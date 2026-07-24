@@ -6,7 +6,7 @@ This is a minimal site repository starter for `@janga/cli-gallery`.
 
 ```sh
 npm install
-npm run dev:local
+npm run gallery:dev
 ```
 
 Edit site-specific content in `site/content.md`, technical settings such as URL,
@@ -22,6 +22,19 @@ The site font is configured with `typography.fontFamily` in `site/config.mjs`.
 
 Commit `package-lock.json` after the first install so GitHub Actions can use
 `npm ci`.
+
+Use `gallery:*` scripts for gallery-specific work:
+
+```sh
+npm run gallery:content:check
+npm run gallery:sync
+npm run gallery:build
+```
+
+This keeps gallery commands separate from repository-specific build or
+publishing commands in projects that embed a gallery inside a larger GitHub
+project. This pure starter also keeps `npm run build` as an alias for
+`npm run gallery:build`.
 
 Use `npm run engine:version` to inspect the installed engine and
 `npm run engine:update` to update it.

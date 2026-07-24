@@ -186,7 +186,7 @@ const assertMainBranch = async () => {
 
 const assertDeployableStatus = async (entries, expectedImagePaths) => {
 	if (entries.length === 0) {
-		fail('Refusing to deploy: no changes to commit after npm run build.');
+		fail('Refusing to deploy: no changes to commit after the gallery build.');
 	}
 
 	const unexpectedUntracked = entries.filter((entry) => (
@@ -309,9 +309,9 @@ const checkPagesWorkflow = async () => {
 const deployCommittedMain = async () => {
 	if (modeArgs.length > 0) {
 		fail([
-			'npm run deploy no longer accepts a commit message.',
-			'Commit your changes first, then run npm run deploy.',
-			'Use npm run deploy:commit -- "Commit message" for the old build-and-commit convenience flow.',
+			'The deploy command no longer accepts a commit message.',
+			'Commit your changes first, then run cli-gallery deploy.',
+			'Use cli-gallery deploy:commit "Commit message" for the old build-and-commit convenience flow.',
 		].join('\n'));
 	}
 
@@ -321,7 +321,7 @@ const deployCommittedMain = async () => {
 	await assertPushableBranch();
 	await runBuild();
 	await printStatusShort();
-	await assertCleanWorktree('Refusing to deploy: npm run build produced uncommitted changes. Commit them before deploying.');
+	await assertCleanWorktree('Refusing to deploy: the gallery build produced uncommitted changes. Commit them before deploying.');
 	await fetchRemoteMain();
 
 	const relation = await assertPushableBranch();

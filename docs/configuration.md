@@ -317,7 +317,7 @@ The site directory is not configured in `config.mjs`.
 Use one of:
 
 ```sh
-CLI_GALLERY_SITE_DIR=my-site npm run build
+CLI_GALLERY_SITE_DIR=my-site npm run gallery:build
 cli-gallery --site-dir my-site build
 ```
 

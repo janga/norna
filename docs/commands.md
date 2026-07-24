@@ -42,33 +42,43 @@ cli-gallery --help
 
 ## Starter npm Scripts
 
+The starter uses `gallery:*` for gallery-specific work. This avoids collisions
+when a `cli-gallery` presentation is embedded inside a larger GitHub project
+whose own `build`, `test`, or deploy scripts mean something different.
+
 The starter defines:
 
 ```sh
 npm run dev
-npm run dev:local
-npm run dev:lan
-npm run dev:restart
-npm run dev:status
-npm run dev:logs
-npm run dev:stop
-npm run config:check
-npm run content:check
-npm run content:sync
-npm run site:public
-npm run images
+npm run gallery:dev
+npm run gallery:dev:lan
+npm run gallery:dev:restart
+npm run gallery:dev:status
+npm run gallery:dev:logs
+npm run gallery:dev:stop
+npm run gallery:check
+npm run gallery:config:check
+npm run gallery:content:check
+npm run gallery:sync
+npm run gallery:public
+npm run gallery:images
+npm run gallery:build
+npm run gallery:build:local
+npm run gallery:deploy
+npm run gallery:deploy:commit
+npm run gallery:deploy:watch
+npm run gallery:doctor
+npm run gallery:preview
 npm run engine:update
 npm run engine:version
 npm run build
-npm run build:local
-npm run deploy
-npm run deploy:commit
-npm run deploy:watch
-npm run doctor
-npm run preview
 ```
 
-`npm run dev` calls `npm run dev:local`.
+`npm run dev` calls `npm run gallery:dev`. In the pure starter,
+`npm run build` aliases `npm run gallery:build`. In mixed repositories, such as
+a GitHub project that embeds a gallery presentation next to an app, `build`
+should normally mean the repository's complete publishable artifact, while
+`gallery:build` builds only the `cli-gallery` part.
 
 ## Command Summary
 
@@ -79,7 +89,7 @@ npm run preview
   reader.
 - `content:check`: validates section structure and gallery references, then
   runs `astro sync`.
-- `content:sync`: rewrites Markdown section order and moves misplaced referenced
+- `content:sync` / `gallery:sync`: rewrites Markdown section order and moves misplaced referenced
   image files after confirmation.
 - `site:public`: copies `site/public/` into `site/.cli-gallery/public/` and
   removes stale copied static files.

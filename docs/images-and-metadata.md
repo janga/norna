@@ -20,7 +20,7 @@ filename only.
 
 ## Generated Variants
 
-`npm run images` and `npm run build` generate WebP files in:
+`npm run gallery:images` and `npm run gallery:build` generate WebP files in:
 
 ```text
 site/.cli-gallery/public/images/generated/

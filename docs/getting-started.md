@@ -26,7 +26,7 @@ cd path/to/your/projects
 npx @janga/cli-gallery@latest init my-gallery
 cd my-gallery
 npm install
-npm run dev:local
+npm run gallery:dev
 ```
 
 A freshly created empty directory is not a `cli-gallery` site yet. It becomes a
@@ -66,8 +66,7 @@ Commit the generated `package-lock.json` after the first install.
 5. Run:
 
 ```sh
-npm run config:check
-npm run content:check
+npm run gallery:check
 npm run build
 ```
 

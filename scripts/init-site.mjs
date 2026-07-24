@@ -69,4 +69,4 @@ console.log('');
 console.log('Next steps:');
 console.log(`  cd ${targetRoot}`);
 console.log('  npm install');
-console.log('  npm run dev:local');
+console.log('  npm run gallery:dev');

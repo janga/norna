@@ -120,7 +120,7 @@ frontmatter id.
 Run:
 
 ```sh
-npm run content:check
+npm run gallery:content:check
 ```
 
 This checks section order and heading ids, duplicate image names, missing image
@@ -130,7 +130,7 @@ references, and unreferenced images.
 Run:
 
 ```sh
-npm run content:sync
+npm run gallery:sync
 ```
 
 This rewrites Markdown sections into frontmatter order and moves referenced

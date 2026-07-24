@@ -51,7 +51,7 @@ cd ../
 npx @janga/cli-gallery@latest init my-gallery
 cd my-gallery
 npm install
-npm run dev:local
+npm run gallery:dev
 ```
 
 Run `init` before `npm install`. A new site directory is not a Node project

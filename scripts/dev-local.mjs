@@ -237,7 +237,7 @@ const startServer = async ({ host = localHost, open = true } = {}) => {
 			? `On this local network: ${lanUrls.join(', ')}`
 			: 'No local IPv4 address was found for LAN access.');
 	}
-	console.log('Manage it with npm run dev:status, npm run dev:logs, npm run dev:restart, and npm run dev:stop.');
+	console.log('Manage it with cli-gallery dev:status, cli-gallery dev:logs, cli-gallery dev:restart, and cli-gallery dev:stop.');
 };
 
 const showStatus = async () => {

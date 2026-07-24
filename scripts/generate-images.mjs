@@ -153,7 +153,7 @@ const getReferencedSources = async () => {
 
 		const currentDirectory = path.basename(path.dirname(sourcePath));
 		if (reference.sectionId && currentDirectory !== reference.sectionId) {
-			fail(`Image "${imageName}" is used in section "${reference.sectionId}" but is located in ${siteImagesLabel}/${currentDirectory}/. Run npm run content:sync to move it.`);
+			fail(`Image "${imageName}" is used in section "${reference.sectionId}" but is located in ${siteImagesLabel}/${currentDirectory}/. Run cli-gallery content:sync, or npm run gallery:sync in starter-style repositories, to move it.`);
 		}
 
 		seen.set(imageName, reference);
