@@ -12,6 +12,7 @@ The Astro content schema validates these top-level fields:
 - `description`: required string. Rendered as the meta description.
 - `defaultPresentation`: optional object. Presentation defaults for all
   sections.
+- `notices`: optional array of temporary or permanent notice banners.
 - `sections`: required non-empty array. Defines section order, ids,
   presentation overrides, and gallery rows.
 
@@ -19,6 +20,7 @@ Each `sections[]` item has:
 
 - `id`: required string matching `^[a-z0-9-]+$`. Used for anchors, navigation,
   image directories, and Markdown heading ids.
+- `visible`: optional date window that controls whether the section is rendered.
 - `presentation`: optional object with `backgroundColor`, `heading`, and/or
   `body` overrides.
 - `gallery`: optional array, defaulting to `[]`.
@@ -29,6 +31,66 @@ Each gallery row has:
   It must be a filename, not a path.
 - `alt`: required string.
 - `caption`: optional string.
+
+## Notices
+
+Use `notices` for short, attention-grabbing messages that link to a section or
+another page. Notices render below the sticky section navigation. They are
+content, so they belong in `content.md`.
+
+```yaml
+notices:
+  - id: summer-exhibition-2026
+    title: "Summer exhibition"
+    text: "Open through 15 September."
+    href: "#exhibition"
+    visible:
+      from: "2026-08-01"
+      until: "2026-09-16"
+```
+
+Each notice has:
+
+- `id`: required string matching `^[a-z0-9-]+$`.
+- `title`: required string.
+- `text`: optional string.
+- `href`: required link target. Use `#section-id` to point to a section.
+- `visible`: optional date window.
+
+If a notice links to a section with `href: "#section-id"` and that section is
+not currently visible, the notice is not rendered. This prevents temporary
+notices from pointing to hidden temporary sections.
+
+## Temporary Sections
+
+Use `sections[].visible` for sections that should be rendered only during a
+date window:
+
+```yaml
+sections:
+  - id: exhibition
+    visible:
+      from: "2026-08-01"
+      until: "2026-09-16"
+    gallery: []
+```
+
+`from` is inclusive. `until` is exclusive. With the example above, the section
+is visible from 2026-08-01 through 2026-09-15 and hidden again on 2026-09-16.
+
+Both `from` and `until` use `YYYY-MM-DD`. Either value may be omitted, but a
+`visible` object must contain at least one of them.
+
+Hidden sections are omitted from the rendered HTML and sticky navigation. They
+remain in `content.md`, and `content:check` still validates their matching
+Markdown headings and gallery image references.
+
+The current date is evaluated at dev/build time. Set `CLI_GALLERY_TODAY` to
+preview or test a specific date:
+
+```sh
+CLI_GALLERY_TODAY=2026-08-15 npm run gallery:build
+```
 
 ## Presentation
 

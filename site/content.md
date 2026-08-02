@@ -14,6 +14,14 @@ defaultPresentation:
       desktop: left
       mobile: left
     size: medium
+notices:
+  - id: summer-demo-notice
+    title: "Temporary dog note"
+    text: "This notice links to a temporary section and disappears after August."
+    href: "#summer-dogs"
+    visible:
+      from: "2026-08-01"
+      until: "2026-09-01"
 sections:
   - id: black-dogs
     presentation:
@@ -26,6 +34,13 @@ sections:
       - image: black-puppy-meadow.png
         alt: "A black puppy standing in a grassy meadow and looking at the camera."
         caption: "AI-generated image."
+  - id: summer-dogs
+    visible:
+      from: "2026-08-01"
+      until: "2026-09-01"
+    presentation:
+      backgroundColor: "#181818"
+    gallery: []
   - id: brown-dogs
     gallery:
       - image: brown-dog.jpg
@@ -59,6 +74,11 @@ sections:
 ## Black Dogs {#black-dogs}
 
 Black-coated dogs from the local cli-gallery development collection.
+
+## Summer Dogs {#summer-dogs}
+
+This temporary section is visible during August 2026. It is here to demonstrate
+date-controlled sections and notices in the local dog gallery.
 
 ## Brown Dogs {#brown-dogs}
 

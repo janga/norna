@@ -1,9 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
+import NoticeBanner from '../components/NoticeBanner.astro';
 import SiteNavigation from '../components/SiteNavigation.astro';
 import SiteSection from '../components/SiteSection.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getSectionsContent } from '../lib/sectionContent';
+import { getToday, isVisibleToday } from '../lib/visibility';
 
 const siteDirectory = (process.env.CLI_GALLERY_SITE_DIR ?? 'site').trim();
 const siteContentLabel = `${siteDirectory || 'site'}/content.md`;
@@ -16,6 +18,16 @@ if (!site) {
 const sections = site.data.sections;
 const siteHtml = site.rendered?.html ?? '';
 const resolvedSections = getSectionsContent(siteHtml, sections);
+const today = getToday();
+const visibleSections = resolvedSections.filter((section) => isVisibleToday(section.visible, today));
+const visibleSectionIds = new Set(visibleSections.map((section) => section.id));
+const visibleNotices = site.data.notices
+	.filter((notice) => isVisibleToday(notice.visible, today))
+	.filter((notice) => !notice.href.startsWith('#') || visibleSectionIds.has(notice.href.slice(1)));
+
+if (visibleSections.length === 0) {
+	throw new Error(`No sections are visible for ${today}. Check sections[].visible in ${siteContentLabel}.`);
+}
 ---
 
 <BaseLayout
@@ -23,10 +35,11 @@ const resolvedSections = getSectionsContent(siteHtml, sections);
 	description={site.data.description}
 	defaultPresentation={site.data.defaultPresentation}
 >
-	<SiteNavigation sections={resolvedSections} defaultPresentation={site.data.defaultPresentation} />
+	<SiteNavigation sections={visibleSections} defaultPresentation={site.data.defaultPresentation} />
+	<NoticeBanner notices={visibleNotices} defaultPresentation={site.data.defaultPresentation} />
 
 	<main id="main-content" class="site-content">
-		{resolvedSections.map((section, index) => (
+		{visibleSections.map((section, index) => (
 			<SiteSection
 				section={section}
 				defaultPresentation={site.data.defaultPresentation}

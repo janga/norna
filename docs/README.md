@@ -18,9 +18,10 @@ For a site maintainer:
 For a developer integrating or updating the engine:
 
 1. [Commands](commands.md)
-2. [Configuration](configuration.md)
-3. [Content](content.md)
-4. [Engine Development](engine-development.md)
+2. [Command Organization](command-organization.md)
+3. [Configuration](configuration.md)
+4. [Content](content.md)
+5. [Engine Development](engine-development.md)
 
 For a quick reference:
 
@@ -29,6 +30,8 @@ For a quick reference:
   gallery viewport limits, `typography.fontFamily`, validation rule, and
   default.
 - [Commands](commands.md) lists the public CLI surface and starter npm scripts.
+- [Command Organization](command-organization.md) defines command namespaces
+  for pure gallery projects, mixed projects, and engine development.
 - [Site Structure](site-structure.md) separates versioned source files from
   generated build output.
 

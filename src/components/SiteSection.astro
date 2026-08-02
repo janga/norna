@@ -131,6 +131,7 @@ const getAlignedTextWidth = (
 });
 const headingWidth = getAlignedTextWidth(headingAlign, '760px');
 const bodyWidth = getAlignedTextWidth(bodyAlign, 'var(--text-width)');
+const hasGallery = section.gallery.length > 0;
 const sectionStyle = [
 	`--section-background-color: ${backgroundColor}`,
 	`--section-text-color: ${textColor}`,
@@ -160,10 +161,10 @@ const sectionStyle = [
 			<HeadingTag>{section.title}</HeadingTag>
 		</header>
 
-		<div class="section-body">
+		<div class:list={['section-body', { 'section-body-has-gallery': hasGallery, 'section-body-text-only': !hasGallery }]}>
 			{section.contentHtml && <div class="section-markdown" set:html={section.contentHtml} />}
 
-			{section.gallery.length > 0 && (
+			{hasGallery && (
 				<GalleryGrid
 					title={section.title}
 					items={section.gallery}

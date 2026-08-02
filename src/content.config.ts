@@ -3,6 +3,7 @@ import { glob } from 'astro/loaders';
 import { pathToFileURL } from 'node:url';
 import { z } from 'astro/zod';
 import { siteDir, siteDirLabel } from '../scripts/lib/site-paths.mjs';
+import { isDateOnly } from './lib/visibility';
 
 const siteEntryId = `${siteDirLabel
 	.replace(/^[./\\]+/, '')
@@ -15,6 +16,19 @@ const colorValue = z.string().regex(
 );
 const textAlign = z.enum(['left', 'center', 'right']);
 const textSize = z.enum(['small', 'medium', 'large', 'xlarge']);
+const dateOnly = z.string()
+	.regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format.')
+	.refine(isDateOnly, 'Use a real calendar date.');
+const visibilityWindow = z.object({
+	from: dateOnly.optional(),
+	until: dateOnly.optional(),
+}).strict().refine(
+	(value) => value.from !== undefined || value.until !== undefined,
+	'Specify from, until, or both.',
+).refine(
+	(value) => value.from === undefined || value.until === undefined || value.from < value.until,
+	'visible.until must be later than visible.from.',
+);
 const defaultResponsiveTextAlign = z.object({
 	desktop: textAlign,
 	mobile: textAlign,
@@ -56,14 +70,23 @@ const galleryCarousel = z.object({
 	carousel: z.array(galleryImage).min(2, 'A carousel must contain at least two images.'),
 }).strict();
 const galleryItem = z.union([galleryImage, galleryCarousel]);
+const notice = z.object({
+	id: z.string().regex(/^[a-z0-9-]+$/),
+	title: z.string(),
+	text: z.string().optional(),
+	href: z.string().min(1),
+	visible: visibilityWindow.optional(),
+}).strict();
 
 const siteSchema = z.object({
 	title: z.string(),
 	description: z.string(),
 	defaultPresentation: defaultPresentation.optional(),
+	notices: z.array(notice).optional().default([]),
 	sections: z.array(
 		z.object({
 			id: z.string().regex(/^[a-z0-9-]+$/),
+			visible: visibilityWindow.optional(),
 			presentation: sectionPresentationOverride.optional(),
 			gallery: z.array(galleryItem).optional().default([]),
 		}).strict(),

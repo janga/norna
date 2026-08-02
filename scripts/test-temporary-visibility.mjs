@@ -1,0 +1,115 @@
+import assert from 'node:assert/strict';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const cliGalleryBin = path.join(repoRoot, 'bin', 'cli-gallery.mjs');
+const tempParent = path.join(repoRoot, 'node_modules', '.cache');
+await mkdir(tempParent, { recursive: true });
+const tempRoot = await mkdtemp(path.join(tempParent, 'cli-gallery-temporary-visibility-'));
+const siteDir = path.join(tempRoot, 'site');
+
+const runCli = (args, env = {}) => {
+	const result = spawnSync(process.execPath, [cliGalleryBin, ...args], {
+		cwd: tempRoot,
+		encoding: 'utf8',
+		env: {
+			...process.env,
+			CLI_GALLERY_SITE_DIR: siteDir,
+			...env,
+		},
+	});
+
+	if (result.status !== 0) {
+		throw new Error([
+			`cli-gallery ${args.join(' ')} exited with code ${result.status}.`,
+			result.stdout.trim(),
+			result.stderr.trim(),
+		].filter(Boolean).join('\n'));
+	}
+
+	return result;
+};
+
+try {
+	await mkdir(path.join(siteDir, 'images', 'work'), { recursive: true });
+	await mkdir(path.join(siteDir, 'public'), { recursive: true });
+	await writeFile(path.join(siteDir, 'public', 'robots.txt'), 'User-agent: *\nAllow: /\n');
+	await writeFile(path.join(siteDir, 'config.mjs'), `export default {
+	site: {
+		url: 'https://example.com/',
+	},
+	github: {
+		repo: 'owner/example',
+		branch: 'main',
+		pagesWorkflow: 'Deploy to GitHub Pages',
+	},
+};
+`);
+	await writeFile(path.join(siteDir, 'content.md'), `---
+title: Temporary Visibility Test
+description: Test site for temporary notices and sections.
+notices:
+  - id: active-notice
+    title: Active notice
+    text: Visible during the active window.
+    href: "#active"
+    visible:
+      from: "2026-01-01"
+      until: "2026-12-31"
+  - id: expired-notice
+    title: Expired notice
+    href: "#expired"
+    visible:
+      until: "2026-01-01"
+  - id: hidden-target-notice
+    title: Hidden target notice
+    href: "#expired"
+    visible:
+      from: "2026-01-01"
+      until: "2026-12-31"
+sections:
+  - id: expired
+    visible:
+      until: "2026-01-01"
+    gallery: []
+  - id: active
+    visible:
+      from: "2026-01-01"
+      until: "2026-12-31"
+    gallery: []
+  - id: always
+    gallery: []
+
+---
+## Expired {#expired}
+
+Expired section text.
+
+## Active {#active}
+
+Active section text.
+
+## Always {#always}
+
+Always visible section text.
+`);
+
+	runCli(['build'], { CLI_GALLERY_TODAY: '2026-06-15' });
+
+	const html = await readFile(path.join(tempRoot, 'dist', 'index.html'), 'utf8');
+	assert.match(html, /Active notice/);
+	assert.match(html, /Visible during the active window/);
+	assert.match(html, /href="#active"/);
+	assert.match(html, /Active section text/);
+	assert.match(html, /Always visible section text/);
+	assert.doesNotMatch(html, /Expired notice/);
+	assert.doesNotMatch(html, /Hidden target notice/);
+	assert.doesNotMatch(html, /Expired section text/);
+
+	console.log('Temporary visibility test passed.');
+} finally {
+	await rm(tempRoot, { force: true, recursive: true });
+}
