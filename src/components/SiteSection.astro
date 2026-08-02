@@ -12,10 +12,14 @@ type TextSize = 'small' | 'medium' | 'large' | 'xlarge';
 type DefaultTextPresentation = {
 	align: ResponsiveValue<TextAlign>;
 	size: TextSize;
+	lineHeight?: number;
+	paragraphSpacing?: string;
 };
 type OverrideTextPresentation = {
 	align?: ResponsiveOverride<TextAlign>;
 	size?: TextSize;
+	lineHeight?: number;
+	paragraphSpacing?: string;
 };
 type DefaultPresentation = {
 	backgroundColor?: string;
@@ -91,6 +95,8 @@ const fallbackPresentation = {
 			mobile: 'left',
 		},
 		size: 'medium',
+		lineHeight: 1.78,
+		paragraphSpacing: '1em',
 	},
 } satisfies DefaultPresentation & { backgroundColor: string };
 const sectionOverride = section.presentation as SectionPresentationOverride | undefined;
@@ -122,6 +128,12 @@ const bodyFontSize = getSizeValue(
 	bodySizeValues,
 	sectionOverride?.body?.size ?? defaultPresentation.body.size,
 );
+const bodyLineHeight = sectionOverride?.body?.lineHeight
+	?? defaultPresentation.body.lineHeight
+	?? fallbackPresentation.body.lineHeight;
+const bodyParagraphSpacing = sectionOverride?.body?.paragraphSpacing
+	?? defaultPresentation.body.paragraphSpacing
+	?? fallbackPresentation.body.paragraphSpacing;
 const getAlignedTextWidth = (
 	align: ResponsiveValue<TextAlign>,
 	centeredWidth: string,
@@ -145,6 +157,8 @@ const sectionStyle = [
 	`--section-body-align-mobile: ${bodyAlign.mobile}`,
 	`--section-body-font-size-desktop: ${bodyFontSize.desktop}`,
 	`--section-body-font-size-mobile: ${bodyFontSize.mobile}`,
+	`--section-body-line-height: ${bodyLineHeight}`,
+	`--section-body-paragraph-spacing: ${bodyParagraphSpacing}`,
 	`--section-body-width-desktop: ${bodyWidth.desktop}`,
 	`--section-body-width-mobile: ${bodyWidth.mobile}`,
 ].join('; ');

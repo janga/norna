@@ -14,6 +14,8 @@ defaultPresentation:
       desktop: center
       mobile: left
     size: medium
+    lineHeight: 1.78
+    paragraphSpacing: 1em
 sections:
   - id: intro
     presentation:

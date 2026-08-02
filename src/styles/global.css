@@ -339,14 +339,18 @@ h2 {
 	color: inherit;
 	font-family: var(--font-sans);
 	font-size: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
-	line-height: 1.78;
 }
 
 .section-markdown {
 	width: min(100%, var(--section-body-width-desktop, var(--text-width)));
 	margin: 0 auto var(--space-section-body-to-gallery);
 	font-size: var(--section-body-font-size-desktop, clamp(1rem, 0.96rem + 0.18vw, 1.125rem));
+	line-height: var(--section-body-line-height, 1.78);
 	text-align: var(--section-body-align-desktop, center);
+}
+
+.section-markdown p {
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
 }
 
 .section-body-text-only .section-markdown {

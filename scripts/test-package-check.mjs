@@ -199,6 +199,14 @@ try {
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-body-line-height: 1.78',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-body-paragraph-spacing: 1em',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-background-color: #000000',
 	);
 	await assertFileIncludes(
@@ -249,6 +257,29 @@ try {
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'defaultPresentation.textColor',
+	);
+	await writeFile(
+		siteContentPath,
+		siteContent.replace('    lineHeight: 1.78', '    lineHeight: tight'),
+	);
+	await runExpectFailure(
+		npxBin,
+		['cli-gallery', 'build'],
+		{ cwd: siteProjectRoot, env: npmEnv },
+		'defaultPresentation.body.lineHeight',
+	);
+	await writeFile(
+		siteContentPath,
+		siteContent.replace(
+			'      heading:\n        size: large',
+			'      body:\n        paragraphSpacing: wide',
+		),
+	);
+	await runExpectFailure(
+		npxBin,
+		['cli-gallery', 'build'],
+		{ cwd: siteProjectRoot, env: npmEnv },
+		'sections.0.presentation.body.paragraphSpacing',
 	);
 	await writeFile(
 		siteContentPath,

@@ -16,6 +16,13 @@ const colorValue = z.string().regex(
 );
 const textAlign = z.enum(['left', 'center', 'right']);
 const textSize = z.enum(['small', 'medium', 'large', 'xlarge']);
+const lineHeight = z.number()
+	.min(1, 'Use a unitless line height of at least 1.')
+	.max(3, 'Use a unitless line height of at most 3.');
+const cssLength = z.string().regex(
+	/^(?:0|(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|ch|lh))$/,
+	'Use a CSS length such as "0", "0.8em", "1rem", or "12px".',
+);
 const dateOnly = z.string()
 	.regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format.')
 	.refine(isDateOnly, 'Use a real calendar date.');
@@ -43,10 +50,14 @@ const overrideResponsiveTextAlign = z.object({
 const defaultTextPresentation = z.object({
 	align: defaultResponsiveTextAlign,
 	size: textSize,
+	lineHeight: lineHeight.optional(),
+	paragraphSpacing: cssLength.optional(),
 }).strict();
 const overrideTextPresentation = z.object({
 	align: overrideResponsiveTextAlign.optional(),
 	size: textSize.optional(),
+	lineHeight: lineHeight.optional(),
+	paragraphSpacing: cssLength.optional(),
 }).strict();
 const sectionPresentationOverride = z.object({
 	backgroundColor: colorValue.optional(),

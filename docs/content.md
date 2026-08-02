@@ -95,8 +95,9 @@ CLI_GALLERY_TODAY=2026-08-15 npm run gallery:build
 ## Presentation
 
 `defaultPresentation` must provide complete heading and body defaults when it is
-present. `defaultPresentation.backgroundColor` and
-`defaultPresentation.textColor` are optional:
+present for `align` and `size`. `defaultPresentation.backgroundColor`,
+`defaultPresentation.textColor`, `defaultPresentation.body.lineHeight`, and
+`defaultPresentation.body.paragraphSpacing` are optional:
 
 ```yaml
 defaultPresentation:
@@ -112,15 +113,22 @@ defaultPresentation:
       desktop: center
       mobile: left
     size: medium
+    lineHeight: 1.78
+    paragraphSpacing: 1em
 ```
 
 Allowed alignment values are `left`, `center`, and `right`. Allowed size values
 are `small`, `medium`, `large`, and `xlarge`.
+`body.lineHeight` is a unitless number from `1` through `3`; it controls spacing
+between lines within a paragraph. `body.paragraphSpacing` is a CSS length such
+as `0`, `0.8em`, `1rem`, or `12px`; it controls spacing after paragraphs.
 `defaultPresentation.backgroundColor` and `defaultPresentation.textColor` must
 be quoted hex colors in `#rgb`, `#rrggbb`, or `#rrggbbaa` form.
 If `backgroundColor` is omitted, section backgrounds are transparent over the
 page background. If `textColor` is omitted, section text uses the global site
 text color.
+If `body.lineHeight` or `body.paragraphSpacing` is omitted, the renderer uses
+the built-in defaults `1.78` and `1em`.
 
 `sections[].presentation` contains only section-specific differences:
 
@@ -136,13 +144,17 @@ sections:
         align:
           desktop: left
           mobile: left
+        lineHeight: 1.55
+        paragraphSpacing: 0.85em
 ```
 
-Section override alignment may specify `desktop`, `mobile`, or both. If
-`defaultPresentation` is omitted, the renderer uses built-in fallbacks: the first
-section heading uses `large`, later section headings use `medium`, heading text
-is centered, body text is centered on desktop and left-aligned on mobile, and
-body size is `medium`.
+Section override alignment may specify `desktop`, `mobile`, or both. Section
+body overrides may specify only the fields that differ from
+`defaultPresentation`. If `defaultPresentation` is omitted, the renderer uses
+built-in fallbacks: the first section heading uses `large`, later section
+headings use `medium`, heading text is centered, body text is centered on
+desktop and left-aligned on mobile, body size is `medium`, body line height is
+`1.78`, and paragraph spacing is `1em`.
 
 Centered text uses narrower text widths. Left- or right-aligned heading and body
 text use the calculated gallery layout width so text edges line up with gallery
