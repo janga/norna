@@ -50,26 +50,7 @@ try {
 `);
 	await writeFile(path.join(siteDir, 'content.md'), `---
 title: Temporary Visibility Test
-description: Test site for temporary notices and sections.
-notices:
-  - id: active-notice
-    title: Active notice
-    text: Visible during the active window.
-    href: "#active"
-    visible:
-      from: "2026-01-01"
-      until: "2026-12-31"
-  - id: expired-notice
-    title: Expired notice
-    href: "#expired"
-    visible:
-      until: "2026-01-01"
-  - id: hidden-target-notice
-    title: Hidden target notice
-    href: "#expired"
-    visible:
-      from: "2026-01-01"
-      until: "2026-12-31"
+description: Test site for temporary sections.
 sections:
   - id: expired
     visible:
@@ -100,13 +81,8 @@ Always visible section text.
 	runCli(['build'], { CLI_GALLERY_TODAY: '2026-06-15' });
 
 	const html = await readFile(path.join(tempRoot, 'dist', 'index.html'), 'utf8');
-	assert.match(html, /Active notice/);
-	assert.match(html, /Visible during the active window/);
-	assert.match(html, /href="#active"/);
 	assert.match(html, /Active section text/);
 	assert.match(html, /Always visible section text/);
-	assert.doesNotMatch(html, /Expired notice/);
-	assert.doesNotMatch(html, /Hidden target notice/);
 	assert.doesNotMatch(html, /Expired section text/);
 
 	console.log('Temporary visibility test passed.');

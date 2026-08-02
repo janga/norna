@@ -5,7 +5,9 @@ import path from 'node:path';
 import {
 	getBodySections,
 	getFrontmatterSections,
+	getFrontmatterInlineStyleNames,
 	getImageIndex,
+	getInlineStyleReferences,
 	readSiteFile,
 	toPosixPath,
 } from './lib/site-content.mjs';
@@ -58,6 +60,7 @@ const promptForWrite = async () => {
 
 const { frontmatter, body } = await readSiteFile(siteContentPath);
 const frontmatterSections = getFrontmatterSections(frontmatter);
+const frontmatterInlineStyleNames = getFrontmatterInlineStyleNames(frontmatter);
 const frontmatterIds = frontmatterSections.map((section) => section.id);
 const { prelude, sections } = getBodySections(body);
 const sectionsById = new Map();
@@ -344,6 +347,16 @@ for (const section of frontmatterSections) {
 }
 
 await warnAboutCarouselAspectRatios();
+
+for (const styleName of new Set(getInlineStyleReferences(body))) {
+	if (!frontmatterInlineStyleNames.has(styleName)) {
+		addIssue({
+			severity: 'error',
+			message: `Inline style ".${styleName}" is used in Markdown but is not defined in defaultPresentation.inlineStyles.`,
+			fix: `Add defaultPresentation.inlineStyles.${styleName} or remove "{.${styleName}}" from Markdown.`,
+		});
+	}
+}
 
 if (hasErrors()) {
 	printReport(shouldWrite ? 'Content sync failed.' : 'Content check failed.');

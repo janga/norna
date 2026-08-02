@@ -207,6 +207,10 @@ try {
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'class="inline-style inline-style-highlight" style="--inline-style-color: #ffd84d"',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-background-color: #000000',
 	);
 	await assertFileIncludes(
@@ -257,6 +261,16 @@ try {
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'defaultPresentation.textColor',
+	);
+	await writeFile(
+		siteContentPath,
+		siteContent.replace('      color: "#ffd84d"', '      color: yellow'),
+	);
+	await runExpectFailure(
+		npxBin,
+		['cli-gallery', 'build'],
+		{ cwd: siteProjectRoot, env: npmEnv },
+		'defaultPresentation.inlineStyles.highlight.color',
 	);
 	await writeFile(
 		siteContentPath,

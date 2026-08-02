@@ -4,6 +4,9 @@ description: Minimal cli-gallery starter site.
 defaultPresentation:
   backgroundColor: "#000000"
   textColor: "#f7f4ee"
+  inlineStyles:
+    highlight:
+      color: "#ffd84d"
   heading:
     align:
       desktop: center
@@ -28,7 +31,8 @@ sections:
 ---
 ## Intro {#intro}
 
-This is a minimal starter site for cli-gallery.
+This is a minimal starter site for cli-gallery. Use
+[highlighted inline text]{.highlight} when a short phrase needs emphasis.
 
 ## Work {#work}
 

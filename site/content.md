@@ -4,6 +4,11 @@ description: A small cli-gallery example with free dog images.
 defaultPresentation:
   backgroundColor: "#000000"
   textColor: "#ffffff"
+  inlineStyles:
+    highlight:
+      color: "#ffd84d"
+    alert:
+      color: "#ff9a3d"
   heading:
     align:
       desktop: left
@@ -16,14 +21,6 @@ defaultPresentation:
     size: medium
     lineHeight: 1.78
     paragraphSpacing: 1em
-notices:
-  - id: summer-demo-notice
-    title: "Temporary dog note"
-    text: "This notice links to a temporary section and disappears after August."
-    href: "#summer-dogs"
-    visible:
-      from: "2026-08-01"
-      until: "2026-09-01"
 sections:
   - id: black-dogs
     presentation:
@@ -93,7 +90,9 @@ sections:
 
 ## Black Dogs {#black-dogs}
 
-Black-coated dogs from the local cli-gallery development collection.
+Black-coated dogs from the local cli-gallery development collection. This
+sentence contains [yellow highlighted text]{.highlight} for inline style
+inspection.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a
 ante venenatis dapibus posuere velit aliquet.
@@ -104,7 +103,8 @@ metus. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
 ## Summer Dogs {#summer-dogs}
 
 This temporary section is visible during August 2026. It is here to demonstrate
-date-controlled sections and notices in the local dog gallery.
+date-controlled sections and [warm alert text]{.alert} in the local dog
+gallery.
 
 Lorem ipsum dolor sit amet.
 

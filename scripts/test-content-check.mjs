@@ -152,6 +152,35 @@ test('content:check warns when carousel images use different aspect ratios', asy
 	});
 });
 
+const inlineStyleSite = `---
+defaultPresentation:
+  inlineStyles:
+    highlight:
+      color: "#ffd84d"
+sections:
+  - id: intro
+    gallery: []
+
+---
+## Intro {#intro}
+This has [known text]{.highlight} and [unknown text]{.missing}.
+`;
+
+test('content:check fails when Markdown uses undefined inline styles', async () => {
+	await withTempProject({
+		site: inlineStyleSite,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 1, output);
+		assert.match(output, /^Content check failed\./m);
+		assert.match(output, /Inline style "\.missing" is used in Markdown but is not defined in defaultPresentation\.inlineStyles\./);
+		assert.doesNotMatch(output, /"\.highlight" is used in Markdown/);
+	});
+});
+
 test('content:check respects CLI_GALLERY_SITE_DIR', async () => {
 	await withTempProject({
 		site: movableSite,

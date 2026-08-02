@@ -6,6 +6,7 @@ export const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
 
 const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
+const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 
 export const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 
@@ -69,6 +70,40 @@ export const getFrontmatterSections = (frontmatter) => {
 
 	return sections;
 };
+
+export const getFrontmatterInlineStyleNames = (frontmatter) => {
+	const names = new Set();
+	const lines = frontmatter.split(/\r?\n/);
+	let inlineStylesIndent = null;
+
+	for (const line of lines) {
+		const inlineStylesMatch = line.match(/^(\s*)inlineStyles:\s*$/);
+
+		if (inlineStylesMatch) {
+			inlineStylesIndent = inlineStylesMatch[1].length;
+			continue;
+		}
+
+		if (inlineStylesIndent === null) continue;
+		if (!line.trim() || line.trim().startsWith('#')) continue;
+
+		const indent = line.match(/^\s*/)?.[0].length ?? 0;
+		if (indent <= inlineStylesIndent) {
+			inlineStylesIndent = null;
+			continue;
+		}
+
+		const nameMatch = line.match(new RegExp(`^\\s{${inlineStylesIndent + 2}}([a-z][a-z0-9-]*):\\s*$`));
+		if (nameMatch) {
+			names.add(nameMatch[1]);
+		}
+	}
+
+	return names;
+};
+
+export const getInlineStyleReferences = (body) => Array.from(body.matchAll(inlineStyleReferenceRegex))
+	.map((match) => match[1]);
 
 export const getHeadingId = (heading) => heading.match(explicitHeadingIdRegex)?.[1];
 

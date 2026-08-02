@@ -23,6 +23,7 @@ const cssLength = z.string().regex(
 	/^(?:0|(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|ch|lh))$/,
 	'Use a CSS length such as "0", "0.8em", "1rem", or "12px".',
 );
+const inlineStyleName = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const dateOnly = z.string()
 	.regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format.')
 	.refine(isDateOnly, 'Use a real calendar date.');
@@ -68,6 +69,9 @@ const sectionPresentationOverride = z.object({
 const defaultPresentation = z.object({
 	backgroundColor: colorValue.optional(),
 	textColor: colorValue.optional(),
+	inlineStyles: z.record(inlineStyleName, z.object({
+		color: colorValue,
+	}).strict()).optional(),
 	heading: defaultTextPresentation,
 	body: defaultTextPresentation,
 }).strict();
@@ -81,19 +85,11 @@ const galleryCarousel = z.object({
 	carousel: z.array(galleryImage).min(2, 'A carousel must contain at least two images.'),
 }).strict();
 const galleryItem = z.union([galleryImage, galleryCarousel]);
-const notice = z.object({
-	id: z.string().regex(/^[a-z0-9-]+$/),
-	title: z.string(),
-	text: z.string().optional(),
-	href: z.string().min(1),
-	visible: visibilityWindow.optional(),
-}).strict();
 
 const siteSchema = z.object({
 	title: z.string(),
 	description: z.string(),
 	defaultPresentation: defaultPresentation.optional(),
-	notices: z.array(notice).optional().default([]),
 	sections: z.array(
 		z.object({
 			id: z.string().regex(/^[a-z0-9-]+$/),

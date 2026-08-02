@@ -12,7 +12,6 @@ The Astro content schema validates these top-level fields:
 - `description`: required string. Rendered as the meta description.
 - `defaultPresentation`: optional object. Presentation defaults for all
   sections.
-- `notices`: optional array of temporary or permanent notice banners.
 - `sections`: required non-empty array. Defines section order, ids,
   presentation overrides, and gallery rows.
 
@@ -31,35 +30,6 @@ Each gallery row has:
   It must be a filename, not a path.
 - `alt`: required string.
 - `caption`: optional string.
-
-## Notices
-
-Use `notices` for short, attention-grabbing messages that link to a section or
-another page. Notices render below the sticky section navigation. They are
-content, so they belong in `content.md`.
-
-```yaml
-notices:
-  - id: summer-exhibition-2026
-    title: "Summer exhibition"
-    text: "Open through 15 September."
-    href: "#exhibition"
-    visible:
-      from: "2026-08-01"
-      until: "2026-09-16"
-```
-
-Each notice has:
-
-- `id`: required string matching `^[a-z0-9-]+$`.
-- `title`: required string.
-- `text`: optional string.
-- `href`: required link target. Use `#section-id` to point to a section.
-- `visible`: optional date window.
-
-If a notice links to a section with `href: "#section-id"` and that section is
-not currently visible, the notice is not rendered. This prevents temporary
-notices from pointing to hidden temporary sections.
 
 ## Temporary Sections
 
@@ -103,6 +73,9 @@ present for `align` and `size`. `defaultPresentation.backgroundColor`,
 defaultPresentation:
   backgroundColor: "#000000"
   textColor: "#f7f4ee"
+  inlineStyles:
+    highlight:
+      color: "#ffd84d"
   heading:
     align:
       desktop: center
@@ -129,6 +102,27 @@ page background. If `textColor` is omitted, section text uses the global site
 text color.
 If `body.lineHeight` or `body.paragraphSpacing` is omitted, the renderer uses
 the built-in defaults `1.78` and `1em`.
+
+Use `defaultPresentation.inlineStyles` for named inline text styles that can be
+applied inside Markdown. Inline style names must match `^[a-z][a-z0-9-]*$`.
+Each style currently supports a required `color` field, using the same quoted
+hex color format as `textColor`:
+
+```yaml
+defaultPresentation:
+  inlineStyles:
+    highlight:
+      color: "#ffd84d"
+```
+
+Apply an inline style in Markdown with `[text]{.style-name}`:
+
+```md
+This sentence contains [highlighted text]{.highlight}.
+```
+
+`content:check` fails if Markdown uses an inline style that is not defined in
+`defaultPresentation.inlineStyles`.
 
 `sections[].presentation` contains only section-specific differences:
 
