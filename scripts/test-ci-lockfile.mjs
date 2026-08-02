@@ -16,6 +16,10 @@ const npmEnv = {
 	npm_config_cache: npmCachePath,
 };
 
+function escapeRegExp(value) {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 try {
 	await writeFile(path.join(tempRoot, 'package.json'), `${JSON.stringify({
 		name: 'cli-gallery-ci-lockfile-test',
@@ -29,6 +33,8 @@ try {
 	await normalizeCiLockfile(tempRoot, quietOptions);
 	const lockfilePath = path.join(tempRoot, 'package-lock.json');
 	const corruptedLockfile = JSON.parse(await readFile(lockfilePath, 'utf8'));
+	const emnapiCoreVersion = corruptedLockfile.packages['node_modules/@emnapi/core']?.version;
+	assert.ok(emnapiCoreVersion, 'expected npm to include @emnapi/core in the normalized lockfile');
 	delete corruptedLockfile.packages['node_modules/@emnapi/core'];
 	await writeFile(lockfilePath, `${JSON.stringify(corruptedLockfile, null, 2)}\n`);
 
@@ -45,14 +51,14 @@ try {
 			'--cpu=x64',
 			'--libc=glibc',
 		], { cwd: tempRoot, env: npmEnv }),
-		/Missing: @emnapi\/core@1\.11\.2 from lock file/,
+		new RegExp(`Missing: @emnapi\\/core@${escapeRegExp(emnapiCoreVersion)} from lock file`),
 	);
 
 	await normalizeCiLockfile(tempRoot, quietOptions);
 	await verifyCiLockfile(tempRoot, quietOptions);
 
 	const repairedLockfile = JSON.parse(await readFile(lockfilePath, 'utf8'));
-	assert.equal(repairedLockfile.packages['node_modules/@emnapi/core']?.version, '1.11.2');
+	assert.equal(repairedLockfile.packages['node_modules/@emnapi/core']?.version, emnapiCoreVersion);
 	console.log('ok - CI lockfile normalization repairs missing optional npm peers');
 } finally {
 	await rm(tempRoot, { force: true, recursive: true });
