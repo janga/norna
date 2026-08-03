@@ -14,6 +14,8 @@
     "gallery:config:check": "cli-gallery config:check",
     "gallery:content:check": "cli-gallery content:check",
     "gallery:sync": "cli-gallery content:sync",
+    "gallery:typography:presets": "cli-gallery typography:presets",
+    "gallery:typography:show": "cli-gallery typography:show",
     "gallery:public": "cli-gallery site:public",
     "gallery:images": "cli-gallery images",
     "gallery:build": "cli-gallery build",
@@ -23,8 +25,8 @@
     "gallery:deploy:watch": "cli-gallery deploy:watch",
     "gallery:doctor": "cli-gallery doctor",
     "gallery:preview": "cli-gallery preview",
-    "engine:update": "cli-gallery engine:update",
-    "engine:version": "cli-gallery engine:version",
+    "gallery:engine:update": "cli-gallery engine:update",
+    "gallery:engine:version": "cli-gallery engine:version",
     "build": "npm run gallery:build"
   },
   "dependencies": {

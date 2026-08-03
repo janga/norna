@@ -15,11 +15,13 @@ cli-gallery dev:stop
 cli-gallery config:check
 cli-gallery content:check
 cli-gallery content:sync
+cli-gallery typography:presets
+cli-gallery typography:show
 cli-gallery site:public
 cli-gallery images
 cli-gallery engine:update [version|latest]
 cli-gallery engine:version [--latest]
-cli-gallery init <target-dir>
+cli-gallery init <target-dir> [--type pure|embedded] [--site-dir <path>]
 cli-gallery build
 cli-gallery build:local
 cli-gallery deploy
@@ -60,6 +62,8 @@ npm run gallery:check
 npm run gallery:config:check
 npm run gallery:content:check
 npm run gallery:sync
+npm run gallery:typography:presets
+npm run gallery:typography:show
 npm run gallery:public
 npm run gallery:images
 npm run gallery:build
@@ -69,8 +73,8 @@ npm run gallery:deploy:commit
 npm run gallery:deploy:watch
 npm run gallery:doctor
 npm run gallery:preview
-npm run engine:update
-npm run engine:version
+npm run gallery:engine:update
+npm run gallery:engine:version
 npm run build
 ```
 
@@ -91,6 +95,10 @@ should normally mean the repository's complete publishable artifact, while
   runs `astro sync`.
 - `content:sync` / `gallery:sync`: rewrites Markdown section order and moves misplaced referenced
   image files after confirmation.
+- `typography:presets`: prints the exact built-in values for every typography
+  preset.
+- `typography:show`: prints the selected site's resolved typography after
+  applying the default preset, site overrides, and section overrides.
 - `site:public`: copies `site/public/` into `site/.cli-gallery/public/` and
   removes stale copied static files.
 - `images`: generates WebP variants and writes
@@ -105,9 +113,10 @@ should normally mean the repository's complete publishable artifact, while
 - `engine:version [--latest]`: prints the declared site dependency, installed
   engine version, engine root, Astro dependency, and installed Astro version.
   With `--latest`, it also asks npm for the latest published engine version.
-- `init <target-dir>`: copies the packaged basic starter into a new or empty
-  directory and pins its `@janga/cli-gallery` dependency to the version that
-  created it.
+- `init <target-dir> [--type pure|embedded] [--site-dir <path>]`: creates a
+  pure gallery project from the packaged starter, or adds a gallery source
+  directory plus `gallery:*` scripts to an existing project in embedded mode.
+  Pure setup pins `@janga/cli-gallery` to the version that created it.
 - `build`: runs config check, content check, public sync, image generation, and
   Astro build.
 - `build:local`: runs `build` and restarts `dev:local`.

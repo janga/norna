@@ -263,6 +263,20 @@ If a mixed project defines `test`, that command should cover the whole project.
 It may call `gallery:check`, but it should not be a hidden synonym for only
 gallery validation.
 
+### Inspect Gallery Presentation
+
+Commands that inspect gallery presentation without changing source files use
+`gallery:*` in consuming repositories:
+
+```sh
+npm run gallery:typography:presets
+npm run gallery:typography:show
+```
+
+`gallery:typography:presets` shows the built-in typography presets from the
+installed engine. `gallery:typography:show` shows the effective typography for
+the selected gallery after presets and overrides have been applied.
+
 ### Correct Content And Configuration
 
 Commands that modify gallery-owned source files use `gallery:*`:
@@ -290,21 +304,25 @@ In a pure gallery project:
 
 ```sh
 npm run gallery:build
+npm run gallery:build:local
 npm run build
 ```
 
-`build` may alias `gallery:build` because the gallery is the whole project.
+`gallery:build:local` builds and restarts the local dev server. `build` may
+alias `gallery:build` because the gallery is the whole project.
 
 In a mixed project:
 
 ```sh
 npm run gallery:build
+npm run gallery:build:local
 npm run build
 ```
 
-`gallery:build` builds only the gallery. If the mixed project defines `build`,
-that project command should build the complete publishable artifact, such as a
-GitHub Pages output that combines the gallery with an app. It may call
+`gallery:build` builds only the gallery. `gallery:build:local` builds the
+gallery and restarts the local gallery dev server. If the mixed project defines
+`build`, that project command should build the complete publishable artifact,
+such as a GitHub Pages output that combines the gallery with an app. It may call
 `gallery:build` internally.
 
 In the engine repository:

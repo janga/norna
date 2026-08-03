@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,10 +30,83 @@ try {
 
 	const initializedPackageJson = JSON.parse(await readFile(path.join(initializedSiteRoot, 'package.json'), 'utf8'));
 	assert.equal(initializedPackageJson.dependencies['@janga/cli-gallery'], packageJson.version);
+	assert.equal(initializedPackageJson.scripts['gallery:engine:update'], 'cli-gallery engine:update');
+	assert.equal(initializedPackageJson.scripts['gallery:engine:version'], 'cli-gallery engine:version');
+	assert.equal(initializedPackageJson.scripts['engine:update'], undefined);
+	assert.equal(initializedPackageJson.scripts['engine:version'], undefined);
+
+	const presetsResult = runCli(['typography:presets']);
+	assert.equal(presetsResult.status, 0, presetsResult.stderr || presetsResult.stdout);
+	assert.match(presetsResult.stdout, /quiet-gallery:/);
+	assert.match(presetsResult.stdout, /text-forward:/);
+
+	const showResult = runCli(['--site-dir', path.join(initializedSiteRoot, 'site'), 'typography:show']);
+	assert.equal(showResult.status, 0, showResult.stderr || showResult.stdout);
+	assert.match(showResult.stdout, /defaultPresentation:/);
+	assert.match(showResult.stdout, /preset: quiet-gallery/);
+	assert.match(showResult.stdout, /intro:/);
 
 	const initAgainResult = runCli(['init', initializedSiteRoot]);
 	assert.notEqual(initAgainResult.status, 0);
 	assert.match(initAgainResult.stderr, /Target directory must be empty/);
+
+	const customPureSiteRoot = path.join(tempRoot, 'custom-pure-site');
+	const customPureInitResult = runCli(['init', customPureSiteRoot, '--type', 'pure', '--site-dir', 'presentation']);
+	assert.equal(customPureInitResult.status, 0, customPureInitResult.stderr || customPureInitResult.stdout);
+	const customPurePackageJson = JSON.parse(await readFile(path.join(customPureSiteRoot, 'package.json'), 'utf8'));
+	assert.equal(customPurePackageJson.scripts.dev, 'npm run gallery:dev');
+	assert.equal(customPurePackageJson.scripts.build, 'npm run gallery:build');
+	assert.equal(customPurePackageJson.scripts['gallery:dev'], 'cli-gallery --site-dir presentation dev:local');
+	assert.equal(customPurePackageJson.scripts['gallery:build'], 'cli-gallery --site-dir presentation build');
+	await readFile(path.join(customPureSiteRoot, 'presentation', 'content.md'));
+	await readFile(path.join(customPureSiteRoot, 'presentation', 'config.mjs'));
+
+	const mixedProjectRoot = path.join(tempRoot, 'mixed-project');
+	await mkdir(mixedProjectRoot, { recursive: true });
+	await writeFile(path.join(mixedProjectRoot, 'package.json'), `${JSON.stringify({
+		name: 'mixed-project',
+		private: true,
+		type: 'module',
+		scripts: {
+			build: 'node build-app.mjs',
+		},
+	}, null, 2)}\n`);
+	const embeddedInitResult = runCli(['init', '.', '--type', 'embedded', '--site-dir', 'presentation'], {
+		cwd: mixedProjectRoot,
+	});
+	assert.equal(embeddedInitResult.status, 0, embeddedInitResult.stderr || embeddedInitResult.stdout);
+	assert.match(embeddedInitResult.stdout, /Added cli-gallery site directory at /);
+	const mixedPackageJson = JSON.parse(await readFile(path.join(mixedProjectRoot, 'package.json'), 'utf8'));
+	assert.equal(mixedPackageJson.dependencies['@janga/cli-gallery'], packageJson.version);
+	assert.equal(mixedPackageJson.scripts.build, 'node build-app.mjs');
+	assert.equal(mixedPackageJson.scripts.dev, undefined);
+	assert.equal(mixedPackageJson.scripts['gallery:dev'], 'cli-gallery --site-dir presentation dev:local');
+	assert.equal(mixedPackageJson.scripts['gallery:engine:update'], 'cli-gallery --site-dir presentation engine:update');
+	assert.equal(mixedPackageJson.scripts['gallery:engine:version'], 'cli-gallery --site-dir presentation engine:version');
+	await readFile(path.join(mixedProjectRoot, 'presentation', 'content.md'));
+	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.mjs'));
+
+	const conflictProjectRoot = path.join(tempRoot, 'conflict-project');
+	await mkdir(conflictProjectRoot, { recursive: true });
+	await writeFile(path.join(conflictProjectRoot, 'package.json'), `${JSON.stringify({
+		name: 'conflict-project',
+		private: true,
+		scripts: {
+			'gallery:dev': 'vite --host 0.0.0.0',
+		},
+	}, null, 2)}\n`);
+	const conflictInitResult = runCli(['init', '.', '--type', 'embedded', '--site-dir', 'presentation'], {
+		cwd: conflictProjectRoot,
+	});
+	assert.notEqual(conflictInitResult.status, 0);
+	assert.match(conflictInitResult.stderr, /Refusing to overwrite existing npm scripts/);
+	assert.match(conflictInitResult.stderr, /gallery:dev/);
+
+	const pureIntoExistingProjectResult = runCli(['init', '.', '--type', 'pure'], {
+		cwd: mixedProjectRoot,
+	});
+	assert.notEqual(pureIntoExistingProjectResult.status, 0);
+	assert.match(pureIntoExistingProjectResult.stderr, /use --type embedded/);
 
 	const updateFromEngineResult = runCli(['engine:update', '--skip-checks']);
 	assert.notEqual(updateFromEngineResult.status, 0);
