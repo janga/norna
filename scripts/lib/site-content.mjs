@@ -8,6 +8,36 @@ const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
+const knownTopLevelFrontmatterKeys = new Set(['title', 'description', 'defaultPresentation', 'sections']);
+const knownNestedFrontmatterKeys = new Set([
+	'align',
+	'alt',
+	'backgroundColor',
+	'body',
+	'caption',
+	'carousel',
+	'color',
+	'desktop',
+	'from',
+	'gallery',
+	'heading',
+	'id',
+	'image',
+	'inlineStyles',
+	'lineHeight',
+	'mobile',
+	'overrides',
+	'paragraphSpacing',
+	'preset',
+	'presentation',
+	'sections',
+	'size',
+	'spacing',
+	'textColor',
+	'typography',
+	'until',
+	'visible',
+]);
 
 export const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 
@@ -108,6 +138,38 @@ export const validateFrontmatterIndentation = (frontmatter, addIssue) => {
 			severity: 'error',
 			message: `Frontmatter line ${nextEntry.index + 1} is indented under line ${lineNumber}, but line ${lineNumber} already has a value.`,
 			fix: 'Move the later line to the same indentation level as its sibling, or place it under a key that has no value.',
+		});
+	}
+};
+
+export const validateFrontmatterStructure = (frontmatter, addIssue) => {
+	const lines = frontmatter.split(/\r?\n/);
+
+	for (const [index, line] of lines.entries()) {
+		const lineNumber = index + 1;
+		const trimmed = line.trim();
+
+		if (!trimmed || trimmed.startsWith('#') || frontmatterDelimiterRegex.test(line)) {
+			continue;
+		}
+
+		const { indent, hasInvalidWhitespace } = getIndentInfo(line);
+		if (hasInvalidWhitespace || indent !== 0) continue;
+
+		const keyMatch = line.match(/^([A-Za-z][A-Za-z0-9-]*):/);
+		if (!keyMatch) continue;
+
+		const key = keyMatch[1];
+		if (knownTopLevelFrontmatterKeys.has(key)) continue;
+
+		const fix = knownNestedFrontmatterKeys.has(key)
+			? `Indent "${key}:" under the section or object it belongs to. For gallery rows, "gallery:" normally belongs under a "sections" item.`
+			: `Move "${key}:" under the correct parent key, or remove it if it is not part of the content schema.`;
+
+		addIssue({
+			severity: 'error',
+			message: `Frontmatter line ${lineNumber} defines "${key}" at the top level, but it is not a valid top-level content field.`,
+			fix,
 		});
 	}
 };

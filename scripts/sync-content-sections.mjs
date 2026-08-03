@@ -11,6 +11,7 @@ import {
 	readSiteFile,
 	toPosixPath,
 	validateFrontmatterIndentation,
+	validateFrontmatterStructure,
 } from './lib/site-content.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
@@ -61,6 +62,7 @@ const promptForWrite = async () => {
 
 const { frontmatter, body } = await readSiteFile(siteContentPath);
 validateFrontmatterIndentation(frontmatter, addIssue);
+validateFrontmatterStructure(frontmatter, addIssue);
 const frontmatterSections = getFrontmatterSections(frontmatter);
 const frontmatterInlineStyleNames = getFrontmatterInlineStyleNames(frontmatter);
 const frontmatterIds = frontmatterSections.map((section) => section.id);

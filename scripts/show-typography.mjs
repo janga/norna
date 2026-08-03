@@ -9,6 +9,7 @@ import {
 import {
 	splitSiteFile,
 	validateFrontmatterIndentation,
+	validateFrontmatterStructure,
 } from './lib/site-content.mjs';
 import {
 	siteContentLabel,
@@ -117,6 +118,7 @@ const readSiteTypography = async () => {
 	const { frontmatter, frontmatterBody } = splitSiteFile(await readFile(siteContentPath, 'utf8'));
 	const indentationIssues = [];
 	validateFrontmatterIndentation(frontmatter, (issue) => indentationIssues.push(issue));
+	validateFrontmatterStructure(frontmatter, (issue) => indentationIssues.push(issue));
 	if (indentationIssues.length > 0) {
 		throw new Error([
 			`Cannot inspect typography because ${siteContentLabel} has invalid frontmatter indentation.`,

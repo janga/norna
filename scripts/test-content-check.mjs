@@ -243,6 +243,34 @@ test('content:check explains frontmatter indentation below scalar values', async
 	});
 });
 
+const topLevelGallerySite = `---
+title: Example
+description: Example site.
+sections:
+  - id: intro
+gallery:
+      - image: intro.jpg
+
+---
+## Intro {#intro}
+Text.
+`;
+
+test('content:check explains likely misindented frontmatter keys', async () => {
+	await withTempProject({
+		site: topLevelGallerySite,
+		files: ['site/images/intro/intro.jpg'],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 1, output);
+		assert.match(output, /^Content check failed\./m);
+		assert.match(output, /Frontmatter line 6 defines "gallery" at the top level, but it is not a valid top-level content field\./);
+		assert.match(output, /Indent "gallery:" under the section or object it belongs to\./);
+	});
+});
+
 test('content:check respects CLI_GALLERY_SITE_DIR', async () => {
 	await withTempProject({
 		site: movableSite,
