@@ -17,6 +17,8 @@ Commands:
   config:check           Validate site/config.mjs
   content:check          Validate site/content.md and gallery references
   content:sync           Rewrite section order and move misplaced images
+  typography:presets     Show built-in typography preset values
+  typography:show        Show resolved typography for the selected site
   site:public            Sync site/public/ to public/
   images                 Generate optimized image variants
   engine:update          Update @janga/cli-gallery in a site repository
@@ -128,6 +130,10 @@ try {
 		await runAstroInherit(['sync']);
 	} else if (command === 'content:sync') {
 		await runScript('scripts/sync-content-sections.mjs', ['--write', ...rest]);
+	} else if (command === 'typography:presets') {
+		await runScript('scripts/show-typography.mjs', ['presets', ...rest]);
+	} else if (command === 'typography:show') {
+		await runScript('scripts/show-typography.mjs', ['show', ...rest]);
 	} else if (command === 'site:public') {
 		await runScript('scripts/sync-site-public.mjs', rest);
 	} else if (command === 'images') {

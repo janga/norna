@@ -9,26 +9,13 @@ defaultPresentation:
       color: "#ffd84d"
     alert:
       color: "#ff9a3d"
-  heading:
-    align:
-      desktop: left
-      mobile: left
-    size: medium
-  body:
-    align:
-      desktop: left
-      mobile: left
-    size: medium
-    lineHeight: 1.78
-    paragraphSpacing: 1em
+  typography:
+    preset: quiet-gallery
 sections:
   - id: black-dogs
     presentation:
-      heading:
-        size: large
-      body:
-        lineHeight: 1.0
-        paragraphSpacing: 0.55em
+      typography:
+        preset: statement
     gallery:
       - image: photo-of-a-black-dog.jpg
         alt: "A black dog sitting outdoors and looking at the camera."
@@ -42,15 +29,13 @@ sections:
       until: "2026-09-01"
     presentation:
       backgroundColor: "#181818"
-      body:
-        lineHeight: 1.55
-        paragraphSpacing: 0.9em
+      typography:
+        preset: compact-gallery
     gallery: []
   - id: brown-dogs
     presentation:
-      body:
-        lineHeight: 1.78
-        paragraphSpacing: 1.2em
+      typography:
+        preset: text-forward
     gallery:
       - image: brown-dog.jpg
         alt: "A brown dog looking directly at the camera."
@@ -60,9 +45,11 @@ sections:
         caption: "Dog accompanies his master. Steve Hillebrand, U.S. Fish and Wildlife Service, public domain."
   - id: golden-dogs
     presentation:
-      body:
-        lineHeight: 2.05
-        paragraphSpacing: 1.45em
+      typography:
+        overrides:
+          body:
+            lineHeight: 1.58
+            paragraphSpacing: 1em
     gallery:
       - image: golden-retriever.jpg
         alt: "A golden retriever standing outdoors."
@@ -72,9 +59,10 @@ sections:
         caption: "Nova Scotia Duck Tolling Retriever puppy. RM, public domain, via Wikimedia Commons."
   - id: white-dogs
     presentation:
-      body:
-        lineHeight: 1.2
-        paragraphSpacing: 1.8em
+      typography:
+        overrides:
+          caption:
+            spacing: 0.35em
     gallery:
       - carousel:
           - image: white-cute-dog.jpg

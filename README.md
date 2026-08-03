@@ -75,6 +75,7 @@ Actions use the same engine version.
 - Keep images within viewport height:
   [`gallery.maxAvailableHeightPercent`](docs/configuration.md#gallerymaxavailableheightpercent)
 - Set the site font: [`typography.fontFamily`](docs/configuration.md#typographyfontfamily)
+- Choose typography presets and overrides: [Content](docs/content.md#typography-presets)
 - Look up CLI and npm scripts: [Commands](docs/commands.md)
 - Understand generated images: [Images And Metadata](docs/images-and-metadata.md)
 - Run local preview: [Local Development](docs/local-development.md)

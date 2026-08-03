@@ -56,10 +56,10 @@ Commit the generated `package-lock.json` after the first install.
 
 ## First Edits
 
-1. Edit `site/config.mjs` for the site's URL, layout, typography, GitHub
-   repository, footer, and deploy settings.
+1. Edit `site/config.mjs` for the site's URL, layout, font, GitHub repository,
+   footer, and deploy settings.
 2. Edit `site/content.md` for title, description, sections, text, gallery rows,
-   alt text, and captions.
+   typography presets, alt text, and captions.
 3. Put source images under `site/images/<section-id>/`.
 4. Put static files such as `robots.txt`, `CNAME`, and favicons under
    `site/public/`.
@@ -83,3 +83,8 @@ the accepted formats and default values.
 To change the site's font, set `typography.fontFamily` in `site/config.mjs`.
 See [`typography.fontFamily`](configuration.md#typographyfontfamily) for the
 accepted format and default value.
+
+To change section typography, choose a preset or add a focused override in
+`site/content.md`. Use `npm run gallery:typography:presets` to inspect the
+installed preset values and `npm run gallery:typography:show` to inspect the
+resolved typography for the site.

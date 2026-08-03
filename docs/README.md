@@ -29,6 +29,9 @@ For a quick reference:
   `site/config.mjs` field, including `layout.pageWidth`, `layout.gutter`,
   gallery viewport limits, `typography.fontFamily`, validation rule, and
   default.
+- [Content](content.md) describes section frontmatter, typography presets,
+  inline styles, temporary sections, Markdown section matching, and content
+  validation.
 - [Commands](commands.md) lists the public CLI surface and starter npm scripts.
 - [Command Organization](command-organization.md) defines command namespaces
   for pure gallery projects, mixed projects, and engine development.

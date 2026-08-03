@@ -16,6 +16,7 @@ const colorValue = z.string().regex(
 );
 const textAlign = z.enum(['left', 'center', 'right']);
 const textSize = z.enum(['small', 'medium', 'large', 'xlarge']);
+const typographyPreset = z.enum(['quiet-gallery', 'compact-gallery', 'text-forward', 'statement']);
 const lineHeight = z.number()
 	.min(1, 'Use a unitless line height of at least 1.')
 	.max(3, 'Use a unitless line height of at most 3.');
@@ -37,10 +38,6 @@ const visibilityWindow = z.object({
 	(value) => value.from === undefined || value.until === undefined || value.from < value.until,
 	'visible.until must be later than visible.from.',
 );
-const defaultResponsiveTextAlign = z.object({
-	desktop: textAlign,
-	mobile: textAlign,
-}).strict();
 const overrideResponsiveTextAlign = z.object({
 	desktop: textAlign.optional(),
 	mobile: textAlign.optional(),
@@ -48,23 +45,39 @@ const overrideResponsiveTextAlign = z.object({
 	(value) => value.desktop !== undefined || value.mobile !== undefined,
 	'Specify desktop, mobile, or both.',
 );
-const defaultTextPresentation = z.object({
-	align: defaultResponsiveTextAlign,
-	size: textSize,
-	lineHeight: lineHeight.optional(),
-	paragraphSpacing: cssLength.optional(),
-}).strict();
-const overrideTextPresentation = z.object({
+const commonTextPresentationOverride = {
 	align: overrideResponsiveTextAlign.optional(),
 	size: textSize.optional(),
 	lineHeight: lineHeight.optional(),
+};
+const headingPresentationOverride = z.object({
+	...commonTextPresentationOverride,
+	spacing: cssLength.optional(),
+}).strict();
+const bodyPresentationOverride = z.object({
+	...commonTextPresentationOverride,
 	paragraphSpacing: cssLength.optional(),
 }).strict();
+const captionPresentationOverride = z.object({
+	...commonTextPresentationOverride,
+	spacing: cssLength.optional(),
+}).strict();
+const typographyOverrides = z.object({
+	heading: headingPresentationOverride.optional(),
+	body: bodyPresentationOverride.optional(),
+	caption: captionPresentationOverride.optional(),
+}).strict();
+const typography = z.object({
+	preset: typographyPreset.optional(),
+	overrides: typographyOverrides.optional(),
+}).strict().refine(
+	(value) => value.preset !== undefined || value.overrides !== undefined,
+	'Specify preset, overrides, or both.',
+);
 const sectionPresentationOverride = z.object({
 	backgroundColor: colorValue.optional(),
 	textColor: colorValue.optional(),
-	heading: overrideTextPresentation.optional(),
-	body: overrideTextPresentation.optional(),
+	typography: typography.optional(),
 }).strict();
 const defaultPresentation = z.object({
 	backgroundColor: colorValue.optional(),
@@ -72,8 +85,7 @@ const defaultPresentation = z.object({
 	inlineStyles: z.record(inlineStyleName, z.object({
 		color: colorValue,
 	}).strict()).optional(),
-	heading: defaultTextPresentation,
-	body: defaultTextPresentation,
+	typography: typography.optional(),
 }).strict();
 
 const galleryImage = z.object({

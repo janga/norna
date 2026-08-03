@@ -7,23 +7,13 @@ defaultPresentation:
   inlineStyles:
     highlight:
       color: "#ffd84d"
-  heading:
-    align:
-      desktop: center
-      mobile: center
-    size: medium
-  body:
-    align:
-      desktop: center
-      mobile: left
-    size: medium
-    lineHeight: 1.78
-    paragraphSpacing: 1em
+  typography:
+    preset: quiet-gallery
 sections:
   - id: intro
     presentation:
-      heading:
-        size: large
+      typography:
+        preset: statement
     gallery: []
   - id: work
     gallery: []

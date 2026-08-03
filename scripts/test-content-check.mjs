@@ -181,6 +181,68 @@ test('content:check fails when Markdown uses undefined inline styles', async () 
 	});
 });
 
+const badWhitespaceSite = `---
+defaultPresentation:
+  typography:
+    preset: quiet-gallery
+\u00a0\u00a0\u00a0\u00a0overrides:
+      body:
+        paragraphSpacing: 0.3em
+sections:
+  - id: intro
+    gallery: []
+
+---
+## Intro {#intro}
+Text.
+`;
+
+test('content:check explains invalid frontmatter indentation whitespace', async () => {
+	await withTempProject({
+		site: badWhitespaceSite,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 1, output);
+		assert.match(output, /^Content check failed\./m);
+		assert.match(output, /Frontmatter line 5 uses tabs, non-breaking spaces, or invalid whitespace for indentation\./);
+		assert.match(output, /Replace the indentation on that line with ordinary spaces\./);
+	});
+});
+
+const badNestedValueSite = `---
+defaultPresentation:
+  typography:
+    preset: quiet-gallery
+      overrides:
+        body:
+          paragraphSpacing: 0.3em
+sections:
+  - id: intro
+    gallery: []
+
+---
+## Intro {#intro}
+Text.
+`;
+
+test('content:check explains frontmatter indentation below scalar values', async () => {
+	await withTempProject({
+		site: badNestedValueSite,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 1, output);
+		assert.match(output, /^Content check failed\./m);
+		assert.match(output, /Frontmatter line 5 is indented under line 4, but line 4 already has a value\./);
+		assert.match(output, /Move the later line to the same indentation level as its sibling/);
+	});
+});
+
 test('content:check respects CLI_GALLERY_SITE_DIR', async () => {
 	await withTempProject({
 		site: movableSite,

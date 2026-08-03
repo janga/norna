@@ -20,8 +20,8 @@ Each `sections[]` item has:
 - `id`: required string matching `^[a-z0-9-]+$`. Used for anchors, navigation,
   image directories, and Markdown heading ids.
 - `visible`: optional date window that controls whether the section is rendered.
-- `presentation`: optional object with `backgroundColor`, `heading`, and/or
-  `body` overrides.
+- `presentation`: optional object with `backgroundColor`, `textColor`, and/or
+  `typography` overrides.
 - `gallery`: optional array, defaulting to `[]`.
 
 Each gallery row has:
@@ -64,10 +64,14 @@ CLI_GALLERY_TODAY=2026-08-15 npm run gallery:build
 
 ## Presentation
 
-`defaultPresentation` must provide complete heading and body defaults when it is
-present for `align` and `size`. `defaultPresentation.backgroundColor`,
-`defaultPresentation.textColor`, `defaultPresentation.body.lineHeight`, and
-`defaultPresentation.body.paragraphSpacing` are optional:
+Use `defaultPresentation` for site-wide presentation defaults. Section-specific
+presentation belongs under `sections[].presentation`.
+
+`defaultPresentation.backgroundColor` and `defaultPresentation.textColor` are
+optional quoted hex colors in `#rgb`, `#rrggbb`, or `#rrggbbaa` form. If
+`backgroundColor` is omitted, section backgrounds are transparent over the page
+background. If `textColor` is omitted, section text uses the global site text
+color.
 
 ```yaml
 defaultPresentation:
@@ -76,32 +80,74 @@ defaultPresentation:
   inlineStyles:
     highlight:
       color: "#ffd84d"
-  heading:
-    align:
-      desktop: center
-      mobile: center
-    size: medium
-  body:
-    align:
-      desktop: center
-      mobile: left
-    size: medium
-    lineHeight: 1.78
-    paragraphSpacing: 1em
+  typography:
+    preset: quiet-gallery
 ```
 
-Allowed alignment values are `left`, `center`, and `right`. Allowed size values
-are `small`, `medium`, `large`, and `xlarge`.
-`body.lineHeight` is a unitless number from `1` through `3`; it controls spacing
-between lines within a paragraph. `body.paragraphSpacing` is a CSS length such
-as `0`, `0.8em`, `1rem`, or `12px`; it controls spacing after paragraphs.
-`defaultPresentation.backgroundColor` and `defaultPresentation.textColor` must
-be quoted hex colors in `#rgb`, `#rrggbb`, or `#rrggbbaa` form.
-If `backgroundColor` is omitted, section backgrounds are transparent over the
-page background. If `textColor` is omitted, section text uses the global site
-text color.
-If `body.lineHeight` or `body.paragraphSpacing` is omitted, the renderer uses
-the built-in defaults `1.78` and `1em`.
+### Typography Presets
+
+Typographic presentation is configured through presets with optional overrides:
+
+```yaml
+defaultPresentation:
+  typography:
+    preset: quiet-gallery
+    overrides:
+      body:
+        paragraphSpacing: 0.8em
+```
+
+Available presets:
+
+- `quiet-gallery`: the default for image-led art and portfolio sites. Text is
+  restrained and supports the images without dominating the page.
+- `compact-gallery`: tighter typography for many sections, many images, or
+  short information blocks.
+- `text-forward`: more generous body text for pages where longer text carries
+  more of the experience.
+- `statement`: stronger type for introductions, first sections, and short
+  programmatic statements. Use it sparingly, usually as a section override.
+
+If `defaultPresentation.typography` is omitted, `quiet-gallery` is used.
+
+Use this command to inspect the exact preset values shipped with the installed
+engine:
+
+```sh
+cli-gallery typography:presets
+```
+
+Use this command to inspect the effective values for the selected site after
+presets and overrides have been applied:
+
+```sh
+cli-gallery typography:show
+```
+
+The typographic roles are:
+
+- `heading`: section headings.
+- `body`: Markdown body text inside sections.
+- `caption`: gallery captions.
+
+Allowed alignment values are `left`, `center`, and `right`. Alignment can be
+responsive:
+
+```yaml
+align:
+  desktop: left
+  mobile: center
+```
+
+Allowed size values are `small`, `medium`, `large`, and `xlarge`.
+`lineHeight` is a unitless number from `1` through `3`. `spacing` and
+`paragraphSpacing` are CSS lengths such as `0`, `0.8em`, `1rem`, or `12px`.
+
+Supported override fields:
+
+- `heading.align`, `heading.size`, `heading.lineHeight`, `heading.spacing`
+- `body.align`, `body.size`, `body.lineHeight`, `body.paragraphSpacing`
+- `caption.align`, `caption.size`, `caption.lineHeight`, `caption.spacing`
 
 Use `defaultPresentation.inlineStyles` for named inline text styles that can be
 applied inside Markdown. Inline style names must match `^[a-z][a-z0-9-]*$`.
@@ -132,23 +178,16 @@ sections:
     presentation:
       backgroundColor: "#161616"
       textColor: "#ffffff"
-      heading:
-        size: large
-      body:
-        align:
-          desktop: left
-          mobile: left
-        lineHeight: 1.55
-        paragraphSpacing: 0.85em
+      typography:
+        preset: statement
+        overrides:
+          body:
+            paragraphSpacing: 0.7em
 ```
 
-Section override alignment may specify `desktop`, `mobile`, or both. Section
-body overrides may specify only the fields that differ from
-`defaultPresentation`. If `defaultPresentation` is omitted, the renderer uses
-built-in fallbacks: the first section heading uses `large`, later section
-headings use `medium`, heading text is centered, body text is centered on
-desktop and left-aligned on mobile, body size is `medium`, body line height is
-`1.78`, and paragraph spacing is `1em`.
+If a section sets `typography.preset`, that section starts from that preset. If
+a section only sets `typography.overrides`, it keeps the site default preset and
+changes only the specified values.
 
 Centered text uses narrower text widths. Left- or right-aligned heading and body
 text use the calculated gallery layout width so text edges line up with gallery
@@ -193,7 +232,20 @@ npm run gallery:content:check
 
 This checks section order and heading ids, duplicate image names, missing image
 files, misplaced referenced images, duplicate gallery references, invalid image
-references, and unreferenced images.
+references, unreferenced images, undefined inline styles, and common
+frontmatter indentation mistakes.
+
+Frontmatter uses YAML indentation. Use ordinary spaces, not tabs or
+non-breaking spaces. `content:check` reports a focused error when indentation is
+invalid or when a key is indented under a line that already has a value:
+
+```yaml
+typography:
+  preset: quiet-gallery
+  overrides:
+    body:
+      paragraphSpacing: 0.8em
+```
 
 Run:
 

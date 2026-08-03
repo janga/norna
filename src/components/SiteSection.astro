@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { resolveSectionTypography } from '../../scripts/lib/typography.mjs';
 import GalleryGrid from './GalleryGrid.astro';
 
 type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
@@ -9,29 +10,10 @@ type ResponsiveValue<T> = { desktop: T; mobile: T };
 type ResponsiveOverride<T> = { desktop?: T; mobile?: T };
 type TextAlign = 'left' | 'center' | 'right';
 type TextSize = 'small' | 'medium' | 'large' | 'xlarge';
-type DefaultTextPresentation = {
-	align: ResponsiveValue<TextAlign>;
-	size: TextSize;
-	lineHeight?: number;
-	paragraphSpacing?: string;
-};
-type OverrideTextPresentation = {
-	align?: ResponsiveOverride<TextAlign>;
-	size?: TextSize;
-	lineHeight?: number;
-	paragraphSpacing?: string;
-};
-type DefaultPresentation = {
-	backgroundColor?: string;
-	textColor?: string;
-	heading: DefaultTextPresentation;
-	body: DefaultTextPresentation;
-};
 type SectionPresentationOverride = {
 	backgroundColor?: string;
 	textColor?: string;
-	heading?: OverrideTextPresentation;
-	body?: OverrideTextPresentation;
+	typography?: NonNullable<SiteSection['presentation']>['typography'];
 };
 
 interface Props {
@@ -79,61 +61,53 @@ const bodySizeValues: Record<TextSize, ResponsiveValue<string>> = {
 		mobile: 'clamp(1.18rem, 1.08rem + 0.36vw, 1.42rem)',
 	},
 };
+const captionSizeValues: Record<TextSize, ResponsiveValue<string>> = {
+	small: {
+		desktop: 'clamp(0.82rem, 0.78rem + 0.12vw, 0.92rem)',
+		mobile: 'clamp(0.82rem, 0.78rem + 0.12vw, 0.92rem)',
+	},
+	medium: {
+		desktop: 'clamp(0.9rem, 0.86rem + 0.16vw, 1rem)',
+		mobile: 'clamp(0.9rem, 0.86rem + 0.16vw, 1rem)',
+	},
+	large: {
+		desktop: 'clamp(1rem, 0.94rem + 0.2vw, 1.12rem)',
+		mobile: 'clamp(1rem, 0.94rem + 0.2vw, 1.12rem)',
+	},
+	xlarge: {
+		desktop: 'clamp(1.08rem, 1rem + 0.28vw, 1.25rem)',
+		mobile: 'clamp(1.08rem, 1rem + 0.28vw, 1.25rem)',
+	},
+};
 const fallbackPresentation = {
 	backgroundColor: 'transparent',
 	textColor: 'var(--color-text)',
-	heading: {
-		align: {
-			desktop: 'center',
-			mobile: 'center',
-		},
-		size: headingLevel === 1 ? 'large' : 'medium',
-	},
-	body: {
-		align: {
-			desktop: 'center',
-			mobile: 'left',
-		},
-		size: 'medium',
-		lineHeight: 1.78,
-		paragraphSpacing: '1em',
-	},
-} satisfies DefaultPresentation & { backgroundColor: string };
+};
 const sectionOverride = section.presentation as SectionPresentationOverride | undefined;
-const getResponsiveValue = <T,>(
-	defaults: ResponsiveValue<T>,
-	override: ResponsiveOverride<T> | undefined,
-): ResponsiveValue<T> => ({
-	desktop: override?.desktop ?? defaults.desktop,
-	mobile: override?.mobile ?? defaults.mobile,
-});
 const getSizeValue = (
 	sizeValues: Record<TextSize, ResponsiveValue<string>>,
 	size: TextSize,
 ) => sizeValues[size];
-const defaultPresentation = configuredDefaultPresentation ?? fallbackPresentation;
+const defaultPresentation = configuredDefaultPresentation;
 const backgroundColor = sectionOverride?.backgroundColor
-	?? defaultPresentation.backgroundColor
+	?? defaultPresentation?.backgroundColor
 	?? fallbackPresentation.backgroundColor;
 const textColor = sectionOverride?.textColor
-	?? defaultPresentation.textColor
+	?? defaultPresentation?.textColor
 	?? fallbackPresentation.textColor;
-const headingAlign = getResponsiveValue(defaultPresentation.heading.align, sectionOverride?.heading?.align);
-const headingFontSize = getSizeValue(
-	headingSizeValues,
-	sectionOverride?.heading?.size ?? defaultPresentation.heading.size,
-);
-const bodyAlign = getResponsiveValue(defaultPresentation.body.align, sectionOverride?.body?.align);
-const bodyFontSize = getSizeValue(
-	bodySizeValues,
-	sectionOverride?.body?.size ?? defaultPresentation.body.size,
-);
-const bodyLineHeight = sectionOverride?.body?.lineHeight
-	?? defaultPresentation.body.lineHeight
-	?? fallbackPresentation.body.lineHeight;
-const bodyParagraphSpacing = sectionOverride?.body?.paragraphSpacing
-	?? defaultPresentation.body.paragraphSpacing
-	?? fallbackPresentation.body.paragraphSpacing;
+const resolvedTypography = resolveSectionTypography(defaultPresentation?.typography, sectionOverride?.typography);
+const typography = resolvedTypography.values;
+const headingAlign = typography.heading.align as ResponsiveValue<TextAlign>;
+const bodyAlign = typography.body.align as ResponsiveValue<TextAlign>;
+const captionAlign = typography.caption.align as ResponsiveValue<TextAlign>;
+const headingFontSize = getSizeValue(headingSizeValues, typography.heading.size as TextSize);
+const bodyFontSize = getSizeValue(bodySizeValues, typography.body.size as TextSize);
+const captionFontSize = getSizeValue(captionSizeValues, typography.caption.size as TextSize);
+const justifyByAlign: Record<TextAlign, string> = {
+	left: 'flex-start',
+	center: 'center',
+	right: 'flex-end',
+};
 const getAlignedTextWidth = (
 	align: ResponsiveValue<TextAlign>,
 	centeredWidth: string,
@@ -151,16 +125,26 @@ const sectionStyle = [
 	`--section-heading-align-mobile: ${headingAlign.mobile}`,
 	`--section-heading-font-size-desktop: ${headingFontSize.desktop}`,
 	`--section-heading-font-size-mobile: ${headingFontSize.mobile}`,
+	`--section-heading-line-height: ${typography.heading.lineHeight}`,
+	`--section-heading-spacing: ${typography.heading.spacing}`,
 	`--section-heading-width-desktop: ${headingWidth.desktop}`,
 	`--section-heading-width-mobile: ${headingWidth.mobile}`,
 	`--section-body-align-desktop: ${bodyAlign.desktop}`,
 	`--section-body-align-mobile: ${bodyAlign.mobile}`,
 	`--section-body-font-size-desktop: ${bodyFontSize.desktop}`,
 	`--section-body-font-size-mobile: ${bodyFontSize.mobile}`,
-	`--section-body-line-height: ${bodyLineHeight}`,
-	`--section-body-paragraph-spacing: ${bodyParagraphSpacing}`,
+	`--section-body-line-height: ${typography.body.lineHeight}`,
+	`--section-body-paragraph-spacing: ${typography.body.paragraphSpacing}`,
 	`--section-body-width-desktop: ${bodyWidth.desktop}`,
 	`--section-body-width-mobile: ${bodyWidth.mobile}`,
+	`--section-caption-align-desktop: ${captionAlign.desktop}`,
+	`--section-caption-align-mobile: ${captionAlign.mobile}`,
+	`--section-caption-font-size-desktop: ${captionFontSize.desktop}`,
+	`--section-caption-font-size-mobile: ${captionFontSize.mobile}`,
+	`--section-caption-line-height: ${typography.caption.lineHeight}`,
+	`--section-caption-spacing: ${typography.caption.spacing}`,
+	`--section-caption-justify-desktop: ${justifyByAlign[captionAlign.desktop]}`,
+	`--section-caption-justify-mobile: ${justifyByAlign[captionAlign.mobile]}`,
 ].join('; ');
 ---
 

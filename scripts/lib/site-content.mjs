@@ -7,6 +7,7 @@ export const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
 const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
+const frontmatterDelimiterRegex = /^---\s*$/;
 
 export const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 
@@ -25,6 +26,91 @@ export const splitSiteFile = (source) => {
 };
 
 export const readSiteFile = async (sitePath) => splitSiteFile(await readFile(sitePath, 'utf8'));
+
+const getIndentInfo = (line) => {
+	const characters = Array.from(line);
+	const indentCharacters = [];
+
+	for (const character of characters) {
+		if (character === ' ' || character === '\t' || character === '\u00a0' || character === '\uFFFD' || character === '\u00c2') {
+			indentCharacters.push(character);
+			continue;
+		}
+
+		break;
+	}
+
+	return {
+		indent: indentCharacters.length,
+		hasInvalidWhitespace: indentCharacters.some((character) => character !== ' '),
+	};
+};
+
+const getNextFrontmatterEntry = (lines, startIndex) => {
+	for (let index = startIndex + 1; index < lines.length; index += 1) {
+		const line = lines[index];
+		if (!line.trim() || line.trim().startsWith('#') || frontmatterDelimiterRegex.test(line)) {
+			continue;
+		}
+
+		return {
+			index,
+			line,
+			...getIndentInfo(line),
+		};
+	}
+
+	return null;
+};
+
+export const validateFrontmatterIndentation = (frontmatter, addIssue) => {
+	const lines = frontmatter.split(/\r?\n/);
+
+	for (const [index, line] of lines.entries()) {
+		const lineNumber = index + 1;
+		const trimmed = line.trim();
+
+		if (!trimmed || trimmed.startsWith('#') || frontmatterDelimiterRegex.test(line)) {
+			continue;
+		}
+
+		const { indent, hasInvalidWhitespace } = getIndentInfo(line);
+
+		if (hasInvalidWhitespace) {
+			addIssue({
+				severity: 'error',
+				message: `Frontmatter line ${lineNumber} uses tabs, non-breaking spaces, or invalid whitespace for indentation.`,
+				fix: 'Replace the indentation on that line with ordinary spaces.',
+			});
+			continue;
+		}
+
+		if (indent % 2 !== 0) {
+			addIssue({
+				severity: 'error',
+				message: `Frontmatter line ${lineNumber} is indented with ${indent} spaces.`,
+				fix: 'Use 2-space indentation levels in frontmatter.',
+			});
+		}
+
+		const keyValueMatch = line.match(/^(\s*)[A-Za-z][A-Za-z0-9-]*:\s+(.+)$/);
+		if (!keyValueMatch) continue;
+
+		const value = keyValueMatch[2].trim();
+		if (value === '|' || value === '>' || value.startsWith('|') || value.startsWith('>')) {
+			continue;
+		}
+
+		const nextEntry = getNextFrontmatterEntry(lines, index);
+		if (!nextEntry || nextEntry.indent <= indent) continue;
+
+		addIssue({
+			severity: 'error',
+			message: `Frontmatter line ${nextEntry.index + 1} is indented under line ${lineNumber}, but line ${lineNumber} already has a value.`,
+			fix: 'Move the later line to the same indentation level as its sibling, or place it under a key that has no value.',
+		});
+	}
+};
 
 export const getFrontmatterSections = (frontmatter) => {
 	const sections = [];

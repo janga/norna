@@ -199,11 +199,15 @@ try {
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-body-line-height: 1.78',
+		'--section-body-line-height: 1.5',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-body-paragraph-spacing: 1em',
+		'--section-body-paragraph-spacing: 0.85em',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-caption-line-height: 1.35',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -235,12 +239,12 @@ try {
 	);
 	const siteContentPath = path.join(siteProjectRoot, 'site', 'content.md');
 	const siteContent = await readFile(siteContentPath, 'utf8');
-	await writeFile(siteContentPath, siteContent.replace('desktop: center', 'desktop: sideways'));
+	await writeFile(siteContentPath, siteContent.replace('preset: quiet-gallery', 'preset: noisy-gallery'));
 	await runExpectFailure(
 		npxBin,
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'defaultPresentation.heading.align.desktop',
+		'defaultPresentation.typography.preset',
 	);
 	await writeFile(
 		siteContentPath,
@@ -274,36 +278,39 @@ try {
 	);
 	await writeFile(
 		siteContentPath,
-		siteContent.replace('    lineHeight: 1.78', '    lineHeight: tight'),
-	);
-	await runExpectFailure(
-		npxBin,
-		['cli-gallery', 'build'],
-		{ cwd: siteProjectRoot, env: npmEnv },
-		'defaultPresentation.body.lineHeight',
-	);
-	await writeFile(
-		siteContentPath,
 		siteContent.replace(
-			'      heading:\n        size: large',
-			'      body:\n        paragraphSpacing: wide',
+			'    preset: quiet-gallery',
+			'    preset: quiet-gallery\n    overrides:\n      body:\n        lineHeight: tight',
 		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.0.presentation.body.paragraphSpacing',
+		'defaultPresentation.typography.overrides.body.lineHeight',
 	);
 	await writeFile(
 		siteContentPath,
-		siteContent.replace('        size: large', '        size: huge'),
+		siteContent.replace(
+			'      typography:\n        preset: statement',
+			'      typography:\n        overrides:\n          caption:\n            spacing: wide',
+		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.0.presentation.heading.size',
+		'sections.0.presentation.typography.overrides.caption.spacing',
+	);
+	await writeFile(
+		siteContentPath,
+		siteContent.replace('        preset: statement', '        preset: dramatic'),
+	);
+	await runExpectFailure(
+		npxBin,
+		['cli-gallery', 'build'],
+		{ cwd: siteProjectRoot, env: npmEnv },
+		'sections.0.presentation.typography.preset',
 	);
 	const siteConfigPath = path.join(siteProjectRoot, 'site', 'config.mjs');
 	const siteConfig = await readFile(siteConfigPath, 'utf8');
