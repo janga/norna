@@ -51,6 +51,10 @@ Do not edit these by hand:
 `site/.cli-gallery/public/` while preserving generated image output under
 `site/.cli-gallery/public/images/`.
 
+Favicons are convention-based. Put files such as `favicon.svg`, `favicon.ico`,
+`favicon.png`, or `apple-touch-icon.png` in `site/public/`. The renderer emits
+icon links only for files that exist.
+
 ## Engine Repository Layout
 
 In this repository:

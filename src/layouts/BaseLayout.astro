@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import projectConfig from '../../scripts/lib/project-config.mjs';
+import { getIconLinks } from '../lib/sitePublicAssets';
 import '../styles/global.css';
 
 type SiteDefaultPresentation = CollectionEntry<'site'>['data']['defaultPresentation'];
@@ -19,6 +20,7 @@ const {
 
 const documentTitle = title;
 const canonicalUrl = projectConfig.site.url;
+const iconLinks = getIconLinks();
 const scrollBehavior = projectConfig.navigation.smoothScroll.enabled ? 'smooth' : 'auto';
 const formatPercent = (value: number) => `${value}%`;
 const formatViewportHeightPercent = (value: number) => `${value}svh`;
@@ -59,8 +61,14 @@ const footerStyle = [
 		<meta name="theme-color" content="#000000" />
 		<link rel="canonical" href={canonicalUrl} />
 		<meta name="generator" content={Astro.generator} />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		{iconLinks.map((iconLink) => (
+			<link
+				rel={iconLink.rel}
+				type={iconLink.type}
+				sizes={iconLink.sizes}
+				href={iconLink.href}
+			/>
+		))}
 		<title>{documentTitle}</title>
 	</head>
 	<body>

@@ -127,6 +127,14 @@ const assertFileIncludes = async (filePath, expectedText) => {
 	}
 };
 
+const assertFileExcludes = async (filePath, unexpectedText) => {
+	const fileContent = await readFile(filePath, 'utf8');
+
+	if (fileContent.includes(unexpectedText)) {
+		throw new Error(`Expected ${filePath} not to include: ${unexpectedText}`);
+	}
+};
+
 try {
 	await mkdir(packDir, { recursive: true });
 	await mkdir(npmCachePath, { recursive: true });
@@ -185,6 +193,14 @@ try {
 	await assertFileExists(path.join(siteProjectRoot, 'site', '.cli-gallery', 'public', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'robots.txt'));
 	await assertFileMissing(path.join(siteProjectRoot, 'public', 'robots.txt'));
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'href="/favicon.svg"',
+	);
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'href="/favicon.ico"',
+	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-heading-font-size-desktop: clamp(1.65rem, 4.6vw, 5.65rem)',
@@ -236,6 +252,17 @@ try {
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-text-color: #f7f4ee',
+	);
+	await writeFile(path.join(siteProjectRoot, 'site', 'public', 'favicon.ico'), 'fake icon');
+	await runInherit(npxBin, ['cli-gallery', 'build'], { cwd: siteProjectRoot, env: npmEnv });
+	await assertFileExists(path.join(siteProjectRoot, 'dist', 'favicon.ico'));
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'<link rel="icon" sizes="any" href="/favicon.ico">',
+	);
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'href="/favicon.svg"',
 	);
 	const siteContentPath = path.join(siteProjectRoot, 'site', 'content.md');
 	const siteContent = await readFile(siteContentPath, 'utf8');
