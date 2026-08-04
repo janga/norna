@@ -95,10 +95,11 @@ site repository after the site's normal checks pass.
 ## npm Release
 
 The npm package is published under the `@janga` scope. Choose the release type
-when starting a release; the command runs `npm test`, requires a clean working
-tree before and after the checks, updates `package.json` and `package-lock.json`,
-creates the release commit and Git tag, publishes to npm, then pushes the commit
-and tag.
+when starting a release; the command requires a clean working tree, verifies npm
+registry authentication for the same registry/cache used by `release:publish`,
+runs `npm test`, requires a clean working tree after the checks, updates
+`package.json` and `package-lock.json`, creates the release commit and Git tag,
+publishes to npm, then pushes the commit and tag.
 
 ```sh
 npm run release:patch
@@ -115,6 +116,15 @@ npm run release:major
 The release command deliberately does not run GitHub Pages deployment monitoring.
 If npm publication fails, it stops before pushing; the local version commit and
 tag remain available for inspection or recovery.
+
+If the npm authentication preflight fails, no version commit or tag has been
+created yet. Run the printed login command:
+
+```sh
+npm login --registry=https://registry.npmjs.org/ --auth-type=web --cache /private/tmp/cli-gallery-npm-cache
+```
+
+Then start the release command again.
 
 After publication, update site repositories to the exact published npm version
 and commit their updated `package-lock.json`.

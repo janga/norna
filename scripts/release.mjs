@@ -8,6 +8,8 @@ import { runInherit } from './lib/run-command.mjs';
 const execFileAsync = promisify(execFile);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const npmRegistry = 'https://registry.npmjs.org/';
+const npmCachePath = '/private/tmp/cli-gallery-npm-cache';
 const releaseTypes = new Set(['patch', 'minor', 'major']);
 const releaseArguments = process.argv.slice(2);
 const [releaseType] = releaseArguments;
@@ -15,7 +17,7 @@ const showHelp = releaseArguments.includes('--help') || releaseArguments.include
 
 const printUsage = () => {
 	console.log('Usage: node scripts/release.mjs <patch|minor|major>');
-	console.log('Runs npm test, creates the version commit and tag, publishes to npm, then pushes the commit and tag.');
+	console.log('Checks npm authentication, runs npm test, creates the version commit and tag, publishes to npm, then pushes the commit and tag.');
 };
 
 const run = (command, args) => runInherit(command, args, { cwd: repoRoot });
@@ -33,6 +35,24 @@ const assertCleanWorktree = async (stage) => {
 	}
 };
 
+const assertNpmAuthenticated = async () => {
+	try {
+		const { stdout } = await execFileAsync(npmBin, [
+			'whoami',
+			`--registry=${npmRegistry}`,
+			'--cache',
+			npmCachePath,
+		], { cwd: repoRoot });
+		console.log(`npm registry authentication: ${stdout.trim()}`);
+	} catch {
+		throw new Error([
+			'Cannot publish because npm is not authenticated for the registry/cache used by release:publish.',
+			'Run this command, complete the browser login, then start the release again:',
+			`npm login --registry=${npmRegistry} --auth-type=web --cache ${npmCachePath}`,
+		].join('\n'));
+	}
+};
+
 if (showHelp || !releaseType) {
 	printUsage();
 	process.exitCode = showHelp ? 0 : 1;
@@ -43,6 +63,7 @@ if (showHelp || !releaseType) {
 	const previousVersion = await readPackageVersion();
 
 	await assertCleanWorktree('before the release checks');
+	await assertNpmAuthenticated();
 	console.log(`Preparing a ${releaseType} release from ${previousVersion}.`);
 	await run(npmBin, ['test']);
 	await assertCleanWorktree('after the release checks');
