@@ -40,3 +40,5 @@ For a quick reference:
 
 Site repositories should document only their site-specific choices and link here
 for generic `cli-gallery` behavior.
+
+Planning and future work are tracked in [../BACKLOG.md](../BACKLOG.md).

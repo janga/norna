@@ -98,5 +98,7 @@ deployment.
 Start with [docs/README.md](docs/README.md) for the documentation map and
 recommended reading order.
 
+Planning and future work are tracked in [BACKLOG.md](BACKLOG.md).
+
 `AGENTS.md` contains operating rules for coding agents. Human-facing product
 and workflow documentation should live in this README and `docs/`.

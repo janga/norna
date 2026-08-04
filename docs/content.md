@@ -233,11 +233,12 @@ npm run gallery:content:check
 This checks section order and heading ids, duplicate image names, missing image
 files, misplaced referenced images, duplicate gallery references, invalid image
 references, unreferenced images, undefined inline styles, and common
-frontmatter indentation mistakes.
+frontmatter indentation and structure mistakes.
 
 Frontmatter uses YAML indentation. Use ordinary spaces, not tabs or
 non-breaking spaces. `content:check` reports a focused error when indentation is
-invalid or when a key is indented under a line that already has a value:
+invalid, when a key is indented under a line that already has a value, or when
+a known nested key such as `gallery` appears at the top level:
 
 ```yaml
 typography:
@@ -245,6 +246,16 @@ typography:
   overrides:
     body:
       paragraphSpacing: 0.8em
+```
+
+Top-level frontmatter may contain only `title`, `description`,
+`defaultPresentation`, and `sections`. A `gallery` key belongs under one
+`sections[]` item:
+
+```yaml
+sections:
+  - id: work
+    gallery: []
 ```
 
 Run:
