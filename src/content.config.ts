@@ -10,6 +10,7 @@ const siteEntryId = `${siteDirLabel
 	.replace(/[^a-zA-Z0-9-]+/g, '-')
 	.replace(/^-+|-+$/g, '') || 'site'}-content`;
 const contentImageName = z.string().regex(/^[a-z0-9][a-z0-9.-]*\.(jpe?g|png)$/i);
+const routeSlug = z.string().regex(/^[a-z0-9][a-z0-9-]*$/, 'Use lowercase letters, numbers, and hyphens.');
 const colorValue = z.string().regex(
 	/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/,
 	'Use a hex color such as "#000000".',
@@ -102,6 +103,11 @@ const frameColors = z.union([
 const frame = z.object({
 	colors: frameColors.optional(),
 }).strict();
+const pageNavigation = z.object({
+	include: z.boolean().optional(),
+	label: z.string().optional(),
+	order: z.number().int().optional(),
+}).strict();
 
 const galleryImage = z.object({
 	image: contentImageName,
@@ -116,6 +122,8 @@ const galleryItem = z.union([galleryImage, galleryCarousel]);
 const siteSchema = z.object({
 	title: z.string(),
 	description: z.string(),
+	slug: routeSlug.optional(),
+	navigation: pageNavigation.optional(),
 	presentation: pagePresentation.optional(),
 	frame: frame.optional(),
 	sections: z.array(
@@ -135,9 +143,18 @@ const themeSchema = z.object({
 
 const site = defineCollection({
 	loader: glob({
-		pattern: 'content.md',
+		pattern: ['content.md', 'routes/*/route-content.md'],
 		base: pathToFileURL(siteDir),
-		generateId: () => siteEntryId,
+		generateId: ({ entry }) => {
+			if (entry === 'content.md') {
+				return siteEntryId;
+			}
+
+			const routeFolder = entry.match(/^routes\/([^/]+)\/route-content\.md$/)?.[1];
+			return routeFolder
+				? `${siteEntryId.replace(/-content$/, '')}-route-${routeFolder}`
+				: entry.replace(/[^a-zA-Z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+		},
 	}),
 	schema: siteSchema,
 });

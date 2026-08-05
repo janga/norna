@@ -1,0 +1,69 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteNavigation from './SiteNavigation.astro';
+import SiteSection from './SiteSection.astro';
+import { getSectionsContent } from '../lib/sectionContent';
+import { getNavigationPages, getSitePage, getSitePages } from '../lib/sitePages';
+import { getToday, isVisibleToday } from '../lib/visibility';
+import { resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
+
+type SiteEntry = CollectionEntry<'site'>;
+
+interface Props {
+	entry: SiteEntry;
+}
+
+const { entry } = Astro.props;
+const siteDirectory = (process.env.CLI_GALLERY_SITE_DIR ?? 'site').trim();
+const siteContentLabel = entry.id.includes('-route-')
+	? `${siteDirectory || 'site'}/routes/${entry.id.split('-route-').at(-1)}/route-content.md`
+	: `${siteDirectory || 'site'}/content.md`;
+const [theme] = await getCollection('theme');
+const allEntries = await getCollection('site');
+const sitePages = getSitePages(allEntries);
+const currentPage = getSitePage(entry);
+const navigationPages = getNavigationPages(sitePages);
+const themeData = theme?.data ?? {};
+const pagePresentation = resolvePagePresentation(themeData.presentation, entry.data.presentation);
+const frameColors = resolveFrameColors({
+	themePresentation: themeData.presentation,
+	themeFrame: themeData.frame,
+	pagePresentation,
+	pageFrame: entry.data.frame,
+});
+const sections = entry.data.sections;
+const siteHtml = entry.rendered?.html ?? '';
+const resolvedSections = getSectionsContent(siteHtml, sections, pagePresentation.inlineStyles);
+const today = getToday();
+const visibleSections = resolvedSections.filter((section) => isVisibleToday(section.visible, today));
+
+if (visibleSections.length === 0) {
+	throw new Error(`No sections are visible for ${today}. Check sections[].visible in ${siteContentLabel}.`);
+}
+---
+
+<BaseLayout
+	title={entry.data.title}
+	description={entry.data.description}
+	frameColors={frameColors}
+	pathname={currentPage.pathname}
+>
+	<SiteNavigation
+		currentPage={currentPage}
+		pages={navigationPages}
+		sections={visibleSections}
+		frameColors={frameColors}
+	/>
+
+	<main id="main-content" class="site-content">
+		{visibleSections.map((section, index) => (
+			<SiteSection
+				section={section}
+				pagePresentation={pagePresentation}
+				headingLevel={index === 0 ? 1 : 2}
+				priorityGalleryImage={index === 0}
+			/>
+		))}
+	</main>
+</BaseLayout>

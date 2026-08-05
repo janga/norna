@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import projectConfig from '../../scripts/lib/project-config.mjs';
+import type { SitePage } from '../lib/sitePages';
 
 type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
 type ResolvedSection = SiteSection & { title: string };
@@ -10,38 +11,103 @@ type FrameColors = {
 };
 
 interface Props {
+	currentPage: SitePage;
+	pages: SitePage[];
 	sections: ResolvedSection[];
 	frameColors: FrameColors;
 }
 
-const { sections, frameColors } = Astro.props;
+const { currentPage, pages, sections, frameColors } = Astro.props;
 const smoothScrollConfig = projectConfig.navigation.smoothScroll;
 const navigationStyle = [
 	`--site-top-background-color: ${frameColors.backgroundColor}`,
 	`--site-top-text-color: ${frameColors.textColor}`,
 ].join('; ');
+const showSiteNavigation = pages.length > 1;
+const showPageNavigation = sections.length > 1;
+const homePage = pages.find((page) => page.isHome) ?? currentPage;
+const brandLabel = homePage.title;
+const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
 
-<header class="site-top" data-smooth-scroll={JSON.stringify(smoothScrollConfig)} style={navigationStyle}>
-	<nav class="section-nav" aria-label={projectConfig.locale.labels.sectionNavigation}>
-		<ul>
-			{sections.map((section, index) => (
-				<li>
-					<a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
-						{section.title}
-					</a>
-				</li>
-			))}
-		</ul>
-	</nav>
+<header
+	class:list={['site-top', { 'site-top-has-site-nav': showSiteNavigation }]}
+	data-smooth-scroll={JSON.stringify(smoothScrollConfig)}
+	style={navigationStyle}
+>
+	{showSiteNavigation && (
+		<div class="site-nav-row">
+			<a class="site-brand" href={homePage.pathname}>{brandLabel}</a>
+
+			<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
+				<ul>
+					{pages.map((page) => (
+						<li>
+							<a href={page.pathname} aria-current={isCurrentPage(page) ? 'page' : undefined}>
+								{page.navigation.label}
+							</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+
+			<details class="mobile-nav-menu">
+				<summary>{projectConfig.locale.labels.menu}</summary>
+				<div class="mobile-nav-panel">
+					<nav class="mobile-site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
+						<h2>{projectConfig.locale.labels.siteNavigation}</h2>
+						<ul>
+							{pages.map((page) => (
+								<li>
+									<a href={page.pathname} aria-current={isCurrentPage(page) ? 'page' : undefined}>
+										{page.navigation.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</nav>
+
+					{showPageNavigation && (
+						<nav class="mobile-page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
+							<h2>{projectConfig.locale.labels.pageNavigation}</h2>
+							<ul>
+								{sections.map((section, index) => (
+									<li>
+										<a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
+											{section.title}
+										</a>
+									</li>
+								))}
+							</ul>
+						</nav>
+					)}
+				</div>
+			</details>
+		</div>
+	)}
+
+	{showPageNavigation && (
+		<nav class="page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
+			<ul>
+				{sections.map((section, index) => (
+					<li>
+						<a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
+							{section.title}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+	)}
 </header>
 
 <script>
 	const siteTop = document.querySelector('.site-top');
 	const sections = Array.from(document.querySelectorAll('.site-section'));
-	const links = Array.from(document.querySelectorAll('.section-nav a'));
+	const links = Array.from(document.querySelectorAll('.page-nav a, .mobile-page-nav a'));
+	const mobileMenu = document.querySelector('.mobile-nav-menu');
 	const smoothScrollConfig = JSON.parse(siteTop?.getAttribute('data-smooth-scroll') ?? '{}');
 	const anchorPadding = 0;
 	const maximumAnchorGap = 2;
@@ -338,7 +404,12 @@ const navigationStyle = [
 			scrollToSection(section, {
 				behavior: 'smooth',
 				duration,
-				onComplete: () => setHash(targetHash),
+				onComplete: () => {
+					setHash(targetHash);
+					if (mobileMenu instanceof HTMLDetailsElement) {
+						mobileMenu.open = false;
+					}
+				},
 			});
 		});
 	});

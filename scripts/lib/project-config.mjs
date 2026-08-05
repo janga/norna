@@ -205,9 +205,13 @@ const readLocale = (rawLocale) => {
 	return Object.freeze({
 		lang: lang.trim(),
 		labels: Object.freeze({
+			closeMenu: readString({ closeMenu: labels.closeMenu ?? 'Close menu' }, 'closeMenu', 'locale.labels'),
 			skipToContent: readString({ skipToContent: labels.skipToContent ?? 'Skip to content' }, 'skipToContent', 'locale.labels'),
 			sectionNavigation: readString({ sectionNavigation: labels.sectionNavigation ?? 'Sections' }, 'sectionNavigation', 'locale.labels'),
 			gallery: readString({ gallery: labels.gallery ?? 'Gallery' }, 'gallery', 'locale.labels'),
+			menu: readString({ menu: labels.menu ?? 'Menu' }, 'menu', 'locale.labels'),
+			pageNavigation: readString({ pageNavigation: labels.pageNavigation ?? 'On this page' }, 'pageNavigation', 'locale.labels'),
+			siteNavigation: readString({ siteNavigation: labels.siteNavigation ?? 'Pages' }, 'siteNavigation', 'locale.labels'),
 		}),
 	});
 };

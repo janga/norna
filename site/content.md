@@ -1,6 +1,9 @@
 ---
 title: Local Dog Gallery
 description: A small cli-gallery example with free dog images.
+navigation:
+  label: Dog site!
+  order: 10
 sections:
   - id: black-dogs
     presentation:
@@ -9,9 +12,11 @@ sections:
     gallery:
       - image: photo-of-a-black-dog.jpg
         alt: "A black dog sitting outdoors and looking at the camera."
-        caption: "Photo of a dog. ContaDeletada2906, CC0 1.0, via Wikimedia Commons."
+        caption:
+          "Photo of a dog. ContaDeletada2906, CC0 1.0, via Wikimedia Commons."
       - image: black-puppy-meadow.png
-        alt: "A black puppy standing in a grassy meadow and looking at the camera."
+        alt:
+          "A black puppy standing in a grassy meadow and looking at the camera."
         caption: "AI-generated image."
   - id: summer-dogs
     visible:
@@ -32,7 +37,9 @@ sections:
         caption: "DogBrown. Frank-3, CC0 1.0, via Wikimedia Commons."
       - image: dog-accompanies-master.jpg
         alt: "A man walks outdoors with a dog at his side."
-        caption: "Dog accompanies his master. Steve Hillebrand, U.S. Fish and Wildlife Service, public domain."
+        caption:
+          "Dog accompanies his master. Steve Hillebrand, U.S. Fish and Wildlife
+          Service, public domain."
   - id: golden-dogs
     presentation:
       typography:
@@ -45,8 +52,11 @@ sections:
         alt: "A golden retriever standing outdoors."
         caption: "Golden Retriever. Ribo, public domain, via Wikimedia Commons."
       - image: toller-puppy.jpg
-        alt: "A young Nova Scotia Duck Tolling Retriever puppy sitting on grass."
-        caption: "Nova Scotia Duck Tolling Retriever puppy. RM, public domain, via Wikimedia Commons."
+        alt:
+          "A young Nova Scotia Duck Tolling Retriever puppy sitting on grass."
+        caption:
+          "Nova Scotia Duck Tolling Retriever puppy. RM, public domain, via
+          Wikimedia Commons."
   - id: white-dogs
     presentation:
       typography:
@@ -57,7 +67,9 @@ sections:
       - carousel:
           - image: white-cute-dog.jpg
             alt: "A white dog looking toward the camera."
-            caption: "White cute dog. Neal Ziring, public domain, via Wikimedia Commons."
+            caption:
+              "White cute dog. Neal Ziring, public domain, via Wikimedia
+              Commons."
           - image: white-puppy-garden.png
             alt: "A fluffy white puppy standing on grass in a garden."
             caption: "AI-generated image."
@@ -79,8 +91,7 @@ metus. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
 ## Summer Dogs {#summer-dogs}
 
 This temporary section is visible during August 2026. It is here to demonstrate
-date-controlled sections and [warm alert text]{.alert} in the local dog
-gallery.
+date-controlled sections and [warm alert text]{.alert} in the local dog gallery.
 
 Lorem ipsum dolor sit amet.
 
@@ -122,10 +133,10 @@ ligula porta felis euismod semper.
 
 ## Sources {#sources}
 
-Most images are sourced from Wikimedia Commons pages that list CC0 or public-domain licensing:
+Most images are sourced from Wikimedia Commons pages that list CC0 or
+public-domain licensing:
 
 - [Photo of a dog](https://commons.wikimedia.org/wiki/File:Photo_of_a_dog.jpg)
-- [Smiling dog](https://commons.wikimedia.org/wiki/File:Smiling_dog.jpg)
 - [DogBrown](https://commons.wikimedia.org/wiki/File:DogBrown.jpg)
 - [Dog accompanies his master](https://commons.wikimedia.org/wiki/File:Dog_accompanies_his_master.jpg)
 - [Golden Retriever](https://commons.wikimedia.org/wiki/File:Golden_Retriever.jpg)
