@@ -118,6 +118,15 @@ engine defaults
 ```
 
 - Page-level `presentation` is always an override on top of `site/theme.md`.
+- Navigation should keep site navigation and page navigation conceptually
+  separate. Site navigation changes pages/routes; page navigation changes the
+  current URL hash and active section within the current page.
+- Section navigation history should remain hash-based: each clicked section
+  link creates one hash entry, browser back/forward moves through those section
+  entries, and the hashless page state maps back to the first active section.
+  Active section state should not be driven by free manual scrolling unless a
+  later design explicitly reintroduces that behavior without conflicting with
+  hash history.
 - `frame.colors` is explicit and may use `theme`, `presentation`, or explicit
   `backgroundColor`/`textColor` values.
 - Page metadata such as `title` and `description` should remain page-local and

@@ -131,10 +131,26 @@ and commit their updated `package-lock.json`.
 
 ## Rendering Notes
 
-The renderer builds one static page at `/`. Section navigation uses real
-`href="#section-id"` links and progressively enhances them with JavaScript when
-available. The sticky navigation updates root scroll offset variables so direct
-hash links and clicked links land below the fixed header.
+The renderer builds the homepage at `/` and optional first-level routes from
+`site/routes/<route-folder>/route-content.md`.
+
+Navigation has two separate levels:
+
+- Site navigation moves between pages and routes. It uses normal page URLs and
+  browser history.
+- Page navigation moves between sections on the current page. It uses real
+  `href="#section-id"` links so anchors work without JavaScript.
+
+The JavaScript enhancement keeps the URL hash as the source of truth for active
+page-navigation state. A section-link click pushes one hash entry into browser
+history, back/forward moves between hash entries, and returning to the same page
+without a hash restores the first section as active. The enhancement does not
+derive active section state from free manual scrolling.
+
+The sticky navigation updates root scroll offset variables so direct hash links
+and clicked links land below the fixed header. Hash targets may be corrected
+again after layout shifts such as image loading, but that correction must not
+add history entries or change the active section independently of the URL hash.
 
 The shared layout reads UI language and labels from `site/config.mjs`
 `locale`. Keep editorial content in page Markdown and non-editorial engine UI
