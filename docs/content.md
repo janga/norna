@@ -1,22 +1,33 @@
 # Content
 
 `site/content.md` is the editable page file for the homepage of a
-`cli-gallery` site. It contains page metadata, page-local presentation
-overrides, section definitions, and Markdown section bodies.
+`cli-gallery` site. Optional route pages use
+`site/routes/<route-folder>/route-content.md` with the same page frontmatter and
+Markdown section model.
 
-Site-wide visual defaults live in `site/theme.md`. Technical site
+Site-wide visual defaults may live in `site/theme.md`. Technical site
 configuration lives in `site/config.mjs`.
 
 ## Frontmatter Schema
 
-The Astro content schema validates these top-level fields in `site/content.md`:
+The Astro content schema validates these top-level fields in page files:
 
 - `title`: required string. Rendered as the document title.
 - `description`: required string. Rendered as the meta description.
+- `slug`: optional route URL slug. It is ignored on the homepage. If omitted on
+  a route page, the route folder name is used.
+- `navigation`: optional page navigation metadata.
 - `presentation`: optional page-level presentation overrides.
 - `frame`: optional page-level frame color source.
 - `sections`: required non-empty array. Defines section order, ids,
   presentation overrides, and gallery rows.
+
+`navigation` may contain:
+
+- `include`: optional boolean. Defaults to `true`.
+- `label`: optional string. Defaults to `title`.
+- `order`: optional integer. Defaults to `0` for the homepage and `100` for
+  route pages.
 
 Each `sections[]` item has:
 
@@ -34,10 +45,52 @@ Each gallery row has:
 - `alt`: required string.
 - `caption`: optional string.
 
+## Routes
+
+The homepage is always `site/content.md` and builds to `/`.
+
+Add a first-level route by creating:
+
+```text
+site/routes/about/route-content.md
+```
+
+Minimal route page:
+
+```md
+---
+title: About
+description: About this gallery.
+navigation:
+  label: About
+  order: 20
+sections:
+  - id: intro
+---
+
+## Intro {#intro}
+
+Text...
+```
+
+The example above builds to `/about/`. If `slug` is omitted, the route folder
+name is used. If `slug` is set, it must use lowercase letters, numbers, and
+hyphens. Keep the route folder and `slug` aligned unless you intentionally need
+a different URL.
+
+Route images live under the route:
+
+```text
+site/routes/about/images/intro/image.jpg
+```
+
+Image references in route frontmatter still use only the filename.
+
 ## Site Theme
 
-`site/theme.md` defines site-wide visual defaults. It uses frontmatter and does
-not need a Markdown body.
+`site/theme.md` optionally defines site-wide visual defaults. It uses
+frontmatter and does not need a Markdown body. If the file is missing, built-in
+engine defaults are used.
 
 Starter sites include a marked comment block such as
 `cli-gallery:start theme-help` / `cli-gallery:end theme-help`. The block is

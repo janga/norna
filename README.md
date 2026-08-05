@@ -23,13 +23,16 @@ A `cli-gallery` site is file-driven:
 1. A site repository depends on this package.
 2. The site keeps technical settings, including page width, gallery width, and
    the global font family, in `site/config.mjs`.
-3. The site keeps site-wide visual theme defaults in `site/theme.md`.
+3. The site can keep site-wide visual theme defaults in `site/theme.md`.
 4. The site keeps homepage content, section order, gallery rows, alt text, and
    captions in `site/content.md`.
-5. Source images live under `site/images/<section-id>/`.
-6. Static public files live under `site/public/`.
-7. `cli-gallery` validates the files, generates WebP variants, builds a static
-   Astro page, and can help publish the committed branch through GitHub Pages.
+5. Optional route pages live under
+   `site/routes/<route-folder>/route-content.md`.
+6. Source images live under `site/images/<section-id>/` for the homepage, or
+   under `site/routes/<route-folder>/images/<section-id>/` for a route.
+7. Static public files live under `site/public/`.
+8. `cli-gallery` validates the files, generates WebP variants, builds static
+   Astro pages, and can help publish the committed branch through GitHub Pages.
 
 The default site directory is `site/`. Commands can also use another directory
 with `CLI_GALLERY_SITE_DIR` or `cli-gallery --site-dir <path>`.

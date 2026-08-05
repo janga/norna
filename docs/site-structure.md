@@ -14,6 +14,11 @@ site/
 |-- content.md
 |-- images/
 |   `-- <section-id>/
+|-- routes/
+|   `-- <route-folder>/
+|       |-- route-content.md
+|       `-- images/
+|           `-- <section-id>/
 |-- public/
 `-- .cli-gallery/
     |-- generated-images.json
@@ -23,18 +28,22 @@ site/
 Use `CLI_GALLERY_SITE_DIR` or `cli-gallery --site-dir <path>` to select another
 site directory. Commands started from a subdirectory walk upward until they find
 the selected site directory containing both `config.mjs` and `content.md`.
-`theme.md` is also required for rendering and validation, but the upward
-directory discovery currently keys on `config.mjs` and `content.md`.
+`theme.md` is optional; omit it to use the engine's built-in presentation
+defaults.
 
 ## Versioned Source Files
 
 Version these files in a site repository:
 
 - `site/config.mjs`: technical site configuration.
-- `site/theme.md`: site-wide visual theme, inline styles, and frame defaults.
+- `site/theme.md`: optional site-wide visual theme, inline styles, and frame
+  defaults.
 - `site/content.md`: homepage page file with editable content, section
   definitions, gallery rows, alt text, and captions.
 - `site/images/<section-id>/`: original source images.
+- `site/routes/<route-folder>/route-content.md`: optional route page files.
+- `site/routes/<route-folder>/images/<section-id>/`: original source images
+  for that route page.
 - `site/public/`: site-specific static public files.
 - `site/.cli-gallery/generated-images.json`: generated image manifest used to
   decide whether WebP variants can be reused.

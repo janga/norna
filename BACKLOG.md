@@ -64,8 +64,8 @@ verified.
 These are current constraints, not necessarily bugs.
 
 - `npm link` is not supported for testing the engine in a site repository.
-- The renderer is intentionally single-page; adding routes would be a larger
-  architectural decision.
+- Routes currently support one route segment under `site/routes/<route-folder>/`;
+  nested routes and richer navigation behavior remain out of scope.
 - Source image copyright metadata is outside the current command surface.
 - `cli-gallery` assumes a file-driven site model with `config.mjs`,
   `theme.md`, `content.md`, source images, and static public files.
@@ -82,14 +82,14 @@ basic site workflow.
 - A documented pattern for embedding a gallery into larger GitHub Pages
   projects that also publish an app or project homepage.
 
-## Future Route Architecture Notes
+## Route Architecture Notes
 
-Routes are not implemented. These notes record current structural decisions so
-future route work can avoid unnecessary breaking changes.
+Basic first-level routes are implemented. These notes record structural
+decisions so future route work can avoid unnecessary breaking changes.
 
 - `site/content.md` is the homepage page file for `/`, not a catch-all site
   file.
-- Future route files should be analogous page files, for example:
+- Route files are analogous page files, for example:
 
 ```text
 site/

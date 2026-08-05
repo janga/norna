@@ -19,9 +19,10 @@ For a developer integrating or updating the engine:
 
 1. [Commands](commands.md)
 2. [Command Organization](command-organization.md)
-3. [Configuration](configuration.md)
-4. [Content](content.md)
-5. [Engine Development](engine-development.md)
+3. [Site Examples Structure Note](site-examples-structure-note.md)
+4. [Configuration](configuration.md)
+5. [Content](content.md)
+6. [Engine Development](engine-development.md)
 
 For a quick reference:
 
@@ -29,14 +30,17 @@ For a quick reference:
   `site/config.mjs` field, including `layout.pageWidth`, `layout.gutter`,
   gallery viewport limits, `typography.fontFamily`, validation rule, and
   default.
-- [Content](content.md) describes section frontmatter, typography presets,
-  site themes, inline styles, temporary sections, Markdown section matching,
-  and content validation.
+- [Content](content.md) describes page and route frontmatter, section
+  frontmatter, typography presets, site themes, inline styles, temporary
+  sections, Markdown section matching, and content validation.
 - [Commands](commands.md) lists the public CLI surface and starter npm scripts.
 - [Command Organization](command-organization.md) defines command namespaces
   for pure gallery projects, mixed projects, and engine development.
 - [Site Structure](site-structure.md) separates versioned source files from
   generated build output.
+- [Site Examples Structure Note](site-examples-structure-note.md) defines the
+  intended vocabulary for starters, examples, docs sites, reference docs, and
+  fixtures before any repository reorganization.
 
 Site repositories should document only their site-specific choices and link here
 for generic `cli-gallery` behavior.

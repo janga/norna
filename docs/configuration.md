@@ -233,8 +233,14 @@ navigation: {
 Fields:
 
 - `locale.labels.skipToContent`: skip-link text, default `Skip to content`.
-- `locale.labels.sectionNavigation`: sticky navigation ARIA label, default
+- `locale.labels.siteNavigation`: site-level navigation ARIA label and mobile
+  menu group heading, default `Pages`.
+- `locale.labels.pageNavigation`: current-page section navigation ARIA label and
+  mobile menu group heading, default `On this page`.
+- `locale.labels.sectionNavigation`: legacy section navigation label, default
   `Sections`.
+- `locale.labels.menu`: mobile menu summary text, default `Menu`.
+- `locale.labels.closeMenu`: reserved close-menu label, default `Close menu`.
 - `locale.labels.gallery`: gallery ARIA label prefix, default `Gallery`.
 
 Example:
@@ -244,7 +250,10 @@ locale: {
 	lang: 'sv',
 	labels: {
 		skipToContent: 'Hoppa till innehåll',
+		siteNavigation: 'Sidor',
+		pageNavigation: 'På denna sida',
 		sectionNavigation: 'Sektioner',
+		menu: 'Meny',
 		gallery: 'Galleri',
 	},
 }

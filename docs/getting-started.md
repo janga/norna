@@ -60,13 +60,15 @@ Commit the generated `package-lock.json` after the first install.
 1. Edit `site/config.mjs` for the site's URL, layout, font, language labels,
    GitHub repository, footer, and deploy settings.
 2. Edit `site/theme.md` for site-wide colors, typography preset, inline styles,
-   and frame colors.
+   and frame colors, or omit it to use engine defaults.
 3. Edit `site/content.md` for homepage title, description, sections, text,
    gallery rows, page/section presentation overrides, alt text, and captions.
 4. Put source images under `site/images/<section-id>/`.
-5. Put static files such as `robots.txt`, `CNAME`, and favicons under
+5. Add optional route pages under
+   `site/routes/<route-folder>/route-content.md`.
+6. Put static files such as `robots.txt`, `CNAME`, and favicons under
    `site/public/`.
-6. Run:
+7. Run:
 
 ```sh
 npm run gallery:check
