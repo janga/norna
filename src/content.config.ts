@@ -79,13 +79,28 @@ const sectionPresentationOverride = z.object({
 	textColor: colorValue.optional(),
 	typography: typography.optional(),
 }).strict();
-const defaultPresentation = z.object({
+const themePresentation = z.object({
 	backgroundColor: colorValue.optional(),
 	textColor: colorValue.optional(),
 	inlineStyles: z.record(inlineStyleName, z.object({
 		color: colorValue,
 	}).strict()).optional(),
 	typography: typography.optional(),
+}).strict();
+const pagePresentation = z.object({
+	backgroundColor: colorValue.optional(),
+	textColor: colorValue.optional(),
+	typography: typography.optional(),
+}).strict();
+const frameColors = z.union([
+	z.enum(['theme', 'presentation']),
+	z.object({
+		backgroundColor: colorValue,
+		textColor: colorValue,
+	}).strict(),
+]);
+const frame = z.object({
+	colors: frameColors.optional(),
 }).strict();
 
 const galleryImage = z.object({
@@ -101,7 +116,8 @@ const galleryItem = z.union([galleryImage, galleryCarousel]);
 const siteSchema = z.object({
 	title: z.string(),
 	description: z.string(),
-	defaultPresentation: defaultPresentation.optional(),
+	presentation: pagePresentation.optional(),
+	frame: frame.optional(),
 	sections: z.array(
 		z.object({
 			id: z.string().regex(/^[a-z0-9-]+$/),
@@ -112,6 +128,11 @@ const siteSchema = z.object({
 	).min(1),
 });
 
+const themeSchema = z.object({
+	presentation: themePresentation.optional(),
+	frame: frame.optional(),
+}).strict();
+
 const site = defineCollection({
 	loader: glob({
 		pattern: 'content.md',
@@ -121,4 +142,13 @@ const site = defineCollection({
 	schema: siteSchema,
 });
 
-export const collections = { site };
+const theme = defineCollection({
+	loader: glob({
+		pattern: 'theme.md',
+		base: pathToFileURL(siteDir),
+		generateId: () => `${siteEntryId.replace(/-content$/, '')}-theme`,
+	}),
+	schema: themeSchema,
+});
+
+export const collections = { site, theme };

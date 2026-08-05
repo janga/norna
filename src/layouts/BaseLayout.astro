@@ -1,21 +1,23 @@
 ---
-import type { CollectionEntry } from 'astro:content';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { getIconLinks } from '../lib/sitePublicAssets';
 import '../styles/global.css';
 
-type SiteDefaultPresentation = CollectionEntry<'site'>['data']['defaultPresentation'];
+type FrameColors = {
+	backgroundColor: string;
+	textColor: string;
+};
 
 interface Props {
 	title?: string;
 	description?: string;
-	defaultPresentation?: SiteDefaultPresentation;
+	frameColors: FrameColors;
 }
 
 const {
 	title = 'cli-gallery',
 	description = 'A cli-gallery site.',
-	defaultPresentation: configuredDefaultPresentation,
+	frameColors,
 } = Astro.props;
 
 const documentTitle = title;
@@ -47,13 +49,13 @@ const buildTime = showBuildInfo
 	: null;
 const showFooter = Boolean(copyrightMessage || showBuildInfo);
 const footerStyle = [
-	`--site-footer-background-color: ${configuredDefaultPresentation?.backgroundColor ?? 'var(--color-page)'}`,
-	`--site-footer-text-color: ${configuredDefaultPresentation?.textColor ?? 'var(--color-muted)'}`,
+	`--site-footer-background-color: ${frameColors.backgroundColor}`,
+	`--site-footer-text-color: ${frameColors.textColor}`,
 ].join('; ');
 ---
 
 <!doctype html>
-<html lang="sv" style={documentStyle}>
+<html lang={projectConfig.locale.lang} style={documentStyle}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />

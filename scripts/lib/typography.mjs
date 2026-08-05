@@ -128,21 +128,25 @@ export const resolveTypographyConfig = (typography = defaultTypography) => {
 	};
 };
 
-export const resolveSectionTypography = (defaultTypographyConfig, sectionTypographyConfig) => {
-	const defaultResolved = resolveTypographyConfig(defaultTypographyConfig);
-
-	if (sectionTypographyConfig?.preset) {
-		return resolveTypographyConfig(sectionTypographyConfig);
+export const resolveTypographyOverride = (baseResolved, typographyConfig) => {
+	if (typographyConfig?.preset) {
+		return resolveTypographyConfig(typographyConfig);
 	}
 
-	if (sectionTypographyConfig?.overrides) {
+	if (typographyConfig?.overrides) {
 		return {
-			preset: defaultResolved.preset,
-			values: mergeDeep(defaultResolved.values, sectionTypographyConfig.overrides),
+			preset: baseResolved.preset,
+			values: mergeDeep(baseResolved.values, typographyConfig.overrides),
 		};
 	}
 
-	return defaultResolved;
+	return baseResolved;
+};
+
+export const resolveSectionTypography = (defaultTypographyConfig, sectionTypographyConfig) => {
+	const defaultResolved = resolveTypographyConfig(defaultTypographyConfig);
+
+	return resolveTypographyOverride(defaultResolved, sectionTypographyConfig);
 };
 
 const quoteString = (value) => typeof value === 'string' && !/^[a-z0-9.-]+$/i.test(value)

@@ -98,7 +98,7 @@ should normally mean the repository's complete publishable artifact, while
 - `typography:presets`: prints the exact built-in values for every typography
   preset.
 - `typography:show`: prints the selected site's resolved typography after
-  applying the default preset, site overrides, and section overrides.
+  applying theme, page, and section presentation.
 - `site:public`: copies `site/public/` into `site/.cli-gallery/public/` and
   removes stale copied static files.
 - `images`: generates WebP variants and writes

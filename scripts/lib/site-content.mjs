@@ -1,6 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { siteContentLabel, siteImagesLabel } from './site-paths.mjs';
+import { siteContentLabel, siteImagesLabel, siteThemeLabel } from './site-paths.mjs';
 
 export const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
 
@@ -8,7 +8,8 @@ const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
-const knownTopLevelFrontmatterKeys = new Set(['title', 'description', 'defaultPresentation', 'sections']);
+const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'presentation', 'frame', 'sections']);
+const knownThemeTopLevelFrontmatterKeys = new Set(['presentation', 'frame']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
 	'alt',
@@ -17,6 +18,7 @@ const knownNestedFrontmatterKeys = new Set([
 	'caption',
 	'carousel',
 	'color',
+	'colors',
 	'desktop',
 	'from',
 	'gallery',
@@ -34,6 +36,7 @@ const knownNestedFrontmatterKeys = new Set([
 	'size',
 	'spacing',
 	'textColor',
+	'theme',
 	'typography',
 	'until',
 	'visible',
@@ -41,11 +44,11 @@ const knownNestedFrontmatterKeys = new Set([
 
 export const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 
-export const splitSiteFile = (source) => {
+export const splitSiteFile = (source, label = siteContentLabel) => {
 	const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
 
 	if (!match) {
-		throw new Error(`${siteContentLabel} is missing frontmatter delimited by ---.`);
+		throw new Error(`${label} is missing frontmatter delimited by ---.`);
 	}
 
 	return {
@@ -55,7 +58,7 @@ export const splitSiteFile = (source) => {
 	};
 };
 
-export const readSiteFile = async (sitePath) => splitSiteFile(await readFile(sitePath, 'utf8'));
+export const readSiteFile = async (sitePath, label = siteContentLabel) => splitSiteFile(await readFile(sitePath, 'utf8'), label);
 
 const getIndentInfo = (line) => {
 	const characters = Array.from(line);
@@ -142,7 +145,10 @@ export const validateFrontmatterIndentation = (frontmatter, addIssue) => {
 	}
 };
 
-export const validateFrontmatterStructure = (frontmatter, addIssue) => {
+export const validateFrontmatterStructure = (frontmatter, addIssue, {
+	knownTopLevelFrontmatterKeys = knownContentTopLevelFrontmatterKeys,
+	fileKind = 'content',
+} = {}) => {
 	const lines = frontmatter.split(/\r?\n/);
 
 	for (const [index, line] of lines.entries()) {
@@ -164,15 +170,29 @@ export const validateFrontmatterStructure = (frontmatter, addIssue) => {
 
 		const fix = knownNestedFrontmatterKeys.has(key)
 			? `Indent "${key}:" under the section or object it belongs to. For gallery rows, "gallery:" normally belongs under a "sections" item.`
-			: `Move "${key}:" under the correct parent key, or remove it if it is not part of the content schema.`;
+			: `Move "${key}:" under the correct parent key, or remove it if it is not part of the ${fileKind} schema.`;
 
 		addIssue({
 			severity: 'error',
-			message: `Frontmatter line ${lineNumber} defines "${key}" at the top level, but it is not a valid top-level content field.`,
+			message: `Frontmatter line ${lineNumber} defines "${key}" at the top level, but it is not a valid top-level ${fileKind} field.`,
 			fix,
 		});
 	}
 };
+
+export const validateContentFrontmatterStructure = (frontmatter, addIssue) =>
+	validateFrontmatterStructure(frontmatter, addIssue, {
+		knownTopLevelFrontmatterKeys: knownContentTopLevelFrontmatterKeys,
+		fileKind: 'content',
+	});
+
+export const validateThemeFrontmatterStructure = (frontmatter, addIssue) =>
+	validateFrontmatterStructure(frontmatter, addIssue, {
+		knownTopLevelFrontmatterKeys: knownThemeTopLevelFrontmatterKeys,
+		fileKind: 'theme',
+	});
+
+export const readThemeFile = async (sitePath) => readSiteFile(sitePath, siteThemeLabel);
 
 export const getFrontmatterSections = (frontmatter) => {
 	const sections = [];

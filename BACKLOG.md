@@ -23,8 +23,8 @@ approachable before wider use.
 
 - Add a short "Build your first gallery in 5 minutes" guide with one happy path
   and no reference material.
-- Add a complete small `site/content.md` example that a new user can compare
-  with the starter.
+- Add a complete small `site/theme.md` and `site/content.md` example that a
+  new user can compare with the starter.
 - Add pure-project and embedded-project examples that show the expected
   directory layout and npm scripts.
 - Add troubleshooting for common workflow errors:
@@ -36,7 +36,8 @@ approachable before wider use.
 - Add a plain explanation of what is versioned, what is generated, and what is
   published.
 - Expand typography preset guidance with examples of when to choose each
-  preset and how to make small overrides without losing the preset model.
+  preset in `site/theme.md`, how to make page-level overrides, and how to make
+  section-level overrides without losing the preset model.
 - Document the recommended site-upgrade workflow after a new engine version is
   published.
 
@@ -55,18 +56,19 @@ verified.
   images, or generated state changes.
 - Decide whether image cache and generated manifest behavior needs a more
   explicit command for repair or reset.
+- Consider a conservative command for refreshing marked `theme.md` help
+  comment blocks without changing user-owned YAML values.
 
 ## Known Limitations
 
 These are current constraints, not necessarily bugs.
 
 - `npm link` is not supported for testing the engine in a site repository.
-- The rendered shared UI still contains Swedish labels in some places.
 - The renderer is intentionally single-page; adding routes would be a larger
   architectural decision.
 - Source image copyright metadata is outside the current command surface.
 - `cli-gallery` assumes a file-driven site model with `config.mjs`,
-  `content.md`, source images, and static public files.
+  `theme.md`, `content.md`, source images, and static public files.
 
 ## Future Plans
 
@@ -74,9 +76,53 @@ These ideas may be useful later, but should not distract from stabilizing the
 basic site workflow.
 
 - More polished onboarding for non-project users.
-- More preset families or theme-level presentation models if several real sites
-  need them.
+- More preset families or richer theme helpers if several real sites need
+  them.
 - Better diagnostics for generated images and cache reuse.
-- Optional localization of built-in UI labels.
 - A documented pattern for embedding a gallery into larger GitHub Pages
   projects that also publish an app or project homepage.
+
+## Future Route Architecture Notes
+
+Routes are not implemented. These notes record current structural decisions so
+future route work can avoid unnecessary breaking changes.
+
+- `site/content.md` is the homepage page file for `/`, not a catch-all site
+  file.
+- Future route files should be analogous page files, for example:
+
+```text
+site/
+  content.md
+  routes/
+    <slug>/
+      route-content.md
+      images/
+```
+
+- `site/config.mjs` is site-level technical configuration, including URL,
+  layout, gallery sizing, font family, locale/UI labels, footer, GitHub, and
+  deploy settings.
+- `site/theme.md` is site-level visual theme configuration, including
+  site-wide presentation defaults, inline styles, and frame defaults.
+- Page files own page metadata, page-level `presentation` overrides,
+  page-level `frame` overrides, section definitions, gallery references, and
+  Markdown body content.
+- Presentation resolution should remain:
+
+```text
+engine defaults
+-> site/theme.md presentation
+-> page frontmatter presentation
+-> sections[].presentation
+```
+
+- Page-level `presentation` is always an override on top of `site/theme.md`.
+- `frame.colors` is explicit and may use `theme`, `presentation`, or explicit
+  `backgroundColor`/`textColor` values.
+- Page metadata such as `title` and `description` should remain page-local and
+  should not inherit from the homepage.
+- Sections, galleries, and Markdown content should remain page-local and should
+  not inherit from the homepage.
+- `presentation.inlineStyles` belongs at site theme level so all future pages
+  can use the same Markdown inline-style vocabulary.

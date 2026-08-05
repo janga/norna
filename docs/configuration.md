@@ -210,6 +210,46 @@ navigation: {
 }
 ```
 
+## Locale And UI Labels
+
+### `locale.lang`
+
+- Purpose: language tag rendered on the root `<html lang="...">` element.
+- Type: string language tag such as `en` or `sv`.
+- Required: no.
+- Default: `en`.
+- Validation: two or three letters, optionally followed by `-` separated
+  subtags.
+- Consequence: screen readers, browsers, and search engines use this to
+  interpret the page language.
+
+### `locale.labels`
+
+- Purpose: site-wide UI labels rendered by the engine for non-editorial
+  interface text.
+- Type: object.
+- Required: no; omitted labels use English defaults.
+
+Fields:
+
+- `locale.labels.skipToContent`: skip-link text, default `Skip to content`.
+- `locale.labels.sectionNavigation`: sticky navigation ARIA label, default
+  `Sections`.
+- `locale.labels.gallery`: gallery ARIA label prefix, default `Gallery`.
+
+Example:
+
+```js
+locale: {
+	lang: 'sv',
+	labels: {
+		skipToContent: 'Hoppa till innehåll',
+		sectionNavigation: 'Sektioner',
+		gallery: 'Galleri',
+	},
+}
+```
+
 ## Footer
 
 ### `footer.copyrightMessage`

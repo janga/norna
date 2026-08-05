@@ -100,6 +100,7 @@ const getPathLabel = (filePath) => {
 
 export const siteDir = resolvedSitePaths.siteDir;
 export const siteConfigPath = path.join(siteDir, 'config.mjs');
+export const siteThemePath = path.join(siteDir, 'theme.md');
 export const siteContentPath = path.join(siteDir, 'content.md');
 export const siteImagesDir = path.join(siteDir, 'images');
 export const sitePublicDir = path.join(siteDir, 'public');
@@ -116,6 +117,7 @@ export const invocationRootLabel = getPathLabel(invocationRoot);
 export const siteProjectRootLabel = getPathLabel(siteProjectRoot);
 export const siteDirLabel = getPathLabel(siteDir);
 export const siteConfigLabel = getPathLabel(siteConfigPath);
+export const siteThemeLabel = getPathLabel(siteThemePath);
 export const siteContentLabel = getPathLabel(siteContentPath);
 export const siteImagesLabel = getPathLabel(siteImagesDir);
 export const sitePublicLabel = getPathLabel(sitePublicDir);

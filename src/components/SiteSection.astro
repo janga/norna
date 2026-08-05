@@ -1,10 +1,9 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { resolveSectionTypography } from '../../scripts/lib/typography.mjs';
+import { resolveTypographyOverride } from '../../scripts/lib/typography.mjs';
 import GalleryGrid from './GalleryGrid.astro';
 
 type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
-type SiteDefaultPresentation = CollectionEntry<'site'>['data']['defaultPresentation'];
 type ResolvedSection = SiteSection & { title: string; contentHtml: string };
 type ResponsiveValue<T> = { desktop: T; mobile: T };
 type ResponsiveOverride<T> = { desktop?: T; mobile?: T };
@@ -15,15 +14,23 @@ type SectionPresentationOverride = {
 	textColor?: string;
 	typography?: NonNullable<SiteSection['presentation']>['typography'];
 };
+type ResolvedPagePresentation = {
+	backgroundColor: string;
+	textColor: string;
+	typography: {
+		preset: string;
+		values: any;
+	};
+};
 
 interface Props {
 	section: ResolvedSection;
-	defaultPresentation?: SiteDefaultPresentation;
+	pagePresentation: ResolvedPagePresentation;
 	headingLevel: 1 | 2;
 	priorityGalleryImage?: boolean;
 }
 
-const { section, defaultPresentation: configuredDefaultPresentation, headingLevel, priorityGalleryImage = false } = Astro.props;
+const { section, pagePresentation, headingLevel, priorityGalleryImage = false } = Astro.props;
 const HeadingTag = headingLevel === 1 ? 'h1' : 'h2';
 const headingSizeValues: Record<TextSize, ResponsiveValue<string>> = {
 	small: {
@@ -79,23 +86,16 @@ const captionSizeValues: Record<TextSize, ResponsiveValue<string>> = {
 		mobile: 'clamp(1.08rem, 1rem + 0.28vw, 1.25rem)',
 	},
 };
-const fallbackPresentation = {
-	backgroundColor: 'transparent',
-	textColor: 'var(--color-text)',
-};
 const sectionOverride = section.presentation as SectionPresentationOverride | undefined;
 const getSizeValue = (
 	sizeValues: Record<TextSize, ResponsiveValue<string>>,
 	size: TextSize,
 ) => sizeValues[size];
-const defaultPresentation = configuredDefaultPresentation;
 const backgroundColor = sectionOverride?.backgroundColor
-	?? defaultPresentation?.backgroundColor
-	?? fallbackPresentation.backgroundColor;
+	?? pagePresentation.backgroundColor;
 const textColor = sectionOverride?.textColor
-	?? defaultPresentation?.textColor
-	?? fallbackPresentation.textColor;
-const resolvedTypography = resolveSectionTypography(defaultPresentation?.typography, sectionOverride?.typography);
+	?? pagePresentation.textColor;
+const resolvedTypography = resolveTypographyOverride(pagePresentation.typography, sectionOverride?.typography);
 const typography = resolvedTypography.values;
 const headingAlign = typography.heading.align as ResponsiveValue<TextAlign>;
 const bodyAlign = typography.body.align as ResponsiveValue<TextAlign>;

@@ -159,6 +159,7 @@ try {
 		assertFileExists(path.join(packagedStarterRoot, 'package.json')),
 		assertFileExists(path.join(packagedStarterRoot, 'README.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'config.mjs')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'theme.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'content.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'images', 'work', '.gitkeep')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'public', 'robots.txt')),
@@ -182,6 +183,7 @@ try {
 	await Promise.all([
 		assertFileExists(path.join(initializedSiteRoot, 'package.json')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'config.mjs')),
+		assertFileExists(path.join(initializedSiteRoot, 'site', 'theme.md')),
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
 	]);
@@ -266,55 +268,58 @@ try {
 	);
 	const siteContentPath = path.join(siteProjectRoot, 'site', 'content.md');
 	const siteContent = await readFile(siteContentPath, 'utf8');
-	await writeFile(siteContentPath, siteContent.replace('preset: quiet-gallery', 'preset: noisy-gallery'));
+	const siteThemePath = path.join(siteProjectRoot, 'site', 'theme.md');
+	const siteTheme = await readFile(siteThemePath, 'utf8');
+	await writeFile(siteThemePath, siteTheme.replace('\n    preset: quiet-gallery', '\n    preset: noisy-gallery'));
 	await runExpectFailure(
 		npxBin,
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'defaultPresentation.typography.preset',
+		'presentation.typography.preset',
 	);
 	await writeFile(
-		siteContentPath,
-		siteContent.replace('backgroundColor: "#000000"', 'backgroundColor: blue'),
+		siteThemePath,
+		siteTheme.replace('backgroundColor: "#000000"', 'backgroundColor: blue'),
 	);
 	await runExpectFailure(
 		npxBin,
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'defaultPresentation.backgroundColor',
+		'presentation.backgroundColor',
 	);
 	await writeFile(
-		siteContentPath,
-		siteContent.replace('textColor: "#f7f4ee"', 'textColor: white'),
+		siteThemePath,
+		siteTheme.replace('textColor: "#f7f4ee"', 'textColor: white'),
 	);
 	await runExpectFailure(
 		npxBin,
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'defaultPresentation.textColor',
+		'presentation.textColor',
 	);
 	await writeFile(
-		siteContentPath,
-		siteContent.replace('      color: "#ffd84d"', '      color: yellow'),
+		siteThemePath,
+		siteTheme.replace('      color: "#ffd84d"', '      color: yellow'),
 	);
 	await runExpectFailure(
 		npxBin,
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'defaultPresentation.inlineStyles.highlight.color',
+		'presentation.inlineStyles.highlight.color',
 	);
+	await writeFile(siteThemePath, siteTheme);
 	await writeFile(
 		siteContentPath,
 		siteContent.replace(
-			'    preset: quiet-gallery',
-			'    preset: quiet-gallery\n    overrides:\n      body:\n        lineHeight: tight',
+			'description: Minimal cli-gallery starter site.',
+			'description: Minimal cli-gallery starter site.\npresentation:\n  typography:\n    overrides:\n      body:\n        lineHeight: tight',
 		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['cli-gallery', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'defaultPresentation.typography.overrides.body.lineHeight',
+		'presentation.typography.overrides.body.lineHeight',
 	);
 	await writeFile(
 		siteContentPath,

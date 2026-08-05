@@ -48,6 +48,7 @@ The starter contains:
 - `package.json` with npm scripts that call `cli-gallery`
 - `.github/workflows/deploy.yml` for GitHub Pages
 - `site/config.mjs`
+- `site/theme.md`
 - `site/content.md`
 - `site/images/work/.gitkeep`
 - `site/public/robots.txt`
@@ -56,14 +57,16 @@ Commit the generated `package-lock.json` after the first install.
 
 ## First Edits
 
-1. Edit `site/config.mjs` for the site's URL, layout, font, GitHub repository,
-   footer, and deploy settings.
-2. Edit `site/content.md` for title, description, sections, text, gallery rows,
-   typography presets, alt text, and captions.
-3. Put source images under `site/images/<section-id>/`.
-4. Put static files such as `robots.txt`, `CNAME`, and favicons under
+1. Edit `site/config.mjs` for the site's URL, layout, font, language labels,
+   GitHub repository, footer, and deploy settings.
+2. Edit `site/theme.md` for site-wide colors, typography preset, inline styles,
+   and frame colors.
+3. Edit `site/content.md` for homepage title, description, sections, text,
+   gallery rows, page/section presentation overrides, alt text, and captions.
+4. Put source images under `site/images/<section-id>/`.
+5. Put static files such as `robots.txt`, `CNAME`, and favicons under
    `site/public/`.
-5. Run:
+6. Run:
 
 ```sh
 npm run gallery:check
@@ -84,7 +87,8 @@ To change the site's font, set `typography.fontFamily` in `site/config.mjs`.
 See [`typography.fontFamily`](configuration.md#typographyfontfamily) for the
 accepted format and default value.
 
-To change section typography, choose a preset or add a focused override in
+To change the site-wide typography preset, edit `site/theme.md`. To change one
+page or section, add a focused `presentation.typography` override in
 `site/content.md`. Use `npm run gallery:typography:presets` to inspect the
 installed preset values and `npm run gallery:typography:show` to inspect the
-resolved typography for the site.
+resolved typography for the selected site.

@@ -193,6 +193,25 @@ const readSmoothScroll = (navigation) => {
 	});
 };
 
+const readLocale = (rawLocale) => {
+	const locale = assertObject(rawLocale ?? {}, 'locale');
+	const labels = assertObject(locale.labels ?? {}, 'locale.labels');
+	const lang = locale.lang ?? 'en';
+
+	if (typeof lang !== 'string' || !/^[a-zA-Z]{2,3}(?:-[a-zA-Z0-9]+)*$/.test(lang.trim())) {
+		throw new Error(`locale.lang must be a valid language tag such as "en" or "sv" in ${siteConfigLabel}.`);
+	}
+
+	return Object.freeze({
+		lang: lang.trim(),
+		labels: Object.freeze({
+			skipToContent: readString({ skipToContent: labels.skipToContent ?? 'Skip to content' }, 'skipToContent', 'locale.labels'),
+			sectionNavigation: readString({ sectionNavigation: labels.sectionNavigation ?? 'Sections' }, 'sectionNavigation', 'locale.labels'),
+			gallery: readString({ gallery: labels.gallery ?? 'Gallery' }, 'gallery', 'locale.labels'),
+		}),
+	});
+};
+
 const readDateTimeFormat = (object, path) => {
 	const dateTimeFormat = assertObject(object, path);
 	const locale = readString(dateTimeFormat, 'locale', path);
@@ -241,6 +260,7 @@ const rawLayout = assertObject(rawConfig.layout ?? {}, 'layout');
 const rawGallery = assertObject(rawConfig.gallery ?? {}, 'gallery');
 const rawTypography = assertObject(rawConfig.typography ?? {}, 'typography');
 const rawNavigation = assertObject(rawConfig.navigation ?? {}, 'navigation');
+const rawLocale = rawConfig.locale ?? {};
 const rawFooter = assertObject(rawConfig.footer ?? {}, 'footer');
 const rawGithub = assertObject(rawConfig.github, 'github');
 const rawDeploy = assertObject(rawConfig.deploy ?? {}, 'deploy');
@@ -273,10 +293,11 @@ export const projectConfig = Object.freeze({
 	typography: Object.freeze({
 		fontFamily: readFontFamily(rawTypography, 'fontFamily', 'typography', defaultFontFamily),
 	}),
-	navigation: Object.freeze({
-		smoothScroll: readSmoothScroll(rawNavigation),
-	}),
-	footer: Object.freeze({
+		navigation: Object.freeze({
+			smoothScroll: readSmoothScroll(rawNavigation),
+		}),
+		locale: readLocale(rawLocale),
+		footer: Object.freeze({
 		buildInfo: readBuildInfo(rawFooter),
 		copyrightMessage: readOptionalString(rawFooter, 'copyrightMessage', 'footer'),
 	}),

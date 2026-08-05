@@ -5,18 +5,31 @@ import SiteSection from '../components/SiteSection.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getSectionsContent } from '../lib/sectionContent';
 import { getToday, isVisibleToday } from '../lib/visibility';
+import { resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
 
 const siteDirectory = (process.env.CLI_GALLERY_SITE_DIR ?? 'site').trim();
 const siteContentLabel = `${siteDirectory || 'site'}/content.md`;
 const [site] = await getCollection('site');
+const [theme] = await getCollection('theme');
 
 if (!site) {
 	throw new Error(`Content file ${siteContentLabel} is missing.`);
 }
 
+if (!theme) {
+	throw new Error(`Theme file ${siteDirectory || 'site'}/theme.md is missing.`);
+}
+
+const pagePresentation = resolvePagePresentation(theme.data.presentation, site.data.presentation);
+const frameColors = resolveFrameColors({
+	themePresentation: theme.data.presentation,
+	themeFrame: theme.data.frame,
+	pagePresentation,
+	pageFrame: site.data.frame,
+});
 const sections = site.data.sections;
 const siteHtml = site.rendered?.html ?? '';
-const resolvedSections = getSectionsContent(siteHtml, sections, site.data.defaultPresentation);
+const resolvedSections = getSectionsContent(siteHtml, sections, pagePresentation.inlineStyles);
 const today = getToday();
 const visibleSections = resolvedSections.filter((section) => isVisibleToday(section.visible, today));
 
@@ -28,15 +41,15 @@ if (visibleSections.length === 0) {
 <BaseLayout
 	title={site.data.title}
 	description={site.data.description}
-	defaultPresentation={site.data.defaultPresentation}
+	frameColors={frameColors}
 >
-	<SiteNavigation sections={visibleSections} defaultPresentation={site.data.defaultPresentation} />
+	<SiteNavigation sections={visibleSections} frameColors={frameColors} />
 
 	<main id="main-content" class="site-content">
 		{visibleSections.map((section, index) => (
 			<SiteSection
 				section={section}
-				defaultPresentation={site.data.defaultPresentation}
+				pagePresentation={pagePresentation}
 				headingLevel={index === 0 ? 1 : 2}
 				priorityGalleryImage={index === 0}
 			/>

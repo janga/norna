@@ -9,9 +9,11 @@ import {
 	getImageIndex,
 	getInlineStyleReferences,
 	readSiteFile,
+	readThemeFile,
 	toPosixPath,
+	validateContentFrontmatterStructure,
 	validateFrontmatterIndentation,
-	validateFrontmatterStructure,
+	validateThemeFrontmatterStructure,
 } from './lib/site-content.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
@@ -19,6 +21,8 @@ import {
 	siteContentPath,
 	siteImagesDir,
 	siteImagesLabel,
+	siteThemeLabel,
+	siteThemePath,
 } from './lib/site-paths.mjs';
 
 const args = new Set(process.argv.slice(2));
@@ -62,9 +66,27 @@ const promptForWrite = async () => {
 
 const { frontmatter, body } = await readSiteFile(siteContentPath);
 validateFrontmatterIndentation(frontmatter, addIssue);
-validateFrontmatterStructure(frontmatter, addIssue);
+validateContentFrontmatterStructure(frontmatter, addIssue);
+let themeFrontmatter = null;
+try {
+	themeFrontmatter = (await readThemeFile(siteThemePath)).frontmatter;
+	validateFrontmatterIndentation(themeFrontmatter, addIssue);
+	validateThemeFrontmatterStructure(themeFrontmatter, addIssue);
+} catch (error) {
+	if (error?.code === 'ENOENT') {
+		addIssue({
+			severity: 'error',
+			message: `${siteThemeLabel} is missing.`,
+			fix: `Create ${siteThemeLabel} with a presentation frontmatter block.`,
+		});
+	} else {
+		throw error;
+	}
+}
 const frontmatterSections = getFrontmatterSections(frontmatter);
-const frontmatterInlineStyleNames = getFrontmatterInlineStyleNames(frontmatter);
+const themeInlineStyleNames = themeFrontmatter
+	? getFrontmatterInlineStyleNames(themeFrontmatter)
+	: new Set();
 const frontmatterIds = frontmatterSections.map((section) => section.id);
 const { prelude, sections } = getBodySections(body);
 const sectionsById = new Map();
@@ -353,11 +375,11 @@ for (const section of frontmatterSections) {
 await warnAboutCarouselAspectRatios();
 
 for (const styleName of new Set(getInlineStyleReferences(body))) {
-	if (!frontmatterInlineStyleNames.has(styleName)) {
+	if (!themeInlineStyleNames.has(styleName)) {
 		addIssue({
 			severity: 'error',
-			message: `Inline style ".${styleName}" is used in Markdown but is not defined in defaultPresentation.inlineStyles.`,
-			fix: `Add defaultPresentation.inlineStyles.${styleName} or remove "{.${styleName}}" from Markdown.`,
+			message: `Inline style ".${styleName}" is used in Markdown but is not defined in ${siteThemeLabel} presentation.inlineStyles.`,
+			fix: `Add presentation.inlineStyles.${styleName} to ${siteThemeLabel} or remove "{.${styleName}}" from Markdown.`,
 		});
 	}
 }

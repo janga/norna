@@ -9,8 +9,9 @@ npm install
 npm run gallery:dev
 ```
 
-Edit site-specific content and presentation presets in `site/content.md`,
-technical settings such as URL, layout, and font in `site/config.mjs`, source images under
+Edit site-wide theme defaults in `site/theme.md`, homepage content and section
+overrides in `site/content.md`, technical settings such as URL, layout, font,
+and locale labels in `site/config.mjs`, source images under
 `site/images/<section-id>/`, and static public files under `site/public/`.
 
 The page width is configured with `layout.pageWidth`; gallery width is
@@ -19,8 +20,8 @@ configured with `gallery.width`. Side margins are configured with
 `gallery.maxAvailableHeightPercent`.
 
 The site font is configured with `typography.fontFamily` in `site/config.mjs`.
-Text presentation is configured with typography presets and overrides in
-`site/content.md`.
+Site-wide text presentation is configured with typography presets and overrides
+in `site/theme.md`; page and section overrides live in `site/content.md`.
 
 Commit `package-lock.json` after the first install so GitHub Actions can use
 `npm ci`.

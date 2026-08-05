@@ -1,17 +1,20 @@
 # Content
 
-`site/content.md` is the editable content file for a `cli-gallery` site. It
-contains frontmatter for site-wide content data and section definitions, followed
-by Markdown section bodies.
+`site/content.md` is the editable page file for the homepage of a
+`cli-gallery` site. It contains page metadata, page-local presentation
+overrides, section definitions, and Markdown section bodies.
+
+Site-wide visual defaults live in `site/theme.md`. Technical site
+configuration lives in `site/config.mjs`.
 
 ## Frontmatter Schema
 
-The Astro content schema validates these top-level fields:
+The Astro content schema validates these top-level fields in `site/content.md`:
 
 - `title`: required string. Rendered as the document title.
 - `description`: required string. Rendered as the meta description.
-- `defaultPresentation`: optional object. Presentation defaults for all
-  sections.
+- `presentation`: optional page-level presentation overrides.
+- `frame`: optional page-level frame color source.
 - `sections`: required non-empty array. Defines section order, ids,
   presentation overrides, and gallery rows.
 
@@ -30,6 +33,57 @@ Each gallery row has:
   It must be a filename, not a path.
 - `alt`: required string.
 - `caption`: optional string.
+
+## Site Theme
+
+`site/theme.md` defines site-wide visual defaults. It uses frontmatter and does
+not need a Markdown body.
+
+Starter sites include a marked comment block such as
+`cli-gallery:start theme-help` / `cli-gallery:end theme-help`. The block is
+only explorable help text; YAML comments do not affect rendering. The active
+configuration is the uncommented YAML below it.
+
+```yaml
+---
+# cli-gallery:start theme-help
+# Site-wide visual defaults. Remove a value to use the engine default.
+# cli-gallery:end theme-help
+
+presentation:
+  backgroundColor: "#000000"
+  textColor: "#f7f4ee"
+  inlineStyles:
+    highlight:
+      color: "#ffd84d"
+  typography:
+    preset: quiet-gallery
+frame:
+  colors: presentation
+---
+```
+
+`presentation.backgroundColor` and `presentation.textColor` are optional quoted
+hex colors in `#rgb`, `#rrggbb`, or `#rrggbbaa` form.
+
+`presentation.inlineStyles` defines named inline text styles that can be used
+from Markdown. Inline style names must match `^[a-z][a-z0-9-]*$`. Each style
+currently supports a required `color` field using the same quoted hex color
+format as `textColor`.
+
+`frame.colors` controls the sticky navigation and footer colors:
+
+- `presentation`: use the resolved presentation colors for this level.
+- `theme`: use the site theme frame colors. This is useful in page-level
+  frontmatter.
+- explicit colors:
+
+```yaml
+frame:
+  colors:
+    backgroundColor: "#111111"
+    textColor: "#eeeeee"
+```
 
 ## Temporary Sections
 
@@ -64,24 +118,19 @@ CLI_GALLERY_TODAY=2026-08-15 npm run gallery:build
 
 ## Presentation
 
-Use `defaultPresentation` for site-wide presentation defaults. Section-specific
+Site-wide presentation belongs in `site/theme.md`. Page-level presentation in
+`site/content.md` is always an override on top of the theme. Section-specific
 presentation belongs under `sections[].presentation`.
 
-`defaultPresentation.backgroundColor` and `defaultPresentation.textColor` are
-optional quoted hex colors in `#rgb`, `#rrggbb`, or `#rrggbbaa` form. If
-`backgroundColor` is omitted, section backgrounds are transparent over the page
-background. If `textColor` is omitted, section text uses the global site text
-color.
+If a page omits `presentation`, it uses the theme presentation unchanged. If a
+section omits `presentation`, it uses the resolved page presentation.
 
 ```yaml
-defaultPresentation:
-  backgroundColor: "#000000"
-  textColor: "#f7f4ee"
-  inlineStyles:
-    highlight:
-      color: "#ffd84d"
+presentation:
   typography:
-    preset: quiet-gallery
+    overrides:
+      body:
+        paragraphSpacing: 1em
 ```
 
 ### Typography Presets
@@ -89,7 +138,7 @@ defaultPresentation:
 Typographic presentation is configured through presets with optional overrides:
 
 ```yaml
-defaultPresentation:
+presentation:
   typography:
     preset: quiet-gallery
     overrides:
@@ -108,7 +157,11 @@ Available presets:
 - `statement`: stronger type for introductions, first sections, and short
   programmatic statements. Use it sparingly, usually as a section override.
 
-If `defaultPresentation.typography` is omitted, `quiet-gallery` is used.
+The normal place to choose a site-wide preset is `site/theme.md`. If theme
+typography is omitted, `quiet-gallery` is used. A page-level
+`presentation.typography.preset` changes the typographic base for the page. A
+section-level `sections[].presentation.typography.preset` changes the
+typographic base for that section.
 
 Use this command to inspect the exact preset values shipped with the installed
 engine:
@@ -149,13 +202,11 @@ Supported override fields:
 - `body.align`, `body.size`, `body.lineHeight`, `body.paragraphSpacing`
 - `caption.align`, `caption.size`, `caption.lineHeight`, `caption.spacing`
 
-Use `defaultPresentation.inlineStyles` for named inline text styles that can be
-applied inside Markdown. Inline style names must match `^[a-z][a-z0-9-]*$`.
-Each style currently supports a required `color` field, using the same quoted
-hex color format as `textColor`:
+Use `site/theme.md` `presentation.inlineStyles` for named inline text styles
+that can be applied inside Markdown:
 
 ```yaml
-defaultPresentation:
+presentation:
   inlineStyles:
     highlight:
       color: "#ffd84d"
@@ -168,7 +219,7 @@ This sentence contains [highlighted text]{.highlight}.
 ```
 
 `content:check` fails if Markdown uses an inline style that is not defined in
-`defaultPresentation.inlineStyles`.
+`site/theme.md` `presentation.inlineStyles`.
 
 `sections[].presentation` contains only section-specific differences:
 
@@ -186,8 +237,8 @@ sections:
 ```
 
 If a section sets `typography.preset`, that section starts from that preset. If
-a section only sets `typography.overrides`, it keeps the site default preset and
-changes only the specified values.
+a section only sets `typography.overrides`, it keeps the resolved page preset
+and changes only the specified values.
 
 Centered text uses narrower text widths. Left- or right-aligned heading and body
 text use the calculated gallery layout width so text edges line up with gallery
@@ -196,9 +247,8 @@ Configured section backgrounds render as full-width horizontal bands while the
 section content keeps the normal page and gallery widths. The top spacing
 before the first heading, the spacing between sections, and the spacing after
 the final section are part of the section background. The sticky section
-navigation row uses the default background and text colors, even when the active
-section has section-specific overrides. The footer uses the same default
-background and text colors.
+navigation row and footer use the resolved frame colors, not section-specific
+presentation.
 Configured section text colors apply to section headings, Markdown text,
 Markdown subheadings, and gallery captions. Links keep the global accent color.
 
@@ -248,8 +298,8 @@ typography:
       paragraphSpacing: 0.8em
 ```
 
-Top-level frontmatter may contain only `title`, `description`,
-`defaultPresentation`, and `sections`. A `gallery` key belongs under one
+Top-level page frontmatter may contain only `title`, `description`,
+`presentation`, `frame`, and `sections`. A `gallery` key belongs under one
 `sections[]` item:
 
 ```yaml

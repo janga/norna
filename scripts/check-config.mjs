@@ -26,6 +26,7 @@ try {
 	console.log(`Gallery max available width: desktop ${projectConfig.gallery.maxAvailableWidthPercent.desktop}%, mobile ${projectConfig.gallery.maxAvailableWidthPercent.mobile}%`);
 	console.log(`Gallery max available height: desktop ${projectConfig.gallery.maxAvailableHeightPercent.desktop}%, mobile ${projectConfig.gallery.maxAvailableHeightPercent.mobile}%`);
 	console.log(`Font family: ${projectConfig.typography.fontFamily}`);
+	console.log(`Language: ${projectConfig.locale.lang}`);
 	console.log(`GitHub repo: ${projectConfig.github.repo}`);
 	console.log(`Deploy branch: ${projectConfig.github.branch}`);
 	console.log(`Pages workflow: ${projectConfig.github.pagesWorkflow}`);

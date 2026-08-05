@@ -34,7 +34,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
   hardcoding site paths in scripts.
 - Keep editable content, section definitions, image references, gallery alt
   text, and captions in the selected site `content.md`; the default path is
-  `site/content.md`. Use `fixtures/basic/site` for standalone engine checks.
+  `site/content.md`. Keep site-wide visual theme defaults and inline styles in
+  the selected site `theme.md`; the default path is `site/theme.md`. Use
+  `fixtures/basic/site` for standalone engine checks.
 - Keep site-specific static files in the selected site `public/`; the default
   path is `site/public/`. The selected site's `.cli-gallery/public/` directory
   is copied build preparation output plus generated image output.
@@ -52,6 +54,8 @@ maintainer, put it in `README.md` instead of duplicating it here.
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or
   gallery images.
+- Run `npm run content:check` after changing `site/theme.md` or theme
+  validation behavior.
 - Run `npm run content:sync` after moving gallery rows between sections so image
   files move to the matching section directory.
 - Run `npm run site:public` after changing `site/public/` when you need the

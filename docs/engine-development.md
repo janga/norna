@@ -136,6 +136,6 @@ The renderer builds one static page at `/`. Section navigation uses real
 available. The sticky navigation updates root scroll offset variables so direct
 hash links and clicked links land below the fixed header.
 
-The current shared layout contains Swedish UI labels such as the skip link and
-navigation labels. Treat that as current implementation behavior when planning
-broader reuse.
+The shared layout reads UI language and labels from `site/config.mjs`
+`locale`. Keep editorial content in page Markdown and non-editorial engine UI
+labels in config.

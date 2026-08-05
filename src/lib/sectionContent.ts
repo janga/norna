@@ -1,8 +1,8 @@
 import type { CollectionEntry } from 'astro:content';
 
 type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
-type SiteDefaultPresentation = CollectionEntry<'site'>['data']['defaultPresentation'];
-type InlineStyles = NonNullable<NonNullable<SiteDefaultPresentation>['inlineStyles']>;
+type ThemePresentation = CollectionEntry<'theme'>['data']['presentation'];
+type InlineStyles = NonNullable<NonNullable<ThemePresentation>['inlineStyles']>;
 
 const headingRegex = /<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
@@ -50,7 +50,7 @@ const applyInlineStyles = (html: string, inlineStyles: InlineStyles | undefined)
 		const style = inlineStyles?.[styleName];
 
 		if (!style) {
-			throw new Error(`Markdown uses inline style ".${styleName}", but defaultPresentation.inlineStyles.${styleName} is not defined.`);
+			throw new Error(`Markdown uses inline style ".${styleName}", but theme.md presentation.inlineStyles.${styleName} is not defined.`);
 		}
 
 		return `<span class="inline-style inline-style-${styleName}" style="--inline-style-color: ${style.color}">${text}</span>`;
@@ -59,13 +59,12 @@ const applyInlineStyles = (html: string, inlineStyles: InlineStyles | undefined)
 export const getSectionsContent = (
 	html: string,
 	sections: SiteSection[],
-	defaultPresentation?: SiteDefaultPresentation,
+	inlineStyles?: InlineStyles,
 ) => {
 	const matches = Array.from(html.matchAll(headingRegex));
 	const contentById = new Map<string, { title: string; contentHtml: string }>();
 	const sectionIds = new Set(sections.map((section) => section.id));
 	const markdownSectionIds: string[] = [];
-	const inlineStyles = defaultPresentation?.inlineStyles;
 
 	for (let index = 0; index < matches.length; index += 1) {
 		const match = matches[index];

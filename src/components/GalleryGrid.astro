@@ -39,7 +39,7 @@ const getCarouselAspectRatio = (images: GalleryImage[]) => {
 };
 ---
 
-<div class="gallery" aria-label={`Galleri: ${title}`}>
+<div class="gallery" aria-label={`${projectConfig.locale.labels.gallery}: ${title}`}>
 	{items.map((item, itemIndex) => {
 		const isPriorityItem = priorityFirstImage && itemIndex === 0;
 

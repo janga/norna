@@ -1,16 +1,6 @@
 ---
 title: Local Dog Gallery
 description: A small cli-gallery example with free dog images.
-defaultPresentation:
-  backgroundColor: "#000000"
-  textColor: "#ffffff"
-  inlineStyles:
-    highlight:
-      color: "#ffd84d"
-    alert:
-      color: "#ff9a3d"
-  typography:
-    preset: quiet-gallery
 sections:
   - id: black-dogs
     presentation:
@@ -72,8 +62,6 @@ sections:
             alt: "A fluffy white puppy standing on grass in a garden."
             caption: "AI-generated image."
   - id: sources
-    presentation:
-      backgroundColor: "#000000"
 ---
 
 ## Black Dogs {#black-dogs}

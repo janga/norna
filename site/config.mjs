@@ -35,8 +35,8 @@ export default {
 		// CSS font-family stack used by the whole site, including sticky navigation.
 		fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
 	},
-	navigation: {
-		smoothScroll: {
+		navigation: {
+			smoothScroll: {
 			// Set to false to make section links jump directly to the target anchor.
 			enabled: true,
 
@@ -46,9 +46,17 @@ export default {
 
 			// Additional duration per pixel of scroll distance, before min/max clamping.
 			durationPerPixelMs: 0.22,
+			},
 		},
-	},
-	footer: {
+		locale: {
+			lang: 'en',
+			labels: {
+				skipToContent: 'Skip to content',
+				sectionNavigation: 'Sections',
+				gallery: 'Gallery',
+			},
+		},
+		footer: {
 		// Omit this value to hide the copyright sentence.
 		copyrightMessage: 'Dog images from Wikimedia Commons; see image captions for license details.',
 

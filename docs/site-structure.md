@@ -10,6 +10,7 @@ The selected site directory defaults to `site/`:
 ```text
 site/
 |-- config.mjs
+|-- theme.md
 |-- content.md
 |-- images/
 |   `-- <section-id>/
@@ -22,14 +23,17 @@ site/
 Use `CLI_GALLERY_SITE_DIR` or `cli-gallery --site-dir <path>` to select another
 site directory. Commands started from a subdirectory walk upward until they find
 the selected site directory containing both `config.mjs` and `content.md`.
+`theme.md` is also required for rendering and validation, but the upward
+directory discovery currently keys on `config.mjs` and `content.md`.
 
 ## Versioned Source Files
 
 Version these files in a site repository:
 
 - `site/config.mjs`: technical site configuration.
-- `site/content.md`: editable content, section definitions, gallery rows, alt
-  text, and captions.
+- `site/theme.md`: site-wide visual theme, inline styles, and frame defaults.
+- `site/content.md`: homepage page file with editable content, section
+  definitions, gallery rows, alt text, and captions.
 - `site/images/<section-id>/`: original source images.
 - `site/public/`: site-specific static public files.
 - `site/.cli-gallery/generated-images.json`: generated image manifest used to

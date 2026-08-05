@@ -48,6 +48,14 @@ try {
 	},
 };
 `);
+	await writeFile(path.join(siteDir, 'theme.md'), `---
+presentation:
+  typography:
+    preset: quiet-gallery
+frame:
+  colors: presentation
+---
+`);
 	await writeFile(path.join(siteDir, 'content.md'), `---
 title: Temporary Visibility Test
 description: Test site for temporary sections.

@@ -3,28 +3,29 @@ import type { CollectionEntry } from 'astro:content';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 
 type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
-type SiteDefaultPresentation = CollectionEntry<'site'>['data']['defaultPresentation'];
 type ResolvedSection = SiteSection & { title: string };
+type FrameColors = {
+	backgroundColor: string;
+	textColor: string;
+};
 
 interface Props {
 	sections: ResolvedSection[];
-	defaultPresentation?: SiteDefaultPresentation;
+	frameColors: FrameColors;
 }
 
-const { sections, defaultPresentation: configuredDefaultPresentation } = Astro.props;
+const { sections, frameColors } = Astro.props;
 const smoothScrollConfig = projectConfig.navigation.smoothScroll;
-const fallbackNavigationBackgroundColor = 'var(--color-nav-background)';
-const fallbackNavigationTextColor = 'var(--color-text)';
 const navigationStyle = [
-	`--site-top-background-color: ${configuredDefaultPresentation?.backgroundColor ?? fallbackNavigationBackgroundColor}`,
-	`--site-top-text-color: ${configuredDefaultPresentation?.textColor ?? fallbackNavigationTextColor}`,
+	`--site-top-background-color: ${frameColors.backgroundColor}`,
+	`--site-top-text-color: ${frameColors.textColor}`,
 ].join('; ');
 ---
 
-<a class="skip-link" href="#main-content">Hoppa till innehåll</a>
+<a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
 
 <header class="site-top" data-smooth-scroll={JSON.stringify(smoothScrollConfig)} style={navigationStyle}>
-	<nav class="section-nav" aria-label="Sektioner">
+	<nav class="section-nav" aria-label={projectConfig.locale.labels.sectionNavigation}>
 		<ul>
 			{sections.map((section, index) => (
 				<li>

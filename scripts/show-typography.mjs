@@ -1,19 +1,22 @@
 import { readFile } from 'node:fs/promises';
 import {
 	defaultTypography,
-	resolveSectionTypography,
+	resolveTypographyOverride,
 	resolveTypographyConfig,
 	toYamlLines,
 	typographyPresets,
 } from './lib/typography.mjs';
 import {
 	splitSiteFile,
+	validateContentFrontmatterStructure,
 	validateFrontmatterIndentation,
-	validateFrontmatterStructure,
+	validateThemeFrontmatterStructure,
 } from './lib/site-content.mjs';
 import {
 	siteContentLabel,
 	siteContentPath,
+	siteThemeLabel,
+	siteThemePath,
 } from './lib/site-paths.mjs';
 
 const mode = process.argv[2] ?? 'show';
@@ -63,11 +66,12 @@ const parseMapping = (lines, startIndex, baseIndent) => {
 	return { value, nextIndex: index };
 };
 
-const findMap = (lines, label, parentStart = 0, parentEnd = lines.length) => {
+const findMap = (lines, label, parentStart = 0, parentEnd = lines.length, requiredIndent = null) => {
 	for (let index = parentStart; index < parentEnd; index += 1) {
 		const line = lines[index];
 		const match = line.match(/^(\s*)([a-zA-Z][a-zA-Z0-9-]*):\s*$/);
 		if (!match || match[2] !== label) continue;
+		if (requiredIndent !== null && match[1].length !== requiredIndent) continue;
 
 		return {
 			index,
@@ -116,21 +120,31 @@ const getSectionBlocks = (lines) => {
 
 const readSiteTypography = async () => {
 	const { frontmatter, frontmatterBody } = splitSiteFile(await readFile(siteContentPath, 'utf8'));
+	const { frontmatter: themeFrontmatter, frontmatterBody: themeFrontmatterBody } = splitSiteFile(await readFile(siteThemePath, 'utf8'), siteThemeLabel);
 	const indentationIssues = [];
 	validateFrontmatterIndentation(frontmatter, (issue) => indentationIssues.push(issue));
-	validateFrontmatterStructure(frontmatter, (issue) => indentationIssues.push(issue));
+	validateContentFrontmatterStructure(frontmatter, (issue) => indentationIssues.push(issue));
+	validateFrontmatterIndentation(themeFrontmatter, (issue) => indentationIssues.push(issue));
+	validateThemeFrontmatterStructure(themeFrontmatter, (issue) => indentationIssues.push(issue));
 	if (indentationIssues.length > 0) {
 		throw new Error([
-			`Cannot inspect typography because ${siteContentLabel} has invalid frontmatter indentation.`,
-			...indentationIssues.map((issue) => `- ${issue}`),
+			`Cannot inspect typography because ${siteContentLabel} or ${siteThemeLabel} has invalid frontmatter.`,
+			...indentationIssues.map((issue) => `- ${issue.message}`),
 		].join('\n'));
 	}
 
 	const lines = frontmatterBody.split(/\r?\n/);
-	const defaultPresentation = findMap(lines, 'defaultPresentation');
-	const defaultTypographyConfig = defaultPresentation
-		? findMap(lines, 'typography', defaultPresentation.index + 1, defaultPresentation.nextIndex)?.value
+	const themeLines = themeFrontmatterBody.split(/\r?\n/);
+	const themePresentation = findMap(themeLines, 'presentation', 0, themeLines.length, 0);
+	const themeTypographyConfig = themePresentation
+		? findMap(themeLines, 'typography', themePresentation.index + 1, themePresentation.nextIndex)?.value
 		: null;
+	const pagePresentation = findMap(lines, 'presentation', 0, lines.length, 0);
+	const pageTypographyConfig = pagePresentation
+		? findMap(lines, 'typography', pagePresentation.index + 1, pagePresentation.nextIndex)?.value
+		: null;
+	const themeTypography = resolveTypographyConfig(themeTypographyConfig ?? defaultTypography);
+	const pageTypography = resolveTypographyOverride(themeTypography, pageTypographyConfig ?? undefined);
 	const sections = getSectionBlocks(lines).map((section) => {
 		const presentation = findMap(lines, 'presentation', section.start + 1, section.end);
 		const typography = presentation
@@ -140,12 +154,13 @@ const readSiteTypography = async () => {
 		return {
 			id: section.id,
 			typography,
-			resolved: resolveSectionTypography(defaultTypographyConfig ?? defaultTypography, typography ?? undefined),
+			resolved: resolveTypographyOverride(pageTypography, typography ?? undefined),
 		};
 	});
 
 	return {
-		defaultTypography: resolveTypographyConfig(defaultTypographyConfig ?? defaultTypography),
+		themeTypography,
+		pageTypography,
 		sections,
 	};
 };
@@ -156,10 +171,19 @@ if (mode === 'presets') {
 	const siteTypography = await readSiteTypography();
 	const output = {
 		source: siteContentLabel,
-		defaultPresentation: {
+		theme: {
+			source: siteThemeLabel,
+			presentation: {
+				typography: {
+					preset: siteTypography.themeTypography.preset,
+					resolved: siteTypography.themeTypography.values,
+				},
+			},
+		},
+		page: {
 			typography: {
-				preset: siteTypography.defaultTypography.preset,
-				resolved: siteTypography.defaultTypography.values,
+				preset: siteTypography.pageTypography.preset,
+				resolved: siteTypography.pageTypography.values,
 			},
 		},
 		sections: Object.fromEntries(siteTypography.sections.map((section) => [

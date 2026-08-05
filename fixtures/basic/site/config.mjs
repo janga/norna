@@ -30,6 +30,14 @@ export default {
 			durationPerPixelMs: 0.2,
 		},
 	},
+	locale: {
+		lang: 'en',
+		labels: {
+			skipToContent: 'Skip to content',
+			sectionNavigation: 'Sections',
+			gallery: 'Gallery',
+		},
+	},
 	footer: {
 		copyrightMessage: '(c) Fixture Artist.',
 		buildInfo: {

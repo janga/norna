@@ -42,7 +42,8 @@ try {
 
 	const showResult = runCli(['--site-dir', path.join(initializedSiteRoot, 'site'), 'typography:show']);
 	assert.equal(showResult.status, 0, showResult.stderr || showResult.stdout);
-	assert.match(showResult.stdout, /defaultPresentation:/);
+	assert.match(showResult.stdout, /theme:/);
+	assert.match(showResult.stdout, /page:/);
 	assert.match(showResult.stdout, /preset: quiet-gallery/);
 	assert.match(showResult.stdout, /intro:/);
 
@@ -60,6 +61,7 @@ try {
 	assert.equal(customPurePackageJson.scripts['gallery:build'], 'cli-gallery --site-dir presentation build');
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'content.md'));
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'config.mjs'));
+	await readFile(path.join(customPureSiteRoot, 'presentation', 'theme.md'));
 
 	const mixedProjectRoot = path.join(tempRoot, 'mixed-project');
 	await mkdir(mixedProjectRoot, { recursive: true });
@@ -85,6 +87,7 @@ try {
 	assert.equal(mixedPackageJson.scripts['gallery:engine:version'], 'cli-gallery --site-dir presentation engine:version');
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'content.md'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.mjs'));
+	await readFile(path.join(mixedProjectRoot, 'presentation', 'theme.md'));
 
 	const conflictProjectRoot = path.join(tempRoot, 'conflict-project');
 	await mkdir(conflictProjectRoot, { recursive: true });

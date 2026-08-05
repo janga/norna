@@ -42,11 +42,21 @@ const makePngHeader = ({ width, height }) => {
 	return buffer;
 };
 
-const withTempProject = async ({ site, files, siteDirectory = 'site' }, run) => {
+const defaultTheme = `---
+presentation:
+  typography:
+    preset: quiet-gallery
+frame:
+  colors: presentation
+---
+`;
+
+const withTempProject = async ({ site, theme = defaultTheme, files, siteDirectory = 'site' }, run) => {
 	const root = await mkdtemp(path.join(tmpdir(), 'walde-content-check-'));
 
 	try {
 		await writeFixtureFile(root, `${siteDirectory}/content.md`, site);
+		await writeFixtureFile(root, `${siteDirectory}/theme.md`, theme);
 
 		for (const file of files) {
 			if (typeof file === 'string') {
@@ -152,11 +162,15 @@ test('content:check warns when carousel images use different aspect ratios', asy
 	});
 });
 
-const inlineStyleSite = `---
-defaultPresentation:
+const inlineStyleTheme = `---
+presentation:
   inlineStyles:
     highlight:
       color: "#ffd84d"
+---
+`;
+
+const inlineStyleSite = `---
 sections:
   - id: intro
     gallery: []
@@ -169,6 +183,7 @@ This has [known text]{.highlight} and [unknown text]{.missing}.
 test('content:check fails when Markdown uses undefined inline styles', async () => {
 	await withTempProject({
 		site: inlineStyleSite,
+		theme: inlineStyleTheme,
 		files: [],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -176,13 +191,13 @@ test('content:check fails when Markdown uses undefined inline styles', async () 
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Inline style "\.missing" is used in Markdown but is not defined in defaultPresentation\.inlineStyles\./);
+		assert.match(output, /Inline style "\.missing" is used in Markdown but is not defined in site\/theme\.md presentation\.inlineStyles\./);
 		assert.doesNotMatch(output, /"\.highlight" is used in Markdown/);
 	});
 });
 
 const badWhitespaceSite = `---
-defaultPresentation:
+presentation:
   typography:
     preset: quiet-gallery
 \u00a0\u00a0\u00a0\u00a0overrides:
@@ -213,7 +228,7 @@ test('content:check explains invalid frontmatter indentation whitespace', async 
 });
 
 const badNestedValueSite = `---
-defaultPresentation:
+presentation:
   typography:
     preset: quiet-gallery
       overrides:
