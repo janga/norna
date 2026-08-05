@@ -86,6 +86,18 @@ site/routes/about/images/intro/image.jpg
 
 Image references in route frontmatter still use only the filename.
 
+### Navigation Scope
+
+Current route navigation is intended for small sites. This guidance may change
+as route support matures, but the present model is:
+
+- A single-page site should normally use only page navigation between sections.
+- A small multi-page site may use site navigation between routes plus page
+  navigation between sections on the current page.
+- If a site needs many routes, deeply nested routes, or several navigation
+  levels, it has probably outgrown the current sticky-navigation model and may
+  need a different site structure or navigation system.
+
 ## Site Theme
 
 `site/theme.md` optionally defines site-wide visual defaults. It uses

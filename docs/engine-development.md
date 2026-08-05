@@ -141,6 +141,13 @@ Navigation has two separate levels:
 - Page navigation moves between sections on the current page. It uses real
   `href="#section-id"` links so anchors work without JavaScript.
 
+The current navigation model is deliberately scoped to single-page and small
+multi-page sites. That scope may change as route support matures. For now,
+single-page sites should rely on page navigation only; small route-based sites
+may combine site navigation and page navigation; larger information
+architectures should not be forced into the sticky-navigation model without a
+separate design decision.
+
 The JavaScript enhancement keeps the URL hash as the source of truth for active
 page-navigation state. A section-link click pushes one hash entry into browser
 history, back/forward moves between hash entries, and returning to the same page
