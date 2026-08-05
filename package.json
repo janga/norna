@@ -2,7 +2,7 @@
   "name": "@janga/cli-gallery",
   "description": "A command-line publishing workflow for simple static galleries.",
   "type": "module",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "license": "MIT",
   "repository": {
     "type": "git",
