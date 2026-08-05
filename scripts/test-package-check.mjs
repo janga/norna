@@ -213,6 +213,10 @@ try {
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'<meta name="format-detection" content="telephone=no">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-body-align-mobile: left',
 	);
 	await assertFileIncludes(
