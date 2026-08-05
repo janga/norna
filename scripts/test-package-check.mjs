@@ -176,6 +176,21 @@ try {
 	packageJson.name = 'cli-gallery-package-check-site';
 	packageJson.dependencies['@janga/cli-gallery'] = tarballPath;
 	await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
+	await mkdir(path.join(siteProjectRoot, 'site', 'routes', 'about'), { recursive: true });
+	await writeFile(path.join(siteProjectRoot, 'site', 'routes', 'about', 'route-content.md'), `---
+title: About the gallery
+description: Route used by package checks.
+navigation:
+  label: About
+  order: 20
+sections:
+  - id: about
+---
+
+## About {#about}
+
+This route verifies that packaged cli-gallery sites can build route pages.
+`);
 
 	await runInherit(npmBin, ['install', '--no-audit', '--no-fund', '--prefer-offline', '--fetch-retries=0'], { cwd: siteProjectRoot, env: npmEnv });
 	const cliGalleryBinPath = path.join(siteProjectRoot, 'node_modules', '.bin', process.platform === 'win32' ? 'cli-gallery.cmd' : 'cli-gallery');
@@ -194,6 +209,7 @@ try {
 	await runInherit(npxBin, ['cli-gallery', 'build'], { cwd: siteProjectRoot, env: npmEnv });
 	await assertFileExists(path.join(siteProjectRoot, 'site', '.cli-gallery', 'public', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'robots.txt'));
+	await assertFileExists(path.join(siteProjectRoot, 'dist', 'about', 'index.html'));
 	await assertFileMissing(path.join(siteProjectRoot, 'public', 'robots.txt'));
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -214,6 +230,14 @@ try {
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'<meta name="format-detection" content="telephone=no">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
+		'<link rel="canonical" href="https://example.com/about/">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
+		'href="/about/" aria-current="page"',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),

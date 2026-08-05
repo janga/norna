@@ -1,6 +1,15 @@
-import { readdir, readFile } from 'node:fs/promises';
+import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { siteContentLabel, siteImagesLabel, siteThemeLabel } from './site-paths.mjs';
+import {
+	siteContentLabel,
+	siteContentPath,
+	siteDir,
+	siteImagesDir,
+	siteImagesLabel,
+	siteRoutesDir,
+	siteRoutesLabel,
+	siteThemeLabel,
+} from './site-paths.mjs';
 
 export const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
 
@@ -8,7 +17,7 @@ const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
-const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'presentation', 'frame', 'sections']);
+const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'slug', 'navigation', 'presentation', 'frame', 'sections']);
 const knownThemeTopLevelFrontmatterKeys = new Set(['presentation', 'frame']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
@@ -24,11 +33,15 @@ const knownNestedFrontmatterKeys = new Set([
 	'gallery',
 	'heading',
 	'id',
+	'include',
 	'image',
 	'inlineStyles',
+	'label',
 	'lineHeight',
 	'mobile',
+	'navigation',
 	'overrides',
+	'order',
 	'paragraphSpacing',
 	'preset',
 	'presentation',
@@ -43,6 +56,47 @@ const knownNestedFrontmatterKeys = new Set([
 ]);
 
 export const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
+
+const fileExists = async (filePath) => access(filePath).then(() => true, () => false);
+
+export const getContentFiles = async () => {
+	const contentFiles = [{
+		contentLabel: siteContentLabel,
+		contentPath: siteContentPath,
+		imagesDir: siteImagesDir,
+		imagesLabel: siteImagesLabel,
+		isHome: true,
+		routeFolder: null,
+	}];
+	const routeEntries = await readdir(siteRoutesDir, { withFileTypes: true }).catch((error) => {
+		if (error?.code === 'ENOENT') {
+			return [];
+		}
+
+		throw error;
+	});
+
+	for (const entry of routeEntries) {
+		if (!entry.isDirectory()) continue;
+
+		const routeFolder = entry.name;
+		const routeDir = path.join(siteRoutesDir, routeFolder);
+		const routeContentPath = path.join(routeDir, 'route-content.md');
+
+		if (!(await fileExists(routeContentPath))) continue;
+
+		contentFiles.push({
+			contentLabel: `${siteRoutesLabel}/${routeFolder}/route-content.md`,
+			contentPath: routeContentPath,
+			imagesDir: path.join(routeDir, 'images'),
+			imagesLabel: `${siteRoutesLabel}/${routeFolder}/images`,
+			isHome: false,
+			routeFolder,
+		});
+	}
+
+	return contentFiles;
+};
 
 export const splitSiteFile = (source, label = siteContentLabel) => {
 	const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);

@@ -120,7 +120,14 @@ const getSectionBlocks = (lines) => {
 
 const readSiteTypography = async () => {
 	const { frontmatter, frontmatterBody } = splitSiteFile(await readFile(siteContentPath, 'utf8'));
-	const { frontmatter: themeFrontmatter, frontmatterBody: themeFrontmatterBody } = splitSiteFile(await readFile(siteThemePath, 'utf8'), siteThemeLabel);
+	const themeFile = await readFile(siteThemePath, 'utf8').catch((error) => {
+		if (error?.code === 'ENOENT') {
+			return '---\n---\n';
+		}
+
+		throw error;
+	});
+	const { frontmatter: themeFrontmatter, frontmatterBody: themeFrontmatterBody } = splitSiteFile(themeFile, siteThemeLabel);
 	const indentationIssues = [];
 	validateFrontmatterIndentation(frontmatter, (issue) => indentationIssues.push(issue));
 	validateContentFrontmatterStructure(frontmatter, (issue) => indentationIssues.push(issue));

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import {
 	getFrontmatterSections,
+	getContentFiles,
 	readSiteFile,
 	supportedImageExtensions,
 	toPosixPath,
@@ -14,9 +15,10 @@ import {
 	siteProjectRoot,
 	siteConfigLabel,
 	siteContentLabel,
-	siteContentPath,
 	siteImagesLabel,
 	sitePublicLabel,
+	siteRoutesLabel,
+	siteThemeLabel,
 } from './lib/site-paths.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -34,6 +36,7 @@ const allowedExactPaths = new Set([
 	'package-lock.json',
 	'package.json',
 	siteConfigLabel,
+	siteThemeLabel,
 	`${sitePublicLabel}/CNAME`,
 	`${sitePublicLabel}/favicon.ico`,
 	`${sitePublicLabel}/favicon.svg`,
@@ -137,15 +140,19 @@ const getStatusEntries = async () => parseStatus(await runCapture(
 ));
 
 const getExpectedImagePaths = async () => {
-	const { frontmatter } = await readSiteFile(siteContentPath);
+	const contentFiles = await getContentFiles();
 	const imagePaths = new Set();
 
-	for (const section of getFrontmatterSections(frontmatter)) {
-		for (const image of section.images) {
-			if (image.includes('/') || image.includes('\\')) continue;
-			if (!supportedImageExtensions.has(path.extname(image).toLowerCase())) continue;
+	for (const contentFile of contentFiles) {
+		const { frontmatter } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 
-			imagePaths.add(toPosixPath(path.join(siteImagesLabel, section.id, image)));
+		for (const section of getFrontmatterSections(frontmatter)) {
+			for (const image of section.images) {
+				if (image.includes('/') || image.includes('\\')) continue;
+				if (!supportedImageExtensions.has(path.extname(image).toLowerCase())) continue;
+
+				imagePaths.add(toPosixPath(path.join(contentFile.imagesLabel, section.id, image)));
+			}
 		}
 	}
 
@@ -160,12 +167,15 @@ const isExpectedUntracked = (entry, expectedImagePaths) => (
 		expectedImagePaths.has(entry.path)
 		|| entry.path === generatedImagesManifestLabel
 		|| entry.path.startsWith(`${sitePublicLabel}/`)
+		|| entry.path.startsWith(`${siteRoutesLabel}/`)
 	)
 );
 
 const isAllowedPath = (entry, filePath, expectedImagePaths) => (
 	filePath === siteContentLabel
+	|| filePath === siteThemeLabel
 	|| (!isUntracked(entry) && filePath.startsWith(`${siteImagesLabel}/`))
+	|| filePath.startsWith(`${siteRoutesLabel}/`)
 	|| filePath.startsWith(`${sitePublicLabel}/`)
 	|| expectedImagePaths.has(filePath)
 	|| filePath.startsWith('src/')
@@ -196,7 +206,7 @@ const assertDeployableStatus = async (entries, expectedImagePaths) => {
 	if (unexpectedUntracked.length > 0) {
 		fail([
 			'Refusing to deploy: unexpected untracked files are present.',
-			`Only new referenced gallery images under ${siteImagesLabel}/<section-id>/ are staged automatically.`,
+			`Only new referenced gallery images under ${siteImagesLabel}/<section-id>/ or ${siteRoutesLabel}/<route-folder>/images/<section-id>/ are staged automatically.`,
 			...unexpectedUntracked.map((entry) => `- ${formatEntry(entry)}`),
 		].join('\n'));
 	}

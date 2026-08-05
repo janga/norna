@@ -5,6 +5,7 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import {
 	getFrontmatterSections,
+	getContentFiles,
 	getImageIndex,
 	readSiteFile,
 	supportedImageExtensions,
@@ -14,10 +15,7 @@ import {
 	generatedImagesDir,
 	generatedImagesManifestPath,
 	originalImagesDir,
-	siteContentLabel,
-	siteContentPath,
 	siteImagesDir,
-	siteImagesLabel,
 } from './lib/site-paths.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -78,13 +76,14 @@ const getImageMagick = async () => {
 
 const toPublicPath = (filePath) => filePath.split(path.sep).join('/');
 const getPublicPath = (filePath) => `/${toPublicPath(path.relative(astroPublicDir, filePath))}`;
-const getSiteImagePath = (filePath) => toPublicPath(path.relative(siteImagesDir, filePath));
 const getFilePathFromPublicPath = (publicPath) => path.join(astroPublicDir, publicPath.replace(/^\//, ''));
 
 const getSourceHashSlug = (sourceHash) => sourceHash.slice(0, sourceHashSlugLength);
 
 const getGeneratedPath = (sourcePath, sourceHash, width) => {
-	const parsed = path.parse(path.relative(siteImagesDir, sourcePath));
+	const parsed = path.parse(path.relative(siteImagesDir, sourcePath).startsWith('..')
+		? path.relative(path.dirname(siteImagesDir), sourcePath)
+		: path.relative(siteImagesDir, sourcePath));
 	return path.join(generatedImagesDir, parsed.dir, `${parsed.name}-${getSourceHashSlug(sourceHash)}-${width}.webp`);
 };
 
@@ -92,8 +91,8 @@ const fail = (message) => {
 	throw new Error(message);
 };
 
-const getReferencedImages = async () => {
-	const { frontmatter } = await readSiteFile(siteContentPath);
+const getReferencedImages = async (contentFile) => {
+	const { frontmatter } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 	const sections = getFrontmatterSections(frontmatter);
 	const references = [];
 
@@ -101,6 +100,7 @@ const getReferencedImages = async () => {
 		const imageReferences = section.imageReferences ?? section.images.map((image) => ({ image }));
 		for (const { image, line } of imageReferences) {
 			references.push({
+				contentFile,
 				image,
 				line,
 				sectionId: section.id,
@@ -124,40 +124,44 @@ const getContentSourcePath = ({ image, line }, imageIndex) => {
 	const sourcePath = imageIndex.get(image);
 
 	if (!sourcePath) {
-		fail(`Image file "${image}" does not exist anywhere under ${siteImagesLabel}/.`);
+		fail(`Image file "${image}" does not exist anywhere under the page images directory.`);
 	}
 
 	return sourcePath;
 };
 
 const getReferencedSources = async () => {
-	const references = await getReferencedImages();
-	const imageIndex = await getImageIndex(siteImagesDir, fail);
+	const contentFiles = await getContentFiles();
 	const seen = new Map();
 	const sources = [];
 
-	for (const reference of references) {
-		const sourcePath = getContentSourcePath(reference, imageIndex);
-		const siteImagePath = getSiteImagePath(sourcePath);
-		const imageName = path.basename(sourcePath);
+	for (const contentFile of contentFiles) {
+		const references = await getReferencedImages(contentFile);
+		const imageIndex = await getImageIndex(contentFile.imagesDir, fail);
 
-		if (seen.has(imageName)) {
-			const firstReference = seen.get(imageName);
-			fail(`Image reference "${imageName}" appears more than once in ${siteContentLabel}, on lines ${firstReference.line} and ${reference.line}.`);
+		for (const reference of references) {
+			const sourcePath = getContentSourcePath(reference, imageIndex);
+			const siteImagePath = toPublicPath(path.relative(contentFile.imagesDir, sourcePath));
+			const imageName = path.basename(sourcePath);
+
+			if (seen.has(imageName)) {
+				const firstReference = seen.get(imageName);
+				fail(`Image reference "${imageName}" appears more than once, in ${firstReference.contentFile.contentLabel} line ${firstReference.line} and ${reference.contentFile.contentLabel} line ${reference.line}.`);
+			}
+
+			const fileStat = await stat(sourcePath).catch(() => null);
+			if (!fileStat?.isFile()) {
+				fail(`Image file does not exist: ${contentFile.imagesLabel}/${siteImagePath}`);
+			}
+
+			const currentDirectory = path.basename(path.dirname(sourcePath));
+			if (reference.sectionId && currentDirectory !== reference.sectionId) {
+				fail(`Image "${imageName}" is used in section "${reference.sectionId}" but is located in ${contentFile.imagesLabel}/${currentDirectory}/. Run cli-gallery content:sync, or npm run gallery:sync in starter-style repositories, to move it.`);
+			}
+
+			seen.set(imageName, reference);
+			sources.push(sourcePath);
 		}
-
-		const fileStat = await stat(sourcePath).catch(() => null);
-		if (!fileStat?.isFile()) {
-			fail(`Image file does not exist: ${siteImagesLabel}/${siteImagePath}`);
-		}
-
-		const currentDirectory = path.basename(path.dirname(sourcePath));
-		if (reference.sectionId && currentDirectory !== reference.sectionId) {
-			fail(`Image "${imageName}" is used in section "${reference.sectionId}" but is located in ${siteImagesLabel}/${currentDirectory}/. Run cli-gallery content:sync, or npm run gallery:sync in starter-style repositories, to move it.`);
-		}
-
-		seen.set(imageName, reference);
-		sources.push(sourcePath);
 	}
 
 	return sources.sort();
@@ -314,8 +318,11 @@ const removeUnreferencedGeneratedFiles = async (manifest) => {
 await rm(originalImagesDir, { recursive: true, force: true });
 await mkdir(generatedImagesDir, { recursive: true });
 
-const { frontmatter } = await readSiteFile(siteContentPath);
-const frontmatterSections = getFrontmatterSections(frontmatter);
+const contentFiles = await getContentFiles();
+const frontmatterSections = (await Promise.all(contentFiles.map(async (contentFile) => {
+	const { frontmatter } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+	return getFrontmatterSections(frontmatter);
+}))).flat();
 const sources = await getReferencedSources();
 const previousManifest = await readManifest();
 const manifest = {};

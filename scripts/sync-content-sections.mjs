@@ -4,6 +4,7 @@ import { stdin as input, stdout as output } from 'node:process';
 import path from 'node:path';
 import {
 	getBodySections,
+	getContentFiles,
 	getFrontmatterSections,
 	getFrontmatterInlineStyleNames,
 	getImageIndex,
@@ -74,11 +75,7 @@ try {
 	validateThemeFrontmatterStructure(themeFrontmatter, addIssue);
 } catch (error) {
 	if (error?.code === 'ENOENT') {
-		addIssue({
-			severity: 'error',
-			message: `${siteThemeLabel} is missing.`,
-			fix: `Create ${siteThemeLabel} with a presentation frontmatter block.`,
-		});
+		themeFrontmatter = null;
 	} else {
 		throw error;
 	}
@@ -163,6 +160,191 @@ const warnAboutCarouselAspectRatios = async () => {
 				message: `Carousel on line ${carousel.line} uses images with different aspect ratios: ${imagesWithRatios.map(({ image, ratio }) => `${image} (${ratio})`).join(', ')}.`,
 				fix: 'Use images with exactly matching proportions in the same carousel to avoid uneven layout and motion.',
 			});
+		}
+	}
+};
+
+const getFrontmatterSlug = (frontmatter) =>
+	frontmatter.match(/^slug:\s*["']?([^"'\n]+)["']?\s*$/m)?.[1]?.trim() ?? null;
+
+const validateRouteContentFiles = async () => {
+	const routeContentFiles = (await getContentFiles()).filter((contentFile) => !contentFile.isHome);
+
+	for (const contentFile of routeContentFiles) {
+		const { frontmatter: routeFrontmatter, body: routeBody } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+		validateFrontmatterIndentation(routeFrontmatter, addIssue);
+		validateContentFrontmatterStructure(routeFrontmatter, addIssue);
+
+		const slug = getFrontmatterSlug(routeFrontmatter);
+		if (slug && slug !== contentFile.routeFolder) {
+			addIssue({
+				severity: 'warning',
+				message: `${contentFile.contentLabel} has slug "${slug}" but its route folder is "${contentFile.routeFolder}".`,
+				fix: `Keep slug and route folder aligned unless the page intentionally needs to build at /${slug}/.`,
+			});
+		}
+
+		const routeFrontmatterSections = getFrontmatterSections(routeFrontmatter);
+		const routeFrontmatterIds = routeFrontmatterSections.map((section) => section.id);
+		const routeBodySections = getBodySections(routeBody).sections;
+		const routeSectionsById = new Map();
+		const routeImageIndex = await getImageIndex(contentFile.imagesDir, fail);
+
+		for (const section of routeBodySections) {
+			const sectionLabel = `${contentFile.contentLabel} [${section.id ?? section.heading}]`;
+
+			if (!section.id) {
+				addIssue({
+					severity: 'warning',
+					sectionLabel,
+					message: 'Markdown section is missing an explicit heading id.',
+					fix: `Write the heading with an explicit id, for example "${section.heading} {#section-id}".`,
+				});
+				continue;
+			}
+
+			if (routeSectionsById.has(section.id)) {
+				addIssue({
+					severity: 'error',
+					sectionId: `${contentFile.contentLabel}:${section.id}`,
+					sectionLabel,
+					message: `Duplicate Markdown section heading id "${section.id}".`,
+					fix: 'Each Markdown level 2 section heading must use a unique explicit id.',
+				});
+				continue;
+			}
+
+			routeSectionsById.set(section.id, section);
+		}
+
+		for (const id of routeFrontmatterIds) {
+			if (!routeSectionsById.has(id)) {
+				addIssue({
+					severity: 'error',
+					sectionId: `${contentFile.contentLabel}:${id}`,
+					sectionLabel: `${contentFile.contentLabel} [${id}]`,
+					message: `Cannot find a Markdown heading for section "${id}".`,
+					fix: `Add a level 2 Markdown heading, for example "## Heading {#${id}}".`,
+				});
+			}
+		}
+
+		for (const section of routeBodySections) {
+			if (section.id && !routeFrontmatterIds.includes(section.id)) {
+				addIssue({
+					severity: 'warning',
+					sectionId: `${contentFile.contentLabel}:${section.id}`,
+					sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
+					message: `Markdown section "${section.id}" exists but is not used in frontmatter.`,
+					fix: 'Add it to frontmatter sections or remove the unused Markdown section.',
+				});
+			}
+		}
+
+		const currentOrder = routeBodySections.map((section) => section.id).filter(Boolean);
+		const expectedOrder = routeFrontmatterIds.filter((id) => routeSectionsById.has(id));
+		if (
+			currentOrder.length !== expectedOrder.length ||
+			currentOrder.some((id, index) => id !== expectedOrder[index])
+		) {
+			addIssue({
+				severity: 'warning',
+				message: `${contentFile.contentLabel} Markdown section order differs from frontmatter.`,
+			});
+		}
+
+		for (const section of routeFrontmatterSections) {
+			for (const imageName of section.images) {
+				if (imageName.includes('/') || imageName.includes('\\')) {
+					addIssue({
+						severity: 'error',
+						sectionId: `${contentFile.contentLabel}:${section.id}`,
+						sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
+						message: `Image reference "${imageName}" must be a filename without a directory.`,
+						fix: `Use only the filename in ${contentFile.contentLabel} and keep the file in the matching ${contentFile.imagesLabel}/<section-id>/ directory.`,
+					});
+					continue;
+				}
+
+				if (referencedImages.has(imageName)) {
+					const previousSectionId = referencedImages.get(imageName);
+					const message = `Image "${imageName}" is referenced more than once, in "${previousSectionId}" and "${contentFile.contentLabel}:${section.id}".`;
+					const fix = 'Each image filename can be referenced by only one gallery row.';
+
+					addIssue({ severity: 'error', sectionId: previousSectionId, message, fix });
+					addIssue({
+						severity: 'error',
+						sectionId: `${contentFile.contentLabel}:${section.id}`,
+						sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
+						message,
+						fix,
+					});
+					continue;
+				}
+
+				referencedImages.set(imageName, `${contentFile.contentLabel}:${section.id}`);
+
+				const imagePath = routeImageIndex.get(imageName);
+				if (!imagePath) {
+					addIssue({
+						severity: 'error',
+						sectionId: `${contentFile.contentLabel}:${section.id}`,
+						sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
+						message: `Image "${imageName}" does not exist anywhere under ${contentFile.imagesLabel}/.`,
+						fix: `Add the source image to ${contentFile.imagesLabel}/${section.id}/ or remove the gallery row.`,
+					});
+					continue;
+				}
+
+				const currentDirectory = path.basename(path.dirname(imagePath));
+				if (currentDirectory !== section.id) {
+					addIssue({
+						severity: 'error',
+						sectionId: `${contentFile.contentLabel}:${section.id}`,
+						sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
+						message: `Image "${imageName}" is used here but is located in ${contentFile.imagesLabel}/${currentDirectory}/.`,
+						fix: 'Move it to the matching section image directory.',
+					});
+				}
+			}
+
+			for (const carousel of section.carousels ?? []) {
+				const imagesWithRatios = [];
+
+				for (const { image } of carousel.imageReferences ?? []) {
+					const imagePath = routeImageIndex.get(image);
+					if (!imagePath) continue;
+
+					const dimensions = await readImageDimensions(imagePath).catch(() => null);
+					if (!dimensions) continue;
+
+					imagesWithRatios.push({
+						image,
+						ratio: getAspectRatioLabel(dimensions),
+					});
+				}
+
+				const ratios = new Set(imagesWithRatios.map(({ ratio }) => ratio));
+				if (ratios.size <= 1) continue;
+
+				addIssue({
+					severity: 'warning',
+					sectionId: `${contentFile.contentLabel}:${section.id}`,
+					sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
+					message: `Carousel on line ${carousel.line} uses images with different aspect ratios: ${imagesWithRatios.map(({ image, ratio }) => `${image} (${ratio})`).join(', ')}.`,
+					fix: 'Use images with exactly matching proportions in the same carousel to avoid uneven layout and motion.',
+				});
+			}
+		}
+
+		for (const styleName of new Set(getInlineStyleReferences(routeBody))) {
+			if (!themeInlineStyleNames.has(styleName)) {
+				addIssue({
+					severity: 'error',
+					message: `Inline style ".${styleName}" is used in ${contentFile.contentLabel} but is not defined in ${siteThemeLabel} presentation.inlineStyles.`,
+					fix: `Add presentation.inlineStyles.${styleName} to ${siteThemeLabel} or remove "{.${styleName}}" from Markdown.`,
+				});
+			}
 		}
 	}
 };
@@ -383,6 +565,8 @@ for (const styleName of new Set(getInlineStyleReferences(body))) {
 		});
 	}
 }
+
+await validateRouteContentFiles();
 
 if (hasErrors()) {
 	printReport(shouldWrite ? 'Content sync failed.' : 'Content check failed.');
