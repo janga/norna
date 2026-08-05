@@ -54,7 +54,9 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 			</nav>
 
 			<details class="mobile-nav-menu">
-				<summary>{projectConfig.locale.labels.menu}</summary>
+				<summary>
+					<span>{currentPage.navigation.label}</span>
+				</summary>
 				<div class="mobile-nav-panel">
 					<nav class="mobile-site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 						<h2>{projectConfig.locale.labels.siteNavigation}</h2>
@@ -110,7 +112,6 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 	const mobileMenu = document.querySelector('.mobile-nav-menu');
 	const smoothScrollConfig = JSON.parse(siteTop?.getAttribute('data-smooth-scroll') ?? '{}');
 	const anchorPadding = 0;
-	const maximumAnchorGap = 2;
 	const anchorCorrectionDelays = [120, 320, 700, 1_000, 2_000];
 	const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 	const minimumScrollDuration = smoothScrollConfig.minimumDurationMs;
@@ -119,9 +120,12 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 	const scrollInterruptEvents = ['wheel', 'touchstart'];
 	const scrollInterruptKeys = new Set(['ArrowDown', 'ArrowUp', 'End', 'Home', 'PageDown', 'PageUp', ' ']);
 	let activeScrollAnimation = null;
-	let recentAnchorSection = null;
-	let correctAnchorUntil = 0;
-	let missedAnchorCorrectionStartsAt = 0;
+	let activeSectionId = null;
+	let anchorCorrectionToken = 0;
+
+	if ('scrollRestoration' in history) {
+		history.scrollRestoration = 'manual';
+	}
 
 	const setAnchorOffset = () => {
 		if (!(siteTop instanceof HTMLElement)) return;
@@ -138,25 +142,18 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 
 	const getSectionHeading = (section) => section?.querySelector('h1, h2');
 
-	const clearRecentAnchor = () => {
-		recentAnchorSection = null;
-		correctAnchorUntil = 0;
-		missedAnchorCorrectionStartsAt = 0;
-	};
-
-	const cancelActiveScroll = ({ clearAnchor = false } = {}) => {
+	const cancelActiveScroll = () => {
 		if (activeScrollAnimation) {
 			activeScrollAnimation.cancel();
 			activeScrollAnimation = null;
-		}
-
-		if (clearAnchor) {
-			clearRecentAnchor();
 		}
 	};
 
 	const setActiveSection = (section) => {
 		if (!section) return;
+		if (activeSectionId === section.id) return;
+
+		activeSectionId = section.id;
 
 		links.forEach((link) => {
 			const isActive = link.getAttribute('href') === `#${section.id}`;
@@ -168,9 +165,17 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 		});
 	};
 
+	const getHashSection = () => getSectionFromHash(window.location.hash);
+
 	const setHash = (targetHash) => {
 		if (window.location.hash !== targetHash) {
 			history.pushState(null, '', targetHash);
+		}
+	};
+
+	const closeMobileMenu = () => {
+		if (mobileMenu instanceof HTMLDetailsElement) {
+			mobileMenu.open = false;
 		}
 	};
 
@@ -198,7 +203,7 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 	const getScrollDuration = (distance) => {
 		const distancePx = Math.abs(distance);
 
-		if (!smoothScrollConfig.enabled || reduceMotionQuery.matches || distancePx < anchorPadding) return 0;
+		if (!smoothScrollConfig.enabled || reduceMotionQuery.matches || distancePx <= anchorPadding) return 0;
 
 		return Math.min(
 			maximumScrollDuration,
@@ -256,19 +261,15 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 			}
 		};
 
-		const cancel = ({ clearAnchor = true } = {}) => {
+		const cancel = () => {
 			if (frameId) {
 				cancelAnimationFrame(frameId);
 			}
 
 			cleanup();
-
-			if (clearAnchor) {
-				clearRecentAnchor();
-			}
 		};
 
-		const interruptScroll = () => cancel({ clearAnchor: true });
+		const interruptScroll = () => cancel();
 		const interruptScrollKey = (event) => {
 			if (scrollInterruptKeys.has(event.key)) {
 				interruptScroll();
@@ -291,7 +292,6 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 				window.scrollTo(0, latestTop);
 				cleanup();
 				onComplete?.();
-				requestAnimationFrame(correctRecentAnchor);
 				return;
 			}
 
@@ -323,67 +323,49 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 		return scrollDuration;
 	};
 
-	const trackRecentAnchor = (section, { missedAnchorDelay = 1_200 } = {}) => {
-		const now = performance.now();
-
-		recentAnchorSection = section;
-		correctAnchorUntil = now + Math.max(2_700, missedAnchorDelay + 1_500);
-		missedAnchorCorrectionStartsAt = now + missedAnchorDelay;
-
-		const correctionDelays = [...new Set([
-			...anchorCorrectionDelays,
-			missedAnchorDelay,
-			missedAnchorDelay + 500,
-			missedAnchorDelay + 1_200,
-		])].sort((a, b) => a - b);
-
-		correctionDelays.forEach((delay) => {
-			window.setTimeout(() => requestAnimationFrame(correctRecentAnchor), delay);
-		});
+	const updateAnchorOffset = () => {
+		setAnchorOffset();
 	};
 
-	const correctRecentAnchor = () => {
+	const correctCurrentHashAnchor = () => {
 		if (activeScrollAnimation) return;
-		if (!(recentAnchorSection instanceof HTMLElement)) return;
-		if (performance.now() > correctAnchorUntil) return;
-		if (window.location.hash !== `#${recentAnchorSection.id}`) return;
 
-		const heading = getSectionHeading(recentAnchorSection);
-		if (!(siteTop instanceof HTMLElement) || !(heading instanceof HTMLElement)) return;
-
-		const headerBottom = siteTop.getBoundingClientRect().bottom;
-		const headingTop = heading.getBoundingClientRect().top;
-		const hiddenBehindHeader = headingTop < headerBottom - 1;
-		const canCorrectMissedAnchor = performance.now() >= missedAnchorCorrectionStartsAt;
-		const missedAnchorScroll = canCorrectMissedAnchor && headingTop > headerBottom + maximumAnchorGap;
-
-		if (hiddenBehindHeader || missedAnchorScroll) {
-			scrollToSection(recentAnchorSection, { behavior: 'auto' });
+		const section = getHashSection();
+		if (section instanceof HTMLElement) {
+			scrollToSection(section, { behavior: 'auto' });
 		}
 	};
 
-	const updateAnchorOffset = () => {
-		setAnchorOffset();
-		requestAnimationFrame(correctRecentAnchor);
+	const scheduleHashAnchorCorrection = () => {
+		if (!window.location.hash) return;
+
+		anchorCorrectionToken += 1;
+		const token = anchorCorrectionToken;
+
+		anchorCorrectionDelays.forEach((delay) => {
+			window.setTimeout(() => {
+				if (token === anchorCorrectionToken) {
+					requestAnimationFrame(correctCurrentHashAnchor);
+				}
+			}, delay);
+		});
 	};
 
-	const observer = new IntersectionObserver(
-		(entries) => {
-			const visible = entries
-				.filter((entry) => entry.isIntersecting)
-				.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+	const syncToLocation = ({ behavior = 'auto', scrollHashlessTop = false } = {}) => {
+		const section = getHashSection();
 
-			if (visible?.target) {
-				setActiveSection(visible.target);
-			}
-		},
-		{
-			rootMargin: '-35% 0px -55% 0px',
-			threshold: [0, 0.25, 0.5, 0.75, 1],
-		},
-	);
+		if (section instanceof HTMLElement) {
+			scrollToSection(section, { behavior });
+			scheduleHashAnchorCorrection();
+			return;
+		}
 
-	sections.forEach((section) => observer.observe(section));
+		if (scrollHashlessTop) {
+			jumpTo(0);
+		}
+
+		setActiveSection(sections[0]);
+	};
 
 	links.forEach((link) => {
 		link.addEventListener('click', (event) => {
@@ -398,51 +380,29 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 			const targetHash = `#${section.id}`;
 			const duration = getScrollDuration(top - window.scrollY);
 
-			trackRecentAnchor(section, { missedAnchorDelay: duration + 350 });
+			setHash(targetHash);
 			setActiveSection(section);
+			closeMobileMenu();
 
 			scrollToSection(section, {
 				behavior: 'smooth',
 				duration,
-				onComplete: () => {
-					setHash(targetHash);
-					if (mobileMenu instanceof HTMLDetailsElement) {
-						mobileMenu.open = false;
-					}
-				},
+				onComplete: scheduleHashAnchorCorrection,
 			});
 		});
 	});
 
-	const trackCurrentHashAnchor = ({ scrollImmediately = false } = {}) => {
-		const section = getSectionFromHash(window.location.hash);
-		if (!(section instanceof HTMLElement)) return;
-
-		trackRecentAnchor(section, { missedAnchorDelay: scrollImmediately ? 0 : 1_200 });
-
-		if (scrollImmediately) {
-			requestAnimationFrame(() => scrollToSection(section, { behavior: 'auto' }));
-			return;
-		}
-
-		requestAnimationFrame(correctRecentAnchor);
-	};
-
-	const initialSection = getSectionFromHash(window.location.hash);
-	if (initialSection instanceof HTMLElement) {
-		trackCurrentHashAnchor({ scrollImmediately: true });
-	}
-
 	updateAnchorOffset();
+	requestAnimationFrame(() => syncToLocation({ behavior: 'auto' }));
 
 	if (siteTop instanceof HTMLElement && 'ResizeObserver' in window) {
 		new ResizeObserver(updateAnchorOffset).observe(siteTop);
 	}
 
 	window.addEventListener('resize', updateAnchorOffset);
-	window.addEventListener('hashchange', () => trackCurrentHashAnchor());
-	window.addEventListener('popstate', () => trackCurrentHashAnchor());
-	window.addEventListener('scrollend', () => requestAnimationFrame(correctRecentAnchor));
+	window.addEventListener('load', scheduleHashAnchorCorrection);
+	window.addEventListener('hashchange', () => syncToLocation({ behavior: 'auto', scrollHashlessTop: true }));
+	window.addEventListener('popstate', () => syncToLocation({ behavior: 'auto', scrollHashlessTop: true }));
 
 	if (window.visualViewport) {
 		window.visualViewport.addEventListener('resize', updateAnchorOffset);

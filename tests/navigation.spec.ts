@@ -11,11 +11,16 @@ type AnchorMeasurement = {
 	headerBottom: number;
 	headingTop: number;
 	gap: number;
+	isFirstSection: boolean;
 	scrollBottomGap: number;
 	scrollY: number;
 };
 
-const getNavTargets = async (page) => page.locator('.section-nav a').evaluateAll((links) => (
+const pageNavSelector = '.page-nav a';
+const mobilePageNavSelector = '.mobile-page-nav a';
+const sectionNavSelector = `${pageNavSelector}, ${mobilePageNavSelector}`;
+
+const getNavTargets = async (page) => page.locator(pageNavSelector).evaluateAll((links) => (
 	links.map((link) => ({
 		hash: link.getAttribute('href') ?? '',
 		label: link.textContent?.trim() ?? '',
@@ -24,6 +29,7 @@ const getNavTargets = async (page) => page.locator('.section-nav a').evaluateAll
 
 const measureAnchor = async (page, sectionId: string): Promise<AnchorMeasurement> => page.evaluate((id) => {
 	const header = document.querySelector('.site-top');
+	const sections = Array.from(document.querySelectorAll('.site-section'));
 	const section = document.getElementById(id);
 	const heading = section?.querySelector('h1, h2');
 
@@ -44,6 +50,7 @@ const measureAnchor = async (page, sectionId: string): Promise<AnchorMeasurement
 		headerBottom,
 		headingTop,
 		gap: headingTop - headerBottom,
+		isFirstSection: sections[0] === section,
 		scrollBottomGap: maxScrollY - window.scrollY,
 		scrollY: window.scrollY,
 	};
@@ -51,7 +58,7 @@ const measureAnchor = async (page, sectionId: string): Promise<AnchorMeasurement
 
 const openSite = async (page, path = '/') => {
 	await page.goto(path, { waitUntil: 'domcontentloaded' });
-	await page.locator('.section-nav a').first().waitFor();
+	await page.locator(sectionNavSelector).first().waitFor({ state: 'attached' });
 	await page.waitForLoadState('networkidle').catch(() => {});
 };
 
@@ -59,6 +66,7 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 	await page.waitForFunction(
 		({ id, maximumGap }) => {
 			const header = document.querySelector('.site-top');
+			const sections = Array.from(document.querySelectorAll('.site-section'));
 			const section = document.getElementById(id);
 			const heading = section?.querySelector('h1, h2');
 
@@ -77,17 +85,40 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 			);
 			const atDocumentTop = window.scrollY <= 2;
 			const atDocumentBottom = maxScrollY - window.scrollY <= 2;
+			const isFirstSection = sections[0] === section;
 
 			return window.location.hash === `#${id}`
 				&& gap >= -1
-				&& (gap <= maximumGap || atDocumentTop || atDocumentBottom);
+				&& (gap <= maximumGap || (atDocumentTop && isFirstSection) || atDocumentBottom);
 		},
 		{ id: sectionId, maximumGap: maximumAnchorGap },
 		{ timeout: maximumAnchorWait },
 	);
 };
 
-const measureNavTextHitTargets = async (page) => page.locator('.section-nav a').evaluateAll((links) => (
+const clickSectionLink = async (page, hash: string) => {
+	const desktopLink = page.locator(`${pageNavSelector}[href="${hash}"]`).first();
+
+	if (await desktopLink.isVisible()) {
+		await desktopLink.click();
+		return;
+	}
+
+	const mobileMenu = page.locator('.mobile-nav-menu').first();
+	if (await mobileMenu.isVisible()) {
+		await mobileMenu.locator('summary').click();
+		await page.locator(`${mobilePageNavSelector}[href="${hash}"]`).first().click();
+		return;
+	}
+
+	throw new Error(`Cannot find visible section navigation link for ${hash}.`);
+};
+
+const getActiveSectionHash = async (page) => page.locator(`${sectionNavSelector}[aria-current="true"]`)
+	.first()
+	.getAttribute('href');
+
+const measureNavTextHitTargets = async (page) => page.locator(pageNavSelector).evaluateAll((links) => (
 	links.map((link) => {
 		const textRange = document.createRange();
 		textRange.selectNodeContents(link);
@@ -125,13 +156,13 @@ for (const scenario of [
 
 			for (const target of await getNavTargets(page)) {
 				const sectionId = target.hash.slice(1);
-				await page.locator(`.section-nav a[href="${target.hash}"]`).click();
+				await clickSectionLink(page, target.hash);
 				await waitForAnchorPosition(page, sectionId);
 
 				const measurement = await measureAnchor(page, sectionId);
 				expect(measurement.hash, target.label).toBe(target.hash);
 				expect(measurement.gap, target.label).toBeGreaterThanOrEqual(-1);
-				if (measurement.scrollY > 2 && measurement.scrollBottomGap > 2) {
+				if (!measurement.isFirstSection && measurement.scrollY > 2 && measurement.scrollBottomGap > 2) {
 					expect(measurement.gap, target.label).toBeLessThanOrEqual(maximumAnchorGap);
 				}
 			}
@@ -148,7 +179,7 @@ for (const scenario of [
 				const measurement = await measureAnchor(page, sectionId);
 				expect(measurement.hash, target.label).toBe(target.hash);
 				expect(measurement.gap, target.label).toBeGreaterThanOrEqual(-1);
-				if (measurement.scrollY > 2 && measurement.scrollBottomGap > 2) {
+				if (!measurement.isFirstSection && measurement.scrollY > 2 && measurement.scrollBottomGap > 2) {
 					expect(measurement.gap, target.label).toBeLessThanOrEqual(maximumAnchorGap);
 				}
 			}
@@ -173,7 +204,7 @@ for (const scenario of [
 				}, 500);
 			}, sectionId);
 
-			await page.locator(`.section-nav a[href="${target.hash}"]`).click();
+			await clickSectionLink(page, target.hash);
 			await waitForAnchorPosition(page, sectionId);
 
 			const measurement = await measureAnchor(page, sectionId);
@@ -183,6 +214,70 @@ for (const scenario of [
 		});
 	});
 }
+
+test.describe('section navigation history', () => {
+	test.use({
+		hasTouch: false,
+		isMobile: false,
+		viewport: desktopViewport,
+	});
+
+	test('back and forward move between section jumps on the same page', async ({ page }) => {
+		await openSite(page);
+		const targets = (await getNavTargets(page)).slice(0, 3);
+		if (targets.length < 3) throw new Error('The fixture must provide at least three navigation targets.');
+
+		await clickSectionLink(page, targets[1].hash);
+		await waitForAnchorPosition(page, targets[1].hash.slice(1));
+		await clickSectionLink(page, targets[2].hash);
+		await waitForAnchorPosition(page, targets[2].hash.slice(1));
+
+		await page.goBack();
+		await waitForAnchorPosition(page, targets[1].hash.slice(1));
+		expect(page.url()).toContain(targets[1].hash);
+
+		await page.goForward();
+		await waitForAnchorPosition(page, targets[2].hash.slice(1));
+		expect(page.url()).toContain(targets[2].hash);
+	});
+
+	test('back to the page without a hash restores the first active section', async ({ page }) => {
+		await openSite(page);
+		const targets = (await getNavTargets(page)).slice(0, 3);
+		if (targets.length < 3) throw new Error('The fixture must provide at least three navigation targets.');
+
+		await clickSectionLink(page, targets[1].hash);
+		await waitForAnchorPosition(page, targets[1].hash.slice(1));
+		await clickSectionLink(page, targets[2].hash);
+		await waitForAnchorPosition(page, targets[2].hash.slice(1));
+
+		await page.goBack();
+		await waitForAnchorPosition(page, targets[1].hash.slice(1));
+		await expect.poll(() => getActiveSectionHash(page)).toBe(targets[1].hash);
+
+		const startedAt = Date.now();
+		await page.goBack();
+		await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('');
+		await expect.poll(() => getActiveSectionHash(page)).toBe(targets[0].hash);
+		expect(Date.now() - startedAt).toBeLessThan(1_000);
+		await page.waitForTimeout(700);
+		await expect.poll(() => getActiveSectionHash(page)).toBe(targets[0].hash);
+	});
+
+	test('rapid section clicks keep the last clicked section active', async ({ page }) => {
+		await openSite(page);
+		const targets = (await getNavTargets(page)).slice(0, 4);
+		if (targets.length < 4) throw new Error('The fixture must provide at least four navigation targets.');
+
+		for (const target of targets.slice(1)) {
+			await clickSectionLink(page, target.hash);
+		}
+
+		const finalTarget = targets.at(-1);
+		await waitForAnchorPosition(page, finalTarget.hash.slice(1));
+		await expect.poll(() => getActiveSectionHash(page)).toBe(finalTarget.hash);
+	});
+});
 
 test.describe('desktop navigation hit targets', () => {
 	test.use({
@@ -214,7 +309,7 @@ test('keeps hash links usable as a fallback', async ({ page }) => {
 		const target = (await getNavTargets(page))[1];
 		if (!target) throw new Error('The fixture must provide at least two navigation targets.');
 		const sectionId = target.hash.slice(1);
-		await page.locator(`.section-nav a[href="${target.hash}"]`).click();
+		await clickSectionLink(page, target.hash);
 
 		const measurement = await measureAnchor(page, sectionId);
 		expect(measurement.hash).toBe(target.hash);
