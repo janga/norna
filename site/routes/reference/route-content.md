@@ -33,21 +33,23 @@ Start here:
 
 ## Commands {#commands}
 
-The CLI is named `norna`.
-
-```sh
-norna --help
-norna content:check
-norna build
-norna deploy:watch
-```
-
-Site repositories normally use starter npm scripts such as:
+The CLI binary is named `norna`. In site repositories, use the starter npm
+scripts; they call the local `norna` binary from `node_modules/.bin`.
 
 ```sh
 npm run norna:dev
 npm run norna:check
 npm run norna:build
+npm run norna:deploy:watch
+```
+
+Use the direct CLI form when `norna` is on your shell `PATH`, inside an npm
+script, or through `npm exec`:
+
+```sh
+npm exec -- norna --help
+npm exec -- norna content:check
+npm exec -- norna build
 ```
 
 Command reference:

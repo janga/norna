@@ -1,7 +1,11 @@
 # Commands
 
-The `norna` binary is the stable command surface. The starter's npm
-scripts are thin aliases around these commands.
+The `norna` binary is the stable command surface. Site repositories normally
+use starter npm scripts such as `npm run norna:content:check`; those scripts
+call the local `norna` binary from `node_modules/.bin`.
+
+Use direct `norna ...` commands only when the binary is on your shell `PATH`,
+inside an npm script, or through `npm exec -- norna ...`.
 
 ## CLI Commands
 
