@@ -206,5 +206,5 @@ if (mode === 'presets') {
 
 	console.log(toYamlLines(output).join('\n'));
 } else {
-	throw new Error('Usage: cli-gallery typography:presets|typography:show');
+	throw new Error('Usage: norna typography:presets|typography:show');
 }

@@ -5,14 +5,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const cliGalleryBin = path.join(repoRoot, 'bin', 'cli-gallery.mjs');
+const nornaBin = path.join(repoRoot, 'bin', 'norna.mjs');
 const tempParent = path.join(repoRoot, 'node_modules', '.cache');
 await mkdir(tempParent, { recursive: true });
-const tempRoot = await mkdtemp(path.join(tempParent, 'cli-gallery-temporary-visibility-'));
+const tempRoot = await mkdtemp(path.join(tempParent, 'norna-temporary-visibility-'));
 const siteDir = path.join(tempRoot, 'site');
 
 const runCli = (args, env = {}) => {
-	const result = spawnSync(process.execPath, [cliGalleryBin, ...args], {
+	const result = spawnSync(process.execPath, [nornaBin, ...args], {
 		cwd: tempRoot,
 		encoding: 'utf8',
 		env: {
@@ -24,7 +24,7 @@ const runCli = (args, env = {}) => {
 
 	if (result.status !== 0) {
 		throw new Error([
-			`cli-gallery ${args.join(' ')} exited with code ${result.status}.`,
+			`norna ${args.join(' ')} exited with code ${result.status}.`,
 			result.stdout.trim(),
 			result.stderr.trim(),
 		].filter(Boolean).join('\n'));

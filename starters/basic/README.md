@@ -1,6 +1,6 @@
-# cli-gallery Starter
+# norna Starter
 
-This is a minimal site repository starter for `@janga/cli-gallery`.
+This is a minimal site repository starter for `@janga/norna`.
 
 ## Setup
 
@@ -44,7 +44,7 @@ project. This pure starter also keeps `npm run build` as an alias for
 Use `npm run gallery:engine:version` to inspect the installed engine and
 `npm run gallery:engine:update` to update it.
 
-Generic documentation lives in the `cli-gallery` repository:
+Generic documentation lives in the `norna` repository:
 
 - `docs/getting-started.md`
 - `docs/site-structure.md`

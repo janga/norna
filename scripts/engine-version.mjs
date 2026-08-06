@@ -10,14 +10,14 @@ import {
 	siteProjectRootLabel,
 } from './lib/site-paths.mjs';
 
-const packageName = '@janga/cli-gallery';
+const packageName = '@janga/norna';
 const requireFromEngine = createRequire(import.meta.url);
 
 const usage = `
-Usage: cli-gallery engine:version [--latest]
+Usage: norna engine:version [--latest]
 
 Options:
-  --latest      Also query npm for the latest published cli-gallery version
+  --latest      Also query npm for the latest published norna version
 `.trim();
 
 const args = process.argv.slice(2);
@@ -92,13 +92,13 @@ const runCapture = (command, args, options = {}) => new Promise((resolve, reject
 
 const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const configuredNpmCache = process.env.npm_config_cache ?? process.env.NPM_CONFIG_CACHE;
-const npmCachePath = path.resolve(siteProjectRoot, configuredNpmCache ?? path.join('node_modules', '.cache', 'cli-gallery-npm'));
+const npmCachePath = path.resolve(siteProjectRoot, configuredNpmCache ?? path.join('node_modules', '.cache', 'norna-npm'));
 const sitePackageJson = await readOptionalJson(path.join(siteProjectRoot, 'package.json'));
 const enginePackageJson = await readJson(path.join(engineRoot, 'package.json'));
 const astroPackageJson = await readJson(requireFromEngine.resolve('astro/package.json'));
 const siteDependency = getPackageDependency(sitePackageJson);
 
-console.log('cli-gallery engine:version');
+console.log('norna engine:version');
 console.log(`Site project root: ${siteProjectRootLabel}`);
 
 if (siteDependency) {
@@ -109,7 +109,7 @@ if (siteDependency) {
 	console.log(`Site dependency: ${packageName} not declared`);
 }
 
-console.log(`Installed cli-gallery: ${enginePackageJson.version}`);
+console.log(`Installed norna: ${enginePackageJson.version}`);
 console.log(`Engine root: ${engineRootLabel}`);
 console.log(`Astro dependency: ${enginePackageJson.dependencies?.astro ?? 'not declared'}`);
 console.log(`Installed Astro: ${astroPackageJson.version}`);

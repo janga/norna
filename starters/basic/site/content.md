@@ -1,6 +1,6 @@
 ---
 title: Example Gallery
-description: Minimal cli-gallery starter site.
+description: Minimal norna starter site.
 sections:
   - id: intro
     presentation:
@@ -13,7 +13,7 @@ sections:
 ---
 ## Intro {#intro}
 
-This is a minimal starter site for cli-gallery. Use
+This is a minimal starter site for norna. Use
 [highlighted inline text]{.highlight} when a short phrase needs emphasis.
 
 ## Work {#work}

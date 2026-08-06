@@ -47,17 +47,17 @@ const allowedExactPaths = new Set([
 const failedConclusions = new Set(['action_required', 'cancelled', 'failure', 'startup_failure', 'timed_out']);
 
 const deployUsage = [
-	'Usage: cli-gallery deploy',
+	'Usage: norna deploy',
 	'',
 	`Publishes an already committed ${branch} branch: builds, verifies a clean worktree,`,
 	`pushes ${branch} when local ${branch} is ahead of origin/${branch}, and checks GitHub Pages.`,
 	`If local ${branch} already matches origin/${branch}, it skips push and checks Pages.`,
 	'',
 	'For the old build-and-commit convenience flow, use:',
-	'cli-gallery deploy:commit "Commit message"',
+	'norna deploy:commit "Commit message"',
 ].join('\n');
 const deployCommitUsage = [
-	'Usage: cli-gallery deploy:commit "Commit message"',
+	'Usage: norna deploy:commit "Commit message"',
 	'',
 	`Builds, stages only allowed site changes, commits, pushes ${branch},`,
 	'and checks GitHub Pages.',
@@ -320,8 +320,8 @@ const deployCommittedMain = async () => {
 	if (modeArgs.length > 0) {
 		fail([
 			'The deploy command no longer accepts a commit message.',
-			'Commit your changes first, then run cli-gallery deploy.',
-			'Use cli-gallery deploy:commit "Commit message" for the old build-and-commit convenience flow.',
+			'Commit your changes first, then run norna deploy.',
+			'Use norna deploy:commit "Commit message" for the old build-and-commit convenience flow.',
 		].join('\n'));
 	}
 

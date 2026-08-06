@@ -547,7 +547,7 @@ for (const section of frontmatterSections) {
 				addSectionIssue(section.id, {
 					severity: 'error',
 					message: `Image "${imageName}" is used here but is located in ${siteImagesLabel}/${currentDirectory}/.`,
-					fix: 'Run cli-gallery content:sync, or npm run gallery:sync in starter-style repositories, to move it.',
+					fix: 'Run norna content:sync, or npm run gallery:sync in starter-style repositories, to move it.',
 				});
 			}
 		}

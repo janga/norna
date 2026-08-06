@@ -9,14 +9,14 @@ import {
 	siteProjectRootLabel,
 } from './lib/site-paths.mjs';
 
-const packageName = '@janga/cli-gallery';
+const packageName = '@janga/norna';
 const usage = `
-Usage: cli-gallery engine:update [version|latest] [--skip-checks]
+Usage: norna engine:update [version|latest] [--skip-checks]
 
 Examples:
-  cli-gallery engine:update
-  cli-gallery engine:update latest
-  cli-gallery engine:update 0.1.15
+  norna engine:update
+  norna engine:update latest
+  norna engine:update 0.1.15
 
 Options:
   --skip-checks     Update package files without running config/content/build checks
@@ -54,7 +54,7 @@ const dependencyVersion = sitePackageJson.dependencies?.[packageName]
 	?? sitePackageJson.optionalDependencies?.[packageName];
 
 if (sitePackageJson.name === packageName) {
-	throw new Error('engine:update must be run from a site repository, not from the cli-gallery engine repository.');
+	throw new Error('engine:update must be run from a site repository, not from the norna engine repository.');
 }
 
 if (!dependencyVersion) {
@@ -63,12 +63,12 @@ if (!dependencyVersion) {
 
 const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const configuredNpmCache = process.env.npm_config_cache ?? process.env.NPM_CONFIG_CACHE;
-const npmCachePath = path.resolve(siteProjectRoot, configuredNpmCache ?? path.join('node_modules', '.cache', 'cli-gallery-npm'));
-const cliGalleryBin = path.join(
+const npmCachePath = path.resolve(siteProjectRoot, configuredNpmCache ?? path.join('node_modules', '.cache', 'norna-npm'));
+const nornaBin = path.join(
 	siteProjectRoot,
 	'node_modules',
 	'.bin',
-	process.platform === 'win32' ? 'cli-gallery.cmd' : 'cli-gallery',
+	process.platform === 'win32' ? 'norna.cmd' : 'norna',
 );
 
 console.log(`Updating ${packageName} in ${siteProjectRootLabel}`);
@@ -111,14 +111,14 @@ if (skipChecks) {
 	process.exit(0);
 }
 
-if (!existsSync(cliGalleryBin)) {
-	throw new Error(`Installed cli-gallery binary was not found: ${cliGalleryBin}`);
+if (!existsSync(nornaBin)) {
+	throw new Error(`Installed norna binary was not found: ${nornaBin}`);
 }
 
 for (const command of ['config:check', 'content:check', 'build']) {
 	console.log('');
-	console.log(`Running cli-gallery ${command}`);
-	await runInherit(cliGalleryBin, [command], {
+	console.log(`Running norna ${command}`);
+	await runInherit(nornaBin, [command], {
 		cwd: siteProjectRoot,
 	});
 }

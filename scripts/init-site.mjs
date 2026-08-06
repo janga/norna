@@ -7,16 +7,19 @@ import {
 	siteDirectoryEnv,
 } from './lib/site-paths.mjs';
 
+const packageName = '@janga/norna';
+const cliExecutableName = 'norna';
+
 const usage = `
-Usage: cli-gallery init <target-dir> [--type pure|embedded] [--site-dir <path>]
+Usage: norna init <target-dir> [--type pure|embedded] [--site-dir <path>]
 
 Creates a new site project or adds a gallery source directory to an existing
 project.
 
 Examples:
-  cli-gallery init my-gallery
-  cli-gallery init my-gallery --type pure
-  cli-gallery init . --type embedded --site-dir presentation
+  norna init my-gallery
+  norna init my-gallery --type pure
+  norna init . --type embedded --site-dir presentation
 `.trim();
 
 const args = process.argv.slice(2);
@@ -118,7 +121,7 @@ const readDirectoryEntries = async (directoryPath) => {
 const readJsonFile = async (filePath) => JSON.parse(await readFile(filePath, 'utf8'));
 
 const siteDirArg = siteDirectory === 'site' ? [] : ['--site-dir', siteDirectory];
-const cliCommand = (command) => ['cli-gallery', ...siteDirArg, command].join(' ');
+const cliCommand = (command) => [cliExecutableName, ...siteDirArg, command].join(' ');
 const galleryScripts = {
 	'gallery:dev': cliCommand('dev:local'),
 	'gallery:dev:lan': cliCommand('dev:lan'),
@@ -147,7 +150,7 @@ const galleryScripts = {
 
 const addGalleryDependency = (packageJson, version) => {
 	packageJson.dependencies ??= {};
-	packageJson.dependencies['@janga/cli-gallery'] ??= version;
+	packageJson.dependencies[packageName] ??= version;
 };
 
 const addGalleryScripts = (packageJson, scripts, { includePureAliases }) => {
@@ -194,7 +197,7 @@ if (type === 'pure') {
 	}
 
 	const targetPackageJson = await readJsonFile(targetPackageJsonPath);
-	targetPackageJson.dependencies['@janga/cli-gallery'] = enginePackageJson.version;
+	targetPackageJson.dependencies[packageName] = enginePackageJson.version;
 	if (siteDirectory !== 'site') {
 		targetPackageJson.scripts = {};
 		addGalleryScripts(targetPackageJson, galleryScripts, { includePureAliases: true });
@@ -229,11 +232,11 @@ if (type === 'pure') {
 }
 
 console.log(type === 'embedded'
-	? `Added cli-gallery site directory at ${targetSiteDir}`
-	: `Created cli-gallery site at ${targetRoot}`);
+	? `Added norna site directory at ${targetSiteDir}`
+	: `Created norna site at ${targetRoot}`);
 if (isInsideEngineRoot(targetRoot)) {
 	console.warn('');
-	console.warn('Warning: This site was created inside the cli-gallery engine repository.');
+	console.warn('Warning: This site was created inside the norna engine repository.');
 	console.warn('For normal site projects, create the site next to the engine repository instead, for example as a sibling directory under your Projects folder.');
 	console.warn('That keeps site content, npm installs, commits, and releases separate from engine development.');
 }

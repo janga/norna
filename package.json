@@ -1,17 +1,17 @@
 {
-  "name": "@janga/cli-gallery",
-  "description": "A command-line publishing workflow for simple static galleries.",
+  "name": "@janga/norna",
+  "description": "A command-line publishing workflow for simple static sites.",
   "type": "module",
   "version": "0.6.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/janga/cli-gallery.git"
+    "url": "git+https://github.com/janga/norna.git"
   },
   "bugs": {
-    "url": "https://github.com/janga/cli-gallery/issues"
+    "url": "https://github.com/janga/norna/issues"
   },
-  "homepage": "https://github.com/janga/cli-gallery#readme",
+  "homepage": "https://github.com/janga/norna#readme",
   "keywords": [
     "astro",
     "gallery",
@@ -19,7 +19,7 @@
     "cli"
   ],
   "bin": {
-    "cli-gallery": "bin/cli-gallery.mjs"
+    "norna": "bin/norna.mjs"
   },
   "files": [
     "astro.config.mjs",
@@ -42,28 +42,28 @@
   "scripts": {
     "dev": "npm run dev:local",
     "dev:local": "npm run demo:dev",
-    "dev:lan": "node bin/cli-gallery.mjs dev:lan",
-    "dev:restart": "node bin/cli-gallery.mjs dev:restart",
-    "dev:status": "node bin/cli-gallery.mjs dev:status",
-    "dev:logs": "node bin/cli-gallery.mjs dev:logs",
-    "dev:stop": "node bin/cli-gallery.mjs dev:stop",
-    "config:check": "node bin/cli-gallery.mjs config:check",
-    "content:check": "node bin/cli-gallery.mjs content:check",
-    "content:sync": "node bin/cli-gallery.mjs content:sync",
-    "typography:presets": "node bin/cli-gallery.mjs typography:presets",
-    "typography:show": "node bin/cli-gallery.mjs typography:show",
-    "site:public": "node bin/cli-gallery.mjs site:public",
-    "images": "node bin/cli-gallery.mjs images",
+    "dev:lan": "node bin/norna.mjs dev:lan",
+    "dev:restart": "node bin/norna.mjs dev:restart",
+    "dev:status": "node bin/norna.mjs dev:status",
+    "dev:logs": "node bin/norna.mjs dev:logs",
+    "dev:stop": "node bin/norna.mjs dev:stop",
+    "config:check": "node bin/norna.mjs config:check",
+    "content:check": "node bin/norna.mjs content:check",
+    "content:sync": "node bin/norna.mjs content:sync",
+    "typography:presets": "node bin/norna.mjs typography:presets",
+    "typography:show": "node bin/norna.mjs typography:show",
+    "site:public": "node bin/norna.mjs site:public",
+    "images": "node bin/norna.mjs images",
     "build": "npm run demo:build",
-    "build:local": "node bin/cli-gallery.mjs build:local",
-    "deploy": "node bin/cli-gallery.mjs deploy",
-    "deploy:commit": "node bin/cli-gallery.mjs deploy:commit",
-    "deploy:watch": "node bin/cli-gallery.mjs deploy:watch",
-    "doctor": "node bin/cli-gallery.mjs doctor",
-    "demo:dev": "node bin/cli-gallery.mjs dev:local",
-    "demo:build": "node bin/cli-gallery.mjs build",
+    "build:local": "node bin/norna.mjs build:local",
+    "deploy": "node bin/norna.mjs deploy",
+    "deploy:commit": "node bin/norna.mjs deploy:commit",
+    "deploy:watch": "node bin/norna.mjs deploy:watch",
+    "doctor": "node bin/norna.mjs doctor",
+    "demo:dev": "node bin/norna.mjs dev:local",
+    "demo:build": "node bin/norna.mjs build",
     "test": "npm run test:content-check && npm run test:site-public && npm run test:engine-commands && npm run test:ci-lockfile && npm run test:temporary-visibility && npm run test:fixture:build && npm run demo:build && npm run package:check",
-    "test:fixture:build": "node bin/cli-gallery.mjs --site-dir fixtures/basic/site build",
+    "test:fixture:build": "node bin/norna.mjs --site-dir fixtures/basic/site build",
     "test:content-check": "node scripts/test-content-check.mjs",
     "test:site-public": "node scripts/test-site-public.mjs",
     "test:engine-commands": "node scripts/test-engine-commands.mjs",
@@ -73,12 +73,12 @@
     "test:navigation:stress": "node scripts/test-navigation.mjs tests/navigation-stress.spec.ts",
     "test:navigation:preview": "node scripts/test-navigation-preview.mjs",
     "package:check": "node scripts/test-package-check.mjs",
-    "release:publish": "npm publish --access public --registry=https://registry.npmjs.org/ --cache /private/tmp/cli-gallery-npm-cache",
+    "release:publish": "npm publish --access public --registry=https://registry.npmjs.org/ --cache /private/tmp/norna-npm-cache",
     "release:patch": "node scripts/release.mjs patch",
     "release:minor": "node scripts/release.mjs minor",
     "release:major": "node scripts/release.mjs major",
-    "preview": "node bin/cli-gallery.mjs preview",
-    "astro": "node bin/cli-gallery.mjs astro"
+    "preview": "node bin/norna.mjs preview",
+    "astro": "node bin/norna.mjs astro"
   },
   "dependencies": {
     "astro": "^7.1.3",

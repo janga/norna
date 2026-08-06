@@ -5,7 +5,7 @@ const args = process.argv.slice(2);
 process.env.CLI_GALLERY_INVOCATION_ROOT ??= process.cwd();
 
 const usage = `
-Usage: cli-gallery <command> [options]
+Usage: norna <command> [options]
 
 Commands:
   dev:local              Start local Astro dev server
@@ -21,7 +21,7 @@ Commands:
   typography:show        Show resolved typography for the selected site
   site:public            Sync site/public/ to public/
   images                 Generate optimized image variants
-  engine:update          Update @janga/cli-gallery in a site repository
+  engine:update          Update @janga/norna in a site repository
   engine:version         Show installed engine and Astro versions
   init                   Create a new site project from the starter
   build                  Build the selected site
@@ -30,7 +30,7 @@ Commands:
   deploy:commit          Build, commit allowed changes, push, and check Pages
   deploy:watch           Watch GitHub Pages workflow
   preview                Preview dist/
-  astro                  Run Astro with cli-gallery config
+  astro                  Run Astro with norna config
   doctor                 Print resolved paths
 
 Global options:

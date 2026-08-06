@@ -6,9 +6,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const cliPath = path.join(repoRoot, 'bin', 'cli-gallery.mjs');
+const cliPath = path.join(repoRoot, 'bin', 'norna.mjs');
 const packageJson = JSON.parse(await readFile(path.join(repoRoot, 'package.json'), 'utf8'));
-const tempRoot = await mkdtemp(path.join(tmpdir(), 'cli-gallery-engine-commands-'));
+const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-engine-commands-'));
 
 const runCli = (args, options = {}) => spawnSync(process.execPath, [cliPath, ...args], {
 	cwd: repoRoot,
@@ -19,19 +19,19 @@ const runCli = (args, options = {}) => spawnSync(process.execPath, [cliPath, ...
 try {
 	const versionResult = runCli(['engine:version']);
 	assert.equal(versionResult.status, 0, versionResult.stderr || versionResult.stdout);
-	assert.match(versionResult.stdout, /cli-gallery engine:version/);
-	assert.match(versionResult.stdout, new RegExp(`Installed cli-gallery: ${packageJson.version.replaceAll('.', '\\.')}`));
+	assert.match(versionResult.stdout, /norna engine:version/);
+	assert.match(versionResult.stdout, new RegExp(`Installed norna: ${packageJson.version.replaceAll('.', '\\.')}`));
 	assert.match(versionResult.stdout, /Installed Astro: /);
 
 	const initializedSiteRoot = path.join(tempRoot, 'initialized-site');
 	const initResult = runCli(['init', initializedSiteRoot]);
 	assert.equal(initResult.status, 0, initResult.stderr || initResult.stdout);
-	assert.match(initResult.stdout, /Created cli-gallery site at /);
+	assert.match(initResult.stdout, /Created norna site at /);
 
 	const initializedPackageJson = JSON.parse(await readFile(path.join(initializedSiteRoot, 'package.json'), 'utf8'));
-	assert.equal(initializedPackageJson.dependencies['@janga/cli-gallery'], packageJson.version);
-	assert.equal(initializedPackageJson.scripts['gallery:engine:update'], 'cli-gallery engine:update');
-	assert.equal(initializedPackageJson.scripts['gallery:engine:version'], 'cli-gallery engine:version');
+	assert.equal(initializedPackageJson.dependencies['@janga/norna'], packageJson.version);
+	assert.equal(initializedPackageJson.scripts['gallery:engine:update'], 'norna engine:update');
+	assert.equal(initializedPackageJson.scripts['gallery:engine:version'], 'norna engine:version');
 	assert.equal(initializedPackageJson.scripts['engine:update'], undefined);
 	assert.equal(initializedPackageJson.scripts['engine:version'], undefined);
 
@@ -57,8 +57,8 @@ try {
 	const customPurePackageJson = JSON.parse(await readFile(path.join(customPureSiteRoot, 'package.json'), 'utf8'));
 	assert.equal(customPurePackageJson.scripts.dev, 'npm run gallery:dev');
 	assert.equal(customPurePackageJson.scripts.build, 'npm run gallery:build');
-	assert.equal(customPurePackageJson.scripts['gallery:dev'], 'cli-gallery --site-dir presentation dev:local');
-	assert.equal(customPurePackageJson.scripts['gallery:build'], 'cli-gallery --site-dir presentation build');
+	assert.equal(customPurePackageJson.scripts['gallery:dev'], 'norna --site-dir presentation dev:local');
+	assert.equal(customPurePackageJson.scripts['gallery:build'], 'norna --site-dir presentation build');
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'content.md'));
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'config.mjs'));
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'theme.md'));
@@ -77,14 +77,14 @@ try {
 		cwd: mixedProjectRoot,
 	});
 	assert.equal(embeddedInitResult.status, 0, embeddedInitResult.stderr || embeddedInitResult.stdout);
-	assert.match(embeddedInitResult.stdout, /Added cli-gallery site directory at /);
+	assert.match(embeddedInitResult.stdout, /Added norna site directory at /);
 	const mixedPackageJson = JSON.parse(await readFile(path.join(mixedProjectRoot, 'package.json'), 'utf8'));
-	assert.equal(mixedPackageJson.dependencies['@janga/cli-gallery'], packageJson.version);
+	assert.equal(mixedPackageJson.dependencies['@janga/norna'], packageJson.version);
 	assert.equal(mixedPackageJson.scripts.build, 'node build-app.mjs');
 	assert.equal(mixedPackageJson.scripts.dev, undefined);
-	assert.equal(mixedPackageJson.scripts['gallery:dev'], 'cli-gallery --site-dir presentation dev:local');
-	assert.equal(mixedPackageJson.scripts['gallery:engine:update'], 'cli-gallery --site-dir presentation engine:update');
-	assert.equal(mixedPackageJson.scripts['gallery:engine:version'], 'cli-gallery --site-dir presentation engine:version');
+	assert.equal(mixedPackageJson.scripts['gallery:dev'], 'norna --site-dir presentation dev:local');
+	assert.equal(mixedPackageJson.scripts['gallery:engine:update'], 'norna --site-dir presentation engine:update');
+	assert.equal(mixedPackageJson.scripts['gallery:engine:version'], 'norna --site-dir presentation engine:version');
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'content.md'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.mjs'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'theme.md'));

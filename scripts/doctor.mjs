@@ -17,7 +17,7 @@ import {
 } from './lib/site-paths.mjs';
 
 const lines = [
-	'cli-gallery doctor',
+	'norna doctor',
 	`Invocation root: ${invocationRoot}`,
 	`Site project root: ${siteProjectRoot}`,
 	`Site directory: ${siteDirectory}`,

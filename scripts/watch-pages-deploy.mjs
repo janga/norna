@@ -46,7 +46,7 @@ const runViewFields = [
 ].join(',');
 
 const usage = `
-Usage: cli-gallery deploy:watch [options]
+Usage: norna deploy:watch [options]
 
 Options:
   --repo <owner/name>     GitHub repository. Default: ${defaultRepo}

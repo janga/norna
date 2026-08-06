@@ -9,7 +9,7 @@ const execFileAsync = promisify(execFile);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const npmRegistry = 'https://registry.npmjs.org/';
-const npmCachePath = '/private/tmp/cli-gallery-npm-cache';
+const npmCachePath = '/private/tmp/norna-npm-cache';
 const releaseTypes = new Set(['patch', 'minor', 'major']);
 const releaseArguments = process.argv.slice(2);
 const [releaseType] = releaseArguments;
@@ -73,5 +73,5 @@ if (showHelp || !releaseType) {
 	await run(npmBin, ['run', 'release:publish']);
 	await run('git', ['push', '--follow-tags']);
 
-	console.log(`Released @janga/cli-gallery@${publishedVersion}.`);
+	console.log(`Released @janga/norna@${publishedVersion}.`);
 }

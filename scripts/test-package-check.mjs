@@ -174,7 +174,7 @@ try {
 	const packageJsonPath = path.join(siteProjectRoot, 'package.json');
 	const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'));
 	packageJson.name = 'cli-gallery-package-check-site';
-	packageJson.dependencies['@janga/cli-gallery'] = tarballPath;
+	packageJson.dependencies['@janga/norna'] = tarballPath;
 	await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
 	await mkdir(path.join(siteProjectRoot, 'site', 'routes', 'about'), { recursive: true });
 	await writeFile(path.join(siteProjectRoot, 'site', 'routes', 'about', 'route-content.md'), `---
@@ -189,12 +189,12 @@ sections:
 
 ## About {#about}
 
-This route verifies that packaged cli-gallery sites can build route pages.
+This route verifies that packaged norna sites can build route pages.
 `);
 
 	await runInherit(npmBin, ['install', '--no-audit', '--no-fund', '--prefer-offline', '--fetch-retries=0'], { cwd: siteProjectRoot, env: npmEnv });
-	const cliGalleryBinPath = path.join(siteProjectRoot, 'node_modules', '.bin', process.platform === 'win32' ? 'cli-gallery.cmd' : 'cli-gallery');
-	await runInherit(cliGalleryBinPath, ['init', initializedSiteRoot], { cwd: tempRoot, env: npmEnv });
+	const nornaBinPath = path.join(siteProjectRoot, 'node_modules', '.bin', process.platform === 'win32' ? 'norna.cmd' : 'norna');
+	await runInherit(nornaBinPath, ['init', initializedSiteRoot], { cwd: tempRoot, env: npmEnv });
 	await Promise.all([
 		assertFileExists(path.join(initializedSiteRoot, 'package.json')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'config.mjs')),
@@ -202,11 +202,11 @@ This route verifies that packaged cli-gallery sites can build route pages.
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
 	]);
-	await runInherit(npxBin, ['cli-gallery', 'engine:version'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
-	await runInherit(npxBin, ['cli-gallery', 'doctor'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
-	await runInherit(npxBin, ['cli-gallery', 'config:check'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
-	await runInherit(npxBin, ['cli-gallery', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
-	await runInherit(npxBin, ['cli-gallery', 'build'], { cwd: siteProjectRoot, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
+	await runInherit(npxBin, ['norna', 'doctor'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
+	await runInherit(npxBin, ['norna', 'config:check'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
+	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
 	await assertFileExists(path.join(siteProjectRoot, 'site', '.cli-gallery', 'public', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'about', 'index.html'));
@@ -284,7 +284,7 @@ This route verifies that packaged cli-gallery sites can build route pages.
 		'--section-text-color: #f7f4ee',
 	);
 	await writeFile(path.join(siteProjectRoot, 'site', 'public', 'favicon.ico'), 'fake icon');
-	await runInherit(npxBin, ['cli-gallery', 'build'], { cwd: siteProjectRoot, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'favicon.ico'));
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -301,7 +301,7 @@ This route verifies that packaged cli-gallery sites can build route pages.
 	await writeFile(siteThemePath, siteTheme.replace('\n    preset: quiet-gallery', '\n    preset: noisy-gallery'));
 	await runExpectFailure(
 		npxBin,
-		['cli-gallery', 'build'],
+		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'presentation.typography.preset',
 	);
@@ -311,7 +311,7 @@ This route verifies that packaged cli-gallery sites can build route pages.
 	);
 	await runExpectFailure(
 		npxBin,
-		['cli-gallery', 'build'],
+		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'presentation.backgroundColor',
 	);
@@ -321,7 +321,7 @@ This route verifies that packaged cli-gallery sites can build route pages.
 	);
 	await runExpectFailure(
 		npxBin,
-		['cli-gallery', 'build'],
+		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'presentation.textColor',
 	);
@@ -331,7 +331,7 @@ This route verifies that packaged cli-gallery sites can build route pages.
 	);
 	await runExpectFailure(
 		npxBin,
-		['cli-gallery', 'build'],
+		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'presentation.inlineStyles.highlight.color',
 	);
@@ -339,13 +339,13 @@ This route verifies that packaged cli-gallery sites can build route pages.
 	await writeFile(
 		siteContentPath,
 		siteContent.replace(
-			'description: Minimal cli-gallery starter site.',
-			'description: Minimal cli-gallery starter site.\npresentation:\n  typography:\n    overrides:\n      body:\n        lineHeight: tight',
+			'description: Minimal norna starter site.',
+			'description: Minimal norna starter site.\npresentation:\n  typography:\n    overrides:\n      body:\n        lineHeight: tight',
 		),
 	);
 	await runExpectFailure(
 		npxBin,
-		['cli-gallery', 'build'],
+		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'presentation.typography.overrides.body.lineHeight',
 	);
@@ -358,7 +358,7 @@ This route verifies that packaged cli-gallery sites can build route pages.
 	);
 	await runExpectFailure(
 		npxBin,
-		['cli-gallery', 'build'],
+		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'sections.0.presentation.typography.overrides.caption.spacing',
 	);
@@ -368,7 +368,7 @@ This route verifies that packaged cli-gallery sites can build route pages.
 	);
 	await runExpectFailure(
 		npxBin,
-		['cli-gallery', 'build'],
+		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'sections.0.presentation.typography.preset',
 	);
@@ -383,7 +383,7 @@ This route verifies that packaged cli-gallery sites can build route pages.
 	);
 	await runExpectFailure(
 		npxBin,
-		['cli-gallery', 'config:check'],
+		['norna', 'config:check'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'typography.fontFamily',
 	);
