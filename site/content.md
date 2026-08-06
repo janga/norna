@@ -1,30 +1,63 @@
 ---
-title: Norna Documentation
-description: A local documentation site for the norna engine.
+title: Norna
+description: An introduction to Norna, a file-based static website toolchain.
 navigation:
-  label: Documentation
-  order: 10
+  label: Home
+  order: 0
 sections:
-  - id: overview
-  - id: examples
-  - id: reference
+  - id: intro
+    presentation:
+      typography:
+        preset: statement
+        overrides:
+          heading:
+            size: xlarge
+          body:
+            size: large
+  - id: workflow
+  - id: next
 ---
 
-## Overview {#overview}
+## Norna builds websites from files {#intro}
 
-This local site is reserved for the future norna documentation site. The
-canonical technical reference still lives in Markdown under `docs/`.
+Norna is an independent open source CLI for building small file-based static
+websites.
 
-The documentation site should be used for introductory, visual, and
-scenario-based explanations that benefit from being presented as a built site.
+You keep content, presentation, configuration, images, and public files in a
+plain project directory. Norna validates those files, prepares responsive image
+assets, and builds a static website.
 
-## Examples {#examples}
+![Diagram showing site files flowing through the Norna CLI into a static website.](/workflow.svg)
 
-Runnable example sites belong under `examples/`. The dog gallery demo has been
-moved to `examples/dog-gallery/site`.
+## The workflow {#workflow}
 
-## Reference {#reference}
+```text
+site files -> norna -> static website
+```
 
-Keep command, configuration, content-model, publishing, and engine-development
-reference material in `docs/` so it remains readable directly on GitHub and by
-coding agents.
+The source model is intentionally simple:
+
+- `config.mjs` holds technical settings such as URL, layout, language labels,
+  GitHub Pages workflow details, and deployment watch settings.
+- `theme.md` holds site-wide visual defaults such as colors, typography preset,
+  frame colors, and inline text styles.
+- `content.md` holds the homepage title, description, section order, text,
+  galleries, alt text, and captions.
+- `routes/` can hold additional pages.
+- `images/` holds source images next to the sections that use them.
+- `public/` holds static files such as `robots.txt`, `CNAME`, and favicons.
+
+## Where to go next {#next}
+
+Use the guided route if you want to try Norna now:
+
+[Start with Norna](/getting-started/)
+
+Use the concepts route if you want to understand how the parts fit together:
+
+[Understand the model](/concepts/)
+
+Use the reference route when you need exact command, configuration, content, or
+publishing details:
+
+[Open the reference map](/reference/)

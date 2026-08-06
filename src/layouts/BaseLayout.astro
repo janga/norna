@@ -1,6 +1,7 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { getIconLinks } from '../lib/sitePublicAssets';
+import { withBasePath } from '../lib/basePath';
 import '../styles/global.css';
 
 type FrameColors = {
@@ -23,7 +24,7 @@ const {
 } = Astro.props;
 
 const documentTitle = title;
-const canonicalUrl = new URL(pathname, projectConfig.site.url).href;
+const canonicalUrl = new URL(withBasePath(projectConfig.site.basePath, pathname), projectConfig.site.url).href;
 const iconLinks = getIconLinks();
 const scrollBehavior = projectConfig.navigation.smoothScroll.enabled ? 'smooth' : 'auto';
 const formatPercent = (value: number) => `${value}%`;

@@ -14,6 +14,18 @@ overrides in `site/content.md`, technical settings such as URL, layout, font,
 and locale labels in `site/config.mjs`, source images under
 `site/images/<section-id>/`, and static public files under `site/public/`.
 
+Use `site.basePath: '/'` for a custom domain or root-hosted site. For a GitHub
+Pages project site without a custom domain, set both values:
+
+```js
+site: {
+	url: 'https://owner.github.io/repository-name/',
+	basePath: '/repository-name/',
+}
+```
+
+In GitHub repository settings, configure Pages to build from GitHub Actions.
+
 The page width is configured with `layout.pageWidth`; gallery width is
 configured with `gallery.width`. Side margins are configured with
 `layout.gutter`; image height is limited with

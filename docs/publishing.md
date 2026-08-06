@@ -25,6 +25,29 @@ workflow:
 Site-specific static files such as `site/public/CNAME`, `robots.txt`, and
 `sitemap.xml` belong in the site repository.
 
+In the GitHub repository settings, set Pages to build from GitHub Actions. For
+a project site without a custom domain, configure the site URL and base path in
+`site/config.mjs`:
+
+```js
+site: {
+	url: 'https://owner.github.io/repository-name/',
+	basePath: '/repository-name/',
+}
+```
+
+For a custom domain, keep `basePath` as `/`:
+
+```js
+site: {
+	url: 'https://example.com/',
+	basePath: '/',
+}
+```
+
+Norna uses `site.basePath` for generated internal page links, favicons,
+generated images, and root-relative links or images written in Markdown.
+
 ## Deploy An Already Committed Branch
 
 Use:

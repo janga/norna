@@ -1,6 +1,7 @@
 export default {
 	site: {
 		url: 'https://example.com/',
+		basePath: '/',
 	},
 	layout: {
 		pageWidth: '1180px',

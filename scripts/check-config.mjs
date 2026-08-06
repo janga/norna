@@ -20,6 +20,7 @@ try {
 
 	console.log('Config check passed.');
 	console.log(`Site URL: ${projectConfig.site.url}`);
+	console.log(`Base path: ${projectConfig.site.basePath}`);
 	console.log(`Page width: ${projectConfig.layout.pageWidth}`);
 	console.log(`Gutter: desktop ${projectConfig.layout.gutter.desktop}, mobile ${projectConfig.layout.gutter.mobile}`);
 	console.log(`Gallery width: ${projectConfig.gallery.width}`);

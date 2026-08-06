@@ -22,7 +22,8 @@ A `norna` site is file-driven:
 
 1. A site repository depends on this package.
 2. The site keeps technical settings, including page width, gallery width, and
-   the global font family, in `site/config.mjs`.
+   the global font family, public URL, and optional URL base path in
+   `site/config.mjs`.
 3. The site can keep site-wide visual theme defaults in `site/theme.md`.
 4. The site keeps homepage content, section order, gallery rows, alt text, and
    captions in `site/content.md`.
@@ -73,6 +74,8 @@ Actions use the same engine version.
 - Understand required site files: [Site Structure](docs/site-structure.md)
 - Edit sections and galleries: [Content](docs/content.md)
 - Configure a site: [Configuration](docs/configuration.md)
+- Publish under a GitHub Pages project path:
+  [`site.basePath`](docs/configuration.md#sitebasepath)
 - Configure site-wide theme: [Theme](docs/theme.md)
 - Add route pages: [Routes](docs/routes.md)
 - Set page width: [`layout.pageWidth`](docs/configuration.md#layoutpagewidth)
@@ -104,6 +107,9 @@ deployment.
 `norna` is licensed under [GNU GPL v3](LICENSE).
 
 ## Documentation
+
+The Norna-built introduction site lives in [`site/`](site/) and is configured
+for GitHub Pages at <https://janga.github.io/norna/>.
 
 Start with [docs/README.md](docs/README.md) for the documentation map and
 recommended reading order.

@@ -176,6 +176,27 @@ const readUrl = (object, key, path) => {
 	}
 };
 
+const readBasePath = (object, key, path) => {
+	const value = object[key] ?? '/';
+
+	if (typeof value !== 'string' || value.trim() === '') {
+		throw new Error(`${path}.${key} must be a non-empty URL path in ${siteConfigLabel}.`);
+	}
+
+	const normalizedValue = value.trim();
+
+	if (
+		!normalizedValue.startsWith('/')
+		|| !normalizedValue.endsWith('/')
+		|| normalizedValue.includes('//')
+		|| /[\s?#]/.test(normalizedValue)
+	) {
+		throw new Error(`${path}.${key} must start and end with "/" and must not contain whitespace, "?", "#", or "//" in ${siteConfigLabel}.`);
+	}
+
+	return normalizedValue;
+};
+
 const readSmoothScroll = (navigation) => {
 	const rawSmoothScroll = assertObject(navigation.smoothScroll ?? {}, 'navigation.smoothScroll');
 	const minimumDurationMs = readPositiveInteger(rawSmoothScroll, 'minimumDurationMs', 'navigation.smoothScroll', 2_000);
@@ -274,6 +295,7 @@ const defaultFontFamily = "Arial, 'Helvetica Neue', Helvetica, sans-serif";
 
 export const projectConfig = Object.freeze({
 	site: Object.freeze({
+		basePath: readBasePath(rawSite, 'basePath', 'site'),
 		url: readUrl(rawSite, 'url', 'site'),
 	}),
 	layout: Object.freeze({

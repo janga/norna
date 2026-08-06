@@ -18,12 +18,13 @@ const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
 const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'slug', 'navigation', 'presentation', 'frame', 'sections']);
-const knownThemeTopLevelFrontmatterKeys = new Set(['presentation', 'frame']);
+const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'presentation', 'frame']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
 	'alt',
 	'backgroundColor',
 	'body',
+	'brand',
 	'caption',
 	'carousel',
 	'color',

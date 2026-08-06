@@ -75,6 +75,35 @@ npm run norna:check
 npm run build
 ```
 
+## Configure The Public URL
+
+For a custom domain or any site published at the web root, use:
+
+```js
+site: {
+	url: 'https://example.com/',
+	basePath: '/',
+}
+```
+
+For a GitHub Pages project site without a custom domain, the site is served
+under the repository name. Configure both values:
+
+```js
+site: {
+	url: 'https://owner.github.io/repository-name/',
+	basePath: '/repository-name/',
+}
+```
+
+After that, content files may still use root-style internal links such as
+`/getting-started/` and `/workflow.svg`. Norna applies `site.basePath` during
+rendering so the built links work under the GitHub Pages project path.
+
+The starter includes a GitHub Pages workflow in `.github/workflows/deploy.yml`.
+In the GitHub repository settings, configure Pages to build from GitHub
+Actions.
+
 Read [Site Structure](site-structure.md), [Content](content.md),
 [Theme](theme.md), [Typography](typography.md), [Routes](routes.md), and
 [Configuration](configuration.md) before publishing a real site.

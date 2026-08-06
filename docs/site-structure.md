@@ -67,7 +67,8 @@ Do not edit these by hand:
 
 Favicons are convention-based. Put files such as `favicon.svg`, `favicon.ico`,
 `favicon.png`, or `apple-touch-icon.png` in `site/public/`. The renderer emits
-icon links only for files that exist.
+icon links only for files that exist and prefixes them with `site.basePath`
+when the site is published below a path such as `/repository-name/`.
 
 ## Engine Repository Layout
 

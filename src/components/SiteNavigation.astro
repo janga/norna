@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import projectConfig from '../../scripts/lib/project-config.mjs';
+import { withBasePath } from '../lib/basePath';
 import type { SitePage } from '../lib/sitePages';
 
 type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
@@ -11,13 +12,14 @@ type FrameColors = {
 };
 
 interface Props {
+	brandLabel: string;
 	currentPage: SitePage;
 	pages: SitePage[];
 	sections: ResolvedSection[];
 	frameColors: FrameColors;
 }
 
-const { currentPage, pages, sections, frameColors } = Astro.props;
+const { brandLabel, currentPage, pages, sections, frameColors } = Astro.props;
 const smoothScrollConfig = projectConfig.navigation.smoothScroll;
 const navigationStyle = [
 	`--site-top-background-color: ${frameColors.backgroundColor}`,
@@ -26,8 +28,8 @@ const navigationStyle = [
 const showSiteNavigation = pages.length > 1;
 const showPageNavigation = sections.length > 1;
 const homePage = pages.find((page) => page.isHome) ?? currentPage;
-const brandLabel = homePage.title;
 const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
+const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
@@ -39,13 +41,13 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 >
 	{showSiteNavigation && (
 		<div class="site-nav-row">
-			<a class="site-brand" href={homePage.pathname}>{brandLabel}</a>
+			<a class="site-brand" href={pageHref(homePage)}>{brandLabel}</a>
 
 			<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 				<ul>
 					{pages.map((page) => (
 						<li>
-							<a href={page.pathname} aria-current={isCurrentPage(page) ? 'page' : undefined}>
+							<a href={pageHref(page)} aria-current={isCurrentPage(page) ? 'page' : undefined}>
 								{page.navigation.label}
 							</a>
 						</li>
@@ -63,7 +65,7 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 						<ul>
 							{pages.map((page) => (
 								<li>
-									<a href={page.pathname} aria-current={isCurrentPage(page) ? 'page' : undefined}>
+									<a href={pageHref(page)} aria-current={isCurrentPage(page) ? 'page' : undefined}>
 										{page.navigation.label}
 									</a>
 								</li>

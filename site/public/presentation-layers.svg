@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">Presentation layers</title>
+  <desc id="desc">Presentation settings build from engine defaults through theme, page, and section overrides.</desc>
+  <rect width="1200" height="560" rx="28" fill="#12181d"/>
+  <text x="90" y="82" fill="#f2eee6" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700">presentation layers</text>
+  <g font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">
+    <rect x="130" y="385" width="940" height="70" rx="14" fill="#26343c" stroke="#5f6f78"/>
+    <text x="170" y="429" fill="#f2eee6">engine defaults</text>
+    <rect x="210" y="305" width="780" height="70" rx="14" fill="#31424b" stroke="#71838c"/>
+    <text x="250" y="349" fill="#f2eee6">site/theme.md</text>
+    <rect x="290" y="225" width="620" height="70" rx="14" fill="#42545d" stroke="#84959d"/>
+    <text x="330" y="269" fill="#f2eee6">page frontmatter</text>
+    <rect x="370" y="145" width="460" height="70" rx="14" fill="#d8c47a"/>
+    <text x="410" y="189" fill="#141b20">section overrides</text>
+  </g>
+  <text x="90" y="505" fill="#aaa49a" font-family="Arial, Helvetica, sans-serif" font-size="22">Set broad defaults once. Override only where the page or section needs to differ.</text>
+</svg>

@@ -24,7 +24,9 @@ const allEntries = await getCollection('site');
 const sitePages = getSitePages(allEntries);
 const currentPage = getSitePage(entry);
 const navigationPages = getNavigationPages(sitePages);
+const homePage = sitePages.find((page) => page.isHome) ?? currentPage;
 const themeData = theme?.data ?? {};
+const brandLabel = themeData.navigation?.brand ?? homePage.title;
 const pagePresentation = resolvePagePresentation(themeData.presentation, entry.data.presentation);
 const frameColors = resolveFrameColors({
 	themePresentation: themeData.presentation,
@@ -50,6 +52,7 @@ if (visibleSections.length === 0) {
 	pathname={currentPage.pathname}
 >
 	<SiteNavigation
+		brandLabel={brandLabel}
 		currentPage={currentPage}
 		pages={navigationPages}
 		sections={visibleSections}

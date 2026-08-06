@@ -12,6 +12,8 @@ on top of the resolved page presentation.
 
 ```yaml
 ---
+navigation:
+  brand: Example Gallery
 presentation:
   backgroundColor: "#000000"
   textColor: "#f7f4ee"
@@ -26,6 +28,24 @@ Starter sites include a marked comment block such as
 `norna:start theme-help` / `norna:end theme-help`. The block is only
 explorable help text; YAML comments do not affect rendering. The active
 configuration is the uncommented YAML below it.
+
+## Navigation
+
+`navigation` is optional. It currently supports:
+
+- `brand`: optional site-wide brand or home-link text shown in the site
+  navigation.
+
+If `navigation.brand` is omitted, Norna uses the homepage `title` from
+`site/content.md`. Use `navigation.brand` when the homepage title is editorial
+or route-specific, but the navigation should keep a stable site name.
+
+Example:
+
+```yaml
+navigation:
+  brand: Norna
+```
 
 ## Presentation
 

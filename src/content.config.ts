@@ -108,6 +108,9 @@ const pageNavigation = z.object({
 	label: z.string().optional(),
 	order: z.number().int().optional(),
 }).strict();
+const themeNavigation = z.object({
+	brand: z.string().min(1).optional(),
+}).strict();
 
 const galleryImage = z.object({
 	image: contentImageName,
@@ -137,6 +140,7 @@ const siteSchema = z.object({
 });
 
 const themeSchema = z.object({
+	navigation: themeNavigation.optional(),
 	presentation: themePresentation.optional(),
 	frame: frame.optional(),
 }).strict();

@@ -31,19 +31,19 @@ jobs:
       - name: Install image tools
         run: sudo apt-get update && sudo apt-get install -y imagemagick
 
-      - name: Restore generated images
+      - name: Restore generated image cache
         uses: actions/cache@v4
         with:
           path: site/.norna/public/images/generated
-          key: norna-images-${{ hashFiles('site/.norna/generated-images.json') }}
+          key: norna-docs-images-${{ hashFiles('site/.norna/generated-images.json') }}
           restore-keys: |
-            norna-images-
+            norna-docs-images-
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Build documentation site
+        run: node bin/norna.mjs build
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

@@ -176,6 +176,20 @@ try {
 	packageJson.name = 'norna-package-check-site';
 	packageJson.dependencies['@janga/norna'] = tarballPath;
 	await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
+	const packageCheckConfigPath = path.join(siteProjectRoot, 'site', 'config.mjs');
+	const packageCheckConfig = await readFile(packageCheckConfigPath, 'utf8');
+	await writeFile(
+		packageCheckConfigPath,
+		packageCheckConfig
+			.replace("url: 'https://example.com/'", "url: 'https://example.com/gallery/'")
+			.replace("basePath: '/'", "basePath: '/gallery/'"),
+	);
+	const packageCheckThemePath = path.join(siteProjectRoot, 'site', 'theme.md');
+	const packageCheckTheme = await readFile(packageCheckThemePath, 'utf8');
+	await writeFile(
+		packageCheckThemePath,
+		packageCheckTheme.replace('brand: Example Gallery', 'brand: Package Check Brand'),
+	);
 	await mkdir(path.join(siteProjectRoot, 'site', 'routes', 'about'), { recursive: true });
 	await writeFile(path.join(siteProjectRoot, 'site', 'routes', 'about', 'route-content.md'), `---
 title: About the gallery
@@ -233,11 +247,15 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
-		'<link rel="canonical" href="https://example.com/about/">',
+		'<link rel="canonical" href="https://example.com/gallery/about/">',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
-		'href="/about/" aria-current="page"',
+		'href="/gallery/about/" aria-current="page"',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'<a class="site-brand" href="/gallery/">Package Check Brand</a>',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -288,7 +306,7 @@ This route verifies that packaged norna sites can build route pages.
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'favicon.ico'));
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<link rel="icon" sizes="any" href="/favicon.ico">',
+		'<link rel="icon" sizes="any" href="/gallery/favicon.ico">',
 	);
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -386,6 +404,16 @@ This route verifies that packaged norna sites can build route pages.
 		['norna', 'config:check'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'typography.fontFamily',
+	);
+	await writeFile(
+		siteConfigPath,
+		siteConfig.replace("basePath: '/gallery/'", "basePath: 'gallery'"),
+	);
+	await runExpectFailure(
+		npxBin,
+		['norna', 'config:check'],
+		{ cwd: siteProjectRoot, env: npmEnv },
+		'site.basePath',
 	);
 
 	console.log('Package check passed.');

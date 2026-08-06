@@ -1,4 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { applyBasePathToHtml } from './basePath';
 
 type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
 type ThemePresentation = CollectionEntry<'theme'>['data']['presentation'];
@@ -56,6 +58,9 @@ const applyInlineStyles = (html: string, inlineStyles: InlineStyles | undefined)
 		return `<span class="inline-style inline-style-${styleName}" style="--inline-style-color: ${style.color}">${text}</span>`;
 	});
 
+const prepareContentHtml = (html: string, inlineStyles: InlineStyles | undefined) =>
+	applyBasePathToHtml(projectConfig.site.basePath, applyInlineStyles(html, inlineStyles));
+
 export const getSectionsContent = (
 	html: string,
 	sections: SiteSection[],
@@ -88,7 +93,7 @@ export const getSectionsContent = (
 
 		contentById.set(id, {
 			title,
-			contentHtml: applyInlineStyles(content, inlineStyles),
+			contentHtml: prepareContentHtml(content, inlineStyles),
 		});
 		markdownSectionIds.push(id);
 	}

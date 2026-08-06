@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
+import projectConfig from '../../scripts/lib/project-config.mjs';
 import { generatedImagesManifestPath } from '../../scripts/lib/site-paths.mjs';
+import { withBasePath } from './basePath';
 
 type GeneratedImage = {
 	outputVersion?: number;
@@ -26,7 +28,9 @@ const fallbackDisplayImageWidth = 1440;
 
 export const getGeneratedImage = (src: string) => images[src];
 
-export const getLinkedImageSrc = (src: string) => getGeneratedImage(src)?.variants.at(-1)?.src ?? src;
+const displaySrc = (src: string) => withBasePath(projectConfig.site.basePath, src);
+
+export const getLinkedImageSrc = (src: string) => displaySrc(getGeneratedImage(src)?.variants.at(-1)?.src ?? src);
 
 const getDisplayVariants = (variants: GeneratedImage['variants']) => {
 	const sortedVariants = [...variants].sort((a, b) => a.width - b.width);
@@ -44,7 +48,7 @@ export const getImageAttributes = (src: string, sizes: string) => {
 
 	if (!image) {
 		return {
-			src,
+			src: displaySrc(src),
 			sizes,
 		};
 	}
@@ -53,8 +57,8 @@ export const getImageAttributes = (src: string, sizes: string) => {
 	const fallbackVariant = getFallbackVariant(displayVariants);
 
 	return {
-		src: fallbackVariant?.src ?? src,
-		srcset: displayVariants.map((variant) => `${variant.src} ${variant.width}w`).join(', '),
+		src: displaySrc(fallbackVariant?.src ?? src),
+		srcset: displayVariants.map((variant) => `${displaySrc(variant.src)} ${variant.width}w`).join(', '),
 		sizes,
 		style: `aspect-ratio: ${image.width} / ${image.height};`,
 		width: image.width,

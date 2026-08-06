@@ -1,18 +1,17 @@
-const siteUrl = 'http://localhost:4321/';
-
 export default {
 	site: {
-		url: siteUrl,
+		url: 'https://janga.github.io/norna/',
+		basePath: '/norna/',
 	},
 	layout: {
-		pageWidth: '1180px',
+		pageWidth: '1240px',
 		gutter: {
 			desktop: 'clamp(1.25rem, 4vw, 3rem)',
 			mobile: '1rem',
 		},
 	},
 	gallery: {
-		width: '900px',
+		width: '920px',
 		maxAvailableWidthPercent: {
 			desktop: 100,
 			mobile: 100,
@@ -42,7 +41,7 @@ export default {
 		},
 	},
 	footer: {
-		copyrightMessage: 'norna documentation site.',
+		copyrightMessage: 'norna is licensed under GNU GPL v3.',
 		buildInfo: {
 			enabled: true,
 			text: 'Built',

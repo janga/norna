@@ -7,9 +7,11 @@ import {
 	astroPublicDir,
 	engineRoot,
 } from './scripts/lib/site-paths.mjs';
+import projectConfig from './scripts/lib/project-config.mjs';
 
 // https://astro.build/config
 export default defineConfig({
+	base: projectConfig.site.basePath,
 	cacheDir: astroCacheDir,
 	outDir: astroDistDir,
 	publicDir: astroPublicDir,

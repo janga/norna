@@ -16,14 +16,45 @@ the current values for any one site.
 - Required: yes.
 - Default: none.
 - Validation: non-empty absolute URL accepted by `new URL()`.
-- Consequence: wrong values render a wrong canonical URL and make deploy output
-  point at the wrong site.
+- Consequence: wrong values render a wrong canonical URL and make deploy
+  output point at the wrong site. For GitHub Pages project sites, include the
+  repository path in the URL, for example `https://owner.github.io/repo-name/`.
 
 Example:
 
 ```js
 site: {
 	url: 'https://example.com/',
+}
+```
+
+### `site.basePath`
+
+- Purpose: URL path prefix used for generated internal page links, favicons,
+  generated image URLs, and root-relative links or images written in Markdown.
+- Type: string URL path.
+- Required: no.
+- Default: `/`.
+- Validation: must start and end with `/` and must not contain whitespace,
+  `?`, `#`, or `//`.
+- Consequence: use `/` for a root site or custom domain. Use
+  `/repository-name/` for a GitHub Pages project site without a custom domain.
+  Source Markdown can still use root-relative paths such as `/workflow.svg` or
+  `/getting-started/`; Norna prefixes them during rendering.
+
+Examples:
+
+```js
+site: {
+	url: 'https://example.com/',
+	basePath: '/',
+}
+```
+
+```js
+site: {
+	url: 'https://janga.github.io/norna/',
+	basePath: '/norna/',
 }
 ```
 

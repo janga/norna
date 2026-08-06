@@ -4,6 +4,10 @@ export default {
 	site: {
 		// Public canonical URL for this site.
 		url: siteUrl,
+
+		// URL path prefix. Use "/" for root sites and "/repository-name/" for
+		// GitHub Pages project sites without a custom domain.
+		basePath: '/',
 	},
 	layout: {
 		// Maximum width of the page content area.

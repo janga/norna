@@ -4,6 +4,8 @@
 # Active values below are ordinary YAML; this marked comment block is only help text.
 #
 # Available structure:
+# navigation:
+#   brand: site-wide brand/home text; defaults to the homepage title
 # presentation:
 #   backgroundColor: quoted hex color, e.g. "#000000"
 #   textColor: quoted hex color, e.g. "#f7f4ee"
@@ -40,6 +42,8 @@
 #     backgroundColor: quoted hex color
 #     textColor: quoted hex color
 # norna:end theme-help
+navigation:
+  brand: Example Gallery
 presentation:
   backgroundColor: "#000000"
   textColor: "#f7f4ee"
