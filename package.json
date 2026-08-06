@@ -2,7 +2,7 @@
   "name": "@janga/norna",
   "description": "A command-line publishing workflow for simple static sites.",
   "type": "module",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
