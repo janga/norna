@@ -35,8 +35,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Keep editable content, section definitions, image references, gallery alt
   text, and captions in the selected site `content.md`; the default path is
   `site/content.md`. Keep site-wide visual theme defaults and inline styles in
-  the selected site `theme.md`; the default path is `site/theme.md`. Use
-  `fixtures/basic/site` for standalone engine checks.
+  the selected site `theme.md`; the default path is `site/theme.md`.
+- Use `examples/dog-gallery/site` for visual demo and navigation checks. Use
+  `fixtures/basic/site` for standalone engine regression checks.
 - Keep site-specific static files in the selected site `public/`; the default
   path is `site/public/`. The selected site's `.norna/public/` directory
   is copied build preparation output plus generated image output.

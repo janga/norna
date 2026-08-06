@@ -36,12 +36,13 @@ defaults.
 Version these files in a site repository:
 
 - `site/config.mjs`: technical site configuration.
-- `site/theme.md`: optional site-wide visual theme, inline styles, and frame
-  defaults.
+- `site/theme.md`: optional site-wide visual theme, inline styles, typography
+  defaults, and frame colors. See [Theme](theme.md).
 - `site/content.md`: homepage page file with editable content, section
-  definitions, gallery rows, alt text, and captions.
+  definitions, gallery rows, alt text, and captions. See [Content](content.md).
 - `site/images/<section-id>/`: original source images.
 - `site/routes/<route-folder>/route-content.md`: optional route page files.
+  See [Routes](routes.md).
 - `site/routes/<route-folder>/images/<section-id>/`: original source images
   for that route page.
 - `site/public/`: site-specific static public files.
@@ -78,4 +79,6 @@ In this repository:
 - `starters/basic/` is copied by `norna init <target-dir>` to create a
   site repository.
 - `fixtures/basic/site/` is used by engine regression tests.
-- `site/` is the local dog-gallery demo used by default in this repository.
+- `examples/dog-gallery/site/` is the local visual dog-gallery demo used by
+  demo scripts and navigation diagnostics.
+- `site/` is reserved for the local documentation site.

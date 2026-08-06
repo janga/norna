@@ -80,9 +80,7 @@ const runInherit = (command, args, options = {}) => new Promise((resolve, reject
 });
 
 const ensureServer = async () => {
-	if (await isReachable()) {
-		return false;
-	}
+	await stopServer();
 
 	await runInherit(npmBin, ['run', 'dev:local'], {
 		env: {

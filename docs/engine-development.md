@@ -18,9 +18,12 @@ This document is for work on the reusable `norna` package itself.
 - `tests/`: Playwright navigation diagnostics.
 - `fixtures/basic/site/`: minimal site used for engine checks.
 - `starters/basic/`: copyable site starter.
+- `examples/dog-gallery/site/`: visual dog-gallery demo used by demo scripts
+  and navigation diagnostics.
 
-The repository-local `site/` directory is a dog-gallery demo. It is useful for
-manual engine checks, but it is not a published site.
+The repository-local `site/` directory is reserved for a local documentation
+site. It is useful for dogfooding `norna` documentation, but it is not the
+primary visual regression demo.
 
 ## Common Checks
 
@@ -96,7 +99,7 @@ site repository after the site's normal checks pass.
 
 The npm package is published under the `@janga` scope. Choose the release type
 when starting a release; the command requires a clean working tree, verifies npm
-registry authentication for the same registry/cache used by `release:publish`,
+registry authentication for the same registry/cache used by the publish step,
 runs `npm test`, requires a clean working tree after the checks, updates
 `package.json` and `package-lock.json`, creates the release commit and Git tag,
 publishes to npm, then pushes the commit and tag.

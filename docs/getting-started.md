@@ -75,7 +75,8 @@ npm run norna:check
 npm run build
 ```
 
-Read [Site Structure](site-structure.md), [Content](content.md), and
+Read [Site Structure](site-structure.md), [Content](content.md),
+[Theme](theme.md), [Typography](typography.md), [Routes](routes.md), and
 [Configuration](configuration.md) before publishing a real site.
 
 To change the site's maximum page width, set `layout.pageWidth` in
@@ -91,6 +92,7 @@ accepted format and default value.
 
 To change the site-wide typography preset, edit `site/theme.md`. To change one
 page or section, add a focused `presentation.typography` override in
-`site/content.md`. Use `npm run norna:typography:presets` to inspect the
-installed preset values and `npm run norna:typography:show` to inspect the
-resolved typography for the selected site.
+`site/content.md`. See [Typography](typography.md). Use
+`npm run norna:typography:presets` to inspect the installed preset values and
+`npm run norna:typography:show` to inspect the resolved typography for the
+selected site.

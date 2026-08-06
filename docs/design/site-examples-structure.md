@@ -1,8 +1,7 @@
-# Site Examples Structure Note
+# Site Examples Structure
 
-This note defines the intended repository vocabulary before reorganizing
-starter files, demo sites, fixtures, and documentation sites. It is a design
-note, not an implementation record.
+This document defines the repository vocabulary for starter files, example
+sites, fixtures, and documentation sites.
 
 ## Goal
 
@@ -10,8 +9,8 @@ note, not an implementation record.
 files are product documentation, which files are examples, and which files are
 test fixtures.
 
-The current repository grew from one local demo, one starter, and a set of
-tests. A future structure should keep those roles separate.
+The repository grew from one local demo, one starter, and a set of tests. The
+current structure keeps those roles separate.
 
 ## Terms
 
@@ -57,29 +56,30 @@ for human reading or visual appeal.
 
 ## Intended Direction
 
-A future structure should collect runnable site examples in one place, for
-example:
+Runnable site examples are collected under `examples/`:
 
 ```text
-sites/
-  starter-basic/
+examples/
   dog-gallery/
   routes-demo/
   typography-demo/
-  docs-site/
 ```
 
-The exact names can change, but the roles should remain clear:
+Only `dog-gallery/` exists today. Additional examples should be added when
+they demonstrate a distinct feature or workflow.
 
-- `starter-basic/`: copied by `norna init`.
-- `dog-gallery/`: local visual demo and manual inspection site.
+- `dog-gallery/`: current local visual demo, manual inspection site, and
+  navigation diagnostic target.
 - `routes-demo/`: focused route/navigation example if dog-gallery becomes too
   broad.
 - `typography-demo/`: focused typography preset and override example if needed.
-- `docs-site/`: visual documentation built with `norna`.
 
+The repository-local `site/` directory is reserved for the documentation site.
 `docs/` should remain for reference documentation. It should link to the
 documentation site when visual explanation is more useful than reference text.
+
+`starters/basic/` stays separate from examples because it is copied by
+`norna init`. It should stay small and conservative.
 
 Fixtures may either stay under `fixtures/` or move under a clearly named test
 area later. They should not be confused with examples.
@@ -94,11 +94,6 @@ area later. They should not be confused with examples.
 
 ## Open Decisions
 
-- Exact top-level directory name: `sites/`, `examples/`, or another name.
-- Whether `starter-basic/` belongs beside examples or in a separate template
-  area.
-- Whether the current dog-gallery remains the primary manual test site or
-  becomes one example among several.
 - Whether the documentation site should be published anywhere, or exist only as
   a local/example build.
 - How demo selection should work in npm scripts, for example

@@ -1,6 +1,6 @@
 ---
 title: Dog care
-description: A small route for testing multi-page cli-gallery navigation.
+description: A small route for testing multi-page norna navigation.
 navigation:
   label: Dog care
   order: 20

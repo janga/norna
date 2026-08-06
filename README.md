@@ -73,14 +73,15 @@ Actions use the same engine version.
 - Understand required site files: [Site Structure](docs/site-structure.md)
 - Edit sections and galleries: [Content](docs/content.md)
 - Configure a site: [Configuration](docs/configuration.md)
-- Configure site-wide theme: [Content](docs/content.md#site-theme)
+- Configure site-wide theme: [Theme](docs/theme.md)
+- Add route pages: [Routes](docs/routes.md)
 - Set page width: [`layout.pageWidth`](docs/configuration.md#layoutpagewidth)
 - Set side gutters: [`layout.gutter`](docs/configuration.md#layoutgutter)
 - Set gallery width: [`gallery.width`](docs/configuration.md#gallerywidth)
 - Keep images within viewport height:
   [`gallery.maxAvailableHeightPercent`](docs/configuration.md#gallerymaxavailableheightpercent)
 - Set the site font: [`typography.fontFamily`](docs/configuration.md#typographyfontfamily)
-- Choose typography presets and overrides: [Content](docs/content.md#typography-presets)
+- Choose typography presets and overrides: [Typography](docs/typography.md)
 - Look up CLI and npm scripts: [Commands](docs/commands.md)
 - Understand generated images: [Images And Metadata](docs/images-and-metadata.md)
 - Run local preview: [Local Development](docs/local-development.md)
@@ -97,6 +98,10 @@ Actions use the same engine version.
 
 GitHub Pages workflows created from the starter install the image tools during
 deployment.
+
+## License
+
+`norna` is licensed under [GNU GPL v3](LICENSE).
 
 ## Documentation
 

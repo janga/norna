@@ -49,6 +49,9 @@ Generic documentation lives in the `norna` repository:
 - `docs/getting-started.md`
 - `docs/site-structure.md`
 - `docs/content.md`
+- `docs/theme.md`
+- `docs/typography.md`
+- `docs/routes.md`
 - `docs/configuration.md`
 - `docs/commands.md`
 - `docs/images-and-metadata.md`

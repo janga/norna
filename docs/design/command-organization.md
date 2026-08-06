@@ -86,11 +86,14 @@ Examples:
 npm run release:patch
 npm run release:minor
 npm run release:major
-npm run release:publish
 ```
 
-These commands change or publish the reusable `@janga/norna` package.
+These commands change and publish the reusable `@janga/norna` package.
 They must not be part of ordinary site repositories.
+
+`npm run release:publish` is a low-level script used by the release command
+after the version has already been bumped. It is not the normal release entry
+point.
 
 ### Direct CLI Commands
 
@@ -157,7 +160,6 @@ In the engine repository, version changes belong to `release:*`:
 
 ```sh
 npm run release:minor
-npm run release:publish
 ```
 
 ### Initialize A Gallery Project Directory
@@ -360,7 +362,9 @@ gallery, they should call `norna:*` scripts internally.
 Engine publishing uses `release:*`, not `norna:*`:
 
 ```sh
-npm run release:publish
+npm run release:patch
+npm run release:minor
+npm run release:major
 ```
 
 ### Monitor Publishing
