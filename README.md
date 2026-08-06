@@ -1,6 +1,6 @@
-# cli-gallery
+# norna
 
-`cli-gallery` is a reusable command-line toolchain for small static gallery
+`norna` is a reusable command-line toolchain for small static gallery
 sites. It provides the CLI, Astro renderer, validation scripts, image pipeline,
 starter project, fixtures, and deploy helpers used by site repositories such as
 `www.walde.se`.
@@ -8,7 +8,7 @@ starter project, fixtures, and deploy helpers used by site repositories such as
 Use this repository when you are:
 
 - creating a new site repository from the starter,
-- maintaining the reusable `@janga/cli-gallery` engine,
+- maintaining the reusable `@janga/norna` engine,
 - looking up the generic CLI, content, configuration, image, build, or deploy
   behavior.
 
@@ -18,7 +18,7 @@ belong in each site repository. For example, Karin Walde's site lives in
 
 ## Mental Model
 
-A `cli-gallery` site is file-driven:
+A `norna` site is file-driven:
 
 1. A site repository depends on this package.
 2. The site keeps technical settings, including page width, gallery width, and
@@ -31,7 +31,7 @@ A `cli-gallery` site is file-driven:
 6. Source images live under `site/images/<section-id>/` for the homepage, or
    under `site/routes/<route-folder>/images/<section-id>/` for a route.
 7. Static public files live under `site/public/`.
-8. `cli-gallery` validates the files, generates WebP variants, builds static
+8. `norna` validates the files, generates WebP variants, builds static
    Astro pages, and can help publish the committed branch through GitHub Pages.
 
 The default site directory is `site/`. Commands can also use another directory
@@ -52,7 +52,7 @@ For a new site repository:
 
 ```sh
 cd ../
-npx @janga/cli-gallery@latest init my-gallery
+npx @janga/norna@latest init my-gallery
 cd my-gallery
 npm install
 npm run norna:dev
@@ -63,7 +63,7 @@ until the starter has created its `package.json`; running `npm install` in an
 empty directory can make npm use a parent project instead. Keep real site
 repositories next to this engine repository, not inside it.
 
-The starter pins `@janga/cli-gallery` to an exact npm version. Commit the
+The starter pins `@janga/norna` to an exact npm version. Commit the
 generated `package-lock.json` in the site repository so local builds and GitHub
 Actions use the same engine version.
 

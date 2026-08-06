@@ -1,10 +1,10 @@
 # Engine Development
 
-This document is for work on the reusable `cli-gallery` package itself.
+This document is for work on the reusable `norna` package itself.
 
 ## Main Areas
 
-- `bin/cli-gallery.mjs`: public CLI dispatcher.
+- `bin/norna.mjs`: public CLI dispatcher.
 - `scripts/lib/site-paths.mjs`: engine/site path resolution.
 - `scripts/lib/project-config.mjs`: `site/config.mjs` validation and defaults.
 - `scripts/sync-content-sections.mjs`: content validation and sync behavior.
@@ -54,7 +54,7 @@ npx playwright install chromium
 
 `npm run package:check` packs this repository, extracts the package, copies the
 packaged starter into a temporary site project, installs dependencies, runs
-`cli-gallery doctor` from a site subdirectory, runs config/content checks,
+`norna doctor` from a site subdirectory, runs config/content checks,
 builds the installed site, and verifies selected rendered output and validation
 failures.
 
@@ -77,10 +77,10 @@ case that previously caused GitHub Actions `npm ci` failures.
 
 ## Test The Package In A Site Repository
 
-> **Warning:** `npm link` is not supported for `cli-gallery`. Astro resolves
+> **Warning:** `npm link` is not supported for `norna`. Astro resolves
 > renderer modules and runtime dependencies differently when the package is a
 > symlink, so a linked site can fail to start even though the published package
-> works. Do not use `npm link @janga/cli-gallery` to test a site.
+> works. Do not use `npm link @janga/norna` to test a site.
 
 Use `npm run package:check` to test the package before release. To test a
 specific published engine version in a real site, update it with:

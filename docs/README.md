@@ -1,7 +1,7 @@
-# cli-gallery Documentation
+# norna Documentation
 
 This directory contains the reusable product and engine documentation for
-`cli-gallery`. The root README is the entry point; these files hold the details.
+`norna`. The root README is the entry point; these files hold the details.
 
 ## Recommended Reading
 
@@ -43,6 +43,6 @@ For a quick reference:
   fixtures before any repository reorganization.
 
 Site repositories should document only their site-specific choices and link here
-for generic `cli-gallery` behavior.
+for generic `norna` behavior.
 
 Planning and future work are tracked in [../BACKLOG.md](../BACKLOG.md).

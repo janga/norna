@@ -1,7 +1,7 @@
 # Content
 
 `site/content.md` is the editable page file for the homepage of a
-`cli-gallery` site. Optional route pages use
+`norna` site. Optional route pages use
 `site/routes/<route-folder>/route-content.md` with the same page frontmatter and
 Markdown section model.
 
@@ -232,14 +232,14 @@ Use this command to inspect the exact preset values shipped with the installed
 engine:
 
 ```sh
-cli-gallery typography:presets
+norna typography:presets
 ```
 
 Use this command to inspect the effective values for the selected site after
 presets and overrides have been applied:
 
 ```sh
-cli-gallery typography:show
+norna typography:show
 ```
 
 The typographic roles are:

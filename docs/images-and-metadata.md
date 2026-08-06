@@ -73,7 +73,7 @@ credits, copyright notices, alt text, and captions in site-owned files such as
 `site/content.md`, `COPYRIGHT.md`, or other site documentation.
 
 If a site wants embedded metadata in original source files, that process is
-outside the current `cli-gallery` command surface.
+outside the current `norna` command surface.
 
 ## GitHub Actions Cache
 

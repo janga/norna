@@ -1,6 +1,6 @@
 # Site Structure
 
-A `cli-gallery` site repository owns the content and configuration for one
+A `norna` site repository owns the content and configuration for one
 published site. The engine repository owns the reusable CLI and renderer.
 
 ## Default Layout
@@ -72,10 +72,10 @@ icon links only for files that exist.
 
 In this repository:
 
-- `bin/cli-gallery.mjs` dispatches public CLI commands.
+- `bin/norna.mjs` dispatches public CLI commands.
 - `scripts/` contains validation, image, local preview, deploy, and test tools.
 - `src/` contains the Astro renderer, components, styles, and content schema.
-- `starters/basic/` is copied by `cli-gallery init <target-dir>` to create a
+- `starters/basic/` is copied by `norna init <target-dir>` to create a
   site repository.
 - `fixtures/basic/site/` is used by engine regression tests.
 - `site/` is the local dog-gallery demo used by default in this repository.

@@ -326,7 +326,7 @@ footer is not rendered.
 
 ### `github.branch`
 
-- Purpose: deploy branch required by `cli-gallery deploy` and monitored by
+- Purpose: deploy branch required by `norna deploy` and monitored by
   `deploy:watch`.
 - Type: string.
 - Required: yes.
@@ -346,7 +346,7 @@ footer is not rendered.
 
 ### `deploy.watch`
 
-- Purpose: defaults for `cli-gallery deploy:watch`.
+- Purpose: defaults for `norna deploy:watch`.
 - Type: object.
 - Required: no; omitted fields use defaults.
 
@@ -367,7 +367,7 @@ Use one of:
 
 ```sh
 NORNA_SITE_DIR=my-site npm run norna:build
-cli-gallery --site-dir my-site build
+norna --site-dir my-site build
 ```
 
 If `NORNA_SITE_DIR` is set to an empty value, commands fail. Relative site

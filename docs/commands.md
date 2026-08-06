@@ -1,51 +1,51 @@
 # Commands
 
-The `cli-gallery` binary is the stable command surface. The starter's npm
+The `norna` binary is the stable command surface. The starter's npm
 scripts are thin aliases around these commands.
 
 ## CLI Commands
 
 ```sh
-cli-gallery dev:local
-cli-gallery dev:lan
-cli-gallery dev:restart
-cli-gallery dev:status
-cli-gallery dev:logs
-cli-gallery dev:stop
-cli-gallery config:check
-cli-gallery content:check
-cli-gallery content:sync
-cli-gallery typography:presets
-cli-gallery typography:show
-cli-gallery site:public
-cli-gallery images
-cli-gallery engine:update [version|latest]
-cli-gallery engine:version [--latest]
-cli-gallery init <target-dir> [--type pure|embedded] [--site-dir <path>]
-cli-gallery build
-cli-gallery build:local
-cli-gallery deploy
-cli-gallery deploy:commit
-cli-gallery deploy:watch
-cli-gallery preview
-cli-gallery astro
-cli-gallery doctor
+norna dev:local
+norna dev:lan
+norna dev:restart
+norna dev:status
+norna dev:logs
+norna dev:stop
+norna config:check
+norna content:check
+norna content:sync
+norna typography:presets
+norna typography:show
+norna site:public
+norna images
+norna engine:update [version|latest]
+norna engine:version [--latest]
+norna init <target-dir> [--type pure|embedded] [--site-dir <path>]
+norna build
+norna build:local
+norna deploy
+norna deploy:commit
+norna deploy:watch
+norna preview
+norna astro
+norna doctor
 ```
 
 Global options:
 
 ```sh
-cli-gallery --site-dir <path> <command>
-cli-gallery --help
+norna --site-dir <path> <command>
+norna --help
 ```
 
-`cli-gallery dev` is accepted as an alias for `dev:local`. `help`, `-h`, and
+`norna dev` is accepted as an alias for `dev:local`. `help`, `-h`, and
 `--help` print usage.
 
 ## Starter npm Scripts
 
 The starter uses `norna:*` for norna-specific work. This avoids collisions
-when a `cli-gallery` presentation is embedded inside a larger GitHub project
+when a `norna` presentation is embedded inside a larger GitHub project
 whose own `build`, `test`, or deploy scripts mean something different.
 
 The starter defines:
@@ -82,7 +82,7 @@ npm run build
 `npm run build` aliases `npm run norna:build`. In mixed repositories, such as
 a GitHub project that embeds a gallery presentation next to an app, `build`
 should normally mean the repository's complete publishable artifact, while
-`norna:build` builds only the `cli-gallery` part.
+`norna:build` builds only the `norna` part.
 
 ## Command Summary
 
@@ -104,7 +104,7 @@ should normally mean the repository's complete publishable artifact, while
 - `images`: generates WebP variants and writes
   `site/.norna/generated-images.json`.
 - `engine:update [version|latest]`: updates the site repository's
-  `@janga/cli-gallery` dependency with `npm install --save-exact`, normalizes
+  `@janga/norna` dependency with `npm install --save-exact`, normalizes
   `package-lock.json` for the pinned GitHub Actions Linux/npm environment, and
   verifies it with `npm ci --dry-run` before running config/content/build checks.
   Use `--skip-checks` to skip only the site checks; lockfile normalization and
@@ -116,7 +116,7 @@ should normally mean the repository's complete publishable artifact, while
 - `init <target-dir> [--type pure|embedded] [--site-dir <path>]`: creates a
   pure gallery project from the packaged starter, or adds a gallery source
   directory plus `norna:*` scripts to an existing project in embedded mode.
-  Pure setup pins `@janga/cli-gallery` to the version that created it.
+  Pure setup pins `@janga/norna` to the version that created it.
 - `build`: runs config check, content check, public sync, image generation, and
   Astro build.
 - `build:local`: runs `build` and restarts `dev:local`.
@@ -126,8 +126,8 @@ should normally mean the repository's complete publishable artifact, while
   testing because it is accessible to that local network.
 - `dev:restart`, `dev:status`, `dev:logs`, `dev:stop`: manage the local dev
   server tracked under `.astro/`.
-- `preview`: runs Astro preview with the `cli-gallery` Astro config.
-- `astro`: runs Astro with the `cli-gallery` Astro config.
+- `preview`: runs Astro preview with the `norna` Astro config.
+- `astro`: runs Astro with the `norna` Astro config.
 - `deploy`: builds and publishes an already committed deploy branch.
 - `deploy:commit`: older convenience flow that builds, stages allowed site
   changes, commits, pushes, and checks Pages.

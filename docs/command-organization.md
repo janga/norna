@@ -1,6 +1,6 @@
 # Command Organization
 
-This document defines the naming principles for commands in `cli-gallery`,
+This document defines the naming principles for commands in `norna`,
 gallery site repositories, and GitHub projects that embed a gallery.
 
 The goal is that command names reveal both the action and the scope they affect.
@@ -10,14 +10,14 @@ names.
 
 ## Situations
 
-`cli-gallery` commands must be understandable in three situations:
+`norna` commands must be understandable in three situations:
 
 - Pure gallery project: the repository exists only to publish one
-  `cli-gallery` site.
+  `norna` site.
 - Mixed gallery project: the repository contains another project, such as an
-  app or library, and includes a `cli-gallery` presentation as one part of its
+  app or library, and includes a `norna` presentation as one part of its
   GitHub Pages output.
-- Engine development: the repository is `cli-gallery` itself.
+- Engine development: the repository is `norna` itself.
 
 ## Namespaces
 
@@ -25,7 +25,7 @@ Use these namespaces consistently.
 
 ### `norna:*`
 
-Use `norna:*` npm scripts in repositories that consume `cli-gallery`.
+Use `norna:*` npm scripts in repositories that consume `norna`.
 
 These scripts operate on a selected gallery source directory. In a pure gallery
 project that directory is normally `site/`. In a mixed project it may be a more
@@ -51,7 +51,7 @@ thing for the whole repository, for example `npm run build` as an alias for
 
 ### Project Commands That Call Gallery Commands
 
-`cli-gallery` does not define a consuming project's unprefixed commands. Names
+`norna` does not define a consuming project's unprefixed commands. Names
 such as `build`, `test`, and `deploy` belong to the project that consumes the
 gallery engine.
 
@@ -64,7 +64,7 @@ npm run deploy
 ```
 
 When those project commands need the gallery, they should call `norna:*`
-scripts instead of calling `cli-gallery` directly. That keeps the selected
+scripts instead of calling `norna` directly. That keeps the selected
 gallery source directory and other project-specific wrapper behavior in one
 place.
 
@@ -89,20 +89,20 @@ npm run release:major
 npm run release:publish
 ```
 
-These commands change or publish the reusable `@janga/cli-gallery` package.
+These commands change or publish the reusable `@janga/norna` package.
 They must not be part of ordinary site repositories.
 
 ### Direct CLI Commands
 
-The `cli-gallery` binary is the stable low-level command surface.
+The `norna` binary is the stable low-level command surface.
 
 Examples:
 
 ```sh
-cli-gallery content:check
-cli-gallery content:sync
-cli-gallery build
-cli-gallery deploy
+norna content:check
+norna content:sync
+norna build
+norna deploy
 ```
 
 Npm scripts in site repositories are convenience wrappers around this binary.
@@ -117,7 +117,7 @@ Creating a new pure gallery project starts outside the target project because
 the target does not have a `package.json` yet:
 
 ```sh
-npx @janga/cli-gallery@latest init my-gallery
+npx @janga/norna@latest init my-gallery
 cd my-gallery
 npm install
 ```
@@ -127,7 +127,7 @@ A mixed project already has its own repository and may have its own
 part of the existing project setup:
 
 ```sh
-npm install --save-exact @janga/cli-gallery
+npm install --save-exact @janga/norna
 ```
 
 The mixed project should then add `norna:*` scripts that point at the chosen
@@ -150,7 +150,7 @@ npm run norna:engine:update
 npm run norna:engine:update -- 0.2.0
 ```
 
-These commands update the `@janga/cli-gallery` dependency and lockfile used by
+These commands update the `@janga/norna` dependency and lockfile used by
 the repository. They do not release the engine package.
 
 In the engine repository, version changes belong to `release:*`:
@@ -166,7 +166,7 @@ Initialization is a direct CLI operation because it usually happens before a
 project has npm scripts:
 
 ```sh
-npx @janga/cli-gallery@latest init my-gallery
+npx @janga/norna@latest init my-gallery
 ```
 
 The initializer should support two setup modes that share the same `norna:*`
@@ -177,7 +177,7 @@ command vocabulary.
 Pure setup creates a new project where the gallery is the whole repository:
 
 ```sh
-npx @janga/cli-gallery@latest init my-gallery --type pure
+npx @janga/norna@latest init my-gallery --type pure
 ```
 
 This should be the default when the target is a new or empty directory.
@@ -196,7 +196,7 @@ Embedded setup adds a gallery to an existing project without taking ownership
 of that project's root commands:
 
 ```sh
-npx @janga/cli-gallery@latest init . --type embedded --site-dir presentation
+npx @janga/norna@latest init . --type embedded --site-dir presentation
 ```
 
 Embedded setup should be selected explicitly, or suggested when the target
@@ -205,7 +205,7 @@ already contains a `package.json`.
 Embedded setup should create or update only the gallery-owned parts:
 
 - the chosen gallery source directory, for example `presentation/`;
-- `@janga/cli-gallery` as a project dependency;
+- `@janga/norna` as a project dependency;
 - `norna:*` scripts that set the selected site directory;
 - no unprefixed aliases such as `build`, `test`, `dev`, or `deploy`;
 - no project publishing workflow unless the caller explicitly asks for one.
@@ -287,7 +287,7 @@ npm run norna:public
 npm run norna:images
 ```
 
-`norna:sync` is the preferred npm wrapper for `cli-gallery content:sync`.
+`norna:sync` is the preferred npm wrapper for `norna content:sync`.
 Messages emitted by the engine should mention the direct CLI command and the
 starter-style npm wrapper when suggesting a fix.
 
@@ -386,7 +386,7 @@ norna-specific deploy settings, it should call `norna:deploy:watch`.
 - Use `norna:*` for every npm script in a consuming repository whose direct
   object is the gallery, its source files, its generated images, its dev server,
   or its engine dependency.
-- `cli-gallery` does not define unprefixed project commands such as `build`,
+- `norna` does not define unprefixed project commands such as `build`,
   `test`, and `deploy` in consuming repositories.
 - If project commands need gallery behavior, they should call `norna:*`
   scripts.
@@ -395,7 +395,7 @@ norna-specific deploy settings, it should call `norna:deploy:watch`.
 - In mixed projects, unprefixed project commands must not be aliases for only
   the gallery unless the command name makes that scope explicit.
 - Use `release:*` only for publishing the reusable engine package.
-- Prefer direct `cli-gallery ...` commands in engine docs and diagnostics;
+- Prefer direct `norna ...` commands in engine docs and diagnostics;
   prefer npm scripts in site-repository docs.
 - Do not create separate namespaces for every internal concept. If a command is
   about maintaining the gallery dependency in a consuming repository, keep it

@@ -6,7 +6,7 @@ note, not an implementation record.
 
 ## Goal
 
-`cli-gallery` should make it easy to find runnable examples and understand which
+`norna` should make it easy to find runnable examples and understand which
 files are product documentation, which files are examples, and which files are
 test fixtures.
 
@@ -17,7 +17,7 @@ tests. A future structure should keep those roles separate.
 
 ### Starter
 
-A starter is a template copied by `cli-gallery init`.
+A starter is a template copied by `norna init`.
 
 It should be small, conservative, and suitable as the first commit in a real
 site repository. It should not be a showcase for every feature.
@@ -32,7 +32,7 @@ configuration choices.
 
 ### Documentation Site
 
-A documentation site is a runnable `cli-gallery` site that explains the product
+A documentation site is a runnable `norna` site that explains the product
 visually.
 
 It can use images, diagrams, screenshots, and route pages to explain concepts
@@ -71,12 +71,12 @@ sites/
 
 The exact names can change, but the roles should remain clear:
 
-- `starter-basic/`: copied by `cli-gallery init`.
+- `starter-basic/`: copied by `norna init`.
 - `dog-gallery/`: local visual demo and manual inspection site.
 - `routes-demo/`: focused route/navigation example if dog-gallery becomes too
   broad.
 - `typography-demo/`: focused typography preset and override example if needed.
-- `docs-site/`: visual documentation built with `cli-gallery`.
+- `docs-site/`: visual documentation built with `norna`.
 
 `docs/` should remain for reference documentation. It should link to the
 documentation site when visual explanation is more useful than reference text.
@@ -89,7 +89,7 @@ area later. They should not be confused with examples.
 - Do not remove the starter concept; it has a different purpose from examples.
 - Do not make the documentation site the only documentation.
 - Do not let examples become required input for production site repositories.
-- Keep `cli-gallery init` deterministic and easy to test.
+- Keep `norna init` deterministic and easy to test.
 - Keep engine tests using stable fixtures, not visually evolving demo content.
 
 ## Open Decisions

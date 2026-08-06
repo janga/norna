@@ -1,6 +1,6 @@
 # Backlog
 
-This backlog tracks planned `cli-gallery` work. It is not product
+This backlog tracks planned `norna` work. It is not product
 documentation and does not promise a release date. Move items into ordinary
 documentation only when the behavior exists or the guidance is stable.
 
@@ -28,7 +28,7 @@ approachable before wider use.
 - Add pure-project and embedded-project examples that show the expected
   directory layout and npm scripts.
 - Add troubleshooting for common workflow errors:
-  - running `npm install` before `cli-gallery init`;
+  - running `npm install` before `norna init`;
   - npm authentication or permission failures during publish;
   - YAML/frontmatter indentation problems;
   - stale local preview state;
@@ -67,7 +67,7 @@ These are current constraints, not necessarily bugs.
 - Routes currently support one route segment under `site/routes/<route-folder>/`;
   nested routes and richer navigation behavior remain out of scope.
 - Source image copyright metadata is outside the current command surface.
-- `cli-gallery` assumes a file-driven site model with `config.mjs`,
+- `norna` assumes a file-driven site model with `config.mjs`,
   `theme.md`, `content.md`, source images, and static public files.
 
 ## Future Plans

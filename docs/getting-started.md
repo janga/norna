@@ -1,7 +1,7 @@
 # Getting Started
 
 This guide creates a new site repository from the included starter. It describes
-the generic `cli-gallery` setup; site-specific content belongs in the new site
+the generic `norna` setup; site-specific content belongs in the new site
 repository.
 
 ## Requirements
@@ -23,29 +23,29 @@ new site directory:
 
 ```sh
 cd path/to/your/projects
-npx @janga/cli-gallery@latest init my-gallery
+npx @janga/norna@latest init my-gallery
 cd my-gallery
 npm install
 npm run norna:dev
 ```
 
-A freshly created empty directory is not a `cli-gallery` site yet. It becomes a
+A freshly created empty directory is not a `norna` site yet. It becomes a
 site when `init` copies the starter files, including `package.json`. If you run
 `npm install` in an empty directory, npm may walk up to a parent directory and
 install dependencies for another project instead.
 
-For normal site work, keep site repositories as siblings of the `cli-gallery`
+For normal site work, keep site repositories as siblings of the `norna`
 engine repository. For example:
 
 ```text
 Projects/
-  cli-gallery/
+  norna/
   my-gallery/
 ```
 
 The starter contains:
 
-- `package.json` with npm scripts that call `cli-gallery`
+- `package.json` with npm scripts that call `norna`
 - `.github/workflows/deploy.yml` for GitHub Pages
 - `site/config.mjs`
 - `site/theme.md`
