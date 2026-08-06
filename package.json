@@ -3,7 +3,7 @@
   "description": "A command-line publishing workflow for simple static sites.",
   "type": "module",
   "version": "0.6.0",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/janga/norna.git"
