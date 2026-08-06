@@ -1,5 +1,5 @@
 ---
-# cli-gallery:start theme-help
+# norna:start theme-help
 # Site-wide visual defaults. Remove a value to use the engine default.
 # Active values below are ordinary YAML; this marked comment block is only help text.
 #
@@ -39,7 +39,7 @@
 #   colors:
 #     backgroundColor: quoted hex color
 #     textColor: quoted hex color
-# cli-gallery:end theme-help
+# norna:end theme-help
 presentation:
   backgroundColor: "#000000"
   textColor: "#f7f4ee"

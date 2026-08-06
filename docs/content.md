@@ -105,15 +105,15 @@ frontmatter and does not need a Markdown body. If the file is missing, built-in
 engine defaults are used.
 
 Starter sites include a marked comment block such as
-`cli-gallery:start theme-help` / `cli-gallery:end theme-help`. The block is
+`norna:start theme-help` / `norna:end theme-help`. The block is
 only explorable help text; YAML comments do not affect rendering. The active
 configuration is the uncommented YAML below it.
 
 ```yaml
 ---
-# cli-gallery:start theme-help
+# norna:start theme-help
 # Site-wide visual defaults. Remove a value to use the engine default.
-# cli-gallery:end theme-help
+# norna:end theme-help
 
 presentation:
   backgroundColor: "#000000"
@@ -174,11 +174,11 @@ Hidden sections are omitted from the rendered HTML and sticky navigation. They
 remain in `content.md`, and `content:check` still validates their matching
 Markdown headings and gallery image references.
 
-The current date is evaluated at dev/build time. Set `CLI_GALLERY_TODAY` to
+The current date is evaluated at dev/build time. Set `NORNA_TODAY` to
 preview or test a specific date:
 
 ```sh
-CLI_GALLERY_TODAY=2026-08-15 npm run gallery:build
+NORNA_TODAY=2026-08-15 npm run gallery:build
 ```
 
 ## Presentation

@@ -5,7 +5,7 @@ dist/
 /public/
 
 # generated build-preparation output
-**/.cli-gallery/public/
+**/.norna/public/
 
 # generated types
 .astro/

@@ -30,7 +30,7 @@ maintainer, put it in `README.md` instead of duplicating it here.
   public URL, GitHub repo, deploy branch, Pages workflow name, footer text,
   or smooth-scroll timing in scripts or components.
 - The site source directory defaults to `site/` and can be overridden with
-  `CLI_GALLERY_SITE_DIR`; use `scripts/lib/site-paths.mjs` instead of
+  `NORNA_SITE_DIR`; use `scripts/lib/site-paths.mjs` instead of
   hardcoding site paths in scripts.
 - Keep editable content, section definitions, image references, gallery alt
   text, and captions in the selected site `content.md`; the default path is
@@ -38,7 +38,7 @@ maintainer, put it in `README.md` instead of duplicating it here.
   the selected site `theme.md`; the default path is `site/theme.md`. Use
   `fixtures/basic/site` for standalone engine checks.
 - Keep site-specific static files in the selected site `public/`; the default
-  path is `site/public/`. The selected site's `.cli-gallery/public/` directory
+  path is `site/public/`. The selected site's `.norna/public/` directory
   is copied build preparation output plus generated image output.
 - Do not add routes or split sections into separate Markdown files unless the
   user explicitly changes the single-page architecture.

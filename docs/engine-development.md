@@ -60,9 +60,9 @@ failures.
 
 It needs network access when npm dependencies are not already cached.
 The check uses a reusable npm cache at
-`node_modules/.cache/cli-gallery-package-check-npm` and runs npm with
+`node_modules/.cache/norna-package-check-npm` and runs npm with
 `--prefer-offline` so repeat runs do not redownload dependencies. Set
-`CLI_GALLERY_PACKAGE_CHECK_CACHE=/path/to/cache` to use another cache.
+`NORNA_PACKAGE_CHECK_CACHE=/path/to/cache` to use another cache.
 
 ## CI Lockfiles
 
@@ -121,7 +121,7 @@ If the npm authentication preflight fails, no version commit or tag has been
 created yet. Run the printed login command:
 
 ```sh
-npm login --registry=https://registry.npmjs.org/ --auth-type=web --cache /private/tmp/cli-gallery-npm-cache
+npm login --registry=https://registry.npmjs.org/ --auth-type=web --cache /private/tmp/norna-npm-cache
 ```
 
 Then start the release command again.

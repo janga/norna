@@ -17,7 +17,7 @@ const runCli = (args, env = {}) => {
 		encoding: 'utf8',
 		env: {
 			...process.env,
-			CLI_GALLERY_SITE_DIR: siteDir,
+			NORNA_SITE_DIR: siteDir,
 			...env,
 		},
 	});
@@ -86,7 +86,7 @@ Active section text.
 Always visible section text.
 `);
 
-	runCli(['build'], { CLI_GALLERY_TODAY: '2026-06-15' });
+	runCli(['build'], { NORNA_TODAY: '2026-06-15' });
 
 	const html = await readFile(path.join(tempRoot, 'dist', 'index.html'), 'utf8');
 	assert.match(html, /Active section text/);

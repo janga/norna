@@ -29,7 +29,7 @@
     "scripts/",
     "src/",
     "starters/",
-    "!**/.cli-gallery/public/",
+    "!**/.norna/public/",
     "tsconfig.json",
     "README.md"
   ],

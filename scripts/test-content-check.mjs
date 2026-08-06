@@ -286,7 +286,7 @@ test('content:check explains likely misindented frontmatter keys', async () => {
 	});
 });
 
-test('content:check respects CLI_GALLERY_SITE_DIR', async () => {
+test('content:check respects NORNA_SITE_DIR', async () => {
 	await withTempProject({
 		site: movableSite,
 		siteDirectory: 'custom-site',
@@ -295,7 +295,7 @@ test('content:check respects CLI_GALLERY_SITE_DIR', async () => {
 			'custom-site/images/mitt-hem/home.jpg',
 		],
 	}, async (root) => {
-		const result = runContentScript(root, ['--check'], { CLI_GALLERY_SITE_DIR: 'custom-site' });
+		const result = runContentScript(root, ['--check'], { NORNA_SITE_DIR: 'custom-site' });
 		const output = getOutput(result);
 
 		assert.equal(result.status, 0, output);

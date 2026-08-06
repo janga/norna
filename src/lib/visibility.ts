@@ -13,10 +13,10 @@ export const isDateOnly = (value: string) => {
 };
 
 export const getToday = () => {
-	const configuredToday = process.env.CLI_GALLERY_TODAY?.trim();
+	const configuredToday = process.env.NORNA_TODAY?.trim();
 	if (configuredToday) {
 		if (!isDateOnly(configuredToday)) {
-			throw new Error('CLI_GALLERY_TODAY must use YYYY-MM-DD format.');
+			throw new Error('NORNA_TODAY must use YYYY-MM-DD format.');
 		}
 
 		return configuredToday;

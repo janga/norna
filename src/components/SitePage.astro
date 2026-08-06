@@ -15,7 +15,7 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const siteDirectory = (process.env.CLI_GALLERY_SITE_DIR ?? 'site').trim();
+const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const siteContentLabel = entry.id.includes('-route-')
 	? `${siteDirectory || 'site'}/routes/${entry.id.split('-route-').at(-1)}/route-content.md`
 	: `${siteDirectory || 'site'}/content.md`;

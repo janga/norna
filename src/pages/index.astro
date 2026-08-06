@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import SitePage from '../components/SitePage.astro';
 import { isHomePageEntry } from '../lib/sitePages';
 
-const siteDirectory = (process.env.CLI_GALLERY_SITE_DIR ?? 'site').trim();
+const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const siteContentLabel = `${siteDirectory || 'site'}/content.md`;
 const entries = await getCollection('site');
 const site = entries.find(isHomePageEntry);

@@ -10,7 +10,7 @@ npm run gallery:dev
 
 The wrapper:
 
-1. syncs `site/public/` into `site/.cli-gallery/public/`,
+1. syncs `site/public/` into `site/.norna/public/`,
 2. starts Astro in background mode,
 3. waits until the site responds,
 4. opens `http://localhost:4321/` unless `WALDE_NO_OPEN=1` is set.

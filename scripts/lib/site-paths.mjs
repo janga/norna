@@ -2,8 +2,8 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const siteDirectoryEnvName = 'CLI_GALLERY_SITE_DIR';
-const invocationRootEnvName = 'CLI_GALLERY_INVOCATION_ROOT';
+const siteDirectoryEnvName = 'NORNA_SITE_DIR';
+const invocationRootEnvName = 'NORNA_INVOCATION_ROOT';
 const defaultSiteDirectory = 'site';
 
 const currentFile = fileURLToPath(import.meta.url);
@@ -105,7 +105,7 @@ export const siteContentPath = path.join(siteDir, 'content.md');
 export const siteImagesDir = path.join(siteDir, 'images');
 export const siteRoutesDir = path.join(siteDir, 'routes');
 export const sitePublicDir = path.join(siteDir, 'public');
-export const siteStateDir = path.join(siteDir, '.cli-gallery');
+export const siteStateDir = path.join(siteDir, '.norna');
 export const astroPublicDir = path.join(siteStateDir, 'public');
 export const astroDistDir = path.join(siteProjectRoot, 'dist');
 export const astroCacheDir = path.join(siteProjectRoot, '.astro');

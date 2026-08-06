@@ -366,11 +366,11 @@ The site directory is not configured in `config.mjs`.
 Use one of:
 
 ```sh
-CLI_GALLERY_SITE_DIR=my-site npm run gallery:build
+NORNA_SITE_DIR=my-site npm run gallery:build
 cli-gallery --site-dir my-site build
 ```
 
-If `CLI_GALLERY_SITE_DIR` is set to an empty value, commands fail. Relative site
+If `NORNA_SITE_DIR` is set to an empty value, commands fail. Relative site
 directories are resolved by walking upward from the invocation root until the
 selected directory contains `config.mjs` and `content.md`. Absolute site
 directories are accepted and make their parent the site project root.

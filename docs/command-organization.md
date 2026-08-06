@@ -30,7 +30,7 @@ Use `gallery:*` npm scripts in repositories that consume `cli-gallery`.
 These scripts operate on a selected gallery source directory. In a pure gallery
 project that directory is normally `site/`. In a mixed project it may be a more
 specific directory such as `presentation/`, with the script setting
-`CLI_GALLERY_SITE_DIR` or passing `cli-gallery --site-dir`.
+`NORNA_SITE_DIR` or passing `norna --site-dir`.
 
 Examples:
 

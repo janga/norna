@@ -99,17 +99,17 @@ should normally mean the repository's complete publishable artifact, while
   preset.
 - `typography:show`: prints the selected site's resolved typography after
   applying theme, page, and section presentation.
-- `site:public`: copies `site/public/` into `site/.cli-gallery/public/` and
+- `site:public`: copies `site/public/` into `site/.norna/public/` and
   removes stale copied static files.
 - `images`: generates WebP variants and writes
-  `site/.cli-gallery/generated-images.json`.
+  `site/.norna/generated-images.json`.
 - `engine:update [version|latest]`: updates the site repository's
   `@janga/cli-gallery` dependency with `npm install --save-exact`, normalizes
   `package-lock.json` for the pinned GitHub Actions Linux/npm environment, and
   verifies it with `npm ci --dry-run` before running config/content/build checks.
   Use `--skip-checks` to skip only the site checks; lockfile normalization and
   CI verification still run. Unless npm already has a cache configured, it uses
-  `node_modules/.cache/cli-gallery-npm` in the site project.
+  `node_modules/.cache/norna-npm` in the site project.
 - `engine:version [--latest]`: prints the declared site dependency, installed
   engine version, engine root, Astro dependency, and installed Astro version.
   With `--latest`, it also asks npm for the latest published engine version.

@@ -78,15 +78,15 @@ const runExpectFailure = async (command, args, options = {}, expectedText) => {
 
 const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const npxBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-const tempRoot = await mkdtemp(path.join(tmpdir(), 'cli-gallery-package-check-'));
+const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-package-check-'));
 const packDir = path.join(tempRoot, 'pack');
 const unpackDir = path.join(tempRoot, 'unpack');
 const siteProjectRoot = path.join(tempRoot, 'site-project');
 const initializedSiteRoot = path.join(tempRoot, 'initialized-site');
 const npmCachePath = path.resolve(
 	repoRoot,
-	process.env.CLI_GALLERY_PACKAGE_CHECK_CACHE
-		?? path.join('node_modules', '.cache', 'cli-gallery-package-check-npm'),
+	process.env.NORNA_PACKAGE_CHECK_CACHE
+		?? path.join('node_modules', '.cache', 'norna-package-check-npm'),
 );
 const npmEnv = {
 	...process.env,
@@ -173,7 +173,7 @@ try {
 	});
 	const packageJsonPath = path.join(siteProjectRoot, 'package.json');
 	const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'));
-	packageJson.name = 'cli-gallery-package-check-site';
+	packageJson.name = 'norna-package-check-site';
 	packageJson.dependencies['@janga/norna'] = tarballPath;
 	await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
 	await mkdir(path.join(siteProjectRoot, 'site', 'routes', 'about'), { recursive: true });
@@ -207,7 +207,7 @@ This route verifies that packaged norna sites can build route pages.
 	await runInherit(npxBin, ['norna', 'config:check'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
-	await assertFileExists(path.join(siteProjectRoot, 'site', '.cli-gallery', 'public', 'robots.txt'));
+	await assertFileExists(path.join(siteProjectRoot, 'site', '.norna', 'public', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'about', 'index.html'));
 	await assertFileMissing(path.join(siteProjectRoot, 'public', 'robots.txt'));

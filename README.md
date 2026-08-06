@@ -35,7 +35,7 @@ A `cli-gallery` site is file-driven:
    Astro pages, and can help publish the committed branch through GitHub Pages.
 
 The default site directory is `site/`. Commands can also use another directory
-with `CLI_GALLERY_SITE_DIR` or `cli-gallery --site-dir <path>`.
+with `NORNA_SITE_DIR` or `norna --site-dir <path>`.
 
 ## Quick Start
 

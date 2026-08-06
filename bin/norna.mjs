@@ -2,7 +2,7 @@
 import path from 'node:path';
 
 const args = process.argv.slice(2);
-process.env.CLI_GALLERY_INVOCATION_ROOT ??= process.cwd();
+process.env.NORNA_INVOCATION_ROOT ??= process.cwd();
 
 const usage = `
 Usage: norna <command> [options]
@@ -82,7 +82,7 @@ try {
 const { commandArgs, siteDir } = parsedArgs;
 
 if (siteDir) {
-	process.env.CLI_GALLERY_SITE_DIR = siteDir;
+	process.env.NORNA_SITE_DIR = siteDir;
 }
 
 const [command = 'help', ...rest] = commandArgs;

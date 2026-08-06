@@ -20,12 +20,12 @@ site/
 |       `-- images/
 |           `-- <section-id>/
 |-- public/
-`-- .cli-gallery/
+`-- .norna/
     |-- generated-images.json
     `-- public/
 ```
 
-Use `CLI_GALLERY_SITE_DIR` or `cli-gallery --site-dir <path>` to select another
+Use `NORNA_SITE_DIR` or `norna --site-dir <path>` to select another
 site directory. Commands started from a subdirectory walk upward until they find
 the selected site directory containing both `config.mjs` and `content.md`.
 `theme.md` is optional; omit it to use the engine's built-in presentation
@@ -45,7 +45,7 @@ Version these files in a site repository:
 - `site/routes/<route-folder>/images/<section-id>/`: original source images
   for that route page.
 - `site/public/`: site-specific static public files.
-- `site/.cli-gallery/generated-images.json`: generated image manifest used to
+- `site/.norna/generated-images.json`: generated image manifest used to
   decide whether WebP variants can be reused.
 - `.github/workflows/deploy.yml`: site-owned GitHub Pages workflow.
 - `package.json` and `package-lock.json`: scripts and pinned engine dependency.
@@ -54,15 +54,15 @@ Version these files in a site repository:
 
 Do not edit these by hand:
 
-- `site/.cli-gallery/public/`: build-preparation output copied from
+- `site/.norna/public/`: build-preparation output copied from
   `site/public/`, plus generated images.
 - `dist/`: final static build output.
 - `.astro/`: Astro cache, generated types, and dev-server state.
 - `public/`: legacy generated public output from older engine versions.
 
 `site:public` removes stale copied static files under
-`site/.cli-gallery/public/` while preserving generated image output under
-`site/.cli-gallery/public/images/`.
+`site/.norna/public/` while preserving generated image output under
+`site/.norna/public/images/`.
 
 Favicons are convention-based. Put files such as `favicon.svg`, `favicon.ico`,
 `favicon.png`, or `apple-touch-icon.png` in `site/public/`. The renderer emits

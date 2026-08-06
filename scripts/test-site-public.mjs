@@ -49,21 +49,21 @@ test('site:public copies configured public files, removes stale generated public
 		await writeFixtureFile(root, 'custom-site/public/CNAME', 'example.com\n');
 		await writeFixtureFile(root, 'custom-site/public/robots.txt', 'User-agent: *\nAllow: /\n');
 		await writeFixtureFile(root, 'custom-site/public/nested/source.txt', 'source file\n');
-		await writeFixtureFile(root, 'custom-site/.cli-gallery/public/stale.txt', 'stale generated file\n');
-		await writeFixtureFile(root, 'custom-site/.cli-gallery/public/nested/old.txt', 'stale nested file\n');
-		await writeFixtureFile(root, 'custom-site/.cli-gallery/public/images/generated/keep.webp', 'generated image\n');
+		await writeFixtureFile(root, 'custom-site/.norna/public/stale.txt', 'stale generated file\n');
+		await writeFixtureFile(root, 'custom-site/.norna/public/nested/old.txt', 'stale nested file\n');
+		await writeFixtureFile(root, 'custom-site/.norna/public/images/generated/keep.webp', 'generated image\n');
 
-		const result = runSyncScript(root, { CLI_GALLERY_SITE_DIR: 'custom-site' });
+		const result = runSyncScript(root, { NORNA_SITE_DIR: 'custom-site' });
 		const output = getOutput(result);
 
 		assert.equal(result.status, 0, output);
-		assert.match(output, /Synced custom-site\/public\/ to custom-site\/\.cli-gallery\/public\/\./);
-		assert.equal(await readFixtureFile(root, 'custom-site/.cli-gallery/public/CNAME'), 'example.com\n');
-		assert.equal(await readFixtureFile(root, 'custom-site/.cli-gallery/public/robots.txt'), 'User-agent: *\nAllow: /\n');
-		assert.equal(await readFixtureFile(root, 'custom-site/.cli-gallery/public/nested/source.txt'), 'source file\n');
-		assert.equal(await fileExists(path.join(root, 'custom-site/.cli-gallery/public/stale.txt')), false);
-		assert.equal(await fileExists(path.join(root, 'custom-site/.cli-gallery/public/nested/old.txt')), false);
-		assert.equal(await readFixtureFile(root, 'custom-site/.cli-gallery/public/images/generated/keep.webp'), 'generated image\n');
+		assert.match(output, /Synced custom-site\/public\/ to custom-site\/\.norna\/public\/\./);
+		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/CNAME'), 'example.com\n');
+		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/robots.txt'), 'User-agent: *\nAllow: /\n');
+		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/nested/source.txt'), 'source file\n');
+		assert.equal(await fileExists(path.join(root, 'custom-site/.norna/public/stale.txt')), false);
+		assert.equal(await fileExists(path.join(root, 'custom-site/.norna/public/nested/old.txt')), false);
+		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/images/generated/keep.webp'), 'generated image\n');
 	});
 });
 

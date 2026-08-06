@@ -23,7 +23,7 @@ filename only.
 `npm run gallery:images` and `npm run gallery:build` generate WebP files in:
 
 ```text
-site/.cli-gallery/public/images/generated/
+site/.norna/public/images/generated/
 ```
 
 The normal display widths are:
@@ -51,7 +51,7 @@ browser, CDN, and GitHub Actions cache entries at the old URL.
 The generated image manifest is:
 
 ```text
-site/.cli-gallery/generated-images.json
+site/.norna/generated-images.json
 ```
 
 It is versioned site state. It stores source hashes, original dimensions,
@@ -59,7 +59,7 @@ output version, and generated variant paths. The image pipeline reuses generated
 files only when the manifest entry matches the current source hash and output
 version, and all expected variant files exist.
 
-Generated files under `site/.cli-gallery/public/` are build-preparation output
+Generated files under `site/.norna/public/` are build-preparation output
 and should not be versioned.
 
 ## Metadata Behavior
@@ -80,9 +80,9 @@ outside the current `cli-gallery` command surface.
 The starter workflow caches:
 
 ```text
-site/.cli-gallery/public/images/generated
+site/.norna/public/images/generated
 ```
 
-The cache key should include `site/.cli-gallery/generated-images.json` so
+The cache key should include `site/.norna/generated-images.json` so
 unchanged generated variants can be restored during deploy. With a cache miss or
 a changed source hash, variants are rebuilt from source images.

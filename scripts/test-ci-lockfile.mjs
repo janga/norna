@@ -9,8 +9,8 @@ import { normalizeCiLockfile, verifyCiLockfile } from './lib/ci-lockfile.mjs';
 
 const execFileAsync = promisify(execFile);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const tempRoot = await mkdtemp(path.join(tmpdir(), 'cli-gallery-ci-lockfile-'));
-const npmCachePath = path.join(repoRoot, 'node_modules', '.cache', 'cli-gallery-npm');
+const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-ci-lockfile-'));
+const npmCachePath = path.join(repoRoot, 'node_modules', '.cache', 'norna-npm');
 const npmEnv = {
 	...process.env,
 	npm_config_cache: npmCachePath,
@@ -22,7 +22,7 @@ function escapeRegExp(value) {
 
 try {
 	await writeFile(path.join(tempRoot, 'package.json'), `${JSON.stringify({
-		name: 'cli-gallery-ci-lockfile-test',
+		name: 'norna-ci-lockfile-test',
 		private: true,
 		dependencies: {
 			astro: '^7.1.3',
