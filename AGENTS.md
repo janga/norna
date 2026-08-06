@@ -36,8 +36,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
   text, and captions in the selected site `content.md`; the default path is
   `site/content.md`. Keep site-wide visual theme defaults and inline styles in
   the selected site `theme.md`; the default path is `site/theme.md`.
-- Use `examples/dog-gallery/site` for visual demo and navigation checks. Use
-  `fixtures/basic/site` for standalone engine regression checks.
+- Use root `site/` for the documentation site. Use `examples/dog-gallery/site`
+  for visual demo and navigation checks. Use `fixtures/basic/site` for
+  standalone engine regression checks.
 - Keep site-specific static files in the selected site `public/`; the default
   path is `site/public/`. The selected site's `.norna/public/` directory
   is copied build preparation output plus generated image output.
@@ -47,8 +48,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
 ## Command Choices
 
 
-- Start the dev server with `npm run dev:local`, or `npm run dev:lan` only when
-  testing on another device on the same local network. Manage it with
+- Start the documentation-site dev server with `npm run dev:local`, or
+  `npm run dev:lan` only when testing on another device on the same local
+  network. Use `npm run demo:dev` for the dog-gallery demo. Manage it with
   `npm run dev:stop`, `npm run dev:restart`, `npm run dev:status`, and
   `npm run dev:logs`.
 - Run `npm run config:check` after changing `site/config.mjs` or config

@@ -23,6 +23,11 @@ Available presets:
 
 If theme typography is omitted, `quiet-gallery` is used.
 
+Presets normally keep `heading.size` and `body.size` at `medium`. They differ
+primarily through alignment, line height, paragraph spacing, caption treatment,
+and intended use. Choose larger or smaller type with focused overrides when a
+specific page or section needs it.
+
 Use this command to inspect the exact preset values shipped with the installed
 engine:
 
@@ -36,6 +41,10 @@ presets and overrides have been applied:
 ```sh
 npm run norna:typography:show
 ```
+
+The output includes the site theme, every page route, and every section. Each
+resolved value shows its `source`; values inherited by a page or section are
+also marked with `inherited: true`.
 
 ## Configuration Shape
 
@@ -63,7 +72,12 @@ align:
   mobile: center
 ```
 
-Allowed size values are `small`, `medium`, `large`, and `xlarge`.
+Allowed size values are `small`, `medium`, `large`, and `xlarge`. `medium` is
+the normal reading size. Use `small` for quieter supporting text, and use
+`large` or `xlarge` only when a page or section needs stronger emphasis.
+Headings use their own scale, but follow the same principle: `medium` is the
+normal section heading size, not a hero size.
+
 `lineHeight` is a unitless number from `1` through `3`. `spacing` and
 `paragraphSpacing` are CSS lengths such as `0`, `0.8em`, `1rem`, or `12px`.
 

@@ -97,8 +97,9 @@ should normally mean the repository's complete publishable artifact, while
   image files after confirmation.
 - `typography:presets`: prints the exact built-in values for every typography
   preset.
-- `typography:show`: prints the selected site's resolved typography after
-  applying theme, page, and section presentation.
+- `typography:show`: prints the selected site's resolved typography for the
+  theme, every page route, and every section. Each value includes its source,
+  and inherited page or section values are marked with `inherited: true`.
 - `site:public`: copies `site/public/` into `site/.norna/public/` and
   removes stale copied static files.
 - `images`: generates WebP variants and writes

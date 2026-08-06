@@ -43,8 +43,10 @@ try {
 	const showResult = runCli(['--site-dir', path.join(initializedSiteRoot, 'site'), 'typography:show']);
 	assert.equal(showResult.status, 0, showResult.stderr || showResult.stdout);
 	assert.match(showResult.stdout, /theme:/);
-	assert.match(showResult.stdout, /page:/);
-	assert.match(showResult.stdout, /preset: quiet-gallery/);
+	assert.match(showResult.stdout, /pages:/);
+	assert.match(showResult.stdout, /\s+\/:/);
+	assert.match(showResult.stdout, /value: quiet-gallery/);
+	assert.match(showResult.stdout, /inherited: true/);
 	assert.match(showResult.stdout, /intro:/);
 
 	const initAgainResult = runCli(['init', initializedSiteRoot]);

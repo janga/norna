@@ -6,14 +6,6 @@ navigation:
   order: 0
 sections:
   - id: intro
-    presentation:
-      typography:
-        preset: statement
-        overrides:
-          heading:
-            size: xlarge
-          body:
-            size: large
   - id: workflow
   - id: next
 ---

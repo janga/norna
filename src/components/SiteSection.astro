@@ -34,56 +34,56 @@ const { section, pagePresentation, headingLevel, priorityGalleryImage = false } 
 const HeadingTag = headingLevel === 1 ? 'h1' : 'h2';
 const headingSizeValues: Record<TextSize, ResponsiveValue<string>> = {
 	small: {
-		desktop: 'clamp(1.15rem, 2.2vw, 2rem)',
-		mobile: 'clamp(1.15rem, 5vw, 1.8rem)',
+		desktop: 'clamp(1.1rem, 1.02rem + 0.35vw, 1.35rem)',
+		mobile: 'clamp(1.12rem, 1rem + 0.85vw, 1.42rem)',
 	},
 	medium: {
-		desktop: 'clamp(1.4rem, 3.1vw, 3.2rem)',
-		mobile: 'clamp(1.4rem, 3.1vw, 3.2rem)',
+		desktop: 'clamp(1.35rem, 1.1rem + 0.9vw, 2rem)',
+		mobile: 'clamp(1.3rem, 1.05rem + 1.35vw, 1.75rem)',
 	},
 	large: {
-		desktop: 'clamp(1.65rem, 4.6vw, 5.65rem)',
-		mobile: 'clamp(1.9rem, 8vw, 3.2rem)',
+		desktop: 'clamp(1.6rem, 1.22rem + 1.45vw, 2.75rem)',
+		mobile: 'clamp(1.5rem, 1.12rem + 2vw, 2.25rem)',
 	},
 	xlarge: {
-		desktop: 'clamp(2rem, 5.6vw, 7rem)',
-		mobile: 'clamp(2.15rem, 9.4vw, 3.8rem)',
+		desktop: 'clamp(2rem, 1.35rem + 2.4vw, 3.75rem)',
+		mobile: 'clamp(1.8rem, 1.25rem + 3vw, 2.85rem)',
 	},
 };
 const bodySizeValues: Record<TextSize, ResponsiveValue<string>> = {
 	small: {
-		desktop: 'clamp(0.9rem, 0.86rem + 0.16vw, 1rem)',
-		mobile: 'clamp(0.9rem, 0.86rem + 0.16vw, 1rem)',
+		desktop: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
+		mobile: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
 	},
 	medium: {
-		desktop: 'clamp(1rem, 0.96rem + 0.18vw, 1.125rem)',
-		mobile: 'clamp(1rem, 0.96rem + 0.18vw, 1.125rem)',
+		desktop: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
+		mobile: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
 	},
 	large: {
-		desktop: 'clamp(1.1rem, 1.04rem + 0.24vw, 1.25rem)',
-		mobile: 'clamp(1.1rem, 1.04rem + 0.24vw, 1.25rem)',
+		desktop: 'clamp(1.05rem, 1rem + 0.16vw, 1.12rem)',
+		mobile: 'clamp(1.05rem, 1rem + 0.16vw, 1.12rem)',
 	},
 	xlarge: {
-		desktop: 'clamp(1.18rem, 1.08rem + 0.36vw, 1.42rem)',
-		mobile: 'clamp(1.18rem, 1.08rem + 0.36vw, 1.42rem)',
+		desktop: 'clamp(1.14rem, 1.06rem + 0.26vw, 1.25rem)',
+		mobile: 'clamp(1.14rem, 1.06rem + 0.26vw, 1.25rem)',
 	},
 };
 const captionSizeValues: Record<TextSize, ResponsiveValue<string>> = {
 	small: {
-		desktop: 'clamp(0.82rem, 0.78rem + 0.12vw, 0.92rem)',
-		mobile: 'clamp(0.82rem, 0.78rem + 0.12vw, 0.92rem)',
+		desktop: 'clamp(0.78rem, 0.76rem + 0.08vw, 0.84rem)',
+		mobile: 'clamp(0.78rem, 0.76rem + 0.08vw, 0.84rem)',
 	},
 	medium: {
-		desktop: 'clamp(0.9rem, 0.86rem + 0.16vw, 1rem)',
-		mobile: 'clamp(0.9rem, 0.86rem + 0.16vw, 1rem)',
+		desktop: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
+		mobile: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
 	},
 	large: {
-		desktop: 'clamp(1rem, 0.94rem + 0.2vw, 1.12rem)',
-		mobile: 'clamp(1rem, 0.94rem + 0.2vw, 1.12rem)',
+		desktop: 'clamp(0.96rem, 0.92rem + 0.12vw, 1rem)',
+		mobile: 'clamp(0.96rem, 0.92rem + 0.12vw, 1rem)',
 	},
 	xlarge: {
-		desktop: 'clamp(1.08rem, 1rem + 0.28vw, 1.25rem)',
-		mobile: 'clamp(1.08rem, 1rem + 0.28vw, 1.25rem)',
+		desktop: 'clamp(1.04rem, 0.98rem + 0.18vw, 1.12rem)',
+		mobile: 'clamp(1.04rem, 0.98rem + 0.18vw, 1.12rem)',
 	},
 };
 const sectionOverride = section.presentation as SectionPresentationOverride | undefined;

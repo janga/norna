@@ -342,7 +342,7 @@ h1,
 h2 {
 	margin-bottom: 0;
 	color: inherit;
-	font-size: var(--section-heading-font-size-desktop, clamp(1.4rem, 3.1vw, 3.2rem));
+	font-size: var(--section-heading-font-size-desktop, clamp(1.35rem, 1.1rem + 0.9vw, 2rem));
 	font-weight: 400;
 	letter-spacing: 0;
 	line-height: var(--section-heading-line-height, 1.04);
@@ -351,7 +351,7 @@ h2 {
 }
 
 .site-section-primary h1 {
-	font-size: var(--section-heading-font-size-desktop, clamp(1.65rem, 4.6vw, 5.65rem));
+	font-size: var(--section-heading-font-size-desktop, clamp(1.6rem, 1.22rem + 1.45vw, 2.75rem));
 	font-weight: 700;
 }
 
@@ -360,13 +360,13 @@ h2 {
 	margin: 0 auto;
 	color: inherit;
 	font-family: var(--font-sans);
-	font-size: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
+	font-size: clamp(0.96rem, 0.94rem + 0.08vw, 1rem);
 }
 
 .section-markdown {
 	width: min(100%, var(--section-body-width-desktop, var(--text-width)));
 	margin: 0 auto var(--space-section-body-to-gallery);
-	font-size: var(--section-body-font-size-desktop, clamp(1rem, 0.96rem + 0.18vw, 1.125rem));
+	font-size: var(--section-body-font-size-desktop, clamp(0.96rem, 0.94rem + 0.08vw, 1rem));
 	line-height: var(--section-body-line-height, 1.78);
 	text-align: var(--section-body-align-desktop, center);
 }
@@ -402,7 +402,7 @@ h2 {
 .section-markdown h4 {
 	margin: 0 0 0.85rem;
 	color: inherit;
-	font-size: clamp(0.95rem, 0.9rem + 0.2vw, 1.08rem);
+	font-size: clamp(0.96rem, 0.94rem + 0.08vw, 1rem);
 	font-weight: 400;
 	letter-spacing: 0.02em;
 	line-height: 1.5;
@@ -784,14 +784,14 @@ h2 {
 	h2 {
 		font-size: var(
 			--section-heading-font-size-mobile,
-			var(--section-heading-font-size-desktop, clamp(1.4rem, 3.1vw, 3.2rem))
+			var(--section-heading-font-size-desktop, clamp(1.3rem, 1.05rem + 1.35vw, 1.75rem))
 		);
 	}
 
 	.site-section-primary h1 {
 		font-size: var(
 			--section-heading-font-size-mobile,
-			var(--section-heading-font-size-desktop, clamp(1.9rem, 8vw, 3.2rem))
+			var(--section-heading-font-size-desktop, clamp(1.5rem, 1.12rem + 2vw, 2.25rem))
 		);
 	}
 
@@ -804,7 +804,7 @@ h2 {
 		width: min(100%, var(--section-body-width-mobile, var(--section-body-width-desktop, var(--text-width))));
 		font-size: var(
 			--section-body-font-size-mobile,
-			var(--section-body-font-size-desktop, clamp(1rem, 0.96rem + 0.18vw, 1.125rem))
+			var(--section-body-font-size-desktop, clamp(0.96rem, 0.94rem + 0.08vw, 1rem))
 		);
 		text-align: var(--section-body-align-mobile, var(--section-body-align-desktop, left));
 	}

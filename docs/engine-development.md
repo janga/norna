@@ -39,6 +39,21 @@ npm run package:check
 
 `npm run test` runs the same set in sequence.
 
+The root `site/` directory is the documentation site. Use the ordinary local
+commands for it:
+
+```sh
+npm run dev:local
+npm run build
+```
+
+The dog gallery remains the visual demo and navigation diagnostic target:
+
+```sh
+npm run demo:dev
+npm run demo:build
+```
+
 Navigation diagnostics are separate because they use Playwright:
 
 ```sh

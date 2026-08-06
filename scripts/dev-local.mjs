@@ -5,14 +5,18 @@ import { networkInterfaces } from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { getAstroArgs, runAstroInherit } from './lib/astro-command.mjs';
+import projectConfig from './lib/project-config.mjs';
 import { astroCacheDir, engineRoot, siteProjectRoot } from './lib/site-paths.mjs';
 
 const execFileAsync = promisify(execFile);
 
 const port = 4321;
-const localHost = 'localhost';
-const localUrl = `http://${localHost}:${port}/`;
-const probeUrls = [localUrl, `http://127.0.0.1:${port}/`, `http://[::1]:${port}/`];
+const localHost = '127.0.0.1';
+const localUrl = `http://${localHost}:${port}${projectConfig.site.basePath}`;
+const probeUrls = [
+	localUrl,
+	`http://localhost:${port}${projectConfig.site.basePath}`,
+];
 const skipOpen = process.env.WALDE_NO_OPEN === '1';
 const statePath = path.join(astroCacheDir, 'dev-local.json');
 const logPath = path.join(astroCacheDir, 'dev.log');
@@ -57,7 +61,7 @@ const readState = async () => {
 const getLanUrls = () => Object.values(networkInterfaces())
 	.flat()
 	.filter((network) => network?.family === 'IPv4' && !network.internal)
-	.map((network) => `http://${network.address}:${port}/`);
+	.map((network) => `http://${network.address}:${port}${projectConfig.site.basePath}`);
 
 const writeState = async (pid, host) => {
 	await mkdir(path.dirname(statePath), { recursive: true });
@@ -98,7 +102,7 @@ const isPortFreeOnHost = (loopbackHost) => new Promise((resolve, reject) => {
 });
 
 const isPortFree = async () => {
-	for (const loopbackHost of ['127.0.0.1', '::1']) {
+	for (const loopbackHost of ['127.0.0.1']) {
 		if (!(await isPortFreeOnHost(loopbackHost))) {
 			return false;
 		}

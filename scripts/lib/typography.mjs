@@ -29,13 +29,13 @@ export const typographyPresets = {
 	'compact-gallery': {
 		heading: {
 			align: { desktop: 'left', mobile: 'left' },
-			size: 'small',
+			size: 'medium',
 			lineHeight: 1.08,
 			spacing: '0.45em',
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
-			size: 'small',
+			size: 'medium',
 			lineHeight: 1.42,
 			paragraphSpacing: '0.6em',
 		},
@@ -55,7 +55,7 @@ export const typographyPresets = {
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
-			size: 'large',
+			size: 'medium',
 			lineHeight: 1.62,
 			paragraphSpacing: '1em',
 		},
@@ -69,13 +69,13 @@ export const typographyPresets = {
 	statement: {
 		heading: {
 			align: { desktop: 'left', mobile: 'left' },
-			size: 'large',
+			size: 'medium',
 			lineHeight: 1.04,
 			spacing: '0.5em',
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
-			size: 'large',
+			size: 'medium',
 			lineHeight: 1.42,
 			paragraphSpacing: '0.75em',
 		},

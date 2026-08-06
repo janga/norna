@@ -45,6 +45,7 @@ For engine development in this repository:
 ```sh
 npm install
 npm run dev:local
+npm run demo:dev
 npm run test:fixture:build
 npm run package:check
 ```

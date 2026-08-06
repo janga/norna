@@ -16,7 +16,6 @@ presentation:
         align:
           desktop: left
           mobile: left
-        size: large
       body:
         align:
           desktop: left

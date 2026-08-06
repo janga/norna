@@ -235,7 +235,7 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-heading-font-size-desktop: clamp(1.65rem, 4.6vw, 5.65rem)',
+		'--section-heading-font-size-desktop: clamp(1.35rem, 1.1rem + 0.9vw, 2rem)',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),

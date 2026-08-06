@@ -42,7 +42,7 @@
   },
   "scripts": {
     "dev": "npm run dev:local",
-    "dev:local": "npm run demo:dev",
+    "dev:local": "node bin/norna.mjs dev:local",
     "dev:lan": "node bin/norna.mjs dev:lan",
     "dev:restart": "node bin/norna.mjs dev:restart",
     "dev:status": "node bin/norna.mjs dev:status",
@@ -55,7 +55,7 @@
     "typography:show": "node bin/norna.mjs typography:show",
     "site:public": "node bin/norna.mjs site:public",
     "images": "node bin/norna.mjs images",
-    "build": "npm run demo:build",
+    "build": "node bin/norna.mjs build",
     "build:local": "node bin/norna.mjs build:local",
     "deploy": "node bin/norna.mjs deploy",
     "deploy:commit": "node bin/norna.mjs deploy:commit",

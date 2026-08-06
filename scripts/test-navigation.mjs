@@ -82,7 +82,7 @@ const runInherit = (command, args, options = {}) => new Promise((resolve, reject
 const ensureServer = async () => {
 	await stopServer();
 
-	await runInherit(npmBin, ['run', 'dev:local'], {
+	await runInherit(npmBin, ['run', 'demo:dev'], {
 		env: {
 			...process.env,
 			WALDE_NO_OPEN: '1',
