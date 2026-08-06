@@ -13,7 +13,7 @@ sections:
 ## Norna builds websites from files {#intro}
 
 Norna is an independent open source CLI for building small file-based static
-websites.
+websites. 
 
 You keep content, presentation, configuration, images, and public files in a
 plain project directory. Norna validates those files, prepares responsive image

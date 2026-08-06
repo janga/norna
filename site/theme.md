@@ -2,7 +2,7 @@
 navigation:
   brand: Norna
 presentation:
-  backgroundColor: "#0f1418"
+  backgroundColor: "#000000"
   textColor: "#f2eee6"
   inlineStyles:
     accent:
