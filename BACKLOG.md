@@ -10,7 +10,7 @@ Use this section for work that should normally happen before the next npm
 release.
 
 - Verify the current starter flow after each command-surface change:
-  `init`, `npm install`, `gallery:check`, `gallery:build`, and local preview.
+  `init`, `npm install`, `norna:check`, `norna:build`, and local preview.
 - Update one real site repository after release and note any friction in the
   upgrade flow.
 - Keep release recovery instructions current for the case where version commit

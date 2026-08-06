@@ -44,7 +44,7 @@ cli-gallery --help
 
 ## Starter npm Scripts
 
-The starter uses `gallery:*` for gallery-specific work. This avoids collisions
+The starter uses `norna:*` for norna-specific work. This avoids collisions
 when a `cli-gallery` presentation is embedded inside a larger GitHub project
 whose own `build`, `test`, or deploy scripts mean something different.
 
@@ -52,37 +52,37 @@ The starter defines:
 
 ```sh
 npm run dev
-npm run gallery:dev
-npm run gallery:dev:lan
-npm run gallery:dev:restart
-npm run gallery:dev:status
-npm run gallery:dev:logs
-npm run gallery:dev:stop
-npm run gallery:check
-npm run gallery:config:check
-npm run gallery:content:check
-npm run gallery:sync
-npm run gallery:typography:presets
-npm run gallery:typography:show
-npm run gallery:public
-npm run gallery:images
-npm run gallery:build
-npm run gallery:build:local
-npm run gallery:deploy
-npm run gallery:deploy:commit
-npm run gallery:deploy:watch
-npm run gallery:doctor
-npm run gallery:preview
-npm run gallery:engine:update
-npm run gallery:engine:version
+npm run norna:dev
+npm run norna:dev:lan
+npm run norna:dev:restart
+npm run norna:dev:status
+npm run norna:dev:logs
+npm run norna:dev:stop
+npm run norna:check
+npm run norna:config:check
+npm run norna:content:check
+npm run norna:sync
+npm run norna:typography:presets
+npm run norna:typography:show
+npm run norna:public
+npm run norna:images
+npm run norna:build
+npm run norna:build:local
+npm run norna:deploy
+npm run norna:deploy:commit
+npm run norna:deploy:watch
+npm run norna:doctor
+npm run norna:preview
+npm run norna:engine:update
+npm run norna:engine:version
 npm run build
 ```
 
-`npm run dev` calls `npm run gallery:dev`. In the pure starter,
-`npm run build` aliases `npm run gallery:build`. In mixed repositories, such as
+`npm run dev` calls `npm run norna:dev`. In the pure starter,
+`npm run build` aliases `npm run norna:build`. In mixed repositories, such as
 a GitHub project that embeds a gallery presentation next to an app, `build`
 should normally mean the repository's complete publishable artifact, while
-`gallery:build` builds only the `cli-gallery` part.
+`norna:build` builds only the `cli-gallery` part.
 
 ## Command Summary
 
@@ -93,7 +93,7 @@ should normally mean the repository's complete publishable artifact, while
   reader.
 - `content:check`: validates section structure and gallery references, then
   runs `astro sync`.
-- `content:sync` / `gallery:sync`: rewrites Markdown section order and moves misplaced referenced
+- `content:sync` / `norna:sync`: rewrites Markdown section order and moves misplaced referenced
   image files after confirmation.
 - `typography:presets`: prints the exact built-in values for every typography
   preset.
@@ -115,7 +115,7 @@ should normally mean the repository's complete publishable artifact, while
   With `--latest`, it also asks npm for the latest published engine version.
 - `init <target-dir> [--type pure|embedded] [--site-dir <path>]`: creates a
   pure gallery project from the packaged starter, or adds a gallery source
-  directory plus `gallery:*` scripts to an existing project in embedded mode.
+  directory plus `norna:*` scripts to an existing project in embedded mode.
   Pure setup pins `@janga/cli-gallery` to the version that created it.
 - `build`: runs config check, content check, public sync, image generation, and
   Astro build.

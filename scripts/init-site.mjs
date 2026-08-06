@@ -123,29 +123,29 @@ const readJsonFile = async (filePath) => JSON.parse(await readFile(filePath, 'ut
 const siteDirArg = siteDirectory === 'site' ? [] : ['--site-dir', siteDirectory];
 const cliCommand = (command) => [cliExecutableName, ...siteDirArg, command].join(' ');
 const galleryScripts = {
-	'gallery:dev': cliCommand('dev:local'),
-	'gallery:dev:lan': cliCommand('dev:lan'),
-	'gallery:dev:restart': cliCommand('dev:restart'),
-	'gallery:dev:status': cliCommand('dev:status'),
-	'gallery:dev:logs': cliCommand('dev:logs'),
-	'gallery:dev:stop': cliCommand('dev:stop'),
-	'gallery:check': 'npm run gallery:config:check && npm run gallery:content:check',
-	'gallery:config:check': cliCommand('config:check'),
-	'gallery:content:check': cliCommand('content:check'),
-	'gallery:sync': cliCommand('content:sync'),
-	'gallery:typography:presets': cliCommand('typography:presets'),
-	'gallery:typography:show': cliCommand('typography:show'),
-	'gallery:public': cliCommand('site:public'),
-	'gallery:images': cliCommand('images'),
-	'gallery:build': cliCommand('build'),
-	'gallery:build:local': cliCommand('build:local'),
-	'gallery:deploy': cliCommand('deploy'),
-	'gallery:deploy:commit': cliCommand('deploy:commit'),
-	'gallery:deploy:watch': cliCommand('deploy:watch'),
-	'gallery:doctor': cliCommand('doctor'),
-	'gallery:preview': cliCommand('preview'),
-	'gallery:engine:update': cliCommand('engine:update'),
-	'gallery:engine:version': cliCommand('engine:version'),
+	'norna:dev': cliCommand('dev:local'),
+	'norna:dev:lan': cliCommand('dev:lan'),
+	'norna:dev:restart': cliCommand('dev:restart'),
+	'norna:dev:status': cliCommand('dev:status'),
+	'norna:dev:logs': cliCommand('dev:logs'),
+	'norna:dev:stop': cliCommand('dev:stop'),
+	'norna:check': 'npm run norna:config:check && npm run norna:content:check',
+	'norna:config:check': cliCommand('config:check'),
+	'norna:content:check': cliCommand('content:check'),
+	'norna:sync': cliCommand('content:sync'),
+	'norna:typography:presets': cliCommand('typography:presets'),
+	'norna:typography:show': cliCommand('typography:show'),
+	'norna:public': cliCommand('site:public'),
+	'norna:images': cliCommand('images'),
+	'norna:build': cliCommand('build'),
+	'norna:build:local': cliCommand('build:local'),
+	'norna:deploy': cliCommand('deploy'),
+	'norna:deploy:commit': cliCommand('deploy:commit'),
+	'norna:deploy:watch': cliCommand('deploy:watch'),
+	'norna:doctor': cliCommand('doctor'),
+	'norna:preview': cliCommand('preview'),
+	'norna:engine:update': cliCommand('engine:update'),
+	'norna:engine:version': cliCommand('engine:version'),
 };
 
 const addGalleryDependency = (packageJson, version) => {
@@ -156,9 +156,9 @@ const addGalleryDependency = (packageJson, version) => {
 const addGalleryScripts = (packageJson, scripts, { includePureAliases }) => {
 	packageJson.scripts ??= {};
 	const wantedScripts = {
-		...(includePureAliases ? { dev: 'npm run gallery:dev' } : {}),
+		...(includePureAliases ? { dev: 'npm run norna:dev' } : {}),
 		...scripts,
-		...(includePureAliases ? { build: 'npm run gallery:build' } : {}),
+		...(includePureAliases ? { build: 'npm run norna:build' } : {}),
 	};
 	const conflicts = Object.entries(wantedScripts).filter(([name, value]) => (
 		packageJson.scripts[name] !== undefined && packageJson.scripts[name] !== value
@@ -246,4 +246,4 @@ console.log(`  cd ${targetRoot}`);
 console.log(type === 'embedded'
 	? '  npm install'
 	: '  npm install');
-console.log('  npm run gallery:dev');
+console.log('  npm run norna:dev');

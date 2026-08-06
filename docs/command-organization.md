@@ -23,9 +23,9 @@ names.
 
 Use these namespaces consistently.
 
-### `gallery:*`
+### `norna:*`
 
-Use `gallery:*` npm scripts in repositories that consume `cli-gallery`.
+Use `norna:*` npm scripts in repositories that consume `cli-gallery`.
 
 These scripts operate on a selected gallery source directory. In a pure gallery
 project that directory is normally `site/`. In a mixed project it may be a more
@@ -35,19 +35,19 @@ specific directory such as `presentation/`, with the script setting
 Examples:
 
 ```sh
-npm run gallery:dev
-npm run gallery:check
-npm run gallery:sync
-npm run gallery:build
+npm run norna:dev
+npm run norna:check
+npm run norna:sync
+npm run norna:build
 ```
 
-Mixed projects must use `gallery:*` for gallery work so names such as `build`,
+Mixed projects must use `norna:*` for gallery work so names such as `build`,
 `test`, and `deploy` can remain under the containing project's control.
 
-Pure gallery projects should also use `gallery:*` as the primary documented
+Pure gallery projects should also use `norna:*` as the primary documented
 interface. They may provide unprefixed aliases when the alias means the same
 thing for the whole repository, for example `npm run build` as an alias for
-`npm run gallery:build`.
+`npm run norna:build`.
 
 ### Project Commands That Call Gallery Commands
 
@@ -63,7 +63,7 @@ npm run test
 npm run deploy
 ```
 
-When those project commands need the gallery, they should call `gallery:*`
+When those project commands need the gallery, they should call `norna:*`
 scripts instead of calling `cli-gallery` directly. That keeps the selected
 gallery source directory and other project-specific wrapper behavior in one
 place.
@@ -71,9 +71,9 @@ place.
 In a mixed project, if `npm run build` exists, it should build the project's
 complete publishable artifact, not only the gallery. If the project publishes a
 GitHub Pages artifact containing both a gallery and an app, `build` should
-produce that full artifact and may call `npm run gallery:build` internally.
+produce that full artifact and may call `npm run norna:build` internally.
 
-In a pure gallery project, project commands may be aliases to `gallery:*`
+In a pure gallery project, project commands may be aliases to `norna:*`
 commands because the gallery is the whole project.
 
 ### `release:*`
@@ -130,7 +130,7 @@ part of the existing project setup:
 npm install --save-exact @janga/cli-gallery
 ```
 
-The mixed project should then add `gallery:*` scripts that point at the chosen
+The mixed project should then add `norna:*` scripts that point at the chosen
 gallery source directory.
 
 Engine development uses ordinary package installation in the engine repository:
@@ -142,12 +142,12 @@ npm install
 ### Upgrade Or Inspect Gallery Software
 
 In a consuming repository, upgrading or inspecting the installed gallery engine
-is gallery maintenance, so the preferred namespace is `gallery:*`:
+is norna maintenance, so the preferred namespace is `norna:*`:
 
 ```sh
-npm run gallery:engine:version
-npm run gallery:engine:update
-npm run gallery:engine:update -- 0.2.0
+npm run norna:engine:version
+npm run norna:engine:update
+npm run norna:engine:update -- 0.2.0
 ```
 
 These commands update the `@janga/cli-gallery` dependency and lockfile used by
@@ -169,7 +169,7 @@ project has npm scripts:
 npx @janga/cli-gallery@latest init my-gallery
 ```
 
-The initializer should support two setup modes that share the same `gallery:*`
+The initializer should support two setup modes that share the same `norna:*`
 command vocabulary.
 
 #### Pure Setup
@@ -185,9 +185,9 @@ This should be the default when the target is a new or empty directory.
 Pure setup should create:
 
 - a normal gallery source directory, normally `site/`;
-- a `package.json` with `gallery:*` scripts;
+- a `package.json` with `norna:*` scripts;
 - unprefixed convenience aliases only when they mean the same thing as the
-  whole project, for example `build` as an alias for `gallery:build`;
+  whole project, for example `build` as an alias for `norna:build`;
 - the standard GitHub Pages workflow for publishing the gallery.
 
 #### Embedded Setup
@@ -206,29 +206,29 @@ Embedded setup should create or update only the gallery-owned parts:
 
 - the chosen gallery source directory, for example `presentation/`;
 - `@janga/cli-gallery` as a project dependency;
-- `gallery:*` scripts that set the selected site directory;
+- `norna:*` scripts that set the selected site directory;
 - no unprefixed aliases such as `build`, `test`, `dev`, or `deploy`;
 - no project publishing workflow unless the caller explicitly asks for one.
 
 Embedded setup must not overwrite existing npm scripts without explicit user
-confirmation. If a needed `gallery:*` script already exists, the initializer
+confirmation. If a needed `norna:*` script already exists, the initializer
 should report the conflict and let the user decide whether to replace it.
 
 ### Control The Dev Server
 
-Gallery dev-server commands belong under `gallery:dev:*` in consuming
+Norna dev-server commands belong under `norna:dev:*` in consuming
 repositories:
 
 ```sh
-npm run gallery:dev
-npm run gallery:dev:lan
-npm run gallery:dev:restart
-npm run gallery:dev:status
-npm run gallery:dev:logs
-npm run gallery:dev:stop
+npm run norna:dev
+npm run norna:dev:lan
+npm run norna:dev:restart
+npm run norna:dev:status
+npm run norna:dev:logs
+npm run norna:dev:stop
 ```
 
-The shorter `gallery:dev` starts the normal local server. Subcommands manage
+The shorter `norna:dev` starts the normal local server. Subcommands manage
 the same server.
 
 In the engine repository, engine/demo development may use the engine's own
@@ -241,16 +241,16 @@ npm run dev:lan
 
 ### Test Configuration And Content
 
-Gallery validation should use `gallery:check` for the normal full check and
+Norna validation should use `norna:check` for the normal full check and
 more specific commands when a caller needs one part:
 
 ```sh
-npm run gallery:check
-npm run gallery:config:check
-npm run gallery:content:check
+npm run norna:check
+npm run norna:config:check
+npm run norna:content:check
 ```
 
-`gallery:check` should run configuration and content checks in the order needed
+`norna:check` should run configuration and content checks in the order needed
 by the engine.
 
 Project-level tests remain project-owned commands:
@@ -260,34 +260,34 @@ npm run test
 ```
 
 If a mixed project defines `test`, that command should cover the whole project.
-It may call `gallery:check`, but it should not be a hidden synonym for only
+It may call `norna:check`, but it should not be a hidden synonym for only
 gallery validation.
 
 ### Inspect Gallery Presentation
 
 Commands that inspect gallery presentation without changing source files use
-`gallery:*` in consuming repositories:
+`norna:*` in consuming repositories:
 
 ```sh
-npm run gallery:typography:presets
-npm run gallery:typography:show
+npm run norna:typography:presets
+npm run norna:typography:show
 ```
 
-`gallery:typography:presets` shows the built-in typography presets from the
-installed engine. `gallery:typography:show` shows the effective typography for
+`norna:typography:presets` shows the built-in typography presets from the
+installed engine. `norna:typography:show` shows the effective typography for
 the selected gallery after presets and overrides have been applied.
 
 ### Correct Content And Configuration
 
-Commands that modify gallery-owned source files use `gallery:*`:
+Commands that modify gallery-owned source files use `norna:*`:
 
 ```sh
-npm run gallery:sync
-npm run gallery:public
-npm run gallery:images
+npm run norna:sync
+npm run norna:public
+npm run norna:images
 ```
 
-`gallery:sync` is the preferred npm wrapper for `cli-gallery content:sync`.
+`norna:sync` is the preferred npm wrapper for `cli-gallery content:sync`.
 Messages emitted by the engine should mention the direct CLI command and the
 starter-style npm wrapper when suggesting a fix.
 
@@ -295,7 +295,7 @@ Configuration edits are normally manual edits to the selected gallery
 `config.mjs`, followed by:
 
 ```sh
-npm run gallery:config:check
+npm run norna:config:check
 ```
 
 ### Build
@@ -303,27 +303,27 @@ npm run gallery:config:check
 In a pure gallery project:
 
 ```sh
-npm run gallery:build
-npm run gallery:build:local
+npm run norna:build
+npm run norna:build:local
 npm run build
 ```
 
-`gallery:build:local` builds and restarts the local dev server. `build` may
-alias `gallery:build` because the gallery is the whole project.
+`norna:build:local` builds and restarts the local dev server. `build` may
+alias `norna:build` because the gallery is the whole project.
 
 In a mixed project:
 
 ```sh
-npm run gallery:build
-npm run gallery:build:local
+npm run norna:build
+npm run norna:build:local
 npm run build
 ```
 
-`gallery:build` builds only the gallery. `gallery:build:local` builds the
+`norna:build` builds only the gallery. `norna:build:local` builds the
 gallery and restarts the local gallery dev server. If the mixed project defines
 `build`, that project command should build the complete publishable artifact,
 such as a GitHub Pages output that combines the gallery with an app. It may call
-`gallery:build` internally.
+`norna:build` internally.
 
 In the engine repository:
 
@@ -337,12 +337,12 @@ Engine build commands verify the reusable package, fixtures, or demo site.
 
 ### Publish
 
-Gallery deploy helpers belong under `gallery:deploy*` in consuming
+Norna deploy helpers belong under `norna:deploy*` in consuming
 repositories:
 
 ```sh
-npm run gallery:deploy
-npm run gallery:deploy:commit
+npm run norna:deploy
+npm run norna:deploy:commit
 ```
 
 Use these only when the gallery is the deployable site or when the containing
@@ -355,9 +355,9 @@ npm run deploy
 ```
 
 Those commands should publish the complete project artifact. If they need the
-gallery, they should call `gallery:*` scripts internally.
+gallery, they should call `norna:*` scripts internally.
 
-Engine publishing uses `release:*`, not `gallery:*`:
+Engine publishing uses `release:*`, not `norna:*`:
 
 ```sh
 npm run release:publish
@@ -368,7 +368,7 @@ npm run release:publish
 Gallery Pages monitoring belongs under:
 
 ```sh
-npm run gallery:deploy:watch
+npm run norna:deploy:watch
 ```
 
 Mixed projects may provide a project-owned monitoring command when monitoring
@@ -379,18 +379,18 @@ npm run deploy:watch
 ```
 
 That command should monitor the whole project's publishing workflow. If it needs
-gallery-specific deploy settings, it should call `gallery:deploy:watch`.
+norna-specific deploy settings, it should call `norna:deploy:watch`.
 
 ## Naming Rules
 
-- Use `gallery:*` for every npm script in a consuming repository whose direct
+- Use `norna:*` for every npm script in a consuming repository whose direct
   object is the gallery, its source files, its generated images, its dev server,
   or its engine dependency.
 - `cli-gallery` does not define unprefixed project commands such as `build`,
   `test`, and `deploy` in consuming repositories.
-- If project commands need gallery behavior, they should call `gallery:*`
+- If project commands need gallery behavior, they should call `norna:*`
   scripts.
-- In pure gallery projects, unprefixed project commands may alias `gallery:*`
+- In pure gallery projects, unprefixed project commands may alias `norna:*`
   commands.
 - In mixed projects, unprefixed project commands must not be aliases for only
   the gallery unless the command name makes that scope explicit.
@@ -399,4 +399,4 @@ gallery-specific deploy settings, it should call `gallery:deploy:watch`.
   prefer npm scripts in site-repository docs.
 - Do not create separate namespaces for every internal concept. If a command is
   about maintaining the gallery dependency in a consuming repository, keep it
-  under `gallery:*`.
+  under `norna:*`.

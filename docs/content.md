@@ -178,7 +178,7 @@ The current date is evaluated at dev/build time. Set `NORNA_TODAY` to
 preview or test a specific date:
 
 ```sh
-NORNA_TODAY=2026-08-15 npm run gallery:build
+NORNA_TODAY=2026-08-15 npm run norna:build
 ```
 
 ## Presentation
@@ -342,7 +342,7 @@ frontmatter id.
 Run:
 
 ```sh
-npm run gallery:content:check
+npm run norna:content:check
 ```
 
 This checks section order and heading ids, duplicate image names, missing image
@@ -376,7 +376,7 @@ sections:
 Run:
 
 ```sh
-npm run gallery:sync
+npm run norna:sync
 ```
 
 This rewrites Markdown sections into frontmatter order and moves referenced

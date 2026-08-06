@@ -6,7 +6,7 @@ This is a minimal site repository starter for `@janga/norna`.
 
 ```sh
 npm install
-npm run gallery:dev
+npm run norna:dev
 ```
 
 Edit site-wide theme defaults in `site/theme.md`, homepage content and section
@@ -26,23 +26,23 @@ in `site/theme.md`; page and section overrides live in `site/content.md`.
 Commit `package-lock.json` after the first install so GitHub Actions can use
 `npm ci`.
 
-Use `gallery:*` scripts for gallery-specific work:
+Use `norna:*` scripts for norna-specific work:
 
 ```sh
-npm run gallery:content:check
-npm run gallery:sync
-npm run gallery:typography:presets
-npm run gallery:typography:show
-npm run gallery:build
+npm run norna:content:check
+npm run norna:sync
+npm run norna:typography:presets
+npm run norna:typography:show
+npm run norna:build
 ```
 
 This keeps gallery commands separate from repository-specific build or
 publishing commands in projects that embed a gallery inside a larger GitHub
 project. This pure starter also keeps `npm run build` as an alias for
-`npm run gallery:build`.
+`npm run norna:build`.
 
-Use `npm run gallery:engine:version` to inspect the installed engine and
-`npm run gallery:engine:update` to update it.
+Use `npm run norna:engine:version` to inspect the installed engine and
+`npm run norna:engine:update` to update it.
 
 Generic documentation lives in the `norna` repository:
 

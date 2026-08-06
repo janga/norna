@@ -366,7 +366,7 @@ The site directory is not configured in `config.mjs`.
 Use one of:
 
 ```sh
-NORNA_SITE_DIR=my-site npm run gallery:build
+NORNA_SITE_DIR=my-site npm run norna:build
 cli-gallery --site-dir my-site build
 ```
 

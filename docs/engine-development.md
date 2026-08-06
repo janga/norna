@@ -86,7 +86,7 @@ Use `npm run package:check` to test the package before release. To test a
 specific published engine version in a real site, update it with:
 
 ```sh
-npm run gallery:engine:update -- <version>
+npm run norna:engine:update -- <version>
 ```
 
 Commit the resulting `package.json` and `package-lock.json` changes in the

@@ -26,7 +26,7 @@ cd path/to/your/projects
 npx @janga/cli-gallery@latest init my-gallery
 cd my-gallery
 npm install
-npm run gallery:dev
+npm run norna:dev
 ```
 
 A freshly created empty directory is not a `cli-gallery` site yet. It becomes a
@@ -71,7 +71,7 @@ Commit the generated `package-lock.json` after the first install.
 7. Run:
 
 ```sh
-npm run gallery:check
+npm run norna:check
 npm run build
 ```
 
@@ -91,6 +91,6 @@ accepted format and default value.
 
 To change the site-wide typography preset, edit `site/theme.md`. To change one
 page or section, add a focused `presentation.typography` override in
-`site/content.md`. Use `npm run gallery:typography:presets` to inspect the
-installed preset values and `npm run gallery:typography:show` to inspect the
+`site/content.md`. Use `npm run norna:typography:presets` to inspect the
+installed preset values and `npm run norna:typography:show` to inspect the
 resolved typography for the selected site.

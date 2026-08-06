@@ -18,7 +18,7 @@ workflow:
 4. restores the generated image cache,
 5. runs `npm ci`,
 6. runs `npm run build` in the starter, which aliases
-   `npm run gallery:build`,
+   `npm run norna:build`,
 7. uploads `dist/`,
 8. deploys to GitHub Pages.
 
@@ -30,7 +30,7 @@ Site-specific static files such as `site/public/CNAME`, `robots.txt`, and
 Use:
 
 ```sh
-npm run gallery:deploy
+npm run norna:deploy
 ```
 
 The deploy command:
@@ -51,7 +51,7 @@ It does not create commits or push uncommitted changes.
 The older convenience flow remains available:
 
 ```sh
-npm run gallery:deploy:commit -- "Commit message"
+npm run norna:deploy:commit -- "Commit message"
 ```
 
 It builds, stages only allowed site changes, commits, pushes, and checks Pages.
@@ -65,15 +65,15 @@ and `src/` changes.
 Use:
 
 ```sh
-npm run gallery:deploy:watch
+npm run norna:deploy:watch
 ```
 
 By default it monitors the workflow run for the current `HEAD` on the configured
 branch and repository. Useful one-run overrides include:
 
 ```sh
-npm run gallery:deploy:watch -- --timeout 20m --interval 5s
-npm run gallery:deploy:watch -- --sha <commit-sha>
+npm run norna:deploy:watch -- --timeout 20m --interval 5s
+npm run norna:deploy:watch -- --sha <commit-sha>
 ```
 
 The monitor prints the run id, run URL, Actions URL, branch, commit SHA, status,

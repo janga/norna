@@ -20,7 +20,7 @@ filename only.
 
 ## Generated Variants
 
-`npm run gallery:images` and `npm run gallery:build` generate WebP files in:
+`npm run norna:images` and `npm run norna:build` generate WebP files in:
 
 ```text
 site/.norna/public/images/generated/

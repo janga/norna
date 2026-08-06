@@ -30,8 +30,8 @@ try {
 
 	const initializedPackageJson = JSON.parse(await readFile(path.join(initializedSiteRoot, 'package.json'), 'utf8'));
 	assert.equal(initializedPackageJson.dependencies['@janga/norna'], packageJson.version);
-	assert.equal(initializedPackageJson.scripts['gallery:engine:update'], 'norna engine:update');
-	assert.equal(initializedPackageJson.scripts['gallery:engine:version'], 'norna engine:version');
+	assert.equal(initializedPackageJson.scripts['norna:engine:update'], 'norna engine:update');
+	assert.equal(initializedPackageJson.scripts['norna:engine:version'], 'norna engine:version');
 	assert.equal(initializedPackageJson.scripts['engine:update'], undefined);
 	assert.equal(initializedPackageJson.scripts['engine:version'], undefined);
 
@@ -55,10 +55,10 @@ try {
 	const customPureInitResult = runCli(['init', customPureSiteRoot, '--type', 'pure', '--site-dir', 'presentation']);
 	assert.equal(customPureInitResult.status, 0, customPureInitResult.stderr || customPureInitResult.stdout);
 	const customPurePackageJson = JSON.parse(await readFile(path.join(customPureSiteRoot, 'package.json'), 'utf8'));
-	assert.equal(customPurePackageJson.scripts.dev, 'npm run gallery:dev');
-	assert.equal(customPurePackageJson.scripts.build, 'npm run gallery:build');
-	assert.equal(customPurePackageJson.scripts['gallery:dev'], 'norna --site-dir presentation dev:local');
-	assert.equal(customPurePackageJson.scripts['gallery:build'], 'norna --site-dir presentation build');
+	assert.equal(customPurePackageJson.scripts.dev, 'npm run norna:dev');
+	assert.equal(customPurePackageJson.scripts.build, 'npm run norna:build');
+	assert.equal(customPurePackageJson.scripts['norna:dev'], 'norna --site-dir presentation dev:local');
+	assert.equal(customPurePackageJson.scripts['norna:build'], 'norna --site-dir presentation build');
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'content.md'));
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'config.mjs'));
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'theme.md'));
@@ -82,9 +82,9 @@ try {
 	assert.equal(mixedPackageJson.dependencies['@janga/norna'], packageJson.version);
 	assert.equal(mixedPackageJson.scripts.build, 'node build-app.mjs');
 	assert.equal(mixedPackageJson.scripts.dev, undefined);
-	assert.equal(mixedPackageJson.scripts['gallery:dev'], 'norna --site-dir presentation dev:local');
-	assert.equal(mixedPackageJson.scripts['gallery:engine:update'], 'norna --site-dir presentation engine:update');
-	assert.equal(mixedPackageJson.scripts['gallery:engine:version'], 'norna --site-dir presentation engine:version');
+	assert.equal(mixedPackageJson.scripts['norna:dev'], 'norna --site-dir presentation dev:local');
+	assert.equal(mixedPackageJson.scripts['norna:engine:update'], 'norna --site-dir presentation engine:update');
+	assert.equal(mixedPackageJson.scripts['norna:engine:version'], 'norna --site-dir presentation engine:version');
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'content.md'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.mjs'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'theme.md'));
@@ -95,7 +95,7 @@ try {
 		name: 'conflict-project',
 		private: true,
 		scripts: {
-			'gallery:dev': 'vite --host 0.0.0.0',
+			'norna:dev': 'vite --host 0.0.0.0',
 		},
 	}, null, 2)}\n`);
 	const conflictInitResult = runCli(['init', '.', '--type', 'embedded', '--site-dir', 'presentation'], {
@@ -103,7 +103,7 @@ try {
 	});
 	assert.notEqual(conflictInitResult.status, 0);
 	assert.match(conflictInitResult.stderr, /Refusing to overwrite existing npm scripts/);
-	assert.match(conflictInitResult.stderr, /gallery:dev/);
+	assert.match(conflictInitResult.stderr, /norna:dev/);
 
 	const pureIntoExistingProjectResult = runCli(['init', '.', '--type', 'pure'], {
 		cwd: mixedProjectRoot,
