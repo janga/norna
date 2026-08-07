@@ -36,7 +36,10 @@ A `norna` site is file-driven:
    Astro pages, and can help publish the committed branch through GitHub Pages.
 
 The default site directory is `site/`. Commands can also use another directory
-with `NORNA_SITE_DIR` or `norna --site-dir <path>`.
+with `NORNA_SITE_DIR` or `norna --site-dir <path>`. Without an explicit site
+directory, commands first accept the current directory when it contains
+`config.mjs` and `content.md`; otherwise they walk upward looking for a
+`site/` directory with those files.
 
 ## Quick Start
 
@@ -45,7 +48,6 @@ For engine development in this repository:
 ```sh
 npm install
 npm run dev:local
-npm run demo:dev
 npm run test:fixture:build
 npm run package:check
 ```

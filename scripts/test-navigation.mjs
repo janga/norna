@@ -6,6 +6,8 @@ import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const cliPath = path.join(root, 'bin', 'norna.mjs');
+const dogGallerySiteDir = path.join(root, 'examples', 'dog-gallery', 'site');
 const url = 'http://localhost:4321/';
 const probeUrls = [url, 'http://127.0.0.1:4321/', 'http://[::1]:4321/'];
 const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
@@ -53,9 +55,10 @@ const waitForServer = async () => {
 	throw new Error(`Timed out waiting for ${url}`);
 };
 
-const runCapture = async (command, args) => execFileAsync(command, args, {
+const runCapture = async (command, args, options = {}) => execFileAsync(command, args, {
 	cwd: root,
 	maxBuffer: 1024 * 1024 * 10,
+	...options,
 });
 
 const runInherit = (command, args, options = {}) => new Promise((resolve, reject) => {
@@ -82,7 +85,8 @@ const runInherit = (command, args, options = {}) => new Promise((resolve, reject
 const ensureServer = async () => {
 	await stopServer();
 
-	await runInherit(npmBin, ['run', 'demo:dev'], {
+	await runInherit(process.execPath, [cliPath, 'dev:local'], {
+		cwd: dogGallerySiteDir,
 		env: {
 			...process.env,
 			WALDE_NO_OPEN: '1',
@@ -94,7 +98,9 @@ const ensureServer = async () => {
 };
 
 const stopServer = async () => {
-	await runCapture(npmBin, ['run', 'dev:stop']).catch(() => {});
+	await runCapture(process.execPath, [cliPath, 'dev:stop'], {
+		cwd: dogGallerySiteDir,
+	}).catch(() => {});
 };
 
 let startedServer = false;

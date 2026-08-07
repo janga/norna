@@ -96,5 +96,5 @@ area later. They should not be confused with examples.
 
 - Whether the documentation site should be published anywhere, or exist only as
   a local/example build.
-- How demo selection should work in npm scripts, for example
-  `npm run demo:dev -- dog-gallery`.
+- How local example selection should work when there are multiple runnable
+  examples.

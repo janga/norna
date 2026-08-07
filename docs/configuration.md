@@ -405,3 +405,7 @@ If `NORNA_SITE_DIR` is set to an empty value, commands fail. Relative site
 directories are resolved by walking upward from the invocation root until the
 selected directory contains `config.mjs` and `content.md`. Absolute site
 directories are accepted and make their parent the site project root.
+
+When no site directory is explicitly selected, the current directory itself can
+be the site directory if it contains `config.mjs` and `content.md`. If not,
+Norna walks upward looking for a default `site/` directory with those files.

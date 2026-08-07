@@ -50,9 +50,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
 
 - Start the documentation-site dev server with `npm run dev:local`, or
   `npm run dev:lan` only when testing on another device on the same local
-  network. Use `npm run demo:dev` for the dog-gallery demo. Manage it with
-  `npm run dev:stop`, `npm run dev:restart`, `npm run dev:status`, and
-  `npm run dev:logs`.
+  network. For the dog-gallery demo, run `node ../../../bin/norna.mjs dev:local`
+  from `examples/dog-gallery/site`. Manage it from the same directory with
+  `dev:stop`, `dev:restart`, `dev:status`, and `dev:logs`.
 - Run `npm run config:check` after changing `site/config.mjs` or config
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or

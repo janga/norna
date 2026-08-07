@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,6 +22,18 @@ try {
 	assert.match(versionResult.stdout, /norna engine:version/);
 	assert.match(versionResult.stdout, new RegExp(`Installed norna: ${packageJson.version.replaceAll('.', '\\.')}`));
 	assert.match(versionResult.stdout, /Installed Astro: /);
+
+	const directSiteRoot = path.join(tempRoot, 'current-directory-site');
+	await mkdir(directSiteRoot, { recursive: true });
+	await writeFile(path.join(directSiteRoot, 'config.mjs'), 'export default { site: { url: "https://example.com/" } };\n');
+	await writeFile(path.join(directSiteRoot, 'content.md'), '---\ntitle: Direct Site\nsections: []\n---\n');
+	const directSiteProjectRoot = await realpath(tempRoot);
+	const directSiteDoctorResult = runCli(['doctor'], {
+		cwd: directSiteRoot,
+	});
+	assert.equal(directSiteDoctorResult.status, 0, directSiteDoctorResult.stderr || directSiteDoctorResult.stdout);
+	assert.ok(directSiteDoctorResult.stdout.includes(`Site project root: ${directSiteProjectRoot}`));
+	assert.match(directSiteDoctorResult.stdout, /Site directory: current-directory-site/);
 
 	const initializedSiteRoot = path.join(tempRoot, 'initialized-site');
 	const initResult = runCli(['init', initializedSiteRoot]);

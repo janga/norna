@@ -18,7 +18,7 @@ This document is for work on the reusable `norna` package itself.
 - `tests/`: Playwright navigation diagnostics.
 - `fixtures/basic/site/`: minimal site used for engine checks.
 - `starters/basic/`: copyable site starter.
-- `examples/dog-gallery/site/`: visual dog-gallery demo used by demo scripts
+- `examples/dog-gallery/site/`: visual dog-gallery demo used by demo builds
   and navigation diagnostics.
 
 The repository-local `site/` directory is reserved for a local documentation
@@ -37,7 +37,7 @@ npm run demo:build
 npm run package:check
 ```
 
-`npm run test` runs the same set in sequence.
+`npm run test` runs the standard non-demo check sequence.
 
 The root `site/` directory is the documentation site. Use the ordinary local
 commands for it:
@@ -50,7 +50,9 @@ npm run build
 The dog gallery remains the visual demo and navigation diagnostic target:
 
 ```sh
-npm run demo:dev
+cd examples/dog-gallery/site
+node ../../../bin/norna.mjs dev:local
+cd ../../..
 npm run demo:build
 ```
 

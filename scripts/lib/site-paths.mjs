@@ -20,13 +20,17 @@ export const invocationRoot = configuredInvocationRoot
 	? path.resolve(configuredInvocationRoot)
 	: process.cwd();
 
-const hasSiteFiles = (projectRoot, siteDirectory) => {
-	const siteDir = path.resolve(projectRoot, siteDirectory);
-
+const hasSiteFilesInDirectory = (siteDir) => {
 	return (
 		existsSync(path.join(siteDir, 'config.mjs'))
 		&& existsSync(path.join(siteDir, 'content.md'))
 	);
+};
+
+const hasSiteFiles = (projectRoot, siteDirectory) => {
+	const siteDir = path.resolve(projectRoot, siteDirectory);
+
+	return hasSiteFilesInDirectory(siteDir);
 };
 
 const findSiteProjectRoot = (startDirectory, siteDirectory) => {
@@ -58,6 +62,17 @@ if (hasSiteDirectoryEnv && !configuredSiteDirectory) {
 const resolveSitePaths = () => {
 	if (path.isAbsolute(fallbackSiteDirectory)) {
 		const siteDir = path.resolve(fallbackSiteDirectory);
+		const siteProjectRoot = path.dirname(siteDir);
+
+		return {
+			siteDirectory: path.relative(siteProjectRoot, siteDir) || path.basename(siteDir),
+			siteDir,
+			siteProjectRoot,
+		};
+	}
+
+	if (!hasConfiguredSiteDirectory && hasSiteFilesInDirectory(invocationRoot)) {
+		const siteDir = invocationRoot;
 		const siteProjectRoot = path.dirname(siteDir);
 
 		return {

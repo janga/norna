@@ -233,7 +233,7 @@ npm run norna:dev:stop
 The shorter `norna:dev` starts the normal local server. Subcommands manage
 the same server.
 
-In the engine repository, engine/demo development may use the engine's own
+In the engine repository, engine and example development may use the engine's own
 unprefixed commands:
 
 ```sh

@@ -26,8 +26,10 @@ site/
 ```
 
 Use `NORNA_SITE_DIR` or `norna --site-dir <path>` to select another
-site directory. Commands started from a subdirectory walk upward until they find
-the selected site directory containing both `config.mjs` and `content.md`.
+site directory. Without an explicit site directory, commands first accept the
+current directory when it contains both `config.mjs` and `content.md`.
+Otherwise, commands started from a subdirectory walk upward until they find the
+default `site/` directory containing those files.
 `theme.md` is optional; omit it to use the engine's built-in presentation
 defaults.
 
@@ -81,5 +83,5 @@ In this repository:
   site repository.
 - `fixtures/basic/site/` is used by engine regression tests.
 - `examples/dog-gallery/site/` is the local visual dog-gallery demo used by
-  demo scripts and navigation diagnostics.
+  demo builds and navigation diagnostics.
 - `site/` is reserved for the local documentation site.
