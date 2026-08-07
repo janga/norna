@@ -156,7 +156,7 @@ const addGalleryDependency = (packageJson, version) => {
 const addGalleryScripts = (packageJson, scripts, { includePureAliases }) => {
 	packageJson.scripts ??= {};
 	const wantedScripts = {
-		...(includePureAliases ? { dev: 'npm run norna:dev' } : {}),
+		...(includePureAliases ? { dev: 'npm run norna:dev --' } : {}),
 		...scripts,
 		...(includePureAliases ? { build: 'npm run norna:build' } : {}),
 	};

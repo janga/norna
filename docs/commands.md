@@ -125,7 +125,9 @@ should normally mean the repository's complete publishable artifact, while
 - `build`: runs config check, content check, public sync, image generation, and
   Astro build.
 - `build:local`: runs `build` and restarts `dev:local`.
-- `dev:local`: starts Astro dev in background mode on `localhost:4321`.
+- `dev:local`: starts Astro dev in background mode on `localhost:4321`. Pass
+  `--kill` to stop processes that are blocking the standard port before
+  starting.
 - `dev:lan`: starts the same server on all local network interfaces and prints
   the IPv4 URL to open from another device on the same network. Stop it after
   testing because it is accessible to that local network.

@@ -9,6 +9,12 @@ npm install
 npm run norna:dev
 ```
 
+If the standard local port is blocked, start with:
+
+```sh
+npm run dev -- --kill
+```
+
 Edit site-wide theme defaults in `site/theme.md`, homepage content and section
 overrides in `site/content.md`, technical settings such as URL, layout, font,
 and locale labels in `site/config.mjs`, source images under

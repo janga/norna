@@ -69,7 +69,7 @@ try {
 	const customPureInitResult = runCli(['init', customPureSiteRoot, '--type', 'pure', '--site-dir', 'presentation']);
 	assert.equal(customPureInitResult.status, 0, customPureInitResult.stderr || customPureInitResult.stdout);
 	const customPurePackageJson = JSON.parse(await readFile(path.join(customPureSiteRoot, 'package.json'), 'utf8'));
-	assert.equal(customPurePackageJson.scripts.dev, 'npm run norna:dev');
+	assert.equal(customPurePackageJson.scripts.dev, 'npm run norna:dev --');
 	assert.equal(customPurePackageJson.scripts.build, 'npm run norna:build');
 	assert.equal(customPurePackageJson.scripts['norna:dev'], 'norna --site-dir presentation dev:local');
 	assert.equal(customPurePackageJson.scripts['norna:build'], 'norna --site-dir presentation build');

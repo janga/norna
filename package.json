@@ -41,7 +41,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "npm run dev:local",
+    "dev": "npm run dev:local --",
     "dev:local": "node bin/norna.mjs dev:local",
     "dev:lan": "node bin/norna.mjs dev:lan",
     "dev:restart": "node bin/norna.mjs dev:restart",

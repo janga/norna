@@ -20,7 +20,11 @@ const probeUrls = [
 const skipOpen = process.env.WALDE_NO_OPEN === '1';
 const statePath = path.join(astroCacheDir, 'dev-local.json');
 const logPath = path.join(astroCacheDir, 'dev.log');
-const command = process.argv[2] ?? 'start';
+const args = process.argv.slice(2);
+const knownCommands = new Set(['start', 'lan', 'status', 'logs', 'restart', 'stop']);
+const command = args.find((arg) => knownCommands.has(arg)) ?? args.find((arg) => !arg.startsWith('-')) ?? 'start';
+const shouldKillBlockingPort = args.includes('--kill');
+const shouldFollowLogs = args.includes('--follow');
 
 const runAstro = async (args, options = {}) => execFileAsync(process.execPath, getAstroArgs(args), {
 	cwd: siteProjectRoot,
@@ -159,6 +163,35 @@ const waitForPidToStopListening = async (pid) => {
 	return false;
 };
 
+const killPortPids = async (pids) => {
+	for (const pid of pids) {
+		console.log(`Stopping process ${pid} on port ${port}.`);
+		try {
+			process.kill(pid, 'SIGTERM');
+		} catch (error) {
+			if (error.code !== 'ESRCH') {
+				throw error;
+			}
+		}
+	}
+
+	for (const pid of pids) {
+		if (await waitForPidToStopListening(pid)) {
+			continue;
+		}
+
+		console.log(`Process ${pid} did not stop; sending SIGKILL.`);
+		try {
+			process.kill(pid, 'SIGKILL');
+		} catch (error) {
+			if (error.code !== 'ESRCH') {
+				throw error;
+			}
+		}
+		await waitForPidToStopListening(pid);
+	}
+};
+
 const openBrowser = async () => {
 	if (skipOpen) {
 		console.log(`Browser open skipped. Open ${localUrl}`);
@@ -214,12 +247,22 @@ const stopServer = async ({ quiet = false } = {}) => {
 	}
 };
 
-const startServer = async ({ host = localHost, open = true } = {}) => {
+const startServer = async ({ host = localHost, open = true, killBlockingPort = false } = {}) => {
 	await stopServer({ quiet: true });
 
-	const existingPids = await getPortPids();
+	let existingPids = await getPortPids();
 	if (existingPids.length > 0 || !(await isPortFree())) {
-		throw new Error(`Port ${port} is already in use. Stop the process using it, then rerun the dev command.`);
+		if (!killBlockingPort || existingPids.length === 0) {
+			throw new Error(`Port ${port} is already in use. Stop the process using it, then rerun the dev command, or pass --kill.`);
+		}
+
+		await killPortPids(existingPids);
+		await removeState();
+		existingPids = await getPortPids();
+
+		if (existingPids.length > 0 || !(await isPortFree())) {
+			throw new Error(`Port ${port} is still in use after trying to stop ${existingPids.join(', ')}.`);
+		}
 	}
 
 	await syncSitePublic();
@@ -275,9 +318,7 @@ const showStatus = async () => {
 };
 
 const showLogs = async () => {
-	const shouldFollow = process.argv.includes('--follow');
-
-	if (shouldFollow) {
+	if (shouldFollowLogs) {
 		const tail = spawn('tail', ['-n', '80', '-f', logPath], { stdio: 'inherit' });
 		await new Promise((resolve, reject) => {
 			tail.once('exit', resolve);
@@ -300,16 +341,20 @@ const showLogs = async () => {
 };
 
 if (command === 'start') {
-	await startServer({ open: !skipOpen });
+	await startServer({ open: !skipOpen, killBlockingPort: shouldKillBlockingPort });
 } else if (command === 'lan') {
-	await startServer({ host: '0.0.0.0', open: !skipOpen });
+	await startServer({ host: '0.0.0.0', open: !skipOpen, killBlockingPort: shouldKillBlockingPort });
 } else if (command === 'status') {
 	await showStatus();
 } else if (command === 'logs') {
 	await showLogs();
 } else if (command === 'restart') {
 	const state = await readState();
-	await startServer({ host: state?.host === '0.0.0.0' ? '0.0.0.0' : localHost, open: false });
+	await startServer({
+		host: state?.host === '0.0.0.0' ? '0.0.0.0' : localHost,
+		open: false,
+		killBlockingPort: shouldKillBlockingPort,
+	});
 } else if (command === 'stop') {
 	await stopServer();
 } else {

@@ -24,6 +24,19 @@ localhost:4321
 If the port is already in use, the command fails and asks you to stop the
 process using it.
 
+To stop any process that is blocking the standard port before starting, pass
+`--kill`:
+
+```sh
+npm run norna:dev -- --kill
+```
+
+For the pure starter's `dev` alias, use:
+
+```sh
+npm run dev -- --kill
+```
+
 ## Test On A Phone
 
 To make the local dev server available to devices on the same Wi-Fi network:
