@@ -7,13 +7,12 @@ navigation:
 sections:
   - id: intro
   - id: workflow
-  - id: next
 ---
 
 ## Norna builds websites from files {#intro}
 
 Norna is an independent open source CLI for building small file-based static
-websites. 
+websites.
 
 You keep content, presentation, configuration, images, and public files in a
 plain project directory. Norna validates those files, prepares responsive image
@@ -38,18 +37,3 @@ The source model is intentionally simple:
 - `routes/` can hold additional pages.
 - `images/` holds source images next to the sections that use them.
 - `public/` holds static files such as `robots.txt`, `CNAME`, and favicons.
-
-## Where to go next {#next}
-
-Use the guided route if you want to try Norna now:
-
-[Start with Norna](/getting-started/)
-
-Use the concepts route if you want to understand how the parts fit together:
-
-[Understand the model](/concepts/)
-
-Use the reference route when you need exact command, configuration, content, or
-publishing details:
-
-[Open the reference map](/reference/)
