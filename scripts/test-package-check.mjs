@@ -181,18 +181,18 @@ try {
 	await writeFile(
 		packageCheckConfigPath,
 		packageCheckConfig
-			.replace("url: 'https://example.com/'", "url: 'https://example.com/gallery/'")
-			.replace("basePath: '/'", "basePath: '/gallery/'"),
+			.replace("url: 'https://example.com/'", "url: 'https://example.com/site/'")
+			.replace("basePath: '/'", "basePath: '/site/'"),
 	);
 	const packageCheckThemePath = path.join(siteProjectRoot, 'site', 'theme.md');
 	const packageCheckTheme = await readFile(packageCheckThemePath, 'utf8');
 	await writeFile(
 		packageCheckThemePath,
-		packageCheckTheme.replace('brand: Example Gallery', 'brand: Package Check Brand'),
+		packageCheckTheme.replace('brand: Example Site', 'brand: Package Check Brand'),
 	);
 	await mkdir(path.join(siteProjectRoot, 'site', 'routes', 'about'), { recursive: true });
 	await writeFile(path.join(siteProjectRoot, 'site', 'routes', 'about', 'route-content.md'), `---
-title: About the gallery
+title: About the site
 description: Route used by package checks.
 navigation:
   label: About
@@ -235,7 +235,7 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-heading-font-size-desktop: clamp(1.35rem, 1.1rem + 0.9vw, 2rem)',
+		'--section-heading-font-size-desktop: clamp(1.6rem, 1.22rem + 1.45vw, 2.75rem)',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -247,15 +247,15 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
-		'<link rel="canonical" href="https://example.com/gallery/about/">',
+		'<link rel="canonical" href="https://example.com/site/about/">',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
-		'href="/gallery/about/" aria-current="page"',
+		'href="/site/about/" aria-current="page"',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<a class="site-brand" href="/gallery/">Package Check Brand</a>',
+		'<a class="site-brand" href="/site/">Package Check Brand</a>',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -306,7 +306,7 @@ This route verifies that packaged norna sites can build route pages.
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'favicon.ico'));
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<link rel="icon" sizes="any" href="/gallery/favicon.ico">',
+		'<link rel="icon" sizes="any" href="/site/favicon.ico">',
 	);
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -316,12 +316,12 @@ This route verifies that packaged norna sites can build route pages.
 	const siteContent = await readFile(siteContentPath, 'utf8');
 	const siteThemePath = path.join(siteProjectRoot, 'site', 'theme.md');
 	const siteTheme = await readFile(siteThemePath, 'utf8');
-	await writeFile(siteThemePath, siteTheme.replace('\n    preset: quiet-gallery', '\n    preset: noisy-gallery'));
+	await writeFile(siteThemePath, siteTheme.replace('\n  preset: quiet-gallery', '\n  preset: noisy-gallery'));
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation.typography.preset',
+		'typography.preset',
 	);
 	await writeFile(
 		siteThemePath,
@@ -390,11 +390,9 @@ This route verifies that packaged norna sites can build route pages.
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'sections.0.presentation.typography.preset',
 	);
-	const siteConfigPath = path.join(siteProjectRoot, 'site', 'config.mjs');
-	const siteConfig = await readFile(siteConfigPath, 'utf8');
 	await writeFile(
-		siteConfigPath,
-		siteConfig.replace(
+		siteThemePath,
+		siteTheme.replace(
 			'fontFamily: "Arial, \'Helvetica Neue\', Helvetica, sans-serif"',
 			'fontFamily: "Arial; color: red"',
 		),
@@ -405,9 +403,12 @@ This route verifies that packaged norna sites can build route pages.
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'typography.fontFamily',
 	);
+	await writeFile(siteThemePath, siteTheme);
+	const siteConfigPath = path.join(siteProjectRoot, 'site', 'config.mjs');
+	const siteConfig = await readFile(siteConfigPath, 'utf8');
 	await writeFile(
 		siteConfigPath,
-		siteConfig.replace("basePath: '/gallery/'", "basePath: 'gallery'"),
+		siteConfig.replace("basePath: '/site/'", "basePath: 'site'"),
 	);
 	await runExpectFailure(
 		npxBin,

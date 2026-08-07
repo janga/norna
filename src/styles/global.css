@@ -28,20 +28,30 @@
 	--gallery-max-image-height: var(--gallery-max-image-height-desktop);
 	--nav-top-safety-inset: 0px;
 
-	/* Avstand fran sticky navigationsrad till forsta sektionsrubriken. */
-	--space-nav-to-first-section: clamp(1.875rem, 3vw, 2.75rem);
-
-	/* Avstand fran sektionsrubrik till sektionens forsta textstycke. */
-	--space-section-title-to-body: clamp(0.5625rem, 1.25vw, 0.75rem);
-
-	/* Avstand fran sektionens lopande text till efterfoljande galleri. */
-	--space-section-body-to-gallery: clamp(1.25rem, 2.5vw, 2rem);
-
-	/* Avstand mellan enskilda bilder/verk inom samma galleri. */
-	--space-gallery-item: clamp(1.5rem, 3.5vw, 2.75rem);
-
-	/* Avstand fran sista galleriobjektet eller textblocket till nasta sektion. */
-	--space-section-to-section: clamp(2.55rem, 4.2vw, 3.9rem);
+	--space-nav-to-first-section-desktop: clamp(1.875rem, 3vw, 2.75rem);
+	--space-nav-to-first-section-mobile: 1.375rem;
+	--space-nav-to-first-section: var(--space-nav-to-first-section-desktop);
+	--space-section-title-to-body-desktop: clamp(0.5625rem, 1.25vw, 0.75rem);
+	--space-section-title-to-body-mobile: 0.4375rem;
+	--space-section-title-to-body: var(--space-section-title-to-body-desktop);
+	--space-section-body-to-gallery-desktop: clamp(1.25rem, 2.5vw, 2rem);
+	--space-section-body-to-gallery-mobile: 1.25rem;
+	--space-section-body-to-gallery: var(--space-section-body-to-gallery-desktop);
+	--space-gallery-item-desktop: clamp(1.5rem, 3.5vw, 2.75rem);
+	--space-gallery-item-mobile: 2.75rem;
+	--space-gallery-item: var(--space-gallery-item-desktop);
+	--space-section-to-section-desktop: clamp(2.55rem, 4.2vw, 3.9rem);
+	--space-section-to-section-mobile: 2.25rem;
+	--space-section-to-section: var(--space-section-to-section-desktop);
+	--space-final-section-bottom-desktop: var(--space-section-to-section-desktop);
+	--space-final-section-bottom-mobile: var(--space-section-to-section-mobile);
+	--space-final-section-bottom: var(--space-final-section-bottom-desktop);
+	--space-subheading-top-desktop: 2rem;
+	--space-subheading-top-mobile: 1.6rem;
+	--space-subheading-top: var(--space-subheading-top-desktop);
+	--space-subheading-rule-top-desktop: 1rem;
+	--space-subheading-rule-top-mobile: 0.8rem;
+	--space-subheading-rule-top: var(--space-subheading-rule-top-desktop);
 
 	--content-gutter-desktop: clamp(1.25rem, 4vw, 3rem);
 	--content-gutter-mobile: 1rem;
@@ -316,7 +326,7 @@ a {
 }
 
 .site-section:last-child {
-	padding-bottom: var(--space-section-to-section);
+	padding-bottom: var(--space-final-section-bottom);
 }
 
 .section-card {
@@ -331,15 +341,15 @@ a {
 	text-align: var(--section-heading-align-desktop, center);
 }
 
-h1,
-h2,
+.section-header h1,
+.section-header h2,
 p,
 ul {
 	margin-top: 0;
 }
 
-h1,
-h2 {
+.section-header h1,
+.section-header h2 {
 	margin-bottom: 0;
 	color: inherit;
 	font-size: var(--section-heading-font-size-desktop, clamp(1.35rem, 1.1rem + 0.9vw, 2rem));
@@ -348,11 +358,6 @@ h2 {
 	line-height: var(--section-heading-line-height, 1.04);
 	text-transform: uppercase;
 	overflow-wrap: anywhere;
-}
-
-.site-section-primary h1 {
-	font-size: var(--section-heading-font-size-desktop, clamp(1.6rem, 1.22rem + 1.45vw, 2.75rem));
-	font-weight: 700;
 }
 
 .section-body {
@@ -389,23 +394,25 @@ h2 {
 }
 
 .section-markdown h3 {
-	margin: 2.75rem 0 0.9rem;
+	margin: var(--space-subheading-top) 0 var(--section-markdown-h3-spacing, 0.9rem);
 	border-top: 1px solid var(--color-soft);
-	padding-top: 1.75rem;
+	padding-top: var(--space-subheading-rule-top);
 	font-family: var(--font-sans);
-	font-size: 0.82rem;
-	letter-spacing: 0.14em;
-	line-height: 1.35;
+	font-size: var(--section-markdown-h3-font-size-desktop, 0.82rem);
+	letter-spacing: 0;
+	line-height: var(--section-markdown-h3-line-height, 1.35);
+	text-align: var(--section-markdown-h3-align-desktop, left);
 	text-transform: uppercase;
 }
 
 .section-markdown h4 {
-	margin: 0 0 0.85rem;
+	margin: 0 0 var(--section-markdown-h4-spacing, 0.85rem);
 	color: inherit;
-	font-size: clamp(0.96rem, 0.94rem + 0.08vw, 1rem);
+	font-size: var(--section-markdown-h4-font-size-desktop, clamp(0.96rem, 0.94rem + 0.08vw, 1rem));
 	font-weight: 400;
-	letter-spacing: 0.02em;
-	line-height: 1.5;
+	letter-spacing: 0;
+	line-height: var(--section-markdown-h4-line-height, 1.5);
+	text-align: var(--section-markdown-h4-align-desktop, left);
 }
 
 .section-markdown ul,
@@ -639,11 +646,14 @@ h2 {
 
 @media (max-width: 700px) {
 	:root {
-		--space-nav-to-first-section: 1.375rem;
-		--space-section-title-to-body: 0.4375rem;
-		--space-section-body-to-gallery: 1.25rem;
-		--space-gallery-item: 2.75rem;
-		--space-section-to-section: 2.25rem;
+		--space-nav-to-first-section: var(--space-nav-to-first-section-mobile);
+		--space-section-title-to-body: var(--space-section-title-to-body-mobile);
+		--space-section-body-to-gallery: var(--space-section-body-to-gallery-mobile);
+		--space-gallery-item: var(--space-gallery-item-mobile);
+		--space-section-to-section: var(--space-section-to-section-mobile);
+		--space-final-section-bottom: var(--space-final-section-bottom-mobile);
+		--space-subheading-top: var(--space-subheading-top-mobile);
+		--space-subheading-rule-top: var(--space-subheading-rule-top-mobile);
 		--content-gutter: var(--content-gutter-mobile);
 		--gallery-max-available-width: var(--gallery-max-available-width-mobile);
 		--gallery-max-image-height: var(--gallery-max-image-height-mobile);
@@ -780,18 +790,11 @@ h2 {
 		line-height: 1.72;
 	}
 
-	h1,
-	h2 {
+	.section-header h1,
+	.section-header h2 {
 		font-size: var(
 			--section-heading-font-size-mobile,
 			var(--section-heading-font-size-desktop, clamp(1.3rem, 1.05rem + 1.35vw, 1.75rem))
-		);
-	}
-
-	.site-section-primary h1 {
-		font-size: var(
-			--section-heading-font-size-mobile,
-			var(--section-heading-font-size-desktop, clamp(1.5rem, 1.12rem + 2vw, 2.25rem))
 		);
 	}
 
@@ -819,12 +822,13 @@ h2 {
 	}
 
 	.section-markdown h3 {
-		margin-top: 2.25rem;
-		padding-top: 1.35rem;
+		font-size: var(--section-markdown-h3-font-size-mobile, var(--section-markdown-h3-font-size-desktop, 0.82rem));
+		text-align: var(--section-markdown-h3-align-mobile, var(--section-markdown-h3-align-desktop, left));
 	}
 
 	.section-markdown h4 {
-		text-align: center;
+		font-size: var(--section-markdown-h4-font-size-mobile, var(--section-markdown-h4-font-size-desktop, clamp(0.96rem, 0.94rem + 0.08vw, 1rem)));
+		text-align: var(--section-markdown-h4-align-mobile, var(--section-markdown-h4-align-desktop, left));
 	}
 
 	.section-markdown ul,

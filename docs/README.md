@@ -9,9 +9,9 @@ For a site maintainer:
 
 1. [Getting Started](getting-started.md)
 2. [Site Structure](site-structure.md)
-3. [Configuration](configuration.md)
-4. [Content](content.md)
-5. [Theme](theme.md)
+3. [Theme](theme.md)
+4. [Configuration](configuration.md)
+5. [Content](content.md)
 6. [Typography](typography.md)
 7. [Routes](routes.md)
 8. [Images And Metadata](images-and-metadata.md)
@@ -35,15 +35,14 @@ For design and naming principles:
 
 For a quick reference:
 
-- [Configuration](configuration.md) describes every supported
-  `site/config.mjs` field, including `layout.pageWidth`, `layout.gutter`,
-  gallery viewport limits, `typography.fontFamily`, validation rule, and
-  default.
+- [Configuration](configuration.md) describes technical `site/config.mjs`
+  fields such as URL, base path, locale labels, footer, GitHub, and deploy
+  settings.
 - [Content](content.md) describes page frontmatter, section frontmatter,
-  galleries, carousels, temporary sections, Markdown section matching, and
+  image rows, carousels, temporary sections, Markdown section matching, and
   content validation.
-- [Theme](theme.md) describes site-wide presentation, page and section
-  presentation overrides, frame colors, and inline styles.
+- [Theme](theme.md) describes site-wide layout, spacing, image sizing, font,
+  typography, presentation colors, frame colors, and inline styles.
 - [Typography](typography.md) describes presets, roles, overrides,
   inheritance, and inspection commands.
 - [Routes](routes.md) describes route files, slugs, route navigation, and
@@ -55,7 +54,7 @@ For a quick reference:
 Design documents are intentionally separate from the user reference:
 
 - [Command Organization](design/command-organization.md) defines command
-  namespaces for pure gallery projects, mixed projects, and engine development.
+  namespaces for standalone sites, mixed projects, and engine development.
 - [Site Examples Structure](design/site-examples-structure.md) defines the
   intended vocabulary for starters, examples, documentation sites, reference
   docs, and fixtures.

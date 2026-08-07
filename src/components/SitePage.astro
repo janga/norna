@@ -27,10 +27,9 @@ const navigationPages = getNavigationPages(sitePages);
 const homePage = sitePages.find((page) => page.isHome) ?? currentPage;
 const themeData = theme?.data ?? {};
 const brandLabel = themeData.navigation?.brand ?? homePage.title;
-const pagePresentation = resolvePagePresentation(themeData.presentation, entry.data.presentation);
+const pagePresentation = resolvePagePresentation(themeData, entry.data.presentation);
 const frameColors = resolveFrameColors({
-	themePresentation: themeData.presentation,
-	themeFrame: themeData.frame,
+	theme: themeData,
 	pagePresentation,
 	pageFrame: entry.data.frame,
 });

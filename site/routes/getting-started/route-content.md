@@ -19,10 +19,10 @@ Create a new site repository with the published package:
 
 ```sh
 cd ..
-npx @janga/norna@latest init my-gallery
-cd my-gallery
+npx @janga/norna@latest init my-site
+cd my-site
 npm install
-npm run norna:dev
+npm run dev
 ```
 
 Run `init` before `npm install`. A new target directory is not a Node project
@@ -32,10 +32,10 @@ until Norna has created its `package.json`.
 
 Start with the files Norna creates in `site/`:
 
-- edit `site/config.mjs` for URL, layout, language labels, and GitHub settings;
-- edit `site/theme.md` for colors, typography preset, inline styles, and frame
-  colors;
-- edit `site/content.md` for homepage content, section order, galleries, alt
+- edit `site/config.mjs` for URL, language labels, and GitHub settings;
+- edit `site/theme.md` for layout, spacing, image sizing, font, colors,
+  typography preset, inline styles, and frame colors;
+- edit `site/content.md` for homepage content, section order, image rows, alt
   text, and captions;
 - put source images under `site/images/<section-id>/`;
 - put static public files under `site/public/`.

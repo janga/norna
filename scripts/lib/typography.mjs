@@ -7,11 +7,31 @@ export const typographyPresetNames = [
 
 export const typographyPresets = {
 	'quiet-gallery': {
-		heading: {
-			align: { desktop: 'left', mobile: 'left' },
-			size: 'medium',
-			lineHeight: 1.08,
-			spacing: '0.65em',
+		headings: {
+			h1: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'large',
+				lineHeight: 1.04,
+				spacing: '0.55em',
+			},
+			h2: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'medium',
+				lineHeight: 1.08,
+				spacing: '0.65em',
+			},
+			h3: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'small',
+				lineHeight: 1.35,
+				spacing: '0.9rem',
+			},
+			h4: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'medium',
+				lineHeight: 1.5,
+				spacing: '0.85rem',
+			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
@@ -27,11 +47,31 @@ export const typographyPresets = {
 		},
 	},
 	'compact-gallery': {
-		heading: {
-			align: { desktop: 'left', mobile: 'left' },
-			size: 'medium',
-			lineHeight: 1.08,
-			spacing: '0.45em',
+		headings: {
+			h1: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'large',
+				lineHeight: 1.04,
+				spacing: '0.45em',
+			},
+			h2: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'medium',
+				lineHeight: 1.08,
+				spacing: '0.45em',
+			},
+			h3: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'small',
+				lineHeight: 1.3,
+				spacing: '0.75rem',
+			},
+			h4: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'medium',
+				lineHeight: 1.42,
+				spacing: '0.6rem',
+			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
@@ -47,11 +87,31 @@ export const typographyPresets = {
 		},
 	},
 	'text-forward': {
-		heading: {
-			align: { desktop: 'left', mobile: 'left' },
-			size: 'medium',
-			lineHeight: 1.12,
-			spacing: '0.8em',
+		headings: {
+			h1: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'large',
+				lineHeight: 1.06,
+				spacing: '0.65em',
+			},
+			h2: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'medium',
+				lineHeight: 1.12,
+				spacing: '0.8em',
+			},
+			h3: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'small',
+				lineHeight: 1.35,
+				spacing: '1rem',
+			},
+			h4: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'medium',
+				lineHeight: 1.55,
+				spacing: '0.85rem',
+			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
@@ -67,11 +127,31 @@ export const typographyPresets = {
 		},
 	},
 	statement: {
-		heading: {
-			align: { desktop: 'left', mobile: 'left' },
-			size: 'medium',
-			lineHeight: 1.04,
-			spacing: '0.5em',
+		headings: {
+			h1: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'xlarge',
+				lineHeight: 1.02,
+				spacing: '0.45em',
+			},
+			h2: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'large',
+				lineHeight: 1.04,
+				spacing: '0.5em',
+			},
+			h3: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'medium',
+				lineHeight: 1.18,
+				spacing: '0.85rem',
+			},
+			h4: {
+				align: { desktop: 'left', mobile: 'left' },
+				size: 'medium',
+				lineHeight: 1.42,
+				spacing: '0.75rem',
+			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },

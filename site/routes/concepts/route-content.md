@@ -23,7 +23,7 @@ admin UI.
 The important split is:
 
 - technical settings in `config.mjs`;
-- site-wide presentation defaults in `theme.md`;
+- site-wide visual defaults in `theme.md`;
 - page content and section-specific overrides in `content.md` and
   `route-content.md`;
 - source media in `images/`;

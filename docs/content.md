@@ -1,7 +1,7 @@
 # Content
 
 `site/content.md` is the homepage page file for a `norna` site. It defines the
-page metadata, section order, section ids, gallery rows, and Markdown text for
+page metadata, section order, section ids, image rows, and Markdown text for
 the homepage.
 
 Route pages use the same page and section model in
@@ -25,14 +25,14 @@ The Astro content schema validates these top-level fields in page files:
   [Theme](theme.md) and [Typography](typography.md).
 - `frame`: optional page-level frame color source. See [Theme](theme.md).
 - `sections`: required non-empty array. Defines section order, ids,
-  presentation overrides, and gallery rows.
+  presentation overrides, and image rows.
 
 Minimal homepage:
 
 ```md
 ---
-title: My Gallery
-description: A small gallery site.
+title: My Site
+description: A small Norna site.
 sections:
   - id: intro
 ---
@@ -81,9 +81,9 @@ Keep these values aligned:
 The visible section navigation label comes from the Markdown heading text, not
 from the frontmatter id.
 
-## Galleries
+## Image Rows
 
-Each gallery row can contain a single image:
+Each image row can contain a single image:
 
 ```yaml
 gallery:
@@ -105,7 +105,7 @@ images from `site/routes/<route-folder>/images/<section-id>/`.
 
 ## Carousels
 
-A gallery row can contain a carousel instead of a single image:
+An image row can contain a carousel instead of a single image:
 
 ```yaml
 gallery:
@@ -147,7 +147,7 @@ Both `from` and `until` use `YYYY-MM-DD`. Either value may be omitted, but a
 
 Hidden sections are omitted from the rendered HTML and sticky navigation. They
 remain in the page file, and `content:check` still validates their matching
-Markdown headings and gallery image references.
+Markdown headings and image references.
 
 The current date is evaluated at dev/build time. Set `NORNA_TODAY` to preview
 or test a specific date:
@@ -187,21 +187,23 @@ npm run norna:content:check
 ```
 
 This checks section order and heading ids, duplicate image names, missing image
-files, misplaced referenced images, duplicate gallery references, invalid image
+files, misplaced referenced images, duplicate image references, invalid image
 references, unreferenced images, undefined inline styles, and common
 frontmatter indentation and structure mistakes.
 
 Frontmatter uses YAML indentation. Use ordinary spaces, not tabs or
 non-breaking spaces. `content:check` reports a focused error when indentation is
 invalid, when a key is indented under a line that already has a value, or when a
-known nested key such as `gallery` appears at the top level:
+known nested key such as `gallery` or section-specific `typography` appears at
+the top level:
 
 ```yaml
-typography:
-  preset: quiet-gallery
-  overrides:
-    body:
-      paragraphSpacing: 0.8em
+presentation:
+  typography:
+    preset: quiet-gallery
+    overrides:
+      body:
+        paragraphSpacing: 0.8em
 ```
 
 Top-level page frontmatter may contain only `title`, `description`, `slug`,

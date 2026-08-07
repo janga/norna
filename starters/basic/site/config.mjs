@@ -3,27 +3,6 @@ export default {
 		url: 'https://example.com/',
 		basePath: '/',
 	},
-	layout: {
-		pageWidth: '1180px',
-		gutter: {
-			desktop: 'clamp(1.25rem, 4vw, 3rem)',
-			mobile: '1rem',
-		},
-	},
-	gallery: {
-		width: '900px',
-		maxAvailableWidthPercent: {
-			desktop: 100,
-			mobile: 100,
-		},
-		maxAvailableHeightPercent: {
-			desktop: 74,
-			mobile: 68,
-		},
-	},
-	typography: {
-		fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
-	},
 	navigation: {
 		smoothScroll: {
 			enabled: true,
@@ -37,11 +16,11 @@ export default {
 		labels: {
 			skipToContent: 'Skip to content',
 			sectionNavigation: 'Sections',
-			gallery: 'Gallery',
+			gallery: 'Images',
 		},
 	},
 	footer: {
-		copyrightMessage: '(c) Example Artist.',
+		copyrightMessage: '(c) Example Owner.',
 		buildInfo: {
 			enabled: true,
 			text: 'Built',
@@ -54,7 +33,7 @@ export default {
 		},
 	},
 	github: {
-		repo: 'owner/example-gallery',
+		repo: 'owner/example-site',
 		branch: 'main',
 		pagesWorkflow: 'Deploy to GitHub Pages',
 	},

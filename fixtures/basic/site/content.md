@@ -1,5 +1,5 @@
 ---
-title: Fixture Gallery
+title: Fixture Site
 description: Minimal cli-gallery fixture site.
 sections:
   - id: intro

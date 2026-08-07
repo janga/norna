@@ -14,13 +14,13 @@ This document is for work on the reusable `norna` package itself.
 - `scripts/deploy-site.mjs`: deploy and deploy:commit behavior.
 - `scripts/watch-pages-deploy.mjs`: GitHub Pages workflow monitor.
 - `src/content.config.ts`: Astro content schema.
-- `src/components/` and `src/layouts/`: rendered page, navigation, gallery, and
-  layout.
+- `src/components/` and `src/layouts/`: rendered page, navigation, image rows,
+  and layout.
 - `tests/`: Playwright navigation diagnostics.
 - `fixtures/basic/site/`: minimal site used for engine checks.
 - `starters/basic/`: copyable site starter.
-- `examples/dog-gallery/site/`: visual dog-gallery demo used by demo builds
-  and navigation diagnostics.
+- `examples/dog-gallery/site/`: visual dog example used by demo builds and
+  navigation diagnostics.
 
 The repository-local `site/` directory is reserved for a local documentation
 site. It is useful for dogfooding `norna` documentation, but it is not the
@@ -48,7 +48,7 @@ npm run dev:local
 npm run build
 ```
 
-The dog gallery remains the visual demo and navigation diagnostic target:
+The dog example remains the visual demo and navigation diagnostic target:
 
 ```sh
 cd examples/dog-gallery/site

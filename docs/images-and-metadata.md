@@ -15,7 +15,7 @@ Supported source extensions:
 - `.png`
 
 Image filenames must be globally unique under `site/images/`. The content and
-image scripts reject duplicate filenames because gallery rows identify images by
+image scripts reject duplicate filenames because image rows identify images by
 filename only.
 
 ## Generated Variants

@@ -32,6 +32,9 @@ interface Props {
 
 const { section, pagePresentation, headingLevel, priorityGalleryImage = false } = Astro.props;
 const HeadingTag = headingLevel === 1 ? 'h1' : 'h2';
+// Sections are authored with Markdown ## headings even when the first one renders as HTML h1.
+const sectionHeadingVisualLevel = 'h2';
+type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
 const headingSizeValues: Record<TextSize, ResponsiveValue<string>> = {
 	small: {
 		desktop: 'clamp(1.1rem, 1.02rem + 0.35vw, 1.35rem)',
@@ -97,10 +100,26 @@ const textColor = sectionOverride?.textColor
 	?? pagePresentation.textColor;
 const resolvedTypography = resolveTypographyOverride(pagePresentation.typography, sectionOverride?.typography);
 const typography = resolvedTypography.values;
-const headingAlign = typography.heading.align as ResponsiveValue<TextAlign>;
+const heading = typography.headings[sectionHeadingVisualLevel] as {
+	align: ResponsiveValue<TextAlign>;
+	size: TextSize;
+	lineHeight: number;
+	spacing: string;
+};
+const markdownHeadingLevels = ['h3', 'h4'] as const;
+const markdownHeadings = Object.fromEntries(markdownHeadingLevels.map((level) => [
+	level,
+	typography.headings[level] as {
+		align: ResponsiveValue<TextAlign>;
+		size: TextSize;
+		lineHeight: number;
+		spacing: string;
+	},
+]));
+const headingAlign = heading.align;
 const bodyAlign = typography.body.align as ResponsiveValue<TextAlign>;
 const captionAlign = typography.caption.align as ResponsiveValue<TextAlign>;
-const headingFontSize = getSizeValue(headingSizeValues, typography.heading.size as TextSize);
+const headingFontSize = getSizeValue(headingSizeValues, heading.size);
 const bodyFontSize = getSizeValue(bodySizeValues, typography.body.size as TextSize);
 const captionFontSize = getSizeValue(captionSizeValues, typography.caption.size as TextSize);
 const justifyByAlign: Record<TextAlign, string> = {
@@ -118,6 +137,19 @@ const getAlignedTextWidth = (
 const headingWidth = getAlignedTextWidth(headingAlign, '760px');
 const bodyWidth = getAlignedTextWidth(bodyAlign, 'var(--text-width)');
 const hasGallery = section.gallery.length > 0;
+const markdownHeadingStyle = (level: 'h3' | 'h4') => {
+	const headingConfig = markdownHeadings[level];
+	const fontSize = getSizeValue(headingSizeValues, headingConfig.size);
+
+	return [
+		`--section-markdown-${level}-align-desktop: ${headingConfig.align.desktop}`,
+		`--section-markdown-${level}-align-mobile: ${headingConfig.align.mobile}`,
+		`--section-markdown-${level}-font-size-desktop: ${fontSize.desktop}`,
+		`--section-markdown-${level}-font-size-mobile: ${fontSize.mobile}`,
+		`--section-markdown-${level}-line-height: ${headingConfig.lineHeight}`,
+		`--section-markdown-${level}-spacing: ${headingConfig.spacing}`,
+	];
+};
 const sectionStyle = [
 	`--section-background-color: ${backgroundColor}`,
 	`--section-text-color: ${textColor}`,
@@ -125,10 +157,12 @@ const sectionStyle = [
 	`--section-heading-align-mobile: ${headingAlign.mobile}`,
 	`--section-heading-font-size-desktop: ${headingFontSize.desktop}`,
 	`--section-heading-font-size-mobile: ${headingFontSize.mobile}`,
-	`--section-heading-line-height: ${typography.heading.lineHeight}`,
-	`--section-heading-spacing: ${typography.heading.spacing}`,
+	`--section-heading-line-height: ${heading.lineHeight}`,
+	`--section-heading-spacing: ${heading.spacing}`,
 	`--section-heading-width-desktop: ${headingWidth.desktop}`,
 	`--section-heading-width-mobile: ${headingWidth.mobile}`,
+	...markdownHeadingStyle('h3'),
+	...markdownHeadingStyle('h4'),
 	`--section-body-align-desktop: ${bodyAlign.desktop}`,
 	`--section-body-align-mobile: ${bodyAlign.mobile}`,
 	`--section-body-font-size-desktop: ${bodyFontSize.desktop}`,
@@ -150,7 +184,7 @@ const sectionStyle = [
 
 <section
 	id={section.id}
-	class:list={['site-section', { 'site-section-primary': headingLevel === 1 }]}
+	class="site-section"
 	data-section-title={section.title}
 	style={sectionStyle}
 >

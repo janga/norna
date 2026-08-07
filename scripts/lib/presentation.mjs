@@ -11,19 +11,20 @@ export const fallbackPresentationColors = Object.freeze({
 
 const normalizePresentation = (presentation) => presentation ?? {};
 
-export const resolveThemePresentation = (themePresentation) => {
-	const normalizedThemePresentation = normalizePresentation(themePresentation);
+export const resolveThemePresentation = (theme) => {
+	const normalizedTheme = theme ?? {};
+	const normalizedThemePresentation = normalizePresentation(normalizedTheme.presentation);
 
 	return {
 		backgroundColor: normalizedThemePresentation.backgroundColor ?? fallbackPresentationColors.backgroundColor,
 		textColor: normalizedThemePresentation.textColor ?? fallbackPresentationColors.textColor,
 		inlineStyles: normalizedThemePresentation.inlineStyles ?? {},
-		typography: resolveTypographyConfig(normalizedThemePresentation.typography ?? defaultTypography),
+		typography: resolveTypographyConfig(normalizedTheme.typography ?? defaultTypography),
 	};
 };
 
-export const resolvePagePresentation = (themePresentation, pagePresentation) => {
-	const resolvedThemePresentation = resolveThemePresentation(themePresentation);
+export const resolvePagePresentation = (theme, pagePresentation) => {
+	const resolvedThemePresentation = resolveThemePresentation(theme);
 	const normalizedPagePresentation = normalizePresentation(pagePresentation);
 
 	return {
@@ -42,7 +43,7 @@ const getColorsFromPresentation = (presentation) => ({
 	textColor: presentation.textColor,
 });
 
-const resolveColorSource = ({ colors, themePresentation, themeFrameColors, pagePresentation }) => {
+const resolveColorSource = ({ colors, themeFrameColors, pagePresentation }) => {
 	if (!colors || colors === 'theme') {
 		return themeFrameColors;
 	}
@@ -54,18 +55,16 @@ const resolveColorSource = ({ colors, themePresentation, themeFrameColors, pageP
 	return colors;
 };
 
-export const resolveFrameColors = ({ themePresentation, themeFrame, pagePresentation, pageFrame }) => {
-	const resolvedThemePresentation = resolveThemePresentation(themePresentation);
+export const resolveFrameColors = ({ theme, pagePresentation, pageFrame }) => {
+	const resolvedThemePresentation = resolveThemePresentation(theme);
 	const themeFrameColors = resolveColorSource({
-		colors: themeFrame?.colors ?? 'presentation',
-		themePresentation: resolvedThemePresentation,
+		colors: theme?.frame?.colors ?? 'presentation',
 		themeFrameColors: getColorsFromPresentation(resolvedThemePresentation),
 		pagePresentation: resolvedThemePresentation,
 	});
 
 	return resolveColorSource({
 		colors: pageFrame?.colors ?? 'theme',
-		themePresentation: resolvedThemePresentation,
 		themeFrameColors,
 		pagePresentation,
 	});

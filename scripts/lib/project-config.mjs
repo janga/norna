@@ -1,31 +1,33 @@
 import { pathToFileURL } from 'node:url';
-import { siteConfigLabel, siteConfigPath } from './site-paths.mjs';
+import { siteConfigLabel, siteConfigPath, siteThemeLabel } from './site-paths.mjs';
+import { readThemeConfig } from './theme-config.mjs';
 
 const { default: siteConfig } = await import(/* @vite-ignore */ pathToFileURL(siteConfigPath).href);
+const themeConfig = await readThemeConfig();
 
 const cssLengthPattern = String.raw`(?:\d+|\d*\.\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)`;
 const simpleCssLengthPattern = new RegExp(`^${cssLengthPattern}$`);
 const clampCssLengthPattern = new RegExp(`^clamp\\(\\s*${cssLengthPattern}\\s*,\\s*${cssLengthPattern}\\s*,\\s*${cssLengthPattern}\\s*\\)$`);
 
-const assertObject = (value, path) => {
+const assertObject = (value, path, sourceLabel = siteConfigLabel) => {
 	if (!value || typeof value !== 'object' || Array.isArray(value)) {
-		throw new Error(`${path} must be an object in ${siteConfigLabel}.`);
+		throw new Error(`${path} must be an object in ${sourceLabel}.`);
 	}
 
 	return value;
 };
 
-const readString = (object, key, path) => {
+const readString = (object, key, path, sourceLabel = siteConfigLabel) => {
 	const value = object[key];
 
 	if (typeof value !== 'string' || value.trim() === '') {
-		throw new Error(`${path}.${key} must be a non-empty string in ${siteConfigLabel}.`);
+		throw new Error(`${path}.${key} must be a non-empty string in ${sourceLabel}.`);
 	}
 
 	return value.trim();
 };
 
-const readOptionalString = (object, key, path) => {
+const readOptionalString = (object, key, path, sourceLabel = siteConfigLabel) => {
 	const value = object[key];
 
 	if (value === undefined || value === null || value === '') {
@@ -33,66 +35,69 @@ const readOptionalString = (object, key, path) => {
 	}
 
 	if (typeof value !== 'string' || value.trim() === '') {
-		throw new Error(`${path}.${key} must be a non-empty string when set in ${siteConfigLabel}.`);
+		throw new Error(`${path}.${key} must be a non-empty string when set in ${sourceLabel}.`);
 	}
 
 	return value.trim();
 };
 
-const readFontFamily = (object, key, path, fallback) => {
+const readFontFamily = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
 	const value = object[key] ?? fallback;
 
 	if (typeof value !== 'string' || value.trim() === '') {
-		throw new Error(`${path}.${key} must be a non-empty CSS font-family value in ${siteConfigLabel}.`);
+		throw new Error(`${path}.${key} must be a non-empty CSS font-family value in ${sourceLabel}.`);
 	}
 
 	const normalizedValue = value.trim();
 
 	if (/[\n\r;{}]/.test(normalizedValue)) {
-		throw new Error(`${path}.${key} must not contain semicolons, braces, or line breaks in ${siteConfigLabel}.`);
+		throw new Error(`${path}.${key} must not contain semicolons, braces, or line breaks in ${sourceLabel}.`);
 	}
 
 	return normalizedValue;
 };
 
-const readCssLength = (object, key, path, fallback) => {
+const readCssLength = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
 	const value = object[key] ?? fallback;
 
 	if (typeof value !== 'string' || value.trim() === '') {
-		throw new Error(`${path}.${key} must be a non-empty CSS length in ${siteConfigLabel}.`);
+		throw new Error(`${path}.${key} must be a non-empty CSS length in ${sourceLabel}.`);
 	}
 
 	const normalizedValue = value.trim();
 
 	if (!simpleCssLengthPattern.test(normalizedValue) || parseFloat(normalizedValue) <= 0) {
-		throw new Error(`${path}.${key} must be a CSS length such as "900px", "56rem", or "90%" in ${siteConfigLabel}.`);
+		throw new Error(`${path}.${key} must be a CSS length such as "900px", "56rem", or "90%" in ${sourceLabel}.`);
 	}
 
 	return normalizedValue;
 };
 
-const readCssLengthValue = (value, path) => {
+const readCssLengthValue = (value, path, sourceLabel = siteConfigLabel) => {
 	if (typeof value !== 'string' || value.trim() === '') {
-		throw new Error(`${path} must be a non-empty CSS length in ${siteConfigLabel}.`);
+		throw new Error(`${path} must be a non-empty CSS length in ${sourceLabel}.`);
 	}
 
 	const normalizedValue = value.trim();
 
 	if (
-		(!simpleCssLengthPattern.test(normalizedValue) && !clampCssLengthPattern.test(normalizedValue))
-		|| parseFloat(normalizedValue) <= 0
+		normalizedValue !== '0'
+		&& (
+			(!simpleCssLengthPattern.test(normalizedValue) && !clampCssLengthPattern.test(normalizedValue))
+			|| parseFloat(normalizedValue) < 0
+		)
 	) {
-		throw new Error(`${path} must be a CSS length such as "48px", "3rem", "4vw", or a clamp() of those lengths in ${siteConfigLabel}.`);
+		throw new Error(`${path} must be a CSS length such as "0", "48px", "3rem", "4vw", or a clamp() of those lengths in ${sourceLabel}.`);
 	}
 
 	return normalizedValue;
 };
 
-const readResponsiveCssLength = (object, key, path, fallback) => {
+const readResponsiveCssLength = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
 	const value = object[key] ?? fallback;
 
 	if (typeof value === 'string') {
-		const length = readCssLengthValue(value, `${path}.${key}`);
+		const length = readCssLengthValue(value, `${path}.${key}`, sourceLabel);
 
 		return Object.freeze({
 			desktop: length,
@@ -100,27 +105,27 @@ const readResponsiveCssLength = (object, key, path, fallback) => {
 		});
 	}
 
-	const responsiveValue = assertObject(value, `${path}.${key}`);
+	const responsiveValue = assertObject(value, `${path}.${key}`, sourceLabel);
 
 	return Object.freeze({
-		desktop: readCssLengthValue(responsiveValue.desktop ?? fallback.desktop, `${path}.${key}.desktop`),
-		mobile: readCssLengthValue(responsiveValue.mobile ?? fallback.mobile, `${path}.${key}.mobile`),
+		desktop: readCssLengthValue(responsiveValue.desktop ?? fallback.desktop, `${path}.${key}.desktop`, sourceLabel),
+		mobile: readCssLengthValue(responsiveValue.mobile ?? fallback.mobile, `${path}.${key}.mobile`, sourceLabel),
 	});
 };
 
-const readPercentValue = (value, path) => {
+const readPercentValue = (value, path, sourceLabel = siteConfigLabel) => {
 	if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > 100) {
-		throw new Error(`${path} must be a number greater than 0 and less than or equal to 100 in ${siteConfigLabel}.`);
+		throw new Error(`${path} must be a number greater than 0 and less than or equal to 100 in ${sourceLabel}.`);
 	}
 
 	return value;
 };
 
-const readResponsivePercent = (object, key, path, fallback) => {
+const readResponsivePercent = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
 	const value = object[key] ?? fallback;
 
 	if (typeof value === 'number') {
-		const percent = readPercentValue(value, `${path}.${key}`);
+		const percent = readPercentValue(value, `${path}.${key}`, sourceLabel);
 
 		return Object.freeze({
 			desktop: percent,
@@ -128,11 +133,11 @@ const readResponsivePercent = (object, key, path, fallback) => {
 		});
 	}
 
-	const responsiveValue = assertObject(value, `${path}.${key}`);
+	const responsiveValue = assertObject(value, `${path}.${key}`, sourceLabel);
 
 	return Object.freeze({
-		desktop: readPercentValue(responsiveValue.desktop ?? fallback.desktop, `${path}.${key}.desktop`),
-		mobile: readPercentValue(responsiveValue.mobile ?? fallback.mobile, `${path}.${key}.mobile`),
+		desktop: readPercentValue(responsiveValue.desktop ?? fallback.desktop, `${path}.${key}.desktop`, sourceLabel),
+		mobile: readPercentValue(responsiveValue.mobile ?? fallback.mobile, `${path}.${key}.mobile`, sourceLabel),
 	});
 };
 
@@ -229,7 +234,7 @@ const readLocale = (rawLocale) => {
 			closeMenu: readString({ closeMenu: labels.closeMenu ?? 'Close menu' }, 'closeMenu', 'locale.labels'),
 			skipToContent: readString({ skipToContent: labels.skipToContent ?? 'Skip to content' }, 'skipToContent', 'locale.labels'),
 			sectionNavigation: readString({ sectionNavigation: labels.sectionNavigation ?? 'Sections' }, 'sectionNavigation', 'locale.labels'),
-			gallery: readString({ gallery: labels.gallery ?? 'Gallery' }, 'gallery', 'locale.labels'),
+			gallery: readString({ gallery: labels.gallery ?? 'Images' }, 'gallery', 'locale.labels'),
 			menu: readString({ menu: labels.menu ?? 'Menu' }, 'menu', 'locale.labels'),
 			pageNavigation: readString({ pageNavigation: labels.pageNavigation ?? 'On this page' }, 'pageNavigation', 'locale.labels'),
 			siteNavigation: readString({ siteNavigation: labels.siteNavigation ?? 'Pages' }, 'siteNavigation', 'locale.labels'),
@@ -280,10 +285,17 @@ const readBuildInfo = (footer) => {
 };
 
 const rawConfig = assertObject(siteConfig, 'default export');
+const misplacedThemeKeys = ['layout', 'gallery', 'typography'].filter((key) => key in rawConfig);
+if (misplacedThemeKeys.length > 0) {
+	throw new Error(`${misplacedThemeKeys.join(', ')} belong in ${siteThemeLabel}, not ${siteConfigLabel}.`);
+}
+
+const rawTheme = assertObject(themeConfig, 'theme frontmatter', siteThemeLabel);
 const rawSite = assertObject(rawConfig.site, 'site');
-const rawLayout = assertObject(rawConfig.layout ?? {}, 'layout');
-const rawGallery = assertObject(rawConfig.gallery ?? {}, 'gallery');
-const rawTypography = assertObject(rawConfig.typography ?? {}, 'typography');
+const rawLayout = assertObject(rawTheme.layout ?? {}, 'layout', siteThemeLabel);
+const rawLayoutSpacing = assertObject(rawLayout.spacing ?? {}, 'layout.spacing', siteThemeLabel);
+const rawGallery = assertObject(rawTheme.gallery ?? {}, 'gallery', siteThemeLabel);
+const rawTypography = assertObject(rawTheme.typography ?? {}, 'typography', siteThemeLabel);
 const rawNavigation = assertObject(rawConfig.navigation ?? {}, 'navigation');
 const rawLocale = rawConfig.locale ?? {};
 const rawFooter = assertObject(rawConfig.footer ?? {}, 'footer');
@@ -302,28 +314,62 @@ export const projectConfig = Object.freeze({
 		gutter: readResponsiveCssLength(rawLayout, 'gutter', 'layout', Object.freeze({
 			desktop: 'clamp(1.25rem, 4vw, 3rem)',
 			mobile: '1rem',
-		})),
-		pageWidth: readCssLength(rawLayout, 'pageWidth', 'layout', '1180px'),
+		}), siteThemeLabel),
+		pageWidth: readCssLength(rawLayout, 'pageWidth', 'layout', '1180px', siteThemeLabel),
+		spacing: Object.freeze({
+			bodyToImages: readResponsiveCssLength(rawLayoutSpacing, 'bodyToImages', 'layout.spacing', Object.freeze({
+				desktop: 'clamp(1.25rem, 2.5vw, 2rem)',
+				mobile: '1.25rem',
+			}), siteThemeLabel),
+			finalSectionBottom: readResponsiveCssLength(rawLayoutSpacing, 'finalSectionBottom', 'layout.spacing', Object.freeze({
+				desktop: 'clamp(2.55rem, 4.2vw, 3.9rem)',
+				mobile: '2.25rem',
+			}), siteThemeLabel),
+			firstSectionTop: readResponsiveCssLength(rawLayoutSpacing, 'firstSectionTop', 'layout.spacing', Object.freeze({
+				desktop: 'clamp(1.875rem, 3vw, 2.75rem)',
+				mobile: '1.375rem',
+			}), siteThemeLabel),
+			imageGap: readResponsiveCssLength(rawLayoutSpacing, 'imageGap', 'layout.spacing', Object.freeze({
+				desktop: 'clamp(1.5rem, 3.5vw, 2.75rem)',
+				mobile: '2.75rem',
+			}), siteThemeLabel),
+			sectionGap: readResponsiveCssLength(rawLayoutSpacing, 'sectionGap', 'layout.spacing', Object.freeze({
+				desktop: 'clamp(2.55rem, 4.2vw, 3.9rem)',
+				mobile: '2.25rem',
+			}), siteThemeLabel),
+			sectionHeadingToBody: readResponsiveCssLength(rawLayoutSpacing, 'sectionHeadingToBody', 'layout.spacing', Object.freeze({
+				desktop: 'clamp(0.5625rem, 1.25vw, 0.75rem)',
+				mobile: '0.4375rem',
+			}), siteThemeLabel),
+			subheadingRuleTop: readResponsiveCssLength(rawLayoutSpacing, 'subheadingRuleTop', 'layout.spacing', Object.freeze({
+				desktop: '1rem',
+				mobile: '0.8rem',
+			}), siteThemeLabel),
+			subheadingTop: readResponsiveCssLength(rawLayoutSpacing, 'subheadingTop', 'layout.spacing', Object.freeze({
+				desktop: '2rem',
+				mobile: '1.6rem',
+			}), siteThemeLabel),
+		}),
 	}),
 	gallery: Object.freeze({
 		maxAvailableHeightPercent: readResponsivePercent(rawGallery, 'maxAvailableHeightPercent', 'gallery', Object.freeze({
 			desktop: 74,
 			mobile: 68,
-		})),
+		}), siteThemeLabel),
 		maxAvailableWidthPercent: readResponsivePercent(rawGallery, 'maxAvailableWidthPercent', 'gallery', Object.freeze({
 			desktop: 100,
 			mobile: 100,
-		})),
-		width: readCssLength(rawGallery, 'width', 'gallery', '900px'),
+		}), siteThemeLabel),
+		width: readCssLength(rawGallery, 'width', 'gallery', '900px', siteThemeLabel),
 	}),
 	typography: Object.freeze({
-		fontFamily: readFontFamily(rawTypography, 'fontFamily', 'typography', defaultFontFamily),
+		fontFamily: readFontFamily(rawTypography, 'fontFamily', 'typography', defaultFontFamily, siteThemeLabel),
 	}),
-		navigation: Object.freeze({
-			smoothScroll: readSmoothScroll(rawNavigation),
-		}),
-		locale: readLocale(rawLocale),
-		footer: Object.freeze({
+	navigation: Object.freeze({
+		smoothScroll: readSmoothScroll(rawNavigation),
+	}),
+	locale: readLocale(rawLocale),
+	footer: Object.freeze({
 		buildInfo: readBuildInfo(rawFooter),
 		copyrightMessage: readOptionalString(rawFooter, 'copyrightMessage', 'footer'),
 	}),

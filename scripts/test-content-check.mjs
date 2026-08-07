@@ -43,9 +43,8 @@ const makePngHeader = ({ width, height }) => {
 };
 
 const defaultTheme = `---
-presentation:
-  typography:
-    preset: quiet-gallery
+typography:
+  preset: quiet-gallery
 frame:
   colors: presentation
 ---
@@ -114,7 +113,7 @@ test('content:check groups section issues, global issues, and unreferenced image
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Section and Gallery Issues\n\n\[min-konst\]\n  Errors:/);
+		assert.match(output, /Section And Image Issues\n\n\[min-konst\]\n  Errors:/);
 		assert.match(output, /Image "vav\.jpeg" is used here but is located in site\/images\/mitt-hem\/\./);
 		assert.match(output, /Image "missing\.jpeg" does not exist anywhere under site\/images\/\./);
 		assert.match(output, /Image "duplicate\.jpg" is referenced more than once in this section\./);

@@ -196,7 +196,7 @@ const assertMainBranch = async () => {
 
 const assertDeployableStatus = async (entries, expectedImagePaths) => {
 	if (entries.length === 0) {
-		fail('Refusing to deploy: no changes to commit after the gallery build.');
+		fail('Refusing to deploy: no changes to commit after the Norna build.');
 	}
 
 	const unexpectedUntracked = entries.filter((entry) => (
@@ -206,7 +206,7 @@ const assertDeployableStatus = async (entries, expectedImagePaths) => {
 	if (unexpectedUntracked.length > 0) {
 		fail([
 			'Refusing to deploy: unexpected untracked files are present.',
-			`Only new referenced gallery images under ${siteImagesLabel}/<section-id>/ or ${siteRoutesLabel}/<route-folder>/images/<section-id>/ are staged automatically.`,
+			`Only new referenced images under ${siteImagesLabel}/<section-id>/ or ${siteRoutesLabel}/<route-folder>/images/<section-id>/ are staged automatically.`,
 			...unexpectedUntracked.map((entry) => `- ${formatEntry(entry)}`),
 		].join('\n'));
 	}
@@ -331,7 +331,7 @@ const deployCommittedMain = async () => {
 	await assertPushableBranch();
 	await runBuild();
 	await printStatusShort();
-	await assertCleanWorktree('Refusing to deploy: the gallery build produced uncommitted changes. Commit them before deploying.');
+	await assertCleanWorktree('Refusing to deploy: the Norna build produced uncommitted changes. Commit them before deploying.');
 	await fetchRemoteMain();
 
 	const relation = await assertPushableBranch();

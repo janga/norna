@@ -32,12 +32,12 @@ site files -> norna -> static website
 
 The source model is intentionally simple:
 
-- `config.mjs` holds technical settings such as URL, layout, language labels,
-  GitHub Pages workflow details, and deployment watch settings.
-- `theme.md` holds site-wide visual defaults such as colors, typography preset,
-  frame colors, and inline text styles.
+- `config.mjs` holds technical settings such as URL, language labels, GitHub
+  Pages workflow details, and deployment watch settings.
+- `theme.md` holds site-wide visual defaults such as layout, spacing, image
+  sizing, font, colors, typography preset, frame colors, and inline text styles.
 - `content.md` holds the homepage title, description, section order, text,
-  galleries, alt text, and captions.
+  image rows, alt text, and captions.
 - `routes/` can hold additional pages.
 - `images/` holds source images next to the sections that use them.
 - `public/` holds static files such as `robots.txt`, `CNAME`, and favicons.

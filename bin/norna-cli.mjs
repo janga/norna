@@ -15,10 +15,10 @@ Commands:
   dev:logs               Show local dev server logs
   dev:stop               Stop local dev server
   config:check           Validate site/config.mjs
-  content:check          Validate site/content.md and gallery references
+  content:check          Validate site/content.md and image references
   content:sync           Rewrite section order and move misplaced images
-  typography:presets     Show built-in typography preset values
-  typography:show        Show resolved typography for the selected site
+  typography presets     Show built-in typography preset values
+  typography show        Show resolved typography for the selected site
   site:public            Sync site/public/ to public/
   images                 Generate optimized image variants
   engine:update          Update @janga/norna in a site repository
@@ -86,6 +86,7 @@ if (siteDir) {
 }
 
 const [command = 'help', ...rest] = commandArgs;
+const [subcommand, ...subcommandRest] = rest;
 
 if (command === '-h' || command === '--help' || command === 'help') {
 	console.log(usage);
@@ -130,10 +131,14 @@ try {
 		await runAstroInherit(['sync']);
 	} else if (command === 'content:sync') {
 		await runScript('scripts/sync-content-sections.mjs', ['--write', ...rest]);
-	} else if (command === 'typography:presets') {
-		await runScript('scripts/show-typography.mjs', ['presets', ...rest]);
-	} else if (command === 'typography:show') {
-		await runScript('scripts/show-typography.mjs', ['show', ...rest]);
+	} else if (command === 'typography:presets' || (command === 'typography' && subcommand === 'presets')) {
+		const scriptArgs = command === 'typography' ? subcommandRest : rest;
+		await runScript('scripts/show-typography.mjs', ['presets', ...scriptArgs]);
+	} else if (command === 'typography:show' || (command === 'typography' && subcommand === 'show')) {
+		const scriptArgs = command === 'typography' ? subcommandRest : rest;
+		await runScript('scripts/show-typography.mjs', ['show', ...scriptArgs]);
+	} else if (command === 'typography') {
+		throw new Error(`Unknown typography command: ${subcommand ?? ''}\n${usage}`);
 	} else if (command === 'site:public') {
 		await runScript('scripts/sync-site-public.mjs', rest);
 	} else if (command === 'images') {

@@ -58,152 +58,20 @@ site: {
 }
 ```
 
-## Layout
+## Visual Theme
 
-### `layout.pageWidth`
+Visual configuration lives in `site/theme.md`, not `site/config.mjs`.
 
-- Purpose: maximum width of the main page content area, including section
-  headings, section text, galleries, sticky-navigation alignment, and footer.
-- Type: string containing a simple positive CSS length.
-- Required: no.
-- Default: `1180px`.
-- Validation: if set, it must be a positive number followed by one of `px`,
-  `rem`, `em`, `vw`, `vh`, `vmin`, `vmax`, `ch`, or `%`.
-- Consequence: the value overrides the global `--page-width` CSS variable.
-  It is the outer width limit for content that is centered on the page.
-  `gallery.width` cannot render wider than this page width or the available
-  viewport width after responsive gutters.
+Use [Theme](theme.md) for:
 
-Example:
-
-```js
-layout: {
-	pageWidth: '1180px',
-}
-```
-
-### `layout.gutter`
-
-- Purpose: side margin removed from the viewport before the available content
-  width is calculated.
-- Type: either a CSS length string used on all viewports, or an object with
-  `desktop` and `mobile` CSS length strings.
-- Required: no.
-- Default: desktop `clamp(1.25rem, 4vw, 3rem)`, mobile `1rem`.
-- Validation: if set, each value must be a positive CSS length such as `16px`,
-  `3rem`, or `4vw`. `clamp()` with those simple lengths is also accepted.
-- Consequence: wider gutters leave more side margin and reduce the maximum
-  available width for galleries and aligned text.
-
-Example:
-
-```js
-layout: {
-	gutter: {
-		desktop: '48px',
-		mobile: '16px',
-	},
-}
-```
-
-## Gallery
-
-### `gallery.width`
-
-- Purpose: maximum rendered width for gallery images, gallery captions, and
-  left- or right-aligned section text that is intended to line up with gallery
-  edges.
-- Type: string containing a simple positive CSS length.
-- Required: no.
-- Default: `900px`.
-- Validation: if set, it must be a positive number followed by one of `px`,
-  `rem`, `em`, `vw`, `vh`, `vmin`, `vmax`, `ch`, or `%`.
-- Consequence: the value overrides the global `--gallery-width` CSS variable.
-  Images and aligned text cannot render wider than this value, but the
-  effective width is also limited by `layout.pageWidth`, `layout.gutter`, and
-  `gallery.maxAvailableWidthPercent`.
-
-Example:
-
-```js
-gallery: {
-	width: '900px',
-}
-```
-
-### `gallery.maxAvailableWidthPercent`
-
-- Purpose: maximum share of the available width, after gutters, that gallery
-  images, gallery captions, and aligned section text may use.
-- Type: either a number used on all viewports, or an object with `desktop` and
-  `mobile` numbers.
-- Required: no.
-- Default: desktop `100`, mobile `100`.
-- Validation: each value must be greater than `0` and less than or equal to
-  `100`.
-- Consequence: `100` allows the gallery to use the full available width. A
-  smaller value keeps galleries narrower without changing the page width or
-  gutters.
-
-Example:
-
-```js
-gallery: {
-	maxAvailableWidthPercent: {
-		desktop: 100,
-		mobile: 100,
-	},
-}
-```
-
-### `gallery.maxAvailableHeightPercent`
-
-- Purpose: maximum share of viewport height that gallery images may use.
-- Type: either a number used on all viewports, or an object with `desktop` and
-  `mobile` numbers.
-- Required: no.
-- Default: desktop `74`, mobile `68`.
-- Validation: each value must be greater than `0` and less than or equal to
-  `100`.
-- Consequence: images keep their proportions and are scaled down when filling
-  the available width would make them taller than this limit. This applies to
-  both landscape and portrait images.
-
-Example:
-
-```js
-gallery: {
-	maxAvailableHeightPercent: {
-		desktop: 74,
-		mobile: 68,
-	},
-}
-```
-
-## Typography
-
-### `typography.fontFamily`
-
-- Purpose: global CSS `font-family` stack used by site text and sticky
-  navigation.
-- Type: string containing a CSS font-family value.
-- Required: no.
-- Default: `Arial, 'Helvetica Neue', Helvetica, sans-serif`, matching the
-  engine's existing sticky-navigation font stack.
-- Validation: if set, it must be a non-empty string and must not contain
-  semicolons, braces, or line breaks.
-- Consequence: the value overrides the global `--font-sans` CSS variable for
-  the whole page. Section headings, body text, gallery captions, footer text,
-  and sticky navigation all inherit from that variable unless engine CSS gives a
-  more specific rule.
-
-Example:
-
-```js
-typography: {
-	fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-}
-```
+- `layout.pageWidth`
+- `layout.gutter`
+- `gallery.width`
+- `gallery.maxAvailableWidthPercent`
+- `gallery.maxAvailableHeightPercent`
+- `typography.fontFamily`
+- typography presets and overrides
+- presentation colors, inline styles, and frame colors
 
 ## Navigation
 
@@ -272,7 +140,7 @@ Fields:
   `Sections`.
 - `locale.labels.menu`: mobile menu summary text, default `Menu`.
 - `locale.labels.closeMenu`: reserved close-menu label, default `Close menu`.
-- `locale.labels.gallery`: gallery ARIA label prefix, default `Gallery`.
+- `locale.labels.gallery`: image row ARIA label prefix, default `Images`.
 
 Example:
 
@@ -285,7 +153,7 @@ locale: {
 		pageNavigation: 'På denna sida',
 		sectionNavigation: 'Sektioner',
 		menu: 'Meny',
-		gallery: 'Galleri',
+		gallery: 'Bilder',
 	},
 }
 ```

@@ -79,7 +79,7 @@ npm run norna:deploy:commit -- "Commit message"
 
 It builds, stages only allowed site changes, commits, pushes, and checks Pages.
 The allowlist is implemented in `scripts/deploy-site.mjs` and includes the
-site content file, selected config/static files, expected gallery images,
+site content file, selected config/static files, expected generated images,
 generated image manifest, package files, `tsconfig.json`, `astro.config.mjs`,
 and `src/` changes.
 

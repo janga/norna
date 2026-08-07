@@ -18,42 +18,60 @@ const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
 const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'slug', 'navigation', 'presentation', 'frame', 'sections']);
-const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'presentation', 'frame']);
+const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation', 'frame']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
 	'alt',
 	'backgroundColor',
 	'body',
+	'bodyToImages',
 	'brand',
 	'caption',
 	'carousel',
 	'color',
 	'colors',
 	'desktop',
+	'fontFamily',
 	'from',
+	'finalSectionBottom',
 	'gallery',
+	'gutter',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
 	'heading',
+	'headings',
 	'id',
 	'include',
 	'image',
+	'imageGap',
 	'inlineStyles',
 	'label',
 	'lineHeight',
+	'maxAvailableHeightPercent',
+	'maxAvailableWidthPercent',
 	'mobile',
 	'navigation',
 	'overrides',
 	'order',
 	'paragraphSpacing',
+	'pageWidth',
 	'preset',
 	'presentation',
 	'sections',
+	'sectionGap',
+	'sectionHeadingToBody',
 	'size',
 	'spacing',
+	'subheadingRuleTop',
+	'subheadingTop',
 	'textColor',
 	'theme',
 	'typography',
 	'until',
 	'visible',
+	'width',
 ]);
 
 export const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
@@ -224,7 +242,7 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 		if (knownTopLevelFrontmatterKeys.has(key)) continue;
 
 		const fix = knownNestedFrontmatterKeys.has(key)
-			? `Indent "${key}:" under the section or object it belongs to. For gallery rows, "gallery:" normally belongs under a "sections" item.`
+			? `Indent "${key}:" under the section or object it belongs to. For image rows, "gallery:" normally belongs under a "sections" item.`
 			: `Move "${key}:" under the correct parent key, or remove it if it is not part of the ${fileKind} schema.`;
 
 		addIssue({

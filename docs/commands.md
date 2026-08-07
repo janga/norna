@@ -25,8 +25,8 @@ norna dev:stop
 norna config:check
 norna content:check
 norna content:sync
-norna typography:presets
-norna typography:show
+norna typography presets
+norna typography show
 norna site:public
 norna images
 norna engine:update [version|latest]
@@ -55,7 +55,7 @@ norna --help
 ## Starter npm Scripts
 
 The starter uses `norna:*` for norna-specific work. This avoids collisions
-when a `norna` presentation is embedded inside a larger GitHub project
+when a Norna site is embedded inside a larger GitHub project
 whose own `build`, `test`, or deploy scripts mean something different.
 
 The starter defines:
@@ -90,7 +90,7 @@ npm run build
 
 `npm run dev` calls `npm run norna:dev`. In the pure starter,
 `npm run build` aliases `npm run norna:build`. In mixed repositories, such as
-a GitHub project that embeds a gallery presentation next to an app, `build`
+a GitHub project that embeds a Norna site next to an app, `build`
 should normally mean the repository's complete publishable artifact, while
 `norna:build` builds only the `norna` part.
 
@@ -101,13 +101,13 @@ should normally mean the repository's complete publishable artifact, while
   cache path.
 - `config:check`: validates `site/config.mjs` against the runtime config
   reader.
-- `content:check`: validates section structure and gallery references, then
+- `content:check`: validates section structure and image references, then
   runs `astro sync`.
 - `content:sync` / `norna:sync`: rewrites Markdown section order and moves misplaced referenced
   image files after confirmation.
-- `typography:presets`: prints the exact built-in values for every typography
+- `typography presets`: prints the exact built-in values for every typography
   preset.
-- `typography:show`: prints the selected site's resolved typography for the
+- `typography show`: prints the selected site's resolved typography for the
   theme, every page route, and every section. Each value includes its source,
   and inherited page or section values are marked with `inherited: true`.
 - `site:public`: copies `site/public/` into `site/.norna/public/` and
@@ -125,7 +125,7 @@ should normally mean the repository's complete publishable artifact, while
   engine version, engine root, Astro dependency, and installed Astro version.
   With `--latest`, it also asks npm for the latest published engine version.
 - `init <target-dir> [--type pure|embedded] [--site-dir <path>]`: creates a
-  pure gallery project from the packaged starter, or adds a gallery source
+  standalone site project from the packaged starter, or adds a Norna site
   directory plus `norna:*` scripts to an existing project in embedded mode.
   Pure setup pins `@janga/norna` to the version that created it.
 - `build`: runs config check, content check, public sync, image generation, and

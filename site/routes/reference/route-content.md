@@ -37,7 +37,7 @@ The CLI binary is named `norna`. In site repositories, use the starter npm
 scripts; they call the local `norna` binary from `node_modules/.bin`.
 
 ```sh
-npm run norna:dev
+npm run dev
 npm run norna:check
 npm run norna:build
 npm run norna:deploy:watch

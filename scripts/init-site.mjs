@@ -13,12 +13,12 @@ const cliExecutableName = 'norna';
 const usage = `
 Usage: norna init <target-dir> [--type pure|embedded] [--site-dir <path>]
 
-Creates a new site project or adds a gallery source directory to an existing
+Creates a new site project or adds a Norna site directory to an existing
 project.
 
 Examples:
-  norna init my-gallery
-  norna init my-gallery --type pure
+  norna init my-site
+  norna init my-site --type pure
   norna init . --type embedded --site-dir presentation
 `.trim();
 
@@ -133,8 +133,8 @@ const galleryScripts = {
 	'norna:config:check': cliCommand('config:check'),
 	'norna:content:check': cliCommand('content:check'),
 	'norna:sync': cliCommand('content:sync'),
-	'norna:typography:presets': cliCommand('typography:presets'),
-	'norna:typography:show': cliCommand('typography:show'),
+	'norna:typography:presets': cliCommand('typography presets'),
+	'norna:typography:show': cliCommand('typography show'),
 	'norna:public': cliCommand('site:public'),
 	'norna:images': cliCommand('images'),
 	'norna:build': cliCommand('build'),
@@ -180,7 +180,7 @@ const existingEntries = await readDirectoryEntries(targetRoot);
 if (type === 'pure') {
 	if (existingEntries && existingEntries.length > 0) {
 		const existingPackageJson = existingEntries.includes('package.json')
-			? ' The target already contains package.json; use --type embedded to add a gallery to an existing project.'
+			? ' The target already contains package.json; use --type embedded to add a Norna site to an existing project.'
 			: '';
 		throw new Error(`Target directory must be empty for --type pure: ${targetRoot}.${existingPackageJson}`);
 	}
@@ -218,7 +218,7 @@ if (type === 'pure') {
 	const existingSiteEntries = await readDirectoryEntries(targetSiteDir);
 
 	if (existingSiteEntries && existingSiteEntries.length > 0) {
-		throw new Error(`Gallery site directory must be empty for --type embedded: ${targetSiteDir}`);
+		throw new Error(`Norna site directory must be empty for --type embedded: ${targetSiteDir}`);
 	}
 
 	addGalleryDependency(targetPackageJson, enginePackageJson.version);
@@ -246,4 +246,6 @@ console.log(`  cd ${targetRoot}`);
 console.log(type === 'embedded'
 	? '  npm install'
 	: '  npm install');
-console.log('  npm run norna:dev');
+console.log(type === 'embedded'
+	? '  npm run norna:dev'
+	: '  npm run dev');

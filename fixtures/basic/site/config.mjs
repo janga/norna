@@ -3,26 +3,6 @@ export default {
 		url: 'https://example.com/',
 		basePath: '/',
 	},
-	layout: {
-		pageWidth: '1180px',
-		gutter: {
-			desktop: 'clamp(1.25rem, 4vw, 3rem)',
-			mobile: '1rem',
-		},
-	},
-	gallery: {
-		maxAvailableWidthPercent: {
-			desktop: 100,
-			mobile: 100,
-		},
-		maxAvailableHeightPercent: {
-			desktop: 74,
-			mobile: 68,
-		},
-	},
-	typography: {
-		fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
-	},
 	navigation: {
 		smoothScroll: {
 			enabled: true,
@@ -36,7 +16,7 @@ export default {
 		labels: {
 			skipToContent: 'Skip to content',
 			sectionNavigation: 'Sections',
-			gallery: 'Gallery',
+			gallery: 'Images',
 		},
 	},
 	footer: {
@@ -53,7 +33,7 @@ export default {
 		},
 	},
 	github: {
-		repo: 'owner/fixture-gallery',
+		repo: 'owner/fixture-site',
 		branch: 'main',
 		pagesWorkflow: 'Deploy to GitHub Pages',
 	},

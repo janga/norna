@@ -1,7 +1,7 @@
 # norna
 
-`norna` is a reusable command-line toolchain for small static gallery
-sites. It provides the CLI, Astro renderer, validation scripts, image pipeline,
+`norna` is a reusable command-line toolchain for small static websites.
+It provides the CLI, Astro renderer, validation scripts, image pipeline,
 starter project, fixtures, and deploy helpers used by site repositories such as
 `www.walde.se`.
 
@@ -21,11 +21,11 @@ belong in each site repository. For example, Karin Walde's site lives in
 A `norna` site is file-driven:
 
 1. A site repository depends on this package.
-2. The site keeps technical settings, including page width, gallery width, and
-   the global font family, public URL, and optional URL base path in
-   `site/config.mjs`.
-3. The site can keep site-wide visual theme defaults in `site/theme.md`.
-4. The site keeps homepage content, section order, gallery rows, alt text, and
+2. The site keeps technical settings, including public URL and optional URL
+   base path, in `site/config.mjs`.
+3. The site keeps site-wide visual theme defaults, including layout, image
+   sizing, font, typography, colors, and frame colors, in `site/theme.md`.
+4. The site keeps homepage content, section order, image rows, alt text, and
    captions in `site/content.md`.
 5. Optional route pages live under
    `site/routes/<route-folder>/route-content.md`.
@@ -56,10 +56,10 @@ For a new site repository:
 
 ```sh
 cd ../
-npx @janga/norna@latest init my-gallery
-cd my-gallery
+npx @janga/norna@latest init my-site
+cd my-site
 npm install
-npm run norna:dev
+npm run dev
 ```
 
 Run `init` before `npm install`. A new site directory is not a Node project
@@ -75,18 +75,18 @@ Actions use the same engine version.
 
 - Create a site: [Getting Started](docs/getting-started.md)
 - Understand required site files: [Site Structure](docs/site-structure.md)
-- Edit sections and galleries: [Content](docs/content.md)
+- Edit sections and image rows: [Content](docs/content.md)
 - Configure a site: [Configuration](docs/configuration.md)
 - Publish under a GitHub Pages project path:
   [`site.basePath`](docs/configuration.md#sitebasepath)
 - Configure site-wide theme: [Theme](docs/theme.md)
 - Add route pages: [Routes](docs/routes.md)
-- Set page width: [`layout.pageWidth`](docs/configuration.md#layoutpagewidth)
-- Set side gutters: [`layout.gutter`](docs/configuration.md#layoutgutter)
-- Set gallery width: [`gallery.width`](docs/configuration.md#gallerywidth)
+- Set page width: [`layout.pageWidth`](docs/theme.md#layout)
+- Set side gutters: [`layout.gutter`](docs/theme.md#layout)
+- Set image area width: [`gallery.width`](docs/theme.md#image-sizing)
 - Keep images within viewport height:
-  [`gallery.maxAvailableHeightPercent`](docs/configuration.md#gallerymaxavailableheightpercent)
-- Set the site font: [`typography.fontFamily`](docs/configuration.md#typographyfontfamily)
+  [`gallery.maxAvailableHeightPercent`](docs/theme.md#image-sizing)
+- Set the site font: [`typography.fontFamily`](docs/theme.md#typography)
 - Choose typography presets and overrides: [Typography](docs/typography.md)
 - Look up CLI and npm scripts: [Commands](docs/commands.md)
 - Understand generated images: [Images And Metadata](docs/images-and-metadata.md)

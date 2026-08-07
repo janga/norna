@@ -9,38 +9,8 @@ export default {
 		// GitHub Pages project sites without a custom domain.
 		basePath: '/',
 	},
-	layout: {
-		// Maximum width of the page content area.
-		pageWidth: '2048px',
-
-		// Side margin on desktop and mobile before available gallery width is calculated.
-		gutter: {
-			desktop: 'clamp(1.25rem, 4vw, 3rem)',
-			mobile: '16px',
-		},
-	},
-	gallery: {
-		// Hard maximum rendered gallery width for images and aligned text.
-		width: '55vw',
-
-		// Maximum share of the available width after gutters.
-		maxAvailableWidthPercent: {
-			desktop: 100,
-			mobile: 100,
-		},
-
-		// Maximum share of viewport height used by gallery images.
-		maxAvailableHeightPercent: {
-			desktop: 74,
-			mobile: 68,
-		},
-	},
-	typography: {
-		// CSS font-family stack used by the whole site, including sticky navigation.
-		fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
-	},
-		navigation: {
-			smoothScroll: {
+	navigation: {
+		smoothScroll: {
 			// Set to false to make section links jump directly to the target anchor.
 			enabled: true,
 
@@ -50,17 +20,17 @@ export default {
 
 			// Additional duration per pixel of scroll distance, before min/max clamping.
 			durationPerPixelMs: 0.22,
-			},
 		},
-		locale: {
-			lang: 'en',
-			labels: {
-				skipToContent: 'Skip to content',
-				sectionNavigation: 'Sections',
-				gallery: 'Gallery',
-			},
+	},
+	locale: {
+		lang: 'en',
+		labels: {
+			skipToContent: 'Skip to content',
+			sectionNavigation: 'Sections',
+			gallery: 'Images',
 		},
-		footer: {
+	},
+	footer: {
 		// Omit this value to hide the copyright sentence.
 		copyrightMessage: 'Dog images from Wikimedia Commons; see image captions for license details.',
 
@@ -82,7 +52,7 @@ export default {
 	},
 	github: {
 		// Example repository and workflow details used by deploy scripts.
-		repo: 'owner/example-gallery',
+		repo: 'owner/example-site',
 		branch: 'main',
 		pagesWorkflow: 'Deploy to GitHub Pages',
 	},

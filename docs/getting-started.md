@@ -23,10 +23,10 @@ new site directory:
 
 ```sh
 cd path/to/your/projects
-npx @janga/norna@latest init my-gallery
-cd my-gallery
+npx @janga/norna@latest init my-site
+cd my-site
 npm install
-npm run norna:dev
+npm run dev
 ```
 
 After `npm install`, the project's npm scripts use the project-local `norna`
@@ -45,7 +45,7 @@ engine repository. For example:
 ```text
 Projects/
   norna/
-  my-gallery/
+  my-site/
 ```
 
 The starter contains:
@@ -62,12 +62,13 @@ Commit the generated `package-lock.json` after the first install.
 
 ## First Edits
 
-1. Edit `site/config.mjs` for the site's URL, layout, font, language labels,
-   GitHub repository, footer, and deploy settings.
-2. Edit `site/theme.md` for site-wide colors, typography preset, inline styles,
-   and frame colors, or omit it to use engine defaults.
+1. Edit `site/config.mjs` for the site's URL, language labels, GitHub
+   repository, footer, and deploy settings.
+2. Edit `site/theme.md` for site-wide layout, vertical spacing, image sizing,
+   font, typography preset, colors, inline styles, and frame colors, or omit it
+   to use engine defaults.
 3. Edit `site/content.md` for homepage title, description, sections, text,
-   gallery rows, page/section presentation overrides, alt text, and captions.
+   image rows, page/section presentation overrides, alt text, and captions.
 4. Put source images under `site/images/<section-id>/`.
 5. Add optional route pages under
    `site/routes/<route-folder>/route-content.md`.
@@ -113,20 +114,12 @@ Read [Site Structure](site-structure.md), [Content](content.md),
 [Theme](theme.md), [Typography](typography.md), [Routes](routes.md), and
 [Configuration](configuration.md) before publishing a real site.
 
-To change the site's maximum page width, set `layout.pageWidth` in
-`site/config.mjs`. To change side margins, set `layout.gutter`. To change the
-maximum gallery width inside that page area, set `gallery.width`. To keep
-images within a comfortable viewport height, set
-`gallery.maxAvailableHeightPercent`. See [Configuration](configuration.md) for
-the accepted formats and default values.
+To change the site's maximum page width, side gutters, vertical spacing, image
+width, image height limits, font, colors, or site-wide typography preset, edit
+`site/theme.md`. See [Theme](theme.md) for the accepted shape.
 
-To change the site's font, set `typography.fontFamily` in `site/config.mjs`.
-See [`typography.fontFamily`](configuration.md#typographyfontfamily) for the
-accepted format and default value.
-
-To change the site-wide typography preset, edit `site/theme.md`. To change one
-page or section, add a focused `presentation.typography` override in
-`site/content.md`. See [Typography](typography.md). Use
-`npm run norna:typography:presets` to inspect the installed preset values and
-`npm run norna:typography:show` to inspect the resolved typography for the
-selected site.
+To change one page or section, add a focused `presentation.typography`
+override in `site/content.md`. See [Typography](typography.md). Use
+`norna typography presets` to inspect the installed preset values and
+`norna typography show` to inspect the resolved typography for the selected
+site.

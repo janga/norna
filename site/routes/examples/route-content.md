@@ -12,7 +12,7 @@ sections:
   - id: starter
 ---
 
-## Dog gallery {#dog-gallery}
+## Dog example {#dog-gallery}
 
 The local visual demo lives in:
 
@@ -24,7 +24,7 @@ It demonstrates a small multi-page Norna site with:
 
 - route navigation;
 - section navigation;
-- galleries;
+- image rows;
 - a carousel;
 - temporary section visibility;
 - theme and typography overrides;

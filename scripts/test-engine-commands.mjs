@@ -47,12 +47,12 @@ try {
 	assert.equal(initializedPackageJson.scripts['engine:update'], undefined);
 	assert.equal(initializedPackageJson.scripts['engine:version'], undefined);
 
-	const presetsResult = runCli(['typography:presets']);
+	const presetsResult = runCli(['typography', 'presets']);
 	assert.equal(presetsResult.status, 0, presetsResult.stderr || presetsResult.stdout);
 	assert.match(presetsResult.stdout, /quiet-gallery:/);
 	assert.match(presetsResult.stdout, /text-forward:/);
 
-	const showResult = runCli(['--site-dir', path.join(initializedSiteRoot, 'site'), 'typography:show']);
+	const showResult = runCli(['--site-dir', path.join(initializedSiteRoot, 'site'), 'typography', 'show']);
 	assert.equal(showResult.status, 0, showResult.stderr || showResult.stdout);
 	assert.match(showResult.stdout, /theme:/);
 	assert.match(showResult.stdout, /pages:/);

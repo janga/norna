@@ -25,6 +25,12 @@ const cssLength = z.string().regex(
 	/^(?:0|(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|ch|lh))$/,
 	'Use a CSS length such as "0", "0.8em", "1rem", or "12px".',
 );
+const visualCssLengthUnit = String.raw`(?:px|rem|em|vw|vh|vmin|vmax|ch|%)`;
+const visualCssLengthValue = String.raw`(?:\d+(?:\.\d+)?|\.\d+)${visualCssLengthUnit}`;
+const visualCssLength = z.string().regex(
+	new RegExp(`^(?:0|${visualCssLengthValue}|clamp\\(\\s*${visualCssLengthValue}\\s*,\\s*${visualCssLengthValue}\\s*,\\s*${visualCssLengthValue}\\s*\\))$`),
+	'Use a CSS length such as "0", "900px", "56rem", "90%", or "clamp(1rem, 4vw, 3rem)".',
+);
 const inlineStyleName = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const dateOnly = z.string()
 	.regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format.')
@@ -55,6 +61,12 @@ const headingPresentationOverride = z.object({
 	...commonTextPresentationOverride,
 	spacing: cssLength.optional(),
 }).strict();
+const headingLevelsPresentationOverride = z.object({
+	h1: headingPresentationOverride.optional(),
+	h2: headingPresentationOverride.optional(),
+	h3: headingPresentationOverride.optional(),
+	h4: headingPresentationOverride.optional(),
+}).strict();
 const bodyPresentationOverride = z.object({
 	...commonTextPresentationOverride,
 	paragraphSpacing: cssLength.optional(),
@@ -64,7 +76,7 @@ const captionPresentationOverride = z.object({
 	spacing: cssLength.optional(),
 }).strict();
 const typographyOverrides = z.object({
-	heading: headingPresentationOverride.optional(),
+	headings: headingLevelsPresentationOverride.optional(),
 	body: bodyPresentationOverride.optional(),
 	caption: captionPresentationOverride.optional(),
 }).strict();
@@ -75,6 +87,50 @@ const typography = z.object({
 	(value) => value.preset !== undefined || value.overrides !== undefined,
 	'Specify preset, overrides, or both.',
 );
+const themeTypography = z.object({
+	fontFamily: z.string()
+		.min(1)
+		.refine((value) => !/[\n\r;{}]/.test(value), 'Do not use semicolons, braces, or line breaks.').optional(),
+	preset: typographyPreset.optional(),
+	overrides: typographyOverrides.optional(),
+}).strict().refine(
+	(value) => value.fontFamily !== undefined || value.preset !== undefined || value.overrides !== undefined,
+	'Specify fontFamily, preset, overrides, or both.',
+);
+const responsiveCssLength = z.union([
+	visualCssLength,
+	z.object({
+		desktop: visualCssLength,
+		mobile: visualCssLength,
+	}).strict(),
+]);
+const responsivePercent = z.union([
+	z.number().positive().max(100),
+	z.object({
+		desktop: z.number().positive().max(100),
+		mobile: z.number().positive().max(100),
+	}).strict(),
+]);
+const themeLayoutSpacing = z.object({
+	bodyToImages: responsiveCssLength.optional(),
+	finalSectionBottom: responsiveCssLength.optional(),
+	firstSectionTop: responsiveCssLength.optional(),
+	imageGap: responsiveCssLength.optional(),
+	sectionGap: responsiveCssLength.optional(),
+	sectionHeadingToBody: responsiveCssLength.optional(),
+	subheadingRuleTop: responsiveCssLength.optional(),
+	subheadingTop: responsiveCssLength.optional(),
+}).strict();
+const themeLayout = z.object({
+	pageWidth: visualCssLength.optional(),
+	gutter: responsiveCssLength.optional(),
+	spacing: themeLayoutSpacing.optional(),
+}).strict();
+const themeGallery = z.object({
+	width: visualCssLength.optional(),
+	maxAvailableWidthPercent: responsivePercent.optional(),
+	maxAvailableHeightPercent: responsivePercent.optional(),
+}).strict();
 const sectionPresentationOverride = z.object({
 	backgroundColor: colorValue.optional(),
 	textColor: colorValue.optional(),
@@ -86,7 +142,6 @@ const themePresentation = z.object({
 	inlineStyles: z.record(inlineStyleName, z.object({
 		color: colorValue,
 	}).strict()).optional(),
-	typography: typography.optional(),
 }).strict();
 const pagePresentation = z.object({
 	backgroundColor: colorValue.optional(),
@@ -141,6 +196,9 @@ const siteSchema = z.object({
 
 const themeSchema = z.object({
 	navigation: themeNavigation.optional(),
+	layout: themeLayout.optional(),
+	gallery: themeGallery.optional(),
+	typography: themeTypography.optional(),
 	presentation: themePresentation.optional(),
 	frame: frame.optional(),
 }).strict();

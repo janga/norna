@@ -30,18 +30,19 @@ site directory. Without an explicit site directory, commands first accept the
 current directory when it contains both `config.mjs` and `content.md`.
 Otherwise, commands started from a subdirectory walk upward until they find the
 default `site/` directory containing those files.
-`theme.md` is optional; omit it to use the engine's built-in presentation
-defaults.
+`theme.md` is optional; omit it to use the engine's built-in visual defaults.
 
 ## Versioned Source Files
 
 Version these files in a site repository:
 
 - `site/config.mjs`: technical site configuration.
-- `site/theme.md`: optional site-wide visual theme, inline styles, typography
-  defaults, and frame colors. See [Theme](theme.md).
+- `site/theme.md`: optional site-wide visual theme, including layout, spacing,
+  image sizing, font, typography defaults, colors, inline styles, and frame
+  colors.
+  See [Theme](theme.md).
 - `site/content.md`: homepage page file with editable content, section
-  definitions, gallery rows, alt text, and captions. See [Content](content.md).
+  definitions, image rows, alt text, and captions. See [Content](content.md).
 - `site/images/<section-id>/`: original source images.
 - `site/routes/<route-folder>/route-content.md`: optional route page files.
   See [Routes](routes.md).
@@ -83,6 +84,6 @@ In this repository:
 - `starters/basic/` is copied by `norna init <target-dir>` to create a
   site repository.
 - `fixtures/basic/site/` is used by engine regression tests.
-- `examples/dog-gallery/site/` is the local visual dog-gallery demo used by
-  demo builds and navigation diagnostics.
+- `examples/dog-gallery/site/` is the local visual dog example used by demo
+  builds and navigation diagnostics.
 - `site/` is reserved for the local documentation site.

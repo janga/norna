@@ -70,8 +70,8 @@ they demonstrate a distinct feature or workflow.
 
 - `dog-gallery/`: current local visual demo, manual inspection site, and
   navigation diagnostic target.
-- `routes-demo/`: focused route/navigation example if dog-gallery becomes too
-  broad.
+- `routes-demo/`: focused route/navigation example if the dog example becomes
+  too broad.
 - `typography-demo/`: focused typography preset and override example if needed.
 
 The repository-local `site/` directory is reserved for the documentation site.

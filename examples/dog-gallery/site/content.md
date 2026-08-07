@@ -1,5 +1,5 @@
 ---
-title: Local Dog Gallery
+title: Local Dog Example
 description: A small norna example with free dog images.
 navigation:
   label: Dog site!
@@ -9,6 +9,10 @@ sections:
     presentation:
       typography:
         preset: statement
+        overrides:
+          headings:
+            h2:
+              size: xlarge
     gallery:
       - image: photo-of-a-black-dog.jpg
         alt: "A black dog sitting outdoors and looking at the camera."
@@ -44,6 +48,11 @@ sections:
     presentation:
       typography:
         overrides:
+          headings:
+            h2:
+              size: large
+            h3:
+              size: medium
           body:
             lineHeight: 1.58
             paragraphSpacing: 1em
@@ -85,13 +94,21 @@ inspection.
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a
 ante venenatis dapibus posuere velit aliquet.
 
+### Coat notes
+
+This `###` heading should follow `typography.headings.h3`.
+
+#### Small detail
+
+This `####` heading should follow `typography.headings.h4`.
+
 Curabitur blandit tempus porttitor. Donec id elit non mi porta gravida at eget
 metus. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
 
 ## Summer Dogs {#summer-dogs}
 
 This temporary section is visible during August 2026. It is here to demonstrate
-date-controlled sections and [warm alert text]{.alert} in the local dog gallery.
+date-controlled sections and [warm alert text]{.alert} in the local dog example.
 
 Lorem ipsum dolor sit amet.
 
@@ -100,7 +117,7 @@ interdum. Nullam quis risus eget urna mollis ornare vel eu leo.
 
 ## Brown Dogs {#brown-dogs}
 
-Brown dogs provide a second gallery section for local navigation checks.
+Brown dogs provide a second image section for local navigation checks.
 
 Donec ullamcorper nulla non metus auctor fringilla. Fusce dapibus, tellus ac
 cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit
@@ -112,9 +129,14 @@ lobortis.
 
 ## Golden Dogs {#golden-dogs}
 
-Golden-coated retrievers add a third gallery section and more scrolling depth.
+Golden-coated retrievers add a third image section and more scrolling depth.
 
 Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+
+### Training note
+
+This section overrides `headings.h2` and `headings.h3`, while keeping the
+site-wide `headings.h4` style.
 
 Nulla vitae elit libero, a pharetra augue. Integer posuere erat a ante venenatis
 dapibus posuere velit aliquet. Aenean eu leo quam. Pellentesque ornare sem
@@ -122,7 +144,7 @@ lacinia quam venenatis vestibulum.
 
 ## White Dogs {#white-dogs}
 
-A white dog completes the colour-based gallery sequence.
+A white dog completes the colour-based image sequence.
 
 Etiam porta sem malesuada magna mollis euismod. Donec id elit non mi porta
 gravida at eget metus.

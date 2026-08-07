@@ -4,7 +4,7 @@
 under `site/routes/<route-folder>/route-content.md` and build to first-level
 URLs.
 
-Routes use the same page frontmatter, section frontmatter, gallery rows, and
+Routes use the same page frontmatter, section frontmatter, image rows, and
 Markdown section model as the homepage. See [Content](content.md) for the page
 and section model.
 
@@ -21,7 +21,7 @@ Minimal route page:
 ```md
 ---
 title: About
-description: About this gallery.
+description: About this site.
 navigation:
   label: About
   order: 20

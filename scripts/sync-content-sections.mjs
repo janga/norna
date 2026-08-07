@@ -59,7 +59,7 @@ const promptForWrite = async () => {
 	if (!process.stdin.isTTY) return false;
 
 	const rl = createInterface({ input, output });
-	const answer = await rl.question(`This will rewrite Markdown sections in ${siteContentLabel} and move gallery image files if needed. Continue? [y/N] `);
+	const answer = await rl.question(`This will rewrite Markdown sections in ${siteContentLabel} and move image files if needed. Continue? [y/N] `);
 	rl.close();
 
 	return answer.trim().toLowerCase() === 'y';
@@ -269,7 +269,7 @@ const validateRouteContentFiles = async () => {
 				if (referencedImages.has(imageName)) {
 					const previousSectionId = referencedImages.get(imageName);
 					const message = `Image "${imageName}" is referenced more than once, in "${previousSectionId}" and "${contentFile.contentLabel}:${section.id}".`;
-					const fix = 'Each image filename can be referenced by only one gallery row.';
+					const fix = 'Each image filename can be referenced by only one image row.';
 
 					addIssue({ severity: 'error', sectionId: previousSectionId, message, fix });
 					addIssue({
@@ -291,7 +291,7 @@ const validateRouteContentFiles = async () => {
 						sectionId: `${contentFile.contentLabel}:${section.id}`,
 						sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
 						message: `Image "${imageName}" does not exist anywhere under ${contentFile.imagesLabel}/.`,
-						fix: `Add the source image to ${contentFile.imagesLabel}/${section.id}/ or remove the gallery row.`,
+						fix: `Add the source image to ${contentFile.imagesLabel}/${section.id}/ or remove the image row.`,
 					});
 					continue;
 				}
@@ -380,7 +380,7 @@ const getReportLines = (title) => {
 			leftKey.localeCompare(rightKey, 'sv')
 		));
 
-		lines.push('', 'Section and Gallery Issues');
+		lines.push('', 'Section And Image Issues');
 
 		for (const [, group] of orderedSectionGroups) {
 			lines.push('', `[${group.label}]`);
@@ -506,7 +506,7 @@ for (const section of frontmatterSections) {
 			const message = previousSectionId === section.id
 				? `Image "${imageName}" is referenced more than once in this section.`
 				: `Image "${imageName}" is referenced more than once, in sections "${previousSectionId}" and "${section.id}".`;
-			const fix = 'Each image filename can be referenced by only one gallery row.';
+			const fix = 'Each image filename can be referenced by only one image row.';
 
 			addSectionIssue(previousSectionId, { severity: 'error', message, fix });
 			if (previousSectionId !== section.id) {
@@ -522,7 +522,7 @@ for (const section of frontmatterSections) {
 			addSectionIssue(section.id, {
 				severity: 'error',
 				message: `Image "${imageName}" does not exist anywhere under ${siteImagesLabel}/.`,
-				fix: `Add the source image to ${siteImagesLabel}/${section.id}/ or remove the gallery row.`,
+				fix: `Add the source image to ${siteImagesLabel}/${section.id}/ or remove the image row.`,
 			});
 			continue;
 		}

@@ -13,12 +13,51 @@ on top of the resolved page presentation.
 ```yaml
 ---
 navigation:
-  brand: Example Gallery
+  brand: Example Site
+layout:
+  pageWidth: 1180px
+  gutter:
+    desktop: clamp(1.25rem, 4vw, 3rem)
+    mobile: 1rem
+  spacing:
+    firstSectionTop:
+      desktop: clamp(1.875rem, 3vw, 2.75rem)
+      mobile: 1.375rem
+    sectionGap:
+      desktop: clamp(2.55rem, 4.2vw, 3.9rem)
+      mobile: 2.25rem
+    finalSectionBottom:
+      desktop: clamp(2.55rem, 4.2vw, 3.9rem)
+      mobile: 2.25rem
+    sectionHeadingToBody:
+      desktop: clamp(0.5625rem, 1.25vw, 0.75rem)
+      mobile: 0.4375rem
+    bodyToImages:
+      desktop: clamp(1.25rem, 2.5vw, 2rem)
+      mobile: 1.25rem
+    imageGap:
+      desktop: clamp(1.5rem, 3.5vw, 2.75rem)
+      mobile: 2.75rem
+    subheadingTop:
+      desktop: 2rem
+      mobile: 1.6rem
+    subheadingRuleTop:
+      desktop: 1rem
+      mobile: 0.8rem
+gallery:
+  width: 900px
+  maxAvailableWidthPercent:
+    desktop: 100
+    mobile: 100
+  maxAvailableHeightPercent:
+    desktop: 74
+    mobile: 68
+typography:
+  fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
+  preset: quiet-gallery
 presentation:
   backgroundColor: "#000000"
   textColor: "#f7f4ee"
-  typography:
-    preset: quiet-gallery
 frame:
   colors: presentation
 ---
@@ -47,6 +86,108 @@ navigation:
   brand: Norna
 ```
 
+## Layout
+
+`layout` is optional. It controls the outer page geometry:
+
+- `pageWidth`: maximum width of the main page content area.
+- `gutter`: side margin removed from the viewport before available content
+  width is calculated. Use either one CSS length for all viewports or
+  `desktop` / `mobile` values.
+- `spacing`: vertical rhythm for sections, text, image rows, and Markdown
+  subheadings. Every spacing value accepts either one CSS length for all
+  viewports or `desktop` / `mobile` values.
+
+Example:
+
+```yaml
+layout:
+  pageWidth: 1180px
+  gutter:
+    desktop: clamp(1.25rem, 4vw, 3rem)
+    mobile: 1rem
+  spacing:
+    firstSectionTop:
+      desktop: clamp(1.875rem, 3vw, 2.75rem)
+      mobile: 1.375rem
+    sectionGap:
+      desktop: clamp(2.55rem, 4.2vw, 3.9rem)
+      mobile: 2.25rem
+    subheadingTop:
+      desktop: 2rem
+      mobile: 1.6rem
+```
+
+If omitted, Norna uses `1180px` for `pageWidth`, desktop
+`clamp(1.25rem, 4vw, 3rem)` for `gutter`, mobile `1rem`, and the spacing
+defaults shown in the minimal theme example.
+
+Spacing keys:
+
+- `firstSectionTop`: space above the first section heading.
+- `sectionGap`: space above each following section.
+- `finalSectionBottom`: space below the final section.
+- `sectionHeadingToBody`: space from a section heading to its body text.
+- `bodyToImages`: space from section body text to image rows.
+- `imageGap`: space between image rows.
+- `subheadingTop`: space above Markdown `###` subheadings inside body text.
+- `subheadingRuleTop`: space between the rule above a Markdown `###`
+  subheading and the subheading text.
+
+## Image Sizing
+
+`gallery` is optional. It controls image sizing:
+
+- `width`: hard maximum rendered image area width for images, captions, and
+  aligned text.
+- `maxAvailableWidthPercent`: maximum share of available width after gutters.
+- `maxAvailableHeightPercent`: maximum share of viewport height used by
+  images.
+
+Example:
+
+```yaml
+gallery:
+  width: 900px
+  maxAvailableWidthPercent:
+    desktop: 100
+    mobile: 100
+  maxAvailableHeightPercent:
+    desktop: 74
+    mobile: 68
+```
+
+If omitted, Norna uses `900px`, full available width, and image height limits of
+desktop `74` / mobile `68`.
+
+## Typography
+
+Top-level `typography` is the site-wide typographic base. It supports:
+
+- `fontFamily`: global CSS font-family stack.
+- `preset`: built-in typography preset.
+- `overrides`: focused changes to preset values.
+
+Example:
+
+```yaml
+typography:
+  fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
+  preset: quiet-gallery
+  overrides:
+    headings:
+      h2:
+        size: medium
+      h3:
+        size: small
+    body:
+      lineHeight: 1.55
+```
+
+Use `norna typography presets` to inspect built-in preset values and
+`norna typography show` to inspect the resolved typography for the selected
+site. See [Typography](typography.md).
+
 ## Presentation
 
 `presentation` is optional. It can contain:
@@ -56,8 +197,6 @@ navigation:
 - `textColor`: optional quoted hex color in `#rgb`, `#rrggbb`, or
   `#rrggbbaa` form.
 - `inlineStyles`: optional named inline text styles.
-- `typography`: optional typography preset and overrides. See
-  [Typography](typography.md).
 
 Example:
 
@@ -76,6 +215,9 @@ page file is always an override on top of the theme:
 presentation:
   typography:
     overrides:
+      headings:
+        h2:
+          size: large
       body:
         paragraphSpacing: 1em
 ```
@@ -96,12 +238,12 @@ If a page omits `presentation`, it uses the theme presentation unchanged. If a
 section omits `presentation`, it uses the resolved page presentation.
 
 Configured section backgrounds render as full-width horizontal bands while the
-section content keeps the normal page and gallery widths. The top spacing
+section content keeps the normal page and image widths. The top spacing
 before the first heading, the spacing between sections, and the spacing after
 the final section are part of the section background.
 
 Configured section text colors apply to section headings, Markdown text,
-Markdown subheadings, and gallery captions. Links keep the global accent color.
+Markdown subheadings, and image captions. Links keep the global accent color.
 
 ## Frame Colors
 

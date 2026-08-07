@@ -49,9 +49,8 @@ try {
 };
 `);
 	await writeFile(path.join(siteDir, 'theme.md'), `---
-presentation:
-  typography:
-    preset: quiet-gallery
+typography:
+  preset: quiet-gallery
 frame:
   colors: presentation
 ---

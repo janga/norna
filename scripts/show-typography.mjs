@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { findMap } from './lib/frontmatter-yaml.mjs';
 import {
 	defaultTypography,
 	resolveTypographyOverride,
@@ -23,75 +24,39 @@ import {
 
 const mode = process.argv[2] ?? 'show';
 
-const typographyRoles = ['heading', 'body', 'caption'];
-const typographyFields = {
-	heading: ['align', 'size', 'lineHeight', 'spacing'],
-	body: ['align', 'size', 'lineHeight', 'paragraphSpacing'],
-	caption: ['align', 'size', 'lineHeight', 'spacing'],
-};
-const responsiveFields = new Set(['align']);
-
+const typographyValuePaths = [
+	['headings', 'h1', 'align', 'desktop'],
+	['headings', 'h1', 'align', 'mobile'],
+	['headings', 'h1', 'size'],
+	['headings', 'h1', 'lineHeight'],
+	['headings', 'h1', 'spacing'],
+	['headings', 'h2', 'align', 'desktop'],
+	['headings', 'h2', 'align', 'mobile'],
+	['headings', 'h2', 'size'],
+	['headings', 'h2', 'lineHeight'],
+	['headings', 'h2', 'spacing'],
+	['headings', 'h3', 'align', 'desktop'],
+	['headings', 'h3', 'align', 'mobile'],
+	['headings', 'h3', 'size'],
+	['headings', 'h3', 'lineHeight'],
+	['headings', 'h3', 'spacing'],
+	['headings', 'h4', 'align', 'desktop'],
+	['headings', 'h4', 'align', 'mobile'],
+	['headings', 'h4', 'size'],
+	['headings', 'h4', 'lineHeight'],
+	['headings', 'h4', 'spacing'],
+	['body', 'align', 'desktop'],
+	['body', 'align', 'mobile'],
+	['body', 'size'],
+	['body', 'lineHeight'],
+	['body', 'paragraphSpacing'],
+	['caption', 'align', 'desktop'],
+	['caption', 'align', 'mobile'],
+	['caption', 'size'],
+	['caption', 'lineHeight'],
+	['caption', 'spacing'],
+];
 const countIndent = (line) => line.match(/^\s*/)?.[0].length ?? 0;
-
-const parseScalar = (rawValue) => {
-	const value = rawValue.trim();
-
-	if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
-	if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-		return value.slice(1, -1);
-	}
-
-	return value;
-};
-
-const parseMapping = (lines, startIndex, baseIndent) => {
-	const value = {};
-	let index = startIndex;
-
-	while (index < lines.length) {
-		const line = lines[index];
-		if (!line.trim() || line.trim().startsWith('#')) {
-			index += 1;
-			continue;
-		}
-
-		const indent = countIndent(line);
-		if (indent <= baseIndent) break;
-		if (line.trim().startsWith('- ')) break;
-
-		const match = line.trim().match(/^([a-zA-Z][a-zA-Z0-9-]*):(?:\s+(.*))?$/);
-		if (!match) break;
-
-		const [, key, rawValue] = match;
-		if (rawValue === undefined) {
-			const parsed = parseMapping(lines, index + 1, indent);
-			value[key] = parsed.value;
-			index = parsed.nextIndex;
-		} else {
-			value[key] = parseScalar(rawValue);
-			index += 1;
-		}
-	}
-
-	return { value, nextIndex: index };
-};
-
-const findMap = (lines, label, parentStart = 0, parentEnd = lines.length, requiredIndent = null) => {
-	for (let index = parentStart; index < parentEnd; index += 1) {
-		const line = lines[index];
-		const match = line.match(/^(\s*)([a-zA-Z][a-zA-Z0-9-]*):\s*$/);
-		if (!match || match[2] !== label) continue;
-		if (requiredIndent !== null && match[1].length !== requiredIndent) continue;
-
-		return {
-			index,
-			indent: match[1].length,
-			...parseMapping(lines, index + 1, match[1].length),
-		};
-	}
-
-	return null;
-};
 
 const isPlainObject = (value) => (
 	value !== null &&
@@ -129,29 +94,13 @@ const setPath = (value, path, entry) => {
 const annotateResolvedValues = (resolved, sources) => {
 	const annotated = {};
 
-	for (const role of typographyRoles) {
-		for (const field of typographyFields[role]) {
-			if (responsiveFields.has(field)) {
-				for (const viewport of ['desktop', 'mobile']) {
-					const path = [role, field, viewport];
-					const source = getPath(sources, path);
-					setPath(annotated, path, {
-						value: getPath(resolved.values, path),
-						source: source.source,
-						...(source.inherited ? { inherited: true } : {}),
-					});
-				}
-				continue;
-			}
-
-			const path = [role, field];
-			const source = getPath(sources, path);
-			setPath(annotated, path, {
-				value: getPath(resolved.values, path),
-				source: source.source,
-				...(source.inherited ? { inherited: true } : {}),
-			});
-		}
+	for (const path of typographyValuePaths) {
+		const source = getPath(sources, path);
+		setPath(annotated, path, {
+			value: getPath(resolved.values, path),
+			source: source.source,
+			...(source.inherited ? { inherited: true } : {}),
+		});
 	}
 
 	return annotated;
@@ -160,23 +109,11 @@ const annotateResolvedValues = (resolved, sources) => {
 const presetSources = (presetName) => {
 	const sources = {};
 
-	for (const role of typographyRoles) {
-		for (const field of typographyFields[role]) {
-			if (responsiveFields.has(field)) {
-				for (const viewport of ['desktop', 'mobile']) {
-					setPath(sources, [role, field, viewport], {
-						source: `preset:${presetName}`,
-						inherited: false,
-					});
-				}
-				continue;
-			}
-
-			setPath(sources, [role, field], {
-				source: `preset:${presetName}`,
-				inherited: false,
-			});
-		}
+	for (const path of typographyValuePaths) {
+		setPath(sources, path, {
+			source: `preset:${presetName}`,
+			inherited: false,
+		});
 	}
 
 	return sources;
@@ -186,28 +123,12 @@ const applyOverrideSources = (sources, typographyConfig, sourceLabel) => {
 	const overrides = typographyConfig?.overrides;
 	if (!overrides) return sources;
 
-	for (const role of typographyRoles) {
-		for (const field of typographyFields[role]) {
-			if (responsiveFields.has(field)) {
-				for (const viewport of ['desktop', 'mobile']) {
-					const path = [role, field, viewport];
-					if (hasPath(overrides, path)) {
-						setPath(sources, path, {
-							source: `${sourceLabel} override`,
-							inherited: false,
-						});
-					}
-				}
-				continue;
-			}
-
-			const path = [role, field];
-			if (hasPath(overrides, path)) {
-				setPath(sources, path, {
-					source: `${sourceLabel} override`,
-					inherited: false,
-				});
-			}
+	for (const path of typographyValuePaths) {
+		if (hasPath(overrides, path)) {
+			setPath(sources, path, {
+				source: `${sourceLabel} override`,
+				inherited: false,
+			});
 		}
 	}
 
@@ -217,25 +138,11 @@ const applyOverrideSources = (sources, typographyConfig, sourceLabel) => {
 const inheritedSources = (sources) => {
 	const inherited = structuredClone(sources);
 
-	for (const role of typographyRoles) {
-		for (const field of typographyFields[role]) {
-			if (responsiveFields.has(field)) {
-				for (const viewport of ['desktop', 'mobile']) {
-					const path = [role, field, viewport];
-					setPath(inherited, path, {
-						...getPath(sources, path),
-						inherited: true,
-					});
-				}
-				continue;
-			}
-
-			const path = [role, field];
-			setPath(inherited, path, {
-				...getPath(sources, path),
-				inherited: true,
-			});
-		}
+	for (const path of typographyValuePaths) {
+		setPath(inherited, path, {
+			...getPath(sources, path),
+			inherited: true,
+		});
 	}
 
 	return inherited;
@@ -355,10 +262,7 @@ const readThemeTypography = async () => {
 	}
 
 	const themeLines = themeFrontmatterBody.split(/\r?\n/);
-	const themePresentation = findMap(themeLines, 'presentation', 0, themeLines.length, 0);
-	const themeTypographyConfig = themePresentation
-		? findMap(themeLines, 'typography', themePresentation.index + 1, themePresentation.nextIndex)?.value
-		: null;
+	const themeTypographyConfig = findMap(themeLines, 'typography', 0, themeLines.length, 0)?.value;
 	return resolveAnnotatedTypographyConfig(themeTypographyConfig ?? defaultTypography, siteThemeLabel);
 };
 
@@ -429,5 +333,5 @@ if (mode === 'presets') {
 
 	console.log(toYamlLines(output).join('\n'));
 } else {
-	throw new Error('Usage: norna typography:presets|typography:show');
+	throw new Error('Usage: norna typography presets|show');
 }
