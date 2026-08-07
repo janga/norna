@@ -14,6 +14,10 @@ sections:
 Norna is an independent open source CLI for building small file-based static
 websites.
 
+Install it with npm and use the `norna` command. When a site project has its
+own installed Norna dependency, that project-local version is used
+automatically.
+
 You keep content, presentation, configuration, images, and public files in a
 plain project directory. Norna validates those files, prepares responsive image
 assets, and builds a static website.

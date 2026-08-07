@@ -76,7 +76,8 @@ when the site is published below a path such as `/repository-name/`.
 
 In this repository:
 
-- `bin/norna.mjs` dispatches public CLI commands.
+- `bin/norna.mjs` launches the appropriate installed Norna version.
+- `bin/norna-cli.mjs` dispatches public CLI commands.
 - `scripts/` contains validation, image, local preview, deploy, and test tools.
 - `src/` contains the Astro renderer, components, styles, and content schema.
 - `starters/basic/` is copied by `norna init <target-dir>` to create a

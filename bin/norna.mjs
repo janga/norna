@@ -1,170 +1,169 @@
 #!/usr/bin/env node
+import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { readFile, realpath } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const args = process.argv.slice(2);
-process.env.NORNA_INVOCATION_ROOT ??= process.cwd();
+const packageName = '@janga/norna';
+const currentEntrypoint = fileURLToPath(import.meta.url);
+const implementationEntrypoint = new URL('./norna-cli.mjs', import.meta.url);
 
-const usage = `
-Usage: norna <command> [options]
+const readJson = async (filePath) => JSON.parse(await readFile(filePath, 'utf8'));
 
-Commands:
-  dev:local              Start local Astro dev server
-  dev:lan                Start dev server for this local network
-  dev:restart            Restart local Astro dev server
-  dev:status             Show local dev server status
-  dev:logs               Show local dev server logs
-  dev:stop               Stop local dev server
-  config:check           Validate site/config.mjs
-  content:check          Validate site/content.md and gallery references
-  content:sync           Rewrite section order and move misplaced images
-  typography:presets     Show built-in typography preset values
-  typography:show        Show resolved typography for the selected site
-  site:public            Sync site/public/ to public/
-  images                 Generate optimized image variants
-  engine:update          Update @janga/norna in a site repository
-  engine:version         Show installed engine and Astro versions
-  init                   Create a new site project from the starter
-  build                  Build the selected site
-  build:local            Build and restart local dev server
-  deploy                 Build and deploy committed branch
-  deploy:commit          Build, commit allowed changes, push, and check Pages
-  deploy:watch           Watch GitHub Pages workflow
-  preview                Preview dist/
-  astro                  Run Astro with norna config
-  doctor                 Print resolved paths
-
-Global options:
-  --site-dir <path>      Use a specific site source directory
-  -h, --help             Show this help
-`.trim();
-
-const parseArgs = (rawArgs) => {
-	const commandArgs = [];
-	let siteDir = null;
-
-	for (let index = 0; index < rawArgs.length; index += 1) {
-		const arg = rawArgs[index];
-
-		if (arg === '--site-dir') {
-			const value = rawArgs[index + 1];
-			if (!value || value.startsWith('-')) {
-				throw new Error('--site-dir requires a path.');
-			}
-
-			siteDir = value;
-			index += 1;
-			continue;
+const readJsonOptional = async (filePath) => {
+	try {
+		return await readJson(filePath);
+	} catch (error) {
+		if (error.code === 'ENOENT') {
+			return null;
 		}
 
-		if (arg.startsWith('--site-dir=')) {
-			siteDir = arg.slice('--site-dir='.length);
-			if (!siteDir) {
-				throw new Error('--site-dir requires a path.');
-			}
-			continue;
-		}
-
-		commandArgs.push(arg);
+		throw error;
 	}
-
-	return { commandArgs, siteDir };
 };
 
-let parsedArgs;
+const realpathOptional = async (filePath) => {
+	try {
+		return await realpath(filePath);
+	} catch (error) {
+		if (error.code === 'ENOENT') {
+			return null;
+		}
 
-try {
-	parsedArgs = parseArgs(args);
-} catch (error) {
-	console.error(error instanceof Error ? error.message : String(error));
-	process.exit(1);
-}
-
-const { commandArgs, siteDir } = parsedArgs;
-
-if (siteDir) {
-	process.env.NORNA_SITE_DIR = siteDir;
-}
-
-const [command = 'help', ...rest] = commandArgs;
-
-if (command === '-h' || command === '--help' || command === 'help') {
-	console.log(usage);
-	process.exit(0);
-}
-
-const [
-	{ runAstroInherit },
-	{ engineRoot, siteProjectRoot },
-	{ runInherit },
-] = await Promise.all([
-	import('../scripts/lib/astro-command.mjs'),
-	import('../scripts/lib/site-paths.mjs'),
-	import('../scripts/lib/run-command.mjs'),
-]);
-
-const runScript = (relativePath, scriptArgs = []) => runInherit(
-	process.execPath,
-	[path.join(engineRoot, relativePath), ...scriptArgs],
-	{ cwd: siteProjectRoot },
-);
-
-const runBuild = () => runScript('scripts/build-site.mjs');
-
-try {
-	if (command === 'dev' || command === 'dev:local') {
-		await runScript('scripts/dev-local.mjs', rest);
-	} else if (command === 'dev:lan') {
-		await runScript('scripts/dev-local.mjs', ['lan', ...rest]);
-	} else if (command === 'dev:restart') {
-		await runScript('scripts/dev-local.mjs', ['restart', ...rest]);
-	} else if (command === 'dev:status') {
-		await runScript('scripts/dev-local.mjs', ['status', ...rest]);
-	} else if (command === 'dev:logs') {
-		await runScript('scripts/dev-local.mjs', ['logs', ...rest]);
-	} else if (command === 'dev:stop') {
-		await runScript('scripts/dev-local.mjs', ['stop', ...rest]);
-	} else if (command === 'config:check') {
-		await runScript('scripts/check-config.mjs', rest);
-	} else if (command === 'content:check') {
-		await runScript('scripts/sync-content-sections.mjs', ['--check', ...rest]);
-		await runAstroInherit(['sync']);
-	} else if (command === 'content:sync') {
-		await runScript('scripts/sync-content-sections.mjs', ['--write', ...rest]);
-	} else if (command === 'typography:presets') {
-		await runScript('scripts/show-typography.mjs', ['presets', ...rest]);
-	} else if (command === 'typography:show') {
-		await runScript('scripts/show-typography.mjs', ['show', ...rest]);
-	} else if (command === 'site:public') {
-		await runScript('scripts/sync-site-public.mjs', rest);
-	} else if (command === 'images') {
-		await runScript('scripts/generate-images.mjs', rest);
-	} else if (command === 'engine:update') {
-		await runScript('scripts/update-engine.mjs', rest);
-	} else if (command === 'engine:version') {
-		await runScript('scripts/engine-version.mjs', rest);
-	} else if (command === 'init') {
-		await runScript('scripts/init-site.mjs', rest);
-	} else if (command === 'build') {
-		await runBuild();
-	} else if (command === 'build:local') {
-		await runBuild();
-		await runScript('scripts/dev-local.mjs', ['restart']);
-	} else if (command === 'deploy') {
-		await runScript('scripts/deploy-site.mjs', rest);
-	} else if (command === 'deploy:commit') {
-		await runScript('scripts/deploy-site.mjs', ['commit', ...rest]);
-	} else if (command === 'deploy:watch') {
-		await runScript('scripts/watch-pages-deploy.mjs', rest);
-	} else if (command === 'doctor') {
-		await runScript('scripts/doctor.mjs', rest);
-	} else if (command === 'astro') {
-		await runAstroInherit(rest);
-	} else if (command === 'preview') {
-		await runAstroInherit(['preview', ...rest]);
-	} else {
-		throw new Error(`Unknown command: ${command}\n${usage}`);
+		throw error;
 	}
-} catch (error) {
-	console.error(error instanceof Error ? error.message : String(error));
-	process.exit(1);
+};
+
+const findNearestProjectRoot = (startDirectory) => {
+	let current = path.resolve(startDirectory);
+
+	while (true) {
+		if (existsSync(path.join(current, 'package.json'))) {
+			return current;
+		}
+
+		const parent = path.dirname(current);
+		if (parent === current) {
+			return null;
+		}
+
+		current = parent;
+	}
+};
+
+const isWithinDirectory = (parentDirectory, childDirectory) => {
+	const relativePath = path.relative(parentDirectory, childDirectory);
+	return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
+};
+
+const declaresNornaDependency = (packageJson) => [
+	'dependencies',
+	'devDependencies',
+	'optionalDependencies',
+	'peerDependencies',
+].some((field) => Object.hasOwn(packageJson[field] ?? {}, packageName));
+
+const getPackageBinEntrypoint = (packageRoot, packageJson) => {
+	const bin = packageJson.bin;
+	const binPath = typeof bin === 'string' ? bin : bin?.norna;
+
+	if (!binPath) {
+		throw new Error(`${packageName} does not define a norna bin entrypoint.`);
+	}
+
+	return path.resolve(packageRoot, binPath);
+};
+
+const resolveLocalEntrypoint = async () => {
+	const currentPackageRoot = findNearestProjectRoot(path.dirname(currentEntrypoint));
+	const currentPackageJson = currentPackageRoot
+		? await readJsonOptional(path.join(currentPackageRoot, 'package.json'))
+		: null;
+
+	if (
+		currentPackageJson?.name === packageName
+		&& isWithinDirectory(currentPackageRoot, process.cwd())
+	) {
+		return null;
+	}
+
+	const projectRoot = findNearestProjectRoot(process.cwd());
+	if (!projectRoot) {
+		return null;
+	}
+
+	const projectPackageJson = await readJsonOptional(path.join(projectRoot, 'package.json'));
+	if (!projectPackageJson || projectPackageJson.name === packageName || !declaresNornaDependency(projectPackageJson)) {
+		return null;
+	}
+
+	let localPackageJsonPath;
+	try {
+		const requireFromProject = createRequire(path.join(projectRoot, 'package.json'));
+		localPackageJsonPath = requireFromProject.resolve(`${packageName}/package.json`);
+	} catch (error) {
+		if (error.code === 'MODULE_NOT_FOUND') {
+			return null;
+		}
+
+		throw error;
+	}
+
+	const localPackageJson = await readJson(localPackageJsonPath);
+	const localPackageRoot = path.dirname(localPackageJsonPath);
+	return getPackageBinEntrypoint(localPackageRoot, localPackageJson);
+};
+
+const runLocalEntrypoint = (entrypoint) => {
+	const child = spawn(process.execPath, [entrypoint, ...process.argv.slice(2)], {
+		cwd: process.cwd(),
+		env: process.env,
+		stdio: 'inherit',
+	});
+
+	const forwardSignal = (signal) => {
+		if (!child.killed) {
+			child.kill(signal);
+		}
+	};
+	const signals = ['SIGINT', 'SIGTERM'];
+	for (const signal of signals) {
+		process.once(signal, forwardSignal);
+	}
+
+	child.once('exit', (code, signal) => {
+		for (const forwardedSignal of signals) {
+			process.removeListener(forwardedSignal, forwardSignal);
+		}
+
+		if (signal) {
+			process.kill(process.pid, signal);
+			return;
+		}
+
+		process.exit(code ?? 1);
+	});
+
+	child.once('error', (error) => {
+		console.error(error instanceof Error ? error.message : String(error));
+		process.exit(1);
+	});
+};
+
+const localEntrypoint = await resolveLocalEntrypoint();
+if (localEntrypoint) {
+	const [currentRealpath, localRealpath] = await Promise.all([
+		realpathOptional(currentEntrypoint),
+		realpathOptional(localEntrypoint),
+	]);
+
+	if (localRealpath && currentRealpath !== localRealpath) {
+		runLocalEntrypoint(localEntrypoint);
+	} else {
+		await import(implementationEntrypoint.href);
+	}
+} else {
+	await import(implementationEntrypoint.href);
 }

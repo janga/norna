@@ -29,6 +29,11 @@ npm install
 npm run norna:dev
 ```
 
+After `npm install`, the project's npm scripts use the project-local `norna`
+binary from `node_modules/.bin`. A globally installed `norna` can also be used
+as a convenience launcher; inside a project with an installed `@janga/norna`
+dependency, it delegates to the project's local version.
+
 A freshly created empty directory is not a `norna` site yet. It becomes a
 site when `init` copies the starter files, including `package.json`. If you run
 `npm install` in an empty directory, npm may walk up to a parent directory and

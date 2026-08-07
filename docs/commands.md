@@ -4,6 +4,12 @@ The `norna` binary is the stable command surface. Site repositories normally
 use starter npm scripts such as `npm run norna:content:check`; those scripts
 call the local `norna` binary from `node_modules/.bin`.
 
+Npm installation exposes the command as `norna` on macOS, Linux, and Windows
+through the package `bin` field. When a globally installed `norna` is started
+inside a project that declares and has installed its own `@janga/norna`
+dependency, the launcher delegates to that project-local version. If no
+project-local install is found, the version that was started continues running.
+
 Use direct `norna ...` commands only when the binary is on your shell `PATH`,
 inside an npm script, or through `npm exec -- norna ...`.
 

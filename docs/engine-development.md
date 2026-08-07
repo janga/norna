@@ -4,7 +4,8 @@ This document is for work on the reusable `norna` package itself.
 
 ## Main Areas
 
-- `bin/norna.mjs`: public CLI dispatcher.
+- `bin/norna.mjs`: public CLI launcher and local-version resolver.
+- `bin/norna-cli.mjs`: public CLI command dispatcher.
 - `scripts/lib/site-paths.mjs`: engine/site path resolution.
 - `scripts/lib/project-config.mjs`: `site/config.mjs` validation and defaults.
 - `scripts/sync-content-sections.mjs`: content validation and sync behavior.
@@ -111,6 +112,13 @@ npm run norna:engine:update -- <version>
 
 Commit the resulting `package.json` and `package-lock.json` changes in the
 site repository after the site's normal checks pass.
+
+The installed `norna` command is created from the package `bin` field. The
+launcher first looks for the nearest project `package.json`. If that project
+declares `@janga/norna` and Node can resolve an installed copy from that project
+root, the launcher delegates to that local entrypoint. The engine repository
+itself is excluded from delegation so local engine development keeps using the
+working tree entrypoint.
 
 ## npm Release
 
