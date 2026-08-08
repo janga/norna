@@ -1,72 +1,110 @@
 ---
 title: Getting Started
-description: Create and run a first Norna site.
+description: Create and understand a first Norna site.
 navigation:
   label: Getting Started
   order: 10
 sections:
-  - id: create
-    presentation:
-      typography:
-        preset: statement
-  - id: edit
+  - id: quickstart
+  - id: site-files
+  - id: setup
   - id: check-build
 ---
 
-## Create a site {#create}
+## Quickstart {#quickstart}
 
-Create a new site repository with the published package:
+You need Node.js 22.12 or later. ImageMagick is used when Norna generates
+image variants.
+
+Create a site:
 
 ```sh
-cd ..
 npx @janga/norna@latest init my-site
 cd my-site
 npm install
 npm run dev
 ```
 
-Run `init` before `npm install`. A new target directory is not a Node project
-until Norna has created its `package.json`.
+The new project contains the Norna site files, npm scripts and the setup needed
+to build the site.
 
-## Make the first edits {#edit}
+For a real project, keep the generated lockfile committed so local and
+automated builds use the same Norna version.
 
-Start with the files Norna creates in `site/`:
+## The site files {#site-files}
 
-- edit `site/config.mjs` for URL, language labels, and GitHub settings;
-- edit `site/theme.md` for layout, layout density, typography rhythm, image
-  sizing, font, colors, typography preset, inline styles, and frame colors;
-- edit `site/content.md` for homepage content, section order, image rows, alt
-  text, and captions;
-- put source images under `site/images/<section-id>/`;
-- put static public files under `site/public/`.
+A typical Norna site starts here:
 
-Keep content and images close to each other. A section with id `work` normally
-uses `site/images/work/`.
+```text
+site/
+  config.mjs
+  theme.md
+  content.md
+  routes/
+  images/
+  public/
+```
 
-## Check and build {#check-build}
+### `content.md`
 
-Before publishing, run:
+The homepage content and its sections. It can also describe image rows,
+captions and other page content.
+
+### `theme.md`
+
+Site-wide visual defaults such as layout, image sizing, typography and colors.
+
+### `config.mjs`
+
+Technical settings such as the public URL, base path, language labels, footer
+and GitHub/deployment settings.
+
+### `routes/`
+
+Optional additional pages. Each route is a directory with its own
+`route-content.md`, and can have route-specific images and public files much
+like the top-level site.
+
+### `images/`
+
+Source images associated with the homepage or individual routes.
+
+### `public/`
+
+Static files that should be published with the site, such as `robots.txt`,
+favicons or a `CNAME` file.
+
+## Standalone or embedded {#setup}
+
+The normal setup creates a dedicated site project:
+
+```sh
+npx @janga/norna@latest init my-site
+```
+
+Norna can also add a site to an existing Node project:
+
+```sh
+npx @janga/norna@latest init . --type embedded --site-dir presentation
+```
+
+The surrounding project keeps its own structure while Norna manages the
+selected site directory and adds its namespaced npm commands.
+
+## Check, build and publish {#check-build}
+
+During normal work, use the development server while editing the source files.
+
+Before publishing, validate and build the site:
 
 ```sh
 npm run norna:check
-npm run norna:build
+npm run build
 ```
 
-`norna:check` validates configuration and content. `norna:build` generates the
-static site.
+Norna validates the site source, processes images when needed and builds static
+output.
 
-For GitHub Pages without a custom domain, set the public URL and path prefix in
-`site/config.mjs`:
-
-```js
-site: {
-  url: 'https://owner.github.io/repository-name/',
-  basePath: '/repository-name/',
-}
-```
-
-For a custom domain or root-hosted site, use `basePath: '/'`. The starter also
-includes `.github/workflows/deploy.yml`; set GitHub Pages to build from GitHub
-Actions before publishing.
-
-Full guide: [docs/getting-started.md](https://github.com/janga/norna/blob/main/docs/getting-started.md)
+The starter workflow can then publish the built site through GitHub Pages. More
+detailed build, deployment and command documentation belongs in the reference
+documentation rather than on this introductory page.
