@@ -1,0 +1,35 @@
+{
+  "name": "project-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run norna:dev --",
+    "norna:dev": "norna dev:local",
+    "norna:dev:lan": "norna dev:lan",
+    "norna:dev:restart": "norna dev:restart",
+    "norna:dev:status": "norna dev:status",
+    "norna:dev:logs": "norna dev:logs",
+    "norna:dev:stop": "norna dev:stop",
+    "norna:check": "npm run norna:config:check && npm run norna:content:check",
+    "norna:config:check": "norna config:check",
+    "norna:content:check": "norna content:check",
+    "norna:sync": "norna content:sync",
+    "norna:typography:presets": "norna typography presets",
+    "norna:typography:show": "norna typography show",
+    "norna:public": "norna site:public",
+    "norna:images": "norna images",
+    "norna:build": "norna build",
+    "norna:build:local": "norna build:local",
+    "norna:deploy": "norna deploy",
+    "norna:deploy:commit": "norna deploy:commit",
+    "norna:deploy:watch": "norna deploy:watch",
+    "norna:doctor": "norna doctor",
+    "norna:preview": "norna preview",
+    "norna:engine:update": "norna engine:update",
+    "norna:engine:version": "norna engine:version",
+    "build": "npm run norna:build"
+  },
+  "dependencies": {
+    "@janga/norna": "0.7.2"
+  }
+}
