@@ -235,7 +235,15 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-heading-font-size-desktop: clamp(1.6rem, 1.22rem + 1.45vw, 2.75rem)',
+		'--section-heading-font-size-desktop: clamp(1.35rem, 1.1rem + 0.9vw, 2rem)',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-heading-spacing-after: 0.55em',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-markdown-h3-spacing-before: 1.5em',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -272,6 +280,14 @@ This route verifies that packaged norna sites can build route pages.
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-caption-line-height: 1.35',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-caption-spacing-before: 0.5em',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-caption-font-size-desktop: clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -371,14 +387,14 @@ This route verifies that packaged norna sites can build route pages.
 		siteContentPath,
 		siteContent.replace(
 			'      typography:\n        preset: statement',
-			'      typography:\n        overrides:\n          caption:\n            spacing: wide',
+			'      typography:\n        overrides:\n          caption:\n            spacingBefore: wide',
 		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.0.presentation.typography.overrides.caption.spacing',
+		'sections.0.presentation.typography.overrides.caption.spacingBefore',
 	);
 	await writeFile(
 		siteContentPath,

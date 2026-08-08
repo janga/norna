@@ -15,35 +15,11 @@ on top of the resolved page presentation.
 navigation:
   brand: Example Site
 layout:
+  density: normal
   pageWidth: 1180px
   gutter:
     desktop: clamp(1.25rem, 4vw, 3rem)
     mobile: 1rem
-  spacing:
-    firstSectionTop:
-      desktop: clamp(1.875rem, 3vw, 2.75rem)
-      mobile: 1.375rem
-    sectionGap:
-      desktop: clamp(2.55rem, 4.2vw, 3.9rem)
-      mobile: 2.25rem
-    finalSectionBottom:
-      desktop: clamp(2.55rem, 4.2vw, 3.9rem)
-      mobile: 2.25rem
-    sectionHeadingToBody:
-      desktop: clamp(0.5625rem, 1.25vw, 0.75rem)
-      mobile: 0.4375rem
-    bodyToImages:
-      desktop: clamp(1.25rem, 2.5vw, 2rem)
-      mobile: 1.25rem
-    imageGap:
-      desktop: clamp(1.5rem, 3.5vw, 2.75rem)
-      mobile: 2.75rem
-    subheadingTop:
-      desktop: 2rem
-      mobile: 1.6rem
-    subheadingRuleTop:
-      desktop: 1rem
-      mobile: 0.8rem
 gallery:
   width: 900px
   maxAvailableWidthPercent:
@@ -55,6 +31,7 @@ gallery:
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
   preset: quiet-gallery
+  rhythm: normal
 presentation:
   backgroundColor: "#000000"
   textColor: "#f7f4ee"
@@ -94,14 +71,17 @@ navigation:
 - `gutter`: side margin removed from the viewport before available content
   width is calculated. Use either one CSS length for all viewports or
   `desktop` / `mobile` values.
-- `spacing`: vertical rhythm for sections, text, image rows, and Markdown
-  subheadings. Every spacing value accepts either one CSS length for all
-  viewports or `desktop` / `mobile` values.
+- `density`: default structural spacing profile. Allowed values are `compact`,
+  `normal`, and `airy`.
+- `spacing`: optional structural spacing overrides for sections and image
+  rows. Every spacing value accepts either one CSS length for all viewports or
+  `desktop` / `mobile` values.
 
 Example:
 
 ```yaml
 layout:
+  density: normal
   pageWidth: 1180px
   gutter:
     desktop: clamp(1.25rem, 4vw, 3rem)
@@ -111,28 +91,25 @@ layout:
       desktop: clamp(1.875rem, 3vw, 2.75rem)
       mobile: 1.375rem
     sectionGap:
-      desktop: clamp(2.55rem, 4.2vw, 3.9rem)
-      mobile: 2.25rem
-    subheadingTop:
-      desktop: 2rem
-      mobile: 1.6rem
+      desktop: clamp(1.4rem, 3vw, 2.75rem)
+      mobile: 1.5rem
 ```
 
 If omitted, Norna uses `1180px` for `pageWidth`, desktop
-`clamp(1.25rem, 4vw, 3rem)` for `gutter`, mobile `1rem`, and the spacing
-defaults shown in the minimal theme example.
+`clamp(1.25rem, 4vw, 3rem)` for `gutter`, mobile `1rem`, and `normal` layout
+density.
 
 Spacing keys:
 
 - `firstSectionTop`: space above the first section heading.
 - `sectionGap`: space above each following section.
 - `finalSectionBottom`: space below the final section.
-- `sectionHeadingToBody`: space from a section heading to its body text.
 - `bodyToImages`: space from section body text to image rows.
 - `imageGap`: space between image rows.
-- `subheadingTop`: space above Markdown `###` subheadings inside body text.
-- `subheadingRuleTop`: space between the rule above a Markdown `###`
-  subheading and the subheading text.
+
+Text-near spacing, such as spacing after headings, spacing before Markdown
+subheadings, paragraph spacing, and caption spacing, belongs to
+`typography.rhythm` and typography overrides.
 
 ## Image Sizing
 
@@ -166,6 +143,8 @@ Top-level `typography` is the site-wide typographic base. It supports:
 
 - `fontFamily`: global CSS font-family stack.
 - `preset`: built-in typography preset.
+- `rhythm`: text-near spacing profile. Allowed values are `compact`,
+  `normal`, and `airy`.
 - `overrides`: focused changes to preset values.
 
 Example:
@@ -174,19 +153,23 @@ Example:
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
   preset: quiet-gallery
+  rhythm: normal
   overrides:
     headings:
       h2:
         size: medium
+        spacingAfter: 0.55em
       h3:
-        size: small
+        size: medium
+        spacingBefore: 1.5em
+        spacingAfter: 0.5em
     body:
       lineHeight: 1.55
 ```
 
-Use `norna typography presets` to inspect built-in preset values and
-`norna typography show` to inspect the resolved typography for the selected
-site. See [Typography](typography.md).
+Use `norna typography presets` to inspect built-in preset and rhythm values,
+and `norna typography show` to inspect the resolved typography for the
+selected site. See [Typography](typography.md).
 
 ## Presentation
 
@@ -218,6 +201,7 @@ presentation:
       headings:
         h2:
           size: large
+          spacingAfter: 0.6em
       body:
         paragraphSpacing: 1em
 ```

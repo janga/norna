@@ -275,9 +275,10 @@ npm run norna:typography:presets
 npm run norna:typography:show
 ```
 
-`norna:typography:presets` shows the built-in typography presets from the
-installed engine. `norna:typography:show` shows the effective typography for
-the selected site after presets and overrides have been applied.
+`norna:typography:presets` shows the built-in typography presets and rhythms
+from the installed engine. `norna:typography:show` shows the effective
+typography for the selected site after presets, rhythms, and overrides have
+been applied.
 
 ### Correct Content And Configuration
 

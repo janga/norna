@@ -64,9 +64,9 @@ Commit the generated `package-lock.json` after the first install.
 
 1. Edit `site/config.mjs` for the site's URL, language labels, GitHub
    repository, footer, and deploy settings.
-2. Edit `site/theme.md` for site-wide layout, vertical spacing, image sizing,
-   font, typography preset, colors, inline styles, and frame colors, or omit it
-   to use engine defaults.
+2. Edit `site/theme.md` for site-wide layout, layout density, typography
+   rhythm, image sizing, font, typography preset, colors, inline styles, and
+   frame colors, or omit it to use engine defaults.
 3. Edit `site/content.md` for homepage title, description, sections, text,
    image rows, page/section presentation overrides, alt text, and captions.
 4. Put source images under `site/images/<section-id>/`.
@@ -114,12 +114,13 @@ Read [Site Structure](site-structure.md), [Content](content.md),
 [Theme](theme.md), [Typography](typography.md), [Routes](routes.md), and
 [Configuration](configuration.md) before publishing a real site.
 
-To change the site's maximum page width, side gutters, vertical spacing, image
-width, image height limits, font, colors, or site-wide typography preset, edit
-`site/theme.md`. See [Theme](theme.md) for the accepted shape.
+To change the site's maximum page width, side gutters, layout density,
+typography rhythm, image width, image height limits, font, colors, or
+site-wide typography preset, edit `site/theme.md`. See [Theme](theme.md) for
+the accepted shape.
 
 To change one page or section, add a focused `presentation.typography`
 override in `site/content.md`. See [Typography](typography.md). Use
-`norna typography presets` to inspect the installed preset values and
+`norna typography presets` to inspect the installed preset and rhythm values and
 `norna typography show` to inspect the resolved typography for the selected
 site.

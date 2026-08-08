@@ -35,22 +35,78 @@ const HeadingTag = headingLevel === 1 ? 'h1' : 'h2';
 // Sections are authored with Markdown ## headings even when the first one renders as HTML h1.
 const sectionHeadingVisualLevel = 'h2';
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
-const headingSizeValues: Record<TextSize, ResponsiveValue<string>> = {
-	small: {
-		desktop: 'clamp(1.1rem, 1.02rem + 0.35vw, 1.35rem)',
-		mobile: 'clamp(1.12rem, 1rem + 0.85vw, 1.42rem)',
+const headingSizeValues: Record<HeadingLevel, Record<TextSize, ResponsiveValue<string>>> = {
+	h1: {
+		small: {
+			desktop: 'clamp(1.5rem, 1.18rem + 1.15vw, 2.25rem)',
+			mobile: 'clamp(1.42rem, 1.12rem + 1.5vw, 2rem)',
+		},
+		medium: {
+			desktop: 'clamp(1.85rem, 1.35rem + 1.8vw, 3.1rem)',
+			mobile: 'clamp(1.65rem, 1.18rem + 2.2vw, 2.45rem)',
+		},
+		large: {
+			desktop: 'clamp(2.25rem, 1.45rem + 2.75vw, 4.25rem)',
+			mobile: 'clamp(1.9rem, 1.26rem + 3.2vw, 3.15rem)',
+		},
+		xlarge: {
+			desktop: 'clamp(2.75rem, 1.6rem + 3.8vw, 5.5rem)',
+			mobile: 'clamp(2.2rem, 1.35rem + 4.4vw, 3.9rem)',
+		},
 	},
-	medium: {
-		desktop: 'clamp(1.35rem, 1.1rem + 0.9vw, 2rem)',
-		mobile: 'clamp(1.3rem, 1.05rem + 1.35vw, 1.75rem)',
+	h2: {
+		small: {
+			desktop: 'clamp(1.1rem, 1.02rem + 0.35vw, 1.35rem)',
+			mobile: 'clamp(1.12rem, 1rem + 0.85vw, 1.42rem)',
+		},
+		medium: {
+			desktop: 'clamp(1.35rem, 1.1rem + 0.9vw, 2rem)',
+			mobile: 'clamp(1.3rem, 1.05rem + 1.35vw, 1.75rem)',
+		},
+		large: {
+			desktop: 'clamp(1.6rem, 1.22rem + 1.45vw, 2.75rem)',
+			mobile: 'clamp(1.5rem, 1.12rem + 2vw, 2.25rem)',
+		},
+		xlarge: {
+			desktop: 'clamp(2rem, 1.35rem + 2.4vw, 3.75rem)',
+			mobile: 'clamp(1.8rem, 1.25rem + 3vw, 2.85rem)',
+		},
 	},
-	large: {
-		desktop: 'clamp(1.6rem, 1.22rem + 1.45vw, 2.75rem)',
-		mobile: 'clamp(1.5rem, 1.12rem + 2vw, 2.25rem)',
+	h3: {
+		small: {
+			desktop: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
+			mobile: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
+		},
+		medium: {
+			desktop: 'clamp(1.05rem, 0.98rem + 0.28vw, 1.22rem)',
+			mobile: 'clamp(1.04rem, 0.98rem + 0.45vw, 1.18rem)',
+		},
+		large: {
+			desktop: 'clamp(1.16rem, 1.02rem + 0.5vw, 1.5rem)',
+			mobile: 'clamp(1.12rem, 1rem + 0.75vw, 1.36rem)',
+		},
+		xlarge: {
+			desktop: 'clamp(1.32rem, 1.08rem + 0.85vw, 1.9rem)',
+			mobile: 'clamp(1.24rem, 1.04rem + 1.15vw, 1.65rem)',
+		},
 	},
-	xlarge: {
-		desktop: 'clamp(2rem, 1.35rem + 2.4vw, 3.75rem)',
-		mobile: 'clamp(1.8rem, 1.25rem + 3vw, 2.85rem)',
+	h4: {
+		small: {
+			desktop: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
+			mobile: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
+		},
+		medium: {
+			desktop: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
+			mobile: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
+		},
+		large: {
+			desktop: 'clamp(1.05rem, 1rem + 0.16vw, 1.12rem)',
+			mobile: 'clamp(1.05rem, 1rem + 0.16vw, 1.12rem)',
+		},
+		xlarge: {
+			desktop: 'clamp(1.14rem, 1.06rem + 0.26vw, 1.25rem)',
+			mobile: 'clamp(1.14rem, 1.06rem + 0.26vw, 1.25rem)',
+		},
 	},
 };
 const bodySizeValues: Record<TextSize, ResponsiveValue<string>> = {
@@ -94,6 +150,9 @@ const getSizeValue = (
 	sizeValues: Record<TextSize, ResponsiveValue<string>>,
 	size: TextSize,
 ) => sizeValues[size];
+const getHeadingSizeValue = (level: HeadingLevel, size: TextSize) => (
+	headingSizeValues[level][size]
+);
 const backgroundColor = sectionOverride?.backgroundColor
 	?? pagePresentation.backgroundColor;
 const textColor = sectionOverride?.textColor
@@ -104,7 +163,8 @@ const heading = typography.headings[sectionHeadingVisualLevel] as {
 	align: ResponsiveValue<TextAlign>;
 	size: TextSize;
 	lineHeight: number;
-	spacing: string;
+	spacingBefore: string;
+	spacingAfter: string;
 };
 const markdownHeadingLevels = ['h3', 'h4'] as const;
 const markdownHeadings = Object.fromEntries(markdownHeadingLevels.map((level) => [
@@ -113,13 +173,14 @@ const markdownHeadings = Object.fromEntries(markdownHeadingLevels.map((level) =>
 		align: ResponsiveValue<TextAlign>;
 		size: TextSize;
 		lineHeight: number;
-		spacing: string;
+		spacingBefore: string;
+		spacingAfter: string;
 	},
 ]));
 const headingAlign = heading.align;
 const bodyAlign = typography.body.align as ResponsiveValue<TextAlign>;
 const captionAlign = typography.caption.align as ResponsiveValue<TextAlign>;
-const headingFontSize = getSizeValue(headingSizeValues, heading.size);
+const headingFontSize = getHeadingSizeValue(sectionHeadingVisualLevel, heading.size);
 const bodyFontSize = getSizeValue(bodySizeValues, typography.body.size as TextSize);
 const captionFontSize = getSizeValue(captionSizeValues, typography.caption.size as TextSize);
 const justifyByAlign: Record<TextAlign, string> = {
@@ -139,7 +200,7 @@ const bodyWidth = getAlignedTextWidth(bodyAlign, 'var(--text-width)');
 const hasGallery = section.gallery.length > 0;
 const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 	const headingConfig = markdownHeadings[level];
-	const fontSize = getSizeValue(headingSizeValues, headingConfig.size);
+	const fontSize = getHeadingSizeValue(level, headingConfig.size);
 
 	return [
 		`--section-markdown-${level}-align-desktop: ${headingConfig.align.desktop}`,
@@ -147,7 +208,8 @@ const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 		`--section-markdown-${level}-font-size-desktop: ${fontSize.desktop}`,
 		`--section-markdown-${level}-font-size-mobile: ${fontSize.mobile}`,
 		`--section-markdown-${level}-line-height: ${headingConfig.lineHeight}`,
-		`--section-markdown-${level}-spacing: ${headingConfig.spacing}`,
+		`--section-markdown-${level}-spacing-before: ${headingConfig.spacingBefore}`,
+		`--section-markdown-${level}-spacing-after: ${headingConfig.spacingAfter}`,
 	];
 };
 const sectionStyle = [
@@ -158,7 +220,7 @@ const sectionStyle = [
 	`--section-heading-font-size-desktop: ${headingFontSize.desktop}`,
 	`--section-heading-font-size-mobile: ${headingFontSize.mobile}`,
 	`--section-heading-line-height: ${heading.lineHeight}`,
-	`--section-heading-spacing: ${heading.spacing}`,
+	`--section-heading-spacing-after: ${heading.spacingAfter}`,
 	`--section-heading-width-desktop: ${headingWidth.desktop}`,
 	`--section-heading-width-mobile: ${headingWidth.mobile}`,
 	...markdownHeadingStyle('h3'),
@@ -176,7 +238,7 @@ const sectionStyle = [
 	`--section-caption-font-size-desktop: ${captionFontSize.desktop}`,
 	`--section-caption-font-size-mobile: ${captionFontSize.mobile}`,
 	`--section-caption-line-height: ${typography.caption.lineHeight}`,
-	`--section-caption-spacing: ${typography.caption.spacing}`,
+	`--section-caption-spacing-before: ${typography.caption.spacingBefore}`,
 	`--section-caption-justify-desktop: ${justifyByAlign[captionAlign.desktop]}`,
 	`--section-caption-justify-mobile: ${justifyByAlign[captionAlign.mobile]}`,
 ].join('; ');

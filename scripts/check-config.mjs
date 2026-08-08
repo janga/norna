@@ -23,6 +23,7 @@ try {
 	console.log(`Base path: ${projectConfig.site.basePath}`);
 	console.log(`Page width: ${projectConfig.layout.pageWidth}`);
 	console.log(`Gutter: desktop ${projectConfig.layout.gutter.desktop}, mobile ${projectConfig.layout.gutter.mobile}`);
+	console.log(`Layout density: ${projectConfig.layout.density}`);
 	console.log(`Image area width: ${projectConfig.gallery.width}`);
 	console.log(`Image max available width: desktop ${projectConfig.gallery.maxAvailableWidthPercent.desktop}%, mobile ${projectConfig.gallery.maxAvailableWidthPercent.mobile}%`);
 	console.log(`Image max available height: desktop ${projectConfig.gallery.maxAvailableHeightPercent.desktop}%, mobile ${projectConfig.gallery.maxAvailableHeightPercent.mobile}%`);

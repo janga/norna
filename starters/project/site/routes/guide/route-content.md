@@ -1,58 +1,85 @@
 ---
 title: Guide
-description: Learn the basic Project Name workflow.
+description: Adapt this compact guide for normal project use.
 navigation:
   label: Guide
   order: 10
 sections:
   - id: quickstart
   - id: configuration
-  - id: api
+  - id: usage
+  - id: topic
 ---
 
 ## Quickstart {#quickstart}
 
-Install the package and run the default check against a source directory:
+Show the shortest path from installation to a useful result.
 
 ```sh
-npm install project-name
-npx project-name check ./src
+<install command>
+<first useful command>
 ```
 
-The command exits with a non-zero status when it finds an issue, so it can run
-unchanged in local scripts and CI jobs.
+Briefly explain what happens and what the user should expect.
+
+> Example:
+>
+> ```sh
+> npm install checkline
+> npx checkline
+> ```
+>
+> The command runs the default project check and prints a short result in the
+> terminal.
 
 ## Configuration {#configuration}
 
-Project Name looks for a project config file at the repository root:
+Include this section only if configuration is relevant. Explain when
+configuration is needed and show the smallest realistic example.
 
 ```js
 export default {
-	include: ['src', 'scripts'],
-	reporter: 'summary',
+	// project-specific options
 };
 ```
 
-Keep configuration small and explicit. Defaults should be good enough for a new
-project, while advanced projects can opt into stricter behavior one setting at a
-time.
+If the project works well without configuration, say so.
 
-## API {#api}
+> Example: Checkline can run without configuration. Add a config file only when
+> the default paths or command behavior need to change.
 
-Use the API when checks need to be part of another tool:
+## Using `<Your project>` {#usage}
 
-```js
-import { checkProject } from 'project-name';
+Show one slightly more complete example of the normal workflow. The purpose is
+to demonstrate typical use, not every available command or option.
 
-const report = await checkProject({
-	input: './src',
-	reporter: 'json',
-});
+> Example: A project might keep the command in `package.json`:
 
-if (!report.ok) {
-	process.exitCode = 1;
+```json
+{
+  "scripts": {
+    "check": "checkline"
+  }
 }
 ```
 
-The API returns structured results so callers can decide whether to print a
-summary, write a report file, or fail a build.
+```sh
+npm run check
+```
+
+## `<API / Commands / Integration / Deployment>` {#topic}
+
+Choose the topic that best fits the project. For a library this may be `API`;
+for a CLI it may be `Commands`; other projects may need `Integration`,
+`Deployment`, or something else.
+
+For example, if a JavaScript API is relevant:
+
+```js
+import { check } from 'checkline';
+
+const result = await check();
+```
+
+Keep the example deliberately small. Detailed reference documentation can live
+elsewhere as the project grows.

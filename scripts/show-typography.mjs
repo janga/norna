@@ -6,6 +6,7 @@ import {
 	resolveTypographyConfig,
 	toYamlLines,
 	typographyPresets,
+	typographyRhythms,
 } from './lib/typography.mjs';
 import {
 	getContentFiles,
@@ -29,22 +30,26 @@ const typographyValuePaths = [
 	['headings', 'h1', 'align', 'mobile'],
 	['headings', 'h1', 'size'],
 	['headings', 'h1', 'lineHeight'],
-	['headings', 'h1', 'spacing'],
+	['headings', 'h1', 'spacingBefore'],
+	['headings', 'h1', 'spacingAfter'],
 	['headings', 'h2', 'align', 'desktop'],
 	['headings', 'h2', 'align', 'mobile'],
 	['headings', 'h2', 'size'],
 	['headings', 'h2', 'lineHeight'],
-	['headings', 'h2', 'spacing'],
+	['headings', 'h2', 'spacingBefore'],
+	['headings', 'h2', 'spacingAfter'],
 	['headings', 'h3', 'align', 'desktop'],
 	['headings', 'h3', 'align', 'mobile'],
 	['headings', 'h3', 'size'],
 	['headings', 'h3', 'lineHeight'],
-	['headings', 'h3', 'spacing'],
+	['headings', 'h3', 'spacingBefore'],
+	['headings', 'h3', 'spacingAfter'],
 	['headings', 'h4', 'align', 'desktop'],
 	['headings', 'h4', 'align', 'mobile'],
 	['headings', 'h4', 'size'],
 	['headings', 'h4', 'lineHeight'],
-	['headings', 'h4', 'spacing'],
+	['headings', 'h4', 'spacingBefore'],
+	['headings', 'h4', 'spacingAfter'],
 	['body', 'align', 'desktop'],
 	['body', 'align', 'mobile'],
 	['body', 'size'],
@@ -54,8 +59,20 @@ const typographyValuePaths = [
 	['caption', 'align', 'mobile'],
 	['caption', 'size'],
 	['caption', 'lineHeight'],
-	['caption', 'spacing'],
+	['caption', 'spacingBefore'],
 ];
+const rhythmValuePaths = new Set([
+	'headings.h1.spacingBefore',
+	'headings.h1.spacingAfter',
+	'headings.h2.spacingBefore',
+	'headings.h2.spacingAfter',
+	'headings.h3.spacingBefore',
+	'headings.h3.spacingAfter',
+	'headings.h4.spacingBefore',
+	'headings.h4.spacingAfter',
+	'body.paragraphSpacing',
+	'caption.spacingBefore',
+]);
 const countIndent = (line) => line.match(/^\s*/)?.[0].length ?? 0;
 
 const isPlainObject = (value) => (
@@ -106,12 +123,15 @@ const annotateResolvedValues = (resolved, sources) => {
 	return annotated;
 };
 
-const presetSources = (presetName) => {
+const defaultSources = (presetName, rhythmName) => {
 	const sources = {};
 
 	for (const path of typographyValuePaths) {
+		const pathKey = path.join('.');
 		setPath(sources, path, {
-			source: `preset:${presetName}`,
+			source: rhythmValuePaths.has(pathKey)
+				? `rhythm:${rhythmName}`
+				: `preset:${presetName}`,
 			inherited: false,
 		});
 	}
@@ -151,7 +171,7 @@ const inheritedSources = (sources) => {
 const resolveAnnotatedTypographyConfig = (typographyConfig, sourceLabel) => {
 	const resolved = resolveTypographyConfig(typographyConfig ?? defaultTypography);
 	const sources = applyOverrideSources(
-		presetSources(resolved.preset),
+		defaultSources(resolved.preset, resolved.rhythm),
 		typographyConfig,
 		sourceLabel,
 	);
@@ -162,14 +182,44 @@ const resolveAnnotatedTypographyConfig = (typographyConfig, sourceLabel) => {
 			source: typographyConfig?.preset ? sourceLabel : 'engine default',
 			...(typographyConfig?.preset ? {} : { inherited: true }),
 		},
+		rhythm: {
+			value: resolved.rhythm,
+			source: typographyConfig?.rhythm ? sourceLabel : 'engine default',
+			...(typographyConfig?.rhythm ? {} : { inherited: true }),
+		},
 		resolved,
 		sources,
 	};
 };
 
 const resolveAnnotatedTypographyOverride = (baseAnnotated, typographyConfig, sourceLabel) => {
-	if (typographyConfig?.preset) {
-		return resolveAnnotatedTypographyConfig(typographyConfig, sourceLabel);
+	if (typographyConfig?.preset || typographyConfig?.rhythm) {
+		const resolvedConfig = {
+			preset: typographyConfig.preset ?? baseAnnotated.resolved.preset,
+			rhythm: typographyConfig.rhythm ?? baseAnnotated.resolved.rhythm,
+			overrides: typographyConfig.overrides,
+		};
+		const resolved = resolveTypographyConfig(resolvedConfig);
+		const sources = applyOverrideSources(
+			defaultSources(resolved.preset, resolved.rhythm),
+			typographyConfig,
+			sourceLabel,
+		);
+
+		return {
+			preset: {
+				value: resolved.preset,
+				source: typographyConfig.preset ? sourceLabel : baseAnnotated.preset.source,
+				...(typographyConfig.preset ? {} : { inherited: true }),
+			},
+			rhythm: {
+				value: resolved.rhythm,
+				source: typographyConfig.rhythm ? sourceLabel : baseAnnotated.rhythm.source,
+				...(typographyConfig.rhythm ? {} : { inherited: true }),
+			},
+			resolved,
+			sources,
+		};
 	}
 
 	if (typographyConfig?.overrides) {
@@ -186,6 +236,11 @@ const resolveAnnotatedTypographyOverride = (baseAnnotated, typographyConfig, sou
 				source: baseAnnotated.preset.source,
 				inherited: true,
 			},
+			rhythm: {
+				value: resolved.rhythm,
+				source: baseAnnotated.rhythm.source,
+				inherited: true,
+			},
 			resolved,
 			sources,
 		};
@@ -197,6 +252,11 @@ const resolveAnnotatedTypographyOverride = (baseAnnotated, typographyConfig, sou
 			source: baseAnnotated.preset.source,
 			inherited: true,
 		},
+		rhythm: {
+			value: baseAnnotated.resolved.rhythm,
+			source: baseAnnotated.rhythm.source,
+			inherited: true,
+		},
 		resolved: baseAnnotated.resolved,
 		sources: inheritedSources(baseAnnotated.sources),
 	};
@@ -204,6 +264,7 @@ const resolveAnnotatedTypographyOverride = (baseAnnotated, typographyConfig, sou
 
 const formatAnnotatedTypography = (annotated) => ({
 	preset: annotated.preset,
+	rhythm: annotated.rhythm,
 	resolved: annotateResolvedValues(annotated.resolved, annotated.sources),
 });
 
@@ -305,7 +366,10 @@ const readPageTypography = async (contentFile, themeTypography) => {
 };
 
 if (mode === 'presets') {
-	console.log(toYamlLines(typographyPresets).join('\n'));
+	console.log(toYamlLines({
+		presets: typographyPresets,
+		rhythms: typographyRhythms,
+	}).join('\n'));
 } else if (mode === 'show') {
 	const themeTypography = await readThemeTypography();
 	const pages = await Promise.all((await getContentFiles()).map((contentFile) => readPageTypography(contentFile, themeTypography)));

@@ -18,6 +18,7 @@ const colorValue = z.string().regex(
 const textAlign = z.enum(['left', 'center', 'right']);
 const textSize = z.enum(['small', 'medium', 'large', 'xlarge']);
 const typographyPreset = z.enum(['quiet-gallery', 'compact-gallery', 'text-forward', 'statement']);
+const spacingDensity = z.enum(['compact', 'normal', 'airy']);
 const lineHeight = z.number()
 	.min(1, 'Use a unitless line height of at least 1.')
 	.max(3, 'Use a unitless line height of at most 3.');
@@ -59,7 +60,8 @@ const commonTextPresentationOverride = {
 };
 const headingPresentationOverride = z.object({
 	...commonTextPresentationOverride,
-	spacing: cssLength.optional(),
+	spacingBefore: cssLength.optional(),
+	spacingAfter: cssLength.optional(),
 }).strict();
 const headingLevelsPresentationOverride = z.object({
 	h1: headingPresentationOverride.optional(),
@@ -73,7 +75,7 @@ const bodyPresentationOverride = z.object({
 }).strict();
 const captionPresentationOverride = z.object({
 	...commonTextPresentationOverride,
-	spacing: cssLength.optional(),
+	spacingBefore: cssLength.optional(),
 }).strict();
 const typographyOverrides = z.object({
 	headings: headingLevelsPresentationOverride.optional(),
@@ -82,20 +84,22 @@ const typographyOverrides = z.object({
 }).strict();
 const typography = z.object({
 	preset: typographyPreset.optional(),
+	rhythm: spacingDensity.optional(),
 	overrides: typographyOverrides.optional(),
 }).strict().refine(
-	(value) => value.preset !== undefined || value.overrides !== undefined,
-	'Specify preset, overrides, or both.',
+	(value) => value.preset !== undefined || value.rhythm !== undefined || value.overrides !== undefined,
+	'Specify preset, rhythm, overrides, or both.',
 );
 const themeTypography = z.object({
 	fontFamily: z.string()
 		.min(1)
 		.refine((value) => !/[\n\r;{}]/.test(value), 'Do not use semicolons, braces, or line breaks.').optional(),
 	preset: typographyPreset.optional(),
+	rhythm: spacingDensity.optional(),
 	overrides: typographyOverrides.optional(),
 }).strict().refine(
-	(value) => value.fontFamily !== undefined || value.preset !== undefined || value.overrides !== undefined,
-	'Specify fontFamily, preset, overrides, or both.',
+	(value) => value.fontFamily !== undefined || value.preset !== undefined || value.rhythm !== undefined || value.overrides !== undefined,
+	'Specify fontFamily, preset, rhythm, overrides, or both.',
 );
 const responsiveCssLength = z.union([
 	visualCssLength,
@@ -117,11 +121,9 @@ const themeLayoutSpacing = z.object({
 	firstSectionTop: responsiveCssLength.optional(),
 	imageGap: responsiveCssLength.optional(),
 	sectionGap: responsiveCssLength.optional(),
-	sectionHeadingToBody: responsiveCssLength.optional(),
-	subheadingRuleTop: responsiveCssLength.optional(),
-	subheadingTop: responsiveCssLength.optional(),
 }).strict();
 const themeLayout = z.object({
+	density: spacingDensity.optional(),
 	pageWidth: visualCssLength.optional(),
 	gutter: responsiveCssLength.optional(),
 	spacing: themeLayoutSpacing.optional(),

@@ -5,171 +5,199 @@ export const typographyPresetNames = [
 	'statement',
 ];
 
+export const typographyRhythmNames = [
+	'compact',
+	'normal',
+	'airy',
+];
+
 export const typographyPresets = {
 	'quiet-gallery': {
 		headings: {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
-				size: 'large',
+				size: 'medium',
 				lineHeight: 1.04,
-				spacing: '0.55em',
 			},
 			h2: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
 				lineHeight: 1.08,
-				spacing: '0.65em',
 			},
 			h3: {
 				align: { desktop: 'left', mobile: 'left' },
-				size: 'small',
+				size: 'medium',
 				lineHeight: 1.35,
-				spacing: '0.9rem',
 			},
 			h4: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
 				lineHeight: 1.5,
-				spacing: '0.85rem',
 			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
 			size: 'medium',
 			lineHeight: 1.5,
-			paragraphSpacing: '0.85em',
 		},
 		caption: {
 			align: { desktop: 'center', mobile: 'center' },
-			size: 'small',
+			size: 'medium',
 			lineHeight: 1.35,
-			spacing: '0.5em',
 		},
 	},
 	'compact-gallery': {
 		headings: {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
-				size: 'large',
+				size: 'medium',
 				lineHeight: 1.04,
-				spacing: '0.45em',
 			},
 			h2: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
 				lineHeight: 1.08,
-				spacing: '0.45em',
 			},
 			h3: {
 				align: { desktop: 'left', mobile: 'left' },
-				size: 'small',
+				size: 'medium',
 				lineHeight: 1.3,
-				spacing: '0.75rem',
 			},
 			h4: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
 				lineHeight: 1.42,
-				spacing: '0.6rem',
 			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
 			size: 'medium',
 			lineHeight: 1.42,
-			paragraphSpacing: '0.6em',
 		},
 		caption: {
 			align: { desktop: 'center', mobile: 'center' },
-			size: 'small',
+			size: 'medium',
 			lineHeight: 1.25,
-			spacing: '0.35em',
 		},
 	},
 	'text-forward': {
 		headings: {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
-				size: 'large',
+				size: 'medium',
 				lineHeight: 1.06,
-				spacing: '0.65em',
 			},
 			h2: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
 				lineHeight: 1.12,
-				spacing: '0.8em',
 			},
 			h3: {
 				align: { desktop: 'left', mobile: 'left' },
-				size: 'small',
+				size: 'medium',
 				lineHeight: 1.35,
-				spacing: '1rem',
 			},
 			h4: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
 				lineHeight: 1.55,
-				spacing: '0.85rem',
 			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
 			size: 'medium',
 			lineHeight: 1.62,
-			paragraphSpacing: '1em',
 		},
 		caption: {
 			align: { desktop: 'left', mobile: 'left' },
-			size: 'small',
+			size: 'medium',
 			lineHeight: 1.4,
-			spacing: '0.6em',
 		},
 	},
 	statement: {
 		headings: {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
-				size: 'xlarge',
+				size: 'medium',
 				lineHeight: 1.02,
-				spacing: '0.45em',
 			},
 			h2: {
 				align: { desktop: 'left', mobile: 'left' },
-				size: 'large',
+				size: 'medium',
 				lineHeight: 1.04,
-				spacing: '0.5em',
 			},
 			h3: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
 				lineHeight: 1.18,
-				spacing: '0.85rem',
 			},
 			h4: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
 				lineHeight: 1.42,
-				spacing: '0.75rem',
 			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
 			size: 'medium',
 			lineHeight: 1.42,
-			paragraphSpacing: '0.75em',
 		},
 		caption: {
 			align: { desktop: 'center', mobile: 'center' },
-			size: 'small',
+			size: 'medium',
 			lineHeight: 1.3,
-			spacing: '0.45em',
+		},
+	},
+};
+
+export const typographyRhythms = {
+	compact: {
+		headings: {
+			h1: { spacingBefore: '0', spacingAfter: '0.4em' },
+			h2: { spacingBefore: '0', spacingAfter: '0.45em' },
+			h3: { spacingBefore: '1.2em', spacingAfter: '0.4em' },
+			h4: { spacingBefore: '0.9em', spacingAfter: '0.35em' },
+		},
+		body: {
+			paragraphSpacing: '0.65em',
+		},
+		caption: {
+			spacingBefore: '0.35em',
+		},
+	},
+	normal: {
+		headings: {
+			h1: { spacingBefore: '0', spacingAfter: '0.5em' },
+			h2: { spacingBefore: '0', spacingAfter: '0.55em' },
+			h3: { spacingBefore: '1.5em', spacingAfter: '0.5em' },
+			h4: { spacingBefore: '1.1em', spacingAfter: '0.4em' },
+		},
+		body: {
+			paragraphSpacing: '0.85em',
+		},
+		caption: {
+			spacingBefore: '0.5em',
+		},
+	},
+	airy: {
+		headings: {
+			h1: { spacingBefore: '0', spacingAfter: '0.65em' },
+			h2: { spacingBefore: '0', spacingAfter: '0.7em' },
+			h3: { spacingBefore: '1.9em', spacingAfter: '0.6em' },
+			h4: { spacingBefore: '1.35em', spacingAfter: '0.5em' },
+		},
+		body: {
+			paragraphSpacing: '1em',
+		},
+		caption: {
+			spacingBefore: '0.65em',
 		},
 	},
 };
 
 export const defaultTypography = {
 	preset: 'quiet-gallery',
+	rhythm: 'normal',
 };
 
 const isPlainObject = (value) => (
@@ -196,26 +224,38 @@ export const mergeDeep = (base, override) => {
 
 export const resolveTypographyConfig = (typography = defaultTypography) => {
 	const presetName = typography?.preset ?? defaultTypography.preset;
+	const rhythmName = typography?.rhythm ?? defaultTypography.rhythm;
 	const preset = typographyPresets[presetName];
+	const rhythm = typographyRhythms[rhythmName];
 
 	if (!preset) {
 		throw new Error(`Unknown typography preset: ${presetName}`);
 	}
 
+	if (!rhythm) {
+		throw new Error(`Unknown typography rhythm: ${rhythmName}`);
+	}
+
 	return {
 		preset: presetName,
-		values: mergeDeep(preset, typography?.overrides),
+		rhythm: rhythmName,
+		values: mergeDeep(mergeDeep(preset, rhythm), typography?.overrides),
 	};
 };
 
 export const resolveTypographyOverride = (baseResolved, typographyConfig) => {
-	if (typographyConfig?.preset) {
-		return resolveTypographyConfig(typographyConfig);
+	if (typographyConfig?.preset || typographyConfig?.rhythm) {
+		return resolveTypographyConfig({
+			preset: typographyConfig.preset ?? baseResolved.preset,
+			rhythm: typographyConfig.rhythm ?? baseResolved.rhythm,
+			overrides: typographyConfig.overrides,
+		});
 	}
 
 	if (typographyConfig?.overrides) {
 		return {
 			preset: baseResolved.preset,
+			rhythm: baseResolved.rhythm,
 			values: mergeDeep(baseResolved.values, typographyConfig.overrides),
 		};
 	}

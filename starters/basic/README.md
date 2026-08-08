@@ -32,9 +32,10 @@ site: {
 
 In GitHub repository settings, configure Pages to build from GitHub Actions.
 
-Page width, side gutters, vertical spacing, image width, image height limits,
-font, colors, and site-wide typography are configured in `site/theme.md`. Page
-and section presentation overrides live in `site/content.md`.
+Page width, side gutters, layout density, typography rhythm, image width, image
+height limits, font, colors, and site-wide typography are configured in
+`site/theme.md`. Page and section presentation overrides live in
+`site/content.md`.
 
 Commit `package-lock.json` after the first install so GitHub Actions can use
 `npm ci`.

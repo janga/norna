@@ -30,6 +30,6 @@
     "build": "npm run norna:build"
   },
   "dependencies": {
-    "@janga/norna": "0.7.2"
+    "@janga/norna": "0.7.3"
   }
 }

@@ -31,9 +31,6 @@
 	--space-nav-to-first-section-desktop: clamp(1.875rem, 3vw, 2.75rem);
 	--space-nav-to-first-section-mobile: 1.375rem;
 	--space-nav-to-first-section: var(--space-nav-to-first-section-desktop);
-	--space-section-title-to-body-desktop: clamp(0.5625rem, 1.25vw, 0.75rem);
-	--space-section-title-to-body-mobile: 0.4375rem;
-	--space-section-title-to-body: var(--space-section-title-to-body-desktop);
 	--space-section-body-to-gallery-desktop: clamp(1.25rem, 2.5vw, 2rem);
 	--space-section-body-to-gallery-mobile: 1.25rem;
 	--space-section-body-to-gallery: var(--space-section-body-to-gallery-desktop);
@@ -46,12 +43,6 @@
 	--space-final-section-bottom-desktop: var(--space-section-to-section-desktop);
 	--space-final-section-bottom-mobile: var(--space-section-to-section-mobile);
 	--space-final-section-bottom: var(--space-final-section-bottom-desktop);
-	--space-subheading-top-desktop: 2rem;
-	--space-subheading-top-mobile: 1.6rem;
-	--space-subheading-top: var(--space-subheading-top-desktop);
-	--space-subheading-rule-top-desktop: 1rem;
-	--space-subheading-rule-top-mobile: 0.8rem;
-	--space-subheading-rule-top: var(--space-subheading-rule-top-desktop);
 
 	--content-gutter-desktop: clamp(1.25rem, 4vw, 3rem);
 	--content-gutter-mobile: 1rem;
@@ -337,7 +328,7 @@ a {
 .section-header {
 	width: min(100%, var(--section-heading-width-desktop, 760px));
 	margin: 0 auto;
-	padding: 0 0 var(--section-heading-spacing, var(--space-section-title-to-body));
+	padding: 0 0 var(--section-heading-spacing-after, 0.55em);
 	text-align: var(--section-heading-align-desktop, center);
 }
 
@@ -380,6 +371,31 @@ ul {
 	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
 }
 
+.section-markdown blockquote {
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+	border-left: 1px solid color-mix(in srgb, currentColor 34%, transparent);
+	padding-left: 1rem;
+}
+
+.section-markdown blockquote > :last-child {
+	margin-bottom: 0;
+}
+
+.section-markdown pre.astro-code {
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+	border-radius: 6px;
+	padding: 0.78rem 0.9rem;
+	background: #0d1117 !important;
+	font-size: 0.92em;
+	line-height: 1.45;
+	text-align: left;
+}
+
+.section-markdown pre.astro-code code {
+	font: inherit;
+}
+
 .section-markdown .inline-style {
 	color: var(--inline-style-color);
 }
@@ -393,10 +409,21 @@ ul {
 	margin-bottom: 0;
 }
 
+.section-markdown > pre.astro-code:last-child {
+	margin-bottom: 0;
+}
+
+.section-markdown blockquote > pre.astro-code:last-child {
+	margin-bottom: 0;
+}
+
 .section-markdown h3 {
-	margin: var(--space-subheading-top) 0 var(--section-markdown-h3-spacing, 0.9rem);
+	margin:
+		var(--section-markdown-h3-spacing-before, 1.5em)
+		0
+		var(--section-markdown-h3-spacing-after, 0.5em);
 	border-top: 1px solid var(--color-soft);
-	padding-top: var(--space-subheading-rule-top);
+	padding-top: 0.55em;
 	font-family: var(--font-sans);
 	font-size: var(--section-markdown-h3-font-size-desktop, 0.82rem);
 	letter-spacing: 0;
@@ -406,7 +433,10 @@ ul {
 }
 
 .section-markdown h4 {
-	margin: 0 0 var(--section-markdown-h4-spacing, 0.85rem);
+	margin:
+		var(--section-markdown-h4-spacing-before, 1.1em)
+		0
+		var(--section-markdown-h4-spacing-after, 0.4em);
 	color: inherit;
 	font-size: var(--section-markdown-h4-font-size-desktop, clamp(0.96rem, 0.94rem + 0.08vw, 1rem));
 	font-weight: 400;
@@ -625,7 +655,7 @@ ul {
 
 .gallery-meta {
 	width: min(100%, var(--gallery-layout-width));
-	margin: var(--section-caption-spacing, 0.5em) auto 0;
+	margin: var(--section-caption-spacing-before, 0.5em) auto 0;
 	font-size: var(--section-caption-font-size-desktop, 0.95rem);
 	text-align: var(--section-caption-align-desktop, center);
 }
@@ -647,13 +677,10 @@ ul {
 @media (max-width: 700px) {
 	:root {
 		--space-nav-to-first-section: var(--space-nav-to-first-section-mobile);
-		--space-section-title-to-body: var(--space-section-title-to-body-mobile);
 		--space-section-body-to-gallery: var(--space-section-body-to-gallery-mobile);
 		--space-gallery-item: var(--space-gallery-item-mobile);
 		--space-section-to-section: var(--space-section-to-section-mobile);
 		--space-final-section-bottom: var(--space-final-section-bottom-mobile);
-		--space-subheading-top: var(--space-subheading-top-mobile);
-		--space-subheading-rule-top: var(--space-subheading-rule-top-mobile);
 		--content-gutter: var(--content-gutter-mobile);
 		--gallery-max-available-width: var(--gallery-max-available-width-mobile);
 		--gallery-max-image-height: var(--gallery-max-image-height-mobile);

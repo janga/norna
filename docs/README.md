@@ -41,9 +41,9 @@ For a quick reference:
 - [Content](content.md) describes page frontmatter, section frontmatter,
   image rows, carousels, temporary sections, Markdown section matching, and
   content validation.
-- [Theme](theme.md) describes site-wide layout, spacing, image sizing, font,
-  typography, presentation colors, frame colors, and inline styles.
-- [Typography](typography.md) describes presets, roles, overrides,
+- [Theme](theme.md) describes site-wide layout, layout density, image sizing,
+  font, typography rhythm, presentation colors, frame colors, and inline styles.
+- [Typography](typography.md) describes presets, rhythms, roles, overrides,
   inheritance, and inspection commands.
 - [Routes](routes.md) describes route files, slugs, route navigation, and
   route image directories.

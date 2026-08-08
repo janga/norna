@@ -33,8 +33,8 @@ until Norna has created its `package.json`.
 Start with the files Norna creates in `site/`:
 
 - edit `site/config.mjs` for URL, language labels, and GitHub settings;
-- edit `site/theme.md` for layout, spacing, image sizing, font, colors,
-  typography preset, inline styles, and frame colors;
+- edit `site/theme.md` for layout, layout density, typography rhythm, image
+  sizing, font, colors, typography preset, inline styles, and frame colors;
 - edit `site/content.md` for homepage content, section order, image rows, alt
   text, and captions;
 - put source images under `site/images/<section-id>/`;

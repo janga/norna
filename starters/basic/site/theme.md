@@ -7,6 +7,7 @@
 # navigation:
 #   brand: site-wide brand/home text; defaults to the homepage title
 # layout:
+#   density: compact | normal | airy
 #   pageWidth: CSS length, e.g. 1180px
 #   gutter:
 #     desktop: CSS length or clamp(), e.g. clamp(1.25rem, 4vw, 3rem)
@@ -16,26 +17,17 @@
 #       desktop: CSS length or clamp(), e.g. clamp(1.875rem, 3vw, 2.75rem)
 #       mobile: CSS length, e.g. 1.375rem
 #     sectionGap:
-#       desktop: CSS length or clamp(), e.g. clamp(2.55rem, 4.2vw, 3.9rem)
-#       mobile: CSS length, e.g. 2.25rem
+#       desktop: CSS length or clamp(), e.g. clamp(1.4rem, 3vw, 2.75rem)
+#       mobile: CSS length, e.g. 1.5rem
 #     finalSectionBottom:
-#       desktop: CSS length or clamp(), e.g. clamp(2.55rem, 4.2vw, 3.9rem)
-#       mobile: CSS length, e.g. 2.25rem
-#     sectionHeadingToBody:
-#       desktop: CSS length or clamp(), e.g. clamp(0.5625rem, 1.25vw, 0.75rem)
-#       mobile: CSS length, e.g. 0.4375rem
+#       desktop: CSS length or clamp(), e.g. clamp(1.4rem, 3vw, 2.75rem)
+#       mobile: CSS length, e.g. 1.5rem
 #     bodyToImages:
-#       desktop: CSS length or clamp(), e.g. clamp(1.25rem, 2.5vw, 2rem)
-#       mobile: CSS length, e.g. 1.25rem
+#       desktop: CSS length, e.g. 1.25rem
+#       mobile: CSS length, e.g. 1rem
 #     imageGap:
-#       desktop: CSS length or clamp(), e.g. clamp(1.5rem, 3.5vw, 2.75rem)
-#       mobile: CSS length, e.g. 2.75rem
-#     subheadingTop:
-#       desktop: CSS length, e.g. 2rem
-#       mobile: CSS length, e.g. 1.6rem
-#     subheadingRuleTop:
-#       desktop: CSS length, e.g. 1rem
-#       mobile: CSS length, e.g. 0.8rem
+#       desktop: CSS length or clamp(), e.g. clamp(1.25rem, 2.8vw, 2rem)
+#       mobile: CSS length, e.g. 1.5rem
 # gallery:
 #   width: CSS length, e.g. 900px
 #   maxAvailableWidthPercent:
@@ -47,6 +39,7 @@
 # typography:
 #   fontFamily: CSS font-family stack
 #   preset: quiet-gallery | compact-gallery | text-forward | statement
+#   rhythm: compact | normal | airy
 #   overrides:
 #     headings:
 #       h2:
@@ -55,21 +48,24 @@
 #           mobile: left | center | right
 #         size: small | medium | large | xlarge
 #         lineHeight: number from 1 through 3
-#         spacing: CSS length, e.g. 0.65em
+#         spacingBefore: CSS length, e.g. 0
+#         spacingAfter: CSS length, e.g. 0.55em
 #       h3:
 #         align:
 #           desktop: left | center | right
 #           mobile: left | center | right
 #         size: small | medium | large | xlarge
 #         lineHeight: number from 1 through 3
-#         spacing: CSS length, e.g. 0.9rem
+#         spacingBefore: CSS length, e.g. 1.5em
+#         spacingAfter: CSS length, e.g. 0.5em
 #       h4:
 #         align:
 #           desktop: left | center | right
 #           mobile: left | center | right
 #         size: small | medium | large | xlarge
 #         lineHeight: number from 1 through 3
-#         spacing: CSS length, e.g. 0.85rem
+#         spacingBefore: CSS length, e.g. 1.1em
+#         spacingAfter: CSS length, e.g. 0.4em
 #     body:
 #       align:
 #         desktop: left | center | right
@@ -83,7 +79,7 @@
 #         mobile: left | center | right
 #       size: small | medium | large | xlarge
 #       lineHeight: number from 1 through 3
-#       spacing: CSS length, e.g. 0.5em
+#       spacingBefore: CSS length, e.g. 0.5em
 # presentation:
 #   backgroundColor: quoted hex color, e.g. "#000000"
 #   textColor: quoted hex color, e.g. "#f7f4ee"
@@ -99,35 +95,11 @@
 navigation:
   brand: Example Site
 layout:
+  density: normal
   pageWidth: 1180px
   gutter:
     desktop: clamp(1.25rem, 4vw, 3rem)
     mobile: 1rem
-  spacing:
-    firstSectionTop:
-      desktop: clamp(1.875rem, 3vw, 2.75rem)
-      mobile: 1.375rem
-    sectionGap:
-      desktop: clamp(2.55rem, 4.2vw, 3.9rem)
-      mobile: 2.25rem
-    finalSectionBottom:
-      desktop: clamp(2.55rem, 4.2vw, 3.9rem)
-      mobile: 2.25rem
-    sectionHeadingToBody:
-      desktop: clamp(0.5625rem, 1.25vw, 0.75rem)
-      mobile: 0.4375rem
-    bodyToImages:
-      desktop: clamp(1.25rem, 2.5vw, 2rem)
-      mobile: 1.25rem
-    imageGap:
-      desktop: clamp(1.5rem, 3.5vw, 2.75rem)
-      mobile: 2.75rem
-    subheadingTop:
-      desktop: 2rem
-      mobile: 1.6rem
-    subheadingRuleTop:
-      desktop: 1rem
-      mobile: 0.8rem
 gallery:
   width: 900px
   maxAvailableWidthPercent:
@@ -139,6 +111,7 @@ gallery:
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
   preset: quiet-gallery
+  rhythm: normal
 presentation:
   backgroundColor: "#000000"
   textColor: "#f7f4ee"

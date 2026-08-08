@@ -105,8 +105,8 @@ should normally mean the repository's complete publishable artifact, while
   runs `astro sync`.
 - `content:sync` / `norna:sync`: rewrites Markdown section order and moves misplaced referenced
   image files after confirmation.
-- `typography presets`: prints the exact built-in values for every typography
-  preset.
+- `typography presets`: prints the exact built-in values for typography
+  presets and rhythms.
 - `typography show`: prints the selected site's resolved typography for the
   theme, every page route, and every section. Each value includes its source,
   and inherited page or section values are marked with `inherited: true`.

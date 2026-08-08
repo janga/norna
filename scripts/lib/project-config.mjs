@@ -17,6 +17,16 @@ const assertObject = (value, path, sourceLabel = siteConfigLabel) => {
 	return value;
 };
 
+const readEnum = (object, key, path, allowedValues, fallback, sourceLabel = siteConfigLabel) => {
+	const value = object[key] ?? fallback;
+
+	if (!allowedValues.includes(value)) {
+		throw new Error(`${path}.${key} must be one of ${allowedValues.join(', ')} in ${sourceLabel}.`);
+	}
+
+	return value;
+};
+
 const readString = (object, key, path, sourceLabel = siteConfigLabel) => {
 	const value = object[key];
 
@@ -304,6 +314,77 @@ const rawDeploy = assertObject(rawConfig.deploy ?? {}, 'deploy');
 const rawDeployWatch = assertObject(rawDeploy.watch ?? {}, 'deploy.watch');
 
 const defaultFontFamily = "Arial, 'Helvetica Neue', Helvetica, sans-serif";
+const layoutDensityNames = ['compact', 'normal', 'airy'];
+const layoutDensityProfiles = Object.freeze({
+	compact: Object.freeze({
+		bodyToImages: Object.freeze({
+			desktop: '1rem',
+			mobile: '0.9rem',
+		}),
+		finalSectionBottom: Object.freeze({
+			desktop: 'clamp(1.2rem, 2.4vw, 2.25rem)',
+			mobile: '1.25rem',
+		}),
+		firstSectionTop: Object.freeze({
+			desktop: 'clamp(1rem, 2vw, 1.75rem)',
+			mobile: '1rem',
+		}),
+		imageGap: Object.freeze({
+			desktop: 'clamp(1rem, 2vw, 1.5rem)',
+			mobile: '1.25rem',
+		}),
+		sectionGap: Object.freeze({
+			desktop: 'clamp(1.2rem, 2.4vw, 2.25rem)',
+			mobile: '1.25rem',
+		}),
+	}),
+	normal: Object.freeze({
+		bodyToImages: Object.freeze({
+			desktop: '1.25rem',
+			mobile: '1rem',
+		}),
+		finalSectionBottom: Object.freeze({
+			desktop: 'clamp(1.4rem, 3vw, 2.75rem)',
+			mobile: '1.5rem',
+		}),
+		firstSectionTop: Object.freeze({
+			desktop: 'clamp(1.25rem, 3vw, 2.5rem)',
+			mobile: '1.25rem',
+		}),
+		imageGap: Object.freeze({
+			desktop: 'clamp(1.25rem, 2.8vw, 2rem)',
+			mobile: '1.5rem',
+		}),
+		sectionGap: Object.freeze({
+			desktop: 'clamp(1.4rem, 3vw, 2.75rem)',
+			mobile: '1.5rem',
+		}),
+	}),
+	airy: Object.freeze({
+		bodyToImages: Object.freeze({
+			desktop: '1.5rem',
+			mobile: '1.25rem',
+		}),
+		finalSectionBottom: Object.freeze({
+			desktop: 'clamp(2.25rem, 5vw, 4.5rem)',
+			mobile: '2rem',
+		}),
+		firstSectionTop: Object.freeze({
+			desktop: 'clamp(2rem, 5vw, 4rem)',
+			mobile: '1.5rem',
+		}),
+		imageGap: Object.freeze({
+			desktop: 'clamp(1.5rem, 3.5vw, 2.75rem)',
+			mobile: '2rem',
+		}),
+		sectionGap: Object.freeze({
+			desktop: 'clamp(2.25rem, 5vw, 4.5rem)',
+			mobile: '2rem',
+		}),
+	}),
+});
+const layoutDensity = readEnum(rawLayout, 'density', 'layout', layoutDensityNames, 'normal', siteThemeLabel);
+const layoutSpacingDefaults = layoutDensityProfiles[layoutDensity];
 
 export const projectConfig = Object.freeze({
 	site: Object.freeze({
@@ -311,44 +392,18 @@ export const projectConfig = Object.freeze({
 		url: readUrl(rawSite, 'url', 'site'),
 	}),
 	layout: Object.freeze({
+		density: layoutDensity,
 		gutter: readResponsiveCssLength(rawLayout, 'gutter', 'layout', Object.freeze({
 			desktop: 'clamp(1.25rem, 4vw, 3rem)',
 			mobile: '1rem',
 		}), siteThemeLabel),
 		pageWidth: readCssLength(rawLayout, 'pageWidth', 'layout', '1180px', siteThemeLabel),
 		spacing: Object.freeze({
-			bodyToImages: readResponsiveCssLength(rawLayoutSpacing, 'bodyToImages', 'layout.spacing', Object.freeze({
-				desktop: 'clamp(1.25rem, 2.5vw, 2rem)',
-				mobile: '1.25rem',
-			}), siteThemeLabel),
-			finalSectionBottom: readResponsiveCssLength(rawLayoutSpacing, 'finalSectionBottom', 'layout.spacing', Object.freeze({
-				desktop: 'clamp(2.55rem, 4.2vw, 3.9rem)',
-				mobile: '2.25rem',
-			}), siteThemeLabel),
-			firstSectionTop: readResponsiveCssLength(rawLayoutSpacing, 'firstSectionTop', 'layout.spacing', Object.freeze({
-				desktop: 'clamp(1.875rem, 3vw, 2.75rem)',
-				mobile: '1.375rem',
-			}), siteThemeLabel),
-			imageGap: readResponsiveCssLength(rawLayoutSpacing, 'imageGap', 'layout.spacing', Object.freeze({
-				desktop: 'clamp(1.5rem, 3.5vw, 2.75rem)',
-				mobile: '2.75rem',
-			}), siteThemeLabel),
-			sectionGap: readResponsiveCssLength(rawLayoutSpacing, 'sectionGap', 'layout.spacing', Object.freeze({
-				desktop: 'clamp(2.55rem, 4.2vw, 3.9rem)',
-				mobile: '2.25rem',
-			}), siteThemeLabel),
-			sectionHeadingToBody: readResponsiveCssLength(rawLayoutSpacing, 'sectionHeadingToBody', 'layout.spacing', Object.freeze({
-				desktop: 'clamp(0.5625rem, 1.25vw, 0.75rem)',
-				mobile: '0.4375rem',
-			}), siteThemeLabel),
-			subheadingRuleTop: readResponsiveCssLength(rawLayoutSpacing, 'subheadingRuleTop', 'layout.spacing', Object.freeze({
-				desktop: '1rem',
-				mobile: '0.8rem',
-			}), siteThemeLabel),
-			subheadingTop: readResponsiveCssLength(rawLayoutSpacing, 'subheadingTop', 'layout.spacing', Object.freeze({
-				desktop: '2rem',
-				mobile: '1.6rem',
-			}), siteThemeLabel),
+			bodyToImages: readResponsiveCssLength(rawLayoutSpacing, 'bodyToImages', 'layout.spacing', layoutSpacingDefaults.bodyToImages, siteThemeLabel),
+			finalSectionBottom: readResponsiveCssLength(rawLayoutSpacing, 'finalSectionBottom', 'layout.spacing', layoutSpacingDefaults.finalSectionBottom, siteThemeLabel),
+			firstSectionTop: readResponsiveCssLength(rawLayoutSpacing, 'firstSectionTop', 'layout.spacing', layoutSpacingDefaults.firstSectionTop, siteThemeLabel),
+			imageGap: readResponsiveCssLength(rawLayoutSpacing, 'imageGap', 'layout.spacing', layoutSpacingDefaults.imageGap, siteThemeLabel),
+			sectionGap: readResponsiveCssLength(rawLayoutSpacing, 'sectionGap', 'layout.spacing', layoutSpacingDefaults.sectionGap, siteThemeLabel),
 		}),
 	}),
 	gallery: Object.freeze({

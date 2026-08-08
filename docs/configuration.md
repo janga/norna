@@ -66,11 +66,12 @@ Use [Theme](theme.md) for:
 
 - `layout.pageWidth`
 - `layout.gutter`
+- `layout.density`
 - `gallery.width`
 - `gallery.maxAvailableWidthPercent`
 - `gallery.maxAvailableHeightPercent`
 - `typography.fontFamily`
-- typography presets and overrides
+- typography presets, rhythm, and overrides
 - presentation colors, inline styles, and frame colors
 
 ## Navigation

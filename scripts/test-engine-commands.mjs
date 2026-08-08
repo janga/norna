@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promi
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { typographyPresets, typographyRhythms } from './lib/typography.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(repoRoot, 'bin', 'norna.mjs');
@@ -51,6 +52,23 @@ try {
 	assert.equal(presetsResult.status, 0, presetsResult.stderr || presetsResult.stdout);
 	assert.match(presetsResult.stdout, /quiet-gallery:/);
 	assert.match(presetsResult.stdout, /text-forward:/);
+	assert.match(presetsResult.stdout, /rhythms:/);
+	assert.match(presetsResult.stdout, /normal:/);
+	for (const [presetName, preset] of Object.entries(typographyPresets)) {
+		for (const [level, heading] of Object.entries(preset.headings)) {
+			assert.equal(heading.size, 'medium', `${presetName} ${level} should use medium size`);
+		}
+		assert.equal(preset.body.size, 'medium', `${presetName} body should use medium size`);
+		assert.equal(preset.caption.size, 'medium', `${presetName} caption should use medium size`);
+	}
+	for (const [rhythmName, rhythm] of Object.entries(typographyRhythms)) {
+		for (const [level, heading] of Object.entries(rhythm.headings)) {
+			assert.match(heading.spacingBefore, /^(0|[\d.]+em)$/, `${rhythmName} ${level} spacingBefore should be text-relative`);
+			assert.match(heading.spacingAfter, /^[\d.]+em$/, `${rhythmName} ${level} spacingAfter should be text-relative`);
+		}
+		assert.match(rhythm.body.paragraphSpacing, /^[\d.]+em$/, `${rhythmName} body paragraphSpacing should be text-relative`);
+		assert.match(rhythm.caption.spacingBefore, /^[\d.]+em$/, `${rhythmName} caption spacingBefore should be text-relative`);
+	}
 
 	const showResult = runCli(['--site-dir', path.join(initializedSiteRoot, 'site'), 'typography', 'show']);
 	assert.equal(showResult.status, 0, showResult.stderr || showResult.stdout);

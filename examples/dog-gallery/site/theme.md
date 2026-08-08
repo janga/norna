@@ -7,6 +7,7 @@
 # navigation:
 #   brand: site-wide brand/home text; defaults to the homepage title
 # layout:
+#   density: compact | normal | airy
 #   pageWidth: CSS length, e.g. 2048px
 #   gutter:
 #     desktop: CSS length or clamp(), e.g. clamp(1.25rem, 4vw, 3rem)
@@ -18,9 +19,6 @@
 #     sectionGap:
 #       desktop: CSS length or clamp(), e.g. clamp(1.8rem, 3vw, 2.75rem)
 #       mobile: CSS length, e.g. 1.65rem
-#     subheadingTop:
-#       desktop: CSS length, e.g. 1.35rem
-#       mobile: CSS length, e.g. 1.1rem
 # gallery:
 #   width: CSS length, e.g. 55vw
 #   maxAvailableWidthPercent:
@@ -32,14 +30,19 @@
 # typography:
 #   fontFamily: CSS font-family stack
 #   preset: quiet-gallery | compact-gallery | text-forward | statement
+#   rhythm: compact | normal | airy
 #   overrides:
 #     headings:
 #       h2:
 #         size: small | medium | large | xlarge
 #       h3:
 #         size: small | medium | large | xlarge
+#         spacingBefore: CSS length, e.g. 1.2em
+#         spacingAfter: CSS length, e.g. 0.45em
 #       h4:
 #         size: small | medium | large | xlarge
+#         spacingBefore: CSS length, e.g. 0.9em
+#         spacingAfter: CSS length, e.g. 0.35em
 # presentation:
 #   backgroundColor: quoted hex color, e.g. "#000000"
 #   textColor: quoted hex color, e.g. "#f7f4ee"
@@ -53,6 +56,7 @@
 #     textColor: quoted hex color
 # norna:end theme-help
 layout:
+  density: compact
   pageWidth: 2048px
   gutter:
     desktop: clamp(1.25rem, 4vw, 3rem)
@@ -67,21 +71,12 @@ layout:
     finalSectionBottom:
       desktop: clamp(1.8rem, 3vw, 2.75rem)
       mobile: 1.65rem
-    sectionHeadingToBody:
-      desktop: 0.55rem
-      mobile: 0.45rem
     bodyToImages:
       desktop: 1.25rem
       mobile: 1rem
     imageGap:
       desktop: clamp(1.25rem, 2.8vw, 2rem)
       mobile: 1.8rem
-    subheadingTop:
-      desktop: 1.35rem
-      mobile: 1.1rem
-    subheadingRuleTop:
-      desktop: 0.65rem
-      mobile: 0.55rem
 gallery:
   width: 55vw
   maxAvailableWidthPercent:
@@ -93,14 +88,17 @@ gallery:
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
   preset: quiet-gallery
+  rhythm: compact
   overrides:
     headings:
       h3:
         size: medium
-        spacing: 0.7rem
+        spacingBefore: 1.2em
+        spacingAfter: 0.45em
       h4:
         size: small
-        spacing: 0.55rem
+        spacingBefore: 0.9em
+        spacingAfter: 0.35em
 presentation:
   backgroundColor: "#550000"
   textColor: "#ffffff"

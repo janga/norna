@@ -34,8 +34,9 @@ The source model is intentionally simple:
 
 - `config.mjs` holds technical settings such as URL, language labels, GitHub
   Pages workflow details, and deployment watch settings.
-- `theme.md` holds site-wide visual defaults such as layout, spacing, image
-  sizing, font, colors, typography preset, frame colors, and inline text styles.
+- `theme.md` holds site-wide visual defaults such as layout, layout density,
+  typography rhythm, image sizing, font, colors, typography preset, frame
+  colors, and inline text styles.
 - `content.md` holds the homepage title, description, section order, text,
   image rows, alt text, and captions.
 - `routes/` can hold additional pages.

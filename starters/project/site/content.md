@@ -1,88 +1,128 @@
 ---
-title: Project Name
-description: A concise project site for an open source tool, library, or CLI.
+title: Your project
+description: A compact project site starter for an open source developer tool.
 navigation:
   label: Home
   order: 0
 sections:
   - id: intro
-    presentation:
-      typography:
-        preset: statement
   - id: links
   - id: install
   - id: example
-  - id: features
-  - id: when-to-use
+  - id: why
+  - id: good-fit
   - id: next
+  - id: license
 ---
 
-## Project Name keeps project workflows predictable {#intro}
+## `<Your project> - <short value proposition>` {#intro}
 
-Project Name is a small open source tool for teams that want repeatable
-results without adding a large platform. It provides one focused command-line
-workflow and a compact JavaScript API for automation.
+Describe the project in one short, concrete phrase. Focus on what it helps the
+user accomplish rather than implementation details.
 
-## Links {#links}
+> Example: **Checkline - keep project checks simple.**
 
-- [GitHub repository](https://github.com/owner/project-name)
-- [Documentation](https://example.com/docs/)
-- [Package](https://www.npmjs.com/package/project-name)
-- [Issue tracker](https://github.com/owner/project-name/issues)
+`<Your project>` is an open source `<tool / library / CLI>` for
+`<main purpose>`.
+
+Briefly explain what the project does and who it is for. Optionally mention one
+or two qualities that distinguish it.
+
+> Example: Checkline is a small open source developer tool for running project
+> checks from the command line or automated workflows.
+
+## Project links {#links}
+
+Link to the most useful project resources. Keep only the links that are
+relevant.
+
+- [GitHub repository](https://github.com/owner/project)
+- [Guide / Documentation](/guide/)
+- [Package](https://www.npmjs.com/package/project)
+- [Issue tracker](https://github.com/owner/project/issues)
 
 ## Install {#install}
 
+Show the simplest normal way to install the project. Add requirements or other
+explanation only when needed.
+
 ```sh
-npm install project-name
+<install command>
 ```
 
-Project Name supports current Node.js releases and works in local development,
-CI jobs, and small publishing workflows.
+> Example:
+>
+> ```sh
+> npm install checkline
+> ```
 
 ## Example {#example}
 
+Show the smallest realistic example that demonstrates the project's main value.
+More advanced usage belongs in the guide.
+
 ```sh
-project-name check ./src --format summary
+<main command or minimal usage example>
 ```
 
-```js
-import { checkProject } from 'project-name';
+> Example:
+>
+> ```sh
+> npx checkline
+> ```
 
-const report = await checkProject({
-	input: './src',
-	format: 'summary',
-});
+If a programmatic API is central to the project, a similarly small API example
+may also be shown.
 
-console.log(report.status);
-```
+## Why `<Your project>`? {#why}
 
-Use the CLI for everyday checks and the API when the same behavior belongs
-inside a larger build script.
+Give two or three concrete reasons someone might choose the project. Focus on
+meaningful benefits rather than generic claims such as "fast", "powerful", or
+"easy to use".
 
-## Features {#features}
+### `<Primary benefit>`
 
-### Simple inputs
+Explain the benefit in one or two sentences.
 
-The project works with ordinary files and predictable commands.
+> Example:
+>
+> ### Fits existing workflows
+>
+> Use Checkline from the command line, project scripts, or automated workflows
+> without introducing a separate service.
 
-### Scriptable results
+### `<Secondary benefit>`
 
-The CLI prints human-readable summaries while the API returns structured data
-for automation.
+Explain another important property or advantage.
 
-### Small surface area
+> Example:
+>
+> ### Configuration stays with the project
+>
+> Keep configuration alongside the rest of the source files so changes remain
+> visible and versioned.
 
-There are only a few concepts to learn, so the project stays easy to adopt and
-easy to replace.
+Add a third benefit only when it adds useful information.
 
-## When to use it {#when-to-use}
+## Good fit for {#good-fit}
 
-- Validate repository conventions before a pull request is reviewed.
-- Reuse the same checks locally and in CI.
-- Add a focused command to an existing project without introducing a service.
-- Expose a small API for downstream tooling.
+Help visitors decide whether the project matches their needs. Describe a few
+realistic situations or workflows rather than repeating the feature list.
+
+> Example: Checkline is a good fit for projects that want lightweight checks
+> that can run locally and in automated workflows without adding separate
+> infrastructure.
 
 ## Next steps {#next}
 
-Read the [guide](/guide/) for configuration options and a longer example, or
-open the repository to inspect the implementation.
+Give the visitor a clear path forward.
+
+> Example: Read the [guide](/guide/) to get started, or visit the GitHub
+> repository for source code, issues, and contribution information.
+
+## License {#license}
+
+State the project's license and link to the license file when one exists.
+
+> Example: Checkline is released under the MIT License. See
+> [LICENSE](https://github.com/owner/checkline/blob/main/LICENSE) for details.

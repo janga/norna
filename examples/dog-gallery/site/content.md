@@ -71,7 +71,7 @@ sections:
       typography:
         overrides:
           caption:
-            spacing: 0.35em
+            spacingBefore: 0.35em
     gallery:
       - carousel:
           - image: white-cute-dog.jpg

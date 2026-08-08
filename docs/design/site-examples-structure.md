@@ -26,8 +26,8 @@ site repository. It should not be a showcase for every feature.
 An example site is a runnable site that demonstrates one or more features.
 
 Examples can be richer than the starter. They may show routes, navigation,
-typography presets, galleries, image carousels, inline styles, and site-specific
-configuration choices.
+typography presets, typography rhythms, galleries, image carousels, inline
+styles, and site-specific configuration choices.
 
 ### Documentation Site
 
@@ -72,7 +72,8 @@ they demonstrate a distinct feature or workflow.
   navigation diagnostic target.
 - `routes-demo/`: focused route/navigation example if the dog example becomes
   too broad.
-- `typography-demo/`: focused typography preset and override example if needed.
+- `typography-demo/`: focused typography preset, rhythm, and override example
+  if needed.
 
 The repository-local `site/` directory is reserved for the documentation site.
 `docs/` should remain for reference documentation. It should link to the
