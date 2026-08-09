@@ -3,6 +3,7 @@ import { glob } from 'astro/loaders';
 import { pathToFileURL } from 'node:url';
 import { z } from 'astro/zod';
 import { siteDir, siteDirLabel } from '../scripts/lib/site-paths.mjs';
+import { parseRouteDirectory } from '../scripts/lib/route-model.mjs';
 import { isDateOnly } from './lib/visibility';
 
 const siteEntryId = `${siteDirLabel
@@ -10,7 +11,6 @@ const siteEntryId = `${siteDirLabel
 	.replace(/[^a-zA-Z0-9-]+/g, '-')
 	.replace(/^-+|-+$/g, '') || 'site'}-content`;
 const contentImageName = z.string().regex(/^[a-z0-9][a-z0-9.-]*\.(jpe?g|png)$/i);
-const routeSlug = z.string().regex(/^[a-z0-9][a-z0-9-]*$/, 'Use lowercase letters, numbers, and hyphens.');
 const colorValue = z.string().regex(
 	/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/,
 	'Use a hex color such as "#000000".',
@@ -163,7 +163,6 @@ const frame = z.object({
 const pageNavigation = z.object({
 	include: z.boolean().optional(),
 	label: z.string().optional(),
-	order: z.number().int().optional(),
 }).strict();
 const themeNavigation = z.object({
 	brand: z.string().min(1).optional(),
@@ -182,7 +181,6 @@ const galleryItem = z.union([galleryImage, galleryCarousel]);
 const siteSchema = z.object({
 	title: z.string(),
 	description: z.string(),
-	slug: routeSlug.optional(),
 	navigation: pageNavigation.optional(),
 	presentation: pagePresentation.optional(),
 	frame: frame.optional(),
@@ -214,9 +212,9 @@ const site = defineCollection({
 				return siteEntryId;
 			}
 
-			const routeFolder = entry.match(/^routes\/([^/]+)\/route-content\.md$/)?.[1];
-			return routeFolder
-				? `${siteEntryId.replace(/-content$/, '')}-route-${routeFolder}`
+			const routeDirectory = entry.match(/^routes\/([^/]+)\/route-content\.md$/)?.[1];
+			return routeDirectory
+				? `${siteEntryId.replace(/-content$/, '')}-route-${parseRouteDirectory(routeDirectory, `route directory routes/${routeDirectory}`).routeDirectory}`
 				: entry.replace(/[^a-zA-Z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
 		},
 	}),

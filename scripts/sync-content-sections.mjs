@@ -164,9 +164,6 @@ const warnAboutCarouselAspectRatios = async () => {
 	}
 };
 
-const getFrontmatterSlug = (frontmatter) =>
-	frontmatter.match(/^slug:\s*["']?([^"'\n]+)["']?\s*$/m)?.[1]?.trim() ?? null;
-
 const validateRouteContentFiles = async () => {
 	const routeContentFiles = (await getContentFiles()).filter((contentFile) => !contentFile.isHome);
 
@@ -174,15 +171,6 @@ const validateRouteContentFiles = async () => {
 		const { frontmatter: routeFrontmatter, body: routeBody } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 		validateFrontmatterIndentation(routeFrontmatter, addIssue);
 		validateContentFrontmatterStructure(routeFrontmatter, addIssue);
-
-		const slug = getFrontmatterSlug(routeFrontmatter);
-		if (slug && slug !== contentFile.routeFolder) {
-			addIssue({
-				severity: 'warning',
-				message: `${contentFile.contentLabel} has slug "${slug}" but its route folder is "${contentFile.routeFolder}".`,
-				fix: `Keep slug and route folder aligned unless the page intentionally needs to build at /${slug}/.`,
-			});
-		}
 
 		const routeFrontmatterSections = getFrontmatterSections(routeFrontmatter);
 		const routeFrontmatterIds = routeFrontmatterSections.map((section) => section.id);

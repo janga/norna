@@ -24,7 +24,7 @@ npm run dev -- --kill
   density, typography rhythm, colors, frame colors, and inline text styles.
 - `site/content.md`: homepage title, sections, placeholders, project summary,
   links, install command, example usage, benefits, next steps, and license.
-- `site/routes/guide/route-content.md`: short secondary page with realistic
+- `site/routes/010-guide/route-content.md`: short secondary page with realistic
   project guide content.
 - `site/public/robots.txt`: static public file copied into the built site.
 
@@ -36,7 +36,7 @@ GitHub Pages workflow uses `npm ci`.
 
 1. Replace the project name, tagline, links, install command, example usage,
    benefits, use cases, and license in `site/content.md`.
-2. Replace the guide examples in `site/routes/guide/route-content.md`, or
+2. Replace the guide examples in `site/routes/010-guide/route-content.md`, or
    delete the route if the homepage is enough.
 3. Edit `site/theme.md` for brand name, layout density, typography rhythm,
    colors, frame colors, and inline text styles.

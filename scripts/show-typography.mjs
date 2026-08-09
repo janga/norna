@@ -359,7 +359,7 @@ const readPageTypography = async (contentFile, themeTypography) => {
 
 	return {
 		source: contentFile.contentLabel,
-		route: contentFile.isHome ? '/' : `/${contentFile.routeFolder}/`,
+		route: contentFile.isHome ? '/' : `/${contentFile.routeId}/`,
 		pageTypography,
 		sections,
 	};

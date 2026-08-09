@@ -160,7 +160,7 @@ and commit their updated `package-lock.json`.
 ## Rendering Notes
 
 The renderer builds the homepage at `/` and optional first-level routes from
-`site/routes/<route-folder>/route-content.md`.
+`site/routes/<NNN-route-id>/route-content.md`.
 
 Navigation has two separate levels:
 

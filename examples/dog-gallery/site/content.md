@@ -3,7 +3,6 @@ title: Local Dog Example
 description: A small norna example with free dog images.
 navigation:
   label: Dog site!
-  order: 10
 sections:
   - id: black-dogs
     presentation:

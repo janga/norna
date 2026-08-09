@@ -1,66 +1,54 @@
 ---
 title: Norna
-description: Build and publish small static websites from files kept in your project repository.
+description: An opinionated CLI for building small static websites from content, presentation and configuration kept as files.
 navigation:
   label: Home
-  order: 0
 sections:
   - id: intro
-  - id: links
-  - id: create
-  - id: idea
+  - id: opinionated
+  - id: files
+  - id: workflow
+  - id: abstraction
   - id: why
   - id: good-fit
+  - id: create
+  - id: links
   - id: next
   - id: license
 ---
 
-## Norna - build small static websites from files {#intro}
+## Norna {#intro}
 
-Norna is an open source CLI for building and publishing small static websites
-from files kept in your project repository.
+**An opinionated CLI for building small static websites from files.**
 
-Write content in Markdown, keep visual presentation separate from technical
-configuration, add routes and images when needed, and let Norna validate and
-build the result as a static website.
+You work with content, presentation, configuration, routes and assets. Norna
+provides the website implementation and builds the result as a static site.
 
-The site stays with your project: readable as files, versionable with Git, and
-suitable for simple static publishing workflows such as GitHub Pages.
+The goal is not to give you another framework for constructing websites. Norna
+gives you a defined site model to work within.
 
-## Project links {#links}
+You describe the site rather than implement it.
 
-- [GitHub repository](https://github.com/janga/norna)
-- [Documentation](https://github.com/janga/norna/tree/main/docs)
-- [npm package](https://www.npmjs.com/package/@janga/norna)
-- [Issue tracker](https://github.com/janga/norna/issues)
+## Opinionated by design {#opinionated}
 
-## Create a site {#create}
+Norna deliberately gives you a defined way to structure a website.
 
-Create a new Norna site and start the local development server:
+Content belongs in content files. Visual presentation belongs in the theme.
+Technical behaviour belongs in configuration. Additional pages are routes.
+Images and public assets have defined places.
 
-```sh
-npx @janga/norna@latest init my-site
-cd my-site
-npm install
-npm run dev
-```
+For normal site work, you do not build templates, components or rendering logic
+for each project. Norna provides that presentation layer as part of the tool.
 
-Norna creates the site project first and pins the engine version used by that
-project.
+This makes Norna less general-purpose than a traditional static site generator
+or web framework - intentionally.
 
-## The idea {#idea}
+The trade-off is less architectural freedom in exchange for less website
+implementation work.
 
-```text
-files
-  ↓
-Norna
-  ↓
-static website
-```
+## Files are the interface {#files}
 
-![Diagram showing Norna site files, including routes, flowing through the Norna CLI into a static website.](/workflow.svg)
-
-A Norna site is made from ordinary project files:
+A typical Norna site looks like this:
 
 ```text
 site/
@@ -72,68 +60,126 @@ site/
   public/
 ```
 
-Content, visual defaults and technical configuration remain separate, while
-routes and images can be added as the site grows.
+- `content.md` - what the homepage says and how its sections are organised
+- `theme.md` - how the site looks
+- `config.mjs` - technical behaviour such as URL, base path, language labels
+  and publishing settings
+- `routes/` - additional pages
+- `images/` - source images used by the site
+- `public/` - static files copied into the published site
+
+Content, presentation and technical configuration stay separate, while routes
+and assets can be added as the site grows.
+
+The files are ordinary project files: they can be edited, versioned, reviewed
+and kept together with the project they describe.
+
+## From files to a website {#workflow}
+
+![Norna turns site files describing content, presentation, configuration, routes and assets into a static website in dist. GitHub Pages is the integrated publishing target today, while a dashed branch shows possible future integrations with other static hosts.](/workflow.svg)
+
+A Norna build turns the source files into static website output in `dist/`.
+
+Norna currently integrates publishing with GitHub Pages. The generated website
+is static, so other static hosting services are technically possible publishing
+targets, but Norna does not provide integrations for them today.
+
+Additional publishing integrations may be added in the future.
+
+## One layer above a traditional site generator {#abstraction}
+
+A general-purpose static site generator usually gives you tools for building a
+website: templates, layouts, components, data pipelines and rendering
+primitives.
+
+Norna works at a higher level of abstraction.
+
+You provide the site's content, presentation choices, configuration, routes and
+assets. Norna owns more of the website implementation.
+
+That means Norna is not trying to maximise flexibility. It is trying to
+minimise how much website-specific implementation you need for the kinds of
+sites it supports.
 
 ## Why Norna? {#why}
 
-### Files are the source of truth
+### Keep the website with the project
 
-The website lives in files that can be read, edited, reviewed and versioned
-together with the rest of the project.
+The website lives in ordinary files that can be read, edited, reviewed and
+versioned together with the rest of the project.
 
-There is no separate content system that has to be kept in sync with the
-repository.
+There is no separate CMS or content database that has to be kept in sync with
+the repository.
 
-### Separate content, presentation and configuration
+### Separate responsibilities
 
-Editorial content belongs in `content.md`, site-wide visual choices in
-`theme.md`, and technical settings in `config.mjs`.
+Editorial content belongs in content files, visual defaults in `theme.md`, and
+technical settings in `config.mjs`.
 
-This keeps the different concerns visible without requiring you to assemble
-your own site framework.
+The structure is deliberately constrained so that each file has a clear role.
 
-### Use it standalone or inside an existing project
+### Less website implementation
 
-Norna can create a dedicated site project, or add a Norna site directory to an
-existing Node project.
+For normal site work, you work with the Norna model instead of creating a new
+template/component architecture for every site.
 
-That makes it useful both for independent websites and for project
-presentations or documentation that should live beside the code they describe.
+### Static output
 
-### From local files to static publishing
+The result of a build is a static website in `dist/`.
 
-Norna provides commands for local development, validation, image generation,
-static builds and GitHub Pages-oriented deployment workflows.
+The build output is separate from the source files.
+
+Edit the files under `site/`; let Norna generate `dist/`.
 
 ## Good fit for {#good-fit}
 
-Norna is intended for relatively small, mostly static websites where keeping
-the site as files is an advantage.
+Norna is intended for relatively small, mostly static websites where a
+file-driven and versioned workflow is useful.
 
 Typical uses include:
 
 - open source and project websites
 - lightweight documentation and guides
-- portfolios and image-driven presentation sites
+- portfolios and artist websites
+- image-driven presentation sites
 - personal websites
 - small organisation and information sites
 - presentation or documentation sites embedded in existing projects
 
-It is a good fit when a file-driven, versioned workflow is more useful than
-introducing a CMS, database or larger web application framework.
+Norna is a good fit when the site can live naturally as files and when a
+defined presentation model is preferable to building a custom web architecture.
+
+It is not intended to replace a general-purpose framework for dynamic web
+applications or projects that need complete control over their rendering
+architecture.
+
+## Create a site {#create}
+
+```sh
+npx @janga/norna@latest init my-site
+cd my-site
+npm install
+npm run dev
+```
+
+Read [Getting Started](/getting-started/) for the full first-site flow.
+
+## Project links {#links}
+
+- [GitHub repository](https://github.com/janga/norna)
+- [Documentation](https://github.com/janga/norna/tree/main/docs)
+- [npm package](https://www.npmjs.com/package/@janga/norna)
+- [Issue tracker](https://github.com/janga/norna/issues)
 
 ## Next steps {#next}
 
-Read [Getting Started](/getting-started/) to create your first site.
-
-Browse the [Documentation](https://github.com/janga/norna/tree/main/docs) for
-content, themes, routes, images, commands and publishing.
-
-Visit [GitHub](https://github.com/janga/norna) for the source code and issue
-tracker.
+- [Getting Started](/getting-started/) - create and build your first Norna site
+- [Concepts](/concepts/) - understand the file model and abstraction level
+- [Examples](/examples/) - see the kinds of sites Norna is designed to build
+- [Full documentation](https://github.com/janga/norna/tree/main/docs) - read
+  detailed configuration, command and publishing reference
 
 ## License {#license}
 
-Norna is open source software released under the
+Norna is open source software released under
 [GNU GPL v3](https://github.com/janga/norna/blob/main/LICENSE).

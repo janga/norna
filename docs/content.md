@@ -5,7 +5,7 @@ page metadata, section order, section ids, image rows, and Markdown text for
 the homepage.
 
 Route pages use the same page and section model in
-`site/routes/<route-folder>/route-content.md`. See [Routes](routes.md) for the
+`site/routes/<NNN-route-id>/route-content.md`. See [Routes](routes.md) for the
 route-specific rules.
 
 Site-wide visual defaults belong in [Theme](theme.md). Typography presets and
@@ -18,8 +18,6 @@ The Astro content schema validates these top-level fields in page files:
 
 - `title`: required string. Rendered as the document title.
 - `description`: required string. Rendered as the meta description.
-- `slug`: optional route URL slug. It is ignored on the homepage. If omitted on
-  a route page, the route folder name is used.
 - `navigation`: optional page navigation metadata. See [Routes](routes.md).
 - `presentation`: optional page-level presentation overrides. See
   [Theme](theme.md) and [Typography](typography.md).
@@ -101,7 +99,7 @@ Image rows support:
 
 Source image filenames must be unique across the selected page's image tree.
 The homepage reads images from `site/images/<section-id>/`. Route pages read
-images from `site/routes/<route-folder>/images/<section-id>/`.
+images from `site/routes/<NNN-route-id>/images/<section-id>/`.
 
 ## Carousels
 
@@ -206,7 +204,7 @@ presentation:
         paragraphSpacing: 0.8em
 ```
 
-Top-level page frontmatter may contain only `title`, `description`, `slug`,
+Top-level page frontmatter may contain only `title`, `description`,
 `navigation`, `presentation`, `frame`, and `sections`. A `gallery` key belongs
 under one `sections[]` item:
 

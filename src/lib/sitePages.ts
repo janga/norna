@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
+import { parseRouteDirectory } from '../../scripts/lib/route-model.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
 
@@ -10,9 +11,10 @@ export type SitePage = {
 		label: string;
 		order: number;
 	};
+	pathSegment: string;
 	pathname: string;
-	routeFolder: string | null;
-	slug: string;
+	routeDirectory: string | null;
+	routeId: string;
 	title: string;
 };
 
@@ -25,21 +27,21 @@ const stripRouteIdPrefix = (id: string) => {
 
 export const isHomePageEntry = (entry: SiteEntry) => stripRouteIdPrefix(entry.id) === null;
 
-const getRouteFolder = (entry: SiteEntry) => isHomePageEntry(entry) ? null : stripRouteIdPrefix(entry.id);
+const getRouteDirectory = (entry: SiteEntry) => isHomePageEntry(entry) ? null : stripRouteIdPrefix(entry.id);
 
-const getPageSlug = (entry: SiteEntry) => {
-	if (isHomePageEntry(entry)) return '';
-
-	const routeFolder = getRouteFolder(entry);
-	return entry.data.slug ?? routeFolder ?? '';
+const getRouteMetadata = (entry: SiteEntry) => {
+	const routeDirectory = getRouteDirectory(entry);
+	return routeDirectory ? parseRouteDirectory(routeDirectory, `route directory ${routeDirectory}`) : null;
 };
 
-const getPagePathname = (slug: string) => slug ? `/${slug}/` : '/';
+const getPagePathname = (pathSegment: string) => pathSegment ? `/${pathSegment}/` : '/';
 
 export const getSitePage = (entry: SiteEntry): SitePage => {
 	const isHome = isHomePageEntry(entry);
-	const routeFolder = getRouteFolder(entry);
-	const slug = getPageSlug(entry);
+	const routeMetadata = getRouteMetadata(entry);
+	const routeDirectory = routeMetadata?.routeDirectory ?? null;
+	const routeId = routeMetadata?.routeId ?? '';
+	const pathSegment = isHome ? '' : routeId;
 	const navigation = entry.data.navigation ?? {};
 
 	return {
@@ -48,11 +50,12 @@ export const getSitePage = (entry: SiteEntry): SitePage => {
 		navigation: {
 			include: navigation.include ?? true,
 			label: navigation.label ?? entry.data.title,
-			order: navigation.order ?? (isHome ? 0 : 100),
+			order: isHome ? 0 : routeMetadata?.routeOrder ?? 100,
 		},
-		pathname: getPagePathname(slug),
-		routeFolder,
-		slug,
+		pathSegment,
+		pathname: getPagePathname(pathSegment),
+		routeDirectory,
+		routeId,
 		title: entry.data.title,
 	};
 };
@@ -60,6 +63,8 @@ export const getSitePage = (entry: SiteEntry): SitePage => {
 export const getSitePages = (entries: SiteEntry[]) => {
 	const pages = entries.map(getSitePage);
 	const pathnames = new Map<string, SitePage>();
+	const routeIds = new Map<string, SitePage>();
+	const routeOrders = new Map<number, SitePage>();
 
 	for (const page of pages) {
 		const existing = pathnames.get(page.pathname);
@@ -68,6 +73,22 @@ export const getSitePages = (entries: SiteEntry[]) => {
 		}
 
 		pathnames.set(page.pathname, page);
+
+		if (page.isHome) continue;
+
+		const existingRouteId = routeIds.get(page.routeId);
+		if (existingRouteId) {
+			throw new Error(`Duplicate route id "${page.routeId}" from "${existingRouteId.entry.id}" and "${page.entry.id}".`);
+		}
+
+		routeIds.set(page.routeId, page);
+
+		const existingRouteOrder = routeOrders.get(page.navigation.order);
+		if (existingRouteOrder) {
+			throw new Error(`Duplicate route order "${String(page.navigation.order).padStart(3, '0')}" from "${existingRouteOrder.entry.id}" and "${page.entry.id}".`);
+		}
+
+		routeOrders.set(page.navigation.order, page);
 	}
 
 	return pages.sort((left, right) => (

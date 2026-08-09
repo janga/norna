@@ -3,7 +3,6 @@ title: Dog care
 description: A small route for testing multi-page norna navigation.
 navigation:
   label: Dog care
-  order: 20
 sections:
   - id: daily-rhythm
     presentation:

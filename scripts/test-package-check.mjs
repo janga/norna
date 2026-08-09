@@ -190,13 +190,12 @@ try {
 		packageCheckThemePath,
 		packageCheckTheme.replace('brand: Example Site', 'brand: Package Check Brand'),
 	);
-	await mkdir(path.join(siteProjectRoot, 'site', 'routes', 'about'), { recursive: true });
-	await writeFile(path.join(siteProjectRoot, 'site', 'routes', 'about', 'route-content.md'), `---
+	await mkdir(path.join(siteProjectRoot, 'site', 'routes', '010-about'), { recursive: true });
+	await writeFile(path.join(siteProjectRoot, 'site', 'routes', '010-about', 'route-content.md'), `---
 title: About the site
 description: Route used by package checks.
 navigation:
   label: About
-  order: 20
 sections:
   - id: about
 ---

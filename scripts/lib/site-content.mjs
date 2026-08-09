@@ -10,6 +10,7 @@ import {
 	siteRoutesLabel,
 	siteThemeLabel,
 } from './site-paths.mjs';
+import { parseRouteDirectory } from './route-model.mjs';
 
 export const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
 
@@ -17,7 +18,7 @@ const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
-const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'slug', 'navigation', 'presentation', 'frame', 'sections']);
+const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'presentation', 'frame', 'sections']);
 const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation', 'frame']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
@@ -55,7 +56,6 @@ const knownNestedFrontmatterKeys = new Set([
 	'mobile',
 	'navigation',
 	'overrides',
-	'order',
 	'paragraphSpacing',
 	'pageWidth',
 	'preset',
@@ -85,7 +85,9 @@ export const getContentFiles = async () => {
 		imagesDir: siteImagesDir,
 		imagesLabel: siteImagesLabel,
 		isHome: true,
-		routeFolder: null,
+		routeDirectory: null,
+		routeId: null,
+		routeOrder: 0,
 	}];
 	const routeEntries = await readdir(siteRoutesDir, { withFileTypes: true }).catch((error) => {
 		if (error?.code === 'ENOENT') {
@@ -98,19 +100,23 @@ export const getContentFiles = async () => {
 	for (const entry of routeEntries) {
 		if (!entry.isDirectory()) continue;
 
-		const routeFolder = entry.name;
-		const routeDir = path.join(siteRoutesDir, routeFolder);
+		const routeDirectory = entry.name;
+		const routeDir = path.join(siteRoutesDir, routeDirectory);
 		const routeContentPath = path.join(routeDir, 'route-content.md');
 
 		if (!(await fileExists(routeContentPath))) continue;
 
+		const { routeId, routeOrder } = parseRouteDirectory(routeDirectory, `${siteRoutesLabel}/${routeDirectory}`);
+
 		contentFiles.push({
-			contentLabel: `${siteRoutesLabel}/${routeFolder}/route-content.md`,
+			contentLabel: `${siteRoutesLabel}/${routeDirectory}/route-content.md`,
 			contentPath: routeContentPath,
 			imagesDir: path.join(routeDir, 'images'),
-			imagesLabel: `${siteRoutesLabel}/${routeFolder}/images`,
+			imagesLabel: `${siteRoutesLabel}/${routeDirectory}/images`,
 			isHome: false,
-			routeFolder,
+			routeDirectory,
+			routeId,
+			routeOrder,
 		});
 	}
 

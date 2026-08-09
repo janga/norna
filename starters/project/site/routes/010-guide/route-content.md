@@ -3,7 +3,6 @@ title: Guide
 description: Adapt this compact guide for normal project use.
 navigation:
   label: Guide
-  order: 10
 sections:
   - id: quickstart
   - id: configuration

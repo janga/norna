@@ -3,7 +3,6 @@ title: Your project
 description: A compact project site starter for an open source developer tool.
 navigation:
   label: Home
-  order: 0
 sections:
   - id: intro
   - id: links

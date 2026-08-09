@@ -10,7 +10,7 @@ export async function getStaticPaths() {
 	return pages
 		.filter((page) => !page.isHome)
 		.map((page) => ({
-			params: { slug: page.slug },
+			params: { slug: page.pathSegment },
 			props: { entry: page.entry },
 		}));
 }
@@ -23,8 +23,8 @@ if (!entry || isHomePageEntry(entry)) {
 
 const currentPage = getSitePage(entry);
 
-if (!currentPage.slug) {
-	throw new Error(`Route "${entry.id}" needs a slug or route folder name.`);
+if (!currentPage.pathSegment) {
+	throw new Error(`Route "${entry.id}" needs a route id.`);
 }
 ---
 

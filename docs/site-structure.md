@@ -15,7 +15,7 @@ site/
 |-- images/
 |   `-- <section-id>/
 |-- routes/
-|   `-- <route-folder>/
+|   `-- <NNN-route-id>/
 |       |-- route-content.md
 |       `-- images/
 |           `-- <section-id>/
@@ -44,9 +44,9 @@ Version these files in a site repository:
 - `site/content.md`: homepage page file with editable content, section
   definitions, image rows, alt text, and captions. See [Content](content.md).
 - `site/images/<section-id>/`: original source images.
-- `site/routes/<route-folder>/route-content.md`: optional route page files.
+- `site/routes/<NNN-route-id>/route-content.md`: optional route page files.
   See [Routes](routes.md).
-- `site/routes/<route-folder>/images/<section-id>/`: original source images
+- `site/routes/<NNN-route-id>/images/<section-id>/`: original source images
   for that route page.
 - `site/public/`: site-specific static public files.
 - `site/.norna/generated-images.json`: generated image manifest used to

@@ -71,7 +71,8 @@ Commit the generated `package-lock.json` after the first install.
    image rows, page/section presentation overrides, alt text, and captions.
 4. Put source images under `site/images/<section-id>/`.
 5. Add optional route pages under
-   `site/routes/<route-folder>/route-content.md`.
+   `site/routes/<NNN-route-id>/route-content.md`, for example
+   `site/routes/010-about/route-content.md`.
 6. Put static files such as `robots.txt`, `CNAME`, and favicons under
    `site/public/`.
 7. Run:
