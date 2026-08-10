@@ -37,6 +37,11 @@ const syncSitePublic = async () => execFileAsync(process.execPath, [path.join(en
 	maxBuffer: 1024 * 1024 * 10,
 });
 
+const generateImages = async () => execFileAsync(process.execPath, [path.join(engineRoot, 'scripts', 'generate-images.mjs')], {
+	cwd: siteProjectRoot,
+	maxBuffer: 1024 * 1024 * 10,
+});
+
 const getPortPids = async () => {
 	try {
 		const { stdout } = await execFileAsync('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t']);
@@ -266,6 +271,7 @@ const startServer = async ({ host = localHost, open = true, killBlockingPort = f
 	}
 
 	await syncSitePublic();
+	await generateImages();
 	await runAstroInherit(['dev', '--background', '--host', host, '--port', String(port)]);
 	await waitForServer();
 

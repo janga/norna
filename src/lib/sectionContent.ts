@@ -1,14 +1,37 @@
 import type { CollectionEntry } from 'astro:content';
 import projectConfig from '../../scripts/lib/project-config.mjs';
+import {
+	extractNornaMarkdownBlocks,
+	splitNornaMarkdownBlockMarkers,
+	splitNornaRenderedCodeBlocks,
+} from '../../scripts/lib/norna-markdown-blocks.mjs';
 import { applyBasePathToHtml } from './basePath';
+import type { SitePage } from './sitePages';
 
-type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
+type SiteSectionMetadataMap = CollectionEntry<'site'>['data']['sections'];
+type SiteSectionMetadata = SiteSectionMetadataMap[string];
 type ThemePresentation = CollectionEntry<'theme'>['data']['presentation'];
 type InlineStyles = NonNullable<NonNullable<ThemePresentation>['inlineStyles']>;
+type GalleryImage = {
+	image: string;
+	src: string;
+	alt?: string;
+	caption?: string;
+};
+type SectionContentBlock =
+	| { type: 'html'; html: string }
+	| { type: 'image-stack'; images: GalleryImage[] }
+	| { type: 'image-carousel'; images: GalleryImage[] };
+export type ResolvedSection = SiteSectionMetadata & {
+	id: string;
+	title: string;
+	contentBlocks: SectionContentBlock[];
+};
 
 const headingRegex = /<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[([^\]<]+)\]\{\.([a-z][a-z0-9-]*)\}/g;
+const markdownH2Regex = /^##\s+.*$/gm;
 
 const stripTags = (html: string) => html.replace(/<[^>]*>/g, '');
 
@@ -61,15 +84,73 @@ const applyInlineStyles = (html: string, inlineStyles: InlineStyles | undefined)
 const prepareContentHtml = (html: string, inlineStyles: InlineStyles | undefined) =>
 	applyBasePathToHtml(projectConfig.site.basePath, applyInlineStyles(html, inlineStyles));
 
+const getRawMarkdownSections = (markdown: string) => {
+	const matches = Array.from(markdown.matchAll(markdownH2Regex));
+	const sections = new Map<string, string>();
+
+	for (let index = 0; index < matches.length; index += 1) {
+		const match = matches[index];
+		const heading = match[0] ?? '';
+		const id = heading.match(explicitHeadingIdRegex)?.[1];
+		if (!id) continue;
+
+		const start = match.index ?? 0;
+		const next = matches[index + 1];
+		const end = next?.index ?? markdown.length;
+		sections.set(id, markdown.slice(start, end));
+	}
+
+	return sections;
+};
+
+const getImageSourceKey = (page: SitePage, sectionId: string, image: string) => (
+	page.routeDirectory
+		? `routes/${page.routeDirectory}/images/${sectionId}/${image}`
+		: `images/${sectionId}/${image}`
+);
+
+const resolveContentBlocks = (
+	html: string,
+	rawMarkdown: string,
+	page: SitePage,
+	sectionId: string,
+	inlineStyles: InlineStyles | undefined,
+) => {
+	const rawBlocks = extractNornaMarkdownBlocks(rawMarkdown);
+	const splitBlocks = rawBlocks.length > 0
+		? splitNornaRenderedCodeBlocks(html, rawBlocks)
+		: splitNornaMarkdownBlockMarkers(html);
+
+	return splitBlocks.map((block): SectionContentBlock => {
+		if (block.type === 'html') {
+			return {
+				type: 'html',
+				html: prepareContentHtml(block.html, inlineStyles),
+			};
+		}
+
+		return {
+			type: block.type,
+			images: block.images.map((image: { image: string; alt?: string; caption?: string }) => ({
+				...image,
+				src: getImageSourceKey(page, sectionId, image.image),
+			})),
+		};
+	});
+};
+
 export const getSectionsContent = (
 	html: string,
-	sections: SiteSection[],
+	rawMarkdown: string,
+	sectionMetadata: SiteSectionMetadataMap,
+	page: SitePage,
 	inlineStyles?: InlineStyles,
 ) => {
 	const matches = Array.from(html.matchAll(headingRegex));
-	const contentById = new Map<string, { title: string; contentHtml: string }>();
-	const sectionIds = new Set(sections.map((section) => section.id));
-	const markdownSectionIds: string[] = [];
+	const rawSections = getRawMarkdownSections(rawMarkdown);
+	const metadataIds = new Set(Object.keys(sectionMetadata));
+	const sections: ResolvedSection[] = [];
+	const sectionIds = new Set<string>();
 
 	for (let index = 0; index < matches.length; index += 1) {
 		const match = matches[index];
@@ -84,47 +165,29 @@ export const getSectionsContent = (
 		const title = getHeadingTitle(headingHtml);
 
 		if (!explicitId) {
-			console.warn(`Markdown section is missing an explicit heading id: "${title}". Write for example "## ${title} {#${id}}".`);
+			throw new Error(`Section heading "${title}" is missing an explicit id. Write it as: ## ${title} {#${id}}`);
 		}
 
-		if (contentById.has(id)) {
+		if (sectionIds.has(id)) {
 			throw new Error(`Duplicate Markdown section heading id: ${id}`);
 		}
 
-		contentById.set(id, {
+		sectionIds.add(id);
+		sections.push({
+			...(sectionMetadata[id] ?? {}),
+			id,
 			title,
-			contentHtml: prepareContentHtml(content, inlineStyles),
+			contentBlocks: resolveContentBlocks(content, rawSections.get(id) ?? '', page, id, inlineStyles),
 		});
-		markdownSectionIds.push(id);
 	}
 
-	for (const id of contentById.keys()) {
+	for (const id of metadataIds) {
 		if (!sectionIds.has(id)) {
-			console.warn(`Markdown section exists but is not used in frontmatter: ${id}`);
-		}
-	}
-
-	const orderedMarkdownSectionIds = markdownSectionIds.filter((id) => sectionIds.has(id));
-	const frontmatterSectionIds = sections.map((section) => section.id);
-	const hasOrderMismatch = frontmatterSectionIds.some((id, index) => id !== orderedMarkdownSectionIds[index]);
-
-	if (hasOrderMismatch) {
-		console.warn('Markdown section order differs from frontmatter. Run npm run content:sync to sort Markdown according to frontmatter.');
-	}
-
-	return sections.map((section) => {
-		const content = contentById.get(section.id);
-
-		if (!content) {
 			throw new Error(
-				`Cannot find heading for "${section.id}". Each frontmatter section must have a matching level 2 Markdown heading, for example: ## Heading {#${section.id}}`,
+				`Section metadata "${id}" does not match any Markdown section. Add "## Heading {#${id}}" or remove sections.${id}.`,
 			);
 		}
+	}
 
-		return {
-			...section,
-			title: content.title,
-			contentHtml: content.contentHtml,
-		};
-	});
+	return sections;
 };

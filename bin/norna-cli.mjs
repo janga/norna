@@ -16,7 +16,7 @@ Commands:
   dev:stop               Stop local dev server
   config:check           Validate site/config.mjs
   content:check          Validate site/content.md and image references
-  content:sync           Rewrite section order and move misplaced images
+  content:sync           Move misplaced Norna-managed images and refresh generated images
   typography presets     Show built-in typography preset values
   typography show        Show resolved typography for the selected site
   site:public            Sync site/public/ to public/
@@ -128,9 +128,9 @@ try {
 		await runScript('scripts/check-config.mjs', rest);
 	} else if (command === 'content:check') {
 		await runScript('scripts/sync-content-sections.mjs', ['--check', ...rest]);
-		await runAstroInherit(['sync']);
 	} else if (command === 'content:sync') {
 		await runScript('scripts/sync-content-sections.mjs', ['--write', ...rest]);
+		await runScript('scripts/generate-images.mjs', rest);
 	} else if (command === 'typography:presets' || (command === 'typography' && subcommand === 'presets')) {
 		const scriptArgs = command === 'typography' ? subcommandRest : rest;
 		await runScript('scripts/show-typography.mjs', ['presets', ...scriptArgs]);

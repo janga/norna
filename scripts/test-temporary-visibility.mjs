@@ -59,17 +59,14 @@ frame:
 title: Temporary Visibility Test
 description: Test site for temporary sections.
 sections:
-  - id: expired
+  expired:
     visible:
       until: "2026-01-01"
-    gallery: []
-  - id: active
+  active:
     visible:
       from: "2026-01-01"
       until: "2026-12-31"
-    gallery: []
-  - id: always
-    gallery: []
+  always: {}
 
 ---
 ## Expired {#expired}

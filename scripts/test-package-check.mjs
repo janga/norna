@@ -190,6 +190,22 @@ try {
 		packageCheckThemePath,
 		packageCheckTheme.replace('brand: Example Site', 'brand: Package Check Brand'),
 	);
+	await writeFile(path.join(siteProjectRoot, 'site', 'content.md'), `---
+title: Package Check Site
+description: Site used by package checks.
+sections:
+  intro: {}
+  work: {}
+---
+
+## Intro {#intro}
+
+This page verifies that [packaged norna sites]{.highlight} can build with the current content model.
+
+## Work {#work}
+
+This section keeps the package check independent from user-facing starter copy.
+`);
 	await mkdir(path.join(siteProjectRoot, 'site', 'routes', '010-about'), { recursive: true });
 	await writeFile(path.join(siteProjectRoot, 'site', 'routes', '010-about', 'route-content.md'), `---
 title: About the site
@@ -197,7 +213,7 @@ description: Route used by package checks.
 navigation:
   label: About
 sections:
-  - id: about
+  about: {}
 ---
 
 ## About {#about}
@@ -372,8 +388,8 @@ This route verifies that packaged norna sites can build route pages.
 	await writeFile(
 		siteContentPath,
 		siteContent.replace(
-			'description: Minimal norna starter site.',
-			'description: Minimal norna starter site.\npresentation:\n  typography:\n    overrides:\n      body:\n        lineHeight: tight',
+			'description: Site used by package checks.',
+			'description: Site used by package checks.\npresentation:\n  typography:\n    overrides:\n      body:\n        lineHeight: tight',
 		),
 	);
 	await runExpectFailure(
@@ -385,25 +401,28 @@ This route verifies that packaged norna sites can build route pages.
 	await writeFile(
 		siteContentPath,
 		siteContent.replace(
-			'      typography:\n        preset: statement',
-			'      typography:\n        overrides:\n          caption:\n            spacingBefore: wide',
+			'  intro: {}',
+			'  intro:\n    presentation:\n      typography:\n        overrides:\n          caption:\n            spacingBefore: wide',
 		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.0.presentation.typography.overrides.caption.spacingBefore',
+		'sections.intro.presentation.typography.overrides.caption.spacingBefore',
 	);
 	await writeFile(
 		siteContentPath,
-		siteContent.replace('        preset: statement', '        preset: dramatic'),
+		siteContent.replace(
+			'  intro: {}',
+			'  intro:\n    presentation:\n      typography:\n        preset: dramatic',
+		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.0.presentation.typography.preset',
+		'sections.intro.presentation.typography.preset',
 	);
 	await writeFile(
 		siteThemePath,

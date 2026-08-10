@@ -73,28 +73,42 @@ const withTempProject = async ({ site, theme = defaultTheme, files, siteDirector
 
 const brokenSite = `---
 sections:
-  - id: karin-walde
-    gallery:
-      - image: karin.jpg
-  - id: min-konst
-    gallery:
-      - image: vav.jpeg
-      - image: missing.jpeg
-      - image: duplicate.jpg
-      - image: duplicate.jpg
-  - id: mitt-hem
-    gallery:
-      - image: home.jpg
+  karin-walde: {}
+  min-konst: {}
+  mitt-hem: {}
 
 ---
 ## Karin Walde {#karin-walde}
 Text.
+
+\`\`\`norna-image-stack
+- image: karin.jpg
+  alt: Karin
+\`\`\`
+
 ## Min konst {#min-konst}
 Text.
+
+\`\`\`norna-image-stack
+- image: vav.jpeg
+  alt: Vav
+- image: missing.jpeg
+  alt: Missing
+- image: duplicate.jpg
+  alt: Duplicate one
+- image: duplicate.jpg
+  alt: Duplicate two
+\`\`\`
+
 ## Extra {#extra}
 Text.
 ## Mitt hem {#mitt-hem}
 Text.
+
+\`\`\`norna-image-stack
+- image: home.jpg
+  alt: Home
+\`\`\`
 `;
 
 test('content:check groups section issues, global issues, and unreferenced images', async () => {
@@ -113,28 +127,26 @@ test('content:check groups section issues, global issues, and unreferenced image
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Section And Image Issues\n\n\[min-konst\]\n  Errors:/);
-		assert.match(output, /Image "vav\.jpeg" is used here but is located in site\/images\/mitt-hem\/\./);
-		assert.match(output, /Image "missing\.jpeg" does not exist anywhere under site\/images\/\./);
-		assert.match(output, /Image "duplicate\.jpg" is referenced more than once in this section\./);
-		assert.match(output, /\[extra\]\n  Warnings:/);
-		assert.match(output, /Global Content Issues\n\nWarnings:\n- Markdown section order differs from frontmatter\./);
-		assert.match(output, /Unreferenced Images\nThese files are kept in site\/images\/ but are not mounted on the site:/);
+		assert.match(output, /Content Issues\n\n\[site\/content\.md \[min-konst\]\]\n  Errors:/);
+		assert.match(output, /Image "vav\.jpeg" is used here but is located in site\/images\/mitt-hem\/vav\.jpeg\./);
+		assert.match(output, /Image "missing\.jpeg" does not exist at site\/images\/min-konst\/missing\.jpeg or anywhere under site\/images\/\./);
+		assert.match(output, /Unreferenced Images\nThese files are kept under page or route image roots but are not referenced by Norna image blocks:/);
 		assert.match(output, /site\/images\/karin-walde\/unreferenced\.jpg/);
 	});
 });
 
 const carouselAspectRatioSite = `---
-sections:
-  - id: puppies
-    gallery:
-      - carousel:
-          - image: wide.png
-          - image: wider.png
-
+title: Carousel Aspect Ratio
 ---
 ## Puppies {#puppies}
 Text.
+
+\`\`\`norna-image-carousel
+- image: wide.png
+  alt: Wide
+- image: wider.png
+  alt: Wider
+\`\`\`
 `;
 
 test('content:check warns when carousel images use different aspect ratios', async () => {
@@ -156,7 +168,7 @@ test('content:check warns when carousel images use different aspect ratios', asy
 
 		assert.equal(result.status, 0, output);
 		assert.match(output, /^Content check completed with warnings\./m);
-		assert.match(output, /Carousel on line 5 uses images with different aspect ratios: wide\.png \(4:3\), wider\.png \(2:1\)\./);
+		assert.match(output, /Carousel on line 7 uses images with different aspect ratios: wide\.png \(4:3\), wider\.png \(2:1\)\./);
 		assert.match(output, /Use images with exactly matching proportions in the same carousel/);
 	});
 });
@@ -170,10 +182,7 @@ presentation:
 `;
 
 const inlineStyleSite = `---
-sections:
-  - id: intro
-    gallery: []
-
+title: Inline Style
 ---
 ## Intro {#intro}
 This has [known text]{.highlight} and [unknown text]{.missing}.
@@ -190,7 +199,7 @@ test('content:check fails when Markdown uses undefined inline styles', async () 
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Inline style "\.missing" is used in Markdown but is not defined in site\/theme\.md presentation\.inlineStyles\./);
+		assert.match(output, /Inline style "\.missing" is used in site\/content\.md but is not defined in site\/theme\.md presentation\.inlineStyles\./);
 		assert.doesNotMatch(output, /"\.highlight" is used in Markdown/);
 	});
 });
@@ -203,8 +212,7 @@ presentation:
       body:
         paragraphSpacing: 0.3em
 sections:
-  - id: intro
-    gallery: []
+  intro: {}
 
 ---
 ## Intro {#intro}
@@ -234,8 +242,7 @@ presentation:
         body:
           paragraphSpacing: 0.3em
 sections:
-  - id: intro
-    gallery: []
+  intro: {}
 
 ---
 ## Intro {#intro}
@@ -261,7 +268,7 @@ const topLevelGallerySite = `---
 title: Example
 description: Example site.
 sections:
-  - id: intro
+  intro: {}
 gallery:
       - image: intro.jpg
 
@@ -281,7 +288,7 @@ test('content:check explains likely misindented frontmatter keys', async () => {
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
 		assert.match(output, /Frontmatter line 6 defines "gallery" at the top level, but it is not a valid top-level content field\./);
-		assert.match(output, /Indent "gallery:" under the section or object it belongs to\./);
+		assert.match(output, /Indent "gallery:" under the object it belongs to, or move image content into Norna Markdown blocks\./);
 	});
 });
 
@@ -304,18 +311,25 @@ test('content:check respects NORNA_SITE_DIR', async () => {
 
 const movableSite = `---
 sections:
-  - id: min-konst
-    gallery:
-      - image: move-me.jpg
-  - id: mitt-hem
-    gallery:
-      - image: home.jpg
+  min-konst: {}
+  mitt-hem: {}
 
 ---
 ## Min konst {#min-konst}
 Text.
+
+\`\`\`norna-image-stack
+- image: move-me.jpg
+  alt: Move me
+\`\`\`
+
 ## Mitt hem {#mitt-hem}
 Text.
+
+\`\`\`norna-image-stack
+- image: home.jpg
+  alt: Home
+\`\`\`
 `;
 
 test('content:sync moves referenced images and keeps unreferenced images in place', async () => {
@@ -340,7 +354,7 @@ test('content:sync moves referenced images and keeps unreferenced images in plac
 		const checkOutput = getOutput(checkResult);
 
 		assert.equal(checkResult.status, 0, checkOutput);
-		assert.match(checkOutput, /Content check passed\./);
+		assert.match(checkOutput, /Content check completed with warnings\./);
 		assert.match(checkOutput, /site\/images\/mitt-hem\/unreferenced\.jpg/);
 	});
 });

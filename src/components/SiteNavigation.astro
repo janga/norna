@@ -1,11 +1,9 @@
 ---
-import type { CollectionEntry } from 'astro:content';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
+import type { ResolvedSection } from '../lib/sectionContent';
 import type { SitePage } from '../lib/sitePages';
 
-type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
-type ResolvedSection = SiteSection & { title: string };
 type FrameColors = {
 	backgroundColor: string;
 	textColor: string;
@@ -21,8 +19,11 @@ interface Props {
 
 const { brandLabel, currentPage, pages, sections, frameColors } = Astro.props;
 const smoothScrollConfig = projectConfig.navigation.smoothScroll;
+const siteTopBackgroundColor = frameColors.backgroundColor === 'transparent'
+	? 'var(--color-page)'
+	: frameColors.backgroundColor;
 const navigationStyle = [
-	`--site-top-background-color: ${frameColors.backgroundColor}`,
+	`--site-top-background-color: ${siteTopBackgroundColor}`,
 	`--site-top-text-color: ${frameColors.textColor}`,
 ].join('; ');
 const showSiteNavigation = pages.length > 1;

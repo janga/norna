@@ -10,7 +10,6 @@ const siteEntryId = `${siteDirLabel
 	.replace(/^[./\\]+/, '')
 	.replace(/[^a-zA-Z0-9-]+/g, '-')
 	.replace(/^-+|-+$/g, '') || 'site'}-content`;
-const contentImageName = z.string().regex(/^[a-z0-9][a-z0-9.-]*\.(jpe?g|png)$/i);
 const colorValue = z.string().regex(
 	/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/,
 	'Use a hex color such as "#000000".',
@@ -168,15 +167,10 @@ const themeNavigation = z.object({
 	brand: z.string().min(1).optional(),
 }).strict();
 
-const galleryImage = z.object({
-	image: contentImageName,
-	alt: z.string(),
-	caption: z.string().optional(),
+const sectionMetadata = z.object({
+	visible: visibilityWindow.optional(),
+	presentation: sectionPresentationOverride.optional(),
 }).strict();
-const galleryCarousel = z.object({
-	carousel: z.array(galleryImage).min(2, 'A carousel must contain at least two images.'),
-}).strict();
-const galleryItem = z.union([galleryImage, galleryCarousel]);
 
 const siteSchema = z.object({
 	title: z.string(),
@@ -184,14 +178,7 @@ const siteSchema = z.object({
 	navigation: pageNavigation.optional(),
 	presentation: pagePresentation.optional(),
 	frame: frame.optional(),
-	sections: z.array(
-		z.object({
-			id: z.string().regex(/^[a-z0-9-]+$/),
-			visible: visibilityWindow.optional(),
-			presentation: sectionPresentationOverride.optional(),
-			gallery: z.array(galleryItem).optional().default([]),
-		}).strict(),
-	).min(1),
+	sections: z.record(z.string().regex(/^[a-z0-9-]+$/), sectionMetadata).optional().default({}),
 });
 
 const themeSchema = z.object({

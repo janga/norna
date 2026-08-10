@@ -2,9 +2,8 @@
 import type { CollectionEntry } from 'astro:content';
 import { resolveTypographyOverride } from '../../scripts/lib/typography.mjs';
 import GalleryGrid from './GalleryGrid.astro';
+import type { ResolvedSection } from '../lib/sectionContent';
 
-type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
-type ResolvedSection = SiteSection & { title: string; contentHtml: string };
 type ResponsiveValue<T> = { desktop: T; mobile: T };
 type ResponsiveOverride<T> = { desktop?: T; mobile?: T };
 type TextAlign = 'left' | 'center' | 'right';
@@ -12,7 +11,7 @@ type TextSize = 'small' | 'medium' | 'large' | 'xlarge';
 type SectionPresentationOverride = {
 	backgroundColor?: string;
 	textColor?: string;
-	typography?: NonNullable<SiteSection['presentation']>['typography'];
+	typography?: NonNullable<ResolvedSection['presentation']>['typography'];
 };
 type ResolvedPagePresentation = {
 	backgroundColor: string;
@@ -197,7 +196,7 @@ const getAlignedTextWidth = (
 });
 const headingWidth = getAlignedTextWidth(headingAlign, '760px');
 const bodyWidth = getAlignedTextWidth(bodyAlign, 'var(--text-width)');
-const hasGallery = section.gallery.length > 0;
+const hasMedia = section.contentBlocks.some((block) => block.type !== 'html');
 const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 	const headingConfig = markdownHeadings[level];
 	const fontSize = getHeadingSizeValue(level, headingConfig.size);
@@ -255,16 +254,30 @@ const sectionStyle = [
 			<HeadingTag>{section.title}</HeadingTag>
 		</header>
 
-		<div class:list={['section-body', { 'section-body-has-gallery': hasGallery, 'section-body-text-only': !hasGallery }]}>
-			{section.contentHtml && <div class="section-markdown" set:html={section.contentHtml} />}
+		<div class:list={['section-body', { 'section-body-has-gallery': hasMedia, 'section-body-text-only': !hasMedia }]}>
+			{section.contentBlocks.map((block, blockIndex) => {
+				if (block.type === 'html') {
+					return block.html && <div class="section-markdown" set:html={block.html} />;
+				}
 
-			{hasGallery && (
-				<GalleryGrid
-					title={section.title}
-					items={section.gallery}
-					priorityFirstImage={priorityGalleryImage}
-				/>
-			)}
+				if (block.type === 'image-carousel') {
+					return (
+						<GalleryGrid
+							title={section.title}
+							items={[{ carousel: block.images }]}
+							priorityFirstImage={priorityGalleryImage && blockIndex === 0}
+						/>
+					);
+				}
+
+				return (
+					<GalleryGrid
+						title={section.title}
+						items={block.images}
+						priorityFirstImage={priorityGalleryImage && blockIndex === 0}
+					/>
+				);
+			})}
 		</div>
 	</div>
 </section>

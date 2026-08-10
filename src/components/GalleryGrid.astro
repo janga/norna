@@ -1,11 +1,14 @@
 ---
-import type { CollectionEntry } from 'astro:content';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { getGeneratedImage, getImageAttributes } from '../lib/generatedImages';
 
-type SiteSection = CollectionEntry<'site'>['data']['sections'][number];
-type GalleryItem = SiteSection['gallery'][number];
-type GalleryImage = Extract<GalleryItem, { image: string }>;
+type GalleryImage = {
+	image: string;
+	src?: string;
+	alt?: string;
+	caption?: string;
+};
+type GalleryItem = GalleryImage | { carousel: GalleryImage[] };
 
 interface Props {
 	title: string;
@@ -19,7 +22,7 @@ const galleryImageSizes = [
 	`${projectConfig.gallery.maxAvailableWidthPercent.desktop}vw`,
 ].join(', ');
 const getImageClass = (image: GalleryImage) => {
-	const generatedImage = getGeneratedImage(image.image);
+	const generatedImage = getGeneratedImage(image.src ?? image.image);
 	return generatedImage && generatedImage.width > generatedImage.height
 		? 'gallery-image-landscape'
 		: undefined;
@@ -31,7 +34,7 @@ const getImageLoadingProps = (isPriority: boolean) => ({
 });
 const getCarouselAspectRatio = (images: GalleryImage[]) => {
 	const ratios = images
-		.map((image) => getGeneratedImage(image.image))
+		.map((image) => getGeneratedImage(image.src ?? image.image))
 		.filter((image): image is NonNullable<typeof image> => Boolean(image))
 		.map((image) => image.width / image.height);
 
@@ -48,9 +51,9 @@ const getCarouselAspectRatio = (images: GalleryImage[]) => {
 				<figure class="gallery-item">
 					<div class="gallery-image-frame">
 						<img
-							{...getImageAttributes(item.image, galleryImageSizes)}
+							{...getImageAttributes(item.src ?? item.image, galleryImageSizes)}
 							class:list={['gallery-image', getImageClass(item)]}
-							alt={item.alt}
+							alt={item.alt ?? ''}
 							{...getImageLoadingProps(isPriorityItem)}
 						/>
 					</div>
@@ -87,9 +90,9 @@ const getCarouselAspectRatio = (images: GalleryImage[]) => {
 								<figure class="gallery-carousel-slide" data-carousel-slide>
 									<div class="gallery-carousel-image-frame">
 										<img
-											{...getImageAttributes(image.image, galleryImageSizes)}
+											{...getImageAttributes(image.src ?? image.image, galleryImageSizes)}
 											class:list={['gallery-image', getImageClass(image)]}
-											alt={image.alt}
+											alt={image.alt ?? ''}
 											{...getImageLoadingProps(isPriorityItem && imageIndex === 0)}
 										/>
 									</div>

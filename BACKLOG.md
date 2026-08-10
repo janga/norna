@@ -46,6 +46,39 @@ approachable before wider use.
 Use this section for concrete engine behavior that should be implemented or
 verified.
 
+- Stabilize content model v2:
+  - Markdown is authoritative for section existence and section order.
+  - Level 2 Markdown headings define sections and must use explicit ids, for
+    example `## About {#about}`.
+  - Page frontmatter `sections` is an optional metadata map keyed by section id.
+  - `sections` metadata should contain only properties that do not naturally
+    belong in Markdown, such as `visible` and `presentation`.
+  - Norna-managed images are written as fenced Markdown blocks:
+    `norna-image-stack` for one or more stacked images, and
+    `norna-image-carousel` for carousels.
+  - Normal Markdown images do not participate in Norna image processing or
+    `content:sync`; local Markdown images should warn, external Markdown images
+    should not.
+  - Image filenames and section ids do not need to be globally unique for a
+    valid site.
+  - `content:sync` v1 is page-local/route-local only and should not move files
+    or section metadata across routes.
+  - Build and render must not mutate source files.
+  - Backwards compatibility with old `sections[]` plus frontmatter `gallery`
+    is not required if it complicates the model.
+- Add a future task for cross-route content sync. The future command should
+  relocate section metadata and section-bound assets across routes only when
+  source and destination are unambiguous. It should never guess, should not
+  require globally unique section ids or image filenames for ordinary site
+  validity, and should prefer diagnostics over unsafe mutation.
+- Review carousel control placement and carousel text/caption placement after
+  testing the content model v2 proof of concept. The current carousel UI works,
+  but controls and text placement need a deliberate pass before the model is
+  promoted to user-facing examples.
+- Consider `norna-image-grid` after the stack/carousel model has been tested.
+  A first version should probably use a simple `columns` value plus a flat image
+  list, fill cells in reading order, allow an incomplete final row, and avoid
+  empty cells until a real need appears.
 - Improve `init --type embedded` if real mixed projects reveal missing setup
   steps.
 - Consider a lighter local-engine testing workflow than publishing to npm,

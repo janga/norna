@@ -9,6 +9,7 @@ import {
 	typographyRhythms,
 } from './lib/typography.mjs';
 import {
+	getBodySections,
 	getContentFiles,
 	readSiteFile,
 	splitSiteFile,
@@ -268,11 +269,11 @@ const formatAnnotatedTypography = (annotated) => ({
 	resolved: annotateResolvedValues(annotated.resolved, annotated.sources),
 });
 
-const getSectionBlocks = (lines) => {
+const getSectionMetadataBlocks = (lines) => {
 	const sectionsMap = findMap(lines, 'sections');
-	if (!sectionsMap) return [];
+	if (!sectionsMap) return new Map();
 
-	const sections = [];
+	const sections = new Map();
 	let current = null;
 
 	for (let index = sectionsMap.index + 1; index < lines.length; index += 1) {
@@ -282,15 +283,16 @@ const getSectionBlocks = (lines) => {
 		const indent = countIndent(line);
 		if (indent <= sectionsMap.indent) break;
 
-		const sectionMatch = line.match(/^\s{2}-\s+id:\s*([a-z0-9-]+)\s*$/);
+		const sectionMatch = line.match(/^\s{2}([a-z0-9-]+):(?:\s+.*)?\s*$/);
 		if (sectionMatch) {
 			if (current) current.end = index;
 			current = { id: sectionMatch[1], start: index, end: lines.length };
-			sections.push(current);
+			sections.set(current.id, current);
 		}
 	}
 
-	const finalSection = sections.at(-1);
+	const sectionList = Array.from(sections.values());
+	const finalSection = sectionList.at(-1);
 	if (finalSection) {
 		const afterSections = lines.findIndex((line, index) => (
 			index > finalSection.start &&
@@ -328,7 +330,7 @@ const readThemeTypography = async () => {
 };
 
 const readPageTypography = async (contentFile, themeTypography) => {
-	const { frontmatter, frontmatterBody } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+	const { frontmatter, frontmatterBody, body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 	const indentationIssues = [];
 	validateFrontmatterIndentation(frontmatter, (issue) => indentationIssues.push(issue));
 	validateContentFrontmatterStructure(frontmatter, (issue) => indentationIssues.push(issue));
@@ -345,8 +347,14 @@ const readPageTypography = async (contentFile, themeTypography) => {
 		? findMap(lines, 'typography', pagePresentation.index + 1, pagePresentation.nextIndex)?.value
 		: null;
 	const pageTypography = resolveAnnotatedTypographyOverride(themeTypography, pageTypographyConfig ?? undefined, contentFile.contentLabel);
-	const sections = getSectionBlocks(lines).map((section) => {
-		const presentation = findMap(lines, 'presentation', section.start + 1, section.end);
+	const sectionMetadataBlocks = getSectionMetadataBlocks(lines);
+	const sections = getBodySections(body).sections
+		.filter((section) => section.id)
+		.map((section) => {
+		const metadata = sectionMetadataBlocks.get(section.id);
+		const presentation = metadata
+			? findMap(lines, 'presentation', metadata.start + 1, metadata.end)
+			: null;
 		const typography = presentation
 			? findMap(lines, 'typography', presentation.index + 1, presentation.nextIndex)?.value
 			: null;

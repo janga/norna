@@ -2,12 +2,16 @@ import { execFile, spawn } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import {
-	getFrontmatterSections,
+	getBodySections,
 	getContentFiles,
 	readSiteFile,
 	supportedImageExtensions,
 	toPosixPath,
 } from './lib/site-content.mjs';
+import {
+	extractNornaMarkdownBlocks,
+	getNornaBlockImageReferences,
+} from './lib/norna-markdown-blocks.mjs';
 import { projectConfig } from './lib/project-config.mjs';
 import {
 	engineRoot,
@@ -144,10 +148,13 @@ const getExpectedImagePaths = async () => {
 	const imagePaths = new Set();
 
 	for (const contentFile of contentFiles) {
-		const { frontmatter } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+		const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 
-		for (const section of getFrontmatterSections(frontmatter)) {
-			for (const image of section.images) {
+		for (const section of getBodySections(body).sections) {
+			if (!section.id) continue;
+
+			const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });
+			for (const { image } of getNornaBlockImageReferences(blocks)) {
 				if (image.includes('/') || image.includes('\\')) continue;
 				if (!supportedImageExtensions.has(path.extname(image).toLowerCase())) continue;
 

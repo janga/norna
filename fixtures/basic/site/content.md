@@ -2,10 +2,8 @@
 title: Fixture Site
 description: Minimal cli-gallery fixture site.
 sections:
-  - id: intro
-    gallery: []
-  - id: work
-    gallery: []
+  intro: {}
+  work: {}
 
 ---
 ## Intro {#intro}

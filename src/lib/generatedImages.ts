@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { generatedImagesManifestPath } from '../../scripts/lib/site-paths.mjs';
 import { withBasePath } from './basePath';
@@ -14,19 +14,32 @@ type GeneratedImage = {
 	}>;
 };
 
+let cachedImagesSignature: string | null = null;
+let cachedImages: Record<string, GeneratedImage | undefined> = {};
+
 const readGeneratedImages = () => {
 	try {
-		return JSON.parse(readFileSync(generatedImagesManifestPath, 'utf8')) as Record<string, GeneratedImage | undefined>;
+		const manifestStats = statSync(generatedImagesManifestPath);
+		const signature = `${manifestStats.mtimeMs}:${manifestStats.size}`;
+
+		if (signature === cachedImagesSignature) {
+			return cachedImages;
+		}
+
+		cachedImages = JSON.parse(readFileSync(generatedImagesManifestPath, 'utf8')) as Record<string, GeneratedImage | undefined>;
+		cachedImagesSignature = signature;
+		return cachedImages;
 	} catch {
+		cachedImagesSignature = null;
+		cachedImages = {};
 		return {};
 	}
 };
 
-const images = readGeneratedImages();
 const maxDisplayImageWidth = 1920;
 const fallbackDisplayImageWidth = 1440;
 
-export const getGeneratedImage = (src: string) => images[src];
+export const getGeneratedImage = (src: string) => readGeneratedImages()[src];
 
 const displaySrc = (src: string) => withBasePath(projectConfig.site.basePath, src);
 

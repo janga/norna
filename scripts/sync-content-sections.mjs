@@ -1,13 +1,18 @@
-import { mkdir, rename, stat, writeFile } from 'node:fs/promises';
+import { mkdir, rename, stat } from 'node:fs/promises';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import path from 'node:path';
 import {
+	extractMarkdownImageReferences,
+	extractNornaMarkdownBlockDiagnostics,
+	getNornaBlockImageReferences,
+} from './lib/norna-markdown-blocks.mjs';
+import {
 	getBodySections,
 	getContentFiles,
-	getFrontmatterSections,
 	getFrontmatterInlineStyleNames,
-	getImageIndex,
+	getFrontmatterSections,
+	getImageCandidatesByName,
 	getInlineStyleReferences,
 	readSiteFile,
 	readThemeFile,
@@ -18,10 +23,6 @@ import {
 } from './lib/site-content.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
-	siteContentLabel,
-	siteContentPath,
-	siteImagesDir,
-	siteImagesLabel,
 	siteThemeLabel,
 	siteThemePath,
 } from './lib/site-paths.mjs';
@@ -31,81 +32,38 @@ const shouldWrite = args.has('--write');
 const shouldCheck = args.has('--check') || !shouldWrite;
 const skipPrompt = args.has('--yes');
 const issues = [];
+const imageMoves = [];
+const referencedImagePaths = new Set();
 
 const addIssue = ({ severity, message, fix, sectionId, sectionLabel }) => {
 	issues.push({ severity, message, fix, sectionId, sectionLabel });
 };
 
-const fail = (message) => {
-	addIssue({ severity: 'error', message });
-};
-
-const warn = (message) => {
-	addIssue({ severity: 'warning', message });
-};
-
-const addSectionIssue = (sectionId, issue) => {
-	addIssue({
-		...issue,
-		sectionId,
-		sectionLabel: issue.sectionLabel ?? sectionId,
-	});
-};
-
 const hasErrors = () => issues.some((issue) => issue.severity === 'error');
+
+const formatSectionLabel = (contentFile, section) => `${contentFile.contentLabel} [${section.id ?? section.heading}]`;
+
+const addContentIssue = (contentFile, issue) => addIssue({
+	...issue,
+	sectionId: issue.sectionId ?? contentFile.contentLabel,
+	sectionLabel: issue.sectionLabel ?? contentFile.contentLabel,
+});
+
+const addSectionIssue = (contentFile, section, issue) => addIssue({
+	...issue,
+	sectionId: issue.sectionId ?? `${contentFile.contentLabel}:${section.id ?? section.heading}`,
+	sectionLabel: issue.sectionLabel ?? formatSectionLabel(contentFile, section),
+});
 
 const promptForWrite = async () => {
 	if (skipPrompt) return true;
 	if (!process.stdin.isTTY) return false;
 
 	const rl = createInterface({ input, output });
-	const answer = await rl.question(`This will rewrite Markdown sections in ${siteContentLabel} and move image files if needed. Continue? [y/N] `);
+	const answer = await rl.question('This will move image files inside their current page or route image root if needed. Continue? [y/N] ');
 	rl.close();
 
 	return answer.trim().toLowerCase() === 'y';
-};
-
-const { frontmatter, body } = await readSiteFile(siteContentPath);
-validateFrontmatterIndentation(frontmatter, addIssue);
-validateContentFrontmatterStructure(frontmatter, addIssue);
-let themeFrontmatter = null;
-try {
-	themeFrontmatter = (await readThemeFile(siteThemePath)).frontmatter;
-	validateFrontmatterIndentation(themeFrontmatter, addIssue);
-	validateThemeFrontmatterStructure(themeFrontmatter, addIssue);
-} catch (error) {
-	if (error?.code === 'ENOENT') {
-		themeFrontmatter = null;
-	} else {
-		throw error;
-	}
-}
-const frontmatterSections = getFrontmatterSections(frontmatter);
-const themeInlineStyleNames = themeFrontmatter
-	? getFrontmatterInlineStyleNames(themeFrontmatter)
-	: new Set();
-const frontmatterIds = frontmatterSections.map((section) => section.id);
-const { prelude, sections } = getBodySections(body);
-const sectionsById = new Map();
-const extraSections = [];
-const imageIndex = await getImageIndex(siteImagesDir, fail);
-const imageMoves = [];
-const referencedImages = new Map();
-
-const getUnreferencedImages = () => Array.from(imageIndex.entries())
-	.filter(([imageName]) => !referencedImages.has(imageName))
-	.map(([, imagePath]) => `${siteImagesLabel}/${toPosixPath(path.relative(siteImagesDir, imagePath))}`)
-	.sort((left, right) => left.localeCompare(right, 'sv'));
-
-const getSectionReportOrder = () => {
-	const order = new Map();
-	frontmatterIds.forEach((id, index) => order.set(id, index));
-	extraSections.forEach((section, index) => {
-		if (!order.has(section.id)) {
-			order.set(section.id, frontmatterIds.length + index);
-		}
-	});
-	return order;
 };
 
 const groupIssuesBySeverity = (groupedIssues) => [
@@ -116,239 +74,17 @@ const groupIssuesBySeverity = (groupedIssues) => [
 	issues: groupedIssues.filter((issue) => issue.severity === severity),
 })).filter((group) => group.issues.length > 0);
 
-const getGreatestCommonDivisor = (left, right) => {
-	let a = Math.abs(left);
-	let b = Math.abs(right);
-
-	while (b !== 0) {
-		const next = a % b;
-		a = b;
-		b = next;
-	}
-
-	return a || 1;
-};
-
-const getAspectRatioLabel = ({ width, height }) => {
-	const divisor = getGreatestCommonDivisor(width, height);
-	return `${width / divisor}:${height / divisor}`;
-};
-
-const warnAboutCarouselAspectRatios = async () => {
-	for (const section of frontmatterSections) {
-		for (const carousel of section.carousels ?? []) {
-			const imagesWithRatios = [];
-
-			for (const { image } of carousel.imageReferences ?? []) {
-				const imagePath = imageIndex.get(image);
-				if (!imagePath) continue;
-
-				const dimensions = await readImageDimensions(imagePath).catch(() => null);
-				if (!dimensions) continue;
-
-				imagesWithRatios.push({
-					image,
-					ratio: getAspectRatioLabel(dimensions),
-				});
-			}
-
-			const ratios = new Set(imagesWithRatios.map(({ ratio }) => ratio));
-			if (ratios.size <= 1) continue;
-
-			addSectionIssue(section.id, {
-				severity: 'warning',
-				message: `Carousel on line ${carousel.line} uses images with different aspect ratios: ${imagesWithRatios.map(({ image, ratio }) => `${image} (${ratio})`).join(', ')}.`,
-				fix: 'Use images with exactly matching proportions in the same carousel to avoid uneven layout and motion.',
-			});
-		}
-	}
-};
-
-const validateRouteContentFiles = async () => {
-	const routeContentFiles = (await getContentFiles()).filter((contentFile) => !contentFile.isHome);
-
-	for (const contentFile of routeContentFiles) {
-		const { frontmatter: routeFrontmatter, body: routeBody } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
-		validateFrontmatterIndentation(routeFrontmatter, addIssue);
-		validateContentFrontmatterStructure(routeFrontmatter, addIssue);
-
-		const routeFrontmatterSections = getFrontmatterSections(routeFrontmatter);
-		const routeFrontmatterIds = routeFrontmatterSections.map((section) => section.id);
-		const routeBodySections = getBodySections(routeBody).sections;
-		const routeSectionsById = new Map();
-		const routeImageIndex = await getImageIndex(contentFile.imagesDir, fail);
-
-		for (const section of routeBodySections) {
-			const sectionLabel = `${contentFile.contentLabel} [${section.id ?? section.heading}]`;
-
-			if (!section.id) {
-				addIssue({
-					severity: 'warning',
-					sectionLabel,
-					message: 'Markdown section is missing an explicit heading id.',
-					fix: `Write the heading with an explicit id, for example "${section.heading} {#section-id}".`,
-				});
-				continue;
-			}
-
-			if (routeSectionsById.has(section.id)) {
-				addIssue({
-					severity: 'error',
-					sectionId: `${contentFile.contentLabel}:${section.id}`,
-					sectionLabel,
-					message: `Duplicate Markdown section heading id "${section.id}".`,
-					fix: 'Each Markdown level 2 section heading must use a unique explicit id.',
-				});
-				continue;
-			}
-
-			routeSectionsById.set(section.id, section);
-		}
-
-		for (const id of routeFrontmatterIds) {
-			if (!routeSectionsById.has(id)) {
-				addIssue({
-					severity: 'error',
-					sectionId: `${contentFile.contentLabel}:${id}`,
-					sectionLabel: `${contentFile.contentLabel} [${id}]`,
-					message: `Cannot find a Markdown heading for section "${id}".`,
-					fix: `Add a level 2 Markdown heading, for example "## Heading {#${id}}".`,
-				});
-			}
-		}
-
-		for (const section of routeBodySections) {
-			if (section.id && !routeFrontmatterIds.includes(section.id)) {
-				addIssue({
-					severity: 'warning',
-					sectionId: `${contentFile.contentLabel}:${section.id}`,
-					sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
-					message: `Markdown section "${section.id}" exists but is not used in frontmatter.`,
-					fix: 'Add it to frontmatter sections or remove the unused Markdown section.',
-				});
-			}
-		}
-
-		const currentOrder = routeBodySections.map((section) => section.id).filter(Boolean);
-		const expectedOrder = routeFrontmatterIds.filter((id) => routeSectionsById.has(id));
-		if (
-			currentOrder.length !== expectedOrder.length ||
-			currentOrder.some((id, index) => id !== expectedOrder[index])
-		) {
-			addIssue({
-				severity: 'warning',
-				message: `${contentFile.contentLabel} Markdown section order differs from frontmatter.`,
-			});
-		}
-
-		for (const section of routeFrontmatterSections) {
-			for (const imageName of section.images) {
-				if (imageName.includes('/') || imageName.includes('\\')) {
-					addIssue({
-						severity: 'error',
-						sectionId: `${contentFile.contentLabel}:${section.id}`,
-						sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
-						message: `Image reference "${imageName}" must be a filename without a directory.`,
-						fix: `Use only the filename in ${contentFile.contentLabel} and keep the file in the matching ${contentFile.imagesLabel}/<section-id>/ directory.`,
-					});
-					continue;
-				}
-
-				if (referencedImages.has(imageName)) {
-					const previousSectionId = referencedImages.get(imageName);
-					const message = `Image "${imageName}" is referenced more than once, in "${previousSectionId}" and "${contentFile.contentLabel}:${section.id}".`;
-					const fix = 'Each image filename can be referenced by only one image row.';
-
-					addIssue({ severity: 'error', sectionId: previousSectionId, message, fix });
-					addIssue({
-						severity: 'error',
-						sectionId: `${contentFile.contentLabel}:${section.id}`,
-						sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
-						message,
-						fix,
-					});
-					continue;
-				}
-
-				referencedImages.set(imageName, `${contentFile.contentLabel}:${section.id}`);
-
-				const imagePath = routeImageIndex.get(imageName);
-				if (!imagePath) {
-					addIssue({
-						severity: 'error',
-						sectionId: `${contentFile.contentLabel}:${section.id}`,
-						sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
-						message: `Image "${imageName}" does not exist anywhere under ${contentFile.imagesLabel}/.`,
-						fix: `Add the source image to ${contentFile.imagesLabel}/${section.id}/ or remove the image row.`,
-					});
-					continue;
-				}
-
-				const currentDirectory = path.basename(path.dirname(imagePath));
-				if (currentDirectory !== section.id) {
-					addIssue({
-						severity: 'error',
-						sectionId: `${contentFile.contentLabel}:${section.id}`,
-						sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
-						message: `Image "${imageName}" is used here but is located in ${contentFile.imagesLabel}/${currentDirectory}/.`,
-						fix: 'Move it to the matching section image directory.',
-					});
-				}
-			}
-
-			for (const carousel of section.carousels ?? []) {
-				const imagesWithRatios = [];
-
-				for (const { image } of carousel.imageReferences ?? []) {
-					const imagePath = routeImageIndex.get(image);
-					if (!imagePath) continue;
-
-					const dimensions = await readImageDimensions(imagePath).catch(() => null);
-					if (!dimensions) continue;
-
-					imagesWithRatios.push({
-						image,
-						ratio: getAspectRatioLabel(dimensions),
-					});
-				}
-
-				const ratios = new Set(imagesWithRatios.map(({ ratio }) => ratio));
-				if (ratios.size <= 1) continue;
-
-				addIssue({
-					severity: 'warning',
-					sectionId: `${contentFile.contentLabel}:${section.id}`,
-					sectionLabel: `${contentFile.contentLabel} [${section.id}]`,
-					message: `Carousel on line ${carousel.line} uses images with different aspect ratios: ${imagesWithRatios.map(({ image, ratio }) => `${image} (${ratio})`).join(', ')}.`,
-					fix: 'Use images with exactly matching proportions in the same carousel to avoid uneven layout and motion.',
-				});
-			}
-		}
-
-		for (const styleName of new Set(getInlineStyleReferences(routeBody))) {
-			if (!themeInlineStyleNames.has(styleName)) {
-				addIssue({
-					severity: 'error',
-					message: `Inline style ".${styleName}" is used in ${contentFile.contentLabel} but is not defined in ${siteThemeLabel} presentation.inlineStyles.`,
-					fix: `Add presentation.inlineStyles.${styleName} to ${siteThemeLabel} or remove "{.${styleName}}" from Markdown.`,
-				});
-			}
-		}
-	}
-};
-
 const formatIssue = (issue) => [
 	`- ${issue.message}`,
 	issue.fix ? `  Fix: ${issue.fix}` : null,
 ].filter(Boolean);
 
-const getReportLines = (title) => {
+const getReportLines = (title, unreferencedImages) => {
 	const lines = [title];
 	const sectionIssues = issues.filter((issue) => issue.sectionId || issue.sectionLabel);
 	const globalIssues = issues.filter((issue) => !issue.sectionId && !issue.sectionLabel);
 
 	if (sectionIssues.length > 0) {
-		const sectionOrder = getSectionReportOrder();
 		const sectionGroups = new Map();
 
 		for (const issue of sectionIssues) {
@@ -362,15 +98,9 @@ const getReportLines = (title) => {
 			sectionGroups.get(key).issues.push(issue);
 		}
 
-		const orderedSectionGroups = Array.from(sectionGroups.entries()).sort(([leftKey], [rightKey]) => (
-			(sectionOrder.get(leftKey) ?? Number.MAX_SAFE_INTEGER) -
-			(sectionOrder.get(rightKey) ?? Number.MAX_SAFE_INTEGER) ||
-			leftKey.localeCompare(rightKey, 'sv')
-		));
+		lines.push('', 'Content Issues');
 
-		lines.push('', 'Section And Image Issues');
-
-		for (const [, group] of orderedSectionGroups) {
+		for (const [, group] of Array.from(sectionGroups.entries()).sort(([left], [right]) => left.localeCompare(right, 'sv'))) {
 			lines.push('', `[${group.label}]`);
 
 			for (const severityGroup of groupIssuesBySeverity(group.issues)) {
@@ -397,13 +127,11 @@ const getReportLines = (title) => {
 		}
 	}
 
-	const unreferencedImages = getUnreferencedImages();
-
 	if (unreferencedImages.length > 0) {
 		lines.push(
 			'',
 			'Unreferenced Images',
-			`These files are kept in ${siteImagesLabel}/ but are not mounted on the site:`,
+			'These files are kept under page or route image roots but are not referenced by Norna image blocks:',
 		);
 
 		for (const imagePath of unreferencedImages) {
@@ -414,185 +142,314 @@ const getReportLines = (title) => {
 	return lines;
 };
 
-const printReport = (title) => {
-	const lines = getReportLines(title);
-	const output = hasErrors() ? console.error : console.log;
-	output(lines.join('\n'));
+const printReport = (title, unreferencedImages) => {
+	const lines = getReportLines(title, unreferencedImages);
+	const target = hasErrors() ? console.error : console.log;
+	target(lines.join('\n'));
 };
 
-for (const section of sections) {
-	if (!section.id) {
-		addSectionIssue(null, {
-			severity: 'warning',
-			sectionLabel: section.heading,
-			message: 'Markdown section is missing an explicit heading id.',
-			fix: `Write the heading with an explicit id, for example "${section.heading} {#section-id}".`,
-		});
-		continue;
+const getGreatestCommonDivisor = (left, right) => {
+	let a = Math.abs(left);
+	let b = Math.abs(right);
+
+	while (b !== 0) {
+		const next = a % b;
+		a = b;
+		b = next;
 	}
 
-	if (sectionsById.has(section.id)) {
-		addSectionIssue(section.id, {
+	return a || 1;
+};
+
+const getAspectRatioLabel = ({ width, height }) => {
+	const divisor = getGreatestCommonDivisor(width, height);
+	return `${width / divisor}:${height / divisor}`;
+};
+
+const getExpectedImagePath = (contentFile, sectionId, imageName) =>
+	path.join(contentFile.imagesDir, sectionId, imageName);
+
+const getExpectedImageLabel = (contentFile, sectionId, imageName) =>
+	`${contentFile.imagesLabel}/${sectionId}/${imageName}`;
+
+const getImageCandidates = (imageCandidatesByName, imageName, expectedPath) =>
+	(imageCandidatesByName.get(imageName) ?? []).filter((candidate) => candidate !== expectedPath);
+
+const getReferenceLabel = (contentFile, section) => `${contentFile.contentLabel} [${section.id}]`;
+
+const validateImageReference = async (
+	contentFile,
+	section,
+	reference,
+	imageCandidatesByName,
+	expectedReferencesByPath,
+) => {
+	const imageName = reference.image;
+	const expectedPath = getExpectedImagePath(contentFile, section.id, imageName);
+	const expectedLabel = getExpectedImageLabel(contentFile, section.id, imageName);
+	const expectedExists = await stat(expectedPath).then((entry) => entry.isFile()).catch(() => false);
+
+	if (expectedExists) {
+		referencedImagePaths.add(expectedPath);
+		return expectedPath;
+	}
+
+	const candidates = getImageCandidates(imageCandidatesByName, imageName, expectedPath);
+	if (candidates.length === 0) {
+		addSectionIssue(contentFile, section, {
 			severity: 'error',
-			message: `Duplicate Markdown section heading id "${section.id}".`,
-			fix: 'Each Markdown level 2 section heading must use a unique explicit id.',
+			message: `Image "${imageName}" does not exist at ${expectedLabel} or anywhere under ${contentFile.imagesLabel}/.`,
+			fix: `Add the source image to ${contentFile.imagesLabel}/${section.id}/ or remove the Norna image block reference.`,
 		});
-		continue;
+		return null;
 	}
 
-	sectionsById.set(section.id, section);
-}
-
-for (const id of frontmatterIds) {
-	if (!sectionsById.has(id)) {
-		addSectionIssue(id, {
+	if (candidates.length > 1) {
+		addSectionIssue(contentFile, section, {
 			severity: 'error',
-			message: `Cannot find a Markdown heading for section "${id}".`,
-			fix: `Add a level 2 Markdown heading, for example "## Heading {#${id}}".`,
+			message: `Cannot relocate "${imageName}". Multiple files with this filename were found: ${candidates.map((candidate) => `${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, candidate))}`).join(', ')}.`,
+			fix: 'Move the intended file manually or rename files so the local move is unambiguous.',
 		});
+		return null;
+	}
+
+	const sourcePath = candidates[0];
+	const referencesAtCurrentLocation = (expectedReferencesByPath.get(sourcePath) ?? [])
+		.filter((expectedReference) => expectedReference.section.id !== section.id);
+
+	if (referencesAtCurrentLocation.length > 0) {
+		addSectionIssue(contentFile, section, {
+			severity: 'error',
+			message: `Cannot relocate "${imageName}" from ${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, sourcePath))} because it is still referenced from ${referencesAtCurrentLocation.map((expectedReference) => getReferenceLabel(contentFile, expectedReference.section)).join(', ')}.`,
+			fix: 'Remove the extra reference, duplicate the image file manually, or rename one of the image files so the intended move is unambiguous.',
+		});
+		return null;
+	}
+
+	imageMoves.push({
+		imageName,
+		from: sourcePath,
+		to: expectedPath,
+		contentFile,
+		sectionId: section.id,
+	});
+	referencedImagePaths.add(sourcePath);
+
+	if (!shouldWrite) {
+		addSectionIssue(contentFile, section, {
+			severity: 'error',
+			message: `Image "${imageName}" is used here but is located in ${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, sourcePath))}.`,
+			fix: 'Run norna content:sync to move it inside the current page or route image root.',
+		});
+	}
+
+	return sourcePath;
+};
+
+const warnAboutCarouselAspectRatios = async (contentFile, section, block, sourcePathsByImage) => {
+	if (block.type !== 'image-carousel') return;
+
+	const imagesWithRatios = [];
+	for (const image of block.images) {
+		const imagePath = sourcePathsByImage.get(image.image);
+		if (!imagePath) continue;
+
+		const dimensions = await readImageDimensions(imagePath).catch(() => null);
+		if (!dimensions) continue;
+
+		imagesWithRatios.push({
+			image: image.image,
+			ratio: getAspectRatioLabel(dimensions),
+		});
+	}
+
+	const ratios = new Set(imagesWithRatios.map(({ ratio }) => ratio));
+	if (ratios.size <= 1) return;
+
+	addSectionIssue(contentFile, section, {
+		severity: 'warning',
+		message: `Carousel on line ${block.line} uses images with different aspect ratios: ${imagesWithRatios.map(({ image, ratio }) => `${image} (${ratio})`).join(', ')}.`,
+		fix: 'Use images with exactly matching proportions in the same carousel to avoid uneven layout and motion.',
+	});
+};
+
+let themeFrontmatter = null;
+try {
+	themeFrontmatter = (await readThemeFile(siteThemePath)).frontmatter;
+	validateFrontmatterIndentation(themeFrontmatter, addIssue);
+	validateThemeFrontmatterStructure(themeFrontmatter, addIssue);
+} catch (error) {
+	if (error?.code !== 'ENOENT') {
+		throw error;
 	}
 }
 
-for (const section of sections) {
-	if (section.id && !frontmatterIds.includes(section.id)) {
-		addSectionIssue(section.id, {
-			severity: 'warning',
-			message: `Markdown section "${section.id}" exists but is not used in frontmatter.`,
-			fix: 'Add it to frontmatter sections or remove the unused Markdown section.',
-		});
-		extraSections.push(section);
+const themeInlineStyleNames = themeFrontmatter
+	? getFrontmatterInlineStyleNames(themeFrontmatter)
+	: new Set();
+
+const contentFiles = await getContentFiles();
+const allImageFiles = [];
+
+for (const contentFile of contentFiles) {
+	const { frontmatter, body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+	const bodyLineOffset = frontmatter.split(/\r?\n/).length - 1;
+	validateFrontmatterIndentation(frontmatter, addIssue);
+	validateContentFrontmatterStructure(frontmatter, addIssue);
+
+	const frontmatterSections = getFrontmatterSections(frontmatter);
+	const frontmatterIds = new Set(frontmatterSections.map((section) => section.id));
+	const { sections } = getBodySections(body);
+	const sectionsById = new Map();
+	const blockResultsBySectionId = new Map();
+	const expectedReferencesByPath = new Map();
+	const imageCandidatesByName = await getImageCandidatesByName(contentFile.imagesDir);
+
+	for (const candidates of imageCandidatesByName.values()) {
+		allImageFiles.push(...candidates.map((imagePath) => ({ contentFile, imagePath })));
 	}
-}
 
-const orderedSections = [
-	...frontmatterIds.map((id) => sectionsById.get(id)).filter(Boolean),
-	...extraSections,
-];
-const currentOrder = sections.map((section) => section.id).filter(Boolean);
-const expectedOrder = orderedSections.map((section) => section.id).filter(Boolean);
-const hasOrderMismatch =
-	currentOrder.length !== expectedOrder.length ||
-	currentOrder.some((id, index) => id !== expectedOrder[index]);
-
-if (hasOrderMismatch) {
-	warn('Markdown section order differs from frontmatter.');
-}
-
-for (const section of frontmatterSections) {
-	for (const imageName of section.images) {
-		if (imageName.includes('/') || imageName.includes('\\')) {
-			addSectionIssue(section.id, {
+	for (const section of sections) {
+		if (!section.id) {
+			addSectionIssue(contentFile, section, {
 				severity: 'error',
-				message: `Image reference "${imageName}" must be a filename without a directory.`,
-				fix: `Use only the filename in ${siteContentLabel} and keep the file in the matching ${siteImagesLabel}/<section-id>/ directory.`,
+				message: `Section heading "${section.heading.replace(/^##\s+/, '')}" is missing an explicit id.`,
+				fix: `Write it as: ${section.heading} {#section-id}`,
 			});
 			continue;
 		}
 
-		if (referencedImages.has(imageName)) {
-			const previousSectionId = referencedImages.get(imageName);
-			const message = previousSectionId === section.id
-				? `Image "${imageName}" is referenced more than once in this section.`
-				: `Image "${imageName}" is referenced more than once, in sections "${previousSectionId}" and "${section.id}".`;
-			const fix = 'Each image filename can be referenced by only one image row.';
-
-			addSectionIssue(previousSectionId, { severity: 'error', message, fix });
-			if (previousSectionId !== section.id) {
-				addSectionIssue(section.id, { severity: 'error', message, fix });
-			}
-			continue;
-		}
-
-		referencedImages.set(imageName, section.id);
-
-		const imagePath = imageIndex.get(imageName);
-		if (!imagePath) {
-			addSectionIssue(section.id, {
+		if (sectionsById.has(section.id)) {
+			addSectionIssue(contentFile, section, {
 				severity: 'error',
-				message: `Image "${imageName}" does not exist anywhere under ${siteImagesLabel}/.`,
-				fix: `Add the source image to ${siteImagesLabel}/${section.id}/ or remove the image row.`,
+				message: `Duplicate Markdown section heading id "${section.id}".`,
+				fix: 'Each Markdown level 2 section heading must use a unique explicit id within the page.',
 			});
 			continue;
 		}
 
-		const currentDirectory = path.basename(path.dirname(imagePath));
-		if (currentDirectory !== section.id) {
-			const targetPath = path.join(siteImagesDir, section.id, imageName);
-			const targetExists = await stat(targetPath).then((entry) => entry.isFile()).catch(() => false);
+		sectionsById.set(section.id, section);
+	}
 
-			if (targetExists) {
-				addSectionIssue(section.id, {
-					severity: 'error',
-					message: `Cannot move image "${imageName}" to ${siteImagesLabel}/${section.id}/ because the target file already exists.`,
-					fix: 'Rename one of the files so image filenames remain globally unique.',
-				});
-				continue;
+	for (const section of sections) {
+		if (!section.id || !sectionsById.has(section.id)) continue;
+
+		const blockResults = extractNornaMarkdownBlockDiagnostics(section.text, {
+			label: contentFile.contentLabel,
+			lineOffset: bodyLineOffset + section.line - 1,
+		});
+		blockResultsBySectionId.set(section.id, blockResults);
+
+		for (const reference of getNornaBlockImageReferences(blockResults.blocks)) {
+			const expectedPath = getExpectedImagePath(contentFile, section.id, reference.image);
+			if (!expectedReferencesByPath.has(expectedPath)) {
+				expectedReferencesByPath.set(expectedPath, []);
 			}
+			expectedReferencesByPath.get(expectedPath).push({ section, reference });
+		}
+	}
 
-			imageMoves.push({ imageName, from: imagePath, to: targetPath, sectionId: section.id });
+	for (const id of frontmatterIds) {
+		if (!sectionsById.has(id)) {
+			addContentIssue(contentFile, {
+				severity: 'error',
+				message: `Section metadata "${id}" does not match any Markdown section.`,
+				fix: `Add a level 2 Markdown heading, for example "## Heading {#${id}}", or remove sections.${id}.`,
+			});
+		}
+	}
 
-			if (!shouldWrite) {
-				addSectionIssue(section.id, {
+	for (const styleName of new Set(getInlineStyleReferences(body))) {
+		if (!themeInlineStyleNames.has(styleName)) {
+			addContentIssue(contentFile, {
+				severity: 'error',
+				message: `Inline style ".${styleName}" is used in ${contentFile.contentLabel} but is not defined in ${siteThemeLabel} presentation.inlineStyles.`,
+				fix: `Add presentation.inlineStyles.${styleName} to ${siteThemeLabel} or remove "{.${styleName}}" from Markdown.`,
+			});
+		}
+	}
+
+	for (const section of sections) {
+		if (!section.id || !sectionsById.has(section.id)) continue;
+
+		const markdownImages = extractMarkdownImageReferences(section.text);
+		for (const reference of markdownImages) {
+			addSectionIssue(contentFile, section, {
+				severity: 'warning',
+				message: `Markdown image "${reference.target}" references a local image that is not managed by Norna.`,
+				fix: 'Use a norna-image-stack or norna-image-carousel block for site images that should be validated, processed and synced.',
+			});
+		}
+
+		const { blocks, errors: blockErrors } = blockResultsBySectionId.get(section.id) ?? { blocks: [], errors: [] };
+		for (const error of blockErrors) {
+			addSectionIssue(contentFile, section, {
+				severity: 'error',
+				message: error.message,
+			});
+		}
+
+		for (const block of blocks) {
+			if (block.type === 'image-carousel' && block.images.length < 2) {
+				addSectionIssue(contentFile, section, {
 					severity: 'error',
-					message: `Image "${imageName}" is used here but is located in ${siteImagesLabel}/${currentDirectory}/.`,
-					fix: 'Run norna content:sync, or npm run norna:sync in starter-style repositories, to move it.',
+					message: `norna-image-carousel on line ${block.line} contains ${block.images.length} image. A carousel needs at least two images.`,
+					fix: 'Add another image entry, or use norna-image-stack for a single image.',
 				});
 			}
+		}
+
+		const sourcePathsByImage = new Map();
+		for (const reference of getNornaBlockImageReferences(blocks)) {
+			const sourcePath = await validateImageReference(
+				contentFile,
+				section,
+				reference,
+				imageCandidatesByName,
+				expectedReferencesByPath,
+			);
+			if (sourcePath) {
+				sourcePathsByImage.set(reference.image, sourcePath);
+			}
+		}
+
+		for (const block of blocks) {
+			await warnAboutCarouselAspectRatios(contentFile, section, block, sourcePathsByImage);
 		}
 	}
 }
 
-await warnAboutCarouselAspectRatios();
-
-for (const styleName of new Set(getInlineStyleReferences(body))) {
-	if (!themeInlineStyleNames.has(styleName)) {
-		addIssue({
-			severity: 'error',
-			message: `Inline style ".${styleName}" is used in Markdown but is not defined in ${siteThemeLabel} presentation.inlineStyles.`,
-			fix: `Add presentation.inlineStyles.${styleName} to ${siteThemeLabel} or remove "{.${styleName}}" from Markdown.`,
-		});
-	}
-}
-
-await validateRouteContentFiles();
+const unreferencedImages = allImageFiles
+	.filter(({ imagePath }) => !referencedImagePaths.has(imagePath))
+	.map(({ contentFile, imagePath }) => `${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, imagePath))}`)
+	.sort((left, right) => left.localeCompare(right, 'sv'));
 
 if (hasErrors()) {
-	printReport(shouldWrite ? 'Content sync failed.' : 'Content check failed.');
+	printReport(shouldWrite ? 'Content sync failed.' : 'Content check failed.', unreferencedImages);
 	process.exit(1);
 }
 
 if (shouldCheck) {
-	const title = issues.length > 0
+	const title = issues.length > 0 || unreferencedImages.length > 0
 		? 'Content check completed with warnings.'
 		: 'Content check passed.';
-	printReport(title);
+	printReport(title, unreferencedImages);
 	process.exit(0);
 }
 
-if (!hasOrderMismatch && imageMoves.length === 0) {
-	console.log(`${siteContentLabel}: no sync needed.`);
+if (imageMoves.length === 0) {
+	console.log('No content sync needed.');
 	process.exit(0);
-}
-
-if (issues.length > 0) {
-	printReport('Content sync completed with warnings.');
 }
 
 const canWrite = await promptForWrite();
-
 if (!canWrite) {
 	console.log('Aborted. No file was changed.');
 	process.exit(1);
 }
 
-const nextBody = `${prelude}${orderedSections.map((section) => section.text).join('\n')}\n`;
-if (hasOrderMismatch) {
-	await writeFile(siteContentPath, `${frontmatter}${nextBody}`);
-	console.log(`${siteContentLabel}: Markdown sections were sorted according to frontmatter.`);
-}
-
 for (const move of imageMoves) {
 	await mkdir(path.dirname(move.to), { recursive: true });
 	await rename(move.from, move.to);
-	console.log(`Moved image "${move.imageName}" to ${siteImagesLabel}/${move.sectionId}/.`);
+	console.log(`Moved image "${move.imageName}" to ${move.contentFile.imagesLabel}/${move.sectionId}/.`);
 }

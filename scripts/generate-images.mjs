@@ -4,17 +4,22 @@ import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path';
 import { promisify } from 'node:util';
 import {
-	getFrontmatterSections,
+	getBodySections,
 	getContentFiles,
-	getImageIndex,
 	readSiteFile,
 	supportedImageExtensions,
+	toPosixPath,
 } from './lib/site-content.mjs';
+import {
+	extractNornaMarkdownBlocks,
+	getNornaBlockImageReferences,
+} from './lib/norna-markdown-blocks.mjs';
 import {
 	astroPublicDir,
 	generatedImagesDir,
 	generatedImagesManifestPath,
 	originalImagesDir,
+	siteDir,
 	siteImagesDir,
 } from './lib/site-paths.mjs';
 
@@ -91,19 +96,31 @@ const fail = (message) => {
 	throw new Error(message);
 };
 
+const getImageSourceKey = (contentFile, sectionId, image) => (
+	contentFile.isHome
+		? `images/${sectionId}/${image}`
+		: `routes/${contentFile.routeDirectory}/images/${sectionId}/${image}`
+);
+
 const getReferencedImages = async (contentFile) => {
-	const { frontmatter } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
-	const sections = getFrontmatterSections(frontmatter);
+	const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+	const { sections } = getBodySections(body);
 	const references = [];
 
 	for (const section of sections) {
-		const imageReferences = section.imageReferences ?? section.images.map((image) => ({ image }));
-		for (const { image, line } of imageReferences) {
+		if (!section.id) {
+			fail(`${contentFile.contentLabel}: section heading "${section.heading}" is missing an explicit id.`);
+		}
+
+		const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });
+		for (const { image, line, blockDisplayType } of getNornaBlockImageReferences(blocks)) {
 			references.push({
 				contentFile,
 				image,
 				line,
+				blockDisplayType,
 				sectionId: section.id,
+				sourceKey: getImageSourceKey(contentFile, section.id, image),
 			});
 		}
 	}
@@ -111,7 +128,7 @@ const getReferencedImages = async (contentFile) => {
 	return references;
 };
 
-const getContentSourcePath = ({ image, line }, imageIndex) => {
+const getContentSourcePath = ({ image, sourceKey }) => {
 	if (image.includes('/') || image.includes('\\') || image.startsWith('/')) {
 		fail(`Image reference must be a filename without a directory: ${image}`);
 	}
@@ -121,32 +138,24 @@ const getContentSourcePath = ({ image, line }, imageIndex) => {
 		fail(`Image reference uses an unsupported file type: ${image}`);
 	}
 
-	const sourcePath = imageIndex.get(image);
-
-	if (!sourcePath) {
-		fail(`Image file "${image}" does not exist anywhere under the page images directory.`);
-	}
-
-	return sourcePath;
+	return path.join(siteDir, sourceKey);
 };
 
 const getReferencedSources = async () => {
 	const contentFiles = await getContentFiles();
-	const seen = new Map();
+	const seen = new Set();
 	const sources = [];
 
 	for (const contentFile of contentFiles) {
 		const references = await getReferencedImages(contentFile);
-		const imageIndex = await getImageIndex(contentFile.imagesDir, fail);
 
 		for (const reference of references) {
-			const sourcePath = getContentSourcePath(reference, imageIndex);
-			const siteImagePath = toPublicPath(path.relative(contentFile.imagesDir, sourcePath));
+			const sourcePath = getContentSourcePath(reference);
+			const siteImagePath = toPosixPath(path.relative(contentFile.imagesDir, sourcePath));
 			const imageName = path.basename(sourcePath);
 
-			if (seen.has(imageName)) {
-				const firstReference = seen.get(imageName);
-				fail(`Image reference "${imageName}" appears more than once, in ${firstReference.contentFile.contentLabel} line ${firstReference.line} and ${reference.contentFile.contentLabel} line ${reference.line}.`);
+			if (seen.has(reference.sourceKey)) {
+				continue;
 			}
 
 			const fileStat = await stat(sourcePath).catch(() => null);
@@ -159,12 +168,12 @@ const getReferencedSources = async () => {
 				fail(`Image "${imageName}" is used in section "${reference.sectionId}" but is located in ${contentFile.imagesLabel}/${currentDirectory}/. Run norna content:sync, or npm run norna:sync in starter-style repositories, to move it.`);
 			}
 
-			seen.set(imageName, reference);
-			sources.push(sourcePath);
+			seen.add(reference.sourceKey);
+			sources.push({ sourcePath, sourceKey: reference.sourceKey, reference });
 		}
 	}
 
-	return sources.sort();
+	return sources.sort((left, right) => left.sourceKey.localeCompare(right.sourceKey, 'sv'));
 };
 
 const getOrientation = ({ width, height }) => {
@@ -172,21 +181,31 @@ const getOrientation = ({ width, height }) => {
 	return width > height ? 'landscape' : 'portrait';
 };
 
-const validateCarouselOrientations = (sections, manifest) => {
-	for (const section of sections) {
-		for (const carousel of section.carousels) {
-			const orientations = new Set(
-				carousel.images
-					.map((image) => manifest[image])
-					.filter(Boolean)
-					.map(getOrientation)
-			);
+const validateCarouselOrientations = async (manifest) => {
+	const contentFiles = await getContentFiles();
 
-			orientations.delete('square');
-			if (orientations.size > 1) {
-				throw new Error(
-					`Carousel in section "${section.id}" on line ${carousel.line} mixes landscape and portrait images. Use landscape images with optional square images, or portrait images with optional square images.`,
+	for (const contentFile of contentFiles) {
+		const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+		const { sections } = getBodySections(body);
+
+		for (const section of sections) {
+			if (!section.id) continue;
+
+			const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });
+			for (const block of blocks.filter((candidate) => candidate.type === 'image-carousel')) {
+				const orientations = new Set(
+					block.images
+						.map((image) => manifest[getImageSourceKey(contentFile, section.id, image.image)])
+						.filter(Boolean)
+						.map(getOrientation)
 				);
+
+				orientations.delete('square');
+				if (orientations.size > 1) {
+					throw new Error(
+						`Carousel in section "${section.id}" on line ${block.line} mixes landscape and portrait images. Use landscape images with optional square images, or portrait images with optional square images.`,
+					);
+				}
 			}
 		}
 	}
@@ -318,13 +337,8 @@ const removeUnreferencedGeneratedFiles = async (manifest) => {
 await rm(originalImagesDir, { recursive: true, force: true });
 await mkdir(generatedImagesDir, { recursive: true });
 
-const contentFiles = await getContentFiles();
-const frontmatterSections = (await Promise.all(contentFiles.map(async (contentFile) => {
-	const { frontmatter } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
-	return getFrontmatterSections(frontmatter);
-}))).flat();
-const sources = await getReferencedSources();
 const previousManifest = await readManifest();
+const sources = await getReferencedSources();
 const manifest = {};
 
 if (sources.length === 0) {
@@ -336,13 +350,12 @@ if (sources.length === 0) {
 
 const imageMagick = await getImageMagick();
 
-for (const sourcePath of sources) {
-	const imageName = path.basename(sourcePath);
+for (const { sourcePath, sourceKey } of sources) {
 	const sourceHash = await getSourceHash(sourcePath);
-	const reusableEntry = await getReusableEntry(sourcePath, previousManifest[imageName], sourceHash);
+	const reusableEntry = await getReusableEntry(sourcePath, previousManifest[sourceKey], sourceHash);
 
 	if (reusableEntry) {
-		manifest[imageName] = reusableEntry;
+		manifest[sourceKey] = reusableEntry;
 		continue;
 	}
 
@@ -354,7 +367,7 @@ for (const sourcePath of sources) {
 		await convert(sourcePath, outputPath, width);
 	}
 
-	manifest[imageName] = {
+	manifest[sourceKey] = {
 		outputVersion: imageOutputVersion,
 		sourceHash,
 		width: dimensions.width,
@@ -363,7 +376,7 @@ for (const sourcePath of sources) {
 	};
 }
 
-validateCarouselOrientations(frontmatterSections, manifest);
+await validateCarouselOrientations(manifest);
 await removeUnreferencedGeneratedFiles(manifest);
 await mkdir(path.dirname(generatedImagesManifestPath), { recursive: true });
 await writeFile(generatedImagesManifestPath, `${JSON.stringify(manifest, null, 2)}\n`);

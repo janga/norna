@@ -6,8 +6,22 @@ import {
 	astroDistDir,
 	astroPublicDir,
 	engineRoot,
+	generatedImagesManifestPath,
 } from './scripts/lib/site-paths.mjs';
 import projectConfig from './scripts/lib/project-config.mjs';
+
+const nornaGeneratedImagesWatcher = () => ({
+	name: 'norna-generated-images-watcher',
+	configureServer(server) {
+		const manifestPath = path.resolve(generatedImagesManifestPath);
+		server.watcher.add(manifestPath);
+		server.watcher.on('change', (changedPath) => {
+			if (path.resolve(changedPath) !== manifestPath) return;
+
+			server.ws.send({ type: 'full-reload' });
+		});
+	},
+});
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,4 +30,7 @@ export default defineConfig({
 	outDir: astroDistDir,
 	publicDir: astroPublicDir,
 	srcDir: path.join(engineRoot, 'src'),
+	vite: {
+		plugins: [nornaGeneratedImagesWatcher()],
+	},
 });

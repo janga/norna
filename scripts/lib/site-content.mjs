@@ -248,7 +248,7 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 		if (knownTopLevelFrontmatterKeys.has(key)) continue;
 
 		const fix = knownNestedFrontmatterKeys.has(key)
-			? `Indent "${key}:" under the section or object it belongs to. For image rows, "gallery:" normally belongs under a "sections" item.`
+			? `Indent "${key}:" under the object it belongs to, or move image content into Norna Markdown blocks.`
 			: `Move "${key}:" under the correct parent key, or remove it if it is not part of the ${fileKind} schema.`;
 
 		addIssue({
@@ -277,7 +277,6 @@ export const getFrontmatterSections = (frontmatter) => {
 	const sections = [];
 	const lines = frontmatter.split(/\r?\n/);
 	let inSections = false;
-	let currentSection = null;
 
 	for (const [index, line] of lines.entries()) {
 		if (/^sections:\s*$/.test(line)) {
@@ -288,30 +287,9 @@ export const getFrontmatterSections = (frontmatter) => {
 		if (!inSections) continue;
 		if (/^[a-zA-Z0-9_-]+:/.test(line)) break;
 
-		const sectionMatch = line.match(/^\s{2}-\s+id:\s*([a-z0-9-]+)\s*$/);
+		const sectionMatch = line.match(/^\s{2}([a-z0-9-]+):(?:\s+.*)?\s*$/);
 		if (sectionMatch) {
-			currentSection = { id: sectionMatch[1], images: [], imageReferences: [], carousels: [] };
-			sections.push(currentSection);
-			continue;
-		}
-
-		const carouselMatch = line.match(/^\s{6}-\s+carousel:\s*$/);
-		if (carouselMatch && currentSection) {
-			currentSection.carousels.push({ images: [], imageReferences: [], line: index + 1 });
-			continue;
-		}
-
-		const imageMatch = line.match(/^\s{6,}-\s+image:\s*["']?([^"'\n]+)["']?\s*$/);
-		if (imageMatch && currentSection) {
-			const image = imageMatch[1].trim();
-			const isCarouselImage = /^\s{10}-\s+image:/.test(line);
-			const carousel = isCarouselImage ? currentSection.carousels.at(-1) : null;
-			currentSection.images.push(image);
-			currentSection.imageReferences.push({ image, line: index + 1 });
-			if (carousel) {
-				carousel.images.push(image);
-				carousel.imageReferences.push({ image, line: index + 1 });
-			}
+			sections.push({ id: sectionMatch[1], line: index + 1 });
 		}
 	}
 
@@ -367,8 +345,9 @@ export const getBodySections = (body) => {
 		const text = body.slice(start, end).trimEnd();
 		const heading = match[0];
 		const id = getHeadingId(heading);
+		const line = body.slice(0, start).split(/\r?\n/).length;
 
-		sections.push({ id, heading, text });
+		sections.push({ id, heading, line, text });
 	}
 
 	return { prelude, sections };
@@ -397,7 +376,7 @@ export const getImageFiles = async (directory) => {
 	return files;
 };
 
-export const getImageIndex = async (contentDir, fail) => {
+export const getImageIndex = async (contentDir, fail, contentLabel = siteImagesLabel) => {
 	const imageFiles = await getImageFiles(contentDir);
 	const imagesByName = new Map();
 
@@ -406,11 +385,32 @@ export const getImageIndex = async (contentDir, fail) => {
 		const existingPath = imagesByName.get(imageName);
 
 		if (existingPath) {
-			fail(`Duplicate image filename "${imageName}" found at ${siteImagesLabel}/${toPosixPath(path.relative(contentDir, existingPath))} and ${siteImagesLabel}/${toPosixPath(path.relative(contentDir, imagePath))}. Image filenames must be globally unique.`);
+			fail(`Duplicate image filename "${imageName}" found at ${contentLabel}/${toPosixPath(path.relative(contentDir, existingPath))} and ${contentLabel}/${toPosixPath(path.relative(contentDir, imagePath))}. The filename is ambiguous within this page image root.`);
 			continue;
 		}
 
 		imagesByName.set(imageName, imagePath);
+	}
+
+	return imagesByName;
+};
+
+export const getImageCandidatesByName = async (contentDir) => {
+	const imageFiles = await getImageFiles(contentDir);
+	const imagesByName = new Map();
+
+	for (const imagePath of imageFiles) {
+		const imageName = path.basename(imagePath);
+
+		if (!imagesByName.has(imageName)) {
+			imagesByName.set(imageName, []);
+		}
+
+		imagesByName.get(imageName).push(imagePath);
+	}
+
+	for (const candidates of imagesByName.values()) {
+		candidates.sort((left, right) => left.localeCompare(right, 'sv'));
 	}
 
 	return imagesByName;
