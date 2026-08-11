@@ -1,10 +1,9 @@
 # Content
 
-`site/content.md` is the homepage page file for a `norna` site. It defines the
-page metadata, section order, section ids, image rows, and Markdown text for
-the homepage.
+`site/content.md` is the homepage page file for a Norna site. It contains page
+metadata in frontmatter and the homepage content in Markdown.
 
-Route pages use the same page and section model in
+Route pages use the same page model in
 `site/routes/<NNN-route-id>/route-content.md`. See [Routes](routes.md) for the
 route-specific rules.
 
@@ -22,8 +21,7 @@ The Astro content schema validates these top-level fields in page files:
 - `presentation`: optional page-level presentation overrides. See
   [Theme](theme.md) and [Typography](typography.md).
 - `frame`: optional page-level frame color source. See [Theme](theme.md).
-- `sections`: required non-empty array. Defines section order, ids,
-  presentation overrides, and image rows.
+- `sections`: optional section metadata keyed by section id.
 
 Minimal homepage:
 
@@ -31,8 +29,6 @@ Minimal homepage:
 ---
 title: My Site
 description: A small Norna site.
-sections:
-  - id: intro
 ---
 
 ## Intro {#intro}
@@ -42,99 +38,174 @@ Text...
 
 ## Sections
 
-Each `sections[]` item has:
+Markdown level 2 headings define the page sections and their order:
 
-- `id`: required string matching `^[a-z0-9-]+$`. Used for anchors, navigation,
-  image directories, and Markdown heading ids.
-- `visible`: optional date window that controls whether the section is rendered.
-- `presentation`: optional section-level visual overrides.
-- `gallery`: optional array, defaulting to `[]`.
+```md
+## About {#about}
 
-Example:
+...
 
-```yaml
-sections:
-  - id: work
-    gallery:
-      - image: work.jpg
-        alt: "A woven artwork on a white wall."
-        caption: "Work in progress."
+## Work {#work}
+
+...
+
+## Contact {#contact}
+
+...
 ```
 
-Every frontmatter section must have a matching level 2 Markdown heading with an
-explicit id:
+Every section heading must have an explicit id:
 
 ```md
 ## Work {#work}
-
-Introductory text.
 ```
 
-Keep these values aligned:
+The id must match `^[a-z0-9-]+$`. It is used for anchors, navigation, image
+directories, and optional section metadata. The visible section navigation
+label comes from the Markdown heading text.
 
-- the frontmatter `sections[].id`
-- the Markdown heading id
-- the source image directory `site/images/<section-id>/`
+Markdown section content starts at the level 2 heading and continues until the
+next level 2 heading. `###` and `####` headings are body subheadings within the
+current section, not new sections.
 
-The visible section navigation label comes from the Markdown heading text, not
-from the frontmatter id.
+## Section Metadata
 
-## Image Rows
-
-Each image row can contain a single image:
+Use `sections` only when a section needs structured metadata that is not
+naturally expressed by Markdown, such as visibility or presentation overrides.
 
 ```yaml
-gallery:
-  - image: work.jpg
-    alt: "A woven artwork on a white wall."
-    caption: "Work in progress."
+sections:
+  work:
+    presentation:
+      typography:
+        preset: statement
 ```
 
-Image rows support:
+Each `sections.<section-id>` key must match a Markdown heading id in the same
+page file:
+
+```md
+## Work {#work}
+```
+
+Do not list sections in frontmatter just to define order. Section order comes
+from the Markdown heading order.
+
+## Image Blocks
+
+Norna-managed local images are written in Markdown fenced blocks at the point
+where they should appear in the section.
+
+Use `norna-image-stack` for one or more stacked images:
+
+````md
+```norna-image-stack
+- image: work.jpg
+  alt: A woven artwork on a white wall.
+  caption: Work in progress.
+```
+````
+
+Use `norna-image-carousel` for a carousel:
+
+````md
+```norna-image-carousel
+- image: first.jpg
+  alt: First image.
+  caption: First caption.
+- image: second.jpg
+  alt: Second image.
+  caption: Second caption.
+```
+````
+
+Each image entry supports:
 
 - `image`: required filename matching `^[a-z0-9][a-z0-9.-]*\.(jpe?g|png)$`.
   It must be a filename, not a path.
-- `alt`: required string.
-- `caption`: optional string.
+- `alt`: optional alt text. If omitted, Norna renders an empty alt attribute.
+- `caption`: optional caption.
 
-Source image filenames must be unique across the selected page's image tree.
-The homepage reads images from `site/images/<section-id>/`. Route pages read
-images from `site/routes/<NNN-route-id>/images/<section-id>/`.
+Start every image entry with `- image: filename.jpg`. Optional fields use two
+spaces of indentation:
 
-## Carousels
-
-An image row can contain a carousel instead of a single image:
-
-```yaml
-gallery:
-  - carousel:
-      - image: first.jpg
-        alt: "First image."
-        caption: "First caption."
-      - image: second.jpg
-        alt: "Second image."
-        caption: "Second caption."
+````md
+```norna-image-stack
+- image: filename.jpg
+  alt: Optional alt text.
+  caption: Optional caption.
 ```
+````
 
-Each carousel item has the same `image`, `alt`, and `caption` fields as a
-single image row.
+Use three or more matching backticks or tildes for fenced blocks. If you need
+to document a Norna image block inside another Markdown code sample, make the
+outer fence longer than the inner fence:
+
+````md
+````
+```norna-image-stack
+- image: filename.jpg
+```
+````
+````
 
 `content:check` warns when carousel images have different aspect ratios. Exact
 matching proportions are recommended because mixed proportions can make the
 layout move while the user changes slides.
 
+## Image Files
+
+Homepage images live under:
+
+```text
+site/images/<section-id>/
+```
+
+Route images live under:
+
+```text
+site/routes/<NNN-route-id>/images/<section-id>/
+```
+
+Image references in Norna image blocks use only the filename:
+
+````md
+```norna-image-stack
+- image: portrait.jpg
+```
+````
+
+If `portrait.jpg` is referenced from `## Team {#team}`, the expected homepage
+location is `site/images/team/portrait.jpg`.
+
+Filenames do not have to be globally unique for the site to be valid. Automatic
+sync only moves files when the filename identifies exactly one source candidate
+within the current page or route.
+
+## Markdown Images
+
+Markdown image syntax is allowed for external images and public static assets:
+
+```md
+![External image](https://example.com/image.jpg)
+![Public asset](/workflow.svg)
+```
+
+Relative local Markdown images such as `![Portrait](portrait.jpg)` are not
+managed by Norna. Use `norna-image-stack` or `norna-image-carousel` for local
+site images that should be validated, processed and synced.
+
 ## Temporary Sections
 
-Use `sections[].visible` for sections that should be rendered only during a
-date window:
+Use `sections.<section-id>.visible` for sections that should be rendered only
+during a date window:
 
 ```yaml
 sections:
-  - id: exhibition
+  exhibition:
     visible:
       from: "2026-08-01"
       until: "2026-09-16"
-    gallery: []
 ```
 
 `from` is inclusive. `until` is exclusive. With the example above, the section
@@ -156,17 +227,6 @@ NORNA_TODAY=2026-08-15 npm run norna:build
 
 ## Markdown Text
 
-Section Markdown starts at the matching level 2 heading and continues until the
-next level 2 heading.
-
-```md
-## Intro {#intro}
-
-Paragraph text.
-
-Another paragraph.
-```
-
 Inline styles use this Markdown form:
 
 ```md
@@ -184,16 +244,17 @@ Run:
 npm run norna:content:check
 ```
 
-This checks section order and heading ids, duplicate image names, missing image
-files, misplaced referenced images, duplicate image references, invalid image
-references, unreferenced images, undefined inline styles, and common
-frontmatter indentation and structure mistakes.
+This checks section heading ids, section metadata, duplicate image names,
+missing image files, misplaced referenced images, duplicate image references,
+invalid image blocks, unreferenced images, undefined inline styles, Markdown
+image references to unmanaged local files, and common frontmatter indentation
+and structure mistakes.
 
 Frontmatter uses YAML indentation. Use ordinary spaces, not tabs or
 non-breaking spaces. `content:check` reports a focused error when indentation is
 invalid, when a key is indented under a line that already has a value, or when a
-known nested key such as `gallery` or section-specific `typography` appears at
-the top level:
+known nested key such as section-specific `typography` appears at the top
+level:
 
 ```yaml
 presentation:
@@ -205,14 +266,7 @@ presentation:
 ```
 
 Top-level page frontmatter may contain only `title`, `description`,
-`navigation`, `presentation`, `frame`, and `sections`. A `gallery` key belongs
-under one `sections[]` item:
-
-```yaml
-sections:
-  - id: work
-    gallery: []
-```
+`navigation`, `presentation`, `frame`, and `sections`.
 
 Run:
 
@@ -220,6 +274,6 @@ Run:
 npm run norna:sync
 ```
 
-This rewrites Markdown sections into frontmatter order and moves referenced
-image files into the directory matching their section. It prompts before
-writing unless `--yes` is passed.
+This moves referenced image files into the section directory shown by the
+Markdown placement. It prompts before writing unless `--yes` is passed. Sync is
+currently page- or route-local: it does not move images across routes.

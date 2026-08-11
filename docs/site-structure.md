@@ -41,8 +41,9 @@ Version these files in a site repository:
   image sizing, font, typography defaults, colors, inline styles, and frame
   colors.
   See [Theme](theme.md).
-- `site/content.md`: homepage page file with editable content, section
-  definitions, image rows, alt text, and captions. See [Content](content.md).
+- `site/content.md`: homepage page file with editable content, Markdown
+  sections, optional section metadata, image blocks, alt text, and captions.
+  See [Content](content.md).
 - `site/images/<section-id>/`: original source images.
 - `site/routes/<NNN-route-id>/route-content.md`: optional route page files.
   See [Routes](routes.md).

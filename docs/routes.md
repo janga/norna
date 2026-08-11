@@ -4,9 +4,9 @@
 under `site/routes/<NNN-route-id>/route-content.md` and build to first-level
 URLs.
 
-Routes use the same page frontmatter, section frontmatter, image rows, and
-Markdown section model as the homepage. See [Content](content.md) for the page
-and section model.
+Routes use the same page frontmatter, optional section metadata, Norna image
+blocks, and Markdown section model as the homepage. See [Content](content.md)
+for the page and section model.
 
 ## Route Directory Format
 
@@ -61,8 +61,6 @@ title: About
 description: About this site.
 navigation:
   label: About
-sections:
-  - id: intro
 ---
 
 ## Intro {#intro}
@@ -99,14 +97,13 @@ Route images live under the physical route directory:
 site/routes/010-about/images/intro/image.jpg
 ```
 
-Image references in route frontmatter still use only the filename:
+Image references in route content still use only the filename:
 
-```yaml
-sections:
-  - id: intro
-    gallery:
-      - image: image.jpg
-        alt: "Intro image."
+````md
+```norna-image-stack
+- image: image.jpg
+  alt: Intro image.
 ```
+````
 
 The image directory segment after `images/` should match the section id.

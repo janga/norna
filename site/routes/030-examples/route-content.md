@@ -3,14 +3,6 @@ title: Examples
 description: See the kinds of small static websites Norna's opinionated site model is designed to build.
 navigation:
   label: Examples
-sections:
-  - id: overview
-  - id: project
-  - id: portfolio
-  - id: docs
-  - id: personal
-  - id: images
-  - id: pattern
 ---
 
 ## What can you build with Norna? {#overview}
@@ -37,7 +29,7 @@ The Norna website itself is an example.
 A portfolio can use:
 
 - sections for bodies of work
-- image rows and captions
+- image stacks, carousels and captions
 - routes for exhibitions, biography or contact information
 - `theme.md` for visual presentation
 

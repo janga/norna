@@ -67,8 +67,9 @@ Commit the generated `package-lock.json` after the first install.
 2. Edit `site/theme.md` for site-wide layout, layout density, typography
    rhythm, image sizing, font, typography preset, colors, inline styles, and
    frame colors, or omit it to use engine defaults.
-3. Edit `site/content.md` for homepage title, description, sections, text,
-   image rows, page/section presentation overrides, alt text, and captions.
+3. Edit `site/content.md` for homepage title, description, Markdown sections,
+   text, Norna image blocks, page/section presentation overrides, alt text, and
+   captions.
 4. Put source images under `site/images/<section-id>/`.
 5. Add optional route pages under
    `site/routes/<NNN-route-id>/route-content.md`, for example

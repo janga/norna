@@ -3,15 +3,6 @@ title: Your project
 description: A compact project site starter for an open source developer tool.
 navigation:
   label: Home
-sections:
-  - id: intro
-  - id: links
-  - id: install
-  - id: example
-  - id: why
-  - id: good-fit
-  - id: next
-  - id: license
 ---
 
 ## `<Your project> - <short value proposition>` {#intro}

@@ -4,15 +4,13 @@ description: A small route for testing multi-page norna navigation.
 navigation:
   label: Dog care
 sections:
-  - id: daily-rhythm
+  daily-rhythm:
     presentation:
       typography:
         overrides:
           headings:
             h2:
               size: large
-  - id: calm-training
-  - id: media-notes
 ---
 
 ## Daily rhythm {#daily-rhythm}

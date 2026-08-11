@@ -3,18 +3,6 @@ title: Norna
 description: An opinionated CLI for building small static websites from content, presentation and configuration kept as files.
 navigation:
   label: Home
-sections:
-  - id: intro
-  - id: opinionated
-  - id: files
-  - id: workflow
-  - id: abstraction
-  - id: why
-  - id: good-fit
-  - id: create
-  - id: links
-  - id: next
-  - id: license
 ---
 
 ## Norna {#intro}

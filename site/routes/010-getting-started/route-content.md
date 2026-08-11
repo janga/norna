@@ -3,14 +3,6 @@ title: Getting Started
 description: Create, edit, build and publish your first Norna site.
 navigation:
   label: Getting Started
-sections:
-  - id: create
-  - id: work-with
-  - id: local
-  - id: check-build
-  - id: publish
-  - id: setup
-  - id: next
 ---
 
 ## Create a site {#create}

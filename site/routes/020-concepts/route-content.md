@@ -3,14 +3,6 @@ title: Concepts
 description: Understand Norna's opinionated file model and how it differs from a traditional static site generator.
 navigation:
   label: Concepts
-sections:
-  - id: files
-  - id: opinionated
-  - id: concerns
-  - id: routes
-  - id: source-output
-  - id: compared
-  - id: publishing
 ---
 
 ## Files are the interface {#files}

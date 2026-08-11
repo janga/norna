@@ -2,14 +2,10 @@
 title: Example Site
 description: Minimal norna starter site.
 sections:
-  - id: intro
+  intro:
     presentation:
       typography:
         preset: statement
-  - id: work
-  - id: lorem1
-  - id: lorem2
-  - id: lorem3
 
 ---
 
@@ -19,7 +15,15 @@ routes defined, the navigation menu will be a sticky bar with anchor links for
 ease of use on phones etc. [Highlighted inline text]{.highlight} when a short
 phrase needs emphasis
 ## Work {#work}
-Add image rows in frontmatter and matching source images under images/work/.
+Add Norna image blocks in Markdown and matching source images under
+`images/work/`.
+
+````
+```norna-image-stack
+- image: example.jpg
+  caption: Replace this with a real image and caption.
+```
+````
 ## What is Lorem Ipsum? {#lorem1}
 Lorem Ipsum is simply dummy text of the printing and typesetting
 industry. Lorem Ipsum has been the industry's standard dummy text ever

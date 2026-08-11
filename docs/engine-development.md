@@ -14,8 +14,8 @@ This document is for work on the reusable `norna` package itself.
 - `scripts/deploy-site.mjs`: deploy and deploy:commit behavior.
 - `scripts/watch-pages-deploy.mjs`: GitHub Pages workflow monitor.
 - `src/content.config.ts`: Astro content schema.
-- `src/components/` and `src/layouts/`: rendered page, navigation, image rows,
-  and layout.
+- `src/components/` and `src/layouts/`: rendered page, navigation, image
+  blocks, and layout.
 - `tests/`: Playwright navigation diagnostics.
 - `fixtures/basic/site/`: minimal site used for engine checks.
 - `starters/basic/`: copyable site starter.

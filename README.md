@@ -25,8 +25,8 @@ A `norna` site is file-driven:
    base path, in `site/config.mjs`.
 3. The site keeps site-wide visual theme defaults, including layout, image
    sizing, font, typography, colors, and frame colors, in `site/theme.md`.
-4. The site keeps homepage content, section order, image rows, alt text, and
-   captions in `site/content.md`.
+4. The site keeps homepage content, Markdown section order, image blocks, alt
+   text, captions, and optional section metadata in `site/content.md`.
 5. Optional route pages live under
    `site/routes/<route-folder>/route-content.md`.
 6. Source images live under `site/images/<section-id>/` for the homepage, or
@@ -75,7 +75,7 @@ Actions use the same engine version.
 
 - Create a site: [Getting Started](docs/getting-started.md)
 - Understand required site files: [Site Structure](docs/site-structure.md)
-- Edit sections and image rows: [Content](docs/content.md)
+- Edit sections and image blocks: [Content](docs/content.md)
 - Configure a site: [Configuration](docs/configuration.md)
 - Publish under a GitHub Pages project path:
   [`site.basePath`](docs/configuration.md#sitebasepath)

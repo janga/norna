@@ -132,10 +132,10 @@ typography:
 ```
 
 A page-level `presentation.typography.preset` changes the typographic character
-for that page. A section-level `sections[].presentation.typography.preset`
-changes the typographic character for that section. `rhythm` is inherited
-separately, so changing preset does not change spacing unless `rhythm` is also
-set.
+for that page. A section-level
+`sections.<section-id>.presentation.typography.preset` changes the typographic
+character for that section. `rhythm` is inherited separately, so changing
+preset does not change spacing unless `rhythm` is also set.
 
 If a section sets `typography.rhythm`, that section changes text-near spacing.
 If a section only sets `typography.overrides`, it keeps the resolved page
@@ -145,7 +145,7 @@ Example section override:
 
 ```yaml
 sections:
-  - id: intro
+  intro:
     presentation:
       typography:
         preset: statement

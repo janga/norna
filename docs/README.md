@@ -38,9 +38,9 @@ For a quick reference:
 - [Configuration](configuration.md) describes technical `site/config.mjs`
   fields such as URL, base path, locale labels, footer, GitHub, and deploy
   settings.
-- [Content](content.md) describes page frontmatter, section frontmatter,
-  image rows, carousels, temporary sections, Markdown section matching, and
-  content validation.
+- [Content](content.md) describes page frontmatter, Markdown-authored
+  sections, optional section metadata, image stacks, carousels, temporary
+  sections, and content validation.
 - [Theme](theme.md) describes site-wide layout, layout density, image sizing,
   font, typography rhythm, presentation colors, frame colors, and inline styles.
 - [Typography](typography.md) describes presets, rhythms, roles, overrides,

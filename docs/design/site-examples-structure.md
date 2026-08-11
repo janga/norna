@@ -26,7 +26,7 @@ site repository. It should not be a showcase for every feature.
 An example site is a runnable site that demonstrates one or more features.
 
 Examples can be richer than the starter. They may show routes, navigation,
-typography presets, typography rhythms, galleries, image carousels, inline
+typography presets, typography rhythms, image stacks, image carousels, inline
 styles, and site-specific configuration choices.
 
 ### Documentation Site

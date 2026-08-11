@@ -359,6 +359,7 @@ const maskFencedCodeBlocks = (markdown) => {
 };
 
 const isExternalImageTarget = (target) => /^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('//');
+const isRootRelativePublicTarget = (target) => target.startsWith('/');
 
 const stripTags = (value) => value.replace(/<[^>]*>/g, '');
 
@@ -379,7 +380,7 @@ export const extractMarkdownImageReferences = (markdown) => {
 
 	for (const match of masked.matchAll(imageRegex)) {
 		const target = match[1] ?? '';
-		if (!target || target.startsWith('#') || isExternalImageTarget(target)) continue;
+		if (!target || target.startsWith('#') || isExternalImageTarget(target) || isRootRelativePublicTarget(target)) continue;
 
 		references.push({
 			target,

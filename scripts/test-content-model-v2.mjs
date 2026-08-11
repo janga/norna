@@ -118,11 +118,14 @@ description: Fixture
 ![Local](portrait.jpg)
 
 ![External](https://example.com/portrait.jpg)
+
+![Public](/workflow.svg)
 `);
 
 		const { stdout } = await runContentScript(siteDir, ['--check']);
 		assert.match(stdout, /Markdown image "portrait\.jpg" references a local image that is not managed by Norna\./);
 		assert.doesNotMatch(stdout, /https:\/\/example\.com\/portrait\.jpg/);
+		assert.doesNotMatch(stdout, /\/workflow\.svg/);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}

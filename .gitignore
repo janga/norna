@@ -6,6 +6,9 @@ dist/
 
 # generated build-preparation output
 **/.norna/public/
+/fixtures/**/site/.norna/
+/examples/**/site/.norna/
+/starters/**/site/.norna/
 
 # generated types
 .astro/

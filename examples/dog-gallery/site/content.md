@@ -4,7 +4,7 @@ description: A small norna example with free dog images.
 navigation:
   label: Dog site!
 sections:
-  - id: black-dogs
+  black-dogs:
     presentation:
       typography:
         preset: statement
@@ -12,16 +12,7 @@ sections:
           headings:
             h2:
               size: xlarge
-    gallery:
-      - image: photo-of-a-black-dog.jpg
-        alt: "A black dog sitting outdoors and looking at the camera."
-        caption:
-          "Photo of a dog. ContaDeletada2906, CC0 1.0, via Wikimedia Commons."
-      - image: black-puppy-meadow.png
-        alt:
-          "A black puppy standing in a grassy meadow and looking at the camera."
-        caption: "AI-generated image."
-  - id: summer-dogs
+  summer-dogs:
     visible:
       from: "2026-08-01"
       until: "2026-09-01"
@@ -29,21 +20,11 @@ sections:
       backgroundColor: "#181818"
       typography:
         preset: compact-gallery
-    gallery: []
-  - id: brown-dogs
+  brown-dogs:
     presentation:
       typography:
         preset: text-forward
-    gallery:
-      - image: brown-dog.jpg
-        alt: "A brown dog looking directly at the camera."
-        caption: "DogBrown. Frank-3, CC0 1.0, via Wikimedia Commons."
-      - image: dog-accompanies-master.jpg
-        alt: "A man walks outdoors with a dog at his side."
-        caption:
-          "Dog accompanies his master. Steve Hillebrand, U.S. Fish and Wildlife
-          Service, public domain."
-  - id: golden-dogs
+  golden-dogs:
     presentation:
       typography:
         overrides:
@@ -55,33 +36,12 @@ sections:
           body:
             lineHeight: 1.58
             paragraphSpacing: 1em
-    gallery:
-      - image: golden-retriever.jpg
-        alt: "A golden retriever standing outdoors."
-        caption: "Golden Retriever. Ribo, public domain, via Wikimedia Commons."
-      - image: toller-puppy.jpg
-        alt:
-          "A young Nova Scotia Duck Tolling Retriever puppy sitting on grass."
-        caption:
-          "Nova Scotia Duck Tolling Retriever puppy. RM, public domain, via
-          Wikimedia Commons."
-  - id: white-dogs
+  white-dogs:
     presentation:
       typography:
         overrides:
           caption:
             spacingBefore: 0.35em
-    gallery:
-      - carousel:
-          - image: white-cute-dog.jpg
-            alt: "A white dog looking toward the camera."
-            caption:
-              "White cute dog. Neal Ziring, public domain, via Wikimedia
-              Commons."
-          - image: white-puppy-garden.png
-            alt: "A fluffy white puppy standing on grass in a garden."
-            caption: "AI-generated image."
-  - id: sources
 ---
 
 ## Black Dogs {#black-dogs}
@@ -103,6 +63,15 @@ This `####` heading should follow `typography.headings.h4`.
 
 Curabitur blandit tempus porttitor. Donec id elit non mi porta gravida at eget
 metus. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+
+```norna-image-stack
+- image: photo-of-a-black-dog.jpg
+  alt: A black dog sitting outdoors and looking at the camera.
+  caption: Photo of a dog. ContaDeletada2906, CC0 1.0, via Wikimedia Commons.
+- image: black-puppy-meadow.png
+  alt: A black puppy standing in a grassy meadow and looking at the camera.
+  caption: AI-generated image.
+```
 
 ## Summer Dogs {#summer-dogs}
 
@@ -126,6 +95,15 @@ Maecenas sed diam eget risus varius blandit sit amet non magna. Morbi leo risus,
 porta ac consectetur ac, vestibulum at eros. Sed posuere consectetur est at
 lobortis.
 
+```norna-image-stack
+- image: brown-dog.jpg
+  alt: A brown dog looking directly at the camera.
+  caption: DogBrown. Frank-3, CC0 1.0, via Wikimedia Commons.
+- image: dog-accompanies-master.jpg
+  alt: A man walks outdoors with a dog at his side.
+  caption: Dog accompanies his master. Steve Hillebrand, U.S. Fish and Wildlife Service, public domain.
+```
+
 ## Golden Dogs {#golden-dogs}
 
 Golden-coated retrievers add a third image section and more scrolling depth.
@@ -141,6 +119,15 @@ Nulla vitae elit libero, a pharetra augue. Integer posuere erat a ante venenatis
 dapibus posuere velit aliquet. Aenean eu leo quam. Pellentesque ornare sem
 lacinia quam venenatis vestibulum.
 
+```norna-image-stack
+- image: golden-retriever.jpg
+  alt: A golden retriever standing outdoors.
+  caption: Golden Retriever. Ribo, public domain, via Wikimedia Commons.
+- image: toller-puppy.jpg
+  alt: A young Nova Scotia Duck Tolling Retriever puppy sitting on grass.
+  caption: Nova Scotia Duck Tolling Retriever puppy. RM, public domain, via Wikimedia Commons.
+```
+
 ## White Dogs {#white-dogs}
 
 A white dog completes the colour-based image sequence.
@@ -151,6 +138,15 @@ gravida at eget metus.
 Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Lorem ipsum
 dolor sit amet, consectetur adipiscing elit. Donec sed odio dui. Vestibulum id
 ligula porta felis euismod semper.
+
+```norna-image-stack
+- image: white-cute-dog.jpg
+  alt: A white dog looking toward the camera.
+  caption: White cute dog. Neal Ziring, public domain, via Wikimedia Commons.
+- image: white-puppy-garden.png
+  alt: A fluffy white puppy standing on grass in a garden.
+  caption: AI-generated image.
+```
 
 ## Sources {#sources}
 

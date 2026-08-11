@@ -1,12 +1,25 @@
 # Images And Metadata
 
-This document describes the generic image pipeline. Site repositories own their
+This document describes Norna's image pipeline. Site repositories own their
 source images and any copyright or licensing policy for those images.
 
-## Source Images
+## Managed Source Images
 
-Source images live under `site/images/<section-id>/` and are referenced from
-`site/content.md` by filename only.
+Norna-managed local images are referenced from Markdown with
+`norna-image-stack` or `norna-image-carousel` blocks. See
+[Content](content.md#image-blocks) for the block syntax.
+
+Homepage source images live under:
+
+```text
+site/images/<section-id>/
+```
+
+Route source images live under:
+
+```text
+site/routes/<NNN-route-id>/images/<section-id>/
+```
 
 Supported source extensions:
 
@@ -14,9 +27,35 @@ Supported source extensions:
 - `.jpeg`
 - `.png`
 
-Image filenames must be globally unique under `site/images/`. The content and
-image scripts reject duplicate filenames because image rows identify images by
-filename only.
+Image block references use only the filename:
+
+````md
+```norna-image-stack
+- image: portrait.jpg
+  alt: Optional alt text.
+  caption: Optional caption.
+```
+````
+
+`alt` and `caption` are optional. If `alt` is omitted, Norna renders an empty
+alt attribute.
+
+Filenames do not have to be globally unique for the site to be valid.
+Automatic sync only moves files when the filename identifies exactly one source
+candidate within the current page or route.
+
+## Markdown Images
+
+Use ordinary Markdown images for external images or static public assets:
+
+```md
+![External image](https://example.com/image.jpg)
+![Public asset](/workflow.svg)
+```
+
+Relative local Markdown images such as `![Portrait](portrait.jpg)` are not
+managed by Norna. `content:check` warns about them because Norna cannot
+validate, process, or sync those files through the image pipeline.
 
 ## Generated Variants
 
@@ -59,8 +98,8 @@ output version, and generated variant paths. The image pipeline reuses generated
 files only when the manifest entry matches the current source hash and output
 version, and all expected variant files exist.
 
-Generated files under `site/.norna/public/` are build-preparation output
-and should not be versioned.
+Generated files under `site/.norna/public/` are build-preparation output and
+should not be versioned.
 
 ## Metadata Behavior
 
@@ -70,10 +109,11 @@ copyright metadata.
 Generated WebP files are created with ImageMagick using `-strip`, so embedded
 metadata is not a publication mechanism for generated variants. Keep licensing,
 credits, copyright notices, alt text, and captions in site-owned files such as
-`site/content.md`, `COPYRIGHT.md`, or other site documentation.
+`site/content.md`, route content files, `COPYRIGHT.md`, or other site
+documentation.
 
 If a site wants embedded metadata in original source files, that process is
-outside the current `norna` command surface.
+outside the current Norna command surface.
 
 ## GitHub Actions Cache
 
@@ -83,6 +123,6 @@ The starter workflow caches:
 site/.norna/public/images/generated
 ```
 
-The cache key should include `site/.norna/generated-images.json` so
-unchanged generated variants can be restored during deploy. With a cache miss or
-a changed source hash, variants are rebuilt from source images.
+The cache key should include `site/.norna/generated-images.json` so unchanged
+generated variants can be restored during deploy. With a cache miss or a
+changed source hash, variants are rebuilt from source images.

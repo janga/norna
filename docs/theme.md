@@ -73,9 +73,9 @@ navigation:
   `desktop` / `mobile` values.
 - `density`: default structural spacing profile. Allowed values are `compact`,
   `normal`, and `airy`.
-- `spacing`: optional structural spacing overrides for sections and image
-  rows. Every spacing value accepts either one CSS length for all viewports or
-  `desktop` / `mobile` values.
+- `spacing`: optional structural spacing overrides for sections and Norna
+  image blocks. Every spacing value accepts either one CSS length for all
+  viewports or `desktop` / `mobile` values.
 
 Example:
 
@@ -104,8 +104,8 @@ Spacing keys:
 - `firstSectionTop`: space above the first section heading.
 - `sectionGap`: space above each following section.
 - `finalSectionBottom`: space below the final section.
-- `bodyToImages`: space from section body text to image rows.
-- `imageGap`: space between image rows.
+- `bodyToImages`: space from section body text to Norna image blocks.
+- `imageGap`: space between stacked images or carousel blocks.
 
 Text-near spacing, such as spacing after headings, spacing before Markdown
 subheadings, paragraph spacing, and caption spacing, belongs to
@@ -206,11 +206,12 @@ presentation:
         paragraphSpacing: 1em
 ```
 
-Section-specific presentation belongs under `sections[].presentation`:
+Section-specific presentation belongs under
+`sections.<section-id>.presentation`:
 
 ```yaml
 sections:
-  - id: intro
+  intro:
     presentation:
       backgroundColor: "#161616"
       textColor: "#ffffff"
