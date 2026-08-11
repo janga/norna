@@ -9,7 +9,7 @@ This document is for work on the reusable `norna` package itself.
 - `scripts/lib/site-paths.mjs`: engine/site path resolution.
 - `scripts/lib/project-config.mjs`: `site/config.mjs` validation and defaults.
 - `scripts/sync-content-sections.mjs`: content validation and sync behavior.
-- `scripts/generate-images.mjs`: WebP image pipeline and manifest.
+- `scripts/generate-images.mjs`: managed image pipeline and manifest.
 - `scripts/sync-site-public.mjs`: static public file sync.
 - `scripts/deploy-site.mjs`: deploy and deploy:commit behavior.
 - `scripts/watch-pages-deploy.mjs`: GitHub Pages workflow monitor.

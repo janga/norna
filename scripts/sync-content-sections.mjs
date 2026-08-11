@@ -250,16 +250,28 @@ const warnAboutCarouselAspectRatios = async (contentFile, section, block, source
 	if (block.type !== 'image-carousel') return;
 
 	const imagesWithRatios = [];
+	const imagesWithoutRatios = [];
 	for (const image of block.images) {
 		const imagePath = sourcePathsByImage.get(image.image);
 		if (!imagePath) continue;
 
 		const dimensions = await readImageDimensions(imagePath).catch(() => null);
-		if (!dimensions) continue;
+		if (!dimensions) {
+			imagesWithoutRatios.push(image.image);
+			continue;
+		}
 
 		imagesWithRatios.push({
 			image: image.image,
 			ratio: getAspectRatioLabel(dimensions),
+		});
+	}
+
+	if (imagesWithoutRatios.length > 0) {
+		addSectionIssue(contentFile, section, {
+			severity: 'warning',
+			message: `Carousel on line ${block.line} uses images without an intrinsic aspect ratio: ${imagesWithoutRatios.join(', ')}.`,
+			fix: 'For SVG images, add a viewBox or numeric width and height when stable carousel sizing matters.',
 		});
 	}
 

@@ -105,7 +105,7 @@ site: {
 ```
 
 After that, content files may still use root-style internal links such as
-`/getting-started/` and `/workflow.svg`. Norna applies `site.basePath` during
+`/getting-started/` and `/favicon.svg`. Norna applies `site.basePath` during
 rendering so the built links work under the GitHub Pages project path.
 
 The starter includes a GitHub Pages workflow in `.github/workflows/deploy.yml`.

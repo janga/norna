@@ -12,6 +12,19 @@ navigation:
 A Norna site is defined primarily through files rather than through a CMS,
 database, visual editor or application-specific component tree.
 
+<!-- norna-image-provenance:
+image: site-files.svg
+source: hand-authored
+Hand-authored SVG diagram created for the Norna introduction site to explain
+how site files, homepage sections, route pages and route-local images map to
+the rendered website.
+-->
+
+```norna-image-stack
+- image: site-files.svg
+  alt: A Norna homepage is defined by content.md and homepage images. Additional routes are separate content pages under routes, ordered by numeric prefixes and able to keep their own images.
+```
+
 The files are both the source of the website and the interface through which
 the site is maintained.
 
@@ -65,8 +78,14 @@ Routes create additional pages with their own URLs.
 The homepage is defined by `content.md`. Additional pages live under `routes/`
 and use their own route content.
 
-Routes use the broader Norna site model rather than defining an independent
-website implementation.
+Routes are simply more content in the same site model. They inherit the site's
+visual presentation by default and do not introduce their own technical
+behaviour.
+
+In route directories, the numeric prefix controls the route's position in the
+site navigation. The route id after the prefix becomes the URL slug: for
+example, `010-getting-started/` is ordered by `010` and normally builds to
+`/getting-started/`.
 
 ## Source and output {#source-output}
 

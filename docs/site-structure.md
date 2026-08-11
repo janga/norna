@@ -51,7 +51,7 @@ Version these files in a site repository:
   for that route page.
 - `site/public/`: site-specific static public files.
 - `site/.norna/generated-images.json`: generated image manifest used to
-  decide whether WebP variants can be reused.
+  decide whether WebP variants and copied managed SVG files can be reused.
 - `.github/workflows/deploy.yml`: site-owned GitHub Pages workflow.
 - `package.json` and `package-lock.json`: scripts and pinned engine dependency.
 

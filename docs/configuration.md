@@ -39,7 +39,7 @@ site: {
   `?`, `#`, or `//`.
 - Consequence: use `/` for a root site or custom domain. Use
   `/repository-name/` for a GitHub Pages project site without a custom domain.
-  Source Markdown can still use root-relative paths such as `/workflow.svg` or
+  Source Markdown can still use root-relative paths such as `/favicon.svg` or
   `/getting-started/`; Norna prefixes them during rendering.
 
 Examples:

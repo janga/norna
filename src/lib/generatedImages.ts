@@ -4,11 +4,13 @@ import { generatedImagesManifestPath } from '../../scripts/lib/site-paths.mjs';
 import { withBasePath } from './basePath';
 
 type GeneratedImage = {
+	kind?: 'static';
 	outputVersion?: number;
 	sourceHash?: string;
-	width: number;
-	height: number;
-	variants: Array<{
+	src?: string;
+	width?: number;
+	height?: number;
+	variants?: Array<{
 		src: string;
 		width: number;
 	}>;
@@ -43,16 +45,21 @@ export const getGeneratedImage = (src: string) => readGeneratedImages()[src];
 
 const displaySrc = (src: string) => withBasePath(projectConfig.site.basePath, src);
 
-export const getLinkedImageSrc = (src: string) => displaySrc(getGeneratedImage(src)?.variants.at(-1)?.src ?? src);
+export const getLinkedImageSrc = (src: string) => {
+	const image = getGeneratedImage(src);
+	return displaySrc(image?.kind === 'static'
+		? image.src ?? src
+		: image?.variants?.at(-1)?.src ?? src);
+};
 
-const getDisplayVariants = (variants: GeneratedImage['variants']) => {
+const getDisplayVariants = (variants: NonNullable<GeneratedImage['variants']>) => {
 	const sortedVariants = [...variants].sort((a, b) => a.width - b.width);
 	const displayVariants = sortedVariants.filter((variant) => variant.width <= maxDisplayImageWidth);
 
 	return displayVariants.length > 0 ? displayVariants : sortedVariants;
 };
 
-const getFallbackVariant = (variants: GeneratedImage['variants']) => (
+const getFallbackVariant = (variants: NonNullable<GeneratedImage['variants']>) => (
 	variants.filter((variant) => variant.width <= fallbackDisplayImageWidth).at(-1) ?? variants[0]
 );
 
@@ -60,6 +67,26 @@ export const getImageAttributes = (src: string, sizes: string) => {
 	const image = getGeneratedImage(src);
 
 	if (!image) {
+		return {
+			src: displaySrc(src),
+			sizes,
+		};
+	}
+
+	if (image.kind === 'static') {
+		return {
+			src: displaySrc(image.src ?? src),
+			...(Number.isFinite(image.width) && Number.isFinite(image.height)
+				? {
+					style: `aspect-ratio: ${image.width} / ${image.height};`,
+					width: image.width,
+					height: image.height,
+				}
+				: {}),
+		};
+	}
+
+	if (!image.variants) {
 		return {
 			src: displaySrc(src),
 			sizes,

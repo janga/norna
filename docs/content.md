@@ -121,7 +121,8 @@ Use `norna-image-carousel` for a carousel:
 
 Each image entry supports:
 
-- `image`: required filename matching `^[a-z0-9][a-z0-9.-]*\.(jpe?g|png)$`.
+- `image`: required filename matching
+  `^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$`.
   It must be a filename, not a path.
 - `alt`: optional alt text. If omitted, Norna renders an empty alt attribute.
 - `caption`: optional caption.
@@ -152,6 +153,12 @@ outer fence longer than the inner fence:
 `content:check` warns when carousel images have different aspect ratios. Exact
 matching proportions are recommended because mixed proportions can make the
 layout move while the user changes slides.
+
+SVG files are allowed in image stacks and carousels. When an SVG has a
+`viewBox` or numeric `width` and `height`, Norna uses that ratio in the same
+layout logic as raster images. SVG files without an intrinsic aspect ratio are
+rendered directly, but carousel usage produces a warning because stable slide
+sizing is less predictable.
 
 ## Image Files
 
@@ -188,7 +195,7 @@ Markdown image syntax is allowed for external images and public static assets:
 
 ```md
 ![External image](https://example.com/image.jpg)
-![Public asset](/workflow.svg)
+![Public asset](/favicon.svg)
 ```
 
 Relative local Markdown images such as `![Portrait](portrait.jpg)` are not

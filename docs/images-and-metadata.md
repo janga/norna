@@ -26,6 +26,7 @@ Supported source extensions:
 - `.jpg`
 - `.jpeg`
 - `.png`
+- `.svg`
 
 Image block references use only the filename:
 
@@ -40,6 +41,17 @@ Image block references use only the filename:
 `alt` and `caption` are optional. If `alt` is omitted, Norna renders an empty
 alt attribute.
 
+For generated or edited images, keep provenance near the image in a source-only
+comment. Norna removes these comments from rendered HTML:
+
+```md
+<!-- norna-image-provenance:
+image: portrait.jpg
+source: generated
+prompt: Short prompt or editing note.
+-->
+```
+
 Filenames do not have to be globally unique for the site to be valid.
 Automatic sync only moves files when the filename identifies exactly one source
 candidate within the current page or route.
@@ -50,16 +62,17 @@ Use ordinary Markdown images for external images or static public assets:
 
 ```md
 ![External image](https://example.com/image.jpg)
-![Public asset](/workflow.svg)
+![Public asset](/favicon.svg)
 ```
 
 Relative local Markdown images such as `![Portrait](portrait.jpg)` are not
 managed by Norna. `content:check` warns about them because Norna cannot
 validate, process, or sync those files through the image pipeline.
 
-## Generated Variants
+## Generated Variants And Static SVG
 
-`npm run norna:images` and `npm run norna:build` generate WebP files in:
+For raster images, `npm run norna:images` and `npm run norna:build` generate
+WebP files in:
 
 ```text
 site/.norna/public/images/generated/
@@ -85,6 +98,19 @@ example-work-1a2b3c4d-1440.webp
 When a source image changes, the generated URL changes too. This avoids stale
 browser, CDN, and GitHub Actions cache entries at the old URL.
 
+SVG files are managed by the same Markdown image blocks, validation and sync
+model, but they are not rasterized and do not get WebP variants. Norna copies
+the SVG source to:
+
+```text
+site/.norna/public/images/original/
+```
+
+The copied SVG filename includes the source hash. If the SVG has a `viewBox` or
+numeric `width` and `height`, Norna stores that ratio in the image manifest so
+the existing image layout can size it like other images. If no intrinsic aspect
+ratio can be read, the SVG is still rendered directly.
+
 ## Manifest
 
 The generated image manifest is:
@@ -93,10 +119,12 @@ The generated image manifest is:
 site/.norna/generated-images.json
 ```
 
-It is versioned site state. It stores source hashes, original dimensions,
-output version, and generated variant paths. The image pipeline reuses generated
-files only when the manifest entry matches the current source hash and output
-version, and all expected variant files exist.
+It is versioned site state. For raster images, it stores source hashes,
+original dimensions, output version, and generated variant paths. For static
+SVG images, it stores the source hash, copied public path, output version, and
+intrinsic dimensions when they can be read. The image pipeline reuses generated
+or copied files only when the manifest entry matches the current source hash
+and output version, and all expected output files exist.
 
 Generated files under `site/.norna/public/` are build-preparation output and
 should not be versioned.

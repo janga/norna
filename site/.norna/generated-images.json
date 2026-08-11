@@ -1,1 +1,18 @@
-{}
+{
+  "images/intro/workflow.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "6f08e30be637cc2a6c201695ab050fbd105896a0bfd3e0d6991b4723113320d9",
+    "src": "/images/original/images/intro/workflow-6f08e30b.svg",
+    "width": 900,
+    "height": 300
+  },
+  "routes/010-concepts/images/site-model/site-files.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "b3f305ea4fac3fda1154f6f126da1c3f10a712f4e9c9b86a6b7463500e845575",
+    "src": "/images/original/routes/010-concepts/images/site-model/site-files-b3f305ea.svg",
+    "width": 900,
+    "height": 640
+  }
+}

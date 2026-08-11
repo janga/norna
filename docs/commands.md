@@ -101,10 +101,10 @@ should normally mean the repository's complete publishable artifact, while
   cache path.
 - `config:check`: validates `site/config.mjs` against the runtime config
   reader.
-- `content:check`: validates section structure and image references, then
-  runs `astro sync`.
-- `content:sync` / `norna:sync`: rewrites Markdown section order and moves misplaced referenced
-  image files after confirmation.
+- `content:check`: validates section structure, image references, inline
+  styles, and common content mistakes.
+- `content:sync` / `norna:sync`: moves misplaced referenced image files after
+  confirmation.
 - `typography presets`: prints the exact built-in values for typography
   presets and rhythms.
 - `typography show`: prints the selected site's resolved typography for the
@@ -112,8 +112,8 @@ should normally mean the repository's complete publishable artifact, while
   and inherited page or section values are marked with `inherited: true`.
 - `site:public`: copies `site/public/` into `site/.norna/public/` and
   removes stale copied static files.
-- `images`: generates WebP variants and writes
-  `site/.norna/generated-images.json`.
+- `images`: generates WebP variants for raster images, copies managed SVG
+  images, and writes `site/.norna/generated-images.json`.
 - `engine:update [version|latest]`: updates the site repository's
   `@janga/norna` dependency with `npm install --save-exact`, normalizes
   `package-lock.json` for the pinned GitHub Actions Linux/npm environment, and

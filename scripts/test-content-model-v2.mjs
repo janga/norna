@@ -119,13 +119,118 @@ description: Fixture
 
 ![External](https://example.com/portrait.jpg)
 
-![Public](/workflow.svg)
+![Public](/favicon.svg)
 `);
 
 		const { stdout } = await runContentScript(siteDir, ['--check']);
 		assert.match(stdout, /Markdown image "portrait\.jpg" references a local image that is not managed by Norna\./);
 		assert.doesNotMatch(stdout, /https:\/\/example\.com\/portrait\.jpg/);
-		assert.doesNotMatch(stdout, /\/workflow\.svg/);
+		assert.doesNotMatch(stdout, /\/favicon\.svg/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('managed SVG images are copied as static image output', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: SVG Fixture
+description: Fixture
+---
+
+## Intro {#intro}
+
+\`\`\`norna-image-stack
+- image: diagram.svg
+  alt: Diagram
+\`\`\`
+`);
+		await mkdir(path.join(siteDir, 'images', 'intro'), { recursive: true });
+		await writeFile(path.join(siteDir, 'images', 'intro', 'diagram.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620"><rect width="900" height="620"/></svg>\n');
+
+		await runContentScript(siteDir, ['--check']);
+		await runNorna(['--site-dir', siteDir, 'images']);
+
+		const manifest = JSON.parse(await readFile(path.join(siteDir, '.norna', 'generated-images.json'), 'utf8'));
+		const entry = manifest['images/intro/diagram.svg'];
+		assert.equal(entry.kind, 'static');
+		assert.equal(entry.width, 900);
+		assert.equal(entry.height, 620);
+		assert.match(entry.src, /^\/images\/original\/images\/intro\/diagram-[a-f0-9]{8}\.svg$/);
+		assert.equal(entry.variants, undefined);
+		assert.equal(await fileExists(path.join(siteDir, '.norna', 'public', entry.src.replace(/^\//, ''))), true);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('updated managed SVG images get updated static output', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: SVG Update Fixture
+description: Fixture
+---
+
+## Intro {#intro}
+
+\`\`\`norna-image-stack
+- image: diagram.svg
+  alt: Diagram
+\`\`\`
+`);
+		await mkdir(path.join(siteDir, 'images', 'intro'), { recursive: true });
+		const sourcePath = path.join(siteDir, 'images', 'intro', 'diagram.svg');
+		await writeFile(sourcePath, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620"><rect width="900" height="620" fill="red"/></svg>\n');
+
+		await runContentScript(siteDir, ['--check']);
+		await runNorna(['--site-dir', siteDir, 'images']);
+
+		const firstManifest = JSON.parse(await readFile(path.join(siteDir, '.norna', 'generated-images.json'), 'utf8'));
+		const firstEntry = firstManifest['images/intro/diagram.svg'];
+		const firstOutputPath = path.join(siteDir, '.norna', 'public', firstEntry.src.replace(/^\//, ''));
+
+		await writeFile(sourcePath, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620"><rect width="900" height="620" fill="blue"/></svg>\n');
+		await runNorna(['--site-dir', siteDir, 'images']);
+
+		const secondManifest = JSON.parse(await readFile(path.join(siteDir, '.norna', 'generated-images.json'), 'utf8'));
+		const secondEntry = secondManifest['images/intro/diagram.svg'];
+		const secondOutputPath = path.join(siteDir, '.norna', 'public', secondEntry.src.replace(/^\//, ''));
+
+		assert.notEqual(secondEntry.sourceHash, firstEntry.sourceHash);
+		assert.notEqual(secondEntry.src, firstEntry.src);
+		assert.equal(await fileExists(firstOutputPath), false);
+		assert.match(await readFile(secondOutputPath, 'utf8'), /fill="blue"/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check warns when carousel SVG images have no intrinsic aspect ratio', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: SVG Carousel Fixture
+description: Fixture
+---
+
+## Intro {#intro}
+
+\`\`\`norna-image-carousel
+- image: first.svg
+  alt: First
+- image: second.svg
+  alt: Second
+\`\`\`
+`);
+		await mkdir(path.join(siteDir, 'images', 'intro'), { recursive: true });
+		await writeFile(path.join(siteDir, 'images', 'intro', 'first.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100"/></svg>\n');
+		await writeFile(path.join(siteDir, 'images', 'intro', 'second.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100"/></svg>\n');
+
+		const { stdout } = await runContentScript(siteDir, ['--check']);
+		assert.match(stdout, /Content check completed with warnings\./);
+		assert.match(stdout, /Carousel on line \d+ uses images without an intrinsic aspect ratio: first\.svg\./);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -153,6 +258,33 @@ description: Fixture
 
 		const moved = await readFile(path.join(siteDir, 'images', 'work', 'moved.jpg'), 'utf8');
 		assert.equal(moved, 'fixture image');
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:sync moves managed SVG images inside the same page image root', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: SVG Sync Fixture
+description: Fixture
+---
+
+## Work {#work}
+
+\`\`\`norna-image-stack
+- image: moved.svg
+  alt: Moved diagram
+\`\`\`
+`);
+		await mkdir(path.join(siteDir, 'images', 'old'), { recursive: true });
+		await writeFile(path.join(siteDir, 'images', 'old', 'moved.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"></svg>\n');
+
+		await runContentScript(siteDir, ['--write', '--yes']);
+
+		const moved = await readFile(path.join(siteDir, 'images', 'work', 'moved.svg'), 'utf8');
+		assert.match(moved, /viewBox="0 0 10 10"/);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}

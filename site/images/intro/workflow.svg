@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" role="img" aria-labelledby="title desc">
+  <title id="title">Norna build and publishing workflow</title>
+  <desc id="desc">Norna turns site files into static website output in dist. GitHub Pages publishing is included today, while a dashed branch shows possible future integrations with other static hosts.</desc>
+  <rect width="900" height="300" rx="22" fill="#101417"/>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M2 2 L10 6 L2 10" fill="none" stroke="#d8c47a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M2 2 L10 6 L2 10" fill="none" stroke="#aeb8b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="46" y="48" fill="#f2eee6" font-size="22" font-weight="700">From files to static publishing</text>
+    <text x="46" y="72" fill="#aeb8b3" font-size="14">Norna builds static output first. Publishing happens after the build.</text>
+
+    <g transform="translate(48 118)">
+      <rect width="150" height="78" rx="14" fill="#182126" stroke="#52626b"/>
+      <text x="75" y="33" text-anchor="middle" fill="#f2eee6" font-size="17" font-weight="800">Site files</text>
+      <text x="75" y="56" text-anchor="middle" fill="#aeb8b3" font-size="13">source</text>
+    </g>
+
+    <path d="M210 157h84" stroke="#d8c47a" stroke-width="5" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+    <g transform="translate(316 112)">
+      <rect width="162" height="88" rx="16" fill="#d8c47a"/>
+      <text x="81" y="37" text-anchor="middle" fill="#101417" font-size="24" font-weight="800">Norna</text>
+      <text x="81" y="61" text-anchor="middle" fill="#101417" font-size="13" font-weight="700">site model + renderer</text>
+    </g>
+
+    <path d="M490 157h84" stroke="#d8c47a" stroke-width="5" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+    <g transform="translate(596 118)">
+      <rect width="150" height="78" rx="14" fill="#eef2f0"/>
+      <text x="75" y="33" text-anchor="middle" fill="#101417" font-size="22" font-weight="800">dist/</text>
+      <text x="75" y="56" text-anchor="middle" fill="#101417" font-size="13" font-weight="700">static output</text>
+    </g>
+
+    <path d="M746 157h56" stroke="#d8c47a" stroke-width="5" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+    <g transform="translate(802 108)">
+      <rect width="82" height="98" rx="14" fill="#243039" stroke="#d8c47a" stroke-width="2"/>
+      <text x="41" y="34" text-anchor="middle" fill="#f2eee6" font-size="13" font-weight="700">GitHub</text>
+      <text x="41" y="52" text-anchor="middle" fill="#f2eee6" font-size="13" font-weight="700">Pages</text>
+      <text x="41" y="76" text-anchor="middle" fill="#d8c47a" font-size="11" font-weight="700">included</text>
+      <text x="41" y="91" text-anchor="middle" fill="#d8c47a" font-size="11" font-weight="700">today</text>
+    </g>
+
+    <path d="M672 204c38 34 88 42 142 28" stroke="#aeb8b3" stroke-width="4" stroke-linecap="round" stroke-dasharray="9 9" fill="none" marker-end="url(#arrow-muted)"/>
+
+    <g transform="translate(676 224)">
+      <rect width="154" height="42" rx="11" fill="#182126" stroke="#52626b" stroke-width="2"/>
+      <text x="77" y="18" text-anchor="middle" fill="#f2eee6" font-size="12" font-weight="700">Other static hosts</text>
+      <text x="77" y="33" text-anchor="middle" fill="#aeb8b3" font-size="11">future integrations</text>
+    </g>
+  </g>
+</svg>

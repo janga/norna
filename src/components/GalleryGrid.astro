@@ -9,6 +9,10 @@ type GalleryImage = {
 	caption?: string;
 };
 type GalleryItem = GalleryImage | { carousel: GalleryImage[] };
+type GeneratedImageWithDimensions = NonNullable<ReturnType<typeof getGeneratedImage>> & {
+	width: number;
+	height: number;
+};
 
 interface Props {
 	title: string;
@@ -21,9 +25,12 @@ const galleryImageSizes = [
 	`(max-width: 700px) ${projectConfig.gallery.maxAvailableWidthPercent.mobile}vw`,
 	`${projectConfig.gallery.maxAvailableWidthPercent.desktop}vw`,
 ].join(', ');
+const hasDimensions = (image: ReturnType<typeof getGeneratedImage>): image is GeneratedImageWithDimensions => (
+	Boolean(image) && Number.isFinite(image.width) && Number.isFinite(image.height)
+);
 const getImageClass = (image: GalleryImage) => {
 	const generatedImage = getGeneratedImage(image.src ?? image.image);
-	return generatedImage && generatedImage.width > generatedImage.height
+	return hasDimensions(generatedImage) && generatedImage.width > generatedImage.height
 		? 'gallery-image-landscape'
 		: undefined;
 };
@@ -35,7 +42,7 @@ const getImageLoadingProps = (isPriority: boolean) => ({
 const getCarouselAspectRatio = (images: GalleryImage[]) => {
 	const ratios = images
 		.map((image) => getGeneratedImage(image.src ?? image.image))
-		.filter((image): image is NonNullable<typeof image> => Boolean(image))
+		.filter(hasDimensions)
 		.map((image) => image.width / image.height);
 
 	return ratios.length > 0 ? Math.min(...ratios) : null;

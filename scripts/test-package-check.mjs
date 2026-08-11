@@ -202,6 +202,11 @@ sections:
 
 This page verifies that [packaged norna sites]{.highlight} can build with the current content model.
 
+<!-- norna-image-provenance:
+image: package-check.svg
+source: package check fixture
+-->
+
 ## Work {#work}
 
 This section keeps the package check independent from user-facing starter copy.
@@ -287,6 +292,10 @@ This route verifies that packaged norna sites can build route pages.
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-body-line-height: 1.5',
+	);
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'norna-image-provenance',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),

@@ -32,6 +32,7 @@ const headingRegex = /<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[([^\]<]+)\]\{\.([a-z][a-z0-9-]*)\}/g;
 const markdownH2Regex = /^##\s+.*$/gm;
+const imageProvenanceCommentRegex = /<!--\s*norna-image-provenance:[\s\S]*?-->/gi;
 
 const stripTags = (html: string) => html.replace(/<[^>]*>/g, '');
 
@@ -81,8 +82,13 @@ const applyInlineStyles = (html: string, inlineStyles: InlineStyles | undefined)
 		return `<span class="inline-style inline-style-${styleName}" style="--inline-style-color: ${style.color}">${text}</span>`;
 	});
 
+const stripImageProvenanceComments = (html: string) => html.replace(imageProvenanceCommentRegex, '');
+
 const prepareContentHtml = (html: string, inlineStyles: InlineStyles | undefined) =>
-	applyBasePathToHtml(projectConfig.site.basePath, applyInlineStyles(html, inlineStyles));
+	applyBasePathToHtml(
+		projectConfig.site.basePath,
+		stripImageProvenanceComments(applyInlineStyles(html, inlineStyles)),
+	);
 
 const getRawMarkdownSections = (markdown: string) => {
 	const matches = Array.from(markdown.matchAll(markdownH2Regex));

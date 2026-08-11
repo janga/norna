@@ -1,15 +1,18 @@
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import {
 	getBodySections,
 	getContentFiles,
 	readSiteFile,
+	rasterImageExtensions,
+	staticImageExtensions,
 	supportedImageExtensions,
 	toPosixPath,
 } from './lib/site-content.mjs';
+import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
 	extractNornaMarkdownBlocks,
 	getNornaBlockImageReferences,
@@ -90,6 +93,11 @@ const getGeneratedPath = (sourcePath, sourceHash, width) => {
 		? path.relative(path.dirname(siteImagesDir), sourcePath)
 		: path.relative(siteImagesDir, sourcePath));
 	return path.join(generatedImagesDir, parsed.dir, `${parsed.name}-${getSourceHashSlug(sourceHash)}-${width}.webp`);
+};
+
+const getOriginalPath = (sourceKey, sourceHash) => {
+	const parsed = path.parse(sourceKey);
+	return path.join(originalImagesDir, parsed.dir, `${parsed.name}-${getSourceHashSlug(sourceHash)}${parsed.ext}`);
 };
 
 const fail = (message) => {
@@ -197,6 +205,7 @@ const validateCarouselOrientations = async (manifest) => {
 					block.images
 						.map((image) => manifest[getImageSourceKey(contentFile, section.id, image.image)])
 						.filter(Boolean)
+						.filter((entry) => Number.isFinite(entry.width) && Number.isFinite(entry.height))
 						.map(getOrientation)
 				);
 
@@ -296,6 +305,20 @@ const getReusableEntry = async (sourcePath, previousEntry, sourceHash) => {
 	};
 };
 
+const getReusableStaticEntry = async (previousEntry, sourceHash) => {
+	if (
+		previousEntry?.kind !== 'static'
+		|| previousEntry?.sourceHash !== sourceHash
+		|| previousEntry?.outputVersion !== imageOutputVersion
+		|| typeof previousEntry?.src !== 'string'
+		|| !(await fileExists(getFilePathFromPublicPath(previousEntry.src)))
+	) {
+		return null;
+	}
+
+	return previousEntry;
+};
+
 const listGeneratedFiles = async (directory) => {
 	const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
 		if (error?.code === 'ENOENT') {
@@ -319,13 +342,22 @@ const listGeneratedFiles = async (directory) => {
 	return files;
 };
 
+const getManifestOutputPaths = (entry) => [
+	...(entry.variants ?? []).map((variant) => getFilePathFromPublicPath(variant.src)),
+	...(entry.kind === 'static' && typeof entry.src === 'string'
+		? [getFilePathFromPublicPath(entry.src)]
+		: []),
+];
+
 const removeUnreferencedGeneratedFiles = async (manifest) => {
 	const expectedFiles = new Set(
 		Object.values(manifest)
-			.flatMap((entry) => entry.variants ?? [])
-			.map((variant) => getFilePathFromPublicPath(variant.src)),
+			.flatMap(getManifestOutputPaths),
 	);
-	const generatedFiles = await listGeneratedFiles(generatedImagesDir);
+	const generatedFiles = [
+		...await listGeneratedFiles(generatedImagesDir),
+		...await listGeneratedFiles(originalImagesDir),
+	];
 
 	for (const generatedFile of generatedFiles) {
 		if (!expectedFiles.has(generatedFile)) {
@@ -334,12 +366,13 @@ const removeUnreferencedGeneratedFiles = async (manifest) => {
 	}
 };
 
-await rm(originalImagesDir, { recursive: true, force: true });
 await mkdir(generatedImagesDir, { recursive: true });
 
 const previousManifest = await readManifest();
 const sources = await getReferencedSources();
 const manifest = {};
+const isStaticSource = (sourcePath) => staticImageExtensions.has(path.extname(sourcePath).toLowerCase());
+const isRasterSource = (sourcePath) => rasterImageExtensions.has(path.extname(sourcePath).toLowerCase());
 
 if (sources.length === 0) {
 	await removeUnreferencedGeneratedFiles(manifest);
@@ -348,15 +381,45 @@ if (sources.length === 0) {
 	process.exit(0);
 }
 
-const imageMagick = await getImageMagick();
+const imageMagick = sources.some(({ sourcePath }) => isRasterSource(sourcePath))
+	? await getImageMagick()
+	: null;
 
 for (const { sourcePath, sourceKey } of sources) {
 	const sourceHash = await getSourceHash(sourcePath);
+
+	if (isStaticSource(sourcePath)) {
+		const reusableEntry = await getReusableStaticEntry(previousManifest[sourceKey], sourceHash);
+
+		if (reusableEntry) {
+			manifest[sourceKey] = reusableEntry;
+			continue;
+		}
+
+		const outputPath = getOriginalPath(sourceKey, sourceHash);
+		await mkdir(path.dirname(outputPath), { recursive: true });
+		await copyFile(sourcePath, outputPath);
+
+		const dimensions = await readImageDimensions(sourcePath).catch(() => null);
+		manifest[sourceKey] = {
+			kind: 'static',
+			outputVersion: imageOutputVersion,
+			sourceHash,
+			src: getPublicPath(outputPath),
+			...(dimensions ? { width: dimensions.width, height: dimensions.height } : {}),
+		};
+		continue;
+	}
+
 	const reusableEntry = await getReusableEntry(sourcePath, previousManifest[sourceKey], sourceHash);
 
 	if (reusableEntry) {
 		manifest[sourceKey] = reusableEntry;
 		continue;
+	}
+
+	if (!imageMagick) {
+		throw new Error(`ImageMagick is missing for raster image: ${sourcePath}`);
 	}
 
 	const dimensions = await identify(sourcePath);

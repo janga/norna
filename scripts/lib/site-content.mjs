@@ -12,7 +12,9 @@ import {
 } from './site-paths.mjs';
 import { parseRouteDirectory } from './route-model.mjs';
 
-export const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
+export const rasterImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
+export const staticImageExtensions = new Set(['.svg']);
+export const supportedImageExtensions = new Set([...rasterImageExtensions, ...staticImageExtensions]);
 
 const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;

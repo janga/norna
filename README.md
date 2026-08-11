@@ -32,8 +32,8 @@ A `norna` site is file-driven:
 6. Source images live under `site/images/<section-id>/` for the homepage, or
    under `site/routes/<route-folder>/images/<section-id>/` for a route.
 7. Static public files live under `site/public/`.
-8. `norna` validates the files, generates WebP variants, builds static
-   Astro pages, and can help publish the committed branch through GitHub Pages.
+8. `norna` validates the files, prepares managed images, builds static Astro
+   pages, and can help publish the committed branch through GitHub Pages.
 
 The default site directory is `site/`. Commands can also use another directory
 with `NORNA_SITE_DIR` or `norna --site-dir <path>`. Without an explicit site

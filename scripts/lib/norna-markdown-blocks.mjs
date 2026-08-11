@@ -8,7 +8,7 @@ const blockTypeLabels = {
 };
 
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
-const imageNameRegex = /^[a-z0-9][a-z0-9.-]*\.(jpe?g|png)$/i;
+const imageNameRegex = /^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$/i;
 const markerTagName = 'norna-media-block';
 const imageStackExample = [
 	'```norna-image-stack',
@@ -66,11 +66,11 @@ const validateImage = (image, options) => {
 	}
 
 	if (!imageNameRegex.test(image.image)) {
-		if (/\.(?:jpe?g|png)\s+[a-z][a-z0-9-]*:/i.test(image.image)) {
+		if (/\.(?:jpe?g|png|svg)\s+[a-z][a-z0-9-]*:/i.test(image.image)) {
 			fail(`Image entry "${image.image}" looks like multiple fields on one line. Put image, alt and caption on separate lines. Example:\n${imageStackExample}`, options);
 		}
 
-		fail(`Image reference "${image.image}" must be a filename ending in jpg, jpeg, or png.`, options);
+		fail(`Image reference "${image.image}" must be a filename ending in jpg, jpeg, png, or svg.`, options);
 	}
 };
 
