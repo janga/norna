@@ -17,6 +17,47 @@ gives you a defined site model to work within.
 
 You describe the site rather than implement it.
 
+## Why Norna? {#why}
+
+### One layer above a traditional site generator
+
+A general-purpose static site generator usually gives you tools for building a
+website: templates, layouts, components, data pipelines and rendering
+primitives.
+
+Norna works at a higher level of abstraction.
+
+You provide the site's content, presentation choices, configuration, routes and
+assets. Norna owns more of the website implementation.
+
+That means Norna is not trying to maximise flexibility. It is trying to
+minimise how much website-specific implementation you need for the kinds of
+sites it supports.
+
+### Websites as ordinary files
+
+The website lives in ordinary files that can be read, edited, reviewed and
+versioned.
+
+That works for standalone websites, personal sites and small organisation
+sites. It also works when the website should live beside the project it
+documents or presents.
+
+There is no separate CMS or content database that has to be kept in sync with
+the site files.
+
+### A defined structure for common site work
+
+Editorial content belongs in content files, visual defaults in `theme.md`, and
+technical settings in `config.mjs`.
+
+The structure is deliberately constrained so that each file has a clear role,
+and so normal site work does not require a new template, component or layout
+architecture for every site.
+
+You work with the Norna model instead of assembling a custom presentation layer
+from lower-level building blocks.
+
 ## How Norna works {#model}
 
 ### Opinionated by design
@@ -24,8 +65,12 @@ You describe the site rather than implement it.
 Norna deliberately gives you a defined way to structure a website.
 
 Content belongs in content files. Visual presentation belongs in the theme.
-Technical behaviour belongs in configuration. Additional pages are routes.
-Images and public assets have defined places.
+Technical behaviour belongs in configuration. Images and public assets have
+defined places.
+
+Additional pages are routes. A route is simply another content page in the same
+site model: it inherits the site's visual presentation by default and does not
+introduce its own technical behaviour.
 
 For normal site work, you do not build templates, components or rendering logic
 for each project. Norna provides that presentation layer as part of the tool.
@@ -42,21 +87,30 @@ A typical Norna site looks like this:
 
 ```text
 site/
-  config.mjs
-  theme.md
-  content.md
-  routes/
-  images/
-  public/
+|-- content.md                 homepage content and sections
+|-- theme.md                   site-wide visual presentation
+|-- config.mjs                 technical configuration
+|-- images/                    homepage source images
+|   |-- intro/
+|   |   `-- portrait.jpg
+|   `-- work/
+|       `-- detail.jpg
+|-- routes/                    additional content pages
+|   |-- 010-getting-started/   010 orders navigation
+|   |   |-- route-content.md   page content
+|   |   `-- images/
+|   |       `-- intro/
+|   |           `-- hero.jpg   route-local image
+|   `-- 020-concepts/          concepts becomes /concepts/
+|       `-- route-content.md
+`-- public/                    static files copied as-is
+    |-- favicon.ico
+    |-- robots.txt
+    `-- workflow.svg
 ```
 
-- `content.md` - what the homepage says and how its sections are organised
-- `theme.md` - how the site looks
-- `config.mjs` - technical behaviour such as URL, base path, language labels
-  and publishing settings
-- `routes/` - additional pages
-- `images/` - source images used by the site
-- `public/` - static files copied into the published site
+The numeric route prefix controls presentation order. The route id after the
+prefix becomes the URL slug.
 
 Content, presentation and technical configuration stay separate, while routes
 and assets can be added as the site grows.
@@ -75,51 +129,6 @@ is static, so other static hosting services are technically possible publishing
 targets, but Norna does not provide integrations for them today.
 
 Additional publishing integrations may be added in the future.
-
-### One layer above a traditional site generator
-
-A general-purpose static site generator usually gives you tools for building a
-website: templates, layouts, components, data pipelines and rendering
-primitives.
-
-Norna works at a higher level of abstraction.
-
-You provide the site's content, presentation choices, configuration, routes and
-assets. Norna owns more of the website implementation.
-
-That means Norna is not trying to maximise flexibility. It is trying to
-minimise how much website-specific implementation you need for the kinds of
-sites it supports.
-
-## Why Norna? {#why}
-
-### Keep the website with the project
-
-The website lives in ordinary files that can be read, edited, reviewed and
-versioned together with the rest of the project.
-
-There is no separate CMS or content database that has to be kept in sync with
-the repository.
-
-### Separate responsibilities
-
-Editorial content belongs in content files, visual defaults in `theme.md`, and
-technical settings in `config.mjs`.
-
-The structure is deliberately constrained so that each file has a clear role.
-
-### Less website implementation
-
-For normal site work, you work with the Norna model instead of creating a new
-template/component architecture for every site.
-
-### Static output
-
-The result of a build is a static website in `dist/`.
-
-The build output is separate from the source files.
-
-Edit the files under `site/`; let Norna generate `dist/`.
 
 ## Good fit for {#good-fit}
 

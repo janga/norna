@@ -115,6 +115,30 @@ documentation.
 If a site wants embedded metadata in original source files, that process is
 outside the current Norna command surface.
 
+## AI-Generated Images
+
+For AI-generated images, keep provenance and the generation prompt in a
+Markdown comment near the image block. This makes the image maintainable as
+content: future editors can understand where it came from and regenerate or
+revise it without reverse-engineering the asset.
+
+````md
+<!--
+AI image prompt for workflow.png:
+A clean editorial illustration of ordinary project files becoming a small
+static website, restrained colors, readable composition, no text in the image.
+-->
+
+```norna-image-stack
+- image: workflow.png
+  alt: Abstract illustration of project files becoming a website.
+  caption: Generated illustration.
+```
+````
+
+This is a maintenance rule for real editorial images. It is not necessary for
+throwaway test fixtures or examples where the prompt has no practical value.
+
 ## GitHub Actions Cache
 
 The starter workflow caches:

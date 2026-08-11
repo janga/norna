@@ -32,10 +32,15 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - The site source directory defaults to `site/` and can be overridden with
   `NORNA_SITE_DIR`; use `scripts/lib/site-paths.mjs` instead of
   hardcoding site paths in scripts.
-- Keep editable content, section definitions, image references, gallery alt
-  text, and captions in the selected site `content.md`; the default path is
-  `site/content.md`. Keep site-wide visual theme defaults and inline styles in
-  the selected site `theme.md`; the default path is `site/theme.md`.
+- Keep editable content, Markdown section headings, Norna image block
+  references, alt text, captions, and optional section metadata in the selected
+  site `content.md`; the default path is `site/content.md`. Keep site-wide
+  visual theme defaults and inline styles in the selected site `theme.md`; the
+  default path is `site/theme.md`.
+- When adding AI-generated images to Norna sites, document their provenance and
+  prompt in Markdown near the image block so future maintainers can regenerate
+  or revise them. This is not required for disposable test fixtures where the
+  prompt has no maintenance value.
 - Use root `site/` for the documentation site. Use `examples/dog-gallery/site`
   for visual demo and navigation checks. Use `fixtures/basic/site` for
   standalone engine regression checks.
@@ -56,11 +61,11 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Run `npm run config:check` after changing `site/config.mjs` or config
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or
-  gallery images.
+  Norna-managed images.
 - Run `npm run content:check` after changing `site/theme.md` or theme
   validation behavior.
-- Run `npm run content:sync` after moving gallery rows between sections so image
-  files move to the matching section directory.
+- Run `npm run content:sync` after moving Norna image block references between
+  sections so image files move to the matching section directory.
 - Run `npm run site:public` after changing `site/public/` when you need the
   local generated public copy without a full build.
 - Run `npm run test:site-public` after changing static-public sync behavior.
@@ -87,9 +92,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - The sticky navigation uses root `scroll-padding-top` to compensate for the
   fixed header area. Avoid section-level `scroll-margin-top` unless you are
   deliberately testing anchor offsets.
-- When adding, renaming, or moving sections, keep the frontmatter section `id`,
-  the Markdown heading id, and the `site/images/<section-id>/` image directory in
-  sync.
+- When adding, renaming, or moving sections, keep the Markdown heading id,
+  optional `sections.<section-id>` metadata, and the
+  `site/images/<section-id>/` image directory in sync.
 - Do not commit unreferenced source images unless the user explicitly asks for
   them.
 - If Playwright reports a missing Chromium browser, run
