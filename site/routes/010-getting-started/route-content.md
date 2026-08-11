@@ -25,7 +25,7 @@ build the site.
 For a real project, keep the generated lockfile committed so local and
 automated builds use the same Norna version.
 
-## What you work with {#work-with}
+## Understand the site files {#site-files}
 
 ```text
 site/
@@ -63,7 +63,9 @@ language labels, footer and GitHub publishing configuration.
 These files are the interface you normally work with. The website
 implementation itself is provided by Norna.
 
-## Work locally {#local}
+## Work locally and build {#workflow}
+
+### Work locally
 
 ```sh
 npm run dev
@@ -72,7 +74,7 @@ npm run dev
 Edit the source files while the development server is running. You normally do
 not edit generated website code or create a separate template/component layer.
 
-## Check and build {#check-build}
+### Check and build
 
 ```sh
 npm run norna:check
@@ -90,7 +92,9 @@ Treat `dist/` as generated output.
 
 Do not edit it as the source of the site.
 
-## Publish {#publish}
+## Publish and project setup {#publish}
+
+### Publish
 
 Norna currently provides integrated publishing for GitHub Pages.
 
@@ -107,7 +111,7 @@ More publishing integrations may be added in the future.
 Detailed GitHub Pages publishing documentation:
 [docs/publishing.md](https://github.com/janga/norna/blob/main/docs/publishing.md).
 
-## Standalone or embedded {#setup}
+### Standalone or embedded
 
 The normal setup creates a dedicated site project:
 
@@ -124,7 +128,7 @@ npx @janga/norna@latest init . --type embedded --site-dir presentation
 The surrounding project keeps its own structure while Norna manages the
 selected site directory and adds namespaced npm commands.
 
-## Next {#next}
+### Next
 
 - [Concepts](/concepts/)
 - [Examples](/examples/)

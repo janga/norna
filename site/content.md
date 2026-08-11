@@ -17,7 +17,9 @@ gives you a defined site model to work within.
 
 You describe the site rather than implement it.
 
-## Opinionated by design {#opinionated}
+## How Norna works {#model}
+
+### Opinionated by design
 
 Norna deliberately gives you a defined way to structure a website.
 
@@ -34,7 +36,7 @@ or web framework - intentionally.
 The trade-off is less architectural freedom in exchange for less website
 implementation work.
 
-## Files are the interface {#files}
+### Files are the interface
 
 A typical Norna site looks like this:
 
@@ -62,7 +64,7 @@ and assets can be added as the site grows.
 The files are ordinary project files: they can be edited, versioned, reviewed
 and kept together with the project they describe.
 
-## From files to a website {#workflow}
+### From files to a website
 
 ![Norna turns site files describing content, presentation, configuration, routes and assets into a static website in dist. GitHub Pages is the integrated publishing target today, while a dashed branch shows possible future integrations with other static hosts.](/workflow.svg)
 
@@ -74,7 +76,7 @@ targets, but Norna does not provide integrations for them today.
 
 Additional publishing integrations may be added in the future.
 
-## One layer above a traditional site generator {#abstraction}
+### One layer above a traditional site generator
 
 A general-purpose static site generator usually gives you tools for building a
 website: templates, layouts, components, data pipelines and rendering
@@ -141,7 +143,9 @@ It is not intended to replace a general-purpose framework for dynamic web
 applications or projects that need complete control over their rendering
 architecture.
 
-## Create a site {#create}
+## Get started {#start}
+
+### Create a site
 
 ```sh
 npx @janga/norna@latest init my-site
@@ -152,14 +156,14 @@ npm run dev
 
 Read [Getting Started](/getting-started/) for the full first-site flow.
 
-## Project links {#links}
+### Project links
 
 - [GitHub repository](https://github.com/janga/norna)
 - [Documentation](https://github.com/janga/norna/tree/main/docs)
 - [npm package](https://www.npmjs.com/package/@janga/norna)
 - [Issue tracker](https://github.com/janga/norna/issues)
 
-## Next steps {#next}
+### Next steps
 
 - [Getting Started](/getting-started/) - create and build your first Norna site
 - [Concepts](/concepts/) - understand the file model and abstraction level
@@ -167,7 +171,7 @@ Read [Getting Started](/getting-started/) for the full first-site flow.
 - [Full documentation](https://github.com/janga/norna/tree/main/docs) - read
   detailed configuration, command and publishing reference
 
-## License {#license}
+### License
 
 Norna is open source software released under
 [GNU GPL v3](https://github.com/janga/norna/blob/main/LICENSE).

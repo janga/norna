@@ -13,7 +13,9 @@ The common factor is that the site is relatively small, mostly static and fits
 well within a defined model of content, presentation, configuration, routes and
 assets.
 
-## Project website {#project}
+## Common site types {#site-types}
+
+### Project website
 
 A project website can use:
 
@@ -24,7 +26,7 @@ A project website can use:
 
 The Norna website itself is an example.
 
-## Portfolio or artist website {#portfolio}
+### Portfolio or artist website
 
 A portfolio can use:
 
@@ -36,7 +38,7 @@ A portfolio can use:
 Image-heavy presentation is one use of Norna, not the definition of the
 product.
 
-## Documentation or guide {#docs}
+### Documentation or guide
 
 A small guide can use the homepage as an introduction and routes for
 individual topics.
@@ -44,7 +46,7 @@ individual topics.
 Because the documentation is stored as files, it can live in the same
 repository as the project it describes.
 
-## Personal or organisation website {#personal}
+### Personal or organisation website
 
 A small information site can combine:
 
@@ -57,7 +59,7 @@ A small information site can combine:
 
 No CMS or database is required.
 
-## Image-driven site {#images}
+### Image-driven site
 
 Norna includes image processing and gallery-oriented presentation features for
 sites where images matter.

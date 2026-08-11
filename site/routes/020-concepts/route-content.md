@@ -5,7 +5,9 @@ navigation:
   label: Concepts
 ---
 
-## Files are the interface {#files}
+## Norna's site model {#site-model}
+
+### Files are the interface
 
 A Norna site is defined primarily through files rather than through a CMS,
 database, visual editor or application-specific component tree.
@@ -22,7 +24,7 @@ They can be:
 
 Norna reads those files and turns them into a static website.
 
-## Opinionated by design {#opinionated}
+### Opinionated by design
 
 Norna deliberately defines how the major parts of a site are represented.
 
@@ -35,24 +37,26 @@ This is what makes Norna opinionated.
 It reduces flexibility, but also reduces the amount of website architecture
 each project has to create and maintain.
 
-## Separate concerns {#concerns}
+### Separate concerns
 
-### Content - what the site says
+#### Content - what the site says
 
 `content.md` and route content files contain headings, text, sections, image
 references, alt text and captions.
 
-### Theme - how the site looks
+#### Theme - how the site looks
 
 `theme.md` contains site-wide visual choices such as layout, image sizing,
 typography and colors.
 
-### Configuration - how the site behaves
+#### Configuration - how the site behaves
 
 `config.mjs` contains technical settings such as URLs, base paths, locale
 settings and GitHub publishing configuration.
 
-## Sections and routes {#routes}
+## Pages, sections and routes {#structure}
+
+### Sections and routes
 
 Sections organise content within a page.
 
@@ -74,7 +78,9 @@ source               generated static website
 Do not edit generated output to change the website. Change the source files
 and build again.
 
-## Norna compared with a traditional SSG {#compared}
+## Compared with other tools {#compared}
+
+### Norna compared with a traditional SSG
 
 A traditional static site generator usually exposes lower-level
 website-building primitives: templates, layouts, components, data sources or
@@ -113,7 +119,7 @@ A useful summary is:
 This is a conceptual explanation of Norna's intended workflow, not an absolute
 technical claim about every other static site generator.
 
-## Publishing is separate {#publishing}
+### Publishing is separate
 
 A build creates static output in `dist/`.
 
