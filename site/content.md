@@ -11,15 +11,20 @@ navigation:
 
 **An opinionated CLI for building small websites from plain files.**
 
-Norna turns Markdown, images and a small set of site files into a responsive
-static website.
+Norna turns Markdown, images and a small set of configuration files into a
+responsive static website.
 
-You write the content, choose a preset, and keep images in section folders for
-each page. Norna handles the repetitive work: validation, responsive image
-output, static builds and required checks before publishing.
+You keep the site as ordinary files, but not as an arbitrary pile of files.
+Norna gives them a defined structure: content files for text, image folders next
+to the content they belong to, a theme file for visual choices, and a config
+file for the few technical settings the site needs.
 
-Norna handles the repetitive website work and keeps layout decisions
-deliberately few, so you can focus on the site itself.
+Markdown stays the main writing format, with a few small Norna blocks for common
+site patterns such as image stacks, carousels and cards.
+
+That structure removes a lot of small decisions. Keep images where Norna expects
+them, and let the tool handle validation, image syncing, responsive image
+output, static builds and publishing checks.
 
 <!-- norna-image-provenance:
 image: workflow.svg
@@ -54,14 +59,15 @@ The file-based model also works well with AI-assisted editing. An assistant can
 draft, rewrite, reorganise or explain the site by working with the same
 Markdown, image folders, theme and configuration files that you review.
 
-When image files or route folders move, Norna helps the generated site follow.
+When content is reorganised, Norna helps keep related image files aligned with
+the site structure, so file organisation does not become manual bookkeeping.
 During local work, the dev server refreshes image output when content, images or
 route folders change, so the preview stays in step with the files.
 
 Image publishing stays efficient too. Norna creates image versions for different
-screen sizes, but only for new or changed images. Unchanged images do not need
-to be processed or uploaded again, while changed images are published under
-fresh URLs so stale browser caches are avoided.
+screen sizes, but only for new or changed images. Unchanged images can be
+reused, and changed images get fresh URLs so browsers do not keep showing old
+versions.
 
 ### Less website implementation
 
@@ -74,8 +80,8 @@ work, in exchange for staying inside Norna's site model.
 
 ## When is Norna a good fit? {#good-fit}
 
-Norna is intended for relatively small, mostly static websites where a
-file-driven and versioned workflow is useful.
+Norna is for small websites that should be easy to edit, review and publish as
+part of an ordinary file-based workflow.
 
 ### Good fit
 
@@ -85,8 +91,9 @@ file-driven and versioned workflow is useful.
 - personal websites
 - small organisation and information sites
 
-Norna is a good fit when you want to edit the site as files and let a tool
-handle the website structure and presentation.
+Norna is a good fit when you want a site that stays simple to change: content
+in ordinary files, clear places for images and pages, and a ready-made
+presentation model instead of a custom website implementation.
 
 ### Not a good fit
 
