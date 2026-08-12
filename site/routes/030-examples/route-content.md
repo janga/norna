@@ -31,7 +31,7 @@ The Norna website itself is an example.
 A portfolio can use:
 
 - sections for bodies of work
-- image stacks, carousels and captions
+- managed image stacks, carousels and captions
 - routes for exhibitions, biography or contact information
 - `theme.md` for visual presentation
 
@@ -61,7 +61,7 @@ No CMS or database is required.
 
 ### Image-driven site
 
-Norna includes image processing and gallery-oriented presentation features for
+Norna includes image processing and image-oriented presentation features for
 sites where images matter.
 
 Those features can be combined with ordinary text sections and routes.

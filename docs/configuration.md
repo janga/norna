@@ -141,7 +141,7 @@ Fields:
   `Sections`.
 - `locale.labels.menu`: mobile menu summary text, default `Menu`.
 - `locale.labels.closeMenu`: reserved close-menu label, default `Close menu`.
-- `locale.labels.gallery`: Norna image block ARIA label prefix, default
+- `locale.labels.gallery`: Norna managed media ARIA label prefix, default
   `Images`.
 
 Example:

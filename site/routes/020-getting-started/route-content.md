@@ -10,7 +10,9 @@ navigation:
 You need Node.js 22.12 or later. ImageMagick is used when Norna generates
 image variants.
 
-Create a site:
+### Standalone site
+
+Use this when the website is its own project:
 
 ```sh
 npx @janga/norna@latest init my-site
@@ -24,6 +26,28 @@ build the site.
 
 For a real project, keep the generated lockfile committed so local and
 automated builds use the same Norna version.
+
+### Embedded site
+
+Use this when the website should live inside an existing Node project:
+
+```sh
+cd existing-project
+npx @janga/norna@latest init . --type embedded --site-dir presentation
+npm install
+npm run norna:dev
+```
+
+Here `.` means "add Norna to the current project". `--site-dir presentation`
+means the Norna source files will live under `presentation/` instead of the
+default `site/`.
+
+Embedded setup keeps the surrounding project structure and uses namespaced
+`norna:*` scripts so Norna does not take over the project's normal `build`,
+`test`, or deploy scripts.
+
+Relevant documentation: [Getting Started](https://github.com/janga/norna/blob/main/docs/getting-started.md),
+[Commands](https://github.com/janga/norna/blob/main/docs/commands.md).
 
 ## Understand the site files {#site-files}
 
@@ -63,6 +87,11 @@ language labels, footer and GitHub publishing configuration.
 These files are the interface you normally work with. The website
 implementation itself is provided by Norna.
 
+Relevant documentation: [Site Structure](https://github.com/janga/norna/blob/main/docs/site-structure.md),
+[Content](https://github.com/janga/norna/blob/main/docs/content.md),
+[Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
+[Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md).
+
 ## Work locally and build {#workflow}
 
 ### Work locally
@@ -81,12 +110,14 @@ During local work, you can run the checks directly:
 ```sh
 npm run norna:config:check
 npm run norna:content:check
-npm run norna:content:sync
+npm run norna:sync
 ```
 
 `config:check` validates technical configuration. `content:check` validates
-content, sections and managed image references. `content:sync` helps keep image
-files aligned when content moves between sections or routes.
+content, sections and managed image references. `norna:sync` helps keep image
+files aligned when content moves between sections or routes. Cross-route sync
+requires a clean Git working tree before files are moved, so the operation is
+easy to roll back.
 
 Before publishing, validate and build the site:
 
@@ -105,6 +136,9 @@ dist/
 Treat `dist/` as generated output.
 
 Do not edit it as the source of the site.
+
+Relevant documentation: [Commands](https://github.com/janga/norna/blob/main/docs/commands.md),
+[Images And Metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md).
 
 ## Publish and project setup {#publish}
 
@@ -129,22 +163,8 @@ More publishing integrations may be added in the future.
 Detailed GitHub Pages publishing documentation:
 [docs/publishing.md](https://github.com/janga/norna/blob/main/docs/publishing.md).
 
-### Standalone or embedded
-
-The normal setup creates a dedicated site project:
-
-```sh
-npx @janga/norna@latest init my-site
-```
-
-Norna can also add a site to an existing Node project:
-
-```sh
-npx @janga/norna@latest init . --type embedded --site-dir presentation
-```
-
-The surrounding project keeps its own structure while Norna manages the
-selected site directory and adds namespaced npm commands.
+Relevant documentation: [Publishing](https://github.com/janga/norna/blob/main/docs/publishing.md),
+[Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md).
 
 ### Next
 

@@ -17,8 +17,10 @@ npm run dev -- --kill
 
 Edit site-wide visual defaults in `site/theme.md`, homepage content and section
 overrides in `site/content.md`, technical settings such as URL and locale
-labels in `site/config.mjs`, source images under
-`site/images/<section-id>/`, and static public files under `site/public/`.
+labels in `site/config.mjs`, source images under `site/images/<section-id>/`,
+and static public files under `site/public/`. The image folder name should
+match the section id in Markdown, for example `## Work {#work}` uses
+`site/images/work/`.
 
 Use `site.basePath: '/'` for a custom domain or root-hosted site. For a GitHub
 Pages project site without a custom domain, set both values:

@@ -4,44 +4,10 @@ description: A small norna example with free dog images.
 navigation:
   label: Dog site!
 sections:
-  black-dogs:
-    presentation:
-      typography:
-        preset: statement
-        overrides:
-          headings:
-            h2:
-              size: xlarge
   summer-dogs:
     visible:
       from: "2026-08-01"
       until: "2026-09-01"
-    presentation:
-      backgroundColor: "#181818"
-      typography:
-        preset: compact-gallery
-  brown-dogs:
-    presentation:
-      typography:
-        preset: text-forward
-  golden-dogs:
-    presentation:
-      typography:
-        overrides:
-          headings:
-            h2:
-              size: large
-            h3:
-              size: medium
-          body:
-            lineHeight: 1.58
-            paragraphSpacing: 1em
-  white-dogs:
-    presentation:
-      typography:
-        overrides:
-          caption:
-            spacingBefore: 0.35em
 ---
 
 ## Black Dogs {#black-dogs}
@@ -112,8 +78,7 @@ Cras justo odio, dapibus ac facilisis in, egestas eget quam.
 
 ### Training note
 
-This section overrides `headings.h2` and `headings.h3`, while keeping the
-site-wide `headings.h4` style.
+This `###` heading follows the site-wide `headings.h3` style.
 
 Nulla vitae elit libero, a pharetra augue. Integer posuere erat a ante venenatis
 dapibus posuere velit aliquet. Aenean eu leo quam. Pellentesque ornare sem

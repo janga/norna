@@ -6,8 +6,8 @@ source images and any copyright or licensing policy for those images.
 ## Managed Source Images
 
 Norna-managed local images are referenced from Markdown with
-`norna-image-stack` or `norna-image-carousel` blocks. See
-[Content](content.md#image-blocks) for the block syntax.
+`norna-image-stack`, `norna-image-carousel`, or `norna-card-list` blocks. See
+[Content](content.md#managed-media-blocks) for the block syntax.
 
 Homepage source images live under:
 
@@ -28,7 +28,7 @@ Supported source extensions:
 - `.png`
 - `.svg`
 
-Image block references use only the filename:
+Managed media block references use only the filename:
 
 ````md
 ```norna-image-stack
@@ -53,8 +53,10 @@ prompt: Short prompt or editing note.
 ```
 
 Filenames do not have to be globally unique for the site to be valid.
-Automatic sync only moves files when the filename identifies exactly one source
-candidate within the current page or route.
+Automatic sync only moves misplaced files when the filename identifies exactly
+one source candidate across the site's page and route image roots, and when the
+move will not break another reference. If the move crosses page or route image
+roots, `content:sync` requires a clean Git working tree before writing.
 
 ## Markdown Images
 
@@ -98,7 +100,7 @@ example-work-1a2b3c4d-1440.webp
 When a source image changes, the generated URL changes too. This avoids stale
 browser, CDN, and GitHub Actions cache entries at the old URL.
 
-SVG files are managed by the same Markdown image blocks, validation and sync
+SVG files are managed by the same Markdown media blocks, validation and sync
 model, but they are not rasterized and do not get WebP variants. Norna copies
 the SVG source to:
 
@@ -163,6 +165,9 @@ static website, restrained colors, readable composition, no text in the image.
   caption: Generated illustration.
 ```
 ````
+
+The same provenance comment style can be used next to a `norna-image-carousel`
+or `norna-card-list` block when generated images are referenced there.
 
 This is a maintenance rule for real editorial images. It is not necessary for
 throwaway test fixtures or examples where the prompt has no practical value.

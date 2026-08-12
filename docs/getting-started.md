@@ -16,10 +16,13 @@ Install Playwright Chromium only when you plan to run navigation diagnostics:
 npx playwright install chromium
 ```
 
-## Create A Site Repository
+## Create A Site
 
-Create the site from the starter first, then install dependencies inside the
-new site directory:
+### Standalone Site
+
+Use a standalone setup when the website is its own project. Create the site
+from the starter first, then install dependencies inside the new site
+directory:
 
 ```sh
 cd path/to/your/projects
@@ -55,10 +58,32 @@ The starter contains:
 - `site/config.mjs`
 - `site/theme.md`
 - `site/content.md`
-- `site/images/work/.gitkeep`
 - `site/public/robots.txt`
 
 Commit the generated `package-lock.json` after the first install.
+
+### Embedded Site
+
+Use an embedded setup when a Norna site should live inside an existing Node or
+GitHub project:
+
+```sh
+cd existing-project
+npx @janga/norna@latest init . --type embedded --site-dir presentation
+npm install
+npm run norna:dev
+```
+
+The command looks different because the target is different. `.` means "add
+Norna to the current project" instead of creating a new directory.
+`--site-dir presentation` tells Norna to manage `presentation/` as the site
+directory instead of the default `site/`.
+
+Embedded setup keeps the surrounding project structure. It adds namespaced
+`norna:*` scripts so Norna does not take over the project's normal `build`,
+`test`, or deploy scripts.
+
+Relevant documentation: [Commands](commands.md), [Site Structure](site-structure.md).
 
 ## First Edits
 
@@ -68,9 +93,10 @@ Commit the generated `package-lock.json` after the first install.
    rhythm, image sizing, font, typography preset, colors, inline styles, and
    frame colors, or omit it to use engine defaults.
 3. Edit `site/content.md` for homepage title, description, Markdown sections,
-   text, Norna image blocks, page/section presentation overrides, alt text, and
-   captions.
-4. Put source images under `site/images/<section-id>/`.
+   text, Norna managed media blocks, page/section presentation overrides, alt
+   text, and captions.
+4. Put source images under `site/images/<section-id>/`, where `<section-id>`
+   matches a `## Section {#section-id}` heading in `site/content.md`.
 5. Add optional route pages under
    `site/routes/<NNN-route-id>/route-content.md`, for example
    `site/routes/010-about/route-content.md`.
@@ -79,9 +105,22 @@ Commit the generated `package-lock.json` after the first install.
 7. Run:
 
 ```sh
+npm run norna:config:check
+npm run norna:content:check
+npm run norna:sync
 npm run norna:check
 npm run build
 ```
+
+`norna:sync` moves misplaced referenced image files when the intended move is
+unambiguous. It can move images between sections and routes, but cross-route
+writes require a clean Git working tree so the operation is easy to roll back.
+Publishing is normally done by committing the site files and pushing them with
+Git; the starter GitHub Pages workflow runs the required checks before
+publishing.
+
+Relevant documentation: [Content](content.md), [Theme](theme.md),
+[Typography](typography.md), [Routes](routes.md), [Images And Metadata](images-and-metadata.md).
 
 ## Configure The Public URL
 
@@ -111,6 +150,8 @@ rendering so the built links work under the GitHub Pages project path.
 The starter includes a GitHub Pages workflow in `.github/workflows/deploy.yml`.
 In the GitHub repository settings, configure Pages to build from GitHub
 Actions.
+
+Relevant documentation: [Configuration](configuration.md), [Publishing](publishing.md).
 
 Read [Site Structure](site-structure.md), [Content](content.md),
 [Theme](theme.md), [Typography](typography.md), [Routes](routes.md), and

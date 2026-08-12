@@ -5,8 +5,8 @@ presets, text rhythm, and optional overrides.
 
 The normal place to choose a site-wide typography preset and rhythm is the
 top-level `typography` block in `site/theme.md`.
-Page and section files may override the theme when a page or section needs a
-different presentation.
+Page and section files may override the theme when a focused exception is
+needed, but the normal workflow is to keep typography in `theme.md`.
 
 ## Presets
 
@@ -18,9 +18,8 @@ Available presets:
   short information blocks.
 - `text-forward`: more generous body text for pages where longer text carries
   more of the experience.
-- `statement`: tighter, more declarative line-height for introductions, first
-  sections, and short programmatic statements. Use it sparingly, usually as a
-  section override.
+- `statement`: tighter, more declarative line-height for short programmatic
+  statements. Use it sparingly, usually as a page or section exception.
 
 If theme typography is omitted, `quiet-gallery` is used.
 

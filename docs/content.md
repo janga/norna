@@ -91,10 +91,12 @@ page file:
 Do not list sections in frontmatter just to define order. Section order comes
 from the Markdown heading order.
 
-## Image Blocks
+## Managed Media Blocks
 
-Norna-managed local images are written in Markdown fenced blocks at the point
-where they should appear in the section.
+Norna-managed local images and cards are written in Markdown fenced blocks at
+the point where they should appear in the section. Markdown determines
+placement: move the fenced block in the page file to move the rendered image,
+carousel, or card list.
 
 Use `norna-image-stack` for one or more stacked images:
 
@@ -119,6 +121,38 @@ Use `norna-image-carousel` for a carousel:
 ```
 ````
 
+Use `norna-card-list` for a list of compact cards. Cards can include text,
+managed images, links, and optional badge text:
+
+````md
+```norna-card-list
+layout: image-top
+flow: grid
+size: m
+width: normal
+
+- title: Adopt
+  text: Give a dog a new home.
+  image: adopt.svg
+  link: /adopt/
+  badge-text: Recommended
+- title: Foster
+  text: Help for a shorter period.
+  image: foster.svg
+```
+````
+
+Card-list options:
+
+- `layout`: `image-top`, `image-left`, or `image-right`.
+- `flow`: `grid` or `stack`.
+- `size`: `s`, `m`, `l`, or `xl`.
+- `width`: `text`, `narrow`, `normal`, or `wide`.
+
+Each card starts with `- title: Card title`. Card fields use two spaces of
+indentation. Supported fields are `text`, `image`, `link`, and `badge-text`.
+Each card must include at least one of `text`, `image`, or `link`.
+
 Each image entry supports:
 
 - `image`: required filename matching
@@ -127,8 +161,8 @@ Each image entry supports:
 - `alt`: optional alt text. If omitted, Norna renders an empty alt attribute.
 - `caption`: optional caption.
 
-Start every image entry with `- image: filename.jpg`. Optional fields use two
-spaces of indentation:
+Start every image entry in image stacks and carousels with
+`- image: filename.jpg`. Optional fields use two spaces of indentation:
 
 ````md
 ```norna-image-stack
@@ -174,7 +208,7 @@ Route images live under:
 site/routes/<NNN-route-id>/images/<section-id>/
 ```
 
-Image references in Norna image blocks use only the filename:
+Image references in Norna managed media blocks use only the filename:
 
 ````md
 ```norna-image-stack
@@ -187,7 +221,8 @@ location is `site/images/team/portrait.jpg`.
 
 Filenames do not have to be globally unique for the site to be valid. Automatic
 sync only moves files when the filename identifies exactly one source candidate
-within the current page or route.
+across the site's page and route image roots. If more than one candidate
+exists, Norna reports the ambiguity instead of guessing.
 
 ## Markdown Images
 
@@ -199,8 +234,9 @@ Markdown image syntax is allowed for external images and public static assets:
 ```
 
 Relative local Markdown images such as `![Portrait](portrait.jpg)` are not
-managed by Norna. Use `norna-image-stack` or `norna-image-carousel` for local
-site images that should be validated, processed and synced.
+managed by Norna. Use `norna-image-stack`, `norna-image-carousel`, or
+`norna-card-list` for local site images that should be validated, processed and
+synced.
 
 ## Temporary Sections
 
@@ -253,9 +289,9 @@ npm run norna:content:check
 
 This checks section heading ids, section metadata, duplicate image names,
 missing image files, misplaced referenced images, duplicate image references,
-invalid image blocks, unreferenced images, undefined inline styles, Markdown
-image references to unmanaged local files, and common frontmatter indentation
-and structure mistakes.
+invalid managed media blocks, unreferenced images, undefined inline styles,
+Markdown image references to unmanaged local files, and common frontmatter
+indentation and structure mistakes.
 
 Frontmatter uses YAML indentation. Use ordinary spaces, not tabs or
 non-breaking spaces. `content:check` reports a focused error when indentation is
@@ -282,5 +318,19 @@ npm run norna:sync
 ```
 
 This moves referenced image files into the section directory shown by the
-Markdown placement. It prompts before writing unless `--yes` is passed. Sync is
-currently page- or route-local: it does not move images across routes.
+Markdown placement. It prompts before writing unless `--yes` is passed.
+
+`content:sync` is intentionally conservative. It only moves a file when the
+filename identifies exactly one matching source candidate across the site's
+page and route image roots, and when the move will not break another reference.
+If the intended move is ambiguous, rename or move the file manually and run
+`content:check` again.
+
+Duplicate filenames are allowed when files already live where their Markdown
+references expect them. Automatic relocation only requires site-wide filename
+uniqueness for the file being moved.
+
+When `content:sync` needs to move an image between the homepage and a route, or
+between two routes, the Git working tree must be clean before the write. This
+keeps cross-route sync easy to roll back. `content:check` only reports issues
+and does not require a clean working tree.

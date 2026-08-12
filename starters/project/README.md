@@ -23,7 +23,8 @@ npm run dev -- --kill
 - `site/theme.md`: site-wide visual settings such as brand text, layout
   density, typography rhythm, colors, frame colors, and inline text styles.
 - `site/content.md`: homepage title, sections, placeholders, project summary,
-  links, install command, example usage, benefits, next steps, and license.
+  links, install command, example usage, benefits, next steps, managed media
+  blocks, and license.
 - `site/routes/010-guide/route-content.md`: short secondary page with realistic
   project guide content.
 - `site/public/robots.txt`: static public file copied into the built site.
@@ -40,15 +41,18 @@ GitHub Pages workflow uses `npm ci`.
    delete the route if the homepage is enough.
 3. Edit `site/theme.md` for brand name, layout density, typography rhythm,
    colors, frame colors, and inline text styles.
-4. Edit `site/config.mjs` for public URL, GitHub repository, footer text, and
+4. Put any local source images in the image folder for the Markdown section
+   that references them, for example `site/images/intro/`.
+5. Edit `site/config.mjs` for public URL, GitHub repository, footer text, and
    deploy workflow name.
-5. Update `package.json` with the site's package name and keep
+6. Update `package.json` with the site's package name and keep
    `package-lock.json` committed.
 
 ## Common Commands
 
 ```sh
 npm run norna:check
+npm run norna:sync
 npm run norna:typography:show
 npm run build
 ```

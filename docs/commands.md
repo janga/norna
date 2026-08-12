@@ -101,10 +101,11 @@ should normally mean the repository's complete publishable artifact, while
   cache path.
 - `config:check`: validates `site/config.mjs` against the runtime config
   reader.
-- `content:check`: validates section structure, image references, inline
-  styles, and common content mistakes.
+- `content:check`: validates section structure, managed media references,
+  inline styles, and common content mistakes.
 - `content:sync` / `norna:sync`: moves misplaced referenced image files after
-  confirmation.
+  confirmation when the intended move is unambiguous. Moving files between the
+  homepage and routes, or between routes, requires a clean Git working tree.
 - `typography presets`: prints the exact built-in values for typography
   presets and rhythms.
 - `typography show`: prints the selected site's resolved typography for the

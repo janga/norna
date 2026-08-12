@@ -1,7 +1,9 @@
+import { execFile } from 'node:child_process';
 import { mkdir, rename, stat } from 'node:fs/promises';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import path from 'node:path';
+import { promisify } from 'node:util';
 import {
 	extractMarkdownImageReferences,
 	extractNornaMarkdownBlockDiagnostics,
@@ -25,7 +27,10 @@ import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
 	siteThemeLabel,
 	siteThemePath,
+	siteProjectRoot,
 } from './lib/site-paths.mjs';
+
+const execFileAsync = promisify(execFile);
 
 const args = new Set(process.argv.slice(2));
 const shouldWrite = args.has('--write');
@@ -60,7 +65,7 @@ const promptForWrite = async () => {
 	if (!process.stdin.isTTY) return false;
 
 	const rl = createInterface({ input, output });
-	const answer = await rl.question('This will move image files inside their current page or route image root if needed. Continue? [y/N] ');
+	const answer = await rl.question('This will move image files into the page or route image roots where Norna references them. Continue? [y/N] ');
 	rl.close();
 
 	return answer.trim().toLowerCase() === 'y';
@@ -172,16 +177,110 @@ const getExpectedImagePath = (contentFile, sectionId, imageName) =>
 const getExpectedImageLabel = (contentFile, sectionId, imageName) =>
 	`${contentFile.imagesLabel}/${sectionId}/${imageName}`;
 
-const getImageCandidates = (imageCandidatesByName, imageName, expectedPath) =>
-	(imageCandidatesByName.get(imageName) ?? []).filter((candidate) => candidate !== expectedPath);
+const getGlobalImageCandidates = (globalImageCandidatesByName, imageName, expectedPath) =>
+	(globalImageCandidatesByName.get(imageName) ?? []).filter(({ imagePath }) => imagePath !== expectedPath);
 
 const getReferenceLabel = (contentFile, section) => `${contentFile.contentLabel} [${section.id}]`;
+
+const getRootLabel = (contentFile) => contentFile.isHome
+	? contentFile.imagesLabel
+	: contentFile.imagesLabel.replace(/\/images$/, '');
+
+const getCandidateLabel = ({ contentFile, imagePath }) =>
+	`${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, imagePath))}`;
+
+const addExpectedReference = (expectedReferencesByPath, expectedPath, expectedReference) => {
+	if (!expectedReferencesByPath.has(expectedPath)) {
+		expectedReferencesByPath.set(expectedPath, []);
+	}
+
+	expectedReferencesByPath.get(expectedPath).push(expectedReference);
+};
+
+const addGlobalImageCandidate = (globalImageCandidatesByName, imageName, candidate) => {
+	if (!globalImageCandidatesByName.has(imageName)) {
+		globalImageCandidatesByName.set(imageName, []);
+	}
+
+	globalImageCandidatesByName.get(imageName).push(candidate);
+};
+
+const assertCleanGitForCrossRootSync = async (moves) => {
+	if (!moves.some((move) => move.crossRoot)) return;
+
+	let stdout = '';
+	try {
+		({ stdout } = await execFileAsync('git', ['status', '--short'], {
+			cwd: siteProjectRoot,
+			maxBuffer: 1024 * 1024,
+		}));
+	} catch (error) {
+		addIssue({
+			severity: 'error',
+			message: 'Cross-route content sync requires a clean git working tree, but git status could not be checked.',
+			fix: 'Run content:sync inside a Git worktree, or move cross-route image files manually.',
+		});
+		return;
+	}
+
+	if (!stdout.trim()) return;
+
+	addIssue({
+		severity: 'error',
+		message: 'Cross-route content sync requires a clean git working tree before moving files between page or route image roots.',
+		fix: `Commit or stash your current changes, then run content:sync again. Current changes:\n${stdout.trim()}`,
+	});
+};
+
+const addConflictingMoveIssues = () => {
+	const movesBySource = new Map();
+	const movesByDestination = new Map();
+
+	for (const move of imageMoves) {
+		const sourceKey = move.from;
+		const destinationKey = move.to;
+
+		if (!movesBySource.has(sourceKey)) {
+			movesBySource.set(sourceKey, []);
+		}
+		movesBySource.get(sourceKey).push(move);
+
+		if (!movesByDestination.has(destinationKey)) {
+			movesByDestination.set(destinationKey, []);
+		}
+		movesByDestination.get(destinationKey).push(move);
+	}
+
+	for (const moves of movesBySource.values()) {
+		const destinations = new Set(moves.map((move) => move.to));
+		if (destinations.size <= 1) continue;
+
+		const firstMove = moves[0];
+		addSectionIssue(firstMove.contentFile, { id: firstMove.sectionId, heading: firstMove.sectionId }, {
+			severity: 'error',
+			message: `Cannot relocate "${firstMove.imageName}" because the same source file is referenced from multiple destinations: ${moves.map((move) => getExpectedImageLabel(move.contentFile, move.sectionId, move.imageName)).join(', ')}.`,
+			fix: 'Duplicate the image manually or rename one of the image files so each move has a single destination.',
+		});
+	}
+
+	for (const moves of movesByDestination.values()) {
+		const sources = new Set(moves.map((move) => move.from));
+		if (sources.size <= 1) continue;
+
+		const firstMove = moves[0];
+		addSectionIssue(firstMove.contentFile, { id: firstMove.sectionId, heading: firstMove.sectionId }, {
+			severity: 'error',
+			message: `Cannot relocate "${firstMove.imageName}" because multiple source files would move to ${getExpectedImageLabel(firstMove.contentFile, firstMove.sectionId, firstMove.imageName)}: ${moves.map((move) => getCandidateLabel(move.sourceContentFile ? { contentFile: move.sourceContentFile, imagePath: move.from } : move)).join(', ')}.`,
+			fix: 'Move the intended file manually or rename files so the destination is unambiguous.',
+		});
+	}
+};
 
 const validateImageReference = async (
 	contentFile,
 	section,
 	reference,
-	imageCandidatesByName,
+	globalImageCandidatesByName,
 	expectedReferencesByPath,
 ) => {
 	const imageName = reference.image;
@@ -194,11 +293,11 @@ const validateImageReference = async (
 		return expectedPath;
 	}
 
-	const candidates = getImageCandidates(imageCandidatesByName, imageName, expectedPath);
+	const candidates = getGlobalImageCandidates(globalImageCandidatesByName, imageName, expectedPath);
 	if (candidates.length === 0) {
 		addSectionIssue(contentFile, section, {
 			severity: 'error',
-			message: `Image "${imageName}" does not exist at ${expectedLabel} or anywhere under ${contentFile.imagesLabel}/.`,
+			message: `Image "${imageName}" does not exist at ${expectedLabel} or anywhere under any page or route image root.`,
 			fix: `Add the source image to ${contentFile.imagesLabel}/${section.id}/ or remove the Norna-managed image reference.`,
 		});
 		return null;
@@ -207,20 +306,21 @@ const validateImageReference = async (
 	if (candidates.length > 1) {
 		addSectionIssue(contentFile, section, {
 			severity: 'error',
-			message: `Cannot relocate "${imageName}". Multiple files with this filename were found: ${candidates.map((candidate) => `${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, candidate))}`).join(', ')}.`,
-			fix: 'Move the intended file manually or rename files so the local move is unambiguous.',
+			message: `Cannot relocate "${imageName}". Multiple files with this filename were found: ${candidates.map(getCandidateLabel).join(', ')}.`,
+			fix: 'Move the intended file manually or rename files so the move is unambiguous.',
 		});
 		return null;
 	}
 
-	const sourcePath = candidates[0];
+	const sourceCandidate = candidates[0];
+	const sourcePath = sourceCandidate.imagePath;
 	const referencesAtCurrentLocation = (expectedReferencesByPath.get(sourcePath) ?? [])
-		.filter((expectedReference) => expectedReference.section.id !== section.id);
+		.filter((expectedReference) => expectedReference.contentFile !== contentFile || expectedReference.section.id !== section.id);
 
 	if (referencesAtCurrentLocation.length > 0) {
 		addSectionIssue(contentFile, section, {
 			severity: 'error',
-			message: `Cannot relocate "${imageName}" from ${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, sourcePath))} because it is still referenced from ${referencesAtCurrentLocation.map((expectedReference) => getReferenceLabel(contentFile, expectedReference.section)).join(', ')}.`,
+			message: `Cannot relocate "${imageName}" from ${getCandidateLabel(sourceCandidate)} because it is still referenced from ${referencesAtCurrentLocation.map((expectedReference) => getReferenceLabel(expectedReference.contentFile, expectedReference.section)).join(', ')}.`,
 			fix: 'Remove the extra reference, duplicate the image file manually, or rename one of the image files so the intended move is unambiguous.',
 		});
 		return null;
@@ -231,15 +331,19 @@ const validateImageReference = async (
 		from: sourcePath,
 		to: expectedPath,
 		contentFile,
+		sourceContentFile: sourceCandidate.contentFile,
 		sectionId: section.id,
+		crossRoot: sourceCandidate.contentFile !== contentFile,
 	});
 	referencedImagePaths.add(sourcePath);
 
 	if (!shouldWrite) {
 		addSectionIssue(contentFile, section, {
 			severity: 'error',
-			message: `Image "${imageName}" is used here but is located in ${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, sourcePath))}.`,
-			fix: 'Run norna content:sync to move it inside the current page or route image root.',
+			message: `Image "${imageName}" is used here but is located in ${getCandidateLabel(sourceCandidate)}.`,
+			fix: sourceCandidate.contentFile === contentFile
+				? 'Run norna content:sync to move it inside the current page or route image root.'
+				: `Run norna content:sync to move it from ${getRootLabel(sourceCandidate.contentFile)} to ${getRootLabel(contentFile)}. Cross-route sync requires a clean git working tree when files are moved.`,
 		});
 	}
 
@@ -302,6 +406,9 @@ const themeInlineStyleNames = themeFrontmatter
 
 const contentFiles = await getContentFiles();
 const allImageFiles = [];
+const contentFileContexts = [];
+const globalImageCandidatesByName = new Map();
+const globalExpectedReferencesByPath = new Map();
 
 for (const contentFile of contentFiles) {
 	const { frontmatter, body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
@@ -314,11 +421,14 @@ for (const contentFile of contentFiles) {
 	const { sections } = getBodySections(body);
 	const sectionsById = new Map();
 	const blockResultsBySectionId = new Map();
-	const expectedReferencesByPath = new Map();
 	const imageCandidatesByName = await getImageCandidatesByName(contentFile.imagesDir);
 
-	for (const candidates of imageCandidatesByName.values()) {
-		allImageFiles.push(...candidates.map((imagePath) => ({ contentFile, imagePath })));
+	for (const [imageName, candidates] of imageCandidatesByName) {
+		for (const imagePath of candidates) {
+			const candidate = { contentFile, imagePath };
+			allImageFiles.push(candidate);
+			addGlobalImageCandidate(globalImageCandidatesByName, imageName, candidate);
+		}
 	}
 
 	for (const section of sections) {
@@ -354,12 +464,29 @@ for (const contentFile of contentFiles) {
 
 		for (const reference of getNornaBlockImageReferences(blockResults.blocks)) {
 			const expectedPath = getExpectedImagePath(contentFile, section.id, reference.image);
-			if (!expectedReferencesByPath.has(expectedPath)) {
-				expectedReferencesByPath.set(expectedPath, []);
-			}
-			expectedReferencesByPath.get(expectedPath).push({ section, reference });
+			addExpectedReference(globalExpectedReferencesByPath, expectedPath, { contentFile, section, reference });
 		}
 	}
+
+	contentFileContexts.push({
+		contentFile,
+		frontmatterIds,
+		sections,
+		sectionsById,
+		blockResultsBySectionId,
+		body,
+	});
+}
+
+for (const context of contentFileContexts) {
+	const {
+		contentFile,
+		frontmatterIds,
+		sections,
+		sectionsById,
+		blockResultsBySectionId,
+		body,
+	} = context;
 
 	for (const id of frontmatterIds) {
 		if (!sectionsById.has(id)) {
@@ -417,8 +544,8 @@ for (const contentFile of contentFiles) {
 				contentFile,
 				section,
 				reference,
-				imageCandidatesByName,
-				expectedReferencesByPath,
+				globalImageCandidatesByName,
+				globalExpectedReferencesByPath,
 			);
 			if (sourcePath) {
 				sourcePathsByImage.set(reference.image, sourcePath);
@@ -435,6 +562,12 @@ const unreferencedImages = allImageFiles
 	.filter(({ imagePath }) => !referencedImagePaths.has(imagePath))
 	.map(({ contentFile, imagePath }) => `${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, imagePath))}`)
 	.sort((left, right) => left.localeCompare(right, 'sv'));
+
+addConflictingMoveIssues();
+
+if (shouldWrite) {
+	await assertCleanGitForCrossRootSync(imageMoves);
+}
 
 if (hasErrors()) {
 	printReport(shouldWrite ? 'Content sync failed.' : 'Content check failed.', unreferencedImages);

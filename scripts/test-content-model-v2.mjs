@@ -73,6 +73,26 @@ typography:
 
 const fileExists = async (filePath) => access(filePath).then(() => true, () => false);
 
+const runGit = async (cwd, args) => execFileAsync('git', args, {
+	cwd,
+	env: {
+		...process.env,
+		GIT_AUTHOR_NAME: 'Norna Test',
+		GIT_AUTHOR_EMAIL: 'norna@example.test',
+		GIT_COMMITTER_NAME: 'Norna Test',
+		GIT_COMMITTER_EMAIL: 'norna@example.test',
+	},
+	maxBuffer: 1024 * 1024,
+});
+
+const initCleanGitWorktree = async (root) => {
+	await runGit(root, ['init']);
+	await runGit(root, ['config', 'user.email', 'norna@example.test']);
+	await runGit(root, ['config', 'user.name', 'Norna Test']);
+	await runGit(root, ['add', '.']);
+	await runGit(root, ['commit', '-m', 'initial']);
+};
+
 const createTempFixtureCopy = async () => {
 	const tempParent = path.join(repoRoot, 'node_modules', '.cache');
 	await mkdir(tempParent, { recursive: true });
@@ -310,7 +330,7 @@ description: Fixture
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Image "missing\.svg" does not exist at .*site\/images\/help\/missing\.svg or anywhere under .*site\/images\//);
+				assert.match(error.output, /Image "missing\.svg" does not exist at .*site\/images\/help\/missing\.svg or anywhere under any page or route image root\./);
 				return true;
 			},
 		);
@@ -488,6 +508,218 @@ description: Fixture
 
 		const moved = await readFile(path.join(siteDir, 'images', 'work', 'moved.svg'), 'utf8');
 		assert.match(moved, /viewBox="0 0 10 10"/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:sync moves Norna-managed images across route image roots when git is clean', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		const sourceRouteDir = path.join(siteDir, 'routes', '010-source');
+		const targetRouteDir = path.join(siteDir, 'routes', '020-target');
+		await mkdir(path.join(sourceRouteDir, 'images', 'old'), { recursive: true });
+		await mkdir(targetRouteDir, { recursive: true });
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Cross Route Sync
+description: Fixture
+---
+
+## Home {#home}
+
+Text.
+`);
+		await writeFile(path.join(sourceRouteDir, 'route-content.md'), `---
+title: Source
+description: Fixture
+---
+
+## Old {#old}
+
+Text.
+`);
+		await writeFile(path.join(targetRouteDir, 'route-content.md'), `---
+title: Target
+description: Fixture
+---
+
+## Work {#work}
+
+\`\`\`norna-image-stack
+- image: moved.jpg
+\`\`\`
+`);
+		await writeFile(path.join(sourceRouteDir, 'images', 'old', 'moved.jpg'), 'route image');
+		await initCleanGitWorktree(root);
+
+		await runContentScript(siteDir, ['--write', '--yes']);
+
+		assert.equal(await fileExists(path.join(targetRouteDir, 'images', 'work', 'moved.jpg')), true);
+		assert.equal(await fileExists(path.join(sourceRouteDir, 'images', 'old', 'moved.jpg')), false);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:sync refuses cross-route image moves when git status is dirty', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		const sourceRouteDir = path.join(siteDir, 'routes', '010-source');
+		const targetRouteDir = path.join(siteDir, 'routes', '020-target');
+		await mkdir(path.join(sourceRouteDir, 'images', 'old'), { recursive: true });
+		await mkdir(targetRouteDir, { recursive: true });
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Dirty Cross Route Sync
+description: Fixture
+---
+
+## Home {#home}
+
+Text.
+`);
+		await writeFile(path.join(sourceRouteDir, 'route-content.md'), `---
+title: Source
+description: Fixture
+---
+
+## Old {#old}
+
+Text.
+`);
+		await writeFile(path.join(targetRouteDir, 'route-content.md'), `---
+title: Target
+description: Fixture
+---
+
+## Work {#work}
+
+\`\`\`norna-image-stack
+- image: moved.jpg
+\`\`\`
+`);
+		await writeFile(path.join(sourceRouteDir, 'images', 'old', 'moved.jpg'), 'route image');
+		await initCleanGitWorktree(root);
+		await writeFile(path.join(root, 'dirty.txt'), 'dirty');
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--write', '--yes']),
+			(error) => {
+				assert.match(error.output, /Cross-route content sync requires a clean git working tree before moving files between page or route image roots\./);
+				assert.match(error.output, /dirty\.txt/);
+				return true;
+			},
+		);
+
+		assert.equal(await fileExists(path.join(targetRouteDir, 'images', 'work', 'moved.jpg')), false);
+		assert.equal(await fileExists(path.join(sourceRouteDir, 'images', 'old', 'moved.jpg')), true);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check reports cross-route image moves without requiring clean git status', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		const sourceRouteDir = path.join(siteDir, 'routes', '010-source');
+		const targetRouteDir = path.join(siteDir, 'routes', '020-target');
+		await mkdir(path.join(sourceRouteDir, 'images', 'old'), { recursive: true });
+		await mkdir(targetRouteDir, { recursive: true });
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Cross Route Check
+description: Fixture
+---
+
+## Home {#home}
+
+Text.
+`);
+		await writeFile(path.join(sourceRouteDir, 'route-content.md'), `---
+title: Source
+description: Fixture
+---
+
+## Old {#old}
+
+Text.
+`);
+		await writeFile(path.join(targetRouteDir, 'route-content.md'), `---
+title: Target
+description: Fixture
+---
+
+## Work {#work}
+
+\`\`\`norna-image-stack
+- image: moved.jpg
+\`\`\`
+`);
+		await writeFile(path.join(sourceRouteDir, 'images', 'old', 'moved.jpg'), 'route image');
+		await writeFile(path.join(root, 'dirty.txt'), 'dirty');
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Image "moved\.jpg" is used here but is located in .*site\/routes\/010-source\/images\/old\/moved\.jpg\./);
+				assert.match(error.output, /Run norna content:sync to move it from .*site\/routes\/010-source to .*site\/routes\/020-target\./);
+				assert.doesNotMatch(error.output, /requires a clean git working tree before moving files/);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:sync refuses to move a cross-route image still referenced by its current section', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		const sourceRouteDir = path.join(siteDir, 'routes', '010-source');
+		const targetRouteDir = path.join(siteDir, 'routes', '020-target');
+		await mkdir(path.join(sourceRouteDir, 'images', 'old'), { recursive: true });
+		await mkdir(targetRouteDir, { recursive: true });
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Cross Route Copy
+description: Fixture
+---
+
+## Home {#home}
+
+Text.
+`);
+		await writeFile(path.join(sourceRouteDir, 'route-content.md'), `---
+title: Source
+description: Fixture
+---
+
+## Old {#old}
+
+\`\`\`norna-image-stack
+- image: shared.jpg
+\`\`\`
+`);
+		await writeFile(path.join(targetRouteDir, 'route-content.md'), `---
+title: Target
+description: Fixture
+---
+
+## Work {#work}
+
+\`\`\`norna-image-stack
+- image: shared.jpg
+\`\`\`
+`);
+		await writeFile(path.join(sourceRouteDir, 'images', 'old', 'shared.jpg'), 'route image');
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--write', '--yes']),
+			(error) => {
+				assert.match(error.output, /Cannot relocate "shared\.jpg" from .*site\/routes\/010-source\/images\/old\/shared\.jpg because it is still referenced from .*site\/routes\/010-source\/route-content\.md \[old\]\./);
+				return true;
+			},
+		);
+
+		assert.equal(await fileExists(path.join(targetRouteDir, 'images', 'work', 'shared.jpg')), false);
+		assert.equal(await fileExists(path.join(sourceRouteDir, 'images', 'old', 'shared.jpg')), true);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -773,8 +1005,8 @@ image broken.jpg
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
 				assert.match(error.output, /Invalid norna-image-stack entry "image broken\.jpg"\. Start each image with "- image: filename\.jpg"\./);
-				assert.match(error.output, /Image "missing-intro\.jpg" does not exist at .*site\/images\/intro\/missing-intro\.jpg or anywhere under .*site\/images\//);
-				assert.match(error.output, /Image "missing-more\.jpg" does not exist at .*site\/images\/more\/missing-more\.jpg or anywhere under .*site\/images\//);
+				assert.match(error.output, /Image "missing-intro\.jpg" does not exist at .*site\/images\/intro\/missing-intro\.jpg or anywhere under any page or route image root\./);
+				assert.match(error.output, /Image "missing-more\.jpg" does not exist at .*site\/images\/more\/missing-more\.jpg or anywhere under any page or route image root\./);
 				return true;
 			},
 		);
@@ -826,7 +1058,7 @@ description: Fixture
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
 				assert.match(error.output, /norna-image-carousel on line \d+ contains 1 image\. A carousel needs at least two images\./);
-				assert.match(error.output, /Image "foo\.jpg" does not exist at .*site\/images\/plain\/foo\.jpg or anywhere under .*site\/images\//);
+				assert.match(error.output, /Image "foo\.jpg" does not exist at .*site\/images\/plain\/foo\.jpg or anywhere under any page or route image root\./);
 				return true;
 			},
 		);
@@ -854,7 +1086,7 @@ description: Fixture
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Image "missing\.jpg" does not exist at .*site\/images\/intro\/missing\.jpg or anywhere under .*site\/images\//);
+				assert.match(error.output, /Image "missing\.jpg" does not exist at .*site\/images\/intro\/missing\.jpg or anywhere under any page or route image root\./);
 				return true;
 			},
 		);
@@ -919,7 +1151,7 @@ Text.
 	}
 });
 
-test('content:sync refuses ambiguous page-local image relocation', async () => {
+test('content:sync refuses ambiguous image relocation', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---

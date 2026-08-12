@@ -4,9 +4,14 @@
 under `site/routes/<NNN-route-id>/route-content.md` and build to first-level
 URLs.
 
-Routes use the same page frontmatter, optional section metadata, Norna image
-blocks, and Markdown section model as the homepage. See [Content](content.md)
-for the page and section model.
+Routes use the same page frontmatter, optional section metadata, Norna managed
+media blocks, and Markdown section model as the homepage. See
+[Content](content.md) for the page and section model.
+
+Route directories can contain route content, route-local images, and
+route-local presentation overrides in `route-content.md`. They cannot contain
+technical site configuration; technical configuration stays at the selected
+site directory's top-level `config.mjs`.
 
 ## Route Directory Format
 
@@ -107,3 +112,9 @@ Image references in route content still use only the filename:
 ````
 
 The image directory segment after `images/` should match the section id.
+If the section id or route folder changes, run `norna content:check` to find
+misplaced images and `norna content:sync` to move unambiguous files into the
+expected section folder. `content:sync` can move images between route image
+roots when the filename is unambiguous across the site and the move will not
+break another reference; these cross-route writes require a clean Git working
+tree.

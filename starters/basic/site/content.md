@@ -1,12 +1,6 @@
 ---
 title: Example Site
 description: Minimal norna starter site.
-sections:
-  intro:
-    presentation:
-      typography:
-        preset: statement
-
 ---
 
 ## Intro {#intro}
@@ -15,8 +9,8 @@ routes defined, the navigation menu will be a sticky bar with anchor links for
 ease of use on phones etc. [Highlighted inline text]{.highlight} when a short
 phrase needs emphasis
 ## Work {#work}
-Add Norna image blocks in Markdown and matching source images under
-`images/work/`.
+Add Norna managed media blocks in Markdown where the media should appear. Put
+matching source images under `images/work/`.
 
 ````
 ```norna-image-stack

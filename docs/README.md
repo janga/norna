@@ -39,7 +39,7 @@ For a quick reference:
   fields such as URL, base path, locale labels, footer, GitHub, and deploy
   settings.
 - [Content](content.md) describes page frontmatter, Markdown-authored
-  sections, optional section metadata, image stacks, carousels, temporary
+  sections, optional section metadata, managed media blocks, temporary
   sections, and content validation.
 - [Theme](theme.md) describes site-wide layout, layout density, image sizing,
   font, typography rhythm, presentation colors, frame colors, and inline styles.

@@ -6,7 +6,8 @@ missing, built-in engine defaults are used.
 
 Page-level presentation in `site/content.md` and route page files is always an
 override on top of `site/theme.md`. Section-level presentation is an override
-on top of the resolved page presentation.
+on top of the resolved page presentation. Use those overrides for focused
+exceptions; the normal place for shared visual choices is `site/theme.md`.
 
 ## Minimal Theme
 
@@ -74,7 +75,7 @@ navigation:
 - `density`: default structural spacing profile. Allowed values are `compact`,
   `normal`, and `airy`.
 - `spacing`: optional structural spacing overrides for sections and Norna
-  image blocks. Every spacing value accepts either one CSS length for all
+  managed media blocks. Every spacing value accepts either one CSS length for all
   viewports or `desktop` / `mobile` values.
 
 Example:
@@ -104,7 +105,7 @@ Spacing keys:
 - `firstSectionTop`: space above the first section heading.
 - `sectionGap`: space above each following section.
 - `finalSectionBottom`: space below the final section.
-- `bodyToImages`: space from section body text to Norna image blocks.
+- `bodyToImages`: space from section body text to Norna managed media blocks.
 - `imageGap`: space between stacked images or carousel blocks.
 
 Text-near spacing, such as spacing after headings, spacing before Markdown
@@ -207,7 +208,9 @@ presentation:
 ```
 
 Section-specific presentation belongs under
-`sections.<section-id>.presentation`:
+`sections.<section-id>.presentation`. Use it when one section genuinely needs
+different presentation; do not use `sections` to define section order or normal
+Markdown structure.
 
 ```yaml
 sections:

@@ -129,7 +129,7 @@ test('content:check groups section issues, global issues, and unreferenced image
 		assert.match(output, /^Content check failed\./m);
 		assert.match(output, /Content Issues\n\n\[site\/content\.md \[min-konst\]\]\n  Errors:/);
 		assert.match(output, /Image "vav\.jpeg" is used here but is located in site\/images\/mitt-hem\/vav\.jpeg\./);
-		assert.match(output, /Image "missing\.jpeg" does not exist at site\/images\/min-konst\/missing\.jpeg or anywhere under site\/images\/\./);
+		assert.match(output, /Image "missing\.jpeg" does not exist at site\/images\/min-konst\/missing\.jpeg or anywhere under any page or route image root\./);
 		assert.match(output, /Unreferenced Images\nThese files are kept under page or route image roots but are not referenced by Norna-managed image references:/);
 		assert.match(output, /site\/images\/karin-walde\/unreferenced\.jpg/);
 	});

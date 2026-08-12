@@ -42,7 +42,8 @@ Version these files in a site repository:
   colors.
   See [Theme](theme.md).
 - `site/content.md`: homepage page file with editable content, Markdown
-  sections, optional section metadata, image blocks, alt text, and captions.
+  sections, optional section metadata, managed media blocks, alt text, and
+  captions.
   See [Content](content.md).
 - `site/images/<section-id>/`: original source images.
 - `site/routes/<NNN-route-id>/route-content.md`: optional route page files.
@@ -82,8 +83,10 @@ In this repository:
 - `bin/norna-cli.mjs` dispatches public CLI commands.
 - `scripts/` contains validation, image, local preview, deploy, and test tools.
 - `src/` contains the Astro renderer, components, styles, and content schema.
-- `starters/basic/` is copied by `norna init <target-dir>` to create a
-  site repository.
+- `starters/basic/` is the default compact starter copied by
+  `norna init <target-dir>`.
+- `starters/project/` is a project-site starter used as a maintained example
+  for small project and developer-tool sites.
 - `fixtures/basic/site/` is used by engine regression tests.
 - `examples/dog-gallery/site/` is the local visual dog example used by demo
   builds and navigation diagnostics.
