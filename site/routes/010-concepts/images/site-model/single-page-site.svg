@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 520" role="img" aria-labelledby="title desc">
+  <title id="title">A single-page Norna site</title>
+  <desc id="desc">A three-column diagram showing how a simple Norna site uses content.md, theme.md and section image folders to produce a single-page website.</desc>
+  <rect width="1080" height="520" rx="22" fill="#f7f3ea"/>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M2 2 L10 6 L2 10" fill="none" stroke="#61736d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="small-arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M2 2 L10 6 L2 10" fill="none" stroke="#61736d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .sans { font-family: Arial, Helvetica, sans-serif; }
+      .mono { font-family: Menlo, Consolas, monospace; }
+      .title { fill: #17201d; font-size: 25px; font-weight: 800; }
+      .intro { fill: #41514c; font-size: 14px; }
+      .col-title { fill: #17201d; font-size: 18px; font-weight: 800; }
+      .body { fill: #41514c; font-size: 13px; }
+      .small { fill: #61736d; font-size: 12px; }
+      .code { fill: #20302b; font-size: 12px; }
+      .code-light { fill: #f2eee6; font-size: 12px; }
+      .code-muted { fill: #cbd5cf; font-size: 12px; }
+      .key { fill: #78612a; font-size: 12px; font-weight: 700; }
+      .panel { fill: #ffffff; stroke: #d7ded9; stroke-width: 1.4; }
+      .dark { fill: #17201d; stroke: #445852; stroke-width: 1.4; }
+      .mark { fill: #fff4c7; stroke: #d8c47a; stroke-width: 1.3; }
+      .connector { stroke: #d8c47a; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-dasharray: 6 6; }
+    </style>
+  </defs>
+
+  <g class="sans">
+    <text class="title" x="36" y="44">Single-page site</text>
+    <text class="intro" x="36" y="70">A homepage can be described with one Markdown file, one theme file and section image folders.</text>
+
+    <text class="col-title" x="36" y="116">Files</text>
+    <text class="col-title" x="394" y="116">File content</text>
+    <text class="col-title" x="756" y="116">Website</text>
+
+    <path d="M336 302h34" stroke="#61736d" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M694 302h34" stroke="#61736d" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <g transform="translate(36 140)">
+      <rect class="panel" width="300" height="324" rx="15"/>
+      <text class="mono code" x="22" y="34">site/</text>
+      <text class="mono code" x="42" y="62">content.md</text>
+      <text class="mono code" x="42" y="90">theme.md</text>
+      <text class="small" x="126" y="90">visual presentation</text>
+      <text class="mono code" x="42" y="122">images/</text>
+
+      <rect class="mark" x="58" y="138" width="196" height="58" rx="8"/>
+      <text class="mono key" x="72" y="161">what-we-do/</text>
+      <text class="mono code" x="92" y="183">dog-house.svg</text>
+
+      <rect class="mark" x="58" y="214" width="224" height="58" rx="8"/>
+      <text class="mono key" x="72" y="237">how-you-can-help/</text>
+      <text class="mono code" x="92" y="259">heart.svg</text>
+    </g>
+
+    <g transform="translate(394 140)">
+      <rect class="panel" width="300" height="324" rx="15"/>
+
+      <g transform="translate(20 22)">
+        <rect class="dark" width="260" height="272" rx="12"/>
+        <text class="mono code-light" x="16" y="30" font-weight="700">content.md</text>
+        <text class="mono code-muted" x="16" y="55">---</text>
+        <text class="mono code-light" x="16" y="77">title: Dog Shelter</text>
+        <text class="mono code-muted" x="16" y="99">---</text>
+
+        <rect class="mark" x="12" y="116" width="212" height="27" rx="6"/>
+        <text class="mono key" x="20" y="135">## What we do {#what-we-do}</text>
+        <text class="mono code-light" x="20" y="162">We rescue and rehome dogs.</text>
+        <text class="mono code-light" x="20" y="188">```norna-image-stack</text>
+        <text class="mono code-light" x="20" y="210">- image: dog-house.svg</text>
+        <text class="mono code-light" x="20" y="232">```</text>
+
+        <rect class="mark" x="12" y="238" width="236" height="46" rx="6"/>
+        <text class="mono key" x="20" y="257">## How you can help</text>
+        <text class="mono key" x="20" y="275">{#how-you-can-help}</text>
+      </g>
+
+    </g>
+
+    <path d="M164 194 C248 172 316 168 406 176" stroke="#61736d" stroke-width="2.2" fill="none" stroke-linecap="round" marker-end="url(#small-arrow)"/>
+
+    <path class="connector" d="M290 304 C350 286 376 286 426 286"/>
+    <path class="connector" d="M314 388 C356 414 392 414 426 402"/>
+
+    <g transform="translate(756 140)">
+      <rect class="panel" width="288" height="324" rx="16"/>
+      <rect x="24" y="20" width="240" height="38" rx="9" fill="#17201d"/>
+      <text x="44" y="45" fill="#d8c47a" font-size="12" font-weight="800">What we do</text>
+      <text x="132" y="45" fill="#f7f3ea" font-size="12">How you can help</text>
+
+      <text x="30" y="94" fill="#17201d" font-size="23" font-weight="800">Dog Shelter</text>
+
+      <g transform="translate(30 124)">
+        <text x="0" y="0" fill="#17201d" font-size="17" font-weight="800">What we do</text>
+        <text x="0" y="26" fill="#41514c" font-size="13">We rescue and rehome dogs.</text>
+        <g transform="translate(154 -4)">
+          <rect x="18" y="36" width="46" height="34" rx="4" fill="#d8c47a"/>
+          <path d="M10 40 L41 13 L72 40" fill="#8c573a"/>
+          <rect x="36" y="52" width="12" height="18" rx="2" fill="#17201d"/>
+        </g>
+      </g>
+
+      <line x1="30" y1="222" x2="258" y2="222" stroke="#d7ded9"/>
+
+      <g transform="translate(30 268)">
+        <text x="0" y="0" fill="#17201d" font-size="17" font-weight="800">How you can help</text>
+        <text x="0" y="26" fill="#41514c" font-size="13">Adopt. Foster. Donate.</text>
+        <path d="M202 3 C192 -9 172 -1 174 17 C176 33 202 44 202 44 C202 44 228 33 230 17 C232 -1 212 -9 202 3Z" fill="#c85555"/>
+      </g>
+    </g>
+  </g>
+</svg>

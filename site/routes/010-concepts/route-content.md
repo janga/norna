@@ -7,23 +7,59 @@ navigation:
 
 ## Norna's site model {#site-model}
 
+### Single-page site
+
+A Norna site can start as a single page. The homepage content lives in
+`content.md`, visual defaults live in `theme.md`, and local images live in
+section folders under `images/`.
+
+The section id in Markdown connects a section to its image folder. For example,
+`## What we do {#what-we-do}` can use images from `images/what-we-do/`.
+
+<!-- norna-image-provenance:
+image: single-page-site.svg
+source: hand-authored
+Hand-authored SVG diagram created for the Norna introduction site to explain
+how content.md, theme.md and section image folders map to a simple single-page
+website.
+-->
+
+```norna-image-stack
+- image: single-page-site.svg
+  alt: A three-column diagram showing Norna files, Markdown file content and the resulting single-page Dog Shelter website. Section ids connect Markdown sections to image folders.
+```
+
+### Multi-page site
+
+A Norna site can grow by adding routes. A route is more content in the same
+site model: it gets its own URL and normally inherits the site's visual
+presentation.
+
+Route folder prefixes control navigation order, while the route id becomes the
+URL slug. For example, `010-dogs/` appears before `020-adopt/`, and normally
+builds to `/dogs/`.
+
+<!-- norna-image-provenance:
+image: multi-page-site.svg
+source: hand-authored
+Hand-authored SVG diagram created for the Norna introduction site to explain
+how route folders map to route content, hierarchical navigation, managed images
+and URL slugs.
+-->
+
+```norna-image-stack
+- image: multi-page-site.svg
+  alt: A three-column diagram showing route folders, route content and the resulting website navigation. Numeric prefixes control navigation order, route ids become URL slugs, and the Dogs route shows two managed images.
+```
+
+`content:check` helps validate route files, section ids and managed image
+references. `content:sync` helps keep image files aligned when content moves
+between sections or routes.
+
 ### Files are the interface
 
 A Norna site is defined primarily through files rather than through a CMS,
 database, visual editor or application-specific component tree.
-
-<!-- norna-image-provenance:
-image: site-files.svg
-source: hand-authored
-Hand-authored SVG diagram created for the Norna introduction site to explain
-how site files, homepage sections, route pages and route-local images map to
-the rendered website.
--->
-
-```norna-image-stack
-- image: site-files.svg
-  alt: A three-column diagram showing Norna files, Markdown content and the resulting Dog Shelter website. Section ids connect Markdown sections to image folders, and route prefixes set navigation order.
-```
 
 The files are both the source of the website and the interface through which
 the site is maintained.

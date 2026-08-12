@@ -7,12 +7,20 @@
     "width": 900,
     "height": 300
   },
-  "routes/010-concepts/images/site-model/site-files.svg": {
+  "routes/010-concepts/images/site-model/multi-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "6a5488567dc49ddcf13830acdb092d59bec30650c8c3a9ab274e51fbf7cd75d3",
-    "src": "/images/original/routes/010-concepts/images/site-model/site-files-6a548856.svg",
-    "width": 1320,
-    "height": 760
+    "sourceHash": "cd71bc145b334c4f54aff5253bf10dea6592715831d9e75747f0543312f2598e",
+    "src": "/images/original/routes/010-concepts/images/site-model/multi-page-site-cd71bc14.svg",
+    "width": 1080,
+    "height": 520
+  },
+  "routes/010-concepts/images/site-model/single-page-site.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "feadd869ec69b2528e4e011bef93fd1a2208ce4a7643e0b4909e3437e4f1bcaf",
+    "src": "/images/original/routes/010-concepts/images/site-model/single-page-site-feadd869.svg",
+    "width": 1080,
+    "height": 520
   }
 }
