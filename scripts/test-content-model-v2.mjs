@@ -43,8 +43,12 @@ const runContentScript = async (siteDir, args) => {
 	}
 };
 
-const createTempSite = async () => {
-	const root = await mkdtemp(path.join(os.tmpdir(), 'norna-content-model-v2-'));
+const createTempSite = async ({ underRepoCache = false } = {}) => {
+	const tempParent = underRepoCache
+		? path.join(repoRoot, 'node_modules', '.cache')
+		: os.tmpdir();
+	await mkdir(tempParent, { recursive: true });
+	const root = await mkdtemp(path.join(tempParent, 'norna-content-model-v2-'));
 	const siteDir = path.join(root, 'site');
 	await mkdir(siteDir, { recursive: true });
 	await writeFile(path.join(siteDir, 'config.mjs'), `export default {
@@ -236,6 +240,205 @@ description: Fixture
 	}
 });
 
+test('norna-card-list images are managed image references', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Card List Fixture
+description: Fixture
+---
+
+## Help {#help}
+
+\`\`\`norna-card-list
+layout: image-left
+flow: stack
+size: l
+width: narrow
+
+- title: Adopt
+  text: Give a dog a new home.
+  image: adopt.svg
+  link: /adopt/
+  badge-text: Recommended
+- title: Donate
+  text: Support the shelter.
+\`\`\`
+`);
+		await mkdir(path.join(siteDir, 'images', 'help'), { recursive: true });
+		await writeFile(path.join(siteDir, 'images', 'help', 'adopt.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><rect width="160" height="100"/></svg>\n');
+
+		const { stdout } = await runContentScript(siteDir, ['--check']);
+		assert.match(stdout, /Content check passed\./);
+
+		await runNorna(['--site-dir', siteDir, 'images']);
+		const manifest = JSON.parse(await readFile(path.join(siteDir, '.norna', 'generated-images.json'), 'utf8'));
+		assert.equal(manifest['images/help/adopt.svg'].kind, 'static');
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+		assert.match(html, /card-list-layout-image-left/);
+		assert.match(html, /card-list-flow-stack/);
+		assert.match(html, /card-list-size-l/);
+		assert.match(html, /card-list-width-narrow/);
+		assert.match(html, /card-list-item-has-image/);
+		assert.match(html, /class="card-list-badge">Recommended<\/p>/);
+		assert.match(html, /Give a dog a new home\./);
+		assert.match(html, /href="\/adopt\/"/);
+		assert.match(html, /src="\/images\/original\/images\/help\/adopt-[a-f0-9]{8}\.svg"/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check fails when a norna-card-list image file is missing', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Missing Card Image
+description: Fixture
+---
+
+## Help {#help}
+
+\`\`\`norna-card-list
+- title: Adopt
+  image: missing.svg
+\`\`\`
+`);
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Image "missing\.svg" does not exist at .*site\/images\/help\/missing\.svg or anywhere under .*site\/images\//);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check fails for malformed norna-card-list blocks', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Malformed Card List
+description: Fixture
+---
+
+## Help {#help}
+
+\`\`\`norna-card-list
+- text: Missing title
+\`\`\`
+`);
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Invalid norna-card-list entry "- text: Missing title"\. Start each card with "- title: Card title"\./);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check fails for invalid norna-card-list options', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Invalid Card List Options
+description: Fixture
+---
+
+## Help {#help}
+
+\`\`\`norna-card-list
+layout: floating
+flow: list
+size: huge
+width: full
+
+- title: Adopt
+  text: Give a dog a new home.
+\`\`\`
+`);
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Invalid norna-card-list layout "floating"\. Use one of: image-top, image-left, image-right\./);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check fails for invalid norna-card-list width', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Invalid Card List Width
+description: Fixture
+---
+
+## Help {#help}
+
+\`\`\`norna-card-list
+width: full
+
+- title: Adopt
+  text: Give a dog a new home.
+\`\`\`
+`);
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Invalid norna-card-list width "full"\. Use one of: text, narrow, normal, wide\./);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check fails for invalid norna-card-list size', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Invalid Card List Size
+description: Fixture
+---
+
+## Help {#help}
+
+\`\`\`norna-card-list
+size: huge
+
+- title: Adopt
+  text: Give a dog a new home.
+\`\`\`
+`);
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Invalid norna-card-list size "huge"\. Use one of: s, m, l, xl\./);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
 test('content:sync moves Norna-managed images inside the same page image root', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
@@ -396,7 +599,7 @@ description: Fixture
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Unknown Norna image block "norna-gallery-stack"\. Use one of: norna-image-stack, norna-image-carousel\./);
+				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list\./);
 				assert.match(error.output, /Use norna-image-stack for one or more stacked images\./);
 				assert.match(error.output, /Example: ```norna-image-stack\n- image: filename\.jpg\n```/);
 				return true;
@@ -473,7 +676,7 @@ norna-image-stack
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
 				assert.match(error.output, /Found "norna-image-stack" outside a code block\./);
-				assert.match(error.output, /Start the image block like this:\n```norna-image-stack\n- image: filename\.jpg\n```/);
+				assert.match(error.output, /Start the block like this:\n```norna-image-stack\n- image: filename\.jpg\n```/);
 				return true;
 			},
 		);
@@ -500,7 +703,7 @@ description: Fixture
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid Norna image block start for "norna-image-stack"\./);
+				assert.match(error.output, /Invalid Norna block start for "norna-image-stack"\./);
 				assert.match(error.output, /Use three backticks or three tildes/);
 				return true;
 			},
@@ -528,8 +731,8 @@ description: Fixture
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /This Norna image block was started on line \d+ but not closed\./);
-				assert.match(error.output, /Add a closing ``` line after the last image entry\./);
+				assert.match(error.output, /This Norna block was started on line \d+ but not closed\./);
+				assert.match(error.output, /Add a closing ``` line after the last entry\./);
 				return true;
 			},
 		);

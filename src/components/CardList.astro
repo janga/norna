@@ -1,0 +1,77 @@
+---
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { withBasePath } from '../lib/basePath';
+import { getImageAttributes } from '../lib/generatedImages';
+
+type Card = {
+	title: string;
+	text?: string;
+	image?: string;
+	src?: string;
+	link?: string;
+	'badge-text'?: string;
+};
+type CardListLayout = 'image-top' | 'image-left' | 'image-right';
+type CardListFlow = 'grid' | 'stack';
+type CardListSize = 's' | 'm' | 'l' | 'xl';
+type CardListWidth = 'text' | 'narrow' | 'normal' | 'wide';
+
+interface Props {
+	cards: Card[];
+	layout?: CardListLayout;
+	flow?: CardListFlow;
+	size?: CardListSize;
+	width?: CardListWidth;
+}
+
+const { cards, layout = 'image-top', flow = 'grid', size = 'm', width = 'normal' } = Astro.props;
+const cardImageSizes = [
+	'(max-width: 700px) 100vw',
+	`min(20rem, ${projectConfig.gallery.maxAvailableWidthPercent.desktop}vw)`,
+].join(', ');
+const displayLink = (link: string) => withBasePath(projectConfig.site.basePath, link);
+const cardListClasses = [
+	'card-list',
+	`card-list-layout-${layout}`,
+	`card-list-flow-${flow}`,
+	`card-list-size-${size}`,
+	`card-list-width-${width}`,
+];
+---
+
+<div class:list={cardListClasses}>
+	{cards.map((card) => {
+		const content = (
+			<>
+				{card.src && (
+					<div class="card-list-image-frame">
+						<img
+							{...getImageAttributes(card.src, cardImageSizes)}
+							class="card-list-image"
+							alt=""
+							decoding="async"
+							fetchpriority="low"
+							loading="lazy"
+						/>
+					</div>
+				)}
+				<div class="card-list-content">
+					{card['badge-text'] && <p class="card-list-badge">{card['badge-text']}</p>}
+					<h3 class="card-list-title">{card.title}</h3>
+					{card.text && <p>{card.text}</p>}
+				</div>
+			</>
+		);
+
+		return (
+			<article class:list={['card-list-item', {
+				'card-list-item-has-image': Boolean(card.src),
+				'card-list-item-linked': Boolean(card.link),
+			}]}>
+				{card.link
+					? <a class="card-list-link" href={displayLink(card.link)}>{content}</a>
+					: content}
+			</article>
+		);
+	})}
+</div>

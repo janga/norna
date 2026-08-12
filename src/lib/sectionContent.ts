@@ -18,10 +18,23 @@ type GalleryImage = {
 	alt?: string;
 	caption?: string;
 };
+type CardListItem = {
+	title: string;
+	text?: string;
+	image?: string;
+	src?: string;
+	link?: string;
+	'badge-text'?: string;
+};
+type CardListLayout = 'image-top' | 'image-left' | 'image-right';
+type CardListFlow = 'grid' | 'stack';
+type CardListSize = 's' | 'm' | 'l' | 'xl';
+type CardListWidth = 'text' | 'narrow' | 'normal' | 'wide';
 type SectionContentBlock =
 	| { type: 'html'; html: string }
 	| { type: 'image-stack'; images: GalleryImage[] }
-	| { type: 'image-carousel'; images: GalleryImage[] };
+	| { type: 'image-carousel'; images: GalleryImage[] }
+	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width: CardListWidth; cards: CardListItem[] };
 export type ResolvedSection = SiteSectionMetadata & {
 	id: string;
 	title: string;
@@ -137,10 +150,23 @@ const resolveContentBlocks = (
 
 		return {
 			type: block.type,
-			images: block.images.map((image: { image: string; alt?: string; caption?: string }) => ({
-				...image,
-				src: getImageSourceKey(page, sectionId, image.image),
-			})),
+			...(block.type === 'card-list'
+				? {
+					layout: block.layout,
+					flow: block.flow,
+					size: block.size,
+					width: block.width,
+					cards: block.cards.map((card: CardListItem) => ({
+						...card,
+						...(card.image ? { src: getImageSourceKey(page, sectionId, card.image) } : {}),
+					})),
+				}
+				: {
+					images: block.images.map((image: { image: string; alt?: string; caption?: string }) => ({
+						...image,
+						src: getImageSourceKey(page, sectionId, image.image),
+					})),
+				}),
 		};
 	});
 };

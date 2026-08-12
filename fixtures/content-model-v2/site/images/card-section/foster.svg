@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 150" role="img" aria-labelledby="title desc">
+  <title id="title">Open hands icon</title>
+  <desc id="desc">Two simple hands holding a small dog silhouette.</desc>
+  <rect width="240" height="150" fill="#eef4f0"/>
+  <path d="M64 106c18-12 34-16 56-16s38 4 56 16" fill="none" stroke="#2d2a26" stroke-width="12" stroke-linecap="round"/>
+  <path d="M54 116c24 14 108 14 132 0" fill="none" stroke="#4f8b6f" stroke-width="12" stroke-linecap="round"/>
+  <path d="M92 76c0-18 14-32 32-32h18c17 0 30 13 30 30v12H92Z" fill="#d9a441" stroke="#2d2a26" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="118" cy="63" r="4" fill="#2d2a26"/>
+  <path d="M158 54h24l-20 18Z" fill="#d9a441" stroke="#2d2a26" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M98 50 78 34l4 28Z" fill="#d9a441" stroke="#2d2a26" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M92 86h82" stroke="#2d2a26" stroke-width="6" stroke-linecap="round"/>
+</svg>

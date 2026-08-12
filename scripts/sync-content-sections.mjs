@@ -131,7 +131,7 @@ const getReportLines = (title, unreferencedImages) => {
 		lines.push(
 			'',
 			'Unreferenced Images',
-			'These files are kept under page or route image roots but are not referenced by Norna image blocks:',
+			'These files are kept under page or route image roots but are not referenced by Norna-managed image references:',
 		);
 
 		for (const imagePath of unreferencedImages) {
@@ -199,7 +199,7 @@ const validateImageReference = async (
 		addSectionIssue(contentFile, section, {
 			severity: 'error',
 			message: `Image "${imageName}" does not exist at ${expectedLabel} or anywhere under ${contentFile.imagesLabel}/.`,
-			fix: `Add the source image to ${contentFile.imagesLabel}/${section.id}/ or remove the Norna image block reference.`,
+			fix: `Add the source image to ${contentFile.imagesLabel}/${section.id}/ or remove the Norna-managed image reference.`,
 		});
 		return null;
 	}
@@ -389,7 +389,7 @@ for (const contentFile of contentFiles) {
 			addSectionIssue(contentFile, section, {
 				severity: 'warning',
 				message: `Markdown image "${reference.target}" references a local image that is not managed by Norna.`,
-				fix: 'Use a norna-image-stack or norna-image-carousel block for site images that should be validated, processed and synced.',
+				fix: 'Use a norna-image-stack, norna-image-carousel, or norna-card-list block for site images that should be validated, processed and synced.',
 			});
 		}
 

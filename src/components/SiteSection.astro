@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { resolveTypographyOverride } from '../../scripts/lib/typography.mjs';
+import CardList from './CardList.astro';
 import GalleryGrid from './GalleryGrid.astro';
 import type { ResolvedSection } from '../lib/sectionContent';
 
@@ -196,7 +197,11 @@ const getAlignedTextWidth = (
 });
 const headingWidth = getAlignedTextWidth(headingAlign, '760px');
 const bodyWidth = getAlignedTextWidth(bodyAlign, 'var(--text-width)');
-const hasMedia = section.contentBlocks.some((block) => block.type !== 'html');
+const hasMedia = section.contentBlocks.some((block) => (
+	block.type === 'image-stack'
+	|| block.type === 'image-carousel'
+	|| (block.type === 'card-list' && block.cards.some((card) => card.image))
+));
 const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 	const headingConfig = markdownHeadings[level];
 	const fontSize = getHeadingSizeValue(level, headingConfig.size);
@@ -268,6 +273,10 @@ const sectionStyle = [
 							priorityFirstImage={priorityGalleryImage && blockIndex === 0}
 						/>
 					);
+				}
+
+				if (block.type === 'card-list') {
+					return <CardList cards={block.cards} layout={block.layout} flow={block.flow} size={block.size} width={block.width} />;
 				}
 
 				return (

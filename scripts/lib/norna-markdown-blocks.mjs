@@ -1,10 +1,11 @@
 import { Buffer } from 'node:buffer';
 
-export const nornaBlockTypes = new Set(['norna-image-stack', 'norna-image-carousel']);
+export const nornaBlockTypes = new Set(['norna-image-stack', 'norna-image-carousel', 'norna-card-list']);
 
 const blockTypeLabels = {
 	'norna-image-stack': 'norna-image-stack',
 	'norna-image-carousel': 'norna-image-carousel',
+	'norna-card-list': 'norna-card-list',
 };
 
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
@@ -15,6 +16,24 @@ const imageStackExample = [
 	'- image: filename.jpg',
 	'```',
 ].join('\n');
+const cardListExample = [
+	'```norna-card-list',
+	'layout: image-top',
+	'flow: grid',
+	'size: m',
+	'width: normal',
+	'',
+	'- title: Adopt',
+	'  text: Give a dog a new home.',
+	'  image: adopt.jpg',
+	'  link: /adopt/',
+	'  badge-text: Recommended',
+	'```',
+].join('\n');
+const cardListLayouts = new Set(['image-top', 'image-left', 'image-right']);
+const cardListFlows = new Set(['grid', 'stack']);
+const cardListSizes = new Set(['s', 'm', 'l', 'xl']);
+const cardListWidths = new Set(['text', 'narrow', 'normal', 'wide']);
 
 const formatLocation = ({ label, line } = {}) => [
 	label,
@@ -27,7 +46,7 @@ const fail = (message, options) => {
 };
 
 const getUnknownNornaBlockMessage = (type) => [
-	`Unknown Norna image block "${type}". Use one of: ${knownBlockTypeList}.`,
+	`Unknown Norna block "${type}". Use one of: ${knownBlockTypeList}.`,
 	type === 'norna-gallery-stack'
 		? 'Use norna-image-stack for one or more stacked images.'
 		: null,
@@ -74,6 +93,11 @@ const validateImage = (image, options) => {
 	}
 };
 
+const validateOptionalImage = (image, options) => {
+	if (!image) return;
+	validateImage({ image }, options);
+};
+
 const normalizeLines = (source) => source.replace(/\r\n?/g, '\n').split('\n');
 
 const getFenceInfo = (line) => {
@@ -112,15 +136,16 @@ const getNornaLineAttempt = (line) => {
 };
 
 const getNornaFenceStartMessage = (type, marker = '') => {
+	const example = type === 'norna-card-list' ? cardListExample : `\`\`\`${type}\n- image: filename.jpg\n\`\`\``;
 	if (marker) {
-		return `Invalid Norna image block start for "${type}". Use three backticks or three tildes. Example:\n\`\`\`${type}\n- image: filename.jpg\n\`\`\``;
+		return `Invalid Norna block start for "${type}". Use three backticks or three tildes. Example:\n${example}`;
 	}
 
-	return `Found "${type}" outside a code block. Start the image block like this:\n\`\`\`${type}\n- image: filename.jpg\n\`\`\``;
+	return `Found "${type}" outside a code block. Start the block like this:\n${example}`;
 };
 
 const getUnclosedNornaBlockMessage = (opening) =>
-	`This Norna image block was started on line ${opening.line} but not closed. Add a closing ${opening.markerCharacter.repeat(opening.length)} line after the last image entry.`;
+	`This Norna block was started on line ${opening.line} but not closed. Add a closing ${opening.markerCharacter.repeat(opening.length)} line after the last entry.`;
 
 const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 	const lines = normalizeLines(markdown);
@@ -266,13 +291,119 @@ const parseImageListBlock = (source, options = {}) => {
 	return { type: options.type === 'norna-image-carousel' ? 'image-carousel' : 'image-stack', images };
 };
 
+const parseCardListBlock = (source, options = {}) => {
+	const cards = [];
+	const allowedKeys = new Set(['text', 'image', 'link', 'badge-text']);
+	let layout = 'image-top';
+	let flow = 'grid';
+	let size = 'm';
+	let width = 'normal';
+	let current = null;
+
+	for (const [index, line] of normalizeLines(source).entries()) {
+		if (!line.trim()) continue;
+
+		const lineNumber = (options.line ?? 1) + index;
+		const itemMatch = line.match(/^(\s*)-\s+title:\s*(.*?)\s*$/);
+		if (itemMatch) {
+			current = { title: decodeScalar(itemMatch[2]) };
+			cards.push(current);
+			continue;
+		}
+
+		if (!current) {
+			if (/^\s*-\s+/.test(line)) {
+				fail(`Invalid ${options.type} entry "${line.trim()}". Start each card with "- title: Card title". Example:\n${cardListExample}`, { ...options, line: lineNumber });
+			}
+
+			const optionEntry = parseKeyValue(line, { ...options, line: lineNumber });
+			if (optionEntry.indent !== 0) {
+				fail(`Invalid ${options.type} entry "${line.trim()}". Start each card with "- title: Card title". Example:\n${cardListExample}`, { ...options, line: lineNumber });
+			}
+
+			if (optionEntry.key === 'layout') {
+				if (!cardListLayouts.has(optionEntry.value)) {
+					fail(`Invalid ${options.type} layout "${optionEntry.value}". Use one of: ${Array.from(cardListLayouts).join(', ')}.`, { ...options, line: lineNumber });
+				}
+
+				layout = optionEntry.value;
+				continue;
+			}
+
+			if (optionEntry.key === 'flow') {
+				if (!cardListFlows.has(optionEntry.value)) {
+					fail(`Invalid ${options.type} flow "${optionEntry.value}". Use one of: ${Array.from(cardListFlows).join(', ')}.`, { ...options, line: lineNumber });
+				}
+
+				flow = optionEntry.value;
+				continue;
+			}
+
+			if (optionEntry.key === 'size') {
+				if (!cardListSizes.has(optionEntry.value)) {
+					fail(`Invalid ${options.type} size "${optionEntry.value}". Use one of: ${Array.from(cardListSizes).join(', ')}.`, { ...options, line: lineNumber });
+				}
+
+				size = optionEntry.value;
+				continue;
+			}
+
+			if (optionEntry.key === 'width') {
+				if (!cardListWidths.has(optionEntry.value)) {
+					fail(`Invalid ${options.type} width "${optionEntry.value}". Use one of: ${Array.from(cardListWidths).join(', ')}.`, { ...options, line: lineNumber });
+				}
+
+				width = optionEntry.value;
+				continue;
+			}
+
+			fail(`Unknown ${options.type} option "${optionEntry.key}". Use layout, flow, size, width, or start the first card with "- title: Card title".`, { ...options, line: lineNumber });
+		}
+
+		const entry = parseKeyValue(line, { ...options, line: lineNumber });
+		if (entry.indent === 0 && (entry.key === 'layout' || entry.key === 'flow' || entry.key === 'size' || entry.key === 'width')) {
+			fail(`${options.type} option "${entry.key}" must appear before the first card.`, { ...options, line: lineNumber });
+		}
+
+		if (entry.indent !== 2) {
+			fail(`Invalid indentation in ${options.type}. Use two spaces before card fields such as text, image, link and badge-text. Example:\n${cardListExample}`, { ...options, line: lineNumber });
+		}
+
+		if (!allowedKeys.has(entry.key)) {
+			fail(`Unknown ${options.type} field "${entry.key}". Use title, text, image, link, or badge-text.`, { ...options, line: lineNumber });
+		}
+
+		current[entry.key] = entry.value;
+	}
+
+	for (const card of cards) {
+		if (!card.title) {
+			fail(`${options.type} card is missing "title".`, options);
+		}
+
+		if (!card.text && !card.image && !card.link) {
+			fail(`${options.type} card "${card.title}" must specify at least one of text, image, or link.`, options);
+		}
+
+		validateOptionalImage(card.image, options);
+	}
+
+	if (cards.length === 0) {
+		fail(`${options.type} must contain at least one card. Example:\n${cardListExample}`, options);
+	}
+
+	return { type: 'card-list', layout, flow, size, width, cards };
+};
+
 export const parseNornaMarkdownBlock = (type, source, options = {}) => {
 	if (!nornaBlockTypes.has(type)) {
 		fail(getUnknownNornaBlockMessage(type), options);
 	}
 
 	const parseOptions = { ...options, type: blockTypeLabels[type] };
-	return parseImageListBlock(source, parseOptions);
+	return type === 'norna-card-list'
+		? parseCardListBlock(source, parseOptions)
+		: parseImageListBlock(source, parseOptions);
 };
 
 const getLineNumber = (source, index) => source.slice(0, index).split(/\r?\n/).length;
@@ -392,12 +523,26 @@ export const extractMarkdownImageReferences = (markdown) => {
 };
 
 export const getNornaBlockImageReferences = (blocks) =>
-	blocks.flatMap((block) => block.images.map((image) => ({
-		...image,
-		blockType: block.blockType,
-		blockDisplayType: block.type,
-		line: block.line,
-	})));
+	blocks.flatMap((block) => {
+		if (block.type === 'card-list') {
+			return block.cards
+				.filter((card) => card.image)
+				.map((card) => ({
+					image: card.image,
+					alt: card.title,
+					blockType: block.blockType,
+					blockDisplayType: block.type,
+					line: block.line,
+				}));
+		}
+
+		return block.images.map((image) => ({
+			...image,
+			blockType: block.blockType,
+			blockDisplayType: block.type,
+			line: block.line,
+		}));
+	});
 
 export const createNornaMarkdownBlockMarker = (type, source) => {
 	const encodedSource = Buffer.from(source, 'utf8').toString('base64');

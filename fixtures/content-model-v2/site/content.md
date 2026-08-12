@@ -60,3 +60,25 @@ This section has no frontmatter metadata.
 - image: image.jpg
   caption: a dog
 ```
+
+## Card section {#card-section}
+
+Cards are very limited but may be developed in the future.
+
+```norna-card-list
+layout: image-right
+flow: stack
+size: s
+width: narrow
+
+- title: Adopt
+  text: A card can combine a short label, supporting text, a managed SVG image and an optional link.
+  image: adopt.svg
+  link: /guide/
+  badge-text: Recommended
+- title: Foster
+  text: Cards without links use the same visual structure.
+  image: foster.svg
+- title: Donate
+  text: Cards may also be text-only when no image is needed.
+```

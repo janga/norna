@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 150" role="img" aria-labelledby="title desc">
+  <title id="title">Dog house icon</title>
+  <desc id="desc">A simple dog house with a heart above the doorway.</desc>
+  <rect width="240" height="150" fill="#f4f0e8"/>
+  <path d="M48 78 120 28l72 50v52H48Z" fill="#d85845" stroke="#2d2a26" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M72 82h96v48H72Z" fill="#fff9ef" stroke="#2d2a26" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M104 130V96a16 16 0 0 1 32 0v34Z" fill="#2d2a26"/>
+  <path d="M120 74c-14-12-28-20-28-34 0-10 8-18 18-18 5 0 9 2 10 6 2-4 6-6 11-6 10 0 18 8 18 18 0 14-15 22-29 34Z" fill="#f7c948" stroke="#2d2a26" stroke-width="4" stroke-linejoin="round"/>
+</svg>
