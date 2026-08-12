@@ -22,7 +22,7 @@ the rendered website.
 
 ```norna-image-stack
 - image: site-files.svg
-  alt: A Norna homepage is defined by content.md and homepage images. Additional routes are separate content pages under routes, ordered by numeric prefixes and able to keep their own images.
+  alt: A three-column diagram showing Norna files, Markdown content and the resulting Dog Shelter website. Section ids connect Markdown sections to image folders, and route prefixes set navigation order.
 ```
 
 The files are both the source of the website and the interface through which
