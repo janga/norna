@@ -76,13 +76,27 @@ not edit generated website code or create a separate template/component layer.
 
 ### Check and build
 
+During local work, you can run the checks directly:
+
+```sh
+npm run norna:config:check
+npm run norna:content:check
+npm run norna:content:sync
+```
+
+`config:check` validates technical configuration. `content:check` validates
+content, sections and managed image references. `content:sync` helps keep image
+files aligned when content moves between sections or routes.
+
+Before publishing, validate and build the site:
+
 ```sh
 npm run norna:check
 npm run build
 ```
 
-Norna validates the source, processes images when needed and creates the
-static website in:
+Norna reads the source files, validates them, processes images when needed and
+creates the static website in:
 
 ```text
 dist/
@@ -102,6 +116,10 @@ GitHub Pages is the only integrated publishing target today.
 
 The starter includes the GitHub Actions setup needed to build the site and
 publish the generated `dist/` output.
+
+Publishing is normally done by committing the site files and pushing them with
+Git. The included GitHub Pages workflow runs the required checks before
+publishing.
 
 Other static hosting services can technically serve static files, but Norna
 does not currently provide publishing integrations for them.
