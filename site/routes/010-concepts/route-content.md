@@ -36,13 +36,14 @@ A Norna site can grow by adding _routes_ (pages, if you prefer). Each route adds
 more content to the site model: it gets its own URL and normally inherits the
 site's visual presentation.
 
-Route directories can contain route content and route-local presentation, but
-not technical site configuration. Technical configuration stays at the top level
-in `config.mjs`.
+Route directories contain route content and may contain route-local
+presentation, but they cannot contain technical site configuration. Technical configuration
+stays at the top level in `config.mjs`.
 
-Route folder prefixes control navigation order, while the route id becomes the
-URL slug. For example, `010-dogs/` appears before `020-adopt/`, and normally
-builds to `/dogs/`.
+Route folder prefixes control route presentation order on the site, while the
+route id becomes the URL slug. For example, the route from `010-dogs/` is
+shown before the route from `020-adopt/` on the site. It becomes a URL that
+ends with `/dogs/`.
 
 <!-- norna-image-provenance:
 image: multi-page-site.svg

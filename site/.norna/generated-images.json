@@ -10,16 +10,16 @@
   "routes/010-concepts/images/multi-page-site/multi-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "8101ccdac56b0a6a582ad751e6ccd93d73ab3726ae4b8d593cd6e63ce27d438f",
-    "src": "/images/original/routes/010-concepts/images/multi-page-site/multi-page-site-8101ccda.svg",
+    "sourceHash": "47e6295cab01c4860d15003e8fa86b1e84d6a5f9d288fc32b3f6774f9e5a183d",
+    "src": "/images/original/routes/010-concepts/images/multi-page-site/multi-page-site-47e6295c.svg",
     "width": 1080,
     "height": 520
   },
   "routes/010-concepts/images/single-page-site/single-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "5c967786eb93d0a5f1338271c346cbe47dd2e4fa6529d3c86e43d139f432819f",
-    "src": "/images/original/routes/010-concepts/images/single-page-site/single-page-site-5c967786.svg",
+    "sourceHash": "d04489cfb30b95a2456c841dc166df4e9bf2591bab01974cc04fdc49695c8920",
+    "src": "/images/original/routes/010-concepts/images/single-page-site/single-page-site-d04489cf.svg",
     "width": 1080,
     "height": 520
   }

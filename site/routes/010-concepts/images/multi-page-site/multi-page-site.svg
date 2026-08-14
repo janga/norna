@@ -49,7 +49,7 @@
       <text class="mono code" x="42" y="118">config.mjs</text>
       <text class="mono code" x="42" y="150">routes/</text>
 
-      <rect class="mark" x="58" y="168" width="238" height="104" rx="8"/>
+      <rect class="mark" x="58" y="168" width="238" height="122" rx="8"/>
       <text class="mono key" x="72" y="192">010-dogs/</text>
       <text class="mono code" x="92" y="214">route-content.md</text>
       <text class="mono code" x="92" y="236">images/</text>
@@ -57,9 +57,9 @@
       <text class="mono code" x="126" y="280">rover.svg</text>
       <text class="mono code" x="200" y="280">rex.svg</text>
 
-      <rect class="mark" x="58" y="294" width="202" height="50" rx="8"/>
-      <text class="mono key" x="72" y="317">020-adopt/</text>
-      <text class="mono code" x="92" y="337">route-content.md</text>
+      <rect class="mark" x="58" y="308" width="202" height="50" rx="8"/>
+      <text class="mono key" x="72" y="331">020-adopt/</text>
+      <text class="mono code" x="92" y="351">route-content.md</text>
     </g>
 
     <g transform="translate(394 140)">
@@ -87,31 +87,32 @@
     </g>
 
     <path d="M296 306 C342 276 372 238 406 214" stroke="#61736d" stroke-width="2.2" fill="none" stroke-linecap="round" marker-end="url(#small-arrow)"/>
-    <path class="connector" d="M260 458 C332 448 370 430 414 426" marker-end="url(#small-arrow)"/>
+    <path class="connector" d="M260 472 C332 454 370 430 414 426" marker-end="url(#small-arrow)"/>
 
     <g transform="translate(756 140)">
-      <rect class="panel" width="288" height="30" rx="16"/>
-      <rect x="1" y="14" width="286" height="18" fill="#ffffff"/>
-      <text class="mono code" x="24" y="20">https://yoursite.example/dogs/</text>
-    </g>
+      <rect class="panel" width="288" height="352" rx="16"/>
+      <rect x="1" y="1" width="286" height="39" rx="15" fill="#eef3ef"/>
+      <rect x="1" y="25" width="286" height="18" fill="#eef3ef"/>
+      <circle cx="18" cy="20" r="3.5" fill="#d8c47a"/>
+      <circle cx="30" cy="20" r="3.5" fill="#c4d2cb"/>
+      <circle cx="42" cy="20" r="3.5" fill="#c4d2cb"/>
+      <rect x="54" y="10" width="218" height="20" rx="10" fill="#ffffff" stroke="#d7ded9"/>
+      <text class="mono code" x="63" y="24" font-size="9">yoursite.example/dogs/</text>
 
-    <g transform="translate(756 168)">
-      <rect class="panel" width="288" height="324" rx="16"/>
+      <rect x="24" y="58" width="240" height="70" rx="9" fill="#17201d"/>
+      <text x="42" y="82" fill="#f7f3ea" font-size="16" font-weight="800">Dog Shelter</text>
+      <text x="42" y="110" fill="#f7f3ea" font-size="12">Home</text>
+      <text x="88" y="110" fill="#d8c47a" font-size="12" font-weight="800">Dogs</text>
+      <text x="130" y="110" fill="#f7f3ea" font-size="12">Adopt</text>
 
-      <rect x="24" y="20" width="240" height="70" rx="9" fill="#17201d"/>
-      <text x="42" y="44" fill="#f7f3ea" font-size="16" font-weight="800">Dog Shelter</text>
-      <text x="42" y="72" fill="#f7f3ea" font-size="12">Home</text>
-      <text x="88" y="72" fill="#d8c47a" font-size="12" font-weight="800">Dogs</text>
-      <text x="130" y="72" fill="#f7f3ea" font-size="12">Adopt</text>
+      <rect x="24" y="130" width="240" height="32" rx="8" fill="#edf3ef" stroke="#c4d2cb"/>
+      <text x="42" y="151" fill="#17201d" font-size="12" font-weight="800">Dogs</text>
+      <text x="88" y="151" fill="#61736d" font-size="12">Visiting</text>
 
-      <rect x="24" y="92" width="240" height="32" rx="8" fill="#edf3ef" stroke="#c4d2cb"/>
-      <text x="42" y="113" fill="#17201d" font-size="12" font-weight="800">Dogs</text>
-      <text x="88" y="113" fill="#61736d" font-size="12">Visiting</text>
+      <text x="30" y="208" fill="#17201d" font-size="23" font-weight="800">Dogs</text>
+      <text x="30" y="236" fill="#41514c" font-size="13">Meet Rover and Rex.</text>
 
-      <text x="30" y="174" fill="#17201d" font-size="23" font-weight="800">Dogs</text>
-      <text x="30" y="202" fill="#41514c" font-size="13">Meet Rover and Rex.</text>
-
-      <g transform="translate(36 230)">
+      <g transform="translate(36 260)">
         <rect width="94" height="70" rx="10" fill="#eef4f0" stroke="#d7ded9"/>
         <g transform="translate(12 11) scale(0.3)">
           <path d="M64 106c18-12 34-16 56-16s38 4 56 16" fill="none" stroke="#2d2a26" stroke-width="12" stroke-linecap="round"/>
@@ -125,7 +126,7 @@
         <text x="47" y="88" text-anchor="middle" fill="#41514c" font-size="11">Rover</text>
       </g>
 
-      <g transform="translate(156 230)">
+      <g transform="translate(156 260)">
         <rect width="94" height="70" rx="10" fill="#f4f0e8" stroke="#d7ded9"/>
         <g transform="translate(12 11) scale(0.3)">
           <path d="M48 78 120 28l72 50v52H48Z" fill="#d85845" stroke="#2d2a26" stroke-width="6" stroke-linejoin="round"/>

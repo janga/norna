@@ -89,20 +89,22 @@
     <path class="connector" d="M314 388 C356 414 392 414 426 402"/>
 
     <g transform="translate(756 140)">
-      <rect class="panel" width="288" height="30" rx="16"/>
-      <rect x="1" y="14" width="286" height="18" fill="#ffffff"/>
-      <text class="mono code" x="24" y="20">https://yoursite.example/</text>
-    </g>
+      <rect class="panel" width="288" height="352" rx="16"/>
+      <rect x="1" y="1" width="286" height="39" rx="15" fill="#eef3ef"/>
+      <rect x="1" y="25" width="286" height="18" fill="#eef3ef"/>
+      <circle cx="22" cy="20" r="4" fill="#d8c47a"/>
+      <circle cx="36" cy="20" r="4" fill="#c4d2cb"/>
+      <circle cx="50" cy="20" r="4" fill="#c4d2cb"/>
+      <rect x="66" y="10" width="198" height="20" rx="10" fill="#ffffff" stroke="#d7ded9"/>
+      <text class="mono code" x="78" y="24">https://yoursite.example/</text>
 
-    <g transform="translate(756 168)">
-      <rect class="panel" width="288" height="324" rx="16"/>
-      <rect x="24" y="20" width="240" height="38" rx="9" fill="#17201d"/>
-      <text x="44" y="45" fill="#d8c47a" font-size="12" font-weight="800">What we do</text>
-      <text x="132" y="45" fill="#f7f3ea" font-size="12">How you can help</text>
+      <rect x="24" y="58" width="240" height="38" rx="9" fill="#17201d"/>
+      <text x="44" y="83" fill="#d8c47a" font-size="12" font-weight="800">What we do</text>
+      <text x="132" y="83" fill="#f7f3ea" font-size="12">How you can help</text>
 
-      <text x="30" y="106" fill="#17201d" font-size="23" font-weight="800">Dog Shelter</text>
+      <text x="30" y="144" fill="#17201d" font-size="23" font-weight="800">Dog Shelter</text>
 
-      <g transform="translate(30 136)">
+      <g transform="translate(30 174)">
         <text x="0" y="0" fill="#17201d" font-size="17" font-weight="800">What we do</text>
         <text x="0" y="26" fill="#41514c" font-size="13">We rescue and rehome dogs.</text>
         <g transform="translate(154 -4)">
@@ -112,9 +114,9 @@
         </g>
       </g>
 
-      <line x1="30" y1="226" x2="258" y2="226" stroke="#d7ded9"/>
+      <line x1="30" y1="264" x2="258" y2="264" stroke="#d7ded9"/>
 
-      <g transform="translate(30 264)">
+      <g transform="translate(30 302)">
         <text x="0" y="0" fill="#17201d" font-size="17" font-weight="800">How you can help</text>
         <text x="0" y="26" fill="#41514c" font-size="13">Adopt. Foster. Donate.</text>
         <path d="M202 3 C192 -9 172 -1 174 17 C176 33 202 44 202 44 C202 44 228 33 230 17 C232 -1 212 -9 202 3Z" fill="#c85555"/>
