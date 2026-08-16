@@ -23,11 +23,18 @@ source: hand-authored
 Hand-authored SVG diagram created for the Norna introduction site to explain
 how content.md, theme.md and section image folders map to a simple single-page
 website.
+
+image: single-page-site-v2.svg
+source: hand-authored
+Alternative hand-authored SVG diagram created to test a more explicit
+files-pattern-to-browser explanation for the single-page site model.
 -->
 
 ```norna-image-stack
 - image: single-page-site.svg
   alt: A three-column diagram showing Norna files, Markdown file content and the resulting single-page Dog Shelter website. Section ids connect Markdown sections to image folders.
+- image: single-page-site-v2.svg
+  alt: Alternative three-column diagram showing Norna's defined file pattern, Markdown sections with matching image folders and the resulting single-page browser preview.
 ```
 
 ## Multi-page site {#multi-page-site}
@@ -51,9 +58,16 @@ source: hand-authored
 Hand-authored SVG diagram created for the Norna introduction site to explain
 how route folders map to route content, hierarchical navigation, managed images
 and URL slugs.
+
+image: multi-page-site-v2.svg
+source: hand-authored
+Alternative hand-authored SVG diagram created to test a more explicit route
+order, route content and browser URL explanation for the multi-page site model.
 -->
 
 ```norna-image-stack
 - image: multi-page-site.svg
   alt: A three-column diagram showing route folders, route content and the resulting website navigation. Numeric prefixes control navigation order, route ids become URL slugs, and the Dogs route shows two managed images.
+- image: multi-page-site-v2.svg
+  alt: Alternative three-column diagram showing route folders, route content, route order, URL slugs and the Dogs route rendered in a browser.
 ```
