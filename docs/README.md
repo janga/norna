@@ -32,6 +32,7 @@ For design and naming principles:
 
 1. [Command Organization](design/command-organization.md)
 2. [Site Examples Structure](design/site-examples-structure.md)
+3. [Norna Diagram Design](design/norna-diagram-design.md)
 
 For a quick reference:
 
@@ -58,6 +59,9 @@ Design documents are intentionally separate from the user reference:
 - [Site Examples Structure](design/site-examples-structure.md) defines the
   intended vocabulary for starters, examples, documentation sites, reference
   docs, and fixtures.
+- [Norna Diagram Design](design/norna-diagram-design.md) defines the first
+  experiment for technical and pedagogical diagrams without adding external
+  diagram tooling to the build pipeline.
 
 Site repositories should document only their site-specific choices and link here
 for generic `norna` behavior.
