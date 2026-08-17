@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { parseYamlMapping } from './frontmatter-yaml.mjs';
 import {
 	splitSiteFile,
+	validateFrontmatterColorValues,
 	validateFrontmatterIndentation,
 	validateThemeFrontmatterStructure,
 } from './site-content.mjs';
@@ -22,6 +23,7 @@ export const readThemeConfig = async () => {
 
 	validateFrontmatterIndentation(frontmatter, (issue) => issues.push(issue));
 	validateThemeFrontmatterStructure(frontmatter, (issue) => issues.push(issue));
+	validateFrontmatterColorValues(frontmatter, (issue) => issues.push(issue), siteThemeLabel);
 
 	if (issues.length > 0) {
 		throw new Error([

@@ -396,7 +396,7 @@ ul {
 	font: inherit;
 }
 
-.section-markdown .inline-style {
+.inline-style {
 	color: var(--inline-style-color);
 }
 

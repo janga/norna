@@ -20,6 +20,7 @@ import {
 	readThemeFile,
 	toPosixPath,
 	validateContentFrontmatterStructure,
+	validateFrontmatterColorValues,
 	validateFrontmatterIndentation,
 	validateThemeFrontmatterStructure,
 } from './lib/site-content.mjs';
@@ -394,6 +395,7 @@ try {
 	themeFrontmatter = (await readThemeFile(siteThemePath)).frontmatter;
 	validateFrontmatterIndentation(themeFrontmatter, addIssue);
 	validateThemeFrontmatterStructure(themeFrontmatter, addIssue);
+	validateFrontmatterColorValues(themeFrontmatter, addIssue, siteThemeLabel);
 } catch (error) {
 	if (error?.code !== 'ENOENT') {
 		throw error;
@@ -415,6 +417,7 @@ for (const contentFile of contentFiles) {
 	const bodyLineOffset = frontmatter.split(/\r?\n/).length - 1;
 	validateFrontmatterIndentation(frontmatter, addIssue);
 	validateContentFrontmatterStructure(frontmatter, addIssue);
+	validateFrontmatterColorValues(frontmatter, addIssue, contentFile.contentLabel);
 
 	const frontmatterSections = getFrontmatterSections(frontmatter);
 	const frontmatterIds = new Set(frontmatterSections.map((section) => section.id));

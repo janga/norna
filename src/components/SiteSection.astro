@@ -256,7 +256,7 @@ const sectionStyle = [
 >
 	<div class="section-card">
 		<header class="section-header">
-			<HeadingTag>{section.title}</HeadingTag>
+			<HeadingTag set:html={section.titleHtml} />
 		</header>
 
 		<div class:list={['section-body', { 'section-body-has-gallery': hasMedia, 'section-body-text-only': !hasMedia }]}>

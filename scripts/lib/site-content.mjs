@@ -22,6 +22,9 @@ const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
 const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'presentation', 'frame', 'sections']);
 const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation', 'frame']);
+const frontmatterColorKeys = new Set(['backgroundColor', 'textColor', 'color']);
+const quotedHexColorRegex = /^["']#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})["']$/;
+const unquotedHexColorRegex = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 const knownNestedFrontmatterKeys = new Set([
 	'align',
 	'alt',
@@ -257,6 +260,79 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 			severity: 'error',
 			message: `Frontmatter line ${lineNumber} defines "${key}" at the top level, but it is not a valid top-level ${fileKind} field.`,
 			fix,
+		});
+	}
+};
+
+const stripInlineYamlComment = (value) => {
+	let quote = null;
+
+	for (let index = 0; index < value.length; index += 1) {
+		const character = value[index];
+		const previous = value[index - 1];
+
+		if ((character === '"' || character === "'") && previous !== '\\') {
+			quote = quote === character ? null : quote ?? character;
+			continue;
+		}
+
+		if (character === '#' && quote === null && /\s/.test(previous ?? '')) {
+			return value.slice(0, index).trimEnd();
+		}
+	}
+
+	return value.trim();
+};
+
+export const validateFrontmatterColorValues = (frontmatter, addIssue, label = 'Frontmatter') => {
+	const lines = frontmatter.split(/\r?\n/);
+	const pathStack = [];
+
+	for (const [index, line] of lines.entries()) {
+		const lineNumber = index + 1;
+		const trimmed = line.trim();
+
+		if (!trimmed || trimmed.startsWith('#') || frontmatterDelimiterRegex.test(line)) {
+			continue;
+		}
+
+		const match = line.match(/^(\s*)([A-Za-z][A-Za-z0-9-]*):\s*(.*?)\s*$/);
+		if (!match) continue;
+
+		const indent = match[1].length;
+		const key = match[2];
+		const rawValue = match[3].trim();
+
+		while (pathStack.length > 0 && pathStack[pathStack.length - 1].indent >= indent) {
+			pathStack.pop();
+		}
+
+		const pathLabel = [...pathStack.map((entry) => entry.key), key].join('.');
+
+		if (!frontmatterColorKeys.has(key)) {
+			if (!rawValue) {
+				pathStack.push({ indent, key });
+			}
+			continue;
+		}
+
+		const value = stripInlineYamlComment(rawValue);
+
+		if (quotedHexColorRegex.test(value)) continue;
+
+		if (unquotedHexColorRegex.test(rawValue)) {
+			addIssue({
+				severity: 'error',
+				message: `${label} line ${lineNumber} defines ${pathLabel} as an unquoted hex color. YAML treats "#" as the start of a comment unless the value is quoted.`,
+				fix: `Write it as ${key}: "#ffd84d" or another quoted hex color.`,
+			});
+			continue;
+		}
+
+		addIssue({
+			severity: 'error',
+			message: `${label} line ${lineNumber} defines ${pathLabel} with invalid color value ${rawValue || '(empty)'}.`,
+			fix: `Use a quoted hex color in #rgb, #rrggbb, or #rrggbbaa form, for example ${key}: "#ffd84d".`,
 		});
 	}
 };

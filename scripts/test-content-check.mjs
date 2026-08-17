@@ -204,6 +204,36 @@ test('content:check fails when Markdown uses undefined inline styles', async () 
 	});
 });
 
+const invalidInlineStyleColorTheme = `---
+presentation:
+  inlineStyles:
+    yellow:
+      color: "#ffd844d"
+---
+`;
+
+test('content:check explains invalid inline style colors', async () => {
+	await withTempProject({
+		site: `---
+title: Invalid Inline Color
+---
+## Intro {#intro}
+This has [yellow text]{.yellow}.
+`,
+		theme: invalidInlineStyleColorTheme,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 1, output);
+		assert.match(output, /^Content check failed\./m);
+		assert.match(output, /site\/theme\.md line 5 defines presentation\.inlineStyles\.yellow\.color with invalid color value "#ffd844d"\./);
+		assert.match(output, /Use a quoted hex color in #rgb, #rrggbb, or #rrggbbaa form, for example color: "#ffd84d"\./);
+		assert.doesNotMatch(output, /Inline style "\.yellow" is used in site\/content\.md but is not defined/);
+	});
+});
+
 const badWhitespaceSite = `---
 presentation:
   typography:

@@ -38,12 +38,13 @@ type SectionContentBlock =
 export type ResolvedSection = SiteSectionMetadata & {
 	id: string;
 	title: string;
+	titleHtml: string;
 	contentBlocks: SectionContentBlock[];
 };
 
 const headingRegex = /<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
-const inlineStyleReferenceRegex = /\[([^\]<]+)\]\{\.([a-z][a-z0-9-]*)\}/g;
+const inlineStyleReferenceRegex = /\[([\s\S]*?)\]\{\.([a-z][a-z0-9-]*)\}/g;
 const markdownH2Regex = /^##\s+.*$/gm;
 const imageProvenanceCommentRegex = /<!--\s*norna-image-provenance:[\s\S]*?-->/gi;
 
@@ -81,8 +82,14 @@ const getHeadingId = (attributes: string, headingHtml: string) => {
 const getExplicitHeadingId = (headingHtml: string) =>
 	decodeHtmlEntities(stripTags(headingHtml)).trim().match(explicitHeadingIdRegex)?.[1];
 
+const stripInlineStyleMarkers = (value: string) =>
+	value.replace(inlineStyleReferenceRegex, '$1');
+
 const getHeadingTitle = (headingHtml: string) =>
-	decodeHtmlEntities(stripTags(headingHtml)).replace(explicitHeadingIdRegex, '').trim();
+	stripInlineStyleMarkers(decodeHtmlEntities(stripTags(headingHtml)).replace(explicitHeadingIdRegex, '').trim());
+
+const getHeadingTitleHtml = (headingHtml: string, inlineStyles: InlineStyles | undefined) =>
+	prepareContentHtml(headingHtml.replace(explicitHeadingIdRegex, '').trim(), inlineStyles);
 
 const applyInlineStyles = (html: string, inlineStyles: InlineStyles | undefined) =>
 	html.replace(inlineStyleReferenceRegex, (_match, text: string, styleName: string) => {
@@ -209,6 +216,7 @@ export const getSectionsContent = (
 			...(sectionMetadata[id] ?? {}),
 			id,
 			title,
+			titleHtml: getHeadingTitleHtml(headingHtml, inlineStyles),
 			contentBlocks: resolveContentBlocks(content, rawSections.get(id) ?? '', page, id, inlineStyles),
 		});
 	}

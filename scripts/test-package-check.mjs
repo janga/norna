@@ -195,6 +195,7 @@ title: Package Check Site
 description: Site used by package checks.
 sections:
   intro: {}
+  warning: {}
   work: {}
 ---
 
@@ -206,6 +207,10 @@ This page verifies that [packaged norna sites]{.highlight} can build with the cu
 image: package-check.svg
 source: package check fixture
 -->
+
+## [**Warning**]{.highlight} {#warning}
+
+This section verifies styled section headings.
 
 ## Work {#work}
 
@@ -316,6 +321,18 @@ This route verifies that packaged norna sites can build route pages.
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'class="inline-style inline-style-highlight" style="--inline-style-color: #ffd84d"',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'<h2><span class="inline-style inline-style-highlight" style="--inline-style-color: #ffd84d"><strong>Warning</strong></span></h2>',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'data-section-title="Warning"',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'href="#warning">Warning</a>',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
