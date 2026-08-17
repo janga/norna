@@ -7,6 +7,11 @@ navigation:
   label: Home
 ---
 
+## [**Warning**]{.yellow} {#warning}
+
+- [Experimental code.]{.yellow}
+- [Not for production use.]{.yellow}
+
 ## Norna {#intro}
 
 **An opinionated CLI for building small websites from plain files.**
@@ -91,9 +96,9 @@ part of an ordinary file-based workflow.
 - personal websites
 - small organisation and information sites
 
-Norna is a good fit when you want a site that stays simple to change: content
-in ordinary files, clear places for images and pages, and a ready-made
-presentation model instead of a custom website implementation.
+Norna is a good fit when you want a site that stays simple to change: content in
+ordinary files, clear places for images and pages, and a ready-made presentation
+model instead of a custom website implementation.
 
 ### Not a good fit
 

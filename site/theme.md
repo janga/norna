@@ -42,6 +42,8 @@ presentation:
       color: "#d8c47a"
     muted:
       color: "#aaa49a"
+    yellow:
+      color: "#ffd84d"
 frame:
   colors: presentation
 ---
