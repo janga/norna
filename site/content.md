@@ -7,11 +7,6 @@ navigation:
   label: Home
 ---
 
-## [**Warning**]{.yellow} {#warning}
-
-- [Experimental code.]{.yellow}
-- [Not for production use.]{.yellow}
-
 ## Norna {#intro}
 
 **An opinionated CLI for building small websites from plain files.**

@@ -1,5 +1,5 @@
 {
-  "black-puppy-meadow.png": {
+  "images/black-dogs/black-puppy-meadow.png": {
     "outputVersion": 2,
     "sourceHash": "7255e3d9148c1ded01ae6ae6809b9a8261b553a1516d3f8f4de0554bc321f652",
     "width": 1536,
@@ -27,7 +27,7 @@
       }
     ]
   },
-  "photo-of-a-black-dog.jpg": {
+  "images/black-dogs/photo-of-a-black-dog.jpg": {
     "outputVersion": 2,
     "sourceHash": "5cf614d2863ca8f86b6162c7b477fd2690adbc101816206c9e675bf36d9962d0",
     "width": 960,
@@ -47,7 +47,7 @@
       }
     ]
   },
-  "brown-dog.jpg": {
+  "images/brown-dogs/brown-dog.jpg": {
     "outputVersion": 2,
     "sourceHash": "50ef114e49ae48491c015157b4a25f4f1fd69140170fe6d4202c551858c3e03d",
     "width": 3939,
@@ -79,7 +79,7 @@
       }
     ]
   },
-  "dog-accompanies-master.jpg": {
+  "images/brown-dogs/dog-accompanies-master.jpg": {
     "outputVersion": 2,
     "sourceHash": "7ef804d5ebe27724409f4ffa94389c7b1102c2c8bb9c1dae29ecbd4c56e61af9",
     "width": 2400,
@@ -111,7 +111,7 @@
       }
     ]
   },
-  "golden-retriever.jpg": {
+  "images/golden-dogs/golden-retriever.jpg": {
     "outputVersion": 2,
     "sourceHash": "f797fd880d6c3b112ceb3408f468fbeaf442efc792f935fd6c9954b812fdc838",
     "width": 1600,
@@ -139,7 +139,7 @@
       }
     ]
   },
-  "toller-puppy.jpg": {
+  "images/golden-dogs/toller-puppy.jpg": {
     "outputVersion": 2,
     "sourceHash": "a2a8fbc0d599deb019d45f7b11de98bcbcb4f1fd609e931073161dcb88cbf63f",
     "width": 2576,
@@ -171,7 +171,7 @@
       }
     ]
   },
-  "white-cute-dog.jpg": {
+  "images/white-dogs/white-cute-dog.jpg": {
     "outputVersion": 2,
     "sourceHash": "077a06891d97eafb4593cfcaa5c9b04fdb1e3a6206d56acd4ebd3eadb83356bf",
     "width": 1277,
@@ -195,7 +195,7 @@
       }
     ]
   },
-  "white-puppy-garden.png": {
+  "images/white-dogs/white-puppy-garden.png": {
     "outputVersion": 2,
     "sourceHash": "d3ab2ca04fb37dfbf010e7f9f3adf2ba8401553bd1946e3b388cb662eac58ee9",
     "width": 1536,

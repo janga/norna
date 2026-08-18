@@ -6,6 +6,9 @@
 # Available structure:
 # navigation:
 #   brand: site-wide brand/home text; defaults to the homepage title
+#   logo:
+#     alt: accessible name for site/public/logo.svg
+#     height: CSS length for the logo height, e.g. 2.6rem
 # layout:
 #   density: compact | normal | airy
 #   pageWidth: CSS length, e.g. 2048px
@@ -55,6 +58,10 @@
 #     backgroundColor: quoted hex color
 #     textColor: quoted hex color
 # norna:end theme-help
+navigation:
+  logo:
+    alt: Dog Shelter
+    height: 2.6rem
 layout:
   density: compact
   pageWidth: 2048px

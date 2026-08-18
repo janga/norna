@@ -16,15 +16,19 @@ type AnchorMeasurement = {
 	scrollY: number;
 };
 
-const pageNavSelector = '.page-nav a';
+const pageNavSelector = '.site-nav-submenu a';
 const mobilePageNavSelector = '.mobile-page-nav a';
 const sectionNavSelector = `${pageNavSelector}, ${mobilePageNavSelector}`;
 
 const getNavTargets = async (page) => page.locator(pageNavSelector).evaluateAll((links) => (
-	links.map((link) => ({
-		hash: link.getAttribute('href') ?? '',
-		label: link.textContent?.trim() ?? '',
-	})).filter((link) => link.hash.startsWith('#'))
+	links.map((link) => {
+		const url = new URL(link.href, window.location.href);
+		return {
+			hash: url.hash,
+			label: link.textContent?.trim() ?? '',
+			pathname: url.pathname,
+		};
+	}).filter((link) => link.pathname === window.location.pathname && link.hash.startsWith('#'))
 ));
 
 const measureAnchor = async (page, sectionId: string): Promise<AnchorMeasurement> => page.evaluate((id) => {
@@ -97,7 +101,12 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 };
 
 const clickSectionLink = async (page, hash: string) => {
-	const desktopLink = page.locator(`${pageNavSelector}[href="${hash}"]`).first();
+	const desktopLink = page.locator(`${pageNavSelector}[href$="${hash}"]`).first();
+	const currentRouteLink = page.locator('.site-nav a[aria-current="page"]').first();
+
+	if (await currentRouteLink.isVisible()) {
+		await currentRouteLink.hover();
+	}
 
 	if (await desktopLink.isVisible()) {
 		await desktopLink.click();
@@ -107,7 +116,7 @@ const clickSectionLink = async (page, hash: string) => {
 	const mobileMenu = page.locator('.mobile-nav-menu').first();
 	if (await mobileMenu.isVisible()) {
 		await mobileMenu.locator('summary').click();
-		await page.locator(`${mobilePageNavSelector}[href="${hash}"]`).first().click();
+		await page.locator(`${mobilePageNavSelector}[href$="${hash}"]`).first().click();
 		return;
 	}
 
@@ -120,6 +129,7 @@ const getActiveSectionHash = async (page) => page.locator(`${sectionNavSelector}
 
 const measureNavTextHitTargets = async (page) => page.locator(pageNavSelector).evaluateAll((links) => (
 	links.map((link) => {
+		const linkUrl = new URL(link.href, window.location.href);
 		const textRange = document.createRange();
 		textRange.selectNodeContents(link);
 		const textRect = textRange.getBoundingClientRect();
@@ -136,9 +146,31 @@ const measureNavTextHitTargets = async (page) => page.locator(pageNavSelector).e
 			hitHref: hitElement instanceof HTMLAnchorElement
 				? hitElement.getAttribute('href')
 				: hitElement?.closest('a')?.getAttribute('href'),
+			pathname: linkUrl.pathname,
 		};
-	})
+	}).filter((link) => link.pathname === window.location.pathname)
 ));
+
+test.describe('route navigation menus', () => {
+	test.use({
+		hasTouch: false,
+		isMobile: false,
+		viewport: desktopViewport,
+	});
+
+	test('marks the current route and opens its section menu on hover', async ({ page }) => {
+		await openSite(page);
+
+		const currentRouteLink = page.locator('.site-nav a[aria-current="page"]');
+		await expect(currentRouteLink).toHaveText('Home');
+		await currentRouteLink.hover();
+
+		const currentRouteItem = currentRouteLink.locator('..');
+		const submenu = currentRouteItem.locator('.site-nav-submenu');
+		await expect(submenu).toBeVisible();
+		await expect(submenu.locator('a').first()).toBeVisible();
+	});
+});
 
 for (const scenario of [
 	{ name: 'mobile', viewport: mobileViewport, isMobile: true, hasTouch: true },
@@ -288,6 +320,7 @@ test.describe('desktop navigation hit targets', () => {
 
 	test('keeps labels below the top fullscreen browser chrome risk area', async ({ page }) => {
 		await openSite(page);
+		await page.locator('.site-nav a[aria-current="page"]').hover();
 
 		for (const target of await measureNavTextHitTargets(page)) {
 			expect(target.textTop, target.label).toBeGreaterThanOrEqual(minimumFullscreenSafeTextTop);

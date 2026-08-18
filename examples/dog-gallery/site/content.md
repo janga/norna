@@ -2,7 +2,7 @@
 title: Local Dog Example
 description: A small norna example with free dog images.
 navigation:
-  label: Dog site!
+  label: Snoopy´s dog shelter!
 sections:
   summer-dogs:
     visible:
@@ -12,9 +12,8 @@ sections:
 
 ## Black Dogs {#black-dogs}
 
-Black-coated dogs from the local norna development collection. This
-sentence contains [yellow highlighted text]{.highlight} for inline style
-inspection.
+Black-coated dogs from the local norna development collection. This sentence
+contains [yellow highlighted text]{.highlight} for inline style inspection.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a
 ante venenatis dapibus posuere velit aliquet.

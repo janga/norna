@@ -6,6 +6,9 @@
 # Available structure:
 # navigation:
 #   brand: site-wide brand/home text; defaults to the homepage title
+#   logo:
+#     alt: accessible name for site/public/logo.svg
+#     height: CSS length for the logo height, e.g. 2.6rem
 # layout:
 #   density: compact | normal | airy
 #   pageWidth: CSS length, e.g. 1180px

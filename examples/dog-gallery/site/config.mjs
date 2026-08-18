@@ -30,26 +30,6 @@ export default {
 			gallery: 'Images',
 		},
 	},
-	footer: {
-		// Omit this value to hide the copyright sentence.
-		copyrightMessage: 'Dog images from Wikimedia Commons; see image captions for license details.',
-
-		// Set enabled to false to hide the build timestamp while keeping its config.
-		buildInfo: {
-			enabled: true,
-
-			// Text shown before the formatted build timestamp.
-			text: 'Built',
-
-			// Standard Intl.DateTimeFormat options for the build timestamp.
-			dateTimeFormat: {
-				locale: 'en-GB',
-				timeZone: 'UTC',
-				dateStyle: 'short',
-				timeStyle: 'short',
-			},
-		},
-	},
 	github: {
 		// Example repository and workflow details used by deploy scripts.
 		repo: 'owner/example-site',

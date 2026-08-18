@@ -3,10 +3,12 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import path from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteNavigation from './SiteNavigation.astro';
+import SiteBanners from './SiteBanners.astro';
 import SiteSection from './SiteSection.astro';
-import { getSectionsContent } from '../lib/sectionContent';
+import { getSectionNavigation, getSectionsContent } from '../lib/sectionContent';
 import { getNavigationPages, getSitePage, getSitePages } from '../lib/sitePages';
 import { getToday, isVisibleToday } from '../lib/visibility';
+import { getLogoAsset } from '../lib/sitePublicAssets';
 import { readSiteFile } from '../../scripts/lib/site-content.mjs';
 import { siteContentPath, siteRoutesDir } from '../../scripts/lib/site-paths.mjs';
 import { resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
@@ -29,10 +31,20 @@ const pageContentPath = currentPage.routeDirectory
 	: siteContentPath;
 const rawMarkdown = (await readSiteFile(pageContentPath, siteContentLabel)).body;
 const [theme] = await getCollection('theme');
+const [sitewide] = await getCollection('sitewide');
 const navigationPages = getNavigationPages(sitePages);
 const homePage = sitePages.find((page) => page.isHome) ?? currentPage;
 const themeData = theme?.data ?? {};
 const brandLabel = themeData.navigation?.brand ?? homePage.title;
+const logoAsset = getLogoAsset();
+const logoSettings = themeData.navigation?.logo;
+const logo = logoAsset
+	? {
+		src: logoAsset.href,
+		alt: logoSettings?.alt ?? brandLabel,
+		height: logoSettings?.height,
+	}
+	: undefined;
 const pagePresentation = resolvePagePresentation(themeData, entry.data.presentation);
 const frameColors = resolveFrameColors({
 	theme: themeData,
@@ -43,7 +55,24 @@ const sections = entry.data.sections;
 const siteHtml = entry.rendered?.html ?? '';
 const resolvedSections = getSectionsContent(siteHtml, rawMarkdown, sections, currentPage, pagePresentation.inlineStyles);
 const today = getToday();
+const sitewideData = sitewide?.data ?? {};
+const siteBanners = (sitewideData.banners ?? []).filter((banner) => isVisibleToday(banner.visible, today));
 const visibleSections = resolvedSections.filter((section) => isVisibleToday(section.visible, today));
+
+const getPageContent = async (page: SitePage) => {
+	if (page.pathname === currentPage.pathname) {
+		return visibleSections.map(({ id, title }) => ({ id, title }));
+	}
+
+	const pageSections = getSectionNavigation(page.entry.rendered?.html ?? '', page.entry.data.sections);
+
+	return pageSections.filter((section) => isVisibleToday(page.entry.data.sections[section.id]?.visible, today));
+};
+
+const pageNavigation = await Promise.all(navigationPages.map(async (page) => ({
+	page,
+	sections: await getPageContent(page),
+})));
 
 if (visibleSections.length === 0) {
 	throw new Error(`No sections are visible for ${today}. Check sections.<section-id>.visible in ${siteContentLabel}.`);
@@ -55,14 +84,16 @@ if (visibleSections.length === 0) {
 	description={entry.data.description}
 	frameColors={frameColors}
 	pathname={currentPage.pathname}
+	footer={sitewideData.footer}
 >
 	<SiteNavigation
 		brandLabel={brandLabel}
+		logo={logo}
 		currentPage={currentPage}
-		pages={navigationPages}
-		sections={visibleSections}
+		pageNavigation={pageNavigation}
 		frameColors={frameColors}
 	/>
+	<SiteBanners banners={siteBanners} />
 
 	<main id="main-content" class="site-content">
 		{visibleSections.map((section, index) => (

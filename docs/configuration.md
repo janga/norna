@@ -141,6 +141,10 @@ Fields:
   `Sections`.
 - `locale.labels.menu`: mobile menu summary text, default `Menu`.
 - `locale.labels.closeMenu`: reserved close-menu label, default `Close menu`.
+- `locale.labels.dismissBanner`: banner dismissal button label, default
+  `Dismiss notice`.
+- `locale.labels.siteBanners`: ARIA label for the banner stack, default
+  `Site notices`.
 - `locale.labels.gallery`: Norna managed media ARIA label prefix, default
   `Images`.
 
@@ -160,60 +164,10 @@ locale: {
 }
 ```
 
-## Footer
+## Sitewide Content
 
-### `footer.copyrightMessage`
-
-- Purpose: optional footer sentence.
-- Type: string.
-- Required: no.
-- Default: hidden.
-- Validation: if set, it must be a non-empty string. `undefined`, `null`, and
-  `''` are treated as absent.
-- Consequence: footer rendering is enabled when this or enabled build info is
-  present.
-
-### `footer.buildInfo`
-
-- Purpose: optional footer build timestamp.
-- Type: object, `false`, `null`, or omitted.
-- Required: no.
-- Default: hidden.
-- Validation: object fields are validated when the object is present. `false`,
-  `null`, or omission hides build info.
-
-Fields:
-
-- `footer.buildInfo.enabled`: boolean, default `true`.
-- `footer.buildInfo.text`: required non-empty string.
-- `footer.buildInfo.dateTimeFormat`: required object.
-- `footer.buildInfo.dateTimeFormat.locale`: required string.
-- `footer.buildInfo.dateTimeFormat.timeZone`: required string.
-- `footer.buildInfo.dateTimeFormat.dateStyle`: required string.
-- `footer.buildInfo.dateTimeFormat.timeStyle`: required string.
-
-The date/time object must be accepted by `Intl.DateTimeFormat`.
-
-Example:
-
-```js
-footer: {
-	copyrightMessage: '(c) Example Artist.',
-	buildInfo: {
-		enabled: true,
-		text: 'Built',
-		dateTimeFormat: {
-			locale: 'en-GB',
-			timeZone: 'UTC',
-			dateStyle: 'short',
-			timeStyle: 'short',
-		},
-	},
-}
-```
-
-If both `footer.copyrightMessage` and enabled `footer.buildInfo` are absent, the
-footer is not rendered.
+Shared banners and footer content are defined in `site/sitewide-content.md`. See
+[Sitewide Content](sitewide-content.md) for the schema and examples.
 
 ## GitHub
 

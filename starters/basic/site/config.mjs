@@ -19,19 +19,6 @@ export default {
 			gallery: 'Images',
 		},
 	},
-	footer: {
-		copyrightMessage: '(c) Example Owner.',
-		buildInfo: {
-			enabled: true,
-			text: 'Built',
-			dateTimeFormat: {
-				locale: 'en-GB',
-				timeZone: 'UTC',
-				dateStyle: 'short',
-				timeStyle: 'short',
-			},
-		},
-	},
 	github: {
 		repo: 'owner/example-site',
 		branch: 'main',

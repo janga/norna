@@ -160,6 +160,7 @@ try {
 		assertFileExists(path.join(packagedStarterRoot, 'README.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'config.mjs')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'theme.md')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'sitewide-content.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'content.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'images', 'work', '.gitkeep')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'public', 'robots.txt')),
@@ -188,7 +189,11 @@ try {
 	const packageCheckTheme = await readFile(packageCheckThemePath, 'utf8');
 	await writeFile(
 		packageCheckThemePath,
-		packageCheckTheme.replace('brand: Example Site', 'brand: Package Check Brand'),
+		packageCheckTheme.replace('brand: Example Site', 'brand: Package Check Brand\n  logo:\n    alt: Package Check Logo\n    height: 2.6rem'),
+	);
+	await writeFile(
+		path.join(siteProjectRoot, 'site', 'public', 'logo.svg'),
+		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="black"/></svg>\n',
 	);
 	await writeFile(path.join(siteProjectRoot, 'site', 'content.md'), `---
 title: Package Check Site
@@ -288,7 +293,15 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<a class="site-brand" href="/site/">Package Check Brand</a>',
+		'<a class="site-brand" href="/site/"><img class="site-brand-logo" src="/site/logo.svg" alt="Package Check Logo">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'<div class="site-nav-submenu">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'href="/site/#intro">Intro</a>',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -332,7 +345,7 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'href="#warning">Warning</a>',
+		'href="/site/#warning">Warning</a>',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),

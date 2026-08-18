@@ -52,6 +52,10 @@ configuration is the uncommented YAML below it.
 
 - `brand`: optional site-wide brand or home-link text shown in the site
   navigation.
+- `logo`: optional settings for a fixed logo file in `site/public`. Name the
+  file `logo.svg`, `logo.png`, `logo.jpg`, or `logo.jpeg`; only one is allowed.
+  `alt` sets the accessible name and `height` sets the rendered height. The
+  width is derived from the file's intrinsic aspect ratio.
 
 If `navigation.brand` is omitted, Norna uses the homepage `title` from
 `site/content.md`. Use `navigation.brand` when the homepage title is editorial
@@ -63,6 +67,20 @@ Example:
 navigation:
   brand: Norna
 ```
+
+Example with a logo:
+
+```yaml
+navigation:
+  logo:
+    alt: Norna
+    height: 2.6rem
+```
+
+If no logo file is present, `config:check` warns and the navigation uses
+`navigation.brand` or the homepage title instead. If both a logo and
+`navigation.brand` are present, the logo is used and the brand remains a text
+fallback.
 
 ## Layout
 

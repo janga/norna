@@ -22,19 +22,6 @@ export default {
 			gallery: 'Images',
 		},
 	},
-	footer: {
-		copyrightMessage: '(c) Project contributors.',
-		buildInfo: {
-			enabled: true,
-			text: 'Built',
-			dateTimeFormat: {
-				locale: 'en-GB',
-				timeZone: 'UTC',
-				dateStyle: 'short',
-				timeStyle: 'short',
-			},
-		},
-	},
 	github: {
 		repo: 'owner/project-name',
 		branch: 'main',

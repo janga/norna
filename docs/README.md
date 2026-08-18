@@ -10,13 +10,14 @@ For a site maintainer:
 1. [Getting Started](getting-started.md)
 2. [Site Structure](site-structure.md)
 3. [Theme](theme.md)
-4. [Configuration](configuration.md)
-5. [Content](content.md)
-6. [Typography](typography.md)
-7. [Routes](routes.md)
-8. [Images And Metadata](images-and-metadata.md)
-9. [Local Development](local-development.md)
-10. [Publishing](publishing.md)
+4. [Sitewide Content](sitewide-content.md)
+5. [Configuration](configuration.md)
+6. [Content](content.md)
+7. [Typography](typography.md)
+8. [Routes](routes.md)
+9. [Images And Metadata](images-and-metadata.md)
+10. [Local Development](local-development.md)
+11. [Publishing](publishing.md)
 
 For a developer integrating or updating the engine:
 
@@ -37,11 +38,13 @@ For design and naming principles:
 For a quick reference:
 
 - [Configuration](configuration.md) describes technical `site/config.mjs`
-  fields such as URL, base path, locale labels, footer, GitHub, and deploy
+  fields such as URL, base path, locale labels, GitHub, and deploy
   settings.
+- [Sitewide Content](sitewide-content.md) describes shared banners and footer content
+  in `site/sitewide-content.md`.
 - [Content](content.md) describes page frontmatter, Markdown-authored
-  sections, optional section metadata, managed media blocks, temporary
-  sections, and content validation.
+  sections, optional section metadata, managed media blocks, temporary sections,
+  and content validation.
 - [Theme](theme.md) describes site-wide layout, layout density, image sizing,
   font, typography rhythm, presentation colors, frame colors, and inline styles.
 - [Typography](typography.md) describes presets, rhythms, roles, overrides,

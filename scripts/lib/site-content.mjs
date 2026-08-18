@@ -55,6 +55,7 @@ const knownNestedFrontmatterKeys = new Set([
 	'imageGap',
 	'inlineStyles',
 	'label',
+	'logo',
 	'lineHeight',
 	'maxAvailableHeightPercent',
 	'maxAvailableWidthPercent',

@@ -42,6 +42,11 @@ export type ResolvedSection = SiteSectionMetadata & {
 	contentBlocks: SectionContentBlock[];
 };
 
+export type SectionNavigation = {
+	id: string;
+	title: string;
+};
+
 const headingRegex = /<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const inlineStyleReferenceRegex = /\[([\s\S]*?)\]\{\.([a-z][a-z0-9-]*)\}/g;
@@ -90,6 +95,39 @@ const getHeadingTitle = (headingHtml: string) =>
 
 const getHeadingTitleHtml = (headingHtml: string, inlineStyles: InlineStyles | undefined) =>
 	prepareContentHtml(headingHtml.replace(explicitHeadingIdRegex, '').trim(), inlineStyles);
+
+export const getSectionNavigation = (html: string, sectionMetadata: SiteSectionMetadataMap): SectionNavigation[] => {
+	const matches = Array.from(html.matchAll(headingRegex));
+	const sectionIds = new Set<string>();
+	const sections = matches.map((match) => {
+		const attributes = match[1] ?? '';
+		const headingHtml = match[2] ?? '';
+		const explicitId = getExplicitHeadingId(headingHtml);
+		const id = getHeadingId(attributes, headingHtml);
+		const title = getHeadingTitle(headingHtml);
+
+		if (!explicitId) {
+			throw new Error(`Section heading "${title}" is missing an explicit id. Write it as: ## ${title} {#${id}}`);
+		}
+
+		if (sectionIds.has(id)) {
+			throw new Error(`Duplicate Markdown section heading id: ${id}`);
+		}
+
+		sectionIds.add(id);
+		return { id, title };
+	});
+
+	for (const id of Object.keys(sectionMetadata)) {
+		if (!sectionIds.has(id)) {
+			throw new Error(
+				`Section metadata "${id}" does not match any Markdown section. Add "## Heading {#${id}}" or remove sections.${id}.`,
+			);
+		}
+	}
+
+	return sections;
+};
 
 const applyInlineStyles = (html: string, inlineStyles: InlineStyles | undefined) =>
 	html.replace(inlineStyleReferenceRegex, (_match, text: string, styleName: string) => {

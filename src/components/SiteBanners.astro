@@ -1,0 +1,100 @@
+---
+import projectConfig from '../../scripts/lib/project-config.mjs';
+
+type Banner = {
+	id: string;
+	tone: 'warning';
+	title: string;
+	text: string;
+	visible?: {
+		from?: string;
+		until?: string;
+	};
+};
+
+interface Props {
+	banners: Banner[];
+}
+
+const { banners } = Astro.props;
+const hashBanner = (banner: Banner) => {
+	const value = [
+		banner.id,
+		banner.tone,
+		banner.title,
+		banner.text,
+		banner.visible?.from ?? '',
+		banner.visible?.until ?? '',
+	].join('\u001f');
+	let hash = 0;
+
+	for (const character of value) {
+		hash = ((hash << 5) - hash + character.charCodeAt(0)) | 0;
+	}
+
+	return (hash >>> 0).toString(36);
+};
+const getStorageKey = (banner: Banner) => `norna-banner:${banner.id}:${hashBanner(banner)}`;
+const dismissBannerLabel = projectConfig.locale.labels.dismissBanner;
+const siteBannersLabel = projectConfig.locale.labels.siteBanners;
+---
+
+{banners.length > 0 && (
+	<aside class="site-banners" aria-label={siteBannersLabel}>
+		{banners.map((banner) => {
+			const storageKey = getStorageKey(banner);
+			const dismissLabel = `${dismissBannerLabel}: ${banner.title}`;
+
+			return (
+				<article
+					class:list={['site-banner', `site-banner-${banner.tone}`]}
+					data-norna-banner
+					data-banner-key={storageKey}
+					role="status"
+				>
+					<div class="site-banner-copy">
+						<p class="site-banner-title">{banner.title}</p>
+						<p class="site-banner-text">{banner.text}</p>
+					</div>
+					<button class="site-banner-dismiss" type="button" data-dismiss-banner aria-label={dismissLabel} title={dismissLabel}>
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</article>
+			);
+		})}
+	</aside>
+)}
+
+<script is:inline>
+	(() => {
+		const storagePrefix = 'norna-banner:';
+		const banners = Array.from(document.querySelectorAll('[data-norna-banner]'));
+
+		banners.forEach((banner) => {
+			const storageKey = banner.getAttribute('data-banner-key');
+			const dismissButton = banner.querySelector('[data-dismiss-banner]');
+
+			if (!storageKey || !(dismissButton instanceof HTMLButtonElement)) return;
+
+			try {
+				if (localStorage.getItem(storageKey) === 'dismissed') {
+					banner.hidden = true;
+				}
+			} catch {
+				// Private browsing modes may deny storage; the banner remains usable.
+			}
+
+			dismissButton.addEventListener('click', () => {
+				try {
+					if (storageKey.startsWith(storagePrefix)) {
+						localStorage.setItem(storageKey, 'dismissed');
+					}
+				} catch {
+					// Dismissing still works for the current page when storage is unavailable.
+				}
+
+				banner.hidden = true;
+			});
+		});
+	})();
+</script>

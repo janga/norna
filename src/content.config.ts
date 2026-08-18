@@ -165,11 +165,51 @@ const pageNavigation = z.object({
 }).strict();
 const themeNavigation = z.object({
 	brand: z.string().min(1).optional(),
+	logo: z.object({
+		alt: z.string().min(1).optional(),
+		height: visualCssLength.optional(),
+	}).strict().optional(),
 }).strict();
 
 const sectionMetadata = z.object({
 	visible: visibilityWindow.optional(),
 	presentation: sectionPresentationOverride.optional(),
+}).strict();
+const banner = z.object({
+	id: z.string().regex(/^[a-z0-9-]+$/),
+	tone: z.enum(['warning']).default('warning'),
+	visible: visibilityWindow.optional(),
+	title: z.string().min(1),
+	text: z.string().min(1),
+}).strict();
+const banners = z.array(banner).optional().default([]).refine(
+	(values) => new Set(values.map((value) => value.id)).size === values.length,
+	'Banner ids must be unique.',
+);
+const dateTimeFormat = z.object({
+	locale: z.string().min(1),
+	timeZone: z.string().min(1),
+	dateStyle: z.string().min(1),
+	timeStyle: z.string().min(1),
+}).strict().refine((value) => {
+	try {
+		new Intl.DateTimeFormat(value.locale, {
+			dateStyle: value.dateStyle as Intl.DateTimeFormatOptions['dateStyle'],
+			timeStyle: value.timeStyle as Intl.DateTimeFormatOptions['timeStyle'],
+			timeZone: value.timeZone,
+		});
+		return true;
+	} catch {
+		return false;
+	}
+}, 'Use a valid Intl.DateTimeFormat configuration.');
+const sitewideFooter = z.object({
+	copyrightMessage: z.string().min(1).optional(),
+	buildInfo: z.object({
+		enabled: z.boolean().default(true),
+		text: z.string().min(1),
+		dateTimeFormat,
+	}).strict().optional(),
 }).strict();
 
 const siteSchema = z.object({
@@ -188,6 +228,11 @@ const themeSchema = z.object({
 	typography: themeTypography.optional(),
 	presentation: themePresentation.optional(),
 	frame: frame.optional(),
+}).strict();
+
+const sitewideSchema = z.object({
+	banners,
+	footer: sitewideFooter.optional(),
 }).strict();
 
 const site = defineCollection({
@@ -217,4 +262,13 @@ const theme = defineCollection({
 	schema: themeSchema,
 });
 
-export const collections = { site, theme };
+const sitewide = defineCollection({
+	loader: glob({
+		pattern: 'sitewide-content.md',
+		base: pathToFileURL(siteDir),
+		generateId: () => `${siteEntryId.replace(/-content$/, '')}-sitewide`,
+	}),
+	schema: sitewideSchema,
+});
+
+export const collections = { site, theme, sitewide };

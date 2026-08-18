@@ -37,20 +37,6 @@ const readString = (object, key, path, sourceLabel = siteConfigLabel) => {
 	return value.trim();
 };
 
-const readOptionalString = (object, key, path, sourceLabel = siteConfigLabel) => {
-	const value = object[key];
-
-	if (value === undefined || value === null || value === '') {
-		return null;
-	}
-
-	if (typeof value !== 'string' || value.trim() === '') {
-		throw new Error(`${path}.${key} must be a non-empty string when set in ${sourceLabel}.`);
-	}
-
-	return value.trim();
-};
-
 const readFontFamily = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
 	const value = object[key] ?? fallback;
 
@@ -242,55 +228,15 @@ const readLocale = (rawLocale) => {
 		lang: lang.trim(),
 		labels: Object.freeze({
 			closeMenu: readString({ closeMenu: labels.closeMenu ?? 'Close menu' }, 'closeMenu', 'locale.labels'),
+			dismissBanner: readString({ dismissBanner: labels.dismissBanner ?? 'Dismiss notice' }, 'dismissBanner', 'locale.labels'),
 			skipToContent: readString({ skipToContent: labels.skipToContent ?? 'Skip to content' }, 'skipToContent', 'locale.labels'),
 			sectionNavigation: readString({ sectionNavigation: labels.sectionNavigation ?? 'Sections' }, 'sectionNavigation', 'locale.labels'),
 			gallery: readString({ gallery: labels.gallery ?? 'Images' }, 'gallery', 'locale.labels'),
 			menu: readString({ menu: labels.menu ?? 'Menu' }, 'menu', 'locale.labels'),
 			pageNavigation: readString({ pageNavigation: labels.pageNavigation ?? 'On this page' }, 'pageNavigation', 'locale.labels'),
 			siteNavigation: readString({ siteNavigation: labels.siteNavigation ?? 'Pages' }, 'siteNavigation', 'locale.labels'),
+			siteBanners: readString({ siteBanners: labels.siteBanners ?? 'Site notices' }, 'siteBanners', 'locale.labels'),
 		}),
-	});
-};
-
-const readDateTimeFormat = (object, path) => {
-	const dateTimeFormat = assertObject(object, path);
-	const locale = readString(dateTimeFormat, 'locale', path);
-	const timeZone = readString(dateTimeFormat, 'timeZone', path);
-	const dateStyle = readString(dateTimeFormat, 'dateStyle', path);
-	const timeStyle = readString(dateTimeFormat, 'timeStyle', path);
-
-	try {
-		new Intl.DateTimeFormat(locale, {
-			dateStyle,
-			timeStyle,
-			timeZone,
-		});
-	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		throw new Error(`${path} must be a valid Intl.DateTimeFormat configuration in ${siteConfigLabel}: ${message}`);
-	}
-
-	return Object.freeze({
-		dateStyle,
-		locale,
-		timeStyle,
-		timeZone,
-	});
-};
-
-const readBuildInfo = (footer) => {
-	const value = footer.buildInfo;
-
-	if (value === undefined || value === null || value === false) {
-		return null;
-	}
-
-	const buildInfo = assertObject(value, 'footer.buildInfo');
-
-	return Object.freeze({
-		enabled: readBoolean(buildInfo, 'enabled', 'footer.buildInfo', true),
-		text: readString(buildInfo, 'text', 'footer.buildInfo'),
-		dateTimeFormat: readDateTimeFormat(buildInfo.dateTimeFormat, 'footer.buildInfo.dateTimeFormat'),
 	});
 };
 
@@ -308,7 +254,6 @@ const rawGallery = assertObject(rawTheme.gallery ?? {}, 'gallery', siteThemeLabe
 const rawTypography = assertObject(rawTheme.typography ?? {}, 'typography', siteThemeLabel);
 const rawNavigation = assertObject(rawConfig.navigation ?? {}, 'navigation');
 const rawLocale = rawConfig.locale ?? {};
-const rawFooter = assertObject(rawConfig.footer ?? {}, 'footer');
 const rawGithub = assertObject(rawConfig.github, 'github');
 const rawDeploy = assertObject(rawConfig.deploy ?? {}, 'deploy');
 const rawDeployWatch = assertObject(rawDeploy.watch ?? {}, 'deploy.watch');
@@ -424,10 +369,6 @@ export const projectConfig = Object.freeze({
 		smoothScroll: readSmoothScroll(rawNavigation),
 	}),
 	locale: readLocale(rawLocale),
-	footer: Object.freeze({
-		buildInfo: readBuildInfo(rawFooter),
-		copyrightMessage: readOptionalString(rawFooter, 'copyrightMessage', 'footer'),
-	}),
 	github: Object.freeze({
 		repo: readString(rawGithub, 'repo', 'github'),
 		branch: readString(rawGithub, 'branch', 'github'),

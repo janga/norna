@@ -55,6 +55,21 @@ frame:
   colors: presentation
 ---
 `);
+	await writeFile(path.join(siteDir, 'sitewide-content.md'), `---
+banners:
+  - id: expired-banner
+    visible:
+      until: "2026-01-01"
+    title: Expired banner
+    text: Expired banner text.
+  - id: active-banner
+    visible:
+      from: "2026-01-01"
+      until: "2026-12-31"
+    title: Active banner
+    text: Active banner text.
+---
+`);
 	await writeFile(path.join(siteDir, 'content.md'), `---
 title: Temporary Visibility Test
 description: Test site for temporary sections.
@@ -88,6 +103,8 @@ Always visible section text.
 	assert.match(html, /Active section text/);
 	assert.match(html, /Always visible section text/);
 	assert.doesNotMatch(html, /Expired section text/);
+	assert.match(html, /Active banner text/);
+	assert.doesNotMatch(html, /Expired banner text/);
 
 	console.log('Temporary visibility test passed.');
 } finally {

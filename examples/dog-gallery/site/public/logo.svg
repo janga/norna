@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 104" role="img" aria-labelledby="title desc">
+  <title id="title">Dog Shelter</title>
+  <desc id="desc">A line-art dog house, food bowl and dog beside the words Dog Shelter.</desc>
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+    <path d="M8 48 39 19l31 29M16 42v43h46V42M30 85V58h18v27"/>
+    <path d="M80 69h42l-6 17H86zM78 69c0-6 46-6 46 0"/>
+    <path d="M159 42c-3-8-2-17 2-24 6 2 12 6 16 11 5-4 11-7 17-8 3 8 1 16-4 22"/>
+    <path d="M158 41c-1 14 7 24 19 24s20-10 19-24M163 66c-5 8-7 15-6 20M191 66c5 8 7 15 6 20"/>
+    <circle cx="166" cy="43" r="2" fill="#fff" stroke="none"/>
+    <circle cx="186" cy="43" r="2" fill="#fff" stroke="none"/>
+    <path d="M177 50c2 2 6 2 8 0M181 47v3"/>
+  </g>
+  <text x="232" y="63" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" letter-spacing="2">DOG SHELTER</text>
+</svg>

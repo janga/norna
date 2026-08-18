@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { sitePublicDir } from '../../scripts/lib/site-paths.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
+export { getLogoAsset } from '../../scripts/lib/logo-assets.mjs';
 import { withBasePath } from './basePath';
 
 type IconLink = {

@@ -1,7 +1,7 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
-import type { ResolvedSection } from '../lib/sectionContent';
+import type { SectionNavigation } from '../lib/sectionContent';
 import type { SitePage } from '../lib/sitePages';
 
 type FrameColors = {
@@ -11,13 +11,20 @@ type FrameColors = {
 
 interface Props {
 	brandLabel: string;
+	logo?: {
+		src: string;
+		alt: string;
+		height?: string;
+	};
 	currentPage: SitePage;
-	pages: SitePage[];
-	sections: ResolvedSection[];
+	pageNavigation: Array<{
+		page: SitePage;
+		sections: SectionNavigation[];
+	}>;
 	frameColors: FrameColors;
 }
 
-const { brandLabel, currentPage, pages, sections, frameColors } = Astro.props;
+const { brandLabel, logo, currentPage, pageNavigation, frameColors } = Astro.props;
 const smoothScrollConfig = projectConfig.navigation.smoothScroll;
 const siteTopBackgroundColor = frameColors.backgroundColor === 'transparent'
 	? 'var(--color-page)'
@@ -25,12 +32,15 @@ const siteTopBackgroundColor = frameColors.backgroundColor === 'transparent'
 const navigationStyle = [
 	`--site-top-background-color: ${siteTopBackgroundColor}`,
 	`--site-top-text-color: ${frameColors.textColor}`,
+	...(logo?.height ? [`--site-brand-logo-height: ${logo.height}`] : []),
 ].join('; ');
-const showSiteNavigation = pages.length > 1;
-const showPageNavigation = sections.length > 1;
-const homePage = pages.find((page) => page.isHome) ?? currentPage;
+const showSiteNavigation = pageNavigation.length > 1;
+const homePage = pageNavigation.find(({ page }) => page.isHome)?.page ?? currentPage;
+const currentPageNavigation = pageNavigation.find(({ page }) => page.pathname === currentPage.pathname);
 const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
+const sectionHref = (page: SitePage, section: SectionNavigation) => `${pageHref(page)}#${section.id}`;
+const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
@@ -42,15 +52,30 @@ const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, p
 >
 	{showSiteNavigation && (
 		<div class="site-nav-row">
-			<a class="site-brand" href={pageHref(homePage)}>{brandLabel}</a>
+			<a class="site-brand" href={pageHref(homePage)}>
+				{logo ? <img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} /> : brandLabel}
+			</a>
 
 			<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 				<ul>
-					{pages.map((page) => (
-						<li>
+					{pageNavigation.map(({ page, sections: pageSections }) => (
+						<li class:list={['site-nav-item', { 'site-nav-item-has-sections': hasSectionMenu(pageSections) }]}>
 							<a href={pageHref(page)} aria-current={isCurrentPage(page) ? 'page' : undefined}>
 								{page.navigation.label}
 							</a>
+							{hasSectionMenu(pageSections) && (
+								<div class="site-nav-submenu">
+									<nav aria-label={`${page.navigation.label} ${projectConfig.locale.labels.pageNavigation}`}>
+										<ul>
+											{pageSections.map((section) => (
+												<li>
+													<a href={sectionHref(page, section)}>{section.title}</a>
+												</li>
+											))}
+										</ul>
+									</nav>
+								</div>
+							)}
 						</li>
 					))}
 				</ul>
@@ -64,7 +89,7 @@ const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, p
 					<nav class="mobile-site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 						<h2>{projectConfig.locale.labels.siteNavigation}</h2>
 						<ul>
-							{pages.map((page) => (
+							{pageNavigation.map(({ page }) => (
 								<li>
 									<a href={pageHref(page)} aria-current={isCurrentPage(page) ? 'page' : undefined}>
 										{page.navigation.label}
@@ -74,13 +99,13 @@ const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, p
 						</ul>
 					</nav>
 
-					{showPageNavigation && (
+					{currentPageNavigation && hasSectionMenu(currentPageNavigation.sections) && (
 						<nav class="mobile-page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
 							<h2>{projectConfig.locale.labels.pageNavigation}</h2>
 							<ul>
-								{sections.map((section, index) => (
+								{currentPageNavigation.sections.map((section, index) => (
 									<li>
-										<a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
+										<a href={sectionHref(currentPage, section)} aria-current={index === 0 ? 'true' : undefined}>
 											{section.title}
 										</a>
 									</li>
@@ -93,25 +118,12 @@ const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, p
 		</div>
 	)}
 
-	{showPageNavigation && (
-		<nav class="page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
-			<ul>
-				{sections.map((section, index) => (
-					<li>
-						<a href={`#${section.id}`} aria-current={index === 0 ? 'true' : undefined}>
-							{section.title}
-						</a>
-					</li>
-				))}
-			</ul>
-		</nav>
-	)}
 </header>
 
 <script>
 	const siteTop = document.querySelector('.site-top');
 	const sections = Array.from(document.querySelectorAll('.site-section'));
-	const links = Array.from(document.querySelectorAll('.page-nav a, .mobile-page-nav a'));
+	const links = Array.from(document.querySelectorAll('.site-nav-submenu a, .mobile-page-nav a'));
 	const mobileMenu = document.querySelector('.mobile-nav-menu');
 	const smoothScrollConfig = JSON.parse(siteTop?.getAttribute('data-smooth-scroll') ?? '{}');
 	const anchorPadding = 0;
@@ -159,7 +171,9 @@ const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, p
 		activeSectionId = section.id;
 
 		links.forEach((link) => {
-			const isActive = link.getAttribute('href') === `#${section.id}`;
+			const linkUrl = new URL(link.href, window.location.href);
+			const isCurrentPageLink = linkUrl.pathname === window.location.pathname;
+			const isActive = isCurrentPageLink && linkUrl.hash === `#${section.id}`;
 			if (isActive) {
 				link.setAttribute('aria-current', 'true');
 			} else {
@@ -372,7 +386,10 @@ const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, p
 
 	links.forEach((link) => {
 		link.addEventListener('click', (event) => {
-			const section = getSectionFromHash(link.hash);
+			const linkUrl = new URL(link.href, window.location.href);
+			if (linkUrl.pathname !== window.location.pathname) return;
+
+			const section = getSectionFromHash(linkUrl.hash);
 			if (!(section instanceof HTMLElement)) return;
 
 			const top = getSectionScrollTop(section);
@@ -380,7 +397,7 @@ const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, p
 
 			event.preventDefault();
 
-			const targetHash = `#${section.id}`;
+			const targetHash = linkUrl.hash;
 			const duration = getScrollDuration(top - window.scrollY);
 
 			setHash(targetHash);

@@ -19,19 +19,6 @@ export default {
 			gallery: 'Images',
 		},
 	},
-	footer: {
-		copyrightMessage: 'norna is licensed under GNU GPL v3.',
-		buildInfo: {
-			enabled: true,
-			text: 'Built',
-			dateTimeFormat: {
-				locale: 'en-GB',
-				timeZone: 'UTC',
-				dateStyle: 'short',
-				timeStyle: 'short',
-			},
-		},
-	},
 	github: {
 		repo: 'janga/norna',
 		branch: 'main',
