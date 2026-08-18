@@ -78,9 +78,12 @@ layout:
     finalSectionBottom:
       desktop: clamp(1.8rem, 3vw, 2.75rem)
       mobile: 1.65rem
-    bodyToImages:
-      desktop: 1.25rem
-      mobile: 1rem
+    headingToBlock:
+      desktop: 0.65em
+      mobile: 0.6em
+    blockGap:
+      desktop: 1.25em
+      mobile: 1.1em
     imageGap:
       desktop: clamp(1.25rem, 2.8vw, 2rem)
       mobile: 1.8rem

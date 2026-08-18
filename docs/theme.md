@@ -92,9 +92,9 @@ fallback.
   `desktop` / `mobile` values.
 - `density`: default structural spacing profile. Allowed values are `compact`,
   `normal`, and `airy`.
-- `spacing`: optional structural spacing overrides for sections and Norna
-  managed media blocks. Every spacing value accepts either one CSS length for all
-  viewports or `desktop` / `mobile` values.
+- `spacing`: optional spacing overrides for sections and content blocks. Every
+  spacing value accepts either one CSS length for all viewports or `desktop` /
+  `mobile` values.
 
 Example:
 
@@ -112,6 +112,12 @@ layout:
     sectionGap:
       desktop: clamp(1.4rem, 3vw, 2.75rem)
       mobile: 1.5rem
+    headingToBlock:
+      desktop: 0.75em
+      mobile: 0.7em
+    blockGap:
+      desktop: 1.5em
+      mobile: 1.25em
 ```
 
 If omitted, Norna uses `1180px` for `pageWidth`, desktop
@@ -123,11 +129,20 @@ Spacing keys:
 - `firstSectionTop`: space above the first section heading.
 - `sectionGap`: space above each following section.
 - `finalSectionBottom`: space below the final section.
-- `bodyToImages`: space from section body text to Norna managed media blocks.
+- `headingToBlock`: space between a section heading and its first visual content
+  block, such as an image stack, carousel, or card list.
+- `blockGap`: space between content blocks in a section. It applies between
+  Markdown, image, carousel, and card-list blocks, but not after the final block.
 - `imageGap`: space between stacked images or carousel blocks.
 
-Text-near spacing, such as spacing after headings, spacing before Markdown
-subheadings, paragraph spacing, and caption spacing, belongs to
+The default `compact`, `normal`, and `airy` density profiles provide values for
+these spacing keys. The `em` values for `headingToBlock` and `blockGap` are
+relative to the relevant text size, so the rhythm follows typography changes.
+Use `sectionGap` and the other structural keys when the distance should describe
+the page layout rather than the size of nearby text.
+
+Text-near spacing inside Markdown, such as spacing after headings, spacing
+before Markdown subheadings, paragraph spacing, and caption spacing, belongs to
 `typography.rhythm` and typography overrides.
 
 ## Image Sizing

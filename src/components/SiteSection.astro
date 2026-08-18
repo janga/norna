@@ -34,6 +34,7 @@ const { section, pagePresentation, headingLevel, priorityGalleryImage = false } 
 const HeadingTag = headingLevel === 1 ? 'h1' : 'h2';
 // Sections are authored with Markdown ## headings even when the first one renders as HTML h1.
 const sectionHeadingVisualLevel = 'h2';
+const firstContentBlockIsVisual = section.contentBlocks[0]?.type !== 'html';
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
 const headingSizeValues: Record<HeadingLevel, Record<TextSize, ResponsiveValue<string>>> = {
 	h1: {
@@ -250,7 +251,7 @@ const sectionStyle = [
 
 <section
 	id={section.id}
-	class="site-section"
+	class:list={['site-section', { 'site-section-first-block-is-visual': firstContentBlockIsVisual }]}
 	data-section-title={section.title}
 	style={sectionStyle}
 >

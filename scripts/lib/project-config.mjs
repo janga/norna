@@ -262,9 +262,9 @@ const defaultFontFamily = "Arial, 'Helvetica Neue', Helvetica, sans-serif";
 const layoutDensityNames = ['compact', 'normal', 'airy'];
 const layoutDensityProfiles = Object.freeze({
 	compact: Object.freeze({
-		bodyToImages: Object.freeze({
-			desktop: '1rem',
-			mobile: '0.9rem',
+		blockGap: Object.freeze({
+			desktop: '1.25em',
+			mobile: '1.1em',
 		}),
 		finalSectionBottom: Object.freeze({
 			desktop: 'clamp(1.2rem, 2.4vw, 2.25rem)',
@@ -273,6 +273,10 @@ const layoutDensityProfiles = Object.freeze({
 		firstSectionTop: Object.freeze({
 			desktop: 'clamp(1rem, 2vw, 1.75rem)',
 			mobile: '1rem',
+		}),
+		headingToBlock: Object.freeze({
+			desktop: '0.65em',
+			mobile: '0.6em',
 		}),
 		imageGap: Object.freeze({
 			desktop: 'clamp(1rem, 2vw, 1.5rem)',
@@ -284,9 +288,9 @@ const layoutDensityProfiles = Object.freeze({
 		}),
 	}),
 	normal: Object.freeze({
-		bodyToImages: Object.freeze({
-			desktop: '1.25rem',
-			mobile: '1rem',
+		blockGap: Object.freeze({
+			desktop: '1.5em',
+			mobile: '1.25em',
 		}),
 		finalSectionBottom: Object.freeze({
 			desktop: 'clamp(1.4rem, 3vw, 2.75rem)',
@@ -295,6 +299,10 @@ const layoutDensityProfiles = Object.freeze({
 		firstSectionTop: Object.freeze({
 			desktop: 'clamp(1.25rem, 3vw, 2.5rem)',
 			mobile: '1.25rem',
+		}),
+		headingToBlock: Object.freeze({
+			desktop: '0.75em',
+			mobile: '0.7em',
 		}),
 		imageGap: Object.freeze({
 			desktop: 'clamp(1.25rem, 2.8vw, 2rem)',
@@ -306,9 +314,9 @@ const layoutDensityProfiles = Object.freeze({
 		}),
 	}),
 	airy: Object.freeze({
-		bodyToImages: Object.freeze({
-			desktop: '1.5rem',
-			mobile: '1.25rem',
+		blockGap: Object.freeze({
+			desktop: '1.75em',
+			mobile: '1.5em',
 		}),
 		finalSectionBottom: Object.freeze({
 			desktop: 'clamp(2.25rem, 5vw, 4.5rem)',
@@ -317,6 +325,10 @@ const layoutDensityProfiles = Object.freeze({
 		firstSectionTop: Object.freeze({
 			desktop: 'clamp(2rem, 5vw, 4rem)',
 			mobile: '1.5rem',
+		}),
+		headingToBlock: Object.freeze({
+			desktop: '0.9em',
+			mobile: '0.8em',
 		}),
 		imageGap: Object.freeze({
 			desktop: 'clamp(1.5rem, 3.5vw, 2.75rem)',
@@ -344,9 +356,10 @@ export const projectConfig = Object.freeze({
 		}), siteThemeLabel),
 		pageWidth: readCssLength(rawLayout, 'pageWidth', 'layout', '1180px', siteThemeLabel),
 		spacing: Object.freeze({
-			bodyToImages: readResponsiveCssLength(rawLayoutSpacing, 'bodyToImages', 'layout.spacing', layoutSpacingDefaults.bodyToImages, siteThemeLabel),
+			blockGap: readResponsiveCssLength(rawLayoutSpacing, 'blockGap', 'layout.spacing', layoutSpacingDefaults.blockGap, siteThemeLabel),
 			finalSectionBottom: readResponsiveCssLength(rawLayoutSpacing, 'finalSectionBottom', 'layout.spacing', layoutSpacingDefaults.finalSectionBottom, siteThemeLabel),
 			firstSectionTop: readResponsiveCssLength(rawLayoutSpacing, 'firstSectionTop', 'layout.spacing', layoutSpacingDefaults.firstSectionTop, siteThemeLabel),
+			headingToBlock: readResponsiveCssLength(rawLayoutSpacing, 'headingToBlock', 'layout.spacing', layoutSpacingDefaults.headingToBlock, siteThemeLabel),
 			imageGap: readResponsiveCssLength(rawLayoutSpacing, 'imageGap', 'layout.spacing', layoutSpacingDefaults.imageGap, siteThemeLabel),
 			sectionGap: readResponsiveCssLength(rawLayoutSpacing, 'sectionGap', 'layout.spacing', layoutSpacingDefaults.sectionGap, siteThemeLabel),
 		}),

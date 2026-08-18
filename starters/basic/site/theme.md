@@ -25,9 +25,12 @@
 #     finalSectionBottom:
 #       desktop: CSS length or clamp(), e.g. clamp(1.4rem, 3vw, 2.75rem)
 #       mobile: CSS length, e.g. 1.5rem
-#     bodyToImages:
-#       desktop: CSS length, e.g. 1.25rem
-#       mobile: CSS length, e.g. 1rem
+#     headingToBlock:
+#       desktop: CSS length, e.g. 0.75em
+#       mobile: CSS length, e.g. 0.7em
+#     blockGap:
+#       desktop: CSS length, e.g. 1.5em
+#       mobile: CSS length, e.g. 1.25em
 #     imageGap:
 #       desktop: CSS length or clamp(), e.g. clamp(1.25rem, 2.8vw, 2rem)
 #       mobile: CSS length, e.g. 1.5rem

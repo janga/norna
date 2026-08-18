@@ -115,9 +115,10 @@ const responsivePercent = z.union([
 	}).strict(),
 ]);
 const themeLayoutSpacing = z.object({
-	bodyToImages: responsiveCssLength.optional(),
+	blockGap: responsiveCssLength.optional(),
 	finalSectionBottom: responsiveCssLength.optional(),
 	firstSectionTop: responsiveCssLength.optional(),
+	headingToBlock: responsiveCssLength.optional(),
 	imageGap: responsiveCssLength.optional(),
 	sectionGap: responsiveCssLength.optional(),
 }).strict();
