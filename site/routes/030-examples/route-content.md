@@ -15,58 +15,22 @@ assets.
 
 ## Common site types {#site-types}
 
-### Project website
+```norna-card-list
+flow: grid
+size: m
+width: normal
 
-A project website can use:
-
-- `content.md` for the overview
-- routes for Getting Started, Concepts or other topics
-- `theme.md` for a consistent presentation
-- `public/` for project-specific static assets
-
-The Norna website itself is an example.
-
-### Portfolio or artist website
-
-A portfolio can use:
-
-- sections for bodies of work
-- managed image stacks, carousels and captions
-- routes for exhibitions, biography or contact information
-- `theme.md` for visual presentation
-
-Image-heavy presentation is one use of Norna, not the definition of the
-product.
-
-### Documentation or guide
-
-A small guide can use the homepage as an introduction and routes for
-individual topics.
-
-Because the documentation is stored as files, it can live in the same
-repository as the project it describes.
-
-### Personal or organisation website
-
-A small information site can combine:
-
-- an introductory homepage
-- a few additional routes
-- Markdown content
-- images
-- static public assets
-- a shared theme
-
-No CMS or database is required.
-
-### Image-driven site
-
-Norna includes image processing and image-oriented presentation features for
-sites where images matter.
-
-Those features can be combined with ordinary text sections and routes.
-
-A Norna site does not have to be a gallery.
+- title: Project website
+  text: Present an open source project, CLI tool or library with an overview, guide and useful links.
+- title: Portfolio or artist website
+  text: Combine written presentation with image stacks, carousels and captions.
+- title: Documentation or guide
+  text: Introduce a small project and organise additional topics as routes.
+- title: Personal or organisation website
+  text: Publish a compact information site with ordinary files and a shared visual presentation.
+- title: Image-driven site
+  text: Combine ordinary text sections with managed image stacks, carousels and captions when images are central to the presentation.
+```
 
 ## The common pattern {#pattern}
 
