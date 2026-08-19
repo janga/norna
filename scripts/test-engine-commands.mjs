@@ -57,8 +57,10 @@ try {
 	for (const [presetName, preset] of Object.entries(typographyPresets)) {
 		for (const [level, heading] of Object.entries(preset.headings)) {
 			assert.equal(heading.size, 'medium', `${presetName} ${level} should use medium size`);
+			assert.ok([400, 500, 600, 700].includes(heading.weight), `${presetName} ${level} should use a supported weight`);
 		}
 		assert.equal(preset.body.size, 'medium', `${presetName} body should use medium size`);
+		assert.ok(['narrow', 'normal', 'wide'].includes(preset.body.width), `${presetName} body should use a supported width`);
 		assert.equal(preset.caption.size, 'medium', `${presetName} caption should use medium size`);
 	}
 	for (const [rhythmName, rhythm] of Object.entries(typographyRhythms)) {

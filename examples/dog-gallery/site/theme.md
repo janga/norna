@@ -47,16 +47,10 @@
 #         spacingBefore: CSS length, e.g. 0.9em
 #         spacingAfter: CSS length, e.g. 0.35em
 # presentation:
-#   backgroundColor: quoted hex color, e.g. "#000000"
-#   textColor: quoted hex color, e.g. "#f7f4ee"
-#   inlineStyles:
-#     style-name:
-#       color: quoted hex color
-# frame:
-#   colors: presentation | theme
-#   colors:
-#     backgroundColor: quoted hex color
-#     textColor: quoted hex color
+#   palette: dark  # Alternatives: light, paper
+#   sectionSurfaces:
+#     mode: none | cycle
+#     sequence: [base, soft, emphasis]
 # norna:end theme-help
 navigation:
   logo:
@@ -110,13 +104,7 @@ typography:
         spacingBefore: 0.9em
         spacingAfter: 0.35em
 presentation:
-  backgroundColor: "#550000"
-  textColor: "#ffffff"
-  inlineStyles:
-    highlight:
-      color: "#ffd84d"
-    alert:
-      color: "#ff9a3d"
-frame:
-  colors: presentation
+  palette: dark  # Alternatives: light, paper
+  sectionSurfaces:
+    mode: cycle
 ---

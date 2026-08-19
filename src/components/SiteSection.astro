@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { resolveSectionSurface } from '../../scripts/lib/presentation.mjs';
 import { resolveTypographyOverride } from '../../scripts/lib/typography.mjs';
 import CardList from './CardList.astro';
 import GalleryGrid from './GalleryGrid.astro';
@@ -9,14 +10,19 @@ type ResponsiveValue<T> = { desktop: T; mobile: T };
 type ResponsiveOverride<T> = { desktop?: T; mobile?: T };
 type TextAlign = 'left' | 'center' | 'right';
 type TextSize = 'small' | 'medium' | 'large' | 'xlarge';
+type TextWidth = 'narrow' | 'normal' | 'wide';
 type SectionPresentationOverride = {
-	backgroundColor?: string;
-	textColor?: string;
+	surface?: 'base' | 'soft' | 'emphasis';
 	typography?: NonNullable<ResolvedSection['presentation']>['typography'];
 };
 type ResolvedPagePresentation = {
-	backgroundColor: string;
-	textColor: string;
+	palette: {
+		surfaces: Record<'base' | 'soft' | 'emphasis', { backgroundColor: string; textColor: string }>;
+	};
+	sectionSurfaces: {
+		mode: 'none' | 'cycle';
+		sequence: Array<'base' | 'soft' | 'emphasis'>;
+	};
 	typography: {
 		preset: string;
 		values: any;
@@ -26,11 +32,12 @@ type ResolvedPagePresentation = {
 interface Props {
 	section: ResolvedSection;
 	pagePresentation: ResolvedPagePresentation;
+	sectionIndex: number;
 	headingLevel: 1 | 2;
 	priorityGalleryImage?: boolean;
 }
 
-const { section, pagePresentation, headingLevel, priorityGalleryImage = false } = Astro.props;
+const { section, pagePresentation, sectionIndex, headingLevel, priorityGalleryImage = false } = Astro.props;
 const HeadingTag = headingLevel === 1 ? 'h1' : 'h2';
 // Sections are authored with Markdown ## headings even when the first one renders as HTML h1.
 const sectionHeadingVisualLevel = 'h2';
@@ -154,15 +161,18 @@ const getSizeValue = (
 const getHeadingSizeValue = (level: HeadingLevel, size: TextSize) => (
 	headingSizeValues[level][size]
 );
-const backgroundColor = sectionOverride?.backgroundColor
-	?? pagePresentation.backgroundColor;
-const textColor = sectionOverride?.textColor
-	?? pagePresentation.textColor;
+const textWidthValues: Record<TextWidth, string> = {
+	narrow: '38rem',
+	normal: 'var(--text-width)',
+	wide: 'var(--gallery-layout-width)',
+};
+const surface = resolveSectionSurface(pagePresentation, sectionOverride, sectionIndex);
 const resolvedTypography = resolveTypographyOverride(pagePresentation.typography, sectionOverride?.typography);
 const typography = resolvedTypography.values;
 const heading = typography.headings[sectionHeadingVisualLevel] as {
 	align: ResponsiveValue<TextAlign>;
 	size: TextSize;
+	weight: number;
 	lineHeight: number;
 	spacingBefore: string;
 	spacingAfter: string;
@@ -173,6 +183,7 @@ const markdownHeadings = Object.fromEntries(markdownHeadingLevels.map((level) =>
 	typography.headings[level] as {
 		align: ResponsiveValue<TextAlign>;
 		size: TextSize;
+		weight: number;
 		lineHeight: number;
 		spacingBefore: string;
 		spacingAfter: string;
@@ -197,7 +208,11 @@ const getAlignedTextWidth = (
 	mobile: align.mobile === 'center' ? centeredWidth : 'var(--gallery-layout-width)',
 });
 const headingWidth = getAlignedTextWidth(headingAlign, '760px');
-const bodyWidth = getAlignedTextWidth(bodyAlign, 'var(--text-width)');
+const bodyWidthValue = textWidthValues[typography.body.width as TextWidth];
+const bodyWidth = {
+	desktop: bodyWidthValue,
+	mobile: bodyWidthValue,
+};
 const hasMedia = section.contentBlocks.some((block) => (
 	block.type === 'image-stack'
 	|| block.type === 'image-carousel'
@@ -212,18 +227,20 @@ const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 		`--section-markdown-${level}-align-mobile: ${headingConfig.align.mobile}`,
 		`--section-markdown-${level}-font-size-desktop: ${fontSize.desktop}`,
 		`--section-markdown-${level}-font-size-mobile: ${fontSize.mobile}`,
+		`--section-markdown-${level}-font-weight: ${headingConfig.weight}`,
 		`--section-markdown-${level}-line-height: ${headingConfig.lineHeight}`,
 		`--section-markdown-${level}-spacing-before: ${headingConfig.spacingBefore}`,
 		`--section-markdown-${level}-spacing-after: ${headingConfig.spacingAfter}`,
 	];
 };
 const sectionStyle = [
-	`--section-background-color: ${backgroundColor}`,
-	`--section-text-color: ${textColor}`,
+	`--section-background-color: ${surface.backgroundColor}`,
+	`--section-text-color: ${surface.textColor}`,
 	`--section-heading-align-desktop: ${headingAlign.desktop}`,
 	`--section-heading-align-mobile: ${headingAlign.mobile}`,
 	`--section-heading-font-size-desktop: ${headingFontSize.desktop}`,
 	`--section-heading-font-size-mobile: ${headingFontSize.mobile}`,
+	`--section-heading-font-weight: ${heading.weight}`,
 	`--section-heading-line-height: ${heading.lineHeight}`,
 	`--section-heading-spacing-after: ${heading.spacingAfter}`,
 	`--section-heading-width-desktop: ${headingWidth.desktop}`,

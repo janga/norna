@@ -1,6 +1,6 @@
 ---
 banners:
-  - id: project-status2
+  - id: project-status3
     tone: warning
     visible:
       from: "2026-01-01"

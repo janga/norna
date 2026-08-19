@@ -45,8 +45,8 @@ const makePngHeader = ({ width, height }) => {
 const defaultTheme = `---
 typography:
   preset: quiet-gallery
-frame:
-  colors: presentation
+presentation:
+  palette: dark
 ---
 `;
 
@@ -173,14 +173,6 @@ test('content:check warns when carousel images use different aspect ratios', asy
 	});
 });
 
-const inlineStyleTheme = `---
-presentation:
-  inlineStyles:
-    highlight:
-      color: "#ffd84d"
----
-`;
-
 const inlineStyleSite = `---
 title: Inline Style
 ---
@@ -188,10 +180,9 @@ title: Inline Style
 This has [known text]{.highlight} and [unknown text]{.missing}.
 `;
 
-test('content:check fails when Markdown uses undefined inline styles', async () => {
+test('content:check fails when Markdown uses removed inline color styles', async () => {
 	await withTempProject({
 		site: inlineStyleSite,
-		theme: inlineStyleTheme,
 		files: [],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -199,20 +190,12 @@ test('content:check fails when Markdown uses undefined inline styles', async () 
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Inline style "\.missing" is used in site\/content\.md but is not defined in site\/theme\.md presentation\.inlineStyles\./);
-		assert.doesNotMatch(output, /"\.highlight" is used in Markdown/);
+		assert.match(output, /Inline color style "\.highlight" is no longer supported in site\/content\.md\./);
+		assert.match(output, /Inline color style "\.missing" is no longer supported in site\/content\.md\./);
 	});
 });
 
-const invalidInlineStyleColorTheme = `---
-presentation:
-  inlineStyles:
-    yellow:
-      color: "#ffd844d"
----
-`;
-
-test('content:check explains invalid inline style colors', async () => {
+test('content:check suggests semantic Markdown instead of inline color styles', async () => {
 	await withTempProject({
 		site: `---
 title: Invalid Inline Color
@@ -220,7 +203,6 @@ title: Invalid Inline Color
 ## Intro {#intro}
 This has [yellow text]{.yellow}.
 `,
-		theme: invalidInlineStyleColorTheme,
 		files: [],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -228,9 +210,7 @@ This has [yellow text]{.yellow}.
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /site\/theme\.md line 5 defines presentation\.inlineStyles\.yellow\.color with invalid color value "#ffd844d"\./);
-		assert.match(output, /Use a quoted hex color in #rgb, #rrggbb, or #rrggbbaa form, for example color: "#ffd84d"\./);
-		assert.doesNotMatch(output, /Inline style "\.yellow" is used in site\/content\.md but is not defined/);
+		assert.match(output, /Use standard Markdown emphasis, a blockquote, or a semantic Norna block instead of color syntax\./);
 	});
 });
 

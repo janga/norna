@@ -18,24 +18,18 @@ export const supportedImageExtensions = new Set([...rasterImageExtensions, ...st
 
 const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
-const inlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
+const deprecatedInlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
-const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'presentation', 'frame', 'sections']);
-const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation', 'frame']);
-const frontmatterColorKeys = new Set(['backgroundColor', 'textColor', 'color']);
-const quotedHexColorRegex = /^["']#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})["']$/;
-const unquotedHexColorRegex = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'presentation', 'sections']);
+const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
 	'alt',
-	'backgroundColor',
 	'body',
 	'blockGap',
 	'brand',
 	'caption',
 	'carousel',
-	'color',
-	'colors',
 	'density',
 	'desktop',
 	'fontFamily',
@@ -54,7 +48,6 @@ const knownNestedFrontmatterKeys = new Set([
 	'include',
 	'image',
 	'imageGap',
-	'inlineStyles',
 	'label',
 	'logo',
 	'lineHeight',
@@ -65,15 +58,18 @@ const knownNestedFrontmatterKeys = new Set([
 	'overrides',
 	'paragraphSpacing',
 	'pageWidth',
+	'palette',
 	'preset',
 	'presentation',
 	'rhythm',
+	'sequence',
 	'sections',
 	'sectionGap',
+	'sectionSurfaces',
 	'size',
 	'spacingAfter',
 	'spacingBefore',
-	'textColor',
+	'surface',
 	'theme',
 	'typography',
 	'until',
@@ -266,79 +262,6 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 	}
 };
 
-const stripInlineYamlComment = (value) => {
-	let quote = null;
-
-	for (let index = 0; index < value.length; index += 1) {
-		const character = value[index];
-		const previous = value[index - 1];
-
-		if ((character === '"' || character === "'") && previous !== '\\') {
-			quote = quote === character ? null : quote ?? character;
-			continue;
-		}
-
-		if (character === '#' && quote === null && /\s/.test(previous ?? '')) {
-			return value.slice(0, index).trimEnd();
-		}
-	}
-
-	return value.trim();
-};
-
-export const validateFrontmatterColorValues = (frontmatter, addIssue, label = 'Frontmatter') => {
-	const lines = frontmatter.split(/\r?\n/);
-	const pathStack = [];
-
-	for (const [index, line] of lines.entries()) {
-		const lineNumber = index + 1;
-		const trimmed = line.trim();
-
-		if (!trimmed || trimmed.startsWith('#') || frontmatterDelimiterRegex.test(line)) {
-			continue;
-		}
-
-		const match = line.match(/^(\s*)([A-Za-z][A-Za-z0-9-]*):\s*(.*?)\s*$/);
-		if (!match) continue;
-
-		const indent = match[1].length;
-		const key = match[2];
-		const rawValue = match[3].trim();
-
-		while (pathStack.length > 0 && pathStack[pathStack.length - 1].indent >= indent) {
-			pathStack.pop();
-		}
-
-		const pathLabel = [...pathStack.map((entry) => entry.key), key].join('.');
-
-		if (!frontmatterColorKeys.has(key)) {
-			if (!rawValue) {
-				pathStack.push({ indent, key });
-			}
-			continue;
-		}
-
-		const value = stripInlineYamlComment(rawValue);
-
-		if (quotedHexColorRegex.test(value)) continue;
-
-		if (unquotedHexColorRegex.test(rawValue)) {
-			addIssue({
-				severity: 'error',
-				message: `${label} line ${lineNumber} defines ${pathLabel} as an unquoted hex color. YAML treats "#" as the start of a comment unless the value is quoted.`,
-				fix: `Write it as ${key}: "#ffd84d" or another quoted hex color.`,
-			});
-			continue;
-		}
-
-		addIssue({
-			severity: 'error',
-			message: `${label} line ${lineNumber} defines ${pathLabel} with invalid color value ${rawValue || '(empty)'}.`,
-			fix: `Use a quoted hex color in #rgb, #rrggbb, or #rrggbbaa form, for example ${key}: "#ffd84d".`,
-		});
-	}
-};
-
 export const validateContentFrontmatterStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
 		knownTopLevelFrontmatterKeys: knownContentTopLevelFrontmatterKeys,
@@ -376,41 +299,10 @@ export const getFrontmatterSections = (frontmatter) => {
 	return sections;
 };
 
-export const getFrontmatterInlineStyleNames = (frontmatter) => {
-	const names = new Set();
-	const lines = frontmatter.split(/\r?\n/);
-	let inlineStylesIndent = null;
-
-	for (const line of lines) {
-		const inlineStylesMatch = line.match(/^(\s*)inlineStyles:\s*$/);
-
-		if (inlineStylesMatch) {
-			inlineStylesIndent = inlineStylesMatch[1].length;
-			continue;
-		}
-
-		if (inlineStylesIndent === null) continue;
-		if (!line.trim() || line.trim().startsWith('#')) continue;
-
-		const indent = line.match(/^\s*/)?.[0].length ?? 0;
-		if (indent <= inlineStylesIndent) {
-			inlineStylesIndent = null;
-			continue;
-		}
-
-		const nameMatch = line.match(new RegExp(`^\\s{${inlineStylesIndent + 2}}([a-z][a-z0-9-]*):\\s*$`));
-		if (nameMatch) {
-			names.add(nameMatch[1]);
-		}
-	}
-
-	return names;
-};
-
-export const getInlineStyleReferences = (body) => Array.from(body.matchAll(inlineStyleReferenceRegex))
-	.map((match) => match[1]);
-
 export const getHeadingId = (heading) => heading.match(explicitHeadingIdRegex)?.[1];
+
+export const getDeprecatedInlineStyleReferences = (body) => Array.from(body.matchAll(deprecatedInlineStyleReferenceRegex))
+	.map((match) => match[1]);
 
 export const getBodySections = (body) => {
 	const matches = Array.from(body.matchAll(h2Regex));

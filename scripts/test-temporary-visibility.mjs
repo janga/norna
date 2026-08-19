@@ -51,8 +51,8 @@ try {
 	await writeFile(path.join(siteDir, 'theme.md'), `---
 typography:
   preset: quiet-gallery
-frame:
-  colors: presentation
+presentation:
+  palette: dark
 ---
 `);
 	await writeFile(path.join(siteDir, 'sitewide-content.md'), `---

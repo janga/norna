@@ -6,6 +6,6 @@ gallery:
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
   preset: quiet-gallery
-frame:
-  colors: presentation
+presentation:
+  palette: dark
 ---

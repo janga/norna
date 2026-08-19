@@ -17,27 +17,32 @@ export const typographyPresets = {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 400,
 				lineHeight: 1.04,
 			},
 			h2: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 400,
 				lineHeight: 1.08,
 			},
 			h3: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 500,
 				lineHeight: 1.35,
 			},
 			h4: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 400,
 				lineHeight: 1.5,
 			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
 			size: 'medium',
+			width: 'normal',
 			lineHeight: 1.5,
 		},
 		caption: {
@@ -51,27 +56,32 @@ export const typographyPresets = {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 500,
 				lineHeight: 1.04,
 			},
 			h2: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 500,
 				lineHeight: 1.08,
 			},
 			h3: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 600,
 				lineHeight: 1.3,
 			},
 			h4: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 500,
 				lineHeight: 1.42,
 			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
 			size: 'medium',
+			width: 'wide',
 			lineHeight: 1.42,
 		},
 		caption: {
@@ -85,27 +95,32 @@ export const typographyPresets = {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 500,
 				lineHeight: 1.06,
 			},
 			h2: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 500,
 				lineHeight: 1.12,
 			},
 			h3: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 500,
 				lineHeight: 1.35,
 			},
 			h4: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 400,
 				lineHeight: 1.55,
 			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
 			size: 'medium',
+			width: 'narrow',
 			lineHeight: 1.62,
 		},
 		caption: {
@@ -119,27 +134,32 @@ export const typographyPresets = {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 600,
 				lineHeight: 1.02,
 			},
 			h2: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 600,
 				lineHeight: 1.04,
 			},
 			h3: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 600,
 				lineHeight: 1.18,
 			},
 			h4: {
 				align: { desktop: 'left', mobile: 'left' },
 				size: 'medium',
+				weight: 500,
 				lineHeight: 1.42,
 			},
 		},
 		body: {
 			align: { desktop: 'left', mobile: 'left' },
 			size: 'medium',
+			width: 'narrow',
 			lineHeight: 1.42,
 		},
 		caption: {

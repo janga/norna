@@ -35,15 +35,7 @@ typography:
         mobile: left
       paragraphSpacing: 0.82em
 presentation:
-  backgroundColor: "#000000"
-  textColor: "#f2eee6"
-  inlineStyles:
-    accent:
-      color: "#d8c47a"
-    muted:
-      color: "#aaa49a"
-    yellow:
-      color: "#ffd84d"
-frame:
-  colors: presentation
+  palette: dark  # Alternatives: light, paper
+  sectionSurfaces:
+    mode: cycle
 ---

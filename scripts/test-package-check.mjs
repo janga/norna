@@ -206,14 +206,14 @@ sections:
 
 ## Intro {#intro}
 
-This page verifies that [packaged norna sites]{.highlight} can build with the current content model.
+This page verifies that **packaged norna sites** can build with the current content model.
 
 <!-- norna-image-provenance:
 image: package-check.svg
 source: package check fixture
 -->
 
-## [**Warning**]{.highlight} {#warning}
+## **Warning** {#warning}
 
 This section verifies styled section headings.
 
@@ -269,6 +269,10 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-heading-font-weight: 400',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-heading-spacing-after: 0.55em',
 	);
 	await assertFileIncludes(
@@ -311,6 +315,10 @@ This route verifies that packaged norna sites can build route pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-body-line-height: 1.5',
 	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-body-width-desktop: var(--text-width)',
+	);
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'norna-image-provenance',
@@ -331,13 +339,9 @@ This route verifies that packaged norna sites can build route pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-caption-font-size-desktop: clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
 	);
-	await assertFileIncludes(
+	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'class="inline-style inline-style-highlight" style="--inline-style-color: #ffd84d"',
-	);
-	await assertFileIncludes(
-		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<h2><span class="inline-style inline-style-highlight" style="--inline-style-color: #ffd84d"><strong>Warning</strong></span></h2>',
+		'class="inline-style',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -353,11 +357,19 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-background-color: #171717',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-background-color: #252525',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--site-top-background-color: #000000',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-top-text-color: #f7f4ee',
+		'--site-top-text-color: #f2eee6',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -365,11 +377,11 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-footer-text-color: #f7f4ee',
+		'--site-footer-text-color: #f2eee6',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-text-color: #f7f4ee',
+		'--section-text-color: #f2eee6',
 	);
 	await writeFile(path.join(siteProjectRoot, 'site', 'public', 'favicon.ico'), 'fake icon');
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
@@ -395,35 +407,52 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await writeFile(
 		siteThemePath,
-		siteTheme.replace('backgroundColor: "#000000"', 'backgroundColor: blue'),
+		siteTheme.replace('\n  palette: dark', '\n  palette: neon'),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation.backgroundColor',
+		'presentation.palette',
 	);
 	await writeFile(
 		siteThemePath,
-		siteTheme.replace('textColor: "#f7f4ee"', 'textColor: white'),
+		siteTheme.replace('  sectionSurfaces:\n    mode: cycle', '  sectionSurfaces:\n    mode: glowing'),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation.textColor',
+		'presentation.sectionSurfaces.mode',
 	);
 	await writeFile(
 		siteThemePath,
-		siteTheme.replace('      color: "#ffd84d"', '      color: yellow'),
+		siteTheme.replace(
+			'  sectionSurfaces:\n    mode: cycle',
+			'  sectionSurfaces:\n    mode: cycle\n    sequence: [base, base]',
+		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation.inlineStyles.highlight.color',
+		'presentation.sectionSurfaces',
 	);
 	await writeFile(siteThemePath, siteTheme);
+	await writeFile(
+		siteContentPath,
+		siteContent.replace(
+			'This page verifies that **packaged norna sites** can build with the current content model.',
+			'This page verifies that [packaged norna sites]{.highlight} can build with the current content model.',
+		),
+	);
+	await runExpectFailure(
+		npxBin,
+		['norna', 'build'],
+		{ cwd: siteProjectRoot, env: npmEnv },
+		'Inline color style ".highlight" is no longer supported',
+	);
+	await writeFile(siteContentPath, siteContent);
 	await writeFile(
 		siteContentPath,
 		siteContent.replace(
@@ -435,7 +464,7 @@ This route verifies that packaged norna sites can build route pages.
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation.typography.overrides.body.lineHeight',
+		'presentation.typography',
 	);
 	await writeFile(
 		siteContentPath,
@@ -448,7 +477,7 @@ This route verifies that packaged norna sites can build route pages.
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.intro.presentation.typography.overrides.caption.spacingBefore',
+		'sections.intro.presentation.typography',
 	);
 	await writeFile(
 		siteContentPath,

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Related visual detail</title>
+  <desc id="desc">A dark panel with three aligned cream blocks.</desc>
+  <rect width="1200" height="700" fill="#272522"/>
+  <rect x="170" y="170" width="250" height="360" fill="#f8f5ee"/>
+  <rect x="475" y="170" width="250" height="360" fill="#d8d0c4"/>
+  <rect x="780" y="170" width="250" height="360" fill="#685a43"/>
+  <rect x="170" y="570" width="860" height="10" fill="#f8f5ee" opacity=".55"/>
+</svg>

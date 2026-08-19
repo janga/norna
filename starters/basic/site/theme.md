@@ -87,16 +87,10 @@
 #       lineHeight: number from 1 through 3
 #       spacingBefore: CSS length, e.g. 0.5em
 # presentation:
-#   backgroundColor: quoted hex color, e.g. "#000000"
-#   textColor: quoted hex color, e.g. "#f7f4ee"
-#   inlineStyles:
-#     style-name:
-#       color: quoted hex color
-# frame:
-#   colors: presentation | theme
-#   colors:
-#     backgroundColor: quoted hex color
-#     textColor: quoted hex color
+#   palette: dark  # Alternatives: light, paper
+#   sectionSurfaces:
+#     mode: none | cycle
+#     sequence: [base, soft, emphasis]
 # norna:end theme-help
 navigation:
   brand: Example Site
@@ -119,11 +113,7 @@ typography:
   preset: quiet-gallery
   rhythm: normal
 presentation:
-  backgroundColor: "#000000"
-  textColor: "#f7f4ee"
-  inlineStyles:
-    highlight:
-      color: "#ffd84d"
-frame:
-  colors: presentation
+  palette: dark  # Alternatives: light, paper
+  sectionSurfaces:
+    mode: cycle
 ---

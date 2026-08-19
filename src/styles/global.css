@@ -51,7 +51,7 @@
 	--content-gutter-mobile: 1rem;
 	--content-gutter: var(--content-gutter-desktop);
 	--site-top-anchor-offset: 4.5rem;
-	color-scheme: dark;
+	color-scheme: var(--color-scheme, dark);
 	scroll-behavior: smooth;
 	scroll-padding-top: var(--site-top-anchor-offset);
 }
@@ -429,7 +429,7 @@ ul {
 	margin-bottom: 0;
 	color: inherit;
 	font-size: var(--section-heading-font-size-desktop, clamp(1.35rem, 1.1rem + 0.9vw, 2rem));
-	font-weight: 400;
+	font-weight: var(--section-heading-font-weight, 400);
 	letter-spacing: 0;
 	line-height: var(--section-heading-line-height, 1.04);
 	text-transform: uppercase;
@@ -481,10 +481,6 @@ ul {
 	font: inherit;
 }
 
-.inline-style {
-	color: var(--inline-style-color);
-}
-
 .section-markdown > :last-child,
 .gallery-meta :last-child {
 	margin-bottom: 0;
@@ -507,6 +503,7 @@ ul {
 	padding-top: 0.55em;
 	font-family: var(--font-sans);
 	font-size: var(--section-markdown-h3-font-size-desktop, 0.82rem);
+	font-weight: var(--section-markdown-h3-font-weight, 700);
 	letter-spacing: 0;
 	line-height: var(--section-markdown-h3-line-height, 1.35);
 	text-align: var(--section-markdown-h3-align-desktop, left);
@@ -520,7 +517,7 @@ ul {
 		var(--section-markdown-h4-spacing-after, 0.4em);
 	color: inherit;
 	font-size: var(--section-markdown-h4-font-size-desktop, clamp(0.96rem, 0.94rem + 0.08vw, 1rem));
-	font-weight: 400;
+	font-weight: var(--section-markdown-h4-font-weight, 400);
 	letter-spacing: 0;
 	line-height: var(--section-markdown-h4-line-height, 1.5);
 	text-align: var(--section-markdown-h4-align-desktop, left);

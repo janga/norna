@@ -15,7 +15,7 @@ sections:
 ## Intro {#intro}
 
 This fixture validates that Markdown defines sections and that section metadata
-is optional. It also checks [inline styles]{.highlight}.
+is optional. It also checks **inline emphasis**.
 
 ```norna-image-stack
 - image: hero.jpg

@@ -10,13 +10,14 @@ const siteEntryId = `${siteDirLabel
 	.replace(/^[./\\]+/, '')
 	.replace(/[^a-zA-Z0-9-]+/g, '-')
 	.replace(/^-+|-+$/g, '') || 'site'}-content`;
-const colorValue = z.string().regex(
-	/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/,
-	'Use a hex color such as "#000000".',
-);
 const textAlign = z.enum(['left', 'center', 'right']);
 const textSize = z.enum(['small', 'medium', 'large', 'xlarge']);
+const textWidth = z.enum(['narrow', 'normal', 'wide']);
+const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z.literal(700)]);
 const typographyPreset = z.enum(['quiet-gallery', 'compact-gallery', 'text-forward', 'statement']);
+const presentationPalette = z.enum(['dark', 'light', 'paper']);
+const sectionSurfaceMode = z.enum(['none', 'cycle']);
+const sectionSurface = z.enum(['base', 'soft', 'emphasis']);
 const spacingDensity = z.enum(['compact', 'normal', 'airy']);
 const lineHeight = z.number()
 	.min(1, 'Use a unitless line height of at least 1.')
@@ -31,7 +32,6 @@ const visualCssLength = z.string().regex(
 	new RegExp(`^(?:0|${visualCssLengthValue}|clamp\\(\\s*${visualCssLengthValue}\\s*,\\s*${visualCssLengthValue}\\s*,\\s*${visualCssLengthValue}\\s*\\))$`),
 	'Use a CSS length such as "0", "900px", "56rem", "90%", or "clamp(1rem, 4vw, 3rem)".',
 );
-const inlineStyleName = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const dateOnly = z.string()
 	.regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format.')
 	.refine(isDateOnly, 'Use a real calendar date.');
@@ -59,6 +59,7 @@ const commonTextPresentationOverride = {
 };
 const headingPresentationOverride = z.object({
 	...commonTextPresentationOverride,
+	weight: headingWeight.optional(),
 	spacingBefore: cssLength.optional(),
 	spacingAfter: cssLength.optional(),
 }).strict();
@@ -70,6 +71,7 @@ const headingLevelsPresentationOverride = z.object({
 }).strict();
 const bodyPresentationOverride = z.object({
 	...commonTextPresentationOverride,
+	width: textWidth.optional(),
 	paragraphSpacing: cssLength.optional(),
 }).strict();
 const captionPresentationOverride = z.object({
@@ -81,14 +83,9 @@ const typographyOverrides = z.object({
 	body: bodyPresentationOverride.optional(),
 	caption: captionPresentationOverride.optional(),
 }).strict();
-const typography = z.object({
-	preset: typographyPreset.optional(),
-	rhythm: spacingDensity.optional(),
-	overrides: typographyOverrides.optional(),
-}).strict().refine(
-	(value) => value.preset !== undefined || value.rhythm !== undefined || value.overrides !== undefined,
-	'Specify preset, rhythm, overrides, or both.',
-);
+const typographySelection = z.object({
+	preset: typographyPreset,
+}).strict();
 const themeTypography = z.object({
 	fontFamily: z.string()
 		.min(1)
@@ -134,31 +131,21 @@ const themeGallery = z.object({
 	maxAvailableHeightPercent: responsivePercent.optional(),
 }).strict();
 const sectionPresentationOverride = z.object({
-	backgroundColor: colorValue.optional(),
-	textColor: colorValue.optional(),
-	typography: typography.optional(),
+	surface: sectionSurface.optional(),
+	typography: typographySelection.optional(),
 }).strict();
 const themePresentation = z.object({
-	backgroundColor: colorValue.optional(),
-	textColor: colorValue.optional(),
-	inlineStyles: z.record(inlineStyleName, z.object({
-		color: colorValue,
-	}).strict()).optional(),
+	palette: presentationPalette.optional(),
+	sectionSurfaces: z.object({
+		mode: sectionSurfaceMode,
+		sequence: z.array(sectionSurface).min(1).max(3).optional(),
+	}).strict().refine(
+		(value) => !value.sequence || new Set(value.sequence).size === value.sequence.length,
+		'Each section surface may appear only once in a sequence.',
+	).optional(),
 }).strict();
 const pagePresentation = z.object({
-	backgroundColor: colorValue.optional(),
-	textColor: colorValue.optional(),
-	typography: typography.optional(),
-}).strict();
-const frameColors = z.union([
-	z.enum(['theme', 'presentation']),
-	z.object({
-		backgroundColor: colorValue,
-		textColor: colorValue,
-	}).strict(),
-]);
-const frame = z.object({
-	colors: frameColors.optional(),
+	typography: typographySelection.optional(),
 }).strict();
 const pageNavigation = z.object({
 	include: z.boolean().optional(),
@@ -218,7 +205,6 @@ const siteSchema = z.object({
 	description: z.string(),
 	navigation: pageNavigation.optional(),
 	presentation: pagePresentation.optional(),
-	frame: frame.optional(),
 	sections: z.record(z.string().regex(/^[a-z0-9-]+$/), sectionMetadata).optional().default({}),
 });
 
@@ -228,7 +214,6 @@ const themeSchema = z.object({
 	gallery: themeGallery.optional(),
 	typography: themeTypography.optional(),
 	presentation: themePresentation.optional(),
-	frame: frame.optional(),
 }).strict();
 
 const sitewideSchema = z.object({

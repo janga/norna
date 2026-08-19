@@ -1,5 +1,6 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
+import { getPresentationCssVariables } from '../../scripts/lib/presentation.mjs';
 import { getIconLinks } from '../lib/sitePublicAssets';
 import { withBasePath } from '../lib/basePath';
 import '../styles/global.css';
@@ -9,9 +10,18 @@ type FrameColors = {
 	textColor: string;
 };
 
+type Presentation = {
+	palette: {
+		page: FrameColors;
+		css: Record<string, string>;
+		colorScheme: string;
+	};
+};
+
 interface Props {
 	title?: string;
 	description?: string;
+	presentation: Presentation;
 	frameColors: FrameColors;
 	pathname?: string;
 	footer?: {
@@ -32,6 +42,7 @@ interface Props {
 const {
 	title = 'norna',
 	description = 'A norna site.',
+	presentation,
 	frameColors,
 	pathname = '/',
 	footer,
@@ -46,6 +57,7 @@ const formatViewportHeightPercent = (value: number) => `${value}svh`;
 const layoutSpacing = projectConfig.layout.spacing;
 const documentStyle = [
 	`scroll-behavior: ${scrollBehavior}`,
+	...Object.entries(getPresentationCssVariables(presentation)).map(([name, value]) => `${name}: ${value}`),
 	`--font-sans: ${projectConfig.typography.fontFamily}`,
 	`--page-width: ${projectConfig.layout.pageWidth}`,
 	`--content-gutter-desktop: ${projectConfig.layout.gutter.desktop}`,
@@ -91,7 +103,7 @@ const footerStyle = [
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="format-detection" content="telephone=no" />
 		<meta name="description" content={description} />
-		<meta name="theme-color" content="#000000" />
+		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
 		<link rel="canonical" href={canonicalUrl} />
 		<meta name="generator" content={Astro.generator} />
 		{iconLinks.map((iconLink) => (

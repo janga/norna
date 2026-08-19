@@ -13,7 +13,7 @@ sections:
 ## Black Dogs {#black-dogs}
 
 Black-coated dogs from the local norna development collection. This sentence
-contains [yellow highlighted text]{.highlight} for inline style inspection.
+contains **highlighted text** for inline emphasis inspection.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a
 ante venenatis dapibus posuere velit aliquet.
@@ -41,7 +41,7 @@ metus. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
 ## Summer Dogs {#summer-dogs}
 
 This temporary section is visible during August 2026. It is here to demonstrate
-date-controlled sections and [warm alert text]{.alert} in the local dog example.
+date-controlled sections and **warm alert text** in the local dog example.
 
 Lorem ipsum dolor sit amet.
 

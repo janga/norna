@@ -10,8 +10,6 @@ import type { SitePage } from './sitePages';
 
 type SiteSectionMetadataMap = CollectionEntry<'site'>['data']['sections'];
 type SiteSectionMetadata = SiteSectionMetadataMap[string];
-type ThemePresentation = CollectionEntry<'theme'>['data']['presentation'];
-type InlineStyles = NonNullable<NonNullable<ThemePresentation>['inlineStyles']>;
 type GalleryImage = {
 	image: string;
 	src: string;
@@ -49,7 +47,6 @@ export type SectionNavigation = {
 
 const headingRegex = /<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
-const inlineStyleReferenceRegex = /\[([\s\S]*?)\]\{\.([a-z][a-z0-9-]*)\}/g;
 const markdownH2Regex = /^##\s+.*$/gm;
 const imageProvenanceCommentRegex = /<!--\s*norna-image-provenance:[\s\S]*?-->/gi;
 
@@ -87,14 +84,11 @@ const getHeadingId = (attributes: string, headingHtml: string) => {
 const getExplicitHeadingId = (headingHtml: string) =>
 	decodeHtmlEntities(stripTags(headingHtml)).trim().match(explicitHeadingIdRegex)?.[1];
 
-const stripInlineStyleMarkers = (value: string) =>
-	value.replace(inlineStyleReferenceRegex, '$1');
-
 const getHeadingTitle = (headingHtml: string) =>
-	stripInlineStyleMarkers(decodeHtmlEntities(stripTags(headingHtml)).replace(explicitHeadingIdRegex, '').trim());
+	decodeHtmlEntities(stripTags(headingHtml)).replace(explicitHeadingIdRegex, '').trim();
 
-const getHeadingTitleHtml = (headingHtml: string, inlineStyles: InlineStyles | undefined) =>
-	prepareContentHtml(headingHtml.replace(explicitHeadingIdRegex, '').trim(), inlineStyles);
+const getHeadingTitleHtml = (headingHtml: string) =>
+	prepareContentHtml(headingHtml.replace(explicitHeadingIdRegex, '').trim());
 
 export const getSectionNavigation = (html: string, sectionMetadata: SiteSectionMetadataMap): SectionNavigation[] => {
 	const matches = Array.from(html.matchAll(headingRegex));
@@ -129,23 +123,12 @@ export const getSectionNavigation = (html: string, sectionMetadata: SiteSectionM
 	return sections;
 };
 
-const applyInlineStyles = (html: string, inlineStyles: InlineStyles | undefined) =>
-	html.replace(inlineStyleReferenceRegex, (_match, text: string, styleName: string) => {
-		const style = inlineStyles?.[styleName];
-
-		if (!style) {
-			throw new Error(`Markdown uses inline style ".${styleName}", but theme.md presentation.inlineStyles.${styleName} is not defined.`);
-		}
-
-		return `<span class="inline-style inline-style-${styleName}" style="--inline-style-color: ${style.color}">${text}</span>`;
-	});
-
 const stripImageProvenanceComments = (html: string) => html.replace(imageProvenanceCommentRegex, '');
 
-const prepareContentHtml = (html: string, inlineStyles: InlineStyles | undefined) =>
+const prepareContentHtml = (html: string) =>
 	applyBasePathToHtml(
 		projectConfig.site.basePath,
-		stripImageProvenanceComments(applyInlineStyles(html, inlineStyles)),
+		stripImageProvenanceComments(html),
 	);
 
 const getRawMarkdownSections = (markdown: string) => {
@@ -178,7 +161,6 @@ const resolveContentBlocks = (
 	rawMarkdown: string,
 	page: SitePage,
 	sectionId: string,
-	inlineStyles: InlineStyles | undefined,
 ) => {
 	const rawBlocks = extractNornaMarkdownBlocks(rawMarkdown);
 	const splitBlocks = rawBlocks.length > 0
@@ -189,7 +171,7 @@ const resolveContentBlocks = (
 		if (block.type === 'html') {
 			return {
 				type: 'html',
-				html: prepareContentHtml(block.html, inlineStyles),
+				html: prepareContentHtml(block.html),
 			};
 		}
 
@@ -221,7 +203,6 @@ export const getSectionsContent = (
 	rawMarkdown: string,
 	sectionMetadata: SiteSectionMetadataMap,
 	page: SitePage,
-	inlineStyles?: InlineStyles,
 ) => {
 	const matches = Array.from(html.matchAll(headingRegex));
 	const rawSections = getRawMarkdownSections(rawMarkdown);
@@ -254,8 +235,8 @@ export const getSectionsContent = (
 			...(sectionMetadata[id] ?? {}),
 			id,
 			title,
-			titleHtml: getHeadingTitleHtml(headingHtml, inlineStyles),
-			contentBlocks: resolveContentBlocks(content, rawSections.get(id) ?? '', page, id, inlineStyles),
+			titleHtml: getHeadingTitleHtml(headingHtml),
+			contentBlocks: resolveContentBlocks(content, rawSections.get(id) ?? '', page, id),
 		});
 	}
 

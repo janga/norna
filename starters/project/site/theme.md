@@ -31,13 +31,7 @@ typography:
   preset: text-forward
   rhythm: compact
 presentation:
-  backgroundColor: "#001314"
-  textColor: "#f6f1e8"
-  inlineStyles:
-    accent:
-      color: "#8fd3ff"
-    muted:
-      color: "#b8b1a6"
-frame:
-  colors: presentation
+  palette: dark  # Alternatives: light, paper
+  sectionSurfaces:
+    mode: cycle
 ---

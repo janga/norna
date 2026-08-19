@@ -1,9 +1,9 @@
 ---
 navigation:
-  brand: Typography Presets
+  brand: Visual Model
 layout:
   density: normal
-  pageWidth: 1320px
+  pageWidth: 1240px
   gutter:
     desktop: clamp(1.25rem, 4vw, 3rem)
     mobile: 1rem
@@ -27,7 +27,7 @@ layout:
       desktop: clamp(1.25rem, 3vw, 2.25rem)
       mobile: 1.5rem
 gallery:
-  width: 70vw
+  width: 960px
   maxAvailableWidthPercent:
     desktop: 100
     mobile: 100
@@ -36,7 +36,7 @@ gallery:
     mobile: 68
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
-  preset: quiet-gallery
+  preset: text-forward
   rhythm: normal
 presentation:
   palette: paper  # Alternatives: dark, light
