@@ -20,8 +20,9 @@ const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const deprecatedInlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
-const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'presentation', 'sections']);
+const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'sections']);
 const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation']);
+const knownRouteThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
 	'alt',
@@ -272,6 +273,12 @@ export const validateThemeFrontmatterStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
 		knownTopLevelFrontmatterKeys: knownThemeTopLevelFrontmatterKeys,
 		fileKind: 'theme',
+	});
+
+export const validateRouteThemeFrontmatterStructure = (frontmatter, addIssue) =>
+	validateFrontmatterStructure(frontmatter, addIssue, {
+		knownTopLevelFrontmatterKeys: knownRouteThemeTopLevelFrontmatterKeys,
+		fileKind: 'route theme',
 	});
 
 export const readThemeFile = async (sitePath) => readSiteFile(sitePath, siteThemeLabel);

@@ -17,11 +17,32 @@ type Presentation = {
 		colorScheme: string;
 	};
 };
+type VisualTheme = {
+	layout: {
+		gutter: { desktop: string; mobile: string };
+		pageWidth: string;
+		spacing: {
+			firstSectionTop: { desktop: string; mobile: string };
+			blockGap: { desktop: string; mobile: string };
+			headingToBlock: { desktop: string; mobile: string };
+			imageGap: { desktop: string; mobile: string };
+			sectionGap: { desktop: string; mobile: string };
+			finalSectionBottom: { desktop: string; mobile: string };
+		};
+	};
+	gallery: {
+		width: string;
+		maxAvailableWidthPercent: { desktop: number; mobile: number };
+		maxAvailableHeightPercent: { desktop: number; mobile: number };
+	};
+	typography: { fontFamily: string };
+};
 
 interface Props {
 	title?: string;
 	description?: string;
 	presentation: Presentation;
+	visualTheme: VisualTheme;
 	frameColors: FrameColors;
 	pathname?: string;
 	footer?: {
@@ -43,6 +64,7 @@ const {
 	title = 'norna',
 	description = 'A norna site.',
 	presentation,
+	visualTheme,
 	frameColors,
 	pathname = '/',
 	footer,
@@ -54,14 +76,14 @@ const iconLinks = getIconLinks();
 const scrollBehavior = projectConfig.navigation.smoothScroll.enabled ? 'smooth' : 'auto';
 const formatPercent = (value: number) => `${value}%`;
 const formatViewportHeightPercent = (value: number) => `${value}svh`;
-const layoutSpacing = projectConfig.layout.spacing;
+const layoutSpacing = visualTheme.layout.spacing;
 const documentStyle = [
 	`scroll-behavior: ${scrollBehavior}`,
 	...Object.entries(getPresentationCssVariables(presentation)).map(([name, value]) => `${name}: ${value}`),
-	`--font-sans: ${projectConfig.typography.fontFamily}`,
-	`--page-width: ${projectConfig.layout.pageWidth}`,
-	`--content-gutter-desktop: ${projectConfig.layout.gutter.desktop}`,
-	`--content-gutter-mobile: ${projectConfig.layout.gutter.mobile}`,
+	`--font-sans: ${visualTheme.typography.fontFamily}`,
+	`--page-width: ${visualTheme.layout.pageWidth}`,
+	`--content-gutter-desktop: ${visualTheme.layout.gutter.desktop}`,
+	`--content-gutter-mobile: ${visualTheme.layout.gutter.mobile}`,
 	`--space-nav-to-first-section-desktop: ${layoutSpacing.firstSectionTop.desktop}`,
 	`--space-nav-to-first-section-mobile: ${layoutSpacing.firstSectionTop.mobile}`,
 	`--space-content-block-gap-desktop: ${layoutSpacing.blockGap.desktop}`,
@@ -74,11 +96,11 @@ const documentStyle = [
 	`--space-section-to-section-mobile: ${layoutSpacing.sectionGap.mobile}`,
 	`--space-final-section-bottom-desktop: ${layoutSpacing.finalSectionBottom.desktop}`,
 	`--space-final-section-bottom-mobile: ${layoutSpacing.finalSectionBottom.mobile}`,
-	`--gallery-width: ${projectConfig.gallery.width}`,
-	`--gallery-max-available-width-desktop: ${formatPercent(projectConfig.gallery.maxAvailableWidthPercent.desktop)}`,
-	`--gallery-max-available-width-mobile: ${formatPercent(projectConfig.gallery.maxAvailableWidthPercent.mobile)}`,
-	`--gallery-max-image-height-desktop: ${formatViewportHeightPercent(projectConfig.gallery.maxAvailableHeightPercent.desktop)}`,
-	`--gallery-max-image-height-mobile: ${formatViewportHeightPercent(projectConfig.gallery.maxAvailableHeightPercent.mobile)}`,
+	`--gallery-width: ${visualTheme.gallery.width}`,
+	`--gallery-max-available-width-desktop: ${formatPercent(visualTheme.gallery.maxAvailableWidthPercent.desktop)}`,
+	`--gallery-max-available-width-mobile: ${formatPercent(visualTheme.gallery.maxAvailableWidthPercent.mobile)}`,
+	`--gallery-max-image-height-desktop: ${formatViewportHeightPercent(visualTheme.gallery.maxAvailableHeightPercent.desktop)}`,
+	`--gallery-max-image-height-mobile: ${formatViewportHeightPercent(visualTheme.gallery.maxAvailableHeightPercent.mobile)}`,
 ].join('; ');
 const { buildInfo, copyrightMessage } = footer ?? {};
 const showBuildInfo = Boolean(buildInfo?.enabled);

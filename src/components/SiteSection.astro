@@ -1,7 +1,6 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import projectConfig from '../../scripts/lib/project-config.mjs';
 import { resolveSectionSurface } from '../../scripts/lib/presentation.mjs';
-import { resolveTypographyOverride } from '../../scripts/lib/typography.mjs';
 import CardList from './CardList.astro';
 import GalleryGrid from './GalleryGrid.astro';
 import type { ResolvedSection } from '../lib/sectionContent';
@@ -11,10 +10,6 @@ type ResponsiveOverride<T> = { desktop?: T; mobile?: T };
 type TextAlign = 'left' | 'center' | 'right';
 type TextSize = 'small' | 'medium' | 'large' | 'xlarge';
 type TextWidth = 'narrow' | 'normal' | 'wide';
-type SectionPresentationOverride = {
-	surface?: 'base' | 'soft' | 'emphasis';
-	typography?: NonNullable<ResolvedSection['presentation']>['typography'];
-};
 type ResolvedPagePresentation = {
 	palette: {
 		surfaces: Record<'base' | 'soft' | 'emphasis', { backgroundColor: string; textColor: string }>;
@@ -28,20 +23,30 @@ type ResolvedPagePresentation = {
 		values: any;
 	};
 };
+type VisualTheme = {
+	gallery: {
+		maxAvailableWidthPercent: {
+			desktop: number;
+			mobile: number;
+		};
+	};
+};
 
 interface Props {
 	section: ResolvedSection;
 	pagePresentation: ResolvedPagePresentation;
+	visualTheme: VisualTheme;
 	sectionIndex: number;
 	headingLevel: 1 | 2;
 	priorityGalleryImage?: boolean;
 }
 
-const { section, pagePresentation, sectionIndex, headingLevel, priorityGalleryImage = false } = Astro.props;
+const { section, pagePresentation, visualTheme, sectionIndex, headingLevel, priorityGalleryImage = false } = Astro.props;
 const HeadingTag = headingLevel === 1 ? 'h1' : 'h2';
 // Sections are authored with Markdown ## headings even when the first one renders as HTML h1.
 const sectionHeadingVisualLevel = 'h2';
-const firstContentBlockIsVisual = section.contentBlocks[0]?.type !== 'html';
+const firstContentBlockIsVisual = section.contentBlocks[0]?.type !== 'html'
+	&& section.contentBlocks[0]?.type !== 'note';
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
 const headingSizeValues: Record<HeadingLevel, Record<TextSize, ResponsiveValue<string>>> = {
 	h1: {
@@ -153,7 +158,6 @@ const captionSizeValues: Record<TextSize, ResponsiveValue<string>> = {
 		mobile: 'clamp(1.04rem, 0.98rem + 0.18vw, 1.12rem)',
 	},
 };
-const sectionOverride = section.presentation as SectionPresentationOverride | undefined;
 const getSizeValue = (
 	sizeValues: Record<TextSize, ResponsiveValue<string>>,
 	size: TextSize,
@@ -166,9 +170,8 @@ const textWidthValues: Record<TextWidth, string> = {
 	normal: 'var(--text-width)',
 	wide: 'var(--gallery-layout-width)',
 };
-const surface = resolveSectionSurface(pagePresentation, sectionOverride, sectionIndex);
-const resolvedTypography = resolveTypographyOverride(pagePresentation.typography, sectionOverride?.typography);
-const typography = resolvedTypography.values;
+const surface = resolveSectionSurface(pagePresentation, sectionIndex);
+const typography = pagePresentation.typography.values;
 const heading = typography.headings[sectionHeadingVisualLevel] as {
 	align: ResponsiveValue<TextAlign>;
 	size: TextSize;
@@ -200,24 +203,50 @@ const justifyByAlign: Record<TextAlign, string> = {
 	center: 'center',
 	right: 'flex-end',
 };
-const getAlignedTextWidth = (
-	align: ResponsiveValue<TextAlign>,
-	centeredWidth: string,
-): ResponsiveValue<string> => ({
-	desktop: align.desktop === 'center' ? centeredWidth : 'var(--gallery-layout-width)',
-	mobile: align.mobile === 'center' ? centeredWidth : 'var(--gallery-layout-width)',
-});
-const headingWidth = getAlignedTextWidth(headingAlign, '760px');
 const bodyWidthValue = textWidthValues[typography.body.width as TextWidth];
+const headingWidth = {
+	desktop: bodyWidthValue,
+	mobile: bodyWidthValue,
+};
 const bodyWidth = {
 	desktop: bodyWidthValue,
 	mobile: bodyWidthValue,
 };
+const isMediaBlock = (block: ResolvedSection['contentBlocks'][number]) => (
+	block.type === 'image-stack'
+	|| block.type === 'image-carousel'
+	|| block.type === 'card-list'
+);
 const hasMedia = section.contentBlocks.some((block) => (
 	block.type === 'image-stack'
 	|| block.type === 'image-carousel'
 	|| (block.type === 'card-list' && block.cards.some((card) => card.image))
 ));
+const hasMarginNotes = section.contentBlocks.some((block) => (
+	block.type === 'note' && block.placement === 'margin'
+));
+const noteLabel = projectConfig.locale.labels.note;
+const contentGroups: Array<
+	| { type: 'reading'; blocks: ResolvedSection['contentBlocks'] }
+	| { type: 'media'; block: Extract<ResolvedSection['contentBlocks'][number], { type: 'image-stack' | 'image-carousel' | 'card-list' }> }
+> = [];
+let readingBlocks: ResolvedSection['contentBlocks'] = [];
+const flushReadingBlocks = () => {
+	if (readingBlocks.length === 0) return;
+	contentGroups.push({ type: 'reading', blocks: readingBlocks });
+	readingBlocks = [];
+};
+
+for (const block of section.contentBlocks) {
+	if (isMediaBlock(block)) {
+		flushReadingBlocks();
+		contentGroups.push({ type: 'media', block });
+	} else {
+		readingBlocks = [...readingBlocks, block];
+	}
+}
+
+flushReadingBlocks();
 const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 	const headingConfig = markdownHeadings[level];
 	const fontSize = getHeadingSizeValue(level, headingConfig.size);
@@ -268,7 +297,13 @@ const sectionStyle = [
 
 <section
 	id={section.id}
-	class:list={['site-section', { 'site-section-first-block-is-visual': firstContentBlockIsVisual }]}
+	class:list={[
+		'site-section',
+		{
+			'site-section-first-block-is-visual': firstContentBlockIsVisual,
+			'site-section-has-margin-notes': hasMarginNotes,
+		},
+	]}
 	data-section-title={section.title}
 	style={sectionStyle}
 >
@@ -278,30 +313,67 @@ const sectionStyle = [
 		</header>
 
 		<div class:list={['section-body', { 'section-body-has-gallery': hasMedia, 'section-body-text-only': !hasMedia }]}>
-			{section.contentBlocks.map((block, blockIndex) => {
-				if (block.type === 'html') {
-					return block.html && <div class="section-markdown" set:html={block.html} />;
+			{contentGroups.map((group, groupIndex) => {
+				if (group.type === 'reading') {
+					if (hasMarginNotes && group.blocks.some((block) => block.type === 'note' && block.placement === 'margin')) {
+						return (
+							<div class="section-reading-layout">
+								{group.blocks.map((block) => {
+									if (block.type === 'html') {
+										return block.html && <div class="section-markdown" set:html={block.html} />;
+									}
+
+									return (
+										<aside
+											class:list={['section-note', `section-note-${block.placement}`]}
+											aria-label={noteLabel}
+										>
+											<div class="section-note-content" set:html={block.html} />
+										</aside>
+									);
+								})}
+							</div>
+						);
+					}
+
+					return group.blocks.map((block) => {
+						if (block.type === 'html') {
+							return block.html && <div class="section-markdown" set:html={block.html} />;
+						}
+
+						return (
+							<aside
+								class:list={['section-note', `section-note-${block.placement}`]}
+								aria-label={noteLabel}
+							>
+								<div class="section-note-content" set:html={block.html} />
+							</aside>
+						);
+					});
 				}
 
+				const block = group.block;
 				if (block.type === 'image-carousel') {
 					return (
 						<GalleryGrid
 							title={section.title}
 							items={[{ carousel: block.images }]}
-							priorityFirstImage={priorityGalleryImage && blockIndex === 0}
+							maxAvailableWidthPercent={visualTheme.gallery.maxAvailableWidthPercent}
+							priorityFirstImage={priorityGalleryImage && groupIndex === 0}
 						/>
 					);
 				}
 
 				if (block.type === 'card-list') {
-					return <CardList cards={block.cards} layout={block.layout} flow={block.flow} size={block.size} width={block.width} />;
+					return <CardList cards={block.cards} maxAvailableWidthPercent={visualTheme.gallery.maxAvailableWidthPercent} layout={block.layout} flow={block.flow} size={block.size} width={block.width} />;
 				}
 
 				return (
 					<GalleryGrid
 						title={section.title}
 						items={block.images}
-						priorityFirstImage={priorityGalleryImage && blockIndex === 0}
+						maxAvailableWidthPercent={visualTheme.gallery.maxAvailableWidthPercent}
+						priorityFirstImage={priorityGalleryImage && groupIndex === 0}
 					/>
 				);
 			})}

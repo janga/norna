@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
+import { markdownToHtml } from 'satteri';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import {
 	extractNornaMarkdownBlocks,
@@ -28,11 +29,13 @@ type CardListLayout = 'image-top' | 'image-left' | 'image-right';
 type CardListFlow = 'grid' | 'stack';
 type CardListSize = 's' | 'm' | 'l' | 'xl';
 type CardListWidth = 'text' | 'narrow' | 'normal' | 'wide';
+type NotePlacement = 'margin' | 'inline';
 type SectionContentBlock =
 	| { type: 'html'; html: string }
 	| { type: 'image-stack'; images: GalleryImage[] }
 	| { type: 'image-carousel'; images: GalleryImage[] }
-	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width: CardListWidth; cards: CardListItem[] };
+	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width: CardListWidth; cards: CardListItem[] }
+	| { type: 'note'; html: string; placement: NotePlacement };
 export type ResolvedSection = SiteSectionMetadata & {
 	id: string;
 	title: string;
@@ -131,6 +134,61 @@ const prepareContentHtml = (html: string) =>
 		stripImageProvenanceComments(html),
 	);
 
+const htmlVoidElements = new Set([
+	'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link',
+	'meta', 'param', 'source', 'track', 'wbr',
+]);
+
+// Keep notes aligned with the Markdown block immediately before them instead of
+// aligning them with a whole run of paragraphs rendered as one HTML fragment.
+const splitHtmlIntoBlocks = (html: string) => {
+	const tagRegex = /<!--[\s\S]*?-->|<\/?([a-z][\w:-]*)(?:\s[^<>]*?)?\/?>/gi;
+	const blocks: string[] = [];
+	let blockStart = -1;
+	let depth = 0;
+	let cursor = 0;
+
+	for (const match of html.matchAll(tagRegex)) {
+		const start = match.index ?? 0;
+		const token = match[0] ?? '';
+		const tagName = match[1]?.toLowerCase();
+		if (!tagName) continue;
+
+		const isClosing = /^<\//.test(token);
+		const isSelfClosing = /\/\s*>$/.test(token) || htmlVoidElements.has(tagName);
+
+		if (isClosing) {
+			if (depth > 0) depth -= 1;
+			if (depth === 0 && blockStart >= 0) {
+				blocks.push(html.slice(blockStart, start + token.length));
+				cursor = start + token.length;
+				blockStart = -1;
+			}
+			continue;
+		}
+
+		if (depth === 0) {
+			if (blockStart < 0) blockStart = start;
+			if (isSelfClosing) {
+				blocks.push(html.slice(blockStart, start + token.length));
+				cursor = start + token.length;
+				blockStart = -1;
+			}
+		}
+
+		if (!isSelfClosing) depth += 1;
+	}
+
+	if (blockStart >= 0) {
+		blocks.push(html.slice(blockStart).trim());
+		cursor = html.length;
+	}
+
+	const prefix = html.slice(0, blocks.length > 0 ? html.indexOf(blocks[0]!) : html.length).trim();
+	const suffix = html.slice(cursor).trim();
+	return [prefix, ...blocks, suffix].filter(Boolean);
+};
+
 const getRawMarkdownSections = (markdown: string) => {
 	const matches = Array.from(markdown.matchAll(markdownH2Regex));
 	const sections = new Map<string, string>();
@@ -156,7 +214,22 @@ const getImageSourceKey = (page: SitePage, sectionId: string, image: string) => 
 		: `images/${sectionId}/${image}`
 );
 
-const resolveContentBlocks = (
+const renderNoteMarkdown = async (markdown: string) => {
+	const result = await markdownToHtml(markdown, {
+		features: {
+			gfm: true,
+			smartPunctuation: true,
+		},
+	});
+
+	if (/<img\b/i.test(result.html)) {
+		throw new Error('norna-note cannot contain images. Use a Norna image block with a caption instead.');
+	}
+
+	return prepareContentHtml(result.html);
+};
+
+const resolveContentBlocks = async (
 	html: string,
 	rawMarkdown: string,
 	page: SitePage,
@@ -166,39 +239,65 @@ const resolveContentBlocks = (
 	const splitBlocks = rawBlocks.length > 0
 		? splitNornaRenderedCodeBlocks(html, rawBlocks)
 		: splitNornaMarkdownBlockMarkers(html);
+	const hasNotes = rawBlocks.some((block) => block.blockType === 'norna-note');
+	const contentBlocks = hasNotes
+		? splitBlocks.flatMap((block) => block.type === 'html'
+			? splitHtmlIntoBlocks(block.html).map((htmlBlock) => ({ type: 'html' as const, html: htmlBlock }))
+			: [block])
+		: splitBlocks;
+	const resolvedBlocks: SectionContentBlock[] = [];
 
-	return splitBlocks.map((block): SectionContentBlock => {
+	for (const block of contentBlocks) {
 		if (block.type === 'html') {
-			return {
+			resolvedBlocks.push({
 				type: 'html',
 				html: prepareContentHtml(block.html),
-			};
+			});
+			continue;
 		}
 
-		return {
+		if (block.type === 'note') {
+			const previousBlock = resolvedBlocks.at(-1);
+			resolvedBlocks.push({
+				type: 'note',
+				html: await renderNoteMarkdown(block.markdown),
+				placement: previousBlock?.type === 'image-stack'
+					|| previousBlock?.type === 'image-carousel'
+					|| previousBlock?.type === 'card-list'
+					? 'inline'
+					: 'margin',
+			});
+			continue;
+		}
+
+		if (block.type === 'card-list') {
+			resolvedBlocks.push({
+				type: 'card-list',
+				layout: block.layout,
+				flow: block.flow,
+				size: block.size,
+				width: block.width,
+				cards: block.cards.map((card: CardListItem) => ({
+					...card,
+					...(card.image ? { src: getImageSourceKey(page, sectionId, card.image) } : {}),
+				})),
+			});
+			continue;
+		}
+
+		resolvedBlocks.push({
 			type: block.type,
-			...(block.type === 'card-list'
-				? {
-					layout: block.layout,
-					flow: block.flow,
-					size: block.size,
-					width: block.width,
-					cards: block.cards.map((card: CardListItem) => ({
-						...card,
-						...(card.image ? { src: getImageSourceKey(page, sectionId, card.image) } : {}),
-					})),
-				}
-				: {
-					images: block.images.map((image: { image: string; alt?: string; caption?: string }) => ({
-						...image,
-						src: getImageSourceKey(page, sectionId, image.image),
-					})),
-				}),
-		};
-	});
+			images: block.images.map((image: { image: string; alt?: string; caption?: string }) => ({
+				...image,
+				src: getImageSourceKey(page, sectionId, image.image),
+			})),
+		});
+	}
+
+	return resolvedBlocks;
 };
 
-export const getSectionsContent = (
+export const getSectionsContent = async (
 	html: string,
 	rawMarkdown: string,
 	sectionMetadata: SiteSectionMetadataMap,
@@ -236,7 +335,7 @@ export const getSectionsContent = (
 			id,
 			title,
 			titleHtml: getHeadingTitleHtml(headingHtml),
-			contentBlocks: resolveContentBlocks(content, rawSections.get(id) ?? '', page, id),
+			contentBlocks: await resolveContentBlocks(content, rawSections.get(id) ?? '', page, id),
 		});
 	}
 

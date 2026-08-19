@@ -6,11 +6,13 @@ import SiteNavigation from './SiteNavigation.astro';
 import SiteBanners from './SiteBanners.astro';
 import SiteSection from './SiteSection.astro';
 import { getSectionNavigation, getSectionsContent } from '../lib/sectionContent';
+import { getRouteTheme } from '../lib/routeThemes';
 import { getNavigationPages, getSitePage, getSitePages } from '../lib/sitePages';
 import { getToday, isVisibleToday } from '../lib/visibility';
 import { getLogoAsset } from '../lib/sitePublicAssets';
 import { readSiteFile } from '../../scripts/lib/site-content.mjs';
 import { siteContentPath, siteRoutesDir } from '../../scripts/lib/site-paths.mjs';
+import { resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
 import { resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
@@ -30,14 +32,23 @@ const pageContentPath = currentPage.routeDirectory
 	? path.join(siteRoutesDir, currentPage.routeDirectory, 'route-content.md')
 	: siteContentPath;
 const rawMarkdown = (await readSiteFile(pageContentPath, siteContentLabel)).body;
-const [theme] = await getCollection('theme');
+const [siteTheme] = await getCollection('theme');
+if (!siteTheme) {
+	throw new Error('site/theme.md is required. Add a root theme before building the site.');
+}
 const [sitewide] = await getCollection('sitewide');
 const navigationPages = getNavigationPages(sitePages);
 const homePage = sitePages.find((page) => page.isHome) ?? currentPage;
-const themeData = theme?.data ?? {};
-const brandLabel = themeData.navigation?.brand ?? homePage.title;
+const siteThemeData = siteTheme.data;
+const routeTheme = await getRouteTheme(currentPage.routeDirectory);
+const themeData = routeTheme?.data ?? siteThemeData;
+const themeLabel = routeTheme
+	? `${siteDirectory || 'site'}/${routeTheme.id}`
+	: `${siteDirectory || 'site'}/theme.md`;
+const visualTheme = resolveThemeVisualConfig(themeData, themeLabel);
+const brandLabel = siteThemeData.navigation?.brand ?? homePage.title;
 const logoAsset = getLogoAsset();
-const logoSettings = themeData.navigation?.logo;
+const logoSettings = siteThemeData.navigation?.logo;
 const logo = logoAsset
 	? {
 		src: logoAsset.href,
@@ -45,11 +56,11 @@ const logo = logoAsset
 		height: logoSettings?.height,
 	}
 	: undefined;
-const pagePresentation = resolvePagePresentation(themeData, entry.data.presentation);
+const pagePresentation = resolvePagePresentation(themeData);
 const frameColors = resolveFrameColors({ theme: themeData });
 const sections = entry.data.sections;
 const siteHtml = entry.rendered?.html ?? '';
-const resolvedSections = getSectionsContent(siteHtml, rawMarkdown, sections, currentPage);
+const resolvedSections = await getSectionsContent(siteHtml, rawMarkdown, sections, currentPage);
 const today = getToday();
 const sitewideData = sitewide?.data ?? {};
 const siteBanners = (sitewideData.banners ?? []).filter((banner) => isVisibleToday(banner.visible, today));
@@ -79,6 +90,7 @@ if (visibleSections.length === 0) {
 	title={entry.data.title}
 	description={entry.data.description}
 	presentation={pagePresentation}
+	visualTheme={visualTheme}
 	frameColors={frameColors}
 	pathname={currentPage.pathname}
 	footer={sitewideData.footer}
@@ -97,6 +109,7 @@ if (visibleSections.length === 0) {
 			<SiteSection
 				section={section}
 				pagePresentation={pagePresentation}
+				visualTheme={visualTheme}
 				sectionIndex={index}
 				headingLevel={index === 0 ? 1 : 2}
 				priorityGalleryImage={index === 0}

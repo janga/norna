@@ -1,11 +1,12 @@
 import { Buffer } from 'node:buffer';
 
-export const nornaBlockTypes = new Set(['norna-image-stack', 'norna-image-carousel', 'norna-card-list']);
+export const nornaBlockTypes = new Set(['norna-image-stack', 'norna-image-carousel', 'norna-card-list', 'norna-note']);
 
 const blockTypeLabels = {
 	'norna-image-stack': 'norna-image-stack',
 	'norna-image-carousel': 'norna-image-carousel',
 	'norna-card-list': 'norna-card-list',
+	'norna-note': 'norna-note',
 };
 
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
@@ -28,6 +29,11 @@ const cardListExample = [
 	'  image: adopt.jpg',
 	'  link: /adopt/',
 	'  badge-text: Recommended',
+	'```',
+].join('\n');
+const noteExample = [
+	'```norna-note',
+	'A short note that adds context to the surrounding text.',
 	'```',
 ].join('\n');
 const cardListLayouts = new Set(['image-top', 'image-left', 'image-right']);
@@ -395,13 +401,29 @@ const parseCardListBlock = (source, options = {}) => {
 	return { type: 'card-list', layout, flow, size, width, cards };
 };
 
+const parseNoteBlock = (source, options = {}) => {
+	const markdown = source.trim();
+
+	if (!markdown) {
+		fail(`${options.type} must contain text. Example:\n${noteExample}`, options);
+	}
+
+	if (/!\[[^\]]*\]\([^)]*\)|<img\b/i.test(markdown)) {
+		fail(`${options.type} cannot contain images. Use a Norna image block with a caption instead.`, options);
+	}
+
+	return { type: 'note', markdown };
+};
+
 export const parseNornaMarkdownBlock = (type, source, options = {}) => {
 	if (!nornaBlockTypes.has(type)) {
 		fail(getUnknownNornaBlockMessage(type), options);
 	}
 
 	const parseOptions = { ...options, type: blockTypeLabels[type] };
-	return type === 'norna-card-list'
+	return type === 'norna-note'
+		? parseNoteBlock(source, parseOptions)
+		: type === 'norna-card-list'
 		? parseCardListBlock(source, parseOptions)
 		: parseImageListBlock(source, parseOptions);
 };
@@ -524,6 +546,8 @@ export const extractMarkdownImageReferences = (markdown) => {
 
 export const getNornaBlockImageReferences = (blocks) =>
 	blocks.flatMap((block) => {
+		if (block.type === 'note') return [];
+
 		if (block.type === 'card-list') {
 			return block.cards
 				.filter((card) => card.image)

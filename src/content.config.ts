@@ -83,9 +83,6 @@ const typographyOverrides = z.object({
 	body: bodyPresentationOverride.optional(),
 	caption: captionPresentationOverride.optional(),
 }).strict();
-const typographySelection = z.object({
-	preset: typographyPreset,
-}).strict();
 const themeTypography = z.object({
 	fontFamily: z.string()
 		.min(1)
@@ -130,10 +127,6 @@ const themeGallery = z.object({
 	maxAvailableWidthPercent: responsivePercent.optional(),
 	maxAvailableHeightPercent: responsivePercent.optional(),
 }).strict();
-const sectionPresentationOverride = z.object({
-	surface: sectionSurface.optional(),
-	typography: typographySelection.optional(),
-}).strict();
 const themePresentation = z.object({
 	palette: presentationPalette.optional(),
 	sectionSurfaces: z.object({
@@ -143,9 +136,6 @@ const themePresentation = z.object({
 		(value) => !value.sequence || new Set(value.sequence).size === value.sequence.length,
 		'Each section surface may appear only once in a sequence.',
 	).optional(),
-}).strict();
-const pagePresentation = z.object({
-	typography: typographySelection.optional(),
 }).strict();
 const pageNavigation = z.object({
 	include: z.boolean().optional(),
@@ -161,7 +151,6 @@ const themeNavigation = z.object({
 
 const sectionMetadata = z.object({
 	visible: visibilityWindow.optional(),
-	presentation: sectionPresentationOverride.optional(),
 }).strict();
 const banner = z.object({
 	id: z.string().regex(/^[a-z0-9-]+$/),
@@ -204,16 +193,18 @@ const siteSchema = z.object({
 	title: z.string(),
 	description: z.string(),
 	navigation: pageNavigation.optional(),
-	presentation: pagePresentation.optional(),
 	sections: z.record(z.string().regex(/^[a-z0-9-]+$/), sectionMetadata).optional().default({}),
 });
 
-const themeSchema = z.object({
-	navigation: themeNavigation.optional(),
+export const themeVisualSchema = z.object({
 	layout: themeLayout.optional(),
 	gallery: themeGallery.optional(),
 	typography: themeTypography.optional(),
 	presentation: themePresentation.optional(),
+}).strict();
+
+const siteThemeSchema = themeVisualSchema.extend({
+	navigation: themeNavigation.optional(),
 }).strict();
 
 const sitewideSchema = z.object({
@@ -243,9 +234,9 @@ const theme = defineCollection({
 	loader: glob({
 		pattern: 'theme.md',
 		base: pathToFileURL(siteDir),
-		generateId: () => `${siteEntryId.replace(/-content$/, '')}-theme`,
+		generateId: ({ entry }) => entry,
 	}),
-	schema: themeSchema,
+	schema: siteThemeSchema,
 });
 
 const sitewide = defineCollection({

@@ -20,9 +20,37 @@ const stripInlineComment = (value) => {
 	return value;
 };
 
+const splitInlineList = (value) => {
+	const entries = [];
+	let entryStart = 0;
+	let quote = null;
+
+	for (let index = 0; index < value.length; index += 1) {
+		const character = value[index];
+		const previous = value[index - 1];
+
+		if ((character === '"' || character === "'") && previous !== '\\') {
+			quote = quote === character ? null : quote ?? character;
+			continue;
+		}
+
+		if (character === ',' && quote === null) {
+			entries.push(value.slice(entryStart, index).trim());
+			entryStart = index + 1;
+		}
+	}
+
+	entries.push(value.slice(entryStart).trim());
+	return entries.filter(Boolean);
+};
+
 const parseScalar = (rawValue) => {
 	const value = stripInlineComment(rawValue.trim());
 
+	if (value.startsWith('[') && value.endsWith(']')) {
+		const listValue = value.slice(1, -1).trim();
+		return listValue ? splitInlineList(listValue).map(parseScalar) : [];
+	}
 	if (value === 'true') return true;
 	if (value === 'false') return false;
 	if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);

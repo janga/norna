@@ -2,10 +2,7 @@
 title: Content Model v2 Fixture
 description: Internal fixture for Markdown-authoritative Norna content.
 sections:
-  intro:
-    presentation:
-      typography:
-        preset: statement
+  intro: {}
   timed:
     visible:
       from: "2026-01-01"

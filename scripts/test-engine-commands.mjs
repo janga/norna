@@ -78,7 +78,7 @@ try {
 	assert.match(showResult.stdout, /pages:/);
 	assert.match(showResult.stdout, /\s+\/:/);
 	assert.match(showResult.stdout, /value: quiet-gallery/);
-	assert.match(showResult.stdout, /inherited: true/);
+	assert.match(showResult.stdout, /source: "site\/theme\.md"/);
 	assert.match(showResult.stdout, /intro:/);
 
 	const initAgainResult = runCli(['init', initializedSiteRoot]);

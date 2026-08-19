@@ -263,32 +263,6 @@ export const resolveTypographyConfig = (typography = defaultTypography) => {
 	};
 };
 
-export const resolveTypographyOverride = (baseResolved, typographyConfig) => {
-	if (typographyConfig?.preset || typographyConfig?.rhythm) {
-		return resolveTypographyConfig({
-			preset: typographyConfig.preset ?? baseResolved.preset,
-			rhythm: typographyConfig.rhythm ?? baseResolved.rhythm,
-			overrides: typographyConfig.overrides,
-		});
-	}
-
-	if (typographyConfig?.overrides) {
-		return {
-			preset: baseResolved.preset,
-			rhythm: baseResolved.rhythm,
-			values: mergeDeep(baseResolved.values, typographyConfig.overrides),
-		};
-	}
-
-	return baseResolved;
-};
-
-export const resolveSectionTypography = (defaultTypographyConfig, sectionTypographyConfig) => {
-	const defaultResolved = resolveTypographyConfig(defaultTypographyConfig);
-
-	return resolveTypographyOverride(defaultResolved, sectionTypographyConfig);
-};
-
 const quoteString = (value) => typeof value === 'string' && !/^[a-z0-9.-]+$/i.test(value)
 	? JSON.stringify(value)
 	: value;

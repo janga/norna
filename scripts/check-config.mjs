@@ -1,6 +1,6 @@
 import { siteConfigLabel, sitePublicLabel } from './lib/site-paths.mjs';
 import { getLogoAssets } from './lib/logo-assets.mjs';
-import { readThemeConfig } from './lib/theme-config.mjs';
+import { readThemeConfig, validateRouteThemeFiles } from './lib/theme-config.mjs';
 
 const formatErrorMessage = (error) => {
 	if (error instanceof SyntaxError) {
@@ -20,6 +20,7 @@ const formatErrorMessage = (error) => {
 try {
 	const { projectConfig } = await import('./lib/project-config.mjs');
 	const themeConfig = await readThemeConfig();
+	await validateRouteThemeFiles();
 	const logoAssets = getLogoAssets();
 
 	if (logoAssets.length > 1) {

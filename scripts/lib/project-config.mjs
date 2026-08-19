@@ -232,6 +232,7 @@ const readLocale = (rawLocale) => {
 			skipToContent: readString({ skipToContent: labels.skipToContent ?? 'Skip to content' }, 'skipToContent', 'locale.labels'),
 			sectionNavigation: readString({ sectionNavigation: labels.sectionNavigation ?? 'Sections' }, 'sectionNavigation', 'locale.labels'),
 			gallery: readString({ gallery: labels.gallery ?? 'Images' }, 'gallery', 'locale.labels'),
+			note: readString({ note: labels.note ?? 'Note' }, 'note', 'locale.labels'),
 			menu: readString({ menu: labels.menu ?? 'Menu' }, 'menu', 'locale.labels'),
 			pageNavigation: readString({ pageNavigation: labels.pageNavigation ?? 'On this page' }, 'pageNavigation', 'locale.labels'),
 			siteNavigation: readString({ siteNavigation: labels.siteNavigation ?? 'Pages' }, 'siteNavigation', 'locale.labels'),
@@ -248,10 +249,6 @@ if (misplacedThemeKeys.length > 0) {
 
 const rawTheme = assertObject(themeConfig, 'theme frontmatter', siteThemeLabel);
 const rawSite = assertObject(rawConfig.site, 'site');
-const rawLayout = assertObject(rawTheme.layout ?? {}, 'layout', siteThemeLabel);
-const rawLayoutSpacing = assertObject(rawLayout.spacing ?? {}, 'layout.spacing', siteThemeLabel);
-const rawGallery = assertObject(rawTheme.gallery ?? {}, 'gallery', siteThemeLabel);
-const rawTypography = assertObject(rawTheme.typography ?? {}, 'typography', siteThemeLabel);
 const rawNavigation = assertObject(rawConfig.navigation ?? {}, 'navigation');
 const rawLocale = rawConfig.locale ?? {};
 const rawGithub = assertObject(rawConfig.github, 'github');
@@ -340,44 +337,55 @@ const layoutDensityProfiles = Object.freeze({
 		}),
 	}),
 });
-const layoutDensity = readEnum(rawLayout, 'density', 'layout', layoutDensityNames, 'normal', siteThemeLabel);
-const layoutSpacingDefaults = layoutDensityProfiles[layoutDensity];
+export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) => {
+	const rawThemeConfig = assertObject(theme ?? {}, 'theme frontmatter', sourceLabel);
+	const rawLayoutConfig = assertObject(rawThemeConfig.layout ?? {}, 'layout', sourceLabel);
+	const rawLayoutSpacingConfig = assertObject(rawLayoutConfig.spacing ?? {}, 'layout.spacing', sourceLabel);
+	const rawGalleryConfig = assertObject(rawThemeConfig.gallery ?? {}, 'gallery', sourceLabel);
+	const rawTypographyConfig = assertObject(rawThemeConfig.typography ?? {}, 'typography', sourceLabel);
+	const resolvedLayoutDensity = readEnum(rawLayoutConfig, 'density', 'layout', layoutDensityNames, 'normal', sourceLabel);
+	const resolvedLayoutSpacingDefaults = layoutDensityProfiles[resolvedLayoutDensity];
+
+	return Object.freeze({
+		layout: Object.freeze({
+			density: resolvedLayoutDensity,
+			gutter: readResponsiveCssLength(rawLayoutConfig, 'gutter', 'layout', Object.freeze({
+				desktop: 'clamp(1.25rem, 4vw, 3rem)',
+				mobile: '1rem',
+			}), sourceLabel),
+			pageWidth: readCssLength(rawLayoutConfig, 'pageWidth', 'layout', '1180px', sourceLabel),
+			spacing: Object.freeze({
+				blockGap: readResponsiveCssLength(rawLayoutSpacingConfig, 'blockGap', 'layout.spacing', resolvedLayoutSpacingDefaults.blockGap, sourceLabel),
+				finalSectionBottom: readResponsiveCssLength(rawLayoutSpacingConfig, 'finalSectionBottom', 'layout.spacing', resolvedLayoutSpacingDefaults.finalSectionBottom, sourceLabel),
+				firstSectionTop: readResponsiveCssLength(rawLayoutSpacingConfig, 'firstSectionTop', 'layout.spacing', resolvedLayoutSpacingDefaults.firstSectionTop, sourceLabel),
+				headingToBlock: readResponsiveCssLength(rawLayoutSpacingConfig, 'headingToBlock', 'layout.spacing', resolvedLayoutSpacingDefaults.headingToBlock, sourceLabel),
+				imageGap: readResponsiveCssLength(rawLayoutSpacingConfig, 'imageGap', 'layout.spacing', resolvedLayoutSpacingDefaults.imageGap, sourceLabel),
+				sectionGap: readResponsiveCssLength(rawLayoutSpacingConfig, 'sectionGap', 'layout.spacing', resolvedLayoutSpacingDefaults.sectionGap, sourceLabel),
+			}),
+		}),
+		gallery: Object.freeze({
+			maxAvailableHeightPercent: readResponsivePercent(rawGalleryConfig, 'maxAvailableHeightPercent', 'gallery', Object.freeze({
+				desktop: 74,
+				mobile: 68,
+			}), sourceLabel),
+			maxAvailableWidthPercent: readResponsivePercent(rawGalleryConfig, 'maxAvailableWidthPercent', 'gallery', Object.freeze({
+				desktop: 100,
+				mobile: 100,
+			}), sourceLabel),
+			width: readCssLength(rawGalleryConfig, 'width', 'gallery', '900px', sourceLabel),
+		}),
+		typography: Object.freeze({
+			fontFamily: readFontFamily(rawTypographyConfig, 'fontFamily', 'typography', defaultFontFamily, sourceLabel),
+		}),
+	});
+};
 
 export const projectConfig = Object.freeze({
 	site: Object.freeze({
 		basePath: readBasePath(rawSite, 'basePath', 'site'),
 		url: readUrl(rawSite, 'url', 'site'),
 	}),
-	layout: Object.freeze({
-		density: layoutDensity,
-		gutter: readResponsiveCssLength(rawLayout, 'gutter', 'layout', Object.freeze({
-			desktop: 'clamp(1.25rem, 4vw, 3rem)',
-			mobile: '1rem',
-		}), siteThemeLabel),
-		pageWidth: readCssLength(rawLayout, 'pageWidth', 'layout', '1180px', siteThemeLabel),
-		spacing: Object.freeze({
-			blockGap: readResponsiveCssLength(rawLayoutSpacing, 'blockGap', 'layout.spacing', layoutSpacingDefaults.blockGap, siteThemeLabel),
-			finalSectionBottom: readResponsiveCssLength(rawLayoutSpacing, 'finalSectionBottom', 'layout.spacing', layoutSpacingDefaults.finalSectionBottom, siteThemeLabel),
-			firstSectionTop: readResponsiveCssLength(rawLayoutSpacing, 'firstSectionTop', 'layout.spacing', layoutSpacingDefaults.firstSectionTop, siteThemeLabel),
-			headingToBlock: readResponsiveCssLength(rawLayoutSpacing, 'headingToBlock', 'layout.spacing', layoutSpacingDefaults.headingToBlock, siteThemeLabel),
-			imageGap: readResponsiveCssLength(rawLayoutSpacing, 'imageGap', 'layout.spacing', layoutSpacingDefaults.imageGap, siteThemeLabel),
-			sectionGap: readResponsiveCssLength(rawLayoutSpacing, 'sectionGap', 'layout.spacing', layoutSpacingDefaults.sectionGap, siteThemeLabel),
-		}),
-	}),
-	gallery: Object.freeze({
-		maxAvailableHeightPercent: readResponsivePercent(rawGallery, 'maxAvailableHeightPercent', 'gallery', Object.freeze({
-			desktop: 74,
-			mobile: 68,
-		}), siteThemeLabel),
-		maxAvailableWidthPercent: readResponsivePercent(rawGallery, 'maxAvailableWidthPercent', 'gallery', Object.freeze({
-			desktop: 100,
-			mobile: 100,
-		}), siteThemeLabel),
-		width: readCssLength(rawGallery, 'width', 'gallery', '900px', siteThemeLabel),
-	}),
-	typography: Object.freeze({
-		fontFamily: readFontFamily(rawTypography, 'fontFamily', 'typography', defaultFontFamily, siteThemeLabel),
-	}),
+	...resolveThemeVisualConfig(rawTheme, siteThemeLabel),
 	navigation: Object.freeze({
 		smoothScroll: readSmoothScroll(rawNavigation),
 	}),

@@ -18,16 +18,19 @@ type CardListWidth = 'text' | 'narrow' | 'normal' | 'wide';
 
 interface Props {
 	cards: Card[];
+	maxAvailableWidthPercent: {
+		desktop: number;
+	};
 	layout?: CardListLayout;
 	flow?: CardListFlow;
 	size?: CardListSize;
 	width?: CardListWidth;
 }
 
-const { cards, layout = 'image-top', flow = 'grid', size = 'm', width = 'normal' } = Astro.props;
+const { cards, maxAvailableWidthPercent, layout = 'image-top', flow = 'grid', size = 'm', width = 'normal' } = Astro.props;
 const cardImageSizes = [
 	'(max-width: 700px) 100vw',
-	`min(20rem, ${projectConfig.gallery.maxAvailableWidthPercent.desktop}vw)`,
+	`min(20rem, ${maxAvailableWidthPercent.desktop}vw)`,
 ].join(', ');
 const displayLink = (link: string) => withBasePath(projectConfig.site.basePath, link);
 const cardListClasses = [

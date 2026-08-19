@@ -129,6 +129,96 @@ test('content model v2 fixture checks and builds', async () => {
 	}
 });
 
+test('route theme replaces visual theme while site identity stays at the root', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'theme.md'), `---
+navigation:
+  brand: Root Brand
+typography:
+  preset: text-forward
+---
+`);
+		await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Root
+description: Root page
+---
+
+## Home {#home}
+
+Root content.
+`);
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'route-content.md'), `---
+title: Guide
+description: Guide page
+navigation:
+  label: Guide
+---
+
+## Guide {#guide}
+
+Route content.
+`);
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.md'), `---
+typography:
+  preset: statement
+presentation:
+  palette: light
+---
+`);
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const rootHtml = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
+		const routeHtml = await readFile(path.join(path.dirname(siteDir), 'dist', 'guide', 'index.html'), 'utf8');
+		assert.match(rootHtml, /--color-page: #000000/);
+		assert.match(routeHtml, /--color-page: #ffffff/);
+		assert.match(routeHtml, /<a class="site-brand" href="\/">Root Brand<\/a>/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('route theme cannot define site identity', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Root
+description: Root page
+---
+
+## Home {#home}
+
+Root content.
+`);
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'route-content.md'), `---
+title: Guide
+description: Guide page
+---
+
+## Guide {#guide}
+
+Route content.
+`);
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.md'), `---
+navigation:
+  brand: Route Brand
+---
+`);
+
+		await assert.rejects(
+			runNorna(['--site-dir', siteDir, 'config:check']),
+			(error) => {
+				assert.match(error.output, /may not define navigation\. Brand and logo belong in site\/theme\.md/);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
 test('content:check warns for local Markdown images but not external Markdown images', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
@@ -184,6 +274,75 @@ description: Fixture
 		assert.match(entry.src, /^\/images\/original\/images\/intro\/diagram-[a-f0-9]{8}\.svg$/);
 		assert.equal(entry.variants, undefined);
 		assert.equal(await fileExists(path.join(siteDir, '.norna', 'public', entry.src.replace(/^\//, ''))), true);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('norna-note renders Markdown beside text and stays inline after media', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await mkdir(path.join(siteDir, 'images', 'intro'), { recursive: true });
+		await writeFile(
+			path.join(siteDir, 'images', 'intro', 'diagram.svg'),
+			'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620"><rect width="900" height="620"/></svg>\n',
+		);
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Notes
+description: Fixture
+---
+
+## Intro {#intro}
+
+The main paragraph comes first.
+
+\`\`\`norna-note
+**Context**
+
+This note is rendered as Markdown beside the paragraph.
+\`\`\`
+
+\`\`\`norna-image-stack
+- image: diagram.svg
+\`\`\`
+
+\`\`\`norna-note
+This note follows media and stays in the text flow.
+\`\`\`
+`);
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
+		assert.match(html, /class="section-note section-note-margin"/);
+		assert.match(html, /<strong>Context<\/strong>/);
+		assert.match(html, /class="section-note section-note-inline"/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check rejects images inside norna-note', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Invalid Note
+description: Fixture
+---
+
+## Intro {#intro}
+
+\`\`\`norna-note
+![Image](image.jpg)
+\`\`\`
+`);
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /norna-note cannot contain images\. Use a Norna image block with a caption instead\./);
+				return true;
+			},
+		);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -831,7 +990,7 @@ description: Fixture
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list\./);
+				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list, norna-note\./);
 				assert.match(error.output, /Use norna-image-stack for one or more stacked images\./);
 				assert.match(error.output, /Example: ```norna-image-stack\n- image: filename\.jpg\n```/);
 				return true;

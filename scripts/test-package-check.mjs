@@ -464,7 +464,7 @@ This route verifies that packaged norna sites can build route pages.
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation.typography',
+		'presentation',
 	);
 	await writeFile(
 		siteContentPath,
@@ -477,7 +477,7 @@ This route verifies that packaged norna sites can build route pages.
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.intro.presentation.typography',
+		'sections.intro: Unrecognized key: "presentation"',
 	);
 	await writeFile(
 		siteContentPath,
@@ -490,7 +490,7 @@ This route verifies that packaged norna sites can build route pages.
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.intro.presentation.typography.preset',
+		'sections.intro: Unrecognized key: "presentation"',
 	);
 	await writeFile(
 		siteThemePath,

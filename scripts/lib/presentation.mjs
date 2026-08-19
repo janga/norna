@@ -1,7 +1,6 @@
 import {
 	defaultTypography,
 	resolveTypographyConfig,
-	resolveTypographyOverride,
 } from './typography.mjs';
 
 export const presentationPaletteNames = ['dark', 'light', 'paper'];
@@ -110,25 +109,16 @@ export const resolveThemePresentation = (theme) => {
 	};
 };
 
-export const resolvePagePresentation = (theme, pagePresentation) => {
+export const resolvePagePresentation = (theme) => {
 	const resolvedThemePresentation = resolveThemePresentation(theme);
-	const normalizedPagePresentation = normalizePresentation(pagePresentation);
 
-	return {
-		...resolvedThemePresentation,
-		typography: resolveTypographyOverride(
-			resolvedThemePresentation.typography,
-			normalizedPagePresentation.typography,
-		),
-	};
+	return resolvedThemePresentation;
 };
 
-export const resolveSectionSurface = (pagePresentation, sectionPresentation, sectionIndex) => {
-	const explicitSurface = sectionPresentation?.surface;
-	const surfaceName = explicitSurface
-		?? (pagePresentation.sectionSurfaces.mode === 'cycle'
+export const resolveSectionSurface = (pagePresentation, sectionIndex) => {
+	const surfaceName = pagePresentation.sectionSurfaces.mode === 'cycle'
 			? pagePresentation.sectionSurfaces.sequence[sectionIndex % pagePresentation.sectionSurfaces.sequence.length]
-			: 'base');
+			: 'base';
 
 	return {
 		name: surfaceName,

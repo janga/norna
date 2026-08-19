@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { findMap } from './lib/frontmatter-yaml.mjs';
 import {
 	defaultTypography,
-	resolveTypographyOverride,
 	resolveTypographyConfig,
 	toYamlLines,
 	typographyPresets,
@@ -15,11 +15,13 @@ import {
 	splitSiteFile,
 	validateContentFrontmatterStructure,
 	validateFrontmatterIndentation,
+	validateRouteThemeFrontmatterStructure,
 	validateThemeFrontmatterStructure,
 } from './lib/site-content.mjs';
 import {
 	siteContentLabel,
 	siteContentPath,
+	siteRoutesDir,
 	siteThemeLabel,
 	siteThemePath,
 } from './lib/site-paths.mjs';
@@ -79,8 +81,6 @@ const rhythmValuePaths = new Set([
 	'body.paragraphSpacing',
 	'caption.spacingBefore',
 ]);
-const countIndent = (line) => line.match(/^\s*/)?.[0].length ?? 0;
-
 const isPlainObject = (value) => (
 	value !== null &&
 	typeof value === 'object' &&
@@ -161,19 +161,6 @@ const applyOverrideSources = (sources, typographyConfig, sourceLabel) => {
 	return sources;
 };
 
-const inheritedSources = (sources) => {
-	const inherited = structuredClone(sources);
-
-	for (const path of typographyValuePaths) {
-		setPath(inherited, path, {
-			...getPath(sources, path),
-			inherited: true,
-		});
-	}
-
-	return inherited;
-};
-
 const resolveAnnotatedTypographyConfig = (typographyConfig, sourceLabel) => {
 	const resolved = resolveTypographyConfig(typographyConfig ?? defaultTypography);
 	const sources = applyOverrideSources(
@@ -198,126 +185,14 @@ const resolveAnnotatedTypographyConfig = (typographyConfig, sourceLabel) => {
 	};
 };
 
-const resolveAnnotatedTypographyOverride = (baseAnnotated, typographyConfig, sourceLabel) => {
-	if (typographyConfig?.preset || typographyConfig?.rhythm) {
-		const resolvedConfig = {
-			preset: typographyConfig.preset ?? baseAnnotated.resolved.preset,
-			rhythm: typographyConfig.rhythm ?? baseAnnotated.resolved.rhythm,
-			overrides: typographyConfig.overrides,
-		};
-		const resolved = resolveTypographyConfig(resolvedConfig);
-		const sources = applyOverrideSources(
-			defaultSources(resolved.preset, resolved.rhythm),
-			typographyConfig,
-			sourceLabel,
-		);
-
-		return {
-			preset: {
-				value: resolved.preset,
-				source: typographyConfig.preset ? sourceLabel : baseAnnotated.preset.source,
-				...(typographyConfig.preset ? {} : { inherited: true }),
-			},
-			rhythm: {
-				value: resolved.rhythm,
-				source: typographyConfig.rhythm ? sourceLabel : baseAnnotated.rhythm.source,
-				...(typographyConfig.rhythm ? {} : { inherited: true }),
-			},
-			resolved,
-			sources,
-		};
-	}
-
-	if (typographyConfig?.overrides) {
-		const resolved = resolveTypographyOverride(baseAnnotated.resolved, typographyConfig);
-		const sources = applyOverrideSources(
-			inheritedSources(baseAnnotated.sources),
-			typographyConfig,
-			sourceLabel,
-		);
-
-		return {
-			preset: {
-				value: resolved.preset,
-				source: baseAnnotated.preset.source,
-				inherited: true,
-			},
-			rhythm: {
-				value: resolved.rhythm,
-				source: baseAnnotated.rhythm.source,
-				inherited: true,
-			},
-			resolved,
-			sources,
-		};
-	}
-
-	return {
-		preset: {
-			value: baseAnnotated.resolved.preset,
-			source: baseAnnotated.preset.source,
-			inherited: true,
-		},
-		rhythm: {
-			value: baseAnnotated.resolved.rhythm,
-			source: baseAnnotated.rhythm.source,
-			inherited: true,
-		},
-		resolved: baseAnnotated.resolved,
-		sources: inheritedSources(baseAnnotated.sources),
-	};
-};
-
 const formatAnnotatedTypography = (annotated) => ({
 	preset: annotated.preset,
 	rhythm: annotated.rhythm,
 	resolved: annotateResolvedValues(annotated.resolved, annotated.sources),
 });
 
-const getSectionMetadataBlocks = (lines) => {
-	const sectionsMap = findMap(lines, 'sections');
-	if (!sectionsMap) return new Map();
-
-	const sections = new Map();
-	let current = null;
-
-	for (let index = sectionsMap.index + 1; index < lines.length; index += 1) {
-		const line = lines[index];
-		if (!line.trim()) continue;
-
-		const indent = countIndent(line);
-		if (indent <= sectionsMap.indent) break;
-
-		const sectionMatch = line.match(/^\s{2}([a-z0-9-]+):(?:\s+.*)?\s*$/);
-		if (sectionMatch) {
-			if (current) current.end = index;
-			current = { id: sectionMatch[1], start: index, end: lines.length };
-			sections.set(current.id, current);
-		}
-	}
-
-	const sectionList = Array.from(sections.values());
-	const finalSection = sectionList.at(-1);
-	if (finalSection) {
-		const afterSections = lines.findIndex((line, index) => (
-			index > finalSection.start &&
-			line.trim() &&
-			countIndent(line) <= sectionsMap.indent
-		));
-		finalSection.end = afterSections === -1 ? lines.length : afterSections;
-	}
-
-	return sections;
-};
-
 const readThemeTypography = async () => {
-	const themeFile = await readFile(siteThemePath, 'utf8').catch((error) => {
-		if (error?.code === 'ENOENT') {
-			return '---\n---\n';
-		}
-
-		throw error;
-	});
+	const themeFile = await readFile(siteThemePath, 'utf8');
 	const { frontmatter: themeFrontmatter, frontmatterBody: themeFrontmatterBody } = splitSiteFile(themeFile, siteThemeLabel);
 	const indentationIssues = [];
 	validateFrontmatterIndentation(themeFrontmatter, (issue) => indentationIssues.push(issue));
@@ -334,8 +209,35 @@ const readThemeTypography = async () => {
 	return resolveAnnotatedTypographyConfig(themeTypographyConfig ?? defaultTypography, siteThemeLabel);
 };
 
-const readPageTypography = async (contentFile, themeTypography) => {
-	const { frontmatter, frontmatterBody, body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+const readRouteThemeTypography = async (contentFile, themeTypography) => {
+	if (contentFile.isHome) return themeTypography;
+
+	const routeThemePath = path.join(siteRoutesDir, contentFile.routeDirectory, 'theme.md');
+	const routeThemeLabel = `${contentFile.contentLabel.replace(/\/route-content\.md$/, '')}/theme.md`;
+	const routeThemeFile = await readFile(routeThemePath, 'utf8').catch((error) => {
+		if (error?.code === 'ENOENT') return null;
+		throw error;
+	});
+	if (!routeThemeFile) return themeTypography;
+
+	const { frontmatter, frontmatterBody } = splitSiteFile(routeThemeFile, routeThemeLabel);
+	const indentationIssues = [];
+	validateFrontmatterIndentation(frontmatter, (issue) => indentationIssues.push(issue));
+	validateRouteThemeFrontmatterStructure(frontmatter, (issue) => indentationIssues.push(issue));
+	if (indentationIssues.length > 0) {
+		throw new Error([
+			`Cannot inspect typography because ${routeThemeLabel} has invalid frontmatter.`,
+			...indentationIssues.map((issue) => `- ${issue.message}`),
+		].join('\n'));
+	}
+
+	const lines = frontmatterBody.split(/\r?\n/);
+	const typographyConfig = findMap(lines, 'typography', 0, lines.length, 0)?.value;
+	return resolveAnnotatedTypographyConfig(typographyConfig ?? defaultTypography, routeThemeLabel);
+};
+
+const readPageTypography = async (contentFile, siteThemeTypography) => {
+	const { frontmatter, body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 	const indentationIssues = [];
 	validateFrontmatterIndentation(frontmatter, (issue) => indentationIssues.push(issue));
 	validateContentFrontmatterStructure(frontmatter, (issue) => indentationIssues.push(issue));
@@ -346,27 +248,13 @@ const readPageTypography = async (contentFile, themeTypography) => {
 		].join('\n'));
 	}
 
-	const lines = frontmatterBody.split(/\r?\n/);
-	const pagePresentation = findMap(lines, 'presentation', 0, lines.length, 0);
-	const pageTypographyConfig = pagePresentation
-		? findMap(lines, 'typography', pagePresentation.index + 1, pagePresentation.nextIndex)?.value
-		: null;
-	const pageTypography = resolveAnnotatedTypographyOverride(themeTypography, pageTypographyConfig ?? undefined, contentFile.contentLabel);
-	const sectionMetadataBlocks = getSectionMetadataBlocks(lines);
+	const pageTypography = await readRouteThemeTypography(contentFile, siteThemeTypography);
 	const sections = getBodySections(body).sections
 		.filter((section) => section.id)
 		.map((section) => {
-		const metadata = sectionMetadataBlocks.get(section.id);
-		const presentation = metadata
-			? findMap(lines, 'presentation', metadata.start + 1, metadata.end)
-			: null;
-		const typography = presentation
-			? findMap(lines, 'typography', presentation.index + 1, presentation.nextIndex)?.value
-			: null;
-
 		return {
 			id: section.id,
-			typography: resolveAnnotatedTypographyOverride(pageTypography, typography ?? undefined, `${contentFile.contentLabel} sections.${section.id}`),
+			typography: pageTypography,
 		};
 	});
 
