@@ -3,29 +3,12 @@ title: Presets
 description: Compare Norna's built-in typography presets.
 navigation:
   label: Presets
-sections:
-  quiet-gallery:
-    presentation:
-      typography:
-        preset: quiet-gallery
-  compact-gallery:
-    presentation:
-      typography:
-        preset: compact-gallery
-  text-forward:
-    presentation:
-      typography:
-        preset: text-forward
-  statement:
-    presentation:
-      typography:
-        preset: statement
 ---
 
 ## Quiet Gallery {#quiet-gallery}
 
-This section uses `quiet-gallery`. It keeps headings and body text restrained
-so images or other visual material can carry more of the page.
+This route uses the `quiet-gallery` preset. It keeps headings and body text
+restrained so images or other visual material can carry more of the page.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a
 ante venenatis dapibus posuere velit aliquet. This is useful for portfolios,
@@ -55,10 +38,10 @@ related items.
 This section uses `text-forward`. It gives explanatory writing more presence
 while retaining the same Norna section structure.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed posuere
-consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.
-This is useful for guides, project explanations and documentation with only
-occasional images.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed posuere consectetur
+est at lobortis. Cras mattis consectetur purus sit amet fermentum. This is
+useful for guides, project explanations and documentation with only occasional
+images.
 
 ### Typical use
 

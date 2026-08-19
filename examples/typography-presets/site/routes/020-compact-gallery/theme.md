@@ -1,0 +1,4 @@
+---
+typography:
+  preset: compact-gallery
+---

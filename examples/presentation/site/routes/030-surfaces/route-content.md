@@ -3,16 +3,6 @@ title: Surfaces
 description: See how palette defaults and section surfaces work together.
 navigation:
   label: Surfaces
-sections:
-  palette-options:
-    presentation:
-      surface: base
-  emphasis-surface:
-    presentation:
-      surface: emphasis
-  practical-rule:
-    presentation:
-      surface: soft
 ---
 
 ## Palette options {#palette-options}
@@ -31,8 +21,8 @@ balance.
 
 ## Emphasis surface {#emphasis-surface}
 
-Sections can use the palette's emphasis surface when a visual pause or change
-of rhythm helps the reader. This is not a free-form colour override:
+The route theme uses a palette and a surface sequence when a visual pause or
+change of rhythm helps the reader. This is not a free-form colour override:
 
 ```yaml
 presentation:
@@ -41,9 +31,8 @@ presentation:
     sequence: [base, soft, emphasis]
 ```
 
-The site theme can cycle through the selected surfaces automatically, while an
-individual section can explicitly select `base`, `soft` or `emphasis` in its
-content metadata.
+The theme can cycle through the selected surfaces automatically. Individual
+sections do not select their own colours.
 
 ## A practical rule {#practical-rule}
 
@@ -52,4 +41,4 @@ small number of meaningful transitions, not to make every section look
 unrelated.
 
 Typography presets and media blocks can vary the content inside that system;
-surfaces provide the page-level rhythm around it.
+surfaces provide the route-level rhythm around it.

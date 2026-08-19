@@ -3,19 +3,6 @@ title: Media blocks
 description: Compare Norna's managed image stacks, carousels and card lists.
 navigation:
   label: Media blocks
-sections:
-  stack:
-    presentation:
-      typography:
-        preset: quiet-gallery
-  carousel:
-    presentation:
-      typography:
-        preset: compact-gallery
-  cards:
-    presentation:
-      typography:
-        preset: text-forward
 ---
 
 ## Image stack {#stack}
