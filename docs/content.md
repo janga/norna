@@ -20,7 +20,6 @@ The Astro content schema validates these top-level fields in page files:
 - `navigation`: optional page navigation metadata. See [Routes](routes.md).
 - `presentation`: optional page-level presentation overrides. See
   [Theme](theme.md) and [Typography](typography.md).
-- `frame`: optional page-level frame color source. See [Theme](theme.md).
 - `sections`: optional section metadata keyed by section id.
 
 Minimal homepage:
@@ -77,9 +76,14 @@ naturally expressed by Markdown, such as visibility or presentation overrides.
 sections:
   work:
     presentation:
+      surface: emphasis
       typography:
         preset: statement
 ```
+
+Section presentation can select `base`, `soft`, or `emphasis` as the surface
+within the palette selected in `site/theme.md`. Typography can select a named
+preset; detailed typography overrides belong in `site/theme.md`.
 
 Each `sections.<section-id>` key must match a Markdown heading id in the same
 page file:

@@ -38,8 +38,7 @@ Version these files in a site repository:
 
 - `site/config.mjs`: technical site configuration.
 - `site/theme.md`: optional site-wide visual theme, including layout, spacing,
-  image sizing, font, typography defaults, colors, inline styles, and frame
-  colors.
+  image sizing, font, typography defaults, palettes, and section surfaces.
   See [Theme](theme.md).
 - `site/content.md`: homepage page file with editable content, Markdown
   sections, optional section metadata, managed media blocks, alt text, and

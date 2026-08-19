@@ -72,7 +72,7 @@ Use [Theme](theme.md) for:
 - `gallery.maxAvailableHeightPercent`
 - `typography.fontFamily`
 - typography presets, rhythm, and overrides
-- presentation colors, inline styles, and frame colors
+- presentation palettes and section surfaces
 
 ## Navigation
 

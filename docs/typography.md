@@ -23,11 +23,21 @@ Available presets:
 
 If theme typography is omitted, `quiet-gallery` is used.
 
-Presets define alignment, size, and line height for `headings.h1` through
-`headings.h4`, `body`, and `caption`. Built-in presets use `medium` as the
-default size for every text role. Visual heading hierarchy comes from the
-Markdown heading level, so `h1` is larger than `h2`, `h2` is larger than `h3`,
-and so on.
+Presets define alignment, size, weight, and line height for `headings.h1`
+through `headings.h4`, `body`, and `caption`. They also choose a readable body
+text width. Built-in presets use `medium` as the default size for every text
+role. Visual heading hierarchy comes from the Markdown heading level, so `h1`
+is larger than `h2`, `h2` is larger than `h3`, and so on.
+
+The presets use these controls deliberately:
+
+- `quiet-gallery` uses restrained heading weights and a normal reading width.
+- `compact-gallery` uses stronger headings and a wider text column for short,
+  scannable content.
+- `text-forward` uses a narrower reading width and more generous body line
+  height.
+- `statement` uses the strongest heading weights and a narrow text column for
+  short, declarative content.
 
 `rhythm` defines text-near spacing for headings, paragraphs, and captions.
 Available rhythms are `compact`, `normal`, and `airy`. Built-in rhythm values
@@ -62,12 +72,14 @@ typography:
     headings:
       h2:
         size: medium
+        weight: 600
         spacingAfter: 0.55em
       h3:
         size: medium
         spacingBefore: 1.5em
         spacingAfter: 0.5em
     body:
+      width: narrow
       paragraphSpacing: 0.8em
     caption:
       spacingBefore: 0.5em
@@ -104,17 +116,27 @@ follows the Markdown level the user wrote: `##` uses `headings.h2`.
 `spacingAfter`, and `paragraphSpacing` are CSS lengths such as `0`, `0.8em`,
 `1rem`, or `12px`. Use `em` for spacing that should track the text size.
 
+`weight` is a controlled heading weight. Allowed values are `400`, `500`,
+`600`, and `700`. `body.width` is the readable text width and accepts
+`narrow`, `normal`, or `wide`. It controls the prose column, not the page's
+maximum width or the width of image blocks.
+
 Supported override fields:
 
-- `headings.h1.align`, `headings.h1.size`, `headings.h1.lineHeight`,
+- `headings.h1.align`, `headings.h1.size`, `headings.h1.weight`,
+  `headings.h1.lineHeight`,
   `headings.h1.spacingBefore`, `headings.h1.spacingAfter`
-- `headings.h2.align`, `headings.h2.size`, `headings.h2.lineHeight`,
+- `headings.h2.align`, `headings.h2.size`, `headings.h2.weight`,
+  `headings.h2.lineHeight`,
   `headings.h2.spacingBefore`, `headings.h2.spacingAfter`
-- `headings.h3.align`, `headings.h3.size`, `headings.h3.lineHeight`,
+- `headings.h3.align`, `headings.h3.size`, `headings.h3.weight`,
+  `headings.h3.lineHeight`,
   `headings.h3.spacingBefore`, `headings.h3.spacingAfter`
-- `headings.h4.align`, `headings.h4.size`, `headings.h4.lineHeight`,
+- `headings.h4.align`, `headings.h4.size`, `headings.h4.weight`,
+  `headings.h4.lineHeight`,
   `headings.h4.spacingBefore`, `headings.h4.spacingAfter`
-- `body.align`, `body.size`, `body.lineHeight`, `body.paragraphSpacing`
+- `body.align`, `body.size`, `body.width`, `body.lineHeight`,
+  `body.paragraphSpacing`
 - `caption.align`, `caption.size`, `caption.lineHeight`,
   `caption.spacingBefore`
 
@@ -133,12 +155,9 @@ typography:
 A page-level `presentation.typography.preset` changes the typographic character
 for that page. A section-level
 `sections.<section-id>.presentation.typography.preset` changes the typographic
-character for that section. `rhythm` is inherited separately, so changing
-preset does not change spacing unless `rhythm` is also set.
-
-If a section sets `typography.rhythm`, that section changes text-near spacing.
-If a section only sets `typography.overrides`, it keeps the resolved page
-preset and rhythm and changes only the specified values.
+character for that section. The site-wide `fontFamily`, `rhythm`, and
+`overrides` remain in `site/theme.md`; changing a page or section preset does
+not change the site's overall layout rhythm or font family.
 
 Example section override:
 
@@ -148,12 +167,8 @@ sections:
     presentation:
       typography:
         preset: statement
-        overrides:
-          body:
-            paragraphSpacing: 0.7em
 ```
 
-Centered text uses narrower text widths. Left- or right-aligned heading and body
-text use the calculated image layout width so text edges line up with images
-after layout gutters and image limits are applied. Captions are normally
-centered.
+The `body.width` value controls the prose column independently of the page and
+image widths. Captions are normally centered, but `text-forward` uses
+left-aligned captions to support longer explanatory text.

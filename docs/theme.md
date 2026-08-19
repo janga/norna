@@ -34,10 +34,10 @@ typography:
   preset: quiet-gallery
   rhythm: normal
 presentation:
-  backgroundColor: "#000000"
-  textColor: "#f7f4ee"
-frame:
-  colors: presentation
+  palette: dark  # Alternatives: light, paper
+  sectionSurfaces:
+    mode: cycle
+    sequence: [base, soft, emphasis]
 ---
 ```
 
@@ -186,18 +186,20 @@ Example:
 ```yaml
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
-  preset: quiet-gallery
+  preset: text-forward
   rhythm: normal
   overrides:
     headings:
       h2:
         size: medium
+        weight: 600
         spacingAfter: 0.55em
       h3:
         size: medium
         spacingBefore: 1.5em
         spacingAfter: 0.5em
     body:
+      width: narrow
       lineHeight: 1.55
 ```
 
@@ -207,20 +209,23 @@ selected site. See [Typography](typography.md).
 
 ## Presentation
 
-`presentation` is optional. It can contain:
+`presentation` is optional. It selects a small built-in visual palette for the
+page frame and defines how section surfaces are assigned:
 
-- `backgroundColor`: optional quoted hex color in `#rgb`, `#rrggbb`, or
-  `#rrggbbaa` form.
-- `textColor`: optional quoted hex color in `#rgb`, `#rrggbb`, or
-  `#rrggbbaa` form.
-- `inlineStyles`: optional named inline text styles.
+- `palette`: `dark`, `light`, or `paper`. The palette controls the page,
+  navigation, footer, and section colors.
+- `sectionSurfaces.mode`: `none` or `cycle`.
+- `sectionSurfaces.sequence`: optional sequence of `base`, `soft`, and
+  `emphasis`. Each surface may occur at most once.
 
 Example:
 
 ```yaml
 presentation:
-  backgroundColor: "#101418"
-  textColor: "#f4f1ea"
+  palette: paper  # Alternatives: dark, light
+  sectionSurfaces:
+    mode: cycle
+    sequence: [base, soft, emphasis]
 ```
 
 ## Page And Section Overrides
@@ -231,14 +236,11 @@ page file is always an override on top of the theme:
 ```yaml
 presentation:
   typography:
-    overrides:
-      headings:
-        h2:
-          size: large
-          spacingAfter: 0.6em
-      body:
-        paragraphSpacing: 1em
+    preset: statement
 ```
+
+Detailed typography overrides belong in the top-level `typography.overrides`
+block in `site/theme.md`.
 
 Section-specific presentation belongs under
 `sections.<section-id>.presentation`. Use it when one section genuinely needs
@@ -249,8 +251,7 @@ Markdown structure.
 sections:
   intro:
     presentation:
-      backgroundColor: "#161616"
-      textColor: "#ffffff"
+      surface: emphasis
       typography:
         preset: statement
 ```
@@ -258,56 +259,6 @@ sections:
 If a page omits `presentation`, it uses the theme presentation unchanged. If a
 section omits `presentation`, it uses the resolved page presentation.
 
-Configured section backgrounds render as full-width horizontal bands while the
-section content keeps the normal page and image widths. The top spacing
-before the first heading, the spacing between sections, and the spacing after
-the final section are part of the section background.
-
-Configured section text colors apply to section headings, Markdown text,
-Markdown subheadings, and image captions. Links keep the global accent color.
-
-## Frame Colors
-
-`frame.colors` controls the sticky navigation and footer colors.
-
-Allowed values:
-
-- `presentation`: use the resolved presentation colors for this level.
-- `theme`: use the site theme frame colors. This is useful in page-level
-  frontmatter.
-- explicit colors:
-
-```yaml
-frame:
-  colors:
-    backgroundColor: "#111111"
-    textColor: "#eeeeee"
-```
-
-The sticky section navigation row and footer use the resolved frame colors, not
-section-specific presentation.
-
-## Inline Styles
-
-`presentation.inlineStyles` defines named inline text styles that can be used
-from Markdown:
-
-```yaml
-presentation:
-  inlineStyles:
-    highlight:
-      color: "#ffd84d"
-```
-
-Inline style names must match `^[a-z][a-z0-9-]*$`. Each style currently
-supports a required `color` field using the same quoted hex color format as
-`textColor`.
-
-Apply an inline style in Markdown with `[text]{.style-name}`:
-
-```md
-This sentence contains [highlighted text]{.highlight}.
-```
-
-`content:check` fails if Markdown uses an inline style that is not defined in
-`site/theme.md` `presentation.inlineStyles`.
+Section surfaces render as full-width horizontal bands while the section
+content keeps the normal page and image widths. Links keep the palette's global
+accent color.

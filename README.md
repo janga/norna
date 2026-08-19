@@ -24,7 +24,7 @@ A `norna` site is file-driven:
 2. The site keeps technical settings, including public URL and optional URL
    base path, in `site/config.mjs`.
 3. The site keeps site-wide visual theme defaults, including layout, image
-   sizing, font, typography, colors, and frame colors, in `site/theme.md`.
+   sizing, font, typography, palettes, and section surfaces, in `site/theme.md`.
 4. The site keeps homepage content, Markdown section order, managed media
    blocks, alt text, captions, and optional section metadata in
    `site/content.md`.

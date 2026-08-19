@@ -90,8 +90,8 @@ Relevant documentation: [Commands](commands.md), [Site Structure](site-structure
 1. Edit `site/config.mjs` for the site's URL, language labels, GitHub
    repository, footer, and deploy settings.
 2. Edit `site/theme.md` for site-wide layout, layout density, typography
-   rhythm, image sizing, font, typography preset, colors, inline styles, and
-   frame colors, or omit it to use engine defaults.
+   rhythm, image sizing, font, typography preset, palettes, and section
+   surfaces, or omit it to use engine defaults.
 3. Edit `site/content.md` for homepage title, description, Markdown sections,
    text, Norna managed media blocks, page/section presentation overrides, alt
    text, and captions.
@@ -158,7 +158,7 @@ Read [Site Structure](site-structure.md), [Content](content.md),
 [Configuration](configuration.md) before publishing a real site.
 
 To change the site's maximum page width, side gutters, layout density,
-typography rhythm, image width, image height limits, font, colors, or
+typography rhythm, image width, image height limits, font, palettes, or
 site-wide typography preset, edit `site/theme.md`. See [Theme](theme.md) for
 the accepted shape.
 

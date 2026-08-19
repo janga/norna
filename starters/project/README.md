@@ -21,7 +21,7 @@ npm run dev -- --kill
 - `site/config.mjs`: technical settings such as URL, language labels, GitHub
   repository, and deploy workflow.
 - `site/theme.md`: site-wide visual settings such as brand text, layout
-  density, typography rhythm, colors, frame colors, and inline text styles.
+  density, typography rhythm, palettes, section surfaces, and typography.
 - `site/content.md`: homepage title, sections, placeholders, project summary,
   links, install command, example usage, benefits, next steps, managed media
   blocks, and license.
@@ -40,7 +40,7 @@ GitHub Pages workflow uses `npm ci`.
 2. Replace the guide examples in `site/routes/010-guide/route-content.md`, or
    delete the route if the homepage is enough.
 3. Edit `site/theme.md` for brand name, layout density, typography rhythm,
-   colors, frame colors, and inline text styles.
+   palette, section surfaces, and typography.
 4. Put any local source images in the image folder for the Markdown section
    that references them, for example `site/images/intro/`.
 5. Edit `site/config.mjs` for public URL, GitHub repository, footer text, and

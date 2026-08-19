@@ -35,7 +35,7 @@ site: {
 In GitHub repository settings, configure Pages to build from GitHub Actions.
 
 Page width, side gutters, layout density, typography rhythm, image width, image
-height limits, font, colors, and site-wide typography are configured in
+height limits, font, palettes, section surfaces, and site-wide typography are configured in
 `site/theme.md`. Page and section presentation overrides live in
 `site/content.md`.
 
