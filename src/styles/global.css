@@ -287,6 +287,8 @@ a {
 .site-banner {
 	display: flex;
 	align-items: flex-start;
+	width: 100%;
+	min-width: 0;
 	gap: 1rem;
 	border: 1px solid color-mix(in srgb, #ffd84d 42%, var(--color-border));
 	border-inline-start: 0.35rem solid #ffd84d;
