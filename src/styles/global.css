@@ -488,10 +488,28 @@ ul {
 	line-height: 1.45;
 }
 
-.section-note-inline {
-	grid-column: 1 / -1;
-	width: min(100%, var(--section-reading-body-width, var(--section-body-width-desktop, var(--text-width))));
-	margin: 0 auto;
+.section-note-number {
+	display: inline-block;
+	margin-bottom: 0.35rem;
+	color: inherit;
+	font-size: 0.82em;
+	font-weight: 700;
+	line-height: 1;
+	text-decoration: none;
+}
+
+.section-note-ref {
+	margin-left: 0.08em;
+	font-size: 0.72em;
+	line-height: 0;
+	vertical-align: super;
+}
+
+.section-note-ref a {
+	color: inherit;
+	text-decoration: underline;
+	text-decoration-thickness: 0.08em;
+	text-underline-offset: 0.15em;
 }
 
 .section-note-content > :first-child {
@@ -614,7 +632,6 @@ ul {
 
 .section-body > .section-reading-layout:not(:last-child),
 .section-body > .section-markdown:not(:last-child),
-.section-body > .section-note-inline:not(:last-child),
 .section-body > .card-list:not(:last-child),
 .section-body > .gallery:not(:last-child) {
 	margin-bottom: var(--space-content-block-gap);
@@ -632,8 +649,7 @@ ul {
 	}
 
 	.section-reading-layout .section-markdown,
-	.section-reading-layout .section-note,
-	.section-note-inline {
+	.section-reading-layout .section-note {
 		width: min(100%, var(--section-reading-body-width, var(--section-body-width-desktop, var(--text-width))));
 		margin-right: auto;
 		margin-left: auto;
@@ -1183,10 +1199,6 @@ ul {
 
 	.section-reading-layout {
 		--section-reading-body-width: var(--section-body-width-mobile, var(--section-body-width-desktop, var(--text-width)));
-	}
-
-	.section-note-inline {
-		width: min(100%, var(--section-body-width-mobile, var(--section-body-width-desktop, var(--text-width))));
 	}
 
 	.section-markdown {

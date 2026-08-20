@@ -1,12 +1,11 @@
 import { Buffer } from 'node:buffer';
 
-export const nornaBlockTypes = new Set(['norna-image-stack', 'norna-image-carousel', 'norna-card-list', 'norna-note']);
+export const nornaBlockTypes = new Set(['norna-image-stack', 'norna-image-carousel', 'norna-card-list']);
 
 const blockTypeLabels = {
 	'norna-image-stack': 'norna-image-stack',
 	'norna-image-carousel': 'norna-image-carousel',
 	'norna-card-list': 'norna-card-list',
-	'norna-note': 'norna-note',
 };
 
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
@@ -29,11 +28,6 @@ const cardListExample = [
 	'  image: adopt.jpg',
 	'  link: /adopt/',
 	'  badge-text: Recommended',
-	'```',
-].join('\n');
-const noteExample = [
-	'```norna-note',
-	'A short note that adds context to the surrounding text.',
 	'```',
 ].join('\n');
 const cardListLayouts = new Set(['image-top', 'image-left', 'image-right']);
@@ -401,29 +395,13 @@ const parseCardListBlock = (source, options = {}) => {
 	return { type: 'card-list', layout, flow, size, width, cards };
 };
 
-const parseNoteBlock = (source, options = {}) => {
-	const markdown = source.trim();
-
-	if (!markdown) {
-		fail(`${options.type} must contain text. Example:\n${noteExample}`, options);
-	}
-
-	if (/!\[[^\]]*\]\([^)]*\)|<img\b/i.test(markdown)) {
-		fail(`${options.type} cannot contain images. Use a Norna image block with a caption instead.`, options);
-	}
-
-	return { type: 'note', markdown };
-};
-
 export const parseNornaMarkdownBlock = (type, source, options = {}) => {
 	if (!nornaBlockTypes.has(type)) {
 		fail(getUnknownNornaBlockMessage(type), options);
 	}
 
 	const parseOptions = { ...options, type: blockTypeLabels[type] };
-	return type === 'norna-note'
-		? parseNoteBlock(source, parseOptions)
-		: type === 'norna-card-list'
+	return type === 'norna-card-list'
 		? parseCardListBlock(source, parseOptions)
 		: parseImageListBlock(source, parseOptions);
 };
@@ -546,8 +524,6 @@ export const extractMarkdownImageReferences = (markdown) => {
 
 export const getNornaBlockImageReferences = (blocks) =>
 	blocks.flatMap((block) => {
-		if (block.type === 'note') return [];
-
 		if (block.type === 'card-list') {
 			return block.cards
 				.filter((card) => card.image)
@@ -611,6 +587,172 @@ export const splitNornaMarkdownBlockMarkers = (html, options = {}) => {
 };
 
 const normalizeBlockSource = (source) => source.replace(/\r\n?/g, '\n').trim();
+
+const inlineNoteReferenceRegex = /\{note-ref\}/g;
+const inlineNoteDeclarationRegex = /^\s*\{note:\s*(.*)\}\s*$/;
+const inlineNoteDeclarationStartRegex = /\{note(?:\s*:|\s*\})/;
+
+const maskInlineCodeAndComments = (source) => source.replace(
+	/<!--[\s\S]*?-->|(`+)([\s\S]*?)\1/g,
+	(match) => match.replace(/[^\r\n]/g, ' '),
+);
+
+const countInlineNoteReferences = (line) => Array.from(line.matchAll(inlineNoteReferenceRegex)).length;
+
+const formatInlineNoteError = (message, options, line) => ({
+	blockType: 'inline-note',
+	line,
+	message: failMessage(message, { ...options, line }),
+});
+
+const getInlineNoteErrorMessage = () => 'Write the note on its own line as "{note: Your explanatory text.}".';
+
+/**
+ * Finds the deliberately small inline-note syntax while ignoring fenced and
+ * inline code. Notes are paired by position, so no user-authored IDs are
+ * needed. The caller decides whether diagnostics should be fatal.
+ */
+export const extractInlineNoteDiagnostics = (markdown, options = {}) => {
+	const lines = normalizeLines(markdown);
+	const maskedLines = maskInlineCodeAndComments(maskFencedCodeBlocks(markdown)).split('\n');
+	const notes = [];
+	const errors = [];
+	let paragraph = null;
+	let pendingParagraph = null;
+	let noteJustSeen = false;
+
+	const addError = (message, line) => errors.push(formatInlineNoteError(message, options, line));
+
+	const finishParagraph = () => {
+		if (!paragraph) return;
+		if (paragraph.referenceCount > 0) {
+			pendingParagraph = paragraph;
+		}
+		paragraph = null;
+	};
+
+	const reportMissingNote = () => {
+		if (!pendingParagraph) return;
+		addError(
+			`Paragraph on line ${pendingParagraph.referenceLine} contains "{note-ref}" but has no following "{note: ...}".`,
+			pendingParagraph.referenceLine,
+		);
+		pendingParagraph = null;
+	};
+
+	const attachNote = (noteMatch, lineNumber) => {
+		const text = noteMatch[1].trim();
+		if (!text) {
+			addError(`The note on line ${lineNumber} is empty. ${getInlineNoteErrorMessage()}`, lineNumber);
+			pendingParagraph = null;
+			return;
+		}
+
+		if (/!\[[^\]]*\]\([^)]*\)|<img\b/i.test(text)) {
+			addError('Inline notes cannot contain images. Use a Norna image block with a caption instead.', lineNumber);
+			pendingParagraph = null;
+			return;
+		}
+
+		notes.push({
+			markdown: text,
+			referenceLine: pendingParagraph.referenceLine,
+			noteLine: lineNumber,
+		});
+		pendingParagraph = null;
+		noteJustSeen = true;
+	};
+
+	for (let index = 0; index < lines.length; index += 1) {
+		const line = lines[index] ?? '';
+		const maskedLine = maskedLines[index] ?? line;
+		const lineNumber = (options.lineOffset ?? 0) + index + 1;
+		const fence = getFenceInfo(line);
+
+		if (fence && fence.length >= 3) {
+			finishParagraph();
+			reportMissingNote();
+			let closingIndex = -1;
+			for (let candidateIndex = index + 1; candidateIndex < lines.length; candidateIndex += 1) {
+				if (getFenceCloseInfo(lines[candidateIndex], fence)) {
+					closingIndex = candidateIndex;
+					break;
+				}
+			}
+			index = closingIndex === -1 ? lines.length : closingIndex;
+			noteJustSeen = false;
+			continue;
+		}
+
+		const trimmed = line.trim();
+		const maskedTrimmed = maskedLine.trim();
+		const noteMatch = trimmed.match(inlineNoteDeclarationRegex);
+		const looksLikeNoteDeclaration = inlineNoteDeclarationStartRegex.test(maskedTrimmed);
+		const referenceCount = countInlineNoteReferences(maskedLine);
+		const isHeading = /^#{1,6}(?:\s|$)/.test(trimmed);
+
+		if (!trimmed) {
+			finishParagraph();
+			noteJustSeen = false;
+			continue;
+		}
+
+		if (pendingParagraph) {
+			if (noteMatch) {
+				attachNote(noteMatch, lineNumber);
+				continue;
+			}
+
+			if (looksLikeNoteDeclaration) {
+				addError(`Invalid note syntax on line ${lineNumber}. ${getInlineNoteErrorMessage()}`, lineNumber);
+				pendingParagraph = null;
+			} else {
+				reportMissingNote();
+			}
+		}
+
+		if (noteJustSeen) {
+			addError(`Add a blank line after the note on the previous line before starting more text.`, lineNumber);
+			noteJustSeen = false;
+		}
+
+		if (noteMatch || looksLikeNoteDeclaration) {
+			addError(
+				noteMatch
+					? `A "{note: ...}" requires a preceding paragraph containing "{note-ref}".`
+					: `Invalid note syntax on line ${lineNumber}. ${getInlineNoteErrorMessage()}`,
+				lineNumber,
+			);
+			continue;
+		}
+
+		if (isHeading) {
+			if (referenceCount > 0) {
+				addError('Place "{note-ref}" in a paragraph, not in a heading.', lineNumber);
+			}
+			finishParagraph();
+			reportMissingNote();
+			continue;
+		}
+
+		if (!paragraph) {
+			paragraph = {
+				referenceCount: 0,
+				referenceLine: lineNumber,
+			};
+		}
+
+		paragraph.referenceCount += referenceCount;
+		if (referenceCount > 0 && paragraph.referenceCount > 1) {
+			addError('A paragraph may contain only one "{note-ref}".', lineNumber);
+		}
+	}
+
+	finishParagraph();
+	reportMissingNote();
+
+	return { notes, errors };
+};
 
 export const splitNornaRenderedCodeBlocks = (html, rawBlocks, options = {}) => {
 	const blocks = [];

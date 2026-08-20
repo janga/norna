@@ -2,6 +2,7 @@ import type { CollectionEntry } from 'astro:content';
 import { markdownToHtml } from 'satteri';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import {
+	extractInlineNoteDiagnostics,
 	extractNornaMarkdownBlocks,
 	splitNornaMarkdownBlockMarkers,
 	splitNornaRenderedCodeBlocks,
@@ -29,13 +30,18 @@ type CardListLayout = 'image-top' | 'image-left' | 'image-right';
 type CardListFlow = 'grid' | 'stack';
 type CardListSize = 's' | 'm' | 'l' | 'xl';
 type CardListWidth = 'text' | 'narrow' | 'normal' | 'wide';
-type NotePlacement = 'margin' | 'inline';
+type InlineNote = {
+	markdown: string;
+	number: number;
+	id: string;
+	referenceId: string;
+};
 type SectionContentBlock =
 	| { type: 'html'; html: string }
 	| { type: 'image-stack'; images: GalleryImage[] }
 	| { type: 'image-carousel'; images: GalleryImage[] }
 	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width: CardListWidth; cards: CardListItem[] }
-	| { type: 'note'; html: string; placement: NotePlacement };
+	| { type: 'note'; html: string; number?: number; id?: string; referenceId?: string };
 export type ResolvedSection = SiteSectionMetadata & {
 	id: string;
 	title: string;
@@ -189,6 +195,42 @@ const splitHtmlIntoBlocks = (html: string) => {
 	return [prefix, ...blocks, suffix].filter(Boolean);
 };
 
+const inlineNoteMarkerRegex = /^\s*<norna-inline-note\s+data-note-index="(\d+)"\s*><\/norna-inline-note>\s*$/i;
+const noteDeclarationParagraphRegex = /<p>\s*\{note:\s*[\s\S]*?\}\s*<\/p>/gi;
+const htmlCodeRegionRegex = /<pre\b[\s\S]*?<\/pre>|<code\b[\s\S]*?<\/code>/gi;
+
+const replaceHtmlOutsideCode = (html: string, transform: (value: string) => string) => {
+	let result = '';
+	let cursor = 0;
+
+	for (const match of html.matchAll(htmlCodeRegionRegex)) {
+		const start = match.index ?? 0;
+		result += transform(html.slice(cursor, start));
+		result += match[0];
+		cursor = start + match[0].length;
+	}
+
+	return result + transform(html.slice(cursor));
+};
+
+const applyInlineNoteMarkup = (html: string, notes: InlineNote[]) => {
+	let referenceIndex = 0;
+	const withReferences = replaceHtmlOutsideCode(html, (value) => value.replace(/\{note-ref\}/g, () => {
+		const note = notes[referenceIndex];
+		if (!note) return '{note-ref}';
+
+		referenceIndex += 1;
+		return `<sup class="section-note-ref"><a id="${note.referenceId}" href="#${note.id}" aria-label="Note ${note.number}">${note.number}</a></sup>`;
+	}));
+
+	let noteIndex = 0;
+	return replaceHtmlOutsideCode(withReferences, (value) => value.replace(noteDeclarationParagraphRegex, () => {
+		const marker = `<norna-inline-note data-note-index="${noteIndex}"></norna-inline-note>`;
+		noteIndex += 1;
+		return marker;
+	}));
+};
+
 const getRawMarkdownSections = (markdown: string) => {
 	const matches = Array.from(markdown.matchAll(markdownH2Regex));
 	const sections = new Map<string, string>();
@@ -214,7 +256,7 @@ const getImageSourceKey = (page: SitePage, sectionId: string, image: string) => 
 		: `images/${sectionId}/${image}`
 );
 
-const renderNoteMarkdown = async (markdown: string) => {
+const renderInlineNoteMarkdown = async (markdown: string) => {
 	const result = await markdownToHtml(markdown, {
 		features: {
 			gfm: true,
@@ -223,7 +265,7 @@ const renderNoteMarkdown = async (markdown: string) => {
 	});
 
 	if (/<img\b/i.test(result.html)) {
-		throw new Error('norna-note cannot contain images. Use a Norna image block with a caption instead.');
+		throw new Error('Inline notes cannot contain images. Use a Norna image block with a caption instead.');
 	}
 
 	return prepareContentHtml(result.html);
@@ -234,12 +276,14 @@ const resolveContentBlocks = async (
 	rawMarkdown: string,
 	page: SitePage,
 	sectionId: string,
+	inlineNotes: InlineNote[] = [],
 ) => {
 	const rawBlocks = extractNornaMarkdownBlocks(rawMarkdown);
+	const renderedHtml = applyInlineNoteMarkup(html, inlineNotes);
 	const splitBlocks = rawBlocks.length > 0
-		? splitNornaRenderedCodeBlocks(html, rawBlocks)
-		: splitNornaMarkdownBlockMarkers(html);
-	const hasNotes = rawBlocks.some((block) => block.blockType === 'norna-note');
+		? splitNornaRenderedCodeBlocks(renderedHtml, rawBlocks)
+		: splitNornaMarkdownBlockMarkers(renderedHtml);
+	const hasNotes = inlineNotes.length > 0;
 	const contentBlocks = hasNotes
 		? splitBlocks.flatMap((block) => block.type === 'html'
 			? splitHtmlIntoBlocks(block.html).map((htmlBlock) => ({ type: 'html' as const, html: htmlBlock }))
@@ -249,24 +293,24 @@ const resolveContentBlocks = async (
 
 	for (const block of contentBlocks) {
 		if (block.type === 'html') {
-			resolvedBlocks.push({
-				type: 'html',
-				html: prepareContentHtml(block.html),
-			});
-			continue;
-		}
+			const inlineNoteMarker = block.html.match(inlineNoteMarkerRegex);
+			if (inlineNoteMarker) {
+				const note = inlineNotes[Number(inlineNoteMarker[1])];
+				if (!note) {
+					throw new Error('Norna inline note markup could not be matched to its note text.');
+				}
 
-		if (block.type === 'note') {
-			const previousBlock = resolvedBlocks.at(-1);
-			resolvedBlocks.push({
-				type: 'note',
-				html: await renderNoteMarkdown(block.markdown),
-				placement: previousBlock?.type === 'image-stack'
-					|| previousBlock?.type === 'image-carousel'
-					|| previousBlock?.type === 'card-list'
-					? 'inline'
-					: 'margin',
-			});
+				resolvedBlocks.push({
+					type: 'note',
+					html: await renderInlineNoteMarkdown(note.markdown),
+					number: note.number,
+					id: note.id,
+					referenceId: note.referenceId,
+				});
+				continue;
+			}
+
+			resolvedBlocks.push({ type: 'html', html: prepareContentHtml(block.html) });
 			continue;
 		}
 
@@ -308,6 +352,7 @@ export const getSectionsContent = async (
 	const metadataIds = new Set(Object.keys(sectionMetadata));
 	const sections: ResolvedSection[] = [];
 	const sectionIds = new Set<string>();
+	let nextNoteNumber = 1;
 
 	for (let index = 0; index < matches.length; index += 1) {
 		const match = matches[index];
@@ -330,12 +375,33 @@ export const getSectionsContent = async (
 		}
 
 		sectionIds.add(id);
+		const rawSection = rawSections.get(id) ?? '';
+		const inlineNoteDiagnostics = extractInlineNoteDiagnostics(rawSection, {
+			label: 'Markdown section',
+		});
+		if (inlineNoteDiagnostics.errors.length > 0) {
+			throw new Error(inlineNoteDiagnostics.errors[0].message);
+		}
+
+		const inlineNotes = inlineNoteDiagnostics.notes.map((note) => {
+			const number = nextNoteNumber;
+			nextNoteNumber += 1;
+			const pageKey = page.routeId || 'home';
+			const noteKey = `${pageKey}-${id}-${number}`;
+			return {
+				...note,
+				number,
+				id: `note-${noteKey}`,
+				referenceId: `note-ref-${noteKey}`,
+			};
+		});
+
 		sections.push({
 			...(sectionMetadata[id] ?? {}),
 			id,
 			title,
 			titleHtml: getHeadingTitleHtml(headingHtml),
-			contentBlocks: await resolveContentBlocks(content, rawSections.get(id) ?? '', page, id),
+			contentBlocks: await resolveContentBlocks(content, rawSection, page, id, inlineNotes),
 		});
 	}
 

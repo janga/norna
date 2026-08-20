@@ -223,7 +223,7 @@ const hasMedia = section.contentBlocks.some((block) => (
 	|| (block.type === 'card-list' && block.cards.some((card) => card.image))
 ));
 const hasMarginNotes = section.contentBlocks.some((block) => (
-	block.type === 'note' && block.placement === 'margin'
+	block.type === 'note'
 ));
 const noteLabel = projectConfig.locale.labels.note;
 const contentGroups: Array<
@@ -315,7 +315,7 @@ const sectionStyle = [
 		<div class:list={['section-body', { 'section-body-has-gallery': hasMedia, 'section-body-text-only': !hasMedia }]}>
 			{contentGroups.map((group, groupIndex) => {
 				if (group.type === 'reading') {
-					if (hasMarginNotes && group.blocks.some((block) => block.type === 'note' && block.placement === 'margin')) {
+					if (hasMarginNotes && group.blocks.some((block) => block.type === 'note')) {
 						return (
 							<div class="section-reading-layout">
 								{group.blocks.map((block) => {
@@ -325,9 +325,15 @@ const sectionStyle = [
 
 									return (
 										<aside
-											class:list={['section-note', `section-note-${block.placement}`]}
+											class="section-note section-note-margin"
+											id={block.id}
 											aria-label={noteLabel}
 										>
+											{block.number && block.referenceId && (
+												<a class="section-note-number" href={`#${block.referenceId}`} aria-label={`${noteLabel} ${block.number}`}>
+													{block.number}
+												</a>
+											)}
 											<div class="section-note-content" set:html={block.html} />
 										</aside>
 									);
@@ -343,9 +349,15 @@ const sectionStyle = [
 
 						return (
 							<aside
-								class:list={['section-note', `section-note-${block.placement}`]}
+								class="section-note section-note-margin"
+								id={block.id}
 								aria-label={noteLabel}
 							>
+								{block.number && block.referenceId && (
+									<a class="section-note-number" href={`#${block.referenceId}`} aria-label={`${noteLabel} ${block.number}`}>
+										{block.number}
+									</a>
+								)}
 								<div class="section-note-content" set:html={block.html} />
 							</aside>
 						);

@@ -5,6 +5,7 @@ import { stdin as input, stdout as output } from 'node:process';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import {
+	extractInlineNoteDiagnostics,
 	extractMarkdownImageReferences,
 	extractNornaMarkdownBlockDiagnostics,
 	getNornaBlockImageReferences,
@@ -456,6 +457,17 @@ for (const contentFile of contentFiles) {
 			lineOffset: bodyLineOffset + section.line - 1,
 		});
 		blockResultsBySectionId.set(section.id, blockResults);
+
+		const inlineNoteResults = extractInlineNoteDiagnostics(section.text, {
+			label: contentFile.contentLabel,
+			lineOffset: bodyLineOffset + section.line - 1,
+		});
+		for (const error of inlineNoteResults.errors) {
+			addSectionIssue(contentFile, section, {
+				severity: 'error',
+				message: error.message,
+			});
+		}
 
 		for (const reference of getNornaBlockImageReferences(blockResults.blocks)) {
 			const expectedPath = getExpectedImagePath(contentFile, section.id, reference.image);
