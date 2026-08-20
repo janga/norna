@@ -203,11 +203,10 @@ export const themeVisualSchema = z.object({
 	presentation: themePresentation.optional(),
 }).strict();
 
-const siteThemeSchema = themeVisualSchema.extend({
-	navigation: themeNavigation.optional(),
-}).strict();
+const siteThemeSchema = themeVisualSchema;
 
 const sitewideSchema = z.object({
+	navigation: themeNavigation.optional(),
 	banners,
 	footer: sitewideFooter.optional(),
 }).strict();

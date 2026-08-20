@@ -1,4 +1,6 @@
 ---
+navigation:
+  brand: Typography Presets
 footer:
   copyrightMessage: Dog photos by Bicanski, CC0, via Pixnio.
   buildInfo:

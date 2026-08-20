@@ -25,6 +25,14 @@ interface Props {
 }
 
 const { title, items, maxAvailableWidthPercent, priorityFirstImage = false } = Astro.props;
+const getCaptionId = (image: GalleryImage, itemIndex: number, imageIndex = 0) => {
+	const source = (image.src ?? image.image)
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
+
+	return `gallery-caption-${source}-${itemIndex}-${imageIndex}`;
+};
 const galleryImageSizes = [
 	`(max-width: 700px) ${maxAvailableWidthPercent.mobile}vw`,
 	`${maxAvailableWidthPercent.desktop}vw`,
@@ -58,6 +66,8 @@ const getCarouselAspectRatio = (images: GalleryImage[]) => {
 		const isPriorityItem = priorityFirstImage && itemIndex === 0;
 
 		if ('image' in item) {
+			const captionId = item.caption ? getCaptionId(item, itemIndex) : undefined;
+
 			return (
 				<figure class="gallery-item">
 					<div class="gallery-image-frame">
@@ -65,11 +75,12 @@ const getCarouselAspectRatio = (images: GalleryImage[]) => {
 							{...getImageAttributes(item.src ?? item.image, galleryImageSizes)}
 							class:list={['gallery-image', getImageClass(item)]}
 							alt={item.alt ?? ''}
+							aria-describedby={captionId}
 							{...getImageLoadingProps(isPriorityItem)}
 						/>
 					</div>
 					{item.caption && (
-						<figcaption class="gallery-meta">
+						<figcaption class="gallery-meta" id={captionId}>
 							<div class="gallery-details">
 								<span>{item.caption}</span>
 							</div>
@@ -97,18 +108,23 @@ const getCarouselAspectRatio = (images: GalleryImage[]) => {
 				<div class="gallery-carousel-stage">
 					<div class="gallery-carousel-viewport" data-carousel-viewport>
 						<div class="gallery-carousel-slides">
-							{item.carousel.map((image, imageIndex) => (
-								<figure class="gallery-carousel-slide" data-carousel-slide>
-									<div class="gallery-carousel-image-frame">
-										<img
-											{...getImageAttributes(image.src ?? image.image, galleryImageSizes)}
-											class:list={['gallery-image', getImageClass(image)]}
-											alt={image.alt ?? ''}
-											{...getImageLoadingProps(isPriorityItem && imageIndex === 0)}
-										/>
-									</div>
-								</figure>
-							))}
+							{item.carousel.map((image, imageIndex) => {
+								const captionId = image.caption ? getCaptionId(image, itemIndex, imageIndex) : undefined;
+
+								return (
+									<figure class="gallery-carousel-slide" data-carousel-slide>
+										<div class="gallery-carousel-image-frame">
+											<img
+												{...getImageAttributes(image.src ?? image.image, galleryImageSizes)}
+												class:list={['gallery-image', getImageClass(image)]}
+												alt={image.alt ?? ''}
+												aria-describedby={captionId}
+												{...getImageLoadingProps(isPriorityItem && imageIndex === 0)}
+											/>
+										</div>
+									</figure>
+								);
+							})}
 						</div>
 					</div>
 					<button
@@ -138,6 +154,7 @@ const getCarouselAspectRatio = (images: GalleryImage[]) => {
 						image.caption && (
 							<p
 								class="gallery-meta gallery-carousel-caption"
+								id={getCaptionId(image, itemIndex, imageIndex)}
 								data-carousel-caption
 								data-carousel-caption-index={imageIndex}
 							>

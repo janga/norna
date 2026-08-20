@@ -1,6 +1,4 @@
 ---
-navigation:
-  brand: Visual Model
 layout:
   density: normal
   pageWidth: 1240px

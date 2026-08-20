@@ -1,7 +1,5 @@
 ---
 # Site-wide visual defaults. Remove a value to use the engine default.
-navigation:
-  brand: Project Name
 layout:
   density: compact
   pageWidth: 1120px

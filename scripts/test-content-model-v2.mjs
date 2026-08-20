@@ -133,10 +133,13 @@ test('route theme replaces visual theme while site identity stays at the root', 
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'theme.md'), `---
-navigation:
-  brand: Root Brand
 typography:
   preset: text-forward
+---
+`);
+		await writeFile(path.join(siteDir, 'sitewide-content.md'), `---
+navigation:
+  brand: Root Brand
 ---
 `);
 		await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
@@ -210,7 +213,7 @@ navigation:
 		await assert.rejects(
 			runNorna(['--site-dir', siteDir, 'config:check']),
 			(error) => {
-				assert.match(error.output, /may not define navigation\. Brand and logo belong in site\/theme\.md/);
+				assert.match(error.output, /may not define navigation\. Brand and logo belong in site\/sitewide-content\.md/);
 				return true;
 			},
 		);
@@ -289,17 +292,24 @@ description: Fixture
 
 ## Intro {#intro}
 
-The paragraph points to an explanation.{note-ref}
+The first paragraph points to an explanation.{note-ref}
 
-{note: This explanation is kept beside the paragraph on wide screens.}
+{note: This explanation names \`sitewide-content.md\` and stays beside the paragraph on wide screens.}
+
+The second paragraph has its own explanation.{note-ref}
+
+{note: This is the second explanation.}
 `);
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
-		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-1" href="#note-home-intro-1" aria-label="Note 1">1<\/a><\/sup>/);
-		assert.match(html, /<aside class="section-note section-note-margin" id="note-home-intro-1" aria-label="Note">/);
+		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-1" href="#note-home-intro-1" aria-label="Note 1" aria-describedby="note-home-intro-1" data-note-id="note-home-intro-1">1<\/a><\/sup>/);
+		assert.match(html, /<aside class="section-note section-note-margin" id="note-home-intro-1" aria-label="Note 1" role="note" data-note-id="note-home-intro-1" style="grid-row: 1;">/);
 		assert.match(html, /<a class="section-note-number" href="#note-ref-home-intro-1" aria-label="Note 1">\s*1\s*<\/a>/);
-		assert.match(html, /This explanation is kept beside the paragraph on wide screens\./);
+		assert.match(html, /This explanation names <code>sitewide-content\.md<\/code> and stays beside the paragraph on wide screens\./);
+		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-2" href="#note-home-intro-2" aria-label="Note 2" aria-describedby="note-home-intro-2" data-note-id="note-home-intro-2">2<\/a><\/sup>/);
+		assert.match(html, /<aside class="section-note section-note-margin" id="note-home-intro-2" aria-label="Note 2" role="note" data-note-id="note-home-intro-2" style="grid-row: 2;">/);
+		assert.match(html, /This is the second explanation\./);
 		assert.doesNotMatch(html, /\{note:/);
 	} finally {
 		await rm(root, { recursive: true, force: true });

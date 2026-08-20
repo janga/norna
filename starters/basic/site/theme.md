@@ -4,11 +4,6 @@
 # Active values below are ordinary YAML; this marked comment block is only help text.
 #
 # Available structure:
-# navigation:
-#   brand: site-wide brand/home text; defaults to the homepage title
-#   logo:
-#     alt: accessible name for site/public/logo.svg
-#     height: CSS length for the logo height, e.g. 2.6rem
 # layout:
 #   density: compact | normal | airy
 #   pageWidth: CSS length, e.g. 1180px
@@ -92,8 +87,6 @@
 #     mode: none | cycle
 #     sequence: [base, soft, emphasis]
 # norna:end theme-help
-navigation:
-  brand: Example Site
 layout:
   density: normal
   pageWidth: 1180px

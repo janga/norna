@@ -1,4 +1,6 @@
 ---
+navigation:
+  brand: Project Name
 footer:
   copyrightMessage: (c) Project contributors.
   buildInfo:

@@ -37,6 +37,7 @@ if (!siteTheme) {
 	throw new Error('site/theme.md is required. Add a root theme before building the site.');
 }
 const [sitewide] = await getCollection('sitewide');
+const sitewideData = sitewide?.data ?? {};
 const navigationPages = getNavigationPages(sitePages);
 const homePage = sitePages.find((page) => page.isHome) ?? currentPage;
 const siteThemeData = siteTheme.data;
@@ -46,9 +47,9 @@ const themeLabel = routeTheme
 	? `${siteDirectory || 'site'}/${routeTheme.id}`
 	: `${siteDirectory || 'site'}/theme.md`;
 const visualTheme = resolveThemeVisualConfig(themeData, themeLabel);
-const brandLabel = siteThemeData.navigation?.brand ?? homePage.title;
+const brandLabel = sitewideData.navigation?.brand ?? homePage.title;
 const logoAsset = getLogoAsset();
-const logoSettings = siteThemeData.navigation?.logo;
+const logoSettings = sitewideData.navigation?.logo;
 const logo = logoAsset
 	? {
 		src: logoAsset.href,
@@ -62,7 +63,6 @@ const sections = entry.data.sections;
 const siteHtml = entry.rendered?.html ?? '';
 const resolvedSections = await getSectionsContent(siteHtml, rawMarkdown, sections, currentPage);
 const today = getToday();
-const sitewideData = sitewide?.data ?? {};
 const siteBanners = (sitewideData.banners ?? []).filter((banner) => isVisibleToday(banner.visible, today));
 const visibleSections = resolvedSections.filter((section) => isVisibleToday(section.visible, today));
 

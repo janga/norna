@@ -1,6 +1,4 @@
 ---
-navigation:
-  brand: Typography Presets
 layout:
   density: normal
   pageWidth: 1320px

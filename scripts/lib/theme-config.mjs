@@ -7,7 +7,13 @@ import {
 	validateRouteThemeFrontmatterStructure,
 	validateThemeFrontmatterStructure,
 } from './site-content.mjs';
-import { siteRoutesDir, siteRoutesLabel, siteThemeLabel, siteThemePath } from './site-paths.mjs';
+import {
+	siteRoutesDir,
+	siteRoutesLabel,
+	siteThemeLabel,
+	siteThemePath,
+	sitewideContentLabel,
+} from './site-paths.mjs';
 
 export const readThemeConfig = async () => {
 	const themeFile = await readFile(siteThemePath, 'utf8').catch((error) => {
@@ -30,7 +36,12 @@ export const readThemeConfig = async () => {
 		].join('\n'));
 	}
 
-	return parseYamlMapping(frontmatterBody);
+	const config = parseYamlMapping(frontmatterBody);
+	if (Object.hasOwn(config, 'navigation')) {
+		throw new Error(`${siteThemeLabel} may not define navigation. Brand and logo belong in ${sitewideContentLabel}.`);
+	}
+
+	return config;
 };
 
 const getRouteThemeFiles = async (directory, relativeDirectory = '') => {
@@ -79,7 +90,7 @@ export const validateRouteThemeFiles = async () => {
 
 		const config = parseYamlMapping(frontmatterBody);
 		if (Object.hasOwn(config, 'navigation')) {
-			throw new Error(`${file.label} may not define navigation. Brand and logo belong in ${siteThemeLabel}.`);
+			throw new Error(`${file.label} may not define navigation. Brand and logo belong in ${sitewideContentLabel}.`);
 		}
 
 		configs.push({ ...file, config });

@@ -6,7 +6,7 @@ import {
 	validateFrontmatterIndentation,
 	validateRouteThemeFrontmatterStructure,
 } from '../../scripts/lib/site-content.mjs';
-import { siteRoutesDir, siteRoutesLabel, siteThemeLabel } from '../../scripts/lib/site-paths.mjs';
+import { siteRoutesDir, siteRoutesLabel, sitewideContentLabel } from '../../scripts/lib/site-paths.mjs';
 import { themeVisualSchema } from '../content.config';
 
 type RouteTheme = {
@@ -41,7 +41,7 @@ export const getRouteTheme = async (routeDirectory: string | null): Promise<Rout
 
 		const data = parseYamlMapping(frontmatterBody);
 		if (Object.hasOwn(data, 'navigation')) {
-			throw new Error(`${themeLabel} may not define navigation. Brand and logo belong in ${siteThemeLabel}.`);
+			throw new Error(`${themeLabel} may not define navigation. Brand and logo belong in ${sitewideContentLabel}.`);
 		}
 		const parsed = themeVisualSchema.safeParse(data);
 		if (!parsed.success) {

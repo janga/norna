@@ -1,4 +1,6 @@
 ---
+navigation:
+  brand: Example Site
 footer:
   copyrightMessage: (c) Example Owner.
   buildInfo:

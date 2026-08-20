@@ -1,5 +1,6 @@
 import { siteConfigLabel, sitePublicLabel } from './lib/site-paths.mjs';
 import { getLogoAssets } from './lib/logo-assets.mjs';
+import { readSitewideConfig } from './lib/sitewide-config.mjs';
 import { readThemeConfig, validateRouteThemeFiles } from './lib/theme-config.mjs';
 
 const formatErrorMessage = (error) => {
@@ -19,7 +20,8 @@ const formatErrorMessage = (error) => {
 
 try {
 	const { projectConfig } = await import('./lib/project-config.mjs');
-	const themeConfig = await readThemeConfig();
+	await readThemeConfig();
+	const sitewideConfig = await readSitewideConfig();
 	await validateRouteThemeFiles();
 	const logoAssets = getLogoAssets();
 
@@ -31,10 +33,10 @@ try {
 	}
 
 	if (logoAssets.length === 0) {
-		console.warn(`Warning: No logo file found in ${sitePublicLabel}. Norna will use navigation.brand or the homepage title as the navigation label.`);
+		console.warn(`Warning: No logo file found in ${sitePublicLabel}. Norna will use sitewide navigation.brand or the homepage title as the navigation label.`);
 		console.warn(`Add exactly one of ${sitePublicLabel}/logo.svg, logo.png, logo.jpg, or logo.jpeg when the site should have a logo.`);
-	} else if (themeConfig.navigation?.brand) {
-		console.warn('Warning: Both navigation.brand and a logo file are configured. The logo is used; navigation.brand is only the text fallback.');
+	} else if (sitewideConfig.navigation?.brand) {
+		console.warn('Warning: Both sitewide navigation.brand and a logo file are configured. The logo is used; navigation.brand is only the text fallback.');
 	}
 
 	console.log('Config check passed.');

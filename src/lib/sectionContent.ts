@@ -220,15 +220,15 @@ const applyInlineNoteMarkup = (html: string, notes: InlineNote[]) => {
 		if (!note) return '{note-ref}';
 
 		referenceIndex += 1;
-		return `<sup class="section-note-ref"><a id="${note.referenceId}" href="#${note.id}" aria-label="Note ${note.number}">${note.number}</a></sup>`;
+		return `\u2060<sup class="section-note-ref"><a id="${note.referenceId}" href="#${note.id}" aria-label="Note ${note.number}" aria-describedby="${note.id}" data-note-id="${note.id}">${note.number}</a></sup>`;
 	}));
 
 	let noteIndex = 0;
-	return replaceHtmlOutsideCode(withReferences, (value) => value.replace(noteDeclarationParagraphRegex, () => {
+	return withReferences.replace(noteDeclarationParagraphRegex, () => {
 		const marker = `<norna-inline-note data-note-index="${noteIndex}"></norna-inline-note>`;
 		noteIndex += 1;
 		return marker;
-	}));
+	});
 };
 
 const getRawMarkdownSections = (markdown: string) => {

@@ -23,6 +23,7 @@ const frontmatterDelimiterRegex = /^---\s*$/;
 const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'sections']);
 const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation']);
 const knownRouteThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation']);
+const knownSitewideTopLevelFrontmatterKeys = new Set(['navigation', 'banners', 'footer']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
 	'alt',
@@ -279,6 +280,12 @@ export const validateRouteThemeFrontmatterStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
 		knownTopLevelFrontmatterKeys: knownRouteThemeTopLevelFrontmatterKeys,
 		fileKind: 'route theme',
+	});
+
+export const validateSitewideFrontmatterStructure = (frontmatter, addIssue) =>
+	validateFrontmatterStructure(frontmatter, addIssue, {
+		knownTopLevelFrontmatterKeys: knownSitewideTopLevelFrontmatterKeys,
+		fileKind: 'sitewide content',
 	});
 
 export const readThemeFile = async (sitePath) => readSiteFile(sitePath, siteThemeLabel);

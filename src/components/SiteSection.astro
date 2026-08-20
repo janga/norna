@@ -166,9 +166,9 @@ const getHeadingSizeValue = (level: HeadingLevel, size: TextSize) => (
 	headingSizeValues[level][size]
 );
 const textWidthValues: Record<TextWidth, string> = {
-	narrow: '38rem',
-	normal: 'var(--text-width)',
-	wide: 'var(--gallery-layout-width)',
+	narrow: 'min(60ch, var(--text-width))',
+	normal: 'min(72ch, var(--text-width))',
+	wide: 'min(72ch, var(--gallery-layout-width))',
 };
 const surface = resolveSectionSurface(pagePresentation, sectionIndex);
 const typography = pagePresentation.typography.values;
@@ -225,6 +225,10 @@ const hasMedia = section.contentBlocks.some((block) => (
 const hasMarginNotes = section.contentBlocks.some((block) => (
 	block.type === 'note'
 ));
+const getNoteGridRow = (blocks: ResolvedSection['contentBlocks'], blockIndex: number) => Math.max(
+	1,
+	blocks.slice(0, blockIndex).filter((block) => block.type === 'html').length,
+);
 const noteLabel = projectConfig.locale.labels.note;
 const contentGroups: Array<
 	| { type: 'reading'; blocks: ResolvedSection['contentBlocks'] }
@@ -318,16 +322,20 @@ const sectionStyle = [
 					if (hasMarginNotes && group.blocks.some((block) => block.type === 'note')) {
 						return (
 							<div class="section-reading-layout">
-								{group.blocks.map((block) => {
+								{group.blocks.map((block, blockIndex) => {
 									if (block.type === 'html') {
 										return block.html && <div class="section-markdown" set:html={block.html} />;
 									}
 
+									const noteGridRow = getNoteGridRow(group.blocks, blockIndex);
 									return (
 										<aside
 											class="section-note section-note-margin"
 											id={block.id}
-											aria-label={noteLabel}
+											aria-label={`${noteLabel}${block.number ? ` ${block.number}` : ''}`}
+											role="note"
+											data-note-id={block.id}
+											style={`grid-row: ${noteGridRow};`}
 										>
 											{block.number && block.referenceId && (
 												<a class="section-note-number" href={`#${block.referenceId}`} aria-label={`${noteLabel} ${block.number}`}>
@@ -342,16 +350,20 @@ const sectionStyle = [
 						);
 					}
 
-					return group.blocks.map((block) => {
+					return group.blocks.map((block, blockIndex) => {
 						if (block.type === 'html') {
 							return block.html && <div class="section-markdown" set:html={block.html} />;
 						}
 
+						const noteGridRow = getNoteGridRow(group.blocks, blockIndex);
 						return (
 							<aside
 								class="section-note section-note-margin"
 								id={block.id}
-								aria-label={noteLabel}
+								aria-label={`${noteLabel}${block.number ? ` ${block.number}` : ''}`}
+								role="note"
+								data-note-id={block.id}
+								style={`grid-row: ${noteGridRow};`}
 							>
 								{block.number && block.referenceId && (
 									<a class="section-note-number" href={`#${block.referenceId}`} aria-label={`${noteLabel} ${block.number}`}>
@@ -392,3 +404,47 @@ const sectionStyle = [
 		</div>
 	</div>
 </section>
+
+<script>
+	const noteParts = Array.from(document.querySelectorAll<HTMLElement>('[data-note-id]'));
+	const noteReferences = noteParts.filter((part) => part.matches('.section-note-ref a'));
+	const marginNotes = noteParts.filter((part) => part.matches('.section-note'));
+
+	const setNoteState = (noteId: string, active: boolean) => {
+		noteParts
+			.filter((part) => part.dataset.noteId === noteId)
+			.forEach((part) => part.classList.toggle('is-referenced', active));
+	};
+
+	noteParts.forEach((part) => {
+		const noteId = part.dataset.noteId;
+		if (!noteId) return;
+
+		part.addEventListener('pointerenter', () => setNoteState(noteId, true));
+		part.addEventListener('pointerleave', () => setNoteState(noteId, false));
+		part.addEventListener('focusin', () => setNoteState(noteId, true));
+		part.addEventListener('focusout', () => setNoteState(noteId, false));
+	});
+
+	const alignMarginNotes = () => {
+		const wideLayout = window.matchMedia('(min-width: 1101px)').matches;
+		if (!wideLayout) {
+			marginNotes.forEach((note) => note.style.removeProperty('--section-note-offset'));
+			return;
+		}
+
+		marginNotes.forEach((note) => {
+			const noteId = note.dataset.noteId;
+			const reference = noteReferences.find((part) => part.dataset.noteId === noteId);
+			if (!noteId || !reference) return;
+
+			note.style.removeProperty('--section-note-offset');
+			const offset = reference.getBoundingClientRect().top - note.getBoundingClientRect().top;
+			note.style.setProperty('--section-note-offset', `${Math.max(0, offset)}px`);
+		});
+	};
+
+	alignMarginNotes();
+	window.addEventListener('resize', alignMarginNotes);
+	document.fonts?.ready.then(alignMarginNotes);
+</script>

@@ -185,11 +185,11 @@ try {
 			.replace("url: 'https://example.com/'", "url: 'https://example.com/site/'")
 			.replace("basePath: '/'", "basePath: '/site/'"),
 	);
-	const packageCheckThemePath = path.join(siteProjectRoot, 'site', 'theme.md');
-	const packageCheckTheme = await readFile(packageCheckThemePath, 'utf8');
+	const packageCheckSitewidePath = path.join(siteProjectRoot, 'site', 'sitewide-content.md');
+	const packageCheckSitewide = await readFile(packageCheckSitewidePath, 'utf8');
 	await writeFile(
-		packageCheckThemePath,
-		packageCheckTheme.replace('brand: Example Site', 'brand: Package Check Brand\n  logo:\n    alt: Package Check Logo\n    height: 2.6rem'),
+		packageCheckSitewidePath,
+		packageCheckSitewide.replace('brand: Example Site', 'brand: Package Check Brand\n  logo:\n    alt: Package Check Logo\n    height: 2.6rem'),
 	);
 	await writeFile(
 		path.join(siteProjectRoot, 'site', 'public', 'logo.svg'),
@@ -317,7 +317,7 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-body-width-desktop: var(--text-width)',
+		'--section-body-width-desktop: min(72ch, var(--text-width))',
 	);
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
