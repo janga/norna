@@ -9,7 +9,9 @@ navigation:
 
 An image stack places one or more managed images in the normal Markdown flow.
 Each source file belongs in the section's image folder, and Norna creates the
-responsive output used by the browser.
+responsive output used by the browser.{note-ref}
+
+{note: This note belongs to the introductory text above the image stack. On a wide screen it should sit in the margin and align with its reference paragraph.}
 
 ````
 ```norna-image-stack
@@ -34,7 +36,10 @@ responsive output used by the browser.
 ## Image carousel {#carousel}
 
 A carousel keeps a related group together while showing one image at a time.
-The controls, keyboard interaction and current position are provided by Norna.
+The controls, keyboard interaction and current position are provided by
+Norna.{note-ref}
+
+{note: The note remains explanatory text beside the paragraph; the carousel keeps its full managed image area below.}
 
 ```norna-image-carousel
 - image: carousel-one.svg
@@ -51,7 +56,10 @@ The controls, keyboard interaction and current position are provided by Norna.
 ## Card list {#cards}
 
 Cards are useful when several short items need the same visual treatment. The
-block controls the layout and size without requiring a component for each card.
+block controls the layout and size without requiring a component for each
+card.{note-ref}
+
+{note: This third note makes the numbering and spacing between several sidenotes visible on one page.}
 
 ```norna-card-list
 layout: image-top
