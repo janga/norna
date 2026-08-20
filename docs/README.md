@@ -45,8 +45,9 @@ For a quick reference:
 - [Content](content.md) describes page frontmatter, Markdown-authored
   sections, optional section metadata, managed media blocks, temporary sections,
   and content validation.
-- [Theme](theme.md) describes site-wide layout, layout density, image sizing,
-  font, typography rhythm, presentation palettes, and section surfaces.
+- [Theme](theme.md) describes complete visual presets, focused overrides,
+  preset export, layout, image sizing, typography, palettes, and section
+  surfaces.
 - [Typography](typography.md) describes presets, rhythms, roles, overrides,
   inheritance, and inspection commands.
 - [Routes](routes.md) describes route files, slugs, route navigation, and

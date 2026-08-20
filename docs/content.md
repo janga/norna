@@ -269,14 +269,16 @@ NORNA_TODAY=2026-08-15 npm run norna:build
 
 ## Markdown Text
 
-Inline styles use this Markdown form:
+Use ordinary Markdown for emphasis and structure:
 
 ```md
-This sentence contains [highlighted text]{.highlight}.
+This sentence contains **important text** and *emphasised text*.
 ```
 
-Inline style definitions live in `site/theme.md`. See
-[Theme](theme.md#inline-styles).
+Norna intentionally does not support arbitrary inline color or style classes.
+Deprecated syntax such as `[highlighted text]{.yellow}` is rejected by
+`content:check`. Keep the route visually coherent through its `theme.md`
+instead of styling individual phrases.
 
 ## Validation And Sync
 
@@ -288,27 +290,25 @@ npm run norna:content:check
 
 This checks section heading ids, section metadata, duplicate image names,
 missing image files, misplaced referenced images, duplicate image references,
-invalid managed media blocks, unreferenced images, undefined inline styles,
+invalid managed media blocks, unreferenced images, removed inline style syntax,
 Markdown image references to unmanaged local files, and common frontmatter
 indentation and structure mistakes.
 
 Frontmatter uses YAML indentation. Use ordinary spaces, not tabs or
 non-breaking spaces. `content:check` reports a focused error when indentation is
 invalid, when a key is indented under a line that already has a value, or when a
-known nested key such as section-specific `typography` appears at the top
-level:
+known nested key appears at the top level:
 
 ```yaml
-presentation:
-  typography:
-    preset: quiet-gallery
-    overrides:
-      body:
-        paragraphSpacing: 0.8em
+sections:
+  intro:
+    visible:
+      from: "2026-08-01"
 ```
 
 Top-level page frontmatter may contain only `title`, `description`,
-`navigation`, `presentation`, `frame`, and `sections`.
+`navigation`, and `sections`. Visual settings belong in the root or route-local
+`theme.md`.
 
 Run:
 

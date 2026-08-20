@@ -71,8 +71,8 @@ Additional pages live under `routes/`.
 
 ### Presentation
 
-`theme.md` contains site-wide visual defaults such as layout, image sizing,
-typography and colors.
+`theme.md` is required and normally selects a complete visual preset. Focused
+values in the same file can override the preset.
 
 ### Shared site content
 
@@ -99,6 +99,56 @@ Relevant documentation:
 [Content](https://github.com/janga/norna/blob/main/docs/content.md),
 [Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
 [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md).
+
+## Choose a theme {#theme}
+
+Norna includes four complete theme presets. Each one coordinates layout, image
+sizing, font and typography, spacing, palette and section surfaces:
+
+- `portfolio` for restrained, image-led presentation
+- `documentation` for reading and technical explanation
+- `project` for compact project and product sites
+- `statement` for short content that needs a stronger editorial voice
+
+A complete site theme can therefore be this short:
+
+```yaml
+---
+preset: documentation
+---
+```
+
+Add only the values that should differ from the preset:
+
+```yaml
+---
+preset: documentation
+layout:
+  pageWidth: 1320px
+presentation:
+  palette: dark
+---
+```
+
+To inspect a preset before overriding it, export a commented reference file:
+
+```sh
+npm run norna:theme:export -- documentation
+```
+
+This creates `site/orig-documentation-theme.md`. Norna does not load that file;
+only `theme.md` is active. The command refuses to overwrite an existing
+reference file.
+
+A route can select a different complete preset in its own optional `theme.md`.
+The route theme replaces the root visual theme for that route, while shared
+brand and logo settings remain site-wide.
+
+Relevant documentation:
+[Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
+[Typography](https://github.com/janga/norna/blob/main/docs/typography.md),
+[Routes](https://github.com/janga/norna/blob/main/docs/routes.md),
+[Commands](https://github.com/janga/norna/blob/main/docs/commands.md).
 
 ## Work locally and build {#workflow}
 

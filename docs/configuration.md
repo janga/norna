@@ -64,6 +64,7 @@ Visual configuration lives in `site/theme.md`, not `site/config.mjs`.
 
 Use [Theme](theme.md) for:
 
+- complete theme presets and focused overrides
 - `layout.pageWidth`
 - `layout.gutter`
 - `layout.density`

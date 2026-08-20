@@ -23,8 +23,9 @@ A `norna` site is file-driven:
 1. A site repository depends on this package.
 2. The site keeps technical settings, including public URL and optional URL
    base path, in `site/config.mjs`.
-3. The site keeps site-wide visual theme defaults, including layout, image
-   sizing, font, typography, palettes, and section surfaces, in `site/theme.md`.
+3. The site selects a complete visual preset, with optional focused overrides
+   for layout, image sizing, font, typography, palettes, and section surfaces,
+   in `site/theme.md`.
 4. The site keeps homepage content, Markdown section order, managed media
    blocks, alt text, captions, and optional section metadata in
    `site/content.md`.
@@ -81,6 +82,7 @@ Actions use the same engine version.
 - Publish under a GitHub Pages project path:
   [`site.basePath`](docs/configuration.md#sitebasepath)
 - Configure site-wide theme: [Theme](docs/theme.md)
+- Export a theme preset for inspection: [`theme:export`](docs/commands.md#command-summary)
 - Add route pages: [Routes](docs/routes.md)
 - Set page width: [`layout.pageWidth`](docs/theme.md#layout)
 - Set side gutters: [`layout.gutter`](docs/theme.md#layout)

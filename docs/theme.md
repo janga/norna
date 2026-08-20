@@ -2,48 +2,90 @@
 
 `site/theme.md` defines the site-wide visual theme for a `norna` site. It uses
 YAML frontmatter and does not need a Markdown body. The root theme file is
-required, but every setting inside it is optional and falls back to an engine
-default.
+required. The normal setup selects one complete theme preset and adds only
+focused overrides when needed.
 
 An optional `theme.md` inside a route directory replaces the root visual theme
-for that route. Route themes do not merge with the root theme: omitted values
-use engine defaults. Shared identity such as brand and logo remains site-wide
-and belongs in `sitewide-content.md`.
+for that route. Shared identity such as brand and logo remains site-wide and
+belongs in `sitewide-content.md`.
 
-## Minimal Theme
+## Theme Presets
+
+Available complete theme presets are:
+
+- `portfolio`: restrained typography and a broad image area for image-led
+  presentation.
+- `documentation`: reading-focused typography, a paper palette, and compact
+  structural rhythm.
+- `project`: compact layout and a light presentation for project and product
+  sites.
+- `statement`: airy spacing and stronger typography for short editorial
+  content.
+
+A normal `theme.md` can be only:
 
 ```yaml
 ---
-layout:
-  density: normal
-  pageWidth: 1180px
-  gutter:
-    desktop: clamp(1.25rem, 4vw, 3rem)
-    mobile: 1rem
-gallery:
-  width: 900px
-  maxAvailableWidthPercent:
-    desktop: 100
-    mobile: 100
-  maxAvailableHeightPercent:
-    desktop: 74
-    mobile: 68
-typography:
-  fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
-  preset: quiet-gallery
-  rhythm: normal
-presentation:
-  palette: dark  # Alternatives: light, paper
-  sectionSurfaces:
-    mode: cycle
-    sequence: [base, soft, emphasis]
+preset: documentation
 ---
 ```
 
-Starter sites include a marked comment block such as
-`norna:start theme-help` / `norna:end theme-help`. The block is only
-explorable help text; YAML comments do not affect rendering. The active
-configuration is the uncommented YAML below it.
+Each preset supplies coordinated values for:
+
+- layout density, page width, and gutters
+- managed image sizing
+- font family, typography preset, and typography rhythm
+- palette and section-surface behaviour
+
+The nested `typography.preset` setting documented below is a lower-level
+typography choice. A top-level theme `preset` selects the complete visual
+system, including that typography choice.
+
+## Overrides
+
+Values written beside the top-level preset override only that part of the
+preset. Other preset values remain active:
+
+```yaml
+---
+preset: documentation
+layout:
+  pageWidth: 1320px
+presentation:
+  palette: dark
+---
+```
+
+Nested objects are merged by key. Arrays such as
+`presentation.sectionSurfaces.sequence` replace the preset array when they are
+specified.
+
+It is still valid to omit the top-level preset and define the visual settings
+explicitly. Omitted explicit settings then use engine defaults. This is useful
+for focused testing, but selecting a complete preset is the simpler normal
+workflow.
+
+## Export A Preset
+
+Export the installed definition of a preset before choosing overrides:
+
+```sh
+norna theme:export documentation
+```
+
+In a generated site, the equivalent npm command is:
+
+```sh
+npm run norna:theme:export -- documentation
+```
+
+The command creates `site/orig-documentation-theme.md`, or the corresponding
+path under the selected site directory. The file contains the preset values,
+comments describing accepted alternatives, and an example of a fine-grained
+typography override.
+
+Norna never loads `orig-*-theme.md`; only `theme.md` is active. The export
+command refuses to overwrite an existing reference file.
 
 Site identity is not part of the visual theme. Define the optional navigation
 brand and logo settings in `site/sitewide-content.md`; see [Sitewide Content](sitewide-content.md).
@@ -203,9 +245,19 @@ visual expression:
 site/routes/010-guide/theme.md
 ```
 
-The route theme uses the same visual schema as the root theme. It completely
-replaces the root visual theme for that route, so include every non-default
-visual choice the route needs. It cannot define navigation, brand, logo, or
+The route theme uses the same visual schema and complete presets as the root
+theme. A route can therefore select a different expression without repeating a
+large configuration:
+
+```yaml
+---
+preset: statement
+---
+```
+
+It completely replaces the root visual theme for that route. If the route
+theme selects no top-level preset, omitted values use engine defaults rather
+than values from the root theme. It cannot define navigation, brand, logo, or
 technical configuration.
 
 Section surfaces render as full-width horizontal bands while the section

@@ -31,15 +31,16 @@ site directory. Without an explicit site directory, commands first accept the
 current directory when it contains both `config.mjs` and `content.md`.
 Otherwise, commands started from a subdirectory walk upward until they find the
 default `site/` directory containing those files.
-`theme.md` is optional; omit it to use the engine's built-in visual defaults.
+`theme.md` is required. It can contain only a complete preset selection.
 
 ## Versioned Source Files
 
 Version these files in a site repository:
 
 - `site/config.mjs`: technical site configuration.
-- `site/theme.md`: optional site-wide visual theme, including layout, spacing,
-  image sizing, font, typography defaults, palettes, and section surfaces.
+- `site/theme.md`: required site-wide visual theme. It normally selects a
+  complete preset and may add focused layout, image, typography, palette, or
+  section-surface overrides.
   See [Theme](theme.md).
 - `site/sitewide-content.md`: shared site identity, banners and footer content.
   See [Sitewide Content](sitewide-content.md).

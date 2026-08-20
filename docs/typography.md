@@ -3,12 +3,20 @@
 `norna` typography is configured in `site/theme.md` through a site-wide font,
 presets, text rhythm, and optional overrides.
 
-The normal place to choose a site-wide typography preset and rhythm is the
-top-level `typography` block in `site/theme.md`.
-Page and section files may override the theme when a focused exception is
-needed, but the normal workflow is to keep typography in `theme.md`.
+The normal workflow is to select a complete top-level theme preset. It already
+chooses a coordinated font, typography preset, and rhythm:
 
-## Presets
+```yaml
+---
+preset: documentation
+---
+```
+
+Use the nested `typography` block only when those typographic choices need to
+differ from the selected theme preset. Typography is configured at root-theme
+or route-theme level, not in page or section content.
+
+## Typography Presets
 
 Available presets:
 
@@ -21,7 +29,9 @@ Available presets:
 - `statement`: tighter, more declarative line-height for short programmatic
   statements. Use it sparingly, usually as a page or section exception.
 
-If theme typography is omitted, `quiet-gallery` is used.
+If a complete top-level theme preset is selected, that preset supplies the
+typography choice. If both the top-level preset and nested typography are
+omitted, the engine default is `quiet-gallery`.
 
 Presets define alignment, size, weight, and line height for `headings.h1`
 through `headings.h4`, `body`, and `caption`. They also choose a readable body
@@ -142,29 +152,34 @@ Supported override fields:
 
 ## Route Themes
 
-Theme typography is the site-wide base:
-
-```yaml
-# site/theme.md
-typography:
-  fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
-  preset: quiet-gallery
-  rhythm: normal
-```
-
-A route-local `theme.md` can give that route a different typographic character.
-The route theme replaces the root visual theme rather than inheriting from it,
-so repeat any non-default `fontFamily`, `rhythm`, or `overrides` that the route
-still needs.
-
-Example route theme:
+The simplest route-specific typography change is to select a complete theme
+preset:
 
 ```yaml
 # site/routes/010-introduction/theme.md
+---
+preset: statement
+---
+```
+
+A route-local `theme.md` replaces the root visual theme rather than inheriting
+from it. The complete preset supplies a coherent route theme without repeating
+the root values.
+
+Use a nested typography choice when only the typographic character needs to be
+specified explicitly:
+
+```yaml
+# site/routes/010-introduction/theme.md
+---
 typography:
   preset: statement
   rhythm: normal
+---
 ```
+
+Without a top-level theme preset, other omitted route-theme values use engine
+defaults rather than values from the root theme.
 
 The `body.width` value controls the prose column independently of the page and
 image widths. Captions are normally centered, but `text-forward` uses

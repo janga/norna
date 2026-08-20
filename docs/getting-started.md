@@ -92,9 +92,8 @@ Relevant documentation: [Commands](commands.md), [Site Structure](site-structure
    repository, and deploy settings.
 2. Edit `site/sitewide-content.md` for the shared brand or logo, banners and
    footer content.
-3. Edit `site/theme.md` for site-wide layout, layout density, typography
-   rhythm, image sizing, font, typography preset, palettes, and section
-   surfaces, or omit it to use engine defaults.
+3. Keep `site/theme.md` and select a complete theme preset. Add focused visual
+   overrides only when the preset needs adjustment.
 4. Edit `site/content.md` for homepage title, description, Markdown sections,
    text, Norna managed media blocks, alt text, and captions.
 5. Put source images under `site/images/<section-id>/`, where `<section-id>`
@@ -123,6 +122,42 @@ publishing.
 
 Relevant documentation: [Content](content.md), [Theme](theme.md),
 [Typography](typography.md), [Routes](routes.md), [Images And Metadata](images-and-metadata.md).
+
+## Choose A Theme
+
+The required root `theme.md` can be deliberately short:
+
+```yaml
+---
+preset: project
+---
+```
+
+Available complete presets are `portfolio`, `documentation`, `project`, and
+`statement`. They coordinate layout, image sizing, font, typography, spacing,
+palette, and section surfaces.
+
+Override only what the site needs to change:
+
+```yaml
+---
+preset: project
+layout:
+  pageWidth: 1240px
+---
+```
+
+Export a commented reference for a preset with:
+
+```sh
+npm run norna:theme:export -- project
+```
+
+The generated `site/orig-project-theme.md` is reference material and is not
+loaded by Norna. The command does not overwrite an existing reference file.
+
+Relevant documentation: [Theme](theme.md), [Typography](typography.md),
+[Commands](commands.md).
 
 ## Configure The Public URL
 
@@ -159,13 +194,13 @@ Read [Site Structure](site-structure.md), [Content](content.md),
 [Theme](theme.md), [Typography](typography.md), [Routes](routes.md), and
 [Configuration](configuration.md) before publishing a real site.
 
-To change the site's maximum page width, side gutters, layout density,
-typography rhythm, image width, image height limits, font, palettes, or
-site-wide typography preset, edit `site/theme.md`. See [Theme](theme.md) for
-the accepted shape.
+To change the site's overall visual expression, select a top-level preset in
+`site/theme.md`. Override individual page-width, gutter, image, typography, or
+palette values only where needed. See [Theme](theme.md) for the accepted shape.
 
-To give a route a different visual expression, add a complete route-local
-`theme.md`. See [Theme](theme.md#route-themes) and [Typography](typography.md).
+To give a route a different visual expression, add a route-local `theme.md`
+and normally select another complete top-level preset. See
+[Theme](theme.md#route-themes) and [Typography](typography.md).
 Use `norna typography presets` to inspect the installed preset and rhythm values
 and `norna typography show` to inspect the resolved typography for the selected
 site.

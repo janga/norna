@@ -10,7 +10,8 @@ for the page and section model.
 
 Route directories can contain route content, route-local images, and
 an optional route-local `theme.md`. The route theme replaces the root visual
-theme for that route. Route directories cannot contain technical site
+theme for that route and can select any complete top-level theme preset. Route
+directories cannot contain technical site
 configuration; technical configuration stays in the selected site directory's
 top-level `config.mjs`.
 
