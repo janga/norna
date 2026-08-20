@@ -1,42 +1,42 @@
 {
-  "images/intro/workflow.svg": {
-    "kind": "static",
-    "outputVersion": 2,
-    "sourceHash": "6f08e30be637cc2a6c201695ab050fbd105896a0bfd3e0d6991b4723113320d9",
-    "src": "/images/original/images/intro/workflow-6f08e30b.svg",
-    "width": 900,
-    "height": 300
-  },
-  "routes/010-concepts/images/multi-page-site/multi-page-site-v2.svg": {
-    "kind": "static",
-    "outputVersion": 2,
-    "sourceHash": "67ec3c4e5916b125e2d0ba55e9452f6518f1dfb1460ed2b601a3c577579a7e2e",
-    "src": "/images/original/routes/010-concepts/images/multi-page-site/multi-page-site-v2-67ec3c4e.svg",
-    "width": 1080,
-    "height": 620
-  },
   "routes/010-concepts/images/multi-page-site/multi-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "47e6295cab01c4860d15003e8fa86b1e84d6a5f9d288fc32b3f6774f9e5a183d",
-    "src": "/images/original/routes/010-concepts/images/multi-page-site/multi-page-site-47e6295c.svg",
-    "width": 1080,
-    "height": 520
-  },
-  "routes/010-concepts/images/single-page-site/single-page-site-v2.svg": {
-    "kind": "static",
-    "outputVersion": 2,
-    "sourceHash": "6d5508ec732f665667ab14a8583ee75fa33a6d3d2e88e0e6634e6ca100d1be74",
-    "src": "/images/original/routes/010-concepts/images/single-page-site/single-page-site-v2-6d5508ec.svg",
+    "sourceHash": "bfb37a6a45d03bba71d5e657c07d6cbea422750a8b1d4e4f5bf22f2dddf3881d",
+    "src": "/images/original/routes/010-concepts/images/multi-page-site/multi-page-site-bfb37a6a.svg",
     "width": 1080,
     "height": 620
   },
   "routes/010-concepts/images/single-page-site/single-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "d04489cfb30b95a2456c841dc166df4e9bf2591bab01974cc04fdc49695c8920",
-    "src": "/images/original/routes/010-concepts/images/single-page-site/single-page-site-d04489cf.svg",
+    "sourceHash": "f5bdee1d1ec69e3c9b3bb6b3bad1b1634e675c0410b7f4ae7778dcc2961fd9f3",
+    "src": "/images/original/routes/010-concepts/images/single-page-site/single-page-site-f5bdee1d.svg",
     "width": 1080,
-    "height": 520
+    "height": 620
+  },
+  "routes/010-concepts/images/site-model/site-model.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "e6033ebecf1a2820d793497b95d69f06e8a2298d4719dc7016892c5f2c7df7ed",
+    "src": "/images/original/routes/010-concepts/images/site-model/site-model-e6033ebe.svg",
+    "width": 900,
+    "height": 250
+  },
+  "routes/020-getting-started/images/publish/publishing-workflow.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "e4d81313bf72b3924655248f523712b713b6713a621db537b96fcfff49721ad1",
+    "src": "/images/original/routes/020-getting-started/images/publish/publishing-workflow-e4d81313.svg",
+    "width": 900,
+    "height": 280
+  },
+  "routes/020-getting-started/images/workflow/local-workflow.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "2ee375687d2686e0e0a03dea2a1284a317b9979556a8f980d12245f50479fb35",
+    "src": "/images/original/routes/020-getting-started/images/workflow/local-workflow-2ee37568.svg",
+    "width": 900,
+    "height": 280
   }
 }

@@ -1,6 +1,6 @@
 ---
 title: Examples
-description: See the kinds of small static websites Norna's opinionated site model is designed to build.
+description: See the kinds of websites Norna's opinionated site model is designed to build.
 navigation:
   label: Examples
 ---
@@ -9,9 +9,8 @@ navigation:
 
 Norna is not tied to one particular type of website.
 
-The common factor is that the site is relatively small, mostly static and fits
-well within a defined model of content, presentation, configuration, routes and
-assets.
+The common factor is that the site is content-driven and fits well within a
+defined model of content, presentation, configuration, routes and assets.
 
 ## Common site types {#site-types}
 
@@ -25,7 +24,7 @@ width: normal
 - title: Portfolio or artist website
   text: Combine written presentation with image stacks, carousels and captions.
 - title: Documentation or guide
-  text: Introduce a small project and organise additional topics as routes.
+  text: Introduce a project and organise additional topics as routes.
 - title: Personal or organisation website
   text: Publish a compact information site with ordinary files and a shared visual presentation.
 - title: Image-driven site

@@ -56,6 +56,7 @@ Relevant documentation:
 site/
   config.mjs
   theme.md
+  sitewide-content.md
   content.md
   routes/
   images/
@@ -73,10 +74,15 @@ Additional pages live under `routes/`.
 `theme.md` contains site-wide visual defaults such as layout, image sizing,
 typography and colors.
 
+### Shared site content
+
+`sitewide-content.md` contains shared identity such as the brand or logo, plus
+banners and footer content.
+
 ### Configuration
 
 `config.mjs` contains technical settings such as public URL, base path, language
-labels, footer and GitHub publishing configuration.
+labels and GitHub publishing configuration.
 
 ### Assets
 
@@ -104,6 +110,19 @@ npm run dev
 
 Edit the source files while the development server is running. You normally do
 not edit generated website code or create a separate template/component layer.
+
+<!-- norna-image-provenance:
+image: local-workflow.svg
+source: hand-authored
+Hand-authored SVG diagram created for the Norna introduction site to show the
+local edit-and-preview loop and the check before committing.
+-->
+
+```norna-image-stack
+- image: local-workflow.svg
+  alt: Edit the site files and preview locally in a repeating loop. Run the local checks when the result is ready.
+  caption: Local workflow: edit and preview until the site is ready, then run the local checks before committing.
+```
 
 ### Check and build
 
@@ -157,6 +176,20 @@ publish the generated `dist/` output.
 Publishing is normally done by committing the site files and pushing them with
 Git. The included GitHub Pages workflow runs the required checks before
 publishing.
+
+<!-- norna-image-provenance:
+image: publishing-workflow.svg
+source: hand-authored
+Hand-authored SVG diagram created for the Norna introduction site to show that
+the included GitHub workflow automatically checks, builds and publishes after a
+push.
+-->
+
+```norna-image-stack
+- image: publishing-workflow.svg
+  alt: Commit the site and push to GitHub. The included GitHub workflow automatically checks, builds and publishes the site to GitHub Pages.
+  caption: Publishing workflow: push committed changes to GitHub, where the included workflow checks, builds and publishes to GitHub Pages automatically.
+```
 
 Other static hosting services can technically serve static files, but Norna does
 not currently provide publishing integrations for them.

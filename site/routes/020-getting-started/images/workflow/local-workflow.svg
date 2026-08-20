@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 280" role="img" aria-labelledby="title desc">
+  <title id="title">Local Norna workflow</title>
+  <desc id="desc">Edit the site files and preview locally in a repeating loop. Run the local checks when the result is ready.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M2 2 L10 6 L2 10" fill="none" stroke="#b89f48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <g transform="translate(80 45)">
+      <rect width="270" height="130" rx="14" fill="#182126" stroke="#52626b" stroke-width="2"/>
+      <path d="M30 34h42M30 47h60M30 60h49" stroke="#d8c47a" stroke-width="4" stroke-linecap="round"/>
+      <text x="135" y="91" text-anchor="middle" fill="#f2eee6" font-size="25" font-weight="700">Edit site files</text>
+    </g>
+    <path d="M383 110h134" stroke="#b89f48" stroke-width="5" stroke-linecap="round" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <g transform="translate(550 45)">
+      <rect width="270" height="130" rx="14" fill="#d8c47a"/>
+      <rect x="54" y="26" width="162" height="65" rx="5" fill="#f8f5ee" stroke="#101417" stroke-width="2"/>
+      <path d="M54 40h162" stroke="#101417" stroke-width="2"/>
+      <circle cx="66" cy="33" r="3" fill="#101417"/>
+      <circle cx="77" cy="33" r="3" fill="#101417"/>
+      <text x="135" y="116" text-anchor="middle" fill="#101417" font-size="25" font-weight="700">Preview locally</text>
+    </g>
+    <path d="M685 181v31H450" stroke="#64747c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" marker-end="url(#arrow)"/>
+    <g transform="translate(300 220)">
+      <rect width="300" height="46" rx="10" fill="#eef2f0" stroke="#aeb8b3" stroke-width="2"/>
+      <text x="150" y="30" text-anchor="middle" fill="#101417" font-size="18" font-weight="700">Check before committing</text>
+    </g>
+  </g>
+</svg>

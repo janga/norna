@@ -1,6 +1,4 @@
 ---
-navigation:
-  brand: Norna
 layout:
   density: compact
   pageWidth: 1240px
@@ -35,7 +33,8 @@ typography:
         mobile: left
       paragraphSpacing: 0.82em
 presentation:
-  palette: dark  # Alternatives: light, paper
+  palette: paper  # Alternatives: dark, light
   sectionSurfaces:
     mode: cycle
+    sequence: [base, soft]
 ---

@@ -1,87 +1,64 @@
 ---
 title: Norna
 description:
-  An opinionated CLI for building small static websites from content,
-  presentation and configuration kept as files.
+  An opinionated CLI for building websites from content, presentation and
+  configuration kept as files.
 navigation:
   label: Home
 ---
 
-## Norna {#intro}
+## What is Norna? {#intro}
 
-**An opinionated CLI for building small websites from plain files.**
+**Norna is an opinionated, open source CLI for building websites from plain
+files.**
 
-Norna turns Markdown, images and a small set of configuration files into a
-responsive static website.
+A Norna site combines Markdown content, local images, a theme, technical
+configuration and optional routes. These files follow a defined structure, so
+Norna can understand how pages, sections and assets belong together.
 
-You keep the site as ordinary files, but not as an arbitrary pile of files.
-Norna gives them a defined structure: content files for text, image folders next
-to the content they belong to, a theme file for visual choices, and a config
-file for the few technical settings the site needs.
+You describe the site rather than implement it. Norna provides the presentation
+layer, including page structure, navigation, responsive layout and built-in
+patterns for images and other common content.
 
-Markdown stays the main writing format, with a few small Norna blocks for common
-site patterns such as image stacks, carousels and cards.
-
-That structure removes a lot of small decisions. Keep images where Norna expects
-them, and let the tool handle validation, image syncing, responsive image
-output, static builds and publishing checks.
-
-<!-- norna-image-provenance:
-image: workflow.svg
-source: hand-authored
-Hand-authored SVG diagram created for the Norna introduction site to separate
-the build step from publishing and show GitHub Pages as the publishing target
-included today.
--->
-
-```norna-image-stack
-- image: workflow.svg
-  alt: Norna turns site files into static website output in dist. GitHub Pages publishing is included today, while a dashed branch shows possible future integrations with other static hosts.
-```
+The CLI lets you preview the site while editing, validate its source, process
+managed images and build the finished website. The source remains ordinary
+files that you can inspect, edit and version with the rest of your work.
 
 ## Why Norna? {#why}
 
-### Better browsing experience
+Norna is designed to make a site coherent before you start polishing individual
+pages.
 
-Norna handles many of the small technical details that affect how the finished
-site feels in the browser.
+```norna-card-list
+flow: grid
+size: m
+width: normal
+- title: Fewer decisions, useful defaults
+  text: Presets, palettes and ready-made content patterns establish a coherent site without assembling a custom presentation system.
+- title: Responsive images without the routine
+  text: Work with source images while Norna prepares responsive output and sensible loading behaviour for the finished site.
+- title: Files that stay manageable
+  text: Plain files work naturally with Git and AI-assisted editing, while Norna helps keep content and images organised.
+```
 
-The site is responsive by default. Norna makes early images load first, and lets
-later images wait until the first images have loaded.
+The browsing benefits are part of the normal workflow. Norna creates image
+versions for different screen sizes, gives early images priority and lets later
+images load lazily. Only new or changed images need to be processed, and changed
+images get fresh URLs so browsers do not keep showing old versions.
 
-### Easier maintenance
+Maintenance stays close to the source. You can inspect changes, review them in
+Git and return to a safe version when something goes wrong. An AI assistant can
+work with the same Markdown, image folders, theme and configuration files that
+you review.
 
-Because a Norna site is plain files, it fits naturally with Git. You can inspect
-changes, review them, commit them, and go back to a safe version when something
-goes wrong.
-
-The file-based model also works well with AI-assisted editing. An assistant can
-draft, rewrite, reorganise or explain the site by working with the same
-Markdown, image folders, theme and configuration files that you review.
-
-When content is reorganised, Norna helps keep related image files aligned with
-the site structure, so file organisation does not become manual bookkeeping.
-During local work, the dev server refreshes image output when content, images or
-route folders change, so the preview stays in step with the files.
-
-Image publishing stays efficient too. Norna creates image versions for different
-screen sizes, but only for new or changed images. Unchanged images can be
-reused, and changed images get fresh URLs so browsers do not keep showing old
-versions.
-
-### Less website implementation
-
-Norna gives small sites a defined presentation model instead of asking every
-site to assemble templates, layouts, components, image handling and publishing
-checks from scratch.
-
-The trade-off is deliberate: fewer layout decisions and less implementation
-work, in exchange for staying inside Norna's site model.
+These benefits come from Norna owning more of the presentation layer. The
+trade-off is deliberate: fewer layout decisions and less implementation work, in
+exchange for staying inside Norna's site model.
 
 ## When is Norna a good fit? {#good-fit}
 
-Norna is for small websites that should be easy to edit, review and publish as
-part of an ordinary file-based workflow.
+Norna is for websites that should be easy to edit, review and publish as part of
+an ordinary file-based workflow.
 
 ### Good fit
 
@@ -89,7 +66,7 @@ part of an ordinary file-based workflow.
 - documentation and guides
 - portfolios, artist websites and image-driven presentation sites
 - personal websites
-- small organisation and information sites
+- organisation and information sites
 
 Norna is a good fit when you want a site that stays simple to change: content in
 ordinary files, clear places for images and pages, and a ready-made presentation

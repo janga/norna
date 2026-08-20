@@ -1,4 +1,6 @@
 ---
+navigation:
+  brand: Norna
 banners:
   - id: project-status3
     tone: warning
