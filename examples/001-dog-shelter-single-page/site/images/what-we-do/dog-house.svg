@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">Dog at a shelter house</title>
+  <desc id="desc">A friendly brown dog stands at the entrance to a red wooden dog house.</desc>
+  <rect width="800" height="520" rx="32" fill="#eef3ef"/>
+  <path d="M0 405 Q180 365 380 405 T800 390 V520 H0Z" fill="#cad8bd"/>
+  <g stroke="#493c2b" stroke-width="8" stroke-linejoin="round">
+    <path d="M190 247 L400 82 L610 247" fill="#9f493a"/>
+    <path d="M236 222 H564 V432 H236Z" fill="#c8674f"/>
+    <path d="M327 432 V300 Q327 234 400 234 Q473 234 473 300 V432Z" fill="#332d29"/>
+    <path d="M213 244 L400 94 L587 244" fill="none" stroke="#7f3f32" stroke-width="24" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(310 250)" stroke="#493c2b" stroke-width="6" stroke-linejoin="round">
+    <path d="M40 119 C47 80 93 64 142 76 C181 86 196 119 184 158 H58 C42 151 34 135 40 119Z" fill="#b8794d"/>
+    <path d="M62 94 C45 61 58 23 96 13 C133 3 169 27 168 64 C167 93 145 108 112 109 H76Z" fill="#b8794d"/>
+    <path d="M76 32 L53 3 L98 17" fill="#8c573a"/>
+    <path d="M143 25 L171 3 L164 46" fill="#8c573a"/>
+    <circle cx="92" cy="53" r="6" fill="#272522" stroke="none"/>
+    <circle cx="140" cy="53" r="6" fill="#272522" stroke="none"/>
+    <ellipse cx="116" cy="76" rx="25" ry="19" fill="#dca477"/>
+    <circle cx="116" cy="70" r="7" fill="#272522" stroke="none"/>
+    <path d="M105 84 Q116 96 129 84" fill="none" stroke-linecap="round"/>
+    <path d="M59 154 V188 M94 154 V188 M145 154 V188" fill="none" stroke-linecap="round"/>
+    <path d="M177 105 Q220 80 211 39" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
