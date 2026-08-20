@@ -2,6 +2,7 @@ import {
 	defaultTypography,
 	resolveTypographyConfig,
 } from './typography.mjs';
+import { resolveThemeConfig } from './theme-presets.mjs';
 
 export const presentationPaletteNames = ['dark', 'light', 'paper'];
 
@@ -92,8 +93,8 @@ export const getPresentationCssVariables = (presentation) => {
 	};
 };
 
-export const resolveThemePresentation = (theme) => {
-	const normalizedTheme = theme ?? {};
+export const resolveThemePresentation = (theme, sourceLabel = 'theme.md') => {
+	const normalizedTheme = resolveThemeConfig(theme, sourceLabel);
 	const normalizedThemePresentation = normalizePresentation(normalizedTheme.presentation);
 	const paletteName = normalizedThemePresentation.palette ?? 'dark';
 	const palette = getPresentationPalette(paletteName);
@@ -109,8 +110,8 @@ export const resolveThemePresentation = (theme) => {
 	};
 };
 
-export const resolvePagePresentation = (theme) => {
-	const resolvedThemePresentation = resolveThemePresentation(theme);
+export const resolvePagePresentation = (theme, sourceLabel) => {
+	const resolvedThemePresentation = resolveThemePresentation(theme, sourceLabel);
 
 	return resolvedThemePresentation;
 };
@@ -126,4 +127,4 @@ export const resolveSectionSurface = (pagePresentation, sectionIndex) => {
 	};
 };
 
-export const resolveFrameColors = ({ theme }) => resolveThemePresentation(theme).palette.frame;
+export const resolveFrameColors = ({ theme, sourceLabel }) => resolveThemePresentation(theme, sourceLabel).palette.frame;

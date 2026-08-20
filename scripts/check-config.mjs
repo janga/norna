@@ -20,7 +20,7 @@ const formatErrorMessage = (error) => {
 
 try {
 	const { projectConfig } = await import('./lib/project-config.mjs');
-	await readThemeConfig();
+	const themeConfig = await readThemeConfig();
 	const sitewideConfig = await readSitewideConfig();
 	await validateRouteThemeFiles();
 	const logoAssets = getLogoAssets();
@@ -42,6 +42,7 @@ try {
 	console.log('Config check passed.');
 	console.log(`Site URL: ${projectConfig.site.url}`);
 	console.log(`Base path: ${projectConfig.site.basePath}`);
+	console.log(`Theme preset: ${themeConfig.preset ?? '(none)'}`);
 	console.log(`Page width: ${projectConfig.layout.pageWidth}`);
 	console.log(`Gutter: desktop ${projectConfig.layout.gutter.desktop}, mobile ${projectConfig.layout.gutter.mobile}`);
 	console.log(`Layout density: ${projectConfig.layout.density}`);

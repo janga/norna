@@ -21,8 +21,8 @@ const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const deprecatedInlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
 const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'sections']);
-const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation']);
-const knownRouteThemeTopLevelFrontmatterKeys = new Set(['navigation', 'layout', 'gallery', 'typography', 'presentation']);
+const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'gallery', 'typography', 'presentation']);
+const knownRouteThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'gallery', 'typography', 'presentation']);
 const knownSitewideTopLevelFrontmatterKeys = new Set(['navigation', 'banners', 'footer']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',

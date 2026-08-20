@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { findMap } from './lib/frontmatter-yaml.mjs';
+import { parseYamlMapping } from './lib/frontmatter-yaml.mjs';
 import {
 	defaultTypography,
 	resolveTypographyConfig,
@@ -25,6 +25,7 @@ import {
 	siteThemeLabel,
 	siteThemePath,
 } from './lib/site-paths.mjs';
+import { resolveThemeConfig } from './lib/theme-presets.mjs';
 
 const mode = process.argv[2] ?? 'show';
 
@@ -204,8 +205,8 @@ const readThemeTypography = async () => {
 		].join('\n'));
 	}
 
-	const themeLines = themeFrontmatterBody.split(/\r?\n/);
-	const themeTypographyConfig = findMap(themeLines, 'typography', 0, themeLines.length, 0)?.value;
+	const themeConfig = resolveThemeConfig(parseYamlMapping(themeFrontmatterBody), siteThemeLabel);
+	const themeTypographyConfig = themeConfig.typography;
 	return resolveAnnotatedTypographyConfig(themeTypographyConfig ?? defaultTypography, siteThemeLabel);
 };
 
@@ -231,8 +232,8 @@ const readRouteThemeTypography = async (contentFile, themeTypography) => {
 		].join('\n'));
 	}
 
-	const lines = frontmatterBody.split(/\r?\n/);
-	const typographyConfig = findMap(lines, 'typography', 0, lines.length, 0)?.value;
+	const routeThemeConfig = resolveThemeConfig(parseYamlMapping(frontmatterBody), routeThemeLabel);
+	const typographyConfig = routeThemeConfig.typography;
 	return resolveAnnotatedTypographyConfig(typographyConfig ?? defaultTypography, routeThemeLabel);
 };
 

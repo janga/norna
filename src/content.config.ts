@@ -15,6 +15,7 @@ const textSize = z.enum(['small', 'medium', 'large', 'xlarge']);
 const textWidth = z.enum(['narrow', 'normal', 'wide']);
 const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z.literal(700)]);
 const typographyPreset = z.enum(['quiet-gallery', 'compact-gallery', 'text-forward', 'statement']);
+const themePreset = z.enum(['portfolio', 'documentation', 'project', 'statement']);
 const presentationPalette = z.enum(['dark', 'light', 'paper']);
 const sectionSurfaceMode = z.enum(['none', 'cycle']);
 const sectionSurface = z.enum(['base', 'soft', 'emphasis']);
@@ -197,6 +198,7 @@ const siteSchema = z.object({
 });
 
 export const themeVisualSchema = z.object({
+	preset: themePreset.optional(),
 	layout: themeLayout.optional(),
 	gallery: themeGallery.optional(),
 	typography: themeTypography.optional(),

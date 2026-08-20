@@ -45,6 +45,7 @@ try {
 	assert.equal(initializedPackageJson.dependencies['@janga/norna'], packageJson.version);
 	assert.equal(initializedPackageJson.scripts['norna:engine:update'], 'norna engine:update');
 	assert.equal(initializedPackageJson.scripts['norna:engine:version'], 'norna engine:version');
+	assert.equal(initializedPackageJson.scripts['norna:theme:export'], 'norna theme:export');
 	assert.equal(initializedPackageJson.scripts['engine:update'], undefined);
 	assert.equal(initializedPackageJson.scripts['engine:version'], undefined);
 

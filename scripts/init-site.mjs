@@ -133,6 +133,7 @@ const galleryScripts = {
 	'norna:config:check': cliCommand('config:check'),
 	'norna:content:check': cliCommand('content:check'),
 	'norna:sync': cliCommand('content:sync'),
+	'norna:theme:export': cliCommand('theme:export'),
 	'norna:typography:presets': cliCommand('typography presets'),
 	'norna:typography:show': cliCommand('typography show'),
 	'norna:public': cliCommand('site:public'),

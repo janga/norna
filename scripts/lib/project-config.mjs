@@ -1,6 +1,7 @@
 import { pathToFileURL } from 'node:url';
 import { siteConfigLabel, siteConfigPath, siteThemeLabel } from './site-paths.mjs';
 import { readThemeConfig } from './theme-config.mjs';
+import { resolveThemeConfig } from './theme-presets.mjs';
 
 const { default: siteConfig } = await import(/* @vite-ignore */ pathToFileURL(siteConfigPath).href);
 const themeConfig = await readThemeConfig();
@@ -338,7 +339,7 @@ const layoutDensityProfiles = Object.freeze({
 	}),
 });
 export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) => {
-	const rawThemeConfig = assertObject(theme ?? {}, 'theme frontmatter', sourceLabel);
+	const rawThemeConfig = assertObject(resolveThemeConfig(theme, sourceLabel), 'theme frontmatter', sourceLabel);
 	const rawLayoutConfig = assertObject(rawThemeConfig.layout ?? {}, 'layout', sourceLabel);
 	const rawLayoutSpacingConfig = assertObject(rawLayoutConfig.spacing ?? {}, 'layout.spacing', sourceLabel);
 	const rawGalleryConfig = assertObject(rawThemeConfig.gallery ?? {}, 'gallery', sourceLabel);
