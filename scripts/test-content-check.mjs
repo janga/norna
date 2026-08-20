@@ -214,6 +214,58 @@ This has [yellow text]{.yellow}.
 	});
 });
 
+const inlineNoteSite = `---
+title: Inline notes
+description: Fixture
+---
+## Intro {#intro}
+This paragraph has a note reference.{note-ref}
+
+{note: Additional context.}
+
+\`\`\`text
+{note-ref}
+{note: This is code, not a note.
+\`\`\`
+`;
+
+test('content:check accepts valid inline notes and ignores note syntax in code fences', async () => {
+	await withTempProject({ site: inlineNoteSite, files: [] }, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 0, output);
+		assert.match(output, /Content check passed\./);
+	});
+});
+
+test('content:check rejects unpaired and repeated inline notes', async () => {
+	await withTempProject({
+		site: `---
+title: Invalid inline notes
+description: Fixture
+---
+## Orphan {#orphan}
+{note: This note has no reference.}
+
+## Missing {#missing}
+This reference has no note.{note-ref}
+
+## Repeated {#repeated}
+This paragraph has {note-ref} two references {note-ref}.
+`,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 1, output);
+		assert.match(output, /A "\{note: \.\.\.\}" requires a preceding paragraph containing "\{note-ref\}"\./);
+		assert.match(output, /contains "\{note-ref\}" but has no following "\{note: \.\.\.\}"/);
+		assert.match(output, /A paragraph may contain only one "\{note-ref\}"\./);
+	});
+});
+
 const badWhitespaceSite = `---
 presentation:
   typography:

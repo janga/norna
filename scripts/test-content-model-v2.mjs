@@ -279,70 +279,28 @@ description: Fixture
 	}
 });
 
-test('norna-note renders Markdown beside text and stays inline after media', async () => {
+test('inline notes render as linked numbered margin notes', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await mkdir(path.join(siteDir, 'images', 'intro'), { recursive: true });
-		await writeFile(
-			path.join(siteDir, 'images', 'intro', 'diagram.svg'),
-			'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620"><rect width="900" height="620"/></svg>\n',
-		);
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Notes
+title: Inline notes
 description: Fixture
 ---
 
 ## Intro {#intro}
 
-The main paragraph comes first.
+The paragraph points to an explanation.{note-ref}
 
-\`\`\`norna-note
-**Context**
-
-This note is rendered as Markdown beside the paragraph.
-\`\`\`
-
-\`\`\`norna-image-stack
-- image: diagram.svg
-\`\`\`
-
-\`\`\`norna-note
-This note follows media and stays in the text flow.
-\`\`\`
+{note: This explanation is kept beside the paragraph on wide screens.}
 `);
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
-		assert.match(html, /class="section-note section-note-margin"/);
-		assert.match(html, /<strong>Context<\/strong>/);
-		assert.match(html, /class="section-note section-note-inline"/);
-	} finally {
-		await rm(root, { recursive: true, force: true });
-	}
-});
-
-test('content:check rejects images inside norna-note', async () => {
-	const { root, siteDir } = await createTempSite();
-	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Invalid Note
-description: Fixture
----
-
-## Intro {#intro}
-
-\`\`\`norna-note
-![Image](image.jpg)
-\`\`\`
-`);
-
-		await assert.rejects(
-			() => runContentScript(siteDir, ['--check']),
-			(error) => {
-				assert.match(error.output, /norna-note cannot contain images\. Use a Norna image block with a caption instead\./);
-				return true;
-			},
-		);
+		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-1" href="#note-home-intro-1" aria-label="Note 1">1<\/a><\/sup>/);
+		assert.match(html, /<aside class="section-note section-note-margin" id="note-home-intro-1" aria-label="Note">/);
+		assert.match(html, /<a class="section-note-number" href="#note-ref-home-intro-1" aria-label="Note 1">\s*1\s*<\/a>/);
+		assert.match(html, /This explanation is kept beside the paragraph on wide screens\./);
+		assert.doesNotMatch(html, /\{note:/);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -990,9 +948,36 @@ description: Fixture
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list, norna-note\./);
+				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list\./);
 				assert.match(error.output, /Use norna-image-stack for one or more stacked images\./);
 				assert.match(error.output, /Example: ```norna-image-stack\n- image: filename\.jpg\n```/);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check rejects the removed norna-note block', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+title: Removed note block
+description: Fixture
+---
+
+## Intro {#intro}
+
+\`\`\`norna-note
+This block is no longer supported.
+\`\`\`
+`);
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Unknown Norna block "norna-note"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list\./);
 				return true;
 			},
 		);
