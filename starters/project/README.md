@@ -20,8 +20,9 @@ npm run dev -- --kill
 
 - `site/config.mjs`: technical settings such as URL, language labels, GitHub
   repository, and deploy workflow.
-- `site/theme.md`: site-wide visual settings such as brand text, layout
-  density, typography rhythm, palettes, section surfaces, and typography.
+- `site/sitewide-content.md`: shared brand or logo, banners and footer content.
+- `site/theme.md`: site-wide visual settings such as layout density, typography
+  rhythm, palettes, section surfaces, and typography.
 - `site/content.md`: homepage title, sections, placeholders, project summary,
   links, install command, example usage, benefits, next steps, managed media
   blocks, and license.
@@ -39,13 +40,14 @@ GitHub Pages workflow uses `npm ci`.
    benefits, use cases, and license in `site/content.md`.
 2. Replace the guide examples in `site/routes/010-guide/route-content.md`, or
    delete the route if the homepage is enough.
-3. Edit `site/theme.md` for brand name, layout density, typography rhythm,
-   palette, section surfaces, and typography.
-4. Put any local source images in the image folder for the Markdown section
+3. Edit `site/sitewide-content.md` for the brand or logo, banners and footer.
+4. Edit `site/theme.md` for layout density, typography rhythm, palette, section
+   surfaces, and typography.
+5. Put any local source images in the image folder for the Markdown section
    that references them, for example `site/images/intro/`.
-5. Edit `site/config.mjs` for public URL, GitHub repository, footer text, and
-   deploy workflow name.
-6. Update `package.json` with the site's package name and keep
+6. Edit `site/config.mjs` for public URL, GitHub repository and deploy workflow
+   name.
+7. Update `package.json` with the site's package name and keep
    `package-lock.json` committed.
 
 ## Common Commands

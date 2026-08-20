@@ -15,9 +15,10 @@ If the standard local port is blocked, start with:
 npm run dev -- --kill
 ```
 
-Edit site-wide visual defaults in `site/theme.md`, homepage content and section
-overrides in `site/content.md`, technical settings such as URL and locale
-labels in `site/config.mjs`, source images under `site/images/<section-id>/`,
+Edit shared brand, logo, banners and footer in `site/sitewide-content.md`,
+site-wide visual defaults in `site/theme.md`, homepage content and section
+metadata in `site/content.md`, and technical settings such as URL and locale
+labels in `site/config.mjs`. Keep source images under `site/images/<section-id>/`
 and static public files under `site/public/`. The image folder name should
 match the section id in Markdown, for example `## Work {#work}` uses
 `site/images/work/`.
@@ -35,9 +36,9 @@ site: {
 In GitHub repository settings, configure Pages to build from GitHub Actions.
 
 Page width, side gutters, layout density, typography rhythm, image width, image
-height limits, font, palettes, section surfaces, and site-wide typography are configured in
-`site/theme.md`. Page and section presentation overrides live in
-`site/content.md`.
+height limits, font, palettes, section surfaces, and site-wide typography are
+configured in `site/theme.md`. A route may replace that visual theme with its
+own `theme.md`.
 
 Commit `package-lock.json` after the first install so GitHub Actions can use
 `npm ci`.

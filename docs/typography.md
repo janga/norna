@@ -140,7 +140,7 @@ Supported override fields:
 - `caption.align`, `caption.size`, `caption.lineHeight`,
   `caption.spacingBefore`
 
-## Inheritance
+## Route Themes
 
 Theme typography is the site-wide base:
 
@@ -152,21 +152,18 @@ typography:
   rhythm: normal
 ```
 
-A page-level `presentation.typography.preset` changes the typographic character
-for that page. A section-level
-`sections.<section-id>.presentation.typography.preset` changes the typographic
-character for that section. The site-wide `fontFamily`, `rhythm`, and
-`overrides` remain in `site/theme.md`; changing a page or section preset does
-not change the site's overall layout rhythm or font family.
+A route-local `theme.md` can give that route a different typographic character.
+The route theme replaces the root visual theme rather than inheriting from it,
+so repeat any non-default `fontFamily`, `rhythm`, or `overrides` that the route
+still needs.
 
-Example section override:
+Example route theme:
 
 ```yaml
-sections:
-  intro:
-    presentation:
-      typography:
-        preset: statement
+# site/routes/010-introduction/theme.md
+typography:
+  preset: statement
+  rhythm: normal
 ```
 
 The `body.width` value controls the prose column independently of the page and

@@ -4,14 +4,15 @@
 under `site/routes/<NNN-route-id>/route-content.md` and build to first-level
 URLs.
 
-Routes use the same page frontmatter, optional section metadata, Norna managed
-media blocks, and Markdown section model as the homepage. See
-[Content](content.md) for the page and section model.
+Routes use the same page frontmatter, optional section metadata, Norna-managed
+media blocks, and Markdown section model as the homepage. See [Content](content.md)
+for the page and section model.
 
 Route directories can contain route content, route-local images, and
-route-local presentation overrides in `route-content.md`. They cannot contain
-technical site configuration; technical configuration stays at the selected
-site directory's top-level `config.mjs`.
+an optional route-local `theme.md`. The route theme replaces the root visual
+theme for that route. Route directories cannot contain technical site
+configuration; technical configuration stays in the selected site directory's
+top-level `config.mjs`.
 
 ## Route Directory Format
 

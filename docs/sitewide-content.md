@@ -4,6 +4,26 @@
 is separate from `content.md`, which defines the homepage, and from
 `config.mjs`, which defines technical behaviour.
 
+## Site identity
+
+Use the optional `navigation` object for identity shared by all pages. `brand`
+is the text shown in the home link when no logo is present. A logo is discovered
+from one convention-based file in `site/public`: `logo.svg`, `logo.png`,
+`logo.jpg`, or `logo.jpeg`.
+
+```yaml
+navigation:
+  brand: Example Site
+  logo:
+    alt: Example Site
+    height: 2.6rem
+```
+
+If `navigation.brand` is omitted, Norna uses the homepage `title` from
+`site/content.md`. The logo's width is derived from its intrinsic aspect ratio.
+If both a logo and a brand are present, the logo is displayed and the brand is
+used as its text fallback and accessible default.
+
 ## Banners
 
 Use `banners` for short notices shown above the page content on every route.

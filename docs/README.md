@@ -40,8 +40,8 @@ For a quick reference:
 - [Configuration](configuration.md) describes technical `site/config.mjs`
   fields such as URL, base path, locale labels, GitHub, and deploy
   settings.
-- [Sitewide Content](sitewide-content.md) describes shared banners and footer content
-  in `site/sitewide-content.md`.
+- [Sitewide Content](sitewide-content.md) describes shared site identity, banners
+  and footer content in `site/sitewide-content.md`.
 - [Content](content.md) describes page frontmatter, Markdown-authored
   sections, optional section metadata, managed media blocks, temporary sections,
   and content validation.

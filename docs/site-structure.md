@@ -11,6 +11,7 @@ The selected site directory defaults to `site/`:
 site/
 |-- config.mjs
 |-- theme.md
+|-- sitewide-content.md
 |-- content.md
 |-- images/
 |   `-- <section-id>/
@@ -40,6 +41,8 @@ Version these files in a site repository:
 - `site/theme.md`: optional site-wide visual theme, including layout, spacing,
   image sizing, font, typography defaults, palettes, and section surfaces.
   See [Theme](theme.md).
+- `site/sitewide-content.md`: shared site identity, banners and footer content.
+  See [Sitewide Content](sitewide-content.md).
 - `site/content.md`: homepage page file with editable content, Markdown
   sections, optional section metadata, managed media blocks, alt text, and
   captions.

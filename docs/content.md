@@ -18,8 +18,6 @@ The Astro content schema validates these top-level fields in page files:
 - `title`: required string. Rendered as the document title.
 - `description`: required string. Rendered as the meta description.
 - `navigation`: optional page navigation metadata. See [Routes](routes.md).
-- `presentation`: optional page-level presentation overrides. See
-  [Theme](theme.md) and [Typography](typography.md).
 - `sections`: optional section metadata keyed by section id.
 
 Minimal homepage:
@@ -70,20 +68,17 @@ current section, not new sections.
 ## Section Metadata
 
 Use `sections` only when a section needs structured metadata that is not
-naturally expressed by Markdown, such as visibility or presentation overrides.
+naturally expressed by Markdown. Currently this is date-based visibility.
 
 ```yaml
 sections:
   work:
-    presentation:
-      surface: emphasis
-      typography:
-        preset: statement
+    visible:
+      from: "2026-08-01"
+      until: "2026-09-16"
 ```
 
-Section presentation can select `base`, `soft`, or `emphasis` as the surface
-within the palette selected in `site/theme.md`. Typography can select a named
-preset; detailed typography overrides belong in `site/theme.md`.
+See [Temporary Sections](#temporary-sections) for visibility semantics.
 
 Each `sections.<section-id>` key must match a Markdown heading id in the same
 page file:

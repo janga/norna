@@ -57,6 +57,7 @@ The starter contains:
 - `.github/workflows/deploy.yml` for GitHub Pages
 - `site/config.mjs`
 - `site/theme.md`
+- `site/sitewide-content.md`
 - `site/content.md`
 - `site/public/robots.txt`
 
@@ -88,21 +89,22 @@ Relevant documentation: [Commands](commands.md), [Site Structure](site-structure
 ## First Edits
 
 1. Edit `site/config.mjs` for the site's URL, language labels, GitHub
-   repository, footer, and deploy settings.
-2. Edit `site/theme.md` for site-wide layout, layout density, typography
+   repository, and deploy settings.
+2. Edit `site/sitewide-content.md` for the shared brand or logo, banners and
+   footer content.
+3. Edit `site/theme.md` for site-wide layout, layout density, typography
    rhythm, image sizing, font, typography preset, palettes, and section
    surfaces, or omit it to use engine defaults.
-3. Edit `site/content.md` for homepage title, description, Markdown sections,
-   text, Norna managed media blocks, page/section presentation overrides, alt
-   text, and captions.
-4. Put source images under `site/images/<section-id>/`, where `<section-id>`
+4. Edit `site/content.md` for homepage title, description, Markdown sections,
+   text, Norna managed media blocks, alt text, and captions.
+5. Put source images under `site/images/<section-id>/`, where `<section-id>`
    matches a `## Section {#section-id}` heading in `site/content.md`.
-5. Add optional route pages under
+6. Add optional route pages under
    `site/routes/<NNN-route-id>/route-content.md`, for example
    `site/routes/010-about/route-content.md`.
-6. Put static files such as `robots.txt`, `CNAME`, and favicons under
+7. Put static files such as `robots.txt`, `CNAME`, and favicons under
    `site/public/`.
-7. Run:
+8. Run:
 
 ```sh
 npm run norna:config:check
@@ -162,8 +164,8 @@ typography rhythm, image width, image height limits, font, palettes, or
 site-wide typography preset, edit `site/theme.md`. See [Theme](theme.md) for
 the accepted shape.
 
-To change one page or section, add a focused `presentation.typography`
-override in `site/content.md`. See [Typography](typography.md). Use
-`norna typography presets` to inspect the installed preset and rhythm values and
-`norna typography show` to inspect the resolved typography for the selected
+To give a route a different visual expression, add a complete route-local
+`theme.md`. See [Theme](theme.md#route-themes) and [Typography](typography.md).
+Use `norna typography presets` to inspect the installed preset and rhythm values
+and `norna typography show` to inspect the resolved typography for the selected
 site.

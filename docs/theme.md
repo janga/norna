@@ -1,20 +1,19 @@
 # Theme
 
-`site/theme.md` defines optional site-wide visual defaults for a `norna` site.
-It uses YAML frontmatter and does not need a Markdown body. If the file is
-missing, built-in engine defaults are used.
+`site/theme.md` defines the site-wide visual theme for a `norna` site. It uses
+YAML frontmatter and does not need a Markdown body. The root theme file is
+required, but every setting inside it is optional and falls back to an engine
+default.
 
-Page-level presentation in `site/content.md` and route page files is always an
-override on top of `site/theme.md`. Section-level presentation is an override
-on top of the resolved page presentation. Use those overrides for focused
-exceptions; the normal place for shared visual choices is `site/theme.md`.
+An optional `theme.md` inside a route directory replaces the root visual theme
+for that route. Route themes do not merge with the root theme: omitted values
+use engine defaults. Shared identity such as brand and logo remains site-wide
+and belongs in `sitewide-content.md`.
 
 ## Minimal Theme
 
 ```yaml
 ---
-navigation:
-  brand: Example Site
 layout:
   density: normal
   pageWidth: 1180px
@@ -46,41 +45,8 @@ Starter sites include a marked comment block such as
 explorable help text; YAML comments do not affect rendering. The active
 configuration is the uncommented YAML below it.
 
-## Navigation
-
-`navigation` is optional. It currently supports:
-
-- `brand`: optional site-wide brand or home-link text shown in the site
-  navigation.
-- `logo`: optional settings for a fixed logo file in `site/public`. Name the
-  file `logo.svg`, `logo.png`, `logo.jpg`, or `logo.jpeg`; only one is allowed.
-  `alt` sets the accessible name and `height` sets the rendered height. The
-  width is derived from the file's intrinsic aspect ratio.
-
-If `navigation.brand` is omitted, Norna uses the homepage `title` from
-`site/content.md`. Use `navigation.brand` when the homepage title is editorial
-or route-specific, but the navigation should keep a stable site name.
-
-Example:
-
-```yaml
-navigation:
-  brand: Norna
-```
-
-Example with a logo:
-
-```yaml
-navigation:
-  logo:
-    alt: Norna
-    height: 2.6rem
-```
-
-If no logo file is present, `config:check` warns and the navigation uses
-`navigation.brand` or the homepage title instead. If both a logo and
-`navigation.brand` are present, the logo is used and the brand remains a text
-fallback.
+Site identity is not part of the visual theme. Define the optional navigation
+brand and logo settings in `site/sitewide-content.md`; see [Sitewide Content](sitewide-content.md).
 
 ## Layout
 
@@ -228,36 +194,19 @@ presentation:
     sequence: [base, soft, emphasis]
 ```
 
-## Page And Section Overrides
+## Route Themes
 
-Site-wide presentation belongs in `site/theme.md`. Page-level presentation in a
-page file is always an override on top of the theme:
+Add `theme.md` to a route directory when that route should have a different
+visual expression:
 
-```yaml
-presentation:
-  typography:
-    preset: statement
+```text
+site/routes/010-guide/theme.md
 ```
 
-Detailed typography overrides belong in the top-level `typography.overrides`
-block in `site/theme.md`.
-
-Section-specific presentation belongs under
-`sections.<section-id>.presentation`. Use it when one section genuinely needs
-different presentation; do not use `sections` to define section order or normal
-Markdown structure.
-
-```yaml
-sections:
-  intro:
-    presentation:
-      surface: emphasis
-      typography:
-        preset: statement
-```
-
-If a page omits `presentation`, it uses the theme presentation unchanged. If a
-section omits `presentation`, it uses the resolved page presentation.
+The route theme uses the same visual schema as the root theme. It completely
+replaces the root visual theme for that route, so include every non-default
+visual choice the route needs. It cannot define navigation, brand, logo, or
+technical configuration.
 
 Section surfaces render as full-width horizontal bands while the section
 content keeps the normal page and image widths. Links keep the palette's global

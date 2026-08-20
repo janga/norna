@@ -166,8 +166,9 @@ locale: {
 
 ## Sitewide Content
 
-Shared banners and footer content are defined in `site/sitewide-content.md`. See
-[Sitewide Content](sitewide-content.md) for the schema and examples.
+Shared site identity, banners and footer content are defined in
+`site/sitewide-content.md`. See [Sitewide Content](sitewide-content.md) for the
+schema and examples.
 
 ## GitHub
 

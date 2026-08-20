@@ -42,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build documentation site
+      - name: Check and build documentation site
         run: node bin/norna.mjs build
 
       - name: Configure Pages
