@@ -2,6 +2,10 @@
 
 A small Norna site with a homepage and ordered routes for dogs and adoption.
 
+[Live demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/)
+|
+[View source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-multi-page)
+
 The dog photos are CC0 images by Bicanski, sourced from Pixnio. Attribution is
 included in the site footer even though the licence does not require it.
 

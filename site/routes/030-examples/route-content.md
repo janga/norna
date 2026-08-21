@@ -42,3 +42,12 @@ width: normal
   link: https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/
   badge-text: Complete site
 ```
+
+The cards open the rendered sites. Their source files are available alongside
+them:
+
+- [Media and surfaces source](https://github.com/janga/norna/tree/main/examples/feature-demos/media-and-surfaces)
+- [Theme presets source](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-presets)
+- [Sitewide content source](https://github.com/janga/norna/tree/main/examples/feature-demos/sitewide-content)
+- [Single-page dog shelter source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-single-page)
+- [Multi-page dog shelter source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-multi-page)

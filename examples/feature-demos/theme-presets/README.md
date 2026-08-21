@@ -4,6 +4,10 @@ This feature demo compares Norna's complete built-in theme presets. Every route
 uses one preset without overrides, so differences in layout, typography,
 palette, surfaces and image presentation come from the preset itself.
 
+[Live demo](https://janga.github.io/norna/examples/feature-demos/theme-presets/)
+|
+[View source](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-presets)
+
 Run it from the repository root:
 
 ```sh
