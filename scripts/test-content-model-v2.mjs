@@ -294,11 +294,15 @@ description: Fixture
 
 The first paragraph points to an explanation.{note-ref}
 
-{note: This explanation names \`sitewide-content.md\` and stays beside the paragraph on wide screens.}
+{note: This explanation names \`sitewide-content.md\` and stays beside the
+paragraph on wide screens.}
 
 The second paragraph has its own explanation.{note-ref}
 
-{note: This is the second explanation.}
+{note:
+  This is the second
+  explanation.
+}
 `);
 
 		await runNorna(['--site-dir', siteDir, 'build']);

@@ -239,6 +239,109 @@ test('content:check accepts valid inline notes and ignores note syntax in code f
 	});
 });
 
+test('content:check accepts wrapped and explicit multiline inline notes', async () => {
+	await withTempProject({
+		site: `---
+title: Multiline inline notes
+description: Fixture
+---
+## Wrapped {#wrapped}
+This paragraph has a formatter-wrapped note.{note-ref}
+
+{note: This note was wrapped by
+an editor before its closing brace.}
+
+## Explicit {#explicit}
+This paragraph has an explicit multiline note.{note-ref}
+
+{note:
+  This note uses the explicit
+  multiline form.
+}
+`,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 0, output);
+		assert.match(output, /Content check passed\./);
+	});
+});
+
+test('content:check reports an unclosed multiline inline note', async () => {
+	await withTempProject({
+		site: `---
+title: Unclosed inline note
+description: Fixture
+---
+## Intro {#intro}
+This paragraph has a note reference.{note-ref}
+
+{note: This note never closes
+and continues to the end of the file.
+`,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 1, output);
+		assert.match(output, /The note starting on line \d+ is not closed\./);
+		assert.match(output, /End it with "\}" on its own line or at the end of the note text\./);
+	});
+});
+
+test('content:check rejects nested note syntax before a multiline note is closed', async () => {
+	await withTempProject({
+		site: `---
+title: Nested inline note syntax
+description: Fixture
+---
+## Nested note {#nested-note}
+This paragraph has a note reference.{note-ref}
+
+{note: The first note is still open
+{note: A second note starts here.}
+
+## Nested reference {#nested-reference}
+This paragraph has another note reference.{note-ref}
+
+{note: This note is still open
+and contains {note-ref} before closing.}
+`,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 1, output);
+		assert.match(output, /is not closed before another note starts on line \d+\./);
+		assert.match(output, /contains "\{note-ref\}" on line \d+\./);
+	});
+});
+
+test('content:check allows escaped and inline-code note syntax inside notes', async () => {
+	await withTempProject({
+		site: `---
+title: Literal inline note syntax
+description: Fixture
+---
+## Intro {#intro}
+This paragraph has a note reference.{note-ref}
+
+{note: Write \\{note: ... to show escaped text, or use \`{note-ref}\` as inline code.}
+`,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+
+		assert.equal(result.status, 0, output);
+		assert.match(output, /Content check passed\./);
+	});
+});
+
 test('content:check rejects unpaired and repeated inline notes', async () => {
 	await withTempProject({
 		site: `---

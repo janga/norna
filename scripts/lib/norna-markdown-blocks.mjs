@@ -589,7 +589,8 @@ export const splitNornaMarkdownBlockMarkers = (html, options = {}) => {
 const normalizeBlockSource = (source) => source.replace(/\r\n?/g, '\n').trim();
 
 const inlineNoteReferenceRegex = /\{note-ref\}/g;
-const inlineNoteDeclarationRegex = /^\s*\{note:\s*(.*)\}\s*$/;
+const inlineNoteDeclarationOpeningRegex = /^\s*\{note:\s*(.*)$/;
+const inlineNoteDeclarationClosingRegex = /^(.*?)\}\s*$/;
 const inlineNoteDeclarationStartRegex = /\{note(?:\s*:|\s*\})/;
 
 const maskInlineCodeAndComments = (source) => source.replace(
@@ -605,7 +606,82 @@ const formatInlineNoteError = (message, options, line) => ({
 	message: failMessage(message, { ...options, line }),
 });
 
-const getInlineNoteErrorMessage = () => 'Write the note on its own line as "{note: Your explanatory text.}".';
+const getInlineNoteErrorMessage = () => 'Write the note on its own line as "{note: Short text.}", or end a multiline note with "}".';
+
+const findUnescapedInlineNoteConstruct = (source) => {
+	const constructRegex = /\{note(?:-ref\}|\s*:|\s*\})/g;
+
+	for (const match of source.matchAll(constructRegex)) {
+		const index = match.index ?? 0;
+		let precedingBackslashes = 0;
+		for (let cursor = index - 1; cursor >= 0 && source[cursor] === '\\'; cursor -= 1) {
+			precedingBackslashes += 1;
+		}
+
+		if (precedingBackslashes % 2 === 0) {
+			return match[0].startsWith('{note-ref') ? 'reference' : 'note';
+		}
+	}
+
+	return null;
+};
+
+const collectInlineNoteDeclaration = (lines, maskedLines, startIndex) => {
+	const openingMatch = (lines[startIndex] ?? '').match(inlineNoteDeclarationOpeningRegex);
+	if (!openingMatch) return null;
+	const maskedOpeningMatch = (maskedLines[startIndex] ?? '').match(inlineNoteDeclarationOpeningRegex);
+
+	const textLines = [];
+	let currentLine = openingMatch[1] ?? '';
+	let currentMaskedLine = maskedOpeningMatch?.[1] ?? '';
+
+	for (let index = startIndex; index < lines.length; index += 1) {
+		const conflictType = findUnescapedInlineNoteConstruct(currentMaskedLine);
+		if (conflictType) {
+			return {
+				closed: false,
+				conflictIndex: index,
+				conflictType,
+				endIndex: index,
+				text: textLines.map((line) => line.trim()).filter(Boolean).join(' '),
+			};
+		}
+
+		const closingMatch = currentLine.match(inlineNoteDeclarationClosingRegex);
+		if (closingMatch) {
+			textLines.push(closingMatch[1]);
+			return {
+				closed: true,
+				endIndex: index,
+				text: textLines.map((line) => line.trim()).filter(Boolean).join(' '),
+			};
+		}
+
+		textLines.push(currentLine);
+		currentLine = lines[index + 1] ?? '';
+		currentMaskedLine = maskedLines[index + 1] ?? '';
+	}
+
+	return {
+		closed: false,
+		endIndex: lines.length - 1,
+		text: textLines.map((line) => line.trim()).filter(Boolean).join(' '),
+	};
+};
+
+const getUnclosedInlineNoteMessage = (noteDeclaration, startLine, lineOffset = 0) => {
+	if (noteDeclaration.conflictType === 'note') {
+		const conflictLine = lineOffset + noteDeclaration.conflictIndex + 1;
+		return `The note starting on line ${startLine} is not closed before another note starts on line ${conflictLine}. Close the first note with "}".`;
+	}
+
+	if (noteDeclaration.conflictType === 'reference') {
+		const conflictLine = lineOffset + noteDeclaration.conflictIndex + 1;
+		return `The note starting on line ${startLine} contains "{note-ref}" on line ${conflictLine}. Close the note before adding a note reference.`;
+	}
+
+	return `The note starting on line ${startLine} is not closed. End it with "}" on its own line or at the end of the note text.`;
+};
 
 /**
  * Finds the deliberately small inline-note syntax while ignoring fenced and
@@ -640,8 +716,7 @@ export const extractInlineNoteDiagnostics = (markdown, options = {}) => {
 		pendingParagraph = null;
 	};
 
-	const attachNote = (noteMatch, lineNumber) => {
-		const text = noteMatch[1].trim();
+	const attachNote = (text, lineNumber) => {
 		if (!text) {
 			addError(`The note on line ${lineNumber} is empty. ${getInlineNoteErrorMessage()}`, lineNumber);
 			pendingParagraph = null;
@@ -686,7 +761,10 @@ export const extractInlineNoteDiagnostics = (markdown, options = {}) => {
 
 		const trimmed = line.trim();
 		const maskedTrimmed = maskedLine.trim();
-		const noteMatch = trimmed.match(inlineNoteDeclarationRegex);
+		const startsNoteDeclaration = inlineNoteDeclarationOpeningRegex.test(maskedLine);
+		const noteDeclaration = startsNoteDeclaration
+			? collectInlineNoteDeclaration(lines, maskedLines, index)
+			: null;
 		const looksLikeNoteDeclaration = inlineNoteDeclarationStartRegex.test(maskedTrimmed);
 		const referenceCount = countInlineNoteReferences(maskedLine);
 		const isHeading = /^#{1,6}(?:\s|$)/.test(trimmed);
@@ -698,8 +776,14 @@ export const extractInlineNoteDiagnostics = (markdown, options = {}) => {
 		}
 
 		if (pendingParagraph) {
-			if (noteMatch) {
-				attachNote(noteMatch, lineNumber);
+			if (noteDeclaration) {
+				if (!noteDeclaration.closed) {
+					addError(getUnclosedInlineNoteMessage(noteDeclaration, lineNumber, options.lineOffset), lineNumber);
+					pendingParagraph = null;
+				} else {
+					attachNote(noteDeclaration.text, lineNumber);
+				}
+				index = noteDeclaration.endIndex;
 				continue;
 			}
 
@@ -716,13 +800,16 @@ export const extractInlineNoteDiagnostics = (markdown, options = {}) => {
 			noteJustSeen = false;
 		}
 
-		if (noteMatch || looksLikeNoteDeclaration) {
+		if (noteDeclaration || looksLikeNoteDeclaration) {
 			addError(
-				noteMatch
-					? `A "{note: ...}" requires a preceding paragraph containing "{note-ref}".`
+				noteDeclaration
+					? noteDeclaration.closed
+						? `A "{note: ...}" requires a preceding paragraph containing "{note-ref}".`
+						: getUnclosedInlineNoteMessage(noteDeclaration, lineNumber, options.lineOffset)
 					: `Invalid note syntax on line ${lineNumber}. ${getInlineNoteErrorMessage()}`,
 				lineNumber,
 			);
+			if (noteDeclaration) index = noteDeclaration.endIndex;
 			continue;
 		}
 
