@@ -15,14 +15,6 @@
     "width": 1080,
     "height": 620
   },
-  "routes/010-concepts/images/site-model/site-model.svg": {
-    "kind": "static",
-    "outputVersion": 2,
-    "sourceHash": "e6033ebecf1a2820d793497b95d69f06e8a2298d4719dc7016892c5f2c7df7ed",
-    "src": "/images/original/routes/010-concepts/images/site-model/site-model-e6033ebe.svg",
-    "width": 900,
-    "height": 250
-  },
   "routes/020-getting-started/images/publish/publishing-workflow.svg": {
     "kind": "static",
     "outputVersion": 2,
