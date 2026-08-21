@@ -1,0 +1,38 @@
+# Norna
+
+> Norna is an opinionated open source CLI for building responsive websites from Markdown, images, and a theme preset.
+
+The authoritative documentation is maintained as Markdown in the Norna GitHub
+repository. Norna is pre-1.0, requires Node.js 22.12 or later, and currently
+integrates publishing with GitHub Pages only.
+
+## Start Here
+
+- [Project README](https://raw.githubusercontent.com/janga/norna/main/README.md)
+- [Build your first Norna site](https://raw.githubusercontent.com/janga/norna/main/docs/getting-started.md)
+- [Documentation map](https://raw.githubusercontent.com/janga/norna/main/docs/README.md)
+- [Requirements and limitations](https://raw.githubusercontent.com/janga/norna/main/docs/requirements.md)
+
+## How-To And Explanation
+
+- [Content and managed blocks](https://raw.githubusercontent.com/janga/norna/main/docs/content.md)
+- [Routes](https://raw.githubusercontent.com/janga/norna/main/docs/routes.md)
+- [Theme presets and overrides](https://raw.githubusercontent.com/janga/norna/main/docs/theme.md)
+- [Images and generated metadata](https://raw.githubusercontent.com/janga/norna/main/docs/images-and-metadata.md)
+- [Local development](https://raw.githubusercontent.com/janga/norna/main/docs/local-development.md)
+- [Publishing](https://raw.githubusercontent.com/janga/norna/main/docs/publishing.md)
+
+## Reference
+
+- [Configuration](https://raw.githubusercontent.com/janga/norna/main/docs/configuration.md)
+- [Sitewide content](https://raw.githubusercontent.com/janga/norna/main/docs/sitewide-content.md)
+- [Typography](https://raw.githubusercontent.com/janga/norna/main/docs/typography.md)
+- [Commands](https://raw.githubusercontent.com/janga/norna/main/docs/commands.md)
+- [Site structure](https://raw.githubusercontent.com/janga/norna/main/docs/site-structure.md)
+
+## Examples
+
+- [Rendered examples](https://janga.github.io/norna/examples/)
+- [Example source index](https://raw.githubusercontent.com/janga/norna/main/examples/README.md)
+- [GitHub repository](https://github.com/janga/norna)
+- [Issue tracker](https://github.com/janga/norna/issues)

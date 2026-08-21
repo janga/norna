@@ -24,6 +24,9 @@ npm run dev
 The new project contains the Norna site files, npm scripts and setup needed to
 build the site.
 
+For a short path with a visible checkpoint after every edit, follow the
+[five-minute tutorial](https://github.com/janga/norna/blob/main/docs/getting-started.md).
+
 For a real project, keep the generated lockfile committed so local and automated
 builds use the same Norna version.
 
@@ -48,6 +51,7 @@ Embedded setup keeps the surrounding project structure and uses namespaced
 
 Relevant documentation:
 [Getting Started](https://github.com/janga/norna/blob/main/docs/getting-started.md),
+[Requirements and limitations](https://github.com/janga/norna/blob/main/docs/requirements.md),
 [Commands](https://github.com/janga/norna/blob/main/docs/commands.md).
 
 ## The site files {#site-files}
