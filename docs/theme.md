@@ -263,3 +263,21 @@ technical configuration.
 Section surfaces render as full-width horizontal bands while the section
 content keeps the normal page and image widths. Links keep the palette's global
 accent color.
+
+## Common Questions
+
+### Should every route select its own preset?
+
+No. A route without its own `theme.md` inherits the root theme, which is the
+normal choice when the site should keep one visual expression.
+
+Add a route theme only when the route should intentionally look different. If
+the route should keep the same preset but demonstrate a focused change, repeat
+the root preset in the route theme and override only that setting. This is
+necessary because a route theme replaces the root visual theme rather than
+merging with it.
+
+For example, a route demonstrating section surfaces may keep `preset: project`
+and change only `presentation.sectionSurfaces`. A route demonstrating media or
+content blocks should normally inherit the root preset so that the media or
+content remains the only variable being compared.
