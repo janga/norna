@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" role="img">
+  <path fill="#b9473e" d="M5 29 31 6l26 23v29H5z"/>
+  <path fill="#fffaf2" d="m17 29 6-9 8 5 8-5 6 9v14c0 8-6 14-14 14S17 51 17 43z"/>
+  <path fill="#3b2b27" d="M17 29v-8l8 4zm28 0v-8l-8 4z"/>
+  <circle cx="26" cy="35" r="2" fill="#3b2b27"/>
+  <circle cx="36" cy="35" r="2" fill="#3b2b27"/>
+  <path fill="#3b2b27" d="M27 41h8c0 4-2 6-4 6s-4-2-4-6z"/>
+  <text x="72" y="39" fill="#2d2522" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700">Dog Shelter</text>
+</svg>

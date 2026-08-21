@@ -7,24 +7,16 @@ description: Meet dogs currently waiting for adoption.
 
 Meet Rover and Rex.
 
-<!-- norna-image-provenance:
-image: rover.svg
-source: AI-assisted, hand-authored SVG
-prompt: Draw a friendly brown cartoon dog standing in profile on a pale green
-background. Flat vector style, dark outlines, no text or external assets.
+```norna-card-list
+layout: image-top
+flow: grid
+size: s
+width: narrow
 
-image: rex.svg
-source: AI-assisted, hand-authored SVG
-prompt: Draw a friendly golden cartoon dog standing in profile on a pale cream
-background. Make it visibly distinct from Rover. Flat vector style, dark
-outlines, no text or external assets.
--->
-
-```norna-image-stack
-- image: rover.svg
-  alt: Rover, a brown dog with upright ears and a curled tail.
-  caption: Rover needs daily walks.
-- image: rex.svg
-  alt: Rex, a golden dog with one floppy ear and a gently curved tail.
-  caption: Rex needs a patient home.
+- title: Rover
+  text: Curious and active. Rover needs daily walks and room to explore.
+  image: rover.jpg
+- title: Rex
+  text: Gentle and observant. Rex needs a patient home with quiet routines.
+  image: rex.jpg
 ```

@@ -5,34 +5,30 @@ description: A single-page dog shelter website built with Norna.
 
 ## What we do {#what-we-do}
 
-We rescue and rehome dogs.
+We rescue dogs, give them time to recover and find homes that suit their needs.
 
-<!-- norna-image-provenance:
-image: dog-house.svg
-source: AI-assisted, hand-authored SVG
-prompt: Draw a simple flat vector dog house with a friendly dog at the entrance,
-using a small paper, red and dark-brown palette. No text and no external assets.
--->
+```norna-card-list
+layout: image-right
+flow: stack
+size: s
+width: narrow
 
-```norna-image-stack
-- image: dog-house.svg
-  alt: A brown dog standing at the entrance to a red dog house.
-  caption: Time to recover before adoption.
+- title: A safe place to start again
+  text: Each dog gets care, calm routines and an individual plan before adoption.
+  image: rescue-dog.jpg
 ```
 
 ## You can help {#you-can-help}
 
-Adopt. Foster. Donate.
+Adopt, foster or support the everyday work at the shelter.
 
-<!-- norna-image-provenance:
-image: heart.svg
-source: AI-assisted, hand-authored SVG
-prompt: Draw two simple hands holding a red heart as a flat vector illustration,
-using a small paper, red and dark-brown palette. No text or external assets.
--->
+```norna-card-list
+layout: image-left
+flow: stack
+size: s
+width: narrow
 
-```norna-image-stack
-- image: heart.svg
-  alt: Two open hands holding a red heart.
-  caption: Foster care helps another dog.
+- title: Make room for one more dog
+  text: A foster home gives a dog stability and gives the shelter space for another rescue.
+  image: foster-dog.jpg
 ```

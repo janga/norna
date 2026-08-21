@@ -35,6 +35,7 @@ const navigationStyle = [
 	...(logo?.height ? [`--site-brand-logo-height: ${logo.height}`] : []),
 ].join('; ');
 const showSiteNavigation = pageNavigation.length > 1;
+const showNavigationRow = showSiteNavigation || Boolean(logo);
 const homePage = pageNavigation.find(({ page }) => page.isHome)?.page ?? currentPage;
 const currentPageNavigation = pageNavigation.find(({ page }) => page.pathname === currentPage.pathname);
 const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
@@ -46,42 +47,44 @@ const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.lengt
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
 
 <header
-	class:list={['site-top', { 'site-top-has-site-nav': showSiteNavigation }]}
+	class:list={['site-top', { 'site-top-has-site-nav': showNavigationRow }]}
 	data-smooth-scroll={JSON.stringify(smoothScrollConfig)}
 	style={navigationStyle}
 >
-	{showSiteNavigation && (
+	{showNavigationRow && (
 		<div class="site-nav-row">
 			<a class="site-brand" href={pageHref(homePage)}>
 				{logo ? <img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} /> : brandLabel}
 			</a>
 
-			<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
-				<ul>
-					{pageNavigation.map(({ page, sections: pageSections }) => (
-						<li class:list={['site-nav-item', { 'site-nav-item-has-sections': hasSectionMenu(pageSections) }]}>
-							<a href={pageHref(page)} aria-current={isCurrentPage(page) ? 'page' : undefined}>
-								{page.navigation.label}
-							</a>
-							{hasSectionMenu(pageSections) && (
-								<div class="site-nav-submenu">
-									<nav aria-label={`${page.navigation.label} ${projectConfig.locale.labels.pageNavigation}`}>
-										<ul>
-											{pageSections.map((section) => (
-												<li>
-													<a href={sectionHref(page, section)}>{section.title}</a>
-												</li>
-											))}
-										</ul>
-									</nav>
-								</div>
-							)}
-						</li>
-					))}
-				</ul>
-			</nav>
+			{showSiteNavigation && (
+				<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
+					<ul>
+						{pageNavigation.map(({ page, sections: pageSections }) => (
+							<li class:list={['site-nav-item', { 'site-nav-item-has-sections': hasSectionMenu(pageSections) }]}>
+								<a href={pageHref(page)} aria-current={isCurrentPage(page) ? 'page' : undefined}>
+									{page.navigation.label}
+								</a>
+								{hasSectionMenu(pageSections) && (
+									<div class="site-nav-submenu">
+										<nav aria-label={`${page.navigation.label} ${projectConfig.locale.labels.pageNavigation}`}>
+											<ul>
+												{pageSections.map((section) => (
+													<li>
+														<a href={sectionHref(page, section)}>{section.title}</a>
+													</li>
+												))}
+											</ul>
+										</nav>
+									</div>
+								)}
+							</li>
+						))}
+					</ul>
+				</nav>
+			)}
 
-			<details class="mobile-nav-menu">
+			{showSiteNavigation && <details class="mobile-nav-menu">
 				<summary>
 					<span>{currentPage.navigation.label}</span>
 				</summary>
@@ -114,7 +117,7 @@ const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.lengt
 						</nav>
 					)}
 				</div>
-			</details>
+			</details>}
 		</div>
 	)}
 
