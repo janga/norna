@@ -1,4 +1,4 @@
-# Theme presets
+# Themes
 
 This feature demo compares Norna's complete built-in theme presets. Every route
 uses one preset without overrides, so differences in layout, typography,
