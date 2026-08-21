@@ -11,18 +11,7 @@ An image stack places one or more managed images in the normal Markdown flow.
 Each source file belongs in the section's image folder, and Norna creates the
 responsive output used by the browser.{note-ref}
 
-{note: This note belongs to the introductory text above the image stack. On a wide screen it should sit in the margin and align with its reference paragraph.}
-
-````
-```norna-image-stack
-- image: stack-one.svg
-  alt: A pale panel with a single large circle.
-  caption: One image can introduce a visual idea.
-- image: stack-two.svg
-  alt: A dark panel with three aligned blocks.
-  caption: A stack can contain several related images.
-```
-````
+{note: Local image references are validated against the image folder for this section before the site is built.}
 
 ```norna-image-stack
 - image: stack-one.svg
@@ -39,7 +28,7 @@ A carousel keeps a related group together while showing one image at a time.
 The controls, keyboard interaction and current position are provided by
 Norna.{note-ref}
 
-{note: The note remains explanatory text beside the paragraph; the carousel keeps its full managed image area below.}
+{note: The carousel provides controls, keyboard interaction and readable position status without route-specific components.}
 
 ```norna-image-carousel
 - image: carousel-one.svg
@@ -59,7 +48,7 @@ Cards are useful when several short items need the same visual treatment. The
 block controls the layout and size without requiring a component for each
 card.{note-ref}
 
-{note: This third note makes the numbering and spacing between several sidenotes visible on one page.}
+{note: Card layout stays within named options, so the same content remains predictable at narrow widths.}
 
 ```norna-card-list
 layout: image-top
@@ -67,19 +56,15 @@ flow: grid
 size: m
 width: normal
 
-- title: Image stack
-  text: A simple vertical sequence of managed images.
+- title: Prepare source files
+  text: Keep related content and images together before building the site.
   image: card-stack.svg
-  badge-text: Established
-- title: Carousel
-  text: A focused sequence with controls and captions.
+- title: Review presentation
+  text: Check the result at wide and narrow browser widths.
   image: card-carousel.svg
-  badge-text: Established
-- title: Section surfaces
-  text: A bounded way to create rhythm between sections.
+- title: Publish the result
+  text: Build validated static output when the site is ready.
   image: card-surfaces.svg
-  badge-text: New
 ```
 
-The examples above are still ordinary Markdown blocks. Their presentation is
-opinionated, so the same source remains predictable on smaller screens.
+Each example is an ordinary Markdown block with a bounded presentation model.

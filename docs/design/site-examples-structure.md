@@ -67,6 +67,7 @@ examples/
   feature-demos/
     theme-presets/
     media-and-surfaces/
+    sitewide-content/
 ```
 
 `complete-sites/` contains coherent sites that show how Norna files work
@@ -82,8 +83,10 @@ together in a realistic project:
   overrides.
 - `media-and-surfaces/`: managed media blocks, notes, palettes and section
   surfaces. This is also the broad demo-build and navigation-test target.
+- `sitewide-content/`: convention-based identity, navigation, banner stacks,
+  dismissal and footer content shared across routes.
 
-The repository Pages workflow builds all four examples and publishes them
+The repository Pages workflow builds all examples and publishes them
 under `/norna/examples/`. The HTML documentation links to those rendered sites
 from its Examples route.
 

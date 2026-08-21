@@ -7,7 +7,7 @@ navigation:
 
 ## Palette options {#palette-options}
 
-Norna currently provides a small set of named palettes. The theme chooses one
+Norna provides a small set of named palettes. The theme chooses one
 for the whole site:
 
 ```yaml

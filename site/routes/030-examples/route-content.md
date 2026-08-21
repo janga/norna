@@ -38,6 +38,10 @@ width: normal
   text: Inspect image stacks, carousels, cards, notes, palettes and section surfaces.
   link: https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/
   badge-text: Feature demo
+- title: Sitewide content
+  text: Inspect shared identity, navigation, dismissible banner stacks and footer content across routes.
+  link: https://janga.github.io/norna/examples/feature-demos/sitewide-content/
+  badge-text: Feature demo
 ```
 
 ## Common site types {#site-types}

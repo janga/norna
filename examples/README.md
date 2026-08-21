@@ -9,7 +9,8 @@ examples/
 |   `-- dog-shelter-multi-page/
 `-- feature-demos/
     |-- theme-presets/
-    `-- media-and-surfaces/
+    |-- media-and-surfaces/
+    `-- sitewide-content/
 ```
 
 ## Complete sites
@@ -29,6 +30,8 @@ as starter templates.
 - `theme-presets/` compares Norna's complete built-in theme presets.
 - `media-and-surfaces/` demonstrates managed media blocks, notes, palettes and
   section surfaces.
+- `sitewide-content/` demonstrates identity, navigation, banner stacks,
+  dismissal and footer content across routes.
 
 The repository's GitHub Pages workflow publishes rendered copies under
 `https://janga.github.io/norna/examples/` so the HTML documentation can link to
