@@ -406,6 +406,9 @@ const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.lengt
 			setHash(targetHash);
 			setActiveSection(section);
 			closeMobileMenu();
+			if (event.detail > 0 && link instanceof HTMLElement) {
+				link.blur();
+			}
 
 			scrollToSection(section, {
 				behavior: 'smooth',

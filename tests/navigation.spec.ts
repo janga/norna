@@ -5,6 +5,7 @@ const desktopViewport = { width: 1280, height: 900 };
 const maximumAnchorGap = 2;
 const maximumAnchorWait = 7_000;
 const minimumFullscreenSafeTextTop = 24;
+const testPagePath = '/media/';
 
 type AnchorMeasurement = {
 	hash: string;
@@ -61,7 +62,7 @@ const measureAnchor = async (page, sectionId: string): Promise<AnchorMeasurement
 	};
 }, sectionId);
 
-const openSite = async (page, path = '/') => {
+const openSite = async (page, path = testPagePath) => {
 	await page.goto(path, { waitUntil: 'domcontentloaded' });
 	await page.locator(sectionNavSelector).first().waitFor({ state: 'attached' });
 	await page.waitForLoadState('networkidle').catch(() => {});
@@ -165,13 +166,34 @@ test.describe('route navigation menus', () => {
 		await openSite(page);
 
 		const currentRouteLink = page.locator('.site-nav a[aria-current="page"]');
-		await expect(currentRouteLink).toHaveText('Home');
+		await expect(currentRouteLink).toHaveText('Media blocks');
 		await currentRouteLink.hover();
 
 		const currentRouteItem = currentRouteLink.locator('..');
 		const submenu = currentRouteItem.locator('.site-nav-submenu');
 		await expect(submenu).toBeVisible();
 		await expect(submenu.locator('a').first()).toBeVisible();
+	});
+
+	test('closes the section menu after a pointer activation leaves the menu', async ({ page }) => {
+		await openSite(page);
+		await page.locator('.site-section').evaluateAll((sections) => {
+			sections.forEach((section) => {
+				if (section instanceof HTMLElement) section.style.display = 'none';
+			});
+		});
+		await expect.poll(() => page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight)).toBe(true);
+
+		const currentRouteLink = page.locator('.site-nav a[aria-current="page"]');
+		const currentRouteItem = currentRouteLink.locator('..');
+		const submenu = currentRouteItem.locator('.site-nav-submenu');
+		await currentRouteLink.hover();
+		await expect(submenu).toBeVisible();
+
+		await submenu.locator('a').first().click();
+		await page.mouse.move(8, 500);
+
+		await expect(submenu).toBeHidden();
 	});
 });
 
@@ -208,7 +230,7 @@ for (const scenario of [
 
 			for (const target of await getNavTargets(page)) {
 				const sectionId = target.hash.slice(1);
-				await openSite(page, `/${target.hash}`);
+				await openSite(page, `${testPagePath}${target.hash}`);
 				await waitForAnchorPosition(page, sectionId);
 
 				const measurement = await measureAnchor(page, sectionId);
@@ -301,8 +323,8 @@ test.describe('section navigation history', () => {
 
 	test('rapid section clicks keep the last clicked section active', async ({ page }) => {
 		await openSite(page);
-		const targets = (await getNavTargets(page)).slice(0, 4);
-		if (targets.length < 4) throw new Error('The fixture must provide at least four navigation targets.');
+		const targets = (await getNavTargets(page)).slice(0, 3);
+		if (targets.length < 3) throw new Error('The fixture must provide at least three navigation targets.');
 
 		for (const target of targets.slice(1)) {
 			await clickSectionLink(page, target.hash);
