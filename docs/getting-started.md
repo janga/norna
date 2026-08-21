@@ -1,206 +1,188 @@
-# Getting Started
+# Build Your First Norna Site
 
-This guide creates a new site repository from the included starter. It describes
-the generic `norna` setup; site-specific content belongs in the new site
-repository.
+This tutorial takes the shortest path from an empty directory to a running,
+edited, and verified Norna site. Follow the steps in order. Installation time
+depends on your npm connection, but the site work itself should take about five
+minutes.
 
-## Requirements
+At the end you will have:
 
-- Node.js `>=22.12.0`
-- ImageMagick for image generation
-- GitHub CLI (`gh`) for deploy checks and deploy monitoring
+- a standalone site project with a pinned Norna version,
+- a homepage with your own content and navigation,
+- a complete visual preset,
+- validated source files and a static build in `dist/`.
 
-Install Playwright Chromium only when you plan to run navigation diagnostics:
+## Before You Start
+
+You need:
+
+- Node.js `22.12` or later,
+- npm, which is included with Node.js,
+- a terminal and a text editor.
+
+ImageMagick is needed when you add raster images that Norna should process. It
+is not needed to make the text-only first edit in this tutorial. GitHub CLI and
+Playwright are not required.
+
+See [Requirements and limitations](requirements.md) for platform details and
+the current product boundaries.
+
+## 1. Create And Run The Site
+
+Run these commands from the directory where you keep projects:
 
 ```sh
-npx playwright install chromium
-```
-
-## Create A Site
-
-### Standalone Site
-
-Use a standalone setup when the website is its own project. Create the site
-from the starter first, then install dependencies inside the new site
-directory:
-
-```sh
-cd path/to/your/projects
 npx @janga/norna@latest init my-site
 cd my-site
 npm install
 npm run dev
 ```
 
-After `npm install`, the project's npm scripts use the project-local `norna`
-binary from `node_modules/.bin`. A globally installed `norna` can also be used
-as a convenience launcher; inside a project with an installed `@janga/norna`
-dependency, it delegates to the project's local version.
+`init` creates the project before `npm install` runs. The generated
+`package.json` pins the Norna engine version so this project keeps using the
+same version until you update it deliberately.
 
-A freshly created empty directory is not a `norna` site yet. It becomes a
-site when `init` copies the starter files, including `package.json`. If you run
-`npm install` in an empty directory, npm may walk up to a parent directory and
-install dependencies for another project instead.
+### Checkpoint: The Starter Is Visible
 
-For normal site work, keep site repositories as siblings of the `norna`
-engine repository. For example:
+Open the URL printed by the development server. It is normally
+`http://localhost:4321/`, but Norna uses another available port when necessary.
+You should see the starter homepage and its section navigation.
 
-```text
-Projects/
-  norna/
-  my-site/
+Leave the development server running while you complete the next steps.
+
+## 2. Replace The Homepage Content
+
+Replace `site/content.md` with:
+
+```md
+---
+title: My first Norna site
+description: A website built from plain files.
+---
+
+## Welcome {#welcome}
+
+This page is written in Markdown. Norna provides its layout and navigation.
+
+## Next {#next}
+
+Edit this file while the development server is running and the browser updates.
 ```
 
-The starter contains:
+Each `##` heading is a page section. Its explicit `{#section-id}` gives the
+section a stable identity and is required by Norna.
 
-- `package.json` with npm scripts that call `norna`
-- `.github/workflows/deploy.yml` for GitHub Pages
-- `site/config.mjs`
-- `site/theme.md`
-- `site/sitewide-content.md`
-- `site/content.md`
-- `site/public/robots.txt`
+### Checkpoint: Content And Navigation Update
 
-Commit the generated `package-lock.json` after the first install.
+Return to the browser. The page should now contain `Welcome` and `Next`, and
+the single-page navigation should link to those two sections. You should not
+need to restart the server.
 
-### Embedded Site
+## 3. Set The Shared Brand
 
-Use an embedded setup when a Norna site should live inside an existing Node or
-GitHub project:
+Replace `site/sitewide-content.md` with:
 
-```sh
-cd existing-project
-npx @janga/norna@latest init . --type embedded --site-dir presentation
-npm install
-npm run norna:dev
+```yaml
+---
+navigation:
+  brand: My first Norna site
+footer:
+  copyrightMessage: My first Norna site.
+---
 ```
 
-The command looks different because the target is different. `.` means "add
-Norna to the current project" instead of creating a new directory.
-`--site-dir presentation` tells Norna to manage `presentation/` as the site
-directory instead of the default `site/`.
+The brand and footer are site-wide content rather than page sections. If you
+add routes later, they inherit these values.
 
-Embedded setup keeps the surrounding project structure. It adds namespaced
-`norna:*` scripts so Norna does not take over the project's normal `build`,
-`test`, or deploy scripts.
+### Checkpoint: The Brand Is Shared
 
-Relevant documentation: [Commands](commands.md), [Site Structure](site-structure.md).
+The navigation should now display `My first Norna site`. The footer should show
+the new message.
 
-## First Edits
+## 4. Choose A Complete Theme
 
-1. Edit `site/config.mjs` for the site's URL, language labels, GitHub
-   repository, and deploy settings.
-2. Edit `site/sitewide-content.md` for the shared brand or logo, banners and
-   footer content.
-3. Keep `site/theme.md` and select a complete theme preset. Add focused visual
-   overrides only when the preset needs adjustment.
-4. Edit `site/content.md` for homepage title, description, Markdown sections,
-   text, Norna managed media blocks, alt text, and captions.
-5. Put source images under `site/images/<section-id>/`, where `<section-id>`
-   matches a `## Section {#section-id}` heading in `site/content.md`.
-6. Add optional route pages under
-   `site/routes/<NNN-route-id>/route-content.md`, for example
-   `site/routes/010-about/route-content.md`.
-7. Put static files such as `robots.txt`, `CNAME`, and favicons under
-   `site/public/`.
-8. Run:
+Replace `site/theme.md` with:
+
+```yaml
+---
+preset: project
+---
+```
+
+The preset supplies coordinated layout, typography, spacing, image sizing,
+palette, and section surfaces. Add overrides only when a real site needs to
+differ from the preset.
+
+### Checkpoint: The Preset Is Active
+
+The browser should refresh with the `project` presentation. Your content files
+remain unchanged because presentation belongs in `theme.md`.
+
+## 5. Check And Build
+
+Open another terminal in `my-site` and run:
 
 ```sh
-npm run norna:config:check
-npm run norna:content:check
-npm run norna:sync
 npm run norna:check
 npm run build
 ```
 
-`norna:sync` moves misplaced referenced image files when the intended move is
-unambiguous. It can move images between sections and routes, but cross-route
-writes require a clean Git working tree so the operation is easy to roll back.
-Publishing is normally done by committing the site files and pushing them with
-Git; the starter GitHub Pages workflow runs the required checks before
-publishing.
+The check should complete without errors. The build should create:
 
-Relevant documentation: [Content](content.md), [Theme](theme.md),
-[Typography](typography.md), [Routes](routes.md), [Images And Metadata](images-and-metadata.md).
-
-## Choose A Theme
-
-The required root `theme.md` can be deliberately short:
-
-```yaml
----
-preset: project
----
+```text
+dist/
 ```
 
-Available complete presets are `portfolio`, `documentation`, `project`, and
-`statement`. They coordinate layout, image sizing, font, typography, spacing,
-palette, and section surfaces.
+`dist/` is generated output. Continue editing the files under `site/`; do not
+edit the built HTML as the source of the website.
 
-Override only what the site needs to change:
+### Checkpoint: The Source Produces A Clean Build
 
-```yaml
----
-preset: project
-layout:
-  pageWidth: 1240px
----
-```
+Confirm that both commands exit successfully and that `dist/index.html`
+exists. You now have a complete local Norna workflow: edit, preview, check, and
+build.
 
-Export a commented reference for a preset with:
+## What To Do Next
+
+- [Add and manage images](content.md#managed-media-blocks)
+- [Add another page](routes.md)
+- [Inspect and adjust the theme](theme.md)
+- [Configure the public URL](configuration.md)
+- [Publish with GitHub Pages](publishing.md)
+- [Browse complete and focused examples](../examples/README.md)
+
+To add Norna inside an existing Node project instead of creating a standalone
+site, see [Add an embedded site](how-to/embedded-site.md).
+
+The [documentation map](README.md) separates task guides, explanation, and
+reference so you can continue from the kind of question you have.
+
+## Common First Problems
+
+### The Default Port Is Occupied
+
+Start the development server with:
 
 ```sh
-npm run norna:theme:export -- project
+npm run dev -- --kill
 ```
 
-The generated `site/orig-project-theme.md` is reference material and is not
-loaded by Norna. The command does not overwrite an existing reference file.
+This tells Norna to stop the process occupying its standard port before
+starting. The separator `--` is required so npm forwards `--kill` to Norna.
 
-Relevant documentation: [Theme](theme.md), [Typography](typography.md),
-[Commands](commands.md).
+### Images Fail During Checking Or Building
 
-## Configure The Public URL
+Install ImageMagick and confirm that either `magick` or the older `identify`
+and `convert` commands are available. Then rerun the failed command.
 
-For a custom domain or any site published at the web root, use:
+### The Page Reports Invalid Content
 
-```js
-site: {
-	url: 'https://example.com/',
-	basePath: '/',
-}
+Run:
+
+```sh
+npm run norna:content:check
 ```
 
-For a GitHub Pages project site without a custom domain, the site is served
-under the repository name. Configure both values:
-
-```js
-site: {
-	url: 'https://owner.github.io/repository-name/',
-	basePath: '/repository-name/',
-}
-```
-
-After that, content files may still use root-style internal links such as
-`/getting-started/` and `/favicon.svg`. Norna applies `site.basePath` during
-rendering so the built links work under the GitHub Pages project path.
-
-The starter includes a GitHub Pages workflow in `.github/workflows/deploy.yml`.
-In the GitHub repository settings, configure Pages to build from GitHub
-Actions.
-
-Relevant documentation: [Configuration](configuration.md), [Publishing](publishing.md).
-
-Read [Site Structure](site-structure.md), [Content](content.md),
-[Theme](theme.md), [Typography](typography.md), [Routes](routes.md), and
-[Configuration](configuration.md) before publishing a real site.
-
-To change the site's overall visual expression, select a top-level preset in
-`site/theme.md`. Override individual page-width, gutter, image, typography, or
-palette values only where needed. See [Theme](theme.md) for the accepted shape.
-
-To give a route a different visual expression, add a route-local `theme.md`
-and normally select another complete top-level preset. See
-[Theme](theme.md#route-themes) and [Typography](typography.md).
-Use `norna typography presets` to inspect the installed preset and rhythm values
-and `norna typography show` to inspect the resolved typography for the selected
-site.
+Read all reported issues before editing. Norna reports file and line context
+for invalid sections and managed content blocks. See [Content](content.md) for
+the accepted Markdown forms.

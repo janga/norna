@@ -75,6 +75,8 @@ maintainer, put it in `README.md` instead of duplicating it here.
   that should work against the minimal fixture.
 - Run `npm run test:examples` after moving or changing runnable examples or
   behavior demonstrated by them.
+- Run `npm run test:documentation` after changing the root README, files under
+  `docs/`, example README files, or `site/public/llms.txt`.
 - Run `npm run build:pages` after changing the documentation Pages artifact,
   rendered example links, or example deployment paths.
 - Run `npm run package:check` after changing package files, CLI dispatch,

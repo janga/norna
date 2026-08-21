@@ -33,6 +33,7 @@ Run focused checks while developing:
 ```sh
 npm run test:content-check
 npm run test:site-public
+npm run test:documentation
 npm run test:fixture:build
 npm run test:examples
 npm run demo:build
@@ -42,6 +43,11 @@ npm run package:check
 `npm run test:examples` builds every complete site and feature demo under
 `examples/`. `npm run test` includes those builds in the standard check
 sequence.
+
+`npm run test:documentation` extracts the file examples from the five-minute
+tutorial, applies them to a freshly initialized temporary site, runs the
+configuration and content checks, builds the result, and checks local Markdown
+links plus the `llms.txt` source targets.
 
 `npm run build:pages` is specific to this repository. It builds the
 documentation site and assembles rendered examples under `dist/examples/` for

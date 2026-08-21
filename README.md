@@ -1,126 +1,138 @@
-# norna
+# Norna
 
-`norna` is a reusable command-line toolchain for small static websites.
-It provides the CLI, Astro renderer, validation scripts, image pipeline,
-starter project, fixtures, and deploy helpers used by site repositories such as
-`www.walde.se`.
+**Build responsive websites from Markdown, images, and a theme preset.**
 
-Use this repository when you are:
+Norna is an opinionated, open source CLI for building websites from plain
+files. You write the content, keep images beside the content they belong to,
+and choose a visual preset. Norna provides the page structure, navigation,
+responsive image output, validation, and static build.
 
-- creating a new site repository from the starter,
-- maintaining the reusable `@janga/norna` engine,
-- looking up the generic CLI, content, configuration, image, build, or deploy
-  behavior.
+The result stays readable as source files and works naturally with Git and
+AI-assisted editing. Norna deliberately offers fewer architectural choices
+than a general-purpose site generator: you describe the site instead of
+implementing a new presentation layer for every project.
 
-Site-specific content, domain files, source images, and publication decisions
-belong in each site repository. For example, Karin Walde's site lives in
-`www.walde.se` and depends on a pinned version of this package.
+[Documentation](https://janga.github.io/norna/) |
+[Five-minute tutorial](docs/getting-started.md) |
+[Live examples](https://janga.github.io/norna/examples/) |
+[npm package](https://www.npmjs.com/package/@janga/norna)
 
-## Mental Model
+[![A multi-page dog shelter site with a logo, route navigation, text, a card, and a managed image.](docs/assets/norna-dog-shelter.jpg)](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/)
 
-A `norna` site is file-driven:
-
-1. A site repository depends on this package.
-2. The site keeps technical settings, including public URL and optional URL
-   base path, in `site/config.mjs`.
-3. The site selects a complete visual preset, with optional focused overrides
-   for layout, image sizing, font, typography, palettes, and section surfaces,
-   in `site/theme.md`.
-4. The site keeps homepage content, Markdown section order, managed media
-   blocks, alt text, captions, and optional section metadata in
-   `site/content.md`.
-5. Optional route pages live under
-   `site/routes/<NNN-route-id>/route-content.md`.
-6. Source images live under `site/images/<section-id>/` for the homepage, or
-   under `site/routes/<NNN-route-id>/images/<section-id>/` for a route.
-7. Static public files live under `site/public/`.
-8. `norna` validates the files, prepares managed images, builds static Astro
-   pages, and can help publish the committed branch through GitHub Pages.
-
-The default site directory is `site/`. Commands can also use another directory
-with `NORNA_SITE_DIR` or `norna --site-dir <path>`. Without an explicit site
-directory, commands first accept the current directory when it contains
-`config.mjs` and `content.md`; otherwise they walk upward looking for a
-`site/` directory with those files.
+The screenshot shows the built
+[multi-page example source](examples/complete-sites/dog-shelter-multi-page/).
 
 ## Quick Start
 
-For engine development in this repository:
+You need Node.js 22.12 or later.
 
 ```sh
-npm install
-npm run dev:local
-npm run test:fixture:build
-npm run package:check
-```
-
-For a new site repository:
-
-```sh
-cd ../
 npx @janga/norna@latest init my-site
 cd my-site
 npm install
 npm run dev
 ```
 
-Run `init` before `npm install`. A new site directory is not a Node project
-until the starter has created its `package.json`; running `npm install` in an
-empty directory can make npm use a parent project instead. Keep real site
-repositories next to this engine repository, not inside it.
+Open the URL printed by the development server, then edit the files under
+`site/`. The generated project pins its Norna version and includes the npm
+scripts and GitHub Pages workflow needed to check, build, and publish it.
 
-The starter pins `@janga/norna` to an exact npm version. Commit the
-generated `package-lock.json` in the site repository so local builds and GitHub
-Actions use the same engine version.
+Follow the [five-minute tutorial](docs/getting-started.md) for a first edit and
+verified build.
 
-## Common Tasks
+## The Site Model
 
-- Create a site: [Getting Started](docs/getting-started.md)
-- Understand required site files: [Site Structure](docs/site-structure.md)
-- Edit sections and managed media blocks: [Content](docs/content.md)
-- Configure a site: [Configuration](docs/configuration.md)
-- Publish under a GitHub Pages project path:
-  [`site.basePath`](docs/configuration.md#sitebasepath)
-- Configure site-wide theme: [Theme](docs/theme.md)
-- Export a theme preset for inspection: [`theme:export`](docs/commands.md#command-summary)
-- Add route pages: [Routes](docs/routes.md)
-- Set page width: [`layout.pageWidth`](docs/theme.md#layout)
-- Set side gutters: [`layout.gutter`](docs/theme.md#layout)
-- Set image area width: [`gallery.width`](docs/theme.md#image-sizing)
-- Keep images within viewport height:
-  [`gallery.maxAvailableHeightPercent`](docs/theme.md#image-sizing)
-- Set the site font: [`typography.fontFamily`](docs/theme.md#typography)
-- Choose typography presets and overrides: [Typography](docs/typography.md)
-- Look up CLI and npm scripts: [Commands](docs/commands.md)
-- Understand generated images: [Images And Metadata](docs/images-and-metadata.md)
-- Run local preview: [Local Development](docs/local-development.md)
-- Publish a site: [Publishing](docs/publishing.md)
-- Work on the engine: [Engine Development](docs/engine-development.md)
+```text
+site/
+|-- config.mjs
+|-- theme.md
+|-- sitewide-content.md
+|-- content.md
+|-- images/
+|-- routes/
+`-- public/
+```
 
-## Requirements
+- `content.md` holds the homepage and its sections.
+- `images/` holds managed source images beside the content they belong to.
+- `routes/` adds pages, each with content and optional local images and theme.
+- `theme.md` normally selects one complete visual preset.
+- `sitewide-content.md` holds shared identity, banners, and footer content.
+- `config.mjs` holds the few technical settings the site needs.
+- `public/` holds static files copied without processing.
 
-- Node.js `>=22.12.0`.
-- ImageMagick, either `magick` or the older `identify` and `convert` commands,
-  when generating images locally.
-- GitHub CLI (`gh`) when using deploy checks or deploy monitoring.
-- Playwright Chromium when running navigation diagnostics.
+Norna validates this structure, processes managed images when needed, and
+builds the generated website into `dist/`.
 
-GitHub Pages workflows created from the starter install the image tools during
-deployment.
+## Why Norna?
 
-## License
+- **Useful defaults instead of a new layout project.** Presets coordinate
+  typography, spacing, palettes, image sizing, and section surfaces.
+- **Images without the repetitive work.** Norna creates responsive variants,
+  selects suitable browser sources, and reuses unchanged generated output.
+- **Files that remain manageable.** Content and assets can be inspected,
+  reviewed, versioned, and edited with the tools you already use.
+- **A complete publishing path.** The starter includes validation, static
+  builds, and an integrated GitHub Pages workflow.
 
-`norna` is licensed under [GNU GPL v3](LICENSE).
+## Examples
+
+Every example is built in the repository test suite and published with the
+documentation.
+
+| Example | Live site | Source |
+| --- | --- | --- |
+| Dog shelter, single page | [Open demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/) | [View files](examples/complete-sites/dog-shelter-single-page/) |
+| Dog shelter, multi-page | [Open demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](examples/complete-sites/dog-shelter-multi-page/) |
+| Theme presets | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-presets/) | [View files](examples/feature-demos/theme-presets/) |
+| Media and surfaces | [Open demo](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/) | [View files](examples/feature-demos/media-and-surfaces/) |
+| Sitewide content | [Open demo](https://janga.github.io/norna/examples/feature-demos/sitewide-content/) | [View files](examples/feature-demos/sitewide-content/) |
+
+See [examples/README.md](examples/README.md) for what each example is intended
+to demonstrate and how to run it locally.
+
+## Is Norna A Good Fit?
+
+Norna is designed for sites that should be straightforward to edit, review,
+and publish without creating a custom presentation architecture. Typical uses
+include project and product sites, documentation, portfolios, personal sites,
+and organisation or information sites.
+
+Norna is not intended for dynamic applications, database-backed publishing,
+visual CMS workflows, or projects that need complete control over templates,
+components, and rendering logic.
+
+## Requirements And Current Limits
+
+- Node.js `>=22.12.0` is required.
+- ImageMagick is required when Norna generates responsive raster image variants.
+- GitHub Pages is the only publishing provider integrated by Norna today.
+- The build output is static and written to `dist/`; other static hosts can
+  serve that output, but Norna does not currently configure or publish to them.
+- Norna is pre-1.0 software. Its file model and CLI may still change between
+  releases.
+
+GitHub CLI and Playwright are needed only for specific deploy helpers and
+engine diagnostics, not for ordinary editing and local preview. See
+[Requirements and limitations](docs/requirements.md) for the exact boundaries.
 
 ## Documentation
 
-The Norna-built introduction site lives in [`site/`](site/) and is configured
-for GitHub Pages at <https://janga.github.io/norna/>.
+- [Five-minute tutorial](docs/getting-started.md)
+- [Task-oriented documentation map](docs/README.md)
+- [How-to guides](docs/README.md#how-to-guides)
+- [Concepts and explanation](docs/README.md#concepts-and-explanation)
+- [Technical reference](docs/README.md#reference)
+- [Troubleshooting](docs/README.md#troubleshooting)
+- [AI-readable documentation index](https://janga.github.io/norna/llms.txt)
 
-Start with [docs/README.md](docs/README.md) for the documentation map and
-recommended reading order.
+Engine contributors should start with
+[Engine Development](docs/engine-development.md). Planning and future work are
+tracked in [BACKLOG.md](BACKLOG.md).
 
-Planning and future work are tracked in [BACKLOG.md](BACKLOG.md).
+## Support And License
 
-`AGENTS.md` contains operating rules for coding agents. Human-facing product
-and workflow documentation should live in this README and `docs/`.
+Use the [issue tracker](https://github.com/janga/norna/issues) for reproducible
+bugs, documentation problems, and focused feature proposals.
+
+Norna is licensed under [GNU GPL v3](LICENSE).
