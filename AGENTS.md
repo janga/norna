@@ -41,9 +41,10 @@ maintainer, put it in `README.md` instead of duplicating it here.
   prompt in Markdown near the image block so future maintainers can regenerate
   or revise them. This is not required for disposable test fixtures where the
   prompt has no maintenance value.
-- Use root `site/` for the documentation site. Use `examples/dog-gallery/site`
-  for visual demo and navigation checks. Use `fixtures/basic/site` for
-  standalone engine regression checks.
+- Use root `site/` for the documentation site. Use
+  `examples/feature-demos/media-and-surfaces/site` for broad visual demo and
+  navigation checks. Use `fixtures/basic/site` for minimal standalone engine
+  regression checks.
 - Keep site-specific static files in the selected site `public/`; the default
   path is `site/public/`. The selected site's `.norna/public/` directory
   is copied build preparation output plus generated image output.
@@ -55,9 +56,10 @@ maintainer, put it in `README.md` instead of duplicating it here.
 
 - Start the documentation-site dev server with `npm run dev:local`, or
   `npm run dev:lan` only when testing on another device on the same local
-  network. For the dog-gallery demo, run `node ../../../bin/norna.mjs dev:local`
-  from `examples/dog-gallery/site`. Manage it from the same directory with
-  `dev:stop`, `dev:restart`, `dev:status`, and `dev:logs`.
+  network. Start the broad feature demo from the repository root with
+  `node bin/norna.mjs --site-dir examples/feature-demos/media-and-surfaces/site dev:local`.
+  Manage it with the corresponding `dev:stop`, `dev:restart`, `dev:status`, and
+  `dev:logs` commands using the same `--site-dir`.
 - Run `npm run config:check` after changing `site/config.mjs` or config
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or
@@ -71,6 +73,10 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Run `npm run test:site-public` after changing static-public sync behavior.
 - Run `npm run test:fixture:build` after changing package/site-root behavior
   that should work against the minimal fixture.
+- Run `npm run test:examples` after moving or changing runnable examples or
+  behavior demonstrated by them.
+- Run `npm run build:pages` after changing the documentation Pages artifact,
+  rendered example links, or example deployment paths.
 - Run `npm run package:check` after changing package files, CLI dispatch,
   Astro path resolution, or starter structure.
 - Run `npm run build` after content, layout, config, or image-pipeline changes.

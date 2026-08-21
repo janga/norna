@@ -32,7 +32,9 @@ type AnchorMeasurement = {
 	viewportHeight: number;
 };
 
-const getNavTargets = async (page: Page): Promise<NavTarget[]> => page.locator('.section-nav a').evaluateAll((links) => (
+const mobilePageNavSelector = '.mobile-page-nav a';
+
+const getNavTargets = async (page: Page): Promise<NavTarget[]> => page.locator(mobilePageNavSelector).evaluateAll((links) => (
 	links.map((link) => ({
 		hash: link.getAttribute('href') ?? '',
 		label: link.textContent?.trim() ?? '',
@@ -41,8 +43,16 @@ const getNavTargets = async (page: Page): Promise<NavTarget[]> => page.locator('
 
 const openSite = async (page: Page, path = '/') => {
 	await page.goto(path, { waitUntil: 'domcontentloaded' });
-	await page.locator('.section-nav a').first().waitFor();
+	await page.locator(mobilePageNavSelector).first().waitFor({ state: 'attached' });
 	await page.waitForLoadState('networkidle').catch(() => {});
+};
+
+const clickSectionLink = async (page: Page, hash: string) => {
+	const menu = page.locator('.mobile-nav-menu').first();
+	if (!(await menu.getAttribute('open'))) {
+		await menu.locator('summary').click();
+	}
+	await page.locator(`${mobilePageNavSelector}[href$="${hash}"]`).first().click();
 };
 
 const waitForScrollToSettle = async (page: Page) => {
@@ -128,7 +138,7 @@ test('repeated mobile nav clicks keep headings below the sticky navigation', asy
 
 	for (let round = 0; round < clickRounds; round += 1) {
 		for (const target of targets) {
-			await page.locator(`.section-nav a[href="${target.hash}"]`).click();
+			await clickSectionLink(page, target.hash);
 
 			const targetIndex = targets.indexOf(target);
 			const viewportHeight = alternateViewportHeights[(round + targetIndex) % alternateViewportHeights.length];

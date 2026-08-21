@@ -1,4 +1,0 @@
----
-typography:
-  preset: text-forward
----

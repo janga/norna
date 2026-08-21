@@ -1,15 +1,12 @@
-import { execFile, spawn } from 'node:child_process';
+import { spawn } from 'node:child_process';
+import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { promisify } from 'node:util';
-
-const execFileAsync = promisify(execFile);
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(root, 'bin', 'norna.mjs');
-const dogGallerySiteDir = path.join(root, 'examples', 'dog-gallery', 'site');
-const url = 'http://localhost:4321/';
-const probeUrls = [url, 'http://127.0.0.1:4321/', 'http://[::1]:4321/'];
+const navigationDemoSiteDir = path.join(root, 'examples', 'feature-demos', 'media-and-surfaces', 'site');
+const host = '127.0.0.1';
 const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const testTargets = process.argv.slice(2);
 const playwrightTargets = testTargets.length > 0 ? testTargets : ['tests/navigation.spec.ts'];
@@ -18,33 +15,46 @@ const sleep = (milliseconds) => new Promise((resolve) => {
 	setTimeout(resolve, milliseconds);
 });
 
-const isReachable = async () => {
-	for (const probeUrl of probeUrls) {
-		try {
-			const response = await fetch(probeUrl, { signal: AbortSignal.timeout(1_000) });
-			await response.arrayBuffer();
-			return response.ok;
-		} catch {
-			// Try the next loopback address.
-		}
-	}
-
-	try {
-		await execFileAsync('curl', ['-fsI', url], {
-			cwd: root,
-			maxBuffer: 1024 * 1024,
+const getAvailablePort = () => new Promise((resolve, reject) => {
+	const server = net.createServer();
+	server.unref();
+	server.once('error', reject);
+	server.listen(0, host, () => {
+		const address = server.address();
+		const port = typeof address === 'object' && address ? address.port : null;
+		server.close((error) => {
+			if (error) {
+				reject(error);
+				return;
+			}
+			resolve(port);
 		});
-		return true;
+	});
+});
+
+const port = await getAvailablePort();
+if (!port) throw new Error('Could not reserve a port for the navigation test server.');
+const url = `http://${host}:${port}/`;
+
+const isReachable = async () => {
+	try {
+		const response = await fetch(url, { signal: AbortSignal.timeout(1_000) });
+		await response.arrayBuffer();
+		return response.ok;
 	} catch {
 		return false;
 	}
 };
 
-const waitForServer = async () => {
+const waitForServer = async (serverProcess) => {
 	const startedAt = Date.now();
 	const timeoutMs = 30_000;
 
 	while (Date.now() - startedAt < timeoutMs) {
+		if (serverProcess.exitCode !== null) {
+			throw new Error(`Navigation test server exited before ${url} became reachable.`);
+		}
+
 		if (await isReachable()) {
 			return;
 		}
@@ -54,12 +64,6 @@ const waitForServer = async () => {
 
 	throw new Error(`Timed out waiting for ${url}`);
 };
-
-const runCapture = async (command, args, options = {}) => execFileAsync(command, args, {
-	cwd: root,
-	maxBuffer: 1024 * 1024 * 10,
-	...options,
-});
 
 const runInherit = (command, args, options = {}) => new Promise((resolve, reject) => {
 	const child = spawn(command, args, {
@@ -82,31 +86,57 @@ const runInherit = (command, args, options = {}) => new Promise((resolve, reject
 	});
 });
 
-const ensureServer = async () => {
-	await stopServer();
+const startServer = async () => {
+	await runInherit(process.execPath, [cliPath, 'site:public'], {
+		cwd: navigationDemoSiteDir,
+	});
+	await runInherit(process.execPath, [cliPath, 'images'], {
+		cwd: navigationDemoSiteDir,
+	});
 
-	await runInherit(process.execPath, [cliPath, 'dev:local'], {
-		cwd: dogGallerySiteDir,
+	const serverProcess = spawn(process.execPath, [
+		cliPath,
+		'astro',
+		'dev',
+		'--ignore-lock',
+		'--host',
+		host,
+		'--port',
+		String(port),
+	], {
+		cwd: navigationDemoSiteDir,
+		stdio: 'inherit',
 		env: {
 			...process.env,
-			WALDE_NO_OPEN: '1',
+			ASTRO_DEV_BACKGROUND: '0',
 		},
 	});
-	await waitForServer();
+	serverProcess.once('error', (error) => {
+		throw error;
+	});
+	await waitForServer(serverProcess);
 
-	return true;
+	return serverProcess;
 };
 
-const stopServer = async () => {
-	await runCapture(process.execPath, [cliPath, 'dev:stop'], {
-		cwd: dogGallerySiteDir,
-	}).catch(() => {});
+const stopServer = async (serverProcess) => {
+	if (!serverProcess || serverProcess.exitCode !== null) return;
+
+	serverProcess.kill('SIGTERM');
+	const stopped = await Promise.race([
+		new Promise((resolve) => serverProcess.once('exit', () => resolve(true))),
+		sleep(5_000).then(() => false),
+	]);
+
+	if (!stopped && serverProcess.exitCode === null) {
+		serverProcess.kill('SIGKILL');
+	}
 };
 
-let startedServer = false;
+let serverProcess;
 
 try {
-	startedServer = await ensureServer();
+	serverProcess = await startServer();
 	await runInherit(npmBin, ['exec', '--', 'playwright', 'test', ...playwrightTargets], {
 		env: {
 			...process.env,
@@ -114,7 +144,5 @@ try {
 		},
 	});
 } finally {
-	if (startedServer) {
-		await stopServer();
-	}
+	await stopServer(serverProcess);
 }

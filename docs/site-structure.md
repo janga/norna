@@ -91,6 +91,8 @@ In this repository:
 - `starters/project/` is a project-site starter used as a maintained example
   for small project and developer-tool sites.
 - `fixtures/basic/site/` is used by engine regression tests.
-- `examples/dog-gallery/site/` is the local visual dog example used by demo
-  builds and navigation diagnostics.
+- `examples/feature-demos/media-and-surfaces/site/` is the broad visual example
+  used by demo builds and navigation diagnostics.
+- `examples/complete-sites/` contains coherent sites, while
+  `examples/feature-demos/` contains focused visual test benches.
 - `site/` is reserved for the local documentation site.

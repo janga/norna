@@ -19,8 +19,8 @@ This document is for work on the reusable `norna` package itself.
 - `tests/`: Playwright navigation diagnostics.
 - `fixtures/basic/site/`: minimal site used for engine checks.
 - `starters/basic/`: copyable site starter.
-- `examples/dog-gallery/site/`: visual dog example used by demo builds and
-  navigation diagnostics.
+- `examples/feature-demos/media-and-surfaces/site/`: broad visual example used
+  by demo builds and navigation diagnostics.
 
 The repository-local `site/` directory is reserved for a local documentation
 site. It is useful for dogfooding `norna` documentation, but it is not the
@@ -34,11 +34,18 @@ Run focused checks while developing:
 npm run test:content-check
 npm run test:site-public
 npm run test:fixture:build
+npm run test:examples
 npm run demo:build
 npm run package:check
 ```
 
-`npm run test` runs the standard non-demo check sequence.
+`npm run test:examples` builds every complete site and feature demo under
+`examples/`. `npm run test` includes those builds in the standard check
+sequence.
+
+`npm run build:pages` is specific to this repository. It builds the
+documentation site and assembles rendered examples under `dist/examples/` for
+the shared GitHub Pages artifact. It is not a generic Norna site command.
 
 The root `site/` directory is the documentation site. Use the ordinary local
 commands for it:
@@ -48,12 +55,11 @@ npm run dev:local
 npm run build
 ```
 
-The dog example remains the visual demo and navigation diagnostic target:
+The media-and-surfaces feature demo is the broad visual and navigation
+diagnostic target:
 
 ```sh
-cd examples/dog-gallery/site
-node ../../../bin/norna.mjs dev:local
-cd ../../..
+node bin/norna.mjs --site-dir examples/feature-demos/media-and-surfaces/site dev:local
 npm run demo:build
 ```
 

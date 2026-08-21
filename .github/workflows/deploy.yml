@@ -34,16 +34,18 @@ jobs:
       - name: Restore generated image cache
         uses: actions/cache@v6
         with:
-          path: site/.norna/public/images/generated
-          key: norna-docs-images-${{ hashFiles('site/.norna/generated-images.json') }}
+          path: |
+            site/.norna/public/images/generated
+            examples/**/site/.norna/public/images/generated
+          key: norna-pages-images-${{ hashFiles('site/images/**', 'site/routes/**/images/**', 'examples/**/site/images/**', 'examples/**/site/routes/**/images/**') }}
           restore-keys: |
-            norna-docs-images-
+            norna-pages-images-
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Check and build documentation site
-        run: node bin/norna.mjs build
+      - name: Build documentation and rendered examples
+        run: npm run build:pages
 
       - name: Configure Pages
         uses: actions/configure-pages@v6

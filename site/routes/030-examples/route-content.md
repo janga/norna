@@ -12,6 +12,34 @@ Norna is not tied to one particular type of website.
 The common factor is that the site is content-driven and fits well within a
 defined model of content, presentation, configuration, routes and assets.
 
+## Rendered examples {#rendered-examples}
+
+These sites are built from the example files in the Norna repository and
+published together with this documentation:
+
+```norna-card-list
+flow: grid
+size: m
+width: normal
+
+- title: Dog shelter: single page
+  text: A complete site with two homepage sections and no routes.
+  link: https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/
+  badge-text: Complete site
+- title: Dog shelter: multi-page
+  text: A complete site with a homepage and ordered routes for dogs and adoption.
+  link: https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/
+  badge-text: Complete site
+- title: Theme presets
+  text: Compare portfolio, documentation, project and statement without overrides.
+  link: https://janga.github.io/norna/examples/feature-demos/theme-presets/
+  badge-text: Feature demo
+- title: Media and surfaces
+  text: Inspect image stacks, carousels, cards, notes, palettes and section surfaces.
+  link: https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/
+  badge-text: Feature demo
+```
+
 ## Common site types {#site-types}
 
 ```norna-card-list

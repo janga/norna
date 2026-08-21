@@ -19,6 +19,7 @@ type AnchorMeasurement = {
 const pageNavSelector = '.site-nav-submenu a';
 const mobilePageNavSelector = '.mobile-page-nav a';
 const sectionNavSelector = `${pageNavSelector}, ${mobilePageNavSelector}`;
+const activeSectionNavSelector = `${pageNavSelector}[aria-current="true"], ${mobilePageNavSelector}[aria-current="true"]`;
 
 const getNavTargets = async (page) => page.locator(pageNavSelector).evaluateAll((links) => (
 	links.map((link) => {
@@ -106,11 +107,13 @@ const clickSectionLink = async (page, hash: string) => {
 
 	if (await currentRouteLink.isVisible()) {
 		await currentRouteLink.hover();
-	}
-
-	if (await desktopLink.isVisible()) {
-		await desktopLink.click();
-		return;
+		const menuOpened = await desktopLink.waitFor({ state: 'visible', timeout: 1_000 })
+			.then(() => true)
+			.catch(() => false);
+		if (menuOpened) {
+			await desktopLink.click();
+			return;
+		}
 	}
 
 	const mobileMenu = page.locator('.mobile-nav-menu').first();
@@ -123,9 +126,9 @@ const clickSectionLink = async (page, hash: string) => {
 	throw new Error(`Cannot find visible section navigation link for ${hash}.`);
 };
 
-const getActiveSectionHash = async (page) => page.locator(`${sectionNavSelector}[aria-current="true"]`)
+const getActiveSectionHash = async (page) => page.locator(activeSectionNavSelector)
 	.first()
-	.getAttribute('href');
+	.evaluate((link) => new URL(link.href, window.location.href).hash);
 
 const measureNavTextHitTargets = async (page) => page.locator(pageNavSelector).evaluateAll((links) => (
 	links.map((link) => {
@@ -220,7 +223,7 @@ for (const scenario of [
 	test('keeps the target aligned when layout above it changes during smooth scroll', async ({ page }) => {
 			await openSite(page);
 			const targets = await getNavTargets(page);
-			const target = targets[Math.floor(targets.length / 2)];
+			const target = targets[1];
 			if (!target) throw new Error('The fixture must provide at least three navigation targets.');
 			const sectionId = target.hash.slice(1);
 
