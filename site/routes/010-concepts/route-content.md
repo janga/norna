@@ -7,21 +7,6 @@ navigation:
   label: Concepts
 ---
 
-## The site model {#site-model}
-
-<!-- norna-image-provenance:
-image: site-model.svg
-source: hand-authored
-Hand-authored SVG diagram created for the Norna introduction site to summarise
-how source files pass through Norna's opinionated site model and become a
-website.
--->
-
-```norna-image-stack
-- image: site-model.svg
-  alt: Site files describing content, presentation, configuration, routes and assets flow through Norna and become a responsive website.
-```
-
 ## Single-page site {#single-page-site}
 
 Even a one-page site contains two kinds of content.
