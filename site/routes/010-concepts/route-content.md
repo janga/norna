@@ -24,19 +24,25 @@ website.
 
 ## Single-page site {#single-page-site}
 
-A Norna site may be as simple as a single page. Almost all text lives in
-`content.md`, as does references to images. {note-ref}.
+Even a one-page site contains two kinds of content.
 
-{note: Shared brand and logo settings belong in `sitewide-content.md`.}
+`content.md` contains the page itself: its sections, text and managed media.
+`sitewide-content.md` contains content shared by the whole site, such as its
+identity, notices and footer.{note-ref} The reasoning is that more pages may be
+added to a site that begins as a single page.
 
-The site's navigation structure is based on markdown headers in `content.md`.
-Each section has its images stored in a folder under `images`, the folder name
-is based on the section name.
+{note: If routes are added later, sitewide content already has the right scope
+and can appear across every page without being duplicated.}
 
-Site identity such as a shared brand or logo lives in `sitewide-content.md`.
-Text appearance lives in `theme.md`. Images are kept in folders under `images/`.
+This separation is part of Norna being opinionated. You do not decide where
+these elements should live or wire them into a page layout. Norna gives each
+kind of content a defined place.
 
-The section id in Markdown connects a section to its image folder.
+`theme.md` controls the visual presentation, while `config.mjs` contains the few
+technical settings the site needs.
+
+Within `content.md`, level-two headings define the page sections. Each section
+id connects the section to its corresponding folder under `images/`.
 
 <!-- norna-image-provenance:
 image: single-page-site.svg
