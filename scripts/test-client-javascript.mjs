@@ -100,21 +100,6 @@ Additional sections do not make the page interactive.
 	assertNoClientJavaScript(browserSmoothHtml, 'The browser smooth scroll mode');
 	assertScrollBehavior(browserSmoothHtml, 'smooth', 'The browser smooth scroll mode');
 
-	await writeConfig('norna-smooth');
-	runBuild();
-	const nornaSmoothHtml = await readPage();
-	assert.equal(
-		getScripts(nornaSmoothHtml).length,
-		1,
-		'The Norna smooth scroll mode should load only its scroll implementation.',
-	);
-	assertScrollBehavior(nornaSmoothHtml, 'auto', 'The Norna smooth scroll mode');
-	assert.match(
-		getScripts(nornaSmoothHtml)[0],
-		/nornaScrollActive/,
-		'The Norna smooth scroll mode should emit the Norna scroll implementation.',
-	);
-
 	await writeConfig();
 
 	await mkdir(path.join(routeDir, 'images', 'details'), { recursive: true });

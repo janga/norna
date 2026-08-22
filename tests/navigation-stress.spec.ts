@@ -61,11 +61,6 @@ const clickSectionLink = async (page: Page, hash: string) => {
 };
 
 const waitForScrollToSettle = async (page: Page) => {
-	await page.waitForFunction(
-		() => document.documentElement.dataset.nornaScrollActive !== 'true',
-		undefined,
-		{ timeout: 7_000 },
-	);
 	await page.evaluate(() => new Promise<void>((resolve) => {
 		let previousY = window.scrollY;
 		let stableFrames = 0;

@@ -2,7 +2,6 @@ import { expect, test } from '@playwright/test';
 
 const mobileViewport = { width: 393, height: 852 };
 const desktopViewport = { width: 1280, height: 900 };
-const maximumAnchorGap = 2;
 const maximumAnchorWait = 7_000;
 const minimumFullscreenSafeTextTop = 24;
 const testPagePath = '/media/';
@@ -12,9 +11,6 @@ type AnchorMeasurement = {
 	headerBottom: number;
 	headingTop: number;
 	gap: number;
-	isFirstSection: boolean;
-	scrollBottomGap: number;
-	scrollY: number;
 };
 
 const pageNavSelector = '.site-nav-submenu a';
@@ -34,7 +30,6 @@ const getNavTargets = async (page) => page.locator(pageNavSelector).evaluateAll(
 
 const measureAnchor = async (page, sectionId: string): Promise<AnchorMeasurement> => page.evaluate((id) => {
 	const header = document.querySelector('.site-top');
-	const sections = Array.from(document.querySelectorAll('.site-section'));
 	const section = document.getElementById(id);
 	const heading = section?.querySelector('h1, h2');
 
@@ -44,20 +39,11 @@ const measureAnchor = async (page, sectionId: string): Promise<AnchorMeasurement
 
 	const headerBottom = header.getBoundingClientRect().bottom;
 	const headingTop = heading.getBoundingClientRect().top;
-	const maxScrollY = Math.max(
-		0,
-		document.documentElement.scrollHeight - window.innerHeight,
-		document.body.scrollHeight - window.innerHeight,
-	);
-
 	return {
 		hash: window.location.hash,
 		headerBottom,
 		headingTop,
 		gap: headingTop - headerBottom,
-		isFirstSection: sections[0] === section,
-		scrollBottomGap: maxScrollY - window.scrollY,
-		scrollY: window.scrollY,
 	};
 }, sectionId);
 
@@ -69,9 +55,8 @@ const openSite = async (page, path = testPagePath) => {
 
 const waitForAnchorPosition = async (page, sectionId: string) => {
 	await page.waitForFunction(
-		({ id, maximumGap }) => {
+		({ id }) => {
 			const header = document.querySelector('.site-top');
-			const sections = Array.from(document.querySelectorAll('.site-section'));
 			const section = document.getElementById(id);
 			const heading = section?.querySelector('h1, h2');
 
@@ -82,20 +67,12 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 			const headerBottom = header.getBoundingClientRect().bottom;
 			const headingTop = heading.getBoundingClientRect().top;
 			const gap = headingTop - headerBottom;
-			const maxScrollY = Math.max(
-				0,
-				document.documentElement.scrollHeight - window.innerHeight,
-				document.body.scrollHeight - window.innerHeight,
-			);
-			const atDocumentTop = window.scrollY <= 2;
-			const atDocumentBottom = maxScrollY - window.scrollY <= 2;
-			const isFirstSection = sections[0] === section;
 
 			return window.location.hash === `#${id}`
 				&& gap >= -1
-				&& (gap <= maximumGap || (atDocumentTop && isFirstSection) || atDocumentBottom);
+				&& headingTop < window.innerHeight;
 		},
-		{ id: sectionId, maximumGap: maximumAnchorGap },
+		{ id: sectionId },
 		{ timeout: maximumAnchorWait },
 	);
 };
@@ -204,7 +181,7 @@ for (const scenario of [
 			viewport: scenario.viewport,
 		});
 
-		test('positions each section heading below the sticky navigation', async ({ page }) => {
+		test('keeps each section heading visible below the sticky navigation', async ({ page }) => {
 			await openSite(page);
 
 			for (const target of await getNavTargets(page)) {
@@ -215,13 +192,10 @@ for (const scenario of [
 				const measurement = await measureAnchor(page, sectionId);
 				expect(measurement.hash, target.label).toBe(target.hash);
 				expect(measurement.gap, target.label).toBeGreaterThanOrEqual(-1);
-				if (!measurement.isFirstSection && measurement.scrollY > 2 && measurement.scrollBottomGap > 2) {
-					expect(measurement.gap, target.label).toBeLessThanOrEqual(maximumAnchorGap);
-				}
 			}
 		});
 
-		test('positions direct hash links below the sticky navigation', async ({ page }) => {
+		test('keeps direct hash-link headings visible below the sticky navigation', async ({ page }) => {
 			await openSite(page);
 
 			for (const target of await getNavTargets(page)) {
@@ -232,107 +206,18 @@ for (const scenario of [
 				const measurement = await measureAnchor(page, sectionId);
 				expect(measurement.hash, target.label).toBe(target.hash);
 				expect(measurement.gap, target.label).toBeGreaterThanOrEqual(-1);
-				if (!measurement.isFirstSection && measurement.scrollY > 2 && measurement.scrollBottomGap > 2) {
-					expect(measurement.gap, target.label).toBeLessThanOrEqual(maximumAnchorGap);
-				}
 			}
 		});
 
-		test('keeps the target aligned when layout above it changes during smooth scroll', async ({ page }) => {
+		test('uses native immediate anchor movement by default', async ({ page }) => {
 			await openSite(page);
-			const targets = await getNavTargets(page);
-			const target = targets[1];
-			if (!target) throw new Error('The fixture must provide at least two navigation targets.');
-			const sectionId = target.hash.slice(1);
-
-			await page.evaluate((id) => {
-				window.setTimeout(() => {
-					const targetSection = document.getElementById(id);
-					const spacer = document.createElement('div');
-
-					spacer.id = 'scroll-shift-probe';
-					spacer.style.height = '180px';
-					spacer.style.pointerEvents = 'none';
-					targetSection?.before(spacer);
-				}, 500);
-			}, sectionId);
-
-			await clickSectionLink(page, target.hash);
-			await waitForAnchorPosition(page, sectionId);
-
-			const measurement = await measureAnchor(page, sectionId);
-			expect(measurement.hash).toBe(target.hash);
-			expect(measurement.gap).toBeGreaterThanOrEqual(-1);
-			expect(measurement.gap).toBeLessThanOrEqual(maximumAnchorGap);
+			await expect.poll(() => page.evaluate(
+				() => getComputedStyle(document.documentElement).scrollBehavior,
+			)).toBe('auto');
 		});
+
 	});
 }
-
-test.describe('Norna smooth scrolling', () => {
-	test.use({
-		hasTouch: false,
-		isMobile: false,
-		viewport: desktopViewport,
-	});
-
-	test('animates section jumps before settling at the target', async ({ page }) => {
-		await openSite(page);
-		const target = (await getNavTargets(page))[1];
-		if (!target) throw new Error('The fixture must provide at least two navigation targets.');
-
-		const startY = await page.evaluate(() => window.scrollY);
-		await clickSectionLink(page, target.hash);
-		await page.waitForFunction(() => document.documentElement.dataset.nornaScrollActive === 'true');
-		await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(startY);
-		await page.waitForFunction(() => document.documentElement.dataset.nornaScrollActive !== 'true');
-		await waitForAnchorPosition(page, target.hash.slice(1));
-	});
-
-	test('stops an active animation when the visitor interrupts it', async ({ page }) => {
-		await openSite(page);
-		const target = (await getNavTargets(page))[1];
-		if (!target) throw new Error('The fixture must provide at least two navigation targets.');
-
-		await clickSectionLink(page, target.hash);
-		await page.waitForFunction(() => document.documentElement.dataset.nornaScrollActive === 'true');
-		await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
-		await page.evaluate(() => window.dispatchEvent(new WheelEvent('wheel')));
-		await expect.poll(() => page.evaluate(
-			() => document.documentElement.dataset.nornaScrollActive ?? null,
-		)).toBeNull();
-
-		const interruptedY = await page.evaluate(() => window.scrollY);
-		await page.waitForTimeout(250);
-		expect(Math.abs((await page.evaluate(() => window.scrollY)) - interruptedY)).toBeLessThanOrEqual(1);
-
-		const measurement = await measureAnchor(page, target.hash.slice(1));
-		expect(measurement.gap).toBeGreaterThan(maximumAnchorGap);
-	});
-});
-
-test.describe('Norna smooth scrolling with reduced motion', () => {
-	test.use({
-		contextOptions: { reducedMotion: 'reduce' },
-		hasTouch: false,
-		isMobile: false,
-		viewport: desktopViewport,
-	});
-
-	test('moves immediately while preserving exact anchor placement', async ({ page }) => {
-		await openSite(page);
-		const target = (await getNavTargets(page))[1];
-		if (!target) throw new Error('The fixture must provide at least two navigation targets.');
-		expect(await page.evaluate(
-			() => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-		)).toBe(true);
-
-		await clickSectionLink(page, target.hash);
-		await waitForAnchorPosition(page, target.hash.slice(1));
-		expect(await page.evaluate(
-			() => document.documentElement.dataset.nornaScrollActive ?? null,
-		)).toBeNull();
-	});
-});
 
 test.describe('section navigation history', () => {
 	test.use({

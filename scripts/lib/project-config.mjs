@@ -249,7 +249,7 @@ const readLocale = (config) => {
 const rawConfig = assertObject(siteConfig, 'config frontmatter');
 const rawTheme = assertObject(themeConfig, 'theme frontmatter', siteThemeLabel);
 const siteUrl = readSiteUrl(rawConfig);
-const scrollBehaviorNames = ['instant', 'browser-smooth', 'norna-smooth'];
+const scrollBehaviorNames = ['instant', 'browser-smooth'];
 
 const defaultFontFamily = "Arial, 'Helvetica Neue', Helvetica, sans-serif";
 const layoutDensityNames = ['compact', 'normal', 'airy'];

@@ -77,11 +77,6 @@ try {
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'browser-smooth');
 
-	const nornaSmoothSite = await createSite('norna-smooth', '---\nurl: https://example.com/\nscrollBehavior: norna-smooth\n---\n');
-	const nornaSmoothResult = loadConfig(nornaSmoothSite);
-	assert.equal(nornaSmoothResult.status, 0, nornaSmoothResult.stderr);
-	assert.equal(JSON.parse(nornaSmoothResult.stdout).scrollBehavior, 'norna-smooth');
-
 	const overrideResult = loadConfig(minimalSite, {
 		NORNA_SITE_URL: 'http://127.0.0.1:4567/preview',
 	});
@@ -113,7 +108,7 @@ try {
 	);
 	assertFailure(
 		loadConfig(await createSite('invalid-scroll-behavior', '---\nurl: https://example.com/\nscrollBehavior: slow\n---\n')),
-		/scrollBehavior must be one of instant, browser-smooth, norna-smooth/,
+		/scrollBehavior must be one of instant, browser-smooth/,
 	);
 	assertFailure(
 		loadConfig(await createSite('obsolete-smooth-scroll', '---\nurl: https://example.com/\nsmoothScroll: true\n---\n')),

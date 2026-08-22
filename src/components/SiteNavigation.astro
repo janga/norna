@@ -4,7 +4,6 @@ import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
 import type { SitePage } from '../lib/sitePages';
 import MobileSectionNavigationScript from './MobileSectionNavigationScript.astro';
-import NornaSmoothScrollScript from './NornaSmoothScrollScript.astro';
 
 type FrameColors = {
 	backgroundColor: string;
@@ -49,7 +48,6 @@ const showSinglePageSectionNavigation = Boolean(
 const hasCurrentPageSectionMenu = Boolean(
 	showSiteNavigation && currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
 );
-const useNornaSmoothScroll = projectConfig.navigation.scrollBehavior === 'norna-smooth';
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
@@ -142,6 +140,4 @@ const useNornaSmoothScroll = projectConfig.navigation.scrollBehavior === 'norna-
 
 </header>
 
-{useNornaSmoothScroll
-	? <NornaSmoothScrollScript />
-	: hasCurrentPageSectionMenu && <MobileSectionNavigationScript />}
+{hasCurrentPageSectionMenu && <MobileSectionNavigationScript />}
