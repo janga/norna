@@ -71,24 +71,29 @@ navigation:
 ---
 `);
 	await writeFile(path.join(siteDir, 'content.md'), `---
-title: Static single page
-description: A single page without interactive features.
+title: Section navigation
+description: A single page with sticky section navigation.
 sections:
   intro: {}
   more: {}
 ---
 ## Intro {#intro}
 
-Ordinary Markdown needs no client-side JavaScript.
+The section heading is a native anchor target.
 
 ## More {#more}
 
-Additional sections do not make the page interactive.
+The navigation enhancement keeps native anchors clear of the sticky header.
 `);
 
 	runBuild();
 	const instantHtml = await readPage();
-	assertNoClientJavaScript(instantHtml, 'The default instant scroll mode');
+	assert.equal(
+		getScripts(instantHtml).length,
+		1,
+		'Sticky section navigation should load only its anchor-offset enhancement.',
+	);
+	assert.match(getScripts(instantHtml)[0], /site-top-anchor-offset/);
 	assertScrollBehavior(instantHtml, 'auto', 'The default instant scroll mode');
 	assert.match(instantHtml, /<nav class="page-nav"/);
 	assert.match(instantHtml, /href="#intro"/);
@@ -97,7 +102,11 @@ Additional sections do not make the page interactive.
 	await writeConfig('browser-smooth');
 	runBuild();
 	const browserSmoothHtml = await readPage();
-	assertNoClientJavaScript(browserSmoothHtml, 'The browser smooth scroll mode');
+	assert.equal(
+		getScripts(browserSmoothHtml).length,
+		1,
+		'Browser smooth scrolling should use the same anchor-offset enhancement.',
+	);
 	assertScrollBehavior(browserSmoothHtml, 'smooth', 'The browser smooth scroll mode');
 
 	await writeConfig();

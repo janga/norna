@@ -3,7 +3,7 @@ import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
 import type { SitePage } from '../lib/sitePages';
-import MobileSectionNavigationScript from './MobileSectionNavigationScript.astro';
+import SectionNavigationScript from './SectionNavigationScript.astro';
 
 type FrameColors = {
 	backgroundColor: string;
@@ -48,6 +48,7 @@ const showSinglePageSectionNavigation = Boolean(
 const hasCurrentPageSectionMenu = Boolean(
 	showSiteNavigation && currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
 );
+const hasSectionNavigation = showSinglePageSectionNavigation || hasCurrentPageSectionMenu;
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
@@ -140,4 +141,4 @@ const hasCurrentPageSectionMenu = Boolean(
 
 </header>
 
-{hasCurrentPageSectionMenu && <MobileSectionNavigationScript />}
+{hasSectionNavigation && <SectionNavigationScript />}

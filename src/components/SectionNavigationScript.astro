@@ -1,0 +1,28 @@
+<script>
+	const siteTop = document.querySelector<HTMLElement>('.site-top');
+	const mobileMenu = document.querySelector<HTMLDetailsElement>('.mobile-nav-menu');
+	const mobileSectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.mobile-page-nav a'));
+
+	const setAnchorOffset = () => {
+		if (!siteTop) return;
+
+		const offset = Math.ceil(siteTop.getBoundingClientRect().height);
+		document.documentElement.style.setProperty('--site-top-anchor-offset', `${offset}px`);
+	};
+
+	mobileSectionLinks.forEach((link) => {
+		link.addEventListener('click', (event) => {
+			const linkUrl = new URL(link.href, window.location.href);
+			if (linkUrl.pathname !== window.location.pathname) return;
+
+			if (mobileMenu) mobileMenu.open = false;
+			if (event.detail > 0) link.blur();
+		});
+	});
+
+	setAnchorOffset();
+
+	if (siteTop && 'ResizeObserver' in window) {
+		new ResizeObserver(setAnchorOffset).observe(siteTop);
+	}
+</script>

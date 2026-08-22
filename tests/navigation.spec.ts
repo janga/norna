@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const mobileViewport = { width: 393, height: 852 };
 const desktopViewport = { width: 1280, height: 900 };
+const maximumAnchorGap = 2;
 const maximumAnchorWait = 7_000;
 const minimumFullscreenSafeTextTop = 24;
 const testPagePath = '/media/';
@@ -30,8 +31,7 @@ const getNavTargets = async (page) => page.locator(pageNavSelector).evaluateAll(
 
 const measureAnchor = async (page, sectionId: string): Promise<AnchorMeasurement> => page.evaluate((id) => {
 	const header = document.querySelector('.site-top');
-	const section = document.getElementById(id);
-	const heading = section?.querySelector('h1, h2');
+	const heading = document.getElementById(id);
 
 	if (!(header instanceof HTMLElement) || !(heading instanceof HTMLElement)) {
 		throw new Error(`Cannot measure section heading for ${id}.`);
@@ -57,8 +57,7 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 	await page.waitForFunction(
 		({ id }) => {
 			const header = document.querySelector('.site-top');
-			const section = document.getElementById(id);
-			const heading = section?.querySelector('h1, h2');
+			const heading = document.getElementById(id);
 
 			if (!(header instanceof HTMLElement) || !(heading instanceof HTMLElement)) {
 				return false;
@@ -183,8 +182,9 @@ for (const scenario of [
 
 		test('keeps each section heading visible below the sticky navigation', async ({ page }) => {
 			await openSite(page);
+			const targets = await getNavTargets(page);
 
-			for (const target of await getNavTargets(page)) {
+			for (const [targetIndex, target] of targets.entries()) {
 				const sectionId = target.hash.slice(1);
 				await clickSectionLink(page, target.hash);
 				await waitForAnchorPosition(page, sectionId);
@@ -192,13 +192,15 @@ for (const scenario of [
 				const measurement = await measureAnchor(page, sectionId);
 				expect(measurement.hash, target.label).toBe(target.hash);
 				expect(measurement.gap, target.label).toBeGreaterThanOrEqual(-1);
+				if (targetIndex === 1) expect(measurement.gap, target.label).toBeLessThanOrEqual(maximumAnchorGap);
 			}
 		});
 
 		test('keeps direct hash-link headings visible below the sticky navigation', async ({ page }) => {
 			await openSite(page);
+			const targets = await getNavTargets(page);
 
-			for (const target of await getNavTargets(page)) {
+			for (const [targetIndex, target] of targets.entries()) {
 				const sectionId = target.hash.slice(1);
 				await openSite(page, `${testPagePath}${target.hash}`);
 				await waitForAnchorPosition(page, sectionId);
@@ -206,6 +208,7 @@ for (const scenario of [
 				const measurement = await measureAnchor(page, sectionId);
 				expect(measurement.hash, target.label).toBe(target.hash);
 				expect(measurement.gap, target.label).toBeGreaterThanOrEqual(-1);
+				if (targetIndex === 1) expect(measurement.gap, target.label).toBeLessThanOrEqual(maximumAnchorGap);
 			}
 		});
 

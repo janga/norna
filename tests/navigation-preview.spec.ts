@@ -61,8 +61,8 @@ const measureAnchor = async (
 ): Promise<AnchorMeasurement> => page.evaluate(({ hash, label, currentRound, viewportName }) => {
 	const sectionId = hash.slice(1);
 	const header = document.querySelector('.site-top');
-	const section = document.getElementById(sectionId);
-	const heading = section?.querySelector('h1, h2');
+	const heading = document.getElementById(sectionId);
+	const section = heading?.closest('.site-section');
 	const styles = getComputedStyle(document.documentElement);
 
 	if (!(header instanceof HTMLElement) || !(section instanceof HTMLElement) || !(heading instanceof HTMLElement)) {
