@@ -10,8 +10,17 @@ inside a project that declares and has installed its own `@janga/norna`
 dependency, the launcher delegates to that project-local version. If no
 project-local install is found, the version that was started continues running.
 
-Use direct `norna ...` commands only when the binary is on your shell `PATH`,
-inside an npm script, or through `npm exec -- norna ...`.
+The project-owned `norna:*` npm scripts are the portable default for both
+standalone and embedded sites. To use direct commands from an ordinary shell,
+install the launcher once:
+
+```sh
+npm install --global @janga/norna@latest
+```
+
+You can then use commands such as `norna dev`, `norna check`, and
+`norna build`. The launcher still delegates to the current project's locally
+installed and pinned Norna version.
 
 ## CLI Commands
 
@@ -22,17 +31,18 @@ norna dev:restart
 norna dev:status
 norna dev:logs
 norna dev:stop
+norna check
 norna config:check
 norna content:check
 norna content:sync
 norna theme:export <preset>
-norna typography presets
+norna typography profiles
 norna typography show
 norna site:public
 norna images
 norna engine:update [version|latest]
 norna engine:version [--latest]
-norna init <target-dir> [--type pure|embedded] [--site-dir <path>]
+norna init <target-dir> [--type standalone|embedded] [--site-dir <path>]
 norna build
 norna build:local
 norna deploy
@@ -50,8 +60,9 @@ norna --site-dir <path> <command>
 norna --help
 ```
 
-`norna dev` is accepted as an alias for `dev:local`. `help`, `-h`, and
-`--help` print usage.
+`norna dev` is accepted as an alias for `dev:local`. `norna check` runs the
+configuration and content checks in sequence. `help`, `-h`, and `--help` print
+usage.
 
 ## Starter npm Scripts
 
@@ -59,10 +70,9 @@ The starter uses `norna:*` for norna-specific work. This avoids collisions
 when a Norna site is embedded inside a larger GitHub project
 whose own `build`, `test`, or deploy scripts mean something different.
 
-The starter defines:
+The stable project scripts are:
 
 ```sh
-npm run dev
 npm run norna:dev
 npm run norna:dev:lan
 npm run norna:dev:restart
@@ -74,7 +84,7 @@ npm run norna:config:check
 npm run norna:content:check
 npm run norna:sync
 npm run norna:theme:export -- <preset>
-npm run norna:typography:presets
+npm run norna:typography:profiles
 npm run norna:typography:show
 npm run norna:public
 npm run norna:images
@@ -87,11 +97,10 @@ npm run norna:doctor
 npm run norna:preview
 npm run norna:engine:update
 npm run norna:engine:version
-npm run build
 ```
 
-`npm run dev` calls `npm run norna:dev`. In the pure starter,
-`npm run build` aliases `npm run norna:build`. In mixed repositories, such as
+The standalone starter also provides `npm run dev` and `npm run build` as
+convenience aliases. In mixed repositories, such as
 a GitHub project that embeds a Norna site next to an app, `build`
 should normally mean the repository's complete publishable artifact, while
 `norna:build` builds only the `norna` part.
@@ -103,7 +112,8 @@ should normally mean the repository's complete publishable artifact, while
   cache path.
 - `config:check`: validates `site/config.md` against the runtime config
   reader.
-- `content:check`: validates section structure, managed media references,
+- `check`: runs `config:check` followed by `content:check`.
+- `content:check`: validates section structure, Norna block references,
   inline styles, and common content mistakes.
 - `content:sync` / `norna:sync`: moves misplaced referenced image files after
   confirmation when the intended move is unambiguous. Moving files between the
@@ -112,8 +122,8 @@ should normally mean the repository's complete publishable artifact, while
   `orig-<preset>-theme.md` reference under the selected site directory. The
   available complete theme presets are `portfolio`, `documentation`,
   `project`, and `statement`. Norna continues to load only `theme.md`.
-- `typography presets`: prints the exact built-in values for typography
-  presets and rhythms.
+- `typography profiles`: prints the exact built-in values for typography
+  profiles and rhythms.
 - `typography show`: prints the selected site's resolved typography for the
   theme, every page route, and every section. Each value includes its source,
   and inherited page or section values are marked with `inherited: true`.
@@ -131,10 +141,10 @@ should normally mean the repository's complete publishable artifact, while
 - `engine:version [--latest]`: prints the declared site dependency, installed
   engine version, engine root, Astro dependency, and installed Astro version.
   With `--latest`, it also asks npm for the latest published engine version.
-- `init <target-dir> [--type pure|embedded] [--site-dir <path>]`: creates a
+- `init <target-dir> [--type standalone|embedded] [--site-dir <path>]`: creates a
   standalone site project from the packaged starter, or adds a Norna site
   directory plus `norna:*` scripts to an existing project in embedded mode.
-  Pure setup pins `@janga/norna` to the version that created it.
+  Standalone setup pins `@janga/norna` to the version that created it.
 - `build`: runs config check, content check, public sync, image generation, and
   Astro build.
 - `build:local`: runs `build` and restarts `dev:local`.

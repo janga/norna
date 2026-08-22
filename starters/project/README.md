@@ -7,13 +7,13 @@ libraries, and similar project sites.
 
 ```sh
 npm install
-npm run dev
+npm run norna:dev
 ```
 
 If the standard local port is blocked, start with:
 
 ```sh
-npm run dev -- --kill
+npm run norna:dev -- --kill
 ```
 
 ## Files
@@ -23,9 +23,9 @@ npm run dev -- --kill
 - `site/theme.md`: site-wide visual settings such as layout density, typography
   rhythm, palettes, section surfaces, and typography.
 - `site/content.md`: homepage title, sections, placeholders, project summary,
-  links, install command, example usage, benefits, next steps, managed media
-  blocks, and license.
-- `site/routes/010-guide/route-content.md`: short secondary page with realistic
+  links, install command, example usage, benefits, next steps, Norna blocks,
+  and license.
+- `site/routes/010-guide/content.md`: short secondary page with realistic
   project guide content.
 - `site/public/robots.txt`: static public file copied into the built site.
 
@@ -37,7 +37,7 @@ GitHub Pages workflow uses `npm ci`.
 
 1. Replace the project name, tagline, links, install command, example usage,
    benefits, use cases, and license in `site/content.md`.
-2. Replace the guide examples in `site/routes/010-guide/route-content.md`, or
+2. Replace the guide examples in `site/routes/010-guide/content.md`, or
    delete the route if the homepage is enough.
 3. Edit `site/sitewide-content.md` for the brand or logo, banners and footer.
 4. Edit `site/theme.md` for layout density, typography rhythm, palette, section
@@ -55,14 +55,19 @@ GitHub Pages workflow uses `npm ci`.
 npm run norna:check
 npm run norna:sync
 npm run norna:typography:show
-npm run build
+npm run norna:build
 ```
+
+The standalone aliases `npm run dev` and `npm run build` are also available.
+For direct `norna dev`, `norna check`, and `norna build` commands, install the
+launcher globally with `npm install --global @janga/norna@latest`; it delegates
+to this project's locally installed Norna version.
 
 To verify the same install path used by GitHub Pages:
 
 ```sh
 npm ci
-npm run build
+npm run norna:build
 ```
 
 Generic Norna documentation lives in the Norna repository:

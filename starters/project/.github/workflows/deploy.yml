@@ -42,7 +42,7 @@ jobs:
         run: npm ci
 
       - name: Check and build
-        run: npm run build
+        run: npm run norna:build
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

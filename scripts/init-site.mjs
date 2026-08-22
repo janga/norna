@@ -11,14 +11,14 @@ const packageName = '@janga/norna';
 const cliExecutableName = 'norna';
 
 const usage = `
-Usage: norna init <target-dir> [--type pure|embedded] [--site-dir <path>]
+Usage: norna init <target-dir> [--type standalone|embedded] [--site-dir <path>]
 
 Creates a new site project or adds a Norna site directory to an existing
 project.
 
 Examples:
   norna init my-site
-  norna init my-site --type pure
+  norna init my-site --type standalone
   norna init . --type embedded --site-dir presentation
 `.trim();
 
@@ -27,7 +27,7 @@ const parseArgs = (rawArgs) => {
 	const options = {
 		siteDirectory: process.env[siteDirectoryEnv] ?? 'site',
 		targetDirectory: null,
-		type: 'pure',
+		type: 'standalone',
 	};
 
 	for (let index = 0; index < rawArgs.length; index += 1) {
@@ -36,7 +36,7 @@ const parseArgs = (rawArgs) => {
 		if (arg === '--type') {
 			const value = rawArgs[index + 1];
 			if (!value || value.startsWith('-')) {
-				throw new Error('--type requires "pure" or "embedded".');
+				throw new Error('--type requires "standalone" or "embedded".');
 			}
 			options.type = value;
 			index += 1;
@@ -87,8 +87,8 @@ if (!targetDirectory) {
 	throw new Error(usage);
 }
 
-if (!['pure', 'embedded'].includes(type)) {
-	throw new Error(`Invalid --type "${type}". Use "pure" or "embedded".`);
+if (!['standalone', 'embedded'].includes(type)) {
+	throw new Error(`Invalid --type "${type}". Use "standalone" or "embedded".`);
 }
 
 if (!siteDirectory || path.isAbsolute(siteDirectory) || siteDirectory.split(/[\\/]/).includes('..')) {
@@ -122,19 +122,19 @@ const readJsonFile = async (filePath) => JSON.parse(await readFile(filePath, 'ut
 
 const siteDirArg = siteDirectory === 'site' ? [] : ['--site-dir', siteDirectory];
 const cliCommand = (command) => [cliExecutableName, ...siteDirArg, command].join(' ');
-const galleryScripts = {
+const nornaScripts = {
 	'norna:dev': cliCommand('dev:local'),
 	'norna:dev:lan': cliCommand('dev:lan'),
 	'norna:dev:restart': cliCommand('dev:restart'),
 	'norna:dev:status': cliCommand('dev:status'),
 	'norna:dev:logs': cliCommand('dev:logs'),
 	'norna:dev:stop': cliCommand('dev:stop'),
-	'norna:check': 'npm run norna:config:check && npm run norna:content:check',
+	'norna:check': cliCommand('check'),
 	'norna:config:check': cliCommand('config:check'),
 	'norna:content:check': cliCommand('content:check'),
 	'norna:sync': cliCommand('content:sync'),
 	'norna:theme:export': cliCommand('theme:export'),
-	'norna:typography:presets': cliCommand('typography presets'),
+	'norna:typography:profiles': cliCommand('typography profiles'),
 	'norna:typography:show': cliCommand('typography show'),
 	'norna:public': cliCommand('site:public'),
 	'norna:images': cliCommand('images'),
@@ -149,17 +149,17 @@ const galleryScripts = {
 	'norna:engine:version': cliCommand('engine:version'),
 };
 
-const addGalleryDependency = (packageJson, version) => {
+const addNornaDependency = (packageJson, version) => {
 	packageJson.dependencies ??= {};
 	packageJson.dependencies[packageName] ??= version;
 };
 
-const addGalleryScripts = (packageJson, scripts, { includePureAliases }) => {
+const addNornaScripts = (packageJson, scripts, { includeStandaloneAliases }) => {
 	packageJson.scripts ??= {};
 	const wantedScripts = {
-		...(includePureAliases ? { dev: 'npm run norna:dev --' } : {}),
+		...(includeStandaloneAliases ? { dev: 'npm run norna:dev --' } : {}),
 		...scripts,
-		...(includePureAliases ? { build: 'npm run norna:build' } : {}),
+		...(includeStandaloneAliases ? { build: 'npm run norna:build' } : {}),
 	};
 	const conflicts = Object.entries(wantedScripts).filter(([name, value]) => (
 		packageJson.scripts[name] !== undefined && packageJson.scripts[name] !== value
@@ -178,12 +178,12 @@ const addGalleryScripts = (packageJson, scripts, { includePureAliases }) => {
 const enginePackageJson = await readJsonFile(enginePackageJsonPath);
 const existingEntries = await readDirectoryEntries(targetRoot);
 
-if (type === 'pure') {
+if (type === 'standalone') {
 	if (existingEntries && existingEntries.length > 0) {
 		const existingPackageJson = existingEntries.includes('package.json')
 			? ' The target already contains package.json; use --type embedded to add a Norna site to an existing project.'
 			: '';
-		throw new Error(`Target directory must be empty for --type pure: ${targetRoot}.${existingPackageJson}`);
+		throw new Error(`Target directory must be empty for --type standalone: ${targetRoot}.${existingPackageJson}`);
 	}
 
 	await mkdir(path.dirname(targetRoot), { recursive: true });
@@ -201,7 +201,7 @@ if (type === 'pure') {
 	targetPackageJson.dependencies[packageName] = enginePackageJson.version;
 	if (siteDirectory !== 'site') {
 		targetPackageJson.scripts = {};
-		addGalleryScripts(targetPackageJson, galleryScripts, { includePureAliases: true });
+		addNornaScripts(targetPackageJson, nornaScripts, { includeStandaloneAliases: true });
 	}
 	await writeFile(targetPackageJsonPath, `${JSON.stringify(targetPackageJson, null, 2)}\n`);
 } else {
@@ -222,8 +222,8 @@ if (type === 'pure') {
 		throw new Error(`Norna site directory must be empty for --type embedded: ${targetSiteDir}`);
 	}
 
-	addGalleryDependency(targetPackageJson, enginePackageJson.version);
-	addGalleryScripts(targetPackageJson, galleryScripts, { includePureAliases: false });
+	addNornaDependency(targetPackageJson, enginePackageJson.version);
+	addNornaScripts(targetPackageJson, nornaScripts, { includeStandaloneAliases: false });
 	await mkdir(path.dirname(targetSiteDir), { recursive: true });
 	await cp(starterSiteRoot, targetSiteDir, {
 		filter: (source) => path.basename(source) !== '.DS_Store',
@@ -244,9 +244,5 @@ if (isInsideEngineRoot(targetRoot)) {
 console.log('');
 console.log('Next steps:');
 console.log(`  cd ${targetRoot}`);
-console.log(type === 'embedded'
-	? '  npm install'
-	: '  npm install');
-console.log(type === 'embedded'
-	? '  npm run norna:dev'
-	: '  npm run dev');
+console.log('  npm install');
+console.log('  npm run norna:dev');

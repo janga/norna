@@ -57,7 +57,7 @@ url: https://example.com/
 `);
 	await writeFile(path.join(siteDir, 'theme.md'), `---
 typography:
-  preset: text-forward
+  profile: reading
 ---
 `);
 	return { root, siteDir };
@@ -126,7 +126,7 @@ test('route theme replaces visual theme while site identity stays at the root', 
 	try {
 		await writeFile(path.join(siteDir, 'theme.md'), `---
 typography:
-  preset: text-forward
+  profile: reading
 ---
 `);
 		await writeFile(path.join(siteDir, 'sitewide-content.md'), `---
@@ -144,7 +144,7 @@ description: Root page
 
 Root content.
 `);
-		await writeFile(path.join(siteDir, 'routes', '010-guide', 'route-content.md'), `---
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'content.md'), `---
 title: Guide
 description: Guide page
 navigation:
@@ -157,9 +157,8 @@ Route content.
 `);
 		await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.md'), `---
 typography:
-  preset: statement
-presentation:
-  palette: light
+  profile: statement
+palette: light
 ---
 `);
 
@@ -187,7 +186,7 @@ description: Root page
 
 Root content.
 `);
-		await writeFile(path.join(siteDir, 'routes', '010-guide', 'route-content.md'), `---
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'content.md'), `---
 title: Guide
 description: Guide page
 ---
@@ -652,7 +651,7 @@ description: Fixture
 
 Text.
 `);
-		await writeFile(path.join(sourceRouteDir, 'route-content.md'), `---
+		await writeFile(path.join(sourceRouteDir, 'content.md'), `---
 title: Source
 description: Fixture
 ---
@@ -661,7 +660,7 @@ description: Fixture
 
 Text.
 `);
-		await writeFile(path.join(targetRouteDir, 'route-content.md'), `---
+		await writeFile(path.join(targetRouteDir, 'content.md'), `---
 title: Target
 description: Fixture
 ---
@@ -700,7 +699,7 @@ description: Fixture
 
 Text.
 `);
-		await writeFile(path.join(sourceRouteDir, 'route-content.md'), `---
+		await writeFile(path.join(sourceRouteDir, 'content.md'), `---
 title: Source
 description: Fixture
 ---
@@ -709,7 +708,7 @@ description: Fixture
 
 Text.
 `);
-		await writeFile(path.join(targetRouteDir, 'route-content.md'), `---
+		await writeFile(path.join(targetRouteDir, 'content.md'), `---
 title: Target
 description: Fixture
 ---
@@ -756,7 +755,7 @@ description: Fixture
 
 Text.
 `);
-		await writeFile(path.join(sourceRouteDir, 'route-content.md'), `---
+		await writeFile(path.join(sourceRouteDir, 'content.md'), `---
 title: Source
 description: Fixture
 ---
@@ -765,7 +764,7 @@ description: Fixture
 
 Text.
 `);
-		await writeFile(path.join(targetRouteDir, 'route-content.md'), `---
+		await writeFile(path.join(targetRouteDir, 'content.md'), `---
 title: Target
 description: Fixture
 ---
@@ -809,7 +808,7 @@ description: Fixture
 
 Text.
 `);
-		await writeFile(path.join(sourceRouteDir, 'route-content.md'), `---
+		await writeFile(path.join(sourceRouteDir, 'content.md'), `---
 title: Source
 description: Fixture
 ---
@@ -820,7 +819,7 @@ description: Fixture
 - image: shared.jpg
 \`\`\`
 `);
-		await writeFile(path.join(targetRouteDir, 'route-content.md'), `---
+		await writeFile(path.join(targetRouteDir, 'content.md'), `---
 title: Target
 description: Fixture
 ---
@@ -836,7 +835,7 @@ description: Fixture
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--write', '--yes']),
 			(error) => {
-				assert.match(error.output, /Cannot relocate "shared\.jpg" from .*site\/routes\/010-source\/images\/old\/shared\.jpg because it is still referenced from .*site\/routes\/010-source\/route-content\.md \[old\]\./);
+				assert.match(error.output, /Cannot relocate "shared\.jpg" from .*site\/routes\/010-source\/images\/old\/shared\.jpg because it is still referenced from .*site\/routes\/010-source\/content\.md \[old\]\./);
 				return true;
 			},
 		);

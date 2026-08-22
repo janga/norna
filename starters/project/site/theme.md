@@ -16,7 +16,7 @@ layout:
     finalSectionBottom:
       desktop: clamp(1rem, 2vw, 1.75rem)
       mobile: 1rem
-gallery:
+images:
   width: 840px
   maxAvailableWidthPercent:
     desktop: 100
@@ -26,10 +26,8 @@ gallery:
     mobile: 62
 typography:
   fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-  preset: text-forward
+  profile: reading
   rhythm: compact
-presentation:
-  palette: dark  # Alternatives: light, paper
-  sectionSurfaces:
-    mode: cycle
+palette: dark  # Alternatives: light, paper
+sectionSurfaces: [base, soft]
 ---

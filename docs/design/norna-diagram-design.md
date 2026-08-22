@@ -69,13 +69,13 @@ Diagrams must match the current Norna model:
 - `content.md` is the homepage content file.
 - `sitewide-content.md` contains shared site identity, banners, and footer
   content.
-- Additional pages are route directories with `route-content.md`.
+- Additional pages are route directories with `content.md`.
 - Route folder prefixes control route presentation order.
 - Route ids become default URL slugs.
 - Images belong under the image root for the page or route, usually grouped by
   section id.
 - Markdown remains the primary writing format.
-- Norna managed media blocks cover fixed site patterns such as image stacks,
+- Norna blocks cover fixed site patterns such as image stacks,
   carousels, and card lists.
 - `theme.md` controls visual presentation.
 - `config.md` controls the public URL and optional language and smooth
@@ -111,7 +111,7 @@ Store diagram SVG files as normal Norna managed image assets:
 site/routes/<NNN-route-id>/images/<section-id>/<diagram-name>.svg
 ```
 
-Reference them with a Norna managed media block:
+Reference them with a Norna image block:
 
 ````md
 <!-- norna-image-provenance:

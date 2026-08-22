@@ -1,6 +1,6 @@
 ---
 title: Statement
-description: A stronger typography preset for short declarative content.
+description: A stronger typography profile for short declarative content.
 navigation:
   label: Statement
 ---

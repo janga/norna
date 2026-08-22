@@ -49,6 +49,13 @@ interface. They may provide unprefixed aliases when the alias means the same
 thing for the whole repository, for example `npm run build` as an alias for
 `npm run norna:build`.
 
+### Direct CLI Shortcut
+
+Users may install `@janga/norna` globally as a cross-platform launcher and use
+`norna dev`, `norna check`, or `norna build`. The launcher must delegate to the
+current project's installed Norna version, so this shortcut does not replace
+the project dependency or its lockfile.
+
 ### Project Commands That Call Norna Commands
 
 `norna` does not define a consuming project's unprefixed commands. Names
@@ -174,17 +181,17 @@ npx @janga/norna@latest init my-site
 The initializer should support two setup modes that share the same `norna:*`
 command vocabulary.
 
-#### Pure Setup
+#### Standalone Setup
 
-Pure setup creates a new project where the Norna site is the whole repository:
+Standalone setup creates a new project where the Norna site is the whole repository:
 
 ```sh
-npx @janga/norna@latest init my-site --type pure
+npx @janga/norna@latest init my-site --type standalone
 ```
 
 This should be the default when the target is a new or empty directory.
 
-Pure setup should create:
+Standalone setup should create:
 
 - a normal site source directory, normally `site/`;
 - a `package.json` with `norna:*` scripts;
@@ -271,13 +278,13 @@ Commands that inspect site presentation without changing source files use
 `norna:*` in consuming repositories:
 
 ```sh
-npm run norna:typography:presets
+npm run norna:typography:profiles
 npm run norna:typography:show
 ```
 
-`norna:typography:presets` shows the built-in typography presets and rhythms
+`norna:typography:profiles` shows the built-in typography profiles and rhythms
 from the installed engine. `norna:typography:show` shows the effective
-typography for the selected site after presets, rhythms, and overrides have
+typography for the selected site after profiles, rhythms, and overrides have
 been applied.
 
 ### Correct Content And Configuration

@@ -70,9 +70,9 @@
         <text x="20" y="194">│   │   │   └── dogs/</text>
         <text x="20" y="212">│   │   │       ├── rex.svg</text>
         <text x="20" y="230">│   │   │       └── rover.svg</text>
-        <text x="20" y="248">│   │   └── route-content.md</text>
+        <text x="20" y="248">│   │   └── content.md</text>
         <text x="20" y="266">│   └── 020-adopt/</text>
-        <text x="20" y="284">│       └── route-content.md</text>
+        <text x="20" y="284">│       └── content.md</text>
         <text x="20" y="302">├── sitewide-content.md</text>
         <text x="20" y="320">└── theme.md</text>
       </g>
@@ -94,13 +94,13 @@
         <text class="code" x="46" y="266">- image: rex.svg</text>
         <text class="code" x="46" y="288">  caption: Rex needs a patient home.</text>
         <text class="code" x="46" y="310">```</text>
-        <text class="tree" x="150" y="398" text-anchor="middle">route-content.md</text>
+        <text class="tree" x="150" y="398" text-anchor="middle">content.md</text>
       </g>
 
       <path class="document-muted" d="M28 424 H244 L272 452 V482 H28 Z" opacity=".7"/>
       <path d="M244 424 V452 H272 Z" fill="#f8f5ee" opacity=".55"/>
       <text class="mono" x="46" y="462" fill="#5f5a52" font-size="10">## Adopt {#adopt}</text>
-      <text class="mono tree" x="150" y="510" text-anchor="middle" opacity=".75">route-content.md</text>
+      <text class="mono tree" x="150" y="510" text-anchor="middle" opacity=".75">content.md</text>
     </g>
 
     <path class="line" d="M161 194 L440 198" marker-start="url(#arrow)" marker-end="url(#arrow)"/>

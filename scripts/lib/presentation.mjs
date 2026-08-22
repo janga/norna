@@ -5,6 +5,7 @@ import {
 import { resolveThemeConfig } from './theme-presets.mjs';
 
 export const presentationPaletteNames = ['dark', 'light', 'paper'];
+const sectionSurfaceNames = ['base', 'soft', 'emphasis'];
 
 const presentationPalettes = Object.freeze({
 	dark: {
@@ -66,8 +67,6 @@ const presentationPalettes = Object.freeze({
 	},
 });
 
-const normalizePresentation = (presentation) => presentation ?? {};
-
 export const getPresentationPalette = (paletteName = 'dark') => {
 	const palette = presentationPalettes[paletteName];
 	if (!palette) {
@@ -93,19 +92,33 @@ export const getPresentationCssVariables = (presentation) => {
 	};
 };
 
+const getSectionSurfaces = (value = ['base'], sourceLabel = 'theme.md') => {
+	if (!Array.isArray(value) || value.length < 1 || value.length > 3) {
+		throw new Error(`sectionSurfaces must contain one to three values in ${sourceLabel}.`);
+	}
+
+	for (const surface of value) {
+		if (!sectionSurfaceNames.includes(surface)) {
+			throw new Error(`Unknown section surface "${surface}" in ${sourceLabel}. Use one of: ${sectionSurfaceNames.join(', ')}.`);
+		}
+	}
+
+	if (new Set(value).size !== value.length) {
+		throw new Error(`Each section surface may appear only once in ${sourceLabel}.`);
+	}
+
+	return value;
+};
+
 export const resolveThemePresentation = (theme, sourceLabel = 'theme.md') => {
 	const normalizedTheme = resolveThemeConfig(theme, sourceLabel);
-	const normalizedThemePresentation = normalizePresentation(normalizedTheme.presentation);
-	const paletteName = normalizedThemePresentation.palette ?? 'dark';
+	const paletteName = normalizedTheme.palette ?? 'dark';
 	const palette = getPresentationPalette(paletteName);
 
 	return {
 		paletteName,
 		palette,
-		sectionSurfaces: {
-			mode: normalizedThemePresentation.sectionSurfaces?.mode ?? 'none',
-			sequence: normalizedThemePresentation.sectionSurfaces?.sequence ?? ['base', 'soft', 'emphasis'],
-		},
+		sectionSurfaces: getSectionSurfaces(normalizedTheme.sectionSurfaces, sourceLabel),
 		typography: resolveTypographyConfig(normalizedTheme.typography ?? defaultTypography),
 	};
 };
@@ -117,9 +130,7 @@ export const resolvePagePresentation = (theme, sourceLabel) => {
 };
 
 export const resolveSectionSurface = (pagePresentation, sectionIndex) => {
-	const surfaceName = pagePresentation.sectionSurfaces.mode === 'cycle'
-			? pagePresentation.sectionSurfaces.sequence[sectionIndex % pagePresentation.sectionSurfaces.sequence.length]
-			: 'base';
+	const surfaceName = pagePresentation.sectionSurfaces[sectionIndex % pagePresentation.sectionSurfaces.length];
 
 	return {
 		name: surfaceName,

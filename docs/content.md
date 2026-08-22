@@ -4,10 +4,10 @@
 metadata in frontmatter and the homepage content in Markdown.
 
 Route pages use the same page model in
-`site/routes/<NNN-route-id>/route-content.md`. See [Routes](routes.md) for the
+`site/routes/<NNN-route-id>/content.md`. See [Routes](routes.md) for the
 route-specific rules.
 
-Site-wide visual defaults belong in [Theme](theme.md). Typography presets and
+Site-wide visual defaults belong in [Theme](theme.md). Typography profiles and
 overrides are described in [Typography](typography.md). Technical site settings
 belong in [Configuration](configuration.md).
 
@@ -90,7 +90,7 @@ page file:
 Do not list sections in frontmatter just to define order. Section order comes
 from the Markdown heading order.
 
-## Managed Media Blocks
+## Norna Blocks
 
 Norna-managed local images and cards are written in Markdown fenced blocks at
 the point where they should appear in the section. Markdown determines
@@ -207,7 +207,7 @@ Route images live under:
 site/routes/<NNN-route-id>/images/<section-id>/
 ```
 
-Image references in Norna managed media blocks use only the filename:
+Image references in Norna managed image blocks use only the filename:
 
 ````md
 ```norna-image-stack
@@ -290,7 +290,7 @@ npm run norna:content:check
 
 This checks section heading ids, section metadata, duplicate image names,
 missing image files, misplaced referenced images, duplicate image references,
-invalid managed media blocks, unreferenced images, removed inline style syntax,
+invalid Norna blocks, unreferenced images, removed inline style syntax,
 Markdown image references to unmanaged local files, and common frontmatter
 indentation and structure mistakes.
 

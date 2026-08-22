@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseYamlMapping } from './lib/frontmatter-yaml.mjs';
+import { resolveThemePresentation } from './lib/presentation.mjs';
 import { splitSiteFile } from './lib/site-content.mjs';
 import {
 	resolveThemeConfig,
@@ -29,25 +30,34 @@ try {
 		const resolved = resolveThemeConfig({ preset: presetName }, 'test theme');
 		assert.equal(resolved.preset, presetName);
 		assert.ok(resolved.layout?.density);
-		assert.ok(resolved.gallery?.width);
+		assert.ok(resolved.images?.width);
 		assert.ok(resolved.typography?.fontFamily);
-		assert.ok(resolved.typography?.preset);
-		assert.ok(resolved.presentation?.palette);
+		assert.ok(resolved.typography?.profile);
+		assert.ok(resolved.palette);
+		assert.ok(resolved.sectionSurfaces);
 	}
 
 	const overridden = resolveThemeConfig({
 		preset: 'documentation',
 		layout: { pageWidth: '1300px' },
-		presentation: { palette: 'dark' },
+		palette: 'dark',
 	}, 'test theme');
 	assert.equal(overridden.layout.density, 'compact');
 	assert.equal(overridden.layout.pageWidth, '1300px');
-	assert.equal(overridden.gallery.width, '920px');
-	assert.equal(overridden.presentation.palette, 'dark');
-	assert.deepEqual(overridden.presentation.sectionSurfaces.sequence, ['base', 'soft']);
+	assert.equal(overridden.images.width, '920px');
+	assert.equal(overridden.palette, 'dark');
+	assert.deepEqual(overridden.sectionSurfaces, ['base', 'soft']);
 	assert.throws(
 		() => resolveThemeConfig({ preset: 'unknown' }, 'test/theme.md'),
 		/Unknown theme preset "unknown" in test\/theme\.md.*portfolio, documentation, project, statement/,
+	);
+	assert.throws(
+		() => resolveThemePresentation({ sectionSurfaces: ['base', 'glowing'] }, 'test/theme.md'),
+		/Unknown section surface "glowing" in test\/theme\.md.*base, soft, emphasis/,
+	);
+	assert.throws(
+		() => resolveThemePresentation({ sectionSurfaces: ['base', 'base'] }, 'test/theme.md'),
+		/Each section surface may appear only once in test\/theme\.md/,
 	);
 
 	await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
@@ -68,11 +78,10 @@ Root content.
 preset: documentation
 layout:
   pageWidth: 1300px
-presentation:
-  palette: dark
+palette: dark
 ---
 `);
-	await writeFile(path.join(siteDir, 'routes', '010-guide', 'route-content.md'), `---
+	await writeFile(path.join(siteDir, 'routes', '010-guide', 'content.md'), `---
 title: Guide
 description: Route page
 navigation:
@@ -87,8 +96,7 @@ Route content.
 preset: portfolio
 layout:
   pageWidth: 1010px
-presentation:
-  palette: light
+palette: light
 ---
 `);
 
@@ -105,8 +113,8 @@ presentation:
 
 	const typographyResult = runCli(['typography', 'show']);
 	assert.equal(typographyResult.status, 0, typographyResult.stderr || typographyResult.stdout);
-	assert.match(typographyResult.stdout, /value: text-forward/);
-	assert.match(typographyResult.stdout, /value: quiet-gallery/);
+	assert.match(typographyResult.stdout, /value: reading/);
+	assert.match(typographyResult.stdout, /value: restrained/);
 
 	const routeThemePath = path.join(siteDir, 'routes', '010-guide', 'theme.md');
 	const routeThemeSource = await readFile(routeThemePath, 'utf8');
@@ -129,7 +137,7 @@ presentation:
 	assert.equal(exportedConfig.preset, 'documentation');
 	assert.equal(exportedConfig.layout.pageWidth, themePresets.documentation.layout.pageWidth);
 	assert.equal(exportedConfig.typography.fontFamily, themePresets.documentation.typography.fontFamily);
-	assert.deepEqual(exportedConfig.presentation.sectionSurfaces.sequence, ['base', 'soft']);
+	assert.deepEqual(exportedConfig.sectionSurfaces, ['base', 'soft']);
 
 	const exportAgainResult = runCli(['theme:export', 'documentation']);
 	assert.notEqual(exportAgainResult.status, 0);

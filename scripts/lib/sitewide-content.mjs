@@ -10,7 +10,7 @@ import {
 	validateSitewideFrontmatterStructure,
 } from './site-content.mjs';
 
-export const readSitewideConfig = async () => {
+export const readSitewideContent = async () => {
 	const source = await readFile(sitewideContentPath, 'utf8').catch((error) => {
 		if (error?.code === 'ENOENT') return null;
 		throw error;

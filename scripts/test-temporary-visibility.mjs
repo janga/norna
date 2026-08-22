@@ -43,9 +43,8 @@ url: https://example.com/
 `);
 	await writeFile(path.join(siteDir, 'theme.md'), `---
 typography:
-  preset: quiet-gallery
-presentation:
-  palette: dark
+  profile: restrained
+palette: dark
 ---
 `);
 	await writeFile(path.join(siteDir, 'sitewide-content.md'), `---

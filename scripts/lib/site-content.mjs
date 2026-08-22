@@ -22,8 +22,8 @@ const deprecatedInlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}
 const frontmatterDelimiterRegex = /^---\s*$/;
 const knownConfigTopLevelFrontmatterKeys = new Set(['url', 'language', 'scrollBehavior']);
 const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'sections']);
-const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'gallery', 'typography', 'presentation']);
-const knownRouteThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'gallery', 'typography', 'presentation']);
+const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'images', 'typography', 'palette', 'sectionSurfaces']);
+const knownRouteThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'images', 'typography', 'palette', 'sectionSurfaces']);
 const knownSitewideTopLevelFrontmatterKeys = new Set(['navigation', 'banners', 'footer']);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
@@ -38,7 +38,6 @@ const knownNestedFrontmatterKeys = new Set([
 	'fontFamily',
 	'from',
 	'finalSectionBottom',
-	'gallery',
 	'gutter',
 	'headingToBlock',
 	'h1',
@@ -51,6 +50,7 @@ const knownNestedFrontmatterKeys = new Set([
 	'include',
 	'image',
 	'imageGap',
+	'images',
 	'label',
 	'logo',
 	'lineHeight',
@@ -63,16 +63,14 @@ const knownNestedFrontmatterKeys = new Set([
 	'pageWidth',
 	'palette',
 	'preset',
-	'presentation',
+	'profile',
 	'rhythm',
-	'sequence',
 	'sections',
 	'sectionGap',
 	'sectionSurfaces',
 	'size',
 	'spacingAfter',
 	'spacingBefore',
-	'surface',
 	'theme',
 	'typography',
 	'until',
@@ -108,14 +106,14 @@ export const getContentFiles = async () => {
 
 		const routeDirectory = entry.name;
 		const routeDir = path.join(siteRoutesDir, routeDirectory);
-		const routeContentPath = path.join(routeDir, 'route-content.md');
+		const routeContentPath = path.join(routeDir, 'content.md');
 
 		if (!(await fileExists(routeContentPath))) continue;
 
 		const { routeId, routeOrder } = parseRouteDirectory(routeDirectory, `${siteRoutesLabel}/${routeDirectory}`);
 
 		contentFiles.push({
-			contentLabel: `${siteRoutesLabel}/${routeDirectory}/route-content.md`,
+			contentLabel: `${siteRoutesLabel}/${routeDirectory}/content.md`,
 			contentPath: routeContentPath,
 			imagesDir: path.join(routeDir, 'images'),
 			imagesLabel: `${siteRoutesLabel}/${routeDirectory}/images`,
@@ -253,9 +251,16 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 		const key = keyMatch[1];
 		if (knownTopLevelFrontmatterKeys.has(key)) continue;
 
-		const fix = knownNestedFrontmatterKeys.has(key)
-			? `Indent "${key}:" under the object it belongs to, or move image content into Norna Markdown blocks.`
-			: `Move "${key}:" under the correct parent key, or remove it if it is not part of the ${fileKind} schema.`;
+		let fix;
+		if (fileKind === 'content' && key === 'images') {
+			fix = 'Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body.';
+		} else if (fileKind === 'content' && knownThemeTopLevelFrontmatterKeys.has(key)) {
+			fix = `Move "${key}:" to theme.md. Visual settings do not belong in content frontmatter.`;
+		} else if (knownNestedFrontmatterKeys.has(key)) {
+			fix = `Indent "${key}:" under the object it belongs to.`;
+		} else {
+			fix = `Move "${key}:" under the correct parent key, or remove it if it is not part of the ${fileKind} schema.`;
+		}
 
 		addIssue({
 			severity: 'error',

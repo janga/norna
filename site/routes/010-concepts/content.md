@@ -11,7 +11,8 @@ navigation:
 
 Even a one-page site contains two kinds of content.
 
-`content.md` contains the page itself: its sections, text and managed media.
+`content.md` contains the page itself: its sections, text and Norna image or
+card blocks.
 `sitewide-content.md` contains content shared by the whole site, such as its
 identity, notices and footer.{note-ref} The reasoning is that more pages may be
 added to a site that begins as a single page.
@@ -62,11 +63,11 @@ image: multi-page-site.svg
 source: hand-authored
 Hand-authored SVG diagram created for the Norna introduction site to explain
 how route folders map to route content, hierarchical navigation, managed images
-and URL slugs. The diagram uses a file tree, folded route-content.md documents
+and URL slugs. The diagram uses a file tree, folded content.md documents
 and a pair of cartoon dogs to make the route relationship concrete.
 -->
 
 ```norna-image-stack
 - image: multi-page-site.svg
-  alt: A three-column diagram showing route folders as a file tree, route-content.md documents, ordered navigation, URL slugs and two cartoon dogs on the Dogs page.
+  alt: A three-column diagram showing route folders as a file tree, content.md documents, ordered navigation, URL slugs and two cartoon dogs on the Dogs page.
 ```

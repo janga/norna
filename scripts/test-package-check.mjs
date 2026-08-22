@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -170,11 +171,16 @@ try {
 		path.join(packagedStarterRoot, '.github', 'workflows', 'deploy.yml'),
 		'node-version: 24.18.0',
 	);
+	await assertFileIncludes(
+		path.join(packagedStarterRoot, '.github', 'workflows', 'deploy.yml'),
+		'run: npm run norna:build',
+	);
 	await cp(packagedStarterRoot, siteProjectRoot, {
 		recursive: true,
 	});
 	const packageJsonPath = path.join(siteProjectRoot, 'package.json');
 	const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'));
+	assert.equal(packageJson.scripts['norna:check'], 'norna check');
 	packageJson.name = 'norna-package-check-site';
 	packageJson.dependencies['@janga/norna'] = tarballPath;
 	await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
@@ -221,7 +227,7 @@ This section verifies styled section headings.
 This section keeps the package check independent from user-facing starter copy.
 `);
 	await mkdir(path.join(siteProjectRoot, 'site', 'routes', '010-about'), { recursive: true });
-	await writeFile(path.join(siteProjectRoot, 'site', 'routes', '010-about', 'route-content.md'), `---
+	await writeFile(path.join(siteProjectRoot, 'site', 'routes', '010-about', 'content.md'), `---
 title: About the site
 description: Route used by package checks.
 navigation:
@@ -250,6 +256,7 @@ This route verifies that packaged norna sites can build route pages.
 	await runInherit(npxBin, ['norna', 'doctor'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
 	await runInherit(npxBin, ['norna', 'config:check'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
 	await assertFileExists(path.join(siteProjectRoot, 'site', '.norna', 'public', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'robots.txt'));
@@ -406,45 +413,42 @@ This route verifies that packaged norna sites can build route pages.
 	const siteContent = await readFile(siteContentPath, 'utf8');
 	const siteThemePath = path.join(siteProjectRoot, 'site', 'theme.md');
 	const siteTheme = await readFile(siteThemePath, 'utf8');
-	await writeFile(siteThemePath, siteTheme.replace('\n  preset: quiet-gallery', '\n  preset: noisy-gallery'));
+	await writeFile(siteThemePath, siteTheme.replace('\n  profile: restrained', '\n  profile: noisy'));
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'typography.preset',
+		'Unknown typography profile: noisy',
 	);
 	await writeFile(
 		siteThemePath,
-		siteTheme.replace('\n  palette: dark', '\n  palette: neon'),
+		siteTheme.replace('\npalette: dark', '\npalette: neon'),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation.palette',
+		'palette',
 	);
 	await writeFile(
 		siteThemePath,
-		siteTheme.replace('  sectionSurfaces:\n    mode: cycle', '  sectionSurfaces:\n    mode: glowing'),
+		siteTheme.replace('\nsectionSurfaces: [base, soft, emphasis]', '\nsectionSurfaces: [base, glowing]'),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation.sectionSurfaces.mode',
+		'Unknown section surface "glowing"',
 	);
 	await writeFile(
 		siteThemePath,
-		siteTheme.replace(
-			'  sectionSurfaces:\n    mode: cycle',
-			'  sectionSurfaces:\n    mode: cycle\n    sequence: [base, base]',
-		),
+		siteTheme.replace('\nsectionSurfaces: [base, soft, emphasis]', '\nsectionSurfaces: [base, base]'),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation.sectionSurfaces',
+		'Each section surface may appear only once',
 	);
 	await writeFile(siteThemePath, siteTheme);
 	await writeFile(
@@ -465,40 +469,40 @@ This route verifies that packaged norna sites can build route pages.
 		siteContentPath,
 		siteContent.replace(
 			'description: Site used by package checks.',
-			'description: Site used by package checks.\npresentation:\n  typography:\n    overrides:\n      body:\n        lineHeight: tight',
+			'description: Site used by package checks.\ntypography:\n  overrides:\n    body:\n      lineHeight: tight',
 		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'presentation',
+		'typography',
 	);
 	await writeFile(
 		siteContentPath,
 		siteContent.replace(
 			'  intro: {}',
-			'  intro:\n    presentation:\n      typography:\n        overrides:\n          caption:\n            spacingBefore: wide',
+			'  intro:\n    typography:\n      overrides:\n        caption:\n          spacingBefore: wide',
 		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.intro: Unrecognized key: "presentation"',
+		'sections.intro: Unrecognized key: "typography"',
 	);
 	await writeFile(
 		siteContentPath,
 		siteContent.replace(
 			'  intro: {}',
-			'  intro:\n    presentation:\n      typography:\n        preset: dramatic',
+			'  intro:\n    palette: dark',
 		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.intro: Unrecognized key: "presentation"',
+		'sections.intro: Unrecognized key: "palette"',
 	);
 	await writeFile(
 		siteThemePath,

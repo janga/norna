@@ -6,13 +6,13 @@ This is a minimal site repository starter for `@janga/norna`.
 
 ```sh
 npm install
-npm run dev
+npm run norna:dev
 ```
 
 If the standard local port is blocked, start with:
 
 ```sh
-npm run dev -- --kill
+npm run norna:dev -- --kill
 ```
 
 Edit shared brand, logo, banners and footer in `site/sitewide-content.md`,
@@ -50,15 +50,18 @@ Use `norna:*` scripts for norna-specific work:
 ```sh
 npm run norna:content:check
 npm run norna:sync
-npm run norna:typography:presets
+npm run norna:typography:profiles
 npm run norna:typography:show
 npm run norna:build
 ```
 
 This keeps Norna commands separate from repository-specific build or publishing
 commands in projects that embed a Norna site inside a larger GitHub project.
-This pure starter also keeps `npm run build` as an alias for
-`npm run norna:build`.
+This standalone starter also keeps `npm run dev` and `npm run build` as aliases.
+
+For direct `norna dev`, `norna check`, and `norna build` commands, install the
+launcher globally with `npm install --global @janga/norna@latest`. The launcher
+still selects this project's locally installed Norna version.
 
 Use `npm run norna:engine:version` to inspect the installed engine and
 `npm run norna:engine:update` to update it.

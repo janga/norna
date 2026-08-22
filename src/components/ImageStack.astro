@@ -3,15 +3,15 @@ import projectConfig from '../../scripts/lib/project-config.mjs';
 import { getImageAttributes } from '../lib/generatedImages';
 import {
 	getCaptionId,
-	getGalleryImageSizes,
+	getManagedImageSizes,
 	getImageClass,
 	getImageLoadingProps,
-	type GalleryImage,
-} from '../lib/galleryImages';
+	type ManagedImage,
+} from '../lib/imagePresentation';
 
 interface Props {
 	title: string;
-	images: GalleryImage[];
+	images: ManagedImage[];
 	maxAvailableWidthPercent: {
 		desktop: number;
 		mobile: number;
@@ -20,28 +20,28 @@ interface Props {
 }
 
 const { title, images, maxAvailableWidthPercent, priorityFirstImage = false } = Astro.props;
-const galleryImageSizes = getGalleryImageSizes(maxAvailableWidthPercent);
+const managedImageSizes = getManagedImageSizes(maxAvailableWidthPercent);
 ---
 
-<div class="gallery" aria-label={`${projectConfig.locale.labels.gallery}: ${title}`}>
+<div class="image-stack" aria-label={`${projectConfig.locale.labels.images}: ${title}`}>
 	{images.map((image, itemIndex) => {
 		const isPriorityItem = priorityFirstImage && itemIndex === 0;
 		const captionId = image.caption ? getCaptionId(image, itemIndex) : undefined;
 
 		return (
-			<figure class="gallery-item">
-				<div class="gallery-image-frame">
+			<figure class="managed-image-item">
+				<div class="managed-image-frame">
 					<img
-						{...getImageAttributes(image.src ?? image.image, galleryImageSizes)}
-						class:list={['gallery-image', getImageClass(image)]}
+						{...getImageAttributes(image.src ?? image.image, managedImageSizes)}
+						class:list={['managed-image', getImageClass(image)]}
 						alt={image.alt ?? ''}
 						aria-describedby={captionId}
 						{...getImageLoadingProps(isPriorityItem)}
 					/>
 				</div>
 				{image.caption && (
-					<figcaption class="gallery-meta" id={captionId}>
-						<div class="gallery-details">
+					<figcaption class="image-meta" id={captionId}>
+						<div class="image-details">
 							<span>{image.caption}</span>
 						</div>
 					</figcaption>

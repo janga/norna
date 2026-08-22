@@ -1,11 +1,10 @@
 ---
 layout:
   pageWidth: 1180px
-gallery:
+images:
   width: 900px
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
-  preset: quiet-gallery
-presentation:
-  palette: dark
+  profile: restrained
+palette: dark
 ---

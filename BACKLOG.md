@@ -21,11 +21,11 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
-- Add a short "Build your first gallery in 5 minutes" guide with one happy path
+- Add a short "Build your first image-led site in 5 minutes" guide with one happy path
   and no reference material.
 - Add a complete small `site/theme.md` and `site/content.md` example that a
   new user can compare with the starter.
-- Add pure-project and embedded-project examples that show the expected
+- Add standalone-project and embedded-project examples that show the expected
   directory layout and npm scripts.
 - Add troubleshooting for common workflow errors:
   - running `npm install` before `norna init`;
@@ -35,9 +35,8 @@ approachable before wider use.
   - missing, misplaced, or unreferenced images.
 - Add a plain explanation of what is versioned, what is generated, and what is
   published.
-- Expand typography preset guidance with examples of when to choose each
-  preset in `site/theme.md`, how to make page-level overrides, and how to make
-  section-level overrides without losing the preset model.
+- Expand typography profile guidance with examples of when to choose each
+  profile in `site/theme.md` without losing the complete theme-preset model.
 - Document the recommended site-upgrade workflow after a new engine version is
   published.
 
@@ -61,11 +60,9 @@ verified.
     should not.
   - Image filenames and section ids do not need to be globally unique for a
     valid site.
-  - `content:sync` v1 is page-local/route-local only and should not move files
-    or section metadata across routes.
+  - `content:sync` may move unambiguously identified image files across page
+    and route image roots when the Git worktree is clean.
   - Build and render must not mutate source files.
-  - Backwards compatibility with old `sections[]` plus frontmatter `gallery`
-    is not required if it complicates the model.
 - Add a future task for cross-route content sync. The future command should
   relocate section metadata and section-bound assets across routes only when
   source and destination are unambiguous. It should never guess, should not
@@ -112,7 +109,7 @@ basic site workflow.
 - More preset families or richer theme helpers if several real sites need
   them.
 - Better diagnostics for generated images and cache reuse.
-- A documented pattern for embedding a gallery into larger GitHub Pages
+- A documented pattern for embedding an image-led site into larger GitHub Pages
   projects that also publish an app or project homepage.
 
 ## Route Architecture Notes
@@ -129,28 +126,24 @@ site/
   content.md
   routes/
     <slug>/
-      route-content.md
+      content.md
       images/
 ```
 
 - `site/config.md` is site-level technical configuration for the public URL,
   language and optional smooth scrolling. Norna derives the base path from the
   URL and discovers GitHub repository/default-branch details during deploy.
-- `site/theme.md` is site-level visual theme configuration, including
-  site-wide presentation defaults, inline styles, and frame defaults.
-- Page files own page metadata, page-level `presentation` overrides,
-  page-level `frame` overrides, section definitions, gallery references, and
-  Markdown body content.
-- Presentation resolution should remain:
+- `site/theme.md` is site-level visual configuration. An optional route-local
+  `theme.md` replaces it for that route.
+- Page files own page metadata, section definitions, Norna block references,
+  and Markdown body content.
+- Theme resolution is:
 
 ```text
 engine defaults
--> site/theme.md presentation
--> page frontmatter presentation
--> sections[].presentation
+-> root theme.md or route-local theme.md
 ```
 
-- Page-level `presentation` is always an override on top of `site/theme.md`.
 - Navigation should keep site navigation and page navigation conceptually
   separate. Site navigation changes pages/routes; page navigation changes the
   current URL hash and active section within the current page.
@@ -160,11 +153,7 @@ engine defaults
   Active section state should not be driven by free manual scrolling unless a
   later design explicitly reintroduces that behavior without conflicting with
   hash history.
-- `frame.colors` is explicit and may use `theme`, `presentation`, or explicit
-  `backgroundColor`/`textColor` values.
 - Page metadata such as `title` and `description` should remain page-local and
   should not inherit from the homepage.
-- Sections, galleries, and Markdown content should remain page-local and should
+- Sections, Norna blocks, and Markdown content should remain page-local and should
   not inherit from the homepage.
-- `presentation.inlineStyles` belongs at site theme level so all future pages
-  can use the same Markdown inline-style vocabulary.

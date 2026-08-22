@@ -11,8 +11,7 @@ Norna provides a small set of named palettes. The theme chooses one
 for the whole site:
 
 ```yaml
-presentation:
-  palette: dark
+palette: dark
 ```
 
 The available choices are `dark`, `light` and `paper`. A palette defines the
@@ -25,10 +24,7 @@ The route theme uses a palette and a surface sequence when a visual pause or
 change of rhythm helps the reader. This is not a free-form colour override:
 
 ```yaml
-presentation:
-  sectionSurfaces:
-    mode: cycle
-    sequence: [base, soft, emphasis]
+sectionSurfaces: [base, soft, emphasis]
 ```
 
 The theme can cycle through the selected surfaces automatically. Individual
@@ -40,5 +36,5 @@ Use the site palette for the overall tone. Use soft and emphasis surfaces for a
 small number of meaningful transitions, not to make every section look
 unrelated.
 
-Typography presets and media blocks can vary the content inside that system;
+Typography profiles and Norna blocks can vary the content inside that system;
 surfaces provide the route-level rhythm around it.

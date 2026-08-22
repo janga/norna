@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promi
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { typographyPresets, typographyRhythms } from './lib/typography.mjs';
+import { typographyProfiles, typographyRhythms } from './lib/typography.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(repoRoot, 'bin', 'norna.mjs');
@@ -49,29 +49,35 @@ try {
 	const initResult = runCli(['init', initializedSiteRoot]);
 	assert.equal(initResult.status, 0, initResult.stderr || initResult.stdout);
 	assert.match(initResult.stdout, /Created norna site at /);
+	assert.match(initResult.stdout, /npm run norna:dev/);
 
 	const initializedPackageJson = JSON.parse(await readFile(path.join(initializedSiteRoot, 'package.json'), 'utf8'));
 	assert.equal(initializedPackageJson.dependencies['@janga/norna'], packageJson.version);
+	assert.equal(initializedPackageJson.scripts['norna:check'], 'norna check');
 	assert.equal(initializedPackageJson.scripts['norna:engine:update'], 'norna engine:update');
 	assert.equal(initializedPackageJson.scripts['norna:engine:version'], 'norna engine:version');
 	assert.equal(initializedPackageJson.scripts['norna:theme:export'], 'norna theme:export');
 	assert.equal(initializedPackageJson.scripts['engine:update'], undefined);
 	assert.equal(initializedPackageJson.scripts['engine:version'], undefined);
+	const checkResult = runCli(['--site-dir', path.join(initializedSiteRoot, 'site'), 'check']);
+	assert.equal(checkResult.status, 0, checkResult.stderr || checkResult.stdout);
+	assert.match(checkResult.stdout, /Config check passed\./);
+	assert.match(checkResult.stdout, /Content check passed\./);
 
-	const presetsResult = runCli(['typography', 'presets']);
-	assert.equal(presetsResult.status, 0, presetsResult.stderr || presetsResult.stdout);
-	assert.match(presetsResult.stdout, /quiet-gallery:/);
-	assert.match(presetsResult.stdout, /text-forward:/);
-	assert.match(presetsResult.stdout, /rhythms:/);
-	assert.match(presetsResult.stdout, /normal:/);
-	for (const [presetName, preset] of Object.entries(typographyPresets)) {
-		for (const [level, heading] of Object.entries(preset.headings)) {
-			assert.equal(heading.size, 'medium', `${presetName} ${level} should use medium size`);
-			assert.ok([400, 500, 600, 700].includes(heading.weight), `${presetName} ${level} should use a supported weight`);
+	const profilesResult = runCli(['typography', 'profiles']);
+	assert.equal(profilesResult.status, 0, profilesResult.stderr || profilesResult.stdout);
+	assert.match(profilesResult.stdout, /restrained:/);
+	assert.match(profilesResult.stdout, /reading:/);
+	assert.match(profilesResult.stdout, /rhythms:/);
+	assert.match(profilesResult.stdout, /normal:/);
+	for (const [profileName, profile] of Object.entries(typographyProfiles)) {
+		for (const [level, heading] of Object.entries(profile.headings)) {
+			assert.equal(heading.size, 'medium', `${profileName} ${level} should use medium size`);
+			assert.ok([400, 500, 600, 700].includes(heading.weight), `${profileName} ${level} should use a supported weight`);
 		}
-		assert.equal(preset.body.size, 'medium', `${presetName} body should use medium size`);
-		assert.ok(['narrow', 'normal', 'wide'].includes(preset.body.width), `${presetName} body should use a supported width`);
-		assert.equal(preset.caption.size, 'medium', `${presetName} caption should use medium size`);
+		assert.equal(profile.body.size, 'medium', `${profileName} body should use medium size`);
+		assert.ok(['narrow', 'normal', 'wide'].includes(profile.body.width), `${profileName} body should use a supported width`);
+		assert.equal(profile.caption.size, 'medium', `${profileName} caption should use medium size`);
 	}
 	for (const [rhythmName, rhythm] of Object.entries(typographyRhythms)) {
 		for (const [level, heading] of Object.entries(rhythm.headings)) {
@@ -87,7 +93,7 @@ try {
 	assert.match(showResult.stdout, /theme:/);
 	assert.match(showResult.stdout, /pages:/);
 	assert.match(showResult.stdout, /\s+\/:/);
-	assert.match(showResult.stdout, /value: quiet-gallery/);
+	assert.match(showResult.stdout, /value: restrained/);
 	assert.match(showResult.stdout, /source: "site\/theme\.md"/);
 	assert.match(showResult.stdout, /intro:/);
 
@@ -95,17 +101,18 @@ try {
 	assert.notEqual(initAgainResult.status, 0);
 	assert.match(initAgainResult.stderr, /Target directory must be empty/);
 
-	const customPureSiteRoot = path.join(tempRoot, 'custom-pure-site');
-	const customPureInitResult = runCli(['init', customPureSiteRoot, '--type', 'pure', '--site-dir', 'presentation']);
-	assert.equal(customPureInitResult.status, 0, customPureInitResult.stderr || customPureInitResult.stdout);
-	const customPurePackageJson = JSON.parse(await readFile(path.join(customPureSiteRoot, 'package.json'), 'utf8'));
-	assert.equal(customPurePackageJson.scripts.dev, 'npm run norna:dev --');
-	assert.equal(customPurePackageJson.scripts.build, 'npm run norna:build');
-	assert.equal(customPurePackageJson.scripts['norna:dev'], 'norna --site-dir presentation dev:local');
-	assert.equal(customPurePackageJson.scripts['norna:build'], 'norna --site-dir presentation build');
-	await readFile(path.join(customPureSiteRoot, 'presentation', 'content.md'));
-	await readFile(path.join(customPureSiteRoot, 'presentation', 'config.md'));
-	await readFile(path.join(customPureSiteRoot, 'presentation', 'theme.md'));
+	const customStandaloneSiteRoot = path.join(tempRoot, 'custom-standalone-site');
+	const customStandaloneInitResult = runCli(['init', customStandaloneSiteRoot, '--type', 'standalone', '--site-dir', 'presentation']);
+	assert.equal(customStandaloneInitResult.status, 0, customStandaloneInitResult.stderr || customStandaloneInitResult.stdout);
+	const customStandalonePackageJson = JSON.parse(await readFile(path.join(customStandaloneSiteRoot, 'package.json'), 'utf8'));
+	assert.equal(customStandalonePackageJson.scripts.dev, 'npm run norna:dev --');
+	assert.equal(customStandalonePackageJson.scripts.build, 'npm run norna:build');
+	assert.equal(customStandalonePackageJson.scripts['norna:dev'], 'norna --site-dir presentation dev:local');
+	assert.equal(customStandalonePackageJson.scripts['norna:check'], 'norna --site-dir presentation check');
+	assert.equal(customStandalonePackageJson.scripts['norna:build'], 'norna --site-dir presentation build');
+	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'content.md'));
+	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'config.md'));
+	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'theme.md'));
 
 	const mixedProjectRoot = path.join(tempRoot, 'mixed-project');
 	await mkdir(mixedProjectRoot, { recursive: true });
@@ -127,6 +134,7 @@ try {
 	assert.equal(mixedPackageJson.scripts.build, 'node build-app.mjs');
 	assert.equal(mixedPackageJson.scripts.dev, undefined);
 	assert.equal(mixedPackageJson.scripts['norna:dev'], 'norna --site-dir presentation dev:local');
+	assert.equal(mixedPackageJson.scripts['norna:check'], 'norna --site-dir presentation check');
 	assert.equal(mixedPackageJson.scripts['norna:engine:update'], 'norna --site-dir presentation engine:update');
 	assert.equal(mixedPackageJson.scripts['norna:engine:version'], 'norna --site-dir presentation engine:version');
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'content.md'));
@@ -149,11 +157,11 @@ try {
 	assert.match(conflictInitResult.stderr, /Refusing to overwrite existing npm scripts/);
 	assert.match(conflictInitResult.stderr, /norna:dev/);
 
-	const pureIntoExistingProjectResult = runCli(['init', '.', '--type', 'pure'], {
+	const standaloneIntoExistingProjectResult = runCli(['init', '.', '--type', 'standalone'], {
 		cwd: mixedProjectRoot,
 	});
-	assert.notEqual(pureIntoExistingProjectResult.status, 0);
-	assert.match(pureIntoExistingProjectResult.stderr, /use --type embedded/);
+	assert.notEqual(standaloneIntoExistingProjectResult.status, 0);
+	assert.match(standaloneIntoExistingProjectResult.stderr, /use --type embedded/);
 
 	const updateFromEngineResult = runCli(['engine:update', '--skip-checks']);
 	assert.notEqual(updateFromEngineResult.status, 0);

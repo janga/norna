@@ -4,15 +4,15 @@ import { getImageAttributes } from '../lib/generatedImages';
 import {
 	getCaptionId,
 	getCarouselAspectRatio,
-	getGalleryImageSizes,
+	getManagedImageSizes,
 	getImageClass,
 	getImageLoadingProps,
-	type GalleryImage,
-} from '../lib/galleryImages';
+	type ManagedImage,
+} from '../lib/imagePresentation';
 
 interface Props {
 	title: string;
-	images: GalleryImage[];
+	images: ManagedImage[];
 	maxAvailableWidthPercent: {
 		desktop: number;
 		mobile: number;
@@ -21,16 +21,16 @@ interface Props {
 }
 
 const { title, images, maxAvailableWidthPercent, priorityFirstImage = false } = Astro.props;
-const galleryImageSizes = getGalleryImageSizes(maxAvailableWidthPercent);
+const managedImageSizes = getManagedImageSizes(maxAvailableWidthPercent);
 const carouselAspectRatio = getCarouselAspectRatio(images);
 const carouselStyle = carouselAspectRatio
-	? `--gallery-carousel-aspect-ratio: ${carouselAspectRatio}`
+	? `--image-carousel-aspect-ratio: ${carouselAspectRatio}`
 	: undefined;
 ---
 
-<div class="gallery" aria-label={`${projectConfig.locale.labels.gallery}: ${title}`}>
+<div class="managed-images" aria-label={`${projectConfig.locale.labels.images}: ${title}`}>
 	<section
-		class="gallery-item gallery-carousel"
+		class="managed-image-item image-carousel"
 		data-carousel
 		tabindex="0"
 		role="group"
@@ -38,18 +38,18 @@ const carouselStyle = carouselAspectRatio
 		aria-label={`${title}, bildkarusell`}
 		style={carouselStyle}
 	>
-		<div class="gallery-carousel-stage">
-			<div class="gallery-carousel-viewport" data-carousel-viewport>
-				<div class="gallery-carousel-slides">
+		<div class="image-carousel-stage">
+			<div class="image-carousel-viewport" data-carousel-viewport>
+				<div class="image-carousel-slides">
 					{images.map((image, imageIndex) => {
 						const captionId = image.caption ? getCaptionId(image, 0, imageIndex) : undefined;
 
 						return (
-							<figure class="gallery-carousel-slide" data-carousel-slide>
-								<div class="gallery-carousel-image-frame">
+							<figure class="image-carousel-slide" data-carousel-slide>
+								<div class="image-carousel-frame">
 									<img
-										{...getImageAttributes(image.src ?? image.image, galleryImageSizes)}
-										class:list={['gallery-image', getImageClass(image)]}
+										{...getImageAttributes(image.src ?? image.image, managedImageSizes)}
+										class:list={['managed-image', getImageClass(image)]}
 										alt={image.alt ?? ''}
 										aria-describedby={captionId}
 										{...getImageLoadingProps(priorityFirstImage && imageIndex === 0)}
@@ -61,7 +61,7 @@ const carouselStyle = carouselAspectRatio
 				</div>
 			</div>
 			<button
-				class="gallery-carousel-button gallery-carousel-button-previous"
+				class="image-carousel-button image-carousel-button-previous"
 				type="button"
 				data-carousel-previous
 				aria-label="Föregående bild"
@@ -70,7 +70,7 @@ const carouselStyle = carouselAspectRatio
 				<span aria-hidden="true">‹</span>
 			</button>
 			<button
-				class="gallery-carousel-button gallery-carousel-button-next"
+				class="image-carousel-button image-carousel-button-next"
 				type="button"
 				data-carousel-next
 				aria-label="Nästa bild"
@@ -78,20 +78,20 @@ const carouselStyle = carouselAspectRatio
 			>
 				<span aria-hidden="true">›</span>
 			</button>
-			<output class="gallery-carousel-position" data-carousel-position aria-live="polite">
+			<output class="image-carousel-position" data-carousel-position aria-live="polite">
 				1 / {images.length}
 			</output>
 		</div>
-		<div class="gallery-carousel-captions" data-carousel-captions>
+		<div class="image-carousel-captions" data-carousel-captions>
 			{images.map((image, imageIndex) => (
 				image.caption && (
 					<p
-						class="gallery-meta gallery-carousel-caption"
+						class="image-meta image-carousel-caption"
 						id={getCaptionId(image, 0, imageIndex)}
 						data-carousel-caption
 						data-carousel-caption-index={imageIndex}
 					>
-						<span class="gallery-details">
+						<span class="image-details">
 							<span>{image.caption}</span>
 						</span>
 					</p>

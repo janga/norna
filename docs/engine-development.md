@@ -62,6 +62,12 @@ npm run dev:local
 npm run build
 ```
 
+Inside the engine repository, use npm scripts or explicitly run
+`node bin/norna.mjs ...`. Do not rely on a bare `norna ...` command there: a
+globally installed launcher deliberately does not delegate to another package
+whose own name is `@janga/norna`, so it may continue with the published global
+implementation instead of the working tree.
+
 The media-and-surfaces feature demo is the broad visual and navigation
 diagnostic target:
 
@@ -130,8 +136,8 @@ The installed `norna` command is created from the package `bin` field. The
 launcher first looks for the nearest project `package.json`. If that project
 declares `@janga/norna` and Node can resolve an installed copy from that project
 root, the launcher delegates to that local entrypoint. The engine repository
-itself is excluded from delegation so local engine development keeps using the
-working tree entrypoint.
+itself is excluded from delegation to prevent recursion; its working tree is
+selected explicitly through npm scripts or `node bin/norna.mjs`.
 
 ## npm Release
 
@@ -173,7 +179,7 @@ and commit their updated `package-lock.json`.
 ## Rendering Notes
 
 The renderer builds the homepage at `/` and optional first-level routes from
-`site/routes/<NNN-route-id>/route-content.md`.
+`site/routes/<NNN-route-id>/content.md`.
 
 Navigation has two separate levels:
 

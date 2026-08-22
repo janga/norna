@@ -12,7 +12,7 @@ import type { SitePage } from './sitePages';
 
 type SiteSectionMetadataMap = CollectionEntry<'site'>['data']['sections'];
 type SiteSectionMetadata = SiteSectionMetadataMap[string];
-type GalleryImage = {
+type ManagedImage = {
 	image: string;
 	src: string;
 	alt?: string;
@@ -38,8 +38,8 @@ type InlineNote = {
 };
 type SectionContentBlock =
 	| { type: 'html'; html: string }
-	| { type: 'image-stack'; images: GalleryImage[] }
-	| { type: 'image-carousel'; images: GalleryImage[] }
+	| { type: 'image-stack'; images: ManagedImage[] }
+	| { type: 'image-carousel'; images: ManagedImage[] }
 	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width: CardListWidth; cards: CardListItem[] }
 	| { type: 'note'; html: string; number?: number; id?: string; referenceId?: string };
 export type ResolvedSection = SiteSectionMetadata & {

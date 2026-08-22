@@ -27,10 +27,10 @@ const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const sitePages = getSitePages(await getCollection('site'));
 const currentPage = getSitePage(entry);
 const siteContentLabel = entry.id.includes('-route-')
-	? `${siteDirectory || 'site'}/routes/${currentPage.routeDirectory}/route-content.md`
+	? `${siteDirectory || 'site'}/routes/${currentPage.routeDirectory}/content.md`
 	: `${siteDirectory || 'site'}/content.md`;
 const pageContentPath = currentPage.routeDirectory
-	? path.join(siteRoutesDir, currentPage.routeDirectory, 'route-content.md')
+	? path.join(siteRoutesDir, currentPage.routeDirectory, 'content.md')
 	: siteContentPath;
 const rawMarkdown = (await readSiteFile(pageContentPath, siteContentLabel)).body;
 const [siteTheme] = await getCollection('theme');
@@ -114,7 +114,7 @@ if (visibleSections.length === 0) {
 				visualTheme={visualTheme}
 				sectionIndex={index}
 				headingLevel={index === 0 ? 1 : 2}
-				priorityGalleryImage={index === 0}
+				prioritizeFirstImage={index === 0}
 			/>
 		))}
 	</main>

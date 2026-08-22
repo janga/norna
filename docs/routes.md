@@ -1,11 +1,11 @@
 # Routes
 
 `site/content.md` is the homepage and builds to `/`. Optional route pages live
-under `site/routes/<NNN-route-id>/route-content.md` and build to first-level
+under `site/routes/<NNN-route-id>/content.md` and build to first-level
 URLs.
 
 Routes use the same page frontmatter, optional section metadata, Norna-managed
-media blocks, and Markdown section model as the homepage. See [Content](content.md)
+Norna blocks, and Markdown section model as the homepage. See [Content](content.md)
 for the page and section model.
 
 Route directories can contain route content, route-local images, and
@@ -57,7 +57,7 @@ the route id `contact` and URL `/contact/`.
 Add a first-level route by creating:
 
 ```text
-site/routes/010-about/route-content.md
+site/routes/010-about/content.md
 ```
 
 Minimal route page:

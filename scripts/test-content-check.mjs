@@ -44,9 +44,8 @@ const makePngHeader = ({ width, height }) => {
 
 const defaultTheme = `---
 typography:
-  preset: quiet-gallery
-presentation:
-  palette: dark
+  profile: restrained
+palette: dark
 ---
 `;
 
@@ -370,12 +369,11 @@ This paragraph has {note-ref} two references {note-ref}.
 });
 
 const badWhitespaceSite = `---
-presentation:
-  typography:
-    preset: quiet-gallery
-\u00a0\u00a0\u00a0\u00a0overrides:
-      body:
-        paragraphSpacing: 0.3em
+typography:
+  profile: restrained
+\u00a0\u00a0overrides:
+    body:
+      paragraphSpacing: 0.3em
 sections:
   intro: {}
 
@@ -394,18 +392,17 @@ test('content:check explains invalid frontmatter indentation whitespace', async 
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Frontmatter line 5 uses tabs, non-breaking spaces, or invalid whitespace for indentation\./);
+		assert.match(output, /Frontmatter line 4 uses tabs, non-breaking spaces, or invalid whitespace for indentation\./);
 		assert.match(output, /Replace the indentation on that line with ordinary spaces\./);
 	});
 });
 
 const badNestedValueSite = `---
-presentation:
-  typography:
-    preset: quiet-gallery
-      overrides:
-        body:
-          paragraphSpacing: 0.3em
+typography:
+  profile: restrained
+    overrides:
+      body:
+        paragraphSpacing: 0.3em
 sections:
   intro: {}
 
@@ -424,17 +421,17 @@ test('content:check explains frontmatter indentation below scalar values', async
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Frontmatter line 5 is indented under line 4, but line 4 already has a value\./);
+		assert.match(output, /Frontmatter line 4 is indented under line 3, but line 3 already has a value\./);
 		assert.match(output, /Move the later line to the same indentation level as its sibling/);
 	});
 });
 
-const topLevelGallerySite = `---
+const topLevelImagesSite = `---
 title: Example
 description: Example site.
 sections:
   intro: {}
-gallery:
+images:
       - image: intro.jpg
 
 ---
@@ -444,7 +441,7 @@ Text.
 
 test('content:check explains likely misindented frontmatter keys', async () => {
 	await withTempProject({
-		site: topLevelGallerySite,
+		site: topLevelImagesSite,
 		files: ['site/images/intro/intro.jpg'],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -452,8 +449,8 @@ test('content:check explains likely misindented frontmatter keys', async () => {
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Frontmatter line 6 defines "gallery" at the top level, but it is not a valid top-level content field\./);
-		assert.match(output, /Indent "gallery:" under the object it belongs to, or move image content into Norna Markdown blocks\./);
+		assert.match(output, /Frontmatter line 6 defines "images" at the top level, but it is not a valid top-level content field\./);
+		assert.match(output, /Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body\./);
 	});
 });
 

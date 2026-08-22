@@ -14,11 +14,12 @@ Commands:
   dev:status             Show local dev server status
   dev:logs               Show local dev server logs
   dev:stop               Stop local dev server
+  check                  Validate configuration and content
   config:check           Validate site/config.md
   content:check          Validate site/content.md and image references
   content:sync           Move misplaced Norna-managed images and refresh generated images
   theme:export           Export a commented theme preset reference
-  typography presets     Show built-in typography preset values
+  typography profiles    Show built-in typography profile values
   typography show        Show resolved typography for the selected site
   site:public            Sync site/public/ to public/
   images                 Generate optimized image variants
@@ -125,6 +126,9 @@ try {
 		await runScript('scripts/dev-local.mjs', ['logs', ...rest]);
 	} else if (command === 'dev:stop') {
 		await runScript('scripts/dev-local.mjs', ['stop', ...rest]);
+	} else if (command === 'check') {
+		await runScript('scripts/check-config.mjs', rest);
+		await runScript('scripts/sync-content-sections.mjs', ['--check', ...rest]);
 	} else if (command === 'config:check') {
 		await runScript('scripts/check-config.mjs', rest);
 	} else if (command === 'content:check') {
@@ -134,9 +138,9 @@ try {
 		await runScript('scripts/generate-images.mjs', rest);
 	} else if (command === 'theme:export') {
 		await runScript('scripts/export-theme-preset.mjs', rest);
-	} else if (command === 'typography:presets' || (command === 'typography' && subcommand === 'presets')) {
+	} else if (command === 'typography:profiles' || (command === 'typography' && subcommand === 'profiles')) {
 		const scriptArgs = command === 'typography' ? subcommandRest : rest;
-		await runScript('scripts/show-typography.mjs', ['presets', ...scriptArgs]);
+		await runScript('scripts/show-typography.mjs', ['profiles', ...scriptArgs]);
 	} else if (command === 'typography:show' || (command === 'typography' && subcommand === 'show')) {
 		const scriptArgs = command === 'typography' ? subcommandRest : rest;
 		await runScript('scripts/show-typography.mjs', ['show', ...scriptArgs]);

@@ -1,8 +1,5 @@
 ---
 preset: project
-presentation:
-  palette: light
-  sectionSurfaces:
-    mode: cycle
-    sequence: [base, soft, emphasis]
+palette: light
+sectionSurfaces: [base, soft, emphasis]
 ---

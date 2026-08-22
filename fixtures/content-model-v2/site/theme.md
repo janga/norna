@@ -1,7 +1,6 @@
 ---
 typography:
-  preset: text-forward
+  profile: reading
   rhythm: normal
-presentation:
-  palette: dark
+palette: dark
 ---

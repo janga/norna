@@ -29,7 +29,7 @@
 #     imageGap:
 #       desktop: CSS length or clamp(), e.g. clamp(1.25rem, 2.8vw, 2rem)
 #       mobile: CSS length, e.g. 1.5rem
-# gallery:
+# images:
 #   width: CSS length, e.g. 900px
 #   maxAvailableWidthPercent:
 #     desktop: number from 1 through 100
@@ -39,7 +39,7 @@
 #     mobile: number from 1 through 100
 # typography:
 #   fontFamily: CSS font-family stack
-#   preset: quiet-gallery | compact-gallery | text-forward | statement
+#   profile: restrained | dense | reading | statement
 #   rhythm: compact | normal | airy
 #   overrides:
 #     headings:
@@ -81,11 +81,8 @@
 #       size: small | medium | large | xlarge
 #       lineHeight: number from 1 through 3
 #       spacingBefore: CSS length, e.g. 0.5em
-# presentation:
-#   palette: dark  # Alternatives: light, paper
-#   sectionSurfaces:
-#     mode: none | cycle
-#     sequence: [base, soft, emphasis]
+# palette: dark  # Alternatives: light, paper
+# sectionSurfaces: [base, soft, emphasis]
 # norna:end theme-help
 layout:
   density: normal
@@ -93,7 +90,7 @@ layout:
   gutter:
     desktop: clamp(1.25rem, 4vw, 3rem)
     mobile: 1rem
-gallery:
+images:
   width: 900px
   maxAvailableWidthPercent:
     desktop: 100
@@ -103,10 +100,8 @@ gallery:
     mobile: 68
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
-  preset: quiet-gallery
+  profile: restrained
   rhythm: normal
-presentation:
-  palette: dark  # Alternatives: light, paper
-  sectionSurfaces:
-    mode: cycle
+palette: dark  # Alternatives: light, paper
+sectionSurfaces: [base, soft, emphasis]
 ---

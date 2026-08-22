@@ -1,13 +1,13 @@
 ---
 title: Media and Surfaces
-description: A visual test bench for Norna's managed media and presentation surfaces.
+description: A visual test bench for Norna's image and card blocks and presentation surfaces.
 navigation:
   label: Home
 ---
 
 ## Media and surfaces {#intro}
 
-This site is a focused test bench for Norna's managed media blocks, sidenotes,
+This site is a focused test bench for Norna's image and card blocks, sidenotes,
 palettes and section-surface controls.
 
 Use [Media blocks](/media/) to compare image stacks, carousels, card lists and

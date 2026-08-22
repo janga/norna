@@ -34,10 +34,10 @@ Each preset supplies coordinated values for:
 
 - layout density, page width, and gutters
 - managed image sizing
-- font family, typography preset, and typography rhythm
+- font family, typography profile, and typography rhythm
 - palette and section-surface behaviour
 
-The nested `typography.preset` setting documented below is a lower-level
+The nested `typography.profile` setting documented below is a lower-level
 typography choice. A top-level theme `preset` selects the complete visual
 system, including that typography choice.
 
@@ -51,14 +51,12 @@ preset. Other preset values remain active:
 preset: documentation
 layout:
   pageWidth: 1320px
-presentation:
-  palette: dark
+palette: dark
 ---
 ```
 
-Nested objects are merged by key. Arrays such as
-`presentation.sectionSurfaces.sequence` replace the preset array when they are
-specified.
+Nested objects are merged by key. `sectionSurfaces` replaces the preset array
+when it is specified.
 
 It is still valid to omit the top-level preset and define the visual settings
 explicitly. Omitted explicit settings then use engine defaults. This is useful
@@ -155,7 +153,7 @@ before Markdown subheadings, paragraph spacing, and caption spacing, belongs to
 
 ## Image Sizing
 
-`gallery` is optional. It controls image sizing:
+`images` is optional. It controls managed image sizing:
 
 - `width`: hard maximum rendered image area width for images, captions, and
   aligned text.
@@ -166,7 +164,7 @@ before Markdown subheadings, paragraph spacing, and caption spacing, belongs to
 Example:
 
 ```yaml
-gallery:
+images:
   width: 900px
   maxAvailableWidthPercent:
     desktop: 100
@@ -184,7 +182,7 @@ desktop `74` / mobile `68`.
 Top-level `typography` is the site-wide typographic base. It supports:
 
 - `fontFamily`: global CSS font-family stack.
-- `preset`: built-in typography preset.
+- `profile`: built-in typography profile.
 - `rhythm`: text-near spacing profile. Allowed values are `compact`,
   `normal`, and `airy`.
 - `overrides`: focused changes to preset values.
@@ -194,7 +192,7 @@ Example:
 ```yaml
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
-  preset: text-forward
+  profile: reading
   rhythm: normal
   overrides:
     headings:
@@ -211,29 +209,25 @@ typography:
       lineHeight: 1.55
 ```
 
-Use `norna typography presets` to inspect built-in preset and rhythm values,
+Use `norna typography profiles` to inspect built-in profile and rhythm values,
 and `norna typography show` to inspect the resolved typography for the
 selected site. See [Typography](typography.md).
 
-## Presentation
+## Palette And Section Surfaces
 
-`presentation` is optional. It selects a small built-in visual palette for the
-page frame and defines how section surfaces are assigned:
+`palette` and `sectionSurfaces` are optional top-level theme settings:
 
-- `palette`: `dark`, `light`, or `paper`. The palette controls the page,
-  navigation, footer, and section colors.
-- `sectionSurfaces.mode`: `none` or `cycle`.
-- `sectionSurfaces.sequence`: optional sequence of `base`, `soft`, and
-  `emphasis`. Each surface may occur at most once.
+- `palette`: `dark`, `light`, or `paper`. It coordinates page, navigation,
+  footer, and section colors.
+- `sectionSurfaces`: one to three unique values chosen from `base`, `soft`, and
+  `emphasis`. One value gives every section the same surface. Multiple values
+  cycle in the listed order.
 
 Example:
 
 ```yaml
-presentation:
-  palette: paper  # Alternatives: dark, light
-  sectionSurfaces:
-    mode: cycle
-    sequence: [base, soft, emphasis]
+palette: paper  # Alternatives: dark, light
+sectionSurfaces: [base, soft, emphasis]
 ```
 
 ## Route Themes
@@ -278,6 +272,6 @@ necessary because a route theme replaces the root visual theme rather than
 merging with it.
 
 For example, a route demonstrating section surfaces may keep `preset: project`
-and change only `presentation.sectionSurfaces`. A route demonstrating media or
-content blocks should normally inherit the root preset so that the media or
-content remains the only variable being compared.
+and change only `sectionSurfaces`. A route demonstrating image or content
+blocks should normally inherit the root preset so that the blocks remain the
+only variable being compared.

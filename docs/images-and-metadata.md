@@ -7,7 +7,7 @@ source images and any copyright or licensing policy for those images.
 
 Norna-managed local images are referenced from Markdown with
 `norna-image-stack`, `norna-image-carousel`, or `norna-card-list` blocks. See
-[Content](content.md#managed-media-blocks) for the block syntax.
+[Content](content.md#norna-blocks) for the block syntax.
 
 Homepage source images live under:
 
@@ -28,7 +28,7 @@ Supported source extensions:
 - `.png`
 - `.svg`
 
-Managed media block references use only the filename:
+Managed image block references use only the filename:
 
 ````md
 ```norna-image-stack
@@ -100,7 +100,7 @@ example-work-1a2b3c4d-1440.webp
 When a source image changes, the generated URL changes too. This avoids stale
 browser, CDN, and GitHub Actions cache entries at the old URL.
 
-SVG files are managed by the same Markdown media blocks, validation and sync
+SVG files are managed by the same Markdown image blocks, validation and sync
 model, but they are not rasterized and do not get WebP variants. Norna copies
 the SVG source to:
 

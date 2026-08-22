@@ -1,6 +1,6 @@
 import { siteConfigLabel, sitePublicLabel } from './lib/site-paths.mjs';
 import { getLogoAssets } from './lib/logo-assets.mjs';
-import { readSitewideConfig } from './lib/sitewide-config.mjs';
+import { readSitewideContent } from './lib/sitewide-content.mjs';
 import { readThemeConfig, validateRouteThemeFiles } from './lib/theme-config.mjs';
 
 const formatErrorMessage = (error) => {
@@ -14,7 +14,7 @@ const formatErrorMessage = (error) => {
 try {
 	const { projectConfig } = await import('./lib/project-config.mjs');
 	const themeConfig = await readThemeConfig();
-	const sitewideConfig = await readSitewideConfig();
+	const sitewideContent = await readSitewideContent();
 	await validateRouteThemeFiles();
 	const logoAssets = getLogoAssets();
 
@@ -28,7 +28,7 @@ try {
 	if (logoAssets.length === 0) {
 		console.warn(`Warning: No logo file found in ${sitePublicLabel}. Norna will use sitewide navigation.brand or the homepage title as the navigation label.`);
 		console.warn(`Add exactly one of ${sitePublicLabel}/logo.svg, logo.png, logo.jpg, or logo.jpeg when the site should have a logo.`);
-	} else if (sitewideConfig.navigation?.brand) {
+	} else if (sitewideContent.navigation?.brand) {
 		console.warn('Warning: Both sitewide navigation.brand and a logo file are configured. The logo is used; navigation.brand is only the text fallback.');
 	}
 
@@ -39,9 +39,9 @@ try {
 	console.log(`Page width: ${projectConfig.layout.pageWidth}`);
 	console.log(`Gutter: desktop ${projectConfig.layout.gutter.desktop}, mobile ${projectConfig.layout.gutter.mobile}`);
 	console.log(`Layout density: ${projectConfig.layout.density}`);
-	console.log(`Image area width: ${projectConfig.gallery.width}`);
-	console.log(`Image max available width: desktop ${projectConfig.gallery.maxAvailableWidthPercent.desktop}%, mobile ${projectConfig.gallery.maxAvailableWidthPercent.mobile}%`);
-	console.log(`Image max available height: desktop ${projectConfig.gallery.maxAvailableHeightPercent.desktop}%, mobile ${projectConfig.gallery.maxAvailableHeightPercent.mobile}%`);
+	console.log(`Image area width: ${projectConfig.images.width}`);
+	console.log(`Image max available width: desktop ${projectConfig.images.maxAvailableWidthPercent.desktop}%, mobile ${projectConfig.images.maxAvailableWidthPercent.mobile}%`);
+	console.log(`Image max available height: desktop ${projectConfig.images.maxAvailableHeightPercent.desktop}%, mobile ${projectConfig.images.maxAvailableHeightPercent.mobile}%`);
 	console.log(`Font family: ${projectConfig.typography.fontFamily}`);
 	console.log(`Language: ${projectConfig.locale.lang}`);
 	console.log(`Scroll behavior: ${projectConfig.navigation.scrollBehavior}`);

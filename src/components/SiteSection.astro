@@ -2,8 +2,8 @@
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { resolveSectionSurface } from '../../scripts/lib/presentation.mjs';
 import CardList from './CardList.astro';
-import GalleryGrid from './GalleryGrid.astro';
 import ImageCarousel from './ImageCarousel.astro';
+import ImageStack from './ImageStack.astro';
 import type { ResolvedSection } from '../lib/sectionContent';
 
 type ResponsiveValue<T> = { desktop: T; mobile: T };
@@ -15,17 +15,14 @@ type ResolvedPagePresentation = {
 	palette: {
 		surfaces: Record<'base' | 'soft' | 'emphasis', { backgroundColor: string; textColor: string }>;
 	};
-	sectionSurfaces: {
-		mode: 'none' | 'cycle';
-		sequence: Array<'base' | 'soft' | 'emphasis'>;
-	};
+	sectionSurfaces: Array<'base' | 'soft' | 'emphasis'>;
 	typography: {
-		preset: string;
+		profile: string;
 		values: any;
 	};
 };
 type VisualTheme = {
-	gallery: {
+	images: {
 		maxAvailableWidthPercent: {
 			desktop: number;
 			mobile: number;
@@ -39,10 +36,10 @@ interface Props {
 	visualTheme: VisualTheme;
 	sectionIndex: number;
 	headingLevel: 1 | 2;
-	priorityGalleryImage?: boolean;
+	prioritizeFirstImage?: boolean;
 }
 
-const { section, pagePresentation, visualTheme, sectionIndex, headingLevel, priorityGalleryImage = false } = Astro.props;
+const { section, pagePresentation, visualTheme, sectionIndex, headingLevel, prioritizeFirstImage = false } = Astro.props;
 const HeadingTag = headingLevel === 1 ? 'h1' : 'h2';
 // Sections are authored with Markdown ## headings even when the first one renders as HTML h1.
 const sectionHeadingVisualLevel = 'h2';
@@ -169,7 +166,7 @@ const getHeadingSizeValue = (level: HeadingLevel, size: TextSize) => (
 const textWidthValues: Record<TextWidth, string> = {
 	narrow: 'min(60ch, var(--text-width))',
 	normal: 'min(72ch, var(--text-width))',
-	wide: 'min(72ch, var(--gallery-layout-width))',
+	wide: 'min(72ch, var(--image-layout-width))',
 };
 const surface = resolveSectionSurface(pagePresentation, sectionIndex);
 const typography = pagePresentation.typography.values;
@@ -213,7 +210,7 @@ const bodyWidth = {
 	desktop: bodyWidthValue,
 	mobile: bodyWidthValue,
 };
-const isMediaBlock = (block: ResolvedSection['contentBlocks'][number]) => (
+const isStructuredBlock = (block: ResolvedSection['contentBlocks'][number]) => (
 	block.type === 'image-stack'
 	|| block.type === 'image-carousel'
 	|| block.type === 'card-list'
@@ -243,7 +240,7 @@ const flushReadingBlocks = () => {
 };
 
 for (const block of section.contentBlocks) {
-	if (isMediaBlock(block)) {
+	if (isStructuredBlock(block)) {
 		flushReadingBlocks();
 		contentGroups.push({ type: 'media', block });
 	} else {
@@ -317,7 +314,7 @@ const sectionStyle = [
 			<HeadingTag id={section.id} set:html={section.titleHtml} />
 		</header>
 
-		<div class:list={['section-body', { 'section-body-has-gallery': hasMedia, 'section-body-text-only': !hasMedia }]}>
+		<div class:list={['section-body', { 'section-body-has-media': hasMedia, 'section-body-text-only': !hasMedia }]}>
 			{contentGroups.map((group, groupIndex) => {
 				if (group.type === 'reading') {
 					if (hasMarginNotes && group.blocks.some((block) => block.type === 'note')) {
@@ -383,22 +380,22 @@ const sectionStyle = [
 						<ImageCarousel
 							title={section.title}
 							images={block.images}
-							maxAvailableWidthPercent={visualTheme.gallery.maxAvailableWidthPercent}
-							priorityFirstImage={priorityGalleryImage && groupIndex === 0}
+							maxAvailableWidthPercent={visualTheme.images.maxAvailableWidthPercent}
+							priorityFirstImage={prioritizeFirstImage && groupIndex === 0}
 						/>
 					);
 				}
 
 				if (block.type === 'card-list') {
-					return <CardList cards={block.cards} maxAvailableWidthPercent={visualTheme.gallery.maxAvailableWidthPercent} layout={block.layout} flow={block.flow} size={block.size} width={block.width} />;
+					return <CardList cards={block.cards} layout={block.layout} flow={block.flow} size={block.size} width={block.width} />;
 				}
 
 				return (
-					<GalleryGrid
+					<ImageStack
 						title={section.title}
 						images={block.images}
-						maxAvailableWidthPercent={visualTheme.gallery.maxAvailableWidthPercent}
-						priorityFirstImage={priorityGalleryImage && groupIndex === 0}
+						maxAvailableWidthPercent={visualTheme.images.maxAvailableWidthPercent}
+						priorityFirstImage={prioritizeFirstImage && groupIndex === 0}
 					/>
 				);
 			})}

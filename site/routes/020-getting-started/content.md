@@ -18,7 +18,7 @@ Use this when the website is its own project:
 npx @janga/norna@latest init my-site
 cd my-site
 npm install
-npm run dev
+npm run norna:dev
 ```
 
 The new project contains the Norna site files, npm scripts and setup needed to
@@ -48,6 +48,27 @@ default `site/`.
 Embedded setup keeps the surrounding project structure and uses namespaced
 `norna:*` scripts so Norna does not take over the project's normal `build`,
 `test`, or deploy scripts.
+
+### Optional shorter commands
+
+The `norna:*` npm scripts work in both standalone and embedded projects. If you
+prefer direct commands, install the cross-platform launcher once:
+
+```sh
+npm install --global @janga/norna@latest
+```
+
+You can then use:
+
+```sh
+norna dev
+norna check
+norna build
+```
+
+Inside a project, the launcher uses that project's locally installed and pinned
+Norna version. The global package is only the launcher; the project dependency
+and lockfile remain the source of its engine version.
 
 Relevant documentation:
 [Getting Started](https://github.com/janga/norna/blob/main/docs/getting-started.md),
@@ -130,8 +151,7 @@ Add only the values that should differ from the preset:
 preset: documentation
 layout:
   pageWidth: 1320px
-presentation:
-  palette: dark
+palette: dark
 ---
 ```
 
@@ -160,7 +180,7 @@ Relevant documentation:
 ### Work locally
 
 ```sh
-npm run dev
+npm run norna:dev
 ```
 
 Edit the source files while the development server is running. You normally do
@@ -181,9 +201,10 @@ local edit-and-preview loop and the check before committing.
 
 ### Check and build
 
-During local work, you can run the checks directly:
+During local work, run the combined check or the focused commands:
 
 ```sh
+npm run norna:check
 npm run norna:config:check
 npm run norna:content:check
 npm run norna:sync
@@ -199,7 +220,7 @@ Before publishing, validate and build the site:
 
 ```sh
 npm run norna:check
-npm run build
+npm run norna:build
 ```
 
 Norna reads the source files, validates them, processes images when needed and

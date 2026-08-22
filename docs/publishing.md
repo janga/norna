@@ -15,7 +15,7 @@ Each site repository owns `.github/workflows/deploy.yml`. The starter workflow:
 2. checks out the site repository,
 3. sets up Node and image tools,
 4. restores the generated image cache,
-5. runs `npm ci` and `npm run build`,
+5. runs `npm ci` and `npm run norna:build`,
 6. uploads `dist/`,
 7. deploys the artifact to GitHub Pages.
 

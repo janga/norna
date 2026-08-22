@@ -54,7 +54,7 @@
     "content:check": "node bin/norna.mjs content:check",
     "content:sync": "node bin/norna.mjs content:sync",
     "theme:export": "node bin/norna.mjs theme:export",
-    "typography:presets": "node bin/norna.mjs typography presets",
+    "typography:profiles": "node bin/norna.mjs typography profiles",
     "typography:show": "node bin/norna.mjs typography show",
     "site:public": "node bin/norna.mjs site:public",
     "images": "node bin/norna.mjs images",

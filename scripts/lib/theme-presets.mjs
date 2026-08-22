@@ -17,23 +17,18 @@ export const themePresets = Object.freeze({
 				mobile: '1rem',
 			},
 		},
-		gallery: {
+		images: {
 			width: '1000px',
 			maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
 			maxAvailableHeightPercent: { desktop: 78, mobile: 68 },
 		},
 		typography: {
 			fontFamily: "'Helvetica Neue', Arial, sans-serif",
-			preset: 'quiet-gallery',
+			profile: 'restrained',
 			rhythm: 'normal',
 		},
-		presentation: {
-			palette: 'dark',
-			sectionSurfaces: {
-				mode: 'none',
-				sequence: ['base', 'soft', 'emphasis'],
-			},
-		},
+		palette: 'dark',
+		sectionSurfaces: ['base'],
 	}),
 	documentation: Object.freeze({
 		layout: {
@@ -44,23 +39,18 @@ export const themePresets = Object.freeze({
 				mobile: '1rem',
 			},
 		},
-		gallery: {
+		images: {
 			width: '920px',
 			maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
 			maxAvailableHeightPercent: { desktop: 74, mobile: 68 },
 		},
 		typography: {
 			fontFamily: "Georgia, 'Times New Roman', serif",
-			preset: 'text-forward',
+			profile: 'reading',
 			rhythm: 'compact',
 		},
-		presentation: {
-			palette: 'paper',
-			sectionSurfaces: {
-				mode: 'cycle',
-				sequence: ['base', 'soft'],
-			},
-		},
+		palette: 'paper',
+		sectionSurfaces: ['base', 'soft'],
 	}),
 	project: Object.freeze({
 		layout: {
@@ -71,23 +61,18 @@ export const themePresets = Object.freeze({
 				mobile: '1rem',
 			},
 		},
-		gallery: {
+		images: {
 			width: '840px',
 			maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
 			maxAvailableHeightPercent: { desktop: 70, mobile: 62 },
 		},
 		typography: {
 			fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-			preset: 'text-forward',
+			profile: 'reading',
 			rhythm: 'compact',
 		},
-		presentation: {
-			palette: 'light',
-			sectionSurfaces: {
-				mode: 'cycle',
-				sequence: ['base', 'soft'],
-			},
-		},
+		palette: 'light',
+		sectionSurfaces: ['base', 'soft'],
 	}),
 	statement: Object.freeze({
 		layout: {
@@ -98,23 +83,18 @@ export const themePresets = Object.freeze({
 				mobile: '1rem',
 			},
 		},
-		gallery: {
+		images: {
 			width: '1080px',
 			maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
 			maxAvailableHeightPercent: { desktop: 80, mobile: 70 },
 		},
 		typography: {
 			fontFamily: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif",
-			preset: 'statement',
+			profile: 'statement',
 			rhythm: 'airy',
 		},
-		presentation: {
-			palette: 'paper',
-			sectionSurfaces: {
-				mode: 'cycle',
-				sequence: ['base', 'emphasis'],
-			},
-		},
+		palette: 'paper',
+		sectionSurfaces: ['base', 'emphasis'],
 	}),
 });
 
@@ -153,7 +133,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 
 export const renderThemePresetReference = (presetName, sourceLabel = 'theme.md') => {
 	const preset = getThemePreset(presetName, sourceLabel);
-	const { layout, gallery, typography, presentation } = preset;
+	const { layout, images, typography, palette, sectionSurfaces } = preset;
 
 	return [
 		'---',
@@ -174,18 +154,18 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.md')
 		'  # Optional spacing overrides use blockGap, finalSectionBottom,',
 		'  # firstSectionTop, headingToBlock, imageGap, and sectionGap.',
 		'',
-		'gallery:',
+		'images:',
 		'  # width accepts a positive CSS length.',
-		`  width: ${gallery.width}`,
+		`  width: ${images.width}`,
 		'  # Percent values must be greater than 0 and at most 100.',
-		...responsiveValueLines('maxAvailableWidthPercent', gallery.maxAvailableWidthPercent),
-		...responsiveValueLines('maxAvailableHeightPercent', gallery.maxAvailableHeightPercent),
+		...responsiveValueLines('maxAvailableWidthPercent', images.maxAvailableWidthPercent),
+		...responsiveValueLines('maxAvailableHeightPercent', images.maxAvailableHeightPercent),
 		'',
 		'typography:',
 		'  # Any valid CSS font-family stack without semicolons.',
 		`  fontFamily: ${quote(typography.fontFamily)}`,
-		'  # Alternatives: quiet-gallery, compact-gallery, text-forward, statement.',
-		`  preset: ${typography.preset}`,
+		'  # Alternatives: restrained, dense, reading, statement.',
+		`  profile: ${typography.profile}`,
 		'  # Alternatives: compact, normal, airy.',
 		`  rhythm: ${typography.rhythm}`,
 		'  # Fine-grained overrides can target headings.h1-h4, body, and caption.',
@@ -195,14 +175,11 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.md')
 		'  #     h2:',
 		'  #       size: large  # small, medium, large, or xlarge',
 		'',
-		'presentation:',
-		'  # Alternatives: dark, light, paper.',
-		`  palette: ${presentation.palette}`,
-		'  sectionSurfaces:',
-		'    # Alternatives: none, cycle.',
-		`    mode: ${presentation.sectionSurfaces.mode}`,
-		'    # Use one to three unique values from: base, soft, emphasis.',
-		`    sequence: [${presentation.sectionSurfaces.sequence.join(', ')}]`,
+		'# Alternatives: dark, light, paper.',
+		`palette: ${palette}`,
+		'# One value keeps every section on the same surface; multiple values cycle.',
+		'# Use one to three unique values from: base, soft, emphasis.',
+		`sectionSurfaces: [${sectionSurfaces.join(', ')}]`,
 		'---',
 		'',
 	].join('\n');

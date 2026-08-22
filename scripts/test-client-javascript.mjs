@@ -60,9 +60,8 @@ try {
 	await writeConfig();
 	await writeFile(path.join(siteDir, 'theme.md'), `---
 typography:
-  preset: text-forward
-presentation:
-  palette: paper
+  profile: reading
+palette: paper
 ---
 `);
 	await writeFile(path.join(siteDir, 'sitewide-content.md'), `---
@@ -99,7 +98,7 @@ The navigation enhancement keeps native anchors clear of the sticky header.
 	assert.match(instantHtml, /href="#intro"/);
 	assert.match(instantHtml, /href="#more"/);
 
-	await writeConfig('browser-smooth');
+	await writeConfig('smooth');
 	runBuild();
 	const browserSmoothHtml = await readPage();
 	assert.equal(
@@ -124,7 +123,7 @@ sections:
 
 Ordinary Markdown needs no client-side JavaScript.
 `);
-	await writeFile(path.join(routeDir, 'route-content.md'), `---
+	await writeFile(path.join(routeDir, 'content.md'), `---
 title: Details
 description: Static managed images.
 sections:
@@ -166,7 +165,7 @@ This sentence has additional context.{note-ref}
 
 {note: The note remains readable without JavaScript, while alignment is enhanced when JavaScript runs.}
 `);
-	await writeFile(path.join(routeDir, 'route-content.md'), `---
+	await writeFile(path.join(routeDir, 'content.md'), `---
 title: Carousel
 description: An interactive image carousel.
 sections:
@@ -201,7 +200,7 @@ sections:
 
 The only interactive feature is the banner.
 `);
-	await writeFile(path.join(routeDir, 'route-content.md'), `---
+	await writeFile(path.join(routeDir, 'content.md'), `---
 title: Details
 description: A second plain page.
 sections:

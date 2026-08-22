@@ -1,7 +1,7 @@
-export const typographyPresetNames = [
-	'quiet-gallery',
-	'compact-gallery',
-	'text-forward',
+export const typographyProfileNames = [
+	'restrained',
+	'dense',
+	'reading',
 	'statement',
 ];
 
@@ -11,8 +11,8 @@ export const typographyRhythmNames = [
 	'airy',
 ];
 
-export const typographyPresets = {
-	'quiet-gallery': {
+export const typographyProfiles = {
+	restrained: {
 		headings: {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
@@ -51,7 +51,7 @@ export const typographyPresets = {
 			lineHeight: 1.35,
 		},
 	},
-	'compact-gallery': {
+	dense: {
 		headings: {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
@@ -90,7 +90,7 @@ export const typographyPresets = {
 			lineHeight: 1.25,
 		},
 	},
-	'text-forward': {
+	reading: {
 		headings: {
 			h1: {
 				align: { desktop: 'left', mobile: 'left' },
@@ -216,7 +216,7 @@ export const typographyRhythms = {
 };
 
 export const defaultTypography = {
-	preset: 'quiet-gallery',
+	profile: 'restrained',
 	rhythm: 'normal',
 };
 
@@ -243,13 +243,13 @@ export const mergeDeep = (base, override) => {
 };
 
 export const resolveTypographyConfig = (typography = defaultTypography) => {
-	const presetName = typography?.preset ?? defaultTypography.preset;
+	const profileName = typography?.profile ?? defaultTypography.profile;
 	const rhythmName = typography?.rhythm ?? defaultTypography.rhythm;
-	const preset = typographyPresets[presetName];
+	const profile = typographyProfiles[profileName];
 	const rhythm = typographyRhythms[rhythmName];
 
-	if (!preset) {
-		throw new Error(`Unknown typography preset: ${presetName}`);
+	if (!profile) {
+		throw new Error(`Unknown typography profile: ${profileName}`);
 	}
 
 	if (!rhythm) {
@@ -257,9 +257,9 @@ export const resolveTypographyConfig = (typography = defaultTypography) => {
 	}
 
 	return {
-		preset: presetName,
+		profile: profileName,
 		rhythm: rhythmName,
-		values: mergeDeep(mergeDeep(preset, rhythm), typography?.overrides),
+		values: mergeDeep(mergeDeep(profile, rhythm), typography?.overrides),
 	};
 };
 

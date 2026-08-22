@@ -35,12 +35,29 @@ Run these commands from the directory where you keep projects:
 npx @janga/norna@latest init my-site
 cd my-site
 npm install
-npm run dev
+npm run norna:dev
 ```
 
 `init` creates the project before `npm install` runs. The generated
 `package.json` pins the Norna engine version so this project keeps using the
 same version until you update it deliberately.
+
+The tutorial uses the `norna:*` npm scripts because they work in both
+standalone and embedded projects. A standalone project also includes the
+shorter `npm run dev` and `npm run build` aliases.
+
+### Optional: Shorter CLI Commands
+
+Install the Norna launcher globally when you prefer direct commands:
+
+```sh
+npm install --global @janga/norna@latest
+```
+
+You can then run `norna dev`, `norna check`, and `norna build`. Inside a
+project, the launcher automatically delegates to that project's locally
+installed and pinned Norna version. The global installation is only the
+launcher; keep the local dependency and lockfile.
 
 ### Checkpoint: The Starter Is Visible
 
@@ -124,7 +141,7 @@ Open another terminal in `my-site` and run:
 
 ```sh
 npm run norna:check
-npm run build
+npm run norna:build
 ```
 
 The check should complete without errors. The build should create:
@@ -144,7 +161,7 @@ build.
 
 ## What To Do Next
 
-- [Add and manage images](content.md#managed-media-blocks)
+- [Add and manage images](content.md#norna-blocks)
 - [Add another page](routes.md)
 - [Inspect and adjust the theme](theme.md)
 - [Configure the public URL](configuration.md)
@@ -164,7 +181,7 @@ reference so you can continue from the kind of question you have.
 Start the development server with:
 
 ```sh
-npm run dev -- --kill
+npm run norna:dev -- --kill
 ```
 
 This tells Norna to stop the process occupying its standard port before

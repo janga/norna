@@ -30,7 +30,7 @@ type VisualTheme = {
 			finalSectionBottom: { desktop: string; mobile: string };
 		};
 	};
-	gallery: {
+	images: {
 		width: string;
 		maxAvailableWidthPercent: { desktop: number; mobile: number };
 		maxAvailableHeightPercent: { desktop: number; mobile: number };
@@ -73,7 +73,7 @@ const {
 const documentTitle = title;
 const canonicalUrl = new URL(withBasePath(projectConfig.site.basePath, pathname), projectConfig.site.url).href;
 const iconLinks = getIconLinks();
-const scrollBehavior = projectConfig.navigation.scrollBehavior === 'browser-smooth' ? 'smooth' : 'auto';
+const scrollBehavior = projectConfig.navigation.scrollBehavior === 'smooth' ? 'smooth' : 'auto';
 const formatPercent = (value: number) => `${value}%`;
 const formatViewportHeightPercent = (value: number) => `${value}svh`;
 const layoutSpacing = visualTheme.layout.spacing;
@@ -90,17 +90,17 @@ const documentStyle = [
 	`--space-content-block-gap-mobile: ${layoutSpacing.blockGap.mobile}`,
 	`--space-heading-to-block-desktop: ${layoutSpacing.headingToBlock.desktop}`,
 	`--space-heading-to-block-mobile: ${layoutSpacing.headingToBlock.mobile}`,
-	`--space-gallery-item-desktop: ${layoutSpacing.imageGap.desktop}`,
-	`--space-gallery-item-mobile: ${layoutSpacing.imageGap.mobile}`,
+	`--space-image-item-desktop: ${layoutSpacing.imageGap.desktop}`,
+	`--space-image-item-mobile: ${layoutSpacing.imageGap.mobile}`,
 	`--space-section-to-section-desktop: ${layoutSpacing.sectionGap.desktop}`,
 	`--space-section-to-section-mobile: ${layoutSpacing.sectionGap.mobile}`,
 	`--space-final-section-bottom-desktop: ${layoutSpacing.finalSectionBottom.desktop}`,
 	`--space-final-section-bottom-mobile: ${layoutSpacing.finalSectionBottom.mobile}`,
-	`--gallery-width: ${visualTheme.gallery.width}`,
-	`--gallery-max-available-width-desktop: ${formatPercent(visualTheme.gallery.maxAvailableWidthPercent.desktop)}`,
-	`--gallery-max-available-width-mobile: ${formatPercent(visualTheme.gallery.maxAvailableWidthPercent.mobile)}`,
-	`--gallery-max-image-height-desktop: ${formatViewportHeightPercent(visualTheme.gallery.maxAvailableHeightPercent.desktop)}`,
-	`--gallery-max-image-height-mobile: ${formatViewportHeightPercent(visualTheme.gallery.maxAvailableHeightPercent.mobile)}`,
+	`--image-width: ${visualTheme.images.width}`,
+	`--image-max-available-width-desktop: ${formatPercent(visualTheme.images.maxAvailableWidthPercent.desktop)}`,
+	`--image-max-available-width-mobile: ${formatPercent(visualTheme.images.maxAvailableWidthPercent.mobile)}`,
+	`--image-max-height-desktop: ${formatViewportHeightPercent(visualTheme.images.maxAvailableHeightPercent.desktop)}`,
+	`--image-max-height-mobile: ${formatViewportHeightPercent(visualTheme.images.maxAvailableHeightPercent.mobile)}`,
 ].join('; ');
 const { buildInfo, copyrightMessage } = footer ?? {};
 const showBuildInfo = Boolean(buildInfo?.enabled);

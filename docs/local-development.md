@@ -5,7 +5,7 @@ Use the local preview commands when editing a site or the engine demo.
 ## Start Preview
 
 ```sh
-npm run dev
+npm run norna:dev
 ```
 
 The wrapper:
@@ -28,14 +28,22 @@ To stop any process that is blocking the standard port before starting, pass
 `--kill`:
 
 ```sh
-npm run dev -- --kill
+npm run norna:dev -- --kill
 ```
 
-For the pure starter's `dev` alias, use:
+The standalone starter also provides this shorter alias:
 
 ```sh
 npm run dev -- --kill
 ```
+
+With the optional global launcher installed, the direct form is:
+
+```sh
+norna dev --kill
+```
+
+The launcher selects the current project's locally installed Norna version.
 
 ## Test On A Phone
 

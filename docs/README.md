@@ -29,7 +29,7 @@ the tutorial, then use the task links below when a real site needs them.
 ### Write And Organise Content
 
 - [Write page sections](content.md#sections)
-- [Use image stacks, carousels, and cards](content.md#managed-media-blocks)
+- [Use image stacks, carousels, and cards](content.md#norna-blocks)
 - [Add notes to prose](content.md#markdown-text)
 - [Add another page](routes.md)
 - [Add shared identity, banners, and a footer](sitewide-content.md)
@@ -37,7 +37,7 @@ the tutorial, then use the task links below when a real site needs them.
 ### Work With Images
 
 - [Add managed source images](images-and-metadata.md#managed-source-images)
-- [Place image blocks in Markdown](content.md#managed-media-blocks)
+- [Place image blocks in Markdown](content.md#norna-blocks)
 - [Check and sync moved image references](content.md#validation-and-sync)
 - [Understand generated variants and SVG handling](images-and-metadata.md#generated-variants-and-static-svg)
 

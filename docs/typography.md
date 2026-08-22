@@ -1,10 +1,10 @@
 # Typography
 
 `norna` typography is configured in `site/theme.md` through a site-wide font,
-presets, text rhythm, and optional overrides.
+profile, text rhythm, and optional overrides.
 
 The normal workflow is to select a complete top-level theme preset. It already
-chooses a coordinated font, typography preset, and rhythm:
+chooses a coordinated font, typography profile, and rhythm:
 
 ```yaml
 ---
@@ -16,35 +16,35 @@ Use the nested `typography` block only when those typographic choices need to
 differ from the selected theme preset. Typography is configured at root-theme
 or route-theme level, not in page or section content.
 
-## Typography Presets
+## Typography Profiles
 
-Available presets:
+Available profiles:
 
-- `quiet-gallery`: the default for image-led sites. Text is restrained and
+- `restrained`: the default for image-led sites. Text is restrained and
   supports the images without dominating the page.
-- `compact-gallery`: tighter typography for many sections, many images, or
+- `dense`: tighter typography for many sections, many images, or
   short information blocks.
-- `text-forward`: more generous body text for pages where longer text carries
+- `reading`: more generous body text for pages where longer text carries
   more of the experience.
 - `statement`: tighter, more declarative line-height for short programmatic
   statements. Use it sparingly, usually as a page or section exception.
 
 If a complete top-level theme preset is selected, that preset supplies the
 typography choice. If both the top-level preset and nested typography are
-omitted, the engine default is `quiet-gallery`.
+omitted, the engine default is `restrained`.
 
-Presets define alignment, size, weight, and line height for `headings.h1`
+Profiles define alignment, size, weight, and line height for `headings.h1`
 through `headings.h4`, `body`, and `caption`. They also choose a readable body
 text width. Built-in presets use `medium` as the default size for every text
 role. Visual heading hierarchy comes from the Markdown heading level, so `h1`
 is larger than `h2`, `h2` is larger than `h3`, and so on.
 
-The presets use these controls deliberately:
+The profiles use these controls deliberately:
 
-- `quiet-gallery` uses restrained heading weights and a normal reading width.
-- `compact-gallery` uses stronger headings and a wider text column for short,
+- `restrained` uses restrained heading weights and a normal reading width.
+- `dense` uses stronger headings and a wider text column for short,
   scannable content.
-- `text-forward` uses a narrower reading width and more generous body line
+- `reading` uses a narrower reading width and more generous body line
   height.
 - `statement` uses the strongest heading weights and a narrow text column for
   short, declarative content.
@@ -53,15 +53,15 @@ The presets use these controls deliberately:
 Available rhythms are `compact`, `normal`, and `airy`. Built-in rhythm values
 use `em` so spacing follows the rendered text size.
 
-Use this command to inspect the exact preset and rhythm values shipped with
+Use this command to inspect the exact profile and rhythm values shipped with
 the installed engine:
 
 ```sh
-norna typography presets
+norna typography profiles
 ```
 
 Use this command to inspect the effective values for the selected site after
-presets, rhythms, and overrides have been applied:
+profiles, rhythms, and overrides have been applied:
 
 ```sh
 norna typography show
@@ -76,7 +76,7 @@ also marked with `inherited: true`.
 ```yaml
 typography:
   fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif"
-  preset: quiet-gallery
+  profile: restrained
   rhythm: normal
   overrides:
     headings:
@@ -117,7 +117,7 @@ align:
 Allowed size values are `small`, `medium`, `large`, and `xlarge`. `medium` is
 the normal reading size. Use `small` for quieter supporting text, and use
 `large` or `xlarge` only when a page or section needs stronger emphasis.
-Each heading level uses its own scale, but follows the same principle:
+Each heading level uses its own scale but follows the same principle:
 `medium` is the normal size for that level. Norna may render the first section
 heading as an HTML `h1` for document structure, but its visual typography still
 follows the Markdown level the user wrote: `##` uses `headings.h2`.
@@ -173,7 +173,7 @@ specified explicitly:
 # site/routes/010-introduction/theme.md
 ---
 typography:
-  preset: statement
+  profile: statement
   rhythm: normal
 ---
 ```
@@ -182,5 +182,5 @@ Without a top-level theme preset, other omitted route-theme values use engine
 defaults rather than values from the root theme.
 
 The `body.width` value controls the prose column independently of the page and
-image widths. Captions are normally centered, but `text-forward` uses
+image widths. Captions are normally centered, but `reading` uses
 left-aligned captions to support longer explanatory text.

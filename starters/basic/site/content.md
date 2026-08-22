@@ -9,7 +9,7 @@ routes defined, the navigation menu will be a sticky bar with anchor links for
 ease of use on phones etc. **Highlighted inline text** when a short
 phrase needs emphasis
 ## Work {#work}
-Add Norna managed media blocks in Markdown where the media should appear. Put
+Add Norna image blocks in Markdown where the images should appear. Put
 matching source images under `images/work/`.
 
 ````

@@ -81,7 +81,7 @@ together in a realistic project:
 
 - `theme-presets/`: one route per complete built-in theme preset, without
   overrides.
-- `media-and-surfaces/`: managed media blocks, notes, palettes and section
+- `media-and-surfaces/`: image and card blocks, notes, palettes and section
   surfaces. This is also the broad demo-build and navigation-test target.
 - `sitewide-content/`: convention-based identity, navigation, banner stacks,
   dismissal and footer content shared across routes.

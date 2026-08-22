@@ -58,7 +58,7 @@ try {
 		language: 'en',
 		labels: {
 			dismissBanner: 'Dismiss notice',
-			gallery: 'Images',
+			images: 'Images',
 			note: 'Note',
 			pageNavigation: 'On this page',
 			siteBanners: 'Site notices',
@@ -69,13 +69,13 @@ try {
 		url: 'https://example.com/docs/',
 	});
 
-	const localizedSite = await createSite('localized', '---\nurl: https://example.com/\nlanguage: sv-SE\nscrollBehavior: browser-smooth\n---\n');
+	const localizedSite = await createSite('localized', '---\nurl: https://example.com/\nlanguage: sv-SE\nscrollBehavior: smooth\n---\n');
 	const localizedResult = loadConfig(localizedSite);
 	assert.equal(localizedResult.status, 0, localizedResult.stderr);
 	const localizedConfig = JSON.parse(localizedResult.stdout);
 	assert.equal(localizedConfig.language, 'sv-SE');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
-	assert.equal(localizedConfig.scrollBehavior, 'browser-smooth');
+	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 
 	const overrideResult = loadConfig(minimalSite, {
 		NORNA_SITE_URL: 'http://127.0.0.1:4567/preview',
@@ -108,7 +108,7 @@ try {
 	);
 	assertFailure(
 		loadConfig(await createSite('invalid-scroll-behavior', '---\nurl: https://example.com/\nscrollBehavior: slow\n---\n')),
-		/scrollBehavior must be one of instant, browser-smooth/,
+		/scrollBehavior must be one of instant, smooth/,
 	);
 	assertFailure(
 		loadConfig(await createSite('obsolete-smooth-scroll', '---\nurl: https://example.com/\nsmoothScroll: true\n---\n')),

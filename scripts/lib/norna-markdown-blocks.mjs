@@ -10,7 +10,7 @@ const blockTypeLabels = {
 
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
 const imageNameRegex = /^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$/i;
-const markerTagName = 'norna-media-block';
+const markerTagName = 'norna-block';
 const imageStackExample = [
 	'```norna-image-stack',
 	'- image: filename.jpg',
@@ -551,7 +551,7 @@ export const createNornaMarkdownBlockMarker = (type, source) => {
 
 export const splitNornaMarkdownBlockMarkers = (html, options = {}) => {
 	const blocks = [];
-	const markerRegex = /<norna-media-block\s+data-type="([^"]+)"\s+data-source="([^"]*)"\s*><\/norna-media-block>|<pre\b([^>]*)>\s*<code\b([^>]*)>([\s\S]*?)<\/code>\s*<\/pre>/g;
+	const markerRegex = /<norna-block\s+data-type="([^"]+)"\s+data-source="([^"]*)"\s*><\/norna-block>|<pre\b([^>]*)>\s*<code\b([^>]*)>([\s\S]*?)<\/code>\s*<\/pre>/g;
 	let cursor = 0;
 
 	for (const match of html.matchAll(markerRegex)) {

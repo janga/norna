@@ -14,10 +14,9 @@ const textAlign = z.enum(['left', 'center', 'right']);
 const textSize = z.enum(['small', 'medium', 'large', 'xlarge']);
 const textWidth = z.enum(['narrow', 'normal', 'wide']);
 const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z.literal(700)]);
-const typographyPreset = z.enum(['quiet-gallery', 'compact-gallery', 'text-forward', 'statement']);
+const typographyProfile = z.enum(['restrained', 'dense', 'reading', 'statement']);
 const themePreset = z.enum(['portfolio', 'documentation', 'project', 'statement']);
 const presentationPalette = z.enum(['dark', 'light', 'paper']);
-const sectionSurfaceMode = z.enum(['none', 'cycle']);
 const sectionSurface = z.enum(['base', 'soft', 'emphasis']);
 const spacingDensity = z.enum(['compact', 'normal', 'airy']);
 const lineHeight = z.number()
@@ -88,12 +87,12 @@ const themeTypography = z.object({
 	fontFamily: z.string()
 		.min(1)
 		.refine((value) => !/[\n\r;{}]/.test(value), 'Do not use semicolons, braces, or line breaks.').optional(),
-	preset: typographyPreset.optional(),
+	profile: typographyProfile.optional(),
 	rhythm: spacingDensity.optional(),
 	overrides: typographyOverrides.optional(),
 }).strict().refine(
-	(value) => value.fontFamily !== undefined || value.preset !== undefined || value.rhythm !== undefined || value.overrides !== undefined,
-	'Specify fontFamily, preset, rhythm, overrides, or both.',
+	(value) => value.fontFamily !== undefined || value.profile !== undefined || value.rhythm !== undefined || value.overrides !== undefined,
+	'Specify fontFamily, profile, rhythm, overrides, or a combination of them.',
 );
 const responsiveCssLength = z.union([
 	visualCssLength,
@@ -123,26 +122,20 @@ const themeLayout = z.object({
 	gutter: responsiveCssLength.optional(),
 	spacing: themeLayoutSpacing.optional(),
 }).strict();
-const themeGallery = z.object({
+const themeImages = z.object({
 	width: visualCssLength.optional(),
 	maxAvailableWidthPercent: responsivePercent.optional(),
 	maxAvailableHeightPercent: responsivePercent.optional(),
 }).strict();
-const themePresentation = z.object({
-	palette: presentationPalette.optional(),
-	sectionSurfaces: z.object({
-		mode: sectionSurfaceMode,
-		sequence: z.array(sectionSurface).min(1).max(3).optional(),
-	}).strict().refine(
-		(value) => !value.sequence || new Set(value.sequence).size === value.sequence.length,
-		'Each section surface may appear only once in a sequence.',
-	).optional(),
-}).strict();
+const sectionSurfaces = z.array(sectionSurface).min(1).max(3).refine(
+	(value) => new Set(value).size === value.length,
+	'Each section surface may appear only once.',
+);
 const pageNavigation = z.object({
 	include: z.boolean().optional(),
 	label: z.string().optional(),
 }).strict();
-const themeNavigation = z.object({
+const sitewideNavigation = z.object({
 	brand: z.string().min(1).optional(),
 	logo: z.object({
 		alt: z.string().min(1).optional(),
@@ -200,29 +193,30 @@ const siteSchema = z.object({
 export const themeVisualSchema = z.object({
 	preset: themePreset.optional(),
 	layout: themeLayout.optional(),
-	gallery: themeGallery.optional(),
+	images: themeImages.optional(),
 	typography: themeTypography.optional(),
-	presentation: themePresentation.optional(),
+	palette: presentationPalette.optional(),
+	sectionSurfaces: sectionSurfaces.optional(),
 }).strict();
 
 const siteThemeSchema = themeVisualSchema;
 
 const sitewideSchema = z.object({
-	navigation: themeNavigation.optional(),
+	navigation: sitewideNavigation.optional(),
 	banners,
 	footer: sitewideFooter.optional(),
 }).strict();
 
 const site = defineCollection({
 	loader: glob({
-		pattern: ['content.md', 'routes/*/route-content.md'],
+		pattern: ['content.md', 'routes/*/content.md'],
 		base: pathToFileURL(siteDir),
 		generateId: ({ entry }) => {
 			if (entry === 'content.md') {
 				return siteEntryId;
 			}
 
-			const routeDirectory = entry.match(/^routes\/([^/]+)\/route-content\.md$/)?.[1];
+			const routeDirectory = entry.match(/^routes\/([^/]+)\/content\.md$/)?.[1];
 			return routeDirectory
 				? `${siteEntryId.replace(/-content$/, '')}-route-${parseRouteDirectory(routeDirectory, `route directory routes/${routeDirectory}`).routeDirectory}`
 				: entry.replace(/[^a-zA-Z0-9-]+/g, '-').replace(/^-+|-+$/g, '');

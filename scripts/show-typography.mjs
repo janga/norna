@@ -5,7 +5,7 @@ import {
 	defaultTypography,
 	resolveTypographyConfig,
 	toYamlLines,
-	typographyPresets,
+	typographyProfiles,
 	typographyRhythms,
 } from './lib/typography.mjs';
 import {
@@ -130,7 +130,7 @@ const annotateResolvedValues = (resolved, sources) => {
 	return annotated;
 };
 
-const defaultSources = (presetName, rhythmName) => {
+const defaultSources = (profileName, rhythmName) => {
 	const sources = {};
 
 	for (const path of typographyValuePaths) {
@@ -138,7 +138,7 @@ const defaultSources = (presetName, rhythmName) => {
 		setPath(sources, path, {
 			source: rhythmValuePaths.has(pathKey)
 				? `rhythm:${rhythmName}`
-				: `preset:${presetName}`,
+				: `profile:${profileName}`,
 			inherited: false,
 		});
 	}
@@ -165,16 +165,16 @@ const applyOverrideSources = (sources, typographyConfig, sourceLabel) => {
 const resolveAnnotatedTypographyConfig = (typographyConfig, sourceLabel) => {
 	const resolved = resolveTypographyConfig(typographyConfig ?? defaultTypography);
 	const sources = applyOverrideSources(
-		defaultSources(resolved.preset, resolved.rhythm),
+		defaultSources(resolved.profile, resolved.rhythm),
 		typographyConfig,
 		sourceLabel,
 	);
 
 	return {
-		preset: {
-			value: resolved.preset,
-			source: typographyConfig?.preset ? sourceLabel : 'engine default',
-			...(typographyConfig?.preset ? {} : { inherited: true }),
+		profile: {
+			value: resolved.profile,
+			source: typographyConfig?.profile ? sourceLabel : 'engine default',
+			...(typographyConfig?.profile ? {} : { inherited: true }),
 		},
 		rhythm: {
 			value: resolved.rhythm,
@@ -187,7 +187,7 @@ const resolveAnnotatedTypographyConfig = (typographyConfig, sourceLabel) => {
 };
 
 const formatAnnotatedTypography = (annotated) => ({
-	preset: annotated.preset,
+	profile: annotated.profile,
 	rhythm: annotated.rhythm,
 	resolved: annotateResolvedValues(annotated.resolved, annotated.sources),
 });
@@ -214,7 +214,7 @@ const readRouteThemeTypography = async (contentFile, themeTypography) => {
 	if (contentFile.isHome) return themeTypography;
 
 	const routeThemePath = path.join(siteRoutesDir, contentFile.routeDirectory, 'theme.md');
-	const routeThemeLabel = `${contentFile.contentLabel.replace(/\/route-content\.md$/, '')}/theme.md`;
+	const routeThemeLabel = `${contentFile.contentLabel.replace(/\/content\.md$/, '')}/theme.md`;
 	const routeThemeFile = await readFile(routeThemePath, 'utf8').catch((error) => {
 		if (error?.code === 'ENOENT') return null;
 		throw error;
@@ -267,9 +267,9 @@ const readPageTypography = async (contentFile, siteThemeTypography) => {
 	};
 };
 
-if (mode === 'presets') {
+if (mode === 'profiles') {
 	console.log(toYamlLines({
-		presets: typographyPresets,
+		profiles: typographyProfiles,
 		rhythms: typographyRhythms,
 	}).join('\n'));
 } else if (mode === 'show') {
@@ -278,9 +278,7 @@ if (mode === 'presets') {
 	const output = {
 		theme: {
 			source: siteThemeLabel,
-			presentation: {
-				typography: formatAnnotatedTypography(themeTypography),
-			},
+			typography: formatAnnotatedTypography(themeTypography),
 		},
 		pages: Object.fromEntries(pages.map((page) => [
 			page.route,
@@ -299,5 +297,5 @@ if (mode === 'presets') {
 
 	console.log(toYamlLines(output).join('\n'));
 } else {
-	throw new Error('Usage: norna typography presets|show');
+	throw new Error('Usage: norna typography profiles|show');
 }

@@ -30,7 +30,7 @@ You need Node.js 22.12 or later.
 npx @janga/norna@latest init my-site
 cd my-site
 npm install
-npm run dev
+npm run norna:dev
 ```
 
 Open the URL printed by the development server, then edit the files under
@@ -39,6 +39,11 @@ scripts and GitHub Pages workflow needed to check, build, and publish it.
 
 Follow the [five-minute tutorial](docs/getting-started.md) for a first edit and
 verified build.
+
+For shorter commands, install the launcher globally with
+`npm install --global @janga/norna@latest`. You can then use `norna dev`,
+`norna check`, and `norna build`; inside a project, the launcher selects its
+locally installed and pinned Norna version.
 
 ## The Site Model
 

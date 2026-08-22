@@ -14,6 +14,7 @@ import {
 	siteThemePath,
 	sitewideContentLabel,
 } from './site-paths.mjs';
+import { resolveThemePresentation } from './presentation.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
 
 export const readThemeConfig = async () => {
@@ -42,6 +43,7 @@ export const readThemeConfig = async () => {
 		throw new Error(`${siteThemeLabel} may not define navigation. Brand and logo belong in ${sitewideContentLabel}.`);
 	}
 	resolveThemeConfig(config, siteThemeLabel);
+	resolveThemePresentation(config, siteThemeLabel);
 
 	return config;
 };
@@ -95,6 +97,7 @@ export const validateRouteThemeFiles = async () => {
 			throw new Error(`${file.label} may not define navigation. Brand and logo belong in ${sitewideContentLabel}.`);
 		}
 		resolveThemeConfig(config, file.label);
+		resolveThemePresentation(config, file.label);
 
 		configs.push({ ...file, config });
 	}

@@ -1,6 +1,6 @@
 ---
 title: Fixture Site
-description: Minimal cli-gallery fixture site.
+description: Minimal Norna fixture site.
 sections:
   intro: {}
   work: {}
@@ -8,8 +8,8 @@ sections:
 ---
 ## Intro {#intro}
 
-This fixture validates the cli-gallery engine against a stable empty gallery.
+This fixture validates the Norna engine against a stable page without managed images.
 
 ## Work {#work}
 
-Fixture section with no gallery images.
+Fixture section with no managed images.
