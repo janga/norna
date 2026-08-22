@@ -78,7 +78,8 @@ Diagrams must match the current Norna model:
 - Norna managed media blocks cover fixed site patterns such as image stacks,
   carousels, and card lists.
 - `theme.md` controls visual presentation.
-- `config.mjs` controls technical site configuration.
+- `config.md` controls the public URL and optional language and smooth
+  scrolling.
 - `dist/` is generated static output.
 - GitHub Pages is the integrated publishing target today.
 

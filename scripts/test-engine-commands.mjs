@@ -24,9 +24,18 @@ try {
 	assert.match(versionResult.stdout, new RegExp(`Installed norna: ${packageJson.version.replaceAll('.', '\\.')}`));
 	assert.match(versionResult.stdout, /Installed Astro: /);
 
+	const deployHelpResult = runCli(['deploy', '--help']);
+	assert.equal(deployHelpResult.status, 0, deployHelpResult.stderr || deployHelpResult.stdout);
+	assert.match(deployHelpResult.stdout, /already committed default branch/);
+	const deployWatchHelpResult = runCli(['deploy:watch', '--help']);
+	assert.equal(deployWatchHelpResult.status, 0, deployWatchHelpResult.stderr || deployWatchHelpResult.stdout);
+	assert.match(deployWatchHelpResult.stdout, /Default: current repository/);
+	assert.match(deployWatchHelpResult.stdout, /Default: repository default branch/);
+	assert.match(deployWatchHelpResult.stdout, /Default: deploy\.yml/);
+
 	const directSiteRoot = path.join(tempRoot, 'current-directory-site');
 	await mkdir(directSiteRoot, { recursive: true });
-	await writeFile(path.join(directSiteRoot, 'config.mjs'), 'export default { site: { url: "https://example.com/" } };\n');
+	await writeFile(path.join(directSiteRoot, 'config.md'), '---\nurl: https://example.com/\n---\n');
 	await writeFile(path.join(directSiteRoot, 'content.md'), '---\ntitle: Direct Site\ndescription: Direct site fixture.\n---\n\n## Intro {#intro}\n\nText.\n');
 	const directSiteProjectRoot = await realpath(tempRoot);
 	const directSiteDoctorResult = runCli(['doctor'], {
@@ -95,7 +104,7 @@ try {
 	assert.equal(customPurePackageJson.scripts['norna:dev'], 'norna --site-dir presentation dev:local');
 	assert.equal(customPurePackageJson.scripts['norna:build'], 'norna --site-dir presentation build');
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'content.md'));
-	await readFile(path.join(customPureSiteRoot, 'presentation', 'config.mjs'));
+	await readFile(path.join(customPureSiteRoot, 'presentation', 'config.md'));
 	await readFile(path.join(customPureSiteRoot, 'presentation', 'theme.md'));
 
 	const mixedProjectRoot = path.join(tempRoot, 'mixed-project');
@@ -121,7 +130,7 @@ try {
 	assert.equal(mixedPackageJson.scripts['norna:engine:update'], 'norna --site-dir presentation engine:update');
 	assert.equal(mixedPackageJson.scripts['norna:engine:version'], 'norna --site-dir presentation engine:version');
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'content.md'));
-	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.mjs'));
+	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.md'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'theme.md'));
 
 	const conflictProjectRoot = path.join(tempRoot, 'conflict-project');

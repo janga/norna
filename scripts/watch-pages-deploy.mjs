@@ -1,18 +1,17 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { getGitHubRepositoryContext, githubPagesWorkflow } from './lib/github-repository.mjs';
 import { projectConfig } from './lib/project-config.mjs';
 import { siteProjectRoot } from './lib/site-paths.mjs';
 
 const execFileAsync = promisify(execFile);
 
 const root = siteProjectRoot;
-const defaultRepo = projectConfig.github.repo;
-const defaultWorkflow = projectConfig.github.pagesWorkflow;
-const defaultBranch = projectConfig.github.branch;
+const defaultWorkflow = githubPagesWorkflow;
 const defaultSiteUrl = projectConfig.site.url;
-const defaultPollIntervalMs = projectConfig.deploy.watch.intervalMs;
-const defaultTimeoutMs = projectConfig.deploy.watch.timeoutMs;
-const defaultRunLimit = projectConfig.deploy.watch.runLimit;
+const defaultPollIntervalMs = 10_000;
+const defaultTimeoutMs = 15 * 60_000;
+const defaultRunLimit = 10;
 const runListFields = [
 	'conclusion',
 	'createdAt',
@@ -49,9 +48,9 @@ const usage = `
 Usage: norna deploy:watch [options]
 
 Options:
-  --repo <owner/name>     GitHub repository. Default: ${defaultRepo}
-  --workflow <name>       Workflow name. Default: ${defaultWorkflow}
-  --branch <name>         Branch to monitor. Default: ${defaultBranch}
+  --repo <owner/name>     GitHub repository. Default: current repository
+  --workflow <name>       Workflow name or file. Default: ${defaultWorkflow}
+  --branch <name>         Branch to monitor. Default: repository default branch
   --sha <sha>             Commit SHA to monitor. Default: current HEAD
   --site-url <url>        Public site URL to print. Default: ${defaultSiteUrl}
   --interval <duration>   Poll interval, for example 5s or 0.5m. Default: 10s
@@ -99,10 +98,10 @@ const readOptionValue = (args, index, optionName) => {
 
 const parseArgs = (args) => {
 	const options = {
-		branch: defaultBranch,
+		branch: null,
 		intervalMs: defaultPollIntervalMs,
 		limit: defaultRunLimit,
-		repo: defaultRepo,
+		repo: null,
 		sha: null,
 		siteUrl: defaultSiteUrl,
 		timeoutMs: defaultTimeoutMs,
@@ -367,6 +366,11 @@ const printFailureDetails = async (run, options, elapsedMs) => {
 
 const monitor = async () => {
 	const options = parseArgs(process.argv.slice(2));
+	if (!options.repo || !options.branch) {
+		const repository = await getGitHubRepositoryContext({ cwd: root, repo: options.repo });
+		options.repo ??= repository.repo;
+		options.branch ??= repository.branch;
+	}
 	options.sha ??= await getCurrentSha();
 
 	const startedAt = Date.now();

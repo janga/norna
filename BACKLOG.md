@@ -100,7 +100,7 @@ These are current constraints, not necessarily bugs.
 - Routes currently support one route segment under `site/routes/<route-folder>/`;
   nested routes and richer navigation behavior remain out of scope.
 - Source image copyright metadata is outside the current command surface.
-- `norna` assumes a file-driven site model with `config.mjs`,
+- `norna` assumes a file-driven site model with `config.md`,
   `theme.md`, `content.md`, source images, and static public files.
 
 ## Future Plans
@@ -133,9 +133,9 @@ site/
       images/
 ```
 
-- `site/config.mjs` is site-level technical configuration, including URL,
-  layout, gallery sizing, font family, locale/UI labels, footer, GitHub, and
-  deploy settings.
+- `site/config.md` is site-level technical configuration for the public URL,
+  language and optional smooth scrolling. Norna derives the base path from the
+  URL and discovers GitHub repository/default-branch details during deploy.
 - `site/theme.md` is site-level visual theme configuration, including
   site-wide presentation defaults, inline styles, and frame defaults.
 - Page files own page metadata, page-level `presentation` overrides,

@@ -2,7 +2,8 @@
 
 `site/sitewide-content.md` contains content and settings shared by the whole site. It
 is separate from `content.md`, which defines the homepage, and from
-`config.mjs`, which defines technical behaviour.
+`config.md`, which defines the public URL and optional language and scroll
+behaviour.
 
 ## Site identity
 

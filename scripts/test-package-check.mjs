@@ -158,12 +158,13 @@ try {
 		assertFileExists(path.join(packagedStarterRoot, '.github', 'workflows', 'deploy.yml')),
 		assertFileExists(path.join(packagedStarterRoot, 'package.json')),
 		assertFileExists(path.join(packagedStarterRoot, 'README.md')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'config.mjs')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'config.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'theme.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'sitewide-content.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'content.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'images', 'work', '.gitkeep')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'public', 'robots.txt')),
+		assertFileMissing(path.join(packagedStarterRoot, 'site', 'config.mjs')),
 	]);
 	await assertFileIncludes(
 		path.join(packagedStarterRoot, '.github', 'workflows', 'deploy.yml'),
@@ -177,13 +178,11 @@ try {
 	packageJson.name = 'norna-package-check-site';
 	packageJson.dependencies['@janga/norna'] = tarballPath;
 	await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
-	const packageCheckConfigPath = path.join(siteProjectRoot, 'site', 'config.mjs');
+	const packageCheckConfigPath = path.join(siteProjectRoot, 'site', 'config.md');
 	const packageCheckConfig = await readFile(packageCheckConfigPath, 'utf8');
 	await writeFile(
 		packageCheckConfigPath,
-		packageCheckConfig
-			.replace("url: 'https://example.com/'", "url: 'https://example.com/site/'")
-			.replace("basePath: '/'", "basePath: '/site/'"),
+		packageCheckConfig.replace('url: https://example.com/', 'url: https://example.com/site/'),
 	);
 	const packageCheckSitewidePath = path.join(siteProjectRoot, 'site', 'sitewide-content.md');
 	const packageCheckSitewide = await readFile(packageCheckSitewidePath, 'utf8');
@@ -241,10 +240,11 @@ This route verifies that packaged norna sites can build route pages.
 	await runInherit(nornaBinPath, ['init', initializedSiteRoot], { cwd: tempRoot, env: npmEnv });
 	await Promise.all([
 		assertFileExists(path.join(initializedSiteRoot, 'package.json')),
-		assertFileExists(path.join(initializedSiteRoot, 'site', 'config.mjs')),
+		assertFileExists(path.join(initializedSiteRoot, 'site', 'config.md')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'theme.md')),
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
+		assertFileMissing(path.join(initializedSiteRoot, 'site', 'config.mjs')),
 	]);
 	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
 	await runInherit(npxBin, ['norna', 'doctor'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
@@ -286,6 +286,14 @@ This route verifies that packaged norna sites can build route pages.
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'<meta name="format-detection" content="telephone=no">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'style="scroll-behavior: auto;',
+	);
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'data-smooth-scroll=',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
@@ -506,17 +514,17 @@ This route verifies that packaged norna sites can build route pages.
 		'typography.fontFamily',
 	);
 	await writeFile(siteThemePath, siteTheme);
-	const siteConfigPath = path.join(siteProjectRoot, 'site', 'config.mjs');
+	const siteConfigPath = path.join(siteProjectRoot, 'site', 'config.md');
 	const siteConfig = await readFile(siteConfigPath, 'utf8');
 	await writeFile(
 		siteConfigPath,
-		siteConfig.replace("basePath: '/site/'", "basePath: 'site'"),
+		siteConfig.replace('url: https://example.com/site/', 'url: example.com/site/'),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'config:check'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'site.basePath',
+		'url must be an absolute URL',
 	);
 
 	console.log('Package check passed.');

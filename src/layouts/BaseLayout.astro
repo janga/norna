@@ -73,7 +73,7 @@ const {
 const documentTitle = title;
 const canonicalUrl = new URL(withBasePath(projectConfig.site.basePath, pathname), projectConfig.site.url).href;
 const iconLinks = getIconLinks();
-const scrollBehavior = projectConfig.navigation.smoothScroll.enabled ? 'smooth' : 'auto';
+const scrollBehavior = projectConfig.navigation.smoothScroll ? 'smooth' : 'auto';
 const formatPercent = (value: number) => `${value}%`;
 const formatViewportHeightPercent = (value: number) => `${value}svh`;
 const layoutSpacing = visualTheme.layout.spacing;

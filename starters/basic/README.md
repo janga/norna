@@ -18,20 +18,22 @@ npm run dev -- --kill
 Edit shared brand, logo, banners and footer in `site/sitewide-content.md`,
 site-wide visual defaults in `site/theme.md`, homepage content and section
 metadata in `site/content.md`, and technical settings such as URL and locale
-labels in `site/config.mjs`. Keep source images under `site/images/<section-id>/`
+in `site/config.md`. Keep source images under `site/images/<section-id>/`
 and static public files under `site/public/`. The image folder name should
 match the section id in Markdown, for example `## Work {#work}` uses
 `site/images/work/`.
 
-Use `site.basePath: '/'` for a custom domain or root-hosted site. For a GitHub
-Pages project site without a custom domain, set both values:
+For a GitHub Pages project site without a custom domain, include the repository
+path in the public URL:
 
-```js
-site: {
-	url: 'https://owner.github.io/repository-name/',
-	basePath: '/repository-name/',
-}
+```yaml
+---
+url: https://owner.github.io/repository-name/
+---
 ```
+
+Norna derives `/repository-name/` as the base path. Use a root URL such as
+`https://example.com/` for a custom domain or root-hosted site.
 
 In GitHub repository settings, configure Pages to build from GitHub Actions.
 

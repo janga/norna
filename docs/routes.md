@@ -13,7 +13,7 @@ an optional route-local `theme.md`. The route theme replaces the root visual
 theme for that route and can select any complete top-level theme preset. Route
 directories cannot contain technical site
 configuration; technical configuration stays in the selected site directory's
-top-level `config.mjs`.
+top-level `config.md`.
 
 ## Route Directory Format
 

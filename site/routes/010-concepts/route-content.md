@@ -23,7 +23,7 @@ This separation is part of Norna being opinionated. You do not decide where
 these elements should live or wire them into a page layout. Norna gives each
 kind of content a defined place.
 
-`theme.md` controls the visual presentation, while `config.mjs` contains the few
+`theme.md` controls the visual presentation, while `config.md` contains the few
 technical settings the site needs.
 
 Within `content.md`, level-two headings define the page sections. Each section
@@ -50,7 +50,7 @@ site's visual presentation.
 
 Route directories contain route content and may contain route-local
 presentation, but they cannot contain technical site configuration. Technical
-configuration stays at the top level in `config.mjs`.
+configuration stays at the top level in `config.md`.
 
 Route folder prefixes control route presentation order on the site, while the
 route id becomes the URL slug. For example, the route from `010-dogs/` is shown

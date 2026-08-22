@@ -51,17 +51,9 @@ const createTempSite = async ({ underRepoCache = false } = {}) => {
 	const root = await mkdtemp(path.join(tempParent, 'norna-content-model-v2-'));
 	const siteDir = path.join(root, 'site');
 	await mkdir(siteDir, { recursive: true });
-	await writeFile(path.join(siteDir, 'config.mjs'), `export default {
-  site: {
-    url: 'https://example.com',
-    basePath: '/',
-  },
-  github: {
-    branch: 'main',
-    repo: 'owner/repo',
-    pagesWorkflow: 'Deploy to GitHub Pages',
-  },
-};
+	await writeFile(path.join(siteDir, 'config.md'), `---
+url: https://example.com/
+---
 `);
 	await writeFile(path.join(siteDir, 'theme.md'), `---
 typography:

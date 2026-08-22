@@ -44,7 +44,7 @@ verified build.
 
 ```text
 site/
-|-- config.mjs
+|-- config.md
 |-- theme.md
 |-- sitewide-content.md
 |-- content.md
@@ -58,7 +58,7 @@ site/
 - `routes/` adds pages, each with content and optional local images and theme.
 - `theme.md` normally selects one complete visual preset.
 - `sitewide-content.md` holds shared identity, banners, and footer content.
-- `config.mjs` holds the few technical settings the site needs.
+- `config.md` holds the public URL and optional language and scroll behavior.
 - `public/` holds static files copied without processing.
 
 Norna validates this structure, processes managed images when needed, and

@@ -295,7 +295,7 @@ Messages emitted by the engine should mention the direct CLI command and the
 starter-style npm wrapper when suggesting a fix.
 
 Configuration edits are normally manual edits to the selected site
-`config.mjs`, followed by:
+`config.md`, followed by:
 
 ```sh
 npm run norna:config:check

@@ -12,7 +12,7 @@ import {
 	extractNornaMarkdownBlocks,
 	getNornaBlockImageReferences,
 } from './lib/norna-markdown-blocks.mjs';
-import { projectConfig } from './lib/project-config.mjs';
+import { getGitHubRepositoryContext, githubPagesWorkflow } from './lib/github-repository.mjs';
 import {
 	engineRoot,
 	generatedImagesManifestLabel,
@@ -28,9 +28,9 @@ import {
 const execFileAsync = promisify(execFile);
 
 const root = siteProjectRoot;
-const branch = projectConfig.github.branch;
-const repo = projectConfig.github.repo;
-const pagesWorkflow = projectConfig.github.pagesWorkflow;
+const pagesWorkflow = githubPagesWorkflow;
+let branch;
+let repo;
 const args = process.argv.slice(2);
 const mode = args[0] === 'commit' ? 'commit' : 'deploy';
 const modeArgs = mode === 'commit' ? args.slice(1) : args;
@@ -53,9 +53,9 @@ const failedConclusions = new Set(['action_required', 'cancelled', 'failure', 's
 const deployUsage = [
 	'Usage: norna deploy',
 	'',
-	`Publishes an already committed ${branch} branch: builds, verifies a clean worktree,`,
-	`pushes ${branch} when local ${branch} is ahead of origin/${branch}, and checks GitHub Pages.`,
-	`If local ${branch} already matches origin/${branch}, it skips push and checks Pages.`,
+	'Publishes an already committed default branch: builds, verifies a clean worktree,',
+	'pushes it when local HEAD is ahead of origin, and checks GitHub Pages.',
+	'If local HEAD already matches origin, it skips push and checks Pages.',
 	'',
 	'For the old build-and-commit convenience flow, use:',
 	'norna deploy:commit "Commit message"',
@@ -63,7 +63,7 @@ const deployUsage = [
 const deployCommitUsage = [
 	'Usage: norna deploy:commit "Commit message"',
 	'',
-	`Builds, stages only allowed site changes, commits, pushes ${branch},`,
+	'Builds, stages only allowed site changes, commits, pushes the default branch,',
 	'and checks GitHub Pages.',
 ].join('\n');
 
@@ -385,6 +385,10 @@ if (modeArgs.includes('--help') || modeArgs.includes('-h')) {
 }
 
 try {
+	const githubRepository = await getGitHubRepositoryContext({ cwd: root });
+	branch = githubRepository.branch;
+	repo = githubRepository.repo;
+
 	if (mode === 'commit') {
 		await deployWithCommit();
 	} else {

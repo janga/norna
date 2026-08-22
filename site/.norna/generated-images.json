@@ -2,16 +2,16 @@
   "routes/010-concepts/images/multi-page-site/multi-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "bfb37a6a45d03bba71d5e657c07d6cbea422750a8b1d4e4f5bf22f2dddf3881d",
-    "src": "/images/original/routes/010-concepts/images/multi-page-site/multi-page-site-bfb37a6a.svg",
+    "sourceHash": "1ab947690cfc33d44664a311afb341ff6c1dad24d1da147212d5fec415dd1126",
+    "src": "/images/original/routes/010-concepts/images/multi-page-site/multi-page-site-1ab94769.svg",
     "width": 1080,
     "height": 620
   },
   "routes/010-concepts/images/single-page-site/single-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "f5bdee1d1ec69e3c9b3bb6b3bad1b1634e675c0410b7f4ae7778dcc2961fd9f3",
-    "src": "/images/original/routes/010-concepts/images/single-page-site/single-page-site-f5bdee1d.svg",
+    "sourceHash": "b3fbeb4129cbdadbd2c1c7af0059bf4ad16be251afc00b2a5d849682b3402563",
+    "src": "/images/original/routes/010-concepts/images/single-page-site/single-page-site-b3fbeb41.svg",
     "width": 1080,
     "height": 620
   },

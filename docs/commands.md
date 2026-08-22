@@ -101,7 +101,7 @@ should normally mean the repository's complete publishable artifact, while
 - `doctor`: prints resolved engine root, site project root, site directory,
   content/config/image/public paths, generated manifest, Astro output paths, and
   cache path.
-- `config:check`: validates `site/config.mjs` against the runtime config
+- `config:check`: validates `site/config.md` against the runtime config
   reader.
 - `content:check`: validates section structure, managed media references,
   inline styles, and common content mistakes.
@@ -148,10 +148,11 @@ should normally mean the repository's complete publishable artifact, while
   server tracked under `.astro/`.
 - `preview`: runs Astro preview with the `norna` Astro config.
 - `astro`: runs Astro with the `norna` Astro config.
-- `deploy`: builds and publishes an already committed deploy branch.
+- `deploy`: discovers the GitHub repository and default branch, then builds and
+  publishes the already committed branch.
 - `deploy:commit`: older convenience flow that builds, stages allowed site
   changes, commits, pushes, and checks Pages.
-- `deploy:watch`: follows a GitHub Pages workflow run.
+- `deploy:watch`: follows the included `deploy.yml` GitHub Pages workflow run.
 
 ## Deploy Watch Options
 
@@ -169,4 +170,6 @@ should normally mean the repository's complete publishable artifact, while
 ```
 
 Durations may use `ms`, `s`, or `m`, for example `500ms`, `10s`, or `15m`.
-Without `--sha`, the current `HEAD` is monitored.
+Without repository and branch options, Norna discovers the current GitHub
+repository and its default branch. Without `--sha`, the current `HEAD` is
+monitored.

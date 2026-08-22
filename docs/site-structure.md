@@ -9,7 +9,7 @@ The selected site directory defaults to `site/`:
 
 ```text
 site/
-|-- config.mjs
+|-- config.md
 |-- theme.md
 |-- sitewide-content.md
 |-- content.md
@@ -28,7 +28,7 @@ site/
 
 Use `NORNA_SITE_DIR` or `norna --site-dir <path>` to select another
 site directory. Without an explicit site directory, commands first accept the
-current directory when it contains both `config.mjs` and `content.md`.
+current directory when it contains both `config.md` and `content.md`.
 Otherwise, commands started from a subdirectory walk upward until they find the
 default `site/` directory containing those files.
 `theme.md` is required. It can contain only a complete preset selection.
@@ -37,7 +37,7 @@ default `site/` directory containing those files.
 
 Version these files in a site repository:
 
-- `site/config.mjs`: technical site configuration.
+- `site/config.md`: public URL and optional language and smooth scrolling.
 - `site/theme.md`: required site-wide visual theme. It normally selects a
   complete preset and may add focused layout, image, typography, palette, or
   section-surface overrides.
@@ -75,7 +75,7 @@ Do not edit these by hand:
 
 Favicons are convention-based. Put files such as `favicon.svg`, `favicon.ico`,
 `favicon.png`, or `apple-touch-icon.png` in `site/public/`. The renderer emits
-icon links only for files that exist and prefixes them with `site.basePath`
+icon links only for files that exist and prefixes them with the base path
 when the site is published below a path such as `/repository-name/`.
 
 ## Engine Repository Layout

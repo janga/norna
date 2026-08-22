@@ -20,6 +20,7 @@ const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const deprecatedInlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
+const knownConfigTopLevelFrontmatterKeys = new Set(['url', 'language', 'smoothScroll']);
 const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'sections']);
 const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'gallery', 'typography', 'presentation']);
 const knownRouteThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'gallery', 'typography', 'presentation']);
@@ -268,6 +269,12 @@ export const validateContentFrontmatterStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
 		knownTopLevelFrontmatterKeys: knownContentTopLevelFrontmatterKeys,
 		fileKind: 'content',
+	});
+
+export const validateConfigFrontmatterStructure = (frontmatter, addIssue) =>
+	validateFrontmatterStructure(frontmatter, addIssue, {
+		knownTopLevelFrontmatterKeys: knownConfigTopLevelFrontmatterKeys,
+		fileKind: 'config',
 	});
 
 export const validateThemeFrontmatterStructure = (frontmatter, addIssue) =>

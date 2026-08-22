@@ -1,9 +1,55 @@
-import { pathToFileURL } from 'node:url';
-import { siteConfigLabel, siteConfigPath, siteThemeLabel } from './site-paths.mjs';
+import { access, readFile } from 'node:fs/promises';
+import { parseYamlMapping } from './frontmatter-yaml.mjs';
+import {
+	splitSiteFile,
+	validateConfigFrontmatterStructure,
+	validateFrontmatterIndentation,
+} from './site-content.mjs';
+import {
+	legacySiteConfigPath,
+	siteConfigLabel,
+	siteConfigPath,
+	siteThemeLabel,
+} from './site-paths.mjs';
 import { readThemeConfig } from './theme-config.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
 
-const { default: siteConfig } = await import(/* @vite-ignore */ pathToFileURL(siteConfigPath).href);
+const fileExists = (filePath) => access(filePath).then(() => true, () => false);
+const readSiteConfig = async () => {
+	const source = await readFile(siteConfigPath, 'utf8').catch(async (error) => {
+		if (error?.code === 'ENOENT' && await fileExists(legacySiteConfigPath)) {
+			throw new Error(`${siteConfigLabel} is required. Replace the obsolete config.mjs with a frontmatter-only config.md file.`);
+		}
+
+		if (error?.code === 'ENOENT') {
+			throw new Error(`${siteConfigLabel} is required. Create it before running Norna.`);
+		}
+
+		throw error;
+	});
+	const { body, frontmatter, frontmatterBody } = splitSiteFile(source, siteConfigLabel);
+	const issues = [];
+
+	validateFrontmatterIndentation(frontmatter, (issue) => issues.push(issue));
+	validateConfigFrontmatterStructure(frontmatter, (issue) => issues.push(issue));
+
+	if (body.trim()) {
+		issues.push({
+			message: `${siteConfigLabel} may contain YAML frontmatter only. Remove the Markdown body.`,
+		});
+	}
+
+	if (issues.length > 0) {
+		throw new Error([
+			`${siteConfigLabel} has invalid frontmatter.`,
+			...issues.map((issue) => `- ${issue.message}`),
+		].join('\n'));
+	}
+
+	return parseYamlMapping(frontmatterBody);
+};
+
+const siteConfig = await readSiteConfig();
 const themeConfig = await readThemeConfig();
 
 const cssLengthPattern = String.raw`(?:\d+|\d*\.\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)`;
@@ -26,16 +72,6 @@ const readEnum = (object, key, path, allowedValues, fallback, sourceLabel = site
 	}
 
 	return value;
-};
-
-const readString = (object, key, path, sourceLabel = siteConfigLabel) => {
-	const value = object[key];
-
-	if (typeof value !== 'string' || value.trim() === '') {
-		throw new Error(`${path}.${key} must be a non-empty string in ${sourceLabel}.`);
-	}
-
-	return value.trim();
 };
 
 const readFontFamily = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
@@ -138,123 +174,91 @@ const readResponsivePercent = (object, key, path, fallback, sourceLabel = siteCo
 	});
 };
 
-const readBoolean = (object, key, path, fallback) => {
+const readBoolean = (object, key, fallback) => {
 	const value = object[key] ?? fallback;
 
 	if (typeof value !== 'boolean') {
-		throw new Error(`${path}.${key} must be a boolean in ${siteConfigLabel}.`);
+		throw new Error(`${key} must be true or false in ${siteConfigLabel}.`);
 	}
 
 	return value;
 };
 
-const readPositiveInteger = (object, key, path, fallback) => {
-	const value = object[key] ?? fallback;
+const readSiteUrl = (config) => {
+	const configuredValue = process.env.NORNA_SITE_URL ?? config.url;
 
-	if (!Number.isInteger(value) || value <= 0) {
-		throw new Error(`${path}.${key} must be a positive integer in ${siteConfigLabel}.`);
+	if (typeof configuredValue !== 'string' || configuredValue.trim() === '') {
+		throw new Error(`url must be a non-empty absolute URL in ${siteConfigLabel}.`);
 	}
 
-	return value;
-};
-
-const readPositiveNumber = (object, key, path, fallback) => {
-	const value = object[key] ?? fallback;
-
-	if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
-		throw new Error(`${path}.${key} must be a positive number in ${siteConfigLabel}.`);
-	}
-
-	return value;
-};
-
-const readUrl = (object, key, path) => {
-	const value = readString(object, key, path);
-
+	let url;
 	try {
-		return new URL(value).href;
+		url = new URL(configuredValue.trim());
 	} catch {
-		throw new Error(`${path}.${key} must be an absolute URL in ${siteConfigLabel}.`);
+		throw new Error(`url must be an absolute URL such as "https://example.com/" in ${siteConfigLabel}.`);
 	}
+
+	if (!['http:', 'https:'].includes(url.protocol)) {
+		throw new Error(`url must use http or https in ${siteConfigLabel}.`);
+	}
+	if (url.search || url.hash) {
+		throw new Error(`url must not contain a query string or fragment in ${siteConfigLabel}.`);
+	}
+	if (!url.pathname.endsWith('/')) {
+		url.pathname = `${url.pathname}/`;
+	}
+	if (url.pathname.includes('//')) {
+		throw new Error(`url must not contain repeated slashes in its path in ${siteConfigLabel}.`);
+	}
+
+	return url;
 };
 
-const readBasePath = (object, key, path) => {
-	const value = object[key] ?? '/';
+const localeLabels = Object.freeze({
+	en: Object.freeze({
+		dismissBanner: 'Dismiss notice',
+		gallery: 'Images',
+		note: 'Note',
+		pageNavigation: 'On this page',
+		siteBanners: 'Site notices',
+		siteNavigation: 'Pages',
+		skipToContent: 'Skip to content',
+	}),
+	sv: Object.freeze({
+		dismissBanner: 'Stäng meddelande',
+		gallery: 'Bilder',
+		note: 'Not',
+		pageNavigation: 'På den här sidan',
+		siteBanners: 'Meddelanden',
+		siteNavigation: 'Sidor',
+		skipToContent: 'Hoppa till innehållet',
+	}),
+});
 
-	if (typeof value !== 'string' || value.trim() === '') {
-		throw new Error(`${path}.${key} must be a non-empty URL path in ${siteConfigLabel}.`);
-	}
-
-	const normalizedValue = value.trim();
-
-	if (
-		!normalizedValue.startsWith('/')
-		|| !normalizedValue.endsWith('/')
-		|| normalizedValue.includes('//')
-		|| /[\s?#]/.test(normalizedValue)
-	) {
-		throw new Error(`${path}.${key} must start and end with "/" and must not contain whitespace, "?", "#", or "//" in ${siteConfigLabel}.`);
-	}
-
-	return normalizedValue;
-};
-
-const readSmoothScroll = (navigation) => {
-	const rawSmoothScroll = assertObject(navigation.smoothScroll ?? {}, 'navigation.smoothScroll');
-	const minimumDurationMs = readPositiveInteger(rawSmoothScroll, 'minimumDurationMs', 'navigation.smoothScroll', 2_000);
-	const maximumDurationMs = readPositiveInteger(rawSmoothScroll, 'maximumDurationMs', 'navigation.smoothScroll', 4_000);
-
-	if (maximumDurationMs < minimumDurationMs) {
-		throw new Error(`navigation.smoothScroll.maximumDurationMs must be greater than or equal to minimumDurationMs in ${siteConfigLabel}.`);
-	}
-
-	return Object.freeze({
-		durationPerPixelMs: readPositiveNumber(rawSmoothScroll, 'durationPerPixelMs', 'navigation.smoothScroll', 0.22),
-		enabled: readBoolean(rawSmoothScroll, 'enabled', 'navigation.smoothScroll', true),
-		maximumDurationMs,
-		minimumDurationMs,
-	});
-};
-
-const readLocale = (rawLocale) => {
-	const locale = assertObject(rawLocale ?? {}, 'locale');
-	const labels = assertObject(locale.labels ?? {}, 'locale.labels');
-	const lang = locale.lang ?? 'en';
+const readLocale = (config) => {
+	const lang = config.language ?? 'en';
 
 	if (typeof lang !== 'string' || !/^[a-zA-Z]{2,3}(?:-[a-zA-Z0-9]+)*$/.test(lang.trim())) {
-		throw new Error(`locale.lang must be a valid language tag such as "en" or "sv" in ${siteConfigLabel}.`);
+		throw new Error(`language must be a valid language tag such as "en" or "sv" in ${siteConfigLabel}.`);
+	}
+
+	const normalizedLang = lang.trim();
+	const languageKey = normalizedLang.toLowerCase().split('-')[0];
+	const labels = localeLabels[languageKey];
+
+	if (!labels) {
+		throw new Error(`language "${normalizedLang}" has no built-in Norna UI text. Supported languages: ${Object.keys(localeLabels).join(', ')}.`);
 	}
 
 	return Object.freeze({
-		lang: lang.trim(),
-		labels: Object.freeze({
-			closeMenu: readString({ closeMenu: labels.closeMenu ?? 'Close menu' }, 'closeMenu', 'locale.labels'),
-			dismissBanner: readString({ dismissBanner: labels.dismissBanner ?? 'Dismiss notice' }, 'dismissBanner', 'locale.labels'),
-			skipToContent: readString({ skipToContent: labels.skipToContent ?? 'Skip to content' }, 'skipToContent', 'locale.labels'),
-			sectionNavigation: readString({ sectionNavigation: labels.sectionNavigation ?? 'Sections' }, 'sectionNavigation', 'locale.labels'),
-			gallery: readString({ gallery: labels.gallery ?? 'Images' }, 'gallery', 'locale.labels'),
-			note: readString({ note: labels.note ?? 'Note' }, 'note', 'locale.labels'),
-			menu: readString({ menu: labels.menu ?? 'Menu' }, 'menu', 'locale.labels'),
-			pageNavigation: readString({ pageNavigation: labels.pageNavigation ?? 'On this page' }, 'pageNavigation', 'locale.labels'),
-			siteNavigation: readString({ siteNavigation: labels.siteNavigation ?? 'Pages' }, 'siteNavigation', 'locale.labels'),
-			siteBanners: readString({ siteBanners: labels.siteBanners ?? 'Site notices' }, 'siteBanners', 'locale.labels'),
-		}),
+		lang: normalizedLang,
+		labels,
 	});
 };
 
-const rawConfig = assertObject(siteConfig, 'default export');
-const misplacedThemeKeys = ['layout', 'gallery', 'typography'].filter((key) => key in rawConfig);
-if (misplacedThemeKeys.length > 0) {
-	throw new Error(`${misplacedThemeKeys.join(', ')} belong in ${siteThemeLabel}, not ${siteConfigLabel}.`);
-}
-
+const rawConfig = assertObject(siteConfig, 'config frontmatter');
 const rawTheme = assertObject(themeConfig, 'theme frontmatter', siteThemeLabel);
-const rawSite = assertObject(rawConfig.site, 'site');
-const rawNavigation = assertObject(rawConfig.navigation ?? {}, 'navigation');
-const rawLocale = rawConfig.locale ?? {};
-const rawGithub = assertObject(rawConfig.github, 'github');
-const rawDeploy = assertObject(rawConfig.deploy ?? {}, 'deploy');
-const rawDeployWatch = assertObject(rawDeploy.watch ?? {}, 'deploy.watch');
+const siteUrl = readSiteUrl(rawConfig);
 
 const defaultFontFamily = "Arial, 'Helvetica Neue', Helvetica, sans-serif";
 const layoutDensityNames = ['compact', 'normal', 'airy'];
@@ -383,26 +387,14 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 
 export const projectConfig = Object.freeze({
 	site: Object.freeze({
-		basePath: readBasePath(rawSite, 'basePath', 'site'),
-		url: readUrl(rawSite, 'url', 'site'),
+		basePath: siteUrl.pathname,
+		url: siteUrl.href,
 	}),
 	...resolveThemeVisualConfig(rawTheme, siteThemeLabel),
 	navigation: Object.freeze({
-		smoothScroll: readSmoothScroll(rawNavigation),
+		smoothScroll: readBoolean(rawConfig, 'smoothScroll', false),
 	}),
-	locale: readLocale(rawLocale),
-	github: Object.freeze({
-		repo: readString(rawGithub, 'repo', 'github'),
-		branch: readString(rawGithub, 'branch', 'github'),
-		pagesWorkflow: readString(rawGithub, 'pagesWorkflow', 'github'),
-	}),
-	deploy: Object.freeze({
-		watch: Object.freeze({
-			intervalMs: readPositiveInteger(rawDeployWatch, 'intervalMs', 'deploy.watch', 10_000),
-			timeoutMs: readPositiveInteger(rawDeployWatch, 'timeoutMs', 'deploy.watch', 15 * 60_000),
-			runLimit: readPositiveInteger(rawDeployWatch, 'runLimit', 'deploy.watch', 10),
-		}),
-	}),
+	locale: readLocale(rawConfig),
 });
 
 export default projectConfig;

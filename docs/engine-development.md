@@ -7,7 +7,8 @@ This document is for work on the reusable `norna` package itself.
 - `bin/norna.mjs`: public CLI launcher and local-version resolver.
 - `bin/norna-cli.mjs`: public CLI command dispatcher.
 - `scripts/lib/site-paths.mjs`: engine/site path resolution.
-- `scripts/lib/project-config.mjs`: `site/config.mjs` validation and defaults.
+- `scripts/lib/project-config.mjs`: frontmatter-only `site/config.md`
+  validation, defaults and derived URL path.
 - `scripts/sync-content-sections.mjs`: content validation and sync behavior.
 - `scripts/generate-images.mjs`: managed image pipeline and manifest.
 - `scripts/sync-site-public.mjs`: static public file sync.
@@ -194,11 +195,11 @@ history, back/forward moves between hash entries, and returning to the same page
 without a hash restores the first section as active. The enhancement does not
 derive active section state from free manual scrolling.
 
-The sticky navigation updates root scroll offset variables so direct hash links
-and clicked links land below the fixed header. Hash targets may be corrected
-again after layout shifts such as image loading, but that correction must not
-add history entries or change the active section independently of the URL hash.
+The sticky navigation updates a root scroll-offset variable so direct hash
+links and clicked links remain visible below the fixed header. The browser owns
+anchor movement; Norna does not run a separate scroll animation or retry anchor
+positions after later layout shifts.
 
-The shared layout reads UI language and labels from `site/config.mjs`
-`locale`. Keep editorial content in page Markdown and non-editorial engine UI
-labels in config.
+The shared layout selects Norna's built-in UI labels from the optional
+`language` in `site/config.md`. Keep editorial content in page Markdown and
+non-editorial engine UI labels in the engine language packs.

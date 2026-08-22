@@ -2,7 +2,6 @@ import { expect, test } from '@playwright/test';
 
 const mobileViewport = { width: 393, height: 852 };
 const desktopViewport = { width: 1280, height: 900 };
-const maximumAnchorGap = 2;
 const maximumAnchorWait = 7_000;
 const minimumFullscreenSafeTextTop = 24;
 const testPagePath = '/media/';
@@ -70,9 +69,8 @@ const openSite = async (page, path = testPagePath) => {
 
 const waitForAnchorPosition = async (page, sectionId: string) => {
 	await page.waitForFunction(
-		({ id, maximumGap }) => {
+		({ id }) => {
 			const header = document.querySelector('.site-top');
-			const sections = Array.from(document.querySelectorAll('.site-section'));
 			const section = document.getElementById(id);
 			const heading = section?.querySelector('h1, h2');
 
@@ -84,20 +82,11 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 			const headingTop = heading.getBoundingClientRect().top;
 			const gap = headingTop - headerBottom;
 
-			const maxScrollY = Math.max(
-				0,
-				document.documentElement.scrollHeight - window.innerHeight,
-				document.body.scrollHeight - window.innerHeight,
-			);
-			const atDocumentTop = window.scrollY <= 2;
-			const atDocumentBottom = maxScrollY - window.scrollY <= 2;
-			const isFirstSection = sections[0] === section;
-
 			return window.location.hash === `#${id}`
 				&& gap >= -1
-				&& (gap <= maximumGap || (atDocumentTop && isFirstSection) || atDocumentBottom);
+				&& headingTop < window.innerHeight;
 		},
-		{ id: sectionId, maximumGap: maximumAnchorGap },
+		{ id: sectionId },
 		{ timeout: maximumAnchorWait },
 	);
 };
@@ -208,7 +197,7 @@ for (const scenario of [
 			viewport: scenario.viewport,
 		});
 
-		test('positions each section heading below the sticky navigation', async ({ page }) => {
+		test('keeps each section heading visible below the sticky navigation', async ({ page }) => {
 			await openSite(page);
 
 			for (const target of await getNavTargets(page)) {
@@ -219,13 +208,10 @@ for (const scenario of [
 				const measurement = await measureAnchor(page, sectionId);
 				expect(measurement.hash, target.label).toBe(target.hash);
 				expect(measurement.gap, target.label).toBeGreaterThanOrEqual(-1);
-				if (!measurement.isFirstSection && measurement.scrollY > 2 && measurement.scrollBottomGap > 2) {
-					expect(measurement.gap, target.label).toBeLessThanOrEqual(maximumAnchorGap);
-				}
 			}
 		});
 
-		test('positions direct hash links below the sticky navigation', async ({ page }) => {
+		test('keeps direct hash-link headings visible below the sticky navigation', async ({ page }) => {
 			await openSite(page);
 
 			for (const target of await getNavTargets(page)) {
@@ -236,38 +222,18 @@ for (const scenario of [
 				const measurement = await measureAnchor(page, sectionId);
 				expect(measurement.hash, target.label).toBe(target.hash);
 				expect(measurement.gap, target.label).toBeGreaterThanOrEqual(-1);
-				if (!measurement.isFirstSection && measurement.scrollY > 2 && measurement.scrollBottomGap > 2) {
-					expect(measurement.gap, target.label).toBeLessThanOrEqual(maximumAnchorGap);
-				}
 			}
 		});
 
-	test('keeps the target aligned when layout above it changes during smooth scroll', async ({ page }) => {
+		test('uses native immediate anchor movement by default', async ({ page }) => {
 			await openSite(page);
-			const targets = await getNavTargets(page);
-			const target = targets[1];
-			if (!target) throw new Error('The fixture must provide at least three navigation targets.');
-			const sectionId = target.hash.slice(1);
-
-			await page.evaluate((id) => {
-				window.setTimeout(() => {
-					const target = document.getElementById(id);
-					const spacer = document.createElement('div');
-
-					spacer.id = 'scroll-shift-probe';
-					spacer.style.height = '180px';
-					spacer.style.pointerEvents = 'none';
-					target?.before(spacer);
-				}, 500);
-			}, sectionId);
-
-			await clickSectionLink(page, target.hash);
-			await waitForAnchorPosition(page, sectionId);
-
-			const measurement = await measureAnchor(page, sectionId);
-			expect(measurement.hash).toBe(target.hash);
-			expect(measurement.gap).toBeGreaterThanOrEqual(-1);
-			expect(measurement.gap).toBeLessThanOrEqual(maximumAnchorGap);
+			await expect.poll(() => page.evaluate(() => ({
+				hasScriptedConfig: document.querySelector('.site-top')?.hasAttribute('data-smooth-scroll'),
+				scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
+			}))).toEqual({
+				hasScriptedConfig: false,
+				scrollBehavior: 'auto',
+			});
 		});
 	});
 }

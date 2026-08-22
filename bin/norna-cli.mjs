@@ -14,7 +14,7 @@ Commands:
   dev:status             Show local dev server status
   dev:logs               Show local dev server logs
   dev:stop               Stop local dev server
-  config:check           Validate site/config.mjs
+  config:check           Validate site/config.md
   content:check          Validate site/content.md and image references
   content:sync           Move misplaced Norna-managed images and refresh generated images
   theme:export           Export a commented theme preset reference

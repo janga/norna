@@ -59,7 +59,7 @@
       <rect class="panel" width="300" height="540" rx="15"/>
       <g class="mono tree">
         <text x="20" y="30">site/</text>
-        <text x="20" y="50">├── config.mjs</text>
+        <text x="20" y="50">├── config.md</text>
         <text x="20" y="68">├── content.md</text>
         <text x="20" y="86">├── public/</text>
         <text x="20" y="104">│   ├── favicon.svg</text>

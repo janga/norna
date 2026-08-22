@@ -70,7 +70,7 @@ the tutorial, then use the task links below when a real site needs them.
 
 ## Reference
 
-- [Configuration](configuration.md): `site/config.mjs` fields and defaults.
+- [Configuration](configuration.md): `site/config.md` fields and defaults.
 - [Sitewide Content](sitewide-content.md): shared identity, banners, and footer.
 - [Content](content.md): page frontmatter, sections, blocks, notes, and checks.
 - [Theme](theme.md): presets, overrides, layout, image sizing, and surfaces.

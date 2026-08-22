@@ -51,14 +51,9 @@ try {
 	);
 
 	await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
-	await writeFile(path.join(siteDir, 'config.mjs'), `export default {
-  site: { url: 'https://example.com/', basePath: '/' },
-  github: {
-    repo: 'owner/repo',
-    branch: 'main',
-    pagesWorkflow: 'Deploy to GitHub Pages',
-  },
-};
+	await writeFile(path.join(siteDir, 'config.md'), `---
+url: https://example.com/
+---
 `);
 	await writeFile(path.join(siteDir, 'content.md'), `---
 title: Theme preset test

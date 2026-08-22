@@ -62,6 +62,12 @@ html {
 	background: var(--color-page);
 }
 
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto !important;
+	}
+}
+
 body {
 	min-height: 100vh;
 	min-height: 100svh;

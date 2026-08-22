@@ -1,52 +1,47 @@
 # Publishing
 
-Publishing is site-specific. The generic deploy commands read repository,
-branch, workflow, watch, and public URL settings from the selected site's
-`site/config.mjs`.
+Norna includes a GitHub Pages workflow and deploy helpers. The public URL is
+declared in `site/config.md`; repository and default branch are discovered from
+GitHub when a deploy command runs.
 
 Do not run deploy commands from the engine repository unless you deliberately
-want to test the demo configuration.
+want to deploy the documentation site.
 
 ## GitHub Pages Workflow
 
-Each site repository should own its `.github/workflows/deploy.yml`. The starter
-workflow:
+Each site repository owns `.github/workflows/deploy.yml`. The starter workflow:
 
-1. checks out the site repository,
-2. sets up Node,
-3. installs image tools,
+1. runs for the repository's default branch,
+2. checks out the site repository,
+3. sets up Node and image tools,
 4. restores the generated image cache,
-5. runs `npm ci`,
-6. runs `npm run build` in the starter, which aliases
-   `npm run norna:build`,
-7. uploads `dist/`,
-8. deploys to GitHub Pages.
+5. runs `npm ci` and `npm run build`,
+6. uploads `dist/`,
+7. deploys the artifact to GitHub Pages.
 
-Site-specific static files such as `site/public/CNAME`, `robots.txt`, and
+In the GitHub repository settings, set Pages to build from GitHub Actions.
+Site-specific public files such as `site/public/CNAME`, `robots.txt` and
 `sitemap.xml` belong in the site repository.
 
-In the GitHub repository settings, set Pages to build from GitHub Actions. For
-a project site without a custom domain, configure the site URL and base path in
-`site/config.mjs`:
+For a project site without a custom domain, include the repository path in
+`site/config.md`:
 
-```js
-site: {
-	url: 'https://owner.github.io/repository-name/',
-	basePath: '/repository-name/',
-}
+```yaml
+---
+url: https://owner.github.io/repository-name/
+---
 ```
 
-For a custom domain, keep `basePath` as `/`:
+For a custom domain or root-hosted site:
 
-```js
-site: {
-	url: 'https://example.com/',
-	basePath: '/',
-}
+```yaml
+---
+url: https://example.com/
+---
 ```
 
-Norna uses `site.basePath` for generated internal page links, favicons,
-generated images, and root-relative links or images written in Markdown.
+Norna derives the base path from the URL pathname and applies it to generated
+internal links, favicons, managed images and root-relative Markdown links.
 
 ## Deploy An Already Committed Branch
 
@@ -56,16 +51,17 @@ Use:
 npm run norna:deploy
 ```
 
-The deploy command:
+The command requires an authenticated GitHub CLI. It asks GitHub for the
+current repository and its default branch, then:
 
-- requires the current branch to equal `github.branch`,
-- requires a clean worktree before build,
+- requires the current branch to be that default branch,
+- requires a clean worktree before the build,
 - fetches `origin`,
 - refuses to proceed when the branch is behind or diverged,
 - runs the full build,
 - requires the build to leave the worktree clean,
-- pushes only when the local branch is ahead of `origin/<branch>`,
-- checks the configured GitHub Pages workflow.
+- pushes only when local `HEAD` is ahead of the remote branch,
+- checks the included `deploy.yml` GitHub Pages workflow.
 
 It does not create commits or push uncommitted changes.
 
@@ -77,11 +73,11 @@ The older convenience flow remains available:
 npm run norna:deploy:commit -- "Commit message"
 ```
 
-It builds, stages only allowed site changes, commits, pushes, and checks Pages.
-The allowlist is implemented in `scripts/deploy-site.mjs` and includes the
-site content file, selected config/static files, expected generated images,
-generated image manifest, package files, `tsconfig.json`, `astro.config.mjs`,
-and `src/` changes.
+It discovers the same repository/default branch, builds, stages only allowed
+site changes, commits, pushes and checks Pages. The allowlist is implemented in
+`scripts/deploy-site.mjs` and includes site content and configuration, expected
+managed images and generated image state, public files, package files and
+renderer source changes.
 
 ## Watch A Deploy
 
@@ -91,14 +87,19 @@ Use:
 npm run norna:deploy:watch
 ```
 
-By default it monitors the workflow run for the current `HEAD` on the configured
-branch and repository. Useful one-run overrides include:
+By default it monitors `deploy.yml` for the current `HEAD` in the discovered
+repository and default branch. Useful one-run overrides include:
 
 ```sh
 npm run norna:deploy:watch -- --timeout 20m --interval 5s
 npm run norna:deploy:watch -- --sha <commit-sha>
+npm run norna:deploy:watch -- --repo owner/name --branch main
 ```
 
-The monitor prints the run id, run URL, Actions URL, branch, commit SHA, status,
-and configured public site URL. On failures it fetches failed job details and a
-log excerpt.
+The default poll interval is 10 seconds, timeout is 15 minutes and recent-run
+limit is 10. `--workflow`, `--site-url` and `--limit` provide further one-run
+overrides; these operational values do not belong in `config.md`.
+
+The monitor prints the run id, run URL, Actions URL, branch, commit SHA, status
+and public site URL. On failures it fetches failed job details and a log
+excerpt.

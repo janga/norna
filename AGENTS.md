@@ -26,9 +26,10 @@ maintainer, put it in `README.md` instead of duplicating it here.
   when schema validation, config validation, packaging, build mechanics, or
   deploy behavior may be broken by the change. If the user explicitly says to
   skip tests, do not run them and report that they were skipped.
-- Keep technical project settings in `site/config.mjs`; do not hardcode the
-  public URL, GitHub repo, deploy branch, Pages workflow name, footer text,
-  or smooth-scroll timing in scripts or components.
+- Keep the public URL, optional language and optional smooth-scroll switch in
+  `site/config.md`. Keep engine UI text in the built-in language packs, discover
+  GitHub repository/default-branch details at deploy time, and keep footer text
+  in `site/sitewide-content.md`.
 - The site source directory defaults to `site/` and can be overridden with
   `NORNA_SITE_DIR`; use `scripts/lib/site-paths.mjs` instead of
   hardcoding site paths in scripts.
@@ -60,7 +61,7 @@ maintainer, put it in `README.md` instead of duplicating it here.
   `node bin/norna.mjs --site-dir examples/feature-demos/media-and-surfaces/site dev:local`.
   Manage it with the corresponding `dev:stop`, `dev:restart`, `dev:status`, and
   `dev:logs` commands using the same `--site-dir`.
-- Run `npm run config:check` after changing `site/config.mjs` or config
+- Run `npm run config:check` after changing `site/config.md` or config
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or
   Norna-managed images.

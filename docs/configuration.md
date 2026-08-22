@@ -1,224 +1,125 @@
 # Configuration
 
-Technical site configuration lives in the selected site's `config.mjs`; by
-default that is `site/config.mjs`. The file must default-export an object.
+Technical site configuration lives in the selected site's `config.md`; by
+default that is `site/config.md`. The file contains YAML frontmatter only.
 
-This document describes the generic configuration interface. It does not list
-the current values for any one site.
+A normal configuration needs only the public URL:
 
-## Site
+```yaml
+---
+url: https://example.com/
+---
+```
 
-### `site.url`
+Norna deliberately keeps this file small. Visual choices belong in
+`theme.md`; shared identity, banners and footer content belong in
+`sitewide-content.md`.
 
-- Purpose: canonical public URL used in the page `<link rel="canonical">`,
-  deploy monitoring output, and site-specific documentation.
-- Type: string.
+## `url`
+
+- Purpose: canonical public URL and the source of the site's deployment path.
+- Type: absolute `http` or `https` URL.
 - Required: yes.
 - Default: none.
-- Validation: non-empty absolute URL accepted by `new URL()`.
-- Consequence: wrong values render a wrong canonical URL and make deploy
-  output point at the wrong site. For GitHub Pages project sites, include the
-  repository path in the URL, for example `https://owner.github.io/repo-name/`.
+- Restrictions: no query string or fragment.
 
-Example:
+Norna adds a trailing slash when it is omitted. The URL pathname becomes the
+base path for generated links, favicons and managed images, so there is no
+separate `basePath` setting.
 
-```js
-site: {
-	url: 'https://example.com/',
-}
+Root-hosted site or custom domain:
+
+```yaml
+---
+url: https://example.com/
+---
 ```
 
-### `site.basePath`
+GitHub Pages project site:
 
-- Purpose: URL path prefix used for generated internal page links, favicons,
-  generated image URLs, and root-relative links or images written in Markdown.
-- Type: string URL path.
-- Required: no.
-- Default: `/`.
-- Validation: must start and end with `/` and must not contain whitespace,
-  `?`, `#`, or `//`.
-- Consequence: use `/` for a root site or custom domain. Use
-  `/repository-name/` for a GitHub Pages project site without a custom domain.
-  Source Markdown can still use root-relative paths such as `/favicon.svg` or
-  `/getting-started/`; Norna prefixes them during rendering.
-
-Examples:
-
-```js
-site: {
-	url: 'https://example.com/',
-	basePath: '/',
-}
+```yaml
+---
+url: https://owner.github.io/repository-name/
+---
 ```
 
-```js
-site: {
-	url: 'https://janga.github.io/norna/',
-	basePath: '/norna/',
-}
-```
+In the second example, Norna derives `/repository-name/` as the base path.
+Root-relative links written in Markdown are prefixed when rendered.
 
-## Visual Theme
+## `language`
 
-Visual configuration lives in `site/theme.md`, not `site/config.mjs`.
-
-Use [Theme](theme.md) for:
-
-- complete theme presets and focused overrides
-- `layout.pageWidth`
-- `layout.gutter`
-- `layout.density`
-- `gallery.width`
-- `gallery.maxAvailableWidthPercent`
-- `gallery.maxAvailableHeightPercent`
-- `typography.fontFamily`
-- typography presets, rhythm, and overrides
-- presentation palettes and section surfaces
-
-## Navigation
-
-### `navigation.smoothScroll`
-
-- Purpose: controls enhanced same-page anchor navigation and native
-  `scroll-behavior`.
-- Type: object.
-- Required: no; omitted fields use defaults.
-
-Fields:
-
-- `navigation.smoothScroll.enabled`: boolean, default `true`.
-- `navigation.smoothScroll.minimumDurationMs`: positive integer, default
-  `2000`.
-- `navigation.smoothScroll.maximumDurationMs`: positive integer, default
-  `4000`; must be greater than or equal to `minimumDurationMs`.
-- `navigation.smoothScroll.durationPerPixelMs`: positive number, default
-  `0.22`.
-
-When `enabled` is `false`, section links jump directly to anchors without the
-controlled animation. The no-JavaScript fallback keeps real `href="#section-id"`
-links.
-
-Example:
-
-```js
-navigation: {
-	smoothScroll: {
-		enabled: true,
-		minimumDurationMs: 600,
-		maximumDurationMs: 1_200,
-		durationPerPixelMs: 0.2,
-	},
-}
-```
-
-## Locale And UI Labels
-
-### `locale.lang`
-
-- Purpose: language tag rendered on the root `<html lang="...">` element.
-- Type: string language tag such as `en` or `sv`.
+- Purpose: language tag rendered on the root `<html lang="...">` element and
+  selection of Norna's built-in interface text.
+- Type: language tag such as `en`, `en-GB`, `sv` or `sv-SE`.
 - Required: no.
 - Default: `en`.
-- Validation: two or three letters, optionally followed by `-` separated
-  subtags.
-- Consequence: screen readers, browsers, and search engines use this to
-  interpret the page language.
 
-### `locale.labels`
+Norna currently includes interface text for English and Swedish. Regional tags
+use the language identified by their primary subtag. An unsupported language is
+an error because silently rendering English controls on another-language pages
+would be misleading.
 
-- Purpose: site-wide UI labels rendered by the engine for non-editorial
-  interface text.
-- Type: object.
-- Required: no; omitted labels use English defaults.
+Interface labels are part of the engine and are not configured individually.
+Editorial text remains in `content.md`, route content files and
+`sitewide-content.md`.
 
-Fields:
+## `smoothScroll`
 
-- `locale.labels.skipToContent`: skip-link text, default `Skip to content`.
-- `locale.labels.siteNavigation`: site-level navigation ARIA label and mobile
-  menu group heading, default `Pages`.
-- `locale.labels.pageNavigation`: current-page section navigation ARIA label and
-  mobile menu group heading, default `On this page`.
-- `locale.labels.sectionNavigation`: legacy section navigation label, default
-  `Sections`.
-- `locale.labels.menu`: mobile menu summary text, default `Menu`.
-- `locale.labels.closeMenu`: reserved close-menu label, default `Close menu`.
-- `locale.labels.dismissBanner`: banner dismissal button label, default
-  `Dismiss notice`.
-- `locale.labels.siteBanners`: ARIA label for the banner stack, default
-  `Site notices`.
-- `locale.labels.gallery`: Norna managed media ARIA label prefix, default
-  `Images`.
+- Purpose: enables smooth same-page anchor movement.
+- Type: boolean.
+- Required: no.
+- Default: `false`.
 
 Example:
 
-```js
-locale: {
-	lang: 'sv',
-	labels: {
-		skipToContent: 'Hoppa till innehåll',
-		siteNavigation: 'Sidor',
-		pageNavigation: 'På denna sida',
-		sectionNavigation: 'Sektioner',
-		menu: 'Meny',
-		gallery: 'Bilder',
-	},
-}
+```yaml
+---
+url: https://example.com/
+smoothScroll: true
+---
 ```
 
-## Sitewide Content
+Norna uses the browser's native CSS scrolling behavior rather than a scripted
+animation. Visitors whose system requests reduced motion always get immediate
+anchor movement.
 
-Shared site identity, banners and footer content are defined in
-`site/sitewide-content.md`. See [Sitewide Content](sitewide-content.md) for the
-schema and examples.
+## Complete Example
 
-## GitHub
+```yaml
+---
+url: https://example.com/
+language: en
+smoothScroll: false
+---
+```
 
-### `github.repo`
+Do not add Markdown below the closing `---`; `config.md` is frontmatter-only.
+Run `npm run norna:config:check` after changing it.
 
-- Purpose: repository used by deploy checks and deploy monitoring.
-- Type: string in `owner/name` form.
-- Required: yes.
-- Default: none.
-- Validation: non-empty string.
+## Related Files
 
-### `github.branch`
+- [`theme.md`](theme.md) selects a complete presentation preset and optional
+  focused overrides.
+- [`sitewide-content.md`](sitewide-content.md) contains shared identity,
+  banners and footer content.
+- [`content.md`](content.md) and route content files contain page content.
 
-- Purpose: deploy branch required by `norna deploy` and monitored by
-  `deploy:watch`.
-- Type: string.
-- Required: yes.
-- Default: none.
-- Validation: non-empty string.
+## Publishing Discovery
 
-### `github.pagesWorkflow`
+GitHub repository, default branch and deploy workflow are not site
+configuration fields.
 
-- Purpose: GitHub Actions workflow name used by deploy checks and
-  `deploy:watch`.
-- Type: string.
-- Required: yes.
-- Default: none.
-- Validation: non-empty string.
+`norna deploy` discovers the current GitHub repository and its default branch
+through the authenticated GitHub CLI. Norna's included workflow file is
+`.github/workflows/deploy.yml`. `deploy:watch` accepts command-line overrides
+such as `--repo`, `--branch`, `--workflow`, `--interval`, `--timeout` and
+`--limit` when a one-off run needs different values.
 
-## Deploy Watch
-
-### `deploy.watch`
-
-- Purpose: defaults for `norna deploy:watch`.
-- Type: object.
-- Required: no; omitted fields use defaults.
-
-Fields:
-
-- `deploy.watch.intervalMs`: positive integer, default `10000`.
-- `deploy.watch.timeoutMs`: positive integer, default `900000`.
-- `deploy.watch.runLimit`: positive integer, default `10`.
-
-Command-line options such as `--interval`, `--timeout`, and `--limit` can
-override these values for one run.
+See [Publishing](publishing.md) for the complete workflow.
 
 ## Site Directory Selection
 
-The site directory is not configured in `config.mjs`.
+The site directory is not configured in `config.md`.
 
 Use one of:
 
@@ -229,9 +130,9 @@ norna --site-dir my-site build
 
 If `NORNA_SITE_DIR` is set to an empty value, commands fail. Relative site
 directories are resolved by walking upward from the invocation root until the
-selected directory contains `config.mjs` and `content.md`. Absolute site
+selected directory contains `config.md` and `content.md`. Absolute site
 directories are accepted and make their parent the site project root.
 
-When no site directory is explicitly selected, the current directory itself can
-be the site directory if it contains `config.mjs` and `content.md`. If not,
+When no site directory is explicitly selected, the current directory itself
+can be the site directory if it contains `config.md` and `content.md`. If not,
 Norna walks upward looking for a default `site/` directory with those files.

@@ -18,8 +18,7 @@ npm run dev -- --kill
 
 ## Files
 
-- `site/config.mjs`: technical settings such as URL, language labels, GitHub
-  repository, and deploy workflow.
+- `site/config.md`: public URL and optional language and smooth scrolling.
 - `site/sitewide-content.md`: shared brand or logo, banners and footer content.
 - `site/theme.md`: site-wide visual settings such as layout density, typography
   rhythm, palettes, section surfaces, and typography.
@@ -45,8 +44,8 @@ GitHub Pages workflow uses `npm ci`.
    surfaces, and typography.
 5. Put any local source images in the image folder for the Markdown section
    that references them, for example `site/images/intro/`.
-6. Edit `site/config.mjs` for public URL, GitHub repository and deploy workflow
-   name.
+6. Edit `site/config.md` for the public URL and, when needed, language or smooth
+   scrolling. Deploy commands discover the GitHub repository and default branch.
 7. Update `package.json` with the site's package name and keep
    `package-lock.json` committed.
 

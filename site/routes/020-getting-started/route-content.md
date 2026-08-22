@@ -58,7 +58,7 @@ Relevant documentation:
 
 ```text
 site/
-  config.mjs
+  config.md
   theme.md
   sitewide-content.md
   content.md
@@ -85,8 +85,9 @@ banners and footer content.
 
 ### Configuration
 
-`config.mjs` contains technical settings such as public URL, base path, language
-labels and GitHub publishing configuration.
+`config.md` contains the public URL and optional language and smooth scrolling.
+Norna derives the base path from the URL and discovers GitHub repository details
+when a deploy command runs.
 
 ### Assets
 

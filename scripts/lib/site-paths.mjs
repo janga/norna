@@ -22,7 +22,10 @@ export const invocationRoot = configuredInvocationRoot
 
 const hasSiteFilesInDirectory = (siteDir) => {
 	return (
-		existsSync(path.join(siteDir, 'config.mjs'))
+		(
+			existsSync(path.join(siteDir, 'config.md'))
+			|| existsSync(path.join(siteDir, 'config.mjs'))
+		)
 		&& existsSync(path.join(siteDir, 'content.md'))
 	);
 };
@@ -114,7 +117,8 @@ const getPathLabel = (filePath) => {
 };
 
 export const siteDir = resolvedSitePaths.siteDir;
-export const siteConfigPath = path.join(siteDir, 'config.mjs');
+export const siteConfigPath = path.join(siteDir, 'config.md');
+export const legacySiteConfigPath = path.join(siteDir, 'config.mjs');
 export const siteThemePath = path.join(siteDir, 'theme.md');
 export const siteContentPath = path.join(siteDir, 'content.md');
 export const sitewideContentPath = path.join(siteDir, 'sitewide-content.md');

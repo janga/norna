@@ -4,13 +4,6 @@ import { readSitewideConfig } from './lib/sitewide-config.mjs';
 import { readThemeConfig, validateRouteThemeFiles } from './lib/theme-config.mjs';
 
 const formatErrorMessage = (error) => {
-	if (error instanceof SyntaxError) {
-		return [
-			`${siteConfigLabel} contains invalid JavaScript syntax.`,
-			error.message,
-		].join('\n');
-	}
-
 	if (error instanceof Error) {
 		return error.message;
 	}
@@ -51,9 +44,7 @@ try {
 	console.log(`Image max available height: desktop ${projectConfig.gallery.maxAvailableHeightPercent.desktop}%, mobile ${projectConfig.gallery.maxAvailableHeightPercent.mobile}%`);
 	console.log(`Font family: ${projectConfig.typography.fontFamily}`);
 	console.log(`Language: ${projectConfig.locale.lang}`);
-	console.log(`GitHub repo: ${projectConfig.github.repo}`);
-	console.log(`Deploy branch: ${projectConfig.github.branch}`);
-	console.log(`Pages workflow: ${projectConfig.github.pagesWorkflow}`);
+	console.log(`Smooth scroll: ${projectConfig.navigation.smoothScroll ? 'enabled' : 'disabled'}`);
 } catch (error) {
 	console.error('Config check failed.');
 	console.error(formatErrorMessage(error));

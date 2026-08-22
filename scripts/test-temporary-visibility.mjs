@@ -37,16 +37,9 @@ try {
 	await mkdir(path.join(siteDir, 'images', 'work'), { recursive: true });
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeFile(path.join(siteDir, 'public', 'robots.txt'), 'User-agent: *\nAllow: /\n');
-	await writeFile(path.join(siteDir, 'config.mjs'), `export default {
-	site: {
-		url: 'https://example.com/',
-	},
-	github: {
-		repo: 'owner/example',
-		branch: 'main',
-		pagesWorkflow: 'Deploy to GitHub Pages',
-	},
-};
+	await writeFile(path.join(siteDir, 'config.md'), `---
+url: https://example.com/
+---
 `);
 	await writeFile(path.join(siteDir, 'theme.md'), `---
 typography:

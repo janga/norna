@@ -2,8 +2,8 @@ import { cp, mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import documentationConfig from '../site/config.mjs';
 import { getExampleSites } from './lib/example-sites.mjs';
+import projectConfig from './lib/project-config.mjs';
 import { runInherit } from './lib/run-command.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -11,8 +11,8 @@ const cliPath = path.join(root, 'bin', 'norna.mjs');
 const distDirectory = path.join(root, 'dist');
 const temporaryDirectory = await mkdtemp(path.join(tmpdir(), 'norna-pages-'));
 const artifactDirectory = path.join(temporaryDirectory, 'artifact');
-const documentationUrl = new URL(documentationConfig.site.url);
-const documentationBasePath = documentationConfig.site.basePath;
+const documentationUrl = new URL(projectConfig.site.url);
+const documentationBasePath = projectConfig.site.basePath;
 const examples = await getExampleSites(root);
 let artifactStarted = false;
 
@@ -30,14 +30,12 @@ try {
 
 	for (const example of examples) {
 		const relativePublicPath = `examples/${example.category}/${example.name}/`;
-		const basePath = `${documentationBasePath.replace(/\/$/, '')}/${relativePublicPath}`;
 		const siteUrl = new URL(relativePublicPath, documentationUrl).href;
 
 		console.log(`\nBuilding ${example.siteLabel} for ${siteUrl}`);
 		await buildSite(example.siteLabel, {
 			...process.env,
-			NORNA_EXAMPLE_BASE_PATH: basePath,
-			NORNA_EXAMPLE_SITE_URL: siteUrl,
+			NORNA_SITE_URL: siteUrl,
 		});
 
 		const destination = path.join(artifactDirectory, relativePublicPath);
