@@ -14,7 +14,7 @@ const importScript = `
 		basePath: projectConfig.site.basePath,
 		language: projectConfig.locale.lang,
 		labels: projectConfig.locale.labels,
-		smoothScroll: projectConfig.navigation.smoothScroll,
+		scrollBehavior: projectConfig.navigation.scrollBehavior,
 		url: projectConfig.site.url,
 	}));
 `;
@@ -65,17 +65,22 @@ try {
 			siteNavigation: 'Pages',
 			skipToContent: 'Skip to content',
 		},
-		smoothScroll: false,
+		scrollBehavior: 'instant',
 		url: 'https://example.com/docs/',
 	});
 
-	const localizedSite = await createSite('localized', '---\nurl: https://example.com/\nlanguage: sv-SE\nsmoothScroll: true\n---\n');
+	const localizedSite = await createSite('localized', '---\nurl: https://example.com/\nlanguage: sv-SE\nscrollBehavior: browser-smooth\n---\n');
 	const localizedResult = loadConfig(localizedSite);
 	assert.equal(localizedResult.status, 0, localizedResult.stderr);
 	const localizedConfig = JSON.parse(localizedResult.stdout);
 	assert.equal(localizedConfig.language, 'sv-SE');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
-	assert.equal(localizedConfig.smoothScroll, true);
+	assert.equal(localizedConfig.scrollBehavior, 'browser-smooth');
+
+	const nornaSmoothSite = await createSite('norna-smooth', '---\nurl: https://example.com/\nscrollBehavior: norna-smooth\n---\n');
+	const nornaSmoothResult = loadConfig(nornaSmoothSite);
+	assert.equal(nornaSmoothResult.status, 0, nornaSmoothResult.stderr);
+	assert.equal(JSON.parse(nornaSmoothResult.stdout).scrollBehavior, 'norna-smooth');
 
 	const overrideResult = loadConfig(minimalSite, {
 		NORNA_SITE_URL: 'http://127.0.0.1:4567/preview',
@@ -105,6 +110,14 @@ try {
 	assertFailure(
 		loadConfig(await createSite('invalid-url', '---\nurl: example.com\n---\n')),
 		/url must be an absolute URL/,
+	);
+	assertFailure(
+		loadConfig(await createSite('invalid-scroll-behavior', '---\nurl: https://example.com/\nscrollBehavior: slow\n---\n')),
+		/scrollBehavior must be one of instant, browser-smooth, norna-smooth/,
+	);
+	assertFailure(
+		loadConfig(await createSite('obsolete-smooth-scroll', '---\nurl: https://example.com/\nsmoothScroll: true\n---\n')),
+		/not a valid top-level config field/,
 	);
 	assertFailure(
 		loadConfig(await createSite('legacy', 'export default {};\n', { legacy: true })),

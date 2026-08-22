@@ -260,6 +260,55 @@ a {
 	display: none;
 }
 
+.page-nav {
+	border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.page-nav ul {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0 clamp(1.4rem, 4vw, 3.25rem);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.page-nav li {
+	position: relative;
+}
+
+.page-nav li + li::before {
+	position: absolute;
+	top: 50%;
+	left: calc(clamp(1.4rem, 4vw, 3.25rem) / -2 - 0.1rem);
+	transform: translateY(-50%);
+	content: "·";
+	font-size: 0.75rem;
+	opacity: 0.28;
+}
+
+.page-nav a {
+	display: block;
+	padding: 1.05rem 0 0.95rem;
+	color: currentColor;
+	font-size: 0.76rem;
+	font-weight: 500;
+	letter-spacing: 0.08em;
+	line-height: 1.2;
+	opacity: 0.72;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+.page-nav a:hover,
+.page-nav a:focus-visible {
+	opacity: 1;
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.35em;
+}
+
 .mobile-page-nav a[aria-current='true'] {
 	opacity: 1;
 	text-decoration: underline;
@@ -1097,6 +1146,22 @@ ul {
 		display: block;
 		position: relative;
 		flex: 0 0 auto;
+	}
+
+	.page-nav ul {
+		gap: 0 1.55rem;
+		padding: 0 1rem;
+		text-align: center;
+	}
+
+	.page-nav li + li::before {
+		left: -0.95rem;
+	}
+
+	.page-nav a {
+		padding: 0.95rem 0 0.85rem;
+		font-size: 0.72rem;
+		white-space: nowrap;
 	}
 
 	.mobile-nav-menu summary {

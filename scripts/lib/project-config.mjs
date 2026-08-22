@@ -174,16 +174,6 @@ const readResponsivePercent = (object, key, path, fallback, sourceLabel = siteCo
 	});
 };
 
-const readBoolean = (object, key, fallback) => {
-	const value = object[key] ?? fallback;
-
-	if (typeof value !== 'boolean') {
-		throw new Error(`${key} must be true or false in ${siteConfigLabel}.`);
-	}
-
-	return value;
-};
-
 const readSiteUrl = (config) => {
 	const configuredValue = process.env.NORNA_SITE_URL ?? config.url;
 
@@ -259,6 +249,7 @@ const readLocale = (config) => {
 const rawConfig = assertObject(siteConfig, 'config frontmatter');
 const rawTheme = assertObject(themeConfig, 'theme frontmatter', siteThemeLabel);
 const siteUrl = readSiteUrl(rawConfig);
+const scrollBehaviorNames = ['instant', 'browser-smooth', 'norna-smooth'];
 
 const defaultFontFamily = "Arial, 'Helvetica Neue', Helvetica, sans-serif";
 const layoutDensityNames = ['compact', 'normal', 'airy'];
@@ -392,7 +383,13 @@ export const projectConfig = Object.freeze({
 	}),
 	...resolveThemeVisualConfig(rawTheme, siteThemeLabel),
 	navigation: Object.freeze({
-		smoothScroll: readBoolean(rawConfig, 'smoothScroll', false),
+		scrollBehavior: readEnum(
+			rawConfig,
+			'scrollBehavior',
+			'config frontmatter',
+			scrollBehaviorNames,
+			'instant',
+		),
 	}),
 	locale: readLocale(rawConfig),
 });

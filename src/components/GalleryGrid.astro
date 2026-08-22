@@ -1,22 +1,17 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
-import { getGeneratedImage, getImageAttributes } from '../lib/generatedImages';
-
-type GalleryImage = {
-	image: string;
-	src?: string;
-	alt?: string;
-	caption?: string;
-};
-type GalleryItem = GalleryImage | { carousel: GalleryImage[] };
-type GeneratedImageWithDimensions = NonNullable<ReturnType<typeof getGeneratedImage>> & {
-	width: number;
-	height: number;
-};
+import { getImageAttributes } from '../lib/generatedImages';
+import {
+	getCaptionId,
+	getGalleryImageSizes,
+	getImageClass,
+	getImageLoadingProps,
+	type GalleryImage,
+} from '../lib/galleryImages';
 
 interface Props {
 	title: string;
-	items: GalleryItem[];
+	images: GalleryImage[];
 	maxAvailableWidthPercent: {
 		desktop: number;
 		mobile: number;
@@ -24,229 +19,34 @@ interface Props {
 	priorityFirstImage?: boolean;
 }
 
-const { title, items, maxAvailableWidthPercent, priorityFirstImage = false } = Astro.props;
-const getCaptionId = (image: GalleryImage, itemIndex: number, imageIndex = 0) => {
-	const source = (image.src ?? image.image)
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-|-$/g, '');
-
-	return `gallery-caption-${source}-${itemIndex}-${imageIndex}`;
-};
-const galleryImageSizes = [
-	`(max-width: 700px) ${maxAvailableWidthPercent.mobile}vw`,
-	`${maxAvailableWidthPercent.desktop}vw`,
-].join(', ');
-const hasDimensions = (image: ReturnType<typeof getGeneratedImage>): image is GeneratedImageWithDimensions => (
-	Boolean(image) && Number.isFinite(image.width) && Number.isFinite(image.height)
-);
-const getImageClass = (image: GalleryImage) => {
-	const generatedImage = getGeneratedImage(image.src ?? image.image);
-	return hasDimensions(generatedImage) && generatedImage.width > generatedImage.height
-		? 'gallery-image-landscape'
-		: undefined;
-};
-const getImageLoadingProps = (isPriority: boolean) => ({
-	decoding: 'async' as const,
-	fetchpriority: isPriority ? 'high' as const : 'low' as const,
-	loading: isPriority ? 'eager' as const : 'lazy' as const,
-});
-const getCarouselAspectRatio = (images: GalleryImage[]) => {
-	const ratios = images
-		.map((image) => getGeneratedImage(image.src ?? image.image))
-		.filter(hasDimensions)
-		.map((image) => image.width / image.height);
-
-	return ratios.length > 0 ? Math.min(...ratios) : null;
-};
+const { title, images, maxAvailableWidthPercent, priorityFirstImage = false } = Astro.props;
+const galleryImageSizes = getGalleryImageSizes(maxAvailableWidthPercent);
 ---
 
 <div class="gallery" aria-label={`${projectConfig.locale.labels.gallery}: ${title}`}>
-	{items.map((item, itemIndex) => {
+	{images.map((image, itemIndex) => {
 		const isPriorityItem = priorityFirstImage && itemIndex === 0;
-
-		if ('image' in item) {
-			const captionId = item.caption ? getCaptionId(item, itemIndex) : undefined;
-
-			return (
-				<figure class="gallery-item">
-					<div class="gallery-image-frame">
-						<img
-							{...getImageAttributes(item.src ?? item.image, galleryImageSizes)}
-							class:list={['gallery-image', getImageClass(item)]}
-							alt={item.alt ?? ''}
-							aria-describedby={captionId}
-							{...getImageLoadingProps(isPriorityItem)}
-						/>
-					</div>
-					{item.caption && (
-						<figcaption class="gallery-meta" id={captionId}>
-							<div class="gallery-details">
-								<span>{item.caption}</span>
-							</div>
-						</figcaption>
-					)}
-				</figure>
-			);
-		}
-
-		const carouselAspectRatio = getCarouselAspectRatio(item.carousel);
-		const carouselStyle = carouselAspectRatio
-			? `--gallery-carousel-aspect-ratio: ${carouselAspectRatio}`
-			: undefined;
+		const captionId = image.caption ? getCaptionId(image, itemIndex) : undefined;
 
 		return (
-			<section
-				class="gallery-item gallery-carousel"
-				data-carousel
-				tabindex="0"
-				role="group"
-				aria-roledescription="carousel"
-				aria-label={`${title}, bildkarusell`}
-				style={carouselStyle}
-			>
-				<div class="gallery-carousel-stage">
-					<div class="gallery-carousel-viewport" data-carousel-viewport>
-						<div class="gallery-carousel-slides">
-							{item.carousel.map((image, imageIndex) => {
-								const captionId = image.caption ? getCaptionId(image, itemIndex, imageIndex) : undefined;
-
-								return (
-									<figure class="gallery-carousel-slide" data-carousel-slide>
-										<div class="gallery-carousel-image-frame">
-											<img
-												{...getImageAttributes(image.src ?? image.image, galleryImageSizes)}
-												class:list={['gallery-image', getImageClass(image)]}
-												alt={image.alt ?? ''}
-												aria-describedby={captionId}
-												{...getImageLoadingProps(isPriorityItem && imageIndex === 0)}
-											/>
-										</div>
-									</figure>
-								);
-							})}
+			<figure class="gallery-item">
+				<div class="gallery-image-frame">
+					<img
+						{...getImageAttributes(image.src ?? image.image, galleryImageSizes)}
+						class:list={['gallery-image', getImageClass(image)]}
+						alt={image.alt ?? ''}
+						aria-describedby={captionId}
+						{...getImageLoadingProps(isPriorityItem)}
+					/>
+				</div>
+				{image.caption && (
+					<figcaption class="gallery-meta" id={captionId}>
+						<div class="gallery-details">
+							<span>{image.caption}</span>
 						</div>
-					</div>
-					<button
-						class="gallery-carousel-button gallery-carousel-button-previous"
-						type="button"
-						data-carousel-previous
-						aria-label="Föregående bild"
-						title="Föregående bild"
-					>
-						<span aria-hidden="true">‹</span>
-					</button>
-					<button
-						class="gallery-carousel-button gallery-carousel-button-next"
-						type="button"
-						data-carousel-next
-						aria-label="Nästa bild"
-						title="Nästa bild"
-					>
-						<span aria-hidden="true">›</span>
-					</button>
-					<output class="gallery-carousel-position" data-carousel-position aria-live="polite">
-						1 / {item.carousel.length}
-					</output>
-				</div>
-				<div class="gallery-carousel-captions" data-carousel-captions>
-					{item.carousel.map((image, imageIndex) => (
-						image.caption && (
-							<p
-								class="gallery-meta gallery-carousel-caption"
-								id={getCaptionId(image, itemIndex, imageIndex)}
-								data-carousel-caption
-								data-carousel-caption-index={imageIndex}
-							>
-								<span class="gallery-details">
-									<span>{image.caption}</span>
-								</span>
-							</p>
-						)
-					))}
-				</div>
-			</section>
+					</figcaption>
+				)}
+			</figure>
 		);
 	})}
 </div>
-
-<script>
-	import EmblaCarousel from 'embla-carousel';
-
-	const carouselSelector = '[data-carousel]';
-
-	const initializeCarousel = (carousel: HTMLElement) => {
-		const viewport = carousel.querySelector<HTMLElement>('[data-carousel-viewport]');
-		const previous = carousel.querySelector<HTMLButtonElement>('[data-carousel-previous]');
-		const next = carousel.querySelector<HTMLButtonElement>('[data-carousel-next]');
-		const position = carousel.querySelector<HTMLOutputElement>('[data-carousel-position]');
-		const captions = Array.from(carousel.querySelectorAll<HTMLElement>('[data-carousel-caption]'));
-		const slides = Array.from(carousel.querySelectorAll<HTMLElement>('[data-carousel-slide]'));
-		if (!viewport || !previous || !next || !position || slides.length < 2) return;
-
-		let controlsTimeout: number | undefined;
-		const showControls = () => {
-			carousel.classList.add('is-interacting');
-			window.clearTimeout(controlsTimeout);
-			controlsTimeout = window.setTimeout(() => {
-				carousel.classList.remove('is-interacting');
-			}, 1600);
-		};
-
-		carousel.dataset.carouselReady = 'true';
-
-		const embla = EmblaCarousel(viewport, {
-			align: 'start',
-			containScroll: false,
-			loop: true,
-		});
-
-		const update = () => {
-			const activeIndex = embla.selectedScrollSnap();
-			slides.forEach((slide, index) => {
-				const isSelected = index === activeIndex;
-				slide.classList.toggle('is-active', isSelected);
-				slide.setAttribute('aria-hidden', String(!isSelected));
-			});
-			captions.forEach((caption) => {
-				const isSelected = Number(caption.dataset.carouselCaptionIndex) === activeIndex;
-				caption.classList.toggle('is-active', isSelected);
-				caption.setAttribute('aria-hidden', String(!isSelected));
-			});
-			previous.disabled = false;
-			next.disabled = false;
-			position.textContent = `${activeIndex + 1} / ${slides.length}`;
-		};
-
-		previous.addEventListener('click', () => {
-			showControls();
-			embla.scrollPrev();
-		});
-		next.addEventListener('click', () => {
-			showControls();
-			embla.scrollNext();
-		});
-		carousel.addEventListener('focusin', showControls);
-		carousel.addEventListener('pointerdown', showControls);
-		carousel.addEventListener('keydown', (event) => {
-			if (event.key === 'ArrowLeft') {
-				event.preventDefault();
-				showControls();
-				embla.scrollPrev();
-			}
-			if (event.key === 'ArrowRight') {
-				event.preventDefault();
-				showControls();
-				embla.scrollNext();
-			}
-		});
-		embla.on('select', () => {
-			showControls();
-			update();
-		});
-		embla.on('reInit', update);
-		update();
-	};
-
-	document.querySelectorAll<HTMLElement>(carouselSelector).forEach(initializeCarousel);
-</script>

@@ -1,0 +1,250 @@
+<script>
+	const siteTop = document.querySelector<HTMLElement>('.site-top');
+	const sections = Array.from(document.querySelectorAll<HTMLElement>('.site-section'));
+	const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.site-nav-submenu a, .mobile-page-nav a, .page-nav a'));
+	const mobileMenu = document.querySelector<HTMLDetailsElement>('.mobile-nav-menu');
+	const anchorCorrectionDelays = [120, 320, 700, 1_000, 2_000];
+	const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+	const minimumScrollDuration = 700;
+	const maximumScrollDuration = 1_800;
+	const scrollDurationPerPixel = 0.18;
+	const scrollInterruptEvents = ['wheel', 'touchstart'];
+	const scrollInterruptKeys = new Set(['ArrowDown', 'ArrowUp', 'End', 'Home', 'PageDown', 'PageUp', ' ']);
+	let activeScrollAnimation: { cancel: () => void } | null = null;
+	let anchorCorrectionToken = 0;
+
+	if ('scrollRestoration' in history) {
+		history.scrollRestoration = 'manual';
+	}
+
+	const setAnchorOffset = () => {
+		if (!siteTop) return;
+
+		const offset = Math.ceil(siteTop.getBoundingClientRect().height);
+		document.documentElement.style.setProperty('--site-top-anchor-offset', `${offset}px`);
+		return offset;
+	};
+
+	const getSectionFromHash = (hash: string) => {
+		const id = hash.replace(/^#/, '');
+		return sections.find((section) => section.id === id);
+	};
+
+	const getSectionHeading = (section?: HTMLElement) => section?.querySelector<HTMLElement>('h1, h2');
+
+	const cancelActiveScroll = () => {
+		activeScrollAnimation?.cancel();
+		activeScrollAnimation = null;
+	};
+
+	const getHashSection = () => getSectionFromHash(window.location.hash);
+
+	const setHash = (targetHash: string) => {
+		if (window.location.hash !== targetHash) {
+			history.pushState(null, '', targetHash);
+		}
+	};
+
+	const closeMobileMenu = () => {
+		if (mobileMenu) mobileMenu.open = false;
+	};
+
+	const getSectionScrollTop = (section?: HTMLElement) => {
+		const heading = getSectionHeading(section);
+		if (!heading) return;
+
+		const offset = setAnchorOffset();
+		if (offset === undefined) return;
+
+		return Math.max(0, heading.getBoundingClientRect().top + window.scrollY - offset);
+	};
+
+	const jumpTo = (top: number) => {
+		cancelActiveScroll();
+
+		const root = document.documentElement;
+		const previousScrollBehavior = root.style.scrollBehavior;
+		root.style.scrollBehavior = 'auto';
+		window.scrollTo(0, top);
+		root.style.scrollBehavior = previousScrollBehavior;
+	};
+
+	const getScrollDuration = (distance: number) => {
+		if (reduceMotionQuery.matches) return 0;
+
+		return Math.min(
+			maximumScrollDuration,
+			Math.max(minimumScrollDuration, Math.abs(distance) * scrollDurationPerPixel),
+		);
+	};
+
+	const easeInOutCubic = (progress: number) => (
+		progress < 0.5
+			? 4 * progress * progress * progress
+			: 1 - Math.pow(-2 * progress + 2, 3) / 2
+	);
+
+	const animateScrollTo = (
+		target: number | (() => number | undefined),
+		{ duration, onComplete }: { duration?: number; onComplete?: () => void } = {},
+	) => {
+		cancelActiveScroll();
+
+		const getTop = typeof target === 'function' ? target : () => target;
+		let latestTop = getTop();
+		if (latestTop === undefined) return 0;
+
+		const startY = window.scrollY;
+		const scrollDuration = duration ?? getScrollDuration(latestTop - startY);
+
+		if (scrollDuration <= 0) {
+			const top = getTop();
+			if (top === undefined) return 0;
+
+			jumpTo(top);
+			onComplete?.();
+			return 0;
+		}
+
+		const root = document.documentElement;
+		const previousScrollBehavior = root.style.scrollBehavior;
+		const startedAt = performance.now();
+		let frameId = 0;
+		const state = { cancel: () => {} };
+
+		const cleanup = () => {
+			scrollInterruptEvents.forEach((eventName) => {
+				window.removeEventListener(eventName, interruptScroll);
+			});
+			window.removeEventListener('keydown', interruptScrollKey);
+			root.style.scrollBehavior = previousScrollBehavior;
+			delete root.dataset.nornaScrollActive;
+
+			if (activeScrollAnimation === state) {
+				activeScrollAnimation = null;
+			}
+		};
+
+		const cancel = () => {
+			if (frameId) cancelAnimationFrame(frameId);
+			cleanup();
+		};
+
+		const interruptScroll = () => cancel();
+		const interruptScrollKey = (event: KeyboardEvent) => {
+			if (scrollInterruptKeys.has(event.key)) interruptScroll();
+		};
+
+		const step = (now: number) => {
+			const progress = Math.min(1, (now - startedAt) / scrollDuration);
+			const top = getTop();
+			if (top !== undefined) latestTop = top;
+
+			window.scrollTo(0, startY + (latestTop - startY) * easeInOutCubic(progress));
+
+			if (progress >= 1) {
+				window.scrollTo(0, latestTop);
+				cleanup();
+				onComplete?.();
+				return;
+			}
+
+			frameId = requestAnimationFrame(step);
+		};
+
+		state.cancel = cancel;
+		activeScrollAnimation = state;
+		root.style.scrollBehavior = 'auto';
+		root.dataset.nornaScrollActive = 'true';
+		scrollInterruptEvents.forEach((eventName) => {
+			window.addEventListener(eventName, interruptScroll, { passive: true });
+		});
+		window.addEventListener('keydown', interruptScrollKey);
+		frameId = requestAnimationFrame(step);
+
+		return scrollDuration;
+	};
+
+	const scrollToSection = (
+		section: HTMLElement,
+		{ animate = true, duration, onComplete }: { animate?: boolean; duration?: number; onComplete?: () => void } = {},
+	) => {
+		const top = getSectionScrollTop(section);
+		if (top === undefined) return 0;
+
+		return animate
+			? animateScrollTo(() => getSectionScrollTop(section), { duration, onComplete })
+			: (jumpTo(top), onComplete?.(), 0);
+	};
+
+	const correctCurrentHashAnchor = () => {
+		if (activeScrollAnimation) return;
+
+		const section = getHashSection();
+		if (section) scrollToSection(section, { animate: false });
+	};
+
+	const scheduleHashAnchorCorrection = () => {
+		if (!window.location.hash) return;
+
+		anchorCorrectionToken += 1;
+		const token = anchorCorrectionToken;
+
+		anchorCorrectionDelays.forEach((delay) => {
+			window.setTimeout(() => {
+				if (token === anchorCorrectionToken) requestAnimationFrame(correctCurrentHashAnchor);
+			}, delay);
+		});
+	};
+
+	const syncToLocation = ({ scrollHashlessTop = false } = {}) => {
+		const section = getHashSection();
+
+		if (section) {
+			scrollToSection(section, { animate: false });
+			scheduleHashAnchorCorrection();
+			return;
+		}
+
+		if (scrollHashlessTop) jumpTo(0);
+	};
+
+	links.forEach((link) => {
+		link.addEventListener('click', (event) => {
+			const linkUrl = new URL(link.href, window.location.href);
+			if (linkUrl.pathname !== window.location.pathname) return;
+
+			const section = getSectionFromHash(linkUrl.hash);
+			if (!section) return;
+
+			const top = getSectionScrollTop(section);
+			if (top === undefined) return;
+
+			event.preventDefault();
+			const duration = getScrollDuration(top - window.scrollY);
+
+			setHash(linkUrl.hash);
+			closeMobileMenu();
+			if (event.detail > 0) link.blur();
+
+			scrollToSection(section, {
+				duration,
+				onComplete: scheduleHashAnchorCorrection,
+			});
+		});
+	});
+
+	setAnchorOffset();
+	requestAnimationFrame(() => syncToLocation());
+
+	if (siteTop && 'ResizeObserver' in window) {
+		new ResizeObserver(setAnchorOffset).observe(siteTop);
+	}
+
+	window.addEventListener('resize', setAnchorOffset);
+	window.addEventListener('load', scheduleHashAnchorCorrection);
+	window.addEventListener('hashchange', () => syncToLocation({ scrollHashlessTop: true }));
+	window.addEventListener('popstate', () => syncToLocation({ scrollHashlessTop: true }));
+
+	window.visualViewport?.addEventListener('resize', setAnchorOffset);
+</script>

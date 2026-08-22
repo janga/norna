@@ -44,7 +44,7 @@ try {
 	console.log(`Image max available height: desktop ${projectConfig.gallery.maxAvailableHeightPercent.desktop}%, mobile ${projectConfig.gallery.maxAvailableHeightPercent.mobile}%`);
 	console.log(`Font family: ${projectConfig.typography.fontFamily}`);
 	console.log(`Language: ${projectConfig.locale.lang}`);
-	console.log(`Smooth scroll: ${projectConfig.navigation.smoothScroll ? 'enabled' : 'disabled'}`);
+	console.log(`Scroll behavior: ${projectConfig.navigation.scrollBehavior}`);
 } catch (error) {
 	console.error('Config check failed.');
 	console.error(formatErrorMessage(error));

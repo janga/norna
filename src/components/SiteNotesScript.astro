@@ -1,0 +1,43 @@
+<script>
+	const noteParts = Array.from(document.querySelectorAll<HTMLElement>('[data-note-id]'));
+	const noteReferences = noteParts.filter((part) => part.matches('.section-note-ref a'));
+	const marginNotes = noteParts.filter((part) => part.matches('.section-note'));
+
+	const setNoteState = (noteId: string, active: boolean) => {
+		noteParts
+			.filter((part) => part.dataset.noteId === noteId)
+			.forEach((part) => part.classList.toggle('is-referenced', active));
+	};
+
+	noteParts.forEach((part) => {
+		const noteId = part.dataset.noteId;
+		if (!noteId) return;
+
+		part.addEventListener('pointerenter', () => setNoteState(noteId, true));
+		part.addEventListener('pointerleave', () => setNoteState(noteId, false));
+		part.addEventListener('focusin', () => setNoteState(noteId, true));
+		part.addEventListener('focusout', () => setNoteState(noteId, false));
+	});
+
+	const alignMarginNotes = () => {
+		const wideLayout = window.matchMedia('(min-width: 1101px)').matches;
+		if (!wideLayout) {
+			marginNotes.forEach((note) => note.style.removeProperty('--section-note-offset'));
+			return;
+		}
+
+		marginNotes.forEach((note) => {
+			const noteId = note.dataset.noteId;
+			const reference = noteReferences.find((part) => part.dataset.noteId === noteId);
+			if (!noteId || !reference) return;
+
+			note.style.removeProperty('--section-note-offset');
+			const offset = reference.getBoundingClientRect().top - note.getBoundingClientRect().top;
+			note.style.setProperty('--section-note-offset', `${Math.max(0, offset)}px`);
+		});
+	};
+
+	alignMarginNotes();
+	window.addEventListener('resize', alignMarginNotes);
+	document.fonts?.ready.then(alignMarginNotes);
+</script>

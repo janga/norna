@@ -1,0 +1,14 @@
+<script>
+	const mobileMenu = document.querySelector<HTMLDetailsElement>('.mobile-nav-menu');
+	const sectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.mobile-page-nav a'));
+
+	sectionLinks.forEach((link) => {
+		link.addEventListener('click', (event) => {
+			const linkUrl = new URL(link.href, window.location.href);
+			if (linkUrl.pathname !== window.location.pathname) return;
+
+			if (mobileMenu) mobileMenu.open = false;
+			if (event.detail > 0) link.blur();
+		});
+	});
+</script>

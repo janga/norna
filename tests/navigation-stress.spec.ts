@@ -3,6 +3,7 @@ import { expect, type Page, test } from '@playwright/test';
 const mobileViewport = { width: 393, height: 852 };
 const alternateViewportHeights = [852, 780, 900, 812];
 const hiddenHeadingTolerance = -4;
+const testPagePath = '/media/';
 const getClickRounds = () => {
 	const rounds = Number.parseInt(process.env.NAVIGATION_STRESS_RUNS ?? '10', 10);
 	return Number.isFinite(rounds) && rounds > 0 ? rounds : 10;
@@ -35,13 +36,17 @@ type AnchorMeasurement = {
 const mobilePageNavSelector = '.mobile-page-nav a';
 
 const getNavTargets = async (page: Page): Promise<NavTarget[]> => page.locator(mobilePageNavSelector).evaluateAll((links) => (
-	links.map((link) => ({
-		hash: link.getAttribute('href') ?? '',
-		label: link.textContent?.trim() ?? '',
-	})).filter((link) => link.hash.startsWith('#'))
+	links.map((link) => {
+		const url = new URL(link.href, window.location.href);
+		return {
+			hash: url.hash,
+			label: link.textContent?.trim() ?? '',
+			pathname: url.pathname,
+		};
+	}).filter((link) => link.pathname === window.location.pathname && link.hash.startsWith('#'))
 ));
 
-const openSite = async (page: Page, path = '/') => {
+const openSite = async (page: Page, path = testPagePath) => {
 	await page.goto(path, { waitUntil: 'domcontentloaded' });
 	await page.locator(mobilePageNavSelector).first().waitFor({ state: 'attached' });
 	await page.waitForLoadState('networkidle').catch(() => {});
@@ -56,6 +61,11 @@ const clickSectionLink = async (page: Page, hash: string) => {
 };
 
 const waitForScrollToSettle = async (page: Page) => {
+	await page.waitForFunction(
+		() => document.documentElement.dataset.nornaScrollActive !== 'true',
+		undefined,
+		{ timeout: 7_000 },
+	);
 	await page.evaluate(() => new Promise<void>((resolve) => {
 		let previousY = window.scrollY;
 		let stableFrames = 0;
@@ -135,6 +145,7 @@ test('repeated mobile nav clicks keep headings below the sticky navigation', asy
 
 	await openSite(page);
 	const targets = await getNavTargets(page);
+	if (targets.length < 3) throw new Error('The fixture must provide at least three navigation targets.');
 
 	for (let round = 0; round < clickRounds; round += 1) {
 		for (const target of targets) {
@@ -155,13 +166,14 @@ test('mobile hash deep links keep headings below the sticky navigation', async (
 
 	await openSite(page);
 	const targets = await getNavTargets(page);
+	if (targets.length < 3) throw new Error('The fixture must provide at least three navigation targets.');
 
 	for (let round = 0; round < hashLoadRounds; round += 1) {
 		for (const target of targets) {
 			const targetIndex = targets.indexOf(target);
 			const viewportHeight = alternateViewportHeights[(round + targetIndex) % alternateViewportHeights.length];
 			await page.setViewportSize({ width: mobileViewport.width, height: viewportHeight });
-			await openSite(page, `/${target.hash}`);
+			await openSite(page, `${testPagePath}${target.hash}`);
 			await waitForScrollToSettle(page);
 
 			expectAnchorMeasurement(await measureAnchor(page, target, round));

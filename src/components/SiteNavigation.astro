@@ -3,6 +3,8 @@ import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
 import type { SitePage } from '../lib/sitePages';
+import MobileSectionNavigationScript from './MobileSectionNavigationScript.astro';
+import NornaSmoothScrollScript from './NornaSmoothScrollScript.astro';
 
 type FrameColors = {
 	backgroundColor: string;
@@ -41,12 +43,19 @@ const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
 const sectionHref = (page: SitePage, section: SectionNavigation) => `${pageHref(page)}#${section.id}`;
 const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
+const showSinglePageSectionNavigation = Boolean(
+	!showSiteNavigation && currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
+);
+const hasCurrentPageSectionMenu = Boolean(
+	showSiteNavigation && currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
+);
+const useNornaSmoothScroll = projectConfig.navigation.scrollBehavior === 'norna-smooth';
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
 
 <header
-	class:list={['site-top', { 'site-top-has-site-nav': showNavigationRow }]}
+	class:list={['site-top', { 'site-top-has-site-nav': showSiteNavigation }]}
 	style={navigationStyle}
 >
 	{showNavigationRow && (
@@ -100,13 +109,13 @@ const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.lengt
 						</ul>
 					</nav>
 
-					{currentPageNavigation && hasSectionMenu(currentPageNavigation.sections) && (
+					{currentPageNavigation && hasCurrentPageSectionMenu && (
 						<nav class="mobile-page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
 							<h2>{projectConfig.locale.labels.pageNavigation}</h2>
 							<ul>
-								{currentPageNavigation.sections.map((section, index) => (
+								{currentPageNavigation.sections.map((section) => (
 									<li>
-										<a href={sectionHref(currentPage, section)} aria-current={index === 0 ? 'true' : undefined}>
+										<a href={sectionHref(currentPage, section)}>
 											{section.title}
 										</a>
 									</li>
@@ -119,84 +128,20 @@ const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.lengt
 		</div>
 	)}
 
+	{showSinglePageSectionNavigation && currentPageNavigation && (
+		<nav class="page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
+			<ul>
+				{currentPageNavigation.sections.map((section) => (
+					<li>
+						<a href={`#${section.id}`}>{section.title}</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+	)}
+
 </header>
 
-<script>
-	const siteTop = document.querySelector('.site-top');
-	const sections = Array.from(document.querySelectorAll('.site-section'));
-	const links = Array.from(document.querySelectorAll('.site-nav-submenu a, .mobile-page-nav a'));
-	const mobileMenu = document.querySelector('.mobile-nav-menu');
-	let activeSectionId = null;
-
-	const setAnchorOffset = () => {
-		if (!(siteTop instanceof HTMLElement)) return;
-
-		const offset = Math.ceil(siteTop.getBoundingClientRect().height);
-		document.documentElement.style.setProperty('--site-top-anchor-offset', `${offset}px`);
-	};
-
-	const getSectionFromHash = (hash) => {
-		const id = hash.replace(/^#/, '');
-		return sections.find((section) => section.id === id);
-	};
-
-	const setActiveSection = (section) => {
-		if (!section) return;
-		if (activeSectionId === section.id) return;
-
-		activeSectionId = section.id;
-
-		links.forEach((link) => {
-			const linkUrl = new URL(link.href, window.location.href);
-			const isCurrentPageLink = linkUrl.pathname === window.location.pathname;
-			const isActive = isCurrentPageLink && linkUrl.hash === `#${section.id}`;
-			if (isActive) {
-				link.setAttribute('aria-current', 'true');
-			} else {
-				link.removeAttribute('aria-current');
-			}
-		});
-	};
-
-	const closeMobileMenu = () => {
-		if (mobileMenu instanceof HTMLDetailsElement) {
-			mobileMenu.open = false;
-			setAnchorOffset();
-		}
-	};
-
-	const syncActiveSection = () => {
-		setActiveSection(getSectionFromHash(window.location.hash) ?? sections[0]);
-	};
-
-	links.forEach((link) => {
-		link.addEventListener('click', (event) => {
-			const linkUrl = new URL(link.href, window.location.href);
-			if (linkUrl.pathname !== window.location.pathname) return;
-
-			const section = getSectionFromHash(linkUrl.hash);
-			if (!(section instanceof HTMLElement)) return;
-
-			setActiveSection(section);
-			closeMobileMenu();
-			if (event.detail > 0 && link instanceof HTMLElement) {
-				link.blur();
-			}
-		});
-	});
-
-	setAnchorOffset();
-	syncActiveSection();
-
-	if (siteTop instanceof HTMLElement && 'ResizeObserver' in window) {
-		new ResizeObserver(setAnchorOffset).observe(siteTop);
-	}
-
-	window.addEventListener('resize', setAnchorOffset);
-	window.addEventListener('hashchange', syncActiveSection);
-	window.addEventListener('popstate', syncActiveSection);
-
-	if (window.visualViewport) {
-		window.visualViewport.addEventListener('resize', setAnchorOffset);
-	}
-</script>
+{useNornaSmoothScroll
+	? <NornaSmoothScrollScript />
+	: hasCurrentPageSectionMenu && <MobileSectionNavigationScript />}
