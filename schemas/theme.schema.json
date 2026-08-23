@@ -27,7 +27,7 @@
           "description": "For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis."
         }
       ],
-      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#theme-presets)"
+      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.15/docs/theme.md#theme-presets)"
     },
     "layout": {
       "type": "object",
@@ -278,7 +278,7 @@
       },
       "additionalProperties": false,
       "description": "Optional layout overrides applied after the preset.",
-      "markdownDescription": "```yaml\nlayout:\n  density: compact\n  pageWidth: 72rem\n```\n\nOverrides page width, gutters and structural spacing after the selected preset.\n\n[Layout reference](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#layout)"
+      "markdownDescription": "```yaml\nlayout:\n  density: compact\n  pageWidth: 72rem\n```\n\nOverrides page width, gutters and structural spacing after the selected preset.\n\n[Layout reference](https://github.com/janga/norna/blob/v0.7.15/docs/theme.md#layout)"
     },
     "images": {
       "type": "object",
@@ -355,7 +355,7 @@
       },
       "additionalProperties": false,
       "description": "Optional defaults for managed image presentation.",
-      "markdownDescription": "```yaml\nimages:\n  width: 900px\n  maxAvailableHeightPercent: 74\n```\n\nOverrides the available width and height used by Norna-managed images.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#image-sizing)"
+      "markdownDescription": "```yaml\nimages:\n  width: 900px\n  maxAvailableHeightPercent: 74\n```\n\nOverrides the available width and height used by Norna-managed images.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.15/docs/theme.md#image-sizing)"
     },
     "typography": {
       "type": "object",
@@ -1128,7 +1128,7 @@
       },
       "additionalProperties": false,
       "description": "Typography profile, rhythm, font family, and focused overrides.",
-      "markdownDescription": "```yaml\ntypography:\n  profile: reading\n  rhythm: normal\n```\n\nOverrides the preset's font stack, typography profile, rhythm or individual text settings.\n\n[Typography configuration reference](https://github.com/janga/norna/blob/v0.7.14/docs/typography.md#configuration-shape)"
+      "markdownDescription": "```yaml\ntypography:\n  profile: reading\n  rhythm: normal\n```\n\nOverrides the preset's font stack, typography profile, rhythm or individual text settings.\n\n[Typography configuration reference](https://github.com/janga/norna/blob/v0.7.15/docs/typography.md#configuration-shape)"
     },
     "palette": {
       "type": "string",
@@ -1150,7 +1150,7 @@
           "description": "Warm off-white surfaces with dark text."
         }
       ],
-      "markdownDescription": "```yaml\npalette: paper\n```\n\nChooses a coordinated color system for the page frame, navigation, footer and section surfaces.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#palette-and-section-surfaces)",
+      "markdownDescription": "```yaml\npalette: paper\n```\n\nChooses a coordinated color system for the page frame, navigation, footer and section surfaces.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.15/docs/theme.md#palette-and-section-surfaces)",
       "examples": [
         "dark",
         "light",
@@ -1183,7 +1183,7 @@
           }
         ]
       },
-      "markdownDescription": "```yaml\nsectionSurfaces: [base, soft, emphasis]\n```\n\nLists one to three semantic surfaces. Norna cycles through them in section order; omit this field to keep the preset sequence.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#palette-and-section-surfaces)",
+      "markdownDescription": "```yaml\nsectionSurfaces: [base, soft, emphasis]\n```\n\nLists one to three semantic surfaces. Norna cycles through them in section order; omit this field to keep the preset sequence.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.15/docs/theme.md#palette-and-section-surfaces)",
       "examples": [
         [
           "base"
@@ -1204,5 +1204,5 @@
   "description": "Visual settings for a site or route. A route theme replaces the inherited visual theme; site identity remains site-wide.",
   "$id": "https://janga.github.io/norna/schemas/theme.schema.json",
   "title": "Norna visual theme",
-  "markdownDescription": "```yaml\npreset: documentation\n```\n\nChoose one complete preset first. Add focused overrides only when the site needs to differ from it.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md)"
+  "markdownDescription": "```yaml\npreset: documentation\n```\n\nChoose one complete preset first. Add focused overrides only when the site needs to differ from it.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.15/docs/theme.md)"
 }

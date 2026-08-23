@@ -2,7 +2,7 @@
   "name": "@janga/norna",
   "description": "An opinionated CLI for building responsive websites from Markdown, images, and theme presets.",
   "type": "module",
-  "version": "0.7.14",
+  "version": "0.7.15",
   "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
