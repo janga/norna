@@ -39,6 +39,11 @@ approachable before wider use.
   profile in `site/theme.yaml` without losing the complete theme-preset model.
 - Document the recommended site-upgrade workflow after a new engine version is
   published.
+- Turn the release section in `docs/engine-development.md` into a concise
+  maintainer runbook covering patch/minor/major releases, the steps performed
+  automatically, rollback before the release commit, and recovery after a
+  failed publish. Add a discoverability link from `docs/README.md` without
+  duplicating the instructions.
 - Document IntelliSense suggestion sources for Norna YAML files. Explain that
   schema-based completions come from Norna's project-local schemas, while VS
   Code word suggestions and AI extensions may offer unrelated or invalid
