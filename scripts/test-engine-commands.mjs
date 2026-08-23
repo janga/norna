@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promi
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { getShortGitStatusPath, parseShortGitStatus } from './lib/git-status.mjs';
 import { typographyProfiles, typographyRhythms } from './lib/typography.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -18,6 +19,10 @@ const runCli = (args, options = {}) => spawnSync(process.execPath, [cliPath, ...
 });
 
 try {
+	const releaseStatus = parseShortGitStatus(' M package-lock.json\n M schemas/theme.schema.json\n');
+	assert.deepEqual(releaseStatus, [' M package-lock.json', ' M schemas/theme.schema.json']);
+	assert.equal(getShortGitStatusPath(releaseStatus[0]), 'package-lock.json');
+
 	const versionResult = runCli(['engine:version']);
 	assert.equal(versionResult.status, 0, versionResult.stderr || versionResult.stdout);
 	assert.match(versionResult.stdout, /norna engine:version/);

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { execFile } from 'node:child_process';
+import { getShortGitStatusPath, parseShortGitStatus } from './lib/git-status.mjs';
 import { runInherit } from './lib/run-command.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -31,10 +32,8 @@ const releasePaths = ['package.json', 'package-lock.json', 'schemas'];
 
 const getWorktreeChanges = async () => {
 	const { stdout } = await execFileAsync('git', ['status', '--short'], { cwd: repoRoot });
-	return stdout.trim() ? stdout.trim().split('\n') : [];
+	return parseShortGitStatus(stdout);
 };
-
-const getStatusPath = (line) => line.slice(3).split(' -> ').at(-1);
 
 const isReleasePath = (filePath) => (
 	filePath === 'package.json'
@@ -45,12 +44,12 @@ const isReleasePath = (filePath) => (
 
 const assertOnlyReleaseChanges = async () => {
 	const changes = await getWorktreeChanges();
-	const unexpected = changes.filter((line) => !isReleasePath(getStatusPath(line)));
+	const unexpected = changes.filter((line) => !isReleasePath(getShortGitStatusPath(line)));
 	if (unexpected.length > 0) {
 		throw new Error(`Release checks changed unexpected files:\n${unexpected.join('\n')}`);
 	}
 	for (const requiredPath of ['package.json', 'package-lock.json']) {
-		if (!changes.some((line) => getStatusPath(line) === requiredPath)) {
+		if (!changes.some((line) => getShortGitStatusPath(line) === requiredPath)) {
 			throw new Error(`Release preparation did not update ${requiredPath}.`);
 		}
 	}
