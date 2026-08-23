@@ -36,7 +36,7 @@ case-insensitive file systems.
 | --- | --- | --- |
 | `config.yaml` | Yes | Public URL, language, and browser scroll behavior. |
 | `theme.yaml` | Yes | Complete visual preset and optional focused overrides. |
-| `sitewide-content.yaml` | No | Shared navigation identity, banners, and footer. |
+| `sitewide-content.yaml` | No | Shared logo display settings, banners, and footer. |
 | `content.md` | Yes | Homepage metadata, sections, prose, and Norna blocks. |
 
 These responsibilities are deliberately separate:
@@ -51,7 +51,8 @@ These responsibilities are deliberately separate:
   Markdown with YAML frontmatter.
 
 Routes cannot provide `config.yaml` or `sitewide-content.yaml`. Technical
-configuration and shared identity have one site-wide source.
+configuration and shared logo, banner, and footer settings have one site-wide
+source.
 
 ## Images
 
@@ -91,8 +92,9 @@ URL. See [Routes](routes.md) for exact directory-name and route-id rules.
 names are site-owned, but Norna recognizes a small set of exact conventional
 filenames for the navigation logo and browser icons.
 
-See [Public Files](public-files.md) for logo and favicon filenames, arbitrary
-static files, root-relative links, and publishing paths.
+See [Public Files](public-files.md) for navigation-logo and browser-icon
+filenames, GitHub Pages `CNAME`, arbitrary static files, root-relative links,
+and publishing paths.
 
 ## Selecting The Site Directory
 
@@ -141,4 +143,3 @@ site:
 - `examples/`: complete sites and focused feature demonstrations;
 - `fixtures/`: engine regression input;
 - root `site/`: the Norna introduction and documentation site.
-

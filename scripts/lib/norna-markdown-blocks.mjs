@@ -3,12 +3,11 @@ import { documentationLink } from './documentation-links.mjs';
 
 const field = (description, options = {}) => Object.freeze({ description, ...options });
 const value = (title, description) => Object.freeze({ title, description });
-const nornaBlocksDocumentation = documentationLink('Norna blocks reference', 'content.md', 'norna-blocks');
 
 export const nornaMarkdownBlockDefinitions = Object.freeze({
 	'norna-image-stack': Object.freeze({
 		description: 'Display one or more managed images in a vertical stack.',
-		documentation: nornaBlocksDocumentation,
+		documentation: documentationLink('Image stack reference', 'content.md', 'image-stack'),
 		item: Object.freeze({
 			start: field('Start another managed image.', { key: 'image', prefix: '- ' }),
 			fields: Object.freeze({
@@ -19,7 +18,7 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 	}),
 	'norna-image-carousel': Object.freeze({
 		description: 'Display two or more managed images in an interactive carousel.',
-		documentation: nornaBlocksDocumentation,
+		documentation: documentationLink('Image carousel reference', 'content.md', 'image-carousel'),
 		item: Object.freeze({
 			start: field('Start another managed carousel image.', { key: 'image', prefix: '- ' }),
 			fields: Object.freeze({
@@ -30,7 +29,7 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 	}),
 	'norna-card-list': Object.freeze({
 		description: 'Display a structured list of cards.',
-		documentation: nornaBlocksDocumentation,
+		documentation: documentationLink('Card list reference', 'content.md', 'card-list'),
 		options: Object.freeze({
 			layout: field('Place each card image above, left, or right of its text. Defaults to image-top.', {
 				default: 'image-top',

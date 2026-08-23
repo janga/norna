@@ -69,11 +69,9 @@ const withTempProject = async ({ site, theme = defaultTheme, files, siteDirector
 };
 
 const brokenSite = `---
-sections:
-  karin-walde: {}
-  min-konst: {}
-  mitt-hem: {}
-
+page:
+  title: Broken content fixture
+  description: Exercises grouped content diagnostics.
 ---
 ## Karin Walde {#karin-walde}
 Text.
@@ -133,7 +131,8 @@ test('content:check groups section issues, global issues, and unreferenced image
 });
 
 const carouselAspectRatioSite = `---
-title: Carousel Aspect Ratio
+page:
+  title: Carousel Aspect Ratio
 ---
 ## Puppies {#puppies}
 Text.
@@ -165,13 +164,14 @@ test('content:check warns when carousel images use different aspect ratios', asy
 
 		assert.equal(result.status, 0, output);
 		assert.match(output, /^Content check completed with warnings\./m);
-		assert.match(output, /Carousel on line 7 uses images with different aspect ratios: wide\.png \(4:3\), wider\.png \(2:1\)\./);
+		assert.match(output, /Carousel on line 8 uses images with different aspect ratios: wide\.png \(4:3\), wider\.png \(2:1\)\./);
 		assert.match(output, /Use images with exactly matching proportions in the same carousel/);
 	});
 });
 
 const inlineStyleSite = `---
-title: Inline Style
+page:
+  title: Inline Style
 ---
 ## Intro {#intro}
 This has [known text]{.highlight} and [unknown text]{.missing}.
@@ -195,7 +195,8 @@ test('content:check fails when Markdown uses removed inline color styles', async
 test('content:check suggests semantic Markdown instead of inline color styles', async () => {
 	await withTempProject({
 		site: `---
-title: Invalid Inline Color
+page:
+  title: Invalid Inline Color
 ---
 ## Intro {#intro}
 This has [yellow text]{.yellow}.
@@ -212,8 +213,9 @@ This has [yellow text]{.yellow}.
 });
 
 const inlineNoteSite = `---
-title: Inline notes
-description: Fixture
+page:
+  title: Inline notes
+  description: Fixture
 ---
 ## Intro {#intro}
 This paragraph has a note reference.{note-ref}
@@ -239,8 +241,9 @@ test('content:check accepts valid inline notes and ignores note syntax in code f
 test('content:check accepts wrapped and explicit multiline inline notes', async () => {
 	await withTempProject({
 		site: `---
-title: Multiline inline notes
-description: Fixture
+page:
+  title: Multiline inline notes
+  description: Fixture
 ---
 ## Wrapped {#wrapped}
 This paragraph has a formatter-wrapped note.{note-ref}
@@ -269,8 +272,9 @@ This paragraph has an explicit multiline note.{note-ref}
 test('content:check reports an unclosed multiline inline note', async () => {
 	await withTempProject({
 		site: `---
-title: Unclosed inline note
-description: Fixture
+page:
+  title: Unclosed inline note
+  description: Fixture
 ---
 ## Intro {#intro}
 This paragraph has a note reference.{note-ref}
@@ -292,8 +296,9 @@ and continues to the end of the file.
 test('content:check rejects nested note syntax before a multiline note is closed', async () => {
 	await withTempProject({
 		site: `---
-title: Nested inline note syntax
-description: Fixture
+page:
+  title: Nested inline note syntax
+  description: Fixture
 ---
 ## Nested note {#nested-note}
 This paragraph has a note reference.{note-ref}
@@ -321,8 +326,9 @@ and contains {note-ref} before closing.}
 test('content:check allows escaped and inline-code note syntax inside notes', async () => {
 	await withTempProject({
 		site: `---
-title: Literal inline note syntax
-description: Fixture
+page:
+  title: Literal inline note syntax
+  description: Fixture
 ---
 ## Intro {#intro}
 This paragraph has a note reference.{note-ref}
@@ -342,8 +348,9 @@ This paragraph has a note reference.{note-ref}
 test('content:check rejects unpaired and repeated inline notes', async () => {
 	await withTempProject({
 		site: `---
-title: Invalid inline notes
-description: Fixture
+page:
+  title: Invalid inline notes
+  description: Fixture
 ---
 ## Orphan {#orphan}
 {note: This note has no reference.}
@@ -372,9 +379,6 @@ typography:
 \u00a0\u00a0overrides:
     body:
       paragraphSpacing: 0.3em
-sections:
-  intro: {}
-
 ---
 ## Intro {#intro}
 Text.
@@ -401,9 +405,6 @@ typography:
     overrides:
       body:
         paragraphSpacing: 0.3em
-sections:
-  intro: {}
-
 ---
 ## Intro {#intro}
 Text.
@@ -425,10 +426,9 @@ test('content:check explains frontmatter indentation below scalar values', async
 });
 
 const topLevelImagesSite = `---
-title: Example
-description: Example site.
-sections:
-  intro: {}
+page:
+  title: Example
+  description: Example site.
 images:
       - image: intro.jpg
 
@@ -447,7 +447,7 @@ test('content:check explains likely misindented frontmatter keys', async () => {
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Frontmatter line 6 defines "images" at the top level, but it is not a valid top-level content field\./);
+		assert.match(output, /Frontmatter line 5 defines "images" at the top level, but it is not a valid top-level content field\./);
 		assert.match(output, /Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body\./);
 	});
 });
@@ -470,10 +470,9 @@ test('content:check respects NORNA_SITE_DIR', async () => {
 });
 
 const movableSite = `---
-sections:
-  min-konst: {}
-  mitt-hem: {}
-
+page:
+  title: Movable image fixture
+  description: Exercises content sync.
 ---
 ## Min konst {#min-konst}
 Text.

@@ -39,7 +39,7 @@ type VisualTheme = {
 };
 
 interface Props {
-	title?: string;
+	title: string;
 	description?: string;
 	presentation: Presentation;
 	visualTheme: VisualTheme;
@@ -47,22 +47,13 @@ interface Props {
 	pathname?: string;
 	footer?: {
 		copyrightMessage?: string;
-		buildInfo?: {
-			enabled: boolean;
-			text: string;
-			dateTimeFormat: {
-				locale: string;
-				timeZone: string;
-				dateStyle: string;
-				timeStyle: string;
-			};
-		};
+		buildInfo?: boolean;
 	};
 }
 
 const {
-	title = 'norna',
-	description = 'A norna site.',
+	title,
+	description,
 	presentation,
 	visualTheme,
 	frameColors,
@@ -103,12 +94,12 @@ const documentStyle = [
 	`--image-max-height-mobile: ${formatViewportHeightPercent(visualTheme.images.maxAvailableHeightPercent.mobile)}`,
 ].join('; ');
 const { buildInfo, copyrightMessage } = footer ?? {};
-const showBuildInfo = Boolean(buildInfo?.enabled);
+const showBuildInfo = buildInfo === true;
 const buildTime = showBuildInfo
-	? new Intl.DateTimeFormat(buildInfo.dateTimeFormat.locale, {
-		dateStyle: buildInfo.dateTimeFormat.dateStyle,
-		timeStyle: buildInfo.dateTimeFormat.timeStyle,
-		timeZone: buildInfo.dateTimeFormat.timeZone,
+	? new Intl.DateTimeFormat(projectConfig.locale.lang, {
+		dateStyle: 'short',
+		timeStyle: 'short',
+		timeZone: 'UTC',
 	}).format(new Date())
 	: null;
 const showFooter = Boolean(copyrightMessage || showBuildInfo);
@@ -124,7 +115,7 @@ const footerStyle = [
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="format-detection" content="telephone=no" />
-		<meta name="description" content={description} />
+		{description && <meta name="description" content={description} />}
 		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
 		<link rel="canonical" href={canonicalUrl} />
 		<meta name="generator" content={Astro.generator} />
@@ -144,7 +135,7 @@ const footerStyle = [
 			<footer class="site-footer" style={footerStyle}>
 				<p>
 					{copyrightMessage}
-					{showBuildInfo && <span>{buildInfo.text} {buildTime}</span>}
+					{showBuildInfo && <span>{projectConfig.locale.labels.built} {buildTime}</span>}
 				</p>
 			</footer>
 		)}

@@ -3,6 +3,8 @@
 Proof-of-concept editor support for project-local Norna schemas, Markdown
 blocks, notes, and managed image filenames. The extension reads schemas and
 language behavior from the `@janga/norna` installed by the current project.
+It activates only for files in a recognized Norna site and uses the schema and
+editor API version declared by that local installation.
 
 The proof of concept provides:
 
@@ -13,6 +15,12 @@ The proof of concept provides:
 - content diagnostics and safe quick fixes
 - detected navigation-logo and browser-icon status, with diagnostics for conflicts and likely convention mistakes
 - minimal snippets for empty Norna files
+- high-priority `Norna:` snippets for structured YAML objects and list items where generic YAML completion is too abstract
+
+Recognized files are the root `config.yaml`, `theme.yaml`,
+`sitewide-content.yaml`, and `content.md`, plus `content.md` and optional
+`theme.yaml` in a valid `routes/NNN-route-id/` directory. Other YAML and
+Markdown files are left entirely to their normal language support.
 
 During development:
 

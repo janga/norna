@@ -9,7 +9,6 @@ import {
 	siteRoutesLabel,
 	siteThemeLabel,
 	siteThemePath,
-	sitewideContentLabel,
 } from './site-paths.mjs';
 import { resolveThemePresentation } from './presentation.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
@@ -26,9 +25,6 @@ export const readThemeConfig = async () => {
 	const config = parseYamlConfig(themeFile, siteThemeLabel, {
 		validateStructure: validateThemeYamlStructure,
 	});
-	if (Object.hasOwn(config, 'navigation')) {
-		throw new Error(`${siteThemeLabel} may not define navigation. The site label and logo settings belong in ${sitewideContentLabel}.`);
-	}
 	resolveThemeConfig(config, siteThemeLabel);
 	resolveThemePresentation(config, siteThemeLabel);
 
@@ -70,9 +66,6 @@ export const validateRouteThemeFiles = async () => {
 		const config = parseYamlConfig(source, file.label, {
 			validateStructure: validateRouteThemeYamlStructure,
 		});
-		if (Object.hasOwn(config, 'navigation')) {
-			throw new Error(`${file.label} may not define navigation. The site label and logo settings belong in ${sitewideContentLabel}.`);
-		}
 		resolveThemeConfig(config, file.label);
 		resolveThemePresentation(config, file.label);
 

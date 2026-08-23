@@ -8,7 +8,7 @@ import SiteNotesScript from './SiteNotesScript.astro';
 import SiteSection from './SiteSection.astro';
 import { getSectionNavigation, getSectionsContent } from '../lib/sectionContent';
 import { getRouteTheme } from '../lib/routeThemes';
-import { getNavigationPages, getSitePage, getSitePages } from '../lib/sitePages';
+import { getSitePage, getSitePages } from '../lib/sitePages';
 import { getToday, isVisibleToday } from '../lib/visibility';
 import { getLogoAsset } from '../lib/sitePublicAssets';
 import { readSiteFile } from '../../scripts/lib/site-content.mjs';
@@ -39,7 +39,6 @@ if (!siteTheme) {
 }
 const [sitewide] = await getCollection('sitewide');
 const sitewideData = sitewide?.data ?? {};
-const navigationPages = getNavigationPages(sitePages);
 const homePage = sitePages.find((page) => page.isHome) ?? currentPage;
 const siteThemeData = siteTheme.data;
 const routeTheme = await getRouteTheme(currentPage.routeDirectory);
@@ -48,49 +47,41 @@ const themeLabel = routeTheme
 	? `${siteDirectory || 'site'}/${routeTheme.id}`
 	: `${siteDirectory || 'site'}/${siteTheme.id}`;
 const visualTheme = resolveThemeVisualConfig(themeData, themeLabel);
-const navigationLabel = sitewideData.navigation?.label ?? homePage.title;
 const logoAsset = getLogoAsset();
-const logoSettings = sitewideData.navigation?.logo;
+const logoSettings = sitewideData.logo;
 const logo = logoAsset
 	? {
 		src: logoAsset.href,
-		alt: navigationLabel,
+		alt: homePage.title,
 		height: logoSettings?.height,
 	}
 	: undefined;
 const pagePresentation = resolvePagePresentation(themeData, themeLabel);
 const frameColors = resolveFrameColors({ theme: themeData, sourceLabel: themeLabel });
-const sections = entry.data.sections;
 const siteHtml = entry.rendered?.html ?? '';
-const resolvedSections = await getSectionsContent(siteHtml, rawMarkdown, sections, currentPage);
+const resolvedSections = await getSectionsContent(siteHtml, rawMarkdown, currentPage);
 const today = getToday();
 const siteBanners = (sitewideData.banners ?? []).filter((banner) => isVisibleToday(banner.visible, today));
-const visibleSections = resolvedSections.filter((section) => isVisibleToday(section.visible, today));
-const hasMarginNotes = visibleSections.some((section) => section.contentBlocks.some((block) => block.type === 'note'));
+const hasMarginNotes = resolvedSections.some((section) => section.contentBlocks.some((block) => block.type === 'note'));
 
 const getPageContent = async (page: SitePage) => {
 	if (page.pathname === currentPage.pathname) {
-		return visibleSections.map(({ id, title }) => ({ id, title }));
+		return resolvedSections.map(({ id, title }) => ({ id, title }));
 	}
 
-	const pageSections = getSectionNavigation(page.entry.rendered?.html ?? '', page.entry.data.sections);
-
-	return pageSections.filter((section) => isVisibleToday(page.entry.data.sections[section.id]?.visible, today));
+	return getSectionNavigation(page.entry.rendered?.html ?? '');
 };
 
-const pageNavigation = await Promise.all(navigationPages.map(async (page) => ({
+const pageNavigation = await Promise.all(sitePages.map(async (page) => ({
 	page,
 	sections: await getPageContent(page),
 })));
 
-if (visibleSections.length === 0) {
-	throw new Error(`No sections are visible for ${today}. Check sections.<section-id>.visible in ${siteContentLabel}.`);
-}
 ---
 
 <BaseLayout
-	title={entry.data.title}
-	description={entry.data.description}
+	title={entry.data.page.title}
+	description={entry.data.page.description}
 	presentation={pagePresentation}
 	visualTheme={visualTheme}
 	frameColors={frameColors}
@@ -98,7 +89,6 @@ if (visibleSections.length === 0) {
 	footer={sitewideData.footer}
 >
 	<SiteNavigation
-		navigationLabel={navigationLabel}
 		logo={logo}
 		currentPage={currentPage}
 		pageNavigation={pageNavigation}
@@ -107,7 +97,7 @@ if (visibleSections.length === 0) {
 	{siteBanners.length > 0 && <SiteBanners banners={siteBanners} />}
 
 	<main id="main-content" class="site-content">
-		{visibleSections.map((section, index) => (
+		{resolvedSections.map((section, index) => (
 			<SiteSection
 				section={section}
 				pagePresentation={pagePresentation}

@@ -1,6 +1,6 @@
 # Sitewide content
 
-This feature demo shows content and identity shared by every page: a
+This feature demo shows content and logo display settings shared by every page: a
 convention-based logo, route navigation, dismissible banners and a footer with
 build information.
 

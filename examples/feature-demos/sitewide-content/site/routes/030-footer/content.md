@@ -1,8 +1,7 @@
 ---
-title: Footer
-description: Inspect content and build information shared in the Norna site footer.
-navigation:
-  label: Footer
+page:
+  title: Footer
+  description: Inspect content and build information shared in the Norna site footer.
 ---
 
 ## Persistent footer content {#footer-content}

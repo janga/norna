@@ -37,7 +37,7 @@ export const findNornaSiteRoot = async (documentPath) => {
 	}
 };
 
-const readSitewideNavigationForEditor = async (siteRoot) => {
+const readSitewideLogoForEditor = async (siteRoot) => {
 	const filename = await findFile(siteRoot, ['sitewide-content.yaml']);
 	if (!filename) return null;
 	const absolutePath = path.join(siteRoot, filename);
@@ -45,15 +45,16 @@ const readSitewideNavigationForEditor = async (siteRoot) => {
 
 	try {
 		const data = load(source) ?? {};
-		const navigation = data && typeof data === 'object' && data.navigation && typeof data.navigation === 'object'
-			? data.navigation
-			: {};
+		const logoConfigured = Boolean(
+			data
+			&& typeof data === 'object'
+			&& Object.hasOwn(data, 'logo'),
+		);
 		const logoLine = source.replace(/\r\n?/g, '\n').split('\n')
-			.findIndex((line) => /^\s+logo:\s*(?:#.*)?$/.test(line)) + 1;
+			.findIndex((line) => /^logo:\s*(?:#.*)?$/.test(line)) + 1;
 		return {
 			absolutePath,
-			label: typeof navigation.label === 'string' ? navigation.label : null,
-			logoConfigured: Object.hasOwn(navigation, 'logo'),
+			logoConfigured,
 			logoLine: logoLine > 0 ? logoLine : 1,
 		};
 	} catch {
@@ -73,7 +74,7 @@ export const getSitePublicAssetStatus = async (documentPath) => {
 	const inspection = inspectPublicAssetFilenames(
 		entries.filter((entry) => entry.isFile()).map((entry) => entry.name),
 	);
-	const navigation = await readSitewideNavigationForEditor(siteRoot);
+	const sitewideLogo = await readSitewideLogoForEditor(siteRoot);
 	const issues = inspection.suspicious.map((issue) => ({
 		...issue,
 		absolutePath: path.join(publicDirectory, issue.filename),
@@ -92,14 +93,14 @@ export const getSitePublicAssetStatus = async (documentPath) => {
 			});
 		}
 	}
-	if (inspection.logos.length === 0 && navigation?.logoConfigured) {
+	if (inspection.logos.length === 0 && sitewideLogo?.logoConfigured) {
 		const publicLabel = toPosixPath(path.relative(path.dirname(siteRoot), publicDirectory));
 		issues.push({
-			absolutePath: navigation.absolutePath,
+			absolutePath: sitewideLogo.absolutePath,
 			code: 'missing-logo-file',
-			filename: path.basename(navigation.absolutePath),
-			line: navigation.logoLine,
-			message: `Navigation logo settings are configured, but no logo file was found. Add exactly one of ${logoAssetFilenames.map((filename) => `${publicLabel}/${filename}`).join(', ')}, or remove navigation.logo.`,
+			filename: path.basename(sitewideLogo.absolutePath),
+			line: sitewideLogo.logoLine,
+			message: `Logo display settings are configured, but no logo file was found. Add exactly one of ${logoAssetFilenames.map((filename) => `${publicLabel}/${filename}`).join(', ')}, or remove logo.`,
 			severity: 'error',
 		});
 	}
@@ -107,7 +108,7 @@ export const getSitePublicAssetStatus = async (documentPath) => {
 	return {
 		...inspection,
 		issues,
-		navigation,
+		sitewideLogo,
 		publicDirectory,
 		siteRoot,
 	};

@@ -1,9 +1,7 @@
 ---
-title: Examples
-description:
-  See the kinds of websites Norna's opinionated site model is designed to build.
-navigation:
-  label: Examples
+page:
+  title: Examples
+  description: See the kinds of websites Norna's opinionated site model is designed to build.
 ---
 
 ## What can you build with Norna? {#overview}
@@ -30,7 +28,7 @@ width: normal
   link: https://janga.github.io/norna/examples/feature-demos/theme-presets/
   badge-text: Feature demo
 - title: Sitewide content
-  text: Inspect shared identity, navigation, dismissible banner stacks and footer content across routes.
+  text: Inspect shared logo settings, navigation, dismissible banner stacks and footer content across routes.
   link: https://janga.github.io/norna/examples/feature-demos/sitewide-content/
   badge-text: Feature demo
 - title: Dog shelter: single page

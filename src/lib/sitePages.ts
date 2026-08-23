@@ -7,8 +7,7 @@ export type SitePage = {
 	entry: SiteEntry;
 	isHome: boolean;
 	navigation: {
-		include: boolean;
-		label: string;
+		listed: boolean;
 		order: number;
 	};
 	pathSegment: string;
@@ -48,15 +47,14 @@ export const getSitePage = (entry: SiteEntry): SitePage => {
 		entry,
 		isHome,
 		navigation: {
-			include: navigation.include ?? true,
-			label: navigation.label ?? entry.data.title,
-			order: isHome ? 0 : routeMetadata?.routeOrder ?? 100,
+		listed: navigation.listed ?? true,
+		order: isHome ? 0 : routeMetadata?.routeOrder ?? 100,
 		},
 		pathSegment,
 		pathname: getPagePathname(pathSegment),
 		routeDirectory,
 		routeId,
-		title: entry.data.title,
+		title: entry.data.page.title,
 	};
 };
 
@@ -93,9 +91,7 @@ export const getSitePages = (entries: SiteEntry[]) => {
 
 	return pages.sort((left, right) => (
 		left.navigation.order - right.navigation.order ||
-		left.navigation.label.localeCompare(right.navigation.label, 'sv') ||
+		left.title.localeCompare(right.title, 'sv') ||
 		left.pathname.localeCompare(right.pathname, 'sv')
 	));
 };
-
-export const getNavigationPages = (pages: SitePage[]) => pages.filter((page) => page.navigation.include);

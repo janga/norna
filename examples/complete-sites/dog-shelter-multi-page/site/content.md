@@ -1,6 +1,7 @@
 ---
-title: Home
-description: A multi-page dog shelter website built with Norna.
+page:
+  title: Home
+  description: A multi-page dog shelter website built with Norna.
 ---
 
 ## Dog Shelter {#intro}

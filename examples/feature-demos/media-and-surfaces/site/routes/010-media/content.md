@@ -1,8 +1,7 @@
 ---
-title: Media blocks
-description: Compare Norna's managed image stacks, carousels and card lists.
-navigation:
-  label: Media blocks
+page:
+  title: Media blocks
+  description: Compare Norna's managed image stacks, carousels and card lists.
 ---
 
 ## Image stack {#stack}

@@ -10,7 +10,7 @@ documentation workflow.
 | Dog shelter, multi-page | A coherent site with ordered routes and route-local images | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](complete-sites/dog-shelter-multi-page/) |
 | Theme presets | All complete presets without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-presets/) | [View files](feature-demos/theme-presets/) |
 | Media and surfaces | Image blocks, cards, notes, palettes, and section surfaces | [Open site](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/) | [View files](feature-demos/media-and-surfaces/) |
-| Sitewide content | Shared identity, navigation, banners, and footer content | [Open site](https://janga.github.io/norna/examples/feature-demos/sitewide-content/) | [View files](feature-demos/sitewide-content/) |
+| Sitewide content | Shared logo settings, banners, and footer content | [Open site](https://janga.github.io/norna/examples/feature-demos/sitewide-content/) | [View files](feature-demos/sitewide-content/) |
 
 ## Directory Structure
 

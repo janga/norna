@@ -58,6 +58,7 @@ try {
 		language: 'en',
 		labels: {
 			dismissBanner: 'Dismiss notice',
+			built: 'Built',
 			images: 'Images',
 			note: 'Note',
 			pageNavigation: 'On this page',
@@ -74,6 +75,7 @@ try {
 	assert.equal(localizedResult.status, 0, localizedResult.stderr);
 	const localizedConfig = JSON.parse(localizedResult.stdout);
 	assert.equal(localizedConfig.language, 'sv-SE');
+	assert.equal(localizedConfig.labels.built, 'Byggd');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 

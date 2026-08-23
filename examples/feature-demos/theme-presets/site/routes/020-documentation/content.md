@@ -1,8 +1,7 @@
 ---
-title: Documentation
-description: A complete theme preset for guides and explanatory writing.
-navigation:
-  label: Documentation
+page:
+  title: Documentation
+  description: A complete theme preset for guides and explanatory writing.
 ---
 
 ## Documentation {#documentation}

@@ -16,9 +16,12 @@ const filenames = [
 const requiredRichHelp = {
 	'config.schema.json': ['url', 'language', 'scrollBehavior'],
 	'theme.schema.json': ['preset', 'layout', 'images', 'typography', 'palette', 'sectionSurfaces'],
-	'sitewide-content.schema.json': ['navigation', 'banners', 'footer'],
-	'content-frontmatter.schema.json': ['title', 'description', 'navigation', 'sections'],
+	'sitewide-content.schema.json': ['logo', 'banners', 'footer'],
+	'content-frontmatter.schema.json': ['page', 'navigation'],
 };
+const manifest = JSON.parse(await readFile(path.join(root, 'schemas', 'manifest.json'), 'utf8'));
+assert.equal(manifest.editorApiVersion, 1);
+assert.equal(manifest.schemaVersion, 1);
 
 const githubHeadingAnchor = (heading) => heading
 	.toLowerCase()
@@ -49,22 +52,26 @@ const assertDocumentationLinks = async (markdownDescription, location) => {
 	}
 };
 
-const visitSchema = (schema, location) => {
+const visitSchema = (schema, location, richProperties) => {
 	assert.equal(schema.enum, undefined, `${location} uses an undescribed enum.`);
 	if (schema.properties) {
 		for (const [name, property] of Object.entries(schema.properties)) {
 			assert.ok(property.description, `${location}.${name} has no description.`);
-			visitSchema(property, `${location}.${name}`);
+			richProperties.push([property, `${location}.${name}`]);
+			visitSchema(property, `${location}.${name}`, richProperties);
 		}
 	}
-	if (schema.items) visitSchema(schema.items, `${location}[]`);
+	if (schema.items) visitSchema(schema.items, `${location}[]`, richProperties);
+	if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+		visitSchema(schema.additionalProperties, `${location}.*`, richProperties);
+	}
 	for (const keyword of ['allOf', 'anyOf', 'oneOf']) {
 		for (const [index, candidate] of (schema[keyword] ?? []).entries()) {
 			if (Object.hasOwn(candidate, 'const')) {
 				assert.ok(candidate.title, `${location}.${keyword}[${index}] has no title.`);
 				assert.ok(candidate.description, `${location}.${keyword}[${index}] has no description.`);
 			}
-			visitSchema(candidate, `${location}.${keyword}[${index}]`);
+			visitSchema(candidate, `${location}.${keyword}[${index}]`, richProperties);
 		}
 	}
 };
@@ -83,7 +90,16 @@ for (const filename of filenames) {
 		);
 		await assertDocumentationLinks(property.markdownDescription, `${filename}.${propertyName}`);
 	}
-	visitSchema(schema, filename);
+	const richProperties = [];
+	visitSchema(schema, filename, richProperties);
+	for (const [property, location] of richProperties) {
+		assert.match(
+			property.markdownDescription,
+			/^```yaml\n/,
+			`${location} rich help must start with YAML syntax.`,
+		);
+		await assertDocumentationLinks(property.markdownDescription, location);
+	}
 }
 
 const config = JSON.parse(await readFile(path.join(root, 'schemas', 'config.schema.json'), 'utf8'));
@@ -92,11 +108,46 @@ assert.deepEqual(config.properties.language.examples, ['en', 'sv', 'en-GB', 'sv-
 assert.equal(config.properties.scrollBehavior.default, 'instant');
 
 const sitewide = JSON.parse(await readFile(path.join(root, 'schemas', 'sitewide-content.schema.json'), 'utf8'));
-assert.deepEqual(Object.keys(sitewide.properties.navigation.properties), ['label', 'logo']);
-assert.deepEqual(Object.keys(sitewide.properties.navigation.properties.logo.properties), ['height']);
-assert.match(sitewide.properties.navigation.properties.logo.markdownDescription, /```yaml\nnavigation:\n  label: Example Site\n  logo:\n    height: 2rem\n```/);
-assert.match(sitewide.properties.navigation.properties.logo.markdownDescription, /does not enable or select the file/);
-assert.match(sitewide.properties.navigation.properties.logo.markdownDescription, /docs\/public-files\.md#navigation-logo/);
-assert.equal(sitewide.properties.navigation.properties.logo.description.length < 100, true);
+assert.deepEqual(Object.keys(sitewide.properties.logo.properties), ['height']);
+assert.match(sitewide.properties.logo.markdownDescription, /```yaml\nlogo:\n  height: 2rem\n```/);
+assert.match(sitewide.properties.logo.markdownDescription, /does not enable or select the file/);
+assert.match(sitewide.properties.logo.markdownDescription, /homepage `page\.title`/);
+assert.match(sitewide.properties.logo.markdownDescription, /docs\/public-files\.md#navigation-logo/);
+assert.equal(sitewide.properties.logo.description.length < 100, true);
+const bannerItem = sitewide.properties.banners.items;
+assert.equal(bannerItem.title, 'Warning banner');
+assert.match(bannerItem.description, /important temporary information/);
+assert.match(bannerItem.markdownDescription, /A `warning` is a dismissible site-wide notice/);
+await assertDocumentationLinks(bannerItem.markdownDescription, 'sitewide-content.schema.json.banners[]');
+assert.equal(bannerItem.defaultSnippets[0].label, 'Warning banner');
+assert.deepEqual(bannerItem.defaultSnippets[0].body, {
+	id: '${1:project-status}',
+	tone: 'warning',
+	title: '${2:Important notice}',
+	text: '${3:Brief explanation.}',
+});
+await assertDocumentationLinks(
+	bannerItem.defaultSnippets[0].markdownDescription,
+	'sitewide-content.schema.json.banners[].defaultSnippets[0]',
+);
+const buildInfo = sitewide.properties.footer.properties.buildInfo;
+assert.equal(buildInfo.type, 'boolean');
+assert.equal(buildInfo.default, false);
+assert.match(buildInfo.markdownDescription, /footer:\n  buildInfo: true/);
+
+const theme = JSON.parse(await readFile(path.join(root, 'schemas', 'theme.schema.json'), 'utf8'));
+assert.equal(theme.properties.layout.properties.gutter.defaultSnippets[0].label, 'Responsive page gutter');
+assert.equal(theme.properties.layout.properties.spacing.defaultSnippets[0].label, 'Layout spacing overrides');
+assert.equal(theme.properties.typography.properties.overrides.defaultSnippets[0].label, 'Typography overrides');
+assert.equal(
+	theme.properties.images.properties.maxAvailableWidthPercent.defaultSnippets[0].label,
+	'Responsive image limit',
+);
+
+const content = JSON.parse(await readFile(path.join(root, 'schemas', 'content-frontmatter.schema.json'), 'utf8'));
+assert.deepEqual(Object.keys(content.properties), ['page', 'navigation']);
+assert.deepEqual(Object.keys(content.properties.page.properties), ['title', 'description']);
+assert.deepEqual(content.properties.page.required, ['title']);
+assert.deepEqual(Object.keys(content.properties.navigation.properties), ['listed']);
 
 console.log('Schema metadata tests passed.');

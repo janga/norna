@@ -90,8 +90,9 @@ try {
 	await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
 	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
 	await writeFile(path.join(siteDir, 'content.md'), `---
-title: Theme preset test
-description: Root page
+page:
+  title: Theme preset test
+  description: Root page
 ---
 
 ## Home {#home}
@@ -104,10 +105,9 @@ layout:
 palette: dark
 `);
 	await writeFile(path.join(siteDir, 'routes', '010-guide', 'content.md'), `---
-title: Guide
-description: Route page
-navigation:
-  label: Guide
+page:
+  title: Guide
+  description: Route page
 ---
 
 ## Guide {#guide}

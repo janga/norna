@@ -1,10 +1,7 @@
 ---
-title: Fixture Site
-description: Minimal Norna fixture site.
-sections:
-  intro: {}
-  work: {}
-
+page:
+  title: Fixture Site
+  description: Minimal Norna fixture site.
 ---
 ## Intro {#intro}
 

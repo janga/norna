@@ -37,7 +37,7 @@ site/
   scroll behavior.
 - [`theme.yaml`](theme.md): complete visual presets and focused presentation
   overrides.
-- [`sitewide-content.yaml`](sitewide-content.md): shared navigation identity,
+- [`sitewide-content.yaml`](sitewide-content.md): shared logo display settings,
   banners, and footer.
 - [`content.md`](content.md): page metadata, sections, prose, notes, and Norna
   blocks.
@@ -75,7 +75,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Add managed source images](images-and-metadata.md#managed-source-images)
 - [Check and sync moved image references](content.md#validation-and-sync)
 - [Add a navigation logo](public-files.md#navigation-logo)
-- [Add favicons](public-files.md#logos-and-favicons)
+- [Add browser icons](public-files.md#browser-icons)
 - [Add other static files](public-files.md#other-static-files)
 
 ### Change Presentation

@@ -1,7 +1,5 @@
-navigation:
-  label: Shared Frame
-  logo:
-    height: 2.8rem
+logo:
+  height: 2.8rem
 banners:
   - id: preview-environment
     tone: warning
@@ -13,11 +11,4 @@ banners:
     text: Dismiss each notice independently with its close button.
 footer:
   copyrightMessage: Shared Frame sitewide-content example.
-  buildInfo:
-    enabled: true
-    text: Built
-    dateTimeFormat:
-      locale: en-GB
-      timeZone: UTC
-      dateStyle: medium
-      timeStyle: short
+  buildInfo: true

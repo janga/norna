@@ -1,18 +1,13 @@
 ---
-title: Content Model v2 Fixture
-description: Internal fixture for Markdown-authoritative Norna content.
-sections:
-  intro: {}
-  timed:
-    visible:
-      from: "2026-01-01"
-      until: "2027-01-01"
+page:
+  title: Content Model v2 Fixture
+  description: Internal fixture for Markdown-authoritative Norna content.
 ---
 
 ## Intro {#intro}
 
-This fixture validates that Markdown defines sections and that section metadata
-is optional. It also checks **inline emphasis**.
+This fixture validates that Markdown defines sections. It also checks **inline
+emphasis**.
 
 ```norna-image-stack
 - image: hero.jpg
@@ -33,9 +28,10 @@ Text can continue after a Norna-managed image.
   caption: Dog portrait three: a white and brown border collie-type dog.
 ```
 
-## Timed section {#timed}
+## Carousel section {#timed}
 
-This section uses frontmatter metadata without duplicating section order.
+This section demonstrates an image carousel without duplicating section order
+in frontmatter.
 
 ```norna-image-carousel
 - image: slide-one.jpg
@@ -51,7 +47,7 @@ This section uses frontmatter metadata without duplicating section order.
 
 ## Plain section {#plain}
 
-This section has no frontmatter metadata.
+This section is defined entirely by Markdown.
 
 ```norna-image-stack
 - image: image.jpg

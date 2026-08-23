@@ -1,8 +1,7 @@
 ---
-title: Media and Surfaces
-description: A visual test bench for Norna's image and card blocks and presentation surfaces.
-navigation:
-  label: Home
+page:
+  title: Media and Surfaces
+  description: A visual test bench for Norna's image and card blocks and presentation surfaces.
 ---
 
 ## Media and surfaces {#intro}

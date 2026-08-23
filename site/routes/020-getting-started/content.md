@@ -1,8 +1,7 @@
 ---
-title: Getting Started
-description: Create, edit, build and publish your first Norna site.
-navigation:
-  label: Getting Started
+page:
+  title: Getting Started
+  description: Create, edit, build and publish your first Norna site.
 ---
 
 ## Create a site {#create}
@@ -90,9 +89,26 @@ site/
 
 ### Content
 
-`content.md` contains the homepage content and its sections.
+`content.md` contains the homepage content and its sections. Its frontmatter
+keeps page metadata together under `page`:
+
+```yaml
+page:
+  title: My first Norna site
+  description: A website built from plain files.
+```
+
+`page.title` names the page and its route link. `page.description` is optional
+and is used as the page's HTML meta description, not as visible page content.
 
 Additional pages live under `routes/`.
+
+Routes are listed in site navigation by default. A public route can opt out:
+
+```yaml
+navigation:
+  listed: false
+```
 
 ### Presentation
 
@@ -101,8 +117,17 @@ values in the same file can override the preset.
 
 ### Shared site content
 
-`sitewide-content.yaml` contains the shared navigation label, banners, and
-footer content.
+`sitewide-content.yaml` contains shared banners, footer content and optional
+display settings for a convention-based navigation logo. Navigation text and
+logo alternative text come from the homepage `page.title`.
+
+```yaml
+logo:
+  height: 2rem
+```
+
+The `logo` block only changes the displayed height of a supported logo file in
+`site/public/`; it does not select or enable the file.
 
 ### Configuration
 
@@ -165,7 +190,7 @@ reference file.
 
 A route can select a different complete preset in its own optional `theme.yaml`.
 The route theme replaces the root visual theme for that route, while the shared
-navigation label and logo settings remain site-wide.
+logo display settings remain site-wide.
 
 Relevant documentation:
 [Theme](https://github.com/janga/norna/blob/main/docs/theme.md),

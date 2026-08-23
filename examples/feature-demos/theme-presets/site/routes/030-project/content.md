@@ -1,8 +1,7 @@
 ---
-title: Project
-description: A complete theme preset for project and product websites.
-navigation:
-  label: Project
+page:
+  title: Project
+  description: A complete theme preset for project and product websites.
 ---
 
 ## Project {#project}

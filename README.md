@@ -62,7 +62,7 @@ site/
 - `images/` holds managed source images beside the content they belong to.
 - `routes/` adds pages, each with content and optional local images and theme.
 - `theme.yaml` normally selects one complete visual preset.
-- `sitewide-content.yaml` holds shared identity, banners, and footer content.
+- `sitewide-content.yaml` holds shared logo display settings, banners, and footer content.
 - `config.yaml` holds the public URL and optional language and scroll behavior.
 - `public/` holds static files copied without processing.
 

@@ -19,7 +19,7 @@ npm run norna:dev -- --kill
 ## Files
 
 - `site/config.yaml`: public URL and optional language and smooth scrolling.
-- `site/sitewide-content.yaml`: shared navigation identity, banners, and footer.
+- `site/sitewide-content.yaml`: shared logo display settings, banners, and footer.
 - `site/theme.yaml`: site-wide visual settings such as layout density, typography
   rhythm, palettes, section surfaces, and typography.
 - `site/content.md`: homepage title, sections, placeholders, project summary,
@@ -39,7 +39,7 @@ GitHub Pages workflow uses `npm ci`.
    benefits, use cases, and license in `site/content.md`.
 2. Replace the guide examples in `site/routes/010-guide/content.md`, or
    delete the route if the homepage is enough.
-3. Edit `site/sitewide-content.yaml` for the navigation label, logo display,
+3. Edit `site/sitewide-content.yaml` for logo display settings,
    banners, and footer.
 4. Edit `site/theme.yaml` for layout density, typography rhythm, palette, section
    surfaces, and typography.

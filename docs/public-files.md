@@ -11,62 +11,72 @@ convention.
 
 ## Navigation Logo
 
-Put exactly one navigation logo directly in `site/public/`. Its filename must
-be exactly one of:
+To add a navigation logo, place exactly one supported logo file directly in
+`site/public/`:
 
 - `logo.svg`
 - `logo.png`
 - `logo.jpg`
 - `logo.jpeg`
 
-Use lowercase letters and match the complete filename exactly. This is required
-for portability between case-sensitive and case-insensitive file systems.
+Norna discovers the logo from its filename, so you do not configure a path or
+enable it separately. Use the exact lowercase filename to keep the site
+portable between case-sensitive and case-insensitive file systems.
 
-Norna discovers and displays the file automatically. No configuration path or
-enable switch is needed. Only one supported logo file may exist.
+The logo links to the homepage. Its alternative text comes from the homepage
+`page.title` in `site/content.md`; no separate site name or logo alt text is
+configured.
 
-The shared navigation label is configured separately:
-
-```yaml
-navigation:
-  label: Example Site
-```
-
-Without a logo, `label` is shown as navigation text. With a logo, it becomes the
-image alternative text. If `label` is omitted, Norna uses the homepage title.
-
-Add the optional `logo` object only to override the displayed height:
+Configure top-level `logo` in `site/sitewide-content.yaml` only when you need
+to override the displayed height:
 
 ```yaml
-navigation:
-  label: Example Site
-  logo:
-    height: 2rem
+logo:
+  height: 2rem
 ```
 
-The width follows the logo's intrinsic aspect ratio. `navigation.logo` does not
-enable the logo or select a file.
+The width follows the image's intrinsic aspect ratio. `logo` does
+not enable the logo or select a file.
 
 `norna config:check` fails when it finds multiple supported logo files, or when
-`navigation.logo` is configured but no logo file exists. A site without a logo
-uses its text label; the check reports this fallback as a warning.
+`logo` is configured but no logo file exists. A site without a logo uses its
+ordinary page-title navigation; the check reports the missing logo as a
+warning.
 
-## Logos And Favicons
+## Browser Icons
 
-A navigation logo is visible inside the website. A favicon identifies the site
-in browser tabs, bookmarks, and similar browser UI. They are independent and
-may coexist.
-
-Norna recognizes these browser-icon filenames directly under `site/public/`:
+To add browser icons, place one or more supported files directly in
+`site/public/`:
 
 - `favicon.svg`
 - `favicon.ico`
 - `favicon.png`
 - `apple-touch-icon.png`
 
-These filenames must also match exactly and use lowercase letters. More than
-one format may be present. Norna emits links for every supported file and lets
-the browser choose the appropriate one.
+Norna discovers these files from their filenames, so you do not configure paths
+or enable them separately. Use the exact lowercase filenames to keep the site
+portable between case-sensitive and case-insensitive file systems.
+
+You may include several supported browser-icon files. Norna links every file it
+finds and lets the browser select the appropriate format.
+
+Browser icons are separate from the navigation logo. The logo appears inside
+the website, while browser icons identify it in tabs, bookmarks, and similar
+browser interfaces.
+
+## GitHub Pages Custom Domain
+
+To use a custom domain with GitHub Pages, place a file named exactly `CNAME`
+directly in `site/public/`. Write the domain name in the file without a protocol
+or path:
+
+```text
+www.example.com
+```
+
+Norna does not discover or interpret `CNAME`; it copies the file to the root of
+the generated website. GitHub Pages gives the filename its meaning. The public
+`url` in `site/config.yaml` should use the same domain.
 
 ## Other Static Files
 
@@ -75,11 +85,15 @@ Other names are not restricted. For example:
 ```text
 site/public/
 |-- robots.txt
-|-- CNAME
 |-- verification.html
 `-- downloads/
     `-- project-overview.pdf
 ```
+
+Except for the navigation logo and browser icons documented above, Norna does
+not attach meaning to filenames or inspect their contents. It copies them
+unchanged. Browsers, crawlers, hosting services, and verification providers may
+still require their own exact filenames and locations.
 
 Norna preserves subdirectories while copying these files. A source file such
 as `site/public/downloads/project-overview.pdf` is published at
@@ -102,4 +116,3 @@ validated, synced, processed, and captioned. See
 `norna site:public` copies source files from `site/public/` to
 `site/.norna/public/`. The latter directory is generated build-preparation
 output and must not be edited or versioned.
-

@@ -60,15 +60,10 @@ try {
   profile: reading
 palette: paper
 `);
-	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `navigation:
-  label: Test site
-`);
 	await writeFile(path.join(siteDir, 'content.md'), `---
-title: Section navigation
-description: A single page with sticky section navigation.
-sections:
-  intro: {}
-  more: {}
+page:
+  title: Section navigation
+  description: A single page with sticky section navigation.
 ---
 ## Intro {#intro}
 
@@ -108,20 +103,18 @@ The navigation enhancement keeps native anchors clear of the sticky header.
 	await writeSvg(path.join(routeDir, 'images', 'details', 'first.svg'), '#7b8f78');
 	await writeSvg(path.join(routeDir, 'images', 'details', 'second.svg'), '#a7664b');
 	await writeFile(path.join(siteDir, 'content.md'), `---
-title: Static baseline
-description: A page without interactive features.
-sections:
-  intro: {}
+page:
+  title: Static baseline
+  description: A page without interactive features.
 ---
 ## Intro {#intro}
 
 Ordinary Markdown needs no client-side JavaScript.
 `);
 	await writeFile(path.join(routeDir, 'content.md'), `---
-title: Details
-description: Static managed images.
-sections:
-  details: {}
+page:
+  title: Details
+  description: Static managed images.
 ---
 ## Details {#details}
 
@@ -148,10 +141,9 @@ Static image stacks remain static.
 	);
 
 	await writeFile(path.join(siteDir, 'content.md'), `---
-title: Notes
-description: A page with an enhanced sidenote.
-sections:
-  intro: {}
+page:
+  title: Notes
+  description: A page with an enhanced sidenote.
 ---
 ## Intro {#intro}
 
@@ -160,10 +152,9 @@ This sentence has additional context.{note-ref}
 {note: The note remains readable without JavaScript, while alignment is enhanced when JavaScript runs.}
 `);
 	await writeFile(path.join(routeDir, 'content.md'), `---
-title: Carousel
-description: An interactive image carousel.
-sections:
-  details: {}
+page:
+  title: Carousel
+  description: An interactive image carousel.
 ---
 ## Details {#details}
 
@@ -185,20 +176,18 @@ sections:
 	assert.match(getScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');
 
 	await writeFile(path.join(siteDir, 'content.md'), `---
-title: Banner
-description: A page with a dismissible banner.
-sections:
-  intro: {}
+page:
+  title: Banner
+  description: A page with a dismissible banner.
 ---
 ## Intro {#intro}
 
 The only interactive feature is the banner.
 `);
 	await writeFile(path.join(routeDir, 'content.md'), `---
-title: Details
-description: A second plain page.
-sections:
-  details: {}
+page:
+  title: Details
+  description: A second plain page.
 ---
 ## Details {#details}
 

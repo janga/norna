@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import projectContext from '../editors/vscode/norna-project.cjs';
+import yamlSchemaCompletions from '../editors/vscode/yaml-schema-completions.cjs';
 import { documentationRef } from './lib/documentation-links.mjs';
 import {
 	findNornaSiteRoot,
@@ -18,10 +20,21 @@ const root = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-language-'));
 const siteRoot = path.join(root, 'site');
 const homeContentPath = path.join(siteRoot, 'content.md');
 const routeContentPath = path.join(siteRoot, 'routes', '010-about', 'content.md');
+const routeThemePath = path.join(siteRoot, 'routes', '010-about', 'theme.yaml');
+const installedNornaRoot = path.join(root, 'node_modules', '@janga', 'norna');
+const packageManifestPath = path.join(installedNornaRoot, 'schemas', 'manifest.json');
+const {
+	getNornaDocumentContext,
+	getNornaProjectContext,
+	supportedEditorApiVersion,
+	supportedSchemaVersion,
+} = projectContext;
+const { getYamlSchemaSnippetCompletions } = yamlSchemaCompletions;
 
 const homeSource = `---
-title: Editor fixture
-description: Exercises project-local image discovery.
+page:
+  title: Editor fixture
+  description: Exercises project-local image discovery.
 ---
 
 ## Intro {#intro}
@@ -34,8 +47,9 @@ Text with a missing note {note-ref}.
 \`\`\`
 `;
 const routeSource = `---
-title: About
-description: About this fixture.
+page:
+  title: About
+  description: About this fixture.
 ---
 
 ## Team {#team}
@@ -44,14 +58,26 @@ Route content.
 `;
 
 try {
+	await mkdir(path.join(installedNornaRoot, 'schemas'), { recursive: true });
 	await mkdir(path.join(siteRoot, 'images', 'intro'), { recursive: true });
 	await mkdir(path.join(siteRoot, 'routes', '010-about', 'images', 'team'), { recursive: true });
 	await mkdir(path.join(siteRoot, 'public'), { recursive: true });
+	await writeFile(path.join(root, 'package.json'), JSON.stringify({ name: 'editor-fixture', version: '1.0.0' }));
+	await writeFile(path.join(installedNornaRoot, 'package.json'), JSON.stringify({ name: '@janga/norna', version: '9.8.7' }));
+	await writeFile(packageManifestPath, JSON.stringify({
+		editorApiVersion: supportedEditorApiVersion,
+		files: {
+			config: 'config.schema.json',
+			contentFrontmatter: 'content-frontmatter.schema.json',
+			sitewideContent: 'sitewide-content.schema.json',
+			theme: 'theme.schema.json',
+		},
+		schemaVersion: supportedSchemaVersion,
+	}));
 	await writeFile(path.join(siteRoot, 'config.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(siteRoot, 'sitewide-content.yaml'), `navigation:
-  label: Editor fixture
-  logo:
-    height: 2rem
+	await writeFile(path.join(siteRoot, 'theme.yaml'), 'preset: project\n');
+	await writeFile(path.join(siteRoot, 'sitewide-content.yaml'), `logo:
+  height: 2rem
 `);
 	await writeFile(path.join(siteRoot, 'images', 'intro', 'local.jpg'), 'local');
 	await writeFile(path.join(siteRoot, 'routes', '010-about', 'images', 'team', 'portrait.jpg'), 'portrait');
@@ -63,8 +89,98 @@ try {
 	await writeFile(path.join(siteRoot, 'public', 'favicon-32x32.png'), 'unrecognized');
 	await writeFile(homeContentPath, homeSource);
 	await writeFile(routeContentPath, routeSource);
+	await writeFile(routeThemePath, 'preset: portfolio\n');
 
 	assert.equal(await findNornaSiteRoot(homeContentPath), siteRoot);
+	assert.equal(getNornaDocumentContext(homeContentPath).schemaKind, 'contentFrontmatter');
+	assert.equal(getNornaDocumentContext(homeContentPath).nornaPackage.root, installedNornaRoot);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'config.yaml')).schemaKind, 'config');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).schemaKind, 'theme');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'sitewide-content.yaml')).schemaKind, 'sitewideContent');
+	assert.equal(getNornaDocumentContext(routeContentPath).routeDirectory, '010-about');
+	assert.equal(getNornaDocumentContext(routeThemePath).schemaKind, 'theme');
+	assert.equal(getNornaProjectContext(path.join(siteRoot, 'public', 'logo.svg')).siteRoot, siteRoot);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'public', 'logo.svg')), null);
+	assert.equal(getNornaDocumentContext(path.join(root, 'README.md')), null);
+	assert.equal(getNornaDocumentContext(path.join(root, 'docs', 'content.md')), null);
+	await mkdir(path.join(siteRoot, 'routes', 'about'), { recursive: true });
+	await writeFile(path.join(siteRoot, 'routes', 'about', 'content.md'), routeSource);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'routes', 'about', 'content.md')), null);
+	await mkdir(path.join(siteRoot, 'routes', '010-about', 'nested'), { recursive: true });
+	await writeFile(path.join(siteRoot, 'routes', '010-about', 'nested', 'content.md'), routeSource);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'routes', '010-about', 'nested', 'content.md')), null);
+
+	const compatibleManifest = await readFile(packageManifestPath, 'utf8');
+	await writeFile(packageManifestPath, JSON.stringify({
+		...JSON.parse(compatibleManifest),
+		editorApiVersion: supportedEditorApiVersion + 1,
+	}));
+	assert.equal(getNornaDocumentContext(homeContentPath).schemaCompatible, true);
+	assert.equal(getNornaDocumentContext(homeContentPath).editorCompatible, false);
+	await writeFile(packageManifestPath, JSON.stringify({
+		...JSON.parse(compatibleManifest),
+		schemaVersion: supportedSchemaVersion + 1,
+	}));
+	assert.equal(getNornaDocumentContext(homeContentPath).schemaCompatible, false);
+	await writeFile(packageManifestPath, compatibleManifest);
+
+	const sitewideSchema = JSON.parse(await readFile(path.join(process.cwd(), 'schemas', 'sitewide-content.schema.json'), 'utf8'));
+	const bannerSource = 'banners:\n  - ';
+	const bannerSnippets = getYamlSchemaSnippetCompletions({
+		lineText: '  - ',
+		offset: bannerSource.length,
+		schema: sitewideSchema,
+		source: bannerSource,
+	});
+	assert.equal(bannerSnippets.length, 1);
+	assert.equal(bannerSnippets[0].label, 'Norna: Warning banner');
+	assert.equal(bannerSnippets[0].text, `  - id: \${1:project-status}
+    tone: warning
+    title: \${2:Important notice}
+    text: \${3:Brief explanation.}`);
+	assert.deepEqual(getYamlSchemaSnippetCompletions({
+		lineText: '  - id: existing',
+		offset: bannerSource.length,
+		schema: sitewideSchema,
+		source: bannerSource,
+	}), []);
+	const unrelatedSequence = 'other:\n  - ';
+	assert.deepEqual(getYamlSchemaSnippetCompletions({
+		lineText: '  - ',
+		offset: unrelatedSequence.length,
+		schema: sitewideSchema,
+		source: unrelatedSequence,
+	}), []);
+	const themeSchema = JSON.parse(await readFile(path.join(process.cwd(), 'schemas', 'theme.schema.json'), 'utf8'));
+	const gutterSource = 'layout:\n  gutter: ';
+	const gutterSnippets = getYamlSchemaSnippetCompletions({
+		lineText: '  gutter: ',
+		offset: gutterSource.length,
+		schema: themeSchema,
+		source: gutterSource,
+	});
+	assert.equal(gutterSnippets[0].label, 'Norna: Responsive page gutter');
+	assert.equal(gutterSnippets[0].text, `  gutter:
+    desktop: \${1:clamp(1.25rem, 4vw, 3rem)}
+    mobile: \${2:1rem}`);
+	const typographySource = 'typography:\n  overrides: ';
+	const typographySnippets = getYamlSchemaSnippetCompletions({
+		lineText: '  overrides: ',
+		offset: typographySource.length,
+		schema: themeSchema,
+		source: typographySource,
+	});
+	assert.equal(typographySnippets[0].label, 'Norna: Typography overrides');
+	assert.match(typographySnippets[0].text, /headings:\n      h2:/);
+	const buildInfoSource = 'footer:\n  buildInfo: ';
+	const buildInfoSnippets = getYamlSchemaSnippetCompletions({
+		lineText: '  buildInfo: ',
+		offset: buildInfoSource.length,
+		schema: sitewideSchema,
+		source: buildInfoSource,
+	});
+	assert.deepEqual(buildInfoSnippets, []);
+
 	const publicAssetStatus = await getSitePublicAssetStatus(homeContentPath);
 	assert.deepEqual(publicAssetStatus.logos, ['logo.png', 'logo.svg']);
 	assert.deepEqual(publicAssetStatus.browserIcons, ['favicon.svg']);
@@ -75,12 +191,14 @@ try {
 	await rm(path.join(siteRoot, 'public', 'logo.svg'), { force: true });
 	await rm(path.join(siteRoot, 'public', 'logo.png'), { force: true });
 	const missingLogoStatus = await getSitePublicAssetStatus(homeContentPath);
-	assert.ok(missingLogoStatus.issues.some(({ code, line }) => code === 'missing-logo-file' && line === 3));
+	assert.ok(missingLogoStatus.issues.some(({ code, line }) => code === 'missing-logo-file' && line === 1));
 	assert.equal(nornaBlockDefinitions['norna-image-stack'].description.includes('vertical stack'), true);
 	assert.match(
 		nornaBlockDefinitions['norna-image-stack'].documentation,
-		new RegExp(`/blob/${documentationRef.replaceAll('.', '\\.')}\/docs/content\\.md#norna-blocks`),
+		new RegExp(`/blob/${documentationRef.replaceAll('.', '\\.')}\/docs/content\\.md#image-stack`),
 	);
+	assert.match(nornaBlockDefinitions['norna-image-carousel'].documentation, /docs\/content\.md#image-carousel/);
+	assert.match(nornaBlockDefinitions['norna-card-list'].documentation, /docs\/content\.md#card-list/);
 	assert.equal(nornaBlockDefinitions['norna-card-list'].options.layout.default, 'image-top');
 
 	const stackFieldSource = homeSource.replace('- image: portrait.jpg', '- image: portrait.jpg\n  ');

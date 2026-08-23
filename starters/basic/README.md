@@ -15,7 +15,7 @@ If the standard local port is blocked, start with:
 npm run norna:dev -- --kill
 ```
 
-Edit the shared navigation label, logo settings, banners, and footer in
+Edit shared logo settings, banners, and footer in
 `site/sitewide-content.yaml`,
 site-wide visual defaults in `site/theme.yaml`, homepage content and section
 metadata in `site/content.md`, and technical settings such as URL and locale

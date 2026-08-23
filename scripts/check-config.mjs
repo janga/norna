@@ -32,10 +32,10 @@ try {
 	}
 
 	if (logoAssets.length === 0) {
-		if (sitewideContent.navigation?.logo) {
-			throw new Error(`Site-wide navigation.logo is configured, but no logo file was found. Add exactly one of ${logoAssetPaths.join(', ')}, or remove navigation.logo.`);
+		if (sitewideContent.logo) {
+			throw new Error(`Site-wide logo is configured, but no logo file was found. Add exactly one of ${logoAssetPaths.join(', ')}, or remove logo.`);
 		}
-		console.warn(`Warning: No logo file found in ${sitePublicLabel}. Norna will use sitewide navigation.label or the homepage title as the navigation label.`);
+		console.warn(`Warning: No logo file found in ${sitePublicLabel}. Norna will use page titles for navigation.`);
 		console.warn(`Add exactly one of ${logoAssetPaths.join(', ')} when the site should have a logo.`);
 	}
 

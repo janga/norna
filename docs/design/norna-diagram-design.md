@@ -67,7 +67,7 @@ Diagrams must match the current Norna model:
 
 - A Norna site is described with site files, not arbitrary project structure.
 - `content.md` is the homepage content file.
-- `sitewide-content.yaml` contains shared site identity, banners, and footer
+- `sitewide-content.yaml` contains shared logo settings, banners, and footer
   content.
 - Additional pages are route directories with `content.md`.
 - Route folder prefixes control route presentation order.

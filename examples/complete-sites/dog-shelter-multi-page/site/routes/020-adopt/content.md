@@ -1,6 +1,7 @@
 ---
-title: Adopt
-description: Learn how to adopt from Dog Shelter.
+page:
+  title: Adopt
+  description: Learn how to adopt from Dog Shelter.
 ---
 
 ## Adopt {#adopt}

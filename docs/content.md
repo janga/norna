@@ -13,19 +13,27 @@ belong in [Configuration](configuration.md).
 
 ## Page Frontmatter
 
-The Astro content schema validates these top-level fields in page files:
+The content schema validates these top-level fields in page files:
 
-- `title`: required string. Rendered as the document title.
-- `description`: required string. Rendered as the meta description.
-- `navigation`: optional page navigation metadata. See [Routes](routes.md).
-- `sections`: optional section metadata keyed by section id.
+- `page`: required page metadata.
+- `navigation`: optional route-listing metadata. See [Routes](routes.md).
+
+`page` contains:
+
+- `title`: required string. Used as the document title and navigation label.
+  The homepage title names the first navigation item in a multi-page site and
+  supplies alternative text for an optional navigation logo.
+- `description`: optional string. Used only as the page's HTML meta description
+  for search engines, link previews, and other metadata consumers. It is not
+  rendered as visible page content.
 
 Minimal homepage:
 
 ```md
 ---
-title: My Site
-description: A small Norna site.
+page:
+  title: My Site
+  description: A small Norna site.
 ---
 
 ## Intro {#intro}
@@ -57,38 +65,13 @@ Every section heading must have an explicit id:
 ## Work {#work}
 ```
 
-The id must match `^[a-z0-9-]+$`. It is used for anchors, navigation, image
-directories, and optional section metadata. The visible section navigation
-label comes from the Markdown heading text.
+The id must match `^[a-z0-9-]+$`. It is used for anchors, navigation, and image
+directories. The visible section navigation label comes from the Markdown
+heading text.
 
 Markdown section content starts at the level 2 heading and continues until the
 next level 2 heading. `###` and `####` headings are body subheadings within the
 current section, not new sections.
-
-## Section Metadata
-
-Use `sections` only when a section needs structured metadata that is not
-naturally expressed by Markdown. Currently this is date-based visibility.
-
-```yaml
-sections:
-  work:
-    visible:
-      from: "2026-08-01"
-      until: "2026-09-16"
-```
-
-See [Temporary Sections](#temporary-sections) for visibility semantics.
-
-Each `sections.<section-id>` key must match a Markdown heading id in the same
-page file:
-
-```md
-## Work {#work}
-```
-
-Do not list sections in frontmatter just to define order. Section order comes
-from the Markdown heading order.
 
 ## Norna Blocks
 
@@ -96,6 +79,8 @@ Norna-managed local images and cards are written in Markdown fenced blocks at
 the point where they should appear in the section. Markdown determines
 placement: move the fenced block in the page file to move the rendered image,
 carousel, or card list.
+
+### Image Stack
 
 Use `norna-image-stack` for one or more stacked images:
 
@@ -106,6 +91,8 @@ Use `norna-image-stack` for one or more stacked images:
   caption: Work in progress.
 ```
 ````
+
+### Image Carousel
 
 Use `norna-image-carousel` for a carousel:
 
@@ -119,6 +106,8 @@ Use `norna-image-carousel` for a carousel:
   caption: Second caption.
 ```
 ````
+
+### Card List
 
 Use `norna-card-list` for a list of compact cards. Cards can include text,
 managed images, links, and optional badge text:
@@ -237,36 +226,6 @@ managed by Norna. Use `norna-image-stack`, `norna-image-carousel`, or
 `norna-card-list` for local site images that should be validated, processed and
 synced.
 
-## Temporary Sections
-
-Use `sections.<section-id>.visible` for sections that should be rendered only
-during a date window:
-
-```yaml
-sections:
-  exhibition:
-    visible:
-      from: "2026-08-01"
-      until: "2026-09-16"
-```
-
-`from` is inclusive. `until` is exclusive. With the example above, the section
-is visible from 2026-08-01 through 2026-09-15 and hidden again on 2026-09-16.
-
-Both `from` and `until` use `YYYY-MM-DD`. Either value may be omitted, but a
-`visible` object must contain at least one of them.
-
-Hidden sections are omitted from the rendered HTML and sticky navigation. They
-remain in the page file, and `content:check` still validates their matching
-Markdown headings and image references.
-
-The current date is evaluated at dev/build time. Set `NORNA_TODAY` to preview
-or test a specific date:
-
-```sh
-NORNA_TODAY=2026-08-15 npm run norna:build
-```
-
 ## Markdown Text
 
 Use ordinary Markdown for emphasis and structure:
@@ -315,7 +274,7 @@ Run:
 npm run norna:content:check
 ```
 
-This checks section heading ids, section metadata, duplicate image names,
+This checks section heading ids, duplicate image names,
 missing image files, misplaced referenced images, duplicate image references,
 invalid Norna blocks, unreferenced images, removed inline style syntax,
 Markdown image references to unmanaged local files, and common frontmatter
@@ -327,15 +286,12 @@ invalid, when a key is indented under a line that already has a value, or when a
 known nested key appears at the top level:
 
 ```yaml
-sections:
-  intro:
-    visible:
-      from: "2026-08-01"
+navigation:
+  listed: false
 ```
 
-Top-level page frontmatter may contain only `title`, `description`,
-`navigation`, and `sections`. Visual settings belong in the root or route-local
-`theme.yaml`.
+Top-level page frontmatter may contain only `page` and `navigation`. Visual
+settings belong in the root or route-local `theme.yaml`.
 
 Run:
 

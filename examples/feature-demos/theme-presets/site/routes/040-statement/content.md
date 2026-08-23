@@ -1,8 +1,7 @@
 ---
-title: Statement
-description: A stronger typography profile for short declarative content.
-navigation:
-  label: Statement
+page:
+  title: Statement
+  description: A stronger typography profile for short declarative content.
 ---
 
 ## Statement {#statement}

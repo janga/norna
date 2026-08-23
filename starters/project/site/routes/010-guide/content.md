@@ -1,8 +1,7 @@
 ---
-title: Guide
-description: Adapt this compact guide for normal project use.
-navigation:
-  label: Guide
+page:
+  title: Guide
+  description: Adapt this compact guide for normal project use.
 ---
 
 ## Quickstart {#quickstart}

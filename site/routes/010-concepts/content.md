@@ -1,10 +1,9 @@
 ---
-title: Concepts
-description:
-  Understand Norna's opinionated file model and how it differs from a
-  traditional static site generator.
-navigation:
-  label: Concepts
+page:
+  title: Concepts
+  description: >-
+    Understand Norna's opinionated file model and how it differs from a traditional static site
+    generator.
 ---
 
 ## Single-page site {#single-page-site}

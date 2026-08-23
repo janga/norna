@@ -13,7 +13,6 @@ import {
 import {
 	getBodySections,
 	getContentFiles,
-	getFrontmatterSections,
 	getImageCandidatesByName,
 	getDeprecatedInlineStyleReferences,
 	readSiteFile,
@@ -412,8 +411,6 @@ for (const contentFile of contentFiles) {
 	validateFrontmatterIndentation(frontmatter, addIssue);
 	validateContentFrontmatterStructure(frontmatter, addIssue);
 
-	const frontmatterSections = getFrontmatterSections(frontmatter);
-	const frontmatterIds = new Set(frontmatterSections.map((section) => section.id));
 	const { sections } = getBodySections(body);
 	const sectionsById = new Map();
 	const blockResultsBySectionId = new Map();
@@ -477,7 +474,6 @@ for (const contentFile of contentFiles) {
 
 	contentFileContexts.push({
 		contentFile,
-		frontmatterIds,
 		sections,
 		sectionsById,
 		blockResultsBySectionId,
@@ -488,22 +484,11 @@ for (const contentFile of contentFiles) {
 for (const context of contentFileContexts) {
 	const {
 		contentFile,
-		frontmatterIds,
 		sections,
 		sectionsById,
 		blockResultsBySectionId,
 		body,
 	} = context;
-
-	for (const id of frontmatterIds) {
-		if (!sectionsById.has(id)) {
-			addContentIssue(contentFile, {
-				severity: 'error',
-				message: `Section metadata "${id}" does not match any Markdown section.`,
-				fix: `Add a level 2 Markdown heading, for example "## Heading {#${id}}", or remove sections.${id}.`,
-			});
-		}
-	}
 
 	for (const styleName of new Set(getDeprecatedInlineStyleReferences(body))) {
 		addContentIssue(contentFile, {

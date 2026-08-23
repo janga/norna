@@ -1,8 +1,5 @@
 # yaml-language-server: $schema=../schemas/sitewide-content.schema.json
 
-navigation:
-  label: Norna
-
 banners:
   - id: project-status3
     tone: warning
@@ -12,11 +9,4 @@ banners:
     text: Not for production use.
 footer:
   copyrightMessage: norna is licensed under GNU GPL v3.
-  buildInfo:
-    enabled: true
-    text: Built
-    dateTimeFormat:
-      locale: en-GB
-      timeZone: UTC
-      dateStyle: short
-      timeStyle: short
+  buildInfo: true

@@ -198,19 +198,16 @@ try {
 	const packageCheckSitewide = await readFile(packageCheckSitewidePath, 'utf8');
 	await writeFile(
 		packageCheckSitewidePath,
-		packageCheckSitewide.replace('label: Example Site', 'label: Package Check Logo\n  logo:\n    height: 2.6rem'),
+		`logo:\n  height: 2.6rem\n${packageCheckSitewide}`,
 	);
 	await writeFile(
 		path.join(siteProjectRoot, 'site', 'public', 'logo.svg'),
 		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="black"/></svg>\n',
 	);
 	await writeFile(path.join(siteProjectRoot, 'site', 'content.md'), `---
-title: Package Check Site
-description: Site used by package checks.
-sections:
-  intro: {}
-  warning: {}
-  work: {}
+page:
+  title: Package Check Site
+  description: Site used by package checks.
 ---
 
 ## Intro {#intro}
@@ -232,12 +229,9 @@ This section keeps the package check independent from user-facing starter copy.
 `);
 	await mkdir(path.join(siteProjectRoot, 'site', 'routes', '010-about'), { recursive: true });
 	await writeFile(path.join(siteProjectRoot, 'site', 'routes', '010-about', 'content.md'), `---
-title: About the site
-description: Route used by package checks.
-navigation:
-  label: About
-sections:
-  about: {}
+page:
+  title: About the site
+  description: Route used by package checks.
 ---
 
 ## About {#about}
@@ -315,7 +309,7 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<a class="site-brand" href="/site/"><img class="site-brand-logo" src="/site/logo.svg" alt="Package Check Logo">',
+		'<a class="site-brand" href="/site/"><img class="site-brand-logo" src="/site/logo.svg" alt="Package Check Site">',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -484,28 +478,15 @@ This route verifies that packaged norna sites can build route pages.
 	await writeFile(
 		siteContentPath,
 		siteContent.replace(
-			'  intro: {}',
-			'  intro:\n    typography:\n      overrides:\n        caption:\n          spacingBefore: wide',
+			'description: Site used by package checks.',
+			'description: Site used by package checks.\nsections:\n  intro: {}',
 		),
 	);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.intro: Unrecognized key: "typography"',
-	);
-	await writeFile(
-		siteContentPath,
-		siteContent.replace(
-			'  intro: {}',
-			'  intro:\n    palette: dark',
-		),
-	);
-	await runExpectFailure(
-		npxBin,
-		['norna', 'build'],
-		{ cwd: siteProjectRoot, env: npmEnv },
-		'sections.intro: Unrecognized key: "palette"',
+		'defines "sections" at the top level, but it is not a valid top-level content field',
 	);
 	await writeFile(
 		siteThemePath,

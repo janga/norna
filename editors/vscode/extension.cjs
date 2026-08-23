@@ -3,14 +3,17 @@ const { createHash } = require('node:crypto');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const vscode = require('vscode');
+const {
+	getNornaDocumentContext,
+	getNornaProjectContext,
+	supportedEditorApiVersion,
+	supportedSchemaVersion,
+} = require('./norna-project.cjs');
+const { getYamlSchemaSnippetCompletions } = require('./yaml-schema-completions.cjs');
 
-const schemaKinds = new Map([
-	['config.yaml', 'config'],
-	['theme.yaml', 'theme'],
-	['sitewide-content.yaml', 'sitewideContent'],
-]);
 const schemaContentByUri = new Map();
-const packageByDocument = new Map();
+const documentContextByPath = new Map();
+const projectContextByPath = new Map();
 const serviceByRoot = new Map();
 const diagnosticTimers = new Map();
 const publicAssetDiagnosticUrisByRoot = new Map();
@@ -19,45 +22,22 @@ let output;
 
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
-const findNornaPackage = (documentPath) => {
-	const cached = packageByDocument.get(documentPath);
-	if (cached !== undefined) return cached;
-
-	let directory = path.dirname(path.resolve(documentPath));
-	while (true) {
-		const ownPackagePath = path.join(directory, 'package.json');
-		if (fs.existsSync(ownPackagePath)) {
-			try {
-				const packageJson = readJson(ownPackagePath);
-				if (packageJson.name === '@janga/norna' && fs.existsSync(path.join(directory, 'schemas', 'manifest.json'))) {
-					const result = { packageJson, root: directory };
-					packageByDocument.set(documentPath, result);
-					return result;
-				}
-			} catch {
-				// Continue upwards; a malformed unrelated package is not a Norna project.
-			}
-		}
-
-		const installedRoot = path.join(directory, 'node_modules', '@janga', 'norna');
-		const installedPackagePath = path.join(installedRoot, 'package.json');
-		if (fs.existsSync(installedPackagePath) && fs.existsSync(path.join(installedRoot, 'schemas', 'manifest.json'))) {
-			const result = { packageJson: readJson(installedPackagePath), root: installedRoot };
-			packageByDocument.set(documentPath, result);
-			return result;
-		}
-
-		const parent = path.dirname(directory);
-		if (parent === directory) break;
-		directory = parent;
+const getDocumentContext = (documentPath) => {
+	if (!documentContextByPath.has(documentPath)) {
+		documentContextByPath.set(documentPath, getNornaDocumentContext(documentPath));
 	}
+	return documentContextByPath.get(documentPath);
+};
 
-	packageByDocument.set(documentPath, null);
-	return null;
+const getProjectContext = (documentPath) => {
+	if (!projectContextByPath.has(documentPath)) {
+		projectContextByPath.set(documentPath, getNornaProjectContext(documentPath));
+	}
+	return projectContextByPath.get(documentPath);
 };
 
 const documentationRootFor = (documentPath) => {
-	const version = findNornaPackage(documentPath)?.packageJson?.version;
+	const version = getProjectContext(documentPath)?.nornaPackage?.packageJson?.version;
 	const reference = version ? `v${version}` : 'main';
 	return `https://github.com/janga/norna/blob/${reference}/docs`;
 };
@@ -67,8 +47,9 @@ const documentationLinkFor = (documentPath, label, file, anchor) => (
 );
 
 const getSchema = (documentPath, kind) => {
-	const nornaPackage = findNornaPackage(documentPath);
-	if (!nornaPackage) return null;
+	const context = getDocumentContext(documentPath);
+	const nornaPackage = context?.schemaCompatible ? context.nornaPackage : null;
+	if (!nornaPackage || context.schemaKind !== kind) return null;
 	const manifestPath = path.join(nornaPackage.root, 'schemas', 'manifest.json');
 	const manifest = readJson(manifestPath);
 	const filename = manifest.files?.[kind];
@@ -80,7 +61,8 @@ const getSchema = (documentPath, kind) => {
 
 const getLanguageService = async (documentPath) => {
 	if (!vscode.workspace.isTrusted) return null;
-	const nornaPackage = findNornaPackage(documentPath);
+	const context = getProjectContext(documentPath);
+	const nornaPackage = context?.editorCompatible ? context.nornaPackage : null;
 	if (!nornaPackage) return null;
 	if (!serviceByRoot.has(nornaPackage.root)) {
 		const servicePath = path.join(nornaPackage.root, 'scripts', 'lib', 'editor-language-service.mjs');
@@ -93,16 +75,15 @@ const getLanguageService = async (documentPath) => {
 
 const isNornaContentDocument = (document) => (
 	document.languageId === 'markdown'
-	&& path.basename(document.uri.fsPath) === 'content.md'
-	&& findNornaPackage(document.uri.fsPath)
+	&& getDocumentContext(document.uri.fsPath)?.documentKind === 'content'
 );
 
-const getYamlSchemaKind = (document) => (
-	document.languageId === 'yaml' ? schemaKinds.get(path.basename(document.uri.fsPath)) : undefined
-);
+const getYamlSchemaKind = (document) => document.languageId === 'yaml'
+	? getDocumentContext(document.uri.fsPath)?.schemaKind
+	: undefined;
 
 const isNornaYamlDocument = (document) => Boolean(
-	getYamlSchemaKind(document) && findNornaPackage(document.uri.fsPath)
+	getYamlSchemaKind(document) && getDocumentContext(document.uri.fsPath)?.schemaCompatible
 );
 
 const getSchemaChoices = (schema) => {
@@ -237,7 +218,7 @@ const getEmptyYamlCompletionItems = (document) => {
 	const snippets = {
 		config: `${directive}\n\nurl: \${1:https://example.com/}\n`,
 		theme: `${directive}\n\npreset: \${1|${presetChoices.join(',')}|}\n`,
-		sitewideContent: `${directive}\n\nnavigation:\n  label: \${1:Site name}\n`,
+		sitewideContent: `${directive}\n\nfooter:\n  copyrightMessage: \${1:Copyright owner.}\n`,
 	};
 	const labels = {
 		config: 'Norna site configuration',
@@ -256,6 +237,31 @@ const getEmptyYamlCompletionItems = (document) => {
 		snippets[kind],
 		documentation[kind],
 	)];
+};
+
+const getYamlSchemaSnippetItems = (document, position) => {
+	if (!isNornaYamlDocument(document)) return [];
+	const kind = getYamlSchemaKind(document);
+	const resolved = getSchema(document.uri.fsPath, kind);
+	if (!resolved) return [];
+	const snippets = getYamlSchemaSnippetCompletions({
+		lineText: document.lineAt(position.line).text,
+		offset: document.offsetAt(position),
+		schema: resolved.schema,
+		source: document.getText(),
+	});
+
+	return snippets.map((snippet, index) => {
+		const item = new vscode.CompletionItem(snippet.label, vscode.CompletionItemKind.Snippet);
+		item.detail = `Norna ${path.basename(document.uri.fsPath)} snippet`;
+		item.documentation = new vscode.MarkdownString(snippet.documentation);
+		item.insertText = new vscode.SnippetString(snippet.text);
+		item.range = document.lineAt(position.line).range;
+		item.filterText = snippet.label;
+		item.sortText = `0000-norna-${String(index).padStart(3, '0')}`;
+		item.preselect = index === 0;
+		return item;
+	});
 };
 
 const makeBlockCandidateItem = (candidate, replacementRange, documentation) => {
@@ -482,8 +488,9 @@ const registerYamlSchemas = async (context) => {
 		'norna',
 		(resource) => {
 			const uri = vscode.Uri.parse(resource);
-			const kind = schemaKinds.get(path.basename(uri.fsPath));
-			if (!kind) return undefined;
+			const context = getDocumentContext(uri.fsPath);
+			if (!context?.schemaCompatible || context.documentKind !== 'yaml') return undefined;
+			const kind = context.schemaKind;
 			const resolved = getSchema(uri.fsPath, kind);
 			if (!resolved) return undefined;
 			const schemaContent = JSON.stringify(resolved.schema);
@@ -503,19 +510,33 @@ const showStatus = async () => {
 		void vscode.window.showInformationMessage('Open a Norna file to inspect IntelliSense status.');
 		return;
 	}
-	const resolved = findNornaPackage(editor.document.uri.fsPath);
-	if (!resolved) {
-		void vscode.window.showWarningMessage('No project-local @janga/norna installation with schemas was found. Run npm install in the project.');
+	const project = getProjectContext(editor.document.uri.fsPath);
+	if (!project) {
+		void vscode.window.showWarningMessage('The active file is not inside a Norna site containing config.yaml and content.md.');
 		return;
 	}
-	const manifest = readJson(path.join(resolved.root, 'schemas', 'manifest.json'));
+	const resolved = project.nornaPackage;
+	if (!resolved) {
+		void vscode.window.showWarningMessage('This Norna site has no discoverable project-local @janga/norna installation. Run npm install in the project.');
+		return;
+	}
+	const documentContext = getDocumentContext(editor.document.uri.fsPath);
+	if (!documentContext) {
+		void vscode.window.showWarningMessage('The active file is not a Norna source file recognized by the installed Norna version.');
+		return;
+	}
+	if (!project.schemaCompatible) {
+		void vscode.window.showWarningMessage(`Norna ${resolved.packageJson.version} uses schema format ${resolved.manifest.schemaVersion ?? '(missing)'}, but this extension supports format ${supportedSchemaVersion}. Norna IntelliSense is disabled for this file.`);
+		return;
+	}
+	const manifest = resolved.manifest;
 	const service = await getLanguageService(editor.document.uri.fsPath);
 	const assetStatus = await refreshPublicAssetDiagnostics(editor.document.uri.fsPath, service);
 	const logo = assetStatus?.logos.length === 1
 		? assetStatus.logos[0]
 		: assetStatus?.logos.length > 1
 			? `${assetStatus.logos.length} conflicting files`
-			: 'none (navigation uses label or page title)';
+			: 'none (navigation uses page titles)';
 	const browserIcons = assetStatus?.browserIcons.length > 0
 		? assetStatus.browserIcons.join(', ')
 		: 'none';
@@ -523,10 +544,11 @@ const showStatus = async () => {
 	output.appendLine([
 		`Norna ${resolved.packageJson.version}`,
 		`Schema format: ${manifest.schemaVersion}`,
+		`Editor API: ${manifest.editorApiVersion ?? '(missing)'}${project.editorCompatible ? '' : ` (extension supports ${supportedEditorApiVersion})`}`,
 		`Schemas: ${resolved.root}`,
+		`Active file: ${documentContext.relativePath}`,
 		assetStatus ? `Site: ${assetStatus.siteRoot}` : 'Site: not found for the active file',
 		assetStatus ? `Public directory: ${assetStatus.publicDirectory}` : null,
-		assetStatus ? `Navigation label: ${assetStatus.navigation?.label ?? '(homepage title fallback)'}` : null,
 		`Navigation logo: ${logo}`,
 		`Browser icons: ${browserIcons}`,
 		`Public asset issues: ${issueCount}`,
@@ -534,14 +556,17 @@ const showStatus = async () => {
 		'',
 	].filter((line) => line !== null).join('\n'));
 	const action = await vscode.window.showInformationMessage(
-		`Norna ${resolved.packageJson.version}. Logo: ${logo}. Browser icons: ${browserIcons}. ${issueCount} public asset issue${issueCount === 1 ? '' : 's'}.`,
+		project.editorCompatible
+			? `Norna ${resolved.packageJson.version}. Logo: ${logo}. Browser icons: ${browserIcons}. ${issueCount} public asset issue${issueCount === 1 ? '' : 's'}.`
+			: `Norna ${resolved.packageJson.version} schemas are active, but Norna-specific Markdown support requires editor API ${supportedEditorApiVersion}.`,
 		'Show details',
 	);
 	if (action === 'Show details') output.show(true);
 };
 
 const refresh = () => {
-	packageByDocument.clear();
+	documentContextByPath.clear();
+	projectContextByPath.clear();
 	schemaContentByUri.clear();
 	for (const siteRoot of publicAssetDiagnosticUrisByRoot.keys()) clearPublicAssetDiagnostics(siteRoot);
 	for (const document of vscode.workspace.textDocuments) scheduleDiagnostics(document, 0);
@@ -669,11 +694,14 @@ async function activate(context) {
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
 		{ language: 'yaml', scheme: 'file' },
 		{
-			provideCompletionItems: (document) => {
-				const items = getEmptyYamlCompletionItems(document);
-				return items.length > 0 ? items : undefined;
+			provideCompletionItems: (document, position) => {
+				const emptyItems = getEmptyYamlCompletionItems(document);
+				if (emptyItems.length > 0) return emptyItems;
+				const snippetItems = getYamlSchemaSnippetItems(document, position);
+				return snippetItems.length > 0 ? snippetItems : undefined;
 			},
 		},
+		'-', ':',
 	));
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
 		{ language: 'markdown', scheme: 'file' },

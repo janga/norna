@@ -9,7 +9,21 @@ want to deploy the documentation site.
 
 ## GitHub Pages Workflow
 
-Each site repository owns `.github/workflows/deploy.yml`. The starter workflow:
+`norna init` creates the GitHub Pages workflow at exactly:
+
+```text
+.github/workflows/deploy.yml
+```
+
+The file belongs to the site repository. GitHub Actions runs its contents, while
+Norna's deploy helpers use the filename to find and monitor the workflow. Keep
+the default filename when using `norna deploy`.
+
+GitHub Actions itself permits other workflow filenames. If the file is renamed,
+`norna deploy:watch` can monitor it with `--workflow <name-or-file>`, but the
+normal `norna deploy` command still expects `deploy.yml`.
+
+The starter workflow:
 
 1. runs for the repository's default branch,
 2. checks out the site repository,
@@ -20,8 +34,10 @@ Each site repository owns `.github/workflows/deploy.yml`. The starter workflow:
 7. deploys the artifact to GitHub Pages.
 
 In the GitHub repository settings, set Pages to build from GitHub Actions.
-Site-specific public files such as `site/public/CNAME`, `robots.txt` and
-`sitemap.xml` belong in the site repository.
+Site-specific public files such as `site/public/CNAME`, `robots.txt`, and
+`sitemap.xml` belong in the site repository. Norna copies them, while GitHub
+Pages, crawlers, and other external consumers give those filenames their
+meaning. See [Public Files](public-files.md).
 
 For a project site without a custom domain, include the repository path in
 `site/config.yaml`:

@@ -183,6 +183,7 @@ const readSiteUrl = (config) => {
 const localeLabels = Object.freeze({
 	en: Object.freeze({
 		dismissBanner: 'Dismiss notice',
+		built: 'Built',
 		images: 'Images',
 		note: 'Note',
 		pageNavigation: 'On this page',
@@ -192,6 +193,7 @@ const localeLabels = Object.freeze({
 	}),
 	sv: Object.freeze({
 		dismissBanner: 'Stäng meddelande',
+		built: 'Byggd',
 		images: 'Bilder',
 		note: 'Not',
 		pageNavigation: 'På den här sidan',

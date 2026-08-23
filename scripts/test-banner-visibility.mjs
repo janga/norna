@@ -8,7 +8,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const nornaBin = path.join(repoRoot, 'bin', 'norna.mjs');
 const tempParent = path.join(repoRoot, 'node_modules', '.cache');
 await mkdir(tempParent, { recursive: true });
-const tempRoot = await mkdtemp(path.join(tempParent, 'norna-temporary-visibility-'));
+const tempRoot = await mkdtemp(path.join(tempParent, 'norna-banner-visibility-'));
 const siteDir = path.join(tempRoot, 'site');
 
 const runCli = (args, env = {}) => {
@@ -56,28 +56,11 @@ palette: dark
     text: Active banner text.
 `);
 	await writeFile(path.join(siteDir, 'content.md'), `---
-title: Temporary Visibility Test
-description: Test site for temporary sections.
-sections:
-  expired:
-    visible:
-      until: "2026-01-01"
-  active:
-    visible:
-      from: "2026-01-01"
-      until: "2026-12-31"
-  always: {}
-
+page:
+  title: Temporary Visibility Test
+  description: Test site for temporary banners.
 ---
-## Expired {#expired}
-
-Expired section text.
-
-## Active {#active}
-
-Active section text.
-
-## Always {#always}
+## Content {#content}
 
 Always visible section text.
 `);
@@ -85,13 +68,11 @@ Always visible section text.
 	runCli(['build'], { NORNA_TODAY: '2026-06-15' });
 
 	const html = await readFile(path.join(tempRoot, 'dist', 'index.html'), 'utf8');
-	assert.match(html, /Active section text/);
 	assert.match(html, /Always visible section text/);
-	assert.doesNotMatch(html, /Expired section text/);
 	assert.match(html, /Active banner text/);
 	assert.doesNotMatch(html, /Expired banner text/);
 
-	console.log('Temporary visibility test passed.');
+	console.log('Temporary banner visibility test passed.');
 } finally {
 	await rm(tempRoot, { force: true, recursive: true });
 }

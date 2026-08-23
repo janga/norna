@@ -1,8 +1,7 @@
 ---
-title: Theme Presets
-description: Compare Norna's complete built-in theme presets without overrides.
-navigation:
-  label: Presets
+page:
+  title: Theme Presets
+  description: Compare Norna's complete built-in theme presets without overrides.
 ---
 
 ## Theme presets {#theme-presets}

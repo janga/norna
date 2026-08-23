@@ -1,8 +1,7 @@
 ---
-title: Surfaces
-description: See how palette defaults and section surfaces work together.
-navigation:
-  label: Surfaces
+page:
+  title: Surfaces
+  description: See how palette defaults and section surfaces work together.
 ---
 
 ## Palette options {#palette-options}

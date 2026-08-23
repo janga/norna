@@ -1,8 +1,7 @@
 ---
-title: Guide
-description: Internal route fixture for content model v2.
-navigation:
-  label: Guide
+page:
+  title: Guide
+  description: Internal route fixture for content model v2.
 ---
 
 ## Intro {#intro}

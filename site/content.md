@@ -1,10 +1,9 @@
 ---
-title: Norna
-description:
-  An opinionated CLI for building websites from content, presentation and
-  configuration kept as files.
-navigation:
-  label: Home
+page:
+  title: Norna
+  description: >-
+    An opinionated CLI for building websites from content, presentation and configuration kept as
+    files.
 ---
 
 ## What is Norna? {#intro}

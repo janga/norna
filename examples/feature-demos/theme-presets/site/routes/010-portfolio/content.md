@@ -1,8 +1,7 @@
 ---
-title: Portfolio
-description: A complete theme preset for image-led portfolios and presentations.
-navigation:
-  label: Portfolio
+page:
+  title: Portfolio
+  description: A complete theme preset for image-led portfolios and presentations.
 ---
 
 ## Portfolio {#portfolio}

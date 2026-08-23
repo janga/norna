@@ -8,8 +8,10 @@ import {
 	siteImagesLabel,
 	siteRoutesDir,
 	siteRoutesLabel,
+	sitewideContentLabel,
 } from './site-paths.mjs';
 import { parseRouteDirectory } from './route-model.mjs';
+import { schemaTopLevelKeys } from './schema-definitions.mjs';
 
 export const rasterImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
 export const staticImageExtensions = new Set(['.svg']);
@@ -19,11 +21,11 @@ const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const deprecatedInlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
-const knownConfigTopLevelFrontmatterKeys = new Set(['url', 'language', 'scrollBehavior']);
-const knownContentTopLevelFrontmatterKeys = new Set(['title', 'description', 'navigation', 'sections']);
-const knownThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'images', 'typography', 'palette', 'sectionSurfaces']);
-const knownRouteThemeTopLevelFrontmatterKeys = new Set(['navigation', 'preset', 'layout', 'images', 'typography', 'palette', 'sectionSurfaces']);
-const knownSitewideTopLevelFrontmatterKeys = new Set(['navigation', 'banners', 'footer']);
+const knownConfigTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.config);
+const knownContentTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.content);
+const knownThemeTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.theme);
+const knownRouteThemeTopLevelFrontmatterKeys = knownThemeTopLevelFrontmatterKeys;
+const knownSitewideTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.sitewide);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
 	'alt',
@@ -45,11 +47,10 @@ const knownNestedFrontmatterKeys = new Set([
 	'heading',
 	'headings',
 	'id',
-	'include',
 	'image',
 	'imageGap',
 	'images',
-	'label',
+	'listed',
 	'logo',
 	'lineHeight',
 	'maxAvailableHeightPercent',
@@ -63,7 +64,6 @@ const knownNestedFrontmatterKeys = new Set([
 	'preset',
 	'profile',
 	'rhythm',
-	'sections',
 	'sectionGap',
 	'sectionSurfaces',
 	'size',
@@ -250,10 +250,19 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 		if (knownTopLevelFrontmatterKeys.has(key)) continue;
 
 		let fix;
-		if (fileKind === 'content' && key === 'images') {
+		let message = `Frontmatter line ${lineNumber} defines "${key}" at the top level, but it is not a valid top-level ${fileKind} field.`;
+		if (fileKind === 'content' && (key === 'title' || key === 'description')) {
+			fix = `Indent "${key}:" under "page:". Page metadata belongs in the page object.`;
+		} else if (fileKind === 'content' && key === 'images') {
 			fix = 'Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body.';
 		} else if (fileKind === 'content' && knownThemeTopLevelFrontmatterKeys.has(key)) {
 			fix = `Move "${key}:" to theme.yaml. Visual settings do not belong in content frontmatter.`;
+		} else if ((fileKind === 'theme' || fileKind === 'route theme') && ['logo', 'navigation', 'site'].includes(key)) {
+			message = `Frontmatter line ${lineNumber}: ${fileKind} may not define navigation logo settings. Optional logo display settings belong under "logo:" in ${sitewideContentLabel}.`;
+			fix = `Move only the logo display settings under "logo:" in ${sitewideContentLabel}; the homepage page.title supplies navigation text and logo alternative text.`;
+		} else if (fileKind === 'sitewide content' && (key === 'navigation' || key === 'site')) {
+			message = `Frontmatter line ${lineNumber}: "${key}:" no longer defines site identity.`;
+			fix = 'Use the homepage page.title for navigation text and logo alternative text. Move only an optional logo height to top-level "logo:".';
 		} else if (knownNestedFrontmatterKeys.has(key)) {
 			fix = `Indent "${key}:" under the object it belongs to.`;
 		} else {
@@ -262,7 +271,7 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 
 		addIssue({
 			severity: 'error',
-			message: `Frontmatter line ${lineNumber} defines "${key}" at the top level, but it is not a valid top-level ${fileKind} field.`,
+			message,
 			fix,
 		});
 	}
@@ -301,29 +310,6 @@ export const validateSitewideYamlStructure = (frontmatter, addIssue) =>
 export const readThemeFile = async (sitePath) => {
 	const source = await readFile(sitePath, 'utf8');
 	return { frontmatter: source, frontmatterBody: source, body: '' };
-};
-
-export const getFrontmatterSections = (frontmatter) => {
-	const sections = [];
-	const lines = frontmatter.split(/\r?\n/);
-	let inSections = false;
-
-	for (const [index, line] of lines.entries()) {
-		if (/^sections:\s*$/.test(line)) {
-			inSections = true;
-			continue;
-		}
-
-		if (!inSections) continue;
-		if (/^[a-zA-Z0-9_-]+:/.test(line)) break;
-
-		const sectionMatch = line.match(/^\s{2}([a-z0-9-]+):(?:\s+.*)?\s*$/);
-		if (sectionMatch) {
-			sections.push({ id: sectionMatch[1], line: index + 1 });
-		}
-	}
-
-	return sections;
 };
 
 export const getHeadingId = (heading) => heading.match(explicitHeadingIdRegex)?.[1];

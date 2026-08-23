@@ -1,41 +1,33 @@
 # `sitewide-content.yaml`
 
 `site/sitewide-content.yaml` is optional. It contains editorial content and
-identity shared by every page: the navigation label, banners, and footer.
+optional logo display settings shared by every page: banners, footer, and an
+optional navigation-logo height override.
 
 The file contains plain YAML without Markdown frontmatter delimiters. Page
 sections do not belong here; they remain in each page's `content.md`.
 
-## Navigation Identity
+## Navigation Logo
 
-Use the optional `navigation` object for identity shared by the homepage and
-all routes:
+A logo file is discovered from `site/public/`; no path or site name is
+configured here. The logo links to the homepage, and its alternative text
+comes from the homepage `page.title` in `site/content.md`.
 
-```yaml
-navigation:
-  label: Example Site
-```
-
-Without a navigation logo, `label` is shown in the home link. With a logo,
-`label` becomes the image alternative text. If omitted, Norna uses the homepage
-title from `site/content.md`.
-
-A logo file is discovered from `site/public/`; no path is configured here. Add
-`logo` only to override its displayed height:
+Add `logo` only to override the discovered file's displayed height:
 
 ```yaml
-navigation:
-  label: Example Site
-  logo:
-    height: 2.6rem
+logo:
+  height: 2.6rem
 ```
 
 The logo width follows the file's intrinsic aspect ratio. See
 [Public Files: Navigation Logo](public-files.md#navigation-logo) for exact
 filenames, placement, portability, and validation rules.
 
-Routes inherit this identity and cannot replace it in route content or a route
-theme.
+The logo is a separate home link and does not have a section menu. In a
+multi-page site, the homepage remains the first ordinary navigation item, uses
+its `page.title` as its label, and exposes its sections in the same way as
+routes. Route content and route themes cannot replace the shared logo setting.
 
 ## Banners
 
@@ -54,9 +46,8 @@ banners:
     text: Not for production use.
 ```
 
-`tone` currently supports `warning`. `visible` is optional and uses the same
-date-window rules as temporary sections: `from` is inclusive and `until` is
-exclusive.
+`tone` currently supports `warning`. `visible` is optional. `from` is inclusive
+and `until` is exclusive; both use `YYYY-MM-DD`, and either may be omitted.
 
 Visitors can dismiss each active banner. Dismissal state is stored locally in
 the browser and tied to the banner content, so an edited banner can appear
@@ -71,19 +62,12 @@ information:
 ```yaml
 footer:
   copyrightMessage: (c) Example Owner.
-  buildInfo:
-    enabled: true
-    text: Built
-    dateTimeFormat:
-      locale: en-GB
-      timeZone: UTC
-      dateStyle: short
-      timeStyle: short
+  buildInfo: true
 ```
 
-`dateTimeFormat` uses `Intl.DateTimeFormat` values. `timeZone` must be a valid
-IANA time-zone name. If both copyright text and enabled build information are
-absent, no footer is rendered.
+Set `buildInfo` to `true` to show the generated build date and time. Norna uses
+the site's configured language, a compact format, and UTC. If both copyright
+text and build information are absent, no footer is rendered.
 
 See [Site Files](site-files.md) for where this optional file belongs in the
 complete site model.

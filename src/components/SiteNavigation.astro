@@ -11,7 +11,6 @@ type FrameColors = {
 };
 
 interface Props {
-	navigationLabel: string;
 	logo?: {
 		src: string;
 		alt: string;
@@ -25,7 +24,7 @@ interface Props {
 	frameColors: FrameColors;
 }
 
-const { navigationLabel, logo, currentPage, pageNavigation, frameColors } = Astro.props;
+const { logo, currentPage, pageNavigation, frameColors } = Astro.props;
 const siteTopBackgroundColor = frameColors.backgroundColor === 'transparent'
 	? 'var(--color-page)'
 	: frameColors.backgroundColor;
@@ -34,7 +33,8 @@ const navigationStyle = [
 	`--site-top-text-color: ${frameColors.textColor}`,
 	...(logo?.height ? [`--site-brand-logo-height: ${logo.height}`] : []),
 ].join('; ');
-const showSiteNavigation = pageNavigation.length > 1;
+const siteNavigationPages = pageNavigation.filter(({ page }) => page.isHome || page.navigation.listed);
+const showSiteNavigation = siteNavigationPages.some(({ page }) => !page.isHome);
 const showNavigationRow = showSiteNavigation || Boolean(logo);
 const homePage = pageNavigation.find(({ page }) => page.isHome)?.page ?? currentPage;
 const currentPageNavigation = pageNavigation.find(({ page }) => page.pathname === currentPage.pathname);
@@ -59,21 +59,23 @@ const hasSectionNavigation = showSinglePageSectionNavigation || hasCurrentPageSe
 >
 	{showNavigationRow && (
 		<div class="site-nav-row">
-			<a class="site-brand" href={pageHref(homePage)}>
-				{logo ? <img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} /> : navigationLabel}
-			</a>
+			{logo && (
+				<a class="site-brand" href={pageHref(homePage)}>
+					<img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} />
+				</a>
+			)}
 
 			{showSiteNavigation && (
 				<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 					<ul>
-						{pageNavigation.map(({ page, sections: pageSections }) => (
+						{siteNavigationPages.map(({ page, sections: pageSections }) => (
 							<li class:list={['site-nav-item', { 'site-nav-item-has-sections': hasSectionMenu(pageSections) }]}>
 								<a href={pageHref(page)} aria-current={isCurrentPage(page) ? 'page' : undefined}>
-									{page.navigation.label}
+									{page.title}
 								</a>
 								{hasSectionMenu(pageSections) && (
 									<div class="site-nav-submenu">
-										<nav aria-label={`${page.navigation.label} ${projectConfig.locale.labels.pageNavigation}`}>
+										<nav aria-label={`${page.title} ${projectConfig.locale.labels.pageNavigation}`}>
 											<ul>
 												{pageSections.map((section) => (
 													<li>
@@ -92,16 +94,16 @@ const hasSectionNavigation = showSinglePageSectionNavigation || hasCurrentPageSe
 
 			{showSiteNavigation && <details class="mobile-nav-menu">
 				<summary>
-					<span>{currentPage.navigation.label}</span>
+					<span>{currentPage.title}</span>
 				</summary>
 				<div class="mobile-nav-panel">
 					<nav class="mobile-site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 						<h2>{projectConfig.locale.labels.siteNavigation}</h2>
 						<ul>
-							{pageNavigation.map(({ page }) => (
+							{siteNavigationPages.map(({ page }) => (
 								<li>
 									<a href={pageHref(page)} aria-current={isCurrentPage(page) ? 'page' : undefined}>
-										{page.navigation.label}
+									{page.title}
 									</a>
 								</li>
 							))}

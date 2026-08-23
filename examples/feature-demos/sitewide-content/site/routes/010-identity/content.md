@@ -1,18 +1,17 @@
 ---
-title: Identity
-description: See how a convention-based logo and shared identity work across a Norna site.
-navigation:
-  label: Identity
+page:
+  title: Identity
+  description: See how a convention-based logo and page-title navigation work across a Norna site.
 ---
 
 ## One identity across routes {#identity}
 
-The logo in the navigation is discovered from `public/logo.svg`. Its alt text
-and display height belong to `sitewide-content.yaml`, because the identity is
-shared by every route.
+The logo is discovered from `public/logo.svg`. The homepage `page.title`
+provides its alt text, and an optional top-level `logo` setting in
+`sitewide-content.yaml` can adjust its displayed height.
 
-If a site has no logo file, Norna shows the navigation label as text instead. A
-route cannot replace the shared navigation identity.
+The logo is a separate home link without a section menu. The homepage remains
+the first ordinary navigation item and exposes its sections like any route.
 
 ## Navigation context {#navigation}
 

@@ -1,8 +1,7 @@
 ---
-title: Notices
-description: Inspect Norna's shared banner stack, visibility and dismissal behaviour.
-navigation:
-  label: Notices
+page:
+  title: Notices
+  description: Inspect Norna's shared banner stack, visibility and dismissal behaviour.
 ---
 
 ## Banner stack {#banner-stack}
@@ -19,4 +18,4 @@ new dismissal key, allowing an updated notice to appear again.
 ## Visibility {#visibility}
 
 A banner can optionally have `from` and `until` dates. Norna filters the stack
-before rendering, using the same date-window rules as temporary sections.
+before rendering. `from` is inclusive and `until` is exclusive.

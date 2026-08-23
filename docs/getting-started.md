@@ -73,8 +73,9 @@ Replace `site/content.md` with:
 
 ```md
 ---
-title: My first Norna site
-description: A website built from plain files.
+page:
+  title: My first Norna site
+  description: A website built from plain files.
 ---
 
 ## Welcome {#welcome}
@@ -95,24 +96,24 @@ Return to the browser. The page should now contain `Welcome` and `Next`, and
 the single-page navigation should link to those two sections. You should not
 need to restart the server.
 
-## 3. Set The Shared Identity
+## 3. Set Shared Content
 
 Replace `site/sitewide-content.yaml` with:
 
 ```yaml
-navigation:
-  label: My first Norna site
 footer:
   copyrightMessage: My first Norna site.
 ```
 
-The navigation label and footer are site-wide content rather than page
-sections. If you add routes later, they inherit these values.
+The footer is site-wide content rather than a page section. If you add routes
+later, they share it. The homepage `page.title` you set in the previous step
+already names the homepage in navigation and becomes the alternative text if
+you add a conventional navigation logo.
 
-### Checkpoint: The Identity Is Shared
+### Checkpoint: The Footer Is Shared
 
-The navigation should now display `My first Norna site`. The footer should show
-the new message.
+The navigation should use `My first Norna site` from `content.md`. The footer
+should show the new message.
 
 ## 4. Choose A Complete Theme
 

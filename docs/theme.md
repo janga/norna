@@ -5,8 +5,8 @@ required plain YAML file. The normal setup selects one complete theme preset
 and adds only focused overrides when needed.
 
 An optional `theme.yaml` inside a route directory replaces the root visual
-theme for that route. Shared identity such as the navigation label and logo
-remains site-wide and belongs in `sitewide-content.yaml`.
+theme for that route. Navigation-logo display settings remain site-wide and
+belong in `sitewide-content.yaml`.
 
 ## Theme Presets
 
@@ -81,7 +81,7 @@ Norna never loads `orig-*-theme.yaml`; only `theme.yaml` is active. The export
 command refuses to overwrite an existing reference file.
 
 Site identity is not part of the visual theme. Define the optional navigation
-label and logo display settings in `site/sitewide-content.yaml`; see
+name and logo display settings in `site/sitewide-content.yaml`; see
 [Sitewide Content](sitewide-content.md).
 
 ## Layout
@@ -245,7 +245,7 @@ preset: statement
 
 It completely replaces the root visual theme for that route. If the route
 theme selects no top-level preset, omitted values use engine defaults rather
-than values from the root theme. It cannot define navigation identity or
+than values from the root theme. It cannot define navigation-logo settings or
 technical configuration.
 
 Section surfaces render as full-width horizontal bands while the section

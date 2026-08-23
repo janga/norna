@@ -68,12 +68,6 @@ export const schemaValueDefinitions = Object.freeze([
 	definition(['warning'], {
 		warning: option('Warning', 'Present the banner as an important warning notice.'),
 	}),
-	definition(['short', 'medium', 'long', 'full'], {
-		short: option('Short', 'Use a compact localized date or time representation.'),
-		medium: option('Medium', 'Use a moderately detailed localized representation.'),
-		long: option('Long', 'Use a detailed localized representation.'),
-		full: option('Full', 'Use the most detailed localized representation.'),
-	}),
 ]);
 
 const valuesEqual = (left, right) => (

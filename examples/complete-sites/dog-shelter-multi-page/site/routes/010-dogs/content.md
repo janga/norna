@@ -1,6 +1,7 @@
 ---
-title: Dogs
-description: Meet dogs currently waiting for adoption.
+page:
+  title: Dogs
+  description: Meet dogs currently waiting for adoption.
 ---
 
 ## Dogs {#dogs}

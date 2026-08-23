@@ -116,19 +116,17 @@ test('content model v2 fixture checks and builds', async () => {
 	}
 });
 
-test('route theme replaces visual theme while site identity stays at the root', async () => {
+test('route theme replaces visual theme without changing page navigation', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: reading
 `);
-		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `navigation:
-  label: Root Brand
-`);
 		await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Root
-description: Root page
+page:
+  title: Root
+  description: Root page
 ---
 
 ## Home {#home}
@@ -136,10 +134,9 @@ description: Root page
 Root content.
 `);
 		await writeFile(path.join(siteDir, 'routes', '010-guide', 'content.md'), `---
-title: Guide
-description: Guide page
-navigation:
-  label: Guide
+page:
+  title: Guide
+  description: Guide page
 ---
 
 ## Guide {#guide}
@@ -156,19 +153,106 @@ palette: light
 		const routeHtml = await readFile(path.join(path.dirname(siteDir), 'dist', 'guide', 'index.html'), 'utf8');
 		assert.match(rootHtml, /--color-page: #000000/);
 		assert.match(routeHtml, /--color-page: #ffffff/);
-		assert.match(routeHtml, /<a class="site-brand" href="\/">Root Brand<\/a>/);
+		assert.match(routeHtml, /<a href="\/">\s*Root\s*<\/a>/);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
 });
 
-test('route theme cannot define site identity', async () => {
+test('page metadata, navigation logo, and route listing have separate roles', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await mkdir(path.join(siteDir, 'public'), { recursive: true });
+		await writeFile(path.join(siteDir, 'public', 'logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>');
+		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `logo:
+  height: 2rem
+`);
+		await writeFile(path.join(siteDir, 'content.md'), `---
+page:
+  title: Welcome
+---
+
+## Intro {#intro}
+
+Homepage content.
+`);
+		await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'content.md'), `---
+page:
+  title: Guide
+  description: The visible guide route.
+---
+
+## Guide {#guide}
+
+Guide content.
+`);
+		await mkdir(path.join(siteDir, 'routes', '020-private'), { recursive: true });
+		await writeFile(path.join(siteDir, 'routes', '020-private', 'content.md'), `---
+page:
+  title: Unlisted
+navigation:
+  listed: false
+---
+
+## Unlisted {#unlisted}
+
+Public but unlisted content.
+`);
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const distDir = path.join(path.dirname(siteDir), 'dist');
+		const homeHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
+		const guideHtml = await readFile(path.join(distDir, 'guide', 'index.html'), 'utf8');
+		const unlistedHtml = await readFile(path.join(distDir, 'private', 'index.html'), 'utf8');
+
+		assert.match(homeHtml, /<title>Welcome<\/title>/);
+		assert.doesNotMatch(homeHtml, /<meta name="description"/);
+		assert.match(homeHtml, /<img class="site-brand-logo"[^>]+alt="Welcome"/);
+		assert.match(homeHtml, /<a href="\/" aria-current="page">\s*Welcome\s*<\/a>/);
+		assert.match(homeHtml, /<a href="\/guide\/">\s*Guide\s*<\/a>/);
+		assert.doesNotMatch(homeHtml, />\s*Unlisted\s*<\/a>/);
+		assert.match(guideHtml, /<meta name="description" content="The visible guide route\."/);
+		assert.match(unlistedHtml, /Public but unlisted content/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('footer build information uses the site language and fixed formatting', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\nlanguage: sv-SE\n');
+		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `footer:
+  buildInfo: true
+`);
+		await writeFile(path.join(siteDir, 'content.md'), `---
+page:
+  title: Footer
+  description: Footer build information.
+---
+
+## Home {#home}
+
+Content.
+`);
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
+		assert.match(html, /<span>Byggd [^<]+<\/span>/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('route theme cannot define navigation logo settings', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Root
-description: Root page
+page:
+  title: Root
+  description: Root page
 ---
 
 ## Home {#home}
@@ -176,22 +260,23 @@ description: Root page
 Root content.
 `);
 		await writeFile(path.join(siteDir, 'routes', '010-guide', 'content.md'), `---
-title: Guide
-description: Guide page
+page:
+  title: Guide
+  description: Guide page
 ---
 
 ## Guide {#guide}
 
 Route content.
 `);
-		await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.yaml'), `navigation:
-  label: Route Brand
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.yaml'), `logo:
+  height: 3rem
 `);
 
 		await assert.rejects(
 			runNorna(['--site-dir', siteDir, 'config:check']),
 			(error) => {
-				assert.match(error.output, /may not define navigation\. The site label and logo settings belong in site\/sitewide-content\.yaml/);
+				assert.match(error.output, /may not define navigation logo settings\. Optional logo display settings belong under "logo:" in site\/sitewide-content\.yaml/);
 				return true;
 			},
 		);
@@ -203,16 +288,14 @@ Route content.
 test('navigation logo settings require one conventional logo file', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `navigation:
-  label: Missing logo
-  logo:
-    height: 2rem
+		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `logo:
+  height: 2rem
 `);
 
 		await assert.rejects(
 			runNorna(['--site-dir', siteDir, 'config:check']),
 			(error) => {
-				assert.match(error.output, /navigation\.logo is configured, but no logo file was found/);
+				assert.match(error.output, /Site-wide logo is configured, but no logo file was found/);
 				assert.match(error.output, /site\/public\/logo\.svg/);
 				return true;
 			},
@@ -225,9 +308,6 @@ test('navigation logo settings require one conventional logo file', async () => 
 test('multiple conventional navigation logo files stop config validation', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `navigation:
-  label: Conflicting logos
-`);
 		await mkdir(path.join(siteDir, 'public'), { recursive: true });
 		await writeFile(path.join(siteDir, 'public', 'logo.svg'), '<svg/>');
 		await writeFile(path.join(siteDir, 'public', 'logo.png'), 'png');
@@ -250,8 +330,9 @@ test('content:check warns for local Markdown images but not external Markdown im
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Markdown Image Warning
-description: Fixture
+page:
+  title: Markdown Image Warning
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -276,8 +357,9 @@ test('managed SVG images are copied as static image output', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: SVG Fixture
-description: Fixture
+page:
+  title: SVG Fixture
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -310,8 +392,9 @@ test('inline notes render as linked numbered margin notes', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Inline notes
-description: Fixture
+page:
+  title: Inline notes
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -348,8 +431,9 @@ test('updated managed SVG images get updated static output', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: SVG Update Fixture
-description: Fixture
+page:
+  title: SVG Update Fixture
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -390,8 +474,9 @@ test('content:check warns when carousel SVG images have no intrinsic aspect rati
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: SVG Carousel Fixture
-description: Fixture
+page:
+  title: SVG Carousel Fixture
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -419,8 +504,9 @@ test('norna-card-list images are managed image references', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Card List Fixture
-description: Fixture
+page:
+  title: Card List Fixture
+  description: Fixture
 ---
 
 ## Help {#help}
@@ -470,8 +556,9 @@ test('content:check fails when a norna-card-list image file is missing', async (
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Missing Card Image
-description: Fixture
+page:
+  title: Missing Card Image
+  description: Fixture
 ---
 
 ## Help {#help}
@@ -498,8 +585,9 @@ test('content:check fails for malformed norna-card-list blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Malformed Card List
-description: Fixture
+page:
+  title: Malformed Card List
+  description: Fixture
 ---
 
 ## Help {#help}
@@ -525,8 +613,9 @@ test('content:check fails for invalid norna-card-list options', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Invalid Card List Options
-description: Fixture
+page:
+  title: Invalid Card List Options
+  description: Fixture
 ---
 
 ## Help {#help}
@@ -558,8 +647,9 @@ test('content:check fails for invalid norna-card-list width', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Invalid Card List Width
-description: Fixture
+page:
+  title: Invalid Card List Width
+  description: Fixture
 ---
 
 ## Help {#help}
@@ -588,8 +678,9 @@ test('content:check fails for invalid norna-card-list size', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Invalid Card List Size
-description: Fixture
+page:
+  title: Invalid Card List Size
+  description: Fixture
 ---
 
 ## Help {#help}
@@ -618,8 +709,9 @@ test('content:sync moves Norna-managed images inside the same page image root', 
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Sync Fixture
-description: Fixture
+page:
+  title: Sync Fixture
+  description: Fixture
 ---
 
 ## Work {#work}
@@ -645,8 +737,9 @@ test('content:sync moves managed SVG images inside the same page image root', as
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: SVG Sync Fixture
-description: Fixture
+page:
+  title: SVG Sync Fixture
+  description: Fixture
 ---
 
 ## Work {#work}
@@ -676,8 +769,9 @@ test('content:sync moves Norna-managed images across route image roots when git 
 		await mkdir(path.join(sourceRouteDir, 'images', 'old'), { recursive: true });
 		await mkdir(targetRouteDir, { recursive: true });
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Cross Route Sync
-description: Fixture
+page:
+  title: Cross Route Sync
+  description: Fixture
 ---
 
 ## Home {#home}
@@ -685,8 +779,9 @@ description: Fixture
 Text.
 `);
 		await writeFile(path.join(sourceRouteDir, 'content.md'), `---
-title: Source
-description: Fixture
+page:
+  title: Source
+  description: Fixture
 ---
 
 ## Old {#old}
@@ -694,8 +789,9 @@ description: Fixture
 Text.
 `);
 		await writeFile(path.join(targetRouteDir, 'content.md'), `---
-title: Target
-description: Fixture
+page:
+  title: Target
+  description: Fixture
 ---
 
 ## Work {#work}
@@ -724,8 +820,9 @@ test('content:sync refuses cross-route image moves when git status is dirty', as
 		await mkdir(path.join(sourceRouteDir, 'images', 'old'), { recursive: true });
 		await mkdir(targetRouteDir, { recursive: true });
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Dirty Cross Route Sync
-description: Fixture
+page:
+  title: Dirty Cross Route Sync
+  description: Fixture
 ---
 
 ## Home {#home}
@@ -733,8 +830,9 @@ description: Fixture
 Text.
 `);
 		await writeFile(path.join(sourceRouteDir, 'content.md'), `---
-title: Source
-description: Fixture
+page:
+  title: Source
+  description: Fixture
 ---
 
 ## Old {#old}
@@ -742,8 +840,9 @@ description: Fixture
 Text.
 `);
 		await writeFile(path.join(targetRouteDir, 'content.md'), `---
-title: Target
-description: Fixture
+page:
+  title: Target
+  description: Fixture
 ---
 
 ## Work {#work}
@@ -780,8 +879,9 @@ test('content:check reports cross-route image moves without requiring clean git 
 		await mkdir(path.join(sourceRouteDir, 'images', 'old'), { recursive: true });
 		await mkdir(targetRouteDir, { recursive: true });
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Cross Route Check
-description: Fixture
+page:
+  title: Cross Route Check
+  description: Fixture
 ---
 
 ## Home {#home}
@@ -789,8 +889,9 @@ description: Fixture
 Text.
 `);
 		await writeFile(path.join(sourceRouteDir, 'content.md'), `---
-title: Source
-description: Fixture
+page:
+  title: Source
+  description: Fixture
 ---
 
 ## Old {#old}
@@ -798,8 +899,9 @@ description: Fixture
 Text.
 `);
 		await writeFile(path.join(targetRouteDir, 'content.md'), `---
-title: Target
-description: Fixture
+page:
+  title: Target
+  description: Fixture
 ---
 
 ## Work {#work}
@@ -833,8 +935,9 @@ test('content:sync refuses to move a cross-route image still referenced by its c
 		await mkdir(path.join(sourceRouteDir, 'images', 'old'), { recursive: true });
 		await mkdir(targetRouteDir, { recursive: true });
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Cross Route Copy
-description: Fixture
+page:
+  title: Cross Route Copy
+  description: Fixture
 ---
 
 ## Home {#home}
@@ -842,8 +945,9 @@ description: Fixture
 Text.
 `);
 		await writeFile(path.join(sourceRouteDir, 'content.md'), `---
-title: Source
-description: Fixture
+page:
+  title: Source
+  description: Fixture
 ---
 
 ## Old {#old}
@@ -853,8 +957,9 @@ description: Fixture
 \`\`\`
 `);
 		await writeFile(path.join(targetRouteDir, 'content.md'), `---
-title: Target
-description: Fixture
+page:
+  title: Target
+  description: Fixture
 ---
 
 ## Work {#work}
@@ -884,8 +989,9 @@ test('CLI content:sync refreshes generated images after moving a carousel image'
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Sync Fixture
-description: Fixture
+page:
+  title: Sync Fixture
+  description: Fixture
 ---
 
 ## Work {#work}
@@ -917,8 +1023,9 @@ test('content:check fails when a level 2 section is missing an explicit id', asy
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Missing Id
-description: Fixture
+page:
+  title: Missing Id
+  description: Fixture
 ---
 
 ## Intro
@@ -942,8 +1049,9 @@ test('content:check fails for malformed Norna image blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Malformed Block
-description: Fixture
+page:
+  title: Malformed Block
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -972,8 +1080,9 @@ test('content:check fails for unknown Norna block names', async () => {
 		await mkdir(path.join(siteDir, 'images', 'plain'), { recursive: true });
 		await writeFile(path.join(siteDir, 'images', 'plain', 'image.jpg'), 'fixture image');
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Unknown Block
-description: Fixture
+page:
+  title: Unknown Block
+  description: Fixture
 ---
 
 ## Plain {#plain}
@@ -1001,8 +1110,9 @@ test('content:check rejects the removed norna-note block', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Removed note block
-description: Fixture
+page:
+  title: Removed note block
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1030,8 +1140,9 @@ test('content:check supports tilde fenced Norna blocks', async () => {
 		await mkdir(path.join(siteDir, 'images', 'intro'), { recursive: true });
 		await writeFile(path.join(siteDir, 'images', 'intro', 'hero.jpg'), 'fixture image');
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Tilde Fence
-description: Fixture
+page:
+  title: Tilde Fence
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1052,8 +1163,9 @@ test('content:check ignores Norna blocks shown inside longer code fences', async
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Code Example
-description: Fixture
+page:
+  title: Code Example
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1076,8 +1188,9 @@ test('content:check fails for likely Norna block names outside fences', async ()
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Missing Fence
-description: Fixture
+page:
+  title: Missing Fence
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1103,8 +1216,9 @@ test('content:check fails for short Norna block fences', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Short Fence
-description: Fixture
+page:
+  title: Short Fence
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1131,8 +1245,9 @@ test('content:check fails for unclosed Norna blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Unclosed Fence
-description: Fixture
+page:
+  title: Unclosed Fence
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1159,8 +1274,9 @@ test('content:check continues after malformed Norna blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Multiple Issues
-description: Fixture
+page:
+  title: Multiple Issues
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1203,8 +1319,9 @@ test('content:check allows Norna images without alt text', async () => {
 		await mkdir(path.join(siteDir, 'images', 'intro'), { recursive: true });
 		await writeFile(path.join(siteDir, 'images', 'intro', 'hero.jpg'), 'fixture image');
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Missing Alt
-description: Fixture
+page:
+  title: Missing Alt
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1225,8 +1342,9 @@ test('content:check reports single-image carousel and missing file together', as
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Beginner Errors
-description: Fixture
+page:
+  title: Beginner Errors
+  description: Fixture
 ---
 
 ## Plain {#plain}
@@ -1253,8 +1371,9 @@ test('content:check fails when a Norna-managed image file is missing', async () 
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Missing Image
-description: Fixture
+page:
+  title: Missing Image
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1281,8 +1400,9 @@ test('content:check fails when a page repeats a section id', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Duplicate Section
-description: Fixture
+page:
+  title: Duplicate Section
+  description: Fixture
 ---
 
 ## Intro {#intro}
@@ -1306,14 +1426,15 @@ Second.
 	}
 });
 
-test('content:check fails when section metadata has no Markdown section', async () => {
+test('content:check rejects removed sections frontmatter', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Orphaned Metadata
-description: Fixture
+page:
+  title: Removed Section Metadata
+  description: Fixture
 sections:
-  missing: {}
+  intro: {}
 ---
 
 ## Intro {#intro}
@@ -1324,7 +1445,7 @@ Text.
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Section metadata "missing" does not match any Markdown section\./);
+				assert.match(error.output, /defines "sections" at the top level, but it is not a valid top-level content field\./);
 				return true;
 			},
 		);
@@ -1337,8 +1458,9 @@ test('content:sync refuses ambiguous image relocation', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Ambiguous Move
-description: Fixture
+page:
+  title: Ambiguous Move
+  description: Fixture
 ---
 
 ## Work {#work}
@@ -1375,8 +1497,9 @@ test('content:sync refuses to move an image still referenced by its current sect
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
-title: Copied Image Reference
-description: Fixture
+page:
+  title: Copied Image Reference
+  description: Fixture
 ---
 
 ## Intro {#intro}

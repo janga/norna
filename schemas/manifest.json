@@ -1,4 +1,5 @@
 {
+  "editorApiVersion": 1,
   "schemaVersion": 1,
   "files": {
     "config": "config.schema.json",

@@ -4,15 +4,16 @@
 under `site/routes/<NNN-route-id>/content.md` and build to first-level
 URLs.
 
-Routes use the same page frontmatter, optional section metadata, Norna-managed
-Norna blocks, and Markdown section model as the homepage. See [Content](content.md)
-for the page and section model.
+Routes use the same page frontmatter, Norna-managed blocks, and Markdown
+section model as the homepage. See [Content](content.md) for the page and
+section model.
 
 Route directories can contain route content, route-local images, and
 an optional route-local `theme.yaml`. The route theme replaces the root visual
 theme for that route and can select any complete top-level theme preset. Route
 directories cannot contain `config.yaml` or `sitewide-content.yaml`; technical
-configuration and shared identity remain at the selected site's top level.
+configuration and shared logo, banner, and footer settings remain at the
+selected site's top level.
 
 ## Route Directory Format
 
@@ -63,10 +64,9 @@ Minimal route page:
 
 ```md
 ---
-title: About
-description: About this site.
-navigation:
-  label: About
+page:
+  title: About
+  description: About this site.
 ---
 
 ## Intro {#intro}
@@ -78,12 +78,23 @@ The example above builds to `/about/`.
 
 ## Navigation
 
-`navigation` may contain:
+Route navigation uses `page.title` as its visible label and the route-directory
+prefix as its order. In a multi-page site, the homepage is the first navigation
+item and uses its own `page.title`. An optional logo is a separate home link;
+it does not replace the homepage item or own a section menu.
 
-- `include`: optional boolean. Defaults to `true`.
-- `label`: optional string. Defaults to `title`.
+`navigation` has one optional field:
 
-Route order comes from the directory prefix. The homepage is always first.
+- `listed`: boolean. Defaults to `true`. Set it to `false` to keep the route
+  public while excluding it from site navigation.
+
+```yaml
+navigation:
+  listed: false
+```
+
+Route order comes from the directory prefix.
+The homepage is always listed before routes.
 
 Current route navigation is intended for small sites. This guidance may change
 as route support matures, but the present model is:

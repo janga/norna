@@ -1,8 +1,7 @@
 ---
-title: Your project
-description: A compact project site starter for an open source developer tool.
-navigation:
-  label: Home
+page:
+  title: Your project
+  description: A compact project site starter for an open source developer tool.
 ---
 
 ## `<Your project> - <short value proposition>` {#intro}

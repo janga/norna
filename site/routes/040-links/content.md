@@ -1,8 +1,7 @@
 ---
-title: Links
-description: Project links, package information and license for Norna.
-navigation:
-  label: Links
+page:
+  title: Links
+  description: Project links, package information and license for Norna.
 ---
 
 ## Project links {#project-links}

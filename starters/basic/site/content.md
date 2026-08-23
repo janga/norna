@@ -1,6 +1,7 @@
 ---
-title: Example Site
-description: Minimal norna starter site.
+page:
+  title: Example Site
+  description: Minimal norna starter site.
 ---
 
 ## Intro {#intro}

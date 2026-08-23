@@ -134,80 +134,70 @@ const sectionSurfaces = z.array(sectionSurface).min(1).max(3).refine(
 	'Each section surface may appear only once.',
 ).describe('Surface sequence cycled across page sections.');
 const pageNavigation = z.object({
-	include: z.boolean().optional().describe('Include this page in site navigation. Pages are included when omitted.'),
-	label: z.string().optional().describe('Navigation label when it should differ from the page title.'),
+	listed: z.boolean().optional().default(true).describe('List this route in site navigation. The route remains public when false.'),
 }).strict();
-const sitewideNavigation = z.object({
-	label: z.string().min(1).optional().describe('Accessible site label used for navigation text and logo alternative text.'),
-	logo: z.object({
-		height: visualCssLength.optional().describe('Displayed logo height. Width follows the intrinsic aspect ratio.'),
-	}).strict().optional().describe('Optional display settings for a convention-based navigation logo.'),
-}).strict().describe('Site-wide identity shown in navigation.');
+const pageMetadata = z.object({
+	title: z.string().min(1).describe('Title of this page, used in metadata and route navigation.'),
+	description: z.string().min(1).optional().describe('Optional page-specific meta description.'),
+}).strict().describe('Metadata for this homepage or route.');
+const sitewideLogo = z.object({
+	height: visualCssLength.optional().describe('Displayed logo height. Width follows the intrinsic aspect ratio.'),
+}).strict().describe('Optional display settings for a convention-based navigation logo.');
 
-const sectionMetadata = z.object({
-	visible: visibilityWindow.optional().describe('Optional date window for this section.'),
-}).strict().describe('Metadata keyed by the explicit Markdown section id. Markdown order remains authoritative.');
 const banner = z.object({
 	id: z.string().regex(/^[a-z0-9-]+$/).describe('Stable banner identifier used for dismissal state.'),
 	tone: z.enum(['warning']).default('warning').describe('Semantic banner tone.'),
 	visible: visibilityWindow.optional().describe('Optional date window for the banner.'),
 	title: z.string().min(1).describe('Short banner heading.'),
 	text: z.string().min(1).describe('Concise banner message.'),
-}).strict().describe('Dismissible, site-wide one-line notice.');
+}).strict().describe('Dismissible site-wide warning shown above page content for important temporary information.');
 const banners = z.array(banner).optional().default([]).refine(
 	(values) => new Set(values.map((value) => value.id)).size === values.length,
 	'Banner ids must be unique.',
 );
-const dateTimeFormat = z.object({
-	locale: z.string().min(1).describe('Intl locale such as en-GB or sv-SE.'),
-	timeZone: z.string().min(1).describe('IANA time zone such as Europe/Stockholm.'),
-	dateStyle: z.enum(['short', 'medium', 'long', 'full']).describe('Intl dateStyle for the build timestamp.'),
-	timeStyle: z.enum(['short', 'medium', 'long', 'full']).describe('Intl timeStyle for the build timestamp.'),
-}).strict().refine((value) => {
-	try {
-		new Intl.DateTimeFormat(value.locale, {
-			dateStyle: value.dateStyle,
-			timeStyle: value.timeStyle,
-			timeZone: value.timeZone,
-		});
-		return true;
-	} catch {
-		return false;
-	}
-}, 'Use a valid Intl.DateTimeFormat configuration.');
 const sitewideFooter = z.object({
 	copyrightMessage: z.string().min(1).optional().describe('Copyright or ownership text shown in the site footer.'),
-	buildInfo: z.object({
-		enabled: z.boolean().default(true).describe('Show generated build information in the footer.'),
-		text: z.string().min(1).describe('Label shown before the generated build timestamp.'),
-		dateTimeFormat: dateTimeFormat.describe('Formatting used for the generated build timestamp.'),
-	}).strict().optional().describe('Optional generated build timestamp.'),
+	buildInfo: z.boolean().optional().default(false).describe('Show a localized generated build timestamp in the footer.'),
 }).strict().describe('Site-wide footer content.');
 
-export const configSchema = z.object({
+const configShape = {
 	url: z.string().url().describe('Absolute public URL for the built site.'),
 	language: z.string().regex(/^(?:en|sv)(?:-[a-zA-Z0-9]+)*$/).optional().describe('Site language tag using Norna\'s English or Swedish interface text; the default is en.'),
 	scrollBehavior: z.enum(['instant', 'smooth']).optional().default('instant').describe('Use instant anchors by default or the browser\'s native smooth scrolling.'),
-}).strict().describe('Technical settings for one Norna site. Routes cannot provide technical configuration.');
+};
 
-export const siteSchema = z.object({
-	title: z.string().describe('Page title used in metadata and route navigation.'),
-	description: z.string().describe('Page description used in metadata.'),
+const siteShape = {
+	page: pageMetadata,
 	navigation: pageNavigation.optional().describe('Optional navigation metadata for this page.'),
-	sections: z.record(z.string().regex(/^[a-z0-9-]+$/), sectionMetadata).optional().default({}).describe('Optional metadata keyed by Markdown section id. Do not duplicate section order here.'),
-}).strict().describe('Frontmatter for a homepage or route content.md file.');
+};
 
-export const themeVisualSchema = z.object({
+const themeVisualShape = {
 	preset: themePreset.optional().describe('Complete visual starting point. Add only the overrides the site actually needs.'),
 	layout: themeLayout.optional(),
 	images: themeImages.optional(),
 	typography: themeTypography.optional(),
 	palette: presentationPalette.optional(),
 	sectionSurfaces: sectionSurfaces.optional().describe('Surface sequence cycled through page sections. Omit this to keep the selected preset.'),
-}).strict().describe('Visual settings for a site or route. A route theme replaces the inherited visual theme; site identity remains site-wide.');
+};
 
-export const sitewideSchema = z.object({
-	navigation: sitewideNavigation.optional().describe('Site-wide navigation identity.'),
+const sitewideShape = {
+	logo: sitewideLogo.optional(),
 	banners: banners.describe('Site-wide dismissible notices.'),
 	footer: sitewideFooter.optional().describe('Site-wide footer content.'),
-}).strict().describe('Editorial content and identity shared by every page.');
+};
+
+export const schemaTopLevelKeys = Object.freeze({
+	config: Object.freeze(Object.keys(configShape)),
+	content: Object.freeze(Object.keys(siteShape)),
+	sitewide: Object.freeze(Object.keys(sitewideShape)),
+	theme: Object.freeze(Object.keys(themeVisualShape)),
+});
+
+export const configSchema = z.object(configShape).strict()
+	.describe('Technical settings for one Norna site. Routes cannot provide technical configuration.');
+export const siteSchema = z.object(siteShape).strict()
+	.describe('Frontmatter for a homepage or route content.md file.');
+export const themeVisualSchema = z.object(themeVisualShape).strict()
+	.describe('Visual settings for a site or route. A route theme replaces the inherited visual theme; navigation logo settings remain site-wide.');
+export const sitewideSchema = z.object(sitewideShape).strict()
+	.describe('Editorial content and optional navigation logo display settings shared by every page.');

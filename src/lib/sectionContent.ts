@@ -1,4 +1,3 @@
-import type { CollectionEntry } from 'astro:content';
 import { markdownToHtml } from 'satteri';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import {
@@ -10,8 +9,6 @@ import {
 import { applyBasePathToHtml } from './basePath';
 import type { SitePage } from './sitePages';
 
-type SiteSectionMetadataMap = CollectionEntry<'site'>['data']['sections'];
-type SiteSectionMetadata = SiteSectionMetadataMap[string];
 type ManagedImage = {
 	image: string;
 	src: string;
@@ -42,7 +39,7 @@ type SectionContentBlock =
 	| { type: 'image-carousel'; images: ManagedImage[] }
 	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width: CardListWidth; cards: CardListItem[] }
 	| { type: 'note'; html: string; number?: number; id?: string; referenceId?: string };
-export type ResolvedSection = SiteSectionMetadata & {
+export type ResolvedSection = {
 	id: string;
 	title: string;
 	titleHtml: string;
@@ -99,7 +96,7 @@ const getHeadingTitle = (headingHtml: string) =>
 const getHeadingTitleHtml = (headingHtml: string) =>
 	prepareContentHtml(headingHtml.replace(explicitHeadingIdRegex, '').trim());
 
-export const getSectionNavigation = (html: string, sectionMetadata: SiteSectionMetadataMap): SectionNavigation[] => {
+export const getSectionNavigation = (html: string): SectionNavigation[] => {
 	const matches = Array.from(html.matchAll(headingRegex));
 	const sectionIds = new Set<string>();
 	const sections = matches.map((match) => {
@@ -120,14 +117,6 @@ export const getSectionNavigation = (html: string, sectionMetadata: SiteSectionM
 		sectionIds.add(id);
 		return { id, title };
 	});
-
-	for (const id of Object.keys(sectionMetadata)) {
-		if (!sectionIds.has(id)) {
-			throw new Error(
-				`Section metadata "${id}" does not match any Markdown section. Add "## Heading {#${id}}" or remove sections.${id}.`,
-			);
-		}
-	}
 
 	return sections;
 };
@@ -344,12 +333,10 @@ const resolveContentBlocks = async (
 export const getSectionsContent = async (
 	html: string,
 	rawMarkdown: string,
-	sectionMetadata: SiteSectionMetadataMap,
 	page: SitePage,
 ) => {
 	const matches = Array.from(html.matchAll(headingRegex));
 	const rawSections = getRawMarkdownSections(rawMarkdown);
-	const metadataIds = new Set(Object.keys(sectionMetadata));
 	const sections: ResolvedSection[] = [];
 	const sectionIds = new Set<string>();
 	let nextNoteNumber = 1;
@@ -397,20 +384,11 @@ export const getSectionsContent = async (
 		});
 
 		sections.push({
-			...(sectionMetadata[id] ?? {}),
 			id,
 			title,
 			titleHtml: getHeadingTitleHtml(headingHtml),
 			contentBlocks: await resolveContentBlocks(content, rawSection, page, id, inlineNotes),
 		});
-	}
-
-	for (const id of metadataIds) {
-		if (!sectionIds.has(id)) {
-			throw new Error(
-				`Section metadata "${id}" does not match any Markdown section. Add "## Heading {#${id}}" or remove sections.${id}.`,
-			);
-		}
 	}
 
 	return sections;
