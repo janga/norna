@@ -5,7 +5,7 @@
     "title": {
       "type": "string",
       "description": "Page title used in metadata and route navigation.",
-      "markdownDescription": "```yaml\ntitle: About\n```\n\nThe page title used in metadata and, by default, route navigation.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.15/docs/content.md#page-frontmatter)",
+      "markdownDescription": "```yaml\ntitle: About\n```\n\nThe page title used in metadata and, by default, route navigation.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-frontmatter)",
       "examples": [
         "About"
       ]
@@ -13,7 +13,7 @@
     "description": {
       "type": "string",
       "description": "Page description used in metadata.",
-      "markdownDescription": "```yaml\ndescription: About this project.\n```\n\nA concise page description used in metadata.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.15/docs/content.md#page-frontmatter)",
+      "markdownDescription": "```yaml\ndescription: About this project.\n```\n\nA concise page description used in metadata.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-frontmatter)",
       "examples": [
         "About this project."
       ]
@@ -32,7 +32,7 @@
         }
       },
       "additionalProperties": false,
-      "markdownDescription": "```yaml\nnavigation:\n  include: true\n  label: About us\n```\n\nControls whether a route appears in site navigation and optionally replaces its visible title there. Homepage navigation is section-based.\n\n[Route navigation reference](https://github.com/janga/norna/blob/v0.7.15/docs/routes.md#navigation)"
+      "markdownDescription": "```yaml\nnavigation:\n  include: true\n  label: About us\n```\n\nControls whether a route appears in site navigation and optionally replaces its visible title there. Homepage navigation is section-based.\n\n[Route navigation reference](https://github.com/janga/norna/blob/v0.7.16/docs/routes.md#navigation)"
     },
     "sections": {
       "default": {},
@@ -66,7 +66,7 @@
         "additionalProperties": false,
         "description": "Metadata keyed by the explicit Markdown section id. Markdown order remains authoritative."
       },
-      "markdownDescription": "```yaml\nsections:\n  announcement:\n    visible:\n      until: \"2026-12-01\"\n```\n\nAdds optional metadata keyed by explicit Markdown section id. Markdown headings remain the source of section content and order.\n\n[Section metadata reference](https://github.com/janga/norna/blob/v0.7.15/docs/content.md#section-metadata)"
+      "markdownDescription": "```yaml\nsections:\n  announcement:\n    visible:\n      until: \"2026-12-01\"\n```\n\nAdds optional metadata keyed by explicit Markdown section id. Markdown headings remain the source of section content and order.\n\n[Section metadata reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#section-metadata)"
     }
   },
   "required": [
@@ -77,5 +77,5 @@
   "description": "Frontmatter for a homepage or route content.md file.",
   "$id": "https://janga.github.io/norna/schemas/content-frontmatter.schema.json",
   "title": "Norna page frontmatter",
-  "markdownDescription": "```yaml\n---\ntitle: About\ndescription: About this project.\n---\n```\n\nEvery homepage and route `content.md` starts with page metadata, followed by Markdown sections.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.15/docs/content.md#page-frontmatter)"
+  "markdownDescription": "```yaml\n---\ntitle: About\ndescription: About this project.\n---\n```\n\nEvery homepage and route `content.md` starts with page metadata, followed by Markdown sections.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-frontmatter)"
 }

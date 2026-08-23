@@ -6,7 +6,7 @@
       "type": "string",
       "format": "uri",
       "description": "Absolute public URL for the built site.",
-      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.15/docs/configuration.md#url)",
+      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.16/docs/configuration.md#url)",
       "examples": [
         "https://example.com/",
         "https://owner.github.io/repository-name/"
@@ -41,7 +41,7 @@
           "description": "Use an English or Swedish regional language tag such as en-GB or sv-SE."
         }
       ],
-      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.15/docs/configuration.md#language)"
+      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.16/docs/configuration.md#language)"
     },
     "scrollBehavior": {
       "default": "instant",
@@ -59,7 +59,7 @@
           "description": "Use the browser's native smooth scrolling for anchor navigation."
         }
       ],
-      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.15/docs/configuration.md#scrollbehavior)",
+      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.16/docs/configuration.md#scrollbehavior)",
       "examples": [
         "instant",
         "smooth"
@@ -73,5 +73,5 @@
   "description": "Technical settings for one Norna site. Routes cannot provide technical configuration.",
   "$id": "https://janga.github.io/norna/schemas/config.schema.json",
   "title": "Norna site configuration",
-  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.15/docs/configuration.md)"
+  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.16/docs/configuration.md)"
 }

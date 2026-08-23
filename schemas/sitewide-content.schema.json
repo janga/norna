@@ -10,7 +10,7 @@
           "description": "Accessible site label used for navigation text and logo alternative text.",
           "type": "string",
           "minLength": 1,
-          "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n```\n\n- Without a logo, this text is shown in the navigation.\n\n- With a logo, this text becomes the image alternative text.\n\n- When omitted, Norna uses the homepage title.\n\n[Navigation identity reference](https://github.com/janga/norna/blob/v0.7.15/docs/sitewide-content.md#navigation-identity)",
+          "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n```\n\n- Without a logo, this text is shown in the navigation.\n\n- With a logo, this text becomes the image alternative text.\n\n- When omitted, Norna uses the homepage title.\n\n[Navigation identity reference](https://github.com/janga/norna/blob/v0.7.16/docs/sitewide-content.md#navigation-identity)",
           "examples": [
             "Example Site"
           ]
@@ -29,11 +29,11 @@
             }
           },
           "additionalProperties": false,
-          "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n  logo:\n    height: 2rem\n```\n\n`logo` optionally overrides the displayed height of the logo file that Norna discovers automatically. It does not enable or select the file.\n\n[Navigation logo filenames and placement](https://github.com/janga/norna/blob/v0.7.15/docs/public-files.md#navigation-logo)"
+          "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n  logo:\n    height: 2rem\n```\n\n`logo` optionally overrides the displayed height of the logo file that Norna discovers automatically. It does not enable or select the file.\n\n[Navigation logo filenames and placement](https://github.com/janga/norna/blob/v0.7.16/docs/public-files.md#navigation-logo)"
         }
       },
       "additionalProperties": false,
-      "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n```\n\n`navigation` defines the identity shared by the homepage and every route. Routes cannot replace it.\n\n[Navigation identity reference](https://github.com/janga/norna/blob/v0.7.15/docs/sitewide-content.md#navigation-identity)"
+      "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n```\n\n`navigation` defines the identity shared by the homepage and every route. Routes cannot replace it.\n\n[Navigation identity reference](https://github.com/janga/norna/blob/v0.7.16/docs/sitewide-content.md#navigation-identity)"
     },
     "banners": {
       "default": [],
@@ -95,7 +95,7 @@
         "additionalProperties": false,
         "description": "Dismissible, site-wide one-line notice."
       },
-      "markdownDescription": "```yaml\nbanners:\n  - id: project-status\n    tone: warning\n    title: Experimental code\n    text: Not for production use.\n```\n\nAdds dismissible notices above page content. List order controls their presentation order; each `id` must be unique.\n\n[Banner reference](https://github.com/janga/norna/blob/v0.7.15/docs/sitewide-content.md#banners)"
+      "markdownDescription": "```yaml\nbanners:\n  - id: project-status\n    tone: warning\n    title: Experimental code\n    text: Not for production use.\n```\n\nAdds dismissible notices above page content. List order controls their presentation order; each `id` must be unique.\n\n[Banner reference](https://github.com/janga/norna/blob/v0.7.16/docs/sitewide-content.md#banners)"
     },
     "footer": {
       "description": "Site-wide footer content.",
@@ -204,12 +204,12 @@
         }
       },
       "additionalProperties": false,
-      "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\nAdds shared footer content. Generated build information is optional.\n\n[Footer reference](https://github.com/janga/norna/blob/v0.7.15/docs/sitewide-content.md#footer)"
+      "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\nAdds shared footer content. Generated build information is optional.\n\n[Footer reference](https://github.com/janga/norna/blob/v0.7.16/docs/sitewide-content.md#footer)"
     }
   },
   "additionalProperties": false,
   "description": "Editorial content and identity shared by every page.",
   "$id": "https://janga.github.io/norna/schemas/sitewide-content.schema.json",
   "title": "Norna site-wide content",
-  "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n```\n\n`sitewide-content.yaml` optionally defines editorial content and identity shared by every page.\n\n[Site-wide content reference](https://github.com/janga/norna/blob/v0.7.15/docs/sitewide-content.md)"
+  "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n```\n\n`sitewide-content.yaml` optionally defines editorial content and identity shared by every page.\n\n[Site-wide content reference](https://github.com/janga/norna/blob/v0.7.16/docs/sitewide-content.md)"
 }
