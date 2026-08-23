@@ -129,7 +129,7 @@ if (showHelp || !releaseType) {
 		await run('git', ['add', ...releasePaths]);
 		await run('git', ['commit', '-m', `Release ${releaseTag}`]);
 		releaseCommitCreated = true;
-		await run('git', ['tag', releaseTag]);
+		await run('git', ['tag', '-a', releaseTag, '-m', `Release ${releaseTag}`]);
 		releaseTagCreated = true;
 		await run(npmBin, ['run', 'release:publish']);
 		await run('git', ['push', '--follow-tags']);

@@ -185,6 +185,7 @@ try {
 		"['run', 'schemas:generate']",
 		"['test']",
 		"['commit', '-m', `Release ${releaseTag}`]",
+		"['tag', '-a', releaseTag, '-m', `Release ${releaseTag}`]",
 		"['run', 'release:publish']",
 		"['push', '--follow-tags']",
 	];
