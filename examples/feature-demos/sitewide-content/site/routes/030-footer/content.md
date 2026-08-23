@@ -7,7 +7,7 @@ navigation:
 
 ## Persistent footer content {#footer-content}
 
-The footer below this page is defined once in `sitewide-content.md`. Its
+The footer below this page is defined once in `sitewide-content.yaml`. Its
 copyright message remains the same across routes.
 
 ## Build information {#build-information}

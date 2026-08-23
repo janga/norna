@@ -42,11 +42,9 @@ const makePngHeader = ({ width, height }) => {
 	return buffer;
 };
 
-const defaultTheme = `---
-typography:
+const defaultTheme = `typography:
   profile: restrained
 palette: dark
----
 `;
 
 const withTempProject = async ({ site, theme = defaultTheme, files, siteDirectory = 'site' }, run) => {
@@ -54,7 +52,7 @@ const withTempProject = async ({ site, theme = defaultTheme, files, siteDirector
 
 	try {
 		await writeFixtureFile(root, `${siteDirectory}/content.md`, site);
-		await writeFixtureFile(root, `${siteDirectory}/theme.md`, theme);
+		await writeFixtureFile(root, `${siteDirectory}/theme.yaml`, theme);
 
 		for (const file of files) {
 			if (typeof file === 'string') {

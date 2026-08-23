@@ -49,9 +49,9 @@ locally installed and pinned Norna version.
 
 ```text
 site/
-|-- config.md
-|-- theme.md
-|-- sitewide-content.md
+|-- config.yaml
+|-- theme.yaml
+|-- sitewide-content.yaml
 |-- content.md
 |-- images/
 |-- routes/
@@ -61,9 +61,9 @@ site/
 - `content.md` holds the homepage and its sections.
 - `images/` holds managed source images beside the content they belong to.
 - `routes/` adds pages, each with content and optional local images and theme.
-- `theme.md` normally selects one complete visual preset.
-- `sitewide-content.md` holds shared identity, banners, and footer content.
-- `config.md` holds the public URL and optional language and scroll behavior.
+- `theme.yaml` normally selects one complete visual preset.
+- `sitewide-content.yaml` holds shared identity, banners, and footer content.
+- `config.yaml` holds the public URL and optional language and scroll behavior.
 - `public/` holds static files copied without processing.
 
 Norna validates this structure, processes managed images when needed, and
@@ -124,10 +124,11 @@ engine diagnostics, not for ordinary editing and local preview. See
 ## Documentation
 
 - [Five-minute tutorial](docs/getting-started.md)
+- [Site files](docs/site-files.md)
 - [Task-oriented documentation map](docs/README.md)
-- [How-to guides](docs/README.md#how-to-guides)
+- [Common workflows](docs/README.md#common-workflows)
 - [Concepts and explanation](docs/README.md#concepts-and-explanation)
-- [Technical reference](docs/README.md#reference)
+- [Command and platform reference](docs/README.md#command-and-platform-reference)
 - [Troubleshooting](docs/README.md#troubleshooting)
 - [AI-readable documentation index](https://janga.github.io/norna/llms.txt)
 

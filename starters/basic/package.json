@@ -14,6 +14,7 @@
     "norna:config:check": "norna config:check",
     "norna:content:check": "norna content:check",
     "norna:sync": "norna content:sync",
+    "norna:theme:presets": "norna theme:presets",
     "norna:theme:export": "norna theme:export",
     "norna:typography:profiles": "norna typography profiles",
     "norna:typography:show": "norna typography show",

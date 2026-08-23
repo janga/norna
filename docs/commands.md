@@ -35,6 +35,7 @@ norna check
 norna config:check
 norna content:check
 norna content:sync
+norna theme:presets
 norna theme:export <preset>
 norna typography profiles
 norna typography show
@@ -83,6 +84,7 @@ npm run norna:check
 npm run norna:config:check
 npm run norna:content:check
 npm run norna:sync
+npm run norna:theme:presets
 npm run norna:theme:export -- <preset>
 npm run norna:typography:profiles
 npm run norna:typography:show
@@ -110,7 +112,7 @@ should normally mean the repository's complete publishable artifact, while
 - `doctor`: prints resolved engine root, site project root, site directory,
   content/config/image/public paths, generated manifest, Astro output paths, and
   cache path.
-- `config:check`: validates `site/config.md` against the runtime config
+- `config:check`: validates `site/config.yaml` against the runtime config
   reader.
 - `check`: runs `config:check` followed by `content:check`.
 - `content:check`: validates section structure, Norna block references,
@@ -118,10 +120,12 @@ should normally mean the repository's complete publishable artifact, while
 - `content:sync` / `norna:sync`: moves misplaced referenced image files after
   confirmation when the intended move is unambiguous. Moving files between the
   homepage and routes, or between routes, requires a clean Git working tree.
+- `theme:presets`: lists the available complete theme presets and explains the
+  intended use of each one.
 - `theme:export <preset>`: writes a protected, commented
-  `orig-<preset>-theme.md` reference under the selected site directory. The
+  `orig-<preset>-theme.yaml` reference under the selected site directory. The
   available complete theme presets are `portfolio`, `documentation`,
-  `project`, and `statement`. Norna continues to load only `theme.md`.
+  `project`, and `statement`. Norna continues to load only `theme.yaml`.
 - `typography profiles`: prints the exact built-in values for typography
   profiles and rhythms.
 - `typography show`: prints the selected site's resolved typography for the

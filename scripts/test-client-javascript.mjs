@@ -11,7 +11,7 @@ await mkdir(tempParent, { recursive: true });
 const tempRoot = await mkdtemp(path.join(tempParent, 'norna-client-javascript-'));
 const siteDir = path.join(tempRoot, 'site');
 const routeDir = path.join(siteDir, 'routes', '010-details');
-const configPath = path.join(siteDir, 'config.md');
+const configPath = path.join(siteDir, 'config.yaml');
 
 const runBuild = () => {
 	const result = spawnSync(process.execPath, [nornaBin, 'build'], {
@@ -44,10 +44,8 @@ const assertScrollBehavior = (html, behavior, label) => {
 		`${label} should render scroll-behavior: ${behavior}.`,
 	);
 };
-const writeConfig = (scrollBehavior) => writeFile(configPath, `---
-url: https://example.com/
-${scrollBehavior ? `scrollBehavior: ${scrollBehavior}\n` : ''}---
-`);
+const writeConfig = (scrollBehavior) => writeFile(configPath, `url: https://example.com/
+${scrollBehavior ? `scrollBehavior: ${scrollBehavior}\n` : ''}`);
 const writeSvg = (filePath, color) => writeFile(filePath, [
 	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90">',
 	`  <rect width="160" height="90" fill="${color}"/>`,
@@ -58,16 +56,12 @@ const writeSvg = (filePath, color) => writeFile(filePath, [
 try {
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeConfig();
-	await writeFile(path.join(siteDir, 'theme.md'), `---
-typography:
+	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: reading
 palette: paper
----
 `);
-	await writeFile(path.join(siteDir, 'sitewide-content.md'), `---
-navigation:
-  brand: Test site
----
+	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `navigation:
+  label: Test site
 `);
 	await writeFile(path.join(siteDir, 'content.md'), `---
 title: Section navigation
@@ -210,12 +204,10 @@ sections:
 
 Plain route content.
 `);
-	await writeFile(path.join(siteDir, 'sitewide-content.md'), `---
-banners:
+	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `banners:
   - id: test-banner
     title: Test banner
     text: This banner can be dismissed.
----
 `);
 
 	runBuild();

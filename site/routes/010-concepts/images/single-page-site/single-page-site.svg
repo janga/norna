@@ -58,7 +58,7 @@
       <rect class="panel" width="300" height="540" rx="15"/>
       <g class="mono tree">
         <text x="22" y="32">site/</text>
-        <text x="22" y="54">├── config.md</text>
+        <text x="22" y="54">├── config.yaml</text>
         <text x="22" y="72">├── content.md</text>
         <text x="22" y="90">├── images/</text>
         <text x="22" y="108">│   ├── what-we-do/</text>
@@ -68,8 +68,8 @@
         <text x="22" y="180">├── public/</text>
         <text x="22" y="198">│   ├── favicon.svg</text>
         <text x="22" y="216">│   └── robots.txt</text>
-        <text x="22" y="234">├── sitewide-content.md</text>
-        <text x="22" y="252">└── theme.md</text>
+        <text x="22" y="234">├── sitewide-content.yaml</text>
+        <text x="22" y="252">└── theme.yaml</text>
       </g>
     </g>
 

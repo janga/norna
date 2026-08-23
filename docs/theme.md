@@ -1,13 +1,12 @@
 # Theme
 
-`site/theme.md` defines the site-wide visual theme for a `norna` site. It uses
-YAML frontmatter and does not need a Markdown body. The root theme file is
-required. The normal setup selects one complete theme preset and adds only
-focused overrides when needed.
+`site/theme.yaml` defines the site-wide visual theme for a Norna site. It is a
+required plain YAML file. The normal setup selects one complete theme preset
+and adds only focused overrides when needed.
 
-An optional `theme.md` inside a route directory replaces the root visual theme
-for that route. Shared identity such as brand and logo remains site-wide and
-belongs in `sitewide-content.md`.
+An optional `theme.yaml` inside a route directory replaces the root visual
+theme for that route. Shared identity such as the navigation label and logo
+remains site-wide and belongs in `sitewide-content.yaml`.
 
 ## Theme Presets
 
@@ -22,12 +21,10 @@ Available complete theme presets are:
 - `statement`: airy spacing and stronger typography for short editorial
   content.
 
-A normal `theme.md` can be only:
+A normal `theme.yaml` can be only:
 
 ```yaml
----
 preset: documentation
----
 ```
 
 Each preset supplies coordinated values for:
@@ -47,12 +44,10 @@ Values written beside the top-level preset override only that part of the
 preset. Other preset values remain active:
 
 ```yaml
----
 preset: documentation
 layout:
   pageWidth: 1320px
 palette: dark
----
 ```
 
 Nested objects are merged by key. `sectionSurfaces` replaces the preset array
@@ -77,16 +72,17 @@ In a generated site, the equivalent npm command is:
 npm run norna:theme:export -- documentation
 ```
 
-The command creates `site/orig-documentation-theme.md`, or the corresponding
+The command creates `site/orig-documentation-theme.yaml`, or the corresponding
 path under the selected site directory. The file contains the preset values,
 comments describing accepted alternatives, and an example of a fine-grained
 typography override.
 
-Norna never loads `orig-*-theme.md`; only `theme.md` is active. The export
+Norna never loads `orig-*-theme.yaml`; only `theme.yaml` is active. The export
 command refuses to overwrite an existing reference file.
 
 Site identity is not part of the visual theme. Define the optional navigation
-brand and logo settings in `site/sitewide-content.md`; see [Sitewide Content](sitewide-content.md).
+label and logo display settings in `site/sitewide-content.yaml`; see
+[Sitewide Content](sitewide-content.md).
 
 ## Layout
 
@@ -232,11 +228,11 @@ sectionSurfaces: [base, soft, emphasis]
 
 ## Route Themes
 
-Add `theme.md` to a route directory when that route should have a different
+Add `theme.yaml` to a route directory when that route should have a different
 visual expression:
 
 ```text
-site/routes/010-guide/theme.md
+site/routes/010-guide/theme.yaml
 ```
 
 The route theme uses the same visual schema and complete presets as the root
@@ -244,14 +240,12 @@ theme. A route can therefore select a different expression without repeating a
 large configuration:
 
 ```yaml
----
 preset: statement
----
 ```
 
 It completely replaces the root visual theme for that route. If the route
 theme selects no top-level preset, omitted values use engine defaults rather
-than values from the root theme. It cannot define navigation, brand, logo, or
+than values from the root theme. It cannot define navigation identity or
 technical configuration.
 
 Section surfaces render as full-width horizontal bands while the section
@@ -262,7 +256,7 @@ accent color.
 
 ### Should every route select its own preset?
 
-No. A route without its own `theme.md` inherits the root theme, which is the
+No. A route without its own `theme.yaml` inherits the root theme, which is the
 normal choice when the site should keep one visual expression.
 
 Add a route theme only when the route should intentionally look different. If

@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { sitePublicDir } from '../../scripts/lib/site-paths.mjs';
+import { browserIconAssetDefinitions } from '../../scripts/lib/public-asset-conventions.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 export { getLogoAsset } from '../../scripts/lib/logo-assets.mjs';
 import { withBasePath } from './basePath';
@@ -12,27 +13,10 @@ type IconLink = {
 	sizes?: string;
 };
 
-const faviconCandidates: IconLink[] = [
-	{
-		rel: 'icon',
-		href: '/favicon.svg',
-		type: 'image/svg+xml',
-	},
-	{
-		rel: 'icon',
-		href: '/favicon.ico',
-		sizes: 'any',
-	},
-	{
-		rel: 'icon',
-		href: '/favicon.png',
-		type: 'image/png',
-	},
-	{
-		rel: 'apple-touch-icon',
-		href: '/apple-touch-icon.png',
-	},
-];
+const faviconCandidates: IconLink[] = browserIconAssetDefinitions.map(({ filename, ...definition }) => ({
+	...definition,
+	href: `/${filename}`,
+}));
 
 const publicAssetExists = (href: string) => {
 	const relativePath = href.replace(/^\//, '');

@@ -32,4 +32,4 @@ npm run norna:build
 ```
 
 See [Commands](../commands.md) for the complete script list and
-[Site Structure](../site-structure.md) for source and generated files.
+[Site Files](../site-files.md) for source and generated files.

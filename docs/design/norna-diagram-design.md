@@ -67,7 +67,7 @@ Diagrams must match the current Norna model:
 
 - A Norna site is described with site files, not arbitrary project structure.
 - `content.md` is the homepage content file.
-- `sitewide-content.md` contains shared site identity, banners, and footer
+- `sitewide-content.yaml` contains shared site identity, banners, and footer
   content.
 - Additional pages are route directories with `content.md`.
 - Route folder prefixes control route presentation order.
@@ -77,8 +77,8 @@ Diagrams must match the current Norna model:
 - Markdown remains the primary writing format.
 - Norna blocks cover fixed site patterns such as image stacks,
   carousels, and card lists.
-- `theme.md` controls visual presentation.
-- `config.md` controls the public URL and optional language and smooth
+- `theme.yaml` controls visual presentation.
+- `config.yaml` controls the public URL and optional language and smooth
   scrolling.
 - `dist/` is generated static output.
 - GitHub Pages is the integrated publishing target today.

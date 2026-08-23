@@ -18,9 +18,9 @@ npm run norna:dev -- --kill
 
 ## Files
 
-- `site/config.md`: public URL and optional language and smooth scrolling.
-- `site/sitewide-content.md`: shared brand or logo, banners and footer content.
-- `site/theme.md`: site-wide visual settings such as layout density, typography
+- `site/config.yaml`: public URL and optional language and smooth scrolling.
+- `site/sitewide-content.yaml`: shared navigation identity, banners, and footer.
+- `site/theme.yaml`: site-wide visual settings such as layout density, typography
   rhythm, palettes, section surfaces, and typography.
 - `site/content.md`: homepage title, sections, placeholders, project summary,
   links, install command, example usage, benefits, next steps, Norna blocks,
@@ -39,12 +39,13 @@ GitHub Pages workflow uses `npm ci`.
    benefits, use cases, and license in `site/content.md`.
 2. Replace the guide examples in `site/routes/010-guide/content.md`, or
    delete the route if the homepage is enough.
-3. Edit `site/sitewide-content.md` for the brand or logo, banners and footer.
-4. Edit `site/theme.md` for layout density, typography rhythm, palette, section
+3. Edit `site/sitewide-content.yaml` for the navigation label, logo display,
+   banners, and footer.
+4. Edit `site/theme.yaml` for layout density, typography rhythm, palette, section
    surfaces, and typography.
 5. Put any local source images in the image folder for the Markdown section
    that references them, for example `site/images/intro/`.
-6. Edit `site/config.md` for the public URL and, when needed, language or smooth
+6. Edit `site/config.yaml` for the public URL and, when needed, language or smooth
    scrolling. Deploy commands discover the GitHub repository and default branch.
 7. Update `package.json` with the site's package name and keep
    `package-lock.json` committed.
@@ -73,7 +74,8 @@ npm run norna:build
 Generic Norna documentation lives in the Norna repository:
 
 - `docs/getting-started.md`
-- `docs/site-structure.md`
+- `docs/site-files.md`
+- `docs/public-files.md`
 - `docs/content.md`
 - `docs/theme.md`
 - `docs/typography.md`

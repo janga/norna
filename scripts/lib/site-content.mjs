@@ -8,7 +8,6 @@ import {
 	siteImagesLabel,
 	siteRoutesDir,
 	siteRoutesLabel,
-	siteThemeLabel,
 } from './site-paths.mjs';
 import { parseRouteDirectory } from './route-model.mjs';
 
@@ -30,7 +29,6 @@ const knownNestedFrontmatterKeys = new Set([
 	'alt',
 	'body',
 	'blockGap',
-	'brand',
 	'caption',
 	'carousel',
 	'density',
@@ -255,7 +253,7 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 		if (fileKind === 'content' && key === 'images') {
 			fix = 'Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body.';
 		} else if (fileKind === 'content' && knownThemeTopLevelFrontmatterKeys.has(key)) {
-			fix = `Move "${key}:" to theme.md. Visual settings do not belong in content frontmatter.`;
+			fix = `Move "${key}:" to theme.yaml. Visual settings do not belong in content frontmatter.`;
 		} else if (knownNestedFrontmatterKeys.has(key)) {
 			fix = `Indent "${key}:" under the object it belongs to.`;
 		} else {
@@ -276,31 +274,34 @@ export const validateContentFrontmatterStructure = (frontmatter, addIssue) =>
 		fileKind: 'content',
 	});
 
-export const validateConfigFrontmatterStructure = (frontmatter, addIssue) =>
+export const validateConfigYamlStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
 		knownTopLevelFrontmatterKeys: knownConfigTopLevelFrontmatterKeys,
 		fileKind: 'config',
 	});
 
-export const validateThemeFrontmatterStructure = (frontmatter, addIssue) =>
+export const validateThemeYamlStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
 		knownTopLevelFrontmatterKeys: knownThemeTopLevelFrontmatterKeys,
 		fileKind: 'theme',
 	});
 
-export const validateRouteThemeFrontmatterStructure = (frontmatter, addIssue) =>
+export const validateRouteThemeYamlStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
 		knownTopLevelFrontmatterKeys: knownRouteThemeTopLevelFrontmatterKeys,
 		fileKind: 'route theme',
 	});
 
-export const validateSitewideFrontmatterStructure = (frontmatter, addIssue) =>
+export const validateSitewideYamlStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
 		knownTopLevelFrontmatterKeys: knownSitewideTopLevelFrontmatterKeys,
 		fileKind: 'sitewide content',
 	});
 
-export const readThemeFile = async (sitePath) => readSiteFile(sitePath, siteThemeLabel);
+export const readThemeFile = async (sitePath) => {
+	const source = await readFile(sitePath, 'utf8');
+	return { frontmatter: source, frontmatterBody: source, body: '' };
+};
 
 export const getFrontmatterSections = (frontmatter) => {
 	const sections = [];

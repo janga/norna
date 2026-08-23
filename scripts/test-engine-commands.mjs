@@ -35,7 +35,7 @@ try {
 
 	const directSiteRoot = path.join(tempRoot, 'current-directory-site');
 	await mkdir(directSiteRoot, { recursive: true });
-	await writeFile(path.join(directSiteRoot, 'config.md'), '---\nurl: https://example.com/\n---\n');
+	await writeFile(path.join(directSiteRoot, 'config.yaml'), 'url: https://example.com/\n');
 	await writeFile(path.join(directSiteRoot, 'content.md'), '---\ntitle: Direct Site\ndescription: Direct site fixture.\n---\n\n## Intro {#intro}\n\nText.\n');
 	const directSiteProjectRoot = await realpath(tempRoot);
 	const directSiteDoctorResult = runCli(['doctor'], {
@@ -56,6 +56,7 @@ try {
 	assert.equal(initializedPackageJson.scripts['norna:check'], 'norna check');
 	assert.equal(initializedPackageJson.scripts['norna:engine:update'], 'norna engine:update');
 	assert.equal(initializedPackageJson.scripts['norna:engine:version'], 'norna engine:version');
+	assert.equal(initializedPackageJson.scripts['norna:theme:presets'], 'norna theme:presets');
 	assert.equal(initializedPackageJson.scripts['norna:theme:export'], 'norna theme:export');
 	assert.equal(initializedPackageJson.scripts['engine:update'], undefined);
 	assert.equal(initializedPackageJson.scripts['engine:version'], undefined);
@@ -94,7 +95,7 @@ try {
 	assert.match(showResult.stdout, /pages:/);
 	assert.match(showResult.stdout, /\s+\/:/);
 	assert.match(showResult.stdout, /value: restrained/);
-	assert.match(showResult.stdout, /source: "site\/theme\.md"/);
+	assert.match(showResult.stdout, /source: "site\/theme\.yaml"/);
 	assert.match(showResult.stdout, /intro:/);
 
 	const initAgainResult = runCli(['init', initializedSiteRoot]);
@@ -111,8 +112,8 @@ try {
 	assert.equal(customStandalonePackageJson.scripts['norna:check'], 'norna --site-dir presentation check');
 	assert.equal(customStandalonePackageJson.scripts['norna:build'], 'norna --site-dir presentation build');
 	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'content.md'));
-	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'config.md'));
-	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'theme.md'));
+	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'config.yaml'));
+	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'theme.yaml'));
 
 	const mixedProjectRoot = path.join(tempRoot, 'mixed-project');
 	await mkdir(mixedProjectRoot, { recursive: true });
@@ -138,8 +139,8 @@ try {
 	assert.equal(mixedPackageJson.scripts['norna:engine:update'], 'norna --site-dir presentation engine:update');
 	assert.equal(mixedPackageJson.scripts['norna:engine:version'], 'norna --site-dir presentation engine:version');
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'content.md'));
-	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.md'));
-	await readFile(path.join(mixedProjectRoot, 'presentation', 'theme.md'));
+	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.yaml'));
+	await readFile(path.join(mixedProjectRoot, 'presentation', 'theme.yaml'));
 
 	const conflictProjectRoot = path.join(tempRoot, 'conflict-project');
 	await mkdir(conflictProjectRoot, { recursive: true });
@@ -173,6 +174,23 @@ try {
 	});
 	assert.equal(releaseHelpResult.status, 0, releaseHelpResult.stderr || releaseHelpResult.stdout);
 	assert.match(releaseHelpResult.stdout, /Usage: node scripts\/release\.mjs/);
+	const releaseSource = await readFile(path.join(repoRoot, 'scripts', 'release.mjs'), 'utf8');
+	const releaseSteps = [
+		"['version', releaseType, '--no-git-tag-version']",
+		"['run', 'schemas:generate']",
+		"['test']",
+		"['commit', '-m', `Release ${releaseTag}`]",
+		"['run', 'release:publish']",
+		"['push', '--follow-tags']",
+	];
+	for (const step of releaseSteps) assert.ok(releaseSource.includes(step), `Missing release step: ${step}`);
+	for (let index = 1; index < releaseSteps.length; index += 1) {
+		assert.ok(
+			releaseSource.indexOf(releaseSteps[index - 1]) < releaseSource.indexOf(releaseSteps[index]),
+			`Release step is out of order: ${releaseSteps[index]}`,
+		);
+	}
+	assert.match(releaseSource, /rollbackPreparedRelease/);
 
 	console.log('ok - engine commands report versions, initialize sites, guard engine self-updates, and document release usage');
 } finally {

@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Absolute public URL for the built site.",
+      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.14/docs/configuration.md#url)",
+      "examples": [
+        "https://example.com/",
+        "https://owner.github.io/repository-name/"
+      ]
+    },
+    "language": {
+      "description": "Site language tag using Norna's English or Swedish interface text; the default is en.",
+      "type": "string",
+      "pattern": "^(?:en|sv)(?:-[a-zA-Z0-9]+)*$",
+      "default": "en",
+      "examples": [
+        "en",
+        "sv",
+        "en-GB",
+        "sv-SE"
+      ],
+      "oneOf": [
+        {
+          "const": "en",
+          "title": "English",
+          "description": "Use Norna's built-in English interface text."
+        },
+        {
+          "const": "sv",
+          "title": "Swedish",
+          "description": "Use Norna's built-in Swedish interface text."
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:en|sv)-[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$",
+          "title": "Regional language tag",
+          "description": "Use an English or Swedish regional language tag such as en-GB or sv-SE."
+        }
+      ],
+      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.14/docs/configuration.md#language)"
+    },
+    "scrollBehavior": {
+      "default": "instant",
+      "description": "Use instant anchors by default or the browser's native smooth scrolling.",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "instant",
+          "title": "Instant",
+          "description": "Jump directly to anchors without animated scrolling. This is the default."
+        },
+        {
+          "const": "smooth",
+          "title": "Browser smooth",
+          "description": "Use the browser's native smooth scrolling for anchor navigation."
+        }
+      ],
+      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.14/docs/configuration.md#scrollbehavior)",
+      "examples": [
+        "instant",
+        "smooth"
+      ]
+    }
+  },
+  "required": [
+    "url"
+  ],
+  "additionalProperties": false,
+  "description": "Technical settings for one Norna site. Routes cannot provide technical configuration.",
+  "$id": "https://janga.github.io/norna/schemas/config.schema.json",
+  "title": "Norna site configuration",
+  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.14/docs/configuration.md)"
+}

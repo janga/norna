@@ -23,7 +23,7 @@ approachable before wider use.
 
 - Add a short "Build your first image-led site in 5 minutes" guide with one happy path
   and no reference material.
-- Add a complete small `site/theme.md` and `site/content.md` example that a
+- Add a complete small `site/theme.yaml` and `site/content.md` example that a
   new user can compare with the starter.
 - Add standalone-project and embedded-project examples that show the expected
   directory layout and npm scripts.
@@ -36,9 +36,16 @@ approachable before wider use.
 - Add a plain explanation of what is versioned, what is generated, and what is
   published.
 - Expand typography profile guidance with examples of when to choose each
-  profile in `site/theme.md` without losing the complete theme-preset model.
+  profile in `site/theme.yaml` without losing the complete theme-preset model.
 - Document the recommended site-upgrade workflow after a new engine version is
   published.
+- Document IntelliSense suggestion sources for Norna YAML files. Explain that
+  schema-based completions come from Norna's project-local schemas, while VS
+  Code word suggestions and AI extensions may offer unrelated or invalid
+  content. State that the Norna schema and `norna config:check` are
+  authoritative, and include optional workspace settings for disabling
+  word-based and Copilot suggestions for YAML when users want schema-only
+  completion.
 
 ## Implementation
 
@@ -86,7 +93,7 @@ verified.
   images, or generated state changes.
 - Decide whether image cache and generated manifest behavior needs a more
   explicit command for repair or reset.
-- Consider a conservative command for refreshing marked `theme.md` help
+- Consider a conservative command for refreshing marked `theme.yaml` help
   comment blocks without changing user-owned YAML values.
 
 ## Known Limitations
@@ -97,8 +104,8 @@ These are current constraints, not necessarily bugs.
 - Routes currently support one route segment under `site/routes/<route-folder>/`;
   nested routes and richer navigation behavior remain out of scope.
 - Source image copyright metadata is outside the current command surface.
-- `norna` assumes a file-driven site model with `config.md`,
-  `theme.md`, `content.md`, source images, and static public files.
+- `norna` assumes a file-driven site model with `config.yaml`,
+  `theme.yaml`, `content.md`, source images, and static public files.
 
 ## Future Plans
 
@@ -130,18 +137,18 @@ site/
       images/
 ```
 
-- `site/config.md` is site-level technical configuration for the public URL,
+- `site/config.yaml` is site-level technical configuration for the public URL,
   language and optional smooth scrolling. Norna derives the base path from the
   URL and discovers GitHub repository/default-branch details during deploy.
-- `site/theme.md` is site-level visual configuration. An optional route-local
-  `theme.md` replaces it for that route.
+- `site/theme.yaml` is site-level visual configuration. An optional route-local
+  `theme.yaml` replaces it for that route.
 - Page files own page metadata, section definitions, Norna block references,
   and Markdown body content.
 - Theme resolution is:
 
 ```text
 engine defaults
--> root theme.md or route-local theme.md
+-> root theme.yaml or route-local theme.yaml
 ```
 
 - Navigation should keep site navigation and page navigation conceptually

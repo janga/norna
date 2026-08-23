@@ -79,9 +79,9 @@ Relevant documentation:
 
 ```text
 site/
-  config.md
-  theme.md
-  sitewide-content.md
+  config.yaml
+  theme.yaml
+  sitewide-content.yaml
   content.md
   routes/
   images/
@@ -96,17 +96,17 @@ Additional pages live under `routes/`.
 
 ### Presentation
 
-`theme.md` is required and normally selects a complete visual preset. Focused
+`theme.yaml` is required and normally selects a complete visual preset. Focused
 values in the same file can override the preset.
 
 ### Shared site content
 
-`sitewide-content.md` contains shared identity such as the brand or logo, plus
-banners and footer content.
+`sitewide-content.yaml` contains the shared navigation label, banners, and
+footer content.
 
 ### Configuration
 
-`config.md` contains the public URL and optional language and smooth scrolling.
+`config.yaml` contains the public URL and optional language and smooth scrolling.
 Norna derives the base path from the URL and discovers GitHub repository details
 when a deploy command runs.
 
@@ -114,14 +114,16 @@ when a deploy command runs.
 
 `images/` contains source images.
 
-`public/` contains static files copied into the site, such as favicons,
-`robots.txt` or a `CNAME` file.
+`public/` contains static files copied into the site, including the
+convention-based navigation logo and browser icons, `robots.txt`, or a `CNAME`
+file.
 
 These files are the interface you normally work with. The website implementation
 itself is provided by Norna.
 
 Relevant documentation:
-[Site Structure](https://github.com/janga/norna/blob/main/docs/site-structure.md),
+[Site Files](https://github.com/janga/norna/blob/main/docs/site-files.md),
+[Public Files](https://github.com/janga/norna/blob/main/docs/public-files.md),
 [Content](https://github.com/janga/norna/blob/main/docs/content.md),
 [Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
 [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md).
@@ -139,20 +141,16 @@ sizing, font and typography, spacing, palette and section surfaces:
 A complete site theme can therefore be this short:
 
 ```yaml
----
 preset: documentation
----
 ```
 
 Add only the values that should differ from the preset:
 
 ```yaml
----
 preset: documentation
 layout:
   pageWidth: 1320px
 palette: dark
----
 ```
 
 To inspect a preset before overriding it, export a commented reference file:
@@ -161,13 +159,13 @@ To inspect a preset before overriding it, export a commented reference file:
 npm run norna:theme:export -- documentation
 ```
 
-This creates `site/orig-documentation-theme.md`. Norna does not load that file;
-only `theme.md` is active. The command refuses to overwrite an existing
+This creates `site/orig-documentation-theme.yaml`. Norna does not load that file;
+only `theme.yaml` is active. The command refuses to overwrite an existing
 reference file.
 
-A route can select a different complete preset in its own optional `theme.md`.
-The route theme replaces the root visual theme for that route, while shared
-brand and logo settings remain site-wide.
+A route can select a different complete preset in its own optional `theme.yaml`.
+The route theme replaces the root visual theme for that route, while the shared
+navigation label and logo settings remain site-wide.
 
 Relevant documentation:
 [Theme](https://github.com/janga/norna/blob/main/docs/theme.md),

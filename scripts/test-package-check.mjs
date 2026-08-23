@@ -156,16 +156,20 @@ try {
 		assertFileExists(path.join(unpackDir, 'package', 'docs', 'README.md')),
 		assertFileExists(path.join(unpackDir, 'package', 'docs', 'configuration.md')),
 		assertFileExists(path.join(unpackDir, 'package', 'docs', 'images-and-metadata.md')),
+		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'manifest.json')),
+		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'config.schema.json')),
+		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'content-frontmatter.schema.json')),
+		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'sitewide-content.schema.json')),
+		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'theme.schema.json')),
 		assertFileExists(path.join(packagedStarterRoot, '.github', 'workflows', 'deploy.yml')),
 		assertFileExists(path.join(packagedStarterRoot, 'package.json')),
 		assertFileExists(path.join(packagedStarterRoot, 'README.md')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'config.md')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'theme.md')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'sitewide-content.md')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'config.yaml')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'theme.yaml')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'sitewide-content.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'content.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'images', 'work', '.gitkeep')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'public', 'robots.txt')),
-		assertFileMissing(path.join(packagedStarterRoot, 'site', 'config.mjs')),
 	]);
 	await assertFileIncludes(
 		path.join(packagedStarterRoot, '.github', 'workflows', 'deploy.yml'),
@@ -184,17 +188,17 @@ try {
 	packageJson.name = 'norna-package-check-site';
 	packageJson.dependencies['@janga/norna'] = tarballPath;
 	await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
-	const packageCheckConfigPath = path.join(siteProjectRoot, 'site', 'config.md');
+	const packageCheckConfigPath = path.join(siteProjectRoot, 'site', 'config.yaml');
 	const packageCheckConfig = await readFile(packageCheckConfigPath, 'utf8');
 	await writeFile(
 		packageCheckConfigPath,
 		packageCheckConfig.replace('url: https://example.com/', 'url: https://example.com/site/'),
 	);
-	const packageCheckSitewidePath = path.join(siteProjectRoot, 'site', 'sitewide-content.md');
+	const packageCheckSitewidePath = path.join(siteProjectRoot, 'site', 'sitewide-content.yaml');
 	const packageCheckSitewide = await readFile(packageCheckSitewidePath, 'utf8');
 	await writeFile(
 		packageCheckSitewidePath,
-		packageCheckSitewide.replace('brand: Example Site', 'brand: Package Check Brand\n  logo:\n    alt: Package Check Logo\n    height: 2.6rem'),
+		packageCheckSitewide.replace('label: Example Site', 'label: Package Check Logo\n  logo:\n    height: 2.6rem'),
 	);
 	await writeFile(
 		path.join(siteProjectRoot, 'site', 'public', 'logo.svg'),
@@ -246,11 +250,10 @@ This route verifies that packaged norna sites can build route pages.
 	await runInherit(nornaBinPath, ['init', initializedSiteRoot], { cwd: tempRoot, env: npmEnv });
 	await Promise.all([
 		assertFileExists(path.join(initializedSiteRoot, 'package.json')),
-		assertFileExists(path.join(initializedSiteRoot, 'site', 'config.md')),
-		assertFileExists(path.join(initializedSiteRoot, 'site', 'theme.md')),
+		assertFileExists(path.join(initializedSiteRoot, 'site', 'config.yaml')),
+		assertFileExists(path.join(initializedSiteRoot, 'site', 'theme.yaml')),
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
-		assertFileMissing(path.join(initializedSiteRoot, 'site', 'config.mjs')),
 	]);
 	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
 	await runInherit(npxBin, ['norna', 'doctor'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
@@ -411,7 +414,7 @@ This route verifies that packaged norna sites can build route pages.
 	);
 	const siteContentPath = path.join(siteProjectRoot, 'site', 'content.md');
 	const siteContent = await readFile(siteContentPath, 'utf8');
-	const siteThemePath = path.join(siteProjectRoot, 'site', 'theme.md');
+	const siteThemePath = path.join(siteProjectRoot, 'site', 'theme.yaml');
 	const siteTheme = await readFile(siteThemePath, 'utf8');
 	await writeFile(siteThemePath, siteTheme.replace('\n  profile: restrained', '\n  profile: noisy'));
 	await runExpectFailure(
@@ -518,7 +521,7 @@ This route verifies that packaged norna sites can build route pages.
 		'typography.fontFamily',
 	);
 	await writeFile(siteThemePath, siteTheme);
-	const siteConfigPath = path.join(siteProjectRoot, 'site', 'config.md');
+	const siteConfigPath = path.join(siteProjectRoot, 'site', 'config.yaml');
 	const siteConfig = await readFile(siteConfigPath, 'utf8');
 	await writeFile(
 		siteConfigPath,

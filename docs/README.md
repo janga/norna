@@ -1,23 +1,59 @@
 # Norna Documentation
 
-Use this page to choose documentation by what you are trying to accomplish.
-The [Norna introduction site](https://janga.github.io/norna/) explains the
-product; these Markdown files provide the tutorial, task guides, explanation,
-and exact reference.
+The [Norna introduction site](https://janga.github.io/norna/) explains what the
+tool is for. These Markdown files are the authoritative tutorial, workflow
+guides, and reference.
 
 ## Start Here
 
 1. [Build your first Norna site](getting-started.md) follows one short path from
    an empty directory to a checked build.
-2. [Requirements and limitations](requirements.md) states what must be
-   installed and what Norna does and does not support today.
-3. [Examples](../examples/README.md) pairs complete and focused source projects
-   with their rendered sites.
+2. [Site Files](site-files.md) is the canonical map of every source file,
+   convention-based directory, and generated location.
+3. [Requirements and limitations](requirements.md) lists required software and
+   current product boundaries.
+4. [Examples](../examples/README.md) pairs complete and focused source projects
+   with rendered sites.
 
 Do not read the reference from beginning to end before trying Norna. Complete
-the tutorial, then use the task links below when a real site needs them.
+the tutorial, then open the reference for the file or workflow you are changing.
 
-## How-To Guides
+## Site File Reference
+
+Norna expects this top-level source model:
+
+```text
+site/
+|-- config.yaml
+|-- theme.yaml
+|-- sitewide-content.yaml
+|-- content.md
+|-- images/
+|-- routes/
+`-- public/
+```
+
+- [`config.yaml`](configuration.md): public URL, language, and native browser
+  scroll behavior.
+- [`theme.yaml`](theme.md): complete visual presets and focused presentation
+  overrides.
+- [`sitewide-content.yaml`](sitewide-content.md): shared navigation identity,
+  banners, and footer.
+- [`content.md`](content.md): page metadata, sections, prose, notes, and Norna
+  blocks.
+- [`images/`](images-and-metadata.md): managed source formats, variants, sync,
+  and generated image state.
+- [`routes/`](routes.md): additional pages, ordering, URLs, route themes, and
+  route-local images.
+- [`public/`](public-files.md): navigation logos, favicons, and other static
+  files copied without managed-image processing.
+- [Generated files](site-files.md#generated-files): `site/.norna/public/`,
+  `dist/`, and `.astro/`.
+
+The [complete Site Files reference](site-files.md) explains which paths are
+required, optional, convention-discovered, versioned, or generated.
+
+## Common Workflows
 
 ### Create And Run A Site
 
@@ -26,22 +62,23 @@ the tutorial, then use the task links below when a real site needs them.
 - [Start and manage local preview](local-development.md)
 - [Inspect or update the installed engine](commands.md#command-summary)
 
-### Write And Organise Content
+### Write Content
 
 - [Write page sections](content.md#sections)
 - [Use image stacks, carousels, and cards](content.md#norna-blocks)
 - [Add notes to prose](content.md#markdown-text)
 - [Add another page](routes.md)
-- [Add shared identity, banners, and a footer](sitewide-content.md)
+- [Add shared banners or footer content](sitewide-content.md)
 
-### Work With Images
+### Work With Images And Public Assets
 
 - [Add managed source images](images-and-metadata.md#managed-source-images)
-- [Place image blocks in Markdown](content.md#norna-blocks)
 - [Check and sync moved image references](content.md#validation-and-sync)
-- [Understand generated variants and SVG handling](images-and-metadata.md#generated-variants-and-static-svg)
+- [Add a navigation logo](public-files.md#navigation-logo)
+- [Add favicons](public-files.md#logos-and-favicons)
+- [Add other static files](public-files.md#other-static-files)
 
-### Change The Presentation
+### Change Presentation
 
 - [Choose a complete theme preset](theme.md#theme-presets)
 - [Inspect and override a preset](theme.md#overrides)
@@ -50,37 +87,28 @@ the tutorial, then use the task links below when a real site needs them.
 
 ### Check, Build, And Publish
 
-- [Run content and configuration checks](commands.md#starter-npm-scripts)
-- [Build and inspect generated output](site-structure.md#generated-files)
-- [Publish through the included GitHub Pages workflow](publishing.md#github-pages-workflow)
-- [Monitor or troubleshoot a deployment](publishing.md)
+- [Run configuration and content checks](commands.md#starter-npm-scripts)
+- [Build and inspect generated output](site-files.md#generated-files)
+- [Publish through GitHub Pages](publishing.md#github-pages-workflow)
+- [Monitor or troubleshoot deployment](publishing.md)
 
 ## Concepts And Explanation
 
 - [Norna's site model](https://janga.github.io/norna/concepts/) explains how
   files, sections, images, and routes become a website.
-- [Site Structure](site-structure.md) separates source files, generated files,
-  examples, fixtures, and engine code.
-- [Images and Metadata](images-and-metadata.md) explains why Norna manages image
-  variants and published URLs.
-- [Command Organization](design/command-organization.md) explains the command
-  model for standalone sites, embedded sites, and engine development.
-- [Site Examples Structure](design/site-examples-structure.md) explains the
-  difference between starters, examples, documentation sites, and fixtures.
+- [Images and Metadata](images-and-metadata.md) explains managed variants and
+  published URLs.
+- [Command Organization](design/command-organization.md) explains standalone,
+  embedded, and engine-development command models.
+- [Site Examples Structure](design/site-examples-structure.md) distinguishes
+  starters, examples, documentation sites, and fixtures.
 
-## Reference
+## Command And Platform Reference
 
-- [Configuration](configuration.md): `site/config.md` fields and defaults.
-- [Sitewide Content](sitewide-content.md): shared identity, banners, and footer.
-- [Content](content.md): page frontmatter, sections, blocks, notes, and checks.
-- [Theme](theme.md): presets, overrides, layout, image sizing, and surfaces.
-- [Typography](typography.md): typography roles, rhythms, and inspection.
-- [Routes](routes.md): directory names, route IDs, URLs, and route images.
-- [Images and Metadata](images-and-metadata.md): source formats, variants, and
-  generated manifests.
-- [Commands](commands.md): CLI commands, npm scripts, options, and exit behavior.
+- [Commands](commands.md): CLI commands, npm scripts, and options.
 - [Requirements and limitations](requirements.md): runtime dependencies,
-  optional tools, and current product boundaries.
+  optional tools, and current boundaries.
+- [Publishing](publishing.md): GitHub Pages workflow and deploy helpers.
 
 ## Troubleshooting
 

@@ -21,7 +21,7 @@ import {
 	toPosixPath,
 	validateContentFrontmatterStructure,
 	validateFrontmatterIndentation,
-	validateThemeFrontmatterStructure,
+	validateThemeYamlStructure,
 } from './lib/site-content.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
@@ -393,7 +393,7 @@ let themeFrontmatter = null;
 try {
 	themeFrontmatter = (await readThemeFile(siteThemePath)).frontmatter;
 	validateFrontmatterIndentation(themeFrontmatter, addIssue);
-	validateThemeFrontmatterStructure(themeFrontmatter, addIssue);
+	validateThemeYamlStructure(themeFrontmatter, addIssue);
 } catch (error) {
 	if (error?.code !== 'ENOENT') {
 		throw error;

@@ -1,6 +1,84 @@
 import { Buffer } from 'node:buffer';
+import { documentationLink } from './documentation-links.mjs';
 
-export const nornaBlockTypes = new Set(['norna-image-stack', 'norna-image-carousel', 'norna-card-list']);
+const field = (description, options = {}) => Object.freeze({ description, ...options });
+const value = (title, description) => Object.freeze({ title, description });
+const nornaBlocksDocumentation = documentationLink('Norna blocks reference', 'content.md', 'norna-blocks');
+
+export const nornaMarkdownBlockDefinitions = Object.freeze({
+	'norna-image-stack': Object.freeze({
+		description: 'Display one or more managed images in a vertical stack.',
+		documentation: nornaBlocksDocumentation,
+		item: Object.freeze({
+			start: field('Start another managed image.', { key: 'image', prefix: '- ' }),
+			fields: Object.freeze({
+				alt: field('Optional alternative text for the image.'),
+				caption: field('Optional visible caption below the image.'),
+			}),
+		}),
+	}),
+	'norna-image-carousel': Object.freeze({
+		description: 'Display two or more managed images in an interactive carousel.',
+		documentation: nornaBlocksDocumentation,
+		item: Object.freeze({
+			start: field('Start another managed carousel image.', { key: 'image', prefix: '- ' }),
+			fields: Object.freeze({
+				alt: field('Optional alternative text for the image.'),
+				caption: field('Optional visible caption for the image.'),
+			}),
+		}),
+	}),
+	'norna-card-list': Object.freeze({
+		description: 'Display a structured list of cards.',
+		documentation: nornaBlocksDocumentation,
+		options: Object.freeze({
+			layout: field('Place each card image above, left, or right of its text. Defaults to image-top.', {
+				default: 'image-top',
+				values: Object.freeze({
+					'image-top': value('Image above', 'Place the image above the card text.'),
+					'image-left': value('Image left', 'Place the image to the left of the card text.'),
+					'image-right': value('Image right', 'Place the image to the right of the card text.'),
+				}),
+			}),
+			flow: field('Arrange cards as a responsive grid or a vertical stack. Defaults to grid.', {
+				default: 'grid',
+				values: Object.freeze({
+					grid: value('Grid', 'Arrange cards in a responsive grid.'),
+					stack: value('Stack', 'Arrange cards in one vertical column.'),
+				}),
+			}),
+			size: field('Set the coordinated card and image size. Defaults to m.', {
+				default: 'm',
+				values: Object.freeze({
+					s: value('Small', 'Use compact cards and images.'),
+					m: value('Medium', 'Use the balanced default card size.'),
+					l: value('Large', 'Use larger cards and images.'),
+					xl: value('Extra large', 'Use the largest card and image size.'),
+				}),
+			}),
+			width: field('Limit the width of the complete card list. Defaults to normal.', {
+				default: 'normal',
+				values: Object.freeze({
+					text: value('Text', 'Match the active body-text width.'),
+					narrow: value('Narrow', 'Use a narrow card-list width.'),
+					normal: value('Normal', 'Use the balanced default card-list width.'),
+					wide: value('Wide', 'Allow the card list to use more horizontal space.'),
+				}),
+			}),
+		}),
+		item: Object.freeze({
+			start: field('Start another card. Every card requires a title.', { key: 'title', prefix: '- ' }),
+			fields: Object.freeze({
+				text: field('Optional card text.'),
+				image: field('Optional managed image filename.'),
+				link: field('Optional URL opened when the card is activated.'),
+				'badge-text': field('Optional short badge displayed on the card.'),
+			}),
+		}),
+	}),
+});
+
+export const nornaBlockTypes = new Set(Object.keys(nornaMarkdownBlockDefinitions));
 
 const blockTypeLabels = {
 	'norna-image-stack': 'norna-image-stack',
@@ -30,10 +108,11 @@ const cardListExample = [
 	'  badge-text: Recommended',
 	'```',
 ].join('\n');
-const cardListLayouts = new Set(['image-top', 'image-left', 'image-right']);
-const cardListFlows = new Set(['grid', 'stack']);
-const cardListSizes = new Set(['s', 'm', 'l', 'xl']);
-const cardListWidths = new Set(['text', 'narrow', 'normal', 'wide']);
+const cardListDefinition = nornaMarkdownBlockDefinitions['norna-card-list'];
+const cardListLayouts = new Set(Object.keys(cardListDefinition.options.layout.values));
+const cardListFlows = new Set(Object.keys(cardListDefinition.options.flow.values));
+const cardListSizes = new Set(Object.keys(cardListDefinition.options.size.values));
+const cardListWidths = new Set(Object.keys(cardListDefinition.options.width.values));
 
 const formatLocation = ({ label, line } = {}) => [
 	label,
@@ -294,10 +373,10 @@ const parseImageListBlock = (source, options = {}) => {
 const parseCardListBlock = (source, options = {}) => {
 	const cards = [];
 	const allowedKeys = new Set(['text', 'image', 'link', 'badge-text']);
-	let layout = 'image-top';
-	let flow = 'grid';
-	let size = 'm';
-	let width = 'normal';
+	let layout = cardListDefinition.options.layout.default;
+	let flow = cardListDefinition.options.flow.default;
+	let size = cardListDefinition.options.size.default;
+	let width = cardListDefinition.options.width.default;
 	let current = null;
 
 	for (const [index, line] of normalizeLines(source).entries()) {

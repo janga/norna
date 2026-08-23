@@ -1,0 +1,52 @@
+{
+  "name": "norna-vscode",
+  "displayName": "Norna",
+  "description": "Project-local IntelliSense for Norna configuration, content blocks, notes, and managed images.",
+  "version": "0.0.3",
+  "publisher": "janga",
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janga/norna.git"
+  },
+  "bugs": {
+    "url": "https://github.com/janga/norna/issues"
+  },
+  "homepage": "https://janga.github.io/norna/",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown",
+    "onLanguage:yaml",
+    "onCommand:nornaEditor.showStatus",
+    "onCommand:nornaEditor.refresh"
+  ],
+  "main": "./extension.cjs",
+  "extensionDependencies": [
+    "redhat.vscode-yaml"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "nornaEditor.showStatus",
+        "title": "Norna: Show IntelliSense Status"
+      },
+      {
+        "command": "nornaEditor.refresh",
+        "title": "Norna: Refresh IntelliSense"
+      }
+    ]
+  },
+  "scripts": {
+    "check": "node --check extension.cjs",
+    "package": "vsce package --out norna-vscode.vsix"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "3.9.2"
+  }
+}

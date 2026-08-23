@@ -1,9 +1,6 @@
 # build output
 dist/
 
-# legacy generated public output
-/public/
-
 # generated build-preparation output
 **/.norna/public/
 /fixtures/**/site/.norna/
@@ -15,6 +12,9 @@ dist/
 
 # dependencies
 node_modules/
+
+# local editor packages
+editors/vscode/*.vsix
 
 # logs
 npm-debug.log*

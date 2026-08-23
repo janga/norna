@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "navigation": {
+      "description": "Site-wide navigation identity.",
+      "type": "object",
+      "properties": {
+        "label": {
+          "description": "Accessible site label used for navigation text and logo alternative text.",
+          "type": "string",
+          "minLength": 1,
+          "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n```\n\n- Without a logo, this text is shown in the navigation.\n\n- With a logo, this text becomes the image alternative text.\n\n- When omitted, Norna uses the homepage title.\n\n[Navigation identity reference](https://github.com/janga/norna/blob/v0.7.14/docs/sitewide-content.md#navigation-identity)",
+          "examples": [
+            "Example Site"
+          ]
+        },
+        "logo": {
+          "description": "Optional display settings for a convention-based navigation logo.",
+          "type": "object",
+          "properties": {
+            "height": {
+              "description": "Displayed logo height. Width follows the intrinsic aspect ratio.",
+              "type": "string",
+              "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+              "examples": [
+                "2rem"
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n  logo:\n    height: 2rem\n```\n\n`logo` optionally overrides the displayed height of the logo file that Norna discovers automatically. It does not enable or select the file.\n\n[Navigation logo filenames and placement](https://github.com/janga/norna/blob/v0.7.14/docs/public-files.md#navigation-logo)"
+        }
+      },
+      "additionalProperties": false,
+      "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n```\n\n`navigation` defines the identity shared by the homepage and every route. Routes cannot replace it.\n\n[Navigation identity reference](https://github.com/janga/norna/blob/v0.7.14/docs/sitewide-content.md#navigation-identity)"
+    },
+    "banners": {
+      "default": [],
+      "description": "Site-wide dismissible notices.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "description": "Stable banner identifier used for dismissal state."
+          },
+          "tone": {
+            "default": "warning",
+            "description": "Semantic banner tone.",
+            "type": "string",
+            "oneOf": [
+              {
+                "const": "warning",
+                "title": "Warning",
+                "description": "Present the banner as an important warning notice."
+              }
+            ]
+          },
+          "visible": {
+            "description": "Optional date window for the banner.",
+            "type": "object",
+            "properties": {
+              "from": {
+                "description": "First date on which the content is visible.",
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "until": {
+                "description": "First date on which the content is no longer visible.",
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              }
+            },
+            "additionalProperties": false
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Short banner heading."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Concise banner message."
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "text"
+        ],
+        "additionalProperties": false,
+        "description": "Dismissible, site-wide one-line notice."
+      },
+      "markdownDescription": "```yaml\nbanners:\n  - id: project-status\n    tone: warning\n    title: Experimental code\n    text: Not for production use.\n```\n\nAdds dismissible notices above page content. List order controls their presentation order; each `id` must be unique.\n\n[Banner reference](https://github.com/janga/norna/blob/v0.7.14/docs/sitewide-content.md#banners)"
+    },
+    "footer": {
+      "description": "Site-wide footer content.",
+      "type": "object",
+      "properties": {
+        "copyrightMessage": {
+          "description": "Copyright or ownership text shown in the site footer.",
+          "type": "string",
+          "minLength": 1
+        },
+        "buildInfo": {
+          "description": "Optional generated build timestamp.",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Show generated build information in the footer.",
+              "type": "boolean"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Label shown before the generated build timestamp."
+            },
+            "dateTimeFormat": {
+              "type": "object",
+              "properties": {
+                "locale": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Intl locale such as en-GB or sv-SE."
+                },
+                "timeZone": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "IANA time zone such as Europe/Stockholm."
+                },
+                "dateStyle": {
+                  "type": "string",
+                  "description": "Intl dateStyle for the build timestamp.",
+                  "oneOf": [
+                    {
+                      "const": "short",
+                      "title": "Short",
+                      "description": "Use a compact localized date or time representation."
+                    },
+                    {
+                      "const": "medium",
+                      "title": "Medium",
+                      "description": "Use a moderately detailed localized representation."
+                    },
+                    {
+                      "const": "long",
+                      "title": "Long",
+                      "description": "Use a detailed localized representation."
+                    },
+                    {
+                      "const": "full",
+                      "title": "Full",
+                      "description": "Use the most detailed localized representation."
+                    }
+                  ]
+                },
+                "timeStyle": {
+                  "type": "string",
+                  "description": "Intl timeStyle for the build timestamp.",
+                  "oneOf": [
+                    {
+                      "const": "short",
+                      "title": "Short",
+                      "description": "Use a compact localized date or time representation."
+                    },
+                    {
+                      "const": "medium",
+                      "title": "Medium",
+                      "description": "Use a moderately detailed localized representation."
+                    },
+                    {
+                      "const": "long",
+                      "title": "Long",
+                      "description": "Use a detailed localized representation."
+                    },
+                    {
+                      "const": "full",
+                      "title": "Full",
+                      "description": "Use the most detailed localized representation."
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "locale",
+                "timeZone",
+                "dateStyle",
+                "timeStyle"
+              ],
+              "additionalProperties": false,
+              "description": "Formatting used for the generated build timestamp."
+            }
+          },
+          "required": [
+            "text",
+            "dateTimeFormat"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\nAdds shared footer content. Generated build information is optional.\n\n[Footer reference](https://github.com/janga/norna/blob/v0.7.14/docs/sitewide-content.md#footer)"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Editorial content and identity shared by every page.",
+  "$id": "https://janga.github.io/norna/schemas/sitewide-content.schema.json",
+  "title": "Norna site-wide content",
+  "markdownDescription": "```yaml\nnavigation:\n  label: Example Site\n```\n\n`sitewide-content.yaml` optionally defines editorial content and identity shared by every page.\n\n[Site-wide content reference](https://github.com/janga/norna/blob/v0.7.14/docs/sitewide-content.md)"
+}

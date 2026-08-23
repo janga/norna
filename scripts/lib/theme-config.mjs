@@ -1,11 +1,8 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
-import { parseYamlMapping } from './frontmatter-yaml.mjs';
 import {
-	splitSiteFile,
-	validateFrontmatterIndentation,
-	validateRouteThemeFrontmatterStructure,
-	validateThemeFrontmatterStructure,
+	validateRouteThemeYamlStructure,
+	validateThemeYamlStructure,
 } from './site-content.mjs';
 import {
 	siteRoutesDir,
@@ -16,6 +13,7 @@ import {
 } from './site-paths.mjs';
 import { resolveThemePresentation } from './presentation.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
+import { parseYamlConfig } from './yaml-config.mjs';
 
 export const readThemeConfig = async () => {
 	const themeFile = await readFile(siteThemePath, 'utf8').catch((error) => {
@@ -25,22 +23,11 @@ export const readThemeConfig = async () => {
 
 		throw error;
 	});
-	const { frontmatter, frontmatterBody } = splitSiteFile(themeFile, siteThemeLabel);
-	const issues = [];
-
-	validateFrontmatterIndentation(frontmatter, (issue) => issues.push(issue));
-	validateThemeFrontmatterStructure(frontmatter, (issue) => issues.push(issue));
-
-	if (issues.length > 0) {
-		throw new Error([
-			`${siteThemeLabel} has invalid frontmatter.`,
-			...issues.map((issue) => `- ${issue.message}`),
-		].join('\n'));
-	}
-
-	const config = parseYamlMapping(frontmatterBody);
+	const config = parseYamlConfig(themeFile, siteThemeLabel, {
+		validateStructure: validateThemeYamlStructure,
+	});
 	if (Object.hasOwn(config, 'navigation')) {
-		throw new Error(`${siteThemeLabel} may not define navigation. Brand and logo belong in ${sitewideContentLabel}.`);
+		throw new Error(`${siteThemeLabel} may not define navigation. The site label and logo settings belong in ${sitewideContentLabel}.`);
 	}
 	resolveThemeConfig(config, siteThemeLabel);
 	resolveThemePresentation(config, siteThemeLabel);
@@ -63,7 +50,7 @@ const getRouteThemeFiles = async (directory, relativeDirectory = '') => {
 			continue;
 		}
 
-		if (entry.name === 'theme.md') {
+		if (entry.name === 'theme.yaml') {
 			files.push({
 				path: absolutePath,
 				label: `${siteRoutesLabel}/${relativePath.split(path.sep).join('/')}`,
@@ -80,21 +67,11 @@ export const validateRouteThemeFiles = async () => {
 
 	for (const file of files) {
 		const source = await readFile(file.path, 'utf8');
-		const { frontmatter, frontmatterBody } = splitSiteFile(source, file.label);
-		const issues = [];
-		validateFrontmatterIndentation(frontmatter, (issue) => issues.push(issue));
-		validateRouteThemeFrontmatterStructure(frontmatter, (issue) => issues.push(issue));
-
-		if (issues.length > 0) {
-			throw new Error([
-				`${file.label} has invalid frontmatter.`,
-				...issues.map((issue) => `- ${issue.message}`),
-			].join('\n'));
-		}
-
-		const config = parseYamlMapping(frontmatterBody);
+		const config = parseYamlConfig(source, file.label, {
+			validateStructure: validateRouteThemeYamlStructure,
+		});
 		if (Object.hasOwn(config, 'navigation')) {
-			throw new Error(`${file.label} may not define navigation. Brand and logo belong in ${sitewideContentLabel}.`);
+			throw new Error(`${file.label} may not define navigation. The site label and logo settings belong in ${sitewideContentLabel}.`);
 		}
 		resolveThemeConfig(config, file.label);
 		resolveThemePresentation(config, file.label);

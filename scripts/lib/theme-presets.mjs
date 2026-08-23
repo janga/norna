@@ -1,13 +1,6 @@
 import { mergeDeep } from './typography.mjs';
 
-export const themePresetNames = [
-	'portfolio',
-	'documentation',
-	'project',
-	'statement',
-];
-
-export const themePresets = Object.freeze({
+const themePresetConfigurations = Object.freeze({
 	portfolio: Object.freeze({
 		layout: {
 			density: 'normal',
@@ -98,7 +91,47 @@ export const themePresets = Object.freeze({
 	}),
 });
 
-export const getThemePreset = (presetName, sourceLabel = 'theme.md') => {
+export const themePresetDefinitions = Object.freeze({
+	portfolio: Object.freeze({
+		title: 'Portfolio',
+		description: 'For portfolios and image-led sites, with restrained typography and generous space for images.',
+		theme: themePresetConfigurations.portfolio,
+	}),
+	documentation: Object.freeze({
+		title: 'Documentation',
+		description: 'For guides and reference material, with reading-focused typography and compact spacing.',
+		theme: themePresetConfigurations.documentation,
+	}),
+	project: Object.freeze({
+		title: 'Project',
+		description: 'For project and product sites that balance explanation, code, cards, and images.',
+		theme: themePresetConfigurations.project,
+	}),
+	statement: Object.freeze({
+		title: 'Statement',
+		description: 'For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis.',
+		theme: themePresetConfigurations.statement,
+	}),
+});
+
+export const themePresetNames = Object.freeze(Object.keys(themePresetDefinitions));
+
+export const themePresets = Object.freeze(Object.fromEntries(
+	themePresetNames.map((name) => [name, themePresetDefinitions[name].theme]),
+));
+
+export const getThemePresetMetadata = (presetName) => {
+	const definition = themePresetDefinitions[presetName];
+	if (!definition) return undefined;
+
+	return {
+		name: presetName,
+		title: definition.title,
+		description: definition.description,
+	};
+};
+
+export const getThemePreset = (presetName, sourceLabel = 'theme.yaml') => {
 	const preset = themePresets[presetName];
 
 	if (!preset) {
@@ -108,7 +141,7 @@ export const getThemePreset = (presetName, sourceLabel = 'theme.md') => {
 	return structuredClone(preset);
 };
 
-export const resolveThemeConfig = (theme = {}, sourceLabel = 'theme.md') => {
+export const resolveThemeConfig = (theme = {}, sourceLabel = 'theme.yaml') => {
 	const presetName = theme?.preset;
 	if (presetName === undefined) return structuredClone(theme ?? {});
 
@@ -131,15 +164,16 @@ const responsiveValueLines = (label, value, indent = 2) => {
 	];
 };
 
-export const renderThemePresetReference = (presetName, sourceLabel = 'theme.md') => {
+export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
+	const metadata = getThemePresetMetadata(presetName);
 	const { layout, images, typography, palette, sectionSurfaces } = preset;
 
 	return [
-		'---',
 		`# Original values for Norna's "${presetName}" theme preset.`,
-		'# This is a reference file. Norna only loads theme.md.',
-		'# Keep the preset in theme.md and copy only the values you want to override.',
+		`# ${metadata.description}`,
+		'# This is a reference file. Norna only loads theme.yaml.',
+		'# Keep the preset in theme.yaml and copy only the values you want to override.',
 		`# Available theme presets: ${themePresetNames.join(', ')}.`,
 		`preset: ${presetName}`,
 		'',
@@ -180,7 +214,6 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.md')
 		'# One value keeps every section on the same surface; multiple values cycle.',
 		'# Use one to three unique values from: base, soft, emphasis.',
 		`sectionSurfaces: [${sectionSurfaces.join(', ')}]`,
-		'---',
 		'',
 	].join('\n');
 };

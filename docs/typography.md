@@ -1,15 +1,13 @@
 # Typography
 
-`norna` typography is configured in `site/theme.md` through a site-wide font,
+Norna typography is configured in `site/theme.yaml` through a site-wide font,
 profile, text rhythm, and optional overrides.
 
 The normal workflow is to select a complete top-level theme preset. It already
 chooses a coordinated font, typography profile, and rhythm:
 
 ```yaml
----
 preset: documentation
----
 ```
 
 Use the nested `typography` block only when those typographic choices need to
@@ -27,7 +25,7 @@ Available profiles:
 - `reading`: more generous body text for pages where longer text carries
   more of the experience.
 - `statement`: tighter, more declarative line-height for short programmatic
-  statements. Use it sparingly, usually as a page or section exception.
+  statements. Use it sparingly, usually as a route-level exception.
 
 If a complete top-level theme preset is selected, that preset supplies the
 typography choice. If both the top-level preset and nested typography are
@@ -156,13 +154,11 @@ The simplest route-specific typography change is to select a complete theme
 preset:
 
 ```yaml
-# site/routes/010-introduction/theme.md
----
+# site/routes/010-introduction/theme.yaml
 preset: statement
----
 ```
 
-A route-local `theme.md` replaces the root visual theme rather than inheriting
+A route-local `theme.yaml` replaces the root visual theme rather than inheriting
 from it. The complete preset supplies a coherent route theme without repeating
 the root values.
 
@@ -170,12 +166,10 @@ Use a nested typography choice when only the typographic character needs to be
 specified explicitly:
 
 ```yaml
-# site/routes/010-introduction/theme.md
----
+# site/routes/010-introduction/theme.yaml
 typography:
   profile: statement
   rhythm: normal
----
 ```
 
 Without a top-level theme preset, other omitted route-theme values use engine

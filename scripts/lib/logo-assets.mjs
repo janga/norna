@@ -1,9 +1,11 @@
 import { readdirSync } from 'node:fs';
 import { sitePublicDir, sitePublicLabel } from './site-paths.mjs';
+import {
+	inspectPublicAssetFilenames,
+	logoAssetFilenames,
+} from './public-asset-conventions.mjs';
 
-const logoFilePattern = /^logo\.(svg|png|jpe?g)$/i;
-
-export const getLogoAssets = () => {
+const getPublicAssetFilenames = () => {
 	let entries;
 
 	try {
@@ -13,20 +15,23 @@ export const getLogoAssets = () => {
 		throw error;
 	}
 
-	return entries
-		.filter((entry) => entry.isFile() && logoFilePattern.test(entry.name))
-		.map((entry) => ({
-			filename: entry.name,
-			href: `/${entry.name}`,
-		}));
+	return entries.filter((entry) => entry.isFile()).map((entry) => entry.name);
 };
+
+export const getPublicAssetInspection = () => inspectPublicAssetFilenames(getPublicAssetFilenames());
+
+export const getLogoAssets = () => getPublicAssetInspection().logos
+	.map((entry) => ({
+		filename: entry,
+		href: `/${entry}`,
+	}));
 
 export const getLogoAsset = () => {
 	const assets = getLogoAssets();
 
 	if (assets.length > 1) {
 		throw new Error([
-			`Found multiple logo files in ${sitePublicLabel}. Keep exactly one of logo.svg, logo.png, logo.jpg, or logo.jpeg.`,
+			`Found multiple logo files in ${sitePublicLabel}. Keep exactly one of ${logoAssetFilenames.join(', ')}.`,
 			...assets.map(({ filename }) => `- ${sitePublicLabel}/${filename}`),
 		].join('\n'));
 	}

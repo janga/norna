@@ -1,7 +1,7 @@
 # Publishing
 
 Norna includes a GitHub Pages workflow and deploy helpers. The public URL is
-declared in `site/config.md`; repository and default branch are discovered from
+declared in `site/config.yaml`; repository and default branch are discovered from
 GitHub when a deploy command runs.
 
 Do not run deploy commands from the engine repository unless you deliberately
@@ -24,20 +24,16 @@ Site-specific public files such as `site/public/CNAME`, `robots.txt` and
 `sitemap.xml` belong in the site repository.
 
 For a project site without a custom domain, include the repository path in
-`site/config.md`:
+`site/config.yaml`:
 
 ```yaml
----
 url: https://owner.github.io/repository-name/
----
 ```
 
 For a custom domain or root-hosted site:
 
 ```yaml
----
 url: https://example.com/
----
 ```
 
 Norna derives the base path from the URL pathname and applies it to generated
@@ -98,7 +94,7 @@ npm run norna:deploy:watch -- --repo owner/name --branch main
 
 The default poll interval is 10 seconds, timeout is 15 minutes and recent-run
 limit is 10. `--workflow`, `--site-url` and `--limit` provide further one-run
-overrides; these operational values do not belong in `config.md`.
+overrides; these operational values do not belong in `config.yaml`.
 
 The monitor prints the run id, run URL, Actions URL, branch, commit SHA, status
 and public site URL. On failures it fetches failed job details and a log

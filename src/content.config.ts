@@ -1,211 +1,25 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { basename } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { z } from 'astro/zod';
-import { siteDir, siteDirLabel } from '../scripts/lib/site-paths.mjs';
+import {
+	siteDir,
+	siteDirLabel,
+	siteThemePath,
+	sitewideContentPath,
+} from '../scripts/lib/site-paths.mjs';
 import { parseRouteDirectory } from '../scripts/lib/route-model.mjs';
-import { isDateOnly } from './lib/visibility';
+import {
+	siteSchema,
+	sitewideSchema,
+	themeVisualSchema,
+} from '../scripts/lib/schema-definitions.mjs';
 
 const siteEntryId = `${siteDirLabel
 	.replace(/^[./\\]+/, '')
 	.replace(/[^a-zA-Z0-9-]+/g, '-')
 	.replace(/^-+|-+$/g, '') || 'site'}-content`;
-const textAlign = z.enum(['left', 'center', 'right']);
-const textSize = z.enum(['small', 'medium', 'large', 'xlarge']);
-const textWidth = z.enum(['narrow', 'normal', 'wide']);
-const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z.literal(700)]);
-const typographyProfile = z.enum(['restrained', 'dense', 'reading', 'statement']);
-const themePreset = z.enum(['portfolio', 'documentation', 'project', 'statement']);
-const presentationPalette = z.enum(['dark', 'light', 'paper']);
-const sectionSurface = z.enum(['base', 'soft', 'emphasis']);
-const spacingDensity = z.enum(['compact', 'normal', 'airy']);
-const lineHeight = z.number()
-	.min(1, 'Use a unitless line height of at least 1.')
-	.max(3, 'Use a unitless line height of at most 3.');
-const cssLength = z.string().regex(
-	/^(?:0|(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|ch|lh))$/,
-	'Use a CSS length such as "0", "0.8em", "1rem", or "12px".',
-);
-const visualCssLengthUnit = String.raw`(?:px|rem|em|vw|vh|vmin|vmax|ch|%)`;
-const visualCssLengthValue = String.raw`(?:\d+(?:\.\d+)?|\.\d+)${visualCssLengthUnit}`;
-const visualCssLength = z.string().regex(
-	new RegExp(`^(?:0|${visualCssLengthValue}|clamp\\(\\s*${visualCssLengthValue}\\s*,\\s*${visualCssLengthValue}\\s*,\\s*${visualCssLengthValue}\\s*\\))$`),
-	'Use a CSS length such as "0", "900px", "56rem", "90%", or "clamp(1rem, 4vw, 3rem)".',
-);
-const dateOnly = z.string()
-	.regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format.')
-	.refine(isDateOnly, 'Use a real calendar date.');
-const visibilityWindow = z.object({
-	from: dateOnly.optional(),
-	until: dateOnly.optional(),
-}).strict().refine(
-	(value) => value.from !== undefined || value.until !== undefined,
-	'Specify from, until, or both.',
-).refine(
-	(value) => value.from === undefined || value.until === undefined || value.from < value.until,
-	'visible.until must be later than visible.from.',
-);
-const overrideResponsiveTextAlign = z.object({
-	desktop: textAlign.optional(),
-	mobile: textAlign.optional(),
-}).strict().refine(
-	(value) => value.desktop !== undefined || value.mobile !== undefined,
-	'Specify desktop, mobile, or both.',
-);
-const commonTextPresentationOverride = {
-	align: overrideResponsiveTextAlign.optional(),
-	size: textSize.optional(),
-	lineHeight: lineHeight.optional(),
-};
-const headingPresentationOverride = z.object({
-	...commonTextPresentationOverride,
-	weight: headingWeight.optional(),
-	spacingBefore: cssLength.optional(),
-	spacingAfter: cssLength.optional(),
-}).strict();
-const headingLevelsPresentationOverride = z.object({
-	h1: headingPresentationOverride.optional(),
-	h2: headingPresentationOverride.optional(),
-	h3: headingPresentationOverride.optional(),
-	h4: headingPresentationOverride.optional(),
-}).strict();
-const bodyPresentationOverride = z.object({
-	...commonTextPresentationOverride,
-	width: textWidth.optional(),
-	paragraphSpacing: cssLength.optional(),
-}).strict();
-const captionPresentationOverride = z.object({
-	...commonTextPresentationOverride,
-	spacingBefore: cssLength.optional(),
-}).strict();
-const typographyOverrides = z.object({
-	headings: headingLevelsPresentationOverride.optional(),
-	body: bodyPresentationOverride.optional(),
-	caption: captionPresentationOverride.optional(),
-}).strict();
-const themeTypography = z.object({
-	fontFamily: z.string()
-		.min(1)
-		.refine((value) => !/[\n\r;{}]/.test(value), 'Do not use semicolons, braces, or line breaks.').optional(),
-	profile: typographyProfile.optional(),
-	rhythm: spacingDensity.optional(),
-	overrides: typographyOverrides.optional(),
-}).strict().refine(
-	(value) => value.fontFamily !== undefined || value.profile !== undefined || value.rhythm !== undefined || value.overrides !== undefined,
-	'Specify fontFamily, profile, rhythm, overrides, or a combination of them.',
-);
-const responsiveCssLength = z.union([
-	visualCssLength,
-	z.object({
-		desktop: visualCssLength,
-		mobile: visualCssLength,
-	}).strict(),
-]);
-const responsivePercent = z.union([
-	z.number().positive().max(100),
-	z.object({
-		desktop: z.number().positive().max(100),
-		mobile: z.number().positive().max(100),
-	}).strict(),
-]);
-const themeLayoutSpacing = z.object({
-	blockGap: responsiveCssLength.optional(),
-	finalSectionBottom: responsiveCssLength.optional(),
-	firstSectionTop: responsiveCssLength.optional(),
-	headingToBlock: responsiveCssLength.optional(),
-	imageGap: responsiveCssLength.optional(),
-	sectionGap: responsiveCssLength.optional(),
-}).strict();
-const themeLayout = z.object({
-	density: spacingDensity.optional(),
-	pageWidth: visualCssLength.optional(),
-	gutter: responsiveCssLength.optional(),
-	spacing: themeLayoutSpacing.optional(),
-}).strict();
-const themeImages = z.object({
-	width: visualCssLength.optional(),
-	maxAvailableWidthPercent: responsivePercent.optional(),
-	maxAvailableHeightPercent: responsivePercent.optional(),
-}).strict();
-const sectionSurfaces = z.array(sectionSurface).min(1).max(3).refine(
-	(value) => new Set(value).size === value.length,
-	'Each section surface may appear only once.',
-);
-const pageNavigation = z.object({
-	include: z.boolean().optional(),
-	label: z.string().optional(),
-}).strict();
-const sitewideNavigation = z.object({
-	brand: z.string().min(1).optional(),
-	logo: z.object({
-		alt: z.string().min(1).optional(),
-		height: visualCssLength.optional(),
-	}).strict().optional(),
-}).strict();
-
-const sectionMetadata = z.object({
-	visible: visibilityWindow.optional(),
-}).strict();
-const banner = z.object({
-	id: z.string().regex(/^[a-z0-9-]+$/),
-	tone: z.enum(['warning']).default('warning'),
-	visible: visibilityWindow.optional(),
-	title: z.string().min(1),
-	text: z.string().min(1),
-}).strict();
-const banners = z.array(banner).optional().default([]).refine(
-	(values) => new Set(values.map((value) => value.id)).size === values.length,
-	'Banner ids must be unique.',
-);
-const dateTimeFormat = z.object({
-	locale: z.string().min(1),
-	timeZone: z.string().min(1),
-	dateStyle: z.string().min(1),
-	timeStyle: z.string().min(1),
-}).strict().refine((value) => {
-	try {
-		new Intl.DateTimeFormat(value.locale, {
-			dateStyle: value.dateStyle as Intl.DateTimeFormatOptions['dateStyle'],
-			timeStyle: value.timeStyle as Intl.DateTimeFormatOptions['timeStyle'],
-			timeZone: value.timeZone,
-		});
-		return true;
-	} catch {
-		return false;
-	}
-}, 'Use a valid Intl.DateTimeFormat configuration.');
-const sitewideFooter = z.object({
-	copyrightMessage: z.string().min(1).optional(),
-	buildInfo: z.object({
-		enabled: z.boolean().default(true),
-		text: z.string().min(1),
-		dateTimeFormat,
-	}).strict().optional(),
-}).strict();
-
-const siteSchema = z.object({
-	title: z.string(),
-	description: z.string(),
-	navigation: pageNavigation.optional(),
-	sections: z.record(z.string().regex(/^[a-z0-9-]+$/), sectionMetadata).optional().default({}),
-});
-
-export const themeVisualSchema = z.object({
-	preset: themePreset.optional(),
-	layout: themeLayout.optional(),
-	images: themeImages.optional(),
-	typography: themeTypography.optional(),
-	palette: presentationPalette.optional(),
-	sectionSurfaces: sectionSurfaces.optional(),
-}).strict();
-
 const siteThemeSchema = themeVisualSchema;
-
-const sitewideSchema = z.object({
-	navigation: sitewideNavigation.optional(),
-	banners,
-	footer: sitewideFooter.optional(),
-}).strict();
 
 const site = defineCollection({
 	loader: glob({
@@ -227,16 +41,16 @@ const site = defineCollection({
 
 const theme = defineCollection({
 	loader: glob({
-		pattern: 'theme.md',
+		pattern: basename(siteThemePath),
 		base: pathToFileURL(siteDir),
-		generateId: ({ entry }) => entry,
+		generateId: () => `${siteEntryId.replace(/-content$/, '')}-theme`,
 	}),
 	schema: siteThemeSchema,
 });
 
 const sitewide = defineCollection({
 	loader: glob({
-		pattern: 'sitewide-content.md',
+		pattern: basename(sitewideContentPath),
 		base: pathToFileURL(siteDir),
 		generateId: () => `${siteEntryId.replace(/-content$/, '')}-sitewide`,
 	}),

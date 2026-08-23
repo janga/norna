@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=../schemas/theme.schema.json
+
+preset: portfolio

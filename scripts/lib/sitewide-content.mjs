@@ -1,14 +1,13 @@
 import { readFile } from 'node:fs/promises';
-import { parseYamlMapping } from './frontmatter-yaml.mjs';
+import { sitewideSchema } from './schema-definitions.mjs';
 import {
 	sitewideContentLabel,
 	sitewideContentPath,
 } from './site-paths.mjs';
 import {
-	splitSiteFile,
-	validateFrontmatterIndentation,
-	validateSitewideFrontmatterStructure,
+	validateSitewideYamlStructure,
 } from './site-content.mjs';
+import { parseYamlConfig } from './yaml-config.mjs';
 
 export const readSitewideContent = async () => {
 	const source = await readFile(sitewideContentPath, 'utf8').catch((error) => {
@@ -18,17 +17,8 @@ export const readSitewideContent = async () => {
 
 	if (!source) return {};
 
-	const { frontmatter, frontmatterBody } = splitSiteFile(source, sitewideContentLabel);
-	const issues = [];
-	validateFrontmatterIndentation(frontmatter, (issue) => issues.push(issue));
-	validateSitewideFrontmatterStructure(frontmatter, (issue) => issues.push(issue));
-
-	if (issues.length > 0) {
-		throw new Error([
-			`${sitewideContentLabel} has invalid frontmatter.`,
-			...issues.map((issue) => `- ${issue.message}`),
-		].join('\n'));
-	}
-
-	return parseYamlMapping(frontmatterBody);
+	return parseYamlConfig(source, sitewideContentLabel, {
+		schema: sitewideSchema,
+		validateStructure: validateSitewideYamlStructure,
+	});
 };

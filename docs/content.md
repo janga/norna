@@ -277,8 +277,35 @@ This sentence contains **important text** and *emphasised text*.
 
 Norna intentionally does not support arbitrary inline color or style classes.
 Deprecated syntax such as `[highlighted text]{.yellow}` is rejected by
-`content:check`. Keep the route visually coherent through its `theme.md`
+`content:check`. Keep the route visually coherent through its `theme.yaml`
 instead of styling individual phrases.
+
+### Side Notes
+
+Add one numbered side note to a paragraph by placing `{note-ref}` where its
+reference number should appear, then write the matching note on its own line
+immediately after the paragraph:
+
+```md
+Norna keeps the page source readable.{note-ref}
+
+{note: The note appears in the margin when enough horizontal space is available.}
+```
+
+Longer notes may wrap across lines and end with `}` on its own line:
+
+```md
+Norna keeps the page source readable.{note-ref}
+
+{note:
+The note may contain a longer explanation when the extra context is useful.
+}
+```
+
+On wide screens Norna places the note in the reading margin. On narrower
+screens it remains in the normal reading flow. A paragraph may contain one
+note pair; both `{note-ref}` and `{note: ...}` are required. `content:check`
+reports missing, repeated, nested, or unpaired note syntax.
 
 ## Validation And Sync
 
@@ -308,7 +335,7 @@ sections:
 
 Top-level page frontmatter may contain only `title`, `description`,
 `navigation`, and `sections`. Visual settings belong in the root or route-local
-`theme.md`.
+`theme.yaml`.
 
 Run:
 

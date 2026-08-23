@@ -27,17 +27,17 @@ maintainer, put it in `README.md` instead of duplicating it here.
   deploy behavior may be broken by the change. If the user explicitly says to
   skip tests, do not run them and report that they were skipped.
 - Keep the public URL, optional language and optional smooth-scroll switch in
-  `site/config.md`. Keep engine UI text in the built-in language packs, discover
+  `site/config.yaml`. Keep engine UI text in the built-in language packs, discover
   GitHub repository/default-branch details at deploy time, and keep footer text
-  in `site/sitewide-content.md`.
+  in `site/sitewide-content.yaml`.
 - The site source directory defaults to `site/` and can be overridden with
   `NORNA_SITE_DIR`; use `scripts/lib/site-paths.mjs` instead of
   hardcoding site paths in scripts.
 - Keep editable content, Markdown section headings, Norna image block
   references, alt text, captions, and optional section metadata in the selected
   site `content.md`; the default path is `site/content.md`. Keep site-wide
-  visual theme defaults and inline styles in the selected site `theme.md`; the
-  default path is `site/theme.md`.
+  visual theme defaults and inline styles in the selected site `theme.yaml`;
+  the default path is `site/theme.yaml`.
 - When adding AI-generated images to Norna sites, document their provenance and
   prompt in Markdown near the image block so future maintainers can regenerate
   or revise them. This is not required for disposable test fixtures where the
@@ -61,11 +61,11 @@ maintainer, put it in `README.md` instead of duplicating it here.
   `node bin/norna.mjs --site-dir examples/feature-demos/media-and-surfaces/site dev:local`.
   Manage it with the corresponding `dev:stop`, `dev:restart`, `dev:status`, and
   `dev:logs` commands using the same `--site-dir`.
-- Run `npm run config:check` after changing `site/config.md` or config
+- Run `npm run config:check` after changing `site/config.yaml` or config
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or
   Norna-managed images.
-- Run `npm run content:check` after changing `site/theme.md` or theme
+- Run `npm run content:check` after changing `site/theme.yaml` or theme
   validation behavior.
 - Run `npm run content:sync` after moving Norna image block references between
   sections so image files move to the matching section directory.

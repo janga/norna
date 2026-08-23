@@ -92,7 +92,7 @@ export const getPresentationCssVariables = (presentation) => {
 	};
 };
 
-const getSectionSurfaces = (value = ['base'], sourceLabel = 'theme.md') => {
+const getSectionSurfaces = (value = ['base'], sourceLabel = 'theme.yaml') => {
 	if (!Array.isArray(value) || value.length < 1 || value.length > 3) {
 		throw new Error(`sectionSurfaces must contain one to three values in ${sourceLabel}.`);
 	}
@@ -110,7 +110,7 @@ const getSectionSurfaces = (value = ['base'], sourceLabel = 'theme.md') => {
 	return value;
 };
 
-export const resolveThemePresentation = (theme, sourceLabel = 'theme.md') => {
+export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 	const normalizedTheme = resolveThemeConfig(theme, sourceLabel);
 	const paletteName = normalizedTheme.palette ?? 'dark';
 	const palette = getPresentationPalette(paletteName);

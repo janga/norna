@@ -1,0 +1,86 @@
+import {
+	getThemePresetMetadata,
+	themePresetNames,
+} from './theme-presets.mjs';
+
+const option = (title, description) => Object.freeze({ title, description });
+const definition = (values, options) => Object.freeze({
+	values: Object.freeze(values),
+	options: Object.freeze(options),
+});
+
+export const schemaValueDefinitions = Object.freeze([
+	definition(themePresetNames, Object.fromEntries(themePresetNames.map((name) => {
+		const metadata = getThemePresetMetadata(name);
+		return [name, option(metadata.title, metadata.description)];
+	}))),
+	definition(['instant', 'smooth'], {
+		instant: option('Instant', 'Jump directly to anchors without animated scrolling. This is the default.'),
+		smooth: option('Browser smooth', 'Use the browser\'s native smooth scrolling for anchor navigation.'),
+	}),
+	definition(['en', 'sv'], {
+		en: option('English', 'Use Norna\'s built-in English interface text.'),
+		sv: option('Swedish', 'Use Norna\'s built-in Swedish interface text.'),
+	}),
+	definition(['left', 'center', 'right'], {
+		left: option('Left', 'Align text with the left edge of its text area.'),
+		center: option('Center', 'Center text within its text area.'),
+		right: option('Right', 'Align text with the right edge of its text area.'),
+	}),
+	definition(['small', 'medium', 'large', 'xlarge'], {
+		small: option('Small', 'Use the small type size from the active typography system.'),
+		medium: option('Medium', 'Use the standard type size from the active typography system.'),
+		large: option('Large', 'Use a larger type size for stronger emphasis.'),
+		xlarge: option('Extra large', 'Use the largest available type size for exceptional emphasis.'),
+	}),
+	definition(['narrow', 'normal', 'wide'], {
+		narrow: option('Narrow', 'Use a shorter line length suited to reading-focused text.'),
+		normal: option('Normal', 'Use the balanced default line length.'),
+		wide: option('Wide', 'Allow body text to use more horizontal space.'),
+	}),
+	definition([400, 500, 600, 700], {
+		400: option('Regular', 'Use regular font weight.'),
+		500: option('Medium', 'Use medium font weight.'),
+		600: option('Semibold', 'Use semibold font weight.'),
+		700: option('Bold', 'Use bold font weight.'),
+	}),
+	definition(['restrained', 'dense', 'reading', 'statement'], {
+		restrained: option('Restrained', 'Quiet typography with regular-weight headings and balanced line lengths.'),
+		dense: option('Dense', 'Compact typography with wider text and tighter line height.'),
+		reading: option('Reading', 'Reading-focused typography with narrower text and relaxed line height.'),
+		statement: option('Statement', 'Stronger headings and tighter body rhythm for short, expressive pages.'),
+	}),
+	definition(['dark', 'light', 'paper'], {
+		dark: option('Dark', 'Black page and section surfaces with light text.'),
+		light: option('Light', 'White and cool light surfaces with dark text.'),
+		paper: option('Paper', 'Warm off-white surfaces with dark text.'),
+	}),
+	definition(['base', 'soft', 'emphasis'], {
+		base: option('Base', 'Use the palette\'s normal page surface.'),
+		soft: option('Soft', 'Use the palette\'s subtle contrasting surface.'),
+		emphasis: option('Emphasis', 'Use the palette\'s strongest section surface.'),
+	}),
+	definition(['compact', 'normal', 'airy'], {
+		compact: option('Compact', 'Reduce vertical spacing while preserving readable separation.'),
+		normal: option('Normal', 'Use balanced vertical spacing.'),
+		airy: option('Airy', 'Increase vertical spacing for a more expansive presentation.'),
+	}),
+	definition(['warning'], {
+		warning: option('Warning', 'Present the banner as an important warning notice.'),
+	}),
+	definition(['short', 'medium', 'long', 'full'], {
+		short: option('Short', 'Use a compact localized date or time representation.'),
+		medium: option('Medium', 'Use a moderately detailed localized representation.'),
+		long: option('Long', 'Use a detailed localized representation.'),
+		full: option('Full', 'Use the most detailed localized representation.'),
+	}),
+]);
+
+const valuesEqual = (left, right) => (
+	left.length === right.length
+	&& left.every((value, index) => value === right[index])
+);
+
+export const getSchemaValueDefinition = (values) => (
+	schemaValueDefinitions.find((candidate) => valuesEqual(candidate.values, values))
+);

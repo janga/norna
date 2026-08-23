@@ -3,11 +3,12 @@ import { spawnSync } from 'node:child_process';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseYamlMapping } from './lib/frontmatter-yaml.mjs';
+import { load } from 'js-yaml';
 import { resolveThemePresentation } from './lib/presentation.mjs';
-import { splitSiteFile } from './lib/site-content.mjs';
 import {
+	getThemePresetMetadata,
 	resolveThemeConfig,
+	themePresetDefinitions,
 	themePresetNames,
 	themePresets,
 } from './lib/theme-presets.mjs';
@@ -26,7 +27,12 @@ const runCli = (args) => spawnSync(process.execPath, [cliPath, '--site-dir', sit
 
 try {
 	assert.deepEqual(Object.keys(themePresets), themePresetNames);
+	assert.deepEqual(Object.keys(themePresetDefinitions), themePresetNames);
 	for (const presetName of themePresetNames) {
+		const metadata = getThemePresetMetadata(presetName);
+		assert.equal(metadata.name, presetName);
+		assert.ok(metadata.title);
+		assert.ok(metadata.description);
 		const resolved = resolveThemeConfig({ preset: presetName }, 'test theme');
 		assert.equal(resolved.preset, presetName);
 		assert.ok(resolved.layout?.density);
@@ -48,23 +54,41 @@ try {
 	assert.equal(overridden.palette, 'dark');
 	assert.deepEqual(overridden.sectionSurfaces, ['base', 'soft']);
 	assert.throws(
-		() => resolveThemeConfig({ preset: 'unknown' }, 'test/theme.md'),
-		/Unknown theme preset "unknown" in test\/theme\.md.*portfolio, documentation, project, statement/,
+		() => resolveThemeConfig({ preset: 'unknown' }, 'test/theme.yaml'),
+		/Unknown theme preset "unknown" in test\/theme\.yaml.*portfolio, documentation, project, statement/,
 	);
 	assert.throws(
-		() => resolveThemePresentation({ sectionSurfaces: ['base', 'glowing'] }, 'test/theme.md'),
-		/Unknown section surface "glowing" in test\/theme\.md.*base, soft, emphasis/,
+		() => resolveThemePresentation({ sectionSurfaces: ['base', 'glowing'] }, 'test/theme.yaml'),
+		/Unknown section surface "glowing" in test\/theme\.yaml.*base, soft, emphasis/,
 	);
 	assert.throws(
-		() => resolveThemePresentation({ sectionSurfaces: ['base', 'base'] }, 'test/theme.md'),
-		/Each section surface may appear only once in test\/theme\.md/,
+		() => resolveThemePresentation({ sectionSurfaces: ['base', 'base'] }, 'test/theme.yaml'),
+		/Each section surface may appear only once in test\/theme\.yaml/,
 	);
 
+	const listResult = runCli(['theme:presets']);
+	assert.equal(listResult.status, 0, listResult.stderr || listResult.stdout);
+	for (const presetName of themePresetNames) {
+		const metadata = getThemePresetMetadata(presetName);
+		assert.ok(listResult.stdout.includes(`${presetName}\n  ${metadata.description}`));
+	}
+	const invalidListResult = runCli(['theme:presets', 'documentation']);
+	assert.notEqual(invalidListResult.status, 0);
+	assert.match(invalidListResult.stderr, /Usage: norna theme:presets/);
+
+	const themeSchema = JSON.parse(await readFile(path.join(repoRoot, 'schemas', 'theme.schema.json'), 'utf8'));
+	assert.deepEqual(
+		themeSchema.properties.preset.oneOf.map((entry) => entry.const),
+		themePresetNames,
+	);
+	for (const entry of themeSchema.properties.preset.oneOf) {
+		const metadata = getThemePresetMetadata(entry.const);
+		assert.equal(entry.title, metadata.title);
+		assert.equal(entry.description, metadata.description);
+	}
+
 	await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
-	await writeFile(path.join(siteDir, 'config.md'), `---
-url: https://example.com/
----
-`);
+	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
 	await writeFile(path.join(siteDir, 'content.md'), `---
 title: Theme preset test
 description: Root page
@@ -74,12 +98,10 @@ description: Root page
 
 Root content.
 `);
-	await writeFile(path.join(siteDir, 'theme.md'), `---
-preset: documentation
+	await writeFile(path.join(siteDir, 'theme.yaml'), `preset: documentation
 layout:
   pageWidth: 1300px
 palette: dark
----
 `);
 	await writeFile(path.join(siteDir, 'routes', '010-guide', 'content.md'), `---
 title: Guide
@@ -92,12 +114,10 @@ navigation:
 
 Route content.
 `);
-	await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.md'), `---
-preset: portfolio
+	await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.yaml'), `preset: portfolio
 layout:
   pageWidth: 1010px
 palette: light
----
 `);
 
 	const buildResult = runCli(['build']);
@@ -116,24 +136,23 @@ palette: light
 	assert.match(typographyResult.stdout, /value: reading/);
 	assert.match(typographyResult.stdout, /value: restrained/);
 
-	const routeThemePath = path.join(siteDir, 'routes', '010-guide', 'theme.md');
+	const routeThemePath = path.join(siteDir, 'routes', '010-guide', 'theme.yaml');
 	const routeThemeSource = await readFile(routeThemePath, 'utf8');
-	await writeFile(routeThemePath, `---\npreset: unknown\n---\n`);
+	await writeFile(routeThemePath, 'preset: unknown\n');
 	const invalidRoutePresetResult = runCli(['config:check']);
 	assert.notEqual(invalidRoutePresetResult.status, 0);
-	assert.match(invalidRoutePresetResult.stderr, /Unknown theme preset "unknown" in .*routes\/010-guide\/theme\.md/);
+	assert.match(invalidRoutePresetResult.stderr, /Unknown theme preset "unknown" in .*routes\/010-guide\/theme\.yaml/);
 	await writeFile(routeThemePath, routeThemeSource);
 
 	const exportResult = runCli(['theme:export', 'documentation']);
 	assert.equal(exportResult.status, 0, exportResult.stderr || exportResult.stdout);
-	assert.match(exportResult.stdout, /orig-documentation-theme\.md/);
-	const exportedPath = path.join(siteDir, 'orig-documentation-theme.md');
+	assert.match(exportResult.stdout, /orig-documentation-theme\.yaml/);
+	const exportedPath = path.join(siteDir, 'orig-documentation-theme.yaml');
 	const exportedSource = await readFile(exportedPath, 'utf8');
-	assert.match(exportedSource, /This is a reference file\. Norna only loads theme\.md\./);
+	assert.match(exportedSource, /This is a reference file\. Norna only loads theme\.yaml\./);
 	assert.match(exportedSource, /Available theme presets: portfolio, documentation, project, statement\./);
 	assert.match(exportedSource, /# Alternatives: dark, light, paper\./);
-	const { frontmatterBody } = splitSiteFile(exportedSource, 'exported theme reference');
-	const exportedConfig = parseYamlMapping(frontmatterBody);
+	const exportedConfig = load(exportedSource);
 	assert.equal(exportedConfig.preset, 'documentation');
 	assert.equal(exportedConfig.layout.pageWidth, themePresets.documentation.layout.pageWidth);
 	assert.equal(exportedConfig.typography.fontFamily, themePresets.documentation.typography.fontFamily);

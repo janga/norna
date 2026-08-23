@@ -37,18 +37,12 @@ try {
 	await mkdir(path.join(siteDir, 'images', 'work'), { recursive: true });
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeFile(path.join(siteDir, 'public', 'robots.txt'), 'User-agent: *\nAllow: /\n');
-	await writeFile(path.join(siteDir, 'config.md'), `---
-url: https://example.com/
----
-`);
-	await writeFile(path.join(siteDir, 'theme.md'), `---
-typography:
+	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: restrained
 palette: dark
----
 `);
-	await writeFile(path.join(siteDir, 'sitewide-content.md'), `---
-banners:
+	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `banners:
   - id: expired-banner
     visible:
       until: "2026-01-01"
@@ -60,7 +54,6 @@ banners:
       until: "2026-12-31"
     title: Active banner
     text: Active banner text.
----
 `);
 	await writeFile(path.join(siteDir, 'content.md'), `---
 title: Temporary Visibility Test

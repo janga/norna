@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "config": "config.schema.json",
+    "contentFrontmatter": "content-frontmatter.schema.json",
+    "sitewideContent": "sitewide-content.schema.json",
+    "theme": "theme.schema.json"
+  }
+}

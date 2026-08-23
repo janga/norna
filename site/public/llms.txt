@@ -11,6 +11,7 @@ integrates publishing with GitHub Pages only.
 - [Project README](https://raw.githubusercontent.com/janga/norna/main/README.md)
 - [Build your first Norna site](https://raw.githubusercontent.com/janga/norna/main/docs/getting-started.md)
 - [Documentation map](https://raw.githubusercontent.com/janga/norna/main/docs/README.md)
+- [Site files](https://raw.githubusercontent.com/janga/norna/main/docs/site-files.md)
 - [Requirements and limitations](https://raw.githubusercontent.com/janga/norna/main/docs/requirements.md)
 
 ## How-To And Explanation
@@ -26,9 +27,9 @@ integrates publishing with GitHub Pages only.
 
 - [Configuration](https://raw.githubusercontent.com/janga/norna/main/docs/configuration.md)
 - [Sitewide content](https://raw.githubusercontent.com/janga/norna/main/docs/sitewide-content.md)
+- [Public files, logos, and favicons](https://raw.githubusercontent.com/janga/norna/main/docs/public-files.md)
 - [Typography](https://raw.githubusercontent.com/janga/norna/main/docs/typography.md)
 - [Commands](https://raw.githubusercontent.com/janga/norna/main/docs/commands.md)
-- [Site structure](https://raw.githubusercontent.com/janga/norna/main/docs/site-structure.md)
 
 ## Examples
 

@@ -13,8 +13,8 @@ export const getExampleSites = async (root) => {
 
 		for (const entry of entries.filter((candidate) => candidate.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
 			const siteDirectory = path.join(categoryDirectory, entry.name, 'site');
-			if (!existsSync(path.join(siteDirectory, 'config.md'))) {
-				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing config.md.`);
+			if (!existsSync(path.join(siteDirectory, 'config.yaml'))) {
+				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing config.yaml.`);
 			}
 			if (!existsSync(path.join(siteDirectory, 'content.md'))) {
 				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing content.md.`);

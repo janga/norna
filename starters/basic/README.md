@@ -15,10 +15,11 @@ If the standard local port is blocked, start with:
 npm run norna:dev -- --kill
 ```
 
-Edit shared brand, logo, banners and footer in `site/sitewide-content.md`,
-site-wide visual defaults in `site/theme.md`, homepage content and section
+Edit the shared navigation label, logo settings, banners, and footer in
+`site/sitewide-content.yaml`,
+site-wide visual defaults in `site/theme.yaml`, homepage content and section
 metadata in `site/content.md`, and technical settings such as URL and locale
-in `site/config.md`. Keep source images under `site/images/<section-id>/`
+in `site/config.yaml`. Keep source images under `site/images/<section-id>/`
 and static public files under `site/public/`. The image folder name should
 match the section id in Markdown, for example `## Work {#work}` uses
 `site/images/work/`.
@@ -27,9 +28,7 @@ For a GitHub Pages project site without a custom domain, include the repository
 path in the public URL:
 
 ```yaml
----
 url: https://owner.github.io/repository-name/
----
 ```
 
 Norna derives `/repository-name/` as the base path. Use a root URL such as
@@ -39,8 +38,8 @@ In GitHub repository settings, configure Pages to build from GitHub Actions.
 
 Page width, side gutters, layout density, typography rhythm, image width, image
 height limits, font, palettes, section surfaces, and site-wide typography are
-configured in `site/theme.md`. A route may replace that visual theme with its
-own `theme.md`.
+configured in `site/theme.yaml`. A route may replace that visual theme with its
+own `theme.yaml`.
 
 Commit `package-lock.json` after the first install so GitHub Actions can use
 `npm ci`.
@@ -69,7 +68,8 @@ Use `npm run norna:engine:version` to inspect the installed engine and
 Generic documentation lives in the `norna` repository:
 
 - `docs/getting-started.md`
-- `docs/site-structure.md`
+- `docs/site-files.md`
+- `docs/public-files.md`
 - `docs/content.md`
 - `docs/theme.md`
 - `docs/typography.md`

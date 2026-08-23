@@ -15,9 +15,10 @@ Commands:
   dev:logs               Show local dev server logs
   dev:stop               Stop local dev server
   check                  Validate configuration and content
-  config:check           Validate site/config.md
+  config:check           Validate site/config.yaml
   content:check          Validate site/content.md and image references
   content:sync           Move misplaced Norna-managed images and refresh generated images
+  theme:presets          List available theme presets and their intended uses
   theme:export           Export a commented theme preset reference
   typography profiles    Show built-in typography profile values
   typography show        Show resolved typography for the selected site
@@ -136,6 +137,8 @@ try {
 	} else if (command === 'content:sync') {
 		await runScript('scripts/sync-content-sections.mjs', ['--write', ...rest]);
 		await runScript('scripts/generate-images.mjs', rest);
+	} else if (command === 'theme:presets') {
+		await runScript('scripts/list-theme-presets.mjs', rest);
 	} else if (command === 'theme:export') {
 		await runScript('scripts/export-theme-preset.mjs', rest);
 	} else if (command === 'typography:profiles' || (command === 'typography' && subcommand === 'profiles')) {

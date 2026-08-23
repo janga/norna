@@ -1,0 +1,1208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "preset": {
+      "description": "Complete visual starting point. Add only the overrides the site actually needs.",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "portfolio",
+          "title": "Portfolio",
+          "description": "For portfolios and image-led sites, with restrained typography and generous space for images."
+        },
+        {
+          "const": "documentation",
+          "title": "Documentation",
+          "description": "For guides and reference material, with reading-focused typography and compact spacing."
+        },
+        {
+          "const": "project",
+          "title": "Project",
+          "description": "For project and product sites that balance explanation, code, cards, and images."
+        },
+        {
+          "const": "statement",
+          "title": "Statement",
+          "description": "For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis."
+        }
+      ],
+      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#theme-presets)"
+    },
+    "layout": {
+      "type": "object",
+      "properties": {
+        "density": {
+          "description": "Overall spacing density. Omit this to keep the selected preset.",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "compact",
+              "title": "Compact",
+              "description": "Reduce vertical spacing while preserving readable separation."
+            },
+            {
+              "const": "normal",
+              "title": "Normal",
+              "description": "Use balanced vertical spacing."
+            },
+            {
+              "const": "airy",
+              "title": "Airy",
+              "description": "Increase vertical spacing for a more expansive presentation."
+            }
+          ]
+        },
+        "pageWidth": {
+          "description": "Maximum width of the site layout. Omit this to keep the selected preset.",
+          "type": "string",
+          "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$"
+        },
+        "gutter": {
+          "description": "Horizontal page gutter as one value or separate desktop and mobile values.",
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+              "description": "Responsive CSS length or clamp() expression."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "desktop": {
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                  "description": "Responsive CSS length or clamp() expression."
+                },
+                "mobile": {
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                  "description": "Responsive CSS length or clamp() expression."
+                }
+              },
+              "required": [
+                "desktop",
+                "mobile"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "spacing": {
+          "description": "Fine-grained spacing overrides.",
+          "type": "object",
+          "properties": {
+            "blockGap": {
+              "description": "Default vertical gap between structured content blocks.",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                  "description": "Responsive CSS length or clamp() expression."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "desktop": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    },
+                    "mobile": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    }
+                  },
+                  "required": [
+                    "desktop",
+                    "mobile"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "finalSectionBottom": {
+              "description": "Bottom space after the final section.",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                  "description": "Responsive CSS length or clamp() expression."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "desktop": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    },
+                    "mobile": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    }
+                  },
+                  "required": [
+                    "desktop",
+                    "mobile"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "firstSectionTop": {
+              "description": "Top space before the first section.",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                  "description": "Responsive CSS length or clamp() expression."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "desktop": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    },
+                    "mobile": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    }
+                  },
+                  "required": [
+                    "desktop",
+                    "mobile"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "headingToBlock": {
+              "description": "Gap from a section heading to a following structured block.",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                  "description": "Responsive CSS length or clamp() expression."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "desktop": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    },
+                    "mobile": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    }
+                  },
+                  "required": [
+                    "desktop",
+                    "mobile"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "imageGap": {
+              "description": "Gap between images in an image stack.",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                  "description": "Responsive CSS length or clamp() expression."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "desktop": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    },
+                    "mobile": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    }
+                  },
+                  "required": [
+                    "desktop",
+                    "mobile"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "sectionGap": {
+              "description": "Vertical separation between page sections.",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                  "description": "Responsive CSS length or clamp() expression."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "desktop": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    },
+                    "mobile": {
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
+                      "description": "Responsive CSS length or clamp() expression."
+                    }
+                  },
+                  "required": [
+                    "desktop",
+                    "mobile"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "description": "Optional layout overrides applied after the preset.",
+      "markdownDescription": "```yaml\nlayout:\n  density: compact\n  pageWidth: 72rem\n```\n\nOverrides page width, gutters and structural spacing after the selected preset.\n\n[Layout reference](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#layout)"
+    },
+    "images": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "description": "Maximum managed-image width. Omit this to keep the selected preset.",
+          "type": "string",
+          "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$"
+        },
+        "maxAvailableWidthPercent": {
+          "description": "Maximum percentage of available horizontal space used by managed images.",
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "object",
+              "properties": {
+                "desktop": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 100,
+                  "description": "Percentage used on wider screens."
+                },
+                "mobile": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 100,
+                  "description": "Percentage used on narrow screens."
+                }
+              },
+              "required": [
+                "desktop",
+                "mobile"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "maxAvailableHeightPercent": {
+          "description": "Maximum percentage of viewport height used by managed images.",
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "object",
+              "properties": {
+                "desktop": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 100,
+                  "description": "Percentage used on wider screens."
+                },
+                "mobile": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 100,
+                  "description": "Percentage used on narrow screens."
+                }
+              },
+              "required": [
+                "desktop",
+                "mobile"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "description": "Optional defaults for managed image presentation.",
+      "markdownDescription": "```yaml\nimages:\n  width: 900px\n  maxAvailableHeightPercent: 74\n```\n\nOverrides the available width and height used by Norna-managed images.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#image-sizing)"
+    },
+    "typography": {
+      "type": "object",
+      "properties": {
+        "fontFamily": {
+          "description": "CSS font-family stack.",
+          "type": "string",
+          "minLength": 1
+        },
+        "profile": {
+          "description": "Typography profile. Omit this to keep the selected preset.",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "restrained",
+              "title": "Restrained",
+              "description": "Quiet typography with regular-weight headings and balanced line lengths."
+            },
+            {
+              "const": "dense",
+              "title": "Dense",
+              "description": "Compact typography with wider text and tighter line height."
+            },
+            {
+              "const": "reading",
+              "title": "Reading",
+              "description": "Reading-focused typography with narrower text and relaxed line height."
+            },
+            {
+              "const": "statement",
+              "title": "Statement",
+              "description": "Stronger headings and tighter body rhythm for short, expressive pages."
+            }
+          ]
+        },
+        "rhythm": {
+          "description": "Typography spacing rhythm. Omit this to keep the selected preset.",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "compact",
+              "title": "Compact",
+              "description": "Reduce vertical spacing while preserving readable separation."
+            },
+            {
+              "const": "normal",
+              "title": "Normal",
+              "description": "Use balanced vertical spacing."
+            },
+            {
+              "const": "airy",
+              "title": "Airy",
+              "description": "Increase vertical spacing for a more expansive presentation."
+            }
+          ]
+        },
+        "overrides": {
+          "description": "Focused typography overrides applied after the profile.",
+          "type": "object",
+          "properties": {
+            "headings": {
+              "description": "Overrides for heading levels.",
+              "type": "object",
+              "properties": {
+                "h1": {
+                  "description": "Overrides for Markdown level 1 headings.",
+                  "type": "object",
+                  "properties": {
+                    "align": {
+                      "description": "Responsive text alignment override.",
+                      "type": "object",
+                      "properties": {
+                        "desktop": {
+                          "description": "Text alignment on wider screens.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "left",
+                              "title": "Left",
+                              "description": "Align text with the left edge of its text area."
+                            },
+                            {
+                              "const": "center",
+                              "title": "Center",
+                              "description": "Center text within its text area."
+                            },
+                            {
+                              "const": "right",
+                              "title": "Right",
+                              "description": "Align text with the right edge of its text area."
+                            }
+                          ]
+                        },
+                        "mobile": {
+                          "description": "Text alignment on narrow screens.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "left",
+                              "title": "Left",
+                              "description": "Align text with the left edge of its text area."
+                            },
+                            {
+                              "const": "center",
+                              "title": "Center",
+                              "description": "Center text within its text area."
+                            },
+                            {
+                              "const": "right",
+                              "title": "Right",
+                              "description": "Align text with the right edge of its text area."
+                            }
+                          ]
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "size": {
+                      "type": "string",
+                      "description": "Text size from the active typography system. Omit an override to keep the profile value.",
+                      "oneOf": [
+                        {
+                          "const": "small",
+                          "title": "Small",
+                          "description": "Use the small type size from the active typography system."
+                        },
+                        {
+                          "const": "medium",
+                          "title": "Medium",
+                          "description": "Use the standard type size from the active typography system."
+                        },
+                        {
+                          "const": "large",
+                          "title": "Large",
+                          "description": "Use a larger type size for stronger emphasis."
+                        },
+                        {
+                          "const": "xlarge",
+                          "title": "Extra large",
+                          "description": "Use the largest available type size for exceptional emphasis."
+                        }
+                      ]
+                    },
+                    "lineHeight": {
+                      "type": "number",
+                      "minimum": 1,
+                      "maximum": 3,
+                      "description": "Unitless line height between 1 and 3."
+                    },
+                    "weight": {
+                      "description": "Heading font weight. Omit this to keep the profile value.",
+                      "oneOf": [
+                        {
+                          "const": 400,
+                          "title": "Regular",
+                          "description": "Use regular font weight."
+                        },
+                        {
+                          "const": 500,
+                          "title": "Medium",
+                          "description": "Use medium font weight."
+                        },
+                        {
+                          "const": 600,
+                          "title": "Semibold",
+                          "description": "Use semibold font weight."
+                        },
+                        {
+                          "const": 700,
+                          "title": "Bold",
+                          "description": "Use bold font weight."
+                        }
+                      ]
+                    },
+                    "spacingBefore": {
+                      "description": "Vertical space before the heading.",
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                    },
+                    "spacingAfter": {
+                      "description": "Vertical space after the heading.",
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "h2": {
+                  "description": "Overrides for Markdown level 2 section headings.",
+                  "type": "object",
+                  "properties": {
+                    "align": {
+                      "description": "Responsive text alignment override.",
+                      "type": "object",
+                      "properties": {
+                        "desktop": {
+                          "description": "Text alignment on wider screens.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "left",
+                              "title": "Left",
+                              "description": "Align text with the left edge of its text area."
+                            },
+                            {
+                              "const": "center",
+                              "title": "Center",
+                              "description": "Center text within its text area."
+                            },
+                            {
+                              "const": "right",
+                              "title": "Right",
+                              "description": "Align text with the right edge of its text area."
+                            }
+                          ]
+                        },
+                        "mobile": {
+                          "description": "Text alignment on narrow screens.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "left",
+                              "title": "Left",
+                              "description": "Align text with the left edge of its text area."
+                            },
+                            {
+                              "const": "center",
+                              "title": "Center",
+                              "description": "Center text within its text area."
+                            },
+                            {
+                              "const": "right",
+                              "title": "Right",
+                              "description": "Align text with the right edge of its text area."
+                            }
+                          ]
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "size": {
+                      "type": "string",
+                      "description": "Text size from the active typography system. Omit an override to keep the profile value.",
+                      "oneOf": [
+                        {
+                          "const": "small",
+                          "title": "Small",
+                          "description": "Use the small type size from the active typography system."
+                        },
+                        {
+                          "const": "medium",
+                          "title": "Medium",
+                          "description": "Use the standard type size from the active typography system."
+                        },
+                        {
+                          "const": "large",
+                          "title": "Large",
+                          "description": "Use a larger type size for stronger emphasis."
+                        },
+                        {
+                          "const": "xlarge",
+                          "title": "Extra large",
+                          "description": "Use the largest available type size for exceptional emphasis."
+                        }
+                      ]
+                    },
+                    "lineHeight": {
+                      "type": "number",
+                      "minimum": 1,
+                      "maximum": 3,
+                      "description": "Unitless line height between 1 and 3."
+                    },
+                    "weight": {
+                      "description": "Heading font weight. Omit this to keep the profile value.",
+                      "oneOf": [
+                        {
+                          "const": 400,
+                          "title": "Regular",
+                          "description": "Use regular font weight."
+                        },
+                        {
+                          "const": 500,
+                          "title": "Medium",
+                          "description": "Use medium font weight."
+                        },
+                        {
+                          "const": 600,
+                          "title": "Semibold",
+                          "description": "Use semibold font weight."
+                        },
+                        {
+                          "const": 700,
+                          "title": "Bold",
+                          "description": "Use bold font weight."
+                        }
+                      ]
+                    },
+                    "spacingBefore": {
+                      "description": "Vertical space before the heading.",
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                    },
+                    "spacingAfter": {
+                      "description": "Vertical space after the heading.",
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "h3": {
+                  "description": "Overrides for Markdown level 3 headings.",
+                  "type": "object",
+                  "properties": {
+                    "align": {
+                      "description": "Responsive text alignment override.",
+                      "type": "object",
+                      "properties": {
+                        "desktop": {
+                          "description": "Text alignment on wider screens.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "left",
+                              "title": "Left",
+                              "description": "Align text with the left edge of its text area."
+                            },
+                            {
+                              "const": "center",
+                              "title": "Center",
+                              "description": "Center text within its text area."
+                            },
+                            {
+                              "const": "right",
+                              "title": "Right",
+                              "description": "Align text with the right edge of its text area."
+                            }
+                          ]
+                        },
+                        "mobile": {
+                          "description": "Text alignment on narrow screens.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "left",
+                              "title": "Left",
+                              "description": "Align text with the left edge of its text area."
+                            },
+                            {
+                              "const": "center",
+                              "title": "Center",
+                              "description": "Center text within its text area."
+                            },
+                            {
+                              "const": "right",
+                              "title": "Right",
+                              "description": "Align text with the right edge of its text area."
+                            }
+                          ]
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "size": {
+                      "type": "string",
+                      "description": "Text size from the active typography system. Omit an override to keep the profile value.",
+                      "oneOf": [
+                        {
+                          "const": "small",
+                          "title": "Small",
+                          "description": "Use the small type size from the active typography system."
+                        },
+                        {
+                          "const": "medium",
+                          "title": "Medium",
+                          "description": "Use the standard type size from the active typography system."
+                        },
+                        {
+                          "const": "large",
+                          "title": "Large",
+                          "description": "Use a larger type size for stronger emphasis."
+                        },
+                        {
+                          "const": "xlarge",
+                          "title": "Extra large",
+                          "description": "Use the largest available type size for exceptional emphasis."
+                        }
+                      ]
+                    },
+                    "lineHeight": {
+                      "type": "number",
+                      "minimum": 1,
+                      "maximum": 3,
+                      "description": "Unitless line height between 1 and 3."
+                    },
+                    "weight": {
+                      "description": "Heading font weight. Omit this to keep the profile value.",
+                      "oneOf": [
+                        {
+                          "const": 400,
+                          "title": "Regular",
+                          "description": "Use regular font weight."
+                        },
+                        {
+                          "const": 500,
+                          "title": "Medium",
+                          "description": "Use medium font weight."
+                        },
+                        {
+                          "const": 600,
+                          "title": "Semibold",
+                          "description": "Use semibold font weight."
+                        },
+                        {
+                          "const": 700,
+                          "title": "Bold",
+                          "description": "Use bold font weight."
+                        }
+                      ]
+                    },
+                    "spacingBefore": {
+                      "description": "Vertical space before the heading.",
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                    },
+                    "spacingAfter": {
+                      "description": "Vertical space after the heading.",
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "h4": {
+                  "description": "Overrides for Markdown level 4 headings.",
+                  "type": "object",
+                  "properties": {
+                    "align": {
+                      "description": "Responsive text alignment override.",
+                      "type": "object",
+                      "properties": {
+                        "desktop": {
+                          "description": "Text alignment on wider screens.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "left",
+                              "title": "Left",
+                              "description": "Align text with the left edge of its text area."
+                            },
+                            {
+                              "const": "center",
+                              "title": "Center",
+                              "description": "Center text within its text area."
+                            },
+                            {
+                              "const": "right",
+                              "title": "Right",
+                              "description": "Align text with the right edge of its text area."
+                            }
+                          ]
+                        },
+                        "mobile": {
+                          "description": "Text alignment on narrow screens.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "left",
+                              "title": "Left",
+                              "description": "Align text with the left edge of its text area."
+                            },
+                            {
+                              "const": "center",
+                              "title": "Center",
+                              "description": "Center text within its text area."
+                            },
+                            {
+                              "const": "right",
+                              "title": "Right",
+                              "description": "Align text with the right edge of its text area."
+                            }
+                          ]
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "size": {
+                      "type": "string",
+                      "description": "Text size from the active typography system. Omit an override to keep the profile value.",
+                      "oneOf": [
+                        {
+                          "const": "small",
+                          "title": "Small",
+                          "description": "Use the small type size from the active typography system."
+                        },
+                        {
+                          "const": "medium",
+                          "title": "Medium",
+                          "description": "Use the standard type size from the active typography system."
+                        },
+                        {
+                          "const": "large",
+                          "title": "Large",
+                          "description": "Use a larger type size for stronger emphasis."
+                        },
+                        {
+                          "const": "xlarge",
+                          "title": "Extra large",
+                          "description": "Use the largest available type size for exceptional emphasis."
+                        }
+                      ]
+                    },
+                    "lineHeight": {
+                      "type": "number",
+                      "minimum": 1,
+                      "maximum": 3,
+                      "description": "Unitless line height between 1 and 3."
+                    },
+                    "weight": {
+                      "description": "Heading font weight. Omit this to keep the profile value.",
+                      "oneOf": [
+                        {
+                          "const": 400,
+                          "title": "Regular",
+                          "description": "Use regular font weight."
+                        },
+                        {
+                          "const": 500,
+                          "title": "Medium",
+                          "description": "Use medium font weight."
+                        },
+                        {
+                          "const": 600,
+                          "title": "Semibold",
+                          "description": "Use semibold font weight."
+                        },
+                        {
+                          "const": 700,
+                          "title": "Bold",
+                          "description": "Use bold font weight."
+                        }
+                      ]
+                    },
+                    "spacingBefore": {
+                      "description": "Vertical space before the heading.",
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                    },
+                    "spacingAfter": {
+                      "description": "Vertical space after the heading.",
+                      "type": "string",
+                      "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "body": {
+              "description": "Overrides for body text.",
+              "type": "object",
+              "properties": {
+                "align": {
+                  "description": "Responsive text alignment override.",
+                  "type": "object",
+                  "properties": {
+                    "desktop": {
+                      "description": "Text alignment on wider screens.",
+                      "type": "string",
+                      "oneOf": [
+                        {
+                          "const": "left",
+                          "title": "Left",
+                          "description": "Align text with the left edge of its text area."
+                        },
+                        {
+                          "const": "center",
+                          "title": "Center",
+                          "description": "Center text within its text area."
+                        },
+                        {
+                          "const": "right",
+                          "title": "Right",
+                          "description": "Align text with the right edge of its text area."
+                        }
+                      ]
+                    },
+                    "mobile": {
+                      "description": "Text alignment on narrow screens.",
+                      "type": "string",
+                      "oneOf": [
+                        {
+                          "const": "left",
+                          "title": "Left",
+                          "description": "Align text with the left edge of its text area."
+                        },
+                        {
+                          "const": "center",
+                          "title": "Center",
+                          "description": "Center text within its text area."
+                        },
+                        {
+                          "const": "right",
+                          "title": "Right",
+                          "description": "Align text with the right edge of its text area."
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "size": {
+                  "type": "string",
+                  "description": "Text size from the active typography system. Omit an override to keep the profile value.",
+                  "oneOf": [
+                    {
+                      "const": "small",
+                      "title": "Small",
+                      "description": "Use the small type size from the active typography system."
+                    },
+                    {
+                      "const": "medium",
+                      "title": "Medium",
+                      "description": "Use the standard type size from the active typography system."
+                    },
+                    {
+                      "const": "large",
+                      "title": "Large",
+                      "description": "Use a larger type size for stronger emphasis."
+                    },
+                    {
+                      "const": "xlarge",
+                      "title": "Extra large",
+                      "description": "Use the largest available type size for exceptional emphasis."
+                    }
+                  ]
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 3,
+                  "description": "Unitless line height between 1 and 3."
+                },
+                "width": {
+                  "description": "Maximum body-text line length.",
+                  "type": "string",
+                  "oneOf": [
+                    {
+                      "const": "narrow",
+                      "title": "Narrow",
+                      "description": "Use a shorter line length suited to reading-focused text."
+                    },
+                    {
+                      "const": "normal",
+                      "title": "Normal",
+                      "description": "Use the balanced default line length."
+                    },
+                    {
+                      "const": "wide",
+                      "title": "Wide",
+                      "description": "Allow body text to use more horizontal space."
+                    }
+                  ]
+                },
+                "paragraphSpacing": {
+                  "description": "Vertical space between body paragraphs.",
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                }
+              },
+              "additionalProperties": false
+            },
+            "caption": {
+              "description": "Overrides for image captions.",
+              "type": "object",
+              "properties": {
+                "align": {
+                  "description": "Responsive text alignment override.",
+                  "type": "object",
+                  "properties": {
+                    "desktop": {
+                      "description": "Text alignment on wider screens.",
+                      "type": "string",
+                      "oneOf": [
+                        {
+                          "const": "left",
+                          "title": "Left",
+                          "description": "Align text with the left edge of its text area."
+                        },
+                        {
+                          "const": "center",
+                          "title": "Center",
+                          "description": "Center text within its text area."
+                        },
+                        {
+                          "const": "right",
+                          "title": "Right",
+                          "description": "Align text with the right edge of its text area."
+                        }
+                      ]
+                    },
+                    "mobile": {
+                      "description": "Text alignment on narrow screens.",
+                      "type": "string",
+                      "oneOf": [
+                        {
+                          "const": "left",
+                          "title": "Left",
+                          "description": "Align text with the left edge of its text area."
+                        },
+                        {
+                          "const": "center",
+                          "title": "Center",
+                          "description": "Center text within its text area."
+                        },
+                        {
+                          "const": "right",
+                          "title": "Right",
+                          "description": "Align text with the right edge of its text area."
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "size": {
+                  "type": "string",
+                  "description": "Text size from the active typography system. Omit an override to keep the profile value.",
+                  "oneOf": [
+                    {
+                      "const": "small",
+                      "title": "Small",
+                      "description": "Use the small type size from the active typography system."
+                    },
+                    {
+                      "const": "medium",
+                      "title": "Medium",
+                      "description": "Use the standard type size from the active typography system."
+                    },
+                    {
+                      "const": "large",
+                      "title": "Large",
+                      "description": "Use a larger type size for stronger emphasis."
+                    },
+                    {
+                      "const": "xlarge",
+                      "title": "Extra large",
+                      "description": "Use the largest available type size for exceptional emphasis."
+                    }
+                  ]
+                },
+                "lineHeight": {
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 3,
+                  "description": "Unitless line height between 1 and 3."
+                },
+                "spacingBefore": {
+                  "description": "Vertical space between an image and its caption.",
+                  "type": "string",
+                  "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "description": "Typography profile, rhythm, font family, and focused overrides.",
+      "markdownDescription": "```yaml\ntypography:\n  profile: reading\n  rhythm: normal\n```\n\nOverrides the preset's font stack, typography profile, rhythm or individual text settings.\n\n[Typography configuration reference](https://github.com/janga/norna/blob/v0.7.14/docs/typography.md#configuration-shape)"
+    },
+    "palette": {
+      "type": "string",
+      "description": "Coordinated site color palette. Omit this to use the selected preset.",
+      "oneOf": [
+        {
+          "const": "dark",
+          "title": "Dark",
+          "description": "Black page and section surfaces with light text."
+        },
+        {
+          "const": "light",
+          "title": "Light",
+          "description": "White and cool light surfaces with dark text."
+        },
+        {
+          "const": "paper",
+          "title": "Paper",
+          "description": "Warm off-white surfaces with dark text."
+        }
+      ],
+      "markdownDescription": "```yaml\npalette: paper\n```\n\nChooses a coordinated color system for the page frame, navigation, footer and section surfaces.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#palette-and-section-surfaces)",
+      "examples": [
+        "dark",
+        "light",
+        "paper"
+      ]
+    },
+    "sectionSurfaces": {
+      "description": "Surface sequence cycled through page sections. Omit this to keep the selected preset.",
+      "minItems": 1,
+      "maxItems": 3,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Semantic section surface from the active palette.",
+        "oneOf": [
+          {
+            "const": "base",
+            "title": "Base",
+            "description": "Use the palette's normal page surface."
+          },
+          {
+            "const": "soft",
+            "title": "Soft",
+            "description": "Use the palette's subtle contrasting surface."
+          },
+          {
+            "const": "emphasis",
+            "title": "Emphasis",
+            "description": "Use the palette's strongest section surface."
+          }
+        ]
+      },
+      "markdownDescription": "```yaml\nsectionSurfaces: [base, soft, emphasis]\n```\n\nLists one to three semantic surfaces. Norna cycles through them in section order; omit this field to keep the preset sequence.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md#palette-and-section-surfaces)",
+      "examples": [
+        [
+          "base"
+        ],
+        [
+          "base",
+          "soft"
+        ],
+        [
+          "base",
+          "soft",
+          "emphasis"
+        ]
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "description": "Visual settings for a site or route. A route theme replaces the inherited visual theme; site identity remains site-wide.",
+  "$id": "https://janga.github.io/norna/schemas/theme.schema.json",
+  "title": "Norna visual theme",
+  "markdownDescription": "```yaml\npreset: documentation\n```\n\nChoose one complete preset first. Add focused overrides only when the site needs to differ from it.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.14/docs/theme.md)"
+}

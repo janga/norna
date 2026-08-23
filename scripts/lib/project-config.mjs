@@ -1,52 +1,28 @@
-import { access, readFile } from 'node:fs/promises';
-import { parseYamlMapping } from './frontmatter-yaml.mjs';
+import { readFile } from 'node:fs/promises';
 import {
-	splitSiteFile,
-	validateConfigFrontmatterStructure,
-	validateFrontmatterIndentation,
+	validateConfigYamlStructure,
 } from './site-content.mjs';
 import {
-	legacySiteConfigPath,
 	siteConfigLabel,
 	siteConfigPath,
 	siteThemeLabel,
 } from './site-paths.mjs';
 import { readThemeConfig } from './theme-config.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
+import { parseYamlConfig } from './yaml-config.mjs';
 
-const fileExists = (filePath) => access(filePath).then(() => true, () => false);
 const readSiteConfig = async () => {
-	const source = await readFile(siteConfigPath, 'utf8').catch(async (error) => {
-		if (error?.code === 'ENOENT' && await fileExists(legacySiteConfigPath)) {
-			throw new Error(`${siteConfigLabel} is required. Replace the obsolete config.mjs with a frontmatter-only config.md file.`);
-		}
-
+	const source = await readFile(siteConfigPath, 'utf8').catch((error) => {
 		if (error?.code === 'ENOENT') {
 			throw new Error(`${siteConfigLabel} is required. Create it before running Norna.`);
 		}
 
 		throw error;
 	});
-	const { body, frontmatter, frontmatterBody } = splitSiteFile(source, siteConfigLabel);
-	const issues = [];
 
-	validateFrontmatterIndentation(frontmatter, (issue) => issues.push(issue));
-	validateConfigFrontmatterStructure(frontmatter, (issue) => issues.push(issue));
-
-	if (body.trim()) {
-		issues.push({
-			message: `${siteConfigLabel} may contain YAML frontmatter only. Remove the Markdown body.`,
-		});
-	}
-
-	if (issues.length > 0) {
-		throw new Error([
-			`${siteConfigLabel} has invalid frontmatter.`,
-			...issues.map((issue) => `- ${issue.message}`),
-		].join('\n'));
-	}
-
-	return parseYamlMapping(frontmatterBody);
+	return parseYamlConfig(source, siteConfigLabel, {
+		validateStructure: validateConfigYamlStructure,
+	});
 };
 
 const siteConfig = await readSiteConfig();
@@ -246,8 +222,8 @@ const readLocale = (config) => {
 	});
 };
 
-const rawConfig = assertObject(siteConfig, 'config frontmatter');
-const rawTheme = assertObject(themeConfig, 'theme frontmatter', siteThemeLabel);
+const rawConfig = assertObject(siteConfig, 'config YAML');
+const rawTheme = assertObject(themeConfig, 'theme YAML', siteThemeLabel);
 const siteUrl = readSiteUrl(rawConfig);
 const scrollBehaviorNames = ['instant', 'smooth'];
 

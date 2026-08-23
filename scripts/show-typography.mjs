@@ -1,6 +1,5 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { parseYamlMapping } from './lib/frontmatter-yaml.mjs';
 import {
 	defaultTypography,
 	resolveTypographyConfig,
@@ -12,11 +11,9 @@ import {
 	getBodySections,
 	getContentFiles,
 	readSiteFile,
-	splitSiteFile,
 	validateContentFrontmatterStructure,
 	validateFrontmatterIndentation,
-	validateRouteThemeFrontmatterStructure,
-	validateThemeFrontmatterStructure,
+	validateRouteThemeYamlStructure,
 } from './lib/site-content.mjs';
 import {
 	siteContentLabel,
@@ -25,7 +22,9 @@ import {
 	siteThemeLabel,
 	siteThemePath,
 } from './lib/site-paths.mjs';
+import { readThemeConfig } from './lib/theme-config.mjs';
 import { resolveThemeConfig } from './lib/theme-presets.mjs';
+import { parseYamlConfig } from './lib/yaml-config.mjs';
 
 const mode = process.argv[2] ?? 'show';
 
@@ -193,19 +192,7 @@ const formatAnnotatedTypography = (annotated) => ({
 });
 
 const readThemeTypography = async () => {
-	const themeFile = await readFile(siteThemePath, 'utf8');
-	const { frontmatter: themeFrontmatter, frontmatterBody: themeFrontmatterBody } = splitSiteFile(themeFile, siteThemeLabel);
-	const indentationIssues = [];
-	validateFrontmatterIndentation(themeFrontmatter, (issue) => indentationIssues.push(issue));
-	validateThemeFrontmatterStructure(themeFrontmatter, (issue) => indentationIssues.push(issue));
-	if (indentationIssues.length > 0) {
-		throw new Error([
-			`Cannot inspect typography because ${siteThemeLabel} has invalid frontmatter.`,
-			...indentationIssues.map((issue) => `- ${issue.message}`),
-		].join('\n'));
-	}
-
-	const themeConfig = resolveThemeConfig(parseYamlMapping(themeFrontmatterBody), siteThemeLabel);
+	const themeConfig = resolveThemeConfig(await readThemeConfig(), siteThemeLabel);
 	const themeTypographyConfig = themeConfig.typography;
 	return resolveAnnotatedTypographyConfig(themeTypographyConfig ?? defaultTypography, siteThemeLabel);
 };
@@ -213,26 +200,17 @@ const readThemeTypography = async () => {
 const readRouteThemeTypography = async (contentFile, themeTypography) => {
 	if (contentFile.isHome) return themeTypography;
 
-	const routeThemePath = path.join(siteRoutesDir, contentFile.routeDirectory, 'theme.md');
-	const routeThemeLabel = `${contentFile.contentLabel.replace(/\/content\.md$/, '')}/theme.md`;
+	const routeThemePath = path.join(siteRoutesDir, contentFile.routeDirectory, 'theme.yaml');
 	const routeThemeFile = await readFile(routeThemePath, 'utf8').catch((error) => {
 		if (error?.code === 'ENOENT') return null;
 		throw error;
 	});
 	if (!routeThemeFile) return themeTypography;
+	const routeThemeLabel = `${contentFile.contentLabel.replace(/\/content\.md$/, '')}/theme.yaml`;
 
-	const { frontmatter, frontmatterBody } = splitSiteFile(routeThemeFile, routeThemeLabel);
-	const indentationIssues = [];
-	validateFrontmatterIndentation(frontmatter, (issue) => indentationIssues.push(issue));
-	validateRouteThemeFrontmatterStructure(frontmatter, (issue) => indentationIssues.push(issue));
-	if (indentationIssues.length > 0) {
-		throw new Error([
-			`Cannot inspect typography because ${routeThemeLabel} has invalid frontmatter.`,
-			...indentationIssues.map((issue) => `- ${issue.message}`),
-		].join('\n'));
-	}
-
-	const routeThemeConfig = resolveThemeConfig(parseYamlMapping(frontmatterBody), routeThemeLabel);
+	const routeThemeConfig = resolveThemeConfig(parseYamlConfig(routeThemeFile, routeThemeLabel, {
+		validateStructure: validateRouteThemeYamlStructure,
+	}), routeThemeLabel);
 	const typographyConfig = routeThemeConfig.typography;
 	return resolveAnnotatedTypographyConfig(typographyConfig ?? defaultTypography, routeThemeLabel);
 };

@@ -13,7 +13,7 @@ Even a one-page site contains two kinds of content.
 
 `content.md` contains the page itself: its sections, text and Norna image or
 card blocks.
-`sitewide-content.md` contains content shared by the whole site, such as its
+`sitewide-content.yaml` contains content shared by the whole site, such as its
 identity, notices and footer.{note-ref} The reasoning is that more pages may be
 added to a site that begins as a single page.
 
@@ -24,7 +24,7 @@ This separation is part of Norna being opinionated. You do not decide where
 these elements should live or wire them into a page layout. Norna gives each
 kind of content a defined place.
 
-`theme.md` controls the visual presentation, while `config.md` contains the few
+`theme.yaml` controls the visual presentation, while `config.yaml` contains the few
 technical settings the site needs.
 
 Within `content.md`, level-two headings define the page sections. Each section
@@ -51,7 +51,7 @@ site's visual presentation.
 
 Route directories contain route content and may contain route-local
 presentation, but they cannot contain technical site configuration. Technical
-configuration stays at the top level in `config.md`.
+configuration stays at the top level in `config.yaml`.
 
 Route folder prefixes control route presentation order on the site, while the
 route id becomes the URL slug. For example, the route from `010-dogs/` is shown

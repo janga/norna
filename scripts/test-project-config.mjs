@@ -19,13 +19,13 @@ const importScript = `
 	}));
 `;
 
-const createSite = async (name, config, { legacy = false } = {}) => {
+const createSite = async (name, config) => {
 	const projectRoot = path.join(tempRoot, name);
 	const siteDir = path.join(projectRoot, 'site');
 	await mkdir(siteDir, { recursive: true });
-	await writeFile(path.join(siteDir, legacy ? 'config.mjs' : 'config.md'), config);
+	await writeFile(path.join(siteDir, 'config.yaml'), config);
 	await writeFile(path.join(siteDir, 'content.md'), '---\ntitle: Config test\ndescription: Config test.\n---\n\n## Intro {#intro}\n\nText.\n');
-	await writeFile(path.join(siteDir, 'theme.md'), '---\npreset: documentation\n---\n');
+	await writeFile(path.join(siteDir, 'theme.yaml'), 'preset: documentation\n');
 	return { projectRoot, siteDir };
 };
 
@@ -50,7 +50,7 @@ const assertFailure = (result, expectedPattern) => {
 };
 
 try {
-	const minimalSite = await createSite('minimal', '---\nurl: https://example.com/docs\n---\n');
+	const minimalSite = await createSite('minimal', 'url: https://example.com/docs\n');
 	const minimalResult = loadConfig(minimalSite);
 	assert.equal(minimalResult.status, 0, minimalResult.stderr);
 	assert.deepEqual(JSON.parse(minimalResult.stdout), {
@@ -69,7 +69,7 @@ try {
 		url: 'https://example.com/docs/',
 	});
 
-	const localizedSite = await createSite('localized', '---\nurl: https://example.com/\nlanguage: sv-SE\nscrollBehavior: smooth\n---\n');
+	const localizedSite = await createSite('localized', 'url: https://example.com/\nlanguage: sv-SE\nscrollBehavior: smooth\n');
 	const localizedResult = loadConfig(localizedSite);
 	assert.equal(localizedResult.status, 0, localizedResult.stderr);
 	const localizedConfig = JSON.parse(localizedResult.stdout);
@@ -91,34 +91,29 @@ try {
 	);
 
 	assertFailure(
-		loadConfig(await createSite('unknown-field', '---\nurl: https://example.com/\nbasePath: /docs/\n---\n')),
+		loadConfig(await createSite('unknown-field', 'url: https://example.com/\nbasePath: /docs/\n')),
 		/not a valid top-level config field/,
 	);
 	assertFailure(
-		loadConfig(await createSite('markdown-body', '---\nurl: https://example.com/\n---\n\nConfiguration prose.\n')),
-		/may contain YAML frontmatter only/,
+		loadConfig(await createSite('invalid-yaml', 'url: https://example.com/\nConfiguration prose.\n')),
+		/contains invalid YAML/,
 	);
 	assertFailure(
-		loadConfig(await createSite('unsupported-language', '---\nurl: https://example.com/\nlanguage: de\n---\n')),
+		loadConfig(await createSite('unsupported-language', 'url: https://example.com/\nlanguage: de\n')),
 		/has no built-in Norna UI text/,
 	);
 	assertFailure(
-		loadConfig(await createSite('invalid-url', '---\nurl: example.com\n---\n')),
+		loadConfig(await createSite('invalid-url', 'url: example.com\n')),
 		/url must be an absolute URL/,
 	);
 	assertFailure(
-		loadConfig(await createSite('invalid-scroll-behavior', '---\nurl: https://example.com/\nscrollBehavior: slow\n---\n')),
+		loadConfig(await createSite('invalid-scroll-behavior', 'url: https://example.com/\nscrollBehavior: slow\n')),
 		/scrollBehavior must be one of instant, smooth/,
 	);
 	assertFailure(
-		loadConfig(await createSite('obsolete-smooth-scroll', '---\nurl: https://example.com/\nsmoothScroll: true\n---\n')),
+		loadConfig(await createSite('obsolete-smooth-scroll', 'url: https://example.com/\nsmoothScroll: true\n')),
 		/not a valid top-level config field/,
 	);
-	assertFailure(
-		loadConfig(await createSite('legacy', 'export default {};\n', { legacy: true })),
-		/Replace the obsolete config\.mjs with a frontmatter-only config\.md file/,
-	);
-
 	console.log('Project config test passed.');
 } finally {
 	await rm(tempRoot, { force: true, recursive: true });

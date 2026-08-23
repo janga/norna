@@ -35,7 +35,7 @@ const pageContentPath = currentPage.routeDirectory
 const rawMarkdown = (await readSiteFile(pageContentPath, siteContentLabel)).body;
 const [siteTheme] = await getCollection('theme');
 if (!siteTheme) {
-	throw new Error('site/theme.md is required. Add a root theme before building the site.');
+	throw new Error('site/theme.yaml is required. Add a root theme before building the site.');
 }
 const [sitewide] = await getCollection('sitewide');
 const sitewideData = sitewide?.data ?? {};
@@ -46,15 +46,15 @@ const routeTheme = await getRouteTheme(currentPage.routeDirectory);
 const themeData = routeTheme?.data ?? siteThemeData;
 const themeLabel = routeTheme
 	? `${siteDirectory || 'site'}/${routeTheme.id}`
-	: `${siteDirectory || 'site'}/theme.md`;
+	: `${siteDirectory || 'site'}/${siteTheme.id}`;
 const visualTheme = resolveThemeVisualConfig(themeData, themeLabel);
-const brandLabel = sitewideData.navigation?.brand ?? homePage.title;
+const navigationLabel = sitewideData.navigation?.label ?? homePage.title;
 const logoAsset = getLogoAsset();
 const logoSettings = sitewideData.navigation?.logo;
 const logo = logoAsset
 	? {
 		src: logoAsset.href,
-		alt: logoSettings?.alt ?? brandLabel,
+		alt: navigationLabel,
 		height: logoSettings?.height,
 	}
 	: undefined;
@@ -98,7 +98,7 @@ if (visibleSections.length === 0) {
 	footer={sitewideData.footer}
 >
 	<SiteNavigation
-		brandLabel={brandLabel}
+		navigationLabel={navigationLabel}
 		logo={logo}
 		currentPage={currentPage}
 		pageNavigation={pageNavigation}

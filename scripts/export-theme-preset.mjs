@@ -12,7 +12,7 @@ if (!presetName || extraArgs.length > 0) {
 	throw new Error(`Usage: norna theme:export <preset>\nAvailable presets: ${themePresetNames.join(', ')}`);
 }
 
-const filename = `orig-${presetName}-theme.md`;
+const filename = `orig-${presetName}-theme.yaml`;
 const outputPath = path.join(siteDir, filename);
 const outputLabel = path.posix.join(path.posix.dirname(siteThemeLabel), filename);
 const source = renderThemePresetReference(presetName, siteThemeLabel);

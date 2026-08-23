@@ -7,7 +7,7 @@ navigation:
 
 ## Banner stack {#banner-stack}
 
-The two notices above the page content are defined in `sitewide-content.md`.
+The two notices above the page content are defined in `sitewide-content.yaml`.
 List order controls their order, and each notice keeps its own identity.
 
 ## Dismissal {#dismissal}

@@ -1,6 +1,0 @@
----
-typography:
-  profile: reading
-  rhythm: normal
-palette: dark
----

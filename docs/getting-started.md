@@ -95,35 +95,31 @@ Return to the browser. The page should now contain `Welcome` and `Next`, and
 the single-page navigation should link to those two sections. You should not
 need to restart the server.
 
-## 3. Set The Shared Brand
+## 3. Set The Shared Identity
 
-Replace `site/sitewide-content.md` with:
+Replace `site/sitewide-content.yaml` with:
 
 ```yaml
----
 navigation:
-  brand: My first Norna site
+  label: My first Norna site
 footer:
   copyrightMessage: My first Norna site.
----
 ```
 
-The brand and footer are site-wide content rather than page sections. If you
-add routes later, they inherit these values.
+The navigation label and footer are site-wide content rather than page
+sections. If you add routes later, they inherit these values.
 
-### Checkpoint: The Brand Is Shared
+### Checkpoint: The Identity Is Shared
 
 The navigation should now display `My first Norna site`. The footer should show
 the new message.
 
 ## 4. Choose A Complete Theme
 
-Replace `site/theme.md` with:
+Replace `site/theme.yaml` with:
 
 ```yaml
----
 preset: project
----
 ```
 
 The preset supplies coordinated layout, typography, spacing, image sizing,
@@ -133,7 +129,7 @@ differ from the preset.
 ### Checkpoint: The Preset Is Active
 
 The browser should refresh with the `project` presentation. Your content files
-remain unchanged because presentation belongs in `theme.md`.
+remain unchanged because presentation belongs in `theme.yaml`.
 
 ## 5. Check And Build
 

@@ -51,14 +51,9 @@ const createTempSite = async ({ underRepoCache = false } = {}) => {
 	const root = await mkdtemp(path.join(tempParent, 'norna-content-model-v2-'));
 	const siteDir = path.join(root, 'site');
 	await mkdir(siteDir, { recursive: true });
-	await writeFile(path.join(siteDir, 'config.md'), `---
-url: https://example.com/
----
-`);
-	await writeFile(path.join(siteDir, 'theme.md'), `---
-typography:
+	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: reading
----
 `);
 	return { root, siteDir };
 };
@@ -124,15 +119,11 @@ test('content model v2 fixture checks and builds', async () => {
 test('route theme replaces visual theme while site identity stays at the root', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'theme.md'), `---
-typography:
+		await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: reading
----
 `);
-		await writeFile(path.join(siteDir, 'sitewide-content.md'), `---
-navigation:
-  brand: Root Brand
----
+		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `navigation:
+  label: Root Brand
 `);
 		await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
 		await writeFile(path.join(siteDir, 'content.md'), `---
@@ -155,11 +146,9 @@ navigation:
 
 Route content.
 `);
-		await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.md'), `---
-typography:
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.yaml'), `typography:
   profile: statement
 palette: light
----
 `);
 
 		await runNorna(['--site-dir', siteDir, 'build']);
@@ -195,16 +184,60 @@ description: Guide page
 
 Route content.
 `);
-		await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.md'), `---
-navigation:
-  brand: Route Brand
----
+		await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.yaml'), `navigation:
+  label: Route Brand
 `);
 
 		await assert.rejects(
 			runNorna(['--site-dir', siteDir, 'config:check']),
 			(error) => {
-				assert.match(error.output, /may not define navigation\. Brand and logo belong in site\/sitewide-content\.md/);
+				assert.match(error.output, /may not define navigation\. The site label and logo settings belong in site\/sitewide-content\.yaml/);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('navigation logo settings require one conventional logo file', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `navigation:
+  label: Missing logo
+  logo:
+    height: 2rem
+`);
+
+		await assert.rejects(
+			runNorna(['--site-dir', siteDir, 'config:check']),
+			(error) => {
+				assert.match(error.output, /navigation\.logo is configured, but no logo file was found/);
+				assert.match(error.output, /site\/public\/logo\.svg/);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('multiple conventional navigation logo files stop config validation', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `navigation:
+  label: Conflicting logos
+`);
+		await mkdir(path.join(siteDir, 'public'), { recursive: true });
+		await writeFile(path.join(siteDir, 'public', 'logo.svg'), '<svg/>');
+		await writeFile(path.join(siteDir, 'public', 'logo.png'), 'png');
+
+		await assert.rejects(
+			runNorna(['--site-dir', siteDir, 'config:check']),
+			(error) => {
+				assert.match(error.output, /Found multiple logo files/);
+				assert.match(error.output, /site\/public\/logo\.svg/);
+				assert.match(error.output, /site\/public\/logo\.png/);
 				return true;
 			},
 		);
@@ -285,7 +318,7 @@ description: Fixture
 
 The first paragraph points to an explanation.{note-ref}
 
-{note: This explanation names \`sitewide-content.md\` and stays beside the
+{note: This explanation names \`sitewide-content.yaml\` and stays beside the
 paragraph on wide screens.}
 
 The second paragraph has its own explanation.{note-ref}
@@ -301,7 +334,7 @@ The second paragraph has its own explanation.{note-ref}
 		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-1" href="#note-home-intro-1" aria-label="Note 1" aria-describedby="note-home-intro-1" data-note-id="note-home-intro-1">1<\/a><\/sup>/);
 		assert.match(html, /<aside class="section-note section-note-margin" id="note-home-intro-1" aria-label="Note 1" role="note" data-note-id="note-home-intro-1" style="grid-row: 1;">/);
 		assert.match(html, /<a class="section-note-number" href="#note-ref-home-intro-1" aria-label="Note 1">\s*1\s*<\/a>/);
-		assert.match(html, /This explanation names <code>sitewide-content\.md<\/code> and stays beside the paragraph on wide screens\./);
+		assert.match(html, /This explanation names <code>sitewide-content\.yaml<\/code> and stays beside the paragraph on wide screens\./);
 		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-2" href="#note-home-intro-2" aria-label="Note 2" aria-describedby="note-home-intro-2" data-note-id="note-home-intro-2">2<\/a><\/sup>/);
 		assert.match(html, /<aside class="section-note section-note-margin" id="note-home-intro-2" aria-label="Note 2" role="note" data-note-id="note-home-intro-2" style="grid-row: 2;">/);
 		assert.match(html, /This is the second explanation\./);

@@ -133,6 +133,7 @@ const nornaScripts = {
 	'norna:config:check': cliCommand('config:check'),
 	'norna:content:check': cliCommand('content:check'),
 	'norna:sync': cliCommand('content:sync'),
+	'norna:theme:presets': cliCommand('theme:presets'),
 	'norna:theme:export': cliCommand('theme:export'),
 	'norna:typography:profiles': cliCommand('typography profiles'),
 	'norna:typography:show': cliCommand('typography show'),
@@ -199,10 +200,8 @@ if (type === 'standalone') {
 
 	const targetPackageJson = await readJsonFile(targetPackageJsonPath);
 	targetPackageJson.dependencies[packageName] = enginePackageJson.version;
-	if (siteDirectory !== 'site') {
-		targetPackageJson.scripts = {};
-		addNornaScripts(targetPackageJson, nornaScripts, { includeStandaloneAliases: true });
-	}
+	if (siteDirectory !== 'site') targetPackageJson.scripts = {};
+	addNornaScripts(targetPackageJson, nornaScripts, { includeStandaloneAliases: true });
 	await writeFile(targetPackageJsonPath, `${JSON.stringify(targetPackageJson, null, 2)}\n`);
 } else {
 	if (!existingEntries) {

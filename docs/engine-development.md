@@ -7,7 +7,7 @@ This document is for work on the reusable `norna` package itself.
 - `bin/norna.mjs`: public CLI launcher and local-version resolver.
 - `bin/norna-cli.mjs`: public CLI command dispatcher.
 - `scripts/lib/site-paths.mjs`: engine/site path resolution.
-- `scripts/lib/project-config.mjs`: frontmatter-only `site/config.md`
+- `scripts/lib/project-config.mjs`: plain YAML `site/config.yaml`
   validation, defaults and derived URL path.
 - `scripts/sync-content-sections.mjs`: content validation and sync behavior.
 - `scripts/generate-images.mjs`: managed image pipeline and manifest.
@@ -144,9 +144,10 @@ selected explicitly through npm scripts or `node bin/norna.mjs`.
 The npm package is published under the `@janga` scope. Choose the release type
 when starting a release; the command requires a clean working tree, verifies npm
 registry authentication for the same registry/cache used by the publish step,
-runs `npm test`, requires a clean working tree after the checks, updates
-`package.json` and `package-lock.json`, creates the release commit and Git tag,
-publishes to npm, then pushes the commit and tag.
+updates `package.json` and `package-lock.json` without creating a commit, and
+regenerates schemas with documentation links pinned to the new `v<version>` Git
+tag. It then runs `npm test`, verifies that only release files changed, creates
+the release commit and Git tag, publishes to npm, and pushes the commit and tag.
 
 ```sh
 npm run release:patch
@@ -161,8 +162,14 @@ npm run release:major
 ```
 
 The release command deliberately does not run GitHub Pages deployment monitoring.
+If version preparation, schema generation, or testing fails before the release
+commit, the script restores the previous package version and generated schemas.
+
 If npm publication fails, it stops before pushing; the local version commit and
-tag remain available for inspection or recovery.
+tag remain available for inspection or recovery. Retry publication with
+`npm run release:publish`, then push the existing commit and tag with
+`git push --follow-tags`. Do not start a new version bump merely to retry these
+steps.
 
 If the npm authentication preflight fails, no version commit or tag has been
 created yet. Run the printed login command:
@@ -207,5 +214,5 @@ anchor movement; Norna does not run a separate scroll animation or retry anchor
 positions after later layout shifts.
 
 The shared layout selects Norna's built-in UI labels from the optional
-`language` in `site/config.md`. Keep editorial content in page Markdown and
+`language` in `site/config.yaml`. Keep editorial content in page Markdown and
 non-editorial engine UI labels in the engine language packs.

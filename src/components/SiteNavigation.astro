@@ -11,7 +11,7 @@ type FrameColors = {
 };
 
 interface Props {
-	brandLabel: string;
+	navigationLabel: string;
 	logo?: {
 		src: string;
 		alt: string;
@@ -25,7 +25,7 @@ interface Props {
 	frameColors: FrameColors;
 }
 
-const { brandLabel, logo, currentPage, pageNavigation, frameColors } = Astro.props;
+const { navigationLabel, logo, currentPage, pageNavigation, frameColors } = Astro.props;
 const siteTopBackgroundColor = frameColors.backgroundColor === 'transparent'
 	? 'var(--color-page)'
 	: frameColors.backgroundColor;
@@ -60,7 +60,7 @@ const hasSectionNavigation = showSinglePageSectionNavigation || hasCurrentPageSe
 	{showNavigationRow && (
 		<div class="site-nav-row">
 			<a class="site-brand" href={pageHref(homePage)}>
-				{logo ? <img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} /> : brandLabel}
+				{logo ? <img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} /> : navigationLabel}
 			</a>
 
 			{showSiteNavigation && (

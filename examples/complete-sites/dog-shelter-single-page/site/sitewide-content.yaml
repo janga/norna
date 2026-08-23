@@ -1,0 +1,6 @@
+navigation:
+  label: Dog Shelter
+  logo:
+    height: 3rem
+footer:
+  copyrightMessage: Dog Shelter example site. Dog photos by Bicanski, CC0, via Pixnio.
