@@ -12,7 +12,7 @@ import {
 	siteContentPath,
 	siteImagesDir,
 	siteProjectRoot,
-	siteRoutesDir,
+	sitePagesDir,
 } from './scripts/lib/site-paths.mjs';
 import projectConfig from './scripts/lib/project-config.mjs';
 
@@ -35,7 +35,7 @@ const nornaGeneratedImagesWatcher = () => ({
 		const watchedSourcePaths = [
 			siteContentPath,
 			siteImagesDir,
-			siteRoutesDir,
+			sitePagesDir,
 		].map((watchedPath) => path.resolve(watchedPath));
 		let refreshTimer;
 		let refreshPromise = Promise.resolve();

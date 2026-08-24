@@ -29,7 +29,7 @@ site/
 |-- sitewide-content.yaml
 |-- content.md
 |-- images/
-|-- routes/
+|-- pages/
 `-- public/
 ```
 
@@ -39,12 +39,12 @@ site/
   overrides.
 - [`sitewide-content.yaml`](sitewide-content.md): shared logo display settings,
   banners, and footer.
-- [`content.md`](content.md): page metadata, sections, prose, notes, and Norna
-  blocks.
+- [`content.md`](content.md): Markdown page title, optional metadata, sections,
+  prose, notes, and Norna blocks.
 - [`images/`](images-and-metadata.md): managed source formats, variants, sync,
   and generated image state.
-- [`routes/`](routes.md): additional pages, ordering, URLs, route themes, and
-  route-local images.
+- [`pages/`](pages.md): additional pages, ordering, URLs, page themes, and
+  page-local images.
 - [`public/`](public-files.md): navigation logos, favicons, and other static
   files copied without managed-image processing.
 - [Generated files](site-files.md#generated-files): `site/.norna/public/`,
@@ -67,7 +67,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Write page sections](content.md#sections)
 - [Use image stacks, carousels, and cards](content.md#norna-blocks)
 - [Add notes to prose](content.md#markdown-text)
-- [Add another page](routes.md)
+- [Add another page](pages.md)
 - [Add shared banners or footer content](sitewide-content.md)
 
 ### Work With Images And Public Assets
@@ -82,7 +82,7 @@ required, optional, convention-discovered, versioned, or generated.
 
 - [Choose a complete theme preset](theme.md#theme-presets)
 - [Inspect and override a preset](theme.md#overrides)
-- [Give a route a different theme](theme.md#route-themes)
+- [Give a page a different theme](theme.md#page-themes)
 - [Adjust typography](typography.md)
 
 ### Check, Build, And Publish
@@ -95,7 +95,7 @@ required, optional, convention-discovered, versioned, or generated.
 ## Concepts And Explanation
 
 - [Norna's site model](https://janga.github.io/norna/concepts/) explains how
-  files, sections, images, and routes become a website.
+  files, sections, images, and pages become a website.
 - [Images and Metadata](images-and-metadata.md) explains managed variants and
   published URLs.
 - [Command Organization](design/command-organization.md) explains standalone,

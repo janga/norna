@@ -1,12 +1,10 @@
 ---
 page:
-  title: Theme Presets
   description: Compare Norna's complete built-in theme presets without overrides.
 ---
 
-## Theme presets {#theme-presets}
-
-Each route selects one complete theme preset without overrides. The comparison
+# Theme Presets
+Each page selects one complete theme preset without overrides. The comparison
 therefore includes layout, typography, palette, section surfaces and managed
 image presentation:
 

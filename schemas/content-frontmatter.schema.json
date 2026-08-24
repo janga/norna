@@ -5,31 +5,19 @@
     "page": {
       "type": "object",
       "properties": {
-        "title": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Title of this page, used in metadata and route navigation.",
-          "markdownDescription": "```yaml\npage:\n  title: About\n```\n\nThe page title used in metadata and route navigation.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-frontmatter)",
-          "examples": [
-            "About"
-          ]
-        },
         "description": {
           "description": "Optional page-specific meta description.",
           "type": "string",
           "minLength": 1,
-          "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nAn optional page-specific description rendered as `<meta name=\"description\">`. It is not visible in page content.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-frontmatter)",
+          "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nAn optional page-specific description rendered as `<meta name=\"description\">`. It is not visible in page content.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-title-and-frontmatter)",
           "examples": [
             "About this project."
           ]
         }
       },
-      "required": [
-        "title"
-      ],
       "additionalProperties": false,
-      "description": "Metadata for this homepage or route.",
-      "markdownDescription": "```yaml\npage:\n  title: About\n  description: About this project.\n```\n\nContains metadata for the current homepage or route.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-frontmatter)"
+      "description": "Optional metadata for this homepage or additional page. The Markdown H1 supplies the page title.",
+      "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nContains optional metadata for the current homepage or additional page. The Markdown H1 supplies its title.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-title-and-frontmatter)"
     },
     "navigation": {
       "description": "Optional navigation metadata for this page.",
@@ -37,9 +25,9 @@
       "properties": {
         "listed": {
           "default": true,
-          "description": "List this route in site navigation. The route remains public when false.",
+          "description": "List this page in site navigation. The page remains public when false.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nnavigation:\n  listed: false\n```\n\nList this route in site navigation. The route remains public when false.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/routes.md#navigation)",
+          "markdownDescription": "```yaml\nnavigation:\n  listed: false\n```\n\nList this page in site navigation. The page remains public when false.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/pages.md#navigation)",
           "examples": [
             true,
             false
@@ -47,15 +35,12 @@
         }
       },
       "additionalProperties": false,
-      "markdownDescription": "```yaml\nnavigation:\n  listed: false\n```\n\nOptionally excludes a route from site navigation without removing its public URL.\n\n[Route navigation reference](https://github.com/janga/norna/blob/v0.7.16/docs/routes.md#navigation)"
+      "markdownDescription": "```yaml\nnavigation:\n  listed: false\n```\n\nOptionally excludes an additional page from site navigation without removing its public URL.\n\n[Site navigation reference](https://github.com/janga/norna/blob/v0.7.16/docs/pages.md#navigation)"
     }
   },
-  "required": [
-    "page"
-  ],
   "additionalProperties": false,
-  "description": "Frontmatter for a homepage or route content.md file.",
+  "description": "Frontmatter for a homepage or additional page content.md file.",
   "$id": "https://janga.github.io/norna/schemas/content-frontmatter.schema.json",
   "title": "Norna page frontmatter",
-  "markdownDescription": "```yaml\n---\npage:\n  title: About\n  description: About this project.\n---\n```\n\nEvery homepage and route `content.md` starts with page metadata, followed by Markdown sections.\n\n[Page frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-frontmatter)"
+  "markdownDescription": "```yaml\n---\npage:\n  description: About this project.\n---\n```\n\nContent frontmatter is optional. Write the page title as the single Markdown H1; use frontmatter only for optional metadata or navigation settings.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-title-and-frontmatter)"
 }

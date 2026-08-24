@@ -7,7 +7,7 @@ documentation workflow.
 | Example | Purpose | Live demo | Source |
 | --- | --- | --- | --- |
 | Dog shelter, single page | A coherent homepage made from sections | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/) | [View files](complete-sites/dog-shelter-single-page/) |
-| Dog shelter, multi-page | A coherent site with ordered routes and route-local images | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](complete-sites/dog-shelter-multi-page/) |
+| Dog shelter, multi-page | A coherent site with ordered pages and page-local images | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](complete-sites/dog-shelter-multi-page/) |
 | Theme presets | All complete presets without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-presets/) | [View files](feature-demos/theme-presets/) |
 | Media and surfaces | Image blocks, cards, notes, palettes, and section surfaces | [Open site](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/) | [View files](feature-demos/media-and-surfaces/) |
 | Sitewide content | Shared logo settings, banners, and footer content | [Open site](https://janga.github.io/norna/examples/feature-demos/sitewide-content/) | [View files](feature-demos/sitewide-content/) |

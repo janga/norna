@@ -35,34 +35,36 @@ interface Props {
 	pagePresentation: ResolvedPagePresentation;
 	visualTheme: VisualTheme;
 	sectionIndex: number;
-	headingLevel: 1 | 2;
 	prioritizeFirstImage?: boolean;
 }
 
-const { section, pagePresentation, visualTheme, sectionIndex, headingLevel, prioritizeFirstImage = false } = Astro.props;
-const HeadingTag = headingLevel === 1 ? 'h1' : 'h2';
-// Sections are authored with Markdown ## headings even when the first one renders as HTML h1.
-const sectionHeadingVisualLevel = 'h2';
-const firstContentBlockIsVisual = section.contentBlocks[0]?.type !== 'html'
-	&& section.contentBlocks[0]?.type !== 'note';
+const { section, pagePresentation, visualTheme, sectionIndex, prioritizeFirstImage = false } = Astro.props;
+const isPageTitle = section.headingLevel === 1;
+const HeadingTag = section.headingLevel === 1 ? 'h1' : 'h2';
+const sectionHeadingVisualLevel = section.headingLevel === 1 ? 'h1' : 'h2';
+const headingId = section.id ?? 'page-title';
+const firstContentBlock = section.contentBlocks[0];
+const firstContentBlockIsVisual = firstContentBlock !== undefined
+	&& firstContentBlock.type !== 'html'
+	&& firstContentBlock.type !== 'note';
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
 const headingSizeValues: Record<HeadingLevel, Record<TextSize, ResponsiveValue<string>>> = {
 	h1: {
 		small: {
-			desktop: 'clamp(1.5rem, 1.18rem + 1.15vw, 2.25rem)',
-			mobile: 'clamp(1.42rem, 1.12rem + 1.5vw, 2rem)',
+			desktop: 'clamp(1.35rem, 1.2rem + 0.55vw, 1.7rem)',
+			mobile: 'clamp(1.32rem, 1.16rem + 0.8vw, 1.58rem)',
 		},
 		medium: {
-			desktop: 'clamp(1.85rem, 1.35rem + 1.8vw, 3.1rem)',
-			mobile: 'clamp(1.65rem, 1.18rem + 2.2vw, 2.45rem)',
+			desktop: 'clamp(1.65rem, 1.35rem + 1.1vw, 2.4rem)',
+			mobile: 'clamp(1.5rem, 1.22rem + 1.4vw, 2rem)',
 		},
 		large: {
-			desktop: 'clamp(2.25rem, 1.45rem + 2.75vw, 4.25rem)',
-			mobile: 'clamp(1.9rem, 1.26rem + 3.2vw, 3.15rem)',
+			desktop: 'clamp(1.95rem, 1.48rem + 1.7vw, 3.2rem)',
+			mobile: 'clamp(1.75rem, 1.32rem + 2.15vw, 2.5rem)',
 		},
 		xlarge: {
-			desktop: 'clamp(2.75rem, 1.6rem + 3.8vw, 5.5rem)',
-			mobile: 'clamp(2.2rem, 1.35rem + 4.4vw, 3.9rem)',
+			desktop: 'clamp(2.35rem, 1.58rem + 2.75vw, 4.4rem)',
+			mobile: 'clamp(2rem, 1.4rem + 3vw, 3.1rem)',
 		},
 	},
 	h2: {
@@ -168,7 +170,9 @@ const textWidthValues: Record<TextWidth, string> = {
 	normal: 'min(72ch, var(--text-width))',
 	wide: 'min(72ch, var(--image-layout-width))',
 };
-const surface = resolveSectionSurface(pagePresentation, sectionIndex);
+const surface = isPageTitle
+	? pagePresentation.palette.surfaces.base
+	: resolveSectionSurface(pagePresentation, sectionIndex);
 const typography = pagePresentation.typography.values;
 const heading = typography.headings[sectionHeadingVisualLevel] as {
 	align: ResponsiveValue<TextAlign>;
@@ -249,6 +253,7 @@ for (const block of section.contentBlocks) {
 }
 
 flushReadingBlocks();
+const firstMediaGroupIndex = contentGroups.findIndex((group) => group.type === 'media');
 const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 	const headingConfig = markdownHeadings[level];
 	const fontSize = getHeadingSizeValue(level, headingConfig.size);
@@ -298,10 +303,12 @@ const sectionStyle = [
 ---
 
 <section
-	aria-labelledby={section.id}
+	aria-labelledby={headingId}
 	class:list={[
 		'site-section',
 		{
+			'site-section-page-title': isPageTitle,
+			'site-section-page-title-empty': isPageTitle && section.contentBlocks.length === 0,
 			'site-section-first-block-is-visual': firstContentBlockIsVisual,
 			'site-section-has-margin-notes': hasMarginNotes,
 		},
@@ -311,7 +318,7 @@ const sectionStyle = [
 >
 	<div class="section-card">
 		<header class="section-header">
-			<HeadingTag id={section.id} set:html={section.titleHtml} />
+			<HeadingTag id={headingId} set:html={section.titleHtml} />
 		</header>
 
 		<div class:list={['section-body', { 'section-body-has-media': hasMedia, 'section-body-text-only': !hasMedia }]}>
@@ -381,7 +388,7 @@ const sectionStyle = [
 							title={section.title}
 							images={block.images}
 							maxAvailableWidthPercent={visualTheme.images.maxAvailableWidthPercent}
-							priorityFirstImage={prioritizeFirstImage && groupIndex === 0}
+							priorityFirstImage={prioritizeFirstImage && groupIndex === firstMediaGroupIndex}
 						/>
 					);
 				}
@@ -395,7 +402,7 @@ const sectionStyle = [
 						title={section.title}
 						images={block.images}
 						maxAvailableWidthPercent={visualTheme.images.maxAvailableWidthPercent}
-						priorityFirstImage={prioritizeFirstImage && groupIndex === 0}
+						priorityFirstImage={prioritizeFirstImage && groupIndex === firstMediaGroupIndex}
 					/>
 				);
 			})}

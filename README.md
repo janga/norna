@@ -17,7 +17,7 @@ implementing a new presentation layer for every project.
 [Live examples](https://janga.github.io/norna/examples/) |
 [npm package](https://www.npmjs.com/package/@janga/norna)
 
-[![A multi-page dog shelter site with a logo, route navigation, text, a card, and a managed image.](docs/assets/norna-dog-shelter.jpg)](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/)
+[![A multi-page dog shelter site with a logo, navigation between pages, text, a card, and a managed image.](docs/assets/norna-dog-shelter.jpg)](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/)
 
 The screenshot shows the built
 [multi-page example source](examples/complete-sites/dog-shelter-multi-page/).
@@ -54,13 +54,13 @@ site/
 |-- sitewide-content.yaml
 |-- content.md
 |-- images/
-|-- routes/
+|-- pages/
 `-- public/
 ```
 
-- `content.md` holds the homepage and its sections.
-- `images/` holds managed source images beside the content they belong to.
-- `routes/` adds pages, each with content and optional local images and theme.
+- `content.md` holds the homepage title, introduction, and sections.
+- `images/` holds the homepage's managed source images.
+- `pages/` adds pages, each with content and optional local images and theme.
 - `theme.yaml` normally selects one complete visual preset.
 - `sitewide-content.yaml` holds shared logo display settings, banners, and footer content.
 - `config.yaml` holds the public URL and optional language and scroll behavior.

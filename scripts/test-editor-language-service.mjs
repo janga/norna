@@ -19,8 +19,8 @@ import {
 const root = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-language-'));
 const siteRoot = path.join(root, 'site');
 const homeContentPath = path.join(siteRoot, 'content.md');
-const routeContentPath = path.join(siteRoot, 'routes', '010-about', 'content.md');
-const routeThemePath = path.join(siteRoot, 'routes', '010-about', 'theme.yaml');
+const pageContentPath = path.join(siteRoot, 'pages', '010-about', 'content.md');
+const pageThemePath = path.join(siteRoot, 'pages', '010-about', 'theme.yaml');
 const installedNornaRoot = path.join(root, 'node_modules', '@janga', 'norna');
 const packageManifestPath = path.join(installedNornaRoot, 'schemas', 'manifest.json');
 const {
@@ -33,9 +33,10 @@ const { getYamlSchemaSnippetCompletions } = yamlSchemaCompletions;
 
 const homeSource = `---
 page:
-  title: Editor fixture
   description: Exercises project-local image discovery.
 ---
+
+# Editor fixture
 
 ## Intro {#intro}
 
@@ -46,21 +47,22 @@ Text with a missing note {note-ref}.
 - image: portrait.jpg
 \`\`\`
 `;
-const routeSource = `---
+const pageSource = `---
 page:
-  title: About
   description: About this fixture.
 ---
 
+# About
+
 ## Team {#team}
 
-Route content.
+Page content.
 `;
 
 try {
 	await mkdir(path.join(installedNornaRoot, 'schemas'), { recursive: true });
-	await mkdir(path.join(siteRoot, 'images', 'intro'), { recursive: true });
-	await mkdir(path.join(siteRoot, 'routes', '010-about', 'images', 'team'), { recursive: true });
+	await mkdir(path.join(siteRoot, 'images'), { recursive: true });
+	await mkdir(path.join(siteRoot, 'pages', '010-about', 'images'), { recursive: true });
 	await mkdir(path.join(siteRoot, 'public'), { recursive: true });
 	await writeFile(path.join(root, 'package.json'), JSON.stringify({ name: 'editor-fixture', version: '1.0.0' }));
 	await writeFile(path.join(installedNornaRoot, 'package.json'), JSON.stringify({ name: '@janga/norna', version: '9.8.7' }));
@@ -79,8 +81,8 @@ try {
 	await writeFile(path.join(siteRoot, 'sitewide-content.yaml'), `logo:
   height: 2rem
 `);
-	await writeFile(path.join(siteRoot, 'images', 'intro', 'local.jpg'), 'local');
-	await writeFile(path.join(siteRoot, 'routes', '010-about', 'images', 'team', 'portrait.jpg'), 'portrait');
+	await writeFile(path.join(siteRoot, 'images', 'local.jpg'), 'local');
+	await writeFile(path.join(siteRoot, 'pages', '010-about', 'images', 'portrait.jpg'), 'portrait');
 	await writeFile(path.join(siteRoot, 'public', 'logo.svg'), '<svg/>');
 	await writeFile(path.join(siteRoot, 'public', 'logo.png'), 'logo');
 	await writeFile(path.join(siteRoot, 'public', 'favicon.svg'), '<svg/>');
@@ -88,8 +90,8 @@ try {
 	await writeFile(path.join(siteRoot, 'public', 'favion.ico'), 'typo');
 	await writeFile(path.join(siteRoot, 'public', 'favicon-32x32.png'), 'unrecognized');
 	await writeFile(homeContentPath, homeSource);
-	await writeFile(routeContentPath, routeSource);
-	await writeFile(routeThemePath, 'preset: portfolio\n');
+	await writeFile(pageContentPath, pageSource);
+	await writeFile(pageThemePath, 'preset: portfolio\n');
 
 	assert.equal(await findNornaSiteRoot(homeContentPath), siteRoot);
 	assert.equal(getNornaDocumentContext(homeContentPath).schemaKind, 'contentFrontmatter');
@@ -97,18 +99,18 @@ try {
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'config.yaml')).schemaKind, 'config');
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).schemaKind, 'theme');
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'sitewide-content.yaml')).schemaKind, 'sitewideContent');
-	assert.equal(getNornaDocumentContext(routeContentPath).routeDirectory, '010-about');
-	assert.equal(getNornaDocumentContext(routeThemePath).schemaKind, 'theme');
+	assert.equal(getNornaDocumentContext(pageContentPath).pageDirectory, '010-about');
+	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'theme');
 	assert.equal(getNornaProjectContext(path.join(siteRoot, 'public', 'logo.svg')).siteRoot, siteRoot);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'public', 'logo.svg')), null);
 	assert.equal(getNornaDocumentContext(path.join(root, 'README.md')), null);
 	assert.equal(getNornaDocumentContext(path.join(root, 'docs', 'content.md')), null);
-	await mkdir(path.join(siteRoot, 'routes', 'about'), { recursive: true });
-	await writeFile(path.join(siteRoot, 'routes', 'about', 'content.md'), routeSource);
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'routes', 'about', 'content.md')), null);
-	await mkdir(path.join(siteRoot, 'routes', '010-about', 'nested'), { recursive: true });
-	await writeFile(path.join(siteRoot, 'routes', '010-about', 'nested', 'content.md'), routeSource);
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'routes', '010-about', 'nested', 'content.md')), null);
+	await mkdir(path.join(siteRoot, 'pages', 'about'), { recursive: true });
+	await writeFile(path.join(siteRoot, 'pages', 'about', 'content.md'), pageSource);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', 'about', 'content.md')), null);
+	await mkdir(path.join(siteRoot, 'pages', '010-about', 'nested'), { recursive: true });
+	await writeFile(path.join(siteRoot, 'pages', '010-about', 'nested', 'content.md'), pageSource);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', '010-about', 'nested', 'content.md')), null);
 
 	const compatibleManifest = await readFile(packageManifestPath, 'utf8');
 	await writeFile(packageManifestPath, JSON.stringify({
@@ -234,7 +236,7 @@ try {
 		line: localDefinitionLine,
 		source: homeSource,
 	});
-	assert.deepEqual(localDefinition.files, [path.join(siteRoot, 'images', 'intro', 'local.jpg')]);
+	assert.deepEqual(localDefinition.files, [path.join(siteRoot, 'images', 'local.jpg')]);
 
 	const diagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(diagnostics.some(({ code, message }) => code === 'image-needs-sync' && message.includes('Run "norna content:sync"')));
@@ -244,6 +246,17 @@ try {
 		source: homeSource.replace('## Intro {#intro}', '## Intro'),
 	});
 	assert.ok(missingIdDiagnostics.some(({ code }) => code === 'missing-section-id'));
+	const missingTitleDiagnostics = await getMarkdownDiagnostics({
+		documentPath: homeContentPath,
+		source: homeSource.replace('# Editor fixture', '## Editor fixture {#editor-fixture}'),
+	});
+	assert.ok(missingTitleDiagnostics.some(({ code }) => code === 'missing-page-title'));
+	const codeHeadingDiagnostics = await getMarkdownDiagnostics({
+		documentPath: homeContentPath,
+		source: `${homeSource}\n\`\`\`md\n# Example title\n## Example section\n\`\`\`\n`,
+	});
+	assert.equal(codeHeadingDiagnostics.some(({ code }) => code === 'duplicate-page-title'), false);
+	assert.equal(codeHeadingDiagnostics.some(({ code }) => code === 'missing-section-id'), false);
 	const unclosedBlockDiagnostics = await getMarkdownDiagnostics({
 		documentPath: homeContentPath,
 		source: homeSource.replace(/\n```\n$/, '\n'),
@@ -255,14 +268,14 @@ try {
 	});
 	assert.ok(markdownImageDiagnostics.some(({ code }) => code === 'local-markdown-image'));
 
-	await writeFile(routeContentPath, routeSource.replace('Route content.', `\`\`\`norna-image-stack
+	await writeFile(pageContentPath, pageSource.replace('Page content.', `\`\`\`norna-image-stack
 - image: portrait.jpg
 \`\`\``));
 	const sharedDiagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(sharedDiagnostics.some(({ message }) => message.includes('is still referenced by')));
 
-	await mkdir(path.join(siteRoot, 'routes', '020-contact', 'images', 'people'), { recursive: true });
-	await writeFile(path.join(siteRoot, 'routes', '020-contact', 'images', 'people', 'portrait.jpg'), 'duplicate');
+	await mkdir(path.join(siteRoot, 'pages', '020-contact', 'images'), { recursive: true });
+	await writeFile(path.join(siteRoot, 'pages', '020-contact', 'images', 'portrait.jpg'), 'duplicate');
 	const ambiguousDiagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(ambiguousDiagnostics.some(({ message }) => message.includes('is ambiguous')));
 

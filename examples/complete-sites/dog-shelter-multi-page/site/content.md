@@ -1,11 +1,9 @@
 ---
 page:
-  title: Home
   description: A multi-page dog shelter website built with Norna.
 ---
 
-## Dog Shelter {#intro}
-
+# Dog Shelter
 We rescue dogs, help them recover and introduce them to families ready to give
 them a permanent home.
 

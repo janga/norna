@@ -119,7 +119,7 @@ should normally mean the repository's complete publishable artifact, while
   inline styles, and common content mistakes.
 - `content:sync` / `norna:sync`: moves misplaced referenced image files after
   confirmation when the intended move is unambiguous. Moving files between the
-  homepage and routes, or between routes, requires a clean Git working tree.
+  homepage and an additional page, or between additional pages, requires a clean Git working tree.
 - `theme:presets`: lists the available complete theme presets and explains the
   intended use of each one.
 - `theme:export <preset>`: writes a protected, commented
@@ -129,7 +129,7 @@ should normally mean the repository's complete publishable artifact, while
 - `typography profiles`: prints the exact built-in values for typography
   profiles and rhythms.
 - `typography show`: prints the selected site's resolved typography for the
-  theme, every page route, and every section. Each value includes its source,
+  theme, every page, and every section. Each value includes its source,
   and inherited page or section values are marked with `inherited: true`.
 - `site:public`: copies `site/public/` into `site/.norna/public/` and
   removes stale copied static files.

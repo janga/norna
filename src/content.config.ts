@@ -8,7 +8,7 @@ import {
 	siteThemePath,
 	sitewideContentPath,
 } from '../scripts/lib/site-paths.mjs';
-import { parseRouteDirectory } from '../scripts/lib/route-model.mjs';
+import { parsePageDirectory } from '../scripts/lib/page-model.mjs';
 import {
 	siteSchema,
 	sitewideSchema,
@@ -23,16 +23,16 @@ const siteThemeSchema = themeVisualSchema;
 
 const site = defineCollection({
 	loader: glob({
-		pattern: ['content.md', 'routes/*/content.md'],
+		pattern: ['content.md', 'pages/*/content.md'],
 		base: pathToFileURL(siteDir),
 		generateId: ({ entry }) => {
 			if (entry === 'content.md') {
 				return siteEntryId;
 			}
 
-			const routeDirectory = entry.match(/^routes\/([^/]+)\/content\.md$/)?.[1];
-			return routeDirectory
-				? `${siteEntryId.replace(/-content$/, '')}-route-${parseRouteDirectory(routeDirectory, `route directory routes/${routeDirectory}`).routeDirectory}`
+			const pageDirectory = entry.match(/^pages\/([^/]+)\/content\.md$/)?.[1];
+			return pageDirectory
+				? `${siteEntryId.replace(/-content$/, '')}-page-${parsePageDirectory(pageDirectory, `page directory pages/${pageDirectory}`).pageDirectory}`
 				: entry.replace(/[^a-zA-Z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
 		},
 	}),

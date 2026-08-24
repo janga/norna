@@ -12,7 +12,9 @@ const obsoleteSourceReferences = [
 	'site/config.md',
 	'site/theme.md',
 	'site/sitewide-content.md',
+	'site/routes/',
 	'route-content.md',
+	'docs/routes.md',
 	'docs/site-structure.md',
 ];
 const obsoleteSiteFilenames = new Set([
@@ -129,7 +131,10 @@ const checkObsoleteSiteFiles = async () => {
 	];
 	const files = (await Promise.all(siteRoots.map(collectFiles))).flat();
 	const obsolete = files
-		.filter((filePath) => obsoleteSiteFilenames.has(path.basename(filePath)))
+		.filter((filePath) => (
+			obsoleteSiteFilenames.has(path.basename(filePath))
+			|| filePath.split(path.sep).includes('routes')
+		))
 		.map((filePath) => path.relative(repoRoot, filePath));
 
 	assert.deepEqual(obsolete, [], `Obsolete Norna site files:\n${obsolete.join('\n')}`);

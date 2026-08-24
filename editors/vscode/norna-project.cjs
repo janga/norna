@@ -3,7 +3,7 @@ const path = require('node:path');
 
 const supportedSchemaVersion = 1;
 const supportedEditorApiVersion = 1;
-const routeDirectoryPattern = /^(?!000)(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+const pageDirectoryPattern = /^(?!000)(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const rootFiles = new Map([
 	['config.yaml', { documentKind: 'yaml', schemaKind: 'config' }],
 	['theme.yaml', { documentKind: 'yaml', schemaKind: 'theme' }],
@@ -74,15 +74,15 @@ const classifyDocument = (siteRoot, documentPath) => {
 	if (!relativePath || relativePath.startsWith('../') || path.isAbsolute(relativePath)) return null;
 
 	const rootFile = rootFiles.get(relativePath);
-	if (rootFile) return { ...rootFile, relativePath, routeDirectory: null };
+	if (rootFile) return { ...rootFile, relativePath, pageDirectory: null };
 
-	const routeMatch = relativePath.match(/^routes\/([^/]+)\/(content\.md|theme\.yaml)$/);
-	if (!routeMatch || !routeDirectoryPattern.test(routeMatch[1])) return null;
+	const pageMatch = relativePath.match(/^pages\/([^/]+)\/(content\.md|theme\.yaml)$/);
+	if (!pageMatch || !pageDirectoryPattern.test(pageMatch[1])) return null;
 	return {
-		documentKind: routeMatch[2] === 'content.md' ? 'content' : 'yaml',
+		documentKind: pageMatch[2] === 'content.md' ? 'content' : 'yaml',
 		relativePath,
-		routeDirectory: routeMatch[1],
-		schemaKind: routeMatch[2] === 'content.md' ? 'contentFrontmatter' : 'theme',
+		pageDirectory: pageMatch[1],
+		schemaKind: pageMatch[2] === 'content.md' ? 'contentFrontmatter' : 'theme',
 	};
 };
 
@@ -113,7 +113,7 @@ module.exports = {
 	findNornaSiteRoot,
 	getNornaDocumentContext,
 	getNornaProjectContext,
-	routeDirectoryPattern,
+	pageDirectoryPattern,
 	supportedEditorApiVersion,
 	supportedSchemaVersion,
 };

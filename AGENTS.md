@@ -49,8 +49,8 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Keep site-specific static files in the selected site `public/`; the default
   path is `site/public/`. The selected site's `.norna/public/` directory
   is copied build preparation output plus generated image output.
-- Do not add routes or split sections into separate Markdown files unless the
-  user explicitly changes the single-page architecture.
+- Do not add additional pages or split sections into separate Markdown files
+  unless the user explicitly changes the single-page architecture.
 
 ## Command Choices
 
@@ -68,7 +68,7 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Run `npm run content:check` after changing `site/theme.yaml` or theme
   validation behavior.
 - Run `npm run content:sync` after moving Norna image block references between
-  sections so image files move to the matching section directory.
+  pages so unambiguous image files move to the expected page image directory.
 - Run `npm run site:public` after changing `site/public/` when you need the
   local generated public copy without a full build.
 - Run `npm run test:site-public` after changing static-public sync behavior.
@@ -101,9 +101,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - The sticky navigation uses root `scroll-padding-top` to compensate for the
   fixed header area. Avoid section-level `scroll-margin-top` unless you are
   deliberately testing anchor offsets.
-- When adding, renaming, or moving sections, keep the Markdown heading id,
-  optional `sections.<section-id>` metadata, and the
-  `site/images/<section-id>/` image directory in sync.
+- Keep exactly one Markdown H1 as the page title and explicit ids on all H2
+  sections. Keep managed homepage images directly in `site/images/` and
+  additional-page images directly in that page's `images/` directory.
 - Do not commit unreferenced source images unless the user explicitly asks for
   them.
 - If Playwright reports a missing Chromium browser, run

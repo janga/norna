@@ -185,25 +185,25 @@ and commit their updated `package-lock.json`.
 
 ## Rendering Notes
 
-The renderer builds the homepage at `/` and optional first-level routes from
-`site/routes/<NNN-route-id>/content.md`.
+The renderer builds the homepage at `/` and optional first-level pages from
+`site/pages/<NNN-page-id>/content.md`.
 
 Navigation has two separate levels:
 
-- Site navigation moves between pages and routes. It uses normal page URLs and
-  browser history.
-- Page navigation moves between sections on the current page. It uses real
+- Site navigation moves between the homepage and additional pages. It uses
+  normal page URLs and browser history.
+- Section navigation moves between sections on the current page. It uses real
   `href="#section-id"` links so anchors work without JavaScript.
 
 The current navigation model is deliberately scoped to single-page and small
-multi-page sites. That scope may change as route support matures. For now,
-single-page sites should rely on page navigation only; small route-based sites
-may combine site navigation and page navigation; larger information
+multi-page sites. That scope may change as navigation support matures. For now,
+single-page sites should rely on section navigation only; small multi-page sites
+may combine site navigation and section navigation; larger information
 architectures should not be forced into the sticky-navigation model without a
 separate design decision.
 
 The JavaScript enhancement keeps the URL hash as the source of truth for active
-page-navigation state. A section-link click pushes one hash entry into browser
+section-navigation state. A section-link click pushes one hash entry into browser
 history, back/forward moves between hash entries, and returning to the same page
 without a hash restores the first section as active. The enhancement does not
 derive active section state from free manual scrolling.

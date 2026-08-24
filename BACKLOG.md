@@ -73,10 +73,10 @@ verified.
   - Image filenames and section ids do not need to be globally unique for a
     valid site.
   - `content:sync` may move unambiguously identified image files across page
-    and route image roots when the Git worktree is clean.
+    image roots when the Git worktree is clean.
   - Build and render must not mutate source files.
-- Add a future task for cross-route content sync. The future command should
-  relocate section metadata and section-bound assets across routes only when
+- Extend cross-page content sync if future section-bound metadata or assets
+  need to move with an entire section. Such movement should happen only when
   source and destination are unambiguous. It should never guess, should not
   require globally unique section ids or image filenames for ordinary site
   validity, and should prefer diagnostics over unsafe mutation.
@@ -106,8 +106,8 @@ verified.
 These are current constraints, not necessarily bugs.
 
 - `npm link` is not supported for testing the engine in a site repository.
-- Routes currently support one route segment under `site/routes/<route-folder>/`;
-  nested routes and richer navigation behavior remain out of scope.
+- Pages currently support one page segment under `site/pages/<page-folder>/`;
+  nested pages and richer navigation behavior remain out of scope.
 - Source image copyright metadata is outside the current command surface.
 - `norna` assumes a file-driven site model with `config.yaml`,
   `theme.yaml`, `content.md`, source images, and static public files.
@@ -124,20 +124,20 @@ basic site workflow.
 - A documented pattern for embedding an image-led site into larger GitHub Pages
   projects that also publish an app or project homepage.
 
-## Route Architecture Notes
+## Page Architecture Notes
 
-Basic first-level routes are implemented. These notes record structural
-decisions so future route work can avoid unnecessary breaking changes.
+Basic first-level pages are implemented. These notes record structural
+decisions so future page work can avoid unnecessary breaking changes.
 
-- `site/content.md` is the homepage page file for `/`, not a catch-all site
+- `site/content.md` is the homepage file for `/`, not a catch-all site
   file.
-- Route files are analogous page files, for example:
+- Additional pages use the same content model, for example:
 
 ```text
 site/
   content.md
-  routes/
-    <slug>/
+  pages/
+    <NNN-page-id>/
       content.md
       images/
 ```
@@ -145,19 +145,19 @@ site/
 - `site/config.yaml` is site-level technical configuration for the public URL,
   language and optional smooth scrolling. Norna derives the base path from the
   URL and discovers GitHub repository/default-branch details during deploy.
-- `site/theme.yaml` is site-level visual configuration. An optional route-local
-  `theme.yaml` replaces it for that route.
+- `site/theme.yaml` is site-level visual configuration. An optional page-local
+  `theme.yaml` replaces it for that page.
 - Page files own page metadata, section definitions, Norna block references,
   and Markdown body content.
 - Theme resolution is:
 
 ```text
 engine defaults
--> root theme.yaml or route-local theme.yaml
+-> root theme.yaml or page-local theme.yaml
 ```
 
-- Navigation should keep site navigation and page navigation conceptually
-  separate. Site navigation changes pages/routes; page navigation changes the
+- Navigation should keep site navigation and section navigation conceptually
+  separate. Site navigation changes pages; section navigation changes the
   current URL hash and active section within the current page.
 - Section navigation history should remain hash-based: each clicked section
   link creates one hash entry, browser back/forward moves through those section

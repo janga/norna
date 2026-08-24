@@ -1,8 +1,10 @@
 ---
 page:
-  title: Home
   description: A single-page dog shelter website built with Norna.
 ---
+
+# Dog Shelter
+
 
 ## What we do {#what-we-do}
 

@@ -41,7 +41,7 @@ try {
 	const directSiteRoot = path.join(tempRoot, 'current-directory-site');
 	await mkdir(directSiteRoot, { recursive: true });
 	await writeFile(path.join(directSiteRoot, 'config.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(directSiteRoot, 'content.md'), '---\ntitle: Direct Site\ndescription: Direct site fixture.\n---\n\n## Intro {#intro}\n\nText.\n');
+	await writeFile(path.join(directSiteRoot, 'content.md'), '# Direct Site\n\n## Intro {#intro}\n\nText.\n');
 	const directSiteProjectRoot = await realpath(tempRoot);
 	const directSiteDoctorResult = runCli(['doctor'], {
 		cwd: directSiteRoot,

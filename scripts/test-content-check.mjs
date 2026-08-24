@@ -70,9 +70,11 @@ const withTempProject = async ({ site, theme = defaultTheme, files, siteDirector
 
 const brokenSite = `---
 page:
-  title: Broken content fixture
   description: Exercises grouped content diagnostics.
 ---
+
+# Broken content fixture
+
 ## Karin Walde {#karin-walde}
 Text.
 
@@ -110,10 +112,10 @@ test('content:check groups section issues, global issues, and unreferenced image
 	await withTempProject({
 		site: brokenSite,
 		files: [
-			'site/images/karin-walde/karin.jpg',
+			'site/images/karin.jpg',
 			'site/images/karin-walde/unreferenced.jpg',
 			'site/images/min-konst/duplicate.jpg',
-			'site/images/mitt-hem/home.jpg',
+			'site/images/home.jpg',
 			'site/images/mitt-hem/vav.jpeg',
 		],
 	}, async (root) => {
@@ -124,16 +126,14 @@ test('content:check groups section issues, global issues, and unreferenced image
 		assert.match(output, /^Content check failed\./m);
 		assert.match(output, /Content Issues\n\n\[site\/content\.md \[min-konst\]\]\n  Errors:/);
 		assert.match(output, /Image "vav\.jpeg" is used here but is located in site\/images\/mitt-hem\/vav\.jpeg\./);
-		assert.match(output, /Image "missing\.jpeg" does not exist at site\/images\/min-konst\/missing\.jpeg or anywhere under any page or route image root\./);
-		assert.match(output, /Unreferenced Images\nThese files are kept under page or route image roots but are not referenced by Norna-managed image references:/);
+		assert.match(output, /Image "missing\.jpeg" does not exist at site\/images\/missing\.jpeg or anywhere under any page image root\./);
+		assert.match(output, /Unreferenced Images\nThese files are kept under page image roots but are not referenced by Norna-managed image references:/);
 		assert.match(output, /site\/images\/karin-walde\/unreferenced\.jpg/);
 	});
 });
 
-const carouselAspectRatioSite = `---
-page:
-  title: Carousel Aspect Ratio
----
+const carouselAspectRatioSite = `# Carousel Aspect Ratio
+
 ## Puppies {#puppies}
 Text.
 
@@ -150,11 +150,11 @@ test('content:check warns when carousel images use different aspect ratios', asy
 		site: carouselAspectRatioSite,
 		files: [
 			{
-				path: 'site/images/puppies/wide.png',
+				path: 'site/images/wide.png',
 				contents: makePngHeader({ width: 400, height: 300 }),
 			},
 			{
-				path: 'site/images/puppies/wider.png',
+				path: 'site/images/wider.png',
 				contents: makePngHeader({ width: 600, height: 300 }),
 			},
 		],
@@ -164,15 +164,13 @@ test('content:check warns when carousel images use different aspect ratios', asy
 
 		assert.equal(result.status, 0, output);
 		assert.match(output, /^Content check completed with warnings\./m);
-		assert.match(output, /Carousel on line 8 uses images with different aspect ratios: wide\.png \(4:3\), wider\.png \(2:1\)\./);
+		assert.match(output, /Carousel on line 6 uses images with different aspect ratios: wide\.png \(4:3\), wider\.png \(2:1\)\./);
 		assert.match(output, /Use images with exactly matching proportions in the same carousel/);
 	});
 });
 
-const inlineStyleSite = `---
-page:
-  title: Inline Style
----
+const inlineStyleSite = `# Inline Style
+
 ## Intro {#intro}
 This has [known text]{.highlight} and [unknown text]{.missing}.
 `;
@@ -194,10 +192,8 @@ test('content:check fails when Markdown uses removed inline color styles', async
 
 test('content:check suggests semantic Markdown instead of inline color styles', async () => {
 	await withTempProject({
-		site: `---
-page:
-  title: Invalid Inline Color
----
+		site: `# Invalid Inline Color
+
 ## Intro {#intro}
 This has [yellow text]{.yellow}.
 `,
@@ -214,9 +210,11 @@ This has [yellow text]{.yellow}.
 
 const inlineNoteSite = `---
 page:
-  title: Inline notes
   description: Fixture
 ---
+
+# Inline notes
+
 ## Intro {#intro}
 This paragraph has a note reference.{note-ref}
 
@@ -242,9 +240,11 @@ test('content:check accepts wrapped and explicit multiline inline notes', async 
 	await withTempProject({
 		site: `---
 page:
-  title: Multiline inline notes
   description: Fixture
 ---
+
+# Multiline inline notes
+
 ## Wrapped {#wrapped}
 This paragraph has a formatter-wrapped note.{note-ref}
 
@@ -273,9 +273,11 @@ test('content:check reports an unclosed multiline inline note', async () => {
 	await withTempProject({
 		site: `---
 page:
-  title: Unclosed inline note
   description: Fixture
 ---
+
+# Unclosed inline note
+
 ## Intro {#intro}
 This paragraph has a note reference.{note-ref}
 
@@ -297,9 +299,11 @@ test('content:check rejects nested note syntax before a multiline note is closed
 	await withTempProject({
 		site: `---
 page:
-  title: Nested inline note syntax
   description: Fixture
 ---
+
+# Nested inline note syntax
+
 ## Nested note {#nested-note}
 This paragraph has a note reference.{note-ref}
 
@@ -327,9 +331,11 @@ test('content:check allows escaped and inline-code note syntax inside notes', as
 	await withTempProject({
 		site: `---
 page:
-  title: Literal inline note syntax
   description: Fixture
 ---
+
+# Literal inline note syntax
+
 ## Intro {#intro}
 This paragraph has a note reference.{note-ref}
 
@@ -349,9 +355,11 @@ test('content:check rejects unpaired and repeated inline notes', async () => {
 	await withTempProject({
 		site: `---
 page:
-  title: Invalid inline notes
   description: Fixture
 ---
+
+# Invalid inline notes
+
 ## Orphan {#orphan}
 {note: This note has no reference.}
 
@@ -427,12 +435,13 @@ test('content:check explains frontmatter indentation below scalar values', async
 
 const topLevelImagesSite = `---
 page:
-  title: Example
   description: Example site.
 images:
       - image: intro.jpg
-
 ---
+
+# Example
+
 ## Intro {#intro}
 Text.
 `;
@@ -447,7 +456,7 @@ test('content:check explains likely misindented frontmatter keys', async () => {
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Frontmatter line 5 defines "images" at the top level, but it is not a valid top-level content field\./);
+		assert.match(output, /Frontmatter line 4 defines "images" at the top level, but it is not a valid top-level content field\./);
 		assert.match(output, /Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body\./);
 	});
 });
@@ -457,8 +466,8 @@ test('content:check respects NORNA_SITE_DIR', async () => {
 		site: movableSite,
 		siteDirectory: 'custom-site',
 		files: [
-			'custom-site/images/min-konst/move-me.jpg',
-			'custom-site/images/mitt-hem/home.jpg',
+			'custom-site/images/move-me.jpg',
+			'custom-site/images/home.jpg',
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check'], { NORNA_SITE_DIR: 'custom-site' });
@@ -471,9 +480,11 @@ test('content:check respects NORNA_SITE_DIR', async () => {
 
 const movableSite = `---
 page:
-  title: Movable image fixture
   description: Exercises content sync.
 ---
+
+# Movable image fixture
+
 ## Min konst {#min-konst}
 Text.
 
@@ -495,7 +506,7 @@ test('content:sync moves referenced images and keeps unreferenced images in plac
 	await withTempProject({
 		site: movableSite,
 		files: [
-			'site/images/mitt-hem/home.jpg',
+			'site/images/home.jpg',
 			'site/images/mitt-hem/move-me.jpg',
 			'site/images/mitt-hem/unreferenced.jpg',
 		],
@@ -504,8 +515,8 @@ test('content:sync moves referenced images and keeps unreferenced images in plac
 		const syncOutput = getOutput(syncResult);
 
 		assert.equal(syncResult.status, 0, syncOutput);
-		assert.match(syncOutput, /Moved image "move-me\.jpg" to site\/images\/min-konst\/\./);
-		assert.equal(await fileExists(path.join(root, 'site/images/min-konst/move-me.jpg')), true);
+		assert.match(syncOutput, /Moved image "move-me\.jpg" to site\/images\/\./);
+		assert.equal(await fileExists(path.join(root, 'site/images/move-me.jpg')), true);
 		assert.equal(await fileExists(path.join(root, 'site/images/mitt-hem/move-me.jpg')), false);
 		assert.equal(await fileExists(path.join(root, 'site/images/mitt-hem/unreferenced.jpg')), true);
 
@@ -515,6 +526,80 @@ test('content:sync moves referenced images and keeps unreferenced images in plac
 		assert.equal(checkResult.status, 0, checkOutput);
 		assert.match(checkOutput, /Content check completed with warnings\./);
 		assert.match(checkOutput, /site\/images\/mitt-hem\/unreferenced\.jpg/);
+	});
+});
+
+test('content:check accepts a frontmatter-free page with one H1 title', async () => {
+	await withTempProject({
+		site: `# About
+
+Introductory text.
+
+\`\`\`md
+# Example heading in code
+\`\`\`
+
+## Details {#details}
+
+More text.
+`,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		assert.equal(result.status, 0, getOutput(result));
+	});
+});
+
+test('content:check requires exactly one H1 before level 2 sections', async () => {
+	await withTempProject({
+		site: `## Details {#details}
+
+Text.
+`,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+		assert.equal(result.status, 1, output);
+		assert.match(output, /The page is missing its Markdown H1 title\./);
+		assert.match(output, /a Norna page must start with its H1 title\./);
+	});
+});
+
+test('content:check rejects repeated H1 page titles', async () => {
+	await withTempProject({
+		site: `# First title
+
+Text.
+
+# Second title
+
+More text.
+`,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+		assert.equal(result.status, 1, output);
+		assert.match(output, /The page contains 2 Markdown H1 headings\./);
+	});
+});
+
+test('content:check rejects section ids and content before the H1 page title', async () => {
+	await withTempProject({
+		site: `Text before the title.
+
+# About {#about}
+
+Page text.
+`,
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+		assert.equal(result.status, 1, output);
+		assert.match(output, /The page contains content before its first heading\./);
+		assert.match(output, /The Markdown H1 is the page title and must not have a section id\./);
 	});
 });
 

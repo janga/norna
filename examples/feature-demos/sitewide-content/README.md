@@ -1,7 +1,7 @@
 # Sitewide content
 
 This feature demo shows content and logo display settings shared by every page: a
-convention-based logo, route navigation, dismissible banners and a footer with
+convention-based logo, site navigation, dismissible banners and a footer with
 build information.
 
 [Live demo](https://janga.github.io/norna/examples/feature-demos/sitewide-content/)
@@ -14,7 +14,7 @@ Run it from the repository root with:
 node bin/norna.mjs --site-dir examples/feature-demos/sitewide-content/site dev:local
 ```
 
-Move between the routes to verify that the same sitewide elements remain in
+Move between the pages to verify that the same sitewide elements remain in
 place. Banner dismissals are stored locally in the browser.
 
 <!-- norna-image-provenance:

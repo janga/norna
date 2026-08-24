@@ -12,13 +12,13 @@ Norna-managed local images are referenced from Markdown with
 Homepage source images live under:
 
 ```text
-site/images/<section-id>/
+site/images/
 ```
 
-Route source images live under:
+Page source images live under:
 
 ```text
-site/routes/<NNN-route-id>/images/<section-id>/
+site/pages/<NNN-page-id>/images/
 ```
 
 Supported source extensions:
@@ -52,11 +52,12 @@ prompt: Short prompt or editing note.
 -->
 ```
 
-Filenames do not have to be globally unique for the site to be valid.
-Automatic sync only moves misplaced files when the filename identifies exactly
-one source candidate across the site's page and route image roots, and when the
-move will not break another reference. If the move crosses page or route image
-roots, `content:sync` requires a clean Git working tree before writing.
+Each filename identifies one managed source image within its page. The same
+filename may be used by another page. Automatic sync only moves misplaced
+files when the filename identifies exactly one source candidate across all
+page image roots, and when the move will not break another reference. If the
+move crosses page image roots, `content:sync` requires a clean Git working tree
+before writing.
 
 ## Markdown Images
 
@@ -139,7 +140,7 @@ copyright metadata.
 Generated WebP files are created with ImageMagick using `-strip`, so embedded
 metadata is not a publication mechanism for generated variants. Keep licensing,
 credits, copyright notices, alt text, and captions in site-owned files such as
-`site/content.md`, route content files, `COPYRIGHT.md`, or other site
+`site/content.md`, page content files, `COPYRIGHT.md`, or other site
 documentation.
 
 If a site wants embedded metadata in original source files, that process is

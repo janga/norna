@@ -1,10 +1,12 @@
 ---
 page:
-  title: Norna
   description: >-
     An opinionated CLI for building websites from content, presentation and configuration kept as
     files.
 ---
+
+# Norna
+
 
 ## What is Norna? {#intro}
 
@@ -12,7 +14,7 @@ page:
 files.**
 
 A Norna site combines Markdown content, local images, a theme, technical
-configuration and optional routes. These files follow a defined structure, so
+configuration and optional pages. These files follow a defined structure, so
 Norna can understand how pages, sections and assets belong together.
 
 You describe the site rather than implement it. Norna provides the presentation

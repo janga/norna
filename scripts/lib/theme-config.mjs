@@ -1,12 +1,12 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import {
-	validateRouteThemeYamlStructure,
+	validatePageThemeYamlStructure,
 	validateThemeYamlStructure,
 } from './site-content.mjs';
 import {
-	siteRoutesDir,
-	siteRoutesLabel,
+	sitePagesDir,
+	sitePagesLabel,
 	siteThemeLabel,
 	siteThemePath,
 } from './site-paths.mjs';
@@ -31,7 +31,7 @@ export const readThemeConfig = async () => {
 	return config;
 };
 
-const getRouteThemeFiles = async (directory, relativeDirectory = '') => {
+const getPageThemeFiles = async (directory, relativeDirectory = '') => {
 	const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
 		if (error?.code === 'ENOENT') return [];
 		throw error;
@@ -42,14 +42,14 @@ const getRouteThemeFiles = async (directory, relativeDirectory = '') => {
 		const relativePath = path.join(relativeDirectory, entry.name);
 		const absolutePath = path.join(directory, entry.name);
 		if (entry.isDirectory()) {
-			files.push(...await getRouteThemeFiles(absolutePath, relativePath));
+			files.push(...await getPageThemeFiles(absolutePath, relativePath));
 			continue;
 		}
 
 		if (entry.name === 'theme.yaml') {
 			files.push({
 				path: absolutePath,
-				label: `${siteRoutesLabel}/${relativePath.split(path.sep).join('/')}`,
+				label: `${sitePagesLabel}/${relativePath.split(path.sep).join('/')}`,
 			});
 		}
 	}
@@ -57,14 +57,14 @@ const getRouteThemeFiles = async (directory, relativeDirectory = '') => {
 	return files;
 };
 
-export const validateRouteThemeFiles = async () => {
-	const files = await getRouteThemeFiles(siteRoutesDir);
+export const validatePageThemeFiles = async () => {
+	const files = await getPageThemeFiles(sitePagesDir);
 	const configs = [];
 
 	for (const file of files) {
 		const source = await readFile(file.path, 'utf8');
 		const config = parseYamlConfig(source, file.label, {
-			validateStructure: validateRouteThemeYamlStructure,
+			validateStructure: validatePageThemeYamlStructure,
 		});
 		resolveThemeConfig(config, file.label);
 		resolveThemePresentation(config, file.label);

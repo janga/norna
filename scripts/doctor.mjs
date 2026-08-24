@@ -12,7 +12,7 @@ import {
 	siteImagesDir,
 	siteProjectRoot,
 	sitePublicDir,
-	siteRoutesDir,
+	sitePagesDir,
 	siteThemePath,
 } from './lib/site-paths.mjs';
 
@@ -26,7 +26,7 @@ const lines = [
 	`Site theme: ${siteThemePath}`,
 	`Site content: ${siteContentPath}`,
 	`Site images: ${siteImagesDir}`,
-	`Site routes: ${siteRoutesDir}`,
+	`Site pages: ${sitePagesDir}`,
 	`Site public source: ${sitePublicDir}`,
 	`Generated image manifest: ${generatedImagesManifestPath}`,
 	`Astro public output: ${astroPublicDir}`,

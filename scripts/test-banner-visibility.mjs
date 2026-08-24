@@ -34,7 +34,7 @@ const runCli = (args, env = {}) => {
 };
 
 try {
-	await mkdir(path.join(siteDir, 'images', 'work'), { recursive: true });
+	await mkdir(path.join(siteDir, 'images'), { recursive: true });
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeFile(path.join(siteDir, 'public', 'robots.txt'), 'User-agent: *\nAllow: /\n');
 	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
@@ -57,9 +57,11 @@ palette: dark
 `);
 	await writeFile(path.join(siteDir, 'content.md'), `---
 page:
-  title: Temporary Visibility Test
   description: Test site for temporary banners.
 ---
+
+# Temporary Visibility Test
+
 ## Content {#content}
 
 Always visible section text.

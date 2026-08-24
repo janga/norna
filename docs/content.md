@@ -1,44 +1,64 @@
 # Content
 
-`site/content.md` is the homepage page file for a Norna site. It contains page
-metadata in frontmatter and the homepage content in Markdown.
+`site/content.md` is the homepage file for a Norna site. Its Markdown H1 is
+the page title. Optional page metadata can be added in YAML frontmatter.
 
-Route pages use the same page model in
-`site/routes/<NNN-route-id>/content.md`. See [Routes](routes.md) for the
-route-specific rules.
+Additional pages use the same page model in
+`site/pages/<NNN-page-id>/content.md`. See [Pages](pages.md) for the
+page-specific rules.
 
 Site-wide visual defaults belong in [Theme](theme.md). Typography profiles and
 overrides are described in [Typography](typography.md). Technical site settings
 belong in [Configuration](configuration.md).
 
-## Page Frontmatter
+## Page Title And Frontmatter
 
-The content schema validates these top-level fields in page files:
+Every page must contain exactly one Markdown H1. It must be the first heading,
+must not have a section id, and supplies the visible page title, HTML document
+title, and page label in site navigation:
 
-- `page`: required page metadata.
-- `navigation`: optional route-listing metadata. See [Routes](routes.md).
+```md
+# My Site
+```
+
+Content between the H1 and the first H2 is the page introduction. It may
+contain prose and Norna blocks.
+
+Frontmatter is optional. When present, the content schema validates these
+top-level fields:
+
+- `page`: optional page metadata.
+- `navigation`: optional page-listing metadata. See [Pages](pages.md).
 
 `page` contains:
 
-- `title`: required string. Used as the document title and navigation label.
-  The homepage title names the first navigation item in a multi-page site and
-  supplies alternative text for an optional navigation logo.
 - `description`: optional string. Used only as the page's HTML meta description
   for search engines, link previews, and other metadata consumers. It is not
   rendered as visible page content.
 
-Minimal homepage:
+Minimal homepage without metadata:
+
+```md
+# My Site
+
+Introductory text.
+
+## Work {#work}
+
+Text...
+```
+
+Homepage with a meta description:
 
 ```md
 ---
 page:
-  title: My Site
   description: A small Norna site.
 ---
 
-## Intro {#intro}
+# My Site
 
-Text...
+Introductory text.
 ```
 
 ## Sections
@@ -65,8 +85,8 @@ Every section heading must have an explicit id:
 ## Work {#work}
 ```
 
-The id must match `^[a-z0-9-]+$`. It is used for anchors, navigation, and image
-directories. The visible section navigation label comes from the Markdown
+The id must match `^[a-z0-9-]+$`. It is used for anchors and section
+navigation. The visible section navigation label comes from the Markdown
 heading text.
 
 Markdown section content starts at the level 2 heading and continues until the
@@ -187,13 +207,13 @@ sizing is less predictable.
 Homepage images live under:
 
 ```text
-site/images/<section-id>/
+site/images/
 ```
 
-Route images live under:
+Page images live under:
 
 ```text
-site/routes/<NNN-route-id>/images/<section-id>/
+site/pages/<NNN-page-id>/images/
 ```
 
 Image references in Norna managed image blocks use only the filename:
@@ -204,13 +224,15 @@ Image references in Norna managed image blocks use only the filename:
 ```
 ````
 
-If `portrait.jpg` is referenced from `## Team {#team}`, the expected homepage
-location is `site/images/team/portrait.jpg`.
+If `portrait.jpg` is referenced anywhere on the homepage, its expected
+location is `site/images/portrait.jpg`. The same file may be referenced from
+more than one section on that page.
 
-Filenames do not have to be globally unique for the site to be valid. Automatic
-sync only moves files when the filename identifies exactly one source candidate
-across the site's page and route image roots. If more than one candidate
-exists, Norna reports the ambiguity instead of guessing.
+Filenames must be unique within one page's image directory, but do not have to
+be globally unique across the site. Automatic sync only moves files between
+page image roots when the filename identifies exactly one source candidate
+across the site. If more than one candidate exists, Norna reports the
+ambiguity instead of guessing.
 
 ## Markdown Images
 
@@ -236,7 +258,7 @@ This sentence contains **important text** and *emphasised text*.
 
 Norna intentionally does not support arbitrary inline color or style classes.
 Deprecated syntax such as `[highlighted text]{.yellow}` is rejected by
-`content:check`. Keep the route visually coherent through its `theme.yaml`
+`content:check`. Keep the page visually coherent through its `theme.yaml`
 instead of styling individual phrases.
 
 ### Side Notes
@@ -291,7 +313,7 @@ navigation:
 ```
 
 Top-level page frontmatter may contain only `page` and `navigation`. Visual
-settings belong in the root or route-local `theme.yaml`.
+settings belong in the root or page-local `theme.yaml`.
 
 Run:
 
@@ -299,20 +321,22 @@ Run:
 npm run norna:sync
 ```
 
-This moves referenced image files into the section directory shown by the
-Markdown placement. It prompts before writing unless `--yes` is passed.
+This moves referenced image files into the image directory for the page that
+references them. Moving a block between sections on the same page does not
+move the file because all sections share the page image directory. The command
+prompts before writing unless `--yes` is passed.
 
 `content:sync` is intentionally conservative. It only moves a file when the
-filename identifies exactly one matching source candidate across the site's
-page and route image roots, and when the move will not break another reference.
+filename identifies exactly one matching source candidate across all page
+image roots, and when the move will not break another reference.
 If the intended move is ambiguous, rename or move the file manually and run
 `content:check` again.
 
-Duplicate filenames are allowed when files already live where their Markdown
-references expect them. Automatic relocation only requires site-wide filename
-uniqueness for the file being moved.
+The same filename may exist in different page image directories. Automatic
+relocation only requires site-wide filename uniqueness for the file being
+moved.
 
-When `content:sync` needs to move an image between the homepage and a route, or
-between two routes, the Git working tree must be clean before the write. This
-keeps cross-route sync easy to roll back. `content:check` only reports issues
+When `content:sync` needs to move an image between the homepage and a page, or
+between two pages, the Git working tree must be clean before the write. This
+keeps cross-page sync easy to roll back. `content:check` only reports issues
 and does not require a clean working tree.

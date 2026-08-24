@@ -24,7 +24,7 @@ enable it separately. Use the exact lowercase filename to keep the site
 portable between case-sensitive and case-insensitive file systems.
 
 The logo links to the homepage. Its alternative text comes from the homepage
-`page.title` in `site/content.md`; no separate site name or logo alt text is
+Markdown H1 in `site/content.md`; no separate site name or logo alt text is
 configured.
 
 Configure top-level `logo` in `site/sitewide-content.yaml` only when you need

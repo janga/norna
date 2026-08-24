@@ -104,10 +104,10 @@ const fail = (message) => {
 	throw new Error(message);
 };
 
-const getImageSourceKey = (contentFile, sectionId, image) => (
+const getImageSourceKey = (contentFile, image) => (
 	contentFile.isHome
-		? `images/${sectionId}/${image}`
-		: `routes/${contentFile.routeDirectory}/images/${sectionId}/${image}`
+		? `images/${image}`
+		: `pages/${contentFile.pageDirectory}/images/${image}`
 );
 
 const getReferencedImages = async (contentFile) => {
@@ -116,10 +116,6 @@ const getReferencedImages = async (contentFile) => {
 	const references = [];
 
 	for (const section of sections) {
-		if (!section.id) {
-			fail(`${contentFile.contentLabel}: section heading "${section.heading}" is missing an explicit id.`);
-		}
-
 		const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });
 		for (const { image, line, blockDisplayType } of getNornaBlockImageReferences(blocks)) {
 			references.push({
@@ -127,8 +123,8 @@ const getReferencedImages = async (contentFile) => {
 				image,
 				line,
 				blockDisplayType,
-				sectionId: section.id,
-				sourceKey: getImageSourceKey(contentFile, section.id, image),
+				sectionLabel: section.id ?? 'page title',
+				sourceKey: getImageSourceKey(contentFile, image),
 			});
 		}
 	}
@@ -171,9 +167,8 @@ const getReferencedSources = async () => {
 				fail(`Image file does not exist: ${contentFile.imagesLabel}/${siteImagePath}`);
 			}
 
-			const currentDirectory = path.basename(path.dirname(sourcePath));
-			if (reference.sectionId && currentDirectory !== reference.sectionId) {
-				fail(`Image "${imageName}" is used in section "${reference.sectionId}" but is located in ${contentFile.imagesLabel}/${currentDirectory}/. Run norna content:sync, or npm run norna:sync in starter-style repositories, to move it.`);
+			if (path.dirname(sourcePath) !== contentFile.imagesDir) {
+				fail(`Image "${imageName}" is used in ${reference.sectionLabel} but is not stored directly in ${contentFile.imagesLabel}/. Run norna content:sync, or npm run norna:sync in starter-style repositories, to move it.`);
 			}
 
 			seen.add(reference.sourceKey);
@@ -197,13 +192,11 @@ const validateCarouselOrientations = async (manifest) => {
 		const { sections } = getBodySections(body);
 
 		for (const section of sections) {
-			if (!section.id) continue;
-
 			const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });
 			for (const block of blocks.filter((candidate) => candidate.type === 'image-carousel')) {
 				const orientations = new Set(
 					block.images
-						.map((image) => manifest[getImageSourceKey(contentFile, section.id, image.image)])
+						.map((image) => manifest[getImageSourceKey(contentFile, image.image)])
 						.filter(Boolean)
 						.filter((entry) => Number.isFinite(entry.width) && Number.isFinite(entry.height))
 						.map(getOrientation)
@@ -212,7 +205,7 @@ const validateCarouselOrientations = async (manifest) => {
 				orientations.delete('square');
 				if (orientations.size > 1) {
 					throw new Error(
-						`Carousel in section "${section.id}" on line ${block.line} mixes landscape and portrait images. Use landscape images with optional square images, or portrait images with optional square images.`,
+						`Carousel in ${section.id ? `section "${section.id}"` : 'the page introduction'} on line ${block.line} mixes landscape and portrait images. Use landscape images with optional square images, or portrait images with optional square images.`,
 					);
 				}
 			}

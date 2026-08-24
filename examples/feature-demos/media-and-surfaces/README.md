@@ -16,6 +16,6 @@ Run it from the repository root with:
 node bin/norna.mjs --site-dir examples/feature-demos/media-and-surfaces/site dev:local
 ```
 
-The site has a home page plus routes for Norna blocks and surfaces. Sitewide
-identity, banners and footers are demonstrated separately in
+The site has a home page plus pages for Norna blocks and surfaces. Sitewide
+logo handling, banners and footers are demonstrated separately in
 `examples/feature-demos/sitewide-content/`.

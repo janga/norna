@@ -121,7 +121,7 @@ const addSitewideLogoHelp = (jsonSchema) => {
 
 	logo.markdownDescription = [
 		yamlExample('logo:\n  height: 2rem'),
-		'`logo` optionally overrides the displayed height of the convention-based logo file. The logo links home, and its alternative text comes from the homepage `page.title`. This setting does not enable or select the file.',
+		'`logo` optionally overrides the displayed height of the convention-based logo file. The logo links home, and its alternative text comes from the homepage Markdown H1. This setting does not enable or select the file.',
 		documentationLink('Navigation logo filenames and placement', 'public-files.md', 'navigation-logo'),
 	].join('\n\n');
 	logo.properties.height.examples = ['2rem'];
@@ -427,31 +427,26 @@ const addSitewideHelp = (jsonSchema) => {
 
 const addContentHelp = (jsonSchema) => {
 	jsonSchema.markdownDescription = [
-		yamlExample('---\npage:\n  title: About\n  description: About this project.\n---'),
-		'Every homepage and route `content.md` starts with page metadata, followed by Markdown sections.',
-		documentationLink('Page frontmatter reference', 'content.md', 'page-frontmatter'),
+		yamlExample('---\npage:\n  description: About this project.\n---'),
+		'Content frontmatter is optional. Write the page title as the single Markdown H1; use frontmatter only for optional metadata or navigation settings.',
+		documentationLink('Page title and frontmatter reference', 'content.md', 'page-title-and-frontmatter'),
 	].join('\n\n');
 	addHelp(jsonSchema, 'page', [
-		yamlExample('page:\n  title: About\n  description: About this project.'),
-		'Contains metadata for the current homepage or route.',
-		documentationLink('Page frontmatter reference', 'content.md', 'page-frontmatter'),
+		yamlExample('page:\n  description: About this project.'),
+		'Contains optional metadata for the current homepage or additional page. The Markdown H1 supplies its title.',
+		documentationLink('Page title and frontmatter reference', 'content.md', 'page-title-and-frontmatter'),
 	]);
-	addHelp(jsonSchema, 'page.title', [
-		yamlExample('page:\n  title: About'),
-		'The page title used in metadata and route navigation.',
-		documentationLink('Page frontmatter reference', 'content.md', 'page-frontmatter'),
-	], ['About']);
 	addHelp(jsonSchema, 'page.description', [
 		yamlExample('page:\n  description: About this project.'),
 		'An optional page-specific description rendered as `<meta name="description">`. It is not visible in page content.',
-		documentationLink('Page frontmatter reference', 'content.md', 'page-frontmatter'),
+		documentationLink('Page title and frontmatter reference', 'content.md', 'page-title-and-frontmatter'),
 	], ['About this project.']);
 	addHelp(jsonSchema, 'navigation', [
 		yamlExample('navigation:\n  listed: false'),
-		'Optionally excludes a route from site navigation without removing its public URL.',
-		documentationLink('Route navigation reference', 'routes.md', 'navigation'),
+		'Optionally excludes an additional page from site navigation without removing its public URL.',
+		documentationLink('Site navigation reference', 'pages.md', 'navigation'),
 	]);
-	addFieldHelp(jsonSchema, 'navigation.listed', 'navigation:\n  listed: false', 'routes.md', 'navigation', [true, false]);
+	addFieldHelp(jsonSchema, 'navigation.listed', 'navigation:\n  listed: false', 'pages.md', 'navigation', [true, false]);
 };
 
 export const applySchemaEditorMetadata = (filename, jsonSchema) => {

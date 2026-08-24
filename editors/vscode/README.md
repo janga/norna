@@ -19,7 +19,7 @@ The proof of concept provides:
 
 Recognized files are the root `config.yaml`, `theme.yaml`,
 `sitewide-content.yaml`, and `content.md`, plus `content.md` and optional
-`theme.yaml` in a valid `routes/NNN-route-id/` directory. Other YAML and
+`theme.yaml` in a valid `pages/NNN-page-id/` directory. Other YAML and
 Markdown files are left entirely to their normal language support.
 
 During development:
@@ -28,8 +28,8 @@ During development:
 2. Press `F5` and choose **Run Norna Extension**.
 3. In the Extension Development Host, run **Norna: Show IntelliSense Status**.
 4. Open `site/theme.yaml` to try schema completion.
-5. In a route `content.md`, place the cursor after an `image:` field and press
-   `Ctrl+Space` to see images from the current section and other routes.
+5. In a page `content.md`, place the cursor after an `image:` field and press
+   `Ctrl+Space` to see images from the current section and other pages.
 
 Run `npm install` and `npm run package` in this directory to create an
 installable `norna-vscode.vsix`.

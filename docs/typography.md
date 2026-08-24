@@ -12,7 +12,7 @@ preset: documentation
 
 Use the nested `typography` block only when those typographic choices need to
 differ from the selected theme preset. Typography is configured at root-theme
-or route-theme level, not in page or section content.
+or page-theme level, not in page or section content.
 
 ## Typography Profiles
 
@@ -25,7 +25,7 @@ Available profiles:
 - `reading`: more generous body text for pages where longer text carries
   more of the experience.
 - `statement`: tighter, more declarative line-height for short programmatic
-  statements. Use it sparingly, usually as a route-level exception.
+  statements. Use it sparingly, usually as a page-level exception.
 
 If a complete top-level theme preset is selected, that preset supplies the
 typography choice. If both the top-level preset and nested typography are
@@ -65,7 +65,7 @@ profiles, rhythms, and overrides have been applied:
 norna typography show
 ```
 
-The output includes the site theme, every page route, and every section. Each
+The output includes the site theme, every page, and every section. Each
 resolved value shows its `source`; values inherited by a page or section are
 also marked with `inherited: true`.
 
@@ -148,31 +148,31 @@ Supported override fields:
 - `caption.align`, `caption.size`, `caption.lineHeight`,
   `caption.spacingBefore`
 
-## Route Themes
+## Page Themes
 
-The simplest route-specific typography change is to select a complete theme
+The simplest page-specific typography change is to select a complete theme
 preset:
 
 ```yaml
-# site/routes/010-introduction/theme.yaml
+# site/pages/010-introduction/theme.yaml
 preset: statement
 ```
 
-A route-local `theme.yaml` replaces the root visual theme rather than inheriting
-from it. The complete preset supplies a coherent route theme without repeating
+A page-local `theme.yaml` replaces the root visual theme rather than inheriting
+from it. The complete preset supplies a coherent page theme without repeating
 the root values.
 
 Use a nested typography choice when only the typographic character needs to be
 specified explicitly:
 
 ```yaml
-# site/routes/010-introduction/theme.yaml
+# site/pages/010-introduction/theme.yaml
 typography:
   profile: statement
   rhythm: normal
 ```
 
-Without a top-level theme preset, other omitted route-theme values use engine
+Without a top-level theme preset, other omitted page-theme values use engine
 defaults rather than values from the root theme.
 
 The `body.width` value controls the prose column independently of the page and

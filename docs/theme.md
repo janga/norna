@@ -4,8 +4,8 @@
 required plain YAML file. The normal setup selects one complete theme preset
 and adds only focused overrides when needed.
 
-An optional `theme.yaml` inside a route directory replaces the root visual
-theme for that route. Navigation-logo display settings remain site-wide and
+An optional `theme.yaml` inside a page directory replaces the root visual
+theme for that page. Navigation-logo display settings remain site-wide and
 belong in `sitewide-content.yaml`.
 
 ## Theme Presets
@@ -80,8 +80,8 @@ typography override.
 Norna never loads `orig-*-theme.yaml`; only `theme.yaml` is active. The export
 command refuses to overwrite an existing reference file.
 
-Site identity is not part of the visual theme. Define the optional navigation
-name and logo display settings in `site/sitewide-content.yaml`; see
+Page titles and site navigation are not part of the visual theme. Define
+optional logo display settings in `site/sitewide-content.yaml`; see
 [Sitewide Content](sitewide-content.md).
 
 ## Layout
@@ -226,24 +226,24 @@ palette: paper  # Alternatives: dark, light
 sectionSurfaces: [base, soft, emphasis]
 ```
 
-## Route Themes
+## Page Themes
 
-Add `theme.yaml` to a route directory when that route should have a different
+Add `theme.yaml` to a page directory when that page should have a different
 visual expression:
 
 ```text
-site/routes/010-guide/theme.yaml
+site/pages/010-guide/theme.yaml
 ```
 
-The route theme uses the same visual schema and complete presets as the root
-theme. A route can therefore select a different expression without repeating a
+The page theme uses the same visual schema and complete presets as the root
+theme. A page can therefore select a different expression without repeating a
 large configuration:
 
 ```yaml
 preset: statement
 ```
 
-It completely replaces the root visual theme for that route. If the route
+It completely replaces the root visual theme for that page. If the page
 theme selects no top-level preset, omitted values use engine defaults rather
 than values from the root theme. It cannot define navigation-logo settings or
 technical configuration.
@@ -254,18 +254,18 @@ accent color.
 
 ## Common Questions
 
-### Should every route select its own preset?
+### Should every page select its own preset?
 
-No. A route without its own `theme.yaml` inherits the root theme, which is the
+No. A page without its own `theme.yaml` inherits the root theme, which is the
 normal choice when the site should keep one visual expression.
 
-Add a route theme only when the route should intentionally look different. If
-the route should keep the same preset but demonstrate a focused change, repeat
-the root preset in the route theme and override only that setting. This is
-necessary because a route theme replaces the root visual theme rather than
+Add a page theme only when the page should intentionally look different. If
+the page should keep the same preset but demonstrate a focused change, repeat
+the root preset in the page theme and override only that setting. This is
+necessary because a page theme replaces the root visual theme rather than
 merging with it.
 
-For example, a route demonstrating section surfaces may keep `preset: project`
-and change only `sectionSurfaces`. A route demonstrating image or content
+For example, a page demonstrating section surfaces may keep `preset: project`
+and change only `sectionSurfaces`. A page demonstrating image or content
 blocks should normally inherit the root preset so that the blocks remain the
 only variable being compared.

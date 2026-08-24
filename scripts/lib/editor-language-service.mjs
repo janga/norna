@@ -122,32 +122,20 @@ const getPageContext = (siteRoot, documentPath) => {
 			contentPath: absoluteDocumentPath,
 			imagesRoot: path.join(siteRoot, 'images'),
 			pageLabel: 'Home',
-			routeDirectory: null,
+			pageDirectory: null,
 		};
 	}
 
-	const match = relativePath.match(/^routes\/(.+)\/content\.md$/);
+	const match = relativePath.match(/^pages\/(.+)\/content\.md$/);
 	if (!match) return null;
 
-	const routeDirectory = match[1];
+	const pageDirectory = match[1];
 	return {
 		contentPath: absoluteDocumentPath,
-		imagesRoot: path.join(siteRoot, 'routes', ...routeDirectory.split('/'), 'images'),
-		pageLabel: routeDirectory,
-		routeDirectory,
+		imagesRoot: path.join(siteRoot, 'pages', ...pageDirectory.split('/'), 'images'),
+		pageLabel: pageDirectory,
+		pageDirectory,
 	};
-};
-
-const getSectionAtLine = (source, lineIndex) => {
-	const lines = source.replace(/\r\n?/g, '\n').split('\n');
-	let section = null;
-
-	for (let index = 0; index <= Math.min(lineIndex, lines.length - 1); index += 1) {
-		const match = lines[index].match(headingIdPattern);
-		if (match) section = { id: match[1], line: index };
-	}
-
-	return section;
 };
 
 const getOpenFenceAtLine = (source, lineIndex) => {
@@ -305,12 +293,11 @@ const collectImageFiles = async (directory, imageRoot, pageLabel, files) => {
 			filename: entry.name,
 			pageLabel,
 			relativeToImages,
-			sectionId: relativeToImages.split('/')[0] ?? '',
 		});
 	}
 };
 
-const collectRouteImageRoots = async (directory, siteRoot, roots) => {
+const collectPageImageRoots = async (directory, siteRoot, roots) => {
 	const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
 		if (error?.code === 'ENOENT') return [];
 		throw error;
@@ -320,11 +307,11 @@ const collectRouteImageRoots = async (directory, siteRoot, roots) => {
 		if (!entry.isDirectory()) continue;
 		const absolutePath = path.join(directory, entry.name);
 		if (entry.name === 'images') {
-			const routeDirectory = toPosixPath(path.relative(path.join(siteRoot, 'routes'), path.dirname(absolutePath)));
-			roots.push({ imageRoot: absolutePath, pageLabel: routeDirectory });
+			const pageDirectory = toPosixPath(path.relative(path.join(siteRoot, 'pages'), path.dirname(absolutePath)));
+			roots.push({ imageRoot: absolutePath, pageLabel: pageDirectory });
 			continue;
 		}
-		await collectRouteImageRoots(absolutePath, siteRoot, roots);
+		await collectPageImageRoots(absolutePath, siteRoot, roots);
 	}
 };
 
@@ -345,7 +332,7 @@ const getContentFiles = async (siteRoot) => {
 		}
 	};
 
-	await visit(path.join(siteRoot, 'routes'));
+	await visit(path.join(siteRoot, 'pages'));
 	return files;
 };
 
@@ -367,9 +354,9 @@ export const createSiteImageIndex = async (siteRoot) => {
 	const homeImageRoot = path.join(siteRoot, 'images');
 	await collectImageFiles(homeImageRoot, homeImageRoot, 'Home', files);
 
-	const routeRoots = [];
-	await collectRouteImageRoots(path.join(siteRoot, 'routes'), siteRoot, routeRoots);
-	for (const root of routeRoots) {
+	const pageRoots = [];
+	await collectPageImageRoots(path.join(siteRoot, 'pages'), siteRoot, pageRoots);
+	for (const root of pageRoots) {
 		await collectImageFiles(root.imageRoot, root.imageRoot, root.pageLabel, files);
 	}
 
@@ -398,9 +385,7 @@ export const getImageCompletionContext = async ({ documentPath, source, line }) 
 	const currentLine = source.replace(/\r\n?/g, '\n').split('\n')[line] ?? '';
 	if (!/^\s*(?:-\s+)?image:\s*[^\s]*$/.test(currentLine)) return null;
 
-	const section = getSectionAtLine(source, line);
-	if (!section) return null;
-	const expectedDirectory = path.join(page.imagesRoot, section.id);
+	const expectedDirectory = page.imagesRoot;
 	const index = await createSiteImageIndex(siteRoot);
 	const candidates = index.files.map((file) => {
 		const isExpected = path.dirname(file.absolutePath) === expectedDirectory;
@@ -422,7 +407,6 @@ export const getImageCompletionContext = async ({ documentPath, source, line }) 
 		candidates,
 		expectedDirectory,
 		page,
-		section,
 		siteRoot,
 	};
 };
@@ -435,10 +419,9 @@ export const getImageDefinitionContext = async ({ documentPath, source, line }) 
 	const filename = match[1].replace(/^['"]|['"]$/g, '');
 	const siteRoot = await findNornaSiteRoot(documentPath);
 	const page = siteRoot ? getPageContext(siteRoot, documentPath) : null;
-	const section = getSectionAtLine(source, line);
-	if (!siteRoot || !page || !section) return null;
+	if (!siteRoot || !page) return null;
 
-	const expectedPath = path.join(page.imagesRoot, section.id, filename);
+	const expectedPath = path.join(page.imagesRoot, filename);
 	if (await fileExists(expectedPath)) return { files: [expectedPath], filename, siteRoot };
 
 	const index = await createSiteImageIndex(siteRoot);
@@ -481,7 +464,9 @@ const getImageReferenceLines = (source) => {
 const getContentFrontmatterDiagnostics = (source) => {
 	const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
 	if (!match) {
-		return [{ severity: 'error', line: 1, message: 'Norna content files must start with YAML frontmatter delimited by ---.' }];
+		return /^---(?:\r?\n|$)/.test(source)
+			? [{ severity: 'error', line: 1, message: 'YAML frontmatter starts with ---, but no closing --- delimiter was found.' }]
+			: [];
 	}
 
 	let data;
@@ -505,21 +490,111 @@ const getContentFrontmatterDiagnostics = (source) => {
 	}));
 };
 
-const getSectionHeadingDiagnostics = (source) => source.replace(/\r\n?/g, '\n').split('\n')
-	.flatMap((line, index) => {
-		if (!/^##(?:\s|$)/.test(line) || headingIdPattern.test(line)) return [];
-		return [{
-			code: 'missing-section-id',
+const getMarkdownStructure = (source) => {
+	const lines = source.replace(/\r\n?/g, '\n').split('\n');
+	let bodyStart = 0;
+	if (lines[0]?.trim() === '---') {
+		const closingIndex = lines.findIndex((line, index) => index > 0 && line.trim() === '---');
+		if (closingIndex < 0) return { bodyStart: lines.length, headings: [], lines };
+		bodyStart = closingIndex + 1;
+	}
+
+	const headings = [];
+	let fence = null;
+	for (let index = bodyStart; index < lines.length; index += 1) {
+		const line = lines[index];
+		const fenceMatch = line.match(/^ {0,3}(`{3,}|~{3,})([^\r\n]*)$/);
+		if (fenceMatch) {
+			if (!fence) {
+				fence = { character: fenceMatch[1][0], length: fenceMatch[1].length };
+			} else if (
+				fenceMatch[1][0] === fence.character
+				&& fenceMatch[1].length >= fence.length
+				&& !fenceMatch[2].trim()
+			) {
+				fence = null;
+			}
+			continue;
+		}
+		if (fence) continue;
+
+		const match = line.match(/^(#{1,2})\s+(.+?)\s*$/);
+		if (match) headings.push({ level: match[1].length, line: index + 1, source: line });
+	}
+
+	return { bodyStart, headings, lines };
+};
+
+const getSectionHeadingDiagnostics = (structure) => structure.headings.flatMap((heading) => {
+	if (heading.level !== 2 || headingIdPattern.test(heading.source)) return [];
+	return [{
+		code: 'missing-section-id',
+		severity: 'error',
+		line: heading.line,
+		message: 'Level 2 Norna section headings require an explicit id, for example "## Introduction {#introduction}".',
+	}];
+});
+
+const getPageTitleDiagnostics = (structure) => {
+	const { bodyStart, headings, lines } = structure;
+	const pageHeadings = headings.filter((heading) => heading.level === 1);
+	const diagnostics = [];
+
+	if (pageHeadings.length === 0) {
+		diagnostics.push({
+			code: 'missing-page-title',
 			severity: 'error',
-			line: index + 1,
-			message: 'Level 2 Norna section headings require an explicit id, for example "## Introduction {#introduction}".',
-		}];
-	});
+			line: 1,
+			message: 'Norna pages require exactly one Markdown H1 page title, for example "# About".',
+		});
+	} else if (pageHeadings.length > 1) {
+		for (const heading of pageHeadings.slice(1)) {
+			diagnostics.push({
+				code: 'duplicate-page-title',
+				severity: 'error',
+				line: heading.line,
+				message: 'A Norna page can contain only one Markdown H1. Use a level 2 heading with an explicit id for a section.',
+			});
+		}
+	}
+
+	if (headings[0] && headings[0].level !== 1) {
+		diagnostics.push({
+			code: 'page-title-order',
+			severity: 'error',
+			line: headings[0].line,
+			message: 'The Markdown H1 page title must come before every level 2 section.',
+		});
+	}
+
+	const firstHeadingLineIndex = (headings[0]?.line ?? lines.length + 1) - 1;
+	if (lines.slice(bodyStart, firstHeadingLineIndex).some((line) => line.trim())) {
+		diagnostics.push({
+			code: 'page-title-order',
+			severity: 'error',
+			line: bodyStart + 1,
+			message: 'The Markdown H1 page title must be the first content after optional frontmatter.',
+		});
+	}
+
+	if (pageHeadings[0] && /\s*\{#[a-z0-9-]+\}\s*$/.test(pageHeadings[0].source)) {
+		diagnostics.push({
+			code: 'page-title-id',
+			severity: 'error',
+			line: pageHeadings[0].line,
+			message: 'The Markdown H1 is the page title and must not have a section id. Remove the {#...} suffix.',
+		});
+	}
+
+	return diagnostics;
+};
 
 export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
+	const markdownStructure = getMarkdownStructure(source);
 	const diagnostics = [
 		...getContentFrontmatterDiagnostics(source),
-		...getSectionHeadingDiagnostics(source),
+		...getPageTitleDiagnostics(markdownStructure),
+		...getSectionHeadingDiagnostics(markdownStructure),
 	];
 	const blockResult = extractNornaMarkdownBlockDiagnostics(source, { label: path.basename(documentPath) });
 	for (const error of blockResult.errors) {
@@ -548,9 +623,7 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 
 	const index = await createSiteImageIndex(siteRoot);
 	for (const reference of getImageReferenceLines(source)) {
-		const section = getSectionAtLine(source, reference.line - 1);
-		if (!section) continue;
-		const expectedPath = path.join(page.imagesRoot, section.id, reference.filename);
+		const expectedPath = path.join(page.imagesRoot, reference.filename);
 		if (await fileExists(expectedPath)) continue;
 
 		const candidates = index.filesByName.get(reference.filename) ?? [];
@@ -559,7 +632,7 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 				code: 'missing-image',
 				severity: 'error',
 				line: reference.line,
-				message: `Image "${reference.filename}" was not found in the expected section folder or elsewhere in this Norna site.`,
+				message: `Image "${reference.filename}" was not found in this page's images folder or elsewhere in this Norna site.`,
 			});
 			continue;
 		}
@@ -587,7 +660,7 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 			line: reference.line,
 			message: otherReferences.length > 0
 				? `Image "${reference.filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))} and is still referenced by ${otherReferences.join(', ')}. Norna cannot relocate it safely.`
-				: `Image "${reference.filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))}. Run "norna content:sync" to relocate it to this section.`,
+				: `Image "${reference.filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))}. Run "norna content:sync" to relocate it to this page's images folder.`,
 		});
 	}
 

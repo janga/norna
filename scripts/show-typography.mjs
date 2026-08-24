@@ -13,12 +13,12 @@ import {
 	readSiteFile,
 	validateContentFrontmatterStructure,
 	validateFrontmatterIndentation,
-	validateRouteThemeYamlStructure,
+	validatePageThemeYamlStructure,
 } from './lib/site-content.mjs';
 import {
 	siteContentLabel,
 	siteContentPath,
-	siteRoutesDir,
+	sitePagesDir,
 	siteThemeLabel,
 	siteThemePath,
 } from './lib/site-paths.mjs';
@@ -197,22 +197,22 @@ const readThemeTypography = async () => {
 	return resolveAnnotatedTypographyConfig(themeTypographyConfig ?? defaultTypography, siteThemeLabel);
 };
 
-const readRouteThemeTypography = async (contentFile, themeTypography) => {
+const readPageThemeTypography = async (contentFile, themeTypography) => {
 	if (contentFile.isHome) return themeTypography;
 
-	const routeThemePath = path.join(siteRoutesDir, contentFile.routeDirectory, 'theme.yaml');
-	const routeThemeFile = await readFile(routeThemePath, 'utf8').catch((error) => {
+	const pageThemePath = path.join(sitePagesDir, contentFile.pageDirectory, 'theme.yaml');
+	const pageThemeFile = await readFile(pageThemePath, 'utf8').catch((error) => {
 		if (error?.code === 'ENOENT') return null;
 		throw error;
 	});
-	if (!routeThemeFile) return themeTypography;
-	const routeThemeLabel = `${contentFile.contentLabel.replace(/\/content\.md$/, '')}/theme.yaml`;
+	if (!pageThemeFile) return themeTypography;
+	const pageThemeLabel = `${contentFile.contentLabel.replace(/\/content\.md$/, '')}/theme.yaml`;
 
-	const routeThemeConfig = resolveThemeConfig(parseYamlConfig(routeThemeFile, routeThemeLabel, {
-		validateStructure: validateRouteThemeYamlStructure,
-	}), routeThemeLabel);
-	const typographyConfig = routeThemeConfig.typography;
-	return resolveAnnotatedTypographyConfig(typographyConfig ?? defaultTypography, routeThemeLabel);
+	const pageThemeConfig = resolveThemeConfig(parseYamlConfig(pageThemeFile, pageThemeLabel, {
+		validateStructure: validatePageThemeYamlStructure,
+	}), pageThemeLabel);
+	const typographyConfig = pageThemeConfig.typography;
+	return resolveAnnotatedTypographyConfig(typographyConfig ?? defaultTypography, pageThemeLabel);
 };
 
 const readPageTypography = async (contentFile, siteThemeTypography) => {
@@ -227,7 +227,7 @@ const readPageTypography = async (contentFile, siteThemeTypography) => {
 		].join('\n'));
 	}
 
-	const pageTypography = await readRouteThemeTypography(contentFile, siteThemeTypography);
+	const pageTypography = await readPageThemeTypography(contentFile, siteThemeTypography);
 	const sections = getBodySections(body).sections
 		.filter((section) => section.id)
 		.map((section) => {
@@ -239,7 +239,7 @@ const readPageTypography = async (contentFile, siteThemeTypography) => {
 
 	return {
 		source: contentFile.contentLabel,
-		route: contentFile.isHome ? '/' : `/${contentFile.routeId}/`,
+		pathname: contentFile.isHome ? '/' : `/${contentFile.pageId}/`,
 		pageTypography,
 		sections,
 	};
@@ -259,7 +259,7 @@ if (mode === 'profiles') {
 			typography: formatAnnotatedTypography(themeTypography),
 		},
 		pages: Object.fromEntries(pages.map((page) => [
-			page.route,
+			page.pathname,
 			{
 				source: page.source,
 				typography: formatAnnotatedTypography(page.pageTypography),

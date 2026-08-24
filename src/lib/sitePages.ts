@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
-import { parseRouteDirectory } from '../../scripts/lib/route-model.mjs';
+import { pageDirectoryPattern, parsePageDirectory } from '../../scripts/lib/page-model.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
 
@@ -12,35 +12,55 @@ export type SitePage = {
 	};
 	pathSegment: string;
 	pathname: string;
-	routeDirectory: string | null;
-	routeId: string;
+	pageDirectory: string | null;
+	pageId: string;
 	title: string;
 };
 
-const routeIdMarker = '-route-';
+const pageIdMarker = '-page-';
 
-const stripRouteIdPrefix = (id: string) => {
-	const markerIndex = id.indexOf(routeIdMarker);
-	return markerIndex === -1 ? null : id.slice(markerIndex + routeIdMarker.length);
+const stripPageIdPrefix = (id: string) => {
+	const markerIndex = id.lastIndexOf(pageIdMarker);
+	if (markerIndex === -1) return null;
+
+	const candidate = id.slice(markerIndex + pageIdMarker.length);
+	return pageDirectoryPattern.test(candidate) ? candidate : null;
 };
 
-export const isHomePageEntry = (entry: SiteEntry) => stripRouteIdPrefix(entry.id) === null;
+export const isHomePageEntry = (entry: SiteEntry) => stripPageIdPrefix(entry.id) === null;
 
-const getRouteDirectory = (entry: SiteEntry) => isHomePageEntry(entry) ? null : stripRouteIdPrefix(entry.id);
+const getPageDirectory = (entry: SiteEntry) => isHomePageEntry(entry) ? null : stripPageIdPrefix(entry.id);
 
-const getRouteMetadata = (entry: SiteEntry) => {
-	const routeDirectory = getRouteDirectory(entry);
-	return routeDirectory ? parseRouteDirectory(routeDirectory, `route directory ${routeDirectory}`) : null;
+const getPageMetadata = (entry: SiteEntry) => {
+	const pageDirectory = getPageDirectory(entry);
+	return pageDirectory ? parsePageDirectory(pageDirectory, `page directory ${pageDirectory}`) : null;
 };
 
 const getPagePathname = (pathSegment: string) => pathSegment ? `/${pathSegment}/` : '/';
 
+const decodeHtmlEntities = (value: string) => value
+	.replace(/&amp;/g, '&')
+	.replace(/&lt;/g, '<')
+	.replace(/&gt;/g, '>')
+	.replace(/&quot;/g, '"')
+	.replace(/&#39;/g, "'");
+
+const getPageTitle = (entry: SiteEntry) => {
+	const html = entry.rendered?.html ?? '';
+	const headings = Array.from(html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi));
+	if (headings.length !== 1) {
+		throw new Error(`Page entry "${entry.id}" must contain exactly one Markdown H1 page title.`);
+	}
+
+	return decodeHtmlEntities((headings[0]?.[1] ?? '').replace(/<[^>]*>/g, '')).trim();
+};
+
 export const getSitePage = (entry: SiteEntry): SitePage => {
 	const isHome = isHomePageEntry(entry);
-	const routeMetadata = getRouteMetadata(entry);
-	const routeDirectory = routeMetadata?.routeDirectory ?? null;
-	const routeId = routeMetadata?.routeId ?? '';
-	const pathSegment = isHome ? '' : routeId;
+	const pageMetadata = getPageMetadata(entry);
+	const pageDirectory = pageMetadata?.pageDirectory ?? null;
+	const pageId = pageMetadata?.pageId ?? '';
+	const pathSegment = isHome ? '' : pageId;
 	const navigation = entry.data.navigation ?? {};
 
 	return {
@@ -48,21 +68,21 @@ export const getSitePage = (entry: SiteEntry): SitePage => {
 		isHome,
 		navigation: {
 		listed: navigation.listed ?? true,
-		order: isHome ? 0 : routeMetadata?.routeOrder ?? 100,
+			order: isHome ? 0 : pageMetadata?.pageOrder ?? 100,
 		},
 		pathSegment,
 		pathname: getPagePathname(pathSegment),
-		routeDirectory,
-		routeId,
-		title: entry.data.page.title,
+		pageDirectory,
+		pageId,
+		title: getPageTitle(entry),
 	};
 };
 
 export const getSitePages = (entries: SiteEntry[]) => {
 	const pages = entries.map(getSitePage);
 	const pathnames = new Map<string, SitePage>();
-	const routeIds = new Map<string, SitePage>();
-	const routeOrders = new Map<number, SitePage>();
+	const pageIds = new Map<string, SitePage>();
+	const pageOrders = new Map<number, SitePage>();
 
 	for (const page of pages) {
 		const existing = pathnames.get(page.pathname);
@@ -74,19 +94,19 @@ export const getSitePages = (entries: SiteEntry[]) => {
 
 		if (page.isHome) continue;
 
-		const existingRouteId = routeIds.get(page.routeId);
-		if (existingRouteId) {
-			throw new Error(`Duplicate route id "${page.routeId}" from "${existingRouteId.entry.id}" and "${page.entry.id}".`);
+		const existingPageId = pageIds.get(page.pageId);
+		if (existingPageId) {
+			throw new Error(`Duplicate page id "${page.pageId}" from "${existingPageId.entry.id}" and "${page.entry.id}".`);
 		}
 
-		routeIds.set(page.routeId, page);
+		pageIds.set(page.pageId, page);
 
-		const existingRouteOrder = routeOrders.get(page.navigation.order);
-		if (existingRouteOrder) {
-			throw new Error(`Duplicate route order "${String(page.navigation.order).padStart(3, '0')}" from "${existingRouteOrder.entry.id}" and "${page.entry.id}".`);
+		const existingPageOrder = pageOrders.get(page.navigation.order);
+		if (existingPageOrder) {
+			throw new Error(`Duplicate page order "${String(page.navigation.order).padStart(3, '0')}" from "${existingPageOrder.entry.id}" and "${page.entry.id}".`);
 		}
 
-		routeOrders.set(page.navigation.order, page);
+		pageOrders.set(page.navigation.order, page);
 	}
 
 	return pages.sort((left, right) => (

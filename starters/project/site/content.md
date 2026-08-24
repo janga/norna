@@ -1,8 +1,10 @@
 ---
 page:
-  title: Your project
   description: A compact project site starter for an open source developer tool.
 ---
+
+# Your project
+
 
 ## `<Your project> - <short value proposition>` {#intro}
 

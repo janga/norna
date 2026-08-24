@@ -1,33 +1,33 @@
 {
-  "routes/010-concepts/images/multi-page-site/multi-page-site.svg": {
+  "pages/010-concepts/images/multi-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "e95fbc8ee6b6f76726a5dfdb97998857db7e0517e904e56595075286ce4471e6",
-    "src": "/images/original/routes/010-concepts/images/multi-page-site/multi-page-site-e95fbc8e.svg",
+    "sourceHash": "733e2f16750ad8a9283ea77bb584fd7694d03904085c45fc33743295b9f2c33e",
+    "src": "/images/original/pages/010-concepts/images/multi-page-site-733e2f16.svg",
     "width": 1080,
     "height": 620
   },
-  "routes/010-concepts/images/single-page-site/single-page-site.svg": {
+  "pages/010-concepts/images/single-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "5c37a927b669d94ceaa4ff486674475185b9ad7da9ed84ad77cbcce401aee8cf",
-    "src": "/images/original/routes/010-concepts/images/single-page-site/single-page-site-5c37a927.svg",
+    "sourceHash": "93c77e36aaed3e609f5eeb07be15a3ffe90b980c5028675d5380ddec63e6834c",
+    "src": "/images/original/pages/010-concepts/images/single-page-site-93c77e36.svg",
     "width": 1080,
     "height": 620
   },
-  "routes/020-getting-started/images/publish/publishing-workflow.svg": {
-    "kind": "static",
-    "outputVersion": 2,
-    "sourceHash": "e4d81313bf72b3924655248f523712b713b6713a621db537b96fcfff49721ad1",
-    "src": "/images/original/routes/020-getting-started/images/publish/publishing-workflow-e4d81313.svg",
-    "width": 900,
-    "height": 280
-  },
-  "routes/020-getting-started/images/workflow/local-workflow.svg": {
+  "pages/020-getting-started/images/local-workflow.svg": {
     "kind": "static",
     "outputVersion": 2,
     "sourceHash": "2ee375687d2686e0e0a03dea2a1284a317b9979556a8f980d12245f50479fb35",
-    "src": "/images/original/routes/020-getting-started/images/workflow/local-workflow-2ee37568.svg",
+    "src": "/images/original/pages/020-getting-started/images/local-workflow-2ee37568.svg",
+    "width": 900,
+    "height": 280
+  },
+  "pages/020-getting-started/images/publishing-workflow.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "e4d81313bf72b3924655248f523712b713b6713a621db537b96fcfff49721ad1",
+    "src": "/images/original/pages/020-getting-started/images/publishing-workflow-e4d81313.svg",
     "width": 900,
     "height": 280
   }

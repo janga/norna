@@ -19,10 +19,8 @@ Edit shared logo settings, banners, and footer in
 `site/sitewide-content.yaml`,
 site-wide visual defaults in `site/theme.yaml`, homepage content and section
 metadata in `site/content.md`, and technical settings such as URL and locale
-in `site/config.yaml`. Keep source images under `site/images/<section-id>/`
-and static public files under `site/public/`. The image folder name should
-match the section id in Markdown, for example `## Work {#work}` uses
-`site/images/work/`.
+in `site/config.yaml`. Keep managed homepage source images directly under
+`site/images/` and static public files under `site/public/`.
 
 For a GitHub Pages project site without a custom domain, include the repository
 path in the public URL:
@@ -38,7 +36,7 @@ In GitHub repository settings, configure Pages to build from GitHub Actions.
 
 Page width, side gutters, layout density, typography rhythm, image width, image
 height limits, font, palettes, section surfaces, and site-wide typography are
-configured in `site/theme.yaml`. A route may replace that visual theme with its
+configured in `site/theme.yaml`. A page may replace that visual theme with its
 own `theme.yaml`.
 
 Commit `package-lock.json` after the first install so GitHub Actions can use
@@ -73,7 +71,7 @@ Generic documentation lives in the `norna` repository:
 - `docs/content.md`
 - `docs/theme.md`
 - `docs/typography.md`
-- `docs/routes.md`
+- `docs/pages.md`
 - `docs/configuration.md`
 - `docs/commands.md`
 - `docs/images-and-metadata.md`

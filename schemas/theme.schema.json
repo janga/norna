@@ -1470,7 +1470,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "Visual settings for a site or route. A route theme replaces the inherited visual theme; navigation logo settings remain site-wide.",
+  "description": "Visual settings for a site or page. A page theme replaces the inherited visual theme; navigation logo settings remain site-wide.",
   "$id": "https://janga.github.io/norna/schemas/theme.schema.json",
   "title": "Norna visual theme",
   "markdownDescription": "```yaml\npreset: documentation\n```\n\nChoose one complete preset first. Add focused overrides only when the site needs to differ from it.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md)"

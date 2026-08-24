@@ -17,7 +17,7 @@
       },
       "additionalProperties": false,
       "description": "Optional display settings for a convention-based navigation logo.",
-      "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\n`logo` optionally overrides the displayed height of the convention-based logo file. The logo links home, and its alternative text comes from the homepage `page.title`. This setting does not enable or select the file.\n\n[Navigation logo filenames and placement](https://github.com/janga/norna/blob/v0.7.16/docs/public-files.md#navigation-logo)"
+      "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\n`logo` optionally overrides the displayed height of the convention-based logo file. The logo links home, and its alternative text comes from the homepage Markdown H1. This setting does not enable or select the file.\n\n[Navigation logo filenames and placement](https://github.com/janga/norna/blob/v0.7.16/docs/public-files.md#navigation-logo)"
     },
     "banners": {
       "default": [],

@@ -4,7 +4,7 @@ banners:
   - id: preview-environment
     tone: warning
     title: Preview environment
-    text: This sitewide notice appears on every route in the demo.
+    text: This sitewide notice appears on every page in the demo.
   - id: content-review
     tone: warning
     title: Content review

@@ -111,7 +111,7 @@ const sitewide = JSON.parse(await readFile(path.join(root, 'schemas', 'sitewide-
 assert.deepEqual(Object.keys(sitewide.properties.logo.properties), ['height']);
 assert.match(sitewide.properties.logo.markdownDescription, /```yaml\nlogo:\n  height: 2rem\n```/);
 assert.match(sitewide.properties.logo.markdownDescription, /does not enable or select the file/);
-assert.match(sitewide.properties.logo.markdownDescription, /homepage `page\.title`/);
+assert.match(sitewide.properties.logo.markdownDescription, /homepage Markdown H1/);
 assert.match(sitewide.properties.logo.markdownDescription, /docs\/public-files\.md#navigation-logo/);
 assert.equal(sitewide.properties.logo.description.length < 100, true);
 const bannerItem = sitewide.properties.banners.items;
@@ -146,8 +146,9 @@ assert.equal(
 
 const content = JSON.parse(await readFile(path.join(root, 'schemas', 'content-frontmatter.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(content.properties), ['page', 'navigation']);
-assert.deepEqual(Object.keys(content.properties.page.properties), ['title', 'description']);
-assert.deepEqual(content.properties.page.required, ['title']);
+assert.deepEqual(Object.keys(content.properties.page.properties), ['description']);
+assert.equal(content.properties.page.required, undefined);
+assert.equal(content.required, undefined);
 assert.deepEqual(Object.keys(content.properties.navigation.properties), ['listed']);
 
 console.log('Schema metadata tests passed.');

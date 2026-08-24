@@ -26,7 +26,7 @@ site repository. It should not be a showcase for every feature.
 
 An example site is a runnable site that demonstrates one or more features.
 
-Examples can be richer than the starter. They may show routes, navigation,
+Examples can be richer than the starter. They may show pages, navigation,
 complete theme presets, image stacks, image carousels, cards, notes, surfaces,
 and site-specific configuration choices.
 
@@ -35,8 +35,8 @@ and site-specific configuration choices.
 A documentation site is a runnable `norna` site that explains the product
 visually.
 
-It can use images, diagrams, screenshots, and route pages to explain concepts
-such as file structure, presentation inheritance, route navigation, and image
+It can use images, diagrams, screenshots, and additional pages to explain concepts
+such as file structure, presentation inheritance, site navigation, and image
 handling.
 
 ### Reference Documentation
@@ -73,22 +73,22 @@ examples/
 `complete-sites/` contains coherent sites that show how Norna files work
 together in a realistic project:
 
-- `dog-shelter-single-page/`: sections and managed images without routes.
-- `dog-shelter-multi-page/`: ordered routes with route-local content and
+- `dog-shelter-single-page/`: sections and managed images without additional pages.
+- `dog-shelter-multi-page/`: ordered pages with page-local content and
   images.
 
 `feature-demos/` contains focused visual test benches:
 
-- `theme-presets/`: one route per complete built-in theme preset, without
+- `theme-presets/`: one page per complete built-in theme preset, without
   overrides.
 - `media-and-surfaces/`: image and card blocks, notes, palettes and section
   surfaces. This is also the broad demo-build and navigation-test target.
-- `sitewide-content/`: convention-based identity, navigation, banner stacks,
-  dismissal and footer content shared across routes.
+- `sitewide-content/`: convention-based logo handling, navigation, banner stacks,
+  dismissal and footer content shared across pages.
 
 The repository Pages workflow builds all examples and publishes them
 under `/norna/examples/`. The HTML documentation links to those rendered sites
-from its Examples route.
+from its Examples page.
 
 The repository-local `site/` directory is reserved for the documentation site.
 `docs/` should remain for reference documentation. It should link to the

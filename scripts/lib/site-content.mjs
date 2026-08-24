@@ -4,27 +4,27 @@ import {
 	siteContentLabel,
 	siteContentPath,
 	siteDir,
+	siteDirLabel,
 	siteImagesDir,
 	siteImagesLabel,
-	siteRoutesDir,
-	siteRoutesLabel,
+	sitePagesDir,
+	sitePagesLabel,
 	sitewideContentLabel,
 } from './site-paths.mjs';
-import { parseRouteDirectory } from './route-model.mjs';
+import { parsePageDirectory } from './page-model.mjs';
 import { schemaTopLevelKeys } from './schema-definitions.mjs';
 
 export const rasterImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
 export const staticImageExtensions = new Set(['.svg']);
 export const supportedImageExtensions = new Set([...rasterImageExtensions, ...staticImageExtensions]);
 
-const h2Regex = /^##\s+.*$/gm;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const deprecatedInlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
 const knownConfigTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.config);
 const knownContentTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.content);
 const knownThemeTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.theme);
-const knownRouteThemeTopLevelFrontmatterKeys = knownThemeTopLevelFrontmatterKeys;
+const knownPageThemeTopLevelFrontmatterKeys = knownThemeTopLevelFrontmatterKeys;
 const knownSitewideTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.sitewide);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
@@ -81,17 +81,26 @@ export const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 const fileExists = async (filePath) => access(filePath).then(() => true, () => false);
 
 export const getContentFiles = async () => {
+	const legacyRoutesDir = path.join(siteDir, 'routes');
+	const legacyRoutes = await readdir(legacyRoutesDir).catch((error) => {
+		if (error?.code === 'ENOENT') return null;
+		throw error;
+	});
+	if (legacyRoutes !== null) {
+		throw new Error(`${siteDirLabel}/routes is no longer supported. Rename it to ${sitePagesLabel} and use NNN-page-id directory names.`);
+	}
+
 	const contentFiles = [{
 		contentLabel: siteContentLabel,
 		contentPath: siteContentPath,
 		imagesDir: siteImagesDir,
 		imagesLabel: siteImagesLabel,
 		isHome: true,
-		routeDirectory: null,
-		routeId: null,
-		routeOrder: 0,
+		pageDirectory: null,
+		pageId: null,
+		pageOrder: 0,
 	}];
-	const routeEntries = await readdir(siteRoutesDir, { withFileTypes: true }).catch((error) => {
+	const pageEntries = await readdir(sitePagesDir, { withFileTypes: true }).catch((error) => {
 		if (error?.code === 'ENOENT') {
 			return [];
 		}
@@ -99,26 +108,26 @@ export const getContentFiles = async () => {
 		throw error;
 	});
 
-	for (const entry of routeEntries) {
+	for (const entry of pageEntries) {
 		if (!entry.isDirectory()) continue;
 
-		const routeDirectory = entry.name;
-		const routeDir = path.join(siteRoutesDir, routeDirectory);
-		const routeContentPath = path.join(routeDir, 'content.md');
+		const pageDirectory = entry.name;
+		const pageDir = path.join(sitePagesDir, pageDirectory);
+		const pageContentPath = path.join(pageDir, 'content.md');
 
-		if (!(await fileExists(routeContentPath))) continue;
+		if (!(await fileExists(pageContentPath))) continue;
 
-		const { routeId, routeOrder } = parseRouteDirectory(routeDirectory, `${siteRoutesLabel}/${routeDirectory}`);
+		const { pageId, pageOrder } = parsePageDirectory(pageDirectory, `${sitePagesLabel}/${pageDirectory}`);
 
 		contentFiles.push({
-			contentLabel: `${siteRoutesLabel}/${routeDirectory}/content.md`,
-			contentPath: routeContentPath,
-			imagesDir: path.join(routeDir, 'images'),
-			imagesLabel: `${siteRoutesLabel}/${routeDirectory}/images`,
+			contentLabel: `${sitePagesLabel}/${pageDirectory}/content.md`,
+			contentPath: pageContentPath,
+			imagesDir: path.join(pageDir, 'images'),
+			imagesLabel: `${sitePagesLabel}/${pageDirectory}/images`,
 			isHome: false,
-			routeDirectory,
-			routeId,
-			routeOrder,
+			pageDirectory,
+			pageId,
+			pageOrder,
 		});
 	}
 
@@ -129,7 +138,15 @@ export const splitSiteFile = (source, label = siteContentLabel) => {
 	const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
 
 	if (!match) {
-		throw new Error(`${label} is missing frontmatter delimited by ---.`);
+		if (/^---(?:\r?\n|$)/.test(source)) {
+			throw new Error(`${label} starts YAML frontmatter with ---, but no closing --- delimiter was found.`);
+		}
+
+		return {
+			frontmatter: '',
+			frontmatterBody: '',
+			body: source,
+		};
 	}
 
 	return {
@@ -251,18 +268,20 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 
 		let fix;
 		let message = `Frontmatter line ${lineNumber} defines "${key}" at the top level, but it is not a valid top-level ${fileKind} field.`;
-		if (fileKind === 'content' && (key === 'title' || key === 'description')) {
-			fix = `Indent "${key}:" under "page:". Page metadata belongs in the page object.`;
+		if (fileKind === 'content' && key === 'title') {
+			fix = 'Remove "title:" and write the page title as the single Markdown H1 after frontmatter, for example "# About".';
+		} else if (fileKind === 'content' && key === 'description') {
+			fix = 'Indent "description:" under "page:". The optional meta description belongs in the page object.';
 		} else if (fileKind === 'content' && key === 'images') {
 			fix = 'Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body.';
 		} else if (fileKind === 'content' && knownThemeTopLevelFrontmatterKeys.has(key)) {
 			fix = `Move "${key}:" to theme.yaml. Visual settings do not belong in content frontmatter.`;
-		} else if ((fileKind === 'theme' || fileKind === 'route theme') && ['logo', 'navigation', 'site'].includes(key)) {
+		} else if ((fileKind === 'theme' || fileKind === 'page theme') && ['logo', 'navigation', 'site'].includes(key)) {
 			message = `Frontmatter line ${lineNumber}: ${fileKind} may not define navigation logo settings. Optional logo display settings belong under "logo:" in ${sitewideContentLabel}.`;
-			fix = `Move only the logo display settings under "logo:" in ${sitewideContentLabel}; the homepage page.title supplies navigation text and logo alternative text.`;
+			fix = `Move only the logo display settings under "logo:" in ${sitewideContentLabel}; the homepage Markdown H1 supplies navigation text and logo alternative text.`;
 		} else if (fileKind === 'sitewide content' && (key === 'navigation' || key === 'site')) {
 			message = `Frontmatter line ${lineNumber}: "${key}:" no longer defines site identity.`;
-			fix = 'Use the homepage page.title for navigation text and logo alternative text. Move only an optional logo height to top-level "logo:".';
+			fix = 'Use the homepage Markdown H1 for navigation text and logo alternative text. Move only an optional logo height to top-level "logo:".';
 		} else if (knownNestedFrontmatterKeys.has(key)) {
 			fix = `Indent "${key}:" under the object it belongs to.`;
 		} else {
@@ -295,10 +314,10 @@ export const validateThemeYamlStructure = (frontmatter, addIssue) =>
 		fileKind: 'theme',
 	});
 
-export const validateRouteThemeYamlStructure = (frontmatter, addIssue) =>
+export const validatePageThemeYamlStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
-		knownTopLevelFrontmatterKeys: knownRouteThemeTopLevelFrontmatterKeys,
-		fileKind: 'route theme',
+		knownTopLevelFrontmatterKeys: knownPageThemeTopLevelFrontmatterKeys,
+		fileKind: 'page theme',
 	});
 
 export const validateSitewideYamlStructure = (frontmatter, addIssue) =>
@@ -317,25 +336,64 @@ export const getHeadingId = (heading) => heading.match(explicitHeadingIdRegex)?.
 export const getDeprecatedInlineStyleReferences = (body) => Array.from(body.matchAll(deprecatedInlineStyleReferenceRegex))
 	.map((match) => match[1]);
 
-export const getBodySections = (body) => {
-	const matches = Array.from(body.matchAll(h2Regex));
-	const prelude = matches.length > 0 ? body.slice(0, matches[0].index) : body;
-	const sections = [];
+const getStructuralMarkdownHeadings = (body) => {
+	const normalizedBody = body.replace(/\r\n?/g, '\n');
+	const lines = normalizedBody.split('\n');
+	const headings = [];
+	let fence = null;
+	let offset = 0;
 
-	for (let index = 0; index < matches.length; index += 1) {
-		const match = matches[index];
-		const start = match.index ?? 0;
-		const next = matches[index + 1];
-		const end = next?.index ?? body.length;
-		const text = body.slice(start, end).trimEnd();
-		const heading = match[0];
-		const id = getHeadingId(heading);
-		const line = body.slice(0, start).split(/\r?\n/).length;
+	for (const [lineIndex, line] of lines.entries()) {
+		const fenceMatch = line.match(/^ {0,3}(`{3,}|~{3,})([^\r\n]*)$/);
+		if (fenceMatch) {
+			if (!fence) {
+				fence = { character: fenceMatch[1][0], length: fenceMatch[1].length };
+			} else if (
+				fenceMatch[1][0] === fence.character
+				&& fenceMatch[1].length >= fence.length
+				&& !fenceMatch[2].trim()
+			) {
+				fence = null;
+			}
+		} else if (!fence) {
+			const headingMatch = line.match(/^(#{1,2})\s+(.+?)\s*$/);
+			if (headingMatch) {
+				headings.push({
+					level: headingMatch[1].length,
+					heading: line,
+					index: offset,
+					line: lineIndex + 1,
+				});
+			}
+		}
 
-		sections.push({ id, heading, line, text });
+		offset += line.length + 1;
 	}
 
-	return { prelude, sections };
+	return { headings, normalizedBody };
+};
+
+export const getBodySections = (body) => {
+	const { headings, normalizedBody } = getStructuralMarkdownHeadings(body);
+	const prelude = headings.length > 0 ? normalizedBody.slice(0, headings[0].index) : normalizedBody;
+	const sections = headings.map((heading, index) => {
+		const next = headings[index + 1];
+		const end = next?.index ?? normalizedBody.length;
+
+		return {
+			...heading,
+			id: heading.level === 2 ? getHeadingId(heading.heading) : null,
+			isPageTitle: heading.level === 1,
+			text: normalizedBody.slice(heading.index, end).trimEnd(),
+		};
+	});
+
+	return {
+		headings,
+		pageHeadings: sections.filter((section) => section.isPageTitle),
+		prelude,
+		sections,
+	};
 };
 
 export const getImageFiles = async (directory) => {

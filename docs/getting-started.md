@@ -74,26 +74,30 @@ Replace `site/content.md` with:
 ```md
 ---
 page:
-  title: My first Norna site
   description: A website built from plain files.
 ---
 
-## Welcome {#welcome}
+# My first Norna site
 
 This page is written in Markdown. Norna provides its layout and navigation.
+
+## Welcome {#welcome}
+
+This is the first section.
 
 ## Next {#next}
 
 Edit this file while the development server is running and the browser updates.
 ```
 
-Each `##` heading is a page section. Its explicit `{#section-id}` gives the
-section a stable identity and is required by Norna.
+The single `#` heading is the page title. Each `##` heading is a page section.
+Its explicit `{#section-id}` gives the section a stable identity and is
+required by Norna.
 
 ### Checkpoint: Content And Navigation Update
 
 Return to the browser. The page should now contain `Welcome` and `Next`, and
-the single-page navigation should link to those two sections. You should not
+the section navigation should link to those two sections. You should not
 need to restart the server.
 
 ## 3. Set Shared Content
@@ -105,10 +109,10 @@ footer:
   copyrightMessage: My first Norna site.
 ```
 
-The footer is site-wide content rather than a page section. If you add routes
-later, they share it. The homepage `page.title` you set in the previous step
-already names the homepage in navigation and becomes the alternative text if
-you add a conventional navigation logo.
+The footer is site-wide content rather than a page section. If you add pages
+later, they share it. The homepage H1 you set in the previous step already
+names the homepage in navigation and becomes the alternative text if you add a
+conventional navigation logo.
 
 ### Checkpoint: The Footer Is Shared
 
@@ -159,7 +163,7 @@ build.
 ## What To Do Next
 
 - [Add and manage images](content.md#norna-blocks)
-- [Add another page](routes.md)
+- [Add another page](pages.md)
 - [Inspect and adjust the theme](theme.md)
 - [Configure the public URL](configuration.md)
 - [Publish with GitHub Pages](publishing.md)

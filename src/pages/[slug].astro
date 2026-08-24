@@ -18,13 +18,13 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 
 if (!entry || isHomePageEntry(entry)) {
-	throw new Error('Route page entry is missing.');
+	throw new Error('Page entry is missing.');
 }
 
 const currentPage = getSitePage(entry);
 
 if (!currentPage.pathSegment) {
-	throw new Error(`Route "${entry.id}" needs a route id.`);
+	throw new Error(`Page "${entry.id}" needs a page id.`);
 }
 ---
 

@@ -1,17 +1,19 @@
 ---
 page:
-  title: Example Site
   description: Minimal norna starter site.
 ---
 
+# Example Site
+
+
 ## Intro {#intro}
 This is a minimal starter site for norna. Since this site doesn't have any
-routes defined, the navigation menu will be a sticky bar with anchor links for
+pages defined, the navigation menu will be a sticky bar with anchor links for
 ease of use on phones etc. **Highlighted inline text** when a short
 phrase needs emphasis
 ## Work {#work}
 Add Norna image blocks in Markdown where the images should appear. Put
-matching source images under `images/work/`.
+matching source images directly under `images/`.
 
 ````
 ```norna-image-stack

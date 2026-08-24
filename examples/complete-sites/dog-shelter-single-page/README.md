@@ -1,6 +1,6 @@
 # Dog Shelter single-page example
 
-A small Norna site with two homepage sections and no routes.
+A small Norna site with two homepage sections and no pages.
 
 [Live demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/)
 |

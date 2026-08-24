@@ -1,8 +1,10 @@
 ---
 page:
-  title: Content Model v2 Fixture
   description: Internal fixture for Markdown-authoritative Norna content.
 ---
+
+# Content Model v2 Fixture
+
 
 ## Intro {#intro}
 

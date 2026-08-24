@@ -1,6 +1,6 @@
 # Dog Shelter multi-page example
 
-A small Norna site with a homepage and ordered routes for dogs and adoption.
+A small Norna site with a homepage and ordered pages for dogs and adoption.
 
 [Live demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/)
 |

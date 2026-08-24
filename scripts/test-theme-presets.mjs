@@ -87,13 +87,14 @@ try {
 		assert.equal(entry.description, metadata.description);
 	}
 
-	await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
+	await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
 	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
 	await writeFile(path.join(siteDir, 'content.md'), `---
 page:
-  title: Theme preset test
   description: Root page
 ---
+
+# Theme preset test
 
 ## Home {#home}
 
@@ -104,17 +105,15 @@ layout:
   pageWidth: 1300px
 palette: dark
 `);
-	await writeFile(path.join(siteDir, 'routes', '010-guide', 'content.md'), `---
+	await writeFile(path.join(siteDir, 'pages', '010-guide', 'content.md'), `---
 page:
-  title: Guide
-  description: Route page
+  description: Additional page
 ---
 
-## Guide {#guide}
-
-Route content.
+# Guide
+Page content.
 `);
-	await writeFile(path.join(siteDir, 'routes', '010-guide', 'theme.yaml'), `preset: portfolio
+	await writeFile(path.join(siteDir, 'pages', '010-guide', 'theme.yaml'), `preset: portfolio
 layout:
   pageWidth: 1010px
 palette: light
@@ -123,26 +122,26 @@ palette: light
 	const buildResult = runCli(['build']);
 	assert.equal(buildResult.status, 0, buildResult.stderr || buildResult.stdout);
 	const rootHtml = await readFile(path.join(tempRoot, 'dist', 'index.html'), 'utf8');
-	const routeHtml = await readFile(path.join(tempRoot, 'dist', 'guide', 'index.html'), 'utf8');
+	const pageHtml = await readFile(path.join(tempRoot, 'dist', 'guide', 'index.html'), 'utf8');
 	assert.match(rootHtml, /--page-width: 1300px/);
 	assert.match(rootHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
 	assert.match(rootHtml, /--color-page: #000000/);
-	assert.match(routeHtml, /--page-width: 1010px/);
-	assert.match(routeHtml, /--font-sans: 'Helvetica Neue', Arial, sans-serif/);
-	assert.match(routeHtml, /--color-page: #ffffff/);
+	assert.match(pageHtml, /--page-width: 1010px/);
+	assert.match(pageHtml, /--font-sans: 'Helvetica Neue', Arial, sans-serif/);
+	assert.match(pageHtml, /--color-page: #ffffff/);
 
 	const typographyResult = runCli(['typography', 'show']);
 	assert.equal(typographyResult.status, 0, typographyResult.stderr || typographyResult.stdout);
 	assert.match(typographyResult.stdout, /value: reading/);
 	assert.match(typographyResult.stdout, /value: restrained/);
 
-	const routeThemePath = path.join(siteDir, 'routes', '010-guide', 'theme.yaml');
-	const routeThemeSource = await readFile(routeThemePath, 'utf8');
-	await writeFile(routeThemePath, 'preset: unknown\n');
-	const invalidRoutePresetResult = runCli(['config:check']);
-	assert.notEqual(invalidRoutePresetResult.status, 0);
-	assert.match(invalidRoutePresetResult.stderr, /Unknown theme preset "unknown" in .*routes\/010-guide\/theme\.yaml/);
-	await writeFile(routeThemePath, routeThemeSource);
+	const pageThemePath = path.join(siteDir, 'pages', '010-guide', 'theme.yaml');
+	const pageThemeSource = await readFile(pageThemePath, 'utf8');
+	await writeFile(pageThemePath, 'preset: unknown\n');
+	const invalidPagePresetResult = runCli(['config:check']);
+	assert.notEqual(invalidPagePresetResult.status, 0);
+	assert.match(invalidPagePresetResult.stderr, /Unknown theme preset "unknown" in .*pages\/010-guide\/theme\.yaml/);
+	await writeFile(pageThemePath, pageThemeSource);
 
 	const exportResult = runCli(['theme:export', 'documentation']);
 	assert.equal(exportResult.status, 0, exportResult.stderr || exportResult.stdout);
@@ -167,7 +166,7 @@ palette: light
 	assert.notEqual(unknownExportResult.status, 0);
 	assert.match(unknownExportResult.stderr, /Unknown theme preset "unknown"/);
 
-	console.log('ok - complete theme presets resolve for root and route themes and export as protected references');
+	console.log('ok - complete theme presets resolve for root and page themes and export as protected references');
 } finally {
 	await rm(tempRoot, { force: true, recursive: true });
 }

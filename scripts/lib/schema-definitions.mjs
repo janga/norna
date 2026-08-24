@@ -134,12 +134,11 @@ const sectionSurfaces = z.array(sectionSurface).min(1).max(3).refine(
 	'Each section surface may appear only once.',
 ).describe('Surface sequence cycled across page sections.');
 const pageNavigation = z.object({
-	listed: z.boolean().optional().default(true).describe('List this route in site navigation. The route remains public when false.'),
+	listed: z.boolean().optional().default(true).describe('List this page in site navigation. The page remains public when false.'),
 }).strict();
 const pageMetadata = z.object({
-	title: z.string().min(1).describe('Title of this page, used in metadata and route navigation.'),
 	description: z.string().min(1).optional().describe('Optional page-specific meta description.'),
-}).strict().describe('Metadata for this homepage or route.');
+}).strict().describe('Optional metadata for this homepage or additional page. The Markdown H1 supplies the page title.');
 const sitewideLogo = z.object({
 	height: visualCssLength.optional().describe('Displayed logo height. Width follows the intrinsic aspect ratio.'),
 }).strict().describe('Optional display settings for a convention-based navigation logo.');
@@ -167,7 +166,7 @@ const configShape = {
 };
 
 const siteShape = {
-	page: pageMetadata,
+	page: pageMetadata.optional(),
 	navigation: pageNavigation.optional().describe('Optional navigation metadata for this page.'),
 };
 
@@ -194,10 +193,10 @@ export const schemaTopLevelKeys = Object.freeze({
 });
 
 export const configSchema = z.object(configShape).strict()
-	.describe('Technical settings for one Norna site. Routes cannot provide technical configuration.');
+	.describe('Technical settings for one Norna site. Additional pages cannot provide technical configuration.');
 export const siteSchema = z.object(siteShape).strict()
-	.describe('Frontmatter for a homepage or route content.md file.');
+	.describe('Frontmatter for a homepage or additional page content.md file.');
 export const themeVisualSchema = z.object(themeVisualShape).strict()
-	.describe('Visual settings for a site or route. A route theme replaces the inherited visual theme; navigation logo settings remain site-wide.');
+	.describe('Visual settings for a site or page. A page theme replaces the inherited visual theme; navigation logo settings remain site-wide.');
 export const sitewideSchema = z.object(sitewideShape).strict()
 	.describe('Editorial content and optional navigation logo display settings shared by every page.');

@@ -54,9 +54,9 @@ the image, or in `docs/design/` when it is useful for future maintenance.
 - Keep arrows few and directional.
 - Avoid diagrams where every object connects to every other object.
 - Prefer multiple simple diagrams over one dense diagram.
-- Make route order, URL slugs, section ids, image folders, source files, and
+- Make page order, URL slugs, section ids, image folders, source files, and
   generated output visually distinct when those ideas matter.
-- Do not show templates, components, custom rendering logic, route-level
+- Do not show templates, components, custom rendering logic, page-level
   technical configuration, or hosting integrations that Norna does not support.
 - Do not show page layouts that Norna cannot actually render unless the diagram
   is clearly abstract and not a product capability example.
@@ -69,10 +69,10 @@ Diagrams must match the current Norna model:
 - `content.md` is the homepage content file.
 - `sitewide-content.yaml` contains shared logo settings, banners, and footer
   content.
-- Additional pages are route directories with `content.md`.
-- Route folder prefixes control route presentation order.
-- Route ids become default URL slugs.
-- Images belong under the image root for the page or route, usually grouped by
+- Additional pages are page directories with `content.md`.
+- Page folder prefixes control navigation order.
+- Page ids become URL segments.
+- Images belong under the image root for their page, usually grouped by
   section id.
 - Markdown remains the primary writing format.
 - Norna blocks cover fixed site patterns such as image stacks,
@@ -108,7 +108,7 @@ over relying on horizontal scrolling.
 Store diagram SVG files as normal Norna managed image assets:
 
 ```text
-site/routes/<NNN-route-id>/images/<section-id>/<diagram-name>.svg
+site/pages/<NNN-page-id>/images/<diagram-name>.svg
 ```
 
 Reference them with a Norna image block:
@@ -132,7 +132,7 @@ Before accepting a diagram:
 
 - The main message is obvious without reading the surrounding section.
 - The diagram does not imply unsupported Norna functionality.
-- URL, route, section, image, theme, config, and output terminology is
+- URL, page, section, image, theme, config, and output terminology is
   consistent with documentation.
 - Text fits inside boxes at desktop and mobile widths.
 - Arrows clarify the relationship instead of adding noise.

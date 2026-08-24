@@ -21,7 +21,7 @@ import {
 	siteContentLabel,
 	siteImagesLabel,
 	sitePublicLabel,
-	siteRoutesLabel,
+	sitePagesLabel,
 	siteThemeLabel,
 } from './lib/site-paths.mjs';
 
@@ -151,14 +151,12 @@ const getExpectedImagePaths = async () => {
 		const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 
 		for (const section of getBodySections(body).sections) {
-			if (!section.id) continue;
-
 			const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });
 			for (const { image } of getNornaBlockImageReferences(blocks)) {
 				if (image.includes('/') || image.includes('\\')) continue;
 				if (!supportedImageExtensions.has(path.extname(image).toLowerCase())) continue;
 
-				imagePaths.add(toPosixPath(path.join(contentFile.imagesLabel, section.id, image)));
+				imagePaths.add(toPosixPath(path.join(contentFile.imagesLabel, image)));
 			}
 		}
 	}
@@ -174,7 +172,7 @@ const isExpectedUntracked = (entry, expectedImagePaths) => (
 		expectedImagePaths.has(entry.path)
 		|| entry.path === generatedImagesManifestLabel
 		|| entry.path.startsWith(`${sitePublicLabel}/`)
-		|| entry.path.startsWith(`${siteRoutesLabel}/`)
+		|| entry.path.startsWith(`${sitePagesLabel}/`)
 	)
 );
 
@@ -182,7 +180,7 @@ const isAllowedPath = (entry, filePath, expectedImagePaths) => (
 	filePath === siteContentLabel
 	|| filePath === siteThemeLabel
 	|| (!isUntracked(entry) && filePath.startsWith(`${siteImagesLabel}/`))
-	|| filePath.startsWith(`${siteRoutesLabel}/`)
+	|| filePath.startsWith(`${sitePagesLabel}/`)
 	|| filePath.startsWith(`${sitePublicLabel}/`)
 	|| expectedImagePaths.has(filePath)
 	|| filePath.startsWith('src/')
@@ -213,7 +211,7 @@ const assertDeployableStatus = async (entries, expectedImagePaths) => {
 	if (unexpectedUntracked.length > 0) {
 		fail([
 			'Refusing to deploy: unexpected untracked files are present.',
-			`Only new referenced images under ${siteImagesLabel}/<section-id>/ or ${siteRoutesLabel}/<NNN-route-id>/images/<section-id>/ are staged automatically.`,
+			`Only new referenced images directly under ${siteImagesLabel}/ or ${sitePagesLabel}/<NNN-page-id>/images/ are staged automatically.`,
 			...unexpectedUntracked.map((entry) => `- ${formatEntry(entry)}`),
 		].join('\n'));
 	}

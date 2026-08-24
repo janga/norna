@@ -11,7 +11,7 @@ sections do not belong here; they remain in each page's `content.md`.
 
 A logo file is discovered from `site/public/`; no path or site name is
 configured here. The logo links to the homepage, and its alternative text
-comes from the homepage `page.title` in `site/content.md`.
+comes from the homepage Markdown H1 in `site/content.md`.
 
 Add `logo` only to override the discovered file's displayed height:
 
@@ -26,12 +26,12 @@ filenames, placement, portability, and validation rules.
 
 The logo is a separate home link and does not have a section menu. In a
 multi-page site, the homepage remains the first ordinary navigation item, uses
-its `page.title` as its label, and exposes its sections in the same way as
-routes. Route content and route themes cannot replace the shared logo setting.
+its Markdown H1 as its label, and exposes its sections in the same way as
+pages. Page content and page themes cannot replace the shared logo setting.
 
 ## Banners
 
-Use `banners` for short notices shown above page content on every route. List
+Use `banners` for short notices shown above page content on every page. List
 order controls presentation order. Each banner needs a unique lowercase `id`,
 a title, and text:
 

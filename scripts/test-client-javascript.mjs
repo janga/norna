@@ -10,7 +10,7 @@ const tempParent = path.join(repoRoot, 'node_modules', '.cache');
 await mkdir(tempParent, { recursive: true });
 const tempRoot = await mkdtemp(path.join(tempParent, 'norna-client-javascript-'));
 const siteDir = path.join(tempRoot, 'site');
-const routeDir = path.join(siteDir, 'routes', '010-details');
+const pageDir = path.join(siteDir, 'pages', '010-details');
 const configPath = path.join(siteDir, 'config.yaml');
 
 const runBuild = () => {
@@ -62,9 +62,11 @@ palette: paper
 `);
 	await writeFile(path.join(siteDir, 'content.md'), `---
 page:
-  title: Section navigation
   description: A single page with sticky section navigation.
 ---
+
+# Section navigation
+
 ## Intro {#intro}
 
 The section heading is a native anchor target.
@@ -99,25 +101,26 @@ The navigation enhancement keeps native anchors clear of the sticky header.
 
 	await writeConfig();
 
-	await mkdir(path.join(routeDir, 'images', 'details'), { recursive: true });
-	await writeSvg(path.join(routeDir, 'images', 'details', 'first.svg'), '#7b8f78');
-	await writeSvg(path.join(routeDir, 'images', 'details', 'second.svg'), '#a7664b');
+	await mkdir(path.join(pageDir, 'images'), { recursive: true });
+	await writeSvg(path.join(pageDir, 'images', 'first.svg'), '#7b8f78');
+	await writeSvg(path.join(pageDir, 'images', 'second.svg'), '#a7664b');
 	await writeFile(path.join(siteDir, 'content.md'), `---
 page:
-  title: Static baseline
   description: A page without interactive features.
 ---
+
+# Static baseline
+
 ## Intro {#intro}
 
 Ordinary Markdown needs no client-side JavaScript.
 `);
-	await writeFile(path.join(routeDir, 'content.md'), `---
+	await writeFile(path.join(pageDir, 'content.md'), `---
 page:
-  title: Details
   description: Static managed images.
 ---
-## Details {#details}
 
+# Details
 Static image stacks remain static.
 
 \`\`\`norna-image-stack
@@ -142,20 +145,24 @@ Static image stacks remain static.
 
 	await writeFile(path.join(siteDir, 'content.md'), `---
 page:
-  title: Notes
   description: A page with an enhanced sidenote.
 ---
+
+# Notes
+
 ## Intro {#intro}
 
 This sentence has additional context.{note-ref}
 
 {note: The note remains readable without JavaScript, while alignment is enhanced when JavaScript runs.}
 `);
-	await writeFile(path.join(routeDir, 'content.md'), `---
+	await writeFile(path.join(pageDir, 'content.md'), `---
 page:
-  title: Carousel
   description: An interactive image carousel.
 ---
+
+# Carousel
+
 ## Details {#details}
 
 \`\`\`norna-image-carousel
@@ -177,21 +184,22 @@ page:
 
 	await writeFile(path.join(siteDir, 'content.md'), `---
 page:
-  title: Banner
   description: A page with a dismissible banner.
 ---
+
+# Banner
+
 ## Intro {#intro}
 
 The only interactive feature is the banner.
 `);
-	await writeFile(path.join(routeDir, 'content.md'), `---
+	await writeFile(path.join(pageDir, 'content.md'), `---
 page:
-  title: Details
   description: A second plain page.
 ---
-## Details {#details}
 
-Plain route content.
+# Details
+Plain page content.
 `);
 	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `banners:
   - id: test-banner

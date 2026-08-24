@@ -17,7 +17,7 @@ integrates publishing with GitHub Pages only.
 ## How-To And Explanation
 
 - [Content and managed blocks](https://raw.githubusercontent.com/janga/norna/main/docs/content.md)
-- [Routes](https://raw.githubusercontent.com/janga/norna/main/docs/routes.md)
+- [Pages](https://raw.githubusercontent.com/janga/norna/main/docs/pages.md)
 - [Theme presets and overrides](https://raw.githubusercontent.com/janga/norna/main/docs/theme.md)
 - [Images and generated metadata](https://raw.githubusercontent.com/janga/norna/main/docs/images-and-metadata.md)
 - [Local development](https://raw.githubusercontent.com/janga/norna/main/docs/local-development.md)

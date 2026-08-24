@@ -168,7 +168,7 @@ try {
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'theme.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'sitewide-content.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'content.md')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'images', 'work', '.gitkeep')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'images', '.gitkeep')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'public', 'robots.txt')),
 	]);
 	await assertFileIncludes(
@@ -206,9 +206,10 @@ try {
 	);
 	await writeFile(path.join(siteProjectRoot, 'site', 'content.md'), `---
 page:
-  title: Package Check Site
   description: Site used by package checks.
 ---
+
+# Package Check Site
 
 ## Intro {#intro}
 
@@ -227,16 +228,17 @@ This section verifies styled section headings.
 
 This section keeps the package check independent from user-facing starter copy.
 `);
-	await mkdir(path.join(siteProjectRoot, 'site', 'routes', '010-about'), { recursive: true });
-	await writeFile(path.join(siteProjectRoot, 'site', 'routes', '010-about', 'content.md'), `---
+	await mkdir(path.join(siteProjectRoot, 'site', 'pages', '010-about'), { recursive: true });
+	await writeFile(path.join(siteProjectRoot, 'site', 'pages', '010-about', 'content.md'), `---
 page:
-  title: About the site
-  description: Route used by package checks.
+  description: Page used by package checks.
 ---
+
+# About the site
 
 ## About {#about}
 
-This route verifies that packaged norna sites can build route pages.
+This page verifies that packaged norna sites can build additional pages.
 `);
 
 	await runInherit(npmBin, ['install', '--no-audit', '--no-fund', '--prefer-offline', '--fetch-retries=0'], { cwd: siteProjectRoot, env: npmEnv });
@@ -249,9 +251,9 @@ This route verifies that packaged norna sites can build route pages.
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
 	]);
-	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
-	await runInherit(npxBin, ['norna', 'doctor'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
-	await runInherit(npxBin, ['norna', 'config:check'], { cwd: path.join(siteProjectRoot, 'site', 'images', 'work'), env: npmEnv });
+	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: path.join(siteProjectRoot, 'site', 'images'), env: npmEnv });
+	await runInherit(npxBin, ['norna', 'doctor'], { cwd: path.join(siteProjectRoot, 'site', 'images'), env: npmEnv });
+	await runInherit(npxBin, ['norna', 'config:check'], { cwd: path.join(siteProjectRoot, 'site', 'images'), env: npmEnv });
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });

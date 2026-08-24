@@ -2,7 +2,7 @@
 
 Norna expects a defined set of files and directories. Their names and locations
 are part of the site model: following the structure lets Norna find content,
-presentation, configuration, routes, and assets without path configuration.
+presentation, configuration, pages, and assets without path configuration.
 
 The selected site directory is `site/` by default:
 
@@ -13,13 +13,13 @@ site/
 |-- sitewide-content.yaml
 |-- content.md
 |-- images/
-|   `-- <section-id>/
-|-- routes/
-|   `-- <NNN-route-id>/
+|   `-- image.jpg
+|-- pages/
+|   `-- <NNN-page-id>/
 |       |-- content.md
 |       |-- theme.yaml
 |       `-- images/
-|           `-- <section-id>/
+|           `-- image.jpg
 |-- public/
 `-- .norna/
     |-- generated-images.json
@@ -37,7 +37,7 @@ case-insensitive file systems.
 | `config.yaml` | Yes | Public URL, language, and browser scroll behavior. |
 | `theme.yaml` | Yes | Complete visual preset and optional focused overrides. |
 | `sitewide-content.yaml` | No | Shared logo display settings, banners, and footer. |
-| `content.md` | Yes | Homepage metadata, sections, prose, and Norna blocks. |
+| `content.md` | Yes | Homepage title, optional metadata, sections, prose, and Norna blocks. |
 
 These responsibilities are deliberately separate:
 
@@ -47,10 +47,10 @@ These responsibilities are deliberately separate:
   only a preset selection.
 - [`sitewide-content.yaml`](sitewide-content.md) contains editorial material
   shared by every page.
-- [`content.md`](content.md) is the homepage page file and remains ordinary
-  Markdown with YAML frontmatter.
+- [`content.md`](content.md) is the homepage file and remains ordinary
+  Markdown. YAML frontmatter is optional.
 
-Routes cannot provide `config.yaml` or `sitewide-content.yaml`. Technical
+Pages cannot provide `config.yaml` or `sitewide-content.yaml`. Technical
 configuration and shared logo, banner, and footer settings have one site-wide
 source.
 
@@ -59,32 +59,32 @@ source.
 Managed homepage images belong in:
 
 ```text
-site/images/<section-id>/
+site/images/
 ```
 
-The directory name must match an explicit level 2 Markdown section id in
-`content.md`. Markdown blocks refer to managed images by filename, not by path.
-See [Images and Metadata](images-and-metadata.md) for supported formats,
-generated variants, and syncing.
+All managed images used by the homepage share this directory. Markdown blocks
+refer to managed images by filename, not by path. See
+[Images and Metadata](images-and-metadata.md) for supported formats, generated
+variants, and syncing.
 
-## Routes
+## Pages
 
-Each first-level route is one directory under `routes/`:
+Each first-level page is one directory under `pages/`:
 
 ```text
-site/routes/010-guide/
+site/pages/010-guide/
 |-- content.md
 |-- theme.yaml
 `-- images/
-    `-- intro/
+    `-- image.jpg
 ```
 
-`content.md` is required for a route. The optional route `theme.yaml` replaces
-the root visual theme for that route. Route images follow the same
-`images/<section-id>/` convention as homepage images.
+`content.md` is required for a page. The optional page `theme.yaml` replaces
+the root visual theme for that page. Page images live directly in that page's
+`images/` directory.
 
-The three-digit route prefix controls navigation order and is not part of the
-URL. See [Routes](routes.md) for exact directory-name and route-id rules.
+The three-digit page prefix controls navigation order and is not part of the
+URL. See [Pages](pages.md) for exact directory-name and page-id rules.
 
 ## Public Files
 

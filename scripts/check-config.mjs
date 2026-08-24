@@ -2,7 +2,7 @@ import { siteConfigLabel, sitePublicLabel } from './lib/site-paths.mjs';
 import { getLogoAssets, getPublicAssetInspection } from './lib/logo-assets.mjs';
 import { logoAssetFilenames } from './lib/public-asset-conventions.mjs';
 import { readSitewideContent } from './lib/sitewide-content.mjs';
-import { readThemeConfig, validateRouteThemeFiles } from './lib/theme-config.mjs';
+import { readThemeConfig, validatePageThemeFiles } from './lib/theme-config.mjs';
 
 const formatErrorMessage = (error) => {
 	if (error instanceof Error) {
@@ -16,7 +16,7 @@ try {
 	const { projectConfig } = await import('./lib/project-config.mjs');
 	const themeConfig = await readThemeConfig();
 	const sitewideContent = await readSitewideContent();
-	await validateRouteThemeFiles();
+	await validatePageThemeFiles();
 	const logoAssets = getLogoAssets();
 	const publicAssetInspection = getPublicAssetInspection();
 	const logoAssetPaths = logoAssetFilenames.map((filename) => `${sitePublicLabel}/${filename}`);
