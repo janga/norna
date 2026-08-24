@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import {
 	validateConfigYamlStructure,
 } from './site-content.mjs';
+import { navigationModeNames } from './navigation-model.mjs';
 import {
 	siteConfigLabel,
 	siteConfigPath,
@@ -185,6 +186,9 @@ const localeLabels = Object.freeze({
 		dismissBanner: 'Dismiss notice',
 		built: 'Built',
 		images: 'Images',
+		navigationBack: 'Back to pages',
+		navigationMenu: 'Menu',
+		navigationOverview: 'Overview',
 		note: 'Note',
 		pageNavigation: 'On this page',
 		siteBanners: 'Site notices',
@@ -195,6 +199,9 @@ const localeLabels = Object.freeze({
 		dismissBanner: 'Stäng meddelande',
 		built: 'Byggd',
 		images: 'Bilder',
+		navigationBack: 'Tillbaka till sidor',
+		navigationMenu: 'Meny',
+		navigationOverview: 'Översikt',
 		note: 'Not',
 		pageNavigation: 'På den här sidan',
 		siteBanners: 'Meddelanden',
@@ -354,6 +361,22 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 	});
 };
 
+export const resolveThemeNavigationConfig = (theme, sourceLabel = siteThemeLabel) => {
+	const resolvedTheme = assertObject(resolveThemeConfig(theme, sourceLabel), 'theme YAML', sourceLabel);
+	const rawNavigation = assertObject(resolvedTheme.navigation ?? {}, 'navigation', sourceLabel);
+
+	return Object.freeze({
+		mode: readEnum(
+			rawNavigation,
+			'mode',
+			'navigation',
+			navigationModeNames,
+			'automatic',
+			sourceLabel,
+		),
+	});
+};
+
 export const projectConfig = Object.freeze({
 	site: Object.freeze({
 		basePath: siteUrl.pathname,
@@ -361,6 +384,7 @@ export const projectConfig = Object.freeze({
 	}),
 	...resolveThemeVisualConfig(rawTheme, siteThemeLabel),
 	navigation: Object.freeze({
+		...resolveThemeNavigationConfig(rawTheme, siteThemeLabel),
 		scrollBehavior: readEnum(
 			rawConfig,
 			'scrollBehavior',

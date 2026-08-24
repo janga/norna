@@ -228,7 +228,7 @@ const readPageTypography = async (contentFile, siteThemeTypography) => {
 	}
 
 	const pageTypography = await readPageThemeTypography(contentFile, siteThemeTypography);
-	const sections = getBodySections(body).sections
+	const sections = (await getBodySections(body)).sections
 		.filter((section) => section.id)
 		.map((section) => {
 		return {

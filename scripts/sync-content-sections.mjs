@@ -13,7 +13,6 @@ import {
 import {
 	getBodySections,
 	getContentFiles,
-	getHeadingId,
 	getImageCandidatesByName,
 	getDeprecatedInlineStyleReferences,
 	readSiteFile,
@@ -23,6 +22,7 @@ import {
 	validateFrontmatterIndentation,
 	validateThemeYamlStructure,
 } from './lib/site-content.mjs';
+import { getHeadingIdentifierIssues } from './lib/heading-ids.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
 	siteThemeLabel,
@@ -414,7 +414,24 @@ for (const contentFile of contentFiles) {
 	validateFrontmatterIndentation(frontmatter, addIssue);
 	validateContentFrontmatterStructure(frontmatter, addIssue);
 
-	const { pageHeadings, prelude, sections } = getBodySections(body);
+	const { headings, pageHeadings, prelude, sections } = await getBodySections(body);
+	const headingIdentifierIssues = getHeadingIdentifierIssues(headings);
+	const invalidHeadingLines = new Set();
+	for (const issue of headingIdentifierIssues) {
+		invalidHeadingLines.add(issue.heading.line);
+		if (issue.otherHeading) invalidHeadingLines.add(issue.otherHeading.line);
+		const line = bodyLineOffset + issue.heading.line;
+		const relatedLine = issue.otherHeading
+			? ` The other heading is on line ${bodyLineOffset + issue.otherHeading.line}.`
+			: '';
+		addIssue({
+			severity: 'error',
+			message: `${contentFile.contentLabel} line ${line}: ${issue.message}${relatedLine}`,
+			fix: issue.fix,
+			sectionId: `${contentFile.contentLabel}:heading:${issue.heading.line}`,
+			sectionLabel: `${contentFile.contentLabel} line ${line}`,
+		});
+	}
 	const sectionsById = new Map();
 	const blockResultsBySection = new Map();
 	const validSections = new Set();
@@ -460,34 +477,23 @@ for (const contentFile of contentFiles) {
 
 	for (const section of sections) {
 		if (section.isPageTitle) {
-			if (pageHeadings.length === 1 && sections[0] === section) {
-				if (getHeadingId(section.heading)) {
-					addSectionIssue(contentFile, section, {
-						severity: 'error',
-						message: 'The Markdown H1 is the page title and must not have a section id.',
-						fix: 'Remove the {#...} suffix. Only level 2 section headings use explicit ids.',
-					});
-				} else {
-					validSections.add(section);
-				}
+			if (
+				pageHeadings.length === 1
+				&& sections[0] === section
+				&& !invalidHeadingLines.has(section.line)
+			) {
+				validSections.add(section);
 			}
 			continue;
 		}
 
-		if (!section.id) {
-			addSectionIssue(contentFile, section, {
-				severity: 'error',
-				message: `Section heading "${section.heading.replace(/^##\s+/, '')}" is missing an explicit id.`,
-				fix: `Write it as: ${section.heading} {#section-id}`,
-			});
-			continue;
-		}
+		if (invalidHeadingLines.has(section.line) || !section.id) continue;
 
 		if (sectionsById.has(section.id)) {
 			addSectionIssue(contentFile, section, {
 				severity: 'error',
-				message: `Duplicate Markdown section heading id "${section.id}".`,
-				fix: 'Each Markdown level 2 section heading must use a unique explicit id within the page.',
+				message: `Duplicate Markdown heading id "${section.id}".`,
+				fix: 'Add a unique explicit id to at least one heading.',
 			});
 			continue;
 		}

@@ -15,7 +15,7 @@ const filenames = [
 ];
 const requiredRichHelp = {
 	'config.schema.json': ['url', 'language', 'scrollBehavior'],
-	'theme.schema.json': ['preset', 'layout', 'images', 'typography', 'palette', 'sectionSurfaces'],
+	'theme.schema.json': ['preset', 'navigation', 'layout', 'images', 'typography', 'palette', 'sectionSurfaces'],
 	'sitewide-content.schema.json': ['logo', 'banners', 'footer'],
 	'content-frontmatter.schema.json': ['page', 'navigation'],
 };

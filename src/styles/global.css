@@ -325,7 +325,7 @@ a {
 	text-underline-offset: 0.35em;
 }
 
-.mobile-page-nav a[aria-current='location'] {
+.mobile-nav-sections a[aria-current='location'] {
 	opacity: 1;
 	text-decoration: underline;
 	text-decoration-thickness: 1px;
@@ -1153,6 +1153,10 @@ ul {
 		--site-top-anchor-offset: 6.25rem;
 	}
 
+	.site-top {
+		backdrop-filter: none;
+	}
+
 	.site-nav-row {
 		width: min(calc(100% - (var(--content-gutter) * 2)), var(--page-width));
 		padding: 0.75rem 0;
@@ -1177,30 +1181,20 @@ ul {
 		display: block;
 		position: relative;
 		flex: 0 0 auto;
+		margin-left: auto;
 	}
 
-	.page-nav ul {
-		gap: 0 1.55rem;
-		padding: 0 1rem;
-		text-align: center;
-	}
-
-	.page-nav li + li::before {
-		left: -0.95rem;
-	}
-
-	.page-nav a {
-		padding: 0.95rem 0 0.85rem;
-		font-size: 0.72rem;
-		white-space: nowrap;
+	.page-nav {
+		display: none;
 	}
 
 	.mobile-nav-menu summary {
 		display: flex;
 		align-items: center;
-		gap: 0.42rem;
+		gap: 0.5rem;
+		min-height: 2.75rem;
 		border: 1px solid currentColor;
-		padding: 0.5rem 0.7rem 0.44rem;
+		padding: 0.55rem 0.75rem;
 		font-size: 0.72rem;
 		font-weight: 700;
 		letter-spacing: 0.1em;
@@ -1211,14 +1205,15 @@ ul {
 	}
 
 	.mobile-nav-menu summary::after {
-		content: "▾";
-		font-size: 0.82em;
+		content: "☰";
+		font-size: 1rem;
 		line-height: 1;
-		opacity: 0.78;
+		opacity: 0.86;
 	}
 
 	.mobile-nav-menu[open] summary::after {
-		transform: rotate(180deg);
+		content: "×";
+		font-size: 1.25rem;
 	}
 
 	.mobile-nav-menu summary::-webkit-details-marker {
@@ -1226,47 +1221,179 @@ ul {
 	}
 
 	.mobile-nav-panel {
-		position: absolute;
-		top: calc(100% + 0.75rem);
+		position: fixed;
+		top: var(--site-top-anchor-offset);
 		right: 0;
-		display: grid;
-		gap: 1.75rem;
-		width: min(82vw, 22rem);
-		border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
-		padding: 1rem;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		max-height: none;
+		border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+		padding: clamp(1.25rem, 5vw, 2rem) var(--content-gutter) max(1.5rem, env(safe-area-inset-bottom));
 		background: var(--site-top-background-color, var(--color-nav-background));
-		box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 0.28);
+		box-shadow: 0 1.5rem 3.5rem rgb(0 0 0 / 0.32);
 		color: var(--site-top-text-color, var(--color-text));
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+
+	.mobile-site-nav {
+		width: min(100%, 32rem);
+		margin: 0 auto;
 	}
 
 	.mobile-nav-panel h2 {
-		margin: 0 0 0.75rem;
-		font-size: 0.68rem;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		line-height: 1;
-		text-transform: uppercase;
-	}
-
-	.mobile-page-nav {
-		border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
-		padding-top: 1.05rem;
+		margin: 0 0 1.25rem;
+		font-size: clamp(1.25rem, 5vw, 1.55rem);
+		font-weight: 650;
+		letter-spacing: 0;
+		line-height: 1.2;
+		text-transform: none;
 	}
 
 	.mobile-nav-panel ul {
 		display: grid;
-		gap: 0.65rem;
+		gap: 0;
 	}
 
-	.mobile-nav-panel a {
-		font-size: 0.82rem;
-		letter-spacing: 0.06em;
+	.mobile-nav-panel a,
+	.mobile-nav-page-open,
+	.mobile-nav-back {
+		font-family: inherit;
+		font-size: 0.94rem;
+		letter-spacing: 0;
+		line-height: 1.35;
+		text-transform: none;
 	}
 
-	.mobile-page-nav a[aria-current='true'] {
+	.mobile-nav-page {
+		border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+		padding: 0;
+	}
+
+	.mobile-nav-page:first-child {
+		border-top: 0;
+	}
+
+	.mobile-nav-page > a,
+	.mobile-nav-page-open {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		min-height: 3.4rem;
+		padding: 0.8rem 0;
+		font-weight: 600;
+	}
+
+	.mobile-nav-page-open {
+		display: none;
+		border: 0;
+		background: transparent;
+		color: currentColor;
+		cursor: pointer;
+		font-weight: 600;
+		text-align: left;
+	}
+
+	.mobile-nav-page-open::after {
+		content: "›";
+		font-size: 1.35rem;
+		line-height: 1;
+		opacity: 0.68;
+	}
+
+	.mobile-nav-page-open:hover > span,
+	.mobile-nav-page-open:focus-visible > span,
+	.mobile-nav-page-open[aria-current='page'] > span {
 		text-decoration: underline;
 		text-decoration-thickness: 1px;
-		text-underline-offset: 0.35em;
+		text-underline-offset: 0.3em;
+	}
+
+	.mobile-nav-menu[data-mobile-navigation-ready='true'] .mobile-nav-page-open,
+	.mobile-nav-menu[data-mobile-navigation-ready='true'] .mobile-nav-back {
+		display: flex;
+	}
+
+	.mobile-nav-menu[data-mobile-navigation-ready='true'] .mobile-nav-page-fallback {
+		display: none;
+	}
+
+	.mobile-nav-view[hidden] {
+		display: none;
+	}
+
+	.mobile-nav-menu:not([data-mobile-navigation-ready='true']) .mobile-nav-page-view:not([data-current-page='true']) {
+		display: none;
+	}
+
+	.mobile-nav-page-view + .mobile-nav-page-view,
+	.mobile-nav-view + .mobile-nav-view {
+		margin-top: 2rem;
+	}
+
+	.mobile-nav-menu[data-mobile-navigation-ready='true'] .mobile-nav-view {
+		margin-top: 0;
+	}
+
+	.mobile-nav-back {
+		display: none;
+		align-items: center;
+		gap: 0.55rem;
+		min-height: 2.75rem;
+		margin: -0.4rem 0 0.65rem;
+		border: 0;
+		padding: 0;
+		background: transparent;
+		color: currentColor;
+		cursor: pointer;
+		opacity: 0.78;
+	}
+
+	.mobile-nav-back::before {
+		content: "‹";
+		font-size: 1.35rem;
+		line-height: 1;
+	}
+
+	.mobile-nav-back:hover,
+	.mobile-nav-back:focus-visible {
+		opacity: 1;
+		text-decoration: underline;
+		text-underline-offset: 0.25em;
+	}
+
+	.mobile-nav-sections {
+		border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+	}
+
+	.mobile-nav-sections li {
+		border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+	}
+
+	.mobile-nav-sections a {
+		min-height: 3.2rem;
+		padding: 0.85rem 0;
+		font-size: 0.92rem;
+		opacity: 0.78;
+	}
+
+	.mobile-nav-sections .mobile-nav-overview {
+		font-weight: 650;
+	}
+
+	.mobile-nav-sections a:hover,
+	.mobile-nav-sections a:focus-visible,
+	.mobile-nav-sections a[aria-current='location'] {
+		opacity: 1;
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.25em;
+	}
+
+	.mobile-navigation-open {
+		overflow: hidden;
 	}
 
 	.site-content {

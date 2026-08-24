@@ -150,7 +150,7 @@ const getExpectedImagePaths = async () => {
 	for (const contentFile of contentFiles) {
 		const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 
-		for (const section of getBodySections(body).sections) {
+		for (const section of (await getBodySections(body)).sections) {
 			const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });
 			for (const { image } of getNornaBlockImageReferences(blocks)) {
 				if (image.includes('/') || image.includes('\\')) continue;

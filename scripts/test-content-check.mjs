@@ -599,7 +599,7 @@ Page text.
 		const output = getOutput(result);
 		assert.equal(result.status, 1, output);
 		assert.match(output, /The page contains content before its first heading\./);
-		assert.match(output, /The Markdown H1 is the page title and must not have a section id\./);
+		assert.match(output, /The Markdown H1 is the page title and must not have an id\./);
 	});
 });
 

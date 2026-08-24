@@ -573,44 +573,6 @@ const refresh = () => {
 	void vscode.window.showInformationMessage('Norna IntelliSense refreshed.');
 };
 
-const slugifySectionTitle = (value) => value
-	.normalize('NFKD')
-	.replace(/[\u0300-\u036f]/g, '')
-	.replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
-	.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-	.replace(/[*_~`]/g, '')
-	.toLowerCase()
-	.replace(/[^a-z0-9]+/g, '-')
-	.replace(/^-+|-+$/g, '');
-
-const getUniqueSectionId = (document, title) => {
-	const base = slugifySectionTitle(title);
-	if (!base) return null;
-	const ids = new Set(Array.from(document.getText().matchAll(/\{#([a-z0-9-]+)\}/g), (match) => match[1]));
-	let candidate = base;
-	let suffix = 2;
-	while (ids.has(candidate)) {
-		candidate = `${base}-${suffix}`;
-		suffix += 1;
-	}
-	return candidate;
-};
-
-const makeSectionIdAction = (document, diagnostic) => {
-	const line = document.lineAt(diagnostic.range.start.line);
-	const match = line.text.match(/^(##\s+)(.*?)(\s*)$/);
-	if (!match) return null;
-	const id = getUniqueSectionId(document, match[2]);
-	if (!id) return null;
-	const edit = new vscode.WorkspaceEdit();
-	edit.replace(document.uri, line.range, `${match[1]}${match[2]} {#${id}}${match[3]}`);
-	const action = new vscode.CodeAction(`Add section id {#${id}}`, vscode.CodeActionKind.QuickFix);
-	action.edit = edit;
-	action.isPreferred = true;
-	action.diagnostics = [diagnostic];
-	return action;
-};
-
 const makeCloseFenceAction = (document, diagnostic) => {
 	const opening = document.lineAt(diagnostic.range.start.line).text.match(/^ {0,3}(`{3,}|~{3,})/);
 	if (!opening) return null;
@@ -812,7 +774,6 @@ async function activate(context) {
 			provideCodeActions: (document, _range, codeActionContext) => codeActionContext.diagnostics
 				.filter((diagnostic) => diagnostic.source === 'Norna')
 				.flatMap((diagnostic) => {
-					if (diagnostic.code === 'missing-section-id') return [makeSectionIdAction(document, diagnostic)].filter(Boolean);
 					if (diagnostic.code === 'unclosed-norna-block') return [makeCloseFenceAction(document, diagnostic)].filter(Boolean);
 					if (diagnostic.code === 'image-needs-sync') return [makeContentSyncAction(document, diagnostic)];
 					if (diagnostic.code === 'local-markdown-image') return [makeManagedImageAction(document, diagnostic)].filter(Boolean);

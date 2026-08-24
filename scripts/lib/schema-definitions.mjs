@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { navigationModeNames } from './navigation-model.mjs';
 import { themePresetNames } from './theme-presets.mjs';
 
 const isDateOnly = (value) => {
@@ -17,6 +18,7 @@ const themePreset = z.enum(themePresetNames).describe('Complete Norna visual pre
 const presentationPalette = z.enum(['dark', 'light', 'paper']).describe('Coordinated site color palette. Omit this to use the selected preset.');
 const sectionSurface = z.enum(['base', 'soft', 'emphasis']).describe('Semantic section surface from the active palette.');
 const spacingDensity = z.enum(['compact', 'normal', 'airy']).describe('Coordinated spacing density. Omit this to use the selected preset.');
+const navigationMode = z.enum(navigationModeNames).describe('Site-wide navigation model. Automatic selects from the site structure.');
 const lineHeight = z.number()
 	.min(1, 'Use a unitless line height of at least 1.')
 	.max(3, 'Use a unitless line height of at most 3.')
@@ -129,6 +131,9 @@ const themeImages = z.object({
 	maxAvailableWidthPercent: responsivePercent.optional().describe('Maximum percentage of available horizontal space used by managed images.'),
 	maxAvailableHeightPercent: responsivePercent.optional().describe('Maximum percentage of viewport height used by managed images.'),
 }).strict().describe('Optional defaults for managed image presentation.');
+const themeNavigation = z.object({
+	mode: navigationMode.optional().describe('Navigation model. Omit this to keep the selected preset.'),
+}).strict().describe('Site-wide navigation behavior. This may be set only in the root theme.');
 const sectionSurfaces = z.array(sectionSurface).min(1).max(3).refine(
 	(value) => new Set(value).size === value.length,
 	'Each section surface may appear only once.',
@@ -172,6 +177,7 @@ const siteShape = {
 
 const themeVisualShape = {
 	preset: themePreset.optional().describe('Complete visual starting point. Add only the overrides the site actually needs.'),
+	navigation: themeNavigation.optional(),
 	layout: themeLayout.optional(),
 	images: themeImages.optional(),
 	typography: themeTypography.optional(),

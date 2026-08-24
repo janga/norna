@@ -2,9 +2,14 @@
 	const siteTop = document.querySelector<HTMLElement>('.site-top');
 	const mobileMenu = document.querySelector<HTMLDetailsElement>('.mobile-nav-menu');
 	const sectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(
-		'.site-nav-submenu a, .mobile-page-nav a, .page-nav a',
+		'.site-nav-submenu a, .mobile-nav-sections a, .page-nav a',
 	));
 	const submenuItems = Array.from(document.querySelectorAll<HTMLElement>('.site-nav-item-has-sections'));
+	const mobileViews = Array.from(mobileMenu?.querySelectorAll<HTMLElement>('[data-mobile-nav-view]') ?? []);
+	const mobileOpenButtons = Array.from(mobileMenu?.querySelectorAll<HTMLButtonElement>('[data-mobile-nav-open]') ?? []);
+	const mobileBackButtons = Array.from(mobileMenu?.querySelectorAll<HTMLButtonElement>('[data-mobile-nav-back]') ?? []);
+	const mobileDestinationLinks = Array.from(mobileMenu?.querySelectorAll<HTMLAnchorElement>('.mobile-nav-destination') ?? []);
+	const mobileMenuSummary = mobileMenu?.querySelector<HTMLElement>(':scope > summary');
 
 	const setAnchorOffset = () => {
 		if (!siteTop) return;
@@ -44,6 +49,78 @@
 		item.addEventListener('pointerleave', resetDismissal);
 		item.querySelector<HTMLAnchorElement>(':scope > a')?.addEventListener('focus', resetDismissal);
 	});
+
+	if (mobileMenu && mobileViews.length > 0) {
+		const initialViewId = mobileMenu.dataset.initialView ?? mobileViews[0]?.dataset.mobileNavView;
+
+		const showMobileView = (viewId: string, moveFocus = true) => {
+			const activeView = mobileViews.find((view) => view.dataset.mobileNavView === viewId);
+			if (!activeView) return;
+
+			mobileViews.forEach((view) => {
+				view.hidden = view !== activeView;
+			});
+			mobileMenu.dataset.activeView = viewId;
+
+			if (moveFocus) {
+				window.requestAnimationFrame(() => (
+					activeView.querySelector<HTMLElement>('.mobile-nav-back, h2')?.focus()
+				));
+			}
+		};
+
+		mobileMenu.dataset.mobileNavigationReady = 'true';
+		showMobileView(initialViewId ?? '', false);
+
+		mobileOpenButtons.forEach((button) => {
+			button.addEventListener('click', () => showMobileView(button.dataset.mobileNavOpen ?? ''));
+		});
+
+		mobileBackButtons.forEach((button) => {
+			button.addEventListener('click', () => showMobileView(button.dataset.mobileNavBack ?? ''));
+		});
+
+		mobileDestinationLinks.forEach((link) => {
+			link.addEventListener('click', () => {
+				mobileMenu.open = false;
+			});
+		});
+
+		mobileMenu.addEventListener('toggle', () => {
+			document.documentElement.classList.toggle('mobile-navigation-open', mobileMenu.open);
+			if (mobileMenu.open) {
+				showMobileView(initialViewId ?? '');
+			}
+		});
+
+		mobileMenu.addEventListener('keydown', (event) => {
+			if (!mobileMenu.open) return;
+
+			if (event.key === 'Escape') {
+				event.preventDefault();
+				mobileMenu.open = false;
+				mobileMenuSummary?.focus();
+				return;
+			}
+
+			if (event.key !== 'Tab') return;
+
+			const focusableElements = Array.from(mobileMenu.querySelectorAll<HTMLElement>(
+				'summary, button:not([hidden]), a[href]:not([hidden]), [tabindex]:not([tabindex="-1"]):not([hidden])',
+			)).filter((element) => element.getClientRects().length > 0);
+			const firstFocusable = focusableElements[0];
+			const lastFocusable = focusableElements.at(-1);
+			if (!firstFocusable || !lastFocusable) return;
+
+			if (event.shiftKey && document.activeElement === firstFocusable) {
+				event.preventDefault();
+				lastFocusable.focus();
+			} else if (!event.shiftKey && document.activeElement === lastFocusable) {
+				event.preventDefault();
+				firstFocusable.focus();
+			}
+		});
+	}
 
 	sectionLinks.forEach((link) => {
 		link.addEventListener('click', (event) => {

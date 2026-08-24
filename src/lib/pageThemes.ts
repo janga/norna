@@ -3,7 +3,7 @@ import path from 'node:path';
 import {
 	validatePageThemeYamlStructure,
 } from '../../scripts/lib/site-content.mjs';
-import { sitePagesDir, sitePagesLabel, sitewideContentLabel } from '../../scripts/lib/site-paths.mjs';
+import { sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
 import { parseYamlConfig } from '../../scripts/lib/yaml-config.mjs';
 
 type PageTheme = {
@@ -29,7 +29,7 @@ export const getPageTheme = async (pageDirectory: string | null): Promise<PageTh
 			validateStructure: validatePageThemeYamlStructure,
 		});
 		if (Object.hasOwn(data, 'navigation')) {
-			throw new Error(`${themeLabel} may not define navigation. Page listing belongs in content.md, while logo display settings belong in ${sitewideContentLabel}.`);
+			throw new Error(`${themeLabel} may not define navigation. Set the site-wide navigation mode in the root theme.yaml.`);
 		}
 		return {
 			id: `pages/${themeSegments.join('/')}/theme`,

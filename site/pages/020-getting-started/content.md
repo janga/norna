@@ -5,7 +5,6 @@ page:
 
 # Getting Started
 
-
 ## Create a site {#create}
 
 You need Node.js 22.12 or later. ImageMagick is used when Norna generates image
@@ -136,14 +135,14 @@ The `logo` block only changes the displayed height of a supported logo file in
 `site/public/`; it does not select or enable the file.
 
 The optional logo is a separate link to the homepage and has no section menu.
-The homepage remains the first ordinary navigation item, where its sections
-are available in the same way as sections on additional pages.
+The homepage remains the first ordinary navigation item, where its sections are
+available in the same way as sections on additional pages.
 
 ### Configuration
 
-`config.yaml` contains the public URL and optional language and smooth scrolling.
-Norna derives the base path from the URL and discovers GitHub repository details
-when a deploy command runs.
+`config.yaml` contains the public URL and optional language and smooth
+scrolling. Norna derives the base path from the URL and discovers GitHub
+repository details when a deploy command runs.
 
 ### Assets
 
@@ -195,8 +194,8 @@ To inspect a preset before overriding it, export a commented reference file:
 npm run norna:theme:export -- documentation
 ```
 
-This creates `site/orig-documentation-theme.yaml`. Norna does not load that file;
-only `theme.yaml` is active. The command refuses to overwrite an existing
+This creates `site/orig-documentation-theme.yaml`. Norna does not load that
+file; only `theme.yaml` is active. The command refuses to overwrite an existing
 reference file.
 
 A page can select a different complete preset in its own optional `theme.yaml`.
@@ -274,7 +273,7 @@ Relevant documentation:
 
 ## Publish and project setup {#publish}
 
-### Publish
+### Publish to GitHub
 
 Norna currently provides integrated publishing for GitHub Pages.
 

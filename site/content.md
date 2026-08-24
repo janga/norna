@@ -1,12 +1,11 @@
 ---
 page:
   description: >-
-    An opinionated CLI for building websites from content, presentation and configuration kept as
-    files.
+    An opinionated CLI for building websites from content, presentation and
+    configuration kept as files.
 ---
 
 # Norna
-
 
 ## What is Norna? {#intro}
 
@@ -22,8 +21,8 @@ layer, including page structure, navigation, responsive layout and built-in
 patterns for images and other common content.
 
 The CLI lets you preview the site while editing, validate its source, process
-managed images and build the finished website. The source remains ordinary
-files that you can inspect, edit and version with the rest of your work.
+managed images and build the finished website. The source remains ordinary files
+that you can inspect, edit and version with the rest of your work.
 
 ## Why Norna? {#why}
 
@@ -61,7 +60,7 @@ exchange for staying inside Norna's site model.
 Norna is for websites that should be easy to edit, review and publish as part of
 an ordinary file-based workflow.
 
-### Good fit
+### Good fit {#good-fit3}
 
 - project and product websites
 - documentation and guides

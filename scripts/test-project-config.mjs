@@ -4,6 +4,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { getBasePathRedirectLocation } from './lib/base-path-redirect.mjs';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
 const projectConfigUrl = pathToFileURL(path.join(repoRoot, 'scripts', 'lib', 'project-config.mjs')).href;
@@ -14,6 +15,7 @@ const importScript = `
 		basePath: projectConfig.site.basePath,
 		language: projectConfig.locale.lang,
 		labels: projectConfig.locale.labels,
+		navigationMode: projectConfig.navigation.mode,
 		scrollBehavior: projectConfig.navigation.scrollBehavior,
 		url: projectConfig.site.url,
 	}));
@@ -50,6 +52,12 @@ const assertFailure = (result, expectedPattern) => {
 };
 
 try {
+	assert.equal(getBasePathRedirectLocation('/norna/', '/norna'), '/norna/');
+	assert.equal(getBasePathRedirectLocation('/norna/', '/norna?source=test'), '/norna/?source=test');
+	assert.equal(getBasePathRedirectLocation('/norna/', '/norna/'), undefined);
+	assert.equal(getBasePathRedirectLocation('/norna/', '/norna/concepts/'), undefined);
+	assert.equal(getBasePathRedirectLocation('/', '/'), undefined);
+
 	const minimalSite = await createSite('minimal', 'url: https://example.com/docs\n');
 	const minimalResult = loadConfig(minimalSite);
 	assert.equal(minimalResult.status, 0, minimalResult.stderr);
@@ -60,12 +68,16 @@ try {
 			dismissBanner: 'Dismiss notice',
 			built: 'Built',
 			images: 'Images',
+			navigationBack: 'Back to pages',
+			navigationMenu: 'Menu',
+			navigationOverview: 'Overview',
 			note: 'Note',
 			pageNavigation: 'On this page',
 			siteBanners: 'Site notices',
 			siteNavigation: 'Pages',
 			skipToContent: 'Skip to content',
 		},
+		navigationMode: 'automatic',
 		scrollBehavior: 'instant',
 		url: 'https://example.com/docs/',
 	});
@@ -78,6 +90,15 @@ try {
 	assert.equal(localizedConfig.labels.built, 'Byggd');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
+
+	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\n');
+	await writeFile(path.join(treeNavigationSite.siteDir, 'theme.yaml'), `preset: documentation
+navigation:
+  mode: tree
+`);
+	const treeNavigationResult = loadConfig(treeNavigationSite);
+	assert.equal(treeNavigationResult.status, 0, treeNavigationResult.stderr);
+	assert.equal(JSON.parse(treeNavigationResult.stdout).navigationMode, 'tree');
 
 	const overrideResult = loadConfig(minimalSite, {
 		NORNA_SITE_URL: 'http://127.0.0.1:4567/preview',

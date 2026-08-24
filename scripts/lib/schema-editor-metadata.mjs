@@ -166,9 +166,22 @@ const addThemeHelp = (jsonSchema) => {
 	].join('\n\n');
 	addHelp(jsonSchema, 'preset', [
 		yamlExample('preset: documentation'),
-		'Selects coordinated layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.',
+		'Selects coordinated navigation, layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.',
 		documentationLink('Compare theme presets', 'theme.md', 'theme-presets'),
 	]);
+	addHelp(jsonSchema, 'navigation', [
+		yamlExample('navigation:\n  mode: automatic'),
+		'Sets the site-wide navigation model. Only the root theme may override this preset value.',
+		documentationLink('Theme reference', 'theme.md'),
+	]);
+	addFieldHelp(
+		jsonSchema,
+		'navigation.mode',
+		'navigation:\n  mode: automatic',
+		'theme.md',
+		undefined,
+		['automatic', 'sections', 'top', 'tree'],
+	);
 	addHelp(jsonSchema, 'layout', [
 		yamlExample('layout:\n  density: compact\n  pageWidth: 72rem'),
 		'Overrides page width, gutters and structural spacing after the selected preset.',

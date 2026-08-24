@@ -1,5 +1,9 @@
 import { markdownToHtml } from 'satteri';
 import projectConfig from '../../scripts/lib/project-config.mjs';
+import {
+	formatHeadingIdentifierIssue,
+	getHeadingIdentifierIssues,
+} from '../../scripts/lib/heading-ids.mjs';
 import { getBodySections } from '../../scripts/lib/site-content.mjs';
 import {
 	extractInlineNoteDiagnostics,
@@ -53,7 +57,11 @@ export type SectionNavigation = {
 	title: string;
 };
 
-const sectionHeadingRegex = /<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi;
+export type HeadingNavigation = SectionNavigation & {
+	depth: 2 | 3;
+	parentId: string | null;
+};
+
 const contentHeadingRegex = /<h([12])\b([^>]*)>([\s\S]*?)<\/h\1>/gi;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const imageProvenanceCommentRegex = /<!--\s*norna-image-provenance:[\s\S]*?-->/gi;
@@ -68,60 +76,42 @@ const decodeHtmlEntities = (value: string) =>
 		.replace(/&quot;/g, '"')
 		.replace(/&#39;/g, "'");
 
-const slugify = (value: string) =>
-	decodeHtmlEntities(stripTags(value))
-		.trim()
-		.toLowerCase()
-		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '')
-		.replace(/å/g, 'a')
-		.replace(/ä/g, 'a')
-		.replace(/ö/g, 'o')
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-+|-+$/g, '');
-
-const getHeadingId = (attributes: string, headingHtml: string) => {
-	const headingText = decodeHtmlEntities(stripTags(headingHtml)).trim();
-	const explicitId = headingText.match(explicitHeadingIdRegex)?.[1];
-	if (explicitId) return explicitId;
-
-	const id = attributes.match(/\sid=(["'])(.*?)\1/i)?.[2];
-	return id ? decodeHtmlEntities(id) : slugify(headingHtml);
-};
-
-const getExplicitHeadingId = (headingHtml: string) =>
-	decodeHtmlEntities(stripTags(headingHtml)).trim().match(explicitHeadingIdRegex)?.[1];
-
 const getHeadingTitle = (headingHtml: string) =>
 	decodeHtmlEntities(stripTags(headingHtml)).replace(explicitHeadingIdRegex, '').trim();
 
 const getHeadingTitleHtml = (headingHtml: string) =>
 	prepareContentHtml(headingHtml.replace(explicitHeadingIdRegex, '').trim());
 
-export const getSectionNavigation = (html: string): SectionNavigation[] => {
-	const matches = Array.from(html.matchAll(sectionHeadingRegex));
-	const sectionIds = new Set<string>();
-	const sections = matches.map((match) => {
-		const attributes = match[1] ?? '';
-		const headingHtml = match[2] ?? '';
-		const explicitId = getExplicitHeadingId(headingHtml);
-		const id = getHeadingId(attributes, headingHtml);
-		const title = getHeadingTitle(headingHtml);
+export const getHeadingNavigation = async (
+	markdown: string,
+	sourceLabel = 'Markdown',
+): Promise<HeadingNavigation[]> => {
+	const bodyStructure = await getBodySections(markdown);
+	const issues = getHeadingIdentifierIssues(bodyStructure.headings);
+	if (issues.length > 0) throw new Error(formatHeadingIdentifierIssue(issues[0], sourceLabel));
 
-		if (!explicitId) {
-			throw new Error(`Section heading "${title}" is missing an explicit id. Write it as: ## ${title} {#${id}}`);
-		}
+	let parentId: string | null = null;
+	return bodyStructure.headings.flatMap((heading) => {
+		if (heading.depth === 1 || !heading.id) return [];
+		if (heading.depth === 2) parentId = heading.id;
 
-		if (sectionIds.has(id)) {
-			throw new Error(`Duplicate Markdown section heading id: ${id}`);
-		}
-
-		sectionIds.add(id);
-		return { id, title };
+		return [{
+			depth: heading.depth,
+			id: heading.id,
+			parentId: heading.depth === 3 ? parentId : null,
+			title: heading.title,
+		}];
 	});
-
-	return sections;
 };
+
+export const getSectionNavigation = async (
+	markdown: string,
+	sourceLabel = 'Markdown',
+): Promise<SectionNavigation[]> => (
+	(await getHeadingNavigation(markdown, sourceLabel))
+		.filter((heading) => heading.depth === 2)
+		.map(({ id, title }) => ({ id, title }))
+);
 
 const stripImageProvenanceComments = (html: string) => html.replace(imageProvenanceCommentRegex, '');
 
@@ -222,16 +212,38 @@ const applyInlineNoteMarkup = (html: string, notes: InlineNote[]) => {
 	});
 };
 
-const getRawMarkdownSections = (markdown: string) => {
+const getRawMarkdownSections = (bodySections: Awaited<ReturnType<typeof getBodySections>>['sections']) => {
 	const sections = new Map<string, string>();
 
-	for (const section of getBodySections(markdown).sections) {
+	for (const section of bodySections) {
 		const id = section.isPageTitle ? '__page-title' : section.id;
 		if (!id) continue;
 		sections.set(id, section.text);
 	}
 
 	return sections;
+};
+
+const applyH3HeadingIds = (
+	html: string,
+	headings: Awaited<ReturnType<typeof getBodySections>>['headings'],
+) => {
+	let headingIndex = 0;
+	const result = html.replace(/<h3\b([^>]*)>([\s\S]*?)<\/h3>/gi, (_match, attributes, headingHtml) => {
+		const heading = headings[headingIndex];
+		headingIndex += 1;
+		if (!heading?.id) throw new Error('Rendered Markdown H3 could not be matched to its heading id.');
+
+		const cleanAttributes = String(attributes).replace(/\s+id=(["']).*?\1/gi, '');
+		const cleanHeadingHtml = String(headingHtml).replace(explicitHeadingIdRegex, '').trim();
+		return `<h3${cleanAttributes} id="${heading.id}">${cleanHeadingHtml}</h3>`;
+	});
+
+	if (headingIndex !== headings.length) {
+		throw new Error('Markdown H3 headings could not be matched to the rendered page content.');
+	}
+
+	return result;
 };
 
 const getImageSourceKey = (page: SitePage, image: string) => (
@@ -328,9 +340,15 @@ export const getSectionsContent = async (
 	html: string,
 	rawMarkdown: string,
 	page: SitePage,
+	sourceLabel = 'Markdown',
 ) => {
 	const matches = Array.from(html.matchAll(contentHeadingRegex));
-	const rawSections = getRawMarkdownSections(rawMarkdown);
+	const bodyStructure = await getBodySections(rawMarkdown);
+	const headingIdentifierIssues = getHeadingIdentifierIssues(bodyStructure.headings);
+	if (headingIdentifierIssues.length > 0) {
+		throw new Error(formatHeadingIdentifierIssue(headingIdentifierIssues[0], sourceLabel));
+	}
+	const rawSections = getRawMarkdownSections(bodyStructure.sections);
 	const sections: ResolvedSection[] = [];
 	const sectionIds = new Set<string>();
 	let nextNoteNumber = 1;
@@ -342,24 +360,26 @@ export const getSectionsContent = async (
 
 	for (let index = 0; index < matches.length; index += 1) {
 		const match = matches[index];
+		const bodySection = bodyStructure.sections[index];
 		const headingLevel = Number.parseInt(match[1] ?? '', 10) as 1 | 2;
-		const attributes = match[2] ?? '';
 		const headingHtml = match[3] ?? '';
-		const explicitId = headingLevel === 2 ? getExplicitHeadingId(headingHtml) : undefined;
-		const id = headingLevel === 2 ? getHeadingId(attributes, headingHtml) : null;
+		if (!bodySection || bodySection.level !== headingLevel) {
+			throw new Error('Markdown H1/H2 headings could not be matched to the rendered page content.');
+		}
+		const id = bodySection.id;
 		const contentStart = (match.index ?? 0) + match[0].length;
 		const nextMatch = matches[index + 1];
 		const contentEnd = nextMatch?.index ?? html.length;
-		const content = html.slice(contentStart, contentEnd).trim();
+		const nextBodySection = bodyStructure.sections[index + 1];
+		const h3Headings = bodyStructure.headings.filter((heading) => (
+			heading.depth === 3
+			&& heading.index > bodySection.index
+			&& heading.index < (nextBodySection?.index ?? Number.POSITIVE_INFINITY)
+		));
+		const content = applyH3HeadingIds(html.slice(contentStart, contentEnd).trim(), h3Headings);
 		const title = getHeadingTitle(headingHtml);
 
-		if (headingLevel === 1 && getExplicitHeadingId(headingHtml)) {
-			throw new Error('The Markdown H1 is the page title and must not have a section id. Remove the {#...} suffix.');
-		}
-
-		if (headingLevel === 2 && !explicitId) {
-			throw new Error(`Section heading "${title}" is missing an explicit id. Write it as: ## ${title} {#${id}}`);
-		}
+		if (headingLevel === 2 && !id) throw new Error(`Section heading "${title}" cannot produce an automatic ASCII id.`);
 
 		if (id && sectionIds.has(id)) {
 			throw new Error(`Duplicate Markdown section heading id: ${id}`);

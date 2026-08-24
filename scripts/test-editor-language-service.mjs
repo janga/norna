@@ -245,7 +245,12 @@ try {
 		documentPath: homeContentPath,
 		source: homeSource.replace('## Intro {#intro}', '## Intro'),
 	});
-	assert.ok(missingIdDiagnostics.some(({ code }) => code === 'missing-section-id'));
+	assert.equal(missingIdDiagnostics.some(({ code }) => code === 'missing-section-id'), false);
+	const duplicateIdDiagnostics = await getMarkdownDiagnostics({
+		documentPath: homeContentPath,
+		source: homeSource.replace('## Intro {#intro}', '## Intro\n\n### Intro'),
+	});
+	assert.ok(duplicateIdDiagnostics.some(({ code }) => code === 'duplicate-heading-id'));
 	const missingTitleDiagnostics = await getMarkdownDiagnostics({
 		documentPath: homeContentPath,
 		source: homeSource.replace('# Editor fixture', '## Editor fixture {#editor-fixture}'),
@@ -256,7 +261,7 @@ try {
 		source: `${homeSource}\n\`\`\`md\n# Example title\n## Example section\n\`\`\`\n`,
 	});
 	assert.equal(codeHeadingDiagnostics.some(({ code }) => code === 'duplicate-page-title'), false);
-	assert.equal(codeHeadingDiagnostics.some(({ code }) => code === 'missing-section-id'), false);
+	assert.equal(codeHeadingDiagnostics.some(({ code }) => code === 'duplicate-heading-id'), false);
 	const unclosedBlockDiagnostics = await getMarkdownDiagnostics({
 		documentPath: homeContentPath,
 		source: homeSource.replace(/\n```\n$/, '\n'),

@@ -12,19 +12,21 @@ import {
 	sitewideContentLabel,
 } from './site-paths.mjs';
 import { parsePageDirectory } from './page-model.mjs';
+import { getMarkdownHeadings } from './heading-ids.mjs';
 import { schemaTopLevelKeys } from './schema-definitions.mjs';
 
 export const rasterImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
 export const staticImageExtensions = new Set(['.svg']);
 export const supportedImageExtensions = new Set([...rasterImageExtensions, ...staticImageExtensions]);
 
-const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const deprecatedInlineStyleReferenceRegex = /\[[^\]\n]+\]\{\.([a-z][a-z0-9-]*)\}/g;
 const frontmatterDelimiterRegex = /^---\s*$/;
 const knownConfigTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.config);
 const knownContentTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.content);
 const knownThemeTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.theme);
-const knownPageThemeTopLevelFrontmatterKeys = knownThemeTopLevelFrontmatterKeys;
+const knownPageThemeTopLevelFrontmatterKeys = new Set(
+	[...knownThemeTopLevelFrontmatterKeys].filter((key) => key !== 'navigation'),
+);
 const knownSitewideTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.sitewide);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
@@ -276,7 +278,10 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 			fix = 'Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body.';
 		} else if (fileKind === 'content' && knownThemeTopLevelFrontmatterKeys.has(key)) {
 			fix = `Move "${key}:" to theme.yaml. Visual settings do not belong in content frontmatter.`;
-		} else if ((fileKind === 'theme' || fileKind === 'page theme') && ['logo', 'navigation', 'site'].includes(key)) {
+		} else if (fileKind === 'page theme' && key === 'navigation') {
+			message = `Frontmatter line ${lineNumber}: page themes may not define navigation.`;
+			fix = 'Set the site-wide navigation mode under "navigation:" in the root theme.yaml.';
+		} else if ((fileKind === 'theme' || fileKind === 'page theme') && ['logo', 'site'].includes(key)) {
 			message = `Frontmatter line ${lineNumber}: ${fileKind} may not define navigation logo settings. Optional logo display settings belong under "logo:" in ${sitewideContentLabel}.`;
 			fix = `Move only the logo display settings under "logo:" in ${sitewideContentLabel}; the homepage Markdown H1 supplies navigation text and logo alternative text.`;
 		} else if (fileKind === 'sitewide content' && (key === 'navigation' || key === 'site')) {
@@ -331,60 +336,23 @@ export const readThemeFile = async (sitePath) => {
 	return { frontmatter: source, frontmatterBody: source, body: '' };
 };
 
-export const getHeadingId = (heading) => heading.match(explicitHeadingIdRegex)?.[1];
-
 export const getDeprecatedInlineStyleReferences = (body) => Array.from(body.matchAll(deprecatedInlineStyleReferenceRegex))
 	.map((match) => match[1]);
 
-const getStructuralMarkdownHeadings = (body) => {
-	const normalizedBody = body.replace(/\r\n?/g, '\n');
-	const lines = normalizedBody.split('\n');
-	const headings = [];
-	let fence = null;
-	let offset = 0;
-
-	for (const [lineIndex, line] of lines.entries()) {
-		const fenceMatch = line.match(/^ {0,3}(`{3,}|~{3,})([^\r\n]*)$/);
-		if (fenceMatch) {
-			if (!fence) {
-				fence = { character: fenceMatch[1][0], length: fenceMatch[1].length };
-			} else if (
-				fenceMatch[1][0] === fence.character
-				&& fenceMatch[1].length >= fence.length
-				&& !fenceMatch[2].trim()
-			) {
-				fence = null;
-			}
-		} else if (!fence) {
-			const headingMatch = line.match(/^(#{1,2})\s+(.+?)\s*$/);
-			if (headingMatch) {
-				headings.push({
-					level: headingMatch[1].length,
-					heading: line,
-					index: offset,
-					line: lineIndex + 1,
-				});
-			}
-		}
-
-		offset += line.length + 1;
-	}
-
-	return { headings, normalizedBody };
-};
-
-export const getBodySections = (body) => {
-	const { headings, normalizedBody } = getStructuralMarkdownHeadings(body);
-	const prelude = headings.length > 0 ? normalizedBody.slice(0, headings[0].index) : normalizedBody;
-	const sections = headings.map((heading, index) => {
-		const next = headings[index + 1];
-		const end = next?.index ?? normalizedBody.length;
+export const getBodySections = async (body) => {
+	const { headings, source } = await getMarkdownHeadings(body);
+	const structuralHeadings = headings.filter((heading) => heading.depth <= 2);
+	const prelude = structuralHeadings.length > 0 ? source.slice(0, structuralHeadings[0].index) : source;
+	const sections = structuralHeadings.map((heading, index) => {
+		const next = structuralHeadings[index + 1];
+		const end = next?.index ?? source.length;
 
 		return {
 			...heading,
-			id: heading.level === 2 ? getHeadingId(heading.heading) : null,
-			isPageTitle: heading.level === 1,
-			text: normalizedBody.slice(heading.index, end).trimEnd(),
+			heading: heading.source,
+			isPageTitle: heading.depth === 1,
+			level: heading.depth,
+			text: source.slice(heading.index, end).trimEnd(),
 		};
 	});
 

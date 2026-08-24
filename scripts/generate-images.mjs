@@ -112,7 +112,7 @@ const getImageSourceKey = (contentFile, image) => (
 
 const getReferencedImages = async (contentFile) => {
 	const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
-	const { sections } = getBodySections(body);
+	const { sections } = await getBodySections(body);
 	const references = [];
 
 	for (const section of sections) {
@@ -189,7 +189,7 @@ const validateCarouselOrientations = async (manifest) => {
 
 	for (const contentFile of contentFiles) {
 		const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
-		const { sections } = getBodySections(body);
+		const { sections } = await getBodySections(body);
 
 		for (const section of sections) {
 			const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });

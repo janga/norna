@@ -15,7 +15,8 @@ type AnchorMeasurement = {
 };
 
 const pageNavSelector = '.site-nav-submenu a';
-const mobilePageNavSelector = '.mobile-page-nav a';
+const mobilePageNavSelector = '.mobile-nav-sections a';
+const currentMobilePageNavSelector = `.mobile-nav-page-view[data-current-page="true"] ${mobilePageNavSelector}`;
 const sectionNavSelector = `${pageNavSelector}, ${mobilePageNavSelector}`;
 
 const getNavTargets = async (page) => page.locator(pageNavSelector).evaluateAll((links) => (
@@ -96,7 +97,7 @@ const clickSectionLink = async (page, hash: string) => {
 		if (!(await mobileMenu.getAttribute('open'))) {
 			await mobileMenu.locator('summary').click();
 		}
-		await page.locator(`${mobilePageNavSelector}[href$="${hash}"]`).first().click();
+		await page.locator(`${currentMobilePageNavSelector}[href$="${hash}"]`).first().click();
 		return;
 	}
 
@@ -194,6 +195,56 @@ test.describe('site navigation menus', () => {
 		await expect(submenu).toBeHidden();
 		await expect.poll(() => page.evaluate(() => window.location.hash)).toBe(targetHash);
 		await expect.poll(() => page.evaluate(() => `#${document.activeElement?.id}`)).toBe(targetHash);
+	});
+});
+
+test.describe('mobile site navigation drawer', () => {
+	test.use({
+		hasTouch: true,
+		isMobile: true,
+		viewport: mobileViewport,
+	});
+
+	test('opens on the current page and drills into another page without navigating', async ({ page }) => {
+		await openSite(page);
+		const menu = page.locator('.mobile-nav-menu');
+		await menu.locator(':scope > summary').click();
+
+		const currentPageView = menu.locator('.mobile-nav-page-view[data-current-page="true"]');
+		const pagesView = menu.locator('[data-mobile-nav-view="mobile-pages-view"]');
+		await expect(currentPageView).toBeVisible();
+		await expect(currentPageView.locator('.mobile-nav-sections')).toBeVisible();
+		await expect(pagesView).toBeHidden();
+
+		await currentPageView.locator('.mobile-nav-back').click();
+		await expect(pagesView).toBeVisible();
+		await expect(currentPageView).toBeHidden();
+
+		const otherPageButton = pagesView.locator('.mobile-nav-page:not([data-current-page="true"]) .mobile-nav-page-open').first();
+		const targetViewId = await otherPageButton.getAttribute('data-mobile-nav-open');
+		const targetView = menu.locator(`[data-mobile-nav-view="${targetViewId}"]`);
+
+		const urlBeforeExpansion = page.url();
+		await otherPageButton.click();
+		await expect(targetView).toBeVisible();
+		await expect(pagesView).toBeHidden();
+		expect(page.url()).toBe(urlBeforeExpansion);
+
+		await expect(targetView.locator('.mobile-nav-overview')).toHaveAttribute('href', '/surfaces/');
+		const targetHref = await targetView.locator('.mobile-nav-sections a:not(.mobile-nav-overview)').first().getAttribute('href');
+		expect(targetHref).toMatch(/^\/surfaces\/#.+/);
+	});
+
+	test('closes with Escape and returns focus to the menu button', async ({ page }) => {
+		await openSite(page);
+		const menu = page.locator('.mobile-nav-menu');
+		const summary = menu.locator(':scope > summary');
+		await summary.click();
+		await expect(menu).toHaveAttribute('open', '');
+
+		await page.keyboard.press('Escape');
+		await expect(menu).not.toHaveAttribute('open', '');
+		await expect(summary).toBeFocused();
 	});
 });
 
@@ -331,7 +382,7 @@ test.describe('desktop navigation hit targets', () => {
 test.describe('section navigation without JavaScript', () => {
 	test.use({
 		hasTouch: true,
-		isMobile: true,
+		isMobile: false,
 		javaScriptEnabled: false,
 		viewport: mobileViewport,
 	});

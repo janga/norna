@@ -3,6 +3,7 @@ import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { defineConfig } from 'astro/config';
+import { getBasePathRedirectLocation } from './scripts/lib/base-path-redirect.mjs';
 import {
 	astroCacheDir,
 	astroDistDir,
@@ -27,6 +28,37 @@ const runGenerateImages = () => execFileAsync(process.execPath, [path.join(engin
 	cwd: siteProjectRoot,
 	maxBuffer: 1024 * 1024 * 10,
 });
+
+const nornaBasePathRedirect = () => {
+	const middleware = (request, response, next) => {
+		if (!request.url) {
+			next();
+			return;
+		}
+
+		const redirectLocation = getBasePathRedirectLocation(projectConfig.site.basePath, request.url);
+		if (!redirectLocation) {
+			next();
+			return;
+		}
+
+		response.statusCode = 308;
+		response.setHeader('Location', redirectLocation);
+		response.end();
+	};
+
+	return {
+		name: 'norna-base-path-redirect',
+		configureServer(server) {
+			return () => {
+				server.middlewares.stack.unshift({ route: '', handle: middleware });
+			};
+		},
+		configurePreviewServer(server) {
+			server.middlewares.use(middleware);
+		},
+	};
+};
 
 const nornaGeneratedImagesWatcher = () => ({
 	name: 'norna-generated-images-watcher',
@@ -90,6 +122,6 @@ export default defineConfig({
 	publicDir: astroPublicDir,
 	srcDir: path.join(engineRoot, 'src'),
 	vite: {
-		plugins: [nornaGeneratedImagesWatcher()],
+		plugins: [nornaBasePathRedirect(), nornaGeneratedImagesWatcher()],
 	},
 });

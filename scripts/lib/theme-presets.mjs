@@ -2,6 +2,7 @@ import { mergeDeep } from './typography.mjs';
 
 const themePresetConfigurations = Object.freeze({
 	portfolio: Object.freeze({
+		navigation: { mode: 'automatic' },
 		layout: {
 			density: 'normal',
 			pageWidth: '1240px',
@@ -24,6 +25,7 @@ const themePresetConfigurations = Object.freeze({
 		sectionSurfaces: ['base'],
 	}),
 	documentation: Object.freeze({
+		navigation: { mode: 'automatic' },
 		layout: {
 			density: 'compact',
 			pageWidth: '1240px',
@@ -46,6 +48,7 @@ const themePresetConfigurations = Object.freeze({
 		sectionSurfaces: ['base', 'soft'],
 	}),
 	project: Object.freeze({
+		navigation: { mode: 'automatic' },
 		layout: {
 			density: 'compact',
 			pageWidth: '1120px',
@@ -68,6 +71,7 @@ const themePresetConfigurations = Object.freeze({
 		sectionSurfaces: ['base', 'soft'],
 	}),
 	statement: Object.freeze({
+		navigation: { mode: 'automatic' },
 		layout: {
 			density: 'airy',
 			pageWidth: '1280px',
@@ -167,7 +171,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
 	const metadata = getThemePresetMetadata(presetName);
-	const { layout, images, typography, palette, sectionSurfaces } = preset;
+	const { navigation, layout, images, typography, palette, sectionSurfaces } = preset;
 
 	return [
 		`# Original values for Norna's "${presetName}" theme preset.`,
@@ -176,6 +180,10 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'# Keep the preset in theme.yaml and copy only the values you want to override.',
 		`# Available theme presets: ${themePresetNames.join(', ')}.`,
 		`preset: ${presetName}`,
+		'',
+		'navigation:',
+		'  # Alternatives: automatic, sections, top, tree.',
+		`  mode: ${navigation.mode}`,
 		'',
 		'layout:',
 		'  # Alternatives: compact, normal, airy.',

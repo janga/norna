@@ -1062,28 +1062,34 @@ page:
 	}
 });
 
-test('content:check fails when a level 2 section is missing an explicit id', async () => {
-	const { root, siteDir } = await createTempSite();
+test('automatic H2 and H3 ids render while explicit ids remain stable', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), `---
 page:
   description: Fixture
 ---
 
-# Missing Id
+# Heading IDs
 
-## Intro
+## Café and **code**
 
-This section has no explicit id.
+### More details
+
+Automatic identifiers.
+
+## Renamed heading {#stable-id}
+
+Explicit identifier.
 `);
 
-		await assert.rejects(
-			() => runContentScript(siteDir, ['--check']),
-			(error) => {
-				assert.match(error.output, /Section heading "Intro" is missing an explicit id\./);
-				return true;
-			},
-		);
+		await runContentScript(siteDir, ['--check']);
+		await runNorna(['--site-dir', siteDir, 'build']);
+
+		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+		assert.match(html, /<h2 id="cafe-and-code">Café and <strong>code<\/strong><\/h2>/);
+		assert.match(html, /<h3 id="more-details">More details<\/h3>/);
+		assert.match(html, /<h2 id="stable-id">Renamed heading<\/h2>/);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -1474,7 +1480,40 @@ Second.
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Duplicate Markdown section heading id "intro"\./);
+				assert.match(error.output, /Two headings resolve to id "intro"\./);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check reports collisions between automatic H2 and H3 ids', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'content.md'), `---
+page:
+  description: Fixture
+---
+
+# Automatic collision
+
+## Förstå
+
+Section text.
+
+### Forsta
+
+Topic text.
+`);
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Two headings resolve to id "forsta"\./);
+				assert.match(error.output, /The other heading is on line \d+\./);
+				assert.match(error.output, /Add a unique explicit id to at least one heading/);
 				return true;
 			},
 		);

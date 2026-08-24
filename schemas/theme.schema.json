@@ -27,7 +27,48 @@
           "description": "For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis."
         }
       ],
-      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#theme-presets)"
+      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated navigation, layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#theme-presets)"
+    },
+    "navigation": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "Navigation model. Omit this to keep the selected preset.",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "automatic",
+              "title": "Automatic",
+              "description": "Choose sections for one page, top navigation for a shallow multi-page site, and tree navigation for deeper content."
+            },
+            {
+              "const": "sections",
+              "title": "Sections",
+              "description": "Navigate the sections of the current page."
+            },
+            {
+              "const": "top",
+              "title": "Top",
+              "description": "Use pages in the top navigation and sections below them."
+            },
+            {
+              "const": "tree",
+              "title": "Tree",
+              "description": "Use a hierarchical site-wide navigation tree."
+            }
+          ],
+          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md)",
+          "examples": [
+            "automatic",
+            "sections",
+            "top",
+            "tree"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "description": "Site-wide navigation behavior. This may be set only in the root theme.",
+      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation model. Only the root theme may override this preset value.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md)"
     },
     "layout": {
       "type": "object",

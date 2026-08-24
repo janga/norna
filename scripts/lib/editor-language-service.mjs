@@ -9,12 +9,11 @@ import {
 	nornaMarkdownBlockDefinitions,
 } from './norna-markdown-blocks.mjs';
 import { inspectPublicAssetFilenames, logoAssetFilenames } from './public-asset-conventions.mjs';
+import { getHeadingIdentifierIssues, getMarkdownHeadings } from './heading-ids.mjs';
 import { siteSchema } from './schema-definitions.mjs';
 
 const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.svg']);
 const siteConfigNames = ['config.yaml'];
-const headingIdPattern = /^##\s+.+?\s*\{#([a-z0-9-]+)\}\s*$/;
-
 const fileExists = (filePath) => access(filePath).then(() => true, () => false);
 const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 
@@ -525,16 +524,6 @@ const getMarkdownStructure = (source) => {
 	return { bodyStart, headings, lines };
 };
 
-const getSectionHeadingDiagnostics = (structure) => structure.headings.flatMap((heading) => {
-	if (heading.level !== 2 || headingIdPattern.test(heading.source)) return [];
-	return [{
-		code: 'missing-section-id',
-		severity: 'error',
-		line: heading.line,
-		message: 'Level 2 Norna section headings require an explicit id, for example "## Introduction {#introduction}".',
-	}];
-});
-
 const getPageTitleDiagnostics = (structure) => {
 	const { bodyStart, headings, lines } = structure;
 	const pageHeadings = headings.filter((heading) => heading.level === 1);
@@ -577,24 +566,21 @@ const getPageTitleDiagnostics = (structure) => {
 		});
 	}
 
-	if (pageHeadings[0] && /\s*\{#[a-z0-9-]+\}\s*$/.test(pageHeadings[0].source)) {
-		diagnostics.push({
-			code: 'page-title-id',
-			severity: 'error',
-			line: pageHeadings[0].line,
-			message: 'The Markdown H1 is the page title and must not have a section id. Remove the {#...} suffix.',
-		});
-	}
-
 	return diagnostics;
 };
 
 export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 	const markdownStructure = getMarkdownStructure(source);
+	const { headings } = await getMarkdownHeadings(source);
 	const diagnostics = [
 		...getContentFrontmatterDiagnostics(source),
 		...getPageTitleDiagnostics(markdownStructure),
-		...getSectionHeadingDiagnostics(markdownStructure),
+		...getHeadingIdentifierIssues(headings).map((issue) => ({
+			code: issue.code,
+			severity: 'error',
+			line: issue.heading.line,
+			message: `${issue.message} ${issue.fix}`,
+		})),
 	];
 	const blockResult = extractNornaMarkdownBlockDiagnostics(source, { label: path.basename(documentPath) });
 	for (const error of blockResult.errors) {

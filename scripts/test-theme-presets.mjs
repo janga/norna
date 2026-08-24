@@ -36,6 +36,7 @@ try {
 		const resolved = resolveThemeConfig({ preset: presetName }, 'test theme');
 		assert.equal(resolved.preset, presetName);
 		assert.ok(resolved.layout?.density);
+		assert.equal(resolved.navigation?.mode, 'automatic');
 		assert.ok(resolved.images?.width);
 		assert.ok(resolved.typography?.fontFamily);
 		assert.ok(resolved.typography?.profile);
@@ -49,6 +50,7 @@ try {
 		palette: 'dark',
 	}, 'test theme');
 	assert.equal(overridden.layout.density, 'compact');
+	assert.equal(overridden.navigation.mode, 'automatic');
 	assert.equal(overridden.layout.pageWidth, '1300px');
 	assert.equal(overridden.images.width, '920px');
 	assert.equal(overridden.palette, 'dark');
@@ -129,6 +131,8 @@ palette: light
 	assert.match(pageHtml, /--page-width: 1010px/);
 	assert.match(pageHtml, /--font-sans: 'Helvetica Neue', Arial, sans-serif/);
 	assert.match(pageHtml, /--color-page: #ffffff/);
+	assert.match(rootHtml, /data-navigation-mode="top"/);
+	assert.match(pageHtml, /data-navigation-mode="top"/);
 
 	const typographyResult = runCli(['typography', 'show']);
 	assert.equal(typographyResult.status, 0, typographyResult.stderr || typographyResult.stdout);
@@ -142,6 +146,11 @@ palette: light
 	assert.notEqual(invalidPagePresetResult.status, 0);
 	assert.match(invalidPagePresetResult.stderr, /Unknown theme preset "unknown" in .*pages\/010-guide\/theme\.yaml/);
 	await writeFile(pageThemePath, pageThemeSource);
+	await writeFile(pageThemePath, 'navigation:\n  mode: sections\n');
+	const pageNavigationResult = runCli(['config:check']);
+	assert.notEqual(pageNavigationResult.status, 0);
+	assert.match(pageNavigationResult.stderr, /page themes may not define navigation/);
+	await writeFile(pageThemePath, pageThemeSource);
 
 	const exportResult = runCli(['theme:export', 'documentation']);
 	assert.equal(exportResult.status, 0, exportResult.stderr || exportResult.stdout);
@@ -153,6 +162,7 @@ palette: light
 	assert.match(exportedSource, /# Alternatives: dark, light, paper\./);
 	const exportedConfig = load(exportedSource);
 	assert.equal(exportedConfig.preset, 'documentation');
+	assert.equal(exportedConfig.navigation.mode, 'automatic');
 	assert.equal(exportedConfig.layout.pageWidth, themePresets.documentation.layout.pageWidth);
 	assert.equal(exportedConfig.typography.fontFamily, themePresets.documentation.typography.fontFamily);
 	assert.deepEqual(exportedConfig.sectionSurfaces, ['base', 'soft']);
