@@ -78,10 +78,10 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 
 const clickSectionLink = async (page, hash: string) => {
 	const desktopLink = page.locator(`${pageNavSelector}[href$="${hash}"]`).first();
-	const currentRouteLink = page.locator('.site-nav a[aria-current="page"]').first();
+	const currentPageLink = page.locator('.site-nav a[aria-current="page"]').first();
 
-	if (await currentRouteLink.isVisible()) {
-		await currentRouteLink.hover();
+	if (await currentPageLink.isVisible()) {
+		await currentPageLink.hover();
 		const menuOpened = await desktopLink.waitFor({ state: 'visible', timeout: 1_000 })
 			.then(() => true)
 			.catch(() => false);
@@ -127,27 +127,27 @@ const measureNavTextHitTargets = async (page) => page.locator(pageNavSelector).e
 	}).filter((link) => link.pathname === window.location.pathname)
 ));
 
-test.describe('route navigation menus', () => {
+test.describe('site navigation menus', () => {
 	test.use({
 		hasTouch: false,
 		isMobile: false,
 		viewport: desktopViewport,
 	});
 
-	test('marks the current route and opens its section menu on hover', async ({ page }) => {
+	test('marks the current page and opens its section menu on hover', async ({ page }) => {
 		await openSite(page);
 
-		const currentRouteLink = page.locator('.site-nav a[aria-current="page"]');
-		await expect(currentRouteLink).toHaveText('Media blocks');
-		await currentRouteLink.hover();
+		const currentPageLink = page.locator('.site-nav a[aria-current="page"]');
+		await expect(currentPageLink).toHaveText('Media blocks');
+		await currentPageLink.hover();
 
-		const currentRouteItem = currentRouteLink.locator('..');
-		const submenu = currentRouteItem.locator('.site-nav-submenu');
+		const currentPageItem = currentPageLink.locator('..');
+		const submenu = currentPageItem.locator('.site-nav-submenu');
 		await expect(submenu).toBeVisible();
 		await expect(submenu.locator('a').first()).toBeVisible();
 	});
 
-	test('closes the section menu after a pointer activation leaves the menu', async ({ page }) => {
+	test('closes the section menu immediately after a section link is activated', async ({ page }) => {
 		await openSite(page);
 		await page.locator('.site-section').evaluateAll((sections) => {
 			sections.forEach((section) => {
@@ -156,16 +156,44 @@ test.describe('route navigation menus', () => {
 		});
 		await expect.poll(() => page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight)).toBe(true);
 
-		const currentRouteLink = page.locator('.site-nav a[aria-current="page"]');
-		const currentRouteItem = currentRouteLink.locator('..');
-		const submenu = currentRouteItem.locator('.site-nav-submenu');
-		await currentRouteLink.hover();
+		const currentPageLink = page.locator('.site-nav a[aria-current="page"]');
+		const currentPageItem = currentPageLink.locator('..');
+		const submenu = currentPageItem.locator('.site-nav-submenu');
+		await currentPageLink.hover();
 		await expect(submenu).toBeVisible();
 
-		await submenu.locator('a').first().click();
+		const firstSectionLink = submenu.locator('a').first();
+		const targetHash = await firstSectionLink.getAttribute('href');
+		await firstSectionLink.click();
+		await expect(submenu).toBeHidden();
+		await expect.poll(() => page.evaluate(() => window.location.hash)).toBe(new URL(targetHash!, 'http://example.test').hash);
+		await expect(firstSectionLink).toHaveAttribute('aria-current', 'location');
+
 		await page.mouse.move(8, 500);
+		await currentPageLink.hover();
+		await expect(submenu).toBeVisible();
+	});
+
+	test('moves keyboard focus to the activated section heading', async ({ page }) => {
+		await openSite(page);
+
+		const currentPageLink = page.locator('.site-nav a[aria-current="page"]');
+		const submenu = currentPageLink.locator('..').locator('.site-nav-submenu');
+		const firstSectionLink = submenu.locator('a').first();
+		const targetHash = new URL(
+			(await firstSectionLink.getAttribute('href'))!,
+			'http://example.test',
+		).hash;
+
+		await currentPageLink.focus();
+		await expect(submenu).toBeVisible();
+		await page.keyboard.press('Tab');
+		await expect(firstSectionLink).toBeFocused();
+		await page.keyboard.press('Enter');
 
 		await expect(submenu).toBeHidden();
+		await expect.poll(() => page.evaluate(() => window.location.hash)).toBe(targetHash);
+		await expect.poll(() => page.evaluate(() => `#${document.activeElement?.id}`)).toBe(targetHash);
 	});
 });
 
@@ -248,7 +276,7 @@ test.describe('section navigation history', () => {
 		expect(page.url()).toContain(targets[2].hash);
 	});
 
-	test('back to the page without a hash restores the route URL', async ({ page }) => {
+	test('back to the page without a hash restores the page URL', async ({ page }) => {
 		await openSite(page);
 		const targets = (await getNavTargets(page)).slice(0, 3);
 		if (targets.length < 3) throw new Error('The fixture must provide at least three navigation targets.');

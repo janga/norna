@@ -1,7 +1,10 @@
 <script>
 	const siteTop = document.querySelector<HTMLElement>('.site-top');
 	const mobileMenu = document.querySelector<HTMLDetailsElement>('.mobile-nav-menu');
-	const mobileSectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.mobile-page-nav a'));
+	const sectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(
+		'.site-nav-submenu a, .mobile-page-nav a, .page-nav a',
+	));
+	const submenuItems = Array.from(document.querySelectorAll<HTMLElement>('.site-nav-item-has-sections'));
 
 	const setAnchorOffset = () => {
 		if (!siteTop) return;
@@ -10,15 +13,62 @@
 		document.documentElement.style.setProperty('--site-top-anchor-offset', `${offset}px`);
 	};
 
-	mobileSectionLinks.forEach((link) => {
-		link.addEventListener('click', (event) => {
+	const getSamePageTarget = (link: HTMLAnchorElement) => {
+		const linkUrl = new URL(link.href, window.location.href);
+		if (linkUrl.pathname !== window.location.pathname || !linkUrl.hash) return undefined;
+
+		try {
+			return document.getElementById(decodeURIComponent(linkUrl.hash.slice(1))) ?? undefined;
+		} catch {
+			return undefined;
+		}
+	};
+
+	const updateCurrentSection = () => {
+		sectionLinks.forEach((link) => {
 			const linkUrl = new URL(link.href, window.location.href);
-			if (linkUrl.pathname !== window.location.pathname) return;
+			const isCurrent = linkUrl.pathname === window.location.pathname
+				&& linkUrl.hash !== ''
+				&& linkUrl.hash === window.location.hash;
+
+			if (isCurrent) {
+				link.setAttribute('aria-current', 'location');
+			} else if (link.getAttribute('aria-current') === 'location') {
+				link.removeAttribute('aria-current');
+			}
+		});
+	};
+
+	submenuItems.forEach((item) => {
+		const resetDismissal = () => delete item.dataset.submenuDismissed;
+		item.addEventListener('pointerleave', resetDismissal);
+		item.querySelector<HTMLAnchorElement>(':scope > a')?.addEventListener('focus', resetDismissal);
+	});
+
+	sectionLinks.forEach((link) => {
+		link.addEventListener('click', (event) => {
+			const target = getSamePageTarget(link);
+			if (!target) return;
 
 			if (mobileMenu) mobileMenu.open = false;
-			if (event.detail > 0) link.blur();
+			link.closest<HTMLElement>('.site-nav-item')?.setAttribute('data-submenu-dismissed', 'true');
+
+			window.requestAnimationFrame(() => {
+				updateCurrentSection();
+				if (event.detail > 0) {
+					link.blur();
+					return;
+				}
+
+				target.setAttribute('tabindex', '-1');
+				target.focus({ preventScroll: true });
+				target.addEventListener('blur', () => target.removeAttribute('tabindex'), { once: true });
+			});
 		});
 	});
+
+	window.addEventListener('hashchange', updateCurrentSection);
+	updateCurrentSection();
 
 	setAnchorOffset();
 
