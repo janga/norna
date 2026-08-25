@@ -106,8 +106,10 @@ verified.
 These are current constraints, not necessarily bugs.
 
 - `npm link` is not supported for testing the engine in a site repository.
-- Pages currently support one page segment under `site/pages/<page-folder>/`;
-  nested pages and richer navigation behavior remain out of scope.
+- Nested page discovery and hierarchical URLs have an implementation
+  foundation. The final global/local navigation contract, responsive
+  presentation, and preset boundaries still require evaluation before the
+  hierarchy is treated as stable user-facing behavior.
 - Source image copyright metadata is outside the current command surface.
 - `norna` assumes a file-driven site model with `config.yaml`,
   `theme.yaml`, `content.md`, source images, and static public files.
@@ -117,6 +119,19 @@ These are current constraints, not necessarily bugs.
 These ideas may be useful later, but should not distract from stabilizing the
 basic site workflow.
 
+- Add opt-in static search for larger sites. Prefer a build-time index generated
+  from the completed HTML in `dist/`, using Pagefind or an equivalent established
+  tool rather than a Norna-specific search engine. A first version should:
+  - expose a small site-wide setting such as `search.enabled`;
+  - generate an accessible `/search/` page and keep ordinary pages free from
+    search JavaScript;
+  - index editorial page and section content while excluding navigation,
+    banners, and footer content;
+  - link results to the matching page or section anchor;
+  - work with configured languages, base paths, and GitHub Pages;
+  - define predictable development-server index refresh behavior;
+  - avoid filters, ranking controls, and hosted search providers until real
+    sites demonstrate a need.
 - More polished onboarding for non-project users.
 - More preset families or richer theme helpers if several real sites need
   them.
