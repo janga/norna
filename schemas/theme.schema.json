@@ -27,7 +27,7 @@
           "description": "For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis."
         }
       ],
-      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated navigation, layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#theme-presets)"
+      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated navigation, layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#theme-presets)"
     },
     "navigation": {
       "type": "object",
@@ -57,7 +57,7 @@
               "description": "Use a hierarchical site-wide navigation tree."
             }
           ],
-          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md)",
+          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md)",
           "examples": [
             "automatic",
             "sections",
@@ -68,7 +68,7 @@
       },
       "additionalProperties": false,
       "description": "Site-wide navigation behavior. This may be set only in the root theme.",
-      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation model. Only the root theme may override this preset value.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md)"
+      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation model. Only the root theme may override this preset value.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md)"
     },
     "layout": {
       "type": "object",
@@ -93,13 +93,13 @@
               "description": "Increase vertical spacing for a more expansive presentation."
             }
           ],
-          "markdownDescription": "```yaml\nlayout:\n  density: compact\n```\n\nOverall spacing density. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+          "markdownDescription": "```yaml\nlayout:\n  density: compact\n```\n\nOverall spacing density. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
         },
         "pageWidth": {
           "description": "Maximum width of the site layout. Omit this to keep the selected preset.",
           "type": "string",
           "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
-          "markdownDescription": "```yaml\nlayout:\n  pageWidth: 72rem\n```\n\nMaximum width of the site layout. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+          "markdownDescription": "```yaml\nlayout:\n  pageWidth: 72rem\n```\n\nMaximum width of the site layout. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
         },
         "gutter": {
           "description": "Horizontal page gutter as one value or separate desktop and mobile values.",
@@ -116,13 +116,13 @@
                   "type": "string",
                   "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                   "description": "Responsive CSS length or clamp() expression.",
-                  "markdownDescription": "```yaml\nlayout:\n  gutter:\n    desktop: clamp(1.25rem, 4vw, 3rem)\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                  "markdownDescription": "```yaml\nlayout:\n  gutter:\n    desktop: clamp(1.25rem, 4vw, 3rem)\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                 },
                 "mobile": {
                   "type": "string",
                   "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                   "description": "Responsive CSS length or clamp() expression.",
-                  "markdownDescription": "```yaml\nlayout:\n  gutter:\n    mobile: 1rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                  "markdownDescription": "```yaml\nlayout:\n  gutter:\n    mobile: 1rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                 }
               },
               "required": [
@@ -132,11 +132,11 @@
               "additionalProperties": false
             }
           ],
-          "markdownDescription": "```yaml\nlayout:\n  gutter:\n    desktop: clamp(1.25rem, 4vw, 3rem)\n    mobile: 1rem\n```\n\nHorizontal page gutter as one value or separate desktop and mobile values.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+          "markdownDescription": "```yaml\nlayout:\n  gutter:\n    desktop: clamp(1.25rem, 4vw, 3rem)\n    mobile: 1rem\n```\n\nHorizontal page gutter as one value or separate desktop and mobile values.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
           "defaultSnippets": [
             {
               "label": "Responsive page gutter",
-              "markdownDescription": "Set separate page gutters for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+              "markdownDescription": "Set separate page gutters for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
               "body": {
                 "desktop": "${1:clamp(1.25rem, 4vw, 3rem)}",
                 "mobile": "${2:1rem}"
@@ -163,13 +163,13 @@
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    blockGap:\n      desktop: 1.5em\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    blockGap:\n      desktop: 1.5em\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     },
                     "mobile": {
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    blockGap:\n      mobile: 1.5em\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    blockGap:\n      mobile: 1.5em\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     }
                   },
                   "required": [
@@ -179,11 +179,11 @@
                   "additionalProperties": false
                 }
               ],
-              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    blockGap: 1.5em\n```\n\nDefault vertical gap between structured content blocks.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    blockGap: 1.5em\n```\n\nDefault vertical gap between structured content blocks.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
               "defaultSnippets": [
                 {
                   "label": "Responsive spacing",
-                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
                   "body": {
                     "desktop": "${1:1.5em}",
                     "mobile": "${2:1.5em}"
@@ -206,13 +206,13 @@
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    finalSectionBottom:\n      desktop: 2rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    finalSectionBottom:\n      desktop: 2rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     },
                     "mobile": {
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    finalSectionBottom:\n      mobile: 2rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    finalSectionBottom:\n      mobile: 2rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     }
                   },
                   "required": [
@@ -222,11 +222,11 @@
                   "additionalProperties": false
                 }
               ],
-              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    finalSectionBottom: 2rem\n```\n\nBottom space after the final section.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    finalSectionBottom: 2rem\n```\n\nBottom space after the final section.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
               "defaultSnippets": [
                 {
                   "label": "Responsive spacing",
-                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
                   "body": {
                     "desktop": "${1:2rem}",
                     "mobile": "${2:2rem}"
@@ -249,13 +249,13 @@
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    firstSectionTop:\n      desktop: 1.5rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    firstSectionTop:\n      desktop: 1.5rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     },
                     "mobile": {
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    firstSectionTop:\n      mobile: 1.5rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    firstSectionTop:\n      mobile: 1.5rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     }
                   },
                   "required": [
@@ -265,11 +265,11 @@
                   "additionalProperties": false
                 }
               ],
-              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    firstSectionTop: 1.5rem\n```\n\nTop space before the first section.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    firstSectionTop: 1.5rem\n```\n\nTop space before the first section.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
               "defaultSnippets": [
                 {
                   "label": "Responsive spacing",
-                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
                   "body": {
                     "desktop": "${1:1.5rem}",
                     "mobile": "${2:1.5rem}"
@@ -292,13 +292,13 @@
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    headingToBlock:\n      desktop: 0.75em\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    headingToBlock:\n      desktop: 0.75em\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     },
                     "mobile": {
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    headingToBlock:\n      mobile: 0.75em\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    headingToBlock:\n      mobile: 0.75em\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     }
                   },
                   "required": [
@@ -308,11 +308,11 @@
                   "additionalProperties": false
                 }
               ],
-              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    headingToBlock: 0.75em\n```\n\nGap from a section heading to a following structured block.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    headingToBlock: 0.75em\n```\n\nGap from a section heading to a following structured block.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
               "defaultSnippets": [
                 {
                   "label": "Responsive spacing",
-                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
                   "body": {
                     "desktop": "${1:0.75em}",
                     "mobile": "${2:0.75em}"
@@ -335,13 +335,13 @@
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    imageGap:\n      desktop: 1rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    imageGap:\n      desktop: 1rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     },
                     "mobile": {
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    imageGap:\n      mobile: 1rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    imageGap:\n      mobile: 1rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     }
                   },
                   "required": [
@@ -351,11 +351,11 @@
                   "additionalProperties": false
                 }
               ],
-              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    imageGap: 1rem\n```\n\nGap between images in an image stack.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    imageGap: 1rem\n```\n\nGap between images in an image stack.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
               "defaultSnippets": [
                 {
                   "label": "Responsive spacing",
-                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
                   "body": {
                     "desktop": "${1:1rem}",
                     "mobile": "${2:1rem}"
@@ -378,13 +378,13 @@
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    sectionGap:\n      desktop: 2rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    sectionGap:\n      desktop: 2rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     },
                     "mobile": {
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
                       "description": "Responsive CSS length or clamp() expression.",
-                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    sectionGap:\n      mobile: 2rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+                      "markdownDescription": "```yaml\nlayout:\n  spacing:\n    sectionGap:\n      mobile: 2rem\n```\n\nResponsive CSS length or clamp() expression.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
                     }
                   },
                   "required": [
@@ -394,11 +394,11 @@
                   "additionalProperties": false
                 }
               ],
-              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    sectionGap: 2rem\n```\n\nVertical separation between page sections.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+              "markdownDescription": "```yaml\nlayout:\n  spacing:\n    sectionGap: 2rem\n```\n\nVertical separation between page sections.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
               "defaultSnippets": [
                 {
                   "label": "Responsive spacing",
-                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+                  "markdownDescription": "Set separate spacing values for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
                   "body": {
                     "desktop": "${1:2rem}",
                     "mobile": "${2:2rem}"
@@ -408,11 +408,11 @@
             }
           },
           "additionalProperties": false,
-          "markdownDescription": "```yaml\nlayout:\n  spacing:\n    sectionGap: 2rem\n```\n\nFine-grained spacing overrides.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+          "markdownDescription": "```yaml\nlayout:\n  spacing:\n    sectionGap: 2rem\n```\n\nFine-grained spacing overrides.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
           "defaultSnippets": [
             {
               "label": "Layout spacing overrides",
-              "markdownDescription": "Start with the structural spacing values most commonly adjusted together.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)",
+              "markdownDescription": "Start with the structural spacing values most commonly adjusted together.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)",
               "body": {
                 "sectionGap": {
                   "desktop": "${1:2rem}",
@@ -427,7 +427,7 @@
       },
       "additionalProperties": false,
       "description": "Optional layout overrides applied after the preset.",
-      "markdownDescription": "```yaml\nlayout:\n  density: compact\n  pageWidth: 72rem\n```\n\nOverrides page width, gutters and structural spacing after the selected preset.\n\n[Layout reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#layout)"
+      "markdownDescription": "```yaml\nlayout:\n  density: compact\n  pageWidth: 72rem\n```\n\nOverrides page width, gutters and structural spacing after the selected preset.\n\n[Layout reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
     },
     "images": {
       "type": "object",
@@ -436,7 +436,7 @@
           "description": "Maximum managed-image width. Omit this to keep the selected preset.",
           "type": "string",
           "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
-          "markdownDescription": "```yaml\nimages:\n  width: 900px\n```\n\nMaximum managed-image width. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)"
+          "markdownDescription": "```yaml\nimages:\n  width: 900px\n```\n\nMaximum managed-image width. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
         },
         "maxAvailableWidthPercent": {
           "description": "Maximum percentage of available horizontal space used by managed images.",
@@ -454,14 +454,14 @@
                   "exclusiveMinimum": 0,
                   "maximum": 100,
                   "description": "Percentage used on wider screens.",
-                  "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    desktop: 100\n```\n\nPercentage used on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)"
+                  "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    desktop: 100\n```\n\nPercentage used on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
                 },
                 "mobile": {
                   "type": "number",
                   "exclusiveMinimum": 0,
                   "maximum": 100,
                   "description": "Percentage used on narrow screens.",
-                  "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    mobile: 100\n```\n\nPercentage used on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)"
+                  "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    mobile: 100\n```\n\nPercentage used on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
                 }
               },
               "required": [
@@ -471,11 +471,11 @@
               "additionalProperties": false
             }
           ],
-          "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    desktop: 100\n    mobile: 100\n```\n\nMaximum percentage of available horizontal space used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)",
+          "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    desktop: 100\n    mobile: 100\n```\n\nMaximum percentage of available horizontal space used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)",
           "defaultSnippets": [
             {
               "label": "Responsive image limit",
-              "markdownDescription": "Set separate managed-image limits for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)",
+              "markdownDescription": "Set separate managed-image limits for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)",
               "body": {
                 "desktop": "${1:100}",
                 "mobile": "${2:100}"
@@ -499,14 +499,14 @@
                   "exclusiveMinimum": 0,
                   "maximum": 100,
                   "description": "Percentage used on wider screens.",
-                  "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n```\n\nPercentage used on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)"
+                  "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n```\n\nPercentage used on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
                 },
                 "mobile": {
                   "type": "number",
                   "exclusiveMinimum": 0,
                   "maximum": 100,
                   "description": "Percentage used on narrow screens.",
-                  "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    mobile: 68\n```\n\nPercentage used on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)"
+                  "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    mobile: 68\n```\n\nPercentage used on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
                 }
               },
               "required": [
@@ -516,11 +516,11 @@
               "additionalProperties": false
             }
           ],
-          "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n    mobile: 68\n```\n\nMaximum percentage of viewport height used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)",
+          "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n    mobile: 68\n```\n\nMaximum percentage of viewport height used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)",
           "defaultSnippets": [
             {
               "label": "Responsive image limit",
-              "markdownDescription": "Set separate managed-image limits for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)",
+              "markdownDescription": "Set separate managed-image limits for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)",
               "body": {
                 "desktop": "${1:74}",
                 "mobile": "${2:68}"
@@ -531,7 +531,7 @@
       },
       "additionalProperties": false,
       "description": "Optional defaults for managed image presentation.",
-      "markdownDescription": "```yaml\nimages:\n  width: 900px\n  maxAvailableHeightPercent: 74\n```\n\nOverrides the available width and height used by Norna-managed images.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#image-sizing)"
+      "markdownDescription": "```yaml\nimages:\n  width: 900px\n  maxAvailableHeightPercent: 74\n```\n\nOverrides the available width and height used by Norna-managed images.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
     },
     "typography": {
       "type": "object",
@@ -540,7 +540,7 @@
           "description": "CSS font-family stack.",
           "type": "string",
           "minLength": 1,
-          "markdownDescription": "```yaml\ntypography:\n  fontFamily: \"Arial, sans-serif\"\n```\n\nCSS font-family stack.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+          "markdownDescription": "```yaml\ntypography:\n  fontFamily: \"Arial, sans-serif\"\n```\n\nCSS font-family stack.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
         },
         "profile": {
           "description": "Typography profile. Omit this to keep the selected preset.",
@@ -567,7 +567,7 @@
               "description": "Stronger headings and tighter body rhythm for short, expressive pages."
             }
           ],
-          "markdownDescription": "```yaml\ntypography:\n  profile: reading\n```\n\nTypography profile. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+          "markdownDescription": "```yaml\ntypography:\n  profile: reading\n```\n\nTypography profile. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
         },
         "rhythm": {
           "description": "Typography spacing rhythm. Omit this to keep the selected preset.",
@@ -589,7 +589,7 @@
               "description": "Increase vertical spacing for a more expansive presentation."
             }
           ],
-          "markdownDescription": "```yaml\ntypography:\n  rhythm: normal\n```\n\nTypography spacing rhythm. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+          "markdownDescription": "```yaml\ntypography:\n  rhythm: normal\n```\n\nTypography spacing rhythm. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
         },
         "overrides": {
           "description": "Focused typography overrides applied after the profile.",
@@ -627,7 +627,7 @@
                               "description": "Align text with the right edge of its text area."
                             }
                           ],
-                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                         },
                         "mobile": {
                           "description": "Text alignment on narrow screens.",
@@ -649,15 +649,15 @@
                               "description": "Align text with the right edge of its text area."
                             }
                           ],
-                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                         }
                       },
                       "additionalProperties": false,
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                       "defaultSnippets": [
                         {
                           "label": "Responsive text alignment",
-                          "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                          "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                           "body": {
                             "desktop": "${1:left}",
                             "mobile": "${2:left}"
@@ -690,14 +690,14 @@
                           "description": "Use the largest available type size for exceptional emphasis."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "lineHeight": {
                       "type": "number",
                       "minimum": 1,
                       "maximum": 3,
                       "description": "Unitless line height between 1 and 3.",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "weight": {
                       "description": "Heading font weight. Omit this to keep the profile value.",
@@ -723,23 +723,23 @@
                           "description": "Use bold font weight."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  weight: 600\n```\n\nHeading font weight. Omit this to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  weight: 600\n```\n\nHeading font weight. Omit this to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "spacingBefore": {
                       "description": "Vertical space before the heading.",
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  spacingBefore: 1.5em\n```\n\nVertical space before the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  spacingBefore: 1.5em\n```\n\nVertical space before the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "spacingAfter": {
                       "description": "Vertical space after the heading.",
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  spacingAfter: 0.5em\n```\n\nVertical space after the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  spacingAfter: 0.5em\n```\n\nVertical space after the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     }
                   },
                   "additionalProperties": false,
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n        size: medium\n```\n\nOverrides for Markdown level 1 headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n        size: medium\n```\n\nOverrides for Markdown level 1 headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 },
                 "h2": {
                   "description": "Overrides for Markdown level 2 section headings.",
@@ -769,7 +769,7 @@
                               "description": "Align text with the right edge of its text area."
                             }
                           ],
-                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                         },
                         "mobile": {
                           "description": "Text alignment on narrow screens.",
@@ -791,15 +791,15 @@
                               "description": "Align text with the right edge of its text area."
                             }
                           ],
-                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                         }
                       },
                       "additionalProperties": false,
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                       "defaultSnippets": [
                         {
                           "label": "Responsive text alignment",
-                          "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                          "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                           "body": {
                             "desktop": "${1:left}",
                             "mobile": "${2:left}"
@@ -832,14 +832,14 @@
                           "description": "Use the largest available type size for exceptional emphasis."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "lineHeight": {
                       "type": "number",
                       "minimum": 1,
                       "maximum": 3,
                       "description": "Unitless line height between 1 and 3.",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "weight": {
                       "description": "Heading font weight. Omit this to keep the profile value.",
@@ -865,23 +865,23 @@
                           "description": "Use bold font weight."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  weight: 600\n```\n\nHeading font weight. Omit this to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  weight: 600\n```\n\nHeading font weight. Omit this to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "spacingBefore": {
                       "description": "Vertical space before the heading.",
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  spacingBefore: 1.5em\n```\n\nVertical space before the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  spacingBefore: 1.5em\n```\n\nVertical space before the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "spacingAfter": {
                       "description": "Vertical space after the heading.",
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  spacingAfter: 0.5em\n```\n\nVertical space after the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  spacingAfter: 0.5em\n```\n\nVertical space after the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     }
                   },
                   "additionalProperties": false,
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n        size: medium\n```\n\nOverrides for Markdown level 2 section headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n        size: medium\n```\n\nOverrides for Markdown level 2 section headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 },
                 "h3": {
                   "description": "Overrides for Markdown level 3 headings.",
@@ -911,7 +911,7 @@
                               "description": "Align text with the right edge of its text area."
                             }
                           ],
-                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                         },
                         "mobile": {
                           "description": "Text alignment on narrow screens.",
@@ -933,15 +933,15 @@
                               "description": "Align text with the right edge of its text area."
                             }
                           ],
-                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                         }
                       },
                       "additionalProperties": false,
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                       "defaultSnippets": [
                         {
                           "label": "Responsive text alignment",
-                          "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                          "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                           "body": {
                             "desktop": "${1:left}",
                             "mobile": "${2:left}"
@@ -974,14 +974,14 @@
                           "description": "Use the largest available type size for exceptional emphasis."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "lineHeight": {
                       "type": "number",
                       "minimum": 1,
                       "maximum": 3,
                       "description": "Unitless line height between 1 and 3.",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "weight": {
                       "description": "Heading font weight. Omit this to keep the profile value.",
@@ -1007,23 +1007,23 @@
                           "description": "Use bold font weight."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  weight: 600\n```\n\nHeading font weight. Omit this to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  weight: 600\n```\n\nHeading font weight. Omit this to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "spacingBefore": {
                       "description": "Vertical space before the heading.",
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  spacingBefore: 1.5em\n```\n\nVertical space before the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  spacingBefore: 1.5em\n```\n\nVertical space before the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "spacingAfter": {
                       "description": "Vertical space after the heading.",
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  spacingAfter: 0.5em\n```\n\nVertical space after the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  spacingAfter: 0.5em\n```\n\nVertical space after the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     }
                   },
                   "additionalProperties": false,
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n        size: medium\n```\n\nOverrides for Markdown level 3 headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n        size: medium\n```\n\nOverrides for Markdown level 3 headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 },
                 "h4": {
                   "description": "Overrides for Markdown level 4 headings.",
@@ -1053,7 +1053,7 @@
                               "description": "Align text with the right edge of its text area."
                             }
                           ],
-                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                         },
                         "mobile": {
                           "description": "Text alignment on narrow screens.",
@@ -1075,15 +1075,15 @@
                               "description": "Align text with the right edge of its text area."
                             }
                           ],
-                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                         }
                       },
                       "additionalProperties": false,
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                       "defaultSnippets": [
                         {
                           "label": "Responsive text alignment",
-                          "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                          "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                           "body": {
                             "desktop": "${1:left}",
                             "mobile": "${2:left}"
@@ -1116,14 +1116,14 @@
                           "description": "Use the largest available type size for exceptional emphasis."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "lineHeight": {
                       "type": "number",
                       "minimum": 1,
                       "maximum": 3,
                       "description": "Unitless line height between 1 and 3.",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "weight": {
                       "description": "Heading font weight. Omit this to keep the profile value.",
@@ -1149,27 +1149,27 @@
                           "description": "Use bold font weight."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  weight: 600\n```\n\nHeading font weight. Omit this to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  weight: 600\n```\n\nHeading font weight. Omit this to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "spacingBefore": {
                       "description": "Vertical space before the heading.",
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  spacingBefore: 1.5em\n```\n\nVertical space before the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  spacingBefore: 1.5em\n```\n\nVertical space before the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "spacingAfter": {
                       "description": "Vertical space after the heading.",
                       "type": "string",
                       "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  spacingAfter: 0.5em\n```\n\nVertical space after the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  spacingAfter: 0.5em\n```\n\nVertical space after the heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     }
                   },
                   "additionalProperties": false,
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n        size: medium\n```\n\nOverrides for Markdown level 4 headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n        size: medium\n```\n\nOverrides for Markdown level 4 headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 }
               },
               "additionalProperties": false,
-              "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n        size: medium\n```\n\nOverrides for heading levels.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+              "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n        size: medium\n```\n\nOverrides for heading levels.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
             },
             "body": {
               "description": "Overrides for body text.",
@@ -1199,7 +1199,7 @@
                           "description": "Align text with the right edge of its text area."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "mobile": {
                       "description": "Text alignment on narrow screens.",
@@ -1221,15 +1221,15 @@
                           "description": "Align text with the right edge of its text area."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     }
                   },
                   "additionalProperties": false,
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                   "defaultSnippets": [
                     {
                       "label": "Responsive text alignment",
-                      "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                      "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                       "body": {
                         "desktop": "${1:left}",
                         "mobile": "${2:left}"
@@ -1262,14 +1262,14 @@
                       "description": "Use the largest available type size for exceptional emphasis."
                     }
                   ],
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 },
                 "lineHeight": {
                   "type": "number",
                   "minimum": 1,
                   "maximum": 3,
                   "description": "Unitless line height between 1 and 3.",
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 },
                 "width": {
                   "description": "Maximum body-text line length.",
@@ -1291,17 +1291,17 @@
                       "description": "Allow body text to use more horizontal space."
                     }
                   ],
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      width: narrow\n```\n\nMaximum body-text line length.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      width: narrow\n```\n\nMaximum body-text line length.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 },
                 "paragraphSpacing": {
                   "description": "Vertical space between body paragraphs.",
                   "type": "string",
                   "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      paragraphSpacing: 1em\n```\n\nVertical space between body paragraphs.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      paragraphSpacing: 1em\n```\n\nVertical space between body paragraphs.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 }
               },
               "additionalProperties": false,
-              "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      width: narrow\n```\n\nOverrides for body text.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+              "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      width: narrow\n```\n\nOverrides for body text.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
             },
             "caption": {
               "description": "Overrides for image captions.",
@@ -1331,7 +1331,7 @@
                           "description": "Align text with the right edge of its text area."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  align:\n    desktop: left\n```\n\nText alignment on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     },
                     "mobile": {
                       "description": "Text alignment on narrow screens.",
@@ -1353,15 +1353,15 @@
                           "description": "Align text with the right edge of its text area."
                         }
                       ],
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  align:\n    mobile: left\n```\n\nText alignment on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                     }
                   },
                   "additionalProperties": false,
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  align:\n    desktop: left\n    mobile: left\n```\n\nResponsive text alignment override.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                   "defaultSnippets": [
                     {
                       "label": "Responsive text alignment",
-                      "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+                      "markdownDescription": "Set separate text alignment for wider and narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
                       "body": {
                         "desktop": "${1:left}",
                         "mobile": "${2:left}"
@@ -1394,32 +1394,32 @@
                       "description": "Use the largest available type size for exceptional emphasis."
                     }
                   ],
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  size: medium\n```\n\nText size from the active typography system. Omit an override to keep the profile value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 },
                 "lineHeight": {
                   "type": "number",
                   "minimum": 1,
                   "maximum": 3,
                   "description": "Unitless line height between 1 and 3.",
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 },
                 "spacingBefore": {
                   "description": "Vertical space between an image and its caption.",
                   "type": "string",
                   "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|ch|lh))$",
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n      spacingBefore: 0.5em\n```\n\nVertical space between an image and its caption.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n      spacingBefore: 0.5em\n```\n\nVertical space between an image and its caption.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 }
               },
               "additionalProperties": false,
-              "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n      size: small\n```\n\nOverrides for image captions.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+              "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n      size: small\n```\n\nOverrides for image captions.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
             }
           },
           "additionalProperties": false,
-          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      width: narrow\n```\n\nFocused typography overrides applied after the profile.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      width: narrow\n```\n\nFocused typography overrides applied after the profile.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
           "defaultSnippets": [
             {
               "label": "Typography overrides",
-              "markdownDescription": "Start a focused set of heading and body-text overrides.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)",
+              "markdownDescription": "Start a focused set of heading and body-text overrides.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
               "body": {
                 "headings": {
                   "h2": {
@@ -1438,7 +1438,7 @@
       },
       "additionalProperties": false,
       "description": "Typography profile, rhythm, font family, and focused overrides.",
-      "markdownDescription": "```yaml\ntypography:\n  profile: reading\n  rhythm: normal\n```\n\nOverrides the preset's font stack, typography profile, rhythm or individual text settings.\n\n[Typography configuration reference](https://github.com/janga/norna/blob/v0.7.16/docs/typography.md#configuration-shape)"
+      "markdownDescription": "```yaml\ntypography:\n  profile: reading\n  rhythm: normal\n```\n\nOverrides the preset's font stack, typography profile, rhythm or individual text settings.\n\n[Typography configuration reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
     },
     "palette": {
       "type": "string",
@@ -1460,7 +1460,7 @@
           "description": "Warm off-white surfaces with dark text."
         }
       ],
-      "markdownDescription": "```yaml\npalette: paper\n```\n\nChooses a coordinated color system for the page frame, navigation, footer and section surfaces.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#palette-and-section-surfaces)",
+      "markdownDescription": "```yaml\npalette: paper\n```\n\nChooses a coordinated color system for the page frame, navigation, footer and section surfaces.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#palette-and-section-surfaces)",
       "examples": [
         "dark",
         "light",
@@ -1493,7 +1493,7 @@
           }
         ]
       },
-      "markdownDescription": "```yaml\nsectionSurfaces: [base, soft, emphasis]\n```\n\nLists one to three semantic surfaces. Norna cycles through them in section order; omit this field to keep the preset sequence.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md#palette-and-section-surfaces)",
+      "markdownDescription": "```yaml\nsectionSurfaces: [base, soft, emphasis]\n```\n\nLists one to three semantic surfaces. Norna cycles through them in section order; omit this field to keep the preset sequence.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#palette-and-section-surfaces)",
       "examples": [
         [
           "base"
@@ -1514,5 +1514,5 @@
   "description": "Visual settings for a site or page. A page theme replaces the inherited visual theme; navigation logo settings remain site-wide.",
   "$id": "https://janga.github.io/norna/schemas/theme.schema.json",
   "title": "Norna visual theme",
-  "markdownDescription": "```yaml\npreset: documentation\n```\n\nChoose one complete preset first. Add focused overrides only when the site needs to differ from it.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.16/docs/theme.md)"
+  "markdownDescription": "```yaml\npreset: documentation\n```\n\nChoose one complete preset first. Add focused overrides only when the site needs to differ from it.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md)"
 }

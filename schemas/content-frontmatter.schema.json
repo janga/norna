@@ -9,7 +9,7 @@
           "description": "Optional page-specific meta description.",
           "type": "string",
           "minLength": 1,
-          "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nAn optional page-specific description rendered as `<meta name=\"description\">`. It is not visible in page content.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-title-and-frontmatter)",
+          "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nAn optional page-specific description rendered as `<meta name=\"description\">`. It is not visible in page content.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.17/docs/content.md#page-title-and-frontmatter)",
           "examples": [
             "About this project."
           ]
@@ -17,7 +17,7 @@
       },
       "additionalProperties": false,
       "description": "Optional metadata for this homepage or additional page. The Markdown H1 supplies the page title.",
-      "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nContains optional metadata for the current homepage or additional page. The Markdown H1 supplies its title.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-title-and-frontmatter)"
+      "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nContains optional metadata for the current homepage or additional page. The Markdown H1 supplies its title.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.17/docs/content.md#page-title-and-frontmatter)"
     },
     "navigation": {
       "description": "Optional navigation metadata for this page.",
@@ -27,7 +27,7 @@
           "default": true,
           "description": "List this page in site navigation. The page remains public when false.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nnavigation:\n  listed: false\n```\n\nList this page in site navigation. The page remains public when false.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.16/docs/pages.md#navigation)",
+          "markdownDescription": "```yaml\nnavigation:\n  listed: false\n```\n\nList this page in site navigation. The page remains public when false.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/pages.md#navigation)",
           "examples": [
             true,
             false
@@ -35,12 +35,12 @@
         }
       },
       "additionalProperties": false,
-      "markdownDescription": "```yaml\nnavigation:\n  listed: false\n```\n\nOptionally excludes an additional page from site navigation without removing its public URL.\n\n[Site navigation reference](https://github.com/janga/norna/blob/v0.7.16/docs/pages.md#navigation)"
+      "markdownDescription": "```yaml\nnavigation:\n  listed: false\n```\n\nOptionally excludes an additional page from site navigation without removing its public URL.\n\n[Site navigation reference](https://github.com/janga/norna/blob/v0.7.17/docs/pages.md#navigation)"
     }
   },
   "additionalProperties": false,
   "description": "Frontmatter for a homepage or additional page content.md file.",
   "$id": "https://janga.github.io/norna/schemas/content-frontmatter.schema.json",
   "title": "Norna page frontmatter",
-  "markdownDescription": "```yaml\n---\npage:\n  description: About this project.\n---\n```\n\nContent frontmatter is optional. Write the page title as the single Markdown H1; use frontmatter only for optional metadata or navigation settings.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.16/docs/content.md#page-title-and-frontmatter)"
+  "markdownDescription": "```yaml\n---\npage:\n  description: About this project.\n---\n```\n\nContent frontmatter is optional. Write the page title as the single Markdown H1; use frontmatter only for optional metadata or navigation settings.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.17/docs/content.md#page-title-and-frontmatter)"
 }
