@@ -134,7 +134,7 @@ test.describe('site navigation menus', () => {
 
 		const currentPageLink = page.locator(currentDesktopPageSelector);
 		await expect(currentPageLink).toHaveText('Media blocks');
-		await expect(page.locator('.page-nav-label')).toHaveText('On this page');
+		await expect(page.locator('.page-nav-label')).toHaveText('Page contents');
 		await expect(page.locator(pageNavSelector).first()).toBeVisible();
 		await expect(page.locator('.site-nav-submenu a[href*="#"]')).toHaveCount(0);
 	});
@@ -181,7 +181,7 @@ test.describe('mobile site navigation drawer', () => {
 		await expect(menu.locator('nav[aria-label="Pages"] h2')).toHaveText('Pages');
 		await expect(menu.locator('.navigation-page-node-current > .navigation-page-link')).toHaveText('Media blocks');
 		await expect(menu.getByRole('link', { name: 'Surfaces', exact: true })).toHaveAttribute('href', '/surfaces/');
-		await expect(menu.locator('nav[aria-label="On this page"] h2')).toHaveText('On this page');
+		await expect(menu.locator('nav[aria-label="Page contents"] h2')).toHaveText('Page contents');
 		await expect(menu.locator(mobilePageNavSelector).first()).toBeVisible();
 		await expect(menu.locator('.navigation-page-tree-mobile a[href*="#"]')).toHaveCount(0);
 	});

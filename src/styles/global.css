@@ -359,6 +359,10 @@ a {
 	text-underline-offset: 0.35em;
 }
 
+.page-nav .page-nav-page-top {
+	font-weight: 700;
+}
+
 .mobile-nav-sections a[aria-current='location'] {
 	opacity: 1;
 	text-decoration: underline;
@@ -1539,8 +1543,13 @@ ul {
 		opacity: 0.78;
 	}
 
-	.mobile-nav-sections .mobile-nav-overview {
+	.mobile-nav-sections .mobile-nav-overview,
+	.mobile-nav-sections .mobile-nav-page-top {
 		font-weight: 650;
+	}
+
+	.mobile-nav-sections li:not(.mobile-nav-page-top-item) a {
+		padding-left: 1rem;
 	}
 
 	.mobile-nav-sections a:hover,

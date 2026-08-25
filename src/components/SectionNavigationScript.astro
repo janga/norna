@@ -40,9 +40,12 @@
 	const updateCurrentSection = () => {
 		sectionLinks.forEach((link) => {
 			const linkUrl = new URL(link.href, window.location.href);
-			const isCurrent = linkUrl.pathname === window.location.pathname
-				&& linkUrl.hash !== ''
-				&& linkUrl.hash === window.location.hash;
+			const isPageTop = link.hasAttribute('data-page-top');
+			const isCurrent = linkUrl.pathname === window.location.pathname && (
+				isPageTop
+					? window.location.hash === ''
+					: linkUrl.hash !== '' && linkUrl.hash === window.location.hash
+			);
 
 			if (isCurrent) {
 				link.setAttribute('aria-current', 'location');
@@ -67,7 +70,11 @@
 
 		mobileMenu.addEventListener('toggle', () => {
 			document.documentElement.classList.toggle('mobile-navigation-open', mobileMenu.open);
-			if (mobileMenu.open) window.requestAnimationFrame(() => mobileMenu.querySelector<HTMLElement>('h2')?.focus());
+			if (mobileMenu.open) {
+				window.requestAnimationFrame(() => (
+					mobileMenu.querySelector<HTMLElement>('.mobile-nav-view h2, .mobile-nav-view a')?.focus()
+				));
+			}
 		});
 
 		mobileMenu.addEventListener('keydown', (event) => {

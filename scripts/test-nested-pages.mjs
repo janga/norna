@@ -70,7 +70,7 @@ try {
 	for (const submenuMatch of macosHtml.matchAll(/<div class="site-nav-submenu">([\s\S]*?)<\/div>/g)) {
 		assert.doesNotMatch(submenuMatch[1], /href="[^"#]*#[^"]+"/);
 	}
-	assert.match(macosHtml, /<nav class="mobile-nav-view" aria-label="On this page">/);
+	assert.match(macosHtml, /<nav class="mobile-nav-view" aria-label="Page contents">/);
 	assert.ok(
 		macosHtml.indexOf('href="/guides/installation/"') < macosHtml.indexOf('href="/guides/workflows/"'),
 		'Nested sibling navigation should follow page directory order.',

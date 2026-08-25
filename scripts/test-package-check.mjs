@@ -323,7 +323,7 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<nav class="page-nav" aria-label="On this page">',
+		'<nav class="page-nav" aria-label="Page contents">',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),

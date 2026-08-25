@@ -73,7 +73,7 @@ try {
 			navigationMenu: 'Menu',
 			navigationOverview: 'Overview',
 			note: 'Note',
-			pageNavigation: 'On this page',
+			pageNavigation: 'Page contents',
 			siteBanners: 'Site notices',
 			siteNavigation: 'Pages',
 			skipToContent: 'Skip to content',

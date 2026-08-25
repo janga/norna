@@ -86,6 +86,11 @@ The navigation enhancement keeps native anchors clear of the sticky header.
 	assert.match(getScripts(instantHtml)[0], /site-top-anchor-offset/);
 	assertScrollBehavior(instantHtml, 'auto', 'The default instant scroll mode');
 	assert.match(instantHtml, /<nav class="page-nav"/);
+	assert.match(instantHtml, /<nav class="page-nav" aria-label="Page contents">/);
+	assert.doesNotMatch(instantHtml, /class="page-nav-label"/);
+	assert.doesNotMatch(instantHtml, /<h2 tabindex="-1">Page contents<\/h2>/);
+	assert.match(instantHtml, /class="page-nav-page-top" data-page-top href="\/">Section navigation<\/a>/);
+	assert.match(instantHtml, /class="mobile-nav-destination mobile-nav-page-top" data-page-top href="\/">/);
 	assert.match(instantHtml, /href="#intro"/);
 	assert.match(instantHtml, /href="#more"/);
 

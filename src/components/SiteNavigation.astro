@@ -45,6 +45,7 @@ const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.lengt
 const hasCurrentPageSectionMenu = Boolean(
 	currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
 );
+const showSinglePageTopLink = !showSiteNavigation;
 const showMobileNavigation = showSiteNavigation || hasCurrentPageSectionMenu;
 const showNavigationRow = showMobileNavigation || Boolean(logo);
 const hasSectionNavigation = hasCurrentPageSectionMenu;
@@ -104,8 +105,21 @@ const hasSectionNavigation = hasCurrentPageSectionMenu;
 
 					{hasCurrentPageSectionMenu && currentPageNavigation && (
 						<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.pageNavigation}>
-							<h2 tabindex="-1">{projectConfig.locale.labels.pageNavigation}</h2>
+							{!showSinglePageTopLink && (
+								<h2 tabindex="-1">{projectConfig.locale.labels.pageNavigation}</h2>
+							)}
 							<ul class="mobile-nav-sections">
+								{showSinglePageTopLink && (
+									<li class="mobile-nav-page-top-item">
+										<a
+											class="mobile-nav-destination mobile-nav-page-top"
+											data-page-top
+											href={pageHref(currentPage)}
+										>
+											{currentPage.title}
+										</a>
+									</li>
+								)}
 									{currentPageNavigation.sections.map((section) => (
 										<li>
 											<a class="mobile-nav-destination" href={`#${section.id}`}>{section.title}</a>
@@ -123,8 +137,17 @@ const hasSectionNavigation = hasCurrentPageSectionMenu;
 	{hasCurrentPageSectionMenu && currentPageNavigation && (
 		<nav class="page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
 			<div class="page-nav-inner">
-				<span class="page-nav-label">{projectConfig.locale.labels.pageNavigation}</span>
+				{!showSinglePageTopLink && (
+					<span class="page-nav-label">{projectConfig.locale.labels.pageNavigation}</span>
+				)}
 				<ul>
+					{showSinglePageTopLink && (
+						<li class="page-nav-page-top-item">
+							<a class="page-nav-page-top" data-page-top href={pageHref(currentPage)}>
+								{currentPage.title}
+							</a>
+						</li>
+					)}
 					{currentPageNavigation.sections.map((section) => (
 						<li>
 							<a href={`#${section.id}`}>{section.title}</a>
