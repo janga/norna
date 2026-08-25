@@ -313,13 +313,21 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'<a class="site-brand" href="/site/"><img class="site-brand-logo" src="/site/logo.svg" alt="Package Check Site">',
 	);
-	await assertFileIncludes(
+	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'<div class="site-nav-submenu">',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'href="/site/#intro">Intro</a>',
+		'href="/site/about/">About the site</a>',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'<nav class="page-nav" aria-label="On this page">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'href="#intro">Intro</a>',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -363,7 +371,7 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'href="/site/#warning">Warning</a>',
+		'href="#warning">Warning</a>',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
