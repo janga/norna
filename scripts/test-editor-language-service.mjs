@@ -21,6 +21,8 @@ const siteRoot = path.join(root, 'site');
 const homeContentPath = path.join(siteRoot, 'content.md');
 const pageContentPath = path.join(siteRoot, 'pages', '010-about', 'content.md');
 const pageThemePath = path.join(siteRoot, 'pages', '010-about', 'theme.yaml');
+const nestedPageContentPath = path.join(siteRoot, 'pages', '010-about', 'pages', '020-team', 'content.md');
+const nestedPageThemePath = path.join(siteRoot, 'pages', '010-about', 'pages', '020-team', 'theme.yaml');
 const installedNornaRoot = path.join(root, 'node_modules', '@janga', 'norna');
 const packageManifestPath = path.join(installedNornaRoot, 'schemas', 'manifest.json');
 const {
@@ -63,6 +65,7 @@ try {
 	await mkdir(path.join(installedNornaRoot, 'schemas'), { recursive: true });
 	await mkdir(path.join(siteRoot, 'images'), { recursive: true });
 	await mkdir(path.join(siteRoot, 'pages', '010-about', 'images'), { recursive: true });
+	await mkdir(path.dirname(nestedPageContentPath), { recursive: true });
 	await mkdir(path.join(siteRoot, 'public'), { recursive: true });
 	await writeFile(path.join(root, 'package.json'), JSON.stringify({ name: 'editor-fixture', version: '1.0.0' }));
 	await writeFile(path.join(installedNornaRoot, 'package.json'), JSON.stringify({ name: '@janga/norna', version: '9.8.7' }));
@@ -92,6 +95,8 @@ try {
 	await writeFile(homeContentPath, homeSource);
 	await writeFile(pageContentPath, pageSource);
 	await writeFile(pageThemePath, 'preset: portfolio\n');
+	await writeFile(nestedPageContentPath, pageSource.replace('# About', '# Team'));
+	await writeFile(nestedPageThemePath, 'preset: documentation\n');
 
 	assert.equal(await findNornaSiteRoot(homeContentPath), siteRoot);
 	assert.equal(getNornaDocumentContext(homeContentPath).schemaKind, 'contentFrontmatter');
@@ -101,6 +106,9 @@ try {
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'sitewide-content.yaml')).schemaKind, 'sitewideContent');
 	assert.equal(getNornaDocumentContext(pageContentPath).pageDirectory, '010-about');
 	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'theme');
+	assert.equal(getNornaDocumentContext(nestedPageContentPath).pageDirectory, '010-about/pages/020-team');
+	assert.equal(getNornaDocumentContext(nestedPageContentPath).schemaKind, 'contentFrontmatter');
+	assert.equal(getNornaDocumentContext(nestedPageThemePath).schemaKind, 'theme');
 	assert.equal(getNornaProjectContext(path.join(siteRoot, 'public', 'logo.svg')).siteRoot, siteRoot);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'public', 'logo.svg')), null);
 	assert.equal(getNornaDocumentContext(path.join(root, 'README.md')), null);

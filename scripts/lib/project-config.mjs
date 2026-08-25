@@ -183,6 +183,7 @@ const readSiteUrl = (config) => {
 
 const localeLabels = Object.freeze({
 	en: Object.freeze({
+		breadcrumb: 'Breadcrumb',
 		dismissBanner: 'Dismiss notice',
 		built: 'Built',
 		images: 'Images',
@@ -196,6 +197,7 @@ const localeLabels = Object.freeze({
 		skipToContent: 'Skip to content',
 	}),
 	sv: Object.freeze({
+		breadcrumb: 'Brödsmulor',
 		dismissBanner: 'Stäng meddelande',
 		built: 'Byggd',
 		images: 'Bilder',

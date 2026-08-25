@@ -2,12 +2,9 @@
 	const siteTop = document.querySelector<HTMLElement>('.site-top');
 	const mobileMenu = document.querySelector<HTMLDetailsElement>('.mobile-nav-menu');
 	const sectionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(
-		'.site-nav-submenu a, .mobile-nav-sections a, .page-nav a',
+		'.mobile-nav-sections a, .page-nav a',
 	));
-	const submenuItems = Array.from(document.querySelectorAll<HTMLElement>('.site-nav-item-has-sections'));
-	const mobileViews = Array.from(mobileMenu?.querySelectorAll<HTMLElement>('[data-mobile-nav-view]') ?? []);
-	const mobileOpenButtons = Array.from(mobileMenu?.querySelectorAll<HTMLButtonElement>('[data-mobile-nav-open]') ?? []);
-	const mobileBackButtons = Array.from(mobileMenu?.querySelectorAll<HTMLButtonElement>('[data-mobile-nav-back]') ?? []);
+	const submenuItems = Array.from(document.querySelectorAll<HTMLElement>('.site-nav-item-has-submenu'));
 	const mobileDestinationLinks = Array.from(mobileMenu?.querySelectorAll<HTMLAnchorElement>('.mobile-nav-destination') ?? []);
 	const mobileMenuSummary = mobileMenu?.querySelector<HTMLElement>(':scope > summary');
 
@@ -16,6 +13,17 @@
 
 		const offset = Math.ceil(siteTop.getBoundingClientRect().height);
 		document.documentElement.style.setProperty('--site-top-anchor-offset', `${offset}px`);
+	};
+
+	const alignInitialHashTarget = () => {
+		if (!window.location.hash) return;
+
+		try {
+			const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+			target?.scrollIntoView({ block: 'start' });
+		} catch {
+			// Invalid URL encoding is left to the browser's native hash handling.
+		}
 	};
 
 	const getSamePageTarget = (link: HTMLAnchorElement) => {
@@ -50,36 +58,7 @@
 		item.querySelector<HTMLAnchorElement>(':scope > a')?.addEventListener('focus', resetDismissal);
 	});
 
-	if (mobileMenu && mobileViews.length > 0) {
-		const initialViewId = mobileMenu.dataset.initialView ?? mobileViews[0]?.dataset.mobileNavView;
-
-		const showMobileView = (viewId: string, moveFocus = true) => {
-			const activeView = mobileViews.find((view) => view.dataset.mobileNavView === viewId);
-			if (!activeView) return;
-
-			mobileViews.forEach((view) => {
-				view.hidden = view !== activeView;
-			});
-			mobileMenu.dataset.activeView = viewId;
-
-			if (moveFocus) {
-				window.requestAnimationFrame(() => (
-					activeView.querySelector<HTMLElement>('.mobile-nav-back, h2')?.focus()
-				));
-			}
-		};
-
-		mobileMenu.dataset.mobileNavigationReady = 'true';
-		showMobileView(initialViewId ?? '', false);
-
-		mobileOpenButtons.forEach((button) => {
-			button.addEventListener('click', () => showMobileView(button.dataset.mobileNavOpen ?? ''));
-		});
-
-		mobileBackButtons.forEach((button) => {
-			button.addEventListener('click', () => showMobileView(button.dataset.mobileNavBack ?? ''));
-		});
-
+	if (mobileMenu) {
 		mobileDestinationLinks.forEach((link) => {
 			link.addEventListener('click', () => {
 				mobileMenu.open = false;
@@ -88,9 +67,7 @@
 
 		mobileMenu.addEventListener('toggle', () => {
 			document.documentElement.classList.toggle('mobile-navigation-open', mobileMenu.open);
-			if (mobileMenu.open) {
-				showMobileView(initialViewId ?? '');
-			}
+			if (mobileMenu.open) window.requestAnimationFrame(() => mobileMenu.querySelector<HTMLElement>('h2')?.focus());
 		});
 
 		mobileMenu.addEventListener('keydown', (event) => {
@@ -106,7 +83,7 @@
 			if (event.key !== 'Tab') return;
 
 			const focusableElements = Array.from(mobileMenu.querySelectorAll<HTMLElement>(
-				'summary, button:not([hidden]), a[href]:not([hidden]), [tabindex]:not([tabindex="-1"]):not([hidden])',
+				'summary, a[href]:not([hidden]), [tabindex]:not([tabindex="-1"]):not([hidden])',
 			)).filter((element) => element.getClientRects().length > 0);
 			const firstFocusable = focusableElements[0];
 			const lastFocusable = focusableElements.at(-1);
@@ -148,6 +125,7 @@
 	updateCurrentSection();
 
 	setAnchorOffset();
+	if (window.location.hash) window.requestAnimationFrame(alignInitialHashTarget);
 
 	if (siteTop && 'ResizeObserver' in window) {
 		new ResizeObserver(setAnchorOffset).observe(siteTop);

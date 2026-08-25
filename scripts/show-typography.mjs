@@ -19,9 +19,11 @@ import {
 	siteContentLabel,
 	siteContentPath,
 	sitePagesDir,
+	sitePagesLabel,
 	siteThemeLabel,
 	siteThemePath,
 } from './lib/site-paths.mjs';
+import { getPageDirectoryAncestors } from './lib/page-model.mjs';
 import { readThemeConfig } from './lib/theme-config.mjs';
 import { resolveThemeConfig } from './lib/theme-presets.mjs';
 import { parseYamlConfig } from './lib/yaml-config.mjs';
@@ -200,19 +202,23 @@ const readThemeTypography = async () => {
 const readPageThemeTypography = async (contentFile, themeTypography) => {
 	if (contentFile.isHome) return themeTypography;
 
-	const pageThemePath = path.join(sitePagesDir, contentFile.pageDirectory, 'theme.yaml');
-	const pageThemeFile = await readFile(pageThemePath, 'utf8').catch((error) => {
-		if (error?.code === 'ENOENT') return null;
-		throw error;
-	});
-	if (!pageThemeFile) return themeTypography;
-	const pageThemeLabel = `${contentFile.contentLabel.replace(/\/content\.md$/, '')}/theme.yaml`;
+	for (const pageDirectory of getPageDirectoryAncestors(contentFile.pageDirectory).reverse()) {
+		const pageThemePath = path.join(sitePagesDir, pageDirectory, 'theme.yaml');
+		const pageThemeFile = await readFile(pageThemePath, 'utf8').catch((error) => {
+			if (error?.code === 'ENOENT') return null;
+			throw error;
+		});
+		if (!pageThemeFile) continue;
+		const pageThemeLabel = `${sitePagesLabel}/${pageDirectory}/theme.yaml`;
 
-	const pageThemeConfig = resolveThemeConfig(parseYamlConfig(pageThemeFile, pageThemeLabel, {
-		validateStructure: validatePageThemeYamlStructure,
-	}), pageThemeLabel);
-	const typographyConfig = pageThemeConfig.typography;
-	return resolveAnnotatedTypographyConfig(typographyConfig ?? defaultTypography, pageThemeLabel);
+		const pageThemeConfig = resolveThemeConfig(parseYamlConfig(pageThemeFile, pageThemeLabel, {
+			validateStructure: validatePageThemeYamlStructure,
+		}), pageThemeLabel);
+		const typographyConfig = pageThemeConfig.typography;
+		return resolveAnnotatedTypographyConfig(typographyConfig ?? defaultTypography, pageThemeLabel);
+	}
+
+	return themeTypography;
 };
 
 const readPageTypography = async (contentFile, siteThemeTypography) => {
@@ -239,7 +245,7 @@ const readPageTypography = async (contentFile, siteThemeTypography) => {
 
 	return {
 		source: contentFile.contentLabel,
-		pathname: contentFile.isHome ? '/' : `/${contentFile.pageId}/`,
+		pathname: contentFile.isHome ? '/' : `/${contentFile.pagePath}/`,
 		pageTypography,
 		sections,
 	};

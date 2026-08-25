@@ -34,13 +34,16 @@ const viewports = [
 const hiddenHeadingTolerance = -4;
 const maximumAnchorGap = 2;
 const stableSampleCount = 5;
+const testPagePath = '/media/';
+const pageNavSelector = '.page-nav a';
+const mobilePageNavSelector = '.mobile-nav-sections a';
 
 const getPreviewRounds = () => {
 	const rounds = Number.parseInt(process.env.NAVIGATION_PREVIEW_ROUNDS ?? '3', 10);
 	return Number.isFinite(rounds) && rounds > 0 ? rounds : 3;
 };
 
-const getNavTargets = async (page: Page): Promise<NavTarget[]> => page.locator('.section-nav a').evaluateAll((links) => (
+const getNavTargets = async (page: Page): Promise<NavTarget[]> => page.locator(pageNavSelector).evaluateAll((links) => (
 	links.map((link) => ({
 		hash: link.getAttribute('href') ?? '',
 		label: link.textContent?.trim() ?? '',
@@ -48,9 +51,23 @@ const getNavTargets = async (page: Page): Promise<NavTarget[]> => page.locator('
 ));
 
 const openSite = async (page: Page) => {
-	await page.goto('/', { waitUntil: 'domcontentloaded' });
-	await page.locator('.section-nav a').first().waitFor();
+	await page.goto(testPagePath, { waitUntil: 'domcontentloaded' });
+	await page.locator(pageNavSelector).first().waitFor({ state: 'attached' });
 	await page.waitForLoadState('networkidle').catch(() => {});
+};
+
+const clickSectionLink = async (page: Page, hash: string) => {
+	const desktopLink = page.locator(`${pageNavSelector}[href="${hash}"]`);
+	if (await desktopLink.isVisible()) {
+		await desktopLink.click();
+		return;
+	}
+
+	const mobileMenu = page.locator('.mobile-nav-menu');
+	if (!(await mobileMenu.getAttribute('open'))) {
+		await mobileMenu.locator(':scope > summary').click();
+	}
+	await page.locator(`${mobilePageNavSelector}[href="${hash}"]`).click();
 };
 
 const measureAnchor = async (
@@ -190,7 +207,7 @@ for (const viewport of viewports) {
 
 			for (let round = 0; round < rounds; round += 1) {
 				for (const target of targets) {
-					await page.locator(`.section-nav a[href="${target.hash}"]`).click();
+					await clickSectionLink(page, target.hash);
 					const measurement = await waitForAnchorToSettle(page, target, round, viewport.name);
 
 					expectAnchorMeasurement(measurement);
@@ -210,8 +227,8 @@ test('preview direct hash loads land on target headings', async ({ page }) => {
 		await page.setViewportSize(viewport.size);
 
 		for (const target of targets) {
-			await page.goto(`/${target.hash}`, { waitUntil: 'domcontentloaded' });
-			await page.locator('.section-nav a').first().waitFor();
+			await page.goto(`${testPagePath}${target.hash}`, { waitUntil: 'domcontentloaded' });
+			await page.locator(pageNavSelector).first().waitFor({ state: 'attached' });
 			const measurement = await waitForAnchorToSettle(page, target, 0, viewport.name);
 
 			expectAnchorMeasurement(measurement);

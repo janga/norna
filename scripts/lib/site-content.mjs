@@ -11,7 +11,7 @@ import {
 	sitePagesLabel,
 	sitewideContentLabel,
 } from './site-paths.mjs';
-import { parsePageDirectory } from './page-model.mjs';
+import { parsePageDirectoryPath } from './page-model.mjs';
 import { getMarkdownHeadings } from './heading-ids.mjs';
 import { schemaTopLevelKeys } from './schema-definitions.mjs';
 
@@ -99,39 +99,64 @@ export const getContentFiles = async () => {
 		imagesLabel: siteImagesLabel,
 		isHome: true,
 		pageDirectory: null,
+		pageDirectories: [],
 		pageId: null,
+		pageIds: [],
 		pageOrder: 0,
+		pageOrders: [],
+		pagePath: '',
+		parentPagePath: null,
+		depth: 0,
 	}];
-	const pageEntries = await readdir(sitePagesDir, { withFileTypes: true }).catch((error) => {
+	const collectPageContentFiles = async (pagesDir, pagesLabel, parentPageDirectory = '') => {
+		const pageEntries = await readdir(pagesDir, { withFileTypes: true }).catch((error) => {
 		if (error?.code === 'ENOENT') {
 			return [];
 		}
 
 		throw error;
-	});
-
-	for (const entry of pageEntries) {
-		if (!entry.isDirectory()) continue;
-
-		const pageDirectory = entry.name;
-		const pageDir = path.join(sitePagesDir, pageDirectory);
-		const pageContentPath = path.join(pageDir, 'content.md');
-
-		if (!(await fileExists(pageContentPath))) continue;
-
-		const { pageId, pageOrder } = parsePageDirectory(pageDirectory, `${sitePagesLabel}/${pageDirectory}`);
-
-		contentFiles.push({
-			contentLabel: `${sitePagesLabel}/${pageDirectory}/content.md`,
-			contentPath: pageContentPath,
-			imagesDir: path.join(pageDir, 'images'),
-			imagesLabel: `${sitePagesLabel}/${pageDirectory}/images`,
-			isHome: false,
-			pageDirectory,
-			pageId,
-			pageOrder,
 		});
-	}
+
+		for (const entry of pageEntries.sort((left, right) => left.name.localeCompare(right.name, 'en'))) {
+			if (!entry.isDirectory()) continue;
+
+			const pageDirectory = parentPageDirectory
+				? `${parentPageDirectory}/pages/${entry.name}`
+				: entry.name;
+			const pageLabel = `${pagesLabel}/${entry.name}`;
+			const pageDir = path.join(pagesDir, entry.name);
+			const pageContentPath = path.join(pageDir, 'content.md');
+
+			if (!(await fileExists(pageContentPath))) {
+				const childPageEntries = await readdir(path.join(pageDir, 'pages'), { withFileTypes: true }).catch((error) => {
+					if (error?.code === 'ENOENT') return [];
+					throw error;
+				});
+				if (childPageEntries.some((childEntry) => childEntry.isDirectory())) {
+					throw new Error(`${pageLabel} contains nested pages but has no content.md of its own.`);
+				}
+				continue;
+			}
+			const pageMetadata = parsePageDirectoryPath(pageDirectory, pageLabel);
+
+			contentFiles.push({
+				contentLabel: `${pageLabel}/content.md`,
+				contentPath: pageContentPath,
+				imagesDir: path.join(pageDir, 'images'),
+				imagesLabel: `${pageLabel}/images`,
+				isHome: false,
+				...pageMetadata,
+			});
+
+			await collectPageContentFiles(
+				path.join(pageDir, 'pages'),
+				`${pageLabel}/pages`,
+				pageDirectory,
+			);
+		}
+	};
+
+	await collectPageContentFiles(sitePagesDir, sitePagesLabel);
 
 	return contentFiles;
 };

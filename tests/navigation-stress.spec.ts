@@ -55,7 +55,7 @@ const openSite = async (page: Page, path = testPagePath) => {
 const clickSectionLink = async (page: Page, hash: string) => {
 	const menu = page.locator('.mobile-nav-menu').first();
 	if (!(await menu.getAttribute('open'))) {
-		await menu.locator('summary').click();
+		await menu.locator(':scope > summary').click();
 	}
 	await page.locator(`${mobilePageNavSelector}[href$="${hash}"]`).first().click();
 };

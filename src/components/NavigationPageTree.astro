@@ -1,0 +1,68 @@
+---
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { withBasePath } from '../lib/basePath';
+import type { PageNavigationNode } from '../lib/siteNavigation';
+import type { SitePage } from '../lib/sitePages';
+
+interface Props {
+	nodes: PageNavigationNode[];
+	currentPage: SitePage;
+	variant: 'mobile' | 'submenu';
+}
+
+const { nodes, currentPage, variant } = Astro.props;
+const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
+const hasBranch = (node: PageNavigationNode) => node.children.length > 0;
+const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
+const isCurrentBranch = (page: SitePage) => (
+	page.isHome
+		? currentPage.isHome
+		: currentPage.pagePath === page.pagePath || currentPage.pagePath.startsWith(`${page.pagePath}/`)
+);
+---
+
+<ul class:list={['navigation-page-tree', `navigation-page-tree-${variant}`]}>
+	{nodes.map((node) => (
+		<li
+			class:list={['navigation-page-node', {
+				'navigation-page-node-current': isCurrentPage(node.page),
+				'navigation-page-node-current-branch': isCurrentBranch(node.page),
+			}]}
+		>
+			{variant === 'mobile' && hasBranch(node) ? (
+				<details class="mobile-navigation-branch" open={isCurrentBranch(node.page)}>
+					<summary><span>{node.page.title}</span></summary>
+					<div class="mobile-navigation-branch-content">
+						<ul class="mobile-navigation-page-links">
+							<li>
+								<a
+									class="mobile-nav-destination mobile-nav-overview"
+									href={pageHref(node.page)}
+									aria-current={isCurrentPage(node.page) ? 'page' : undefined}
+								>
+									{projectConfig.locale.labels.navigationOverview}
+								</a>
+							</li>
+						</ul>
+						{node.children.length > 0 && (
+							<Astro.self nodes={node.children} currentPage={currentPage} variant={variant} />
+						)}
+					</div>
+				</details>
+			) : (
+				<>
+					<a
+						class:list={['navigation-page-link', { 'mobile-nav-destination': variant === 'mobile' }]}
+						href={pageHref(node.page)}
+						aria-current={isCurrentPage(node.page) ? 'page' : undefined}
+					>
+						{node.page.title}
+					</a>
+					{node.children.length > 0 && (
+						<Astro.self nodes={node.children} currentPage={currentPage} variant={variant} />
+					)}
+				</>
+			)}
+		</li>
+	))}
+</ul>

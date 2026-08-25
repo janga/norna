@@ -14,9 +14,10 @@ type AnchorMeasurement = {
 	gap: number;
 };
 
-const pageNavSelector = '.site-nav-submenu a';
+const pageNavSelector = '.page-nav a';
+const currentDesktopPageSelector = '.site-nav > ul > .site-nav-item > a[aria-current="page"]';
 const mobilePageNavSelector = '.mobile-nav-sections a';
-const currentMobilePageNavSelector = `.mobile-nav-page-view[data-current-page="true"] ${mobilePageNavSelector}`;
+const currentMobilePageNavSelector = '.mobile-nav-sections a';
 const sectionNavSelector = `${pageNavSelector}, ${mobilePageNavSelector}`;
 
 const getNavTargets = async (page) => page.locator(pageNavSelector).evaluateAll((links) => (
@@ -79,23 +80,16 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 
 const clickSectionLink = async (page, hash: string) => {
 	const desktopLink = page.locator(`${pageNavSelector}[href$="${hash}"]`).first();
-	const currentPageLink = page.locator('.site-nav a[aria-current="page"]').first();
 
-	if (await currentPageLink.isVisible()) {
-		await currentPageLink.hover();
-		const menuOpened = await desktopLink.waitFor({ state: 'visible', timeout: 1_000 })
-			.then(() => true)
-			.catch(() => false);
-		if (menuOpened) {
-			await desktopLink.click();
-			return;
-		}
+	if (await desktopLink.isVisible()) {
+		await desktopLink.click();
+		return;
 	}
 
 	const mobileMenu = page.locator('.mobile-nav-menu').first();
 	if (await mobileMenu.isVisible()) {
 		if (!(await mobileMenu.getAttribute('open'))) {
-			await mobileMenu.locator('summary').click();
+			await mobileMenu.locator(':scope > summary').click();
 		}
 		await page.locator(`${currentMobilePageNavSelector}[href$="${hash}"]`).first().click();
 		return;
@@ -135,64 +129,38 @@ test.describe('site navigation menus', () => {
 		viewport: desktopViewport,
 	});
 
-	test('marks the current page and opens its section menu on hover', async ({ page }) => {
+	test('keeps page navigation and current-page sections separate', async ({ page }) => {
 		await openSite(page);
 
-		const currentPageLink = page.locator('.site-nav a[aria-current="page"]');
+		const currentPageLink = page.locator(currentDesktopPageSelector);
 		await expect(currentPageLink).toHaveText('Media blocks');
-		await currentPageLink.hover();
-
-		const currentPageItem = currentPageLink.locator('..');
-		const submenu = currentPageItem.locator('.site-nav-submenu');
-		await expect(submenu).toBeVisible();
-		await expect(submenu.locator('a').first()).toBeVisible();
+		await expect(page.locator('.page-nav-label')).toHaveText('On this page');
+		await expect(page.locator(pageNavSelector).first()).toBeVisible();
+		await expect(page.locator('.site-nav-submenu a[href*="#"]')).toHaveCount(0);
 	});
 
-	test('closes the section menu immediately after a section link is activated', async ({ page }) => {
+	test('marks an activated current-page section', async ({ page }) => {
 		await openSite(page);
-		await page.locator('.site-section').evaluateAll((sections) => {
-			sections.forEach((section) => {
-				if (section instanceof HTMLElement) section.style.display = 'none';
-			});
-		});
-		await expect.poll(() => page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight)).toBe(true);
-
-		const currentPageLink = page.locator('.site-nav a[aria-current="page"]');
-		const currentPageItem = currentPageLink.locator('..');
-		const submenu = currentPageItem.locator('.site-nav-submenu');
-		await currentPageLink.hover();
-		await expect(submenu).toBeVisible();
-
-		const firstSectionLink = submenu.locator('a').first();
+		const firstSectionLink = page.locator(pageNavSelector).first();
 		const targetHash = await firstSectionLink.getAttribute('href');
 		await firstSectionLink.click();
-		await expect(submenu).toBeHidden();
 		await expect.poll(() => page.evaluate(() => window.location.hash)).toBe(new URL(targetHash!, 'http://example.test').hash);
 		await expect(firstSectionLink).toHaveAttribute('aria-current', 'location');
-
-		await page.mouse.move(8, 500);
-		await currentPageLink.hover();
-		await expect(submenu).toBeVisible();
 	});
 
 	test('moves keyboard focus to the activated section heading', async ({ page }) => {
 		await openSite(page);
 
-		const currentPageLink = page.locator('.site-nav a[aria-current="page"]');
-		const submenu = currentPageLink.locator('..').locator('.site-nav-submenu');
-		const firstSectionLink = submenu.locator('a').first();
+		const firstSectionLink = page.locator(pageNavSelector).first();
 		const targetHash = new URL(
 			(await firstSectionLink.getAttribute('href'))!,
 			'http://example.test',
 		).hash;
 
-		await currentPageLink.focus();
-		await expect(submenu).toBeVisible();
-		await page.keyboard.press('Tab');
+		await firstSectionLink.focus();
 		await expect(firstSectionLink).toBeFocused();
 		await page.keyboard.press('Enter');
 
-		await expect(submenu).toBeHidden();
 		await expect.poll(() => page.evaluate(() => window.location.hash)).toBe(targetHash);
 		await expect.poll(() => page.evaluate(() => `#${document.activeElement?.id}`)).toBe(targetHash);
 	});
@@ -205,34 +173,17 @@ test.describe('mobile site navigation drawer', () => {
 		viewport: mobileViewport,
 	});
 
-	test('opens on the current page and drills into another page without navigating', async ({ page }) => {
+	test('shows pages and current-page sections as separate groups', async ({ page }) => {
 		await openSite(page);
 		const menu = page.locator('.mobile-nav-menu');
 		await menu.locator(':scope > summary').click();
 
-		const currentPageView = menu.locator('.mobile-nav-page-view[data-current-page="true"]');
-		const pagesView = menu.locator('[data-mobile-nav-view="mobile-pages-view"]');
-		await expect(currentPageView).toBeVisible();
-		await expect(currentPageView.locator('.mobile-nav-sections')).toBeVisible();
-		await expect(pagesView).toBeHidden();
-
-		await currentPageView.locator('.mobile-nav-back').click();
-		await expect(pagesView).toBeVisible();
-		await expect(currentPageView).toBeHidden();
-
-		const otherPageButton = pagesView.locator('.mobile-nav-page:not([data-current-page="true"]) .mobile-nav-page-open').first();
-		const targetViewId = await otherPageButton.getAttribute('data-mobile-nav-open');
-		const targetView = menu.locator(`[data-mobile-nav-view="${targetViewId}"]`);
-
-		const urlBeforeExpansion = page.url();
-		await otherPageButton.click();
-		await expect(targetView).toBeVisible();
-		await expect(pagesView).toBeHidden();
-		expect(page.url()).toBe(urlBeforeExpansion);
-
-		await expect(targetView.locator('.mobile-nav-overview')).toHaveAttribute('href', '/surfaces/');
-		const targetHref = await targetView.locator('.mobile-nav-sections a:not(.mobile-nav-overview)').first().getAttribute('href');
-		expect(targetHref).toMatch(/^\/surfaces\/#.+/);
+		await expect(menu.locator('nav[aria-label="Pages"] h2')).toHaveText('Pages');
+		await expect(menu.locator('.navigation-page-node-current > .navigation-page-link')).toHaveText('Media blocks');
+		await expect(menu.getByRole('link', { name: 'Surfaces', exact: true })).toHaveAttribute('href', '/surfaces/');
+		await expect(menu.locator('nav[aria-label="On this page"] h2')).toHaveText('On this page');
+		await expect(menu.locator(mobilePageNavSelector).first()).toBeVisible();
+		await expect(menu.locator('.navigation-page-tree-mobile a[href*="#"]')).toHaveCount(0);
 	});
 
 	test('closes with Escape and returns focus to the menu button', async ({ page }) => {
@@ -343,7 +294,7 @@ test.describe('section navigation history', () => {
 
 		await page.goBack();
 		await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('');
-		await expect(page.locator('.site-nav a[aria-current="page"]')).toHaveText('Media blocks');
+		await expect(page.locator(currentDesktopPageSelector)).toHaveText('Media blocks');
 	});
 
 	test('rapid section clicks keep the last clicked section in the URL', async ({ page }) => {
@@ -370,7 +321,6 @@ test.describe('desktop navigation hit targets', () => {
 
 	test('keeps labels below the top fullscreen browser chrome risk area', async ({ page }) => {
 		await openSite(page);
-		await page.locator('.site-nav a[aria-current="page"]').hover();
 
 		for (const target of await measureNavTextHitTargets(page)) {
 			expect(target.textTop, target.label).toBeGreaterThanOrEqual(minimumFullscreenSafeTextTop);

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 240" role="img" aria-labelledby="title desc">
+  <title id="title">Nested pages</title>
+  <desc id="desc">Three page boxes connected from Guides to Installation to macOS.</desc>
+  <rect width="900" height="240" fill="#f3f0e8"/>
+  <g fill="#fff" stroke="#191919" stroke-width="3">
+    <rect x="45" y="65" width="210" height="110" rx="6"/>
+    <rect x="345" y="65" width="210" height="110" rx="6"/>
+    <rect x="645" y="65" width="210" height="110" rx="6"/>
+  </g>
+  <g fill="#191919" font-family="system-ui, sans-serif" font-size="26" text-anchor="middle">
+    <text x="150" y="130">Guides</text>
+    <text x="450" y="130">Installation</text>
+    <text x="750" y="130">macOS</text>
+  </g>
+  <g fill="none" stroke="#b33a2b" stroke-width="4">
+    <path d="M270 120h55"/>
+    <path d="m315 110 10 10-10 10"/>
+    <path d="M570 120h55"/>
+    <path d="m615 110 10 10-10 10"/>
+  </g>
+</svg>

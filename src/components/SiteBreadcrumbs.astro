@@ -1,0 +1,29 @@
+---
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { withBasePath } from '../lib/basePath';
+import type { SitePage } from '../lib/sitePages';
+
+interface Props {
+	currentPage: SitePage;
+	pages: SitePage[];
+}
+
+const { currentPage, pages } = Astro.props;
+const pagesByPath = new Map(pages.map((page) => [page.pagePath, page]));
+const ancestors = currentPage.pageIds
+	.slice(0, -1)
+	.map((_, index) => pagesByPath.get(currentPage.pageIds.slice(0, index + 1).join('/')))
+	.filter((page): page is SitePage => page !== undefined);
+const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
+---
+
+{ancestors.length > 0 && (
+	<nav class="site-breadcrumbs" aria-label={projectConfig.locale.labels.breadcrumb}>
+		<ol>
+			{ancestors.map((page) => (
+				<li><a href={pageHref(page)}>{page.title}</a></li>
+			))}
+			<li><span aria-current="page">{currentPage.title}</span></li>
+		</ol>
+	</nav>
+)}

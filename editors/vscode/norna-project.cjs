@@ -14,6 +14,14 @@ const rootFiles = new Map([
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const isFile = (filePath) => fs.existsSync(filePath) && fs.statSync(filePath).isFile();
 const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
+const isPageDirectoryPath = (pageDirectory) => {
+	const segments = pageDirectory.split('/');
+	if (segments.length % 2 === 0) return false;
+
+	return segments.every((segment, index) => (
+		index % 2 === 0 ? pageDirectoryPattern.test(segment) : segment === 'pages'
+	));
+};
 
 const hasSiteMarkers = (directory) => (
 	isFile(path.join(directory, 'config.yaml'))
@@ -76,8 +84,8 @@ const classifyDocument = (siteRoot, documentPath) => {
 	const rootFile = rootFiles.get(relativePath);
 	if (rootFile) return { ...rootFile, relativePath, pageDirectory: null };
 
-	const pageMatch = relativePath.match(/^pages\/([^/]+)\/(content\.md|theme\.yaml)$/);
-	if (!pageMatch || !pageDirectoryPattern.test(pageMatch[1])) return null;
+	const pageMatch = relativePath.match(/^pages\/(.+)\/(content\.md|theme\.yaml)$/);
+	if (!pageMatch || !isPageDirectoryPath(pageMatch[1])) return null;
 	return {
 		documentKind: pageMatch[2] === 'content.md' ? 'content' : 'yaml',
 		relativePath,

@@ -2,13 +2,14 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import path from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
 import SiteNavigation from './SiteNavigation.astro';
 import SiteBanners from './SiteBanners.astro';
 import SiteNotesScript from './SiteNotesScript.astro';
 import SiteSection from './SiteSection.astro';
 import { getHeadingNavigation, getSectionsContent, type ResolvedSection } from '../lib/sectionContent';
 import { getPageTheme } from '../lib/pageThemes';
-import { getSitePage, getSitePages } from '../lib/sitePages';
+import { getSitePage, getSitePages, type SitePage } from '../lib/sitePages';
 import { getToday, isVisibleToday } from '../lib/visibility';
 import { getLogoAsset } from '../lib/sitePublicAssets';
 import { readSiteFile } from '../../scripts/lib/site-content.mjs';
@@ -102,7 +103,7 @@ const pageNavigation = await Promise.all(sitePages.map(async (page) => {
 const navigationModel = resolveNavigationModel({
 	mode: projectConfig.navigation.mode,
 	pages: pageNavigation.map(({ page, headings }) => ({
-		depth: 1,
+		depth: Math.max(1, page.depth),
 		headings,
 		isHome: page.isHome,
 		listed: page.navigation.listed,
@@ -129,7 +130,8 @@ const navigationModel = resolveNavigationModel({
 	/>
 	{siteBanners.length > 0 && <SiteBanners banners={siteBanners} />}
 
-	<main id="main-content" class="site-content">
+	<main class:list={['site-content', { 'site-content-has-breadcrumbs': currentPage.depth > 1 }]} id="main-content">
+		{currentPage.depth > 1 && <SiteBreadcrumbs currentPage={currentPage} pages={sitePages} />}
 		{renderedSections.map(({ section, sectionIndex, prioritizeFirstImage }) => (
 			<SiteSection
 				section={section}

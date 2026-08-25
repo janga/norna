@@ -2,7 +2,9 @@
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
+import { getListedPageNavigationTree, type PageNavigationEntry } from '../lib/siteNavigation';
 import type { SitePage } from '../lib/sitePages';
+import NavigationPageTree from './NavigationPageTree.astro';
 import SectionNavigationScript from './SectionNavigationScript.astro';
 
 type FrameColors = {
@@ -17,10 +19,7 @@ interface Props {
 		height?: string;
 	};
 	currentPage: SitePage;
-	pageNavigation: Array<{
-		page: SitePage;
-		sections: SectionNavigation[];
-	}>;
+	pageNavigation: PageNavigationEntry[];
 	navigationMode: 'sections' | 'top' | 'tree';
 	frameColors: FrameColors;
 }
@@ -35,29 +34,20 @@ const navigationStyle = [
 	...(logo?.height ? [`--site-brand-logo-height: ${logo.height}`] : []),
 ].join('; ');
 const siteNavigationPages = pageNavigation.filter(({ page }) => page.isHome || page.navigation.listed);
+const siteNavigationTree = getListedPageNavigationTree(pageNavigation);
+const topLevelNavigation = siteNavigationTree;
 const showSiteNavigation = siteNavigationPages.some(({ page }) => !page.isHome);
 const homePage = pageNavigation.find(({ page }) => page.isHome)?.page ?? currentPage;
 const currentPageNavigation = pageNavigation.find(({ page }) => page.pathname === currentPage.pathname);
 const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
-const sectionHref = (page: SitePage, section: SectionNavigation) => `${pageHref(page)}#${section.id}`;
 const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
-const showSinglePageSectionNavigation = Boolean(
-	!showSiteNavigation && currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
-);
 const hasCurrentPageSectionMenu = Boolean(
-	showSiteNavigation && currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
+	currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
 );
-const hasMobilePageSections = showSiteNavigation && pageNavigation.some(({ sections }) => hasSectionMenu(sections));
-const showMobileNavigation = showSiteNavigation || showSinglePageSectionNavigation;
+const showMobileNavigation = showSiteNavigation || hasCurrentPageSectionMenu;
 const showNavigationRow = showMobileNavigation || Boolean(logo);
-const hasSectionNavigation = showSinglePageSectionNavigation || hasCurrentPageSectionMenu || hasMobilePageSections;
-const mobilePageViewId = (page: SitePage) => `mobile-page-view-${page.pageId || 'home'}`;
-const mobileInitialView = showSiteNavigation && currentPageNavigation && hasSectionMenu(currentPageNavigation.sections)
-	? mobilePageViewId(currentPage)
-	: showSiteNavigation
-		? 'mobile-pages-view'
-		: 'mobile-sections-view';
+const hasSectionNavigation = hasCurrentPageSectionMenu;
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
@@ -78,22 +68,19 @@ const mobileInitialView = showSiteNavigation && currentPageNavigation && hasSect
 			{showSiteNavigation && (
 				<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 					<ul>
-						{siteNavigationPages.map(({ page, sections: pageSections }) => (
-							<li class:list={['site-nav-item', { 'site-nav-item-has-sections': hasSectionMenu(pageSections) }]}>
-								<a href={pageHref(page)} aria-current={isCurrentPage(page) ? 'page' : undefined}>
-									{page.title}
-								</a>
-								{hasSectionMenu(pageSections) && (
-									<div class="site-nav-submenu">
-										<nav aria-label={`${page.title} ${projectConfig.locale.labels.pageNavigation}`}>
-											<ul>
-												{pageSections.map((section) => (
-													<li>
-														<a href={sectionHref(page, section)}>{section.title}</a>
-													</li>
-												))}
-											</ul>
-										</nav>
+					{topLevelNavigation.map((node) => (
+						<li class:list={['site-nav-item', {
+							'site-nav-item-has-submenu': node.children.length > 0,
+							'site-nav-item-current-branch': !node.page.isHome && currentPage.pagePath.startsWith(`${node.page.pagePath}/`),
+						}]}>
+							<a href={pageHref(node.page)} aria-current={isCurrentPage(node.page) ? 'page' : undefined}>
+								{node.page.title}
+							</a>
+							{node.children.length > 0 && (
+								<div class="site-nav-submenu">
+									<nav aria-label={`${node.page.title} ${projectConfig.locale.labels.siteNavigation}`}>
+										<NavigationPageTree nodes={[node]} currentPage={currentPage} variant="submenu" />
+									</nav>
 									</div>
 								)}
 							</li>
@@ -102,118 +89,49 @@ const mobileInitialView = showSiteNavigation && currentPageNavigation && hasSect
 				</nav>
 			)}
 
-			{showMobileNavigation && <details class="mobile-nav-menu" data-initial-view={mobileInitialView}>
-				<summary>
-					<span>{projectConfig.locale.labels.navigationMenu}</span>
-				</summary>
-				<div class="mobile-nav-panel">
-					<nav
-						class="mobile-site-nav"
-						aria-label={showSiteNavigation
-							? projectConfig.locale.labels.siteNavigation
-							: projectConfig.locale.labels.pageNavigation}
-					>
-						{showSiteNavigation && (
-							<div class="mobile-nav-view" data-mobile-nav-view="mobile-pages-view">
-								<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>
-								<ul class="mobile-nav-pages">
-									{siteNavigationPages.map(({ page, sections: pageSections }) => (
-										<li class="mobile-nav-page" data-current-page={isCurrentPage(page) ? 'true' : undefined}>
-											{hasSectionMenu(pageSections) ? (
-												<>
-													<button
-														type="button"
-														class="mobile-nav-page-open"
-														data-mobile-nav-open={mobilePageViewId(page)}
-														aria-current={isCurrentPage(page) ? 'page' : undefined}
-													>
-														<span>{page.title}</span>
-													</button>
-													<a
-														class="mobile-nav-page-fallback"
-														href={pageHref(page)}
-														aria-current={isCurrentPage(page) ? 'page' : undefined}
-													>
-														{page.title}
-													</a>
-												</>
-											) : (
-												<a
-													class="mobile-nav-destination"
-													href={pageHref(page)}
-													aria-current={isCurrentPage(page) ? 'page' : undefined}
-												>
-													{page.title}
-												</a>
-											)}
-										</li>
-									))}
-								</ul>
-							</div>
-						)}
+			{showMobileNavigation && <details class="mobile-nav-menu">
+			<summary>
+				<span>{projectConfig.locale.labels.navigationMenu}</span>
+			</summary>
+			<div class="mobile-nav-panel">
+				<div class="mobile-site-nav">
+					{showSiteNavigation && (
+						<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.siteNavigation}>
+							<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>
+							<NavigationPageTree nodes={siteNavigationTree} currentPage={currentPage} variant="mobile" />
+						</nav>
+					)}
 
-						{showSiteNavigation && siteNavigationPages.map(({ page, sections: pageSections }) => (
-							hasSectionMenu(pageSections) && (
-								<div
-									class="mobile-nav-view mobile-nav-page-view"
-									data-mobile-nav-view={mobilePageViewId(page)}
-									data-current-page={isCurrentPage(page) ? 'true' : undefined}
-								>
-									<button
-										type="button"
-										class="mobile-nav-back"
-										data-mobile-nav-back="mobile-pages-view"
-									>
-										<span>{projectConfig.locale.labels.navigationBack}</span>
-									</button>
-									<h2 tabindex="-1">{page.title}</h2>
-									<ul class="mobile-nav-sections">
-										<li>
-											<a
-												class="mobile-nav-destination mobile-nav-overview"
-												href={pageHref(page)}
-												aria-current={isCurrentPage(page) ? 'page' : undefined}
-											>
-												{projectConfig.locale.labels.navigationOverview}
-											</a>
-										</li>
-										{pageSections.map((section) => (
-											<li>
-												<a class="mobile-nav-destination" href={sectionHref(page, section)}>{section.title}</a>
-											</li>
-										))}
-									</ul>
-								</div>
-							)
-						))}
-
-						{showSinglePageSectionNavigation && currentPageNavigation && (
-							<div class="mobile-nav-view" data-mobile-nav-view="mobile-sections-view">
-								<h2 tabindex="-1">{projectConfig.locale.labels.pageNavigation}</h2>
-								<ul class="mobile-nav-sections">
+					{hasCurrentPageSectionMenu && currentPageNavigation && (
+						<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.pageNavigation}>
+							<h2 tabindex="-1">{projectConfig.locale.labels.pageNavigation}</h2>
+							<ul class="mobile-nav-sections">
 									{currentPageNavigation.sections.map((section) => (
 										<li>
 											<a class="mobile-nav-destination" href={`#${section.id}`}>{section.title}</a>
 										</li>
-									))}
-								</ul>
-							</div>
-						)}
-					</nav>
+								))}
+							</ul>
+						</nav>
+					)}
 				</div>
-			</details>}
+			</div>
+		</details>}
 		</div>
 	)}
 
-	{showSinglePageSectionNavigation && currentPageNavigation && (
+	{hasCurrentPageSectionMenu && currentPageNavigation && (
 		<nav class="page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
-			<ul>
-				{currentPageNavigation.sections.map((section) => (
-					<li>
-						<a href={`#${section.id}`}>{section.title}</a>
-					</li>
-				))}
-			</ul>
+			<div class="page-nav-inner">
+				<span class="page-nav-label">{projectConfig.locale.labels.pageNavigation}</span>
+				<ul>
+					{currentPageNavigation.sections.map((section) => (
+						<li>
+							<a href={`#${section.id}`}>{section.title}</a>
+						</li>
+					))}
+				</ul>
+			</div>
 		</nav>
 	)}
 

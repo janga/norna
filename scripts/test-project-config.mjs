@@ -65,6 +65,7 @@ try {
 		basePath: '/docs/',
 		language: 'en',
 		labels: {
+			breadcrumb: 'Breadcrumb',
 			dismissBanner: 'Dismiss notice',
 			built: 'Built',
 			images: 'Images',
