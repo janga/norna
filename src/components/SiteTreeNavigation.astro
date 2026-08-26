@@ -1,0 +1,37 @@
+---
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { withBasePath } from '../lib/basePath';
+import { getListedPageNavigationTree, type PageNavigationEntry } from '../lib/siteNavigation';
+import type { SitePage } from '../lib/sitePages';
+import NavigationPageTree from './NavigationPageTree.astro';
+
+interface Props {
+	currentPage: SitePage;
+	pageNavigation: PageNavigationEntry[];
+}
+
+const { currentPage, pageNavigation } = Astro.props;
+const roots = getListedPageNavigationTree(pageNavigation);
+const activeRoot = roots.find((node) => (
+	node.page.isHome
+		? currentPage.isHome
+		: currentPage.pagePath === node.page.pagePath
+			|| currentPage.pagePath.startsWith(`${node.page.pagePath}/`)
+));
+---
+
+{activeRoot && (
+	<aside
+		class="tree-local-navigation"
+		data-navigation-root={withBasePath(projectConfig.site.basePath, activeRoot.page.pathname)}
+	>
+		<nav aria-label={`${activeRoot.page.title}: ${projectConfig.locale.labels.siteNavigation}`}>
+			<NavigationPageTree
+				nodes={[activeRoot]}
+				currentPage={currentPage}
+				variant="sidebar"
+				integratePageSections
+			/>
+		</nav>
+	</aside>
+)}

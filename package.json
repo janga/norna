@@ -91,6 +91,7 @@
     "test:banner-visibility": "node scripts/test-banner-visibility.mjs",
     "test:client-javascript": "node scripts/test-client-javascript.mjs",
     "test:navigation": "node scripts/test-navigation.mjs",
+    "test:navigation:tree": "node scripts/test-navigation.mjs --site-dir fixtures/nested-pages/site tests/navigation-tree.spec.ts",
     "test:navigation:stress": "node scripts/test-navigation.mjs tests/navigation-stress.spec.ts",
     "test:navigation:preview": "node scripts/test-navigation-preview.mjs",
     "package:check": "node scripts/test-package-check.mjs",

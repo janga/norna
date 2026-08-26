@@ -45,10 +45,13 @@ const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.lengt
 const hasCurrentPageSectionMenu = Boolean(
 	currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
 );
+const hasTreePageContents = Boolean(
+	navigationMode === 'tree' && currentPageNavigation?.headings.length,
+);
 const showSinglePageTopLink = !showSiteNavigation;
-const showMobileNavigation = showSiteNavigation || hasCurrentPageSectionMenu;
+const showMobileNavigation = showSiteNavigation || hasCurrentPageSectionMenu || hasTreePageContents;
 const showNavigationRow = showMobileNavigation || Boolean(logo);
-const hasSectionNavigation = hasCurrentPageSectionMenu;
+const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents || navigationMode === 'tree';
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
@@ -71,13 +74,13 @@ const hasSectionNavigation = hasCurrentPageSectionMenu;
 					<ul>
 					{topLevelNavigation.map((node) => (
 						<li class:list={['site-nav-item', {
-							'site-nav-item-has-submenu': node.children.length > 0,
+							'site-nav-item-has-submenu': navigationMode !== 'tree' && node.children.length > 0,
 							'site-nav-item-current-branch': !node.page.isHome && currentPage.pagePath.startsWith(`${node.page.pagePath}/`),
 						}]}>
 							<a href={pageHref(node.page)} aria-current={isCurrentPage(node.page) ? 'page' : undefined}>
 								{node.page.title}
 							</a>
-							{node.children.length > 0 && (
+							{navigationMode !== 'tree' && node.children.length > 0 && (
 								<div class="site-nav-submenu">
 									<nav aria-label={`${node.page.title} ${projectConfig.locale.labels.siteNavigation}`}>
 										<NavigationPageTree nodes={[node]} currentPage={currentPage} variant="submenu" />
@@ -95,15 +98,20 @@ const hasSectionNavigation = hasCurrentPageSectionMenu;
 				<span>{projectConfig.locale.labels.navigationMenu}</span>
 			</summary>
 			<div class="mobile-nav-panel">
-				<div class="mobile-site-nav">
+			<div class="mobile-site-nav" data-navigation-root={pageHref(homePage)}>
 					{showSiteNavigation && (
 						<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.siteNavigation}>
 							<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>
-							<NavigationPageTree nodes={siteNavigationTree} currentPage={currentPage} variant="mobile" />
+							<NavigationPageTree
+								nodes={siteNavigationTree}
+								currentPage={currentPage}
+								variant="mobile"
+								integratePageSections={navigationMode === 'tree'}
+							/>
 						</nav>
 					)}
 
-					{hasCurrentPageSectionMenu && currentPageNavigation && (
+					{navigationMode !== 'tree' && hasCurrentPageSectionMenu && currentPageNavigation && (
 						<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.pageNavigation}>
 							{!showSinglePageTopLink && (
 								<h2 tabindex="-1">{projectConfig.locale.labels.pageNavigation}</h2>
@@ -134,7 +142,7 @@ const hasSectionNavigation = hasCurrentPageSectionMenu;
 		</div>
 	)}
 
-	{hasCurrentPageSectionMenu && currentPageNavigation && (
+	{navigationMode !== 'tree' && hasCurrentPageSectionMenu && currentPageNavigation && (
 		<nav class="page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
 			<div class="page-nav-inner">
 				{!showSinglePageTopLink && (
@@ -160,4 +168,4 @@ const hasSectionNavigation = hasCurrentPageSectionMenu;
 
 </header>
 
-{hasSectionNavigation && <SectionNavigationScript />}
+{needsNavigationScript && <SectionNavigationScript />}

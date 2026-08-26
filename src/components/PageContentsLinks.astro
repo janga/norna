@@ -1,0 +1,40 @@
+---
+import type { HeadingNavigation } from '../lib/sectionContent';
+
+interface Props {
+	headings: HeadingNavigation[];
+	variant: 'desktop' | 'mobile';
+	pageHref?: string;
+}
+
+const { headings, variant, pageHref = '' } = Astro.props;
+const sections = headings
+	.filter((heading) => heading.depth === 2)
+	.map((heading) => ({
+		...heading,
+		children: headings.filter((candidate) => (
+			candidate.depth === 3 && candidate.parentId === heading.id
+		)),
+	}));
+---
+
+<ol class:list={['page-contents-links', `page-contents-links-${variant}`]}>
+	{sections.map((section) => (
+		<li>
+			<a class={variant === 'mobile' ? 'mobile-nav-destination' : undefined} href={`${pageHref}#${section.id}`}>
+				{section.title}
+			</a>
+			{section.children.length > 0 && (
+				<ol>
+					{section.children.map((heading) => (
+						<li>
+							<a class={variant === 'mobile' ? 'mobile-nav-destination' : undefined} href={`${pageHref}#${heading.id}`}>
+								{heading.title}
+							</a>
+						</li>
+					))}
+				</ol>
+			)}
+		</li>
+	))}
+</ol>

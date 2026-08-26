@@ -1,0 +1,83 @@
+<script>
+	type NavigationState = {
+		openPaths: string[];
+		sectionPaths: string[];
+		scrollTop: number;
+	};
+
+	const setupNavigationState = (container: HTMLElement, scope: 'desktop' | 'mobile') => {
+		const root = container.dataset.navigationRoot ?? '/';
+		const stateKey = `norna:tree-navigation:${scope}:${root}`;
+		const branches = Array.from(container.querySelectorAll<HTMLDetailsElement>(
+			'.navigation-page-disclosure[data-page-path]',
+		));
+		let storedState: NavigationState = { openPaths: [], sectionPaths: [], scrollTop: 0 };
+
+		try {
+			const parsedState = JSON.parse(sessionStorage.getItem(stateKey) ?? '{}');
+			storedState = {
+				openPaths: Array.isArray(parsedState.openPaths) ? parsedState.openPaths : [],
+				sectionPaths: Array.isArray(parsedState.sectionPaths) ? parsedState.sectionPaths : [],
+				scrollTop: Number.isFinite(Number(parsedState.scrollTop)) ? Number(parsedState.scrollTop) : 0,
+			};
+
+			branches.forEach((branch) => {
+				const pagePath = branch.dataset.pagePath ?? '';
+				branch.open = branch.dataset.currentBranch === 'true'
+					|| storedState.openPaths.includes(pagePath);
+
+				if (storedState.sectionPaths.includes(pagePath)) {
+					branch.dataset.sectionsOpen = 'true';
+				}
+			});
+
+			if (storedState.scrollTop > 0) {
+				requestAnimationFrame(() => {
+					container.scrollTop = storedState.scrollTop;
+				});
+			}
+		} catch {
+			// Navigation remains fully usable when browser storage is unavailable.
+		}
+
+		const saveState = () => {
+			try {
+				const openBranches = branches.filter((branch) => branch.open);
+				const state: NavigationState = {
+					openPaths: openBranches.map((branch) => branch.dataset.pagePath ?? ''),
+					sectionPaths: openBranches
+						.filter((branch) => (
+							branch.dataset.sectionsOpen === 'true'
+							|| branch.dataset.currentPage === 'true'
+						))
+						.map((branch) => branch.dataset.pagePath ?? ''),
+					scrollTop: container.scrollTop,
+				};
+				sessionStorage.setItem(stateKey, JSON.stringify(state));
+			} catch {
+				// Navigation state persistence is an optional enhancement.
+			}
+		};
+
+		requestAnimationFrame(() => {
+			branches.forEach((branch) => branch.addEventListener('toggle', () => {
+				if (branch.open && branch.dataset.hasSections === 'true') {
+					branch.dataset.sectionsOpen = 'true';
+				} else if (!branch.open) {
+					delete branch.dataset.sectionsOpen;
+				}
+				saveState();
+			}));
+		});
+
+		container.addEventListener('scroll', saveState, { passive: true });
+		container.querySelectorAll('a').forEach((link) => link.addEventListener('click', saveState));
+		window.addEventListener('pagehide', saveState);
+	};
+
+	const desktopNavigation = document.querySelector<HTMLElement>('.tree-local-navigation');
+	const mobileNavigation = document.querySelector<HTMLElement>('.mobile-site-nav[data-navigation-root]');
+
+	if (desktopNavigation) setupNavigationState(desktopNavigation, 'desktop');
+	if (mobileNavigation) setupNavigationState(mobileNavigation, 'mobile');
+</script>

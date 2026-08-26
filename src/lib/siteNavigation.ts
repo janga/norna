@@ -1,8 +1,9 @@
-import type { SectionNavigation } from './sectionContent';
+import type { HeadingNavigation, SectionNavigation } from './sectionContent';
 import type { SitePage } from './sitePages';
 
 export type PageNavigationEntry = {
 	page: SitePage;
+	headings: HeadingNavigation[];
 	sections: SectionNavigation[];
 };
 

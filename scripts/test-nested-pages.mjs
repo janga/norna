@@ -46,6 +46,7 @@ try {
 		'guides/installation/index.html',
 		'guides/installation/macos/index.html',
 		'guides/workflows/index.html',
+		'guides/release-notes/index.html',
 		'reference/index.html',
 		'reference/installation/index.html',
 	];
@@ -63,14 +64,19 @@ try {
 	assert.match(macosHtml, /--color-page: #ffffff/);
 	assert.match(installationHtml, /Three nested page levels connected in sequence/);
 	assert.match(installationHtml, /\/original\/pages\/010-guides\/pages\/010-installation\/images\/diagram-[a-f0-9]+\.svg/);
-	assert.match(macosHtml, /class="site-nav-item site-nav-item-has-submenu site-nav-item-current-branch"/);
+	assert.match(macosHtml, /data-navigation-mode="tree"/);
+	assert.match(macosHtml, /class="site-nav-item site-nav-item-current-branch"/);
+	assert.doesNotMatch(macosHtml, /class="site-nav-submenu"/);
 	assert.match(macosHtml, /href="\/guides\/installation\/macos\/" aria-current="page"/);
-	assert.match(macosHtml, /<details class="mobile-navigation-branch" open>/);
-	assert.match(macosHtml, /<nav class="site-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="\/guides\/">Guides<\/a><\/li><li><a href="\/guides\/installation\/">Installation<\/a><\/li><li><span aria-current="page">macOS<\/span>/);
-	for (const submenuMatch of macosHtml.matchAll(/<div class="site-nav-submenu">([\s\S]*?)<\/div>/g)) {
-		assert.doesNotMatch(submenuMatch[1], /href="[^"#]*#[^"]+"/);
-	}
-	assert.match(macosHtml, /<nav class="mobile-nav-view" aria-label="Page contents">/);
+	assert.match(macosHtml, /<aside class="tree-local-navigation" data-navigation-root="\/guides\/">/);
+	assert.match(macosHtml, /<ul class="navigation-page-tree navigation-page-tree-sidebar">/);
+	assert.match(macosHtml, /<details class="navigation-page-branch navigation-page-disclosure navigation-page-disclosure-sidebar" data-page-path="guides" data-current-branch="true"/);
+	assert.match(macosHtml, /<summary class="navigation-page-summary"[^>]*><span class="navigation-page-summary-title">Guides<\/span>/);
+	assert.match(macosHtml, /<nav class="site-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="\/">Nested pages<\/a><\/li><li><a href="\/guides\/">Guides<\/a><\/li><li><a href="\/guides\/installation\/">Installation<\/a><\/li><li><span aria-current="page">macOS<\/span>/);
+	assert.match(macosHtml, /<nav class="navigation-page-sections" aria-label="Page contents: macOS">/);
+	assert.doesNotMatch(macosHtml, /class="tree-page-contents"/);
+	assert.match(macosHtml, /href="#install">Install<\/a><ol><li><a href="#prerequisites">Prerequisites<\/a>/);
+	assert.doesNotMatch(macosHtml, /<nav class="page-nav"/);
 	assert.ok(
 		macosHtml.indexOf('href="/guides/installation/"') < macosHtml.indexOf('href="/guides/workflows/"'),
 		'Nested sibling navigation should follow page directory order.',

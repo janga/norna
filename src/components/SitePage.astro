@@ -7,6 +7,8 @@ import SiteNavigation from './SiteNavigation.astro';
 import SiteBanners from './SiteBanners.astro';
 import SiteNotesScript from './SiteNotesScript.astro';
 import SiteSection from './SiteSection.astro';
+import SiteTreeNavigation from './SiteTreeNavigation.astro';
+import TreeNavigationScript from './TreeNavigationScript.astro';
 import { getHeadingNavigation, getSectionsContent, type ResolvedSection } from '../lib/sectionContent';
 import { getPageTheme } from '../lib/pageThemes';
 import { getSitePage, getSitePages, type SitePage } from '../lib/sitePages';
@@ -109,6 +111,8 @@ const navigationModel = resolveNavigationModel({
 		listed: page.navigation.listed,
 	})),
 });
+const hasTreeNavigation = navigationModel.mode === 'tree';
+const showBreadcrumbs = hasTreeNavigation || currentPage.depth > 1;
 
 ---
 
@@ -130,17 +134,23 @@ const navigationModel = resolveNavigationModel({
 	/>
 	{siteBanners.length > 0 && <SiteBanners banners={siteBanners} />}
 
-	<main class:list={['site-content', { 'site-content-has-breadcrumbs': currentPage.depth > 1 }]} id="main-content">
-		{currentPage.depth > 1 && <SiteBreadcrumbs currentPage={currentPage} pages={sitePages} />}
-		{renderedSections.map(({ section, sectionIndex, prioritizeFirstImage }) => (
-			<SiteSection
-				section={section}
-				pagePresentation={pagePresentation}
-				visualTheme={visualTheme}
-				sectionIndex={sectionIndex}
-				prioritizeFirstImage={prioritizeFirstImage}
-			/>
-		))}
-	</main>
+	<div class:list={['site-page-layout', { 'site-page-layout-tree': hasTreeNavigation }]}>
+		{hasTreeNavigation && (
+			<SiteTreeNavigation currentPage={currentPage} pageNavigation={pageNavigation} />
+		)}
+		<main class:list={['site-content', { 'site-content-has-breadcrumbs': showBreadcrumbs }]} id="main-content">
+			{showBreadcrumbs && <SiteBreadcrumbs currentPage={currentPage} pages={sitePages} />}
+			{renderedSections.map(({ section, sectionIndex, prioritizeFirstImage }) => (
+				<SiteSection
+					section={section}
+					pagePresentation={pagePresentation}
+					visualTheme={visualTheme}
+					sectionIndex={sectionIndex}
+					prioritizeFirstImage={prioritizeFirstImage}
+				/>
+			))}
+		</main>
+	</div>
+	{hasTreeNavigation && <TreeNavigationScript />}
 	{hasMarginNotes && <SiteNotesScript />}
 </BaseLayout>
