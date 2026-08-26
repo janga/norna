@@ -1,5 +1,7 @@
+import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getExampleSites } from './lib/example-sites.mjs';
@@ -8,6 +10,33 @@ import { runInherit } from './lib/run-command.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(root, 'bin', 'norna.mjs');
 const examples = await getExampleSites(root);
+
+const discoveryRoot = await mkdtemp(path.join(tmpdir(), 'norna-example-discovery-'));
+try {
+	for (const category of ['complete-sites', 'feature-demos']) {
+		await mkdir(path.join(discoveryRoot, 'examples', category), { recursive: true });
+	}
+	const validSite = path.join(discoveryRoot, 'examples', 'complete-sites', 'valid', 'site');
+	await mkdir(path.join(validSite, 'pages', '000-home'), { recursive: true });
+	await writeFile(path.join(validSite, 'config.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(validSite, 'pages', '000-home', 'content.md'), '# Example\n');
+	await mkdir(path.join(
+		discoveryRoot,
+		'examples',
+		'feature-demos',
+		'removed-example',
+		'site',
+		'.norna',
+		'public',
+		'images',
+		'generated',
+	), { recursive: true });
+
+	const discovered = await getExampleSites(discoveryRoot);
+	assert.deepEqual(discovered.map(({ name }) => name), ['valid']);
+} finally {
+	await rm(discoveryRoot, { recursive: true, force: true });
+}
 
 for (const example of examples) {
 	console.log(`\nBuilding ${example.siteLabel}`);

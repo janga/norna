@@ -36,9 +36,9 @@ jobs:
           path: |
             site/.norna/public/images/generated
             examples/**/site/.norna/public/images/generated
-          key: norna-pages-images-${{ hashFiles('site/pages/**/images/**', 'examples/**/site/pages/**/images/**') }}
+          key: norna-pages-images-v2-${{ hashFiles('site/pages/**/images/**', 'examples/**/site/pages/**/images/**') }}
           restore-keys: |
-            norna-pages-images-
+            norna-pages-images-v2-
 
       - name: Install dependencies
         run: npm ci
