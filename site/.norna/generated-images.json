@@ -2,16 +2,16 @@
   "pages/010-concepts/images/multi-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "733e2f16750ad8a9283ea77bb584fd7694d03904085c45fc33743295b9f2c33e",
-    "src": "/images/original/pages/010-concepts/images/multi-page-site-733e2f16.svg",
+    "sourceHash": "df14259d8631001dc432c5a6ed2cabf3a69c5b101e74ed94f8c87b7f2d2f7efd",
+    "src": "/images/original/pages/010-concepts/images/multi-page-site-df14259d.svg",
     "width": 1080,
     "height": 620
   },
   "pages/010-concepts/images/single-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "93c77e36aaed3e609f5eeb07be15a3ffe90b980c5028675d5380ddec63e6834c",
-    "src": "/images/original/pages/010-concepts/images/single-page-site-93c77e36.svg",
+    "sourceHash": "8fd564333d30f4fa429e8cc71ea71d5cdac769bab45d307d4ce60ff5ed49d389",
+    "src": "/images/original/pages/010-concepts/images/single-page-site-8fd56433.svg",
     "width": 1080,
     "height": 620
   },

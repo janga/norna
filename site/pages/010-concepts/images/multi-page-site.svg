@@ -60,21 +60,22 @@
       <g class="mono tree">
         <text x="20" y="30">site/</text>
         <text x="20" y="50">├── config.yaml</text>
-        <text x="20" y="68">├── content.md</text>
-        <text x="20" y="86">├── public/</text>
-        <text x="20" y="104">│   ├── favicon.svg</text>
-        <text x="20" y="122">│   ├── logo.svg</text>
-        <text x="20" y="140">│   └── robots.txt</text>
-        <text x="20" y="158">├── pages/</text>
-        <text x="20" y="176">│   ├── 010-dogs/</text>
-        <text x="20" y="194">│   │   ├── images/</text>
-        <text x="20" y="212">│   │   │   ├── rex.svg</text>
-        <text x="20" y="230">│   │   │   └── rover.svg</text>
-        <text x="20" y="248">│   │   └── content.md</text>
-        <text x="20" y="266">│   └── 020-adopt/</text>
-        <text x="20" y="284">│       └── content.md</text>
-        <text x="20" y="302">├── sitewide-content.yaml</text>
-        <text x="20" y="320">└── theme.yaml</text>
+        <text x="20" y="68">├── pages/</text>
+        <text x="20" y="86">│   ├── 000-home/</text>
+        <text x="20" y="104">│   │   └── content.md</text>
+        <text x="20" y="122">│   ├── 010-dogs/</text>
+        <text x="20" y="140">│   │   ├── images/</text>
+        <text x="20" y="158">│   │   │   ├── rex.svg</text>
+        <text x="20" y="176">│   │   │   └── rover.svg</text>
+        <text x="20" y="194">│   │   └── content.md</text>
+        <text x="20" y="212">│   └── 020-adopt/</text>
+        <text x="20" y="230">│       └── content.md</text>
+        <text x="20" y="248">├── public/</text>
+        <text x="20" y="266">│   ├── favicon.svg</text>
+        <text x="20" y="284">│   ├── logo.svg</text>
+        <text x="20" y="302">│   └── robots.txt</text>
+        <text x="20" y="320">├── sitewide-content.yaml</text>
+        <text x="20" y="338">└── theme.yaml</text>
       </g>
     </g>
 
@@ -100,8 +101,8 @@
       <text class="mono tree" x="150" y="510" text-anchor="middle" opacity=".75">content.md</text>
     </g>
 
-    <path class="line" d="M174 288 L440 112" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-    <path class="line" d="M162 324 L440 485" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M198 234 L440 112" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M190 270 L440 485" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
     <path class="flow" d="M666 310 H748" marker-end="url(#arrow)"/>
 
     <g transform="translate(756 40)">

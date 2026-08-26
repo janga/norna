@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 620" role="img" aria-labelledby="title desc">
   <title id="title">Single-page Norna site</title>
-  <desc id="desc">The actual Dog Shelter example file tree, content Markdown and resulting single-page website are shown from left to right.</desc>
+  <desc id="desc">A focused Dog Shelter file tree, content Markdown and resulting single-page website are shown from left to right.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 12 12" refX="6" refY="6" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
       <path d="M2 2 L10 6 L2 10" fill="none" stroke="#c7ad72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -59,15 +59,17 @@
       <g class="mono tree">
         <text x="22" y="32">site/</text>
         <text x="22" y="54">├── config.yaml</text>
-        <text x="22" y="72">├── content.md</text>
-        <text x="22" y="90">├── images/</text>
-        <text x="22" y="108">│   ├── dog-house.svg</text>
-        <text x="22" y="126">│   └── heart.svg</text>
-        <text x="22" y="144">├── public/</text>
-        <text x="22" y="162">│   ├── favicon.svg</text>
-        <text x="22" y="180">│   └── robots.txt</text>
-        <text x="22" y="198">├── sitewide-content.yaml</text>
-        <text x="22" y="216">└── theme.yaml</text>
+        <text x="22" y="72">├── pages/</text>
+        <text x="22" y="90">│   └── 000-home/</text>
+        <text x="22" y="108">│       ├── content.md</text>
+        <text x="22" y="126">│       └── images/</text>
+        <text x="22" y="144">│           ├── dog-house.svg</text>
+        <text x="22" y="162">│           └── heart.svg</text>
+        <text x="22" y="180">├── public/</text>
+        <text x="22" y="198">│   ├── favicon.svg</text>
+        <text x="22" y="216">│   └── robots.txt</text>
+        <text x="22" y="234">├── sitewide-content.yaml</text>
+        <text x="22" y="252">└── theme.yaml</text>
       </g>
     </g>
 
@@ -93,8 +95,8 @@
       </g>
     </g>
 
-    <path class="line" d="M204 148 L438 224" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-    <path class="line" d="M171 166 L438 392" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M226 184 L438 224" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M196 202 L438 392" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
     <path class="flow" d="M666 310 H748" marker-end="url(#arrow)"/>
 
     <g transform="translate(756 40)">
@@ -108,10 +110,12 @@
 
       <rect x="1" y="43" width="286" height="36" fill="#f8f5ee"/>
       <line x1="1" y1="79" x2="287" y2="79" stroke="#d8d0c4"/>
-      <text x="68" y="66" fill="#272522" font-size="9" font-weight="700">WHAT WE DO</text>
-      <line x1="68" y1="71" x2="130" y2="71" stroke="#272522"/>
-      <text x="145" y="66" fill="#746e63" font-size="9">/</text>
-      <text x="159" y="66" fill="#746e63" font-size="9">YOU CAN HELP</text>
+      <text x="20" y="66" fill="#272522" font-size="9" font-weight="700">DOG SHELTER</text>
+      <line x1="20" y1="71" x2="83" y2="71" stroke="#272522"/>
+      <text x="94" y="66" fill="#746e63" font-size="9">·</text>
+      <text x="106" y="66" fill="#746e63" font-size="9">WHAT WE DO</text>
+      <text x="176" y="66" fill="#746e63" font-size="9">·</text>
+      <text x="188" y="66" fill="#746e63" font-size="9">YOU CAN HELP</text>
 
       <text x="28" y="108" fill="#272522" font-size="21" font-weight="700">DOG SHELTER</text>
       <text x="28" y="139" fill="#272522" font-size="16" font-weight="700">WHAT WE DO</text>

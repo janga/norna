@@ -10,10 +10,13 @@ page:
 
 ## Single-page site {#single-page-site}
 
-Even a one-page site contains two kinds of content.
+A single-page Norna site is small without being a special case. Home uses the
+same page model as every page the site may gain later.
 
-`content.md` contains the page itself: its sections, text and Norna image or
-card blocks.
+Home lives in `pages/000-home/`. Its `content.md` contains the page title,
+sections, text, and Norna image or card blocks. Managed images live in the
+neighbouring `images/` directory.
+
 `sitewide-content.yaml` contains content shared by the whole site, such as
 notices and the footer, plus optional display settings for a conventional
 navigation logo.{note-ref} The reasoning is that more pages may be added to a
@@ -29,10 +32,9 @@ kind of content a defined place.
 `theme.yaml` controls the visual presentation, while `config.yaml` contains the few
 technical settings the site needs.
 
-Within `content.md`, the single level-one heading names the page. Level-two
-headings define sections and their navigation anchors. Managed images for the
-page share one `images/` directory next to its content file, so moving an image
-block between sections does not require reorganising image folders.
+Within `content.md`, the single level-one heading names Home. Level-two headings
+define its sections. On a single-page site, the navigation links to the page
+title and those sections, without introducing a separate list of pages.
 
 <!-- norna-image-provenance:
 image: single-page-site.svg
@@ -47,11 +49,16 @@ simple single-page website.
   alt: A three-column diagram showing a single-page Norna file tree, a folded content.md document with section ids and image references, and the resulting browser page.
 ```
 
-## Multi-page site {#multi-page-site}
+## Top-level pages {#top-level-pages}
 
-A Norna site can grow by adding pages. Each page adds
-more content to the site model: it gets its own URL and normally inherits the
-site's visual presentation.
+Adding a page directory beside `000-home` turns the site into a multi-page site.
+Home and the other top-level pages are siblings under `site/pages/`; Home is not
+the parent of the rest of the site.
+
+Each top-level page gets its own URL and a place in global navigation. It also
+gets its own `content.md`, optional `images/`, and optional limited page
+presentation. The site's colors, typography, shape, and navigation remain
+shared.
 
 Page directories contain page content and may contain page-local
 presentation, but they cannot contain technical site configuration. Technical
@@ -74,3 +81,40 @@ and a pair of cartoon dogs to make the page relationship concrete.
 - image: multi-page-site.svg
   alt: A three-column diagram showing page folders and a conventional logo as a file tree, content.md documents, ordered navigation, a page URL and two cartoon dogs on the Dogs page.
 ```
+
+## Nested pages {#nested-pages}
+
+When a top-level area needs more structure, add a `pages/` directory inside
+that page:
+
+```text
+site/pages/
+├── 000-home/
+│   └── content.md
+└── 010-guides/
+    ├── content.md
+    └── pages/
+        └── 010-installation/
+            ├── content.md
+            └── pages/
+                └── 020-macos/
+                    └── content.md
+```
+
+This creates `/guides/`, `/guides/installation/`, and
+`/guides/installation/macos/`. Every directory in the hierarchy is a real page
+with its own title, content, and URL; Norna does not use empty grouping
+directories.
+
+Numeric prefixes order pages among their siblings. Child pages appear in the
+local hierarchy for their top-level area rather than becoming additional
+global navigation roots.
+
+Nested pages inherit the site's visual identity and any permitted page
+presentation set by their ancestors. A more local `theme.yaml` may adjust text
+width, content spacing, managed-image sizing, and section background pattern,
+but not colors, typography, shape, or navigation.
+
+Home is the one exception: `000-home` is the site's front door and cannot own
+child pages. Start each navigable hierarchy with another top-level page beside
+it.
