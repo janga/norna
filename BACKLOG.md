@@ -23,7 +23,7 @@ approachable before wider use.
 
 - Add a short "Build your first image-led site in 5 minutes" guide with one happy path
   and no reference material.
-- Add a complete small `site/theme.yaml` and `site/content.md` example that a
+- Add a complete small `site/theme.yaml` and `site/pages/000-home/content.md` example that a
   new user can compare with the starter.
 - Add standalone-project and embedded-project examples that show the expected
   directory layout and npm scripts.
@@ -141,46 +141,16 @@ basic site workflow.
 
 ## Page Architecture Notes
 
-Basic first-level pages are implemented. These notes record structural
-decisions so future page work can avoid unnecessary breaking changes.
+The unified page tree and theme boundary are implemented. The current contract
+is documented in [Pages](docs/pages.md), [Theme](docs/theme.md), and the
+[navigation and theme design record](docs/design/navigation-and-theme-plan.md).
+Future work should preserve these main boundaries:
 
-- `site/content.md` is the homepage file for `/`, not a catch-all site
-  file.
-- Additional pages use the same content model, for example:
-
-```text
-site/
-  content.md
-  pages/
-    <NNN-page-id>/
-      content.md
-      images/
-```
-
-- `site/config.yaml` is site-level technical configuration for the public URL,
-  language and optional smooth scrolling. Norna derives the base path from the
-  URL and discovers GitHub repository/default-branch details during deploy.
-- `site/theme.yaml` is site-level visual configuration. An optional page-local
-  `theme.yaml` replaces it for that page.
-- Page files own page metadata, section definitions, Norna block references,
-  and Markdown body content.
-- Theme resolution is:
-
-```text
-engine defaults
--> root theme.yaml or page-local theme.yaml
-```
-
-- Navigation should keep site navigation and section navigation conceptually
-  separate. Site navigation changes pages; section navigation changes the
-  current URL hash and active section within the current page.
-- Section navigation history should remain hash-based: each clicked section
-  link creates one hash entry, browser back/forward moves through those section
-  entries, and the hashless page state maps back to the first active section.
-  Active section state should not be driven by free manual scrolling unless a
-  later design explicitly reintroduces that behavior without conflicting with
-  hash history.
-- Page metadata such as `title` and `description` should remain page-local and
-  should not inherit from the homepage.
-- Sections, Norna blocks, and Markdown content should remain page-local and should
-  not inherit from the homepage.
+- Home is the standalone `pages/000-home/` front door and has no child pages.
+- Other top-level pages are global navigation roots; non-home pages may contain
+  nested child pages.
+- Every page owns its Markdown, metadata, sections, Norna blocks, and images.
+- The root theme owns site identity. Page themes inherit and may adjust only
+  text width, content spacing, managed-image sizing, and section background
+  pattern.
+- Normal URLs and anchors remain functional without client-side JavaScript.

@@ -185,28 +185,25 @@ and commit their updated `package-lock.json`.
 
 ## Rendering Notes
 
-The renderer builds the homepage at `/` and optional first-level pages from
-`site/pages/<NNN-page-id>/content.md`.
+The renderer discovers a required homepage at
+`site/pages/000-home/content.md`, top-level navigation roots beside Home, and
+nested child pages under each non-home page's `pages/` directory.
 
-Navigation has two separate levels:
+Navigation has two related levels:
 
-- Site navigation moves between the homepage and additional pages. It uses
-  normal page URLs and browser history.
-- Section navigation moves between sections on the current page. It uses real
-  `href="#section-id"` links so anchors work without JavaScript.
+- Global navigation moves between Home and top-level page areas.
+- Local navigation follows nested pages and headings within the active area.
+  Section links use real `href="#section-id"` anchors so they work without
+  JavaScript.
 
-The current navigation model is deliberately scoped to single-page and small
-multi-page sites. That scope may change as navigation support matures. For now,
-single-page sites should rely on section navigation only; small multi-page sites
-may combine site navigation and section navigation; larger information
-architectures should not be forced into the sticky-navigation model without a
-separate design decision.
+Automatic navigation selects section navigation for one-page sites, top
+navigation for shallow page structures, and tree navigation for deeper page or
+heading hierarchies. `config.yaml` may choose a mode explicitly. Home is a
+standalone front door and cannot contain child pages.
 
-The JavaScript enhancement keeps the URL hash as the source of truth for active
-section-navigation state. A section-link click pushes one hash entry into browser
-history, back/forward moves between hash entries, and returning to the same page
-without a hash restores the first section as active. The enhancement does not
-derive active section state from free manual scrolling.
+The optional JavaScript enhancement manages menu interaction and active local
+navigation while retaining normal links and browser history. The rendered page
+tree and anchor navigation remain usable without client-side JavaScript.
 
 The sticky navigation updates a root scroll-offset variable so direct hash
 links and clicked links remain visible below the fixed header. The browser owns

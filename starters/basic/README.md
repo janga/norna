@@ -18,9 +18,9 @@ npm run norna:dev -- --kill
 Edit shared logo settings, banners, and footer in
 `site/sitewide-content.yaml`,
 site-wide visual defaults in `site/theme.yaml`, homepage content and section
-metadata in `site/content.md`, and technical settings such as URL and locale
-in `site/config.yaml`. Keep managed homepage source images directly under
-`site/images/` and static public files under `site/public/`.
+metadata in `site/pages/000-home/content.md`, and technical settings such as URL
+and locale in `site/config.yaml`. Keep managed homepage source images under
+`site/pages/000-home/images/` and static public files under `site/public/`.
 
 For a GitHub Pages project site without a custom domain, include the repository
 path in the public URL:
@@ -34,10 +34,10 @@ Norna derives `/repository-name/` as the base path. Use a root URL such as
 
 In GitHub repository settings, configure Pages to build from GitHub Actions.
 
-Page width, side gutters, layout density, typography rhythm, image width, image
-height limits, font, palettes, section surfaces, and site-wide typography are
-configured in `site/theme.yaml`. A page may replace that visual theme with its
-own `theme.yaml`.
+Page width, side gutters, content spacing, image sizing, palette, shape, and
+site-wide typography are configured in `site/theme.yaml`. A page may use a
+limited `theme.yaml` for local text width, content spacing, managed-image
+sizing, and section background pattern.
 
 Commit `package-lock.json` after the first install so GitHub Actions can use
 `npm ci`.

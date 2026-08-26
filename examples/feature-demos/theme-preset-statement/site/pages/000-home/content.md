@@ -4,7 +4,7 @@ page:
 ---
 
 # Statement
-This page uses the complete `statement` preset without overrides. Its airy
+This site uses the complete `statement` preset without overrides. Its airy
 layout, stronger typography and alternating surfaces suit short, declarative
 content with a more editorial voice.
 

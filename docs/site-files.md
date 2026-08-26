@@ -11,15 +11,19 @@ site/
 |-- config.yaml
 |-- theme.yaml
 |-- sitewide-content.yaml
-|-- content.md
-|-- images/
-|   `-- image.jpg
 |-- pages/
-|   `-- <NNN-page-id>/
+|   |-- 000-home/
+|   |   |-- content.md
+|   |   `-- images/
+|   |       `-- image.jpg
+|   `-- 010-guide/
 |       |-- content.md
 |       |-- theme.yaml
-|       `-- images/
-|           `-- image.jpg
+|       |-- images/
+|       |   `-- image.jpg
+|       `-- pages/
+|           `-- 010-installation/
+|               `-- content.md
 |-- public/
 `-- .norna/
     |-- generated-images.json
@@ -37,7 +41,7 @@ case-insensitive file systems.
 | `config.yaml` | Yes | Public URL, language, and browser scroll behavior. |
 | `theme.yaml` | Yes | Complete visual preset and optional focused overrides. |
 | `sitewide-content.yaml` | No | Shared logo display settings, banners, and footer. |
-| `content.md` | Yes | Homepage title, optional metadata, sections, prose, and Norna blocks. |
+| `pages/` | Yes | Homepage, top-level pages, and nested page hierarchies. |
 
 These responsibilities are deliberately separate:
 
@@ -47,44 +51,47 @@ These responsibilities are deliberately separate:
   only a preset selection.
 - [`sitewide-content.yaml`](sitewide-content.md) contains editorial material
   shared by every page.
-- [`content.md`](content.md) is the homepage file and remains ordinary
-  Markdown. YAML frontmatter is optional.
+- [`pages/000-home/content.md`](content.md) is the required homepage and remains
+  ordinary Markdown. YAML frontmatter is optional.
 
 Pages cannot provide `config.yaml` or `sitewide-content.yaml`. Technical
 configuration and shared logo, banner, and footer settings have one site-wide
 source.
 
-## Images
-
-Managed homepage images belong in:
-
-```text
-site/images/
-```
-
-All managed images used by the homepage share this directory. Markdown blocks
-refer to managed images by filename, not by path. See
-[Images and Metadata](images-and-metadata.md) for supported formats, generated
-variants, and syncing.
-
 ## Pages
 
-Each first-level page is one directory under `pages/`:
+Every page is represented by a directory containing `content.md`. The homepage
+is the one reserved page:
+
+```text
+site/pages/000-home/content.md
+```
+
+It maps to `/`, cannot contain child pages, and appears first in global
+navigation. Other directories directly under `site/pages/` are top-level page
+roots:
 
 ```text
 site/pages/010-guide/
 |-- content.md
 |-- theme.yaml
-`-- images/
-    `-- image.jpg
+|-- images/
+|   `-- image.jpg
+`-- pages/
+    `-- 010-installation/
+        |-- content.md
+        `-- images/
+            `-- diagram.svg
 ```
 
-`content.md` is required for a page. The optional page `theme.yaml` replaces
-the root visual theme for that page. Page images live directly in that page's
-`images/` directory.
+Nested `pages/` directories create child pages and may continue to further
+depths. Each page owns its optional `images/` directory. A page-local
+`theme.yaml` may adjust a limited set of presentation properties and is inherited
+by descendants; site colors, typography, shape, and navigation remain global.
 
-The three-digit page prefix controls navigation order and is not part of the
-URL. See [Pages](pages.md) for exact directory-name and page-id rules.
+The three-digit page prefix controls sibling navigation order and is not part
+of the URL. See [Pages](pages.md) for hierarchy, URL, navigation, and page-theme
+rules. See [Images and Metadata](images-and-metadata.md) for managed files.
 
 ## Public Files
 
@@ -102,8 +109,8 @@ Use `NORNA_SITE_DIR` or `norna --site-dir <path>` to select a site directory
 explicitly.
 
 Without an explicit selection, Norna first accepts the current directory when
-it contains both `config.yaml` and `content.md`. Otherwise it walks upward until
-it finds a default `site/` directory containing those two files.
+it contains `config.yaml` and `pages/000-home/content.md`. Otherwise it walks
+upward until it finds a default `site/` directory containing those markers.
 
 ## Versioned Files
 

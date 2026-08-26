@@ -13,7 +13,7 @@ url: https://example.com/
 Norna deliberately keeps this file small. Visual choices belong in
 [`theme.yaml`](theme.md), shared editorial content belongs in
 [`sitewide-content.yaml`](sitewide-content.md), and page content belongs in
-[`content.md`](content.md).
+[`pages/*/content.md`](content.md).
 
 ## `url`
 
@@ -58,6 +58,26 @@ would be misleading.
 Interface labels are part of the engine and are not configured individually.
 Editorial text remains in page content and `sitewide-content.yaml`.
 
+## `navigation`
+
+`navigation.mode` selects the site-wide navigation model:
+
+- `automatic`: choose from the discovered page and heading structure. This is
+  the default.
+- `sections`: navigate headings on a single page.
+- `top`: use the sticky top navigation for a shallow multi-page site.
+- `tree`: combine global top-level navigation with a local page hierarchy.
+
+```yaml
+url: https://example.com/
+navigation:
+  mode: automatic
+```
+
+Navigation behavior is technical and site-wide. It cannot be configured in
+`theme.yaml` or in an individual page. See [Pages](pages.md#navigation) for the
+relationship between Home, top-level pages, child pages, and headings.
+
 ## `scrollBehavior`
 
 - Purpose: select native same-page anchor movement.
@@ -80,6 +100,8 @@ requests reduced motion always get immediate anchor movement.
 ```yaml
 url: https://example.com/
 language: en-GB
+navigation:
+  mode: automatic
 scrollBehavior: instant
 ```
 
@@ -110,7 +132,8 @@ norna --site-dir presentation build
 
 If `NORNA_SITE_DIR` is set to an empty value, commands fail. Relative site
 directories are resolved by walking upward from the invocation directory until
-the selected directory contains `config.yaml` and `content.md`.
+the selected directory contains `config.yaml` and
+`pages/000-home/content.md`.
 
 Without an explicit selection, the current directory itself can be the site
 directory when it contains those two files. Otherwise Norna walks upward for a

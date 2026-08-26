@@ -20,9 +20,9 @@ npm run norna:dev -- --kill
 
 - `site/config.yaml`: public URL and optional language and smooth scrolling.
 - `site/sitewide-content.yaml`: shared logo display settings, banners, and footer.
-- `site/theme.yaml`: site-wide visual settings such as layout density, typography
-  rhythm, palettes, section surfaces, and typography.
-- `site/content.md`: homepage title, sections, placeholders, project summary,
+- `site/theme.yaml`: the site-wide visual preset and any focused overrides.
+- `site/pages/000-home/content.md`: homepage title, sections, placeholders,
+  project summary,
   links, install command, example usage, benefits, next steps, Norna blocks,
   and license.
 - `site/pages/010-guide/content.md`: short secondary page with realistic
@@ -36,15 +36,15 @@ GitHub Pages workflow uses `npm ci`.
 ## Adapt The Starter
 
 1. Replace the project name, tagline, links, install command, example usage,
-   benefits, use cases, and license in `site/content.md`.
+   benefits, use cases, and license in `site/pages/000-home/content.md`.
 2. Replace the guide examples in `site/pages/010-guide/content.md`, or
    delete the page if the homepage is enough.
 3. Edit `site/sitewide-content.yaml` for logo display settings,
    banners, and footer.
-4. Edit `site/theme.yaml` for layout density, typography rhythm, palette, section
-   surfaces, and typography.
-5. Put managed homepage source images directly in `site/images/`. Images for
-   an additional page belong directly in that page's `images/` directory.
+4. Select a preset in `site/theme.yaml`. Add focused overrides only when the
+   project needs them.
+5. Put managed homepage source images in `site/pages/000-home/images/`. Images
+   for another page belong directly in that page's `images/` directory.
 6. Edit `site/config.yaml` for the public URL and, when needed, language or smooth
    scrolling. Deploy commands discover the GitHub repository and default branch.
 7. Update `package.json` with the site's package name and keep

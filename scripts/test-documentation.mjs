@@ -9,6 +9,8 @@ const cliPath = path.join(repoRoot, 'bin', 'norna.mjs');
 const tutorialPath = path.join(repoRoot, 'docs', 'getting-started.md');
 const scratchRoot = path.join(repoRoot, 'todos');
 const obsoleteSourceReferences = [
+	'site/content.md',
+	'site/images/',
 	'site/config.md',
 	'site/theme.md',
 	'site/sitewide-content.md',
@@ -149,8 +151,8 @@ try {
 
 	await Promise.all([
 		writeFile(
-			path.join(tutorialSiteRoot, 'site', 'content.md'),
-			extractTutorialFile(tutorial, 'Replace `site/content.md` with:', 'md'),
+			path.join(tutorialSiteRoot, 'site', 'pages', '000-home', 'content.md'),
+			extractTutorialFile(tutorial, 'Replace `site/pages/000-home/content.md` with:', 'md'),
 		),
 		writeFile(
 			path.join(tutorialSiteRoot, 'site', 'sitewide-content.yaml'),

@@ -69,7 +69,7 @@ Leave the development server running while you complete the next steps.
 
 ## 2. Replace The Homepage Content
 
-Replace `site/content.md` with:
+Replace `site/pages/000-home/content.md` with:
 
 ```md
 ---
@@ -91,8 +91,8 @@ Edit this file while the development server is running and the browser updates.
 ```
 
 The single `#` heading is the page title. Each `##` heading is a page section.
-Its explicit `{#section-id}` gives the section a stable identity and is
-required by Norna.
+Norna derives section anchors from heading text. The explicit ids in this
+example keep those public anchors stable if the visible headings are renamed.
 
 ### Checkpoint: Content And Navigation Update
 

@@ -1,11 +1,10 @@
 # Content
 
-`site/content.md` is the homepage file for a Norna site. Its Markdown H1 is
+`site/pages/000-home/content.md` is the homepage file for a Norna site. Its Markdown H1 is
 the page title. Optional page metadata can be added in YAML frontmatter.
 
-Additional pages use the same page model in
-`site/pages/<NNN-page-id>/content.md`. See [Pages](pages.md) for the
-page-specific rules.
+Additional and nested pages use the same page model in a page directory under
+`site/pages/`. See [Pages](pages.md) for the directory and nesting rules.
 
 Site-wide visual defaults belong in [Theme](theme.md). Typography profiles and
 overrides are described in [Typography](typography.md). Technical site settings
@@ -79,15 +78,25 @@ Markdown level 2 headings define the page sections and their order:
 ...
 ```
 
-Every section heading must have an explicit id:
+Norna derives a stable lowercase id from the heading text when no explicit id
+is present:
+
+```md
+## Work
+```
+
+Add an explicit id when a public anchor must remain stable even if the heading
+text changes:
 
 ```md
 ## Work {#work}
 ```
 
-The id must match `^[a-z0-9-]+$`. It is used for anchors and section
-navigation. The visible section navigation label comes from the Markdown
-heading text.
+Explicit ids must match `^[a-z0-9-]+$`. Derived and explicit ids are used for
+anchors and section navigation; the visible label still comes from the heading
+text. H3 headings use the same derivation for deeper local navigation. If two
+headings on one page resolve to the same id, `content:check` reports the page
+and both headings instead of guessing.
 
 Markdown section content starts at the level 2 heading and continues until the
 next level 2 heading. `###` and `####` headings are body subheadings within the
@@ -207,13 +216,13 @@ sizing is less predictable.
 Homepage images live under:
 
 ```text
-site/images/
+site/pages/000-home/images/
 ```
 
-Page images live under:
+Images for any page live directly under that page directory. For example:
 
 ```text
-site/pages/<NNN-page-id>/images/
+site/pages/010-guide/pages/020-installation/images/
 ```
 
 Image references in Norna managed image blocks use only the filename:
@@ -225,7 +234,7 @@ Image references in Norna managed image blocks use only the filename:
 ````
 
 If `portrait.jpg` is referenced anywhere on the homepage, its expected
-location is `site/images/portrait.jpg`. The same file may be referenced from
+location is `site/pages/000-home/images/portrait.jpg`. The same file may be referenced from
 more than one section on that page.
 
 Filenames must be unique within one page's image directory, but do not have to

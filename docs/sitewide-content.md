@@ -11,7 +11,7 @@ sections do not belong here; they remain in each page's `content.md`.
 
 A logo file is discovered from `site/public/`; no path or site name is
 configured here. The logo links to the homepage, and its alternative text
-comes from the homepage Markdown H1 in `site/content.md`.
+comes from the homepage Markdown H1 in `site/pages/000-home/content.md`.
 
 Add `logo` only to override the discovered file's displayed height:
 

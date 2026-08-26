@@ -1,32 +1,77 @@
 # Pages
 
-`site/content.md` is the homepage and builds to `/`. Optional additional pages live
-under `site/pages/<NNN-page-id>/content.md` and build to first-level
-URLs.
+Every Norna page is a directory under `site/pages/` with its own `content.md`.
+The same model is used for the homepage, top-level areas, and nested pages.
 
-Pages use the same H1 title, optional frontmatter, Norna-managed blocks, and
-Markdown section model as the homepage. See [Content](content.md) for the page
-and section model.
+```text
+site/pages/
+|-- 000-home/
+|   `-- content.md
+|-- 010-guides/
+|   |-- content.md
+|   `-- pages/
+|       `-- 010-installation/
+|           `-- content.md
+`-- 020-reference/
+    `-- content.md
+```
 
-Page directories can contain page content, page-local images, and
-an optional page-local `theme.yaml`. The page theme replaces the root visual
-theme for that page and can select any complete top-level theme preset. Page
-directories cannot contain `config.yaml` or `sitewide-content.yaml`; technical
-configuration and shared logo, banner, and footer settings remain at the
-selected site's top level.
+Pages use the same Markdown H1, optional metadata, sections, Norna blocks, and
+managed-image model. See [Content](content.md) for what belongs inside
+`content.md`.
 
-## Page Directory Format
+## Homepage And Top-Level Pages
 
-Page directories must use:
+The homepage is required at:
+
+```text
+site/pages/000-home/content.md
+```
+
+It builds to `/`. The `000` prefix is reserved for `000-home`, and Home cannot
+contain a nested `pages/` directory. Home is the site's front door, not the
+parent of every page.
+
+Other directories directly under `site/pages/` are top-level navigation roots.
+For example, `site/pages/010-guides/content.md` builds to `/guides/`. Place
+further pages under the nearest meaningful non-home page.
+
+## Nested Pages
+
+A page may contain a `pages/` directory:
+
+```text
+site/pages/010-guides/
+|-- content.md
+`-- pages/
+    `-- 020-workflows/
+        |-- content.md
+        `-- pages/
+            `-- 010-local/
+                `-- content.md
+```
+
+This produces:
+
+```text
+/guides/
+/guides/workflows/
+/guides/workflows/local/
+```
+
+Each directory in the chain is a real page and therefore needs its own
+`content.md`. Empty grouping directories are not part of the page model.
+
+## Directory Names, Order, And URLs
+
+Page directories use:
 
 ```text
 NNN-page-id
 ```
 
-`NNN` is a three-digit presentation order from `001` through `999`.
-`page-id` becomes the page id and URL segment.
-
-Valid examples:
+`NNN` is a three-digit sibling presentation order. `page-id` becomes that
+page's URL segment. Valid ordinary page names include:
 
 ```text
 010-getting-started
@@ -34,11 +79,11 @@ Valid examples:
 120-api-reference
 ```
 
-Invalid examples:
+Invalid names include:
 
 ```text
 10-about
-000-home
+000-about
 010_About
 010-About
 010-about-
@@ -46,89 +91,100 @@ Invalid examples:
 ```
 
 The page id may contain only lowercase `a-z`, numbers, and single hyphens
-between alphanumeric groups. The numeric prefix is not part of the page id or
-URL.
+between alphanumeric groups. The numeric prefix is not part of the URL.
+Renaming `030-contact/` to `015-contact/` changes its order among siblings but
+keeps the URL segment `contact`.
 
-Renaming `030-contact/` to `015-contact/` changes navigation order but keeps
-the page id `contact` and URL `/contact/`.
+Sibling page ids and numeric orders must be unique. Reusing the same id below a
+different parent is valid because the complete URL remains different.
 
-## Page File
+## Page Content
 
-Add a first-level page by creating:
-
-```text
-site/pages/010-about/content.md
-```
-
-Minimal additional page:
+A minimal page is ordinary Markdown:
 
 ```md
 ---
 page:
-  description: About this site.
+  description: Installation instructions.
 ---
 
-# About
+# Installation
 
 Introductory text.
 
-## Team {#team}
+## Requirements {#requirements}
 
 Text...
 ```
 
-The example above builds to `/about/`.
+The H1 supplies the visible page title, document title, and navigation label.
+`page.description` is optional metadata and is not rendered. H2 and H3 headings
+provide page-local navigation according to the selected navigation model.
 
 ## Navigation
 
-Site navigation uses each page's Markdown H1 as its visible label and the
-page-directory prefix as its order. In a multi-page site, the homepage is the
-first navigation item and uses its own H1. An optional logo is a separate home
-link; it does not replace the homepage item or own a section menu.
+Home and listed top-level pages appear in global navigation. Child pages appear
+in the local hierarchy for their top-level area. Breadcrumbs show actual parent
+pages; Home is not added as an artificial ancestor.
 
-`navigation` has one optional field:
-
-- `listed`: boolean. Defaults to `true`. Set it to `false` to keep the page
-  public while excluding it from site navigation.
+The numeric prefix controls order among siblings. Set `navigation.listed` to
+`false` in a non-home page's frontmatter when the page should remain public but
+not appear in generated navigation:
 
 ```yaml
 navigation:
   listed: false
 ```
 
-Page order comes from the directory prefix.
-The homepage is always listed before additional pages.
+Home is always listed. By default, Norna chooses navigation from the site
+structure:
 
-Current site navigation is intended for small sites. This guidance may change
-as navigation support matures, but the present model is:
+- one listed page uses section navigation;
+- a shallow hierarchy uses top navigation;
+- deeper page or heading hierarchies use tree navigation.
 
-- A single-page site should normally use only section navigation.
-- A small multi-page site may use site navigation between pages plus section
-  navigation on the current page.
-- If a site needs many pages, deeply nested pages, or several navigation
-  levels, it has probably outgrown the current sticky-navigation model and may
-  need a different site structure or navigation system.
+The site-wide `navigation.mode` in `config.yaml` can explicitly select
+`automatic`, `sections`, `top`, or `tree`. See
+[Configuration](configuration.md#navigation).
 
 ## Page Images
 
-Page images live under the physical page directory:
+Managed images belong directly to the page that references them:
 
 ```text
-site/pages/010-about/images/image.jpg
+site/pages/010-guides/pages/020-workflows/images/diagram.svg
 ```
 
-Image references in page content still use only the filename:
+The Markdown block still uses only the filename:
 
 ````md
 ```norna-image-stack
-- image: image.jpg
-  alt: Intro image.
+- image: diagram.svg
+  alt: The local workflow.
 ```
 ````
 
-All managed images used by the page share this one `images/` directory. Run
-`norna content:check` to find missing or misplaced images and
+Run `norna content:check` to find missing or misplaced images and
 `norna content:sync` to move unambiguous files into the expected page image
-root. `content:sync` can move images between page image roots when the filename
-is unambiguous across the site and the move will not break another reference;
-these cross-page writes require a clean Git working tree.
+root. Cross-page writes require a clean Git working tree and never guess when a
+filename has multiple possible sources.
+
+## Page Themes
+
+The root `site/theme.yaml` owns the site's visual identity: preset, palette,
+shape, typography, page frame, and navigation presentation.
+
+An optional page-local `theme.yaml` may adjust only:
+
+- `layout.textWidth`
+- `layout.contentSpacing`
+- managed-image sizing under `images`
+- `sections.backgroundPattern`
+
+These values are inherited by descendant pages and merged with more local page
+settings. Page themes cannot select presets or change site colors, fonts,
+shape, page width, gutters, or navigation. See [Theme](theme.md#page-themes).
+
+Page directories also cannot contain `config.yaml` or
+`sitewide-content.yaml`; technical configuration and shared editorial content
+remain at the selected site's top level.

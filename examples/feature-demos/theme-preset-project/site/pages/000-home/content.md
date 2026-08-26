@@ -4,7 +4,7 @@ page:
 ---
 
 # Project
-This page uses the complete `project` preset without overrides. It provides a
+This site uses the complete `project` preset without overrides. It provides a
 compact, neutral presentation for project overviews, feature descriptions and
 practical documentation.
 

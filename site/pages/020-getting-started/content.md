@@ -198,9 +198,10 @@ This creates `site/orig-documentation-theme.yaml`. Norna does not load that
 file; only `theme.yaml` is active. The command refuses to overwrite an existing
 reference file.
 
-A page can select a different complete preset in its own optional `theme.yaml`.
-The page theme replaces the root visual theme for that page, while the shared
-logo display settings remain site-wide.
+The root theme keeps colors, shape, typography, page frame, and navigation
+consistent across the site. An optional page `theme.yaml` can make narrower
+changes to text width, content spacing, managed-image sizing, and section
+background patterns. Those page settings are inherited by descendant pages.
 
 Relevant documentation:
 [Theme](https://github.com/janga/norna/blob/main/docs/theme.md),

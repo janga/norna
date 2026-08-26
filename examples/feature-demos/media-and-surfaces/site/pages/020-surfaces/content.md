@@ -25,7 +25,8 @@ The page theme uses a palette and a surface sequence when a visual pause or
 change of rhythm helps the reader. This is not a free-form colour override:
 
 ```yaml
-sectionSurfaces: [base, soft, emphasis]
+sections:
+  backgroundPattern: cycling
 ```
 
 The theme can cycle through the selected surfaces automatically. Individual

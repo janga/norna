@@ -8,7 +8,10 @@ documentation workflow.
 | --- | --- | --- | --- |
 | Dog shelter, single page | A coherent homepage made from sections | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/) | [View files](complete-sites/dog-shelter-single-page/) |
 | Dog shelter, multi-page | A coherent site with ordered pages and page-local images | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](complete-sites/dog-shelter-multi-page/) |
-| Theme presets | All complete presets without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-presets/) | [View files](feature-demos/theme-presets/) |
+| Portfolio preset | Complete `portfolio` preset without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/) | [View files](feature-demos/theme-preset-portfolio/) |
+| Documentation preset | Complete `documentation` preset without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/) | [View files](feature-demos/theme-preset-documentation/) |
+| Project preset | Complete `project` preset without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-preset-project/) | [View files](feature-demos/theme-preset-project/) |
+| Statement preset | Complete `statement` preset without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/) | [View files](feature-demos/theme-preset-statement/) |
 | Media and surfaces | Image blocks, cards, notes, palettes, and section surfaces | [Open site](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/) | [View files](feature-demos/media-and-surfaces/) |
 | Sitewide content | Shared logo settings, banners, and footer content | [Open site](https://janga.github.io/norna/examples/feature-demos/sitewide-content/) | [View files](feature-demos/sitewide-content/) |
 
@@ -20,7 +23,10 @@ examples/
 |   |-- dog-shelter-single-page/
 |   `-- dog-shelter-multi-page/
 `-- feature-demos/
-    |-- theme-presets/
+    |-- theme-preset-portfolio/
+    |-- theme-preset-documentation/
+    |-- theme-preset-project/
+    |-- theme-preset-statement/
     |-- media-and-surfaces/
     `-- sitewide-content/
 ```

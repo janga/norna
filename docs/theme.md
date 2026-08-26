@@ -1,16 +1,20 @@
 # Theme
 
-`site/theme.yaml` defines the site-wide visual theme for a Norna site. It is a
-required plain YAML file. The normal setup selects one complete theme preset
-and adds only focused overrides when needed.
+`site/theme.yaml` defines the visual identity and default presentation for the
+whole Norna site. It is a required plain YAML file. The normal setup selects one
+complete preset and adds only focused overrides when they are needed:
 
-An optional `theme.yaml` inside a page directory replaces the root visual
-theme for that page. Navigation-logo display settings remain site-wide and
-belong in `sitewide-content.yaml`.
+```yaml
+preset: documentation
+```
+
+The root theme owns site-wide colors, shapes, typography, page frame, and
+navigation presentation. An optional page-local `theme.yaml` has a deliberately
+smaller role described under [Page Themes](#page-themes).
 
 ## Theme Presets
 
-Available complete theme presets are:
+Available complete presets are:
 
 - `portfolio`: restrained typography and a broad image area for image-led
   presentation.
@@ -21,27 +25,21 @@ Available complete theme presets are:
 - `statement`: airy spacing and stronger typography for short editorial
   content.
 
-A normal `theme.yaml` can be only:
+Each preset coordinates:
 
-```yaml
-preset: documentation
-```
+- colors, shape, and typography
+- page width, gutters, text width, and content spacing
+- navigation spacing and visual treatment
+- managed-image sizing
+- section background sequence
 
-Each preset supplies coordinated values for:
-
-- layout density, page width, and gutters
-- managed image sizing
-- font family, typography profile, and typography rhythm
-- palette and section-surface behaviour
-
-The nested `typography.profile` setting documented below is a lower-level
-typography choice. A top-level theme `preset` selects the complete visual
-system, including that typography choice.
+These coordinated values keep the site's identity consistent. Page themes
+cannot select another preset.
 
 ## Overrides
 
-Values written beside the top-level preset override only that part of the
-preset. Other preset values remain active:
+Values beside the root preset override only that part of the preset. Other
+preset values remain active:
 
 ```yaml
 preset: documentation
@@ -50,112 +48,89 @@ layout:
 palette: dark
 ```
 
-Nested objects are merged by key. `sectionSurfaces` replaces the preset array
-when it is specified.
-
-It is still valid to omit the top-level preset and define the visual settings
-explicitly. Omitted explicit settings then use engine defaults. This is useful
-for focused testing, but selecting a complete preset is the simpler normal
-workflow.
+Nested objects are merged by key. It is valid to omit `preset` and define root
+settings explicitly, but a complete preset is the simpler normal workflow.
 
 ## Export A Preset
 
-Export the installed definition of a preset before choosing overrides:
+Export the installed definition before choosing overrides:
 
 ```sh
 norna theme:export documentation
 ```
 
-In a generated site, the equivalent npm command is:
+In a generated site, use:
 
 ```sh
 npm run norna:theme:export -- documentation
 ```
 
-The command creates `site/orig-documentation-theme.yaml`, or the corresponding
-path under the selected site directory. The file contains the preset values,
-comments describing accepted alternatives, and an example of a fine-grained
-typography override.
+The command creates `site/orig-documentation-theme.yaml`. The file contains the
+preset values, accepted alternatives, and example overrides. Norna never loads
+`orig-*-theme.yaml`; only `theme.yaml` is active. The command refuses to
+overwrite an existing reference file.
 
-Norna never loads `orig-*-theme.yaml`; only `theme.yaml` is active. The export
-command refuses to overwrite an existing reference file.
-
-Page titles and site navigation are not part of the visual theme. Define
-optional logo display settings in `site/sitewide-content.yaml`; see
-[Sitewide Content](sitewide-content.md).
+Page titles and site-wide editorial content are not part of the visual theme.
+Optional logo display settings, banners, and the footer belong in
+[`sitewide-content.yaml`](sitewide-content.md).
 
 ## Layout
 
-`layout` is optional. It controls the outer page geometry:
+Root `layout` settings control the site frame and default content geometry:
 
-- `pageWidth`: maximum width of the main page content area.
-- `gutter`: side margin removed from the viewport before available content
-  width is calculated. Use either one CSS length for all viewports or
-  `desktop` / `mobile` values.
-- `density`: default structural spacing profile. Allowed values are `compact`,
-  `normal`, and `airy`.
-- `spacing`: optional spacing overrides for sections and content blocks. Every
-  spacing value accepts either one CSS length for all viewports or `desktop` /
-  `mobile` values.
+- `pageWidth`: maximum width of the full site layout, including local tree
+  navigation where present.
+- `gutter`: horizontal viewport gutter, either one CSS length or separate
+  `desktop` and `mobile` values.
+- `textWidth`: body-text line length: `narrow`, `normal`, or `wide`.
+- `contentSpacing`: vertical spacing between sections and structured blocks:
+  `compact`, `normal`, or `spacious`.
+- `spacing`: fine-grained structural spacing overrides.
 
 Example:
 
 ```yaml
+preset: documentation
 layout:
-  density: normal
-  pageWidth: 1180px
+  pageWidth: 1320px
   gutter:
     desktop: clamp(1.25rem, 4vw, 3rem)
     mobile: 1rem
+  textWidth: narrow
+  contentSpacing: compact
   spacing:
-    firstSectionTop:
-      desktop: clamp(1.875rem, 3vw, 2.75rem)
-      mobile: 1.375rem
+    firstSectionTop: 1.5rem
     sectionGap:
-      desktop: clamp(1.4rem, 3vw, 2.75rem)
+      desktop: 2.5rem
       mobile: 1.5rem
-    headingToBlock:
-      desktop: 0.75em
-      mobile: 0.7em
-    blockGap:
-      desktop: 1.5em
-      mobile: 1.25em
+    headingToBlock: 0.75em
+    blockGap: 1.5em
 ```
 
-If omitted, Norna uses `1180px` for `pageWidth`, desktop
-`clamp(1.25rem, 4vw, 3rem)` for `gutter`, mobile `1rem`, and `normal` layout
-density.
-
-Spacing keys:
+Spacing keys are:
 
 - `firstSectionTop`: space above the first section heading.
 - `sectionGap`: space above each following section.
 - `finalSectionBottom`: space below the final section.
-- `headingToBlock`: space between a section heading and its first visual content
+- `headingToBlock`: space between a section heading and its first structured
   block, such as an image stack, carousel, or card list.
-- `blockGap`: space between content blocks in a section. It applies between
-  Markdown, image, carousel, and card-list blocks, but not after the final block.
-- `imageGap`: space between stacked images or carousel blocks.
+- `blockGap`: space between structured content blocks.
+- `imageGap`: space between images in an image stack.
 
-The default `compact`, `normal`, and `airy` density profiles provide values for
-these spacing keys. The `em` values for `headingToBlock` and `blockGap` are
-relative to the relevant text size, so the rhythm follows typography changes.
-Use `sectionGap` and the other structural keys when the distance should describe
-the page layout rather than the size of nearby text.
+The `contentSpacing` profiles supply coordinated defaults for these values.
+Text-near spacing inside Markdown, including paragraph and subheading spacing,
+belongs to typography rhythm.
 
-Text-near spacing inside Markdown, such as spacing after headings, spacing
-before Markdown subheadings, paragraph spacing, and caption spacing, belongs to
-`typography.rhythm` and typography overrides.
+The horizontal gap between tree navigation and page content is coordinated by
+the selected preset. It is intentionally not a separate public override.
 
 ## Image Sizing
 
-`images` is optional. It controls managed image sizing:
+`images` controls managed image sizing:
 
-- `width`: hard maximum rendered image area width for images, captions, and
-  aligned text.
-- `maxAvailableWidthPercent`: maximum share of available width after gutters.
-- `maxAvailableHeightPercent`: maximum share of viewport height used by
-  images.
+- `width`: maximum rendered image-area width.
+- `maxAvailableWidthPercent`: maximum share of available horizontal space.
+- `maxAvailableHeightPercent`: maximum share of viewport height.
 
 Example:
 
@@ -170,18 +145,16 @@ images:
     mobile: 68
 ```
 
-If omitted, Norna uses `900px`, full available width, and image height limits of
-desktop `74` / mobile `68`.
+Each responsive percentage may also be a single number.
 
 ## Typography
 
-Top-level `typography` is the site-wide typographic base. It supports:
+Root `typography` is site-wide. It supports:
 
 - `fontFamily`: global CSS font-family stack.
-- `profile`: built-in typography profile.
-- `rhythm`: text-near spacing profile. Allowed values are `compact`,
-  `normal`, and `airy`.
-- `overrides`: focused changes to preset values.
+- `profile`: `restrained`, `dense`, `reading`, or `statement`.
+- `rhythm`: `compact`, `normal`, or `airy`.
+- `overrides`: focused changes to headings, body text, and captions.
 
 Example:
 
@@ -196,76 +169,69 @@ typography:
         size: medium
         weight: 600
         spacingAfter: 0.55em
-      h3:
-        size: medium
-        spacingBefore: 1.5em
-        spacingAfter: 0.5em
     body:
-      width: narrow
+      size: medium
       lineHeight: 1.55
 ```
 
-Use `norna typography profiles` to inspect built-in profile and rhythm values,
-and `norna typography show` to inspect the resolved typography for the
-selected site. See [Typography](typography.md).
+Use `norna typography profiles` to inspect built-in values and
+`norna typography show` to inspect the resolved site typography. See
+[Typography](typography.md) for every override field.
 
 ## Palette And Section Surfaces
 
-`palette` and `sectionSurfaces` are optional top-level theme settings:
+These root settings are site-wide:
 
-- `palette`: `dark`, `light`, or `paper`. It coordinates page, navigation,
-  footer, and section colors.
-- `sectionSurfaces`: one to three unique values chosen from `base`, `soft`, and
-  `emphasis`. One value gives every section the same surface. Multiple values
-  cycle in the listed order.
+- `palette`: `dark`, `light`, or `paper`.
+- `shape`: `square` or `soft`.
+- `sections.backgroundPattern`: `uniform`, `alternating`, or `cycling`.
 
 Example:
 
 ```yaml
-palette: paper  # Alternatives: dark, light
-sectionSurfaces: [base, soft, emphasis]
+preset: project
+palette: paper
+shape: soft
+sections:
+  backgroundPattern: cycling
 ```
+
+The background pattern uses coordinated surfaces from the active palette. It
+does not let individual sections select arbitrary colors.
 
 ## Page Themes
 
-Add `theme.yaml` to a page directory when that page should have a different
-visual expression:
+Add `theme.yaml` to a non-home page directory only when that page or one of its
+descendants needs a narrower presentation adjustment:
 
 ```text
 site/pages/010-guide/theme.yaml
 ```
 
-The page theme uses the same visual schema and complete presets as the root
-theme. A page can therefore select a different expression without repeating a
-large configuration:
+A page theme may set only:
+
+- `layout.textWidth`
+- `layout.contentSpacing`
+- managed-image sizing under `images`
+- `sections.backgroundPattern`
+
+For example:
 
 ```yaml
-preset: statement
+layout:
+  textWidth: narrow
+  contentSpacing: compact
+images:
+  width: 760px
+sections:
+  backgroundPattern: uniform
 ```
 
-It completely replaces the root visual theme for that page. If the page
-theme selects no top-level preset, omitted values use engine defaults rather
-than values from the root theme. It cannot define navigation-logo settings or
-technical configuration.
+Page settings are merged with the root theme and inherited by descendant pages.
+A more local page theme may override the same limited fields. Site colors,
+shape, typography, page width, gutters, and navigation remain constant.
 
-Section surfaces render as full-width horizontal bands while the section
-content keeps the normal page and image widths. Links keep the palette's global
-accent color.
-
-## Common Questions
-
-### Should every page select its own preset?
-
-No. A page without its own `theme.yaml` inherits the root theme, which is the
-normal choice when the site should keep one visual expression.
-
-Add a page theme only when the page should intentionally look different. If
-the page should keep the same preset but demonstrate a focused change, repeat
-the root preset in the page theme and override only that setting. This is
-necessary because a page theme replaces the root visual theme rather than
-merging with it.
-
-For example, a page demonstrating section surfaces may keep `preset: project`
-and change only `sectionSurfaces`. A page demonstrating image or content
-blocks should normally inherit the root preset so that the blocks remain the
-only variable being compared.
+Page themes cannot define `preset`, `palette`, `shape`, `typography`,
+`navigation`, `config.yaml`, or site-wide content. This boundary keeps one
+recognisable site while still allowing a guide, gallery, or reference area to
+use an appropriate reading width and media presentation.

@@ -25,10 +25,22 @@ width: normal
   text: Inspect image stacks, carousels, cards, notes, palettes and section surfaces.
   link: https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/
   badge-text: Feature demo
-- title: Theme presets
-  text: Compare portfolio, documentation, project and statement without overrides.
-  link: https://janga.github.io/norna/examples/feature-demos/theme-presets/
-  badge-text: Feature demo
+- title: Portfolio preset
+  text: Inspect the complete image-led preset without overrides.
+  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/
+  badge-text: Theme preset
+- title: Documentation preset
+  text: Inspect the complete reading-focused preset without overrides.
+  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/
+  badge-text: Theme preset
+- title: Project preset
+  text: Inspect the complete project-site preset without overrides.
+  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-project/
+  badge-text: Theme preset
+- title: Statement preset
+  text: Inspect the complete editorial preset without overrides.
+  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/
+  badge-text: Theme preset
 - title: Sitewide content
   text: Inspect shared logo settings, navigation, dismissible banner stacks and footer content across pages.
   link: https://janga.github.io/norna/examples/feature-demos/sitewide-content/
@@ -47,7 +59,10 @@ The cards open the rendered sites. Their source files are available alongside
 them:
 
 - [Media and surfaces source](https://github.com/janga/norna/tree/main/examples/feature-demos/media-and-surfaces)
-- [Theme presets source](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-presets)
+- [Portfolio preset source](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-preset-portfolio)
+- [Documentation preset source](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-preset-documentation)
+- [Project preset source](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-preset-project)
+- [Statement preset source](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-preset-statement)
 - [Sitewide content source](https://github.com/janga/norna/tree/main/examples/feature-demos/sitewide-content)
 - [Single-page dog shelter source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-single-page)
 - [Multi-page dog shelter source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-multi-page)

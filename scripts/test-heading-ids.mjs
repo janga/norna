@@ -43,9 +43,9 @@ const collision = await getMarkdownHeadings(`# Page
 `);
 assert.equal(getHeadingIdentifierIssues(collision.headings)[0]?.code, 'duplicate-heading-id');
 assert.equal(
-	formatHeadingIdentifierIssue(getHeadingIdentifierIssues(collision.headings)[0], 'site/content.md'),
+	formatHeadingIdentifierIssue(getHeadingIdentifierIssues(collision.headings)[0], 'site/pages/000-home/content.md'),
 	[
-		'site/content.md: Two headings resolve to id "forsta".',
+		'site/pages/000-home/content.md: Two headings resolve to id "forsta".',
 		'- line 3: "Förstå"',
 		'- line 5: "Forsta"',
 		'Add a unique explicit id to at least one heading, for example {#forsta-details}.',

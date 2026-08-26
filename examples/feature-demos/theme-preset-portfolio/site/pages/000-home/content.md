@@ -4,7 +4,7 @@ page:
 ---
 
 # Portfolio
-This page uses the complete `portfolio` preset without overrides. It gives
+This site uses the complete `portfolio` preset without overrides. It gives
 images a broad stage, keeps typography restrained and uses a dark palette for
 an image-led presentation.
 

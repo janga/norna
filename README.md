@@ -52,15 +52,21 @@ site/
 |-- config.yaml
 |-- theme.yaml
 |-- sitewide-content.yaml
-|-- content.md
-|-- images/
 |-- pages/
+|   |-- 000-home/
+|   |   |-- content.md
+|   |   `-- images/
+|   `-- 010-guide/
+|       |-- content.md
+|       `-- pages/
+|           `-- 010-installation/
 `-- public/
 ```
 
-- `content.md` holds the homepage title, introduction, and sections.
-- `images/` holds the homepage's managed source images.
-- `pages/` adds pages, each with content and optional local images and theme.
+- `pages/000-home/content.md` is the required homepage at `/`.
+- Other top-level directories under `pages/` are global navigation roots.
+- A page may contain local images, limited presentation settings, and nested
+  child pages under its own `pages/` directory.
 - `theme.yaml` normally selects one complete visual preset.
 - `sitewide-content.yaml` holds shared logo display settings, banners, and footer content.
 - `config.yaml` holds the public URL and optional language and scroll behavior.
@@ -89,7 +95,10 @@ documentation.
 | --- | --- | --- |
 | Dog shelter, single page | [Open demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/) | [View files](examples/complete-sites/dog-shelter-single-page/) |
 | Dog shelter, multi-page | [Open demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](examples/complete-sites/dog-shelter-multi-page/) |
-| Theme presets | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-presets/) | [View files](examples/feature-demos/theme-presets/) |
+| Portfolio preset | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/) | [View files](examples/feature-demos/theme-preset-portfolio/) |
+| Documentation preset | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/) | [View files](examples/feature-demos/theme-preset-documentation/) |
+| Project preset | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-project/) | [View files](examples/feature-demos/theme-preset-project/) |
+| Statement preset | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/) | [View files](examples/feature-demos/theme-preset-statement/) |
 | Media and surfaces | [Open demo](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/) | [View files](examples/feature-demos/media-and-surfaces/) |
 | Sitewide content | [Open demo](https://janga.github.io/norna/examples/feature-demos/sitewide-content/) | [View files](examples/feature-demos/sitewide-content/) |
 

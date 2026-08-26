@@ -4,7 +4,7 @@ page:
 ---
 
 # Documentation
-This page uses the complete `documentation` preset without overrides. It
+This site uses the complete `documentation` preset without overrides. It
 favours readable explanatory text, compact vertical rhythm and restrained
 surface changes for longer guides.
 

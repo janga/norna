@@ -27,9 +27,12 @@ site/
 |-- config.yaml
 |-- theme.yaml
 |-- sitewide-content.yaml
-|-- content.md
-|-- images/
 |-- pages/
+|   |-- 000-home/
+|   |   |-- content.md
+|   |   `-- images/
+|   `-- 010-guide/
+|       `-- content.md
 `-- public/
 ```
 
@@ -39,12 +42,11 @@ site/
   overrides.
 - [`sitewide-content.yaml`](sitewide-content.md): shared logo display settings,
   banners, and footer.
-- [`content.md`](content.md): Markdown page title, optional metadata, sections,
-  prose, notes, and Norna blocks.
-- [`images/`](images-and-metadata.md): managed source formats, variants, sync,
-  and generated image state.
-- [`pages/`](pages.md): additional pages, ordering, URLs, page themes, and
-  page-local images.
+- [`pages/`](pages.md): Home, top-level areas, nested pages, ordering, and URLs.
+- [`content.md`](content.md): the content file inside every page directory,
+  containing its title, optional metadata, sections, prose, notes, and blocks.
+- [`images/`](images-and-metadata.md): managed images kept inside the page that
+  references them, plus variants, sync, and generated image state.
 - [`public/`](public-files.md): navigation logos, favicons, and other static
   files copied without managed-image processing.
 - [Generated files](site-files.md#generated-files): `site/.norna/public/`,
@@ -82,7 +84,7 @@ required, optional, convention-discovered, versioned, or generated.
 
 - [Choose a complete theme preset](theme.md#theme-presets)
 - [Inspect and override a preset](theme.md#overrides)
-- [Give a page a different theme](theme.md#page-themes)
+- [Adjust limited presentation for a page subtree](theme.md#page-themes)
 - [Adjust typography](typography.md)
 
 ### Check, Build, And Publish

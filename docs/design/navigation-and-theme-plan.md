@@ -60,8 +60,8 @@ not its children. The homepage cannot contain a `pages/` hierarchy; place each
 top-level area beside `000-home` and nest further pages below that area.
 
 The root `site/` directory now contains only site-wide files and the page
-container. The previous `site/content.md` and `site/images/` locations produce
-a migration error instead of being interpreted as a second page model.
+container. Removed root-level page and image locations produce a migration
+error instead of being interpreted as a second page model.
 
 ### 2. Define The Navigation Contract - Complete
 

@@ -65,7 +65,10 @@ examples/
     dog-shelter-single-page/
     dog-shelter-multi-page/
   feature-demos/
-    theme-presets/
+    theme-preset-portfolio/
+    theme-preset-documentation/
+    theme-preset-project/
+    theme-preset-statement/
     media-and-surfaces/
     sitewide-content/
 ```
@@ -79,8 +82,9 @@ together in a realistic project:
 
 `feature-demos/` contains focused visual test benches:
 
-- `theme-presets/`: one page per complete built-in theme preset, without
-  overrides.
+- `theme-preset-*/`: one independent site per complete built-in preset, without
+  overrides. Presets are site-wide, so comparing them must not rely on
+  page-local preset changes.
 - `media-and-surfaces/`: image and card blocks, notes, palettes and section
   surfaces. This is also the broad demo-build and navigation-test target.
 - `sitewide-content/`: convention-based logo handling, navigation, banner stacks,

@@ -35,9 +35,10 @@ maintainer, put it in `README.md` instead of duplicating it here.
   hardcoding site paths in scripts.
 - Keep editable content, Markdown section headings, Norna image block
   references, alt text, captions, and optional section metadata in the selected
-  site `content.md`; the default path is `site/content.md`. Keep site-wide
-  visual theme defaults and inline styles in the selected site `theme.yaml`;
-  the default path is `site/theme.yaml`.
+  page's `content.md`; the homepage path is
+  `site/pages/000-home/content.md`. Keep site-wide visual identity in the root
+  `site/theme.yaml`; page-local themes may use only the limited inherited
+  presentation fields accepted by the page-theme schema.
 - When adding AI-generated images to Norna sites, document their provenance and
   prompt in Markdown near the image block so future maintainers can regenerate
   or revise them. This is not required for disposable test fixtures where the
@@ -49,8 +50,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Keep site-specific static files in the selected site `public/`; the default
   path is `site/public/`. The selected site's `.norna/public/` directory
   is copied build preparation output plus generated image output.
-- Do not add additional pages or split sections into separate Markdown files
-  unless the user explicitly changes the single-page architecture.
+- Keep Home at `site/pages/000-home/` without child pages. Put global
+  navigation roots beside it and nested pages under the nearest meaningful
+  non-home page.
 
 ## Command Choices
 
@@ -101,9 +103,11 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - The sticky navigation uses root `scroll-padding-top` to compensate for the
   fixed header area. Avoid section-level `scroll-margin-top` unless you are
   deliberately testing anchor offsets.
-- Keep exactly one Markdown H1 as the page title and explicit ids on all H2
-  sections. Keep managed homepage images directly in `site/images/` and
-  additional-page images directly in that page's `images/` directory.
+- Keep exactly one Markdown H1 as the page title. H2 and H3 ids are derived
+  deterministically; use explicit ids only when a public anchor must remain
+  stable across heading edits. Keep managed homepage images directly in
+  `site/pages/000-home/images/` and other images directly in their page's
+  `images/` directory.
 - Do not commit unreferenced source images unless the user explicitly asks for
   them.
 - If Playwright reports a missing Chromium browser, run

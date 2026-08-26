@@ -125,9 +125,9 @@ follows the Markdown level the user wrote: `##` uses `headings.h2`.
 `1rem`, or `12px`. Use `em` for spacing that should track the text size.
 
 `weight` is a controlled heading weight. Allowed values are `400`, `500`,
-`600`, and `700`. `body.width` is the readable text width and accepts
-`narrow`, `normal`, or `wide`. It controls the prose column, not the page's
-maximum width or the width of image blocks.
+`600`, and `700`. Configure readable line length with `layout.textWidth` in the
+root or page theme; it controls the prose column, not the page's maximum width
+or the width of image blocks.
 
 Supported override fields:
 
@@ -143,38 +143,26 @@ Supported override fields:
 - `headings.h4.align`, `headings.h4.size`, `headings.h4.weight`,
   `headings.h4.lineHeight`,
   `headings.h4.spacingBefore`, `headings.h4.spacingAfter`
-- `body.align`, `body.size`, `body.width`, `body.lineHeight`,
+- `body.align`, `body.size`, `body.lineHeight`,
   `body.paragraphSpacing`
 - `caption.align`, `caption.size`, `caption.lineHeight`,
   `caption.spacingBefore`
 
-## Page Themes
+## Page Text Width
 
-The simplest page-specific typography change is to select a complete theme
-preset:
-
-```yaml
-# site/pages/010-introduction/theme.yaml
-preset: statement
-```
-
-A page-local `theme.yaml` replaces the root visual theme rather than inheriting
-from it. The complete preset supplies a coherent page theme without repeating
-the root values.
-
-Use a nested typography choice when only the typographic character needs to be
-specified explicitly:
+Typography itself remains site-wide so pages keep the same font, heading
+hierarchy, and typographic character. A page-local `theme.yaml` may adjust the
+body-text line length when a particular page or subtree needs a narrower or
+wider reading column:
 
 ```yaml
 # site/pages/010-introduction/theme.yaml
-typography:
-  profile: statement
-  rhythm: normal
+layout:
+  textWidth: narrow
 ```
 
-Without a top-level theme preset, other omitted page-theme values use engine
-defaults rather than values from the root theme.
+The page setting is inherited by descendant pages. Page themes cannot select a
+typography profile, rhythm, font family, or heading override.
 
-The `body.width` value controls the prose column independently of the page and
-image widths. Captions are normally centered, but `reading` uses
-left-aligned captions to support longer explanatory text.
+Captions are normally centered, but `reading` uses left-aligned captions to
+support longer explanatory text.

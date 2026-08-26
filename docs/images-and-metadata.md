@@ -12,14 +12,16 @@ Norna-managed local images are referenced from Markdown with
 Homepage source images live under:
 
 ```text
-site/images/
+site/pages/000-home/images/
 ```
 
-Page source images live under:
+Images for any page, including nested pages, live directly under that page:
 
 ```text
-site/pages/<NNN-page-id>/images/
+site/pages/<NNN-page-id>/pages/<NNN-page-id>/images/
 ```
+
+The number of nested `pages/` segments follows the page hierarchy.
 
 Supported source extensions:
 
@@ -140,7 +142,7 @@ copyright metadata.
 Generated WebP files are created with ImageMagick using `-strip`, so embedded
 metadata is not a publication mechanism for generated variants. Keep licensing,
 credits, copyright notices, alt text, and captions in site-owned files such as
-`site/content.md`, page content files, `COPYRIGHT.md`, or other site
+`site/pages/000-home/content.md`, page content files, `COPYRIGHT.md`, or other site
 documentation.
 
 If a site wants embedded metadata in original source files, that process is
