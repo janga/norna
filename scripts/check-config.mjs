@@ -45,7 +45,8 @@ try {
 	console.log(`Theme preset: ${themeConfig.preset ?? '(none)'}`);
 	console.log(`Page width: ${projectConfig.layout.pageWidth}`);
 	console.log(`Gutter: desktop ${projectConfig.layout.gutter.desktop}, mobile ${projectConfig.layout.gutter.mobile}`);
-	console.log(`Layout density: ${projectConfig.layout.density}`);
+	console.log(`Content spacing: ${projectConfig.layout.contentSpacing}`);
+	console.log(`Text width: ${projectConfig.layout.textWidth}`);
 	console.log(`Image area width: ${projectConfig.images.width}`);
 	console.log(`Image max available width: desktop ${projectConfig.images.maxAvailableWidthPercent.desktop}%, mobile ${projectConfig.images.maxAvailableWidthPercent.mobile}%`);
 	console.log(`Image max available height: desktop ${projectConfig.images.maxAvailableHeightPercent.desktop}%, mobile ${projectConfig.images.maxAvailableHeightPercent.mobile}%`);

@@ -182,9 +182,7 @@ const getGlobalImageCandidates = (globalImageCandidatesByName, imageName, expect
 
 const getReferenceLabel = (contentFile, section) => `${contentFile.contentLabel} [${section.id ?? 'page title'}]`;
 
-const getRootLabel = (contentFile) => contentFile.isHome
-	? contentFile.imagesLabel
-	: contentFile.imagesLabel.replace(/\/images$/, '');
+const getRootLabel = (contentFile) => contentFile.imagesLabel.replace(/\/images$/, '');
 
 const getCandidateLabel = ({ contentFile, imagePath }) =>
 	`${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, imagePath))}`;

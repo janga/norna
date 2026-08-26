@@ -1,3 +1,7 @@
-typography:
-  profile: statement
-palette: light
+layout:
+  contentSpacing: spacious
+  textWidth: wide
+images:
+  width: 760px
+sections:
+  backgroundPattern: cycling

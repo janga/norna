@@ -23,7 +23,6 @@ import {
 	generatedImagesManifestPath,
 	originalImagesDir,
 	siteDir,
-	siteImagesDir,
 } from './lib/site-paths.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -88,10 +87,8 @@ const getFilePathFromPublicPath = (publicPath) => path.join(astroPublicDir, publ
 
 const getSourceHashSlug = (sourceHash) => sourceHash.slice(0, sourceHashSlugLength);
 
-const getGeneratedPath = (sourcePath, sourceHash, width) => {
-	const parsed = path.parse(path.relative(siteImagesDir, sourcePath).startsWith('..')
-		? path.relative(path.dirname(siteImagesDir), sourcePath)
-		: path.relative(siteImagesDir, sourcePath));
+const getGeneratedPath = (sourceKey, sourceHash, width) => {
+	const parsed = path.parse(sourceKey);
 	return path.join(generatedImagesDir, parsed.dir, `${parsed.name}-${getSourceHashSlug(sourceHash)}-${width}.webp`);
 };
 
@@ -104,11 +101,7 @@ const fail = (message) => {
 	throw new Error(message);
 };
 
-const getImageSourceKey = (contentFile, image) => (
-	contentFile.isHome
-		? `images/${image}`
-		: `pages/${contentFile.pageDirectory}/images/${image}`
-);
+const getImageSourceKey = (contentFile, image) => `pages/${contentFile.pageDirectory}/images/${image}`;
 
 const getReferencedImages = async (contentFile) => {
 	const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
@@ -241,8 +234,8 @@ const getVariantWidths = ({ width }) => {
 	return variantWidths;
 };
 
-const getVariants = (sourcePath, sourceHash, variantWidths) => variantWidths.map((width) => ({
-	src: getPublicPath(getGeneratedPath(sourcePath, sourceHash, width)),
+const getVariants = (sourceKey, sourceHash, variantWidths) => variantWidths.map((width) => ({
+	src: getPublicPath(getGeneratedPath(sourceKey, sourceHash, width)),
 	width,
 }));
 
@@ -417,9 +410,9 @@ for (const { sourcePath, sourceKey } of sources) {
 
 	const dimensions = await identify(sourcePath);
 	const variantWidths = getVariantWidths(dimensions);
-	const variants = getVariants(sourcePath, sourceHash, variantWidths);
+	const variants = getVariants(sourceKey, sourceHash, variantWidths);
 	for (const width of variantWidths) {
-		const outputPath = getGeneratedPath(sourcePath, sourceHash, width);
+		const outputPath = getGeneratedPath(sourceKey, sourceHash, width);
 		await convert(sourcePath, outputPath, width);
 	}
 

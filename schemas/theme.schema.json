@@ -27,73 +27,75 @@
           "description": "For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis."
         }
       ],
-      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated navigation, layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#theme-presets)"
+      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated shapes, layout, image sizing, typography, palette and section backgrounds. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#theme-presets)"
     },
-    "navigation": {
-      "type": "object",
-      "properties": {
-        "mode": {
-          "description": "Navigation model. Omit this to keep the selected preset.",
-          "type": "string",
-          "oneOf": [
-            {
-              "const": "automatic",
-              "title": "Automatic",
-              "description": "Choose sections for one page, top navigation for a shallow multi-page site, and tree navigation for deeper content."
-            },
-            {
-              "const": "sections",
-              "title": "Sections",
-              "description": "Navigate the sections of the current page."
-            },
-            {
-              "const": "top",
-              "title": "Top",
-              "description": "Use pages in the top navigation and sections below them."
-            },
-            {
-              "const": "tree",
-              "title": "Tree",
-              "description": "Use a hierarchical site-wide navigation tree."
-            }
-          ],
-          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md)",
-          "examples": [
-            "automatic",
-            "sections",
-            "top",
-            "tree"
-          ]
+    "shape": {
+      "description": "Site-wide shape profile. Omit this to use the selected preset.",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "square",
+          "title": "Square",
+          "description": "Use square corners for navigation, cards and framed content."
+        },
+        {
+          "const": "soft",
+          "title": "Soft",
+          "description": "Use restrained rounded corners consistently across the site."
         }
-      },
-      "additionalProperties": false,
-      "description": "Site-wide navigation behavior. This may be set only in the root theme.",
-      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation model. Only the root theme may override this preset value.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md)"
+      ],
+      "markdownDescription": "```yaml\nshape: soft\n```\n\nChooses one consistent corner treatment for navigation, cards and framed content throughout the site.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md)",
+      "examples": [
+        "square",
+        "soft"
+      ]
     },
     "layout": {
       "type": "object",
       "properties": {
-        "density": {
-          "description": "Overall spacing density. Omit this to keep the selected preset.",
+        "contentSpacing": {
+          "description": "Page content spacing. Omit this to keep the selected preset or inherited page setting.",
           "type": "string",
           "oneOf": [
             {
               "const": "compact",
               "title": "Compact",
-              "description": "Reduce vertical spacing while preserving readable separation."
+              "description": "Use restrained spacing between sections and structured blocks."
             },
             {
               "const": "normal",
               "title": "Normal",
-              "description": "Use balanced vertical spacing."
+              "description": "Use balanced content spacing."
             },
             {
-              "const": "airy",
-              "title": "Airy",
-              "description": "Increase vertical spacing for a more expansive presentation."
+              "const": "spacious",
+              "title": "Spacious",
+              "description": "Use more expansive spacing between sections and structured blocks."
             }
           ],
-          "markdownDescription": "```yaml\nlayout:\n  density: compact\n```\n\nOverall spacing density. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
+          "markdownDescription": "```yaml\nlayout:\n  contentSpacing: compact\n```\n\nPage content spacing. Omit this to keep the selected preset or inherited page setting.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
+        },
+        "textWidth": {
+          "description": "Body-text line length. Omit this to keep the selected preset or inherited page setting.",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "narrow",
+              "title": "Narrow",
+              "description": "Use a shorter line length suited to reading-focused text."
+            },
+            {
+              "const": "normal",
+              "title": "Normal",
+              "description": "Use the balanced default line length."
+            },
+            {
+              "const": "wide",
+              "title": "Wide",
+              "description": "Allow body text to use more horizontal space."
+            }
+          ],
+          "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n```\n\nBody-text line length. Omit this to keep the selected preset or inherited page setting.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
         },
         "pageWidth": {
           "description": "Maximum width of the site layout. Omit this to keep the selected preset.",
@@ -427,7 +429,7 @@
       },
       "additionalProperties": false,
       "description": "Optional layout overrides applied after the preset.",
-      "markdownDescription": "```yaml\nlayout:\n  density: compact\n  pageWidth: 72rem\n```\n\nOverrides page width, gutters and structural spacing after the selected preset.\n\n[Layout reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
+      "markdownDescription": "```yaml\nlayout:\n  contentSpacing: compact\n  textWidth: narrow\n```\n\nOverrides text width, content spacing, page width and gutters after the selected preset.\n\n[Layout reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#layout)"
     },
     "images": {
       "type": "object",
@@ -1271,28 +1273,6 @@
                   "description": "Unitless line height between 1 and 3.",
                   "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
                 },
-                "width": {
-                  "description": "Maximum body-text line length.",
-                  "type": "string",
-                  "oneOf": [
-                    {
-                      "const": "narrow",
-                      "title": "Narrow",
-                      "description": "Use a shorter line length suited to reading-focused text."
-                    },
-                    {
-                      "const": "normal",
-                      "title": "Normal",
-                      "description": "Use the balanced default line length."
-                    },
-                    {
-                      "const": "wide",
-                      "title": "Wide",
-                      "description": "Allow body text to use more horizontal space."
-                    }
-                  ],
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      width: narrow\n```\n\nMaximum body-text line length.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
-                },
                 "paragraphSpacing": {
                   "description": "Vertical space between body paragraphs.",
                   "type": "string",
@@ -1301,7 +1281,7 @@
                 }
               },
               "additionalProperties": false,
-              "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      width: narrow\n```\n\nOverrides for body text.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
+              "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      lineHeight: 1.55\n```\n\nOverrides for body text.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)"
             },
             "caption": {
               "description": "Overrides for image captions.",
@@ -1415,7 +1395,7 @@
             }
           },
           "additionalProperties": false,
-          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      width: narrow\n```\n\nFocused typography overrides applied after the profile.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
+          "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n      lineHeight: 1.55\n```\n\nFocused typography overrides applied after the profile.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/typography.md#configuration-shape)",
           "defaultSnippets": [
             {
               "label": "Typography overrides",
@@ -1428,8 +1408,7 @@
                   }
                 },
                 "body": {
-                  "width": "${3:narrow}",
-                  "lineHeight": "${4:1.55}"
+                  "lineHeight": "${3:1.55}"
                 }
               }
             }
@@ -1467,51 +1446,44 @@
         "paper"
       ]
     },
-    "sectionSurfaces": {
-      "description": "Surface sequence cycled through page sections. Omit this to keep the selected preset.",
-      "minItems": 1,
-      "maxItems": 3,
-      "type": "array",
-      "items": {
-        "type": "string",
-        "description": "Semantic section surface from the active palette.",
-        "oneOf": [
-          {
-            "const": "base",
-            "title": "Base",
-            "description": "Use the palette's normal page surface."
-          },
-          {
-            "const": "soft",
-            "title": "Soft",
-            "description": "Use the palette's subtle contrasting surface."
-          },
-          {
-            "const": "emphasis",
-            "title": "Emphasis",
-            "description": "Use the palette's strongest section surface."
-          }
-        ]
+    "sections": {
+      "type": "object",
+      "properties": {
+        "backgroundPattern": {
+          "description": "Section background sequence. Omit this to keep the selected preset or inherited page setting.",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "uniform",
+              "title": "Uniform",
+              "description": "Use the palette base surface for every section."
+            },
+            {
+              "const": "alternating",
+              "title": "Alternating",
+              "description": "Alternate between the palette base and soft surfaces."
+            },
+            {
+              "const": "cycling",
+              "title": "Cycling",
+              "description": "Cycle through the palette base, soft and emphasis surfaces."
+            }
+          ],
+          "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nSection background sequence. Omit this to keep the selected preset or inherited page setting.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#palette-and-section-surfaces)",
+          "examples": [
+            "uniform",
+            "alternating",
+            "cycling"
+          ]
+        }
       },
-      "markdownDescription": "```yaml\nsectionSurfaces: [base, soft, emphasis]\n```\n\nLists one to three semantic surfaces. Norna cycles through them in section order; omit this field to keep the preset sequence.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#palette-and-section-surfaces)",
-      "examples": [
-        [
-          "base"
-        ],
-        [
-          "base",
-          "soft"
-        ],
-        [
-          "base",
-          "soft",
-          "emphasis"
-        ]
-      ]
+      "additionalProperties": false,
+      "description": "Defaults for page section presentation.",
+      "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nChooses whether section backgrounds stay uniform, alternate between two surfaces or cycle through three.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#palette-and-section-surfaces)"
     }
   },
   "additionalProperties": false,
-  "description": "Visual settings for a site or page. A page theme replaces the inherited visual theme; navigation logo settings remain site-wide.",
+  "description": "Site-wide visual identity and default page presentation. Presets may be selected only in the root theme.",
   "$id": "https://janga.github.io/norna/schemas/theme.schema.json",
   "title": "Norna visual theme",
   "markdownDescription": "```yaml\npreset: documentation\n```\n\nChoose one complete preset first. Add focused overrides only when the site needs to differ from it.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md)"

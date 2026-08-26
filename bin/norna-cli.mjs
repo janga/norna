@@ -16,7 +16,7 @@ Commands:
   dev:stop               Stop local dev server
   check                  Validate configuration and content
   config:check           Validate site/config.yaml
-  content:check          Validate site/content.md and image references
+  content:check          Validate page content and managed image references
   content:sync           Move misplaced Norna-managed images and refresh generated images
   theme:presets          List available theme presets and their intended uses
   theme:export           Export a commented theme preset reference

@@ -11,13 +11,15 @@ const isDateOnly = (value) => {
 
 const textAlign = z.enum(['left', 'center', 'right']).describe('Text alignment. Omit an override to keep the active typography profile.');
 const textSize = z.enum(['small', 'medium', 'large', 'xlarge']).describe('Text size from the active typography system. Omit an override to keep the profile value.');
-const textWidth = z.enum(['narrow', 'normal', 'wide']).describe('Maximum width of body text. Omit an override to keep the profile value.');
+const textWidth = z.enum(['narrow', 'normal', 'wide']).describe('Maximum width of body text. Omit this to keep the inherited page setting.');
 const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z.literal(700)]).describe('CSS font weight.');
 const typographyProfile = z.enum(['restrained', 'dense', 'reading', 'statement']).describe('Coordinated typography defaults. Omit this to use the selected preset.');
 const themePreset = z.enum(themePresetNames).describe('Complete Norna visual preset. Start here and add overrides only when needed.');
 const presentationPalette = z.enum(['dark', 'light', 'paper']).describe('Coordinated site color palette. Omit this to use the selected preset.');
-const sectionSurface = z.enum(['base', 'soft', 'emphasis']).describe('Semantic section surface from the active palette.');
 const spacingDensity = z.enum(['compact', 'normal', 'airy']).describe('Coordinated spacing density. Omit this to use the selected preset.');
+const contentSpacing = z.enum(['compact', 'normal', 'spacious']).describe('Vertical spacing between page sections and structured content blocks.');
+const backgroundPattern = z.enum(['uniform', 'alternating', 'cycling']).describe('How sections cycle through the active palette surfaces.');
+const shapeProfile = z.enum(['square', 'soft']).describe('Site-wide corner treatment for interface and content surfaces.');
 const navigationMode = z.enum(navigationModeNames).describe('Site-wide navigation model. Automatic selects from the site structure.');
 const lineHeight = z.number()
 	.min(1, 'Use a unitless line height of at least 1.')
@@ -73,7 +75,6 @@ const headingLevelsPresentationOverride = z.object({
 }).strict().describe('Heading overrides by Markdown level.');
 const bodyPresentationOverride = z.object({
 	...commonTextPresentationOverride,
-	width: textWidth.optional().describe('Maximum body-text line length.'),
 	paragraphSpacing: cssLength.optional().describe('Vertical space between body paragraphs.'),
 }).strict().describe('Focused overrides for body text.');
 const captionPresentationOverride = z.object({
@@ -121,23 +122,36 @@ const themeLayoutSpacing = z.object({
 	sectionGap: responsiveCssLength.optional().describe('Vertical separation between page sections.'),
 }).strict().describe('Fine-grained spacing overrides applied after layout density.');
 const themeLayout = z.object({
-	density: spacingDensity.optional().describe('Overall spacing density. Omit this to keep the selected preset.'),
+	contentSpacing: contentSpacing.optional().describe('Page content spacing. Omit this to keep the selected preset or inherited page setting.'),
+	textWidth: textWidth.optional().describe('Body-text line length. Omit this to keep the selected preset or inherited page setting.'),
 	pageWidth: visualCssLength.optional().describe('Maximum width of the site layout. Omit this to keep the selected preset.'),
 	gutter: responsiveCssLength.optional().describe('Horizontal page gutter as one value or separate desktop and mobile values.'),
 	spacing: themeLayoutSpacing.optional().describe('Fine-grained spacing overrides.'),
 }).strict().describe('Optional layout overrides applied after the preset.');
+const pageThemeLayout = z.object({
+	contentSpacing: contentSpacing.optional().describe('Page content spacing. Descendant pages inherit this value.'),
+	textWidth: textWidth.optional().describe('Body-text line length. Descendant pages inherit this value.'),
+}).strict().refine(
+	(value) => value.contentSpacing !== undefined || value.textWidth !== undefined,
+	'Specify contentSpacing, textWidth, or both.',
+).describe('Page-local layout settings inherited by descendant pages.');
 const themeImages = z.object({
 	width: visualCssLength.optional().describe('Maximum managed-image width. Omit this to keep the selected preset.'),
 	maxAvailableWidthPercent: responsivePercent.optional().describe('Maximum percentage of available horizontal space used by managed images.'),
 	maxAvailableHeightPercent: responsivePercent.optional().describe('Maximum percentage of viewport height used by managed images.'),
 }).strict().describe('Optional defaults for managed image presentation.');
-const themeNavigation = z.object({
-	mode: navigationMode.optional().describe('Navigation model. Omit this to keep the selected preset.'),
-}).strict().describe('Site-wide navigation behavior. This may be set only in the root theme.');
-const sectionSurfaces = z.array(sectionSurface).min(1).max(3).refine(
-	(value) => new Set(value).size === value.length,
-	'Each section surface may appear only once.',
-).describe('Surface sequence cycled across page sections.');
+const configNavigation = z.object({
+	mode: navigationMode.optional().describe('Navigation model. Omit this to let Norna choose from the site structure.'),
+}).strict().describe('Site-wide navigation behavior.');
+const themeSections = z.object({
+	backgroundPattern: backgroundPattern.optional().describe('Section background sequence. Omit this to keep the selected preset or inherited page setting.'),
+}).strict().describe('Defaults for page section presentation.');
+const pageThemeSections = z.object({
+	backgroundPattern: backgroundPattern.optional().describe('Section background sequence inherited by descendant pages.'),
+}).strict().refine(
+	(value) => value.backgroundPattern !== undefined,
+	'Specify backgroundPattern.',
+).describe('Page-local section presentation inherited by descendant pages.');
 const pageNavigation = z.object({
 	listed: z.boolean().optional().default(true).describe('List this page in site navigation. The page remains public when false.'),
 }).strict();
@@ -167,6 +181,7 @@ const sitewideFooter = z.object({
 const configShape = {
 	url: z.string().url().describe('Absolute public URL for the built site.'),
 	language: z.string().regex(/^(?:en|sv)(?:-[a-zA-Z0-9]+)*$/).optional().describe('Site language tag using Norna\'s English or Swedish interface text; the default is en.'),
+	navigation: configNavigation.optional(),
 	scrollBehavior: z.enum(['instant', 'smooth']).optional().default('instant').describe('Use instant anchors by default or the browser\'s native smooth scrolling.'),
 };
 
@@ -177,12 +192,18 @@ const siteShape = {
 
 const themeVisualShape = {
 	preset: themePreset.optional().describe('Complete visual starting point. Add only the overrides the site actually needs.'),
-	navigation: themeNavigation.optional(),
+	shape: shapeProfile.optional().describe('Site-wide shape profile. Omit this to use the selected preset.'),
 	layout: themeLayout.optional(),
 	images: themeImages.optional(),
 	typography: themeTypography.optional(),
 	palette: presentationPalette.optional(),
-	sectionSurfaces: sectionSurfaces.optional().describe('Surface sequence cycled through page sections. Omit this to keep the selected preset.'),
+	sections: themeSections.optional(),
+};
+
+const pageThemeShape = {
+	layout: pageThemeLayout.optional(),
+	images: themeImages.optional(),
+	sections: pageThemeSections.optional(),
 };
 
 const sitewideShape = {
@@ -196,6 +217,7 @@ export const schemaTopLevelKeys = Object.freeze({
 	content: Object.freeze(Object.keys(siteShape)),
 	sitewide: Object.freeze(Object.keys(sitewideShape)),
 	theme: Object.freeze(Object.keys(themeVisualShape)),
+	pageTheme: Object.freeze(Object.keys(pageThemeShape)),
 });
 
 export const configSchema = z.object(configShape).strict()
@@ -203,6 +225,12 @@ export const configSchema = z.object(configShape).strict()
 export const siteSchema = z.object(siteShape).strict()
 	.describe('Frontmatter for a homepage or additional page content.md file.');
 export const themeVisualSchema = z.object(themeVisualShape).strict()
-	.describe('Visual settings for a site or page. A page theme replaces the inherited visual theme; navigation logo settings remain site-wide.');
+	.describe('Site-wide visual identity and default page presentation. Presets may be selected only in the root theme.');
+export const pageThemeSchema = z.object(pageThemeShape).strict()
+	.refine(
+		(value) => value.layout !== undefined || value.images !== undefined || value.sections !== undefined,
+		'Specify layout, images, sections, or a combination of them.',
+	)
+	.describe('Limited page presentation overrides inherited by descendant pages. Site colors, shapes, typography and navigation remain global.');
 export const sitewideSchema = z.object(sitewideShape).strict()
 	.describe('Editorial content and optional navigation logo display settings shared by every page.');

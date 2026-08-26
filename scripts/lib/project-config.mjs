@@ -237,8 +237,8 @@ const siteUrl = readSiteUrl(rawConfig);
 const scrollBehaviorNames = ['instant', 'smooth'];
 
 const defaultFontFamily = "Arial, 'Helvetica Neue', Helvetica, sans-serif";
-const layoutDensityNames = ['compact', 'normal', 'airy'];
-const layoutDensityProfiles = Object.freeze({
+const contentSpacingNames = ['compact', 'normal', 'spacious'];
+const contentSpacingProfiles = Object.freeze({
 	compact: Object.freeze({
 		blockGap: Object.freeze({
 			desktop: '1.25em',
@@ -291,7 +291,7 @@ const layoutDensityProfiles = Object.freeze({
 			mobile: '1.5rem',
 		}),
 	}),
-	airy: Object.freeze({
+	spacious: Object.freeze({
 		blockGap: Object.freeze({
 			desktop: '1.75em',
 			mobile: '1.5em',
@@ -324,12 +324,19 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 	const rawLayoutSpacingConfig = assertObject(rawLayoutConfig.spacing ?? {}, 'layout.spacing', sourceLabel);
 	const rawImagesConfig = assertObject(rawThemeConfig.images ?? {}, 'images', sourceLabel);
 	const rawTypographyConfig = assertObject(rawThemeConfig.typography ?? {}, 'typography', sourceLabel);
-	const resolvedLayoutDensity = readEnum(rawLayoutConfig, 'density', 'layout', layoutDensityNames, 'normal', sourceLabel);
-	const resolvedLayoutSpacingDefaults = layoutDensityProfiles[resolvedLayoutDensity];
+	const resolvedContentSpacing = readEnum(rawLayoutConfig, 'contentSpacing', 'layout', contentSpacingNames, 'normal', sourceLabel);
+	const resolvedLayoutSpacingDefaults = contentSpacingProfiles[resolvedContentSpacing];
+	const shape = readEnum(rawThemeConfig, 'shape', 'theme', ['square', 'soft'], 'soft', sourceLabel);
 
 	return Object.freeze({
 		layout: Object.freeze({
-			density: resolvedLayoutDensity,
+			contentSpacing: resolvedContentSpacing,
+			textWidth: readEnum(rawLayoutConfig, 'textWidth', 'layout', ['narrow', 'normal', 'wide'], 'normal', sourceLabel),
+			localNavigationGap: readCssLengthValue(
+				rawLayoutConfig.localNavigationGap ?? 'clamp(1.5rem, 3vw, 3rem)',
+				'layout.localNavigationGap',
+				sourceLabel,
+			),
 			gutter: readResponsiveCssLength(rawLayoutConfig, 'gutter', 'layout', Object.freeze({
 				desktop: 'clamp(1.25rem, 4vw, 3rem)',
 				mobile: '1rem',
@@ -358,12 +365,17 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 		typography: Object.freeze({
 			fontFamily: readFontFamily(rawTypographyConfig, 'fontFamily', 'typography', defaultFontFamily, sourceLabel),
 		}),
+		shape: Object.freeze({
+			name: shape,
+			radiusSmall: shape === 'square' ? '0' : '2px',
+			radiusMedium: shape === 'square' ? '0' : '6px',
+			radiusLarge: shape === 'square' ? '0' : '8px',
+		}),
 	});
 };
 
-export const resolveThemeNavigationConfig = (theme, sourceLabel = siteThemeLabel) => {
-	const resolvedTheme = assertObject(resolveThemeConfig(theme, sourceLabel), 'theme YAML', sourceLabel);
-	const rawNavigation = assertObject(resolvedTheme.navigation ?? {}, 'navigation', sourceLabel);
+export const resolveNavigationConfig = (config, sourceLabel = siteConfigLabel) => {
+	const rawNavigation = assertObject(config.navigation ?? {}, 'navigation', sourceLabel);
 
 	return Object.freeze({
 		mode: readEnum(
@@ -384,7 +396,7 @@ export const projectConfig = Object.freeze({
 	}),
 	...resolveThemeVisualConfig(rawTheme, siteThemeLabel),
 	navigation: Object.freeze({
-		...resolveThemeNavigationConfig(rawTheme, siteThemeLabel),
+		...resolveNavigationConfig(rawConfig, siteConfigLabel),
 		scrollBehavior: readEnum(
 			rawConfig,
 			'scrollBehavior',

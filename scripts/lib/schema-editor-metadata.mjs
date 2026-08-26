@@ -151,6 +151,19 @@ const addConfigHelp = (jsonSchema) => {
 		'Sets the page language and selects Norna\'s built-in English or Swedish interface text. The default is `en`.',
 		documentationLink('Language reference', 'configuration.md', 'language'),
 	], ['en', 'sv', 'en-GB', 'sv-SE']);
+	addHelp(jsonSchema, 'navigation', [
+		yamlExample('navigation:\n  mode: automatic'),
+		'Sets one navigation model for the complete site. `automatic` selects from the page hierarchy.',
+		documentationLink('Navigation reference', 'pages.md', 'navigation'),
+	]);
+	addFieldHelp(
+		jsonSchema,
+		'navigation.mode',
+		'navigation:\n  mode: automatic',
+		'pages.md',
+		'navigation',
+		['automatic', 'sections', 'top', 'tree'],
+	);
 	addHelp(jsonSchema, 'scrollBehavior', [
 		yamlExample('scrollBehavior: smooth'),
 		'Controls same-page anchor movement. `instant` is the default; `smooth` uses the browser\'s native smooth scrolling.',
@@ -166,25 +179,17 @@ const addThemeHelp = (jsonSchema) => {
 	].join('\n\n');
 	addHelp(jsonSchema, 'preset', [
 		yamlExample('preset: documentation'),
-		'Selects coordinated navigation, layout, image sizing, typography, palette and section surfaces. This is the normal starting point for a theme.',
+		'Selects coordinated shapes, layout, image sizing, typography, palette and section backgrounds. This is the normal starting point for a theme.',
 		documentationLink('Compare theme presets', 'theme.md', 'theme-presets'),
 	]);
-	addHelp(jsonSchema, 'navigation', [
-		yamlExample('navigation:\n  mode: automatic'),
-		'Sets the site-wide navigation model. Only the root theme may override this preset value.',
+	addHelp(jsonSchema, 'shape', [
+		yamlExample('shape: soft'),
+		'Chooses one consistent corner treatment for navigation, cards and framed content throughout the site.',
 		documentationLink('Theme reference', 'theme.md'),
-	]);
-	addFieldHelp(
-		jsonSchema,
-		'navigation.mode',
-		'navigation:\n  mode: automatic',
-		'theme.md',
-		undefined,
-		['automatic', 'sections', 'top', 'tree'],
-	);
+	], ['square', 'soft']);
 	addHelp(jsonSchema, 'layout', [
-		yamlExample('layout:\n  density: compact\n  pageWidth: 72rem'),
-		'Overrides page width, gutters and structural spacing after the selected preset.',
+		yamlExample('layout:\n  contentSpacing: compact\n  textWidth: narrow'),
+		'Overrides text width, content spacing, page width and gutters after the selected preset.',
 		documentationLink('Layout reference', 'theme.md', 'layout'),
 	]);
 	addHelp(jsonSchema, 'images', [
@@ -202,14 +207,16 @@ const addThemeHelp = (jsonSchema) => {
 		'Chooses a coordinated color system for the page frame, navigation, footer and section surfaces.',
 		documentationLink('Palette and section surfaces', 'theme.md', 'palette-and-section-surfaces'),
 	], ['dark', 'light', 'paper']);
-	addHelp(jsonSchema, 'sectionSurfaces', [
-		yamlExample('sectionSurfaces: [base, soft, emphasis]'),
-		'Lists one to three semantic surfaces. Norna cycles through them in section order; omit this field to keep the preset sequence.',
+	addHelp(jsonSchema, 'sections', [
+		yamlExample('sections:\n  backgroundPattern: alternating'),
+		'Chooses whether section backgrounds stay uniform, alternate between two surfaces or cycle through three.',
 		documentationLink('Palette and section surfaces', 'theme.md', 'palette-and-section-surfaces'),
-	], [['base'], ['base', 'soft'], ['base', 'soft', 'emphasis']]);
+	]);
+	addFieldHelp(jsonSchema, 'sections.backgroundPattern', 'sections:\n  backgroundPattern: alternating', 'theme.md', 'palette-and-section-surfaces', ['uniform', 'alternating', 'cycling']);
 
 	const layoutFields = [
-		['layout.density', 'layout:\n  density: compact'],
+		['layout.contentSpacing', 'layout:\n  contentSpacing: compact'],
+		['layout.textWidth', 'layout:\n  textWidth: narrow'],
 		['layout.pageWidth', 'layout:\n  pageWidth: 72rem'],
 		['layout.gutter', 'layout:\n  gutter:\n    desktop: clamp(1.25rem, 4vw, 3rem)\n    mobile: 1rem'],
 		['layout.gutter.desktop', 'layout:\n  gutter:\n    desktop: clamp(1.25rem, 4vw, 3rem)'],
@@ -301,9 +308,9 @@ const addThemeHelp = (jsonSchema) => {
 		['typography.fontFamily', 'typography:\n  fontFamily: "Arial, sans-serif"'],
 		['typography.profile', 'typography:\n  profile: reading'],
 		['typography.rhythm', 'typography:\n  rhythm: normal'],
-		['typography.overrides', 'typography:\n  overrides:\n    body:\n      width: narrow'],
+		['typography.overrides', 'typography:\n  overrides:\n    body:\n      lineHeight: 1.55'],
 		['typography.overrides.headings', 'typography:\n  overrides:\n    headings:\n      h2:\n        size: medium'],
-		['typography.overrides.body', 'typography:\n  overrides:\n    body:\n      width: narrow'],
+		['typography.overrides.body', 'typography:\n  overrides:\n    body:\n      lineHeight: 1.55'],
 		['typography.overrides.caption', 'typography:\n  overrides:\n    caption:\n      size: small'],
 	];
 	for (const [propertyPath, example] of typographyFields) {
@@ -346,7 +353,6 @@ const addThemeHelp = (jsonSchema) => {
 		textOverrideHelp(propertyPath, `${prefix}\n      `, true);
 	}
 	textOverrideHelp('typography.overrides.body', 'typography:\n  overrides:\n    body:');
-	addFieldHelp(jsonSchema, 'typography.overrides.body.width', 'typography:\n  overrides:\n    body:\n      width: narrow', 'typography.md', 'configuration-shape');
 	addFieldHelp(jsonSchema, 'typography.overrides.body.paragraphSpacing', 'typography:\n  overrides:\n    body:\n      paragraphSpacing: 1em', 'typography.md', 'configuration-shape');
 	textOverrideHelp('typography.overrides.caption', 'typography:\n  overrides:\n    caption:');
 	addFieldHelp(jsonSchema, 'typography.overrides.caption.spacingBefore', 'typography:\n  overrides:\n    caption:\n      spacingBefore: 0.5em', 'typography.md', 'configuration-shape');
@@ -359,15 +365,52 @@ const addThemeHelp = (jsonSchema) => {
 					weight: '${2:600}',
 				},
 			},
-			body: {
-				width: '${3:narrow}',
-				lineHeight: '${4:1.55}',
+		body: {
+				lineHeight: '${3:1.55}',
 			},
 		},
 		description: 'Start a focused set of heading and body-text overrides.',
 		file: 'typography.md',
 		anchor: 'configuration-shape',
 	})]);
+};
+
+const addPageThemeHelp = (jsonSchema) => {
+	jsonSchema.markdownDescription = [
+		yamlExample('layout:\n  textWidth: narrow\n  contentSpacing: compact'),
+		'A page theme may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Site colors, shapes and typography stay consistent.',
+		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
+	].join('\n\n');
+	addHelp(jsonSchema, 'layout', [
+		yamlExample('layout:\n  textWidth: narrow\n  contentSpacing: compact'),
+		'Adjusts body-text line length and vertical content spacing for this page and its descendants.',
+		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
+	]);
+	addFieldHelp(jsonSchema, 'layout.textWidth', 'layout:\n  textWidth: narrow', 'theme.md', 'page-themes', ['narrow', 'normal', 'wide']);
+	addFieldHelp(jsonSchema, 'layout.contentSpacing', 'layout:\n  contentSpacing: compact', 'theme.md', 'page-themes', ['compact', 'normal', 'spacious']);
+	addHelp(jsonSchema, 'images', [
+		yamlExample('images:\n  width: 900px'),
+		'Adjusts managed-image sizing for this page and its descendants.',
+		documentationLink('Image sizing reference', 'theme.md', 'image-sizing'),
+	]);
+	const imageFields = [
+		['images.width', 'images:\n  width: 900px'],
+		['images.maxAvailableWidthPercent', 'images:\n  maxAvailableWidthPercent:\n    desktop: 100\n    mobile: 100'],
+		['images.maxAvailableWidthPercent.desktop', 'images:\n  maxAvailableWidthPercent:\n    desktop: 100'],
+		['images.maxAvailableWidthPercent.mobile', 'images:\n  maxAvailableWidthPercent:\n    mobile: 100'],
+		['images.maxAvailableHeightPercent', 'images:\n  maxAvailableHeightPercent:\n    desktop: 74\n    mobile: 68'],
+		['images.maxAvailableHeightPercent.desktop', 'images:\n  maxAvailableHeightPercent:\n    desktop: 74'],
+		['images.maxAvailableHeightPercent.mobile', 'images:\n  maxAvailableHeightPercent:\n    mobile: 68'],
+	];
+	for (const [propertyPath, example] of imageFields) {
+		addFieldHelp(jsonSchema, propertyPath, example, 'theme.md', 'image-sizing');
+	}
+	addHelp(jsonSchema, 'sections', [
+		yamlExample('sections:\n  backgroundPattern: alternating'),
+		'Adjusts the section background sequence for this page and its descendants.',
+		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
+	]);
+	addFieldHelp(jsonSchema, 'sections.backgroundPattern', 'sections:\n  backgroundPattern: alternating', 'theme.md', 'page-themes', ['uniform', 'alternating', 'cycling']);
 };
 
 const addSitewideHelp = (jsonSchema) => {
@@ -469,6 +512,7 @@ export const applySchemaEditorMetadata = (filename, jsonSchema) => {
 		addConfigHelp(jsonSchema);
 	}
 	if (filename === 'theme.schema.json') addThemeHelp(jsonSchema);
+	if (filename === 'page-theme.schema.json') addPageThemeHelp(jsonSchema);
 	if (filename === 'sitewide-content.schema.json') addSitewideHelp(jsonSchema);
 	if (filename === 'content-frontmatter.schema.json') addContentHelp(jsonSchema);
 	return jsonSchema;

@@ -26,7 +26,7 @@ information architecture.
 
 ## Order Of Work
 
-### 1. Stabilize The Page Tree
+### 1. Stabilize The Page Tree - Complete
 
 Finish and test nested page discovery independently of final navigation
 presentation. Establish deterministic rules for:
@@ -39,30 +39,79 @@ presentation. Establish deterministic rules for:
 
 Commit this foundation separately before broad theme or preset changes.
 
-### 2. Define The Navigation Contract
+The page tree now supports nested pages with deterministic directory parsing,
+URLs, ordering, ancestry, breadcrumbs, inherited page resources, and collision
+diagnostics.
 
-The intended information architecture is:
+The current breaking page-container proof of concept removes the special root
+page. Every page now uses the same physical model:
+
+```text
+site/pages/NNN-page-id/
+  content.md
+  theme.yaml       # optional page-local presentation
+  images/          # optional managed page images
+  pages/           # optional child pages
+```
+
+`site/pages/000-home/content.md` is required and maps to `/`. The `000` prefix
+is reserved for this page. Other top-level page directories are its siblings,
+not its children. The homepage cannot contain a `pages/` hierarchy; place each
+top-level area beside `000-home` and nest further pages below that area.
+
+The root `site/` directory now contains only site-wide files and the page
+container. The previous `site/content.md` and `site/images/` locations produce
+a migration error instead of being interpreted as a second page model.
+
+### 2. Define The Navigation Contract - Complete
+
+The accepted information architecture is:
 
 - a small global navigation for the site's top-level areas;
 - a larger local page tree for the selected area;
-- a separate `On this page` list for headings on the current page;
 - breadcrumbs for location and ancestry;
-- one unified mobile navigation containing the whole page hierarchy, with the
-  current branch expanded and current page marked.
+- headings for the current page integrated below that page in the local tree;
+- one unified mobile navigation containing the whole page hierarchy and the
+  current page headings.
 
-The exact contract is potentially difficult to evaluate at an abstract level.
-The maintainer therefore expects this phase to use executable test sites,
-focused automated tests, or clear illustrative examples. These artifacts
-should demonstrate short single-page sites, ordinary two-level sites, and
-deeper documentation-style hierarchies on both desktop and mobile before the
-contract is considered stable.
+Navigation modes follow the site structure:
+
+- a single-page site uses section navigation;
+- an ordinary shallow multi-page site uses top navigation;
+- a deeper documentation-style hierarchy uses tree navigation.
+
+The tree contract is:
+
+- top-level areas remain available in the sticky global navigation;
+- the selected top-level area supplies the desktop local tree;
+- breadcrumbs show page ancestry without changing the vertical position of
+  the page heading;
+- a closed expandable page title expands the node without navigating;
+- an open expandable page title links to that page, while its chevron can
+  collapse the node;
+- a page without headings or child pages is always a direct link;
+- headings on the current page appear under its page node rather than in a
+  separate `On this page` region;
+- opening one branch does not implicitly close another branch;
+- long desktop trees scroll independently of short page content;
+- mobile uses one drawer for the complete hierarchy instead of requiring a
+  separate page-selection and section-selection sequence.
+
+Real links and native disclosure elements provide the fallback. JavaScript
+preserves explicitly opened branches, restores navigation scroll position,
+enhances focus handling, and keeps measured sticky offsets stable. Without
+JavaScript, navigation remains usable but manually opened branches are not
+preserved across page loads.
 
 The contract should also define the fallback and override behavior for the
 supported navigation modes. Structural behavior belongs to site-level engine
 configuration or deterministic automatic selection, not to presentation
 presets.
 
-### 3. Implement Navigation In Layers
+The contract was evaluated with the nested-pages fixture and focused desktop,
+mobile, no-JavaScript, spatial-stability, and long-navigation tests.
+
+### 3. Implement Navigation In Layers - Complete
 
 Implement and verify the navigation model in this order:
 
@@ -72,10 +121,10 @@ Implement and verify the navigation model in this order:
 4. keyboard, focus, current-page, and progressive-enhancement behavior;
 5. visual evaluation at representative viewport sizes.
 
-Keep real links as the foundation. Client-side JavaScript should only enhance
-interaction that cannot be expressed adequately with HTML and CSS.
+Real links remain the foundation. Client-side JavaScript is limited to
+interaction and state that cannot be retained adequately with HTML and CSS.
 
-### 4. Refine Theme And Preset Responsibilities
+### 4. Refine Theme And Preset Responsibilities - Proof Of Concept
 
 Presets should control visual presentation, including:
 
@@ -94,6 +143,27 @@ consistent. Page-local theme variation should be limited to properties such as
 content width, density, and media presentation when variation does not weaken
 site identity or navigation clarity.
 
+The proof-of-concept contract is:
+
+- `config.yaml` owns the site-wide navigation mode;
+- the root `theme.yaml` owns presets, palette, shape, typography, the page
+  frame, global spacing primitives, and default page presentation;
+- a page-local `theme.yaml` may set only `layout.textWidth`,
+  `layout.contentSpacing`, managed-image sizing, and
+  `sections.backgroundPattern`;
+- page-local values are inherited by descendant pages and merged field by
+  field, while global visual identity is never replaced;
+- `layout.contentSpacing` replaces the ambiguous `layout.density` name;
+- `sections.backgroundPattern` replaces the low-level `sectionSurfaces` list
+  with `uniform`, `alternating`, and `cycling` choices;
+- custom presets and custom font definitions are deferred until the built-in
+  contract has been tested in real sites.
+
+The nested-pages fixture is the current proof of concept. The engine-owned
+basic init starter follows the new page contract so newly created sites remain
+valid. Documentation, other starters, and broad examples should be migrated
+only after manual approval.
+
 ### 5. Migrate After Evaluation
 
 After the page tree, navigation contract, and preset boundaries have been
@@ -111,5 +181,6 @@ separate commits where practical.
 
 ## Immediate Checkpoint
 
-The current nested-page implementation should be reviewed, tested, and secured
-before work continues on the final navigation contract or preset model.
+The nested navigation contract has been evaluated and committed. The unified
+page-container and theme-scope proof of concepts are now ready for manual
+evaluation against the nested-pages fixture before broad migration begins.

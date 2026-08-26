@@ -28,7 +28,7 @@ test.describe('desktop tree navigation', () => {
 		await expect(currentPageDisclosure.getByRole('link', { name: 'macOS', exact: true })).toHaveAttribute('aria-current', 'page');
 		await expect(localNavigation.getByRole('link', { name: 'Reference', exact: true })).toHaveCount(0);
 
-		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Nested pages', 'Guides', 'Installation', 'macOS']);
+		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Guides', 'Installation', 'macOS']);
 		const currentPageNode = localNavigation.locator('.navigation-page-node-current');
 		const pageContents = currentPageNode.locator('.navigation-page-sections');
 		await expect(pageContents).toBeVisible();
@@ -77,7 +77,8 @@ test.describe('desktop tree navigation', () => {
 
 	test('keeps the breadcrumb slot stable from a top-level page to a child page', async ({ page }) => {
 		await page.goto('/guides/', { waitUntil: 'networkidle' });
-		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Nested pages', 'Guides']);
+		await expect(page.locator('.site-breadcrumbs')).toHaveCount(1);
+		await expect(page.locator('.site-breadcrumbs li')).toHaveCount(0);
 		const headingTopBefore = (await page.getByRole('heading', { level: 1, name: 'Guides' }).boundingBox())?.y;
 		const installationBranch = page.locator('.tree-local-navigation details[data-page-path="guides/installation"]');
 		await installationBranch.locator(':scope > summary').click();
@@ -85,11 +86,34 @@ test.describe('desktop tree navigation', () => {
 		await installationBranch.getByRole('link', { name: 'Installation', exact: true }).click();
 
 		await expect(page).toHaveURL(/\/guides\/installation\/$/);
-		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Nested pages', 'Guides', 'Installation']);
+		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Guides', 'Installation']);
 		const headingTopAfter = (await page.getByRole('heading', { level: 1, name: 'Installation' }).boundingBox())?.y;
 		expect(headingTopBefore).toBeDefined();
 		expect(headingTopAfter).toBeDefined();
 		expect(Math.abs((headingTopAfter ?? 0) - (headingTopBefore ?? 0))).toBeLessThan(2);
+	});
+
+	test('aligns breadcrumbs with the current page text width', async ({ page }) => {
+		await page.goto('/guides/workflows/#local-work', { waitUntil: 'networkidle' });
+		const breadcrumbBox = await page.locator('.site-breadcrumbs').boundingBox();
+		const paragraphBox = await page.locator('.site-section:has(#local-work) .section-markdown p').first().boundingBox();
+
+		expect(breadcrumbBox).not.toBeNull();
+		expect(paragraphBox).not.toBeNull();
+		expect(Math.abs((breadcrumbBox?.x ?? 0) - (paragraphBox?.x ?? 0))).toBeLessThan(2);
+	});
+
+	test('keeps section surfaces clear of the local navigation', async ({ page }) => {
+		await page.goto('/guides/installation/#examples', { waitUntil: 'networkidle' });
+		const localNavigationBox = await page.locator('.tree-local-navigation').boundingBox();
+		const section = page.locator('.site-section:has(#examples)');
+		const sectionBox = await section.boundingBox();
+		const surfaceLeft = await section.evaluate((element) => getComputedStyle(element, '::before').left);
+
+		expect(localNavigationBox).not.toBeNull();
+		expect(sectionBox).not.toBeNull();
+		expect((sectionBox?.x ?? 0) - ((localNavigationBox?.x ?? 0) + (localNavigationBox?.width ?? 0))).toBeGreaterThan(16);
+		expect(surfaceLeft).toBe('0px');
 	});
 
 	test('keeps the local navigation stable when the destination has no page sections', async ({ page }) => {

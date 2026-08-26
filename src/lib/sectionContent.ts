@@ -246,11 +246,7 @@ const applyH3HeadingIds = (
 	return result;
 };
 
-const getImageSourceKey = (page: SitePage, image: string) => (
-	page.pageDirectory
-		? `pages/${page.pageDirectory}/images/${image}`
-		: `images/${image}`
-);
+const getImageSourceKey = (page: SitePage, image: string) => `pages/${page.pageDirectory}/images/${image}`;
 
 const renderInlineNoteMarkdown = async (markdown: string) => {
 	const result = await markdownToHtml(markdown, {

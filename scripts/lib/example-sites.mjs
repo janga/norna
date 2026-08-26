@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { homePageDirectory } from './site-conventions.mjs';
 
 export const exampleCategories = ['complete-sites', 'feature-demos'];
 
@@ -16,8 +17,8 @@ export const getExampleSites = async (root) => {
 			if (!existsSync(path.join(siteDirectory, 'config.yaml'))) {
 				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing config.yaml.`);
 			}
-			if (!existsSync(path.join(siteDirectory, 'content.md'))) {
-				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing content.md.`);
+			if (!existsSync(path.join(siteDirectory, 'pages', homePageDirectory, 'content.md'))) {
+				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing pages/${homePageDirectory}/content.md.`);
 			}
 
 			examples.push({

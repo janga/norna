@@ -18,7 +18,7 @@ import {
 
 const root = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-language-'));
 const siteRoot = path.join(root, 'site');
-const homeContentPath = path.join(siteRoot, 'content.md');
+const homeContentPath = path.join(siteRoot, 'pages', '000-home', 'content.md');
 const pageContentPath = path.join(siteRoot, 'pages', '010-about', 'content.md');
 const pageThemePath = path.join(siteRoot, 'pages', '010-about', 'theme.yaml');
 const nestedPageContentPath = path.join(siteRoot, 'pages', '010-about', 'pages', '020-team', 'content.md');
@@ -63,7 +63,7 @@ Page content.
 
 try {
 	await mkdir(path.join(installedNornaRoot, 'schemas'), { recursive: true });
-	await mkdir(path.join(siteRoot, 'images'), { recursive: true });
+	await mkdir(path.join(siteRoot, 'pages', '000-home', 'images'), { recursive: true });
 	await mkdir(path.join(siteRoot, 'pages', '010-about', 'images'), { recursive: true });
 	await mkdir(path.dirname(nestedPageContentPath), { recursive: true });
 	await mkdir(path.join(siteRoot, 'public'), { recursive: true });
@@ -74,6 +74,7 @@ try {
 		files: {
 			config: 'config.schema.json',
 			contentFrontmatter: 'content-frontmatter.schema.json',
+			pageTheme: 'page-theme.schema.json',
 			sitewideContent: 'sitewide-content.schema.json',
 			theme: 'theme.schema.json',
 		},
@@ -84,7 +85,7 @@ try {
 	await writeFile(path.join(siteRoot, 'sitewide-content.yaml'), `logo:
   height: 2rem
 `);
-	await writeFile(path.join(siteRoot, 'images', 'local.jpg'), 'local');
+	await writeFile(path.join(siteRoot, 'pages', '000-home', 'images', 'local.jpg'), 'local');
 	await writeFile(path.join(siteRoot, 'pages', '010-about', 'images', 'portrait.jpg'), 'portrait');
 	await writeFile(path.join(siteRoot, 'public', 'logo.svg'), '<svg/>');
 	await writeFile(path.join(siteRoot, 'public', 'logo.png'), 'logo');
@@ -94,21 +95,22 @@ try {
 	await writeFile(path.join(siteRoot, 'public', 'favicon-32x32.png'), 'unrecognized');
 	await writeFile(homeContentPath, homeSource);
 	await writeFile(pageContentPath, pageSource);
-	await writeFile(pageThemePath, 'preset: portfolio\n');
+	await writeFile(pageThemePath, 'layout:\n  textWidth: wide\n');
 	await writeFile(nestedPageContentPath, pageSource.replace('# About', '# Team'));
-	await writeFile(nestedPageThemePath, 'preset: documentation\n');
+	await writeFile(nestedPageThemePath, 'layout:\n  contentSpacing: compact\n');
 
 	assert.equal(await findNornaSiteRoot(homeContentPath), siteRoot);
 	assert.equal(getNornaDocumentContext(homeContentPath).schemaKind, 'contentFrontmatter');
+	assert.equal(getNornaDocumentContext(homeContentPath).pageDirectory, '000-home');
 	assert.equal(getNornaDocumentContext(homeContentPath).nornaPackage.root, installedNornaRoot);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'config.yaml')).schemaKind, 'config');
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).schemaKind, 'theme');
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'sitewide-content.yaml')).schemaKind, 'sitewideContent');
 	assert.equal(getNornaDocumentContext(pageContentPath).pageDirectory, '010-about');
-	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'theme');
+	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'pageTheme');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).pageDirectory, '010-about/pages/020-team');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).schemaKind, 'contentFrontmatter');
-	assert.equal(getNornaDocumentContext(nestedPageThemePath).schemaKind, 'theme');
+	assert.equal(getNornaDocumentContext(nestedPageThemePath).schemaKind, 'pageTheme');
 	assert.equal(getNornaProjectContext(path.join(siteRoot, 'public', 'logo.svg')).siteRoot, siteRoot);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'public', 'logo.svg')), null);
 	assert.equal(getNornaDocumentContext(path.join(root, 'README.md')), null);
@@ -116,6 +118,7 @@ try {
 	await mkdir(path.join(siteRoot, 'pages', 'about'), { recursive: true });
 	await writeFile(path.join(siteRoot, 'pages', 'about', 'content.md'), pageSource);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', 'about', 'content.md')), null);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', '000-home', 'pages', '010-news', 'content.md')), null);
 	await mkdir(path.join(siteRoot, 'pages', '010-about', 'nested'), { recursive: true });
 	await writeFile(path.join(siteRoot, 'pages', '010-about', 'nested', 'content.md'), pageSource);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', '010-about', 'nested', 'content.md')), null);
@@ -244,7 +247,7 @@ try {
 		line: localDefinitionLine,
 		source: homeSource,
 	});
-	assert.deepEqual(localDefinition.files, [path.join(siteRoot, 'images', 'local.jpg')]);
+	assert.deepEqual(localDefinition.files, [path.join(siteRoot, 'pages', '000-home', 'images', 'local.jpg')]);
 
 	const diagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(diagnostics.some(({ code, message }) => code === 'image-needs-sync' && message.includes('Run "norna content:sync"')));

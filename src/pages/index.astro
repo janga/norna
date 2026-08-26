@@ -2,9 +2,10 @@
 import { getCollection } from 'astro:content';
 import SitePage from '../components/SitePage.astro';
 import { isHomePageEntry } from '../lib/sitePages';
+import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
 
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
-const siteContentLabel = `${siteDirectory || 'site'}/content.md`;
+const siteContentLabel = `${siteDirectory || 'site'}/pages/${homePageDirectory}/content.md`;
 const entries = await getCollection('site');
 const site = entries.find(isHomePageEntry);
 

@@ -1,5 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { decodePageDirectoryPath, parsePageDirectoryPath } from '../../scripts/lib/page-model.mjs';
+import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
 
@@ -14,7 +15,7 @@ export type SitePage = {
 	pageDirectories: string[];
 	pathSegment: string;
 	pathname: string;
-	pageDirectory: string | null;
+	pageDirectory: string;
 	pageId: string;
 	pageIds: string[];
 	pageOrders: number[];
@@ -37,13 +38,17 @@ const stripPageIdPrefix = (id: string) => {
 	}
 };
 
-export const isHomePageEntry = (entry: SiteEntry) => stripPageIdPrefix(entry.id) === null;
+export const isHomePageEntry = (entry: SiteEntry) => stripPageIdPrefix(entry.id) === homePageDirectory;
 
-const getPageDirectory = (entry: SiteEntry) => isHomePageEntry(entry) ? null : stripPageIdPrefix(entry.id);
+const getPageDirectory = (entry: SiteEntry) => {
+	const pageDirectory = stripPageIdPrefix(entry.id);
+	if (!pageDirectory) throw new Error(`Page entry "${entry.id}" has no valid page directory.`);
+	return pageDirectory;
+};
 
 const getPageMetadata = (entry: SiteEntry) => {
 	const pageDirectory = getPageDirectory(entry);
-	return pageDirectory ? parsePageDirectoryPath(pageDirectory, `page directory ${pageDirectory}`) : null;
+	return parsePageDirectoryPath(pageDirectory, `page directory ${pageDirectory}`);
 };
 
 const getPagePathname = (pathSegment: string) => pathSegment ? `/${pathSegment}/` : '/';
@@ -78,29 +83,29 @@ const getPageTitle = (entry: SiteEntry) => {
 export const getSitePage = (entry: SiteEntry): SitePage => {
 	const isHome = isHomePageEntry(entry);
 	const pageMetadata = getPageMetadata(entry);
-	const pageDirectory = pageMetadata?.pageDirectory ?? null;
-	const pageId = pageMetadata?.pageId ?? '';
-	const pagePath = pageMetadata?.pagePath ?? '';
+	const pageDirectory = pageMetadata.pageDirectory;
+	const pageId = pageMetadata.pageId;
+	const pagePath = pageMetadata.pagePath;
 	const pathSegment = isHome ? '' : pagePath;
 	const navigation = entry.data.navigation ?? {};
 
 	return {
 		entry,
 		isHome,
-		depth: pageMetadata?.depth ?? 0,
+		depth: pageMetadata.depth,
 		navigation: {
 		listed: navigation.listed ?? true,
-			order: isHome ? 0 : pageMetadata?.pageOrder ?? 100,
+			order: isHome ? 0 : pageMetadata.pageOrder,
 		},
 		pathSegment,
 		pathname: getPagePathname(pathSegment),
 		pageDirectory,
-		pageDirectories: pageMetadata?.pageDirectories ?? [],
+		pageDirectories: pageMetadata.pageDirectories,
 		pageId,
-		pageIds: pageMetadata?.pageIds ?? [],
-		pageOrders: pageMetadata?.pageOrders ?? [],
+		pageIds: pageMetadata.pageIds,
+		pageOrders: pageMetadata.pageOrders,
 		pagePath,
-		parentPagePath: pageMetadata?.parentPagePath ?? null,
+		parentPagePath: isHome ? null : pageMetadata.parentPagePath,
 		title: getPageTitle(entry),
 	};
 };
@@ -112,6 +117,9 @@ export const getSitePages = (entries: SiteEntry[]) => {
 	const siblingPageOrders = new Map<string, SitePage>();
 
 	for (const page of pages) {
+		if (page.isHome && page.navigation.listed === false) {
+			throw new Error(`${homePageDirectory} is the required homepage and cannot set navigation.listed to false.`);
+		}
 		const existing = pathnames.get(page.pathname);
 		if (existing) {
 			throw new Error(`Duplicate page path "${page.pathname}" from "${existing.entry.id}" and "${page.entry.id}".`);
@@ -121,7 +129,7 @@ export const getSitePages = (entries: SiteEntry[]) => {
 
 		if (page.isHome) continue;
 
-		const siblingScope = page.parentPagePath ?? '';
+		const siblingScope = page.pageDirectories.slice(0, -1).join('/pages/');
 		const pageIdKey = `${siblingScope}\0${page.pageId}`;
 		const existingPageId = siblingPageIds.get(pageIdKey);
 		if (existingPageId) {
@@ -137,6 +145,9 @@ export const getSitePages = (entries: SiteEntry[]) => {
 		}
 
 		siblingPageOrders.set(pageOrderKey, page);
+	}
+	if (!pages.some(({ isHome }) => isHome)) {
+		throw new Error(`Homepage page entry ${homePageDirectory} is missing.`);
 	}
 
 	return pages.sort((left, right) => (

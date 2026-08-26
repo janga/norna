@@ -12,6 +12,7 @@ import {
 } from './site-paths.mjs';
 import { resolveThemePresentation } from './presentation.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
+import { pageThemeSchema, themeVisualSchema } from './schema-definitions.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
 
 export const readThemeConfig = async () => {
@@ -23,6 +24,7 @@ export const readThemeConfig = async () => {
 		throw error;
 	});
 	const config = parseYamlConfig(themeFile, siteThemeLabel, {
+		schema: themeVisualSchema,
 		validateStructure: validateThemeYamlStructure,
 	});
 	resolveThemeConfig(config, siteThemeLabel);
@@ -64,10 +66,9 @@ export const validatePageThemeFiles = async () => {
 	for (const file of files) {
 		const source = await readFile(file.path, 'utf8');
 		const config = parseYamlConfig(source, file.label, {
+			schema: pageThemeSchema,
 			validateStructure: validatePageThemeYamlStructure,
 		});
-		resolveThemeConfig(config, file.label);
-		resolveThemePresentation(config, file.label);
 
 		configs.push({ ...file, config });
 	}

@@ -10,18 +10,21 @@ const expectedDocumentationRef = `v${packageJson.version}`;
 const filenames = [
 	'config.schema.json',
 	'theme.schema.json',
+	'page-theme.schema.json',
 	'sitewide-content.schema.json',
 	'content-frontmatter.schema.json',
 ];
 const requiredRichHelp = {
-	'config.schema.json': ['url', 'language', 'scrollBehavior'],
-	'theme.schema.json': ['preset', 'navigation', 'layout', 'images', 'typography', 'palette', 'sectionSurfaces'],
+	'config.schema.json': ['url', 'language', 'navigation', 'scrollBehavior'],
+	'theme.schema.json': ['preset', 'shape', 'layout', 'images', 'typography', 'palette', 'sections'],
+	'page-theme.schema.json': ['layout', 'images', 'sections'],
 	'sitewide-content.schema.json': ['logo', 'banners', 'footer'],
 	'content-frontmatter.schema.json': ['page', 'navigation'],
 };
 const manifest = JSON.parse(await readFile(path.join(root, 'schemas', 'manifest.json'), 'utf8'));
 assert.equal(manifest.editorApiVersion, 1);
-assert.equal(manifest.schemaVersion, 1);
+assert.equal(manifest.schemaVersion, 2);
+assert.equal(manifest.files.pageTheme, 'page-theme.schema.json');
 
 const githubHeadingAnchor = (heading) => heading
 	.toLowerCase()
@@ -143,6 +146,18 @@ assert.equal(
 	theme.properties.images.properties.maxAvailableWidthPercent.defaultSnippets[0].label,
 	'Responsive image limit',
 );
+assert.equal(theme.properties.navigation, undefined);
+assert.equal(theme.properties.layout.properties.density, undefined);
+assert.ok(theme.properties.layout.properties.contentSpacing);
+assert.ok(theme.properties.layout.properties.textWidth);
+assert.ok(theme.properties.sections.properties.backgroundPattern);
+
+const pageTheme = JSON.parse(await readFile(path.join(root, 'schemas', 'page-theme.schema.json'), 'utf8'));
+assert.deepEqual(Object.keys(pageTheme.properties), ['layout', 'images', 'sections']);
+assert.deepEqual(Object.keys(pageTheme.properties.layout.properties), ['contentSpacing', 'textWidth']);
+assert.equal(pageTheme.properties.preset, undefined);
+assert.equal(pageTheme.properties.palette, undefined);
+assert.equal(pageTheme.properties.typography, undefined);
 
 const content = JSON.parse(await readFile(path.join(root, 'schemas', 'content-frontmatter.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(content.properties), ['page', 'navigation']);

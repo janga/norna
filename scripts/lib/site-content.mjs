@@ -2,10 +2,9 @@ import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
 	siteContentLabel,
-	siteContentPath,
 	siteDir,
 	siteDirLabel,
-	siteImagesDir,
+	homePageDirectory,
 	siteImagesLabel,
 	sitePagesDir,
 	sitePagesLabel,
@@ -25,7 +24,7 @@ const knownConfigTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.config);
 const knownContentTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.content);
 const knownThemeTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.theme);
 const knownPageThemeTopLevelFrontmatterKeys = new Set(
-	[...knownThemeTopLevelFrontmatterKeys].filter((key) => key !== 'navigation'),
+	schemaTopLevelKeys.pageTheme,
 );
 const knownSitewideTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.sitewide);
 const knownNestedFrontmatterKeys = new Set([
@@ -35,7 +34,7 @@ const knownNestedFrontmatterKeys = new Set([
 	'blockGap',
 	'caption',
 	'carousel',
-	'density',
+	'contentSpacing',
 	'desktop',
 	'fontFamily',
 	'from',
@@ -67,11 +66,14 @@ const knownNestedFrontmatterKeys = new Set([
 	'profile',
 	'rhythm',
 	'sectionGap',
-	'sectionSurfaces',
+	'backgroundPattern',
+	'sections',
+	'shape',
 	'size',
 	'spacingAfter',
 	'spacingBefore',
 	'theme',
+	'textWidth',
 	'typography',
 	'until',
 	'visible',
@@ -83,6 +85,18 @@ export const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 const fileExists = async (filePath) => access(filePath).then(() => true, () => false);
 
 export const getContentFiles = async () => {
+	const legacyContentPath = path.join(siteDir, 'content.md');
+	const legacyImagesPath = path.join(siteDir, 'images');
+	const legacyPaths = [];
+	if (await fileExists(legacyContentPath)) legacyPaths.push(`${siteDirLabel}/content.md`);
+	if (await fileExists(legacyImagesPath)) legacyPaths.push(`${siteDirLabel}/images`);
+	if (legacyPaths.length > 0) {
+		throw new Error([
+			`The old root-page structure is no longer supported: ${legacyPaths.join(', ')}.`,
+			`Move the homepage content to ${sitePagesLabel}/${homePageDirectory}/content.md and its images to ${sitePagesLabel}/${homePageDirectory}/images/.`,
+		].join('\n'));
+	}
+
 	const legacyRoutesDir = path.join(siteDir, 'routes');
 	const legacyRoutes = await readdir(legacyRoutesDir).catch((error) => {
 		if (error?.code === 'ENOENT') return null;
@@ -92,22 +106,7 @@ export const getContentFiles = async () => {
 		throw new Error(`${siteDirLabel}/routes is no longer supported. Rename it to ${sitePagesLabel} and use NNN-page-id directory names.`);
 	}
 
-	const contentFiles = [{
-		contentLabel: siteContentLabel,
-		contentPath: siteContentPath,
-		imagesDir: siteImagesDir,
-		imagesLabel: siteImagesLabel,
-		isHome: true,
-		pageDirectory: null,
-		pageDirectories: [],
-		pageId: null,
-		pageIds: [],
-		pageOrder: 0,
-		pageOrders: [],
-		pagePath: '',
-		parentPagePath: null,
-		depth: 0,
-	}];
+	const contentFiles = [];
 	const collectPageContentFiles = async (pagesDir, pagesLabel, parentPageDirectory = '') => {
 		const pageEntries = await readdir(pagesDir, { withFileTypes: true }).catch((error) => {
 		if (error?.code === 'ENOENT') {
@@ -138,15 +137,35 @@ export const getContentFiles = async () => {
 				continue;
 			}
 			const pageMetadata = parsePageDirectoryPath(pageDirectory, pageLabel);
+			const isHome = pageDirectory === homePageDirectory;
 
 			contentFiles.push({
 				contentLabel: `${pageLabel}/content.md`,
 				contentPath: pageContentPath,
 				imagesDir: path.join(pageDir, 'images'),
 				imagesLabel: `${pageLabel}/images`,
-				isHome: false,
+				isHome,
 				...pageMetadata,
+				pagePath: isHome ? '' : pageMetadata.pagePath,
+				parentPagePath: isHome ? null : pageMetadata.parentPagePath,
 			});
+
+			if (isHome) {
+				const homePagesDir = path.join(pageDir, 'pages');
+				const homeChildEntries = await readdir(homePagesDir, { withFileTypes: true }).catch((error) => {
+					if (error?.code === 'ENOENT') return [];
+					throw error;
+				});
+				const homeChildDirectories = homeChildEntries.filter((childEntry) => childEntry.isDirectory());
+				if (homeChildDirectories.length > 0) {
+					throw new Error([
+						`${pageLabel} is the homepage and cannot contain child pages.`,
+						`Move these page directories beside ${homePageDirectory} under ${sitePagesLabel}/, or below another non-home page:`,
+						...homeChildDirectories.map(({ name }) => `- ${pageLabel}/pages/${name}`),
+					].join('\n'));
+				}
+				continue;
+			}
 
 			await collectPageContentFiles(
 				path.join(pageDir, 'pages'),
@@ -157,6 +176,9 @@ export const getContentFiles = async () => {
 	};
 
 	await collectPageContentFiles(sitePagesDir, sitePagesLabel);
+	if (!contentFiles.some(({ isHome }) => isHome)) {
+		throw new Error(`Homepage content is missing. Create ${siteContentLabel}.`);
+	}
 
 	return contentFiles;
 };
@@ -303,9 +325,12 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 			fix = 'Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body.';
 		} else if (fileKind === 'content' && knownThemeTopLevelFrontmatterKeys.has(key)) {
 			fix = `Move "${key}:" to theme.yaml. Visual settings do not belong in content frontmatter.`;
-		} else if (fileKind === 'page theme' && key === 'navigation') {
-			message = `Frontmatter line ${lineNumber}: page themes may not define navigation.`;
-			fix = 'Set the site-wide navigation mode under "navigation:" in the root theme.yaml.';
+		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'navigation') {
+			message = `Frontmatter line ${lineNumber}: navigation is technical, site-wide configuration and does not belong in ${fileKind}. Set it in config.yaml.`;
+			fix = 'Set the navigation mode under "navigation:" in config.yaml.';
+		} else if (fileKind === 'page theme' && ['preset', 'shape', 'palette', 'typography'].includes(key)) {
+			message = `Frontmatter line ${lineNumber}: page themes may not define site-wide visual identity through "${key}".`;
+			fix = `Move "${key}:" to the root theme.yaml. Page themes may set only layout.textWidth, layout.contentSpacing, images, and sections.backgroundPattern.`;
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && ['logo', 'site'].includes(key)) {
 			message = `Frontmatter line ${lineNumber}: ${fileKind} may not define navigation logo settings. Optional logo display settings belong under "logo:" in ${sitewideContentLabel}.`;
 			fix = `Move only the logo display settings under "logo:" in ${sitewideContentLabel}; the homepage Markdown H1 supplies navigation text and logo alternative text.`;

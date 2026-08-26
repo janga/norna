@@ -116,15 +116,6 @@ export const getSitePublicAssetStatus = async (documentPath) => {
 const getPageContext = (siteRoot, documentPath) => {
 	const absoluteDocumentPath = path.resolve(documentPath);
 	const relativePath = toPosixPath(path.relative(siteRoot, absoluteDocumentPath));
-	if (relativePath === 'content.md') {
-		return {
-			contentPath: absoluteDocumentPath,
-			imagesRoot: path.join(siteRoot, 'images'),
-			pageLabel: 'Home',
-			pageDirectory: null,
-		};
-	}
-
 	const match = relativePath.match(/^pages\/(.+)\/content\.md$/);
 	if (!match) return null;
 
@@ -316,8 +307,6 @@ const collectPageImageRoots = async (directory, siteRoot, roots) => {
 
 const getContentFiles = async (siteRoot) => {
 	const files = [];
-	const homePath = path.join(siteRoot, 'content.md');
-	if (await fileExists(homePath)) files.push(homePath);
 
 	const visit = async (directory) => {
 		const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
@@ -350,9 +339,6 @@ const getReferencesByFilename = async (siteRoot) => {
 
 export const createSiteImageIndex = async (siteRoot) => {
 	const files = [];
-	const homeImageRoot = path.join(siteRoot, 'images');
-	await collectImageFiles(homeImageRoot, homeImageRoot, 'Home', files);
-
 	const pageRoots = [];
 	await collectPageImageRoots(path.join(siteRoot, 'pages'), siteRoot, pageRoots);
 	for (const root of pageRoots) {

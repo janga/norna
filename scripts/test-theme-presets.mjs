@@ -35,13 +35,14 @@ try {
 		assert.ok(metadata.description);
 		const resolved = resolveThemeConfig({ preset: presetName }, 'test theme');
 		assert.equal(resolved.preset, presetName);
-		assert.ok(resolved.layout?.density);
-		assert.equal(resolved.navigation?.mode, 'automatic');
+		assert.ok(resolved.layout?.contentSpacing);
+		assert.ok(resolved.layout?.textWidth);
+		assert.ok(resolved.shape);
 		assert.ok(resolved.images?.width);
 		assert.ok(resolved.typography?.fontFamily);
 		assert.ok(resolved.typography?.profile);
 		assert.ok(resolved.palette);
-		assert.ok(resolved.sectionSurfaces);
+		assert.ok(resolved.sections?.backgroundPattern);
 	}
 
 	const overridden = resolveThemeConfig({
@@ -49,23 +50,20 @@ try {
 		layout: { pageWidth: '1300px' },
 		palette: 'dark',
 	}, 'test theme');
-	assert.equal(overridden.layout.density, 'compact');
-	assert.equal(overridden.navigation.mode, 'automatic');
+	assert.equal(overridden.layout.contentSpacing, 'compact');
+	assert.equal(overridden.layout.textWidth, 'narrow');
 	assert.equal(overridden.layout.pageWidth, '1300px');
+	assert.equal(overridden.layout.localNavigationGap, 'clamp(1.5rem, 3vw, 3rem)');
 	assert.equal(overridden.images.width, '920px');
 	assert.equal(overridden.palette, 'dark');
-	assert.deepEqual(overridden.sectionSurfaces, ['base', 'soft']);
+	assert.equal(overridden.sections.backgroundPattern, 'alternating');
 	assert.throws(
 		() => resolveThemeConfig({ preset: 'unknown' }, 'test/theme.yaml'),
 		/Unknown theme preset "unknown" in test\/theme\.yaml.*portfolio, documentation, project, statement/,
 	);
 	assert.throws(
-		() => resolveThemePresentation({ sectionSurfaces: ['base', 'glowing'] }, 'test/theme.yaml'),
-		/Unknown section surface "glowing" in test\/theme\.yaml.*base, soft, emphasis/,
-	);
-	assert.throws(
-		() => resolveThemePresentation({ sectionSurfaces: ['base', 'base'] }, 'test/theme.yaml'),
-		/Each section surface may appear only once in test\/theme\.yaml/,
+		() => resolveThemePresentation({ sections: { backgroundPattern: 'glowing' } }, 'test/theme.yaml'),
+		/sections\.backgroundPattern must be one of uniform, alternating, cycling in test\/theme\.yaml/,
 	);
 
 	const listResult = runCli(['theme:presets']);
@@ -89,9 +87,10 @@ try {
 		assert.equal(entry.description, metadata.description);
 	}
 
+	await mkdir(path.join(siteDir, 'pages', '000-home'), { recursive: true });
 	await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
-	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(siteDir, 'content.md'), `---
+	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\nnavigation:\n  mode: top\n');
+	await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
 page:
   description: Root page
 ---
@@ -115,10 +114,13 @@ page:
 # Guide
 Page content.
 `);
-	await writeFile(path.join(siteDir, 'pages', '010-guide', 'theme.yaml'), `preset: portfolio
-layout:
-  pageWidth: 1010px
-palette: light
+	await writeFile(path.join(siteDir, 'pages', '010-guide', 'theme.yaml'), `layout:
+  contentSpacing: spacious
+  textWidth: wide
+images:
+  width: 700px
+sections:
+  backgroundPattern: cycling
 `);
 
 	const buildResult = runCli(['build']);
@@ -128,28 +130,31 @@ palette: light
 	assert.match(rootHtml, /--page-width: 1300px/);
 	assert.match(rootHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
 	assert.match(rootHtml, /--color-page: #000000/);
-	assert.match(pageHtml, /--page-width: 1010px/);
-	assert.match(pageHtml, /--font-sans: 'Helvetica Neue', Arial, sans-serif/);
-	assert.match(pageHtml, /--color-page: #ffffff/);
+	assert.match(pageHtml, /--page-width: 1300px/);
+	assert.match(pageHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
+	assert.match(pageHtml, /--color-page: #000000/);
+	assert.match(pageHtml, /--image-width: 700px/);
+	assert.match(pageHtml, /--space-section-to-section-desktop: clamp\(2\.25rem, 5vw, 4\.5rem\)/);
 	assert.match(rootHtml, /data-navigation-mode="top"/);
 	assert.match(pageHtml, /data-navigation-mode="top"/);
 
 	const typographyResult = runCli(['typography', 'show']);
 	assert.equal(typographyResult.status, 0, typographyResult.stderr || typographyResult.stdout);
 	assert.match(typographyResult.stdout, /value: reading/);
-	assert.match(typographyResult.stdout, /value: restrained/);
+	assert.doesNotMatch(typographyResult.stdout, /value: restrained/);
 
 	const pageThemePath = path.join(siteDir, 'pages', '010-guide', 'theme.yaml');
 	const pageThemeSource = await readFile(pageThemePath, 'utf8');
 	await writeFile(pageThemePath, 'preset: unknown\n');
 	const invalidPagePresetResult = runCli(['config:check']);
 	assert.notEqual(invalidPagePresetResult.status, 0);
-	assert.match(invalidPagePresetResult.stderr, /Unknown theme preset "unknown" in .*pages\/010-guide\/theme\.yaml/);
+	assert.match(invalidPagePresetResult.stderr, /page themes may not define site-wide visual identity through "preset"/);
 	await writeFile(pageThemePath, pageThemeSource);
 	await writeFile(pageThemePath, 'navigation:\n  mode: sections\n');
 	const pageNavigationResult = runCli(['config:check']);
 	assert.notEqual(pageNavigationResult.status, 0);
-	assert.match(pageNavigationResult.stderr, /page themes may not define navigation/);
+	assert.match(pageNavigationResult.stderr, /navigation is technical, site-wide configuration/);
+	assert.match(pageNavigationResult.stderr, /config\.yaml/);
 	await writeFile(pageThemePath, pageThemeSource);
 
 	const exportResult = runCli(['theme:export', 'documentation']);
@@ -162,10 +167,11 @@ palette: light
 	assert.match(exportedSource, /# Alternatives: dark, light, paper\./);
 	const exportedConfig = load(exportedSource);
 	assert.equal(exportedConfig.preset, 'documentation');
-	assert.equal(exportedConfig.navigation.mode, 'automatic');
+	assert.equal(exportedConfig.navigation, undefined);
+	assert.equal(exportedConfig.shape, themePresets.documentation.shape);
 	assert.equal(exportedConfig.layout.pageWidth, themePresets.documentation.layout.pageWidth);
 	assert.equal(exportedConfig.typography.fontFamily, themePresets.documentation.typography.fontFamily);
-	assert.deepEqual(exportedConfig.sectionSurfaces, ['base', 'soft']);
+	assert.equal(exportedConfig.sections.backgroundPattern, 'alternating');
 
 	const exportAgainResult = runCli(['theme:export', 'documentation']);
 	assert.notEqual(exportAgainResult.status, 0);
@@ -176,7 +182,7 @@ palette: light
 	assert.notEqual(unknownExportResult.status, 0);
 	assert.match(unknownExportResult.stderr, /Unknown theme preset "unknown"/);
 
-	console.log('ok - complete theme presets resolve for root and page themes and export as protected references');
+	console.log('ok - complete root presets and limited inherited page themes resolve and export as protected references');
 } finally {
 	await rm(tempRoot, { force: true, recursive: true });
 }

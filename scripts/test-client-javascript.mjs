@@ -10,6 +10,7 @@ const tempParent = path.join(repoRoot, 'node_modules', '.cache');
 await mkdir(tempParent, { recursive: true });
 const tempRoot = await mkdtemp(path.join(tempParent, 'norna-client-javascript-'));
 const siteDir = path.join(tempRoot, 'site');
+const homeDir = path.join(siteDir, 'pages', '000-home');
 const pageDir = path.join(siteDir, 'pages', '010-details');
 const configPath = path.join(siteDir, 'config.yaml');
 
@@ -54,13 +55,14 @@ const writeSvg = (filePath, color) => writeFile(filePath, [
 ].join('\n'));
 
 try {
+	await mkdir(homeDir, { recursive: true });
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeConfig();
 	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: reading
 palette: paper
 `);
-	await writeFile(path.join(siteDir, 'content.md'), `---
+	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
   description: A single page with sticky section navigation.
 ---
@@ -109,7 +111,7 @@ The navigation enhancement keeps native anchors clear of the sticky header.
 	await mkdir(path.join(pageDir, 'images'), { recursive: true });
 	await writeSvg(path.join(pageDir, 'images', 'first.svg'), '#7b8f78');
 	await writeSvg(path.join(pageDir, 'images', 'second.svg'), '#a7664b');
-	await writeFile(path.join(siteDir, 'content.md'), `---
+	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
   description: A page without interactive features.
 ---
@@ -148,7 +150,7 @@ Static image stacks remain static.
 		'A page with managed image stacks and cards',
 	);
 
-	await writeFile(path.join(siteDir, 'content.md'), `---
+	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
   description: A page with an enhanced sidenote.
 ---
@@ -187,7 +189,7 @@ page:
 	assert.match(carouselHtml, /data-carousel/);
 	assert.match(getScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');
 
-	await writeFile(path.join(siteDir, 'content.md'), `---
+	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
   description: A page with a dismissible banner.
 ---

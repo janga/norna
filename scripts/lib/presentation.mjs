@@ -5,7 +5,11 @@ import {
 import { resolveThemeConfig } from './theme-presets.mjs';
 
 export const presentationPaletteNames = ['dark', 'light', 'paper'];
-const sectionSurfaceNames = ['base', 'soft', 'emphasis'];
+const sectionBackgroundPatterns = Object.freeze({
+	uniform: ['base'],
+	alternating: ['base', 'soft'],
+	cycling: ['base', 'soft', 'emphasis'],
+});
 
 const presentationPalettes = Object.freeze({
 	dark: {
@@ -92,34 +96,30 @@ export const getPresentationCssVariables = (presentation) => {
 	};
 };
 
-const getSectionSurfaces = (value = ['base'], sourceLabel = 'theme.yaml') => {
-	if (!Array.isArray(value) || value.length < 1 || value.length > 3) {
-		throw new Error(`sectionSurfaces must contain one to three values in ${sourceLabel}.`);
+const getSectionSurfaces = (pattern = 'uniform', sourceLabel = 'theme.yaml') => {
+	const surfaces = sectionBackgroundPatterns[pattern];
+	if (!surfaces) {
+		throw new Error(`sections.backgroundPattern must be one of ${Object.keys(sectionBackgroundPatterns).join(', ')} in ${sourceLabel}.`);
 	}
 
-	for (const surface of value) {
-		if (!sectionSurfaceNames.includes(surface)) {
-			throw new Error(`Unknown section surface "${surface}" in ${sourceLabel}. Use one of: ${sectionSurfaceNames.join(', ')}.`);
-		}
-	}
-
-	if (new Set(value).size !== value.length) {
-		throw new Error(`Each section surface may appear only once in ${sourceLabel}.`);
-	}
-
-	return value;
+	return surfaces;
 };
 
 export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 	const normalizedTheme = resolveThemeConfig(theme, sourceLabel);
 	const paletteName = normalizedTheme.palette ?? 'dark';
 	const palette = getPresentationPalette(paletteName);
+	const typography = resolveTypographyConfig(normalizedTheme.typography ?? defaultTypography);
+	const textWidth = normalizedTheme.layout?.textWidth;
+	if (textWidth !== undefined) {
+		typography.values.body.width = textWidth;
+	}
 
 	return {
 		paletteName,
 		palette,
-		sectionSurfaces: getSectionSurfaces(normalizedTheme.sectionSurfaces, sourceLabel),
-		typography: resolveTypographyConfig(normalizedTheme.typography ?? defaultTypography),
+		sectionSurfaces: getSectionSurfaces(normalizedTheme.sections?.backgroundPattern, sourceLabel),
+		typography,
 	};
 };
 
@@ -128,6 +128,14 @@ export const resolvePagePresentation = (theme, sourceLabel) => {
 
 	return resolvedThemePresentation;
 };
+
+const textWidthCssValues = Object.freeze({
+	narrow: 'min(60ch, var(--text-width))',
+	normal: 'min(72ch, var(--text-width))',
+	wide: 'min(72ch, var(--image-layout-width))',
+});
+
+export const getTextWidthCssValue = (textWidth) => textWidthCssValues[textWidth];
 
 export const resolveSectionSurface = (pagePresentation, sectionIndex) => {
 	const surfaceName = pagePresentation.sectionSurfaces[sectionIndex % pagePresentation.sectionSurfaces.length];

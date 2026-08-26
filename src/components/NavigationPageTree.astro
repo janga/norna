@@ -17,9 +17,8 @@ const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, p
 const hasBranch = (node: PageNavigationNode) => node.children.length > 0;
 const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
 const isCurrentBranch = (page: SitePage) => (
-	page.isHome
-		? currentPage.isHome
-		: currentPage.pagePath === page.pagePath || currentPage.pagePath.startsWith(`${page.pagePath}/`)
+	currentPage.pageDirectory === page.pageDirectory
+	|| currentPage.pageDirectory.startsWith(`${page.pageDirectory}/pages/`)
 );
 const getBranchId = (page: SitePage) => [
 	'navigation',

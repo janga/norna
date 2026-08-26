@@ -10,16 +10,16 @@ interface Props {
 
 const { currentPage, pages } = Astro.props;
 const pagesByPath = new Map(pages.map((page) => [page.pagePath, page]));
-const homePage = pages.find((page) => page.isHome);
-const ancestors = currentPage.pageIds
-	.slice(0, -1)
-	.map((_, index) => pagesByPath.get(currentPage.pageIds.slice(0, index + 1).join('/')))
-	.filter((page): page is SitePage => page !== undefined);
+const ancestors: SitePage[] = [];
+let parentPagePath = currentPage.parentPagePath;
+while (parentPagePath !== null) {
+	const parentPage = pagesByPath.get(parentPagePath);
+	if (!parentPage) break;
+	ancestors.unshift(parentPage);
+	parentPagePath = parentPage.parentPagePath;
+}
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
-const breadcrumbPages = [
-	...(homePage && !currentPage.isHome ? [homePage] : []),
-	...ancestors,
-];
+const breadcrumbPages = ancestors;
 ---
 
 <nav class="site-breadcrumbs" aria-label={projectConfig.locale.labels.breadcrumb}>

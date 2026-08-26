@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { z } from 'astro/zod';
 import {
 	configSchema,
+	pageThemeSchema,
 	siteSchema,
 	sitewideSchema,
 	themeVisualSchema,
@@ -15,6 +16,7 @@ const schemaDirectory = path.join(root, 'schemas');
 const definitions = [
 	['config.schema.json', 'Norna site configuration', configSchema],
 	['theme.schema.json', 'Norna visual theme', themeVisualSchema],
+	['page-theme.schema.json', 'Norna page theme', pageThemeSchema],
 	['sitewide-content.schema.json', 'Norna site-wide content', sitewideSchema],
 	['content-frontmatter.schema.json', 'Norna page frontmatter', siteSchema],
 ];
@@ -30,12 +32,13 @@ for (const [filename, title, schema] of definitions) {
 
 schemaFiles.set('manifest.json', `${JSON.stringify({
 	editorApiVersion: 1,
-	schemaVersion: 1,
+	schemaVersion: 2,
 	files: {
 		config: 'config.schema.json',
 		contentFrontmatter: 'content-frontmatter.schema.json',
 		sitewideContent: 'sitewide-content.schema.json',
 		theme: 'theme.schema.json',
+		pageTheme: 'page-theme.schema.json',
 	},
 }, null, 2)}\n`);
 

@@ -1,14 +1,14 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const supportedSchemaVersion = 1;
+const supportedSchemaVersion = 2;
 const supportedEditorApiVersion = 1;
-const pageDirectoryPattern = /^(?!000)(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+const homePageDirectory = '000-home';
+const pageDirectoryPattern = /^(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const rootFiles = new Map([
 	['config.yaml', { documentKind: 'yaml', schemaKind: 'config' }],
 	['theme.yaml', { documentKind: 'yaml', schemaKind: 'theme' }],
 	['sitewide-content.yaml', { documentKind: 'yaml', schemaKind: 'sitewideContent' }],
-	['content.md', { documentKind: 'content', schemaKind: 'contentFrontmatter' }],
 ]);
 
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -17,21 +17,30 @@ const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 const isPageDirectoryPath = (pageDirectory) => {
 	const segments = pageDirectory.split('/');
 	if (segments.length % 2 === 0) return false;
+	if (segments[0] === homePageDirectory && segments.length > 1) return false;
 
-	return segments.every((segment, index) => (
-		index % 2 === 0 ? pageDirectoryPattern.test(segment) : segment === 'pages'
-	));
+	return segments.every((segment, index) => {
+		if (index % 2 === 1) return segment === 'pages';
+		const match = segment.match(pageDirectoryPattern);
+		if (!match) return false;
+		if (match[1] !== '000') return true;
+		return index === 0 && segment === homePageDirectory;
+	});
 };
 
 const hasSiteMarkers = (directory) => (
 	isFile(path.join(directory, 'config.yaml'))
-	&& isFile(path.join(directory, 'content.md'))
+	&& (
+		isFile(path.join(directory, 'pages', homePageDirectory, 'content.md'))
+		|| isFile(path.join(directory, 'content.md'))
+	)
 );
 
 const isRootFileBeingCreated = (documentPath, directory) => {
 	if (path.dirname(documentPath) !== directory || !rootFiles.has(path.basename(documentPath))) return false;
-	if (path.basename(documentPath) === 'content.md') return isFile(path.join(directory, 'config.yaml'));
-	if (path.basename(documentPath) === 'config.yaml') return isFile(path.join(directory, 'content.md'));
+	if (path.basename(documentPath) === 'config.yaml') {
+		return isFile(path.join(directory, 'pages', homePageDirectory, 'content.md'));
+	}
 	return false;
 };
 
@@ -90,7 +99,7 @@ const classifyDocument = (siteRoot, documentPath) => {
 		documentKind: pageMatch[2] === 'content.md' ? 'content' : 'yaml',
 		relativePath,
 		pageDirectory: pageMatch[1],
-		schemaKind: pageMatch[2] === 'content.md' ? 'contentFrontmatter' : 'theme',
+		schemaKind: pageMatch[2] === 'content.md' ? 'contentFrontmatter' : 'pageTheme',
 	};
 };
 

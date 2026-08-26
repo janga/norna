@@ -58,10 +58,19 @@ try {
 	const guidesHtml = await readFile(path.join(distDir, 'guides', 'index.html'), 'utf8');
 	const installationHtml = await readFile(path.join(distDir, 'guides', 'installation', 'index.html'), 'utf8');
 	const macosHtml = await readFile(path.join(distDir, 'guides', 'installation', 'macos', 'index.html'), 'utf8');
-	assert.match(rootHtml, /--color-page: #000000/);
-	assert.match(guidesHtml, /--color-page: #ffffff/);
-	assert.match(installationHtml, /--color-page: #ffffff/);
-	assert.match(macosHtml, /--color-page: #ffffff/);
+	for (const html of [rootHtml, guidesHtml, installationHtml, macosHtml]) {
+		assert.match(html, /--color-page: #f8f5ee/);
+		assert.match(html, /--font-sans: Georgia, 'Times New Roman', serif/);
+	}
+	assert.match(rootHtml, /--image-width: 920px/);
+	assert.match(rootHtml, /--space-section-to-section-desktop: clamp\(1\.2rem, 2\.4vw, 2\.25rem\)/);
+	assert.match(guidesHtml, /--image-width: 760px/);
+	assert.match(guidesHtml, /--space-section-to-section-desktop: clamp\(2\.25rem, 5vw, 4\.5rem\)/);
+	assert.match(guidesHtml, /--section-body-width-desktop: min\(72ch,/);
+	assert.match(installationHtml, /--image-width: 760px/);
+	assert.match(installationHtml, /--space-section-to-section-desktop: clamp\(2\.25rem, 5vw, 4\.5rem\)/);
+	assert.match(installationHtml, /--section-body-width-desktop: min\(60ch,/);
+	assert.match(macosHtml, /--section-body-width-desktop: min\(60ch,/);
 	assert.match(installationHtml, /Three nested page levels connected in sequence/);
 	assert.match(installationHtml, /\/original\/pages\/010-guides\/pages\/010-installation\/images\/diagram-[a-f0-9]+\.svg/);
 	assert.match(macosHtml, /data-navigation-mode="tree"/);
@@ -72,7 +81,7 @@ try {
 	assert.match(macosHtml, /<ul class="navigation-page-tree navigation-page-tree-sidebar">/);
 	assert.match(macosHtml, /<details class="navigation-page-branch navigation-page-disclosure navigation-page-disclosure-sidebar" data-page-path="guides" data-current-branch="true"/);
 	assert.match(macosHtml, /<summary class="navigation-page-summary"[^>]*><span class="navigation-page-summary-title">Guides<\/span>/);
-	assert.match(macosHtml, /<nav class="site-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="\/">Nested pages<\/a><\/li><li><a href="\/guides\/">Guides<\/a><\/li><li><a href="\/guides\/installation\/">Installation<\/a><\/li><li><span aria-current="page">macOS<\/span>/);
+	assert.match(macosHtml, /<nav class="site-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="\/guides\/">Guides<\/a><\/li><li><a href="\/guides\/installation\/">Installation<\/a><\/li><li><span aria-current="page">macOS<\/span>/);
 	assert.match(macosHtml, /<nav class="navigation-page-sections" aria-label="Page contents: macOS">/);
 	assert.doesNotMatch(macosHtml, /class="tree-page-contents"/);
 	assert.match(macosHtml, /href="#install">Install<\/a><ol><li><a href="#prerequisites">Prerequisites<\/a>/);

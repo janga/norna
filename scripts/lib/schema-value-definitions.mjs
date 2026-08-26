@@ -61,6 +61,20 @@ export const schemaValueDefinitions = Object.freeze([
 		light: option('Light', 'White and cool light surfaces with dark text.'),
 		paper: option('Paper', 'Warm off-white surfaces with dark text.'),
 	}),
+	definition(['square', 'soft'], {
+		square: option('Square', 'Use square corners for navigation, cards and framed content.'),
+		soft: option('Soft', 'Use restrained rounded corners consistently across the site.'),
+	}),
+	definition(['uniform', 'alternating', 'cycling'], {
+		uniform: option('Uniform', 'Use the palette base surface for every section.'),
+		alternating: option('Alternating', 'Alternate between the palette base and soft surfaces.'),
+		cycling: option('Cycling', 'Cycle through the palette base, soft and emphasis surfaces.'),
+	}),
+	definition(['compact', 'normal', 'spacious'], {
+		compact: option('Compact', 'Use restrained spacing between sections and structured blocks.'),
+		normal: option('Normal', 'Use balanced content spacing.'),
+		spacious: option('Spacious', 'Use more expansive spacing between sections and structured blocks.'),
+	}),
 	definition(['base', 'soft', 'emphasis'], {
 		base: option('Base', 'Use the palette\'s normal page surface.'),
 		soft: option('Soft', 'Use the palette\'s subtle contrasting surface.'),

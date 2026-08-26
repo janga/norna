@@ -2,10 +2,12 @@ import { mergeDeep } from './typography.mjs';
 
 const themePresetConfigurations = Object.freeze({
 	portfolio: Object.freeze({
-		navigation: { mode: 'automatic' },
+		shape: 'square',
 		layout: {
-			density: 'normal',
+			contentSpacing: 'normal',
+			textWidth: 'wide',
 			pageWidth: '1240px',
+			localNavigationGap: 'clamp(1.5rem, 3vw, 3rem)',
 			gutter: {
 				desktop: 'clamp(1.25rem, 4vw, 3rem)',
 				mobile: '1rem',
@@ -22,13 +24,15 @@ const themePresetConfigurations = Object.freeze({
 			rhythm: 'normal',
 		},
 		palette: 'dark',
-		sectionSurfaces: ['base'],
+		sections: { backgroundPattern: 'uniform' },
 	}),
 	documentation: Object.freeze({
-		navigation: { mode: 'automatic' },
+		shape: 'soft',
 		layout: {
-			density: 'compact',
+			contentSpacing: 'compact',
+			textWidth: 'narrow',
 			pageWidth: '1240px',
+			localNavigationGap: 'clamp(1.5rem, 3vw, 3rem)',
 			gutter: {
 				desktop: 'clamp(1.25rem, 4vw, 3rem)',
 				mobile: '1rem',
@@ -45,13 +49,15 @@ const themePresetConfigurations = Object.freeze({
 			rhythm: 'compact',
 		},
 		palette: 'paper',
-		sectionSurfaces: ['base', 'soft'],
+		sections: { backgroundPattern: 'alternating' },
 	}),
 	project: Object.freeze({
-		navigation: { mode: 'automatic' },
+		shape: 'soft',
 		layout: {
-			density: 'compact',
+			contentSpacing: 'compact',
+			textWidth: 'normal',
 			pageWidth: '1120px',
+			localNavigationGap: 'clamp(1.5rem, 3vw, 3rem)',
 			gutter: {
 				desktop: 'clamp(1.25rem, 4vw, 3rem)',
 				mobile: '1rem',
@@ -68,13 +74,15 @@ const themePresetConfigurations = Object.freeze({
 			rhythm: 'compact',
 		},
 		palette: 'light',
-		sectionSurfaces: ['base', 'soft'],
+		sections: { backgroundPattern: 'alternating' },
 	}),
 	statement: Object.freeze({
-		navigation: { mode: 'automatic' },
+		shape: 'square',
 		layout: {
-			density: 'airy',
+			contentSpacing: 'spacious',
+			textWidth: 'normal',
 			pageWidth: '1280px',
+			localNavigationGap: 'clamp(1.5rem, 3vw, 3rem)',
 			gutter: {
 				desktop: 'clamp(1.5rem, 5vw, 4rem)',
 				mobile: '1rem',
@@ -91,7 +99,7 @@ const themePresetConfigurations = Object.freeze({
 			rhythm: 'airy',
 		},
 		palette: 'paper',
-		sectionSurfaces: ['base', 'emphasis'],
+		sections: { backgroundPattern: 'cycling' },
 	}),
 });
 
@@ -158,6 +166,30 @@ export const resolveThemeConfig = (theme = {}, sourceLabel = 'theme.yaml') => {
 	};
 };
 
+const mergePageThemePart = (base, override, keys) => Object.fromEntries(keys
+	.filter((key) => override?.[key] !== undefined || base?.[key] !== undefined)
+	.map((key) => [key, override?.[key] ?? base?.[key]]));
+
+export const mergePageThemeConfig = (base = {}, override = {}) => ({
+	...base,
+	layout: {
+		...(base.layout ?? {}),
+		...mergePageThemePart(base.layout, override.layout, ['contentSpacing', 'textWidth']),
+	},
+	images: {
+		...(base.images ?? {}),
+		...mergePageThemePart(base.images, override.images, [
+			'width',
+			'maxAvailableWidthPercent',
+			'maxAvailableHeightPercent',
+		]),
+	},
+	sections: {
+		...(base.sections ?? {}),
+		...mergePageThemePart(base.sections, override.sections, ['backgroundPattern']),
+	},
+});
+
 const quote = (value) => JSON.stringify(value);
 const responsiveValueLines = (label, value, indent = 2) => {
 	const prefix = ' '.repeat(indent);
@@ -171,7 +203,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
 	const metadata = getThemePresetMetadata(presetName);
-	const { navigation, layout, images, typography, palette, sectionSurfaces } = preset;
+	const { shape, layout, images, typography, palette, sections } = preset;
 
 	return [
 		`# Original values for Norna's "${presetName}" theme preset.`,
@@ -181,13 +213,14 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		`# Available theme presets: ${themePresetNames.join(', ')}.`,
 		`preset: ${presetName}`,
 		'',
-		'navigation:',
-		'  # Alternatives: automatic, sections, top, tree.',
-		`  mode: ${navigation.mode}`,
+		'# Alternatives: square, soft.',
+		`shape: ${shape}`,
 		'',
 		'layout:',
-		'  # Alternatives: compact, normal, airy.',
-		`  density: ${layout.density}`,
+		'  # Alternatives: compact, normal, spacious.',
+		`  contentSpacing: ${layout.contentSpacing}`,
+		'  # Alternatives: narrow, normal, wide.',
+		`  textWidth: ${layout.textWidth}`,
 		'  # Any positive CSS length, including px, rem, em, %, or clamp(...).',
 		`  pageWidth: ${layout.pageWidth}`,
 		'  gutter:',
@@ -219,9 +252,9 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'',
 		'# Alternatives: dark, light, paper.',
 		`palette: ${palette}`,
-		'# One value keeps every section on the same surface; multiple values cycle.',
-		'# Use one to three unique values from: base, soft, emphasis.',
-		`sectionSurfaces: [${sectionSurfaces.join(', ')}]`,
+		'sections:',
+		'  # Alternatives: uniform, alternating, cycling.',
+		`  backgroundPattern: ${sections.backgroundPattern}`,
 		'',
 	].join('\n');
 };

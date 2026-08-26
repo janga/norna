@@ -34,7 +34,7 @@ const runCli = (args, env = {}) => {
 };
 
 try {
-	await mkdir(path.join(siteDir, 'images'), { recursive: true });
+	await mkdir(path.join(siteDir, 'pages', '000-home'), { recursive: true });
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeFile(path.join(siteDir, 'public', 'robots.txt'), 'User-agent: *\nAllow: /\n');
 	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
@@ -55,7 +55,7 @@ palette: dark
     title: Active banner
     text: Active banner text.
 `);
-	await writeFile(path.join(siteDir, 'content.md'), `---
+	await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
 page:
   description: Test site for temporary banners.
 ---

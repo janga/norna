@@ -13,10 +13,8 @@ interface Props {
 const { currentPage, pageNavigation } = Astro.props;
 const roots = getListedPageNavigationTree(pageNavigation);
 const activeRoot = roots.find((node) => (
-	node.page.isHome
-		? currentPage.isHome
-		: currentPage.pagePath === node.page.pagePath
-			|| currentPage.pagePath.startsWith(`${node.page.pagePath}/`)
+	currentPage.pageDirectory === node.page.pageDirectory
+	|| currentPage.pageDirectory.startsWith(`${node.page.pageDirectory}/pages/`)
 ));
 ---
 

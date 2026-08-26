@@ -167,8 +167,8 @@ try {
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'config.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'theme.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'sitewide-content.yaml')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'content.md')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'images', '.gitkeep')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'pages', '000-home', 'content.md')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'pages', '000-home', 'images', '.gitkeep')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'public', 'robots.txt')),
 	]);
 	await assertFileIncludes(
@@ -204,7 +204,7 @@ try {
 		path.join(siteProjectRoot, 'site', 'public', 'logo.svg'),
 		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="black"/></svg>\n',
 	);
-	await writeFile(path.join(siteProjectRoot, 'site', 'content.md'), `---
+	await writeFile(path.join(siteProjectRoot, 'site', 'pages', '000-home', 'content.md'), `---
 page:
   description: Site used by package checks.
 ---
@@ -248,12 +248,14 @@ This page verifies that packaged norna sites can build additional pages.
 		assertFileExists(path.join(initializedSiteRoot, 'package.json')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'config.yaml')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'theme.yaml')),
+		assertFileExists(path.join(initializedSiteRoot, 'site', 'pages', '000-home', 'content.md')),
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
 	]);
-	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: path.join(siteProjectRoot, 'site', 'images'), env: npmEnv });
-	await runInherit(npxBin, ['norna', 'doctor'], { cwd: path.join(siteProjectRoot, 'site', 'images'), env: npmEnv });
-	await runInherit(npxBin, ['norna', 'config:check'], { cwd: path.join(siteProjectRoot, 'site', 'images'), env: npmEnv });
+	const homeImagesDir = path.join(siteProjectRoot, 'site', 'pages', '000-home', 'images');
+	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: homeImagesDir, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'doctor'], { cwd: homeImagesDir, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'config:check'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
@@ -275,19 +277,19 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-heading-font-weight: 400',
+		'--section-heading-font-weight: 500',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-heading-spacing-after: 0.55em',
+		'--section-heading-spacing-after: 0.45em',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-markdown-h3-spacing-before: 1.5em',
+		'--section-markdown-h3-spacing-before: 1.2em',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		"--font-sans: Arial, 'Helvetica Neue', Helvetica, sans-serif",
+		"--font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -335,7 +337,7 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-body-line-height: 1.5',
+		'--section-body-line-height: 1.62',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -347,15 +349,15 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-body-paragraph-spacing: 0.85em',
+		'--section-body-paragraph-spacing: 0.65em',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-caption-line-height: 1.35',
+		'--section-caption-line-height: 1.4',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-caption-spacing-before: 0.5em',
+		'--section-caption-spacing-before: 0.35em',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -375,35 +377,31 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-background-color: #000000',
+		'--section-background-color: #ffffff',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-background-color: #171717',
+		'--section-background-color: #f1f4f2',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-background-color: #252525',
+		'--site-top-background-color: #ffffff',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-top-background-color: #000000',
+		'--site-top-text-color: #17201d',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-top-text-color: #f2eee6',
+		'--site-footer-background-color: #ffffff',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-footer-background-color: #000000',
+		'--site-footer-text-color: #17201d',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-footer-text-color: #f2eee6',
-	);
-	await assertFileIncludes(
-		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-text-color: #f2eee6',
+		'--section-text-color: #17201d',
 	);
 	await writeFile(path.join(siteProjectRoot, 'site', 'public', 'favicon.ico'), 'fake icon');
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
@@ -416,46 +414,23 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'href="/favicon.svg"',
 	);
-	const siteContentPath = path.join(siteProjectRoot, 'site', 'content.md');
+	const siteContentPath = path.join(siteProjectRoot, 'site', 'pages', '000-home', 'content.md');
 	const siteContent = await readFile(siteContentPath, 'utf8');
 	const siteThemePath = path.join(siteProjectRoot, 'site', 'theme.yaml');
 	const siteTheme = await readFile(siteThemePath, 'utf8');
-	await writeFile(siteThemePath, siteTheme.replace('\n  profile: restrained', '\n  profile: noisy'));
+	await writeFile(siteThemePath, `${siteTheme.trim()}\ntypography:\n  profile: noisy\n`);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
-		'Unknown typography profile: noisy',
+		'typography.profile',
 	);
-	await writeFile(
-		siteThemePath,
-		siteTheme.replace('\npalette: dark', '\npalette: neon'),
-	);
+	await writeFile(siteThemePath, `${siteTheme.trim()}\npalette: neon\n`);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'build'],
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'palette',
-	);
-	await writeFile(
-		siteThemePath,
-		siteTheme.replace('\nsectionSurfaces: [base, soft, emphasis]', '\nsectionSurfaces: [base, glowing]'),
-	);
-	await runExpectFailure(
-		npxBin,
-		['norna', 'build'],
-		{ cwd: siteProjectRoot, env: npmEnv },
-		'Unknown section surface "glowing"',
-	);
-	await writeFile(
-		siteThemePath,
-		siteTheme.replace('\nsectionSurfaces: [base, soft, emphasis]', '\nsectionSurfaces: [base, base]'),
-	);
-	await runExpectFailure(
-		npxBin,
-		['norna', 'build'],
-		{ cwd: siteProjectRoot, env: npmEnv },
-		'Each section surface may appear only once',
 	);
 	await writeFile(siteThemePath, siteTheme);
 	await writeFile(
@@ -498,13 +473,7 @@ This page verifies that packaged norna sites can build additional pages.
 		{ cwd: siteProjectRoot, env: npmEnv },
 		'defines "sections" at the top level, but it is not a valid top-level content field',
 	);
-	await writeFile(
-		siteThemePath,
-		siteTheme.replace(
-			'fontFamily: "Arial, \'Helvetica Neue\', Helvetica, sans-serif"',
-			'fontFamily: "Arial; color: red"',
-		),
-	);
+	await writeFile(siteThemePath, `${siteTheme.trim()}\ntypography:\n  fontFamily: "Arial; color: red"\n`);
 	await runExpectFailure(
 		npxBin,
 		['norna', 'config:check'],

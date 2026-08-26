@@ -3,7 +3,9 @@ import path from 'node:path';
 import {
 	validatePageThemeYamlStructure,
 } from '../../scripts/lib/site-content.mjs';
+import { pageThemeSchema } from '../../scripts/lib/schema-definitions.mjs';
 import { sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
+import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
 import { parseYamlConfig } from '../../scripts/lib/yaml-config.mjs';
 import { getPageDirectoryAncestors } from '../../scripts/lib/page-model.mjs';
 
@@ -15,7 +17,9 @@ type PageTheme = {
 export const getPageTheme = async (pageDirectory: string | null): Promise<PageTheme | null> => {
 	if (!pageDirectory) return null;
 
-	const pageAncestors = getPageDirectoryAncestors(pageDirectory).reverse();
+	const pageAncestors = getPageDirectoryAncestors(pageDirectory);
+	let inheritedData: Record<string, unknown> = {};
+	const inheritedIds: string[] = [];
 	for (const pageAncestor of pageAncestors) {
 		const themeSegments = pageAncestor.split('/');
 		const themePath = path.join(sitePagesDir, ...themeSegments, 'theme.yaml');
@@ -27,16 +31,14 @@ export const getPageTheme = async (pageDirectory: string | null): Promise<PageTh
 		const themeLabel = `${sitePagesLabel}/${themeSegments.join('/')}/theme.yaml`;
 
 		const data = parseYamlConfig(source, themeLabel, {
+			schema: pageThemeSchema,
 			validateStructure: validatePageThemeYamlStructure,
 		});
-		if (Object.hasOwn(data, 'navigation')) {
-			throw new Error(`${themeLabel} may not define navigation. Set the site-wide navigation mode in the root theme.yaml.`);
-		}
-		return {
-			id: `pages/${themeSegments.join('/')}/theme`,
-			data,
-		};
+		inheritedData = mergePageThemeConfig(inheritedData, data);
+		inheritedIds.push(`pages/${themeSegments.join('/')}/theme`);
 	}
 
-	return null;
+	return inheritedIds.length > 0
+		? { id: inheritedIds.join(' + '), data: inheritedData }
+		: null;
 };

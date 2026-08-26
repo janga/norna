@@ -211,7 +211,7 @@ const assertDeployableStatus = async (entries, expectedImagePaths) => {
 	if (unexpectedUntracked.length > 0) {
 		fail([
 			'Refusing to deploy: unexpected untracked files are present.',
-			`Only new referenced images directly under ${siteImagesLabel}/ or ${sitePagesLabel}/<NNN-page-id>/images/ are staged automatically.`,
+			`Only new referenced images directly under a page's images/ directory in ${sitePagesLabel}/ are staged automatically.`,
 			...unexpectedUntracked.map((entry) => `- ${formatEntry(entry)}`),
 		].join('\n'));
 	}

@@ -16,9 +16,10 @@ import { getToday, isVisibleToday } from '../lib/visibility';
 import { getLogoAsset } from '../lib/sitePublicAssets';
 import { readSiteFile } from '../../scripts/lib/site-content.mjs';
 import { resolveNavigationModel } from '../../scripts/lib/navigation-model.mjs';
-import { siteContentPath, sitePagesDir } from '../../scripts/lib/site-paths.mjs';
+import { sitePagesDir } from '../../scripts/lib/site-paths.mjs';
 import { projectConfig, resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
-import { resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
+import { getTextWidthCssValue, resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
+import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
 
@@ -30,15 +31,10 @@ const { entry } = Astro.props;
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const sitePages = getSitePages(await getCollection('site'));
 const currentPage = getSitePage(entry);
-const getPageContentFile = (page: SitePage) => page.pageDirectory
-	? {
+const getPageContentFile = (page: SitePage) => ({
 		label: `${siteDirectory || 'site'}/pages/${page.pageDirectory}/content.md`,
 		path: path.join(sitePagesDir, page.pageDirectory, 'content.md'),
-	}
-	: {
-		label: `${siteDirectory || 'site'}/content.md`,
-		path: siteContentPath,
-	};
+	});
 const pageContentFile = getPageContentFile(currentPage);
 const siteContentLabel = pageContentFile.label;
 const rawMarkdown = (await readSiteFile(pageContentFile.path, pageContentFile.label)).body;
@@ -51,7 +47,7 @@ const sitewideData = sitewide?.data ?? {};
 const homePage = sitePages.find((page) => page.isHome) ?? currentPage;
 const siteThemeData = siteTheme.data;
 const pageTheme = await getPageTheme(currentPage.pageDirectory);
-const themeData = pageTheme?.data ?? siteThemeData;
+const themeData = mergePageThemeConfig(siteThemeData, pageTheme?.data);
 const themeLabel = pageTheme
 	? `${siteDirectory || 'site'}/${pageTheme.id}`
 	: `${siteDirectory || 'site'}/${siteTheme.id}`;
@@ -66,7 +62,8 @@ const logo = logoAsset
 	}
 	: undefined;
 const pagePresentation = resolvePagePresentation(themeData, themeLabel);
-const frameColors = resolveFrameColors({ theme: themeData, sourceLabel: themeLabel });
+const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
+const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: `${siteDirectory || 'site'}/${siteTheme.id}` });
 const siteHtml = entry.rendered?.html ?? '';
 const resolvedSections = await getSectionsContent(siteHtml, rawMarkdown, currentPage, siteContentLabel);
 const today = getToday();
@@ -112,7 +109,8 @@ const navigationModel = resolveNavigationModel({
 	})),
 });
 const hasTreeNavigation = navigationModel.mode === 'tree';
-const showBreadcrumbs = hasTreeNavigation || currentPage.depth > 1;
+const showBreadcrumbs = !currentPage.isHome && currentPage.parentPagePath !== null;
+const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 
 ---
 
@@ -138,8 +136,14 @@ const showBreadcrumbs = hasTreeNavigation || currentPage.depth > 1;
 		{hasTreeNavigation && (
 			<SiteTreeNavigation currentPage={currentPage} pageNavigation={pageNavigation} />
 		)}
-		<main class:list={['site-content', { 'site-content-has-breadcrumbs': showBreadcrumbs }]} id="main-content">
-			{showBreadcrumbs && <SiteBreadcrumbs currentPage={currentPage} pages={sitePages} />}
+		<main
+			class:list={['site-content', { 'site-content-has-breadcrumbs': reserveBreadcrumbSpace }]}
+			id="main-content"
+			style={`--page-text-width: ${pageTextWidth}`}
+		>
+			{showBreadcrumbs
+				? <SiteBreadcrumbs currentPage={currentPage} pages={sitePages} />
+				: reserveBreadcrumbSpace && <div class="site-breadcrumbs" aria-hidden="true"></div>}
 			{renderedSections.map(({ section, sectionIndex, prioritizeFirstImage }) => (
 				<SiteSection
 					section={section}

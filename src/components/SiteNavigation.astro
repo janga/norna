@@ -40,6 +40,8 @@ const showSiteNavigation = siteNavigationPages.some(({ page }) => !page.isHome);
 const homePage = pageNavigation.find(({ page }) => page.isHome)?.page ?? currentPage;
 const currentPageNavigation = pageNavigation.find(({ page }) => page.pathname === currentPage.pathname);
 const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
+const isCurrentBranch = (page: SitePage) => currentPage.pageDirectory === page.pageDirectory
+	|| currentPage.pageDirectory.startsWith(`${page.pageDirectory}/pages/`);
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
 const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
 const hasCurrentPageSectionMenu = Boolean(
@@ -75,7 +77,7 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 					{topLevelNavigation.map((node) => (
 						<li class:list={['site-nav-item', {
 							'site-nav-item-has-submenu': navigationMode !== 'tree' && node.children.length > 0,
-							'site-nav-item-current-branch': !node.page.isHome && currentPage.pagePath.startsWith(`${node.page.pagePath}/`),
+							'site-nav-item-current-branch': !isCurrentPage(node.page) && isCurrentBranch(node.page),
 						}]}>
 							<a href={pageHref(node.page)} aria-current={isCurrentPage(node.page) ? 'page' : undefined}>
 								{node.page.title}

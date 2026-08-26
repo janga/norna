@@ -19,6 +19,29 @@ assert.deepEqual(parsePageDirectory('120-api-reference'), {
 	pageId: 'api-reference',
 });
 
+assert.deepEqual(parsePageDirectory('000-home'), {
+	pageDirectory: '000-home',
+	pageOrder: 0,
+	pageId: 'home',
+});
+
+assert.deepEqual(parsePageDirectoryPath('000-home'), {
+	pageDirectory: '000-home',
+	pageDirectories: ['000-home'],
+	pageId: 'home',
+	pageIds: [],
+	pageOrder: 0,
+	pageOrders: [],
+	pagePath: '',
+	parentPagePath: null,
+	depth: 1,
+});
+
+assert.throws(
+	() => parsePageDirectoryPath('000-home/pages/010-about'),
+	/000-home is the homepage and cannot contain child pages.*beside it under site\/pages\/.*below another non-home page/,
+);
+
 assert.deepEqual(parsePageDirectoryPath('010-guides/pages/020-installation'), {
 	pageDirectory: '010-guides/pages/020-installation',
 	pageDirectories: ['010-guides', '020-installation'],
@@ -62,7 +85,7 @@ for (const pageDirectoryPath of [
 }
 
 for (const pageDirectory of [
-	'000-home',
+	'000-about',
 	'10-about',
 	'010_About',
 	'010-About',
@@ -72,9 +95,14 @@ for (const pageDirectory of [
 ]) {
 	assert.throws(
 		() => parsePageDirectory(pageDirectory),
-		/Page directories must use the form NNN-page-id/,
+		/(Page directories must use the form NNN-page-id|000 prefix is reserved)/,
 		`${pageDirectory} should be rejected`,
 	);
 }
+
+assert.throws(
+	() => parsePageDirectoryPath('010-guides/pages/000-home'),
+	/000-home is allowed only as a top-level page/,
+);
 
 console.log('Page model test passed.');

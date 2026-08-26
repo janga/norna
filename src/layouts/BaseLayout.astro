@@ -20,6 +20,7 @@ type Presentation = {
 type VisualTheme = {
 	layout: {
 		gutter: { desktop: string; mobile: string };
+		localNavigationGap: string;
 		pageWidth: string;
 		spacing: {
 			firstSectionTop: { desktop: string; mobile: string };
@@ -36,6 +37,11 @@ type VisualTheme = {
 		maxAvailableHeightPercent: { desktop: number; mobile: number };
 	};
 	typography: { fontFamily: string };
+	shape: {
+		radiusSmall: string;
+		radiusMedium: string;
+		radiusLarge: string;
+	};
 };
 
 interface Props {
@@ -72,7 +78,11 @@ const documentStyle = [
 	`scroll-behavior: ${scrollBehavior}`,
 	...Object.entries(getPresentationCssVariables(presentation)).map(([name, value]) => `${name}: ${value}`),
 	`--font-sans: ${visualTheme.typography.fontFamily}`,
+	`--shape-radius-small: ${visualTheme.shape.radiusSmall}`,
+	`--shape-radius-medium: ${visualTheme.shape.radiusMedium}`,
+	`--shape-radius-large: ${visualTheme.shape.radiusLarge}`,
 	`--page-width: ${visualTheme.layout.pageWidth}`,
+	`--local-navigation-gap: ${visualTheme.layout.localNavigationGap}`,
 	`--content-gutter-desktop: ${visualTheme.layout.gutter.desktop}`,
 	`--content-gutter-mobile: ${visualTheme.layout.gutter.mobile}`,
 	`--space-nav-to-first-section-desktop: ${layoutSpacing.firstSectionTop.desktop}`,

@@ -1,6 +1,6 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
-import { resolveSectionSurface } from '../../scripts/lib/presentation.mjs';
+import { getTextWidthCssValue, resolveSectionSurface } from '../../scripts/lib/presentation.mjs';
 import CardList from './CardList.astro';
 import ImageCarousel from './ImageCarousel.astro';
 import ImageStack from './ImageStack.astro';
@@ -165,11 +165,6 @@ const getSizeValue = (
 const getHeadingSizeValue = (level: HeadingLevel, size: TextSize) => (
 	headingSizeValues[level][size]
 );
-const textWidthValues: Record<TextWidth, string> = {
-	narrow: 'min(60ch, var(--text-width))',
-	normal: 'min(72ch, var(--text-width))',
-	wide: 'min(72ch, var(--image-layout-width))',
-};
 const surface = isPageTitle
 	? pagePresentation.palette.surfaces.base
 	: resolveSectionSurface(pagePresentation, sectionIndex);
@@ -205,7 +200,7 @@ const justifyByAlign: Record<TextAlign, string> = {
 	center: 'center',
 	right: 'flex-end',
 };
-const bodyWidthValue = textWidthValues[typography.body.width as TextWidth];
+const bodyWidthValue = getTextWidthCssValue(typography.body.width as TextWidth);
 const headingWidth = {
 	desktop: bodyWidthValue,
 	mobile: bodyWidthValue,

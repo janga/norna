@@ -1,10 +1,12 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { homePageDirectory } from './site-conventions.mjs';
 
 const siteDirectoryEnvName = 'NORNA_SITE_DIR';
 const invocationRootEnvName = 'NORNA_INVOCATION_ROOT';
 const defaultSiteDirectory = 'site';
+export { homePageDirectory };
 
 const currentFile = fileURLToPath(import.meta.url);
 const currentDirectory = path.dirname(currentFile);
@@ -23,7 +25,10 @@ export const invocationRoot = configuredInvocationRoot
 const hasSiteFilesInDirectory = (siteDir) => {
 	return (
 		existsSync(path.join(siteDir, 'config.yaml'))
-		&& existsSync(path.join(siteDir, 'content.md'))
+		&& (
+			existsSync(path.join(siteDir, 'pages', homePageDirectory, 'content.md'))
+			|| existsSync(path.join(siteDir, 'content.md'))
+		)
 	);
 };
 
@@ -116,10 +121,11 @@ const getPathLabel = (filePath) => {
 export const siteDir = resolvedSitePaths.siteDir;
 export const siteConfigPath = path.join(siteDir, 'config.yaml');
 export const siteThemePath = path.join(siteDir, 'theme.yaml');
-export const siteContentPath = path.join(siteDir, 'content.md');
 export const sitewideContentPath = path.join(siteDir, 'sitewide-content.yaml');
-export const siteImagesDir = path.join(siteDir, 'images');
 export const sitePagesDir = path.join(siteDir, 'pages');
+export const siteHomePageDir = path.join(sitePagesDir, homePageDirectory);
+export const siteContentPath = path.join(siteHomePageDir, 'content.md');
+export const siteImagesDir = path.join(siteHomePageDir, 'images');
 export const sitePublicDir = path.join(siteDir, 'public');
 export const siteStateDir = path.join(siteDir, '.norna');
 export const astroPublicDir = path.join(siteStateDir, 'public');

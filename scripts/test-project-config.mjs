@@ -24,9 +24,9 @@ const importScript = `
 const createSite = async (name, config) => {
 	const projectRoot = path.join(tempRoot, name);
 	const siteDir = path.join(projectRoot, 'site');
-	await mkdir(siteDir, { recursive: true });
+	await mkdir(path.join(siteDir, 'pages', '000-home'), { recursive: true });
 	await writeFile(path.join(siteDir, 'config.yaml'), config);
-	await writeFile(path.join(siteDir, 'content.md'), '# Config test\n\n## Intro {#intro}\n\nText.\n');
+	await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), '# Config test\n\n## Intro {#intro}\n\nText.\n');
 	await writeFile(path.join(siteDir, 'theme.yaml'), 'preset: documentation\n');
 	return { projectRoot, siteDir };
 };
@@ -91,11 +91,7 @@ try {
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 
-	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\n');
-	await writeFile(path.join(treeNavigationSite.siteDir, 'theme.yaml'), `preset: documentation
-navigation:
-  mode: tree
-`);
+	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\nnavigation:\n  mode: tree\n');
 	const treeNavigationResult = loadConfig(treeNavigationSite);
 	assert.equal(treeNavigationResult.status, 0, treeNavigationResult.stderr);
 	assert.equal(JSON.parse(treeNavigationResult.stdout).navigationMode, 'tree');

@@ -51,7 +51,7 @@ const withTempProject = async ({ site, theme = defaultTheme, files, siteDirector
 	const root = await mkdtemp(path.join(tmpdir(), 'walde-content-check-'));
 
 	try {
-		await writeFixtureFile(root, `${siteDirectory}/content.md`, site);
+		await writeFixtureFile(root, `${siteDirectory}/pages/000-home/content.md`, site);
 		await writeFixtureFile(root, `${siteDirectory}/theme.yaml`, theme);
 
 		for (const file of files) {
@@ -112,11 +112,11 @@ test('content:check groups section issues, global issues, and unreferenced image
 	await withTempProject({
 		site: brokenSite,
 		files: [
-			'site/images/karin.jpg',
-			'site/images/karin-walde/unreferenced.jpg',
-			'site/images/min-konst/duplicate.jpg',
-			'site/images/home.jpg',
-			'site/images/mitt-hem/vav.jpeg',
+			'site/pages/000-home/images/karin.jpg',
+			'site/pages/000-home/images/karin-walde/unreferenced.jpg',
+			'site/pages/000-home/images/min-konst/duplicate.jpg',
+			'site/pages/000-home/images/home.jpg',
+			'site/pages/000-home/images/mitt-hem/vav.jpeg',
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -124,11 +124,11 @@ test('content:check groups section issues, global issues, and unreferenced image
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Content Issues\n\n\[site\/content\.md \[min-konst\]\]\n  Errors:/);
-		assert.match(output, /Image "vav\.jpeg" is used here but is located in site\/images\/mitt-hem\/vav\.jpeg\./);
-		assert.match(output, /Image "missing\.jpeg" does not exist at site\/images\/missing\.jpeg or anywhere under any page image root\./);
+		assert.match(output, /Content Issues\n\n\[site\/pages\/000-home\/content\.md \[min-konst\]\]\n  Errors:/);
+		assert.match(output, /Image "vav\.jpeg" is used here but is located in site\/pages\/000-home\/images\/mitt-hem\/vav\.jpeg\./);
+		assert.match(output, /Image "missing\.jpeg" does not exist at site\/pages\/000-home\/images\/missing\.jpeg or anywhere under any page image root\./);
 		assert.match(output, /Unreferenced Images\nThese files are kept under page image roots but are not referenced by Norna-managed image references:/);
-		assert.match(output, /site\/images\/karin-walde\/unreferenced\.jpg/);
+		assert.match(output, /site\/pages\/000-home\/images\/karin-walde\/unreferenced\.jpg/);
 	});
 });
 
@@ -150,11 +150,11 @@ test('content:check warns when carousel images use different aspect ratios', asy
 		site: carouselAspectRatioSite,
 		files: [
 			{
-				path: 'site/images/wide.png',
+				path: 'site/pages/000-home/images/wide.png',
 				contents: makePngHeader({ width: 400, height: 300 }),
 			},
 			{
-				path: 'site/images/wider.png',
+				path: 'site/pages/000-home/images/wider.png',
 				contents: makePngHeader({ width: 600, height: 300 }),
 			},
 		],
@@ -185,8 +185,8 @@ test('content:check fails when Markdown uses removed inline color styles', async
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Inline color style "\.highlight" is no longer supported in site\/content\.md\./);
-		assert.match(output, /Inline color style "\.missing" is no longer supported in site\/content\.md\./);
+		assert.match(output, /Inline color style "\.highlight" is no longer supported in site\/pages\/000-home\/content\.md\./);
+		assert.match(output, /Inline color style "\.missing" is no longer supported in site\/pages\/000-home\/content\.md\./);
 	});
 });
 
@@ -449,7 +449,7 @@ Text.
 test('content:check explains likely misindented frontmatter keys', async () => {
 	await withTempProject({
 		site: topLevelImagesSite,
-		files: ['site/images/intro/intro.jpg'],
+		files: ['site/pages/000-home/images/intro/intro.jpg'],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
 		const output = getOutput(result);
@@ -466,8 +466,8 @@ test('content:check respects NORNA_SITE_DIR', async () => {
 		site: movableSite,
 		siteDirectory: 'custom-site',
 		files: [
-			'custom-site/images/move-me.jpg',
-			'custom-site/images/home.jpg',
+			'custom-site/pages/000-home/images/move-me.jpg',
+			'custom-site/pages/000-home/images/home.jpg',
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check'], { NORNA_SITE_DIR: 'custom-site' });
@@ -506,26 +506,26 @@ test('content:sync moves referenced images and keeps unreferenced images in plac
 	await withTempProject({
 		site: movableSite,
 		files: [
-			'site/images/home.jpg',
-			'site/images/mitt-hem/move-me.jpg',
-			'site/images/mitt-hem/unreferenced.jpg',
+			'site/pages/000-home/images/home.jpg',
+			'site/pages/000-home/images/mitt-hem/move-me.jpg',
+			'site/pages/000-home/images/mitt-hem/unreferenced.jpg',
 		],
 	}, async (root) => {
 		const syncResult = runContentScript(root, ['--write', '--yes']);
 		const syncOutput = getOutput(syncResult);
 
 		assert.equal(syncResult.status, 0, syncOutput);
-		assert.match(syncOutput, /Moved image "move-me\.jpg" to site\/images\/\./);
-		assert.equal(await fileExists(path.join(root, 'site/images/move-me.jpg')), true);
-		assert.equal(await fileExists(path.join(root, 'site/images/mitt-hem/move-me.jpg')), false);
-		assert.equal(await fileExists(path.join(root, 'site/images/mitt-hem/unreferenced.jpg')), true);
+		assert.match(syncOutput, /Moved image "move-me\.jpg" to site\/pages\/000-home\/images\/\./);
+		assert.equal(await fileExists(path.join(root, 'site/pages/000-home/images/move-me.jpg')), true);
+		assert.equal(await fileExists(path.join(root, 'site/pages/000-home/images/mitt-hem/move-me.jpg')), false);
+		assert.equal(await fileExists(path.join(root, 'site/pages/000-home/images/mitt-hem/unreferenced.jpg')), true);
 
 		const checkResult = runContentScript(root, ['--check']);
 		const checkOutput = getOutput(checkResult);
 
 		assert.equal(checkResult.status, 0, checkOutput);
 		assert.match(checkOutput, /Content check completed with warnings\./);
-		assert.match(checkOutput, /site\/images\/mitt-hem\/unreferenced\.jpg/);
+		assert.match(checkOutput, /site\/pages\/000-home\/images\/mitt-hem\/unreferenced\.jpg/);
 	});
 });
 

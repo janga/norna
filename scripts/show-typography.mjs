@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 import {
 	defaultTypography,
 	resolveTypographyConfig,
@@ -13,20 +11,12 @@ import {
 	readSiteFile,
 	validateContentFrontmatterStructure,
 	validateFrontmatterIndentation,
-	validatePageThemeYamlStructure,
 } from './lib/site-content.mjs';
 import {
-	siteContentLabel,
-	siteContentPath,
-	sitePagesDir,
-	sitePagesLabel,
 	siteThemeLabel,
-	siteThemePath,
 } from './lib/site-paths.mjs';
-import { getPageDirectoryAncestors } from './lib/page-model.mjs';
 import { readThemeConfig } from './lib/theme-config.mjs';
 import { resolveThemeConfig } from './lib/theme-presets.mjs';
-import { parseYamlConfig } from './lib/yaml-config.mjs';
 
 const mode = process.argv[2] ?? 'show';
 
@@ -199,28 +189,6 @@ const readThemeTypography = async () => {
 	return resolveAnnotatedTypographyConfig(themeTypographyConfig ?? defaultTypography, siteThemeLabel);
 };
 
-const readPageThemeTypography = async (contentFile, themeTypography) => {
-	if (contentFile.isHome) return themeTypography;
-
-	for (const pageDirectory of getPageDirectoryAncestors(contentFile.pageDirectory).reverse()) {
-		const pageThemePath = path.join(sitePagesDir, pageDirectory, 'theme.yaml');
-		const pageThemeFile = await readFile(pageThemePath, 'utf8').catch((error) => {
-			if (error?.code === 'ENOENT') return null;
-			throw error;
-		});
-		if (!pageThemeFile) continue;
-		const pageThemeLabel = `${sitePagesLabel}/${pageDirectory}/theme.yaml`;
-
-		const pageThemeConfig = resolveThemeConfig(parseYamlConfig(pageThemeFile, pageThemeLabel, {
-			validateStructure: validatePageThemeYamlStructure,
-		}), pageThemeLabel);
-		const typographyConfig = pageThemeConfig.typography;
-		return resolveAnnotatedTypographyConfig(typographyConfig ?? defaultTypography, pageThemeLabel);
-	}
-
-	return themeTypography;
-};
-
 const readPageTypography = async (contentFile, siteThemeTypography) => {
 	const { frontmatter, body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 	const indentationIssues = [];
@@ -233,7 +201,7 @@ const readPageTypography = async (contentFile, siteThemeTypography) => {
 		].join('\n'));
 	}
 
-	const pageTypography = await readPageThemeTypography(contentFile, siteThemeTypography);
+	const pageTypography = siteThemeTypography;
 	const sections = (await getBodySections(body)).sections
 		.filter((section) => section.id)
 		.map((section) => {
