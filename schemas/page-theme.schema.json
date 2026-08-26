@@ -25,7 +25,7 @@
               "description": "Use more expansive spacing between sections and structured blocks."
             }
           ],
-          "markdownDescription": "```yaml\nlayout:\n  contentSpacing: compact\n```\n\nPage content spacing. Descendant pages inherit this value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#page-themes)",
+          "markdownDescription": "```yaml\nlayout:\n  contentSpacing: compact\n```\n\nPage content spacing. Descendant pages inherit this value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)",
           "examples": [
             "compact",
             "normal",
@@ -52,7 +52,7 @@
               "description": "Allow body text to use more horizontal space."
             }
           ],
-          "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n```\n\nBody-text line length. Descendant pages inherit this value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#page-themes)",
+          "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n```\n\nBody-text line length. Descendant pages inherit this value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)",
           "examples": [
             "narrow",
             "normal",
@@ -62,7 +62,7 @@
       },
       "additionalProperties": false,
       "description": "Page-local layout settings inherited by descendant pages.",
-      "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nAdjusts body-text line length and vertical content spacing for this page and its descendants.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#page-themes)"
+      "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nAdjusts body-text line length and vertical content spacing for this page and its descendants.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
     },
     "images": {
       "type": "object",
@@ -71,7 +71,7 @@
           "description": "Maximum managed-image width. Omit this to keep the selected preset.",
           "type": "string",
           "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
-          "markdownDescription": "```yaml\nimages:\n  width: 900px\n```\n\nMaximum managed-image width. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
+          "markdownDescription": "```yaml\nimages:\n  width: 900px\n```\n\nMaximum managed-image width. Omit this to keep the selected preset.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
         },
         "maxAvailableWidthPercent": {
           "description": "Maximum percentage of available horizontal space used by managed images.",
@@ -89,14 +89,14 @@
                   "exclusiveMinimum": 0,
                   "maximum": 100,
                   "description": "Percentage used on wider screens.",
-                  "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    desktop: 100\n```\n\nPercentage used on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
+                  "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    desktop: 100\n```\n\nPercentage used on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
                 },
                 "mobile": {
                   "type": "number",
                   "exclusiveMinimum": 0,
                   "maximum": 100,
                   "description": "Percentage used on narrow screens.",
-                  "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    mobile: 100\n```\n\nPercentage used on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
+                  "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    mobile: 100\n```\n\nPercentage used on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
                 }
               },
               "required": [
@@ -106,7 +106,7 @@
               "additionalProperties": false
             }
           ],
-          "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    desktop: 100\n    mobile: 100\n```\n\nMaximum percentage of available horizontal space used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
+          "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    desktop: 100\n    mobile: 100\n```\n\nMaximum percentage of available horizontal space used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
         },
         "maxAvailableHeightPercent": {
           "description": "Maximum percentage of viewport height used by managed images.",
@@ -124,14 +124,14 @@
                   "exclusiveMinimum": 0,
                   "maximum": 100,
                   "description": "Percentage used on wider screens.",
-                  "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n```\n\nPercentage used on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
+                  "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n```\n\nPercentage used on wider screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
                 },
                 "mobile": {
                   "type": "number",
                   "exclusiveMinimum": 0,
                   "maximum": 100,
                   "description": "Percentage used on narrow screens.",
-                  "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    mobile: 68\n```\n\nPercentage used on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
+                  "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    mobile: 68\n```\n\nPercentage used on narrow screens.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
                 }
               },
               "required": [
@@ -141,12 +141,12 @@
               "additionalProperties": false
             }
           ],
-          "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n    mobile: 68\n```\n\nMaximum percentage of viewport height used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
+          "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n    mobile: 68\n```\n\nMaximum percentage of viewport height used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
         }
       },
       "additionalProperties": false,
       "description": "Optional defaults for managed image presentation.",
-      "markdownDescription": "```yaml\nimages:\n  width: 900px\n```\n\nAdjusts managed-image sizing for this page and its descendants.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#image-sizing)"
+      "markdownDescription": "```yaml\nimages:\n  width: 900px\n```\n\nAdjusts managed-image sizing for this page and its descendants.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
     },
     "sections": {
       "type": "object",
@@ -171,7 +171,7 @@
               "description": "Cycle through the palette base, soft and emphasis surfaces."
             }
           ],
-          "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nSection background sequence inherited by descendant pages.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#page-themes)",
+          "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nSection background sequence inherited by descendant pages.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)",
           "examples": [
             "uniform",
             "alternating",
@@ -181,12 +181,12 @@
       },
       "additionalProperties": false,
       "description": "Page-local section presentation inherited by descendant pages.",
-      "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nAdjusts the section background sequence for this page and its descendants.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#page-themes)"
+      "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nAdjusts the section background sequence for this page and its descendants.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
     }
   },
   "additionalProperties": false,
   "description": "Limited page presentation overrides inherited by descendant pages. Site colors, shapes, typography and navigation remain global.",
   "$id": "https://janga.github.io/norna/schemas/page-theme.schema.json",
   "title": "Norna page theme",
-  "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nA page theme may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Site colors, shapes and typography stay consistent.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.17/docs/theme.md#page-themes)"
+  "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nA page theme may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Site colors, shapes and typography stay consistent.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
 }
