@@ -44,27 +44,42 @@ const isCurrentBranch = (page: SitePage) => currentPage.pageDirectory === page.p
 	|| currentPage.pageDirectory.startsWith(`${page.pageDirectory}/pages/`);
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
 const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
+const showSinglePageTopLink = !showSiteNavigation;
+const currentPageSectionCount = currentPageNavigation?.sections.length ?? 0;
 const hasCurrentPageSectionMenu = Boolean(
-	currentPageNavigation && hasSectionMenu(currentPageNavigation.sections),
+	currentPageNavigation && (
+		showSinglePageTopLink
+			? currentPageSectionCount > 0
+			: hasSectionMenu(currentPageNavigation.sections)
+	),
 );
 const hasTreePageContents = Boolean(
 	navigationMode === 'tree' && currentPageNavigation?.headings.length,
 );
-const showSinglePageTopLink = !showSiteNavigation;
+const showPageNavigation = Boolean(
+	navigationMode !== 'tree'
+	&& currentPageNavigation
+	&& (showSinglePageTopLink || hasCurrentPageSectionMenu),
+);
+const showSinglePageTitleOnly = showSinglePageTopLink && currentPageSectionCount === 0;
 const showMobileNavigation = showSiteNavigation || hasCurrentPageSectionMenu || hasTreePageContents;
-const showNavigationRow = showMobileNavigation || Boolean(logo);
+const showDesktopNavigationRow = showSiteNavigation || Boolean(logo);
+const showNavigationRow = showMobileNavigation || showDesktopNavigationRow;
 const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents || navigationMode === 'tree';
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
 
 <header
-	class:list={['site-top', { 'site-top-has-site-nav': showSiteNavigation }]}
+	class:list={['site-top', {
+		'site-top-has-site-nav': showSiteNavigation,
+		'site-top-has-navigation-row': showDesktopNavigationRow,
+	}]}
 	data-navigation-mode={navigationMode}
 	style={navigationStyle}
 >
 	{showNavigationRow && (
-		<div class="site-nav-row">
+		<div class:list={['site-nav-row', { 'site-nav-row-mobile-only': !showDesktopNavigationRow }]}>
 			{logo && (
 				<a class="site-brand" href={pageHref(homePage)}>
 					<img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} />
@@ -144,8 +159,11 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 		</div>
 	)}
 
-	{navigationMode !== 'tree' && hasCurrentPageSectionMenu && currentPageNavigation && (
-		<nav class="page-nav" aria-label={projectConfig.locale.labels.pageNavigation}>
+	{showPageNavigation && currentPageNavigation && (
+		<nav
+			class:list={['page-nav', { 'page-nav-title-only': showSinglePageTitleOnly }]}
+			aria-label={projectConfig.locale.labels.pageNavigation}
+		>
 			<div class="page-nav-inner">
 				{!showSinglePageTopLink && (
 					<span class="page-nav-label">{projectConfig.locale.labels.pageNavigation}</span>

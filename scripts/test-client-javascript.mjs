@@ -64,6 +64,42 @@ palette: paper
 `);
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
+  description: A minimal single page without sections.
+---
+
+# Minimal page
+
+Ordinary page content does not need a level 2 section.
+`);
+
+	runBuild();
+	const titleOnlyHtml = await readPage();
+	assertNoClientJavaScript(titleOnlyHtml, 'A single page with only its page-title navigation');
+	assert.match(titleOnlyHtml, /<nav class="page-nav page-nav-title-only" aria-label="Page contents">/);
+	assert.match(titleOnlyHtml, /class="page-nav-page-top" data-page-top href="\/">Minimal page<\/a>/);
+	assert.doesNotMatch(titleOnlyHtml, /class="mobile-nav-menu"/);
+
+	await writeFile(path.join(homeDir, 'content.md'), `---
+page:
+  description: A single page with one section.
+---
+
+# One section
+
+## Intro {#intro}
+
+One section still provides a useful navigation destination after the page title.
+`);
+
+	runBuild();
+	const oneSectionHtml = await readPage();
+	assert.match(oneSectionHtml, /<nav class="page-nav" aria-label="Page contents">/);
+	assert.match(oneSectionHtml, /class="page-nav-page-top" data-page-top href="\/">One section<\/a>/);
+	assert.match(oneSectionHtml, /class="mobile-nav-menu"/);
+	assert.match(oneSectionHtml, /href="#intro"/);
+
+	await writeFile(path.join(homeDir, 'content.md'), `---
+page:
   description: A single page with sticky section navigation.
 ---
 
