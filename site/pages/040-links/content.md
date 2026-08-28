@@ -9,8 +9,8 @@ page:
 ## Project links {#project-links}
 
 - [GitHub repository](https://github.com/janga/norna)
+- [Getting Started](/getting-started/)
 - [Documentation map](https://github.com/janga/norna/blob/main/docs/README.md)
-- [Five-minute tutorial](https://github.com/janga/norna/blob/main/docs/getting-started.md)
 - [AI-readable documentation index](/llms.txt)
 - [npm package](https://www.npmjs.com/package/@janga/norna)
 - [Issue tracker](https://github.com/janga/norna/issues)

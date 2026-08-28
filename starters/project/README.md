@@ -73,7 +73,7 @@ npm run norna:build
 
 Generic Norna documentation lives in the Norna repository:
 
-- `docs/getting-started.md`
+- `docs/README.md`
 - `docs/site-files.md`
 - `docs/public-files.md`
 - `docs/content.md`

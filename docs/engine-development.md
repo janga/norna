@@ -45,10 +45,9 @@ npm run package:check
 `examples/`. `npm run test` includes those builds in the standard check
 sequence.
 
-`npm run test:documentation` extracts the file examples from the five-minute
-tutorial, applies them to a freshly initialized temporary site, runs the
-configuration and content checks, builds the result, and checks local Markdown
-links plus the `llms.txt` source targets.
+`npm run test:documentation` checks local Markdown links, rejects obsolete site
+paths and filenames in documentation and examples, and verifies that every
+Markdown source linked from `llms.txt` exists.
 
 `npm run build:pages` is specific to this repository. It builds the
 documentation site and assembles rendered examples under `dist/examples/` for

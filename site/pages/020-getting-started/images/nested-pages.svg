@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 600" role="img" aria-labelledby="title desc">
+  <title id="title">Nested Norna pages and navigation</title>
+  <desc id="desc">Nested Guides, Installation and macOS page folders map to nested URLs, a desktop page tree and an expandable mobile menu.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M2 2 L10 6 L2 10" fill="none" stroke="#a8905d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .sans { font-family: Arial, Helvetica, sans-serif; }
+      .mono { font-family: Menlo, Consolas, monospace; }
+      .panel { fill: #fffdf9; stroke: #d8d0c4; stroke-width: 1.5; }
+      .tree { fill: #393630; font-size: 13px; }
+      .label { fill: #746e63; font-size: 11px; font-weight: 700; }
+      .item { fill: #393630; font-size: 12px; }
+      .muted { fill: #777168; font-size: 11px; }
+      .active { fill: #fffdf9; stroke: #a8905d; stroke-width: 1.5; }
+      .flow { fill: none; stroke: #a8905d; stroke-width: 1.7; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <g class="sans">
+    <g transform="translate(30 36)">
+      <rect class="panel" width="342" height="528" rx="10"/>
+      <text class="label" x="24" y="32">PAGE FILES</text>
+      <g class="mono tree">
+        <text x="24" y="72">site/pages/</text>
+        <text x="24" y="100">├── 000-home/</text>
+        <text x="24" y="126">│   └── content.md</text>
+        <text x="24" y="154">└── 010-guides/</text>
+        <text x="24" y="180">    ├── content.md</text>
+        <text x="24" y="208">    └── pages/</text>
+        <text x="24" y="234">        └── 010-installation/</text>
+        <text x="24" y="260">            ├── content.md</text>
+        <text x="24" y="288">            └── pages/</text>
+        <text x="24" y="314">                └── 020-macos/</text>
+        <text x="24" y="340">                    └── content.md</text>
+      </g>
+      <text class="label" x="24" y="402">GENERATED URLS</text>
+      <text class="mono muted" x="24" y="432">/guides/</text>
+      <text class="mono muted" x="24" y="458">/guides/installation/</text>
+      <text class="mono item" x="24" y="484">/guides/installation/macos/</text>
+    </g>
+
+    <path class="flow" d="M388 300 H432"/>
+
+    <g transform="translate(448 36)">
+      <rect class="panel" width="338" height="528" rx="10"/>
+      <text class="label" x="22" y="32">DESKTOP</text>
+      <rect x="1" y="50" width="336" height="42" fill="#f3eee4"/>
+      <text class="item" x="20" y="76" font-weight="700">HOME</text>
+      <text class="item" x="88" y="76" font-weight="700">GUIDES</text>
+      <line x1="88" y1="83" x2="132" y2="83" stroke="#393630" stroke-width="2"/>
+
+      <text class="label" x="22" y="126">GUIDES</text>
+      <text class="item" x="22" y="158">Overview</text>
+      <text class="item" x="22" y="192">Installation</text>
+      <text class="muted" x="42" y="220">Requirements</text>
+      <rect class="active" x="34" y="236" width="128" height="32" rx="4"/>
+      <text class="item" x="46" y="257" font-weight="700">macOS</text>
+      <text class="muted" x="58" y="292">Install</text>
+      <text class="muted" x="58" y="316">Verify</text>
+
+      <line x1="184" y1="116" x2="184" y2="486" stroke="#ded7cb"/>
+      <text class="muted" x="204" y="144">Guides / Installation</text>
+      <text class="item" x="204" y="180" font-size="19" font-weight="700">macOS</text>
+      <text class="muted" x="204" y="208">Install the required tools</text>
+      <rect x="204" y="232" width="110" height="12" rx="3" fill="#ded7cb"/>
+      <rect x="204" y="254" width="92" height="12" rx="3" fill="#ebe5da"/>
+      <rect x="204" y="296" width="122" height="58" rx="4" fill="#393630"/>
+      <text class="mono" x="216" y="330" fill="#fffdf9" font-size="9">brew install ...</text>
+    </g>
+
+    <path class="flow" d="M802 300 H834"/>
+
+    <g transform="translate(850 36)">
+      <rect class="panel" width="200" height="528" rx="18"/>
+      <rect x="1" y="1" width="198" height="44" rx="17" fill="#f3eee4"/>
+      <text class="item" x="18" y="28" font-weight="700">GUIDES</text>
+      <rect x="144" y="11" width="38" height="24" rx="4" fill="#fffdf9" stroke="#d8d0c4"/>
+      <text class="item" x="154" y="28">☰</text>
+      <text class="label" x="18" y="78">PAGES AND SECTIONS</text>
+      <text class="item" x="18" y="112">▾ Guides</text>
+      <text class="item" x="32" y="146">▾ Installation</text>
+      <rect class="active" x="44" y="162" width="124" height="32" rx="4"/>
+      <text class="item" x="56" y="183" font-weight="700">macOS</text>
+      <text class="muted" x="66" y="218">Install</text>
+      <text class="muted" x="66" y="244">Verify</text>
+      <text class="item" x="32" y="282">Workflows</text>
+      <line x1="18" y1="310" x2="182" y2="310" stroke="#ded7cb"/>
+      <text class="muted" x="18" y="342">The same hierarchy is</text>
+      <text class="muted" x="18" y="360">available in one menu.</text>
+    </g>
+  </g>
+</svg>

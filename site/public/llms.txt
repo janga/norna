@@ -9,7 +9,7 @@ integrates publishing with GitHub Pages only.
 ## Start Here
 
 - [Project README](https://raw.githubusercontent.com/janga/norna/main/README.md)
-- [Build your first Norna site](https://raw.githubusercontent.com/janga/norna/main/docs/getting-started.md)
+- [Getting Started](https://janga.github.io/norna/getting-started/)
 - [Documentation map](https://raw.githubusercontent.com/janga/norna/main/docs/README.md)
 - [Site files](https://raw.githubusercontent.com/janga/norna/main/docs/site-files.md)
 - [Requirements and limitations](https://raw.githubusercontent.com/janga/norna/main/docs/requirements.md)

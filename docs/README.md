@@ -1,22 +1,28 @@
 # Norna Documentation
 
 The [Norna introduction site](https://janga.github.io/norna/) explains what the
-tool is for. These Markdown files are the authoritative tutorial, workflow
-guides, and reference.
+tool is for, and its [Getting Started](https://janga.github.io/norna/getting-started/)
+page introduces the workflow with examples and diagrams. These Markdown files
+are the versioned reference for exact file contracts, syntax, defaults,
+commands, and troubleshooting.
 
 ## Start Here
 
-1. [Build your first Norna site](getting-started.md) follows one short path from
-   an empty directory to a checked build.
+1. [Getting Started](https://janga.github.io/norna/getting-started/) introduces
+   installation, page content, file structure, themes, local work, and
+   publishing.
 2. [Site Files](site-files.md) is the canonical map of every source file,
    convention-based directory, and generated location.
-3. [Requirements and limitations](requirements.md) lists required software and
+3. [Content](content.md) and [Pages](pages.md) define the exact Markdown and
+   page-tree rules behind the introduction.
+4. [Requirements and limitations](requirements.md) lists required software and
    current product boundaries.
-4. [Examples](../examples/README.md) pairs complete and focused source projects
+5. [Examples](../examples/README.md) pairs complete and focused source projects
    with rendered sites.
 
-Do not read the reference from beginning to end before trying Norna. Complete
-the tutorial, then open the reference for the file or workflow you are changing.
+Use the web introduction to learn the normal path. Open the reference for the
+file or workflow you are changing when you need allowed values, defaults,
+constraints, command options, or edge-case behavior.
 
 ## Site File Reference
 
@@ -59,8 +65,8 @@ required, optional, convention-discovered, versioned, or generated.
 
 ### Create And Run A Site
 
-- [Create a standalone site](getting-started.md#1-create-and-run-the-site)
-- [Add Norna to an existing Node project](how-to/embedded-site.md)
+- [Create a standalone site](https://janga.github.io/norna/getting-started/#create)
+- [Add Norna to an existing Node project](https://janga.github.io/norna/faq/#add-norna-to-an-existing-project)
 - [Start and manage local preview](local-development.md)
 - [Inspect or update the installed engine](commands.md#command-summary)
 
@@ -94,10 +100,10 @@ required, optional, convention-discovered, versioned, or generated.
 - [Publish through GitHub Pages](publishing.md#github-pages-workflow)
 - [Monitor or troubleshoot deployment](publishing.md)
 
-## Concepts And Explanation
+## Explanation
 
-- [Norna's site model](https://janga.github.io/norna/concepts/) explains how
-  files, sections, images, and pages become a website.
+- [Getting Started](https://janga.github.io/norna/getting-started/) introduces
+  files, sections, images, and page hierarchies as the site grows.
 - [Images and Metadata](images-and-metadata.md) explains managed variants and
   published URLs.
 - [Command Organization](design/command-organization.md) explains standalone,
@@ -114,9 +120,10 @@ required, optional, convention-discovered, versioned, or generated.
 
 ## Troubleshooting
 
-- [Common first problems](getting-started.md#common-first-problems)
+- [Frequently asked questions](https://janga.github.io/norna/faq/)
 - [Manage and restart local preview](local-development.md#manage-preview)
 - [Rebuild a stale preview](local-development.md#rebuild-stale-preview)
+- [Check ImageMagick and other requirements](requirements.md)
 - [Validate and sync content](content.md#validation-and-sync)
 - [Inspect publishing failures](publishing.md)
 - [Report a reproducible problem](https://github.com/janga/norna/issues)

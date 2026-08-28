@@ -35,6 +35,9 @@ approachable before wider use.
   - missing, misplaced, or unreferenced images.
 - Add a plain explanation of what is versioned, what is generated, and what is
   published.
+- Explain "opinionated" on the presentation site through a few concrete,
+  user-facing examples of decisions Norna removes or standardises. Avoid using
+  the term as a product claim before those practical benefits are visible.
 - Expand typography profile guidance with examples of when to choose each
   profile in `site/theme.yaml` without losing the complete theme-preset model.
 - Document the recommended site-upgrade workflow after a new engine version is

@@ -13,7 +13,7 @@ than a general-purpose site generator: you describe the site instead of
 implementing a new presentation layer for every project.
 
 [Documentation](https://janga.github.io/norna/) |
-[Five-minute tutorial](docs/getting-started.md) |
+[Getting started](https://janga.github.io/norna/getting-started/) |
 [Live examples](https://janga.github.io/norna/examples/) |
 [npm package](https://www.npmjs.com/package/@janga/norna)
 
@@ -37,8 +37,9 @@ Open the URL printed by the development server, then edit the files under
 `site/`. The generated project pins its Norna version and includes the npm
 scripts and GitHub Pages workflow needed to check, build, and publish it.
 
-Follow the [five-minute tutorial](docs/getting-started.md) for a first edit and
-verified build.
+Continue with the illustrated
+[Getting Started](https://janga.github.io/norna/getting-started/) guide to see
+how page content, files, navigation, and rendered output fit together.
 
 For shorter commands, install the launcher globally with
 `npm install --global @janga/norna@latest`. You can then use `norna dev`,
@@ -132,7 +133,7 @@ engine diagnostics, not for ordinary editing and local preview. See
 
 ## Documentation
 
-- [Five-minute tutorial](docs/getting-started.md)
+- [Getting Started](https://janga.github.io/norna/getting-started/)
 - [Site files](docs/site-files.md)
 - [Task-oriented documentation map](docs/README.md)
 - [Common workflows](docs/README.md#common-workflows)

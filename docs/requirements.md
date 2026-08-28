@@ -49,6 +49,7 @@ an ordinary Norna site.
   occur between releases and should be reviewed before updating a project.
 
 These constraints are part of the product's current scope, not hidden setup
-steps. Start with [the tutorial](getting-started.md), and use
+steps. Start with the illustrated
+[Getting Started](https://janga.github.io/norna/getting-started/), and use
 [`norna engine:version`](commands.md#command-summary) to inspect the version
 installed by an existing project.

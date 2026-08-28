@@ -5,173 +5,260 @@ page:
 
 # Getting Started
 
-## Create a site {#create}
+## Install Norna and create a site {#create}
 
-You need Node.js 22.12 or later. ImageMagick is used when Norna generates image
-variants.
-
-### Standalone site
-
-Use this when the website is its own project:
+You need Node.js 22.12 or later.
 
 ```sh
+# Create a new site project in my-site/
 npx @janga/norna@latest init my-site
 cd my-site
+
+# Install the Norna version recorded by the project
 npm install
-npm run norna:dev
 ```
 
-The new project contains the Norna site files, npm scripts and setup needed to
-build the site.
+The first command uses the latest Norna release to create the project.
+`package.json` records the project's Norna version, and `npm install` installs
+that version locally.{note-ref}
 
-For a short path with a visible checkpoint after every edit, follow the
-[five-minute tutorial](https://github.com/janga/norna/blob/main/docs/getting-started.md).
+{note: Adding Norna to an existing Node project is also supported. See the
+[FAQ](/faq/#add-norna-to-an-existing-project).}
 
-For a real project, keep the generated lockfile committed so local and automated
-builds use the same Norna version.
+Commit `package.json` and `package-lock.json` to Git. Together they let you
+restore an earlier version after a failed upgrade and keep installations
+consistent for everyone working on the site and for automated builds.
 
-### Embedded site
+Norna uses ImageMagick to prepare raster images for responsive layouts. Install
+it separately for your operating system before adding JPEG or PNG images to the
+site.{note-ref}
 
-Use this when the website should live inside an existing Node project:
+{note: [How to install ImageMagick.](/faq/#install-imagemagick)}
+
+See [Requirements and limitations](https://github.com/janga/norna/blob/main/docs/requirements.md)
+for exact runtime and external-tool requirements.
+
+## Preview and make the first edit {#preview}
+
+Start the development server from the project directory:
 
 ```sh
-cd existing-project
-npx @janga/norna@latest init . --type embedded --site-dir presentation
-npm install
+# Why use norna:dev? npm runs the Norna version installed by this project.
 npm run norna:dev
 ```
 
-Here `.` means "add Norna to the current project". `--site-dir presentation`
-means the Norna source files will live under `presentation/` instead of the
-default `site/`.
+Open the address printed by the command. Then edit
+`site/pages/000-home/content.md` and save the file:
 
-Embedded setup keeps the surrounding project structure and uses namespaced
-`norna:*` scripts so Norna does not take over the project's normal `build`,
-`test`, or deploy scripts.
+```md
+# Dog Shelter
+
+We help dogs find permanent homes.
+
+## Our dogs
+
+Meet the dogs currently waiting for a family.
+
+### Meet Rover
+
+Rover enjoys long walks and quiet afternoons.
+```
+
+`#` is the page title, `##` starts a section, and `###` adds structure within
+that section. Norna renders the page and derives its local navigation from the
+same heading hierarchy.
 
 ### Optional shorter commands
 
-The `norna:*` npm scripts work in both standalone and embedded projects. If you
+The generated `norna:*` npm scripts are the portable project commands. If you
 prefer direct commands, install the cross-platform launcher once:
 
 ```sh
 npm install --global @janga/norna@latest
 ```
 
-You can then use:
+You can then use `norna dev`, `norna check`, and `norna build`. Inside a project,
+the launcher delegates to that project's locally installed Norna version. The
+project dependency and lockfile therefore remain the source of the engine
+version.
 
-```sh
-norna dev
-norna check
-norna build
-```
+[Commands](https://github.com/janga/norna/blob/main/docs/commands.md) documents
+all npm scripts, direct CLI forms, options, and project-local engine selection.
 
-Inside a project, the launcher uses that project's locally installed and pinned
-Norna version. The global package is only the launcher; the project dependency
-and lockfile remain the source of its engine version.
+## Start with one page {#single-page-site}
 
-Relevant documentation:
-[Getting Started](https://github.com/janga/norna/blob/main/docs/getting-started.md),
-[Requirements and limitations](https://github.com/janga/norna/blob/main/docs/requirements.md),
-[Commands](https://github.com/janga/norna/blob/main/docs/commands.md).
-
-## The site files {#site-files}
+The generated project starts with one page named Home:
 
 ```text
 site/
-  config.yaml
-  theme.yaml
-  sitewide-content.yaml
-  content.md
-  pages/
-  images/
-  public/
+├── config.yaml
+├── theme.yaml
+├── sitewide-content.yaml
+├── pages/
+│   └── 000-home/
+│       ├── content.md
+│       └── images/
+└── public/
 ```
 
-### Content
+Norna expects these files in defined places. The page text belongs in
+`content.md`; managed source images belong beside it in `images/`; visual
+choices belong in `theme.yaml`; and technical settings belong in `config.yaml`.
+Shared banners and footer content belong in `sitewide-content.yaml`, while
+`public/` contains files copied directly to the published site.
 
-`content.md` contains the homepage title, introduction and sections. The title
-is its single Markdown H1:
+Following this structure lets Norna connect content, images, presentation,
+configuration, and navigation without requiring you to describe those
+relationships again.
+
+A page has exactly one H1. Each H2 begins a section and each H3 is a subsection
+within the current section:
 
 ```md
-# My first Norna site
+# Dog Shelter
+
+An introduction to the site.
+
+## What we do
+
+We rescue and rehome dogs.
+
+### Recovery
+
+Every dog receives care before adoption.
+
+## You can help
+
+Adopt. Foster. Donate.
 ```
 
-Optional frontmatter can add an HTML meta description:
+On a one-page site, the page title and section headings form the navigation.
+Desktop navigation keeps these links close to the page; the mobile menu exposes
+the same page and heading structure in one expandable panel. Subsections can be
+included when the chosen navigation model needs that extra level.
 
-```yaml
+<!-- norna-image-provenance:
+image: single-page-site.svg
+source: hand-authored
+Hand-authored SVG diagram created for the Norna introduction site to explain
+how a single-page file tree, content.md and page-local images map to a
+simple single-page website.
+-->
+
+```norna-image-stack
+- image: single-page-site.svg
+  alt: A three-column diagram showing a single-page Norna file tree, Markdown page content, and the resulting browser page with navigation derived from its headings.
+```
+
+Managed local images are placed in the page's `images/` directory and inserted
+with a small Norna Markdown block:
+
+````md
+```norna-image-stack
+- image: rover.jpg
+  alt: Rover waiting for a home.
+  caption: Rover
+```
+````
+
+External images can use ordinary Markdown image syntax. See
+[Content](https://github.com/janga/norna/blob/main/docs/content.md) for exact
+heading, generated-id, note, and Norna-block syntax, and
+[Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md)
+for image placement, processing, and captions.
+
+## Add top-level pages {#top-level-pages}
+
+Add a page directory beside `000-home` when the site needs another main page:
+
+```text
+site/pages/
+├── 000-home/
+│   └── content.md
+├── 010-dogs/
+│   ├── content.md
+│   └── images/
+└── 020-adopt/
+    └── content.md
+```
+
+These pages are peers. Each gets its own URL, content, managed images, and local
+headings. The numeric prefix orders pages among their siblings, while the
+remaining page id becomes the URL segment: `010-dogs/` appears before
+`020-adopt/` and produces a URL ending in `/dogs/`.
+
+Top-level pages appear in the site's global navigation. Selecting one reveals
+that page's sections without losing access to the other pages. On mobile, pages
+and their sections are presented together in the same menu.
+
+<!-- norna-image-provenance:
+image: multi-page-site.svg
+source: hand-authored
+Hand-authored SVG diagram created for the Norna introduction site to explain
+how page folders map to page content, navigation, managed images and URLs.
+-->
+
+```norna-image-stack
+- image: multi-page-site.svg
+  alt: A three-column diagram showing top-level page folders, the Dogs page Markdown, and the resulting Dogs page with its URL and global navigation.
+```
+
+## Add nested pages {#nested-pages}
+
+When a top-level area needs more structure, add a `pages/` directory inside its
 page:
-  description: A website built from plain files.
+
+```text
+site/pages/
+├── 000-home/
+│   └── content.md
+└── 010-guides/
+    ├── content.md
+    └── pages/
+        └── 010-installation/
+            ├── content.md
+            └── pages/
+                └── 020-macos/
+                    └── content.md
 ```
 
-Additional pages live under `pages/`.
+This creates `/guides/`, `/guides/installation/`, and
+`/guides/installation/macos/`. Every directory is a real page with its own H1,
+content, and URL; Norna does not use empty grouping directories.
 
-Additional pages are listed in site navigation by default. The homepage is the
-first item, followed by additional pages in their numbered directory order. A
-public page can opt out:
+The top-level area stays in global navigation. Its descendants form a local
+page tree, and the current page's H2 and H3 headings appear with that tree. On a
+small screen, the same hierarchy becomes an expandable menu rather than a
+separate desktop sidebar.
 
-```yaml
-navigation:
-  listed: false
+Home is the exception: `000-home` is the site's front door and cannot have
+child pages. Start each navigable hierarchy with another top-level page beside
+it.
+
+<!-- norna-image-provenance:
+image: nested-pages.svg
+source: hand-authored
+Hand-authored SVG diagram created for the Norna introduction site to explain
+how nested page directories map to URLs and desktop and mobile navigation.
+-->
+
+```norna-image-stack
+- image: nested-pages.svg
+  alt: A diagram showing nested Guides, Installation and macOS page folders mapped to their URLs, a desktop navigation tree and an expandable mobile menu.
 ```
 
-### Presentation
+See [Pages](https://github.com/janga/norna/blob/main/docs/pages.md) for page
+directory rules, ordering, URL segments, nesting, inheritance, and the exact
+automatic navigation contract.
 
-`theme.yaml` is required and normally selects a complete visual preset. Focused
-values in the same file can override the preset.
+## Choose the site's presentation {#theme}
 
-### Shared site content
-
-`sitewide-content.yaml` contains shared banners, footer content and optional
-display settings for a convention-based navigation logo. Navigation text and
-logo alternative text come from the homepage H1.
-
-```yaml
-logo:
-  height: 2rem
-```
-
-The `logo` block only changes the displayed height of a supported logo file in
-`site/public/`; it does not select or enable the file.
-
-The optional logo is a separate link to the homepage and has no section menu.
-The homepage remains the first ordinary navigation item, where its sections are
-available in the same way as sections on additional pages.
-
-### Configuration
-
-`config.yaml` contains the public URL and optional language and smooth
-scrolling. Norna derives the base path from the URL and discovers GitHub
-repository details when a deploy command runs.
-
-### Assets
-
-`images/` contains the homepage's managed source images. Each additional page
-has its own `images/` directory next to its `content.md`.
-
-`public/` contains static files copied into the site, including the
-convention-based navigation logo and browser icons, `robots.txt`, or a `CNAME`
-file.
-
-These files are the interface you normally work with. The website implementation
-itself is provided by Norna.
-
-Relevant documentation:
-[Site Files](https://github.com/janga/norna/blob/main/docs/site-files.md),
-[Public Files](https://github.com/janga/norna/blob/main/docs/public-files.md),
-[Content](https://github.com/janga/norna/blob/main/docs/content.md),
-[Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
-[Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md).
-
-## Choose a theme {#theme}
-
-Norna includes four complete theme presets. Each one coordinates layout, image
-sizing, font and typography, spacing, palette and section surfaces:
+Norna includes four complete visual presets:
 
 - `portfolio` for restrained, image-led presentation
 - `documentation` for reading and technical explanation
 - `project` for compact project and product sites
-- `statement` for short content that needs a stronger editorial voice
+- `statement` for short content with a stronger editorial voice
 
 A complete site theme can therefore be this short:
 
@@ -179,7 +266,7 @@ A complete site theme can therefore be this short:
 preset: documentation
 ```
 
-Add only the values that should differ from the preset:
+Add only values that should differ from the preset:
 
 ```yaml
 preset: documentation
@@ -194,127 +281,101 @@ To inspect a preset before overriding it, export a commented reference file:
 npm run norna:theme:export -- documentation
 ```
 
-This creates `site/orig-documentation-theme.yaml`. Norna does not load that
-file; only `theme.yaml` is active. The command refuses to overwrite an existing
-reference file.
+This creates `site/orig-documentation-theme.yaml`. Norna does not load the
+reference file, and the command refuses to overwrite an existing one.
 
 The root theme keeps colors, shape, typography, page frame, and navigation
-consistent across the site. An optional page `theme.yaml` can make narrower
-changes to text width, content spacing, managed-image sizing, and section
-background patterns. Those page settings are inherited by descendant pages.
+consistent. A page-local `theme.yaml` can make narrower presentation changes
+that its descendants inherit.
 
-Relevant documentation:
-[Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
-[Typography](https://github.com/janga/norna/blob/main/docs/typography.md),
-[Pages](https://github.com/janga/norna/blob/main/docs/pages.md),
-[Commands](https://github.com/janga/norna/blob/main/docs/commands.md).
+See [Theme](https://github.com/janga/norna/blob/main/docs/theme.md) and
+[Typography](https://github.com/janga/norna/blob/main/docs/typography.md) for
+presets, allowed overrides, defaults, and page-theme inheritance.
 
-## Work locally and build {#workflow}
+## Check and maintain the source {#check}
 
-### Work locally
+Run the combined check before committing or publishing:
 
 ```sh
-npm run norna:dev
-```
-
-Edit the source files while the development server is running. You normally do
-not edit generated website code or create a separate template/component layer.
-
-<!-- norna-image-provenance:
-image: local-workflow.svg
-source: hand-authored
-Hand-authored SVG diagram created for the Norna introduction site to show the
-local edit-and-preview loop and the check before committing.
--->
-
-```norna-image-stack
-- image: local-workflow.svg
-  alt: Edit the site files and preview locally in a repeating loop. Run the local checks when the result is ready.
-  caption: Local workflow: edit and preview until the site is ready, then run the local checks before committing.
-```
-
-### Check and build
-
-During local work, run the combined check or the focused commands:
-
-```sh
+# Does this change files? No. It validates configuration and content.
 npm run norna:check
+```
+
+Use the focused checks while diagnosing a problem:
+
+```sh
 npm run norna:config:check
 npm run norna:content:check
+```
+
+When a managed image reference moves to another page, sync can move the source
+image to that page's `images/` directory:
+
+```sh
+# When is sync useful? After moving an image reference between pages.
+# Unlike check, this command moves the corresponding image file.
 npm run norna:sync
 ```
 
-`config:check` validates technical configuration. `content:check` validates
-content, sections and managed image references. `norna:sync` helps keep image
-files aligned when content moves between sections or pages. Cross-page sync
-requires a clean Git working tree before files are moved, so the operation is
-easy to roll back.
+Moving a reference between sections on the same page requires no sync because
+both sections use the same page-local `images/` directory. For a move between
+pages, sync shows every source and destination before asking for confirmation.
+If a filesystem error interrupts the operation, fix the reported problem and
+run sync again; already completed moves remain in place.
 
-Before publishing, validate and build the site:
+Git is still recommended because it lets you restore an unintended content edit
+or image move, but sync does not require a clean working tree.
+
+See [Commands](https://github.com/janga/norna/blob/main/docs/commands.md) for
+command side effects and options, and
+[Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md)
+for sync matching, ambiguity, and diagnostics.
+
+## Build and publish {#publish}
+
+Build the same static output that will be published:
 
 ```sh
 npm run norna:check
 npm run norna:build
 ```
 
-Norna reads the source files, validates them, processes images when needed and
-creates the static website in:
+Norna writes the generated website to `dist/`. Do not edit `dist/` as site
+source; edit the files under `site/` and build again.
 
-```text
-dist/
+The generated project includes GitHub Pages publishing. Commit the source and
+push it to GitHub when it is ready:
+
+```sh
+git status
+git add site/
+git commit -m "Update site"
+git push
 ```
 
-Treat `dist/` as generated output.
+The included GitHub Actions workflow then runs the required checks, builds the
+site, and publishes the generated output. A failed check prevents a broken site
+from being published.
 
-Do not edit it as the source of the site.
+GitHub Pages is the only integrated publishing target today. Other services can
+serve static files, but Norna does not currently provide publishing integrations
+for them.
 
-Relevant documentation:
-[Commands](https://github.com/janga/norna/blob/main/docs/commands.md),
-[Images And Metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md).
+See [Publishing](https://github.com/janga/norna/blob/main/docs/publishing.md)
+for repository setup, workflow permissions, custom domains, and troubleshooting.
 
-## Publish and project setup {#publish}
+## Continue with the reference {#reference}
 
-### Publish to GitHub
+This page introduces the normal path from an empty directory to a published
+site. The Markdown reference goes deeper without repeating the tutorial:
 
-Norna currently provides integrated publishing for GitHub Pages.
+- [Site files](https://github.com/janga/norna/blob/main/docs/site-files.md) lists required, optional, versioned, and generated paths.
+- [Content](https://github.com/janga/norna/blob/main/docs/content.md) defines headings, ids, notes, Norna blocks, and validation rules.
+- [Pages](https://github.com/janga/norna/blob/main/docs/pages.md) defines directory names, ordering, URLs, nesting, and navigation.
+- [Theme](https://github.com/janga/norna/blob/main/docs/theme.md) and [Typography](https://github.com/janga/norna/blob/main/docs/typography.md) define presets, overrides, and inheritance.
+- [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md) defines technical settings and defaults.
+- [Commands](https://github.com/janga/norna/blob/main/docs/commands.md) documents every project script and direct CLI form.
+- [Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md) explains managed images, generated variants, sync, and metadata.
 
-GitHub Pages is the only integrated publishing target today.
-
-The starter includes the GitHub Actions setup needed to build the site and
-publish the generated `dist/` output.
-
-Publishing is normally done by committing the site files and pushing them with
-Git. The included GitHub Pages workflow runs the required checks before
-publishing.
-
-<!-- norna-image-provenance:
-image: publishing-workflow.svg
-source: hand-authored
-Hand-authored SVG diagram created for the Norna introduction site to show that
-the included GitHub workflow automatically checks, builds and publishes after a
-push.
--->
-
-```norna-image-stack
-- image: publishing-workflow.svg
-  alt: Commit the site and push to GitHub. The included GitHub workflow automatically checks, builds and publishes the site to GitHub Pages.
-  caption: Publishing workflow: push committed changes to GitHub, where the included workflow checks, builds and publishes to GitHub Pages automatically.
-```
-
-Other static hosting services can technically serve static files, but Norna does
-not currently provide publishing integrations for them.
-
-More publishing integrations may be added in the future.
-
-Detailed GitHub Pages publishing documentation:
-[docs/publishing.md](https://github.com/janga/norna/blob/main/docs/publishing.md).
-
-Relevant documentation:
-[Publishing](https://github.com/janga/norna/blob/main/docs/publishing.md),
-[Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md).
-
-### Next
-
-- [Concepts](/concepts/)
-- [Examples](/examples/)
-- [Full documentation](https://github.com/janga/norna/tree/main/docs)
+You can also browse the [Examples](/examples/) or use the [FAQ](/faq/) when a
+normal setup produces an unexpected result.

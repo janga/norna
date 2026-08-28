@@ -65,7 +65,7 @@ Use `npm run norna:engine:version` to inspect the installed engine and
 
 Generic documentation lives in the `norna` repository:
 
-- `docs/getting-started.md`
+- `docs/README.md`
 - `docs/site-files.md`
 - `docs/public-files.md`
 - `docs/content.md`

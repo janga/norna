@@ -1,34 +1,26 @@
 {
-  "pages/010-concepts/images/multi-page-site.svg": {
+  "pages/020-getting-started/images/multi-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
     "sourceHash": "df14259d8631001dc432c5a6ed2cabf3a69c5b101e74ed94f8c87b7f2d2f7efd",
-    "src": "/images/original/pages/010-concepts/images/multi-page-site-df14259d.svg",
+    "src": "/images/original/pages/020-getting-started/images/multi-page-site-df14259d.svg",
     "width": 1080,
     "height": 620
   },
-  "pages/010-concepts/images/single-page-site.svg": {
+  "pages/020-getting-started/images/nested-pages.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "8fd564333d30f4fa429e8cc71ea71d5cdac769bab45d307d4ce60ff5ed49d389",
-    "src": "/images/original/pages/010-concepts/images/single-page-site-8fd56433.svg",
+    "sourceHash": "ad539a822bd8d0a655b1d8b7deec4eea6d1ba2ff74cde81856715910f3b5bd35",
+    "src": "/images/original/pages/020-getting-started/images/nested-pages-ad539a82.svg",
+    "width": 1080,
+    "height": 600
+  },
+  "pages/020-getting-started/images/single-page-site.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "b6a88182efcabfd6a08aabc047f12e9bd3cc83523f3db86cc909fd75eefd298b",
+    "src": "/images/original/pages/020-getting-started/images/single-page-site-b6a88182.svg",
     "width": 1080,
     "height": 620
-  },
-  "pages/020-getting-started/images/local-workflow.svg": {
-    "kind": "static",
-    "outputVersion": 2,
-    "sourceHash": "2ee375687d2686e0e0a03dea2a1284a317b9979556a8f980d12245f50479fb35",
-    "src": "/images/original/pages/020-getting-started/images/local-workflow-2ee37568.svg",
-    "width": 900,
-    "height": 280
-  },
-  "pages/020-getting-started/images/publishing-workflow.svg": {
-    "kind": "static",
-    "outputVersion": 2,
-    "sourceHash": "e4d81313bf72b3924655248f523712b713b6713a621db537b96fcfff49721ad1",
-    "src": "/images/original/pages/020-getting-started/images/publishing-workflow-e4d81313.svg",
-    "width": 900,
-    "height": 280
   }
 }

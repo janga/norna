@@ -74,6 +74,6 @@ model instead of a custom website implementation.
 
 ### Not a good fit
 
-Norna is not intended for dynamic web applications, large publishing systems,
-database-backed sites, visual CMS workflows, or projects that need complete
-control over their rendering architecture.
+Norna is not intended for dynamic web applications, database-backed sites,
+visual CMS workflows, or projects that need complete control over their
+rendering architecture.
