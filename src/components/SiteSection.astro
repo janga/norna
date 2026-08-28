@@ -1,5 +1,4 @@
 ---
-import projectConfig from '../../scripts/lib/project-config.mjs';
 import { getTextWidthCssValue, resolveSectionSurface } from '../../scripts/lib/presentation.mjs';
 import CardList from './CardList.astro';
 import ImageCarousel from './ImageCarousel.astro';
@@ -45,8 +44,7 @@ const sectionHeadingVisualLevel = section.headingLevel === 1 ? 'h1' : 'h2';
 const headingId = section.id ?? 'page-title';
 const firstContentBlock = section.contentBlocks[0];
 const firstContentBlockIsVisual = firstContentBlock !== undefined
-	&& firstContentBlock.type !== 'html'
-	&& firstContentBlock.type !== 'note';
+	&& firstContentBlock.type !== 'html';
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
 const headingSizeValues: Record<HeadingLevel, Record<TextSize, ResponsiveValue<string>>> = {
 	h1: {
@@ -219,14 +217,6 @@ const hasMedia = section.contentBlocks.some((block) => (
 	|| block.type === 'image-carousel'
 	|| (block.type === 'card-list' && block.cards.some((card) => card.image))
 ));
-const hasMarginNotes = section.contentBlocks.some((block) => (
-	block.type === 'note'
-));
-const getNoteGridRow = (blocks: ResolvedSection['contentBlocks'], blockIndex: number) => Math.max(
-	1,
-	blocks.slice(0, blockIndex).filter((block) => block.type === 'html').length,
-);
-const noteLabel = projectConfig.locale.labels.note;
 const contentGroups: Array<
 	| { type: 'reading'; blocks: ResolvedSection['contentBlocks'] }
 	| { type: 'media'; block: Extract<ResolvedSection['contentBlocks'][number], { type: 'image-stack' | 'image-carousel' | 'card-list' }> }
@@ -305,7 +295,6 @@ const sectionStyle = [
 			'site-section-page-title': isPageTitle,
 			'site-section-page-title-empty': isPageTitle && section.contentBlocks.length === 0,
 			'site-section-first-block-is-visual': firstContentBlockIsVisual,
-			'site-section-has-margin-notes': hasMarginNotes,
 		},
 	]}
 	data-section-title={section.title}
@@ -319,61 +308,9 @@ const sectionStyle = [
 		<div class:list={['section-body', { 'section-body-has-media': hasMedia, 'section-body-text-only': !hasMedia }]}>
 			{contentGroups.map((group, groupIndex) => {
 				if (group.type === 'reading') {
-					if (hasMarginNotes && group.blocks.some((block) => block.type === 'note')) {
-						return (
-							<div class="section-reading-layout">
-								{group.blocks.map((block, blockIndex) => {
-									if (block.type === 'html') {
-										return block.html && <div class="section-markdown" set:html={block.html} />;
-									}
-
-									const noteGridRow = getNoteGridRow(group.blocks, blockIndex);
-									return (
-										<aside
-											class="section-note section-note-margin"
-											id={block.id}
-											aria-label={`${noteLabel}${block.number ? ` ${block.number}` : ''}`}
-											role="note"
-											data-note-id={block.id}
-											style={`grid-row: ${noteGridRow};`}
-										>
-											{block.number && block.referenceId && (
-												<a class="section-note-number" href={`#${block.referenceId}`} aria-label={`${noteLabel} ${block.number}`}>
-													{block.number}
-												</a>
-											)}
-											<div class="section-note-content" set:html={block.html} />
-										</aside>
-									);
-								})}
-							</div>
-						);
-					}
-
-					return group.blocks.map((block, blockIndex) => {
-						if (block.type === 'html') {
-							return block.html && <div class="section-markdown" set:html={block.html} />;
-						}
-
-						const noteGridRow = getNoteGridRow(group.blocks, blockIndex);
-						return (
-							<aside
-								class="section-note section-note-margin"
-								id={block.id}
-								aria-label={`${noteLabel}${block.number ? ` ${block.number}` : ''}`}
-								role="note"
-								data-note-id={block.id}
-								style={`grid-row: ${noteGridRow};`}
-							>
-								{block.number && block.referenceId && (
-									<a class="section-note-number" href={`#${block.referenceId}`} aria-label={`${noteLabel} ${block.number}`}>
-										{block.number}
-									</a>
-								)}
-								<div class="section-note-content" set:html={block.html} />
-							</aside>
-						);
-					});
+					return group.blocks.map((block) => block.type === 'html'
+						&& block.html
+						&& <div class="section-markdown" set:html={block.html} />);
 				}
 
 				const block = group.block;

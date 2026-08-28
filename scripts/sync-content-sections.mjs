@@ -1,9 +1,7 @@
-import { execFile } from 'node:child_process';
 import { mkdir, rename, stat } from 'node:fs/promises';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import path from 'node:path';
-import { promisify } from 'node:util';
 import {
 	extractInlineNoteDiagnostics,
 	extractMarkdownImageReferences,
@@ -27,10 +25,7 @@ import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
 	siteThemeLabel,
 	siteThemePath,
-	siteProjectRoot,
 } from './lib/site-paths.mjs';
-
-const execFileAsync = promisify(execFile);
 
 const args = new Set(process.argv.slice(2));
 const shouldWrite = args.has('--write');
@@ -60,7 +55,14 @@ const addSectionIssue = (contentFile, section, issue) => addIssue({
 	sectionLabel: issue.sectionLabel ?? formatSectionLabel(contentFile, section),
 });
 
-const promptForWrite = async () => {
+const getMovePlanLines = (moves) => [
+	'Planned image moves:',
+	...moves.map((move) => `- ${getCandidateLabel({ contentFile: move.sourceContentFile, imagePath: move.from })} -> ${getExpectedImageLabel(move.contentFile, move.imageName)}`),
+];
+
+const promptForWrite = async (moves) => {
+	console.log(getMovePlanLines(moves).join('\n'));
+
 	if (skipPrompt) return true;
 	if (!process.stdin.isTTY) return false;
 
@@ -203,33 +205,6 @@ const addGlobalImageCandidate = (globalImageCandidatesByName, imageName, candida
 	globalImageCandidatesByName.get(imageName).push(candidate);
 };
 
-const assertCleanGitForCrossRootSync = async (moves) => {
-	if (!moves.some((move) => move.crossRoot)) return;
-
-	let stdout = '';
-	try {
-		({ stdout } = await execFileAsync('git', ['status', '--short'], {
-			cwd: siteProjectRoot,
-			maxBuffer: 1024 * 1024,
-		}));
-	} catch (error) {
-		addIssue({
-			severity: 'error',
-			message: 'Cross-page content sync requires a clean git working tree, but git status could not be checked.',
-			fix: 'Run content:sync inside a Git worktree, or move cross-page image files manually.',
-		});
-		return;
-	}
-
-	if (!stdout.trim()) return;
-
-	addIssue({
-		severity: 'error',
-		message: 'Cross-page content sync requires a clean git working tree before moving files between page image roots.',
-		fix: `Commit or stash your current changes, then run content:sync again. Current changes:\n${stdout.trim()}`,
-	});
-};
-
 const addConflictingMoveIssues = () => {
 	const movesBySource = new Map();
 	const movesByDestination = new Map();
@@ -332,7 +307,6 @@ const validateImageReference = async (
 			contentFile,
 			sourceContentFile: sourceCandidate.contentFile,
 			section,
-			crossRoot: sourceCandidate.contentFile !== contentFile,
 		});
 	}
 	referencedImagePaths.add(sourcePath);
@@ -343,7 +317,7 @@ const validateImageReference = async (
 			message: `Image "${imageName}" is used here but is located in ${getCandidateLabel(sourceCandidate)}.`,
 			fix: sourceCandidate.contentFile === contentFile
 				? 'Run norna content:sync to move it directly into the current page image root.'
-				: `Run norna content:sync to move it from ${getRootLabel(sourceCandidate.contentFile)} to ${getRootLabel(contentFile)}. Cross-page sync requires a clean git working tree when files are moved.`,
+				: `Run norna content:sync to move it from ${getRootLabel(sourceCandidate.contentFile)} to ${getRootLabel(contentFile)}.`,
 		});
 	}
 
@@ -609,10 +583,6 @@ const unreferencedImages = allImageFiles
 
 addConflictingMoveIssues();
 
-if (shouldWrite) {
-	await assertCleanGitForCrossRootSync(imageMoves);
-}
-
 if (hasErrors()) {
 	printReport(shouldWrite ? 'Content sync failed.' : 'Content check failed.', unreferencedImages);
 	process.exit(1);
@@ -631,14 +601,53 @@ if (imageMoves.length === 0) {
 	process.exit(0);
 }
 
-const canWrite = await promptForWrite();
+const canWrite = await promptForWrite(imageMoves);
 if (!canWrite) {
 	console.log('Aborted. No file was changed.');
 	process.exit(1);
 }
 
-for (const move of imageMoves) {
-	await mkdir(path.dirname(move.to), { recursive: true });
-	await rename(move.from, move.to);
-	console.log(`Moved image "${move.imageName}" to ${move.contentFile.imagesLabel}/.`);
+const completedMoves = [];
+for (const [index, move] of imageMoves.entries()) {
+	try {
+		await mkdir(path.dirname(move.to), { recursive: true });
+		await rename(move.from, move.to);
+		completedMoves.push(move);
+		console.log(`Moved image "${move.imageName}" to ${move.contentFile.imagesLabel}/.`);
+	} catch (error) {
+		const sourceLabel = getCandidateLabel({ contentFile: move.sourceContentFile, imagePath: move.from });
+		const destinationLabel = getExpectedImageLabel(move.contentFile, move.imageName);
+		const remainingMoves = imageMoves.slice(index);
+		const lines = [
+			'',
+			`Content sync stopped after ${completedMoves.length} of ${imageMoves.length} image moves.`,
+		];
+
+		if (error?.code === 'EXDEV') {
+			lines.push(
+				`Cannot move "${move.imageName}" because the source and destination are on different filesystems.`,
+				`Move it manually from ${sourceLabel} to ${destinationLabel}.`,
+			);
+		} else {
+			lines.push(
+				`Could not move "${move.imageName}" from ${sourceLabel} to ${destinationLabel}.`,
+				`Filesystem error${error?.code ? ` (${error.code})` : ''}: ${error?.message ?? String(error)}`,
+			);
+		}
+
+		if (completedMoves.length > 0) {
+			lines.push('', 'Completed moves:', ...getMovePlanLines(completedMoves).slice(1));
+		}
+
+		lines.push(
+			'',
+			'Remaining moves:',
+			...getMovePlanLines(remainingMoves).slice(1),
+			'',
+			'Fix the reported filesystem problem, then run content:sync again. Already completed moves will be kept.',
+		);
+
+		console.error(lines.join('\n'));
+		process.exit(1);
+	}
 }

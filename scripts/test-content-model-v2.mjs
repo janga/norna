@@ -471,9 +471,10 @@ page:
 	}
 });
 
-test('inline notes render as linked numbered margin notes', async () => {
+test('inline notes render as linked numbered CSS margin notes', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
+		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/docs/\n');
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
 page:
   description: Fixture
@@ -485,27 +486,60 @@ page:
 
 The first paragraph points to an explanation.{note-ref}
 
-{note: This explanation names \`sitewide-content.yaml\` and stays beside the
-paragraph on wide screens.}
+{note: This explanation names \`sitewide-content.yaml\`, links to the
+[site files](/faq/#site-files), and stays beside the paragraph on wide screens.}
 
 The second paragraph has its own explanation.{note-ref}
 
-{note:
-  This is the second
-  explanation.
-}
+{note: This is the second explanation and links to the [FAQ](/faq/#second-note).}
+
+The third paragraph points to a link-only note.{note-ref}
+
+{note: [Install ImageMagick.](/faq/#link-only-note)}
 `);
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
-		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-1" href="#note-home-intro-1" aria-label="Note 1" aria-describedby="note-home-intro-1" data-note-id="note-home-intro-1">1<\/a><\/sup>/);
-		assert.match(html, /<aside class="section-note section-note-margin" id="note-home-intro-1" aria-label="Note 1" role="note" data-note-id="note-home-intro-1" style="grid-row: 1;">/);
+		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-1" href="#note-home-intro-1" aria-label="Note 1" aria-describedby="note-home-intro-1">1<\/a><\/sup><span class="section-note section-note-margin" id="note-home-intro-1" aria-label="Note 1" role="note">/);
 		assert.match(html, /<a class="section-note-number" href="#note-ref-home-intro-1" aria-label="Note 1">\s*1\s*<\/a>/);
-		assert.match(html, /This explanation names <code>sitewide-content\.yaml<\/code> and stays beside the paragraph on wide screens\./);
-		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-2" href="#note-home-intro-2" aria-label="Note 2" aria-describedby="note-home-intro-2" data-note-id="note-home-intro-2">2<\/a><\/sup>/);
-		assert.match(html, /<aside class="section-note section-note-margin" id="note-home-intro-2" aria-label="Note 2" role="note" data-note-id="note-home-intro-2" style="grid-row: 2;">/);
-		assert.match(html, /This is the second explanation\./);
+		assert.match(html, /This explanation names <code>sitewide-content\.yaml<\/code>, links to the/);
+		assert.match(html, /<a href="\/docs\/faq\/#site-files">site files<\/a>/);
+		assert.doesNotMatch(html, /href="\/docs\/docs\/faq\/|href="docs\/faq\//);
+		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-2" href="#note-home-intro-2" aria-label="Note 2" aria-describedby="note-home-intro-2">2<\/a><\/sup><span class="section-note section-note-margin" id="note-home-intro-2" aria-label="Note 2" role="note">/);
+		assert.match(html, /This is the second explanation and links/);
+		assert.match(html, /<a href="\/docs\/faq\/#second-note">FAQ<\/a>/);
+		assert.match(html, /<a href="\/docs\/faq\/#link-only-note">Install ImageMagick\.<\/a>/);
+		assert.doesNotMatch(html, /data-note-id|grid-row:/);
 		assert.doesNotMatch(html, /\{note:/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('page-title notes preserve root-relative links under a site base path', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/docs/\n');
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
+page:
+  description: Fixture
+---
+
+# Page-title note
+
+The introduction points to an installation note.{note-ref}
+
+{note: [Install ImageMagick.](/faq/#install-imagemagick)}
+
+## Intro {#intro}
+
+Page content.
+`);
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
+		assert.match(html, /<a href="\/docs\/faq\/#install-imagemagick">Install ImageMagick\.<\/a>/);
+		assert.doesNotMatch(html, /href="\/docs\/docs\/faq\/|href="docs\/faq\//);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -855,7 +889,7 @@ page:
 	}
 });
 
-test('content:sync moves Norna-managed images across page image roots when git is clean', async () => {
+test('content:sync shows its plan and moves images across pages without requiring a Git worktree', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		const sourcePageDir = path.join(siteDir, 'pages', '010-source');
@@ -898,10 +932,11 @@ page:
 \`\`\`
 `);
 		await writeFile(path.join(sourcePageDir, 'images', 'moved.jpg'), 'page image');
-		await initCleanGitWorktree(root);
+		const { stdout } = await runContentScript(siteDir, ['--write', '--yes']);
 
-		await runContentScript(siteDir, ['--write', '--yes']);
-
+		assert.match(stdout, /Planned image moves:/);
+		assert.match(stdout, /site\/pages\/010-source\/images\/moved\.jpg -> .*site\/pages\/020-target\/images\/moved\.jpg/);
+		assert.match(stdout, /Moved image "moved\.jpg" to .*site\/pages\/020-target\/images\//);
 		assert.equal(await fileExists(path.join(targetPageDir, 'images', 'moved.jpg')), true);
 		assert.equal(await fileExists(path.join(sourcePageDir, 'images', 'moved.jpg')), false);
 	} finally {
@@ -909,7 +944,7 @@ page:
 	}
 });
 
-test('content:sync refuses cross-page image moves when git status is dirty', async () => {
+test('content:sync moves images across pages when Git status is dirty', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		const sourcePageDir = path.join(siteDir, 'pages', '010-source');
@@ -955,17 +990,11 @@ page:
 		await initCleanGitWorktree(root);
 		await writeFile(path.join(root, 'dirty.txt'), 'dirty');
 
-		await assert.rejects(
-			() => runContentScript(siteDir, ['--write', '--yes']),
-			(error) => {
-				assert.match(error.output, /Cross-page content sync requires a clean git working tree before moving files between page image roots\./);
-				assert.match(error.output, /dirty\.txt/);
-				return true;
-			},
-		);
+		const { stdout } = await runContentScript(siteDir, ['--write', '--yes']);
 
-		assert.equal(await fileExists(path.join(targetPageDir, 'images', 'moved.jpg')), false);
-		assert.equal(await fileExists(path.join(sourcePageDir, 'images', 'moved.jpg')), true);
+		assert.match(stdout, /Planned image moves:/);
+		assert.equal(await fileExists(path.join(targetPageDir, 'images', 'moved.jpg')), true);
+		assert.equal(await fileExists(path.join(sourcePageDir, 'images', 'moved.jpg')), false);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -1075,8 +1104,6 @@ page:
 \`\`\`
 `);
 		await writeFile(path.join(sourcePageDir, 'images', 'shared.jpg'), 'page image');
-		await initCleanGitWorktree(root);
-
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--write', '--yes']),
 			(error) => {

@@ -57,9 +57,10 @@ prompt: Short prompt or editing note.
 Each filename identifies one managed source image within its page. The same
 filename may be used by another page. Automatic sync only moves misplaced
 files when the filename identifies exactly one source candidate across all
-page image roots, and when the move will not break another reference. If the
-move crosses page image roots, `content:sync` requires a clean Git working tree
-before writing.
+page image roots, and when the move will not break another reference.
+`content:sync` shows the complete plan before writing and uses an atomic rename
+for each file. If source and destination are on different filesystems, it stops
+and reports the paths for a manual move.
 
 ## Markdown Images
 

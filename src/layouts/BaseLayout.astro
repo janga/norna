@@ -21,6 +21,8 @@ type VisualTheme = {
 	layout: {
 		gutter: { desktop: string; mobile: string };
 		localNavigationGap: string;
+		noteWidth: string;
+		noteGap: string;
 		pageWidth: string;
 		spacing: {
 			firstSectionTop: { desktop: string; mobile: string };
@@ -83,6 +85,8 @@ const documentStyle = [
 	`--shape-radius-large: ${visualTheme.shape.radiusLarge}`,
 	`--page-width: ${visualTheme.layout.pageWidth}`,
 	`--local-navigation-gap: ${visualTheme.layout.localNavigationGap}`,
+	`--section-note-width: ${visualTheme.layout.noteWidth}`,
+	`--section-note-gap: ${visualTheme.layout.noteGap}`,
 	`--content-gutter-desktop: ${visualTheme.layout.gutter.desktop}`,
 	`--content-gutter-mobile: ${visualTheme.layout.gutter.mobile}`,
 	`--space-nav-to-first-section-desktop: ${layoutSpacing.firstSectionTop.desktop}`,

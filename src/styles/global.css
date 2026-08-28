@@ -415,18 +415,27 @@ a {
 }
 
 .site-page-layout-tree {
+	--tree-layout-width: max(var(--page-width), 76rem);
+	--tree-layout-outer-margin: max(var(--content-gutter), calc((100vw - var(--tree-layout-width)) / 2));
 	display: grid;
 	grid-template-columns: minmax(12rem, 14rem) minmax(0, 1fr);
 	align-items: start;
 	gap: var(--local-navigation-gap, clamp(1.5rem, 3vw, 3rem));
 	min-height: calc(100svh - var(--site-top-anchor-offset));
-	width: min(calc(100% - (var(--content-gutter) * 2)), max(var(--page-width), 76rem));
+	width: min(calc(100% - (var(--content-gutter) * 2)), var(--tree-layout-width));
 	margin: 0 auto;
 }
 
 .site-page-layout-tree > .site-content {
 	width: 100%;
 	min-width: 0;
+}
+
+@media (min-width: 701px) {
+	.site-page-layout-tree :is(.site-breadcrumbs, .section-header, .section-markdown) {
+		margin-right: auto;
+		margin-left: 0;
+	}
 }
 
 .tree-local-navigation {
@@ -849,6 +858,7 @@ a {
 
 .site-page-layout-tree .site-section::before {
 	left: 0;
+	right: calc(0px - var(--tree-layout-outer-margin));
 }
 
 .site-section + .site-section {
@@ -918,35 +928,12 @@ ul {
 	font-size: clamp(0.96rem, 0.94rem + 0.08vw, 1rem);
 }
 
-.section-reading-layout {
-	display: grid;
-	--section-reading-body-width: var(--section-body-width-desktop, var(--text-width));
-	--section-reading-inline-start: max(0px, calc((100% - var(--section-reading-body-width)) / 2));
-	grid-template-columns: minmax(0, var(--section-reading-body-width)) minmax(0, 13rem);
-	column-gap: 1.5rem;
-	row-gap: var(--section-body-paragraph-spacing, 1em);
-	width: min(
-		calc(100% - var(--section-reading-inline-start)),
-		calc(var(--section-reading-body-width) + 13rem + 1.5rem)
-	);
-	margin: 0 0 0 var(--section-reading-inline-start);
-	align-items: start;
-}
-
-.section-reading-layout .section-markdown {
-	grid-column: 1;
-	width: 100%;
-	margin: 0;
-}
-
 .section-note {
-	grid-column: 2;
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	column-gap: 0.25rem;
-	align-self: start;
-	margin: 0;
-	margin-top: var(--section-note-offset, 0px);
+	width: 100%;
+	margin: var(--section-body-paragraph-spacing, 0.85em) 0 0;
 	border-inline-start: 2px solid color-mix(in srgb, currentColor 35%, transparent);
 	padding: 0 0 0 0.35rem;
 	color: color-mix(in srgb, currentColor 76%, transparent);
@@ -981,24 +968,28 @@ ul {
 	text-underline-offset: 0.15em;
 }
 
-.section-note.is-referenced,
 .section-note:target {
 	border-inline-start-color: currentColor;
 	background: color-mix(in srgb, currentColor 6%, transparent);
 }
 
-.section-note-ref a.is-referenced,
+.section-note-ref:has(+ .section-note:hover) a,
 .section-note-ref a:hover,
 .section-note-ref a:focus-visible {
 	text-decoration-thickness: 0.16em;
 }
 
-.section-note-content > :first-child {
-	margin-top: 0;
+.section-note-content {
+	min-width: 0;
 }
 
-.section-note-content > :last-child {
-	margin-bottom: 0;
+@media (min-width: 1101px) {
+	.section-note {
+		float: right;
+		clear: right;
+		width: var(--section-note-width, 12rem);
+		margin: 0 calc(0px - var(--section-note-width, 12rem) - var(--section-note-gap, 1.25rem)) 0.75rem var(--section-note-gap, 1.25rem);
+	}
 }
 
 .section-markdown {
@@ -1112,7 +1103,6 @@ ul {
 	--card-list-text-scale: 1;
 }
 
-.section-body > .section-reading-layout:not(:last-child),
 .section-body > .section-markdown:not(:last-child),
 .section-body > :is(.image-stack, .managed-images):not(:last-child) {
 	margin-bottom: var(--space-content-block-gap);
@@ -1124,29 +1114,6 @@ ul {
 
 .section-body > .card-list:last-child {
 	margin-bottom: var(--space-card-list-after);
-}
-
-@media (max-width: 1100px) {
-	.section-reading-layout {
-		display: block;
-		width: 100%;
-		margin: 0;
-	}
-
-	.section-reading-layout .section-markdown,
-	.section-reading-layout .section-note {
-		width: min(100%, var(--section-reading-body-width, var(--section-body-width-desktop, var(--text-width))));
-		margin-right: auto;
-		margin-left: auto;
-	}
-
-	.section-reading-layout .section-note {
-		margin-top: var(--section-body-paragraph-spacing, 0.85em);
-	}
-
-	.section-reading-layout .section-markdown + .section-markdown {
-		margin-top: var(--section-body-paragraph-spacing, 1em);
-	}
 }
 
 .card-list-width-text {
@@ -1943,6 +1910,7 @@ ul {
 
 	.site-page-layout-tree .site-section::before {
 		left: calc(50% - 50vw);
+		right: calc(50% - 50vw);
 	}
 
 	.tree-local-navigation {
@@ -1978,10 +1946,6 @@ ul {
 	.section-header {
 		width: min(100%, var(--section-heading-width-mobile, var(--section-heading-width-desktop, 760px)));
 		text-align: var(--section-heading-align-mobile, var(--section-heading-align-desktop, center));
-	}
-
-	.section-reading-layout {
-		--section-reading-body-width: var(--section-body-width-mobile, var(--section-body-width-desktop, var(--text-width)));
 	}
 
 	.section-markdown {

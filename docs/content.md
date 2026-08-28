@@ -345,7 +345,12 @@ The same filename may exist in different page image directories. Automatic
 relocation only requires site-wide filename uniqueness for the file being
 moved.
 
-When `content:sync` needs to move an image between the homepage and a page, or
-between two pages, the Git working tree must be clean before the write. This
-keeps cross-page sync easy to roll back. `content:check` only reports issues
-and does not require a clean working tree.
+Before writing, `content:sync` shows every planned source and destination. Each
+file is moved atomically when both paths are on the same filesystem. If a move
+fails, the command reports completed and remaining moves; fix the filesystem
+problem and run it again. A move between different filesystems is not copied
+automatically and must be completed manually using the paths in the error.
+
+Git is recommended so an unintended content edit or image move can be restored,
+but a clean working tree is not required. `content:check` only reports issues
+and never moves files.

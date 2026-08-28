@@ -337,6 +337,8 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 				'layout.localNavigationGap',
 				sourceLabel,
 			),
+			noteWidth: readCssLengthValue(rawLayoutConfig.noteWidth ?? '12rem', 'layout.noteWidth', sourceLabel),
+			noteGap: readCssLengthValue(rawLayoutConfig.noteGap ?? '1.25rem', 'layout.noteGap', sourceLabel),
 			gutter: readResponsiveCssLength(rawLayoutConfig, 'gutter', 'layout', Object.freeze({
 				desktop: 'clamp(1.25rem, 4vw, 3rem)',
 				mobile: '1rem',

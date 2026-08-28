@@ -37,6 +37,8 @@ try {
 		assert.equal(resolved.preset, presetName);
 		assert.ok(resolved.layout?.contentSpacing);
 		assert.ok(resolved.layout?.textWidth);
+		assert.ok(resolved.layout?.noteWidth);
+		assert.ok(resolved.layout?.noteGap);
 		assert.ok(resolved.shape);
 		assert.ok(resolved.images?.width);
 		assert.ok(resolved.typography?.fontFamily);
@@ -53,7 +55,9 @@ try {
 	assert.equal(overridden.layout.contentSpacing, 'compact');
 	assert.equal(overridden.layout.textWidth, 'narrow');
 	assert.equal(overridden.layout.pageWidth, '1300px');
-	assert.equal(overridden.layout.localNavigationGap, 'clamp(1.5rem, 3vw, 3rem)');
+	assert.equal(overridden.layout.localNavigationGap, 'clamp(1rem, 2vw, 1.5rem)');
+	assert.equal(overridden.layout.noteWidth, '12rem');
+	assert.equal(overridden.layout.noteGap, '1.25rem');
 	assert.equal(overridden.images.width, '920px');
 	assert.equal(overridden.palette, 'dark');
 	assert.equal(overridden.sections.backgroundPattern, 'alternating');
@@ -128,6 +132,8 @@ sections:
 	const rootHtml = await readFile(path.join(tempRoot, 'dist', 'index.html'), 'utf8');
 	const pageHtml = await readFile(path.join(tempRoot, 'dist', 'guide', 'index.html'), 'utf8');
 	assert.match(rootHtml, /--page-width: 1300px/);
+	assert.match(rootHtml, /--section-note-width: 12rem/);
+	assert.match(rootHtml, /--section-note-gap: 1\.25rem/);
 	assert.match(rootHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
 	assert.match(rootHtml, /--color-page: #000000/);
 	assert.match(pageHtml, /--page-width: 1300px/);
@@ -170,6 +176,8 @@ sections:
 	assert.equal(exportedConfig.navigation, undefined);
 	assert.equal(exportedConfig.shape, themePresets.documentation.shape);
 	assert.equal(exportedConfig.layout.pageWidth, themePresets.documentation.layout.pageWidth);
+	assert.equal(exportedConfig.layout.noteWidth, undefined);
+	assert.equal(exportedConfig.layout.noteGap, undefined);
 	assert.equal(exportedConfig.typography.fontFamily, themePresets.documentation.typography.fontFamily);
 	assert.equal(exportedConfig.sections.backgroundPattern, 'alternating');
 

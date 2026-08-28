@@ -118,8 +118,10 @@ should normally mean the repository's complete publishable artifact, while
 - `content:check`: validates section structure, Norna block references,
   inline styles, and common content mistakes.
 - `content:sync` / `norna:sync`: moves misplaced referenced image files after
-  confirmation when the intended move is unambiguous. Moving files between the
-  homepage and an additional page, or between additional pages, requires a clean Git working tree.
+  showing the complete move plan and asking for confirmation when the intended
+  move is unambiguous. A failed move reports completed and remaining work so the
+  command can be run again. Moves between different filesystems must be
+  completed manually.
 - `theme:presets`: lists the available complete theme presets and explains the
   intended use of each one.
 - `theme:export <preset>`: writes a protected, commented

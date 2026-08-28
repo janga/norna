@@ -166,8 +166,10 @@ The Markdown block still uses only the filename:
 
 Run `norna content:check` to find missing or misplaced images and
 `norna content:sync` to move unambiguous files into the expected page image
-root. Cross-page writes require a clean Git working tree and never guess when a
-filename has multiple possible sources.
+root. Sync shows its complete plan before writing and never guesses when a
+filename has multiple possible sources. If a filesystem error interrupts
+several moves, run sync again after fixing the reported problem; completed
+moves are retained.
 
 ## Page Themes
 

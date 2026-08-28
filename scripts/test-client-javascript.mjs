@@ -188,7 +188,7 @@ Static image stacks remain static.
 
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
-  description: A page with an enhanced sidenote.
+  description: A page with a CSS sidenote.
 ---
 
 # Notes
@@ -197,7 +197,7 @@ page:
 
 This sentence has additional context.{note-ref}
 
-{note: The note remains readable without JavaScript, while alignment is enhanced when JavaScript runs.}
+{note: The note remains readable and uses the page margin without JavaScript.}
 `);
 	await writeFile(path.join(pageDir, 'content.md'), `---
 page:
@@ -219,8 +219,8 @@ page:
 	runBuild();
 	const noteHtml = await readPage();
 	const carouselHtml = await readPage(path.join('details', 'index.html'));
-	assert.equal(getScripts(noteHtml).length, 1, 'A page with notes should load only the note enhancement.');
-	assert.match(noteHtml, /data-note-id=/);
+	assertNoClientJavaScript(noteHtml, 'A page with CSS margin notes');
+	assert.match(noteHtml, /class="section-note section-note-margin"/);
 	assert.equal(getScripts(carouselHtml).length, 1, 'A carousel page should load only the carousel implementation.');
 	assert.match(carouselHtml, /data-carousel/);
 	assert.match(getScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');

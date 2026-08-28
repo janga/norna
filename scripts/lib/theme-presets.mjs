@@ -7,7 +7,9 @@ const themePresetConfigurations = Object.freeze({
 			contentSpacing: 'normal',
 			textWidth: 'wide',
 			pageWidth: '1240px',
-			localNavigationGap: 'clamp(1.5rem, 3vw, 3rem)',
+			localNavigationGap: 'clamp(1rem, 2vw, 1.75rem)',
+			noteWidth: '13rem',
+			noteGap: '1.5rem',
 			gutter: {
 				desktop: 'clamp(1.25rem, 4vw, 3rem)',
 				mobile: '1rem',
@@ -32,7 +34,9 @@ const themePresetConfigurations = Object.freeze({
 			contentSpacing: 'compact',
 			textWidth: 'narrow',
 			pageWidth: '1240px',
-			localNavigationGap: 'clamp(1.5rem, 3vw, 3rem)',
+			localNavigationGap: 'clamp(1rem, 2vw, 1.5rem)',
+			noteWidth: '12rem',
+			noteGap: '1.25rem',
 			gutter: {
 				desktop: 'clamp(1.25rem, 4vw, 3rem)',
 				mobile: '1rem',
@@ -57,7 +61,9 @@ const themePresetConfigurations = Object.freeze({
 			contentSpacing: 'compact',
 			textWidth: 'normal',
 			pageWidth: '1120px',
-			localNavigationGap: 'clamp(1.5rem, 3vw, 3rem)',
+			localNavigationGap: 'clamp(1rem, 2vw, 1.5rem)',
+			noteWidth: '12rem',
+			noteGap: '1.25rem',
 			gutter: {
 				desktop: 'clamp(1.25rem, 4vw, 3rem)',
 				mobile: '1rem',
@@ -82,7 +88,9 @@ const themePresetConfigurations = Object.freeze({
 			contentSpacing: 'spacious',
 			textWidth: 'normal',
 			pageWidth: '1280px',
-			localNavigationGap: 'clamp(1.5rem, 3vw, 3rem)',
+			localNavigationGap: 'clamp(1rem, 2vw, 1.75rem)',
+			noteWidth: '13rem',
+			noteGap: '1.75rem',
 			gutter: {
 				desktop: 'clamp(1.5rem, 5vw, 4rem)',
 				mobile: '1rem',

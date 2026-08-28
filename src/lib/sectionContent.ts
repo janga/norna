@@ -37,13 +37,13 @@ type InlineNote = {
 	number: number;
 	id: string;
 	referenceId: string;
+	html?: string;
 };
 type SectionContentBlock =
 	| { type: 'html'; html: string }
 	| { type: 'image-stack'; images: ManagedImage[] }
 	| { type: 'image-carousel'; images: ManagedImage[] }
-	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width: CardListWidth; cards: CardListItem[] }
-	| { type: 'note'; html: string; number?: number; id?: string; referenceId?: string };
+	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width: CardListWidth; cards: CardListItem[] };
 export type ResolvedSection = {
 	id: string | null;
 	title: string;
@@ -121,62 +121,6 @@ const prepareContentHtml = (html: string) =>
 		stripImageProvenanceComments(html),
 	);
 
-const htmlVoidElements = new Set([
-	'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link',
-	'meta', 'param', 'source', 'track', 'wbr',
-]);
-
-// Keep notes aligned with the Markdown block immediately before them instead of
-// aligning them with a whole run of paragraphs rendered as one HTML fragment.
-const splitHtmlIntoBlocks = (html: string) => {
-	const tagRegex = /<!--[\s\S]*?-->|<\/?([a-z][\w:-]*)(?:\s[^<>]*?)?\/?>/gi;
-	const blocks: string[] = [];
-	let blockStart = -1;
-	let depth = 0;
-	let cursor = 0;
-
-	for (const match of html.matchAll(tagRegex)) {
-		const start = match.index ?? 0;
-		const token = match[0] ?? '';
-		const tagName = match[1]?.toLowerCase();
-		if (!tagName) continue;
-
-		const isClosing = /^<\//.test(token);
-		const isSelfClosing = /\/\s*>$/.test(token) || htmlVoidElements.has(tagName);
-
-		if (isClosing) {
-			if (depth > 0) depth -= 1;
-			if (depth === 0 && blockStart >= 0) {
-				blocks.push(html.slice(blockStart, start + token.length));
-				cursor = start + token.length;
-				blockStart = -1;
-			}
-			continue;
-		}
-
-		if (depth === 0) {
-			if (blockStart < 0) blockStart = start;
-			if (isSelfClosing) {
-				blocks.push(html.slice(blockStart, start + token.length));
-				cursor = start + token.length;
-				blockStart = -1;
-			}
-		}
-
-		if (!isSelfClosing) depth += 1;
-	}
-
-	if (blockStart >= 0) {
-		blocks.push(html.slice(blockStart).trim());
-		cursor = html.length;
-	}
-
-	const prefix = html.slice(0, blocks.length > 0 ? html.indexOf(blocks[0]!) : html.length).trim();
-	const suffix = html.slice(cursor).trim();
-	return [prefix, ...blocks, suffix].filter(Boolean);
-};
-
-const inlineNoteMarkerRegex = /^\s*<norna-inline-note\s+data-note-index="(\d+)"\s*><\/norna-inline-note>\s*$/i;
 const noteDeclarationParagraphRegex = /<p>\s*\{note:\s*[\s\S]*?\}\s*<\/p>/gi;
 const htmlCodeRegionRegex = /<pre\b[\s\S]*?<\/pre>|<code\b[\s\S]*?<\/code>/gi;
 
@@ -201,15 +145,17 @@ const applyInlineNoteMarkup = (html: string, notes: InlineNote[]) => {
 		if (!note) return '{note-ref}';
 
 		referenceIndex += 1;
-		return `\u2060<sup class="section-note-ref"><a id="${note.referenceId}" href="#${note.id}" aria-label="Note ${note.number}" aria-describedby="${note.id}" data-note-id="${note.id}">${note.number}</a></sup>`;
+		return [
+			'\u2060',
+			`<sup class="section-note-ref"><a id="${note.referenceId}" href="#${note.id}" aria-label="Note ${note.number}" aria-describedby="${note.id}">${note.number}</a></sup>`,
+			`<span class="section-note section-note-margin" id="${note.id}" aria-label="Note ${note.number}" role="note">`,
+			`<a class="section-note-number" href="#${note.referenceId}" aria-label="Note ${note.number}">${note.number}</a>`,
+			`<span class="section-note-content">${note.html ?? ''}</span>`,
+			'</span>',
+		].join('');
 	}));
 
-	let noteIndex = 0;
-	return withReferences.replace(noteDeclarationParagraphRegex, () => {
-		const marker = `<norna-inline-note data-note-index="${noteIndex}"></norna-inline-note>`;
-		noteIndex += 1;
-		return marker;
-	});
+	return withReferences.replace(noteDeclarationParagraphRegex, '');
 };
 
 const getRawMarkdownSections = (bodySections: Awaited<ReturnType<typeof getBodySections>>['sections']) => {
@@ -260,7 +206,13 @@ const renderInlineNoteMarkdown = async (markdown: string) => {
 		throw new Error('Inline notes cannot contain images. Use a Norna image block with a caption instead.');
 	}
 
-	return prepareContentHtml(result.html);
+	const inlineHtml = result.html.trim();
+	const paragraph = inlineHtml.match(/^<p>([\s\S]*)<\/p>$/i);
+	if (!paragraph) {
+		throw new Error('Inline notes support inline Markdown only. Move headings, lists, and separate paragraphs into the page content.');
+	}
+
+	return paragraph[1] ?? '';
 };
 
 const resolveContentBlocks = async (
@@ -270,37 +222,18 @@ const resolveContentBlocks = async (
 	inlineNotes: InlineNote[] = [],
 ) => {
 	const rawBlocks = extractNornaMarkdownBlocks(rawMarkdown);
-	const renderedHtml = applyInlineNoteMarkup(html, inlineNotes);
+	const renderedNotes = await Promise.all(inlineNotes.map(async (note) => ({
+		...note,
+		html: await renderInlineNoteMarkdown(note.markdown),
+	})));
+	const renderedHtml = applyInlineNoteMarkup(html, renderedNotes);
 	const splitBlocks = rawBlocks.length > 0
 		? splitNornaRenderedCodeBlocks(renderedHtml, rawBlocks)
 		: splitNornaMarkdownBlockMarkers(renderedHtml);
-	const hasNotes = inlineNotes.length > 0;
-	const contentBlocks = hasNotes
-		? splitBlocks.flatMap((block) => block.type === 'html'
-			? splitHtmlIntoBlocks(block.html).map((htmlBlock) => ({ type: 'html' as const, html: htmlBlock }))
-			: [block])
-		: splitBlocks;
 	const resolvedBlocks: SectionContentBlock[] = [];
 
-	for (const block of contentBlocks) {
+	for (const block of splitBlocks) {
 		if (block.type === 'html') {
-			const inlineNoteMarker = block.html.match(inlineNoteMarkerRegex);
-			if (inlineNoteMarker) {
-				const note = inlineNotes[Number(inlineNoteMarker[1])];
-				if (!note) {
-					throw new Error('Norna inline note markup could not be matched to its note text.');
-				}
-
-				resolvedBlocks.push({
-					type: 'note',
-					html: await renderInlineNoteMarkdown(note.markdown),
-					number: note.number,
-					id: note.id,
-					referenceId: note.referenceId,
-				});
-				continue;
-			}
-
 			resolvedBlocks.push({ type: 'html', html: prepareContentHtml(block.html) });
 			continue;
 		}

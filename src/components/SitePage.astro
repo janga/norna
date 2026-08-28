@@ -5,7 +5,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
 import SiteNavigation from './SiteNavigation.astro';
 import SiteBanners from './SiteBanners.astro';
-import SiteNotesScript from './SiteNotesScript.astro';
 import SiteSection from './SiteSection.astro';
 import SiteTreeNavigation from './SiteTreeNavigation.astro';
 import TreeNavigationScript from './TreeNavigationScript.astro';
@@ -68,7 +67,6 @@ const siteHtml = entry.rendered?.html ?? '';
 const resolvedSections = await getSectionsContent(siteHtml, rawMarkdown, currentPage, siteContentLabel);
 const today = getToday();
 const siteBanners = (sitewideData.banners ?? []).filter((banner) => isVisibleToday(banner.visible, today));
-const hasMarginNotes = resolvedSections.some((section) => section.contentBlocks.some((block) => block.type === 'note'));
 const hasPrioritizableImage = (section: ResolvedSection) => section.contentBlocks.some((block) => (
 	block.type === 'image-stack'
 	|| block.type === 'image-carousel'
@@ -156,5 +154,4 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 		</main>
 	</div>
 	{hasTreeNavigation && <TreeNavigationScript />}
-	{hasMarginNotes && <SiteNotesScript />}
 </BaseLayout>
