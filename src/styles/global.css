@@ -436,6 +436,11 @@ a {
 		margin-right: auto;
 		margin-left: 0;
 	}
+
+	.site-page-layout-tree .card-list {
+		margin-right: auto;
+		margin-left: 0;
+	}
 }
 
 .tree-local-navigation {
