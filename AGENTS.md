@@ -9,6 +9,12 @@ maintainer, put it in `README.md` instead of duplicating it here.
 ## Working Rules
 
 - Keep changes small and focused.
+- When implementing a new feature, add or update a concrete item under
+  `Documentation` in `BACKLOG.md` describing which reference documentation,
+  introduction content, examples, and editor help may need to be updated. Log
+  the documentation work as part of the feature change, but do not perform the
+  wider documentation or example update until the feature has been tested and
+  the user has approved proceeding with it.
 - Do not create branches unless the user asks for one.
 - Do not push uncommitted changes.
 - Before committing, run `git status --short` and make sure untracked files are

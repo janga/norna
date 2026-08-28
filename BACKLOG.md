@@ -21,10 +21,45 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
-- Audit the latest week's functional commits against the reference
-  documentation, introduction site, starters, examples, and IntelliSense help.
-  Record missing or stale coverage and update each surface only after the
-  corresponding behavior has been verified.
+- Complete the documentation follow-up for functional commits from 2026-08-14
+  through 2026-08-28. Update each surface only after the corresponding
+  behavior has been verified:
+  - Document site-wide color modes in `docs/theme.md`: preset defaults,
+    `colorMode.default`, `colorMode.allowSelection`, system preference,
+    persisted visitor choice, and why page-local themes cannot override color
+    mode. Add a focused runnable example and point IntelliSense help to the
+    completed section.
+  - Expand the image-carousel reference with its current presentation and
+    interaction contract: sizing of portrait and landscape images, the
+    relationship to configured image-height limits, persistent controls,
+    position status, keyboard operation, touch gestures, captions, and behavior
+    on narrow screens. Make the media demo exercise both image orientations and
+    contrasting section surfaces.
+  - Add a user-facing client-JavaScript contract that states which features add
+    scripts and what remains usable without them. Cover navigation enhancement,
+    carousels, dismissible banners, selectable color modes, static image stacks,
+    cards, and CSS sidenotes; keep the statements aligned with
+    `test:client-javascript`.
+  - Turn the VS Code proof of concept into discoverable end-user guidance:
+    installation and updating, the Red Hat YAML dependency, project-local
+    engine/schema selection, recognized files, completion and image discovery,
+    Go to Definition, Problems and quick fixes, reload/activation checks, and
+    troubleshooting. Distinguish Norna completions from generic editor and AI
+    suggestions, state that the project-local schema and `norna config:check`
+    are authoritative, and include optional settings for schema-only YAML
+    completion.
+  - Add a concise migration checklist for sites created before the current YAML
+    and page model. Cover `config.yaml`, `theme.yaml`,
+    `sitewide-content.yaml`, `pages/000-home/content.md`, nested page
+    directories, page-local theme limits, generated-state ignores, and the
+    commands used to validate the migrated site. Do not imply compatibility
+    with removed formats.
+  - Review onboarding, reference links, starters, runnable examples, schema
+    descriptions, and IntelliSense links against the current heading-id and
+    navigation contract. Ensure they agree on derived versus explicit heading
+    ids, collision diagnostics, Home and nested-page rules, automatic
+    navigation selection, and desktop/mobile presentation without duplicating
+    the detailed page reference.
 - Add a short "Build your first image-led site in 5 minutes" guide with one happy path
   and no reference material.
 - Add a complete small `site/theme.yaml` and `site/pages/000-home/content.md` example that a
@@ -51,13 +86,6 @@ approachable before wider use.
   automatically, rollback before the release commit, and recovery after a
   failed publish. Add a discoverability link from `docs/README.md` without
   duplicating the instructions.
-- Document IntelliSense suggestion sources for Norna YAML files. Explain that
-  schema-based completions come from Norna's project-local schemas, while VS
-  Code word suggestions and AI extensions may offer unrelated or invalid
-  content. State that the Norna schema and `norna config:check` are
-  authoritative, and include optional workspace settings for disabling
-  word-based and Copilot suggestions for YAML when users want schema-only
-  completion.
 
 ## Implementation
 
