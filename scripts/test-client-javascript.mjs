@@ -223,6 +223,9 @@ page:
 	assert.match(noteHtml, /class="section-note section-note-margin"/);
 	assert.equal(getScripts(carouselHtml).length, 1, 'A carousel page should load only the carousel implementation.');
 	assert.match(carouselHtml, /data-carousel/);
+	assert.match(carouselHtml, /--image-carousel-width-from-height-desktop:/);
+	assert.match(carouselHtml, /aria-label="Previous image"/);
+	assert.match(carouselHtml, /aria-label="Next image"/);
 	assert.match(getScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');
 
 	await writeFile(path.join(homeDir, 'content.md'), `---
