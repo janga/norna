@@ -48,6 +48,21 @@ for (const example of examples) {
 			throw new Error(`Example ${example.siteLabel} has a logo file that is not rendered on its homepage.`);
 		}
 	}
+
+	if (example.name.startsWith('theme-preset-')) {
+		const homepageHtml = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+		assert.match(homepageHtml, /data-navigation-mode="sections"/);
+		assert.match(homepageHtml, /class="page-nav-page-top"[^>]*>[^<]+<\/a>/);
+		for (const sectionId of ['preset-purpose', 'reading-rhythm', 'images-and-captions']) {
+			assert.match(homepageHtml, new RegExp(`href="#${sectionId}"`));
+		}
+	}
+
+	if (example.name === 'media-and-surfaces') {
+		const mediaHtml = await readFile(path.join(root, 'dist', 'media', 'index.html'), 'utf8');
+		assert.match(mediaHtml, /data-navigation-mode="tree"/);
+		assert.match(mediaHtml, /class="tree-local-navigation"/);
+	}
 }
 
 console.log(`\nok - built ${examples.length} example sites`);

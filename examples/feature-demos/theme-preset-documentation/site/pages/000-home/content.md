@@ -4,6 +4,9 @@ page:
 ---
 
 # Documentation
+
+## Preset purpose
+
 This site uses the complete `documentation` preset without overrides. It
 favours readable explanatory text, compact vertical rhythm and restrained
 surface changes for longer guides.
@@ -11,11 +14,16 @@ surface changes for longer guides.
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean lacinia
 bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod.
 
-### Reading rhythm
+## Reading rhythm
 
 Nullam id dolor id nibh ultricies vehicula ut id elit. Fusce dapibus, tellus ac
 cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit
 amet risus.
+
+## Images and captions
+
+The same three-image sequence makes image width, spacing and caption treatment
+easy to compare with the other complete presets.
 
 ```norna-image-stack
 - image: schnauzer-portrait.jpg

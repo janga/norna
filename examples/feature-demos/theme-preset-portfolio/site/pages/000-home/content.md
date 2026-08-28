@@ -4,6 +4,9 @@ page:
 ---
 
 # Portfolio
+
+## Preset purpose
+
 This site uses the complete `portfolio` preset without overrides. It gives
 images a broad stage, keeps typography restrained and uses a dark palette for
 an image-led presentation.
@@ -12,11 +15,16 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a
 ante venenatis dapibus posuere velit aliquet. Maecenas faucibus mollis
 interdum. Donec ullamcorper nulla non metus auctor fringilla.
 
-### Image-led rhythm
+## Reading rhythm
 
 Curabitur blandit tempus porttitor. Praesent commodo cursus magna, vel
 scelerisque nisl consectetur et. Vestibulum id ligula porta felis euismod
 semper.
+
+## Images and captions
+
+The same three-image sequence makes image width, spacing and caption treatment
+easy to compare with the other complete presets.
 
 ```norna-image-stack
 - image: puppy-portrait.jpg
