@@ -16,6 +16,13 @@ const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z
 const typographyProfile = z.enum(['restrained', 'dense', 'reading', 'statement']).describe('Coordinated typography defaults. Omit this to use the selected preset.');
 const themePreset = z.enum(themePresetNames).describe('Complete Norna visual preset. Start here and add overrides only when needed.');
 const presentationPalette = z.enum(['dark', 'light', 'paper']).describe('Coordinated site color palette. Omit this to use the selected preset.');
+const themeColorMode = z.object({
+	default: z.enum(['system', 'light', 'dark']).optional().describe('Initial color mode. System follows the visitor\'s operating-system preference.'),
+	allowSelection: z.boolean().optional().describe('Show a site-wide control that lets visitors choose system, light, or dark mode.'),
+}).strict().refine(
+	(value) => value.default !== undefined || value.allowSelection !== undefined,
+	'Specify default, allowSelection, or both.',
+).describe('Site-wide light and dark mode behaviour.');
 const spacingDensity = z.enum(['compact', 'normal', 'airy']).describe('Coordinated spacing density. Omit this to use the selected preset.');
 const contentSpacing = z.enum(['compact', 'normal', 'spacious']).describe('Vertical spacing between page sections and structured content blocks.');
 const backgroundPattern = z.enum(['uniform', 'alternating', 'cycling']).describe('How sections cycle through the active palette surfaces.');
@@ -192,6 +199,7 @@ const siteShape = {
 
 const themeVisualShape = {
 	preset: themePreset.optional().describe('Complete visual starting point. Add only the overrides the site actually needs.'),
+	colorMode: themeColorMode.optional(),
 	shape: shapeProfile.optional().describe('Site-wide shape profile. Omit this to use the selected preset.'),
 	layout: themeLayout.optional(),
 	images: themeImages.optional(),

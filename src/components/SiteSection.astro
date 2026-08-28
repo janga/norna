@@ -164,7 +164,10 @@ const getHeadingSizeValue = (level: HeadingLevel, size: TextSize) => (
 	headingSizeValues[level][size]
 );
 const surface = isPageTitle
-	? pagePresentation.palette.surfaces.base
+	? {
+		backgroundColor: 'var(--color-surface-base-background)',
+		textColor: 'var(--color-surface-base-text)',
+	}
 	: resolveSectionSurface(pagePresentation, sectionIndex);
 const typography = pagePresentation.typography.values;
 const heading = typography.headings[sectionHeadingVisualLevel] as {

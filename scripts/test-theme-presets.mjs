@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { load } from 'js-yaml';
-import { resolveThemePresentation } from './lib/presentation.mjs';
+import { getPresentationPalette, presentationPaletteNames, resolveThemePresentation } from './lib/presentation.mjs';
 import {
 	getThemePresetMetadata,
 	resolveThemeConfig,
@@ -25,6 +25,21 @@ const runCli = (args) => spawnSync(process.execPath, [cliPath, '--site-dir', sit
 	encoding: 'utf8',
 });
 
+const channelLuminance = (channel) => {
+	const normalized = channel / 255;
+	return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+};
+const luminance = (hex) => {
+	const channels = hex.match(/[a-f\d]{2}/gi).map((channel) => Number.parseInt(channel, 16));
+	return (0.2126 * channelLuminance(channels[0]))
+		+ (0.7152 * channelLuminance(channels[1]))
+		+ (0.0722 * channelLuminance(channels[2]));
+};
+const contrastRatio = (left, right) => {
+	const [lighter, darker] = [luminance(left), luminance(right)].sort((a, b) => b - a);
+	return (lighter + 0.05) / (darker + 0.05);
+};
+
 try {
 	assert.deepEqual(Object.keys(themePresets), themePresetNames);
 	assert.deepEqual(Object.keys(themePresetDefinitions), themePresetNames);
@@ -44,7 +59,20 @@ try {
 		assert.ok(resolved.typography?.fontFamily);
 		assert.ok(resolved.typography?.profile);
 		assert.ok(resolved.palette);
+		assert.ok(resolved.colorMode?.default);
+		assert.equal(resolved.colorMode?.allowSelection, true);
 		assert.ok(resolved.sections?.backgroundPattern);
+	}
+	for (const paletteName of presentationPaletteNames) {
+		const palette = getPresentationPalette(paletteName);
+		for (const [modeName, mode] of Object.entries(palette.modes)) {
+			for (const [surfaceName, surface] of Object.entries(mode.surfaces)) {
+				assert.ok(
+					contrastRatio(surface.backgroundColor, surface.textColor) >= 4.5,
+					`${paletteName}/${modeName}/${surfaceName} must provide readable text and reversible carousel controls.`,
+				);
+			}
+		}
 	}
 
 	const overridden = resolveThemeConfig({
@@ -135,10 +163,13 @@ sections:
 	assert.match(rootHtml, /--section-note-width: 12rem/);
 	assert.match(rootHtml, /--section-note-gap: 1\.25rem/);
 	assert.match(rootHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
-	assert.match(rootHtml, /--color-page: #000000/);
+	assert.match(rootHtml, /data-color-mode="system"/);
+	assert.match(rootHtml, /--palette-light-page-background: #f7f7f5/);
+	assert.match(rootHtml, /--palette-dark-page-background: #000000/);
 	assert.match(pageHtml, /--page-width: 1300px/);
 	assert.match(pageHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
-	assert.match(pageHtml, /--color-page: #000000/);
+	assert.match(pageHtml, /--palette-dark-page-background: #000000/);
+	assert.match(pageHtml, /data-color-mode-selector/);
 	assert.match(pageHtml, /--image-width: 700px/);
 	assert.match(pageHtml, /--space-section-to-section-desktop: clamp\(2\.25rem, 5vw, 4\.5rem\)/);
 	assert.match(rootHtml, /data-navigation-mode="top"/);

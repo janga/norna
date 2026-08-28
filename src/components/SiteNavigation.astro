@@ -4,6 +4,7 @@ import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
 import { getListedPageNavigationTree, type PageNavigationEntry } from '../lib/siteNavigation';
 import type { SitePage } from '../lib/sitePages';
+import ColorModeSelector from './ColorModeSelector.astro';
 import NavigationPageTree from './NavigationPageTree.astro';
 import SectionNavigationScript from './SectionNavigationScript.astro';
 
@@ -22,9 +23,13 @@ interface Props {
 	pageNavigation: PageNavigationEntry[];
 	navigationMode: 'sections' | 'top' | 'tree';
 	frameColors: FrameColors;
+	colorMode: {
+		default: 'system' | 'light' | 'dark';
+		allowSelection: boolean;
+	};
 }
 
-const { logo, currentPage, pageNavigation, navigationMode, frameColors } = Astro.props;
+const { logo, currentPage, pageNavigation, navigationMode, frameColors, colorMode } = Astro.props;
 const siteTopBackgroundColor = frameColors.backgroundColor === 'transparent'
 	? 'var(--color-page)'
 	: frameColors.backgroundColor;
@@ -63,7 +68,7 @@ const showPageNavigation = Boolean(
 );
 const showSinglePageTitleOnly = showSinglePageTopLink && currentPageSectionCount === 0;
 const showMobileNavigation = showSiteNavigation || hasCurrentPageSectionMenu || hasTreePageContents;
-const showDesktopNavigationRow = showSiteNavigation || Boolean(logo);
+const showDesktopNavigationRow = showSiteNavigation || Boolean(logo) || colorMode.allowSelection;
 const showNavigationRow = showMobileNavigation || showDesktopNavigationRow;
 const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents || navigationMode === 'tree';
 ---
@@ -86,8 +91,9 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 				</a>
 			)}
 
-			{showSiteNavigation && (
-				<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
+			<div class="site-nav-actions">
+				{showSiteNavigation && (
+					<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 					<ul>
 					{topLevelNavigation.map((node) => (
 						<li class:list={['site-nav-item', {
@@ -107,10 +113,12 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 							</li>
 						))}
 					</ul>
-				</nav>
-			)}
+					</nav>
+				)}
 
-			{showMobileNavigation && <details class="mobile-nav-menu">
+				{colorMode.allowSelection && <ColorModeSelector defaultMode={colorMode.default} />}
+
+				{showMobileNavigation && <details class="mobile-nav-menu">
 			<summary>
 				<span>{projectConfig.locale.labels.navigationMenu}</span>
 			</summary>
@@ -155,7 +163,8 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 					)}
 				</div>
 			</div>
-		</details>}
+				</details>}
+			</div>
 		</div>
 	)}
 

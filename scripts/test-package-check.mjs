@@ -402,31 +402,31 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-background-color: #ffffff',
+		'--section-background-color: var(--color-surface-base-background)',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-background-color: #f1f4f2',
+		'--section-background-color: var(--color-surface-soft-background)',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-top-background-color: #ffffff',
+		'--site-top-background-color: var(--color-frame-background)',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-top-text-color: #17201d',
+		'--site-top-text-color: var(--color-frame-text)',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-footer-background-color: #ffffff',
+		'--site-footer-background-color: var(--color-frame-background)',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--site-footer-text-color: #17201d',
+		'--site-footer-text-color: var(--color-frame-text)',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'--section-text-color: #17201d',
+		'--section-text-color: var(--color-surface-base-text)',
 	);
 	await writeFile(path.join(siteProjectRoot, 'site', 'public', 'favicon.ico'), 'fake icon');
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });

@@ -1,0 +1,18 @@
+---
+import projectConfig from '../../scripts/lib/project-config.mjs';
+
+interface Props {
+	defaultMode: 'system' | 'light' | 'dark';
+}
+
+const { defaultMode } = Astro.props;
+---
+
+<label class="color-mode-selector">
+	<span class="visually-hidden">{projectConfig.locale.labels.colorMode}</span>
+	<select data-color-mode-selector aria-label={projectConfig.locale.labels.colorMode}>
+		<option value="system" selected={defaultMode === 'system'}>{projectConfig.locale.labels.colorModeSystem}</option>
+		<option value="light" selected={defaultMode === 'light'}>{projectConfig.locale.labels.colorModeLight}</option>
+		<option value="dark" selected={defaultMode === 'dark'}>{projectConfig.locale.labels.colorModeDark}</option>
+	</select>
+</label>

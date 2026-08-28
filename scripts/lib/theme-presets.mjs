@@ -2,6 +2,7 @@ import { mergeDeep } from './typography.mjs';
 
 const themePresetConfigurations = Object.freeze({
 	portfolio: Object.freeze({
+		colorMode: { default: 'dark', allowSelection: true },
 		shape: 'square',
 		layout: {
 			contentSpacing: 'normal',
@@ -29,6 +30,7 @@ const themePresetConfigurations = Object.freeze({
 		sections: { backgroundPattern: 'uniform' },
 	}),
 	documentation: Object.freeze({
+		colorMode: { default: 'system', allowSelection: true },
 		shape: 'soft',
 		layout: {
 			contentSpacing: 'compact',
@@ -56,6 +58,7 @@ const themePresetConfigurations = Object.freeze({
 		sections: { backgroundPattern: 'alternating' },
 	}),
 	project: Object.freeze({
+		colorMode: { default: 'system', allowSelection: true },
 		shape: 'soft',
 		layout: {
 			contentSpacing: 'compact',
@@ -83,6 +86,7 @@ const themePresetConfigurations = Object.freeze({
 		sections: { backgroundPattern: 'alternating' },
 	}),
 	statement: Object.freeze({
+		colorMode: { default: 'system', allowSelection: true },
 		shape: 'square',
 		layout: {
 			contentSpacing: 'spacious',
@@ -211,7 +215,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
 	const metadata = getThemePresetMetadata(presetName);
-	const { shape, layout, images, typography, palette, sections } = preset;
+	const { colorMode, shape, layout, images, typography, palette, sections } = preset;
 
 	return [
 		`# Original values for Norna's "${presetName}" theme preset.`,
@@ -220,6 +224,11 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'# Keep the preset in theme.yaml and copy only the values you want to override.',
 		`# Available theme presets: ${themePresetNames.join(', ')}.`,
 		`preset: ${presetName}`,
+		'',
+		'# The visitor may follow the operating-system preference or choose light or dark.',
+		'colorMode:',
+		`  default: ${colorMode.default}`,
+		`  allowSelection: ${colorMode.allowSelection}`,
 		'',
 		'# Alternatives: square, soft.',
 		`shape: ${shape}`,

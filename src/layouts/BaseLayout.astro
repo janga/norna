@@ -13,8 +13,14 @@ type FrameColors = {
 type Presentation = {
 	palette: {
 		page: FrameColors;
+	};
+	paletteModes: Record<'light' | 'dark', {
+		page: FrameColors;
 		css: Record<string, string>;
-		colorScheme: string;
+	}>;
+	colorMode: {
+		default: 'system' | 'light' | 'dark';
+		allowSelection: boolean;
 	};
 };
 type VisualTheme = {
@@ -121,16 +127,57 @@ const footerStyle = [
 	`--site-footer-background-color: ${frameColors.backgroundColor}`,
 	`--site-footer-text-color: ${frameColors.textColor}`,
 ].join('; ');
+const colorModeStorageKey = `norna-color-mode:${projectConfig.site.basePath}`;
+const colorModeScript = presentation.colorMode.allowSelection
+	? `(() => {
+	const root = document.documentElement;
+	const storageKey = ${JSON.stringify(colorModeStorageKey)};
+	const allowedModes = new Set(['system', 'light', 'dark']);
+	const readStoredMode = () => {
+		try {
+			const storedMode = localStorage.getItem(storageKey);
+			return allowedModes.has(storedMode) ? storedMode : null;
+		} catch {
+			return null;
+		}
+	};
+	const applyMode = (mode, persist = false) => {
+		const nextMode = allowedModes.has(mode) ? mode : ${JSON.stringify(presentation.colorMode.default)};
+		root.dataset.colorMode = nextMode;
+		if (persist) {
+			try { localStorage.setItem(storageKey, nextMode); } catch {}
+		}
+		document.querySelectorAll('[data-color-mode-selector]').forEach((selector) => {
+			selector.value = nextMode;
+		});
+		requestAnimationFrame(() => {
+			const themeColor = getComputedStyle(root).getPropertyValue('--color-page').trim();
+			if (themeColor) document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => meta.content = themeColor);
+		});
+	};
+	applyMode(readStoredMode() ?? root.dataset.colorMode);
+	document.addEventListener('DOMContentLoaded', () => {
+		document.querySelectorAll('[data-color-mode-selector]').forEach((selector) => {
+			selector.addEventListener('change', () => applyMode(selector.value, true));
+		});
+		applyMode(root.dataset.colorMode);
+	});
+	matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+		if (root.dataset.colorMode === 'system') applyMode('system');
+	});
+})();`
+	: null;
 ---
 
 <!doctype html>
-<html lang={projectConfig.locale.lang} style={documentStyle}>
+<html lang={projectConfig.locale.lang} data-color-mode={presentation.colorMode.default} style={documentStyle}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="format-detection" content="telephone=no" />
 		{description && <meta name="description" content={description} />}
 		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
+		{colorModeScript && <script is:inline set:html={colorModeScript} />}
 		<link rel="canonical" href={canonicalUrl} />
 		<meta name="generator" content={Astro.generator} />
 		{iconLinks.map((iconLink) => (

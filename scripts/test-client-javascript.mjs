@@ -255,6 +255,35 @@ Plain page content.
 	assert.equal(getScripts(bannerHtml).length, 1, 'A dismissible banner should load only its dismissal script.');
 	assert.match(getScripts(bannerHtml)[0], /norna-banner:/);
 
+	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), '{}\n');
+	await writeFile(path.join(homeDir, 'content.md'), `---
+page:
+  description: A plain page with selectable color modes.
+---
+
+# Color modes
+
+Ordinary content with a user-selectable color mode.
+`);
+	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
+  profile: reading
+palette: paper
+colorMode:
+  default: system
+  allowSelection: true
+`);
+
+	runBuild();
+	const selectableColorModeHtml = await readPage();
+	assert.equal(
+		getScripts(selectableColorModeHtml).length,
+		1,
+		'A selectable color mode should load only its preference script on a plain page.',
+	);
+	assert.match(selectableColorModeHtml, /<html\b[^>]*data-color-mode="system"/);
+	assert.match(selectableColorModeHtml, /data-color-mode-selector/);
+	assert.match(getScripts(selectableColorModeHtml)[0], /norna-color-mode:/);
+
 	console.log('Client JavaScript boundaries test passed.');
 } finally {
 	await rm(tempRoot, { force: true, recursive: true });

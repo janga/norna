@@ -61,6 +61,11 @@ export const schemaValueDefinitions = Object.freeze([
 		light: option('Light', 'White and cool light surfaces with dark text.'),
 		paper: option('Paper', 'Warm off-white surfaces with dark text.'),
 	}),
+	definition(['system', 'light', 'dark'], {
+		system: option('System', 'Follow the visitor\'s operating-system light or dark preference.'),
+		light: option('Light', 'Start with the palette\'s light appearance.'),
+		dark: option('Dark', 'Start with the palette\'s dark appearance.'),
+	}),
 	definition(['square', 'soft'], {
 		square: option('Square', 'Use square corners for navigation, cards and framed content.'),
 		soft: option('Soft', 'Use restrained rounded corners consistently across the site.'),

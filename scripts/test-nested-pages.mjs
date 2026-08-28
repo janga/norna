@@ -59,7 +59,7 @@ try {
 	const installationHtml = await readFile(path.join(distDir, 'guides', 'installation', 'index.html'), 'utf8');
 	const macosHtml = await readFile(path.join(distDir, 'guides', 'installation', 'macos', 'index.html'), 'utf8');
 	for (const html of [rootHtml, guidesHtml, installationHtml, macosHtml]) {
-		assert.match(html, /--color-page: #f8f5ee/);
+		assert.match(html, /--palette-light-page-background: #f8f5ee/);
 		assert.match(html, /--font-sans: Georgia, 'Times New Roman', serif/);
 	}
 	assert.match(rootHtml, /--image-width: 920px/);

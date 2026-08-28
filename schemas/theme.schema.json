@@ -29,6 +29,53 @@
       ],
       "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated shapes, layout, image sizing, typography, palette and section backgrounds. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#theme-presets)"
     },
+    "colorMode": {
+      "type": "object",
+      "properties": {
+        "default": {
+          "description": "Initial color mode. System follows the visitor's operating-system preference.",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "system",
+              "title": "System",
+              "description": "Follow the visitor's operating-system light or dark preference."
+            },
+            {
+              "const": "light",
+              "title": "Light",
+              "description": "Start with the palette's light appearance."
+            },
+            {
+              "const": "dark",
+              "title": "Dark",
+              "description": "Start with the palette's dark appearance."
+            }
+          ],
+          "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nInitial color mode. System follows the visitor's operating-system preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)",
+          "examples": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "allowSelection": {
+          "description": "Show a site-wide control that lets visitors choose system, light, or dark mode.",
+          "type": "boolean",
+          "markdownDescription": "```yaml\ncolorMode:\n  allowSelection: true\n```\n\nShow a site-wide control that lets visitors choose system, light, or dark mode.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Site-wide light and dark mode behaviour.",
+      "markdownDescription": "```yaml\ncolorMode:\n  default: system\n  allowSelection: true\n```\n\nControls the initial light or dark appearance and whether visitors may choose their preferred mode.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)",
+      "defaultSnippets": [
+        {
+          "label": "Configure color modes",
+          "markdownDescription": "Follow the system color preference and let visitors choose another mode.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)",
+          "body": "colorMode:\n  default: ${1:system}\n  allowSelection: ${2:true}"
+        }
+      ]
+    },
     "shape": {
       "description": "Site-wide shape profile. Omit this to use the selected preset.",
       "type": "string",

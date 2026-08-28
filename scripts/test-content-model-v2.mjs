@@ -234,8 +234,10 @@ sections:
 		const rootHtml = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
 		const pageHtml = await readFile(path.join(path.dirname(siteDir), 'dist', 'guide', 'index.html'), 'utf8');
 		const detailHtml = await readFile(path.join(path.dirname(siteDir), 'dist', 'guide', 'detail', 'index.html'), 'utf8');
-		assert.match(rootHtml, /--color-page: #000000/);
-		assert.match(pageHtml, /--color-page: #000000/);
+		assert.match(rootHtml, /data-color-mode="system"/);
+		assert.match(pageHtml, /data-color-mode="system"/);
+		assert.match(rootHtml, /--palette-dark-page-background: #000000/);
+		assert.match(pageHtml, /--palette-dark-page-background: #000000/);
 		assert.match(rootHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
 		assert.match(pageHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
 		assert.match(pageHtml, /--space-section-to-section-desktop: clamp\(2\.25rem, 5vw, 4\.5rem\)/);
