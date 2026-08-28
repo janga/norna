@@ -56,7 +56,7 @@ site/
 - [`public/`](public-files.md): navigation logos, favicons, and other static
   files copied without managed-image processing.
 - [Generated files](site-files.md#generated-files): `site/.norna/public/`,
-  `dist/`, and `.astro/`.
+  `site/.norna/.astro/`, and `dist/`.
 
 The [complete Site Files reference](site-files.md) explains which paths are
 required, optional, convention-discovered, versioned, or generated.

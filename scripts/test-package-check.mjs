@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -118,6 +118,21 @@ const assertFileMissing = async (filePath) => {
 	}
 
 	throw new Error(`Unexpected file exists: ${filePath}.`);
+};
+
+const assertPathExists = async (filePath) => {
+	await access(filePath);
+};
+
+const assertPathMissing = async (filePath) => {
+	try {
+		await access(filePath);
+	} catch (error) {
+		if (error?.code === 'ENOENT') return;
+		throw error;
+	}
+
+	throw new Error(`Unexpected path exists: ${filePath}.`);
 };
 
 const assertFileIncludes = async (filePath, expectedText) => {
@@ -252,6 +267,14 @@ This page verifies that packaged norna sites can build additional pages.
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
 	]);
+	await assertFileIncludes(
+		path.join(initializedSiteRoot, '.gitignore'),
+		'**/.norna/.astro/',
+	);
+	await assertFileIncludes(
+		path.join(initializedSiteRoot, 'site', '.gitignore'),
+		'.norna/.astro/',
+	);
 	const homeImagesDir = path.join(siteProjectRoot, 'site', 'pages', '000-home', 'images');
 	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'doctor'], { cwd: homeImagesDir, env: npmEnv });
@@ -259,6 +282,8 @@ This page verifies that packaged norna sites can build additional pages.
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
+	await assertPathExists(path.join(siteProjectRoot, 'site', '.norna', '.astro'));
+	await assertPathMissing(path.join(siteProjectRoot, '.astro'));
 	await assertFileExists(path.join(siteProjectRoot, 'site', '.norna', 'public', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'about', 'index.html'));

@@ -9,6 +9,38 @@ import {
 
 const packageName = '@janga/norna';
 const cliExecutableName = 'norna';
+const standaloneGitignore = `# build output
+dist/
+
+# legacy generated public output
+/public/
+
+# generated site state
+**/.norna/public/
+**/.norna/.astro/
+
+# legacy Astro cache location
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+`;
+const siteGitignore = `.norna/public/
+.norna/.astro/
+`;
 
 const usage = `
 Usage: norna init <target-dir> [--type standalone|embedded] [--site-dir <path>]
@@ -203,6 +235,8 @@ if (type === 'standalone') {
 	if (siteDirectory !== 'site') targetPackageJson.scripts = {};
 	addNornaScripts(targetPackageJson, nornaScripts, { includeStandaloneAliases: true });
 	await writeFile(targetPackageJsonPath, `${JSON.stringify(targetPackageJson, null, 2)}\n`);
+	await writeFile(path.join(targetRoot, '.gitignore'), standaloneGitignore);
+	await writeFile(path.join(targetSiteDir, '.gitignore'), siteGitignore);
 } else {
 	if (!existingEntries) {
 		throw new Error(`Target directory must exist for --type embedded: ${targetRoot}`);
@@ -228,6 +262,7 @@ if (type === 'standalone') {
 		filter: (source) => path.basename(source) !== '.DS_Store',
 		recursive: true,
 	});
+	await writeFile(path.join(targetSiteDir, '.gitignore'), siteGitignore);
 	await writeFile(targetPackageJsonPath, `${JSON.stringify(targetPackageJson, null, 2)}\n`);
 }
 

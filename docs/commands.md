@@ -161,7 +161,7 @@ should normally mean the repository's complete publishable artifact, while
   the IPv4 URL to open from another device on the same network. Stop it after
   testing because it is accessible to that local network.
 - `dev:restart`, `dev:status`, `dev:logs`, `dev:stop`: manage the local dev
-  server tracked under `.astro/`.
+  server tracked under `site/.norna/.astro/`.
 - `preview`: runs Astro preview with the `norna` Astro config.
 - `astro`: runs Astro with the `norna` Astro config.
 - `deploy`: discovers the GitHub repository and default branch, then builds and

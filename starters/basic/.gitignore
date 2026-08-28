@@ -4,10 +4,11 @@ dist/
 # legacy generated public output
 /public/
 
-# generated build-preparation output
-site/.cli-gallery/public/
+# generated site state
+**/.norna/public/
+**/.norna/.astro/
 
-# generated types and dev-server state
+# legacy Astro cache location
 .astro/
 
 # dependencies

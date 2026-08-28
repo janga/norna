@@ -131,8 +131,10 @@ Do not edit these by hand:
 
 - `site/.norna/public/`: build-preparation output copied from `site/public/`,
   plus generated or copied managed images;
+- `site/.norna/.astro/`: site-local Astro cache, generated types, and local
+  dev-server state;
 - `dist/`: final static website output;
-- `.astro/`: Astro cache, generated types, and local dev-server state.
+- `.astro/`: legacy Astro cache location, which can be removed after upgrading.
 
 `norna site:public` removes stale copied static files from
 `site/.norna/public/` while preserving managed image output under its `images/`

@@ -43,7 +43,9 @@ npm run package:check
 
 `npm run test:examples` builds every complete site and feature demo under
 `examples/`. `npm run test` includes those builds in the standard check
-sequence.
+sequence. Each build uses that example's own temporary output and site-local
+Astro state, so it cannot replace the documentation site's `dist/` or reload
+an active documentation dev server.
 
 `npm run test:documentation` checks local Markdown links, rejects obsolete site
 paths and filenames in documentation and examples, and verifies that every
@@ -74,6 +76,9 @@ diagnostic target:
 node bin/norna.mjs --site-dir examples/feature-demos/media-and-surfaces/site dev:local
 npm run demo:build
 ```
+
+The demo build is written to `examples/feature-demos/media-and-surfaces/dist/`,
+not to the engine repository's root `dist/`.
 
 Navigation diagnostics are separate because they use Playwright:
 

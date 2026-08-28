@@ -16,9 +16,9 @@ const documentationBasePath = projectConfig.site.basePath;
 const examples = await getExampleSites(root);
 let artifactStarted = false;
 
-const buildSite = (siteLabel, env = process.env) => runInherit(
+const buildSite = (siteDirectory, env = process.env) => runInherit(
 	process.execPath,
-	[cliPath, ...(siteLabel ? ['--site-dir', siteLabel] : []), 'build'],
+	[cliPath, ...(siteDirectory ? ['--site-dir', siteDirectory] : []), 'build'],
 	{ cwd: root, env },
 );
 
@@ -31,16 +31,21 @@ try {
 	for (const example of examples) {
 		const relativePublicPath = `examples/${example.category}/${example.name}/`;
 		const siteUrl = new URL(relativePublicPath, documentationUrl).href;
+		const exampleDistDirectory = path.join(path.dirname(example.siteDirectory), 'dist');
 
 		console.log(`\nBuilding ${example.siteLabel} for ${siteUrl}`);
-		await buildSite(example.siteLabel, {
-			...process.env,
-			NORNA_SITE_URL: siteUrl,
-		});
+		try {
+			await buildSite(example.siteDirectory, {
+				...process.env,
+				NORNA_SITE_URL: siteUrl,
+			});
 
-		const destination = path.join(artifactDirectory, relativePublicPath);
-		await mkdir(path.dirname(destination), { recursive: true });
-		await cp(distDirectory, destination, { recursive: true });
+			const destination = path.join(artifactDirectory, relativePublicPath);
+			await mkdir(path.dirname(destination), { recursive: true });
+			await cp(exampleDistDirectory, destination, { recursive: true });
+		} finally {
+			await rm(exampleDistDirectory, { recursive: true, force: true });
+		}
 	}
 } finally {
 	if (artifactStarted) {

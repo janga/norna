@@ -49,6 +49,7 @@ try {
 	assert.equal(directSiteDoctorResult.status, 0, directSiteDoctorResult.stderr || directSiteDoctorResult.stdout);
 	assert.ok(directSiteDoctorResult.stdout.includes(`Site project root: ${directSiteProjectRoot}`));
 	assert.match(directSiteDoctorResult.stdout, /Site directory: current-directory-site/);
+	assert.match(directSiteDoctorResult.stdout, /Astro cache: .*\/current-directory-site\/\.norna\/\.astro/);
 
 	const initializedSiteRoot = path.join(tempRoot, 'initialized-site');
 	const initResult = runCli(['init', initializedSiteRoot]);
@@ -146,6 +147,10 @@ try {
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'pages', '000-home', 'content.md'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.yaml'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'theme.yaml'));
+	assert.match(
+		await readFile(path.join(mixedProjectRoot, 'presentation', '.gitignore'), 'utf8'),
+		/^\.norna\/\.astro\/$/m,
+	);
 
 	const conflictProjectRoot = path.join(tempRoot, 'conflict-project');
 	await mkdir(conflictProjectRoot, { recursive: true });
