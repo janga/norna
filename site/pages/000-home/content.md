@@ -9,20 +9,20 @@ page:
 
 ## What is Norna? {#intro}
 
-**Norna is an opinionated, open source CLI for building websites from plain
-files.**
+**Norna is an opinionated, open source CLI for building websites from very
+simple markdown files.**{note-ref}
 
-A Norna site combines Markdown content, local images, a theme, technical
-configuration and optional pages. These files follow a defined structure, so
-Norna can understand how pages, sections and assets belong together.
+{note: This site is built by Norna.}
 
-You describe the site rather than implement it. Norna provides the presentation
-layer, including page structure, navigation, responsive layout and built-in
-patterns for images and other common content.
+You write the text, choose the images and place them in the content. Norna takes
+care of the repetitive website work: local preview, page structure, navigation,
+responsive layout, image processing, validation and the finished static build.
 
-The CLI lets you preview the site while editing, validate its source, process
-managed images and build the finished website. The source remains ordinary files
-that you can inspect, edit and version with the rest of your work.
+The working syntax stays small: mostly ordinary Markdown plus a few built-in
+blocks for image stacks, carousels, cards and notes. Optional VS Code
+IntelliSense helps you discover configuration, block syntax and image filenames.
+The source remains ordinary files that you can inspect, edit and version with
+the rest of your work.
 
 ## Why Norna? {#why}
 
