@@ -7,12 +7,12 @@ page:
 
 ## Install
 
-This third-level page should be available at `/guides/installation/macos/`.
+This third-level page is available at `/guides/installation/macos/`.
 
 ### Prerequisites
 
-This nested heading verifies the current-page contents hierarchy.
+Add details that belong under the installation step.
 
 ## Verify
 
-The page should inherit the theme from Guides through its parent page.
+Explain how the reader can verify the installation.

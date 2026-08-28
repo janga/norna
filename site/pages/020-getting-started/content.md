@@ -7,7 +7,16 @@ page:
 
 ## Install Norna and create a site {#create}
 
-You need Node.js 22.12 or later.
+You need:
+
+- Node.js 22.12 or later.
+- ImageMagick
+
+Norna uses ImageMagick to prepare raster images for responsive layouts. Install
+it separately for your operating system before adding JPEG or PNG images to the
+site.{note-ref}
+
+{note: [How to install ImageMagick.](/faq/#install-imagemagick)}
 
 ```sh
 # Create a new site project in my-site/
@@ -20,20 +29,7 @@ npm install
 
 The first command uses the latest Norna release to create the project.
 `package.json` records the project's Norna version, and `npm install` installs
-that version locally.{note-ref}
-
-{note: Adding Norna to an existing Node project is also supported. See the
-[FAQ](/faq/#add-norna-to-an-existing-project).}
-
-Commit `package.json` and `package-lock.json` to Git. Together they let you
-restore an earlier version after a failed upgrade and keep installations
-consistent for everyone working on the site and for automated builds.
-
-Norna uses ImageMagick to prepare raster images for responsive layouts. Install
-it separately for your operating system before adding JPEG or PNG images to the
-site.{note-ref}
-
-{note: [How to install ImageMagick.](/faq/#install-imagemagick)}
+that version.
 
 See
 [Requirements and limitations](https://github.com/janga/norna/blob/main/docs/requirements.md)
@@ -65,9 +61,9 @@ Meet the dogs currently waiting for a family.
 Rover enjoys long walks and quiet afternoons.
 ```
 
-`#` is the page title, `##` starts a section, and `###` adds structure within
-that section. Norna renders the page and derives its local navigation from the
-same heading hierarchy.
+`#` is the page title, `##` starts a section, and `###` creates a subsection. On
+a one-page site, Norna builds local navigation from the page title and its `##`
+sections.
 
 ## Growing your site {#pages}
 
@@ -77,28 +73,28 @@ The generated project starts with one page named Home:
 
 ```text
 site/
-├── config.yaml
-├── theme.yaml
-├── sitewide-content.yaml
-├── pages/
-│   └── 000-home/
-│       ├── content.md
-│       └── images/
-└── public/
+├── config.yaml              # Technical settings
+├── theme.yaml               # Visual choices
+├── sitewide-content.yaml    # Shared banners and footer
+│
+├── pages/                   # The site's pages
+│   └── 000-home/            # The required home page
+│       ├── content.md       # Page title, sections, and text
+│       └── images/          # Managed images used by this page
+│
+└── public/                  # Static files copied unchanged
+    ├── favicon.ico          # Optional browser tab and bookmark icon
+    └── robots.txt           # Instructions for search crawlers
 ```
 
-Norna expects these files in defined places. The page text belongs in
-`content.md`; managed source images belong beside it in `images/`; visual
-choices belong in `theme.yaml`; and technical settings belong in `config.yaml`.
-Shared banners and footer content belong in `sitewide-content.yaml`, while
-`public/` contains files copied directly to the published site.
+Each page keeps its Markdown content and images together. Norna uses this
+structure to connect them without additional configuration.
 
-Following this structure lets Norna connect content, images, presentation,
-configuration, and navigation without requiring you to describe those
-relationships again.
+For the first edit, focus on `content.md` and the adjacent `images/` directory.
+The generated defaults in the other files are enough for local preview.
 
-A page has exactly one H1. Each H2 begins a section and each H3 is a subsection
-within the current section:
+Each page starts with exactly one H1. Every H2 starts a section, and each H3
+creates a subsection within the current section:
 
 ````md
 # Dog Shelter
@@ -140,9 +136,9 @@ simple single-page website.
   alt: A three-column diagram showing a single-page Norna file tree, Markdown page content, and the resulting browser page with navigation derived from its headings.
 ```
 
-The example places both managed source images in the page's `images/` directory
-and inserts them with `norna-image-stack` blocks. A stack may contain one or
-several images; alt text and captions can be added to each entry.
+The example places both images in the page's `images/` directory and inserts
+them with `norna-image-stack` blocks. A stack may contain one or several images;
+alt text and captions can be added to each entry.
 
 External images can use ordinary Markdown image syntax. See
 [Content](https://github.com/janga/norna/blob/main/docs/content.md) for exact
@@ -151,6 +147,11 @@ heading, generated-id, note, and Norna-block syntax, and
 for image placement, processing, and captions.
 
 ### Add top-level pages {#top-level-pages}
+
+Sites with more content need more pages and navigation that fits the available
+screen. Top-level pages normally use horizontal navigation on wide screens. As
+pages or their contents gain more levels, Norna switches to a navigation tree.
+On small screens, the same structure is presented in an expandable menu.
 
 Add a page directory beside `000-home` when the site needs another main page:
 
@@ -165,25 +166,42 @@ site/pages/
     └── content.md
 ```
 
-These pages are peers. Each gets its own URL, content, managed images, and local
+These pages are peers. Each gets its own URL, content, images, and local
 headings. The numeric prefix orders pages among their siblings, while the
 remaining page id becomes the URL segment: `010-dogs/` appears before
 `020-adopt/` and produces a URL ending in `/dogs/`.
 
-Top-level pages appear in the site's global navigation. Selecting one reveals
-that page's sections without losing access to the other pages. On mobile, pages
-and their sections are presented together in the same menu.
+With several pages, Norna-managed images are useful for keeping each image with
+the page that uses it. These are local files referenced from Norna image,
+carousel, or card blocks. The command `npm run norna:content:check` reports
+missing or misplaced files. If an image reference moves to another page, run
+`npm run norna:sync`; it can move a uniquely identified image into that page's
+`images/` directory.
+
+The Dogs page builds on the same shelter example. On a small screen, its
+top-level pages move into one expandable menu. The following views show the
+same page before and after opening that menu.
 
 <!-- norna-image-provenance:
-image: multi-page-site.svg
-source: hand-authored
-Hand-authored SVG diagram created for the Norna introduction site to explain
-how page folders map to page content, navigation, managed images and URLs.
+image: dog-shelter-mobile-page.png
+source: local screenshot
+Screenshot of the Dogs page in the dog-shelter-multi-page example at a mobile
+viewport with navigation closed.
 -->
 
-```norna-image-stack
-- image: multi-page-site.svg
-  alt: A three-column diagram showing top-level page folders, the Dogs page Markdown, and the resulting Dogs page with its URL and global navigation.
+<!-- norna-image-provenance:
+image: dog-shelter-mobile-navigation.png
+source: local screenshot
+Screenshot of the same Dogs page with its mobile navigation menu open.
+-->
+
+```norna-image-carousel
+- image: dog-shelter-mobile-page.png
+  alt: The Dog Shelter Dogs page on a small screen with the navigation menu closed and a Menu button in the top-right corner.
+  caption: The page on a small screen. Select Menu to open navigation.
+- image: dog-shelter-mobile-navigation.png
+  alt: The Dog Shelter Dogs page on a narrow screen, with an open menu listing Dog Shelter, Dogs, and Adopt.
+  caption: The same page with navigation open and the current page marked.
 ```
 
 ### Add nested pages {#nested-pages}
@@ -201,13 +219,41 @@ site/pages/
         └── 010-installation/
             ├── content.md
             └── pages/
-                └── 020-macos/
+                ├── 010-macos/
+                │   └── content.md
+                ├── 020-linux/
+                │   └── content.md
+                └── 030-windows/
                     └── content.md
 ```
 
 This creates `/guides/`, `/guides/installation/`, and
-`/guides/installation/macos/`. Every directory is a real page with its own H1,
-content, and URL; Norna does not use empty grouping directories.
+separate installation pages for macOS, Linux, and Windows. Every directory is a
+real page with its own H1, content, and URL; Norna does not use empty grouping
+directories.
+
+The macOS page remains an ordinary Markdown file:
+
+```md
+---
+page:
+  description: A third-level macOS installation page.
+---
+
+# macOS
+
+## Install
+
+This third-level page is available at `/guides/installation/macos/`.
+
+### Prerequisites
+
+Add details that belong under the installation step.
+
+## Verify
+
+Explain how the reader can verify the installation.
+```
 
 The top-level area stays in global navigation. Its descendants form a local page
 tree, and the current page's H2 and H3 headings appear with that tree. On a
@@ -217,16 +263,20 @@ separate desktop sidebar.
 Home is the exception: `000-home` is the site's front door and cannot have child
 pages. Start each navigable hierarchy with another top-level page beside it.
 
+The rendered page keeps the top-level area in global navigation and shows its
+deeper page hierarchy in the desktop navigation tree:
+
 <!-- norna-image-provenance:
-image: nested-pages.svg
-source: hand-authored
-Hand-authored SVG diagram created for the Norna introduction site to explain
-how nested page directories map to URLs and desktop and mobile navigation.
+image: nested-pages-desktop.png
+source: local screenshot
+Screenshot of the macOS page in the nested-pages fixture after adding Linux and
+Windows as sibling installation pages.
 -->
 
 ```norna-image-stack
-- image: nested-pages.svg
-  alt: A diagram showing nested Guides, Installation and macOS page folders mapped to their URLs, a desktop navigation tree and an expandable mobile menu.
+- image: nested-pages-desktop.png
+  alt: A rendered macOS installation page with Guides in the global navigation and a left navigation tree showing Installation, macOS, Linux, and Windows.
+  caption: A nested documentation page keeps its wider context visible on a desktop screen.
 ```
 
 See [Pages](https://github.com/janga/norna/blob/main/docs/pages.md) for page
@@ -334,36 +384,19 @@ selection.
 
 ## Build and publish {#publish}
 
-Build the same static output that will be published:
+Before the first publish, set the public site URL in `site/config.yaml`:
 
-```sh
-npm run norna:check
-npm run norna:build
+```yaml
+url: https://owner.github.io/repository/
 ```
 
-Norna writes the generated website to `dist/`. Do not edit `dist/` as site
-source; edit the files under `site/` and build again.
+Create a GitHub repository for the site and push the project. In the repository,
+open **Settings -> Pages** and select **GitHub Actions** as the publishing
+source.
 
-The generated project includes GitHub Pages publishing. Commit the source and
-push it to GitHub when it is ready:
-
-```sh
-git status
-git add site/
-git commit -m "Update site"
-git push
-```
-
-The included GitHub Actions workflow then runs the required checks, builds the
-site, and publishes the generated output. A failed check prevents a broken site
-from being published.
-
-Git also lets you restore an unintended content edit or image move. Norna does
-not require a clean working tree for normal checks or image sync.
-
-GitHub Pages is the only integrated publishing target today. Other services can
-serve static files, but Norna does not currently provide publishing integrations
-for them.
+The included workflow checks and builds the site whenever you push to the
+repository's default branch. If the checks pass, GitHub Pages publishes the
+generated `dist/` output.
 
 See [Publishing](https://github.com/janga/norna/blob/main/docs/publishing.md)
-for repository setup, workflow permissions, custom domains, and troubleshooting.
+for custom domains, deploy commands, and troubleshooting.

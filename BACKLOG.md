@@ -21,6 +21,10 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
+- Audit the latest week's functional commits against the reference
+  documentation, introduction site, starters, examples, and IntelliSense help.
+  Record missing or stale coverage and update each surface only after the
+  corresponding behavior has been verified.
 - Add a short "Build your first image-led site in 5 minutes" guide with one happy path
   and no reference material.
 - Add a complete small `site/theme.yaml` and `site/pages/000-home/content.md` example that a

@@ -1,19 +1,51 @@
 {
-  "pages/020-getting-started/images/multi-page-site.svg": {
-    "kind": "static",
+  "pages/020-getting-started/images/dog-shelter-mobile-navigation.png": {
     "outputVersion": 2,
-    "sourceHash": "df14259d8631001dc432c5a6ed2cabf3a69c5b101e74ed94f8c87b7f2d2f7efd",
-    "src": "/images/original/pages/020-getting-started/images/multi-page-site-df14259d.svg",
-    "width": 1080,
-    "height": 620
+    "sourceHash": "24ef8bbb30f908c7f5c161ba5abd03c05b86b630e19ffac363fb25c124b68274",
+    "width": 390,
+    "height": 700,
+    "variants": [
+      {
+        "src": "/images/generated/pages/020-getting-started/images/dog-shelter-mobile-navigation-24ef8bbb-390.webp",
+        "width": 390
+      }
+    ]
   },
-  "pages/020-getting-started/images/nested-pages.svg": {
-    "kind": "static",
+  "pages/020-getting-started/images/dog-shelter-mobile-page.png": {
     "outputVersion": 2,
-    "sourceHash": "ad539a822bd8d0a655b1d8b7deec4eea6d1ba2ff74cde81856715910f3b5bd35",
-    "src": "/images/original/pages/020-getting-started/images/nested-pages-ad539a82.svg",
-    "width": 1080,
-    "height": 600
+    "sourceHash": "d6536d6b8ce5442a9637dd78553b8b46c361413f1fcb88735cd59f2d25e6a81c",
+    "width": 390,
+    "height": 700,
+    "variants": [
+      {
+        "src": "/images/generated/pages/020-getting-started/images/dog-shelter-mobile-page-d6536d6b-390.webp",
+        "width": 390
+      }
+    ]
+  },
+  "pages/020-getting-started/images/nested-pages-desktop.png": {
+    "outputVersion": 2,
+    "sourceHash": "c50777d46f5276e97ac31676fb5fe78a9d00baa7de641bae5abfb3dc1d3e5837",
+    "width": 1200,
+    "height": 600,
+    "variants": [
+      {
+        "src": "/images/generated/pages/020-getting-started/images/nested-pages-desktop-c50777d4-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/020-getting-started/images/nested-pages-desktop-c50777d4-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/020-getting-started/images/nested-pages-desktop-c50777d4-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/020-getting-started/images/nested-pages-desktop-c50777d4-1200.webp",
+        "width": 1200
+      }
+    ]
   },
   "pages/020-getting-started/images/single-page-site.svg": {
     "kind": "static",

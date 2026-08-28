@@ -99,6 +99,11 @@ Use:
 npm run norna:deploy:watch
 ```
 
+GitHub Pages is a reliable publishing service, but GitHub Actions or Pages can
+occasionally be delayed or experience temporary service problems. Norna includes
+`norna:deploy:watch` to make the current deployment status and any reported
+failure easier to follow from the command line.
+
 By default it monitors `deploy.yml` for the current `HEAD` in the discovered
 repository and default branch. Useful one-run overrides include:
 

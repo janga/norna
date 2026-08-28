@@ -4,7 +4,7 @@ page:
     Answers to common questions about setting up and maintaining a Norna site.
 ---
 
-# Norna FAQ
+# FAQ
 
 ## How do I add Norna to an existing Node project? {#add-norna-to-an-existing-project}
 
