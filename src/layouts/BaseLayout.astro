@@ -127,40 +127,62 @@ const footerStyle = [
 	`--site-footer-background-color: ${frameColors.backgroundColor}`,
 	`--site-footer-text-color: ${frameColors.textColor}`,
 ].join('; ');
-const colorModeStorageKey = `norna-color-mode:${projectConfig.site.basePath}`;
+const colorModeCookieName = 'norna-color-mode';
+const colorModeCookiePath = projectConfig.site.basePath;
 const colorModeScript = presentation.colorMode.allowSelection
 	? `(() => {
 	const root = document.documentElement;
-	const storageKey = ${JSON.stringify(colorModeStorageKey)};
+	const cookieName = ${JSON.stringify(colorModeCookieName)};
+	const cookiePath = ${JSON.stringify(colorModeCookiePath)};
 	const allowedModes = new Set(['system', 'light', 'dark']);
-	const readStoredMode = () => {
+	const readSavedMode = () => {
+		const prefix = encodeURIComponent(cookieName) + '=';
+		const cookie = document.cookie.split('; ').find((part) => part.startsWith(prefix));
+		if (!cookie) return null;
+		const mode = decodeURIComponent(cookie.slice(prefix.length));
+		return allowedModes.has(mode) ? mode : null;
+	};
+	const saveMode = (mode) => {
 		try {
-			const storedMode = localStorage.getItem(storageKey);
-			return allowedModes.has(storedMode) ? storedMode : null;
-		} catch {
-			return null;
-		}
+			const secure = location.protocol === 'https:' ? '; Secure' : '';
+			document.cookie = encodeURIComponent(cookieName) + '=' + encodeURIComponent(mode)
+				+ '; Path=' + cookiePath + '; Max-Age=31536000; SameSite=Lax' + secure;
+		} catch {}
 	};
 	const applyMode = (mode, persist = false) => {
 		const nextMode = allowedModes.has(mode) ? mode : ${JSON.stringify(presentation.colorMode.default)};
 		root.dataset.colorMode = nextMode;
-		if (persist) {
-			try { localStorage.setItem(storageKey, nextMode); } catch {}
-		}
+		if (persist) saveMode(nextMode);
 		document.querySelectorAll('[data-color-mode-selector]').forEach((selector) => {
-			selector.value = nextMode;
+			selector.dataset.selectedMode = nextMode;
+			selector.querySelectorAll('[data-color-mode-option]').forEach((option) => {
+				option.setAttribute('aria-pressed', String(option.dataset.colorModeOption === nextMode));
+			});
+			const selectedOption = selector.querySelector('[data-color-mode-option="' + nextMode + '"]');
+			const trigger = selector.querySelector('[data-color-mode-trigger]');
+			if (trigger && selectedOption) {
+				trigger.setAttribute('aria-label', ${JSON.stringify(projectConfig.locale.labels.colorMode)} + ': ' + selectedOption.dataset.colorModeLabel);
+			}
+			if (persist) selector.removeAttribute('open');
 		});
 		requestAnimationFrame(() => {
 			const themeColor = getComputedStyle(root).getPropertyValue('--color-page').trim();
 			if (themeColor) document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => meta.content = themeColor);
 		});
 	};
-	applyMode(readStoredMode() ?? root.dataset.colorMode);
+	applyMode(readSavedMode() ?? root.dataset.colorMode);
 	document.addEventListener('DOMContentLoaded', () => {
 		document.querySelectorAll('[data-color-mode-selector]').forEach((selector) => {
-			selector.addEventListener('change', () => applyMode(selector.value, true));
+			selector.querySelectorAll('[data-color-mode-option]').forEach((option) => {
+				option.addEventListener('click', () => applyMode(option.dataset.colorModeOption, true));
+			});
 		});
 		applyMode(root.dataset.colorMode);
+	});
+	document.addEventListener('click', (event) => {
+		document.querySelectorAll('[data-color-mode-selector][open]').forEach((selector) => {
+			if (!selector.contains(event.target)) selector.removeAttribute('open');
+		});
 	});
 	matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
 		if (root.dataset.colorMode === 'system') applyMode('system');

@@ -27,7 +27,7 @@ Available complete presets are:
 
 Each preset coordinates:
 
-- colors, shape, and typography
+- light and dark colors, shape, and typography
 - page width, gutters, text width, and content spacing
 - navigation spacing and visual treatment
 - managed-image sizing
@@ -177,6 +177,57 @@ typography:
 Use `norna typography profiles` to inspect built-in values and
 `norna typography show` to inspect the resolved site typography. See
 [Typography](typography.md) for every override field.
+
+## Color Modes
+
+Every preset includes coordinated light and dark variants for its palette.
+`colorMode.default` selects the initial appearance:
+
+- `system`: follow the visitor's operating-system preference.
+- `light`: start with the preset's light colors.
+- `dark`: start with the preset's dark colors.
+
+Current preset defaults are:
+
+| Preset | Initial mode | Visitor selector |
+| --- | --- | --- |
+| `portfolio` | `dark` | Enabled |
+| `documentation` | `system` | Enabled |
+| `project` | `system` | Enabled |
+| `statement` | `system` | Enabled |
+
+Set `allowSelection` to `true` to show a site-wide selector for System, Light,
+and Dark in the navigation:
+
+```yaml
+preset: documentation
+colorMode:
+  default: system
+  allowSelection: true
+```
+
+When a visitor selects System, Light, or Dark, Norna stores the value in a
+first-party cookie named `norna-color-mode`. The cookie is limited to the site's
+base path, uses `SameSite=Lax`, and expires after one year. This keeps the choice
+for later visits without sharing it with another Norna site under a different
+path on the same domain. System stores the choice `system`; the actual colors
+continue to follow the visitor's operating-system preference.
+
+When the cookie is absent or invalid, Norna uses `colorMode.default`. Set
+`allowSelection: false` to hide the control; no color-mode preference script or
+cookie is then needed. The preset's initial mode still applies. A root theme
+without a preset also defaults selection to disabled unless it explicitly
+enables it.
+
+Color mode belongs to the root theme because navigation, page frame, section
+surfaces, controls, and text must change together. Page-local themes cannot
+override it. Select a palette for the site's color character, then use color
+mode to choose whether its coordinated light or dark variant is active. Norna
+does not expose arbitrary per-mode colors.
+
+The runnable [Media and surfaces example](../examples/feature-demos/media-and-surfaces/)
+lets you change mode while inspecting prose, section surfaces, managed images,
+cards, and carousel controls.
 
 ## Palette And Section Surfaces
 
