@@ -150,6 +150,9 @@ const carouselStyle = carouselAspectRatio
 			containScroll: false,
 			loop: true,
 		});
+		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const scrollPrevious = () => embla.scrollPrev(reducedMotion.matches);
+		const scrollNext = () => embla.scrollNext(reducedMotion.matches);
 
 		const update = () => {
 			const activeIndex = embla.selectedScrollSnap();
@@ -170,11 +173,11 @@ const carouselStyle = carouselAspectRatio
 
 		previous.addEventListener('click', () => {
 			showControls();
-			embla.scrollPrev();
+			scrollPrevious();
 		});
 		next.addEventListener('click', () => {
 			showControls();
-			embla.scrollNext();
+			scrollNext();
 		});
 		carousel.addEventListener('focusin', showControls);
 		carousel.addEventListener('pointerdown', showControls);
@@ -182,12 +185,12 @@ const carouselStyle = carouselAspectRatio
 			if (event.key === 'ArrowLeft') {
 				event.preventDefault();
 				showControls();
-				embla.scrollPrev();
+				scrollPrevious();
 			}
 			if (event.key === 'ArrowRight') {
 				event.preventDefault();
 				showControls();
-				embla.scrollNext();
+				scrollNext();
 			}
 		});
 		embla.on('select', () => {

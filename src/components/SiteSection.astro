@@ -1,5 +1,11 @@
 ---
 import { getTextWidthCssValue, resolveSectionSurface } from '../../scripts/lib/presentation.mjs';
+import {
+	bodyTypographySizeValues,
+	captionTypographySizeValues,
+	getHeadingTypographySizeValue,
+	getTypographySizeValue,
+} from '../../scripts/lib/typography.mjs';
 import CardList from './CardList.astro';
 import ImageCarousel from './ImageCarousel.astro';
 import ImageStack from './ImageStack.astro';
@@ -45,128 +51,11 @@ const headingId = section.id ?? 'page-title';
 const firstContentBlock = section.contentBlocks[0];
 const firstContentBlockIsVisual = firstContentBlock !== undefined
 	&& firstContentBlock.type !== 'html';
-type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
-const headingSizeValues: Record<HeadingLevel, Record<TextSize, ResponsiveValue<string>>> = {
-	h1: {
-		small: {
-			desktop: 'clamp(1.35rem, 1.2rem + 0.55vw, 1.7rem)',
-			mobile: 'clamp(1.32rem, 1.16rem + 0.8vw, 1.58rem)',
-		},
-		medium: {
-			desktop: 'clamp(1.65rem, 1.35rem + 1.1vw, 2.4rem)',
-			mobile: 'clamp(1.5rem, 1.22rem + 1.4vw, 2rem)',
-		},
-		large: {
-			desktop: 'clamp(1.95rem, 1.48rem + 1.7vw, 3.2rem)',
-			mobile: 'clamp(1.75rem, 1.32rem + 2.15vw, 2.5rem)',
-		},
-		xlarge: {
-			desktop: 'clamp(2.35rem, 1.58rem + 2.75vw, 4.4rem)',
-			mobile: 'clamp(2rem, 1.4rem + 3vw, 3.1rem)',
-		},
-	},
-	h2: {
-		small: {
-			desktop: 'clamp(1.1rem, 1.02rem + 0.35vw, 1.35rem)',
-			mobile: 'clamp(1.12rem, 1rem + 0.85vw, 1.42rem)',
-		},
-		medium: {
-			desktop: 'clamp(1.35rem, 1.1rem + 0.9vw, 2rem)',
-			mobile: 'clamp(1.3rem, 1.05rem + 1.35vw, 1.75rem)',
-		},
-		large: {
-			desktop: 'clamp(1.6rem, 1.22rem + 1.45vw, 2.75rem)',
-			mobile: 'clamp(1.5rem, 1.12rem + 2vw, 2.25rem)',
-		},
-		xlarge: {
-			desktop: 'clamp(2rem, 1.35rem + 2.4vw, 3.75rem)',
-			mobile: 'clamp(1.8rem, 1.25rem + 3vw, 2.85rem)',
-		},
-	},
-	h3: {
-		small: {
-			desktop: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
-			mobile: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
-		},
-		medium: {
-			desktop: 'clamp(1.05rem, 0.98rem + 0.28vw, 1.22rem)',
-			mobile: 'clamp(1.04rem, 0.98rem + 0.45vw, 1.18rem)',
-		},
-		large: {
-			desktop: 'clamp(1.16rem, 1.02rem + 0.5vw, 1.5rem)',
-			mobile: 'clamp(1.12rem, 1rem + 0.75vw, 1.36rem)',
-		},
-		xlarge: {
-			desktop: 'clamp(1.32rem, 1.08rem + 0.85vw, 1.9rem)',
-			mobile: 'clamp(1.24rem, 1.04rem + 1.15vw, 1.65rem)',
-		},
-	},
-	h4: {
-		small: {
-			desktop: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
-			mobile: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
-		},
-		medium: {
-			desktop: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
-			mobile: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
-		},
-		large: {
-			desktop: 'clamp(1.05rem, 1rem + 0.16vw, 1.12rem)',
-			mobile: 'clamp(1.05rem, 1rem + 0.16vw, 1.12rem)',
-		},
-		xlarge: {
-			desktop: 'clamp(1.14rem, 1.06rem + 0.26vw, 1.25rem)',
-			mobile: 'clamp(1.14rem, 1.06rem + 0.26vw, 1.25rem)',
-		},
-	},
-};
-const bodySizeValues: Record<TextSize, ResponsiveValue<string>> = {
-	small: {
-		desktop: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
-		mobile: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
-	},
-	medium: {
-		desktop: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
-		mobile: 'clamp(0.96rem, 0.94rem + 0.08vw, 1rem)',
-	},
-	large: {
-		desktop: 'clamp(1.05rem, 1rem + 0.16vw, 1.12rem)',
-		mobile: 'clamp(1.05rem, 1rem + 0.16vw, 1.12rem)',
-	},
-	xlarge: {
-		desktop: 'clamp(1.14rem, 1.06rem + 0.26vw, 1.25rem)',
-		mobile: 'clamp(1.14rem, 1.06rem + 0.26vw, 1.25rem)',
-	},
-};
-const captionSizeValues: Record<TextSize, ResponsiveValue<string>> = {
-	small: {
-		desktop: 'clamp(0.78rem, 0.76rem + 0.08vw, 0.84rem)',
-		mobile: 'clamp(0.78rem, 0.76rem + 0.08vw, 0.84rem)',
-	},
-	medium: {
-		desktop: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
-		mobile: 'clamp(0.86rem, 0.84rem + 0.08vw, 0.92rem)',
-	},
-	large: {
-		desktop: 'clamp(0.96rem, 0.92rem + 0.12vw, 1rem)',
-		mobile: 'clamp(0.96rem, 0.92rem + 0.12vw, 1rem)',
-	},
-	xlarge: {
-		desktop: 'clamp(1.04rem, 0.98rem + 0.18vw, 1.12rem)',
-		mobile: 'clamp(1.04rem, 0.98rem + 0.18vw, 1.12rem)',
-	},
-};
-const getSizeValue = (
-	sizeValues: Record<TextSize, ResponsiveValue<string>>,
-	size: TextSize,
-) => sizeValues[size];
-const getHeadingSizeValue = (level: HeadingLevel, size: TextSize) => (
-	headingSizeValues[level][size]
-);
 const surface = isPageTitle
 	? {
 		backgroundColor: 'var(--color-surface-base-background)',
 		textColor: 'var(--color-surface-base-text)',
+		secondaryTextColor: 'var(--color-surface-base-secondary-text)',
 	}
 	: resolveSectionSurface(pagePresentation, sectionIndex);
 const typography = pagePresentation.typography.values;
@@ -193,9 +82,9 @@ const markdownHeadings = Object.fromEntries(markdownHeadingLevels.map((level) =>
 const headingAlign = heading.align;
 const bodyAlign = typography.body.align as ResponsiveValue<TextAlign>;
 const captionAlign = typography.caption.align as ResponsiveValue<TextAlign>;
-const headingFontSize = getHeadingSizeValue(sectionHeadingVisualLevel, heading.size);
-const bodyFontSize = getSizeValue(bodySizeValues, typography.body.size as TextSize);
-const captionFontSize = getSizeValue(captionSizeValues, typography.caption.size as TextSize);
+const headingFontSize = getHeadingTypographySizeValue(sectionHeadingVisualLevel, heading.size);
+const bodyFontSize = getTypographySizeValue(bodyTypographySizeValues, typography.body.size as TextSize);
+const captionFontSize = getTypographySizeValue(captionTypographySizeValues, typography.caption.size as TextSize);
 const justifyByAlign: Record<TextAlign, string> = {
 	left: 'flex-start',
 	center: 'center',
@@ -244,7 +133,7 @@ flushReadingBlocks();
 const firstMediaGroupIndex = contentGroups.findIndex((group) => group.type === 'media');
 const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 	const headingConfig = markdownHeadings[level];
-	const fontSize = getHeadingSizeValue(level, headingConfig.size);
+	const fontSize = getHeadingTypographySizeValue(level, headingConfig.size);
 
 	return [
 		`--section-markdown-${level}-align-desktop: ${headingConfig.align.desktop}`,
@@ -260,6 +149,7 @@ const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 const sectionStyle = [
 	`--section-background-color: ${surface.backgroundColor}`,
 	`--section-text-color: ${surface.textColor}`,
+	`--section-secondary-text-color: ${surface.secondaryTextColor}`,
 	`--section-heading-align-desktop: ${headingAlign.desktop}`,
 	`--section-heading-align-mobile: ${headingAlign.mobile}`,
 	`--section-heading-font-size-desktop: ${headingFontSize.desktop}`,

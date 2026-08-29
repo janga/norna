@@ -1,7 +1,13 @@
 import {
+	assertTypographyContract,
 	defaultTypography,
 	resolveTypographyConfig,
 } from './typography.mjs';
+import {
+	assertPaletteModeContract,
+	createSemanticColorRoles,
+	deriveSecondaryTextColor,
+} from './presentation-contract.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
 
 export const presentationPaletteNames = ['dark', 'light', 'paper'];
@@ -12,19 +18,35 @@ const sectionBackgroundPatterns = Object.freeze({
 	cycling: ['base', 'soft', 'emphasis'],
 });
 
-const createPaletteMode = ({ page, surfaces, frame, css }) => Object.freeze({
-	page: Object.freeze(page),
-	surfaces: Object.freeze(Object.fromEntries(Object.entries(surfaces)
-		.map(([name, surface]) => [name, Object.freeze(surface)]))),
-	frame: Object.freeze(frame),
-	css: Object.freeze(css),
-});
+const createPaletteMode = ({ appearance, page, surfaces, frame, css }) => {
+	const resolvedSurfaces = Object.fromEntries(Object.entries(surfaces).map(([name, surface]) => [
+		name,
+		Object.freeze({
+			...surface,
+			secondaryTextColor: deriveSecondaryTextColor(surface.textColor, surface.backgroundColor),
+		}),
+	]));
+
+	return Object.freeze({
+		page: Object.freeze(page),
+		surfaces: Object.freeze(resolvedSurfaces),
+		frame: Object.freeze(frame),
+		css: Object.freeze(css),
+		semantic: createSemanticColorRoles({
+			appearance,
+			page,
+			secondaryText: css.muted,
+			linkText: css.accent,
+		}),
+	});
+};
 
 const presentationPalettes = Object.freeze({
 	dark: Object.freeze({
 		defaultMode: 'dark',
 		modes: Object.freeze({
 			light: createPaletteMode({
+				appearance: 'light',
 				page: { backgroundColor: '#f7f7f5', textColor: '#171717' },
 				surfaces: {
 					base: { backgroundColor: '#f7f7f5', textColor: '#171717' },
@@ -43,6 +65,7 @@ const presentationPalettes = Object.freeze({
 				},
 			}),
 			dark: createPaletteMode({
+				appearance: 'dark',
 				page: { backgroundColor: '#000000', textColor: '#f2eee6' },
 				surfaces: {
 					base: { backgroundColor: '#000000', textColor: '#f2eee6' },
@@ -66,6 +89,7 @@ const presentationPalettes = Object.freeze({
 		defaultMode: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
+				appearance: 'light',
 				page: { backgroundColor: '#ffffff', textColor: '#17201d' },
 				surfaces: {
 					base: { backgroundColor: '#ffffff', textColor: '#17201d' },
@@ -84,6 +108,7 @@ const presentationPalettes = Object.freeze({
 				},
 			}),
 			dark: createPaletteMode({
+				appearance: 'dark',
 				page: { backgroundColor: '#0f1512', textColor: '#edf4ef' },
 				surfaces: {
 					base: { backgroundColor: '#0f1512', textColor: '#edf4ef' },
@@ -107,6 +132,7 @@ const presentationPalettes = Object.freeze({
 		defaultMode: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
+				appearance: 'light',
 				page: { backgroundColor: '#f8f5ee', textColor: '#272522' },
 				surfaces: {
 					base: { backgroundColor: '#f8f5ee', textColor: '#272522' },
@@ -125,6 +151,7 @@ const presentationPalettes = Object.freeze({
 				},
 			}),
 			dark: createPaletteMode({
+				appearance: 'dark',
 				page: { backgroundColor: '#1b1916', textColor: '#f3ede2' },
 				surfaces: {
 					base: { backgroundColor: '#1b1916', textColor: '#f3ede2' },
@@ -146,6 +173,12 @@ const presentationPalettes = Object.freeze({
 	}),
 });
 
+for (const [paletteName, palette] of Object.entries(presentationPalettes)) {
+	for (const [modeName, mode] of Object.entries(palette.modes)) {
+		assertPaletteModeContract(paletteName, modeName, mode);
+	}
+}
+
 export const getPresentationPalette = (paletteName = 'dark') => {
 	const palette = presentationPalettes[paletteName];
 	if (!palette) {
@@ -166,8 +199,13 @@ export const getPresentationCssVariables = (presentation) => {
 		for (const [surfaceName, surface] of Object.entries(palette.surfaces)) {
 			variables[`${prefix}-surface-${surfaceName}-background`] = surface.backgroundColor;
 			variables[`${prefix}-surface-${surfaceName}-text`] = surface.textColor;
+			variables[`${prefix}-surface-${surfaceName}-secondary-text`] = surface.secondaryTextColor;
 		}
 		for (const [name, value] of Object.entries(palette.css)) {
+			const cssName = name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+			variables[`${prefix}-${cssName}`] = value;
+		}
+		for (const [name, value] of Object.entries(palette.semantic)) {
 			const cssName = name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 			variables[`${prefix}-${cssName}`] = value;
 		}
@@ -194,11 +232,12 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 	if (!colorModeNames.includes(defaultColorMode)) {
 		throw new Error(`colorMode.default must be one of ${colorModeNames.join(', ')} in ${sourceLabel}.`);
 	}
-	const typography = resolveTypographyConfig(normalizedTheme.typography ?? defaultTypography);
+	const typography = resolveTypographyConfig(normalizedTheme.typography ?? defaultTypography, sourceLabel);
 	const textWidth = normalizedTheme.layout?.textWidth;
 	if (textWidth !== undefined) {
 		typography.values.body.width = textWidth;
 	}
+	assertTypographyContract(typography, sourceLabel);
 
 	return {
 		paletteName,
@@ -234,6 +273,7 @@ export const resolveSectionSurface = (pagePresentation, sectionIndex) => {
 		name: surfaceName,
 		backgroundColor: `var(--color-surface-${surfaceName}-background)`,
 		textColor: `var(--color-surface-${surfaceName}-text)`,
+		secondaryTextColor: `var(--color-surface-${surfaceName}-secondary-text)`,
 	};
 };
 
