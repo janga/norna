@@ -76,6 +76,13 @@ resolved theme. They do not rewrite `theme.yaml`.
 
 ## Work Phases
 
+Progress:
+
+- Phase 0 completed in commits `5e84890` and `8a6bed7`.
+- Phase 1 completed in August 2026. Its implemented invariants are recorded in
+  [Presentation Engine Contract](presentation-engine-contract.md).
+- Phase 2 is the next implementation phase.
+
 ### Phase 0: Record And Protect The Baseline
 
 Current audit: [Current Preset Inventory](preset-current-inventory.md) and
@@ -438,13 +445,16 @@ documentation migration into proof-of-concept commits.
 
 ## Immediate Next Step
 
-Review and approve the category boundaries in the Preset Design Guide. Then
-perform Phase 0 as one uninterrupted audit and return with:
+Perform Phase 2 as an internal refactor that preserves the newly captured
+visual output:
 
-- a current-value inventory;
-- proposed internal profile definitions;
-- a list of public fields to retain, replace, internalize, or remove;
-- the first two or three typography directions for the `documentation` preset.
+1. extract color, typography, rhythm, geometry, media, shape, and surface
+   profiles;
+2. express every current preset as a compact recipe;
+3. resolve recipes through one deterministic pipeline;
+4. retain the Phase 1 contract as the final validation boundary;
+5. verify root and inherited page themes against the baseline fixture.
 
-No engine, example, schema, or public-documentation changes are required before
-that review.
+This phase should not redesign a preset, add public controls, migrate examples,
+or update public documentation. Product input is needed only if two values
+cannot be assigned to profile categories without changing their meaning.

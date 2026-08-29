@@ -33,6 +33,11 @@ approachable before wider use.
   - missing, misplaced, or unreferenced images.
 - Expand typography profile guidance with examples of when to choose each
   profile in `site/theme.yaml` without losing the complete theme-preset model.
+- After the preset proof of concept is approved, document the engine-owned
+  presentation guarantees that affect site authors: semantic status colors,
+  consistent keyboard focus, minimum control sizes, long-token reflow,
+  sidenote fallback during text enlargement, reduced motion, and forced-colors
+  support. Keep raw contract internals in the design documentation.
 - Turn the release section in `docs/engine-development.md` into a concise
   maintainer runbook covering patch/minor/major releases, the steps performed
   automatically, rollback before the release commit, and recovery after a
