@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { access, cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -151,6 +151,98 @@ const assertFileExcludes = async (filePath, unexpectedText) => {
 	}
 };
 
+const listFiles = async (directoryPath, relativeDirectory = '') => {
+	const entries = await readdir(path.join(directoryPath, relativeDirectory), { withFileTypes: true });
+	const files = [];
+
+	for (const entry of entries) {
+		const relativePath = path.join(relativeDirectory, entry.name);
+
+		if (entry.isDirectory()) {
+			files.push(...await listFiles(directoryPath, relativePath));
+		} else {
+			files.push(relativePath.split(path.sep).join('/'));
+		}
+	}
+
+	return files.sort();
+};
+
+const assertPackageContents = async (packageRoot) => {
+	const files = await listFiles(packageRoot);
+	const fileSet = new Set(files);
+	const requiredFiles = [
+		'LICENSE',
+		'README.md',
+		'astro.config.mjs',
+		'bin/norna-cli.mjs',
+		'bin/norna.mjs',
+		'package.json',
+		'schemas/config.schema.json',
+		'schemas/content-frontmatter.schema.json',
+		'schemas/manifest.json',
+		'schemas/page-theme.schema.json',
+		'schemas/sitewide-content.schema.json',
+		'schemas/theme.schema.json',
+		'scripts/build-site.mjs',
+		'scripts/check-config.mjs',
+		'scripts/deploy-site.mjs',
+		'scripts/dev-local.mjs',
+		'scripts/doctor.mjs',
+		'scripts/engine-version.mjs',
+		'scripts/export-theme-preset.mjs',
+		'scripts/generate-images.mjs',
+		'scripts/generate-schemas.mjs',
+		'scripts/init-site.mjs',
+		'scripts/lib/astro-command.mjs',
+		'scripts/lib/documentation-links.mjs',
+		'scripts/lib/editor-language-service.mjs',
+		'scripts/lib/site-paths.mjs',
+		'scripts/list-theme-presets.mjs',
+		'scripts/show-typography.mjs',
+		'scripts/sync-content-sections.mjs',
+		'scripts/sync-site-public.mjs',
+		'scripts/update-engine.mjs',
+		'scripts/watch-pages-deploy.mjs',
+		'src/pages/index.astro',
+		'starters/basic/.github/workflows/deploy.yml',
+		'starters/basic/package.json',
+		'starters/basic/site/pages/000-home/content.md',
+	];
+	const missingFiles = requiredFiles.filter((filePath) => !fileSet.has(filePath));
+
+	assert.deepEqual(missingFiles, [], `Packed package is missing runtime files:\n${missingFiles.join('\n')}`);
+
+	const forbiddenPrefixes = [
+		'docs/',
+		'editors/',
+		'examples/',
+		'fixtures/',
+		'starters/project/',
+		'test-results/',
+		'tests/',
+	];
+	const forbiddenExactFiles = new Set([
+		'scripts/build-demo.mjs',
+		'scripts/build-pages.mjs',
+		'scripts/lib/documentation-preset-candidates.mjs',
+		'scripts/lib/example-sites.mjs',
+		'scripts/lib/git-status.mjs',
+		'scripts/release.mjs',
+		'scripts/review-documentation-preset.mjs',
+		'tsconfig.json',
+	]);
+	const forbiddenFiles = files.filter((filePath) => (
+		forbiddenPrefixes.some((prefix) => filePath.startsWith(prefix))
+		|| forbiddenExactFiles.has(filePath)
+		|| filePath.startsWith('scripts/test-')
+		|| filePath.split('/').some((segment) => ['.astro', '.norna', 'node_modules'].includes(segment))
+	));
+
+	assert.deepEqual(forbiddenFiles, [], `Packed package contains repository-only files:\n${forbiddenFiles.join('\n')}`);
+	assert.ok(files.length < 250, `Packed package unexpectedly contains ${files.length} files (limit: 249).`);
+};
+
 try {
 	await mkdir(packDir, { recursive: true });
 	await mkdir(npmCachePath, { recursive: true });
@@ -166,16 +258,10 @@ try {
 	const tarballPath = path.join(packDir, tarballName);
 	await mkdir(unpackDir, { recursive: true });
 	await runInherit('tar', ['-xzf', tarballPath, '-C', unpackDir]);
-	const packagedStarterRoot = path.join(unpackDir, 'package', 'starters', 'basic');
+	const packageRoot = path.join(unpackDir, 'package');
+	await assertPackageContents(packageRoot);
+	const packagedStarterRoot = path.join(packageRoot, 'starters', 'basic');
 	await Promise.all([
-		assertFileExists(path.join(unpackDir, 'package', 'docs', 'README.md')),
-		assertFileExists(path.join(unpackDir, 'package', 'docs', 'configuration.md')),
-		assertFileExists(path.join(unpackDir, 'package', 'docs', 'images-and-metadata.md')),
-		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'manifest.json')),
-		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'config.schema.json')),
-		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'content-frontmatter.schema.json')),
-		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'sitewide-content.schema.json')),
-		assertFileExists(path.join(unpackDir, 'package', 'schemas', 'theme.schema.json')),
 		assertFileExists(path.join(packagedStarterRoot, '.github', 'workflows', 'deploy.yml')),
 		assertFileExists(path.join(packagedStarterRoot, 'package.json')),
 		assertFileExists(path.join(packagedStarterRoot, 'README.md')),
