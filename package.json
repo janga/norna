@@ -87,7 +87,7 @@
     "deploy:watch": "node bin/norna.mjs deploy:watch",
     "doctor": "node bin/norna.mjs doctor",
     "demo:build": "node scripts/build-demo.mjs",
-    "test": "npm run schemas:check && npm run test:schemas && npm run test:page-model && npm run test:nested-pages && npm run test:heading-ids && npm run test:navigation-model && npm run test:project-config && npm run test:editor-language && npm run test:content-check && npm run test:content-model-v2 && npm run test:theme-presets && npm run test:presentation-contract && npm run test:preset-baselines && npm run test:documentation-preset-review && npm run test:site-public && npm run test:cli-discovery && npm run test:engine-commands && npm run test:documentation && npm run test:ci-lockfile && npm run test:banner-visibility && npm run test:client-javascript && npm run test:fixture:build && npm run test:examples && npm run package:check",
+    "test": "npm run schemas:check && npm run test:dead-code && npm run test:schemas && npm run test:page-model && npm run test:nested-pages && npm run test:heading-ids && npm run test:navigation-model && npm run test:project-config && npm run test:editor-language && npm run test:content-check && npm run test:content-model-v2 && npm run test:theme-presets && npm run test:presentation-contract && npm run test:preset-baselines && npm run test:documentation-preset-review && npm run test:site-public && npm run test:cli-discovery && npm run test:engine-commands && npm run test:documentation && npm run test:ci-lockfile && npm run test:banner-visibility && npm run test:client-javascript && npm run test:fixture:build && npm run test:examples && npm run package:check",
     "test:fixture:build": "node scripts/test-basic-fixture-build.mjs",
     "test:examples": "node scripts/test-examples.mjs",
     "test:page-model": "node scripts/test-page-model.mjs",
@@ -114,6 +114,7 @@
     "test:ci-lockfile": "node scripts/test-ci-lockfile.mjs",
     "test:banner-visibility": "node scripts/test-banner-visibility.mjs",
     "test:client-javascript": "node scripts/test-client-javascript.mjs",
+    "test:dead-code": "knip --include files,exports",
     "test:navigation": "node scripts/test-navigation.mjs",
     "test:navigation:tree": "node scripts/test-navigation.mjs --site-dir fixtures/nested-pages/site tests/navigation-tree.spec.ts",
     "test:navigation:stress": "node scripts/test-navigation.mjs tests/navigation-stress.spec.ts",
@@ -134,6 +135,7 @@
     "satteri": "^0.9.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.61.1"
+    "@playwright/test": "^1.61.1",
+    "knip": "6.33.0"
   }
 }

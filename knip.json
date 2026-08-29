@@ -1,0 +1,25 @@
+{
+	"ignoreExportsUsedInFile": true,
+	"ignoreIssues": {
+		"scripts/lib/norna-markdown-blocks.mjs": ["exports"]
+	},
+	"workspaces": {
+		".": {
+			"entry": [
+				"bin/*.mjs",
+				"scripts/*.mjs",
+				"src/pages/**/*.astro",
+				"tests/**/*.spec.ts"
+			],
+			"project": [
+				"bin/*.mjs",
+				"scripts/**/*.mjs",
+				"src/**/*.{astro,mjs,ts}",
+				"tests/**/*.ts"
+			]
+		},
+		"editors/vscode": {
+			"project": ["*.cjs"]
+		}
+	}
+}
