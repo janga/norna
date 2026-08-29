@@ -196,14 +196,15 @@ Current preset defaults are:
 | `project` | `system` | Enabled |
 | `statement` | `system` | Enabled |
 
-Set `allowSelection` to `true` to show a site-wide selector for System, Light,
-and Dark in the navigation:
+Set `readerControls.appearance` to `true` to show a site-wide selector for
+System, Light, and Dark in the navigation:
 
 ```yaml
 preset: documentation
 colorMode:
   default: system
-  allowSelection: true
+readerControls:
+  appearance: true
 ```
 
 When a visitor selects System, Light, or Dark, Norna stores the value in a
@@ -214,10 +215,10 @@ path on the same domain. System stores the choice `system`; the actual colors
 continue to follow the visitor's operating-system preference.
 
 When the cookie is absent or invalid, Norna uses `colorMode.default`. Set
-`allowSelection: false` to hide the control; no color-mode preference script or
-cookie is then needed. The preset's initial mode still applies. A root theme
-without a preset also defaults selection to disabled unless it explicitly
-enables it.
+`readerControls.appearance: false` to hide the control; no color-mode preference
+script or cookie is then needed. The preset's initial mode still applies. A
+root theme without a preset also defaults selection to disabled unless it
+explicitly enables it.
 
 Color mode belongs to the root theme because navigation, page frame, section
 surfaces, controls, and text must change together. Page-local themes cannot

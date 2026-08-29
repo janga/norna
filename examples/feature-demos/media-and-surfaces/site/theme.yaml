@@ -1,4 +1,5 @@
 preset: project
 colorMode:
   default: system
-  allowSelection: true
+readerControls:
+  appearance: true

@@ -42,8 +42,7 @@ approachable before wider use.
   design-document links in the generated theme schema with user-facing theme
   reference links. Document `readerControls`, preset defaults, the three
   base-path-scoped preference cookies, reset behavior, focus-reading behavior,
-  and the configured no-JavaScript fallback. Migrate the existing color-mode
-  documentation and examples from `colorMode.allowSelection` at the same time.
+  and the configured no-JavaScript fallback.
 - After the collapsible desktop tree navigation is tested and approved,
   document its one-click control, tab-scoped state, reading-width behavior,
   keyboard semantics, and visible no-JavaScript fallback.

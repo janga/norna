@@ -90,7 +90,9 @@ preset recipes.
 | Field | `portfolio` | `documentation` | `project` | `statement` |
 | --- | --- | --- | --- | --- |
 | `colorMode.default` | `dark` | `system` | `system` | `system` |
-| `colorMode.allowSelection` | `true` | `true` | `true` | `true` |
+| `readerControls.appearance` | `true` | `true` | `true` | `true` |
+| `readerControls.readingWidth` | `false` | `true` | `true` | `false` |
+| `readerControls.focusReading` | `false` | `true` | `true` | `false` |
 | `shape` | `square` | `soft` | `soft` | `square` |
 | `layout.contentSpacing` | `normal` | `compact` | `compact` | `spacious` |
 | `layout.textWidth` | `wide` | `narrow` | `normal` | `normal` |
@@ -116,7 +118,8 @@ preset recipes.
 The preset source contains 21 leaf fields. Repetition is concentrated as
 follows:
 
-- all four presets set `colorMode.allowSelection: true`;
+- all four presets set `readerControls.appearance: true`;
+- `documentation` and `project` also enable reading-width and focus-reading controls;
 - all four set managed-image maximum width to `100%` on desktop and mobile;
 - all four set the mobile gutter to `1rem`;
 - `portfolio`, `documentation`, and `project` share the same desktop gutter;
@@ -439,7 +442,7 @@ schema change.
 | --- | --- | --- |
 | `preset` | Retain | It is the intended one-line path. |
 | `colorMode.default` | Retain as a named site-owner choice | It expresses a clear site default. |
-| `colorMode.allowSelection` | Retain concept, reconsider grouping | It belongs with future reader controls rather than visual identity. |
+| `readerControls` | Retain as bounded reader choices | Appearance, reading width, and focus reading belong together rather than inside visual identity. |
 | `shape` | Retain as a named root choice | It is understandable and can remain accessibility-safe. |
 | `palette` | Retain concept; review names | Named color systems are useful, but `dark` and `light` each contain both modes. |
 | `layout.contentSpacing` | Retain concept as named rhythm | It is useful, but overlaps with typography rhythm and should resolve through one coordinated model. |

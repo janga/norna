@@ -18,7 +18,8 @@ The root theme enables the selector with:
 ```yaml
 colorMode:
   default: system
-  allowSelection: true
+readerControls:
+  appearance: true
 ```
 
 
