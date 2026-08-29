@@ -140,7 +140,8 @@ assert.match(buildInfo.markdownDescription, /footer:\n  buildInfo: true/);
 
 const theme = JSON.parse(await readFile(path.join(root, 'schemas', 'theme.schema.json'), 'utf8'));
 assert.equal(theme.properties.layout.properties.gutter.defaultSnippets[0].label, 'Responsive page gutter');
-assert.equal(theme.properties.colorMode.defaultSnippets[0].label, 'Configure color modes');
+assert.equal(theme.properties.colorMode.defaultSnippets[0].label, 'Set the initial color mode');
+assert.equal(theme.properties.readerControls.defaultSnippets[0].label, 'Configure the Display panel');
 assert.equal(theme.properties.layout.properties.spacing.defaultSnippets[0].label, 'Layout spacing overrides');
 assert.equal(theme.properties.typography.properties.overrides.defaultSnippets[0].label, 'Typography overrides');
 assert.equal(
@@ -159,6 +160,7 @@ assert.deepEqual(Object.keys(pageTheme.properties.layout.properties), ['contentS
 assert.equal(pageTheme.properties.preset, undefined);
 assert.equal(pageTheme.properties.palette, undefined);
 assert.equal(pageTheme.properties.colorMode, undefined);
+assert.equal(pageTheme.properties.readerControls, undefined);
 assert.equal(pageTheme.properties.typography, undefined);
 
 const content = JSON.parse(await readFile(path.join(root, 'schemas', 'content-frontmatter.schema.json'), 'utf8'));

@@ -18,11 +18,18 @@ const themePreset = z.enum(themePresetNames).describe('Complete Norna visual pre
 const presentationPalette = z.enum(['dark', 'light', 'paper']).describe('Coordinated site color palette. Omit this to use the selected preset.');
 const themeColorMode = z.object({
 	default: z.enum(['system', 'light', 'dark']).optional().describe('Initial color mode. System follows the visitor\'s operating-system preference.'),
-	allowSelection: z.boolean().optional().describe('Show a site-wide control that lets visitors choose system, light, or dark mode.'),
 }).strict().refine(
-	(value) => value.default !== undefined || value.allowSelection !== undefined,
-	'Specify default, allowSelection, or both.',
+	(value) => value.default !== undefined,
+	'Specify default.',
 ).describe('Site-wide light and dark mode behaviour.');
+const readerControls = z.object({
+	appearance: z.boolean().optional().describe('Let readers choose System, Light, or Dark appearance in the site-wide Display panel.'),
+	readingWidth: z.boolean().optional().describe('Let readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.'),
+	focusReading: z.boolean().optional().describe('Let readers temporarily hide navigation and other secondary page chrome while reading.'),
+}).strict().refine(
+	(value) => value.appearance !== undefined || value.readingWidth !== undefined || value.focusReading !== undefined,
+	'Specify appearance, readingWidth, focusReading, or a combination of them.',
+).describe('Site-wide reader choices grouped in one Display panel. Presets provide suitable defaults.');
 const spacingDensity = z.enum(['compact', 'normal', 'airy']).describe('Coordinated spacing density. Omit this to use the selected preset.');
 const contentSpacing = z.enum(['compact', 'normal', 'spacious']).describe('Vertical spacing between page sections and structured content blocks.');
 const backgroundPattern = z.enum(['uniform', 'alternating', 'cycling']).describe('How sections cycle through the active palette surfaces.');
@@ -200,6 +207,7 @@ const siteShape = {
 const themeVisualShape = {
 	preset: themePreset.optional().describe('Complete visual starting point. Add only the overrides the site actually needs.'),
 	colorMode: themeColorMode.optional(),
+	readerControls: readerControls.optional(),
 	shape: shapeProfile.optional().describe('Site-wide shape profile. Omit this to use the selected preset.'),
 	layout: themeLayout.optional(),
 	images: themeImages.optional(),

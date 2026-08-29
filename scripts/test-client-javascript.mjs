@@ -273,7 +273,10 @@ Ordinary content with a user-selectable color mode.
 palette: paper
 colorMode:
   default: system
-  allowSelection: true
+readerControls:
+  appearance: true
+  readingWidth: true
+  focusReading: true
 `);
 
 	runBuild();
@@ -284,18 +287,17 @@ colorMode:
 		'A selectable color mode should load only its preference script on a plain page.',
 	);
 	assert.match(selectableColorModeHtml, /<html\b[^>]*data-color-mode="system"/);
-	assert.match(selectableColorModeHtml, /<details\b[^>]*data-color-mode-selector/);
-	assert.match(selectableColorModeHtml, /data-color-mode-option="system"/);
-	assert.match(selectableColorModeHtml, /data-color-mode-option="light"/);
-	assert.match(selectableColorModeHtml, /data-color-mode-option="dark"/);
-	assert.match(selectableColorModeHtml, /class="color-mode-icon color-mode-icon-system"/);
-	assert.match(selectableColorModeHtml, /class="color-mode-icon color-mode-icon-light"/);
-	assert.match(selectableColorModeHtml, /class="color-mode-icon color-mode-icon-dark"/);
+	assert.match(selectableColorModeHtml, /<details\b[^>]*data-display-settings/);
+	assert.match(selectableColorModeHtml, /data-reader-appearance/);
+	assert.match(selectableColorModeHtml, /data-reader-width/);
+	assert.match(selectableColorModeHtml, /data-reader-focus/);
+	assert.match(selectableColorModeHtml, /data-reader-reset/);
 	assert.match(getScripts(selectableColorModeHtml)[0], /norna-color-mode/);
-	assert.match(getScripts(selectableColorModeHtml)[0], /aria-pressed/);
+	assert.match(getScripts(selectableColorModeHtml)[0], /norna-reading-width/);
+	assert.match(getScripts(selectableColorModeHtml)[0], /norna-focus-reading/);
 	assert.match(getScripts(selectableColorModeHtml)[0], /document\.cookie/);
 	assert.match(getScripts(selectableColorModeHtml)[0], /SameSite=Lax/);
-	assert.match(getScripts(selectableColorModeHtml)[0], /Max-Age=31536000/);
+	assert.match(getScripts(selectableColorModeHtml)[0], /maxAge = 31536000/);
 	assert.doesNotMatch(getScripts(selectableColorModeHtml)[0], /localStorage/);
 
 	console.log('Client JavaScript boundaries test passed.');

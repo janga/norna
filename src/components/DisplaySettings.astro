@@ -1,0 +1,107 @@
+---
+import projectConfig from '../../scripts/lib/project-config.mjs';
+
+type Appearance = 'system' | 'light' | 'dark';
+type ReadingWidth = 'narrow' | 'standard' | 'wide';
+
+interface Props {
+	controls: {
+		appearance: boolean;
+		readingWidth: boolean;
+		focusReading: boolean;
+	};
+	defaults: {
+		appearance: Appearance;
+		readingWidth: ReadingWidth;
+		focusReading: 'off' | 'on';
+	};
+}
+
+const { controls, defaults } = Astro.props;
+const labels = projectConfig.locale.labels;
+const appearanceOptions = [
+	{ value: 'system', label: labels.colorModeSystem },
+	{ value: 'light', label: labels.colorModeLight },
+	{ value: 'dark', label: labels.colorModeDark },
+] as const;
+const widthOptions = [
+	{ value: 'narrow', label: labels.readingWidthNarrow },
+	{ value: 'standard', label: labels.readingWidthStandard },
+	{ value: 'wide', label: labels.readingWidthWide },
+] as const;
+---
+
+<details class="display-settings" data-display-settings>
+	<summary aria-label={labels.displaySettings}>
+		<svg class="display-settings-trigger-icon" aria-hidden="true" viewBox="0 0 24 24">
+			<path d="M4 21v-7"></path>
+			<path d="M4 10V3"></path>
+			<path d="M12 21v-9"></path>
+			<path d="M12 8V3"></path>
+			<path d="M20 21v-5"></path>
+			<path d="M20 12V3"></path>
+			<path d="M1 14h6"></path>
+			<path d="M9 8h6"></path>
+			<path d="M17 16h6"></path>
+		</svg>
+		<span class="display-settings-focus-status" aria-hidden="true">{labels.focusReading}</span>
+	</summary>
+	<form class="display-settings-panel">
+		<p class="display-settings-title">{labels.displaySettings}</p>
+
+		{controls.appearance && (
+			<fieldset>
+				<legend>{labels.colorMode}</legend>
+				<div class="display-settings-segmented">
+					{appearanceOptions.map((option) => (
+						<label>
+							<input
+								type="radio"
+								name="appearance"
+								value={option.value}
+								checked={defaults.appearance === option.value}
+								data-reader-appearance
+							/>
+							<span>{option.label}</span>
+						</label>
+					))}
+				</div>
+			</fieldset>
+		)}
+
+		{controls.readingWidth && (
+			<fieldset>
+				<legend>{labels.readingWidth}</legend>
+				<div class="display-settings-segmented">
+					{widthOptions.map((option) => (
+						<label>
+							<input
+								type="radio"
+								name="reading-width"
+								value={option.value}
+								checked={defaults.readingWidth === option.value}
+								data-reader-width
+							/>
+							<span>{option.label}</span>
+						</label>
+					))}
+				</div>
+			</fieldset>
+		)}
+
+		{controls.focusReading && (
+			<label class="display-settings-toggle">
+				<input
+					type="checkbox"
+					checked={defaults.focusReading === 'on'}
+					data-reader-focus
+				/>
+				<span>{labels.focusReading}</span>
+			</label>
+		)}
+
+		<button class="display-settings-reset" type="button" data-reader-reset>
+			{labels.resetDisplaySettings}
+		</button>
+	</form>
+</details>

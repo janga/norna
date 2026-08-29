@@ -38,6 +38,61 @@ test.describe('desktop tree navigation', () => {
 		await expect(page.locator('.page-nav')).toHaveCount(0);
 	});
 
+	test('collapses the local tree in one action while preserving page context and reading position', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const root = page.locator('html');
+		const localNavigation = page.locator('.tree-local-navigation');
+		const collapseButton = page.locator('[data-tree-navigation-toggle]');
+		const content = page.locator('.site-content');
+		const breadcrumbs = page.locator('.site-breadcrumbs');
+		const heading = page.locator('.section-header').first();
+		const prose = page.locator('.section-markdown').first();
+		const contentWidthBefore = (await content.boundingBox())?.width;
+		const breadcrumbsBefore = await breadcrumbs.boundingBox();
+		const headingBefore = await heading.boundingBox();
+		const proseBefore = await prose.boundingBox();
+
+		await expect(collapseButton).toHaveAttribute('aria-expanded', 'true');
+		await expect(collapseButton).toHaveAccessibleName('Hide navigation');
+		await collapseButton.click();
+
+		await expect(collapseButton).toBeFocused();
+		await expect(root).toHaveAttribute('data-tree-navigation', 'collapsed');
+		await expect(collapseButton).toHaveAttribute('aria-expanded', 'false');
+		await expect(collapseButton).toHaveAccessibleName('Show navigation');
+		await expect(localNavigation).toBeHidden();
+		await expect(page.locator('.site-nav')).toBeVisible();
+		await expect(page.locator('.site-breadcrumbs')).toBeVisible();
+
+		const contentWidthAfter = (await content.boundingBox())?.width;
+		const breadcrumbsAfter = await breadcrumbs.boundingBox();
+		const headingAfter = await heading.boundingBox();
+		const proseAfter = await prose.boundingBox();
+		expect(contentWidthBefore).toBeDefined();
+		expect(contentWidthAfter).toBeDefined();
+		expect((contentWidthAfter ?? 0) - (contentWidthBefore ?? 0)).toBeGreaterThan(100);
+		expect(proseBefore).not.toBeNull();
+		expect(proseAfter).not.toBeNull();
+		expect(headingBefore).not.toBeNull();
+		expect(headingAfter).not.toBeNull();
+		expect(breadcrumbsBefore).not.toBeNull();
+		expect(breadcrumbsAfter).not.toBeNull();
+		expect(Math.abs((proseAfter?.width ?? 0) - (proseBefore?.width ?? 0))).toBeLessThan(2);
+		expect(Math.abs((proseAfter?.x ?? 0) - (proseBefore?.x ?? 0))).toBeLessThan(2);
+		expect(Math.abs((headingAfter?.x ?? 0) - (headingBefore?.x ?? 0))).toBeLessThan(2);
+		expect(Math.abs((breadcrumbsAfter?.x ?? 0) - (breadcrumbsBefore?.x ?? 0))).toBeLessThan(2);
+		expect(await page.evaluate(() => sessionStorage.getItem('norna:tree-navigation:visibility:/'))).toBe('collapsed');
+
+		await page.goto('/guides/workflows/', { waitUntil: 'networkidle' });
+		await expect(page.locator('html')).toHaveAttribute('data-tree-navigation', 'collapsed');
+		await expect(page.locator('.tree-local-navigation')).toBeHidden();
+		const showButton = page.locator('[data-tree-navigation-toggle]');
+		await showButton.click();
+		await expect(showButton).toBeFocused();
+		await expect(page.locator('html')).toHaveAttribute('data-tree-navigation', 'expanded');
+		await expect(page.locator('.tree-local-navigation')).toBeVisible();
+	});
+
 	test('preserves open page sections and vertical positions across navigation', async ({ page }) => {
 		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 		const localNavigation = page.locator('.tree-local-navigation');
@@ -153,6 +208,7 @@ test.describe('mobile tree navigation', () => {
 	test('combines the complete page tree and current-page contents', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		await expect(page.locator('.tree-local-navigation')).not.toBeVisible();
+		await expect(page.locator('[data-tree-navigation-toggle]')).not.toBeVisible();
 
 		const menu = page.locator('.mobile-nav-menu');
 		await menu.locator(':scope > summary').click();
@@ -192,6 +248,22 @@ test.describe('mobile tree navigation', () => {
 		await expect(menu.locator('details[data-page-path="guides/installation/macos"]')).toHaveAttribute('open', '');
 		await expect(menu.locator('details[data-page-path="guides/installation/macos"] .navigation-page-sections')).toBeVisible();
 		await expect(menu.locator('details[data-page-path="guides/workflows"]')).toHaveAttribute('open', '');
+	});
+});
+
+test.describe('desktop tree navigation without JavaScript', () => {
+	test.use({
+		hasTouch: false,
+		isMobile: false,
+		javaScriptEnabled: false,
+		viewport: desktopViewport,
+	});
+
+	test('shows the navigation tree and hides its inactive disclosure control', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'domcontentloaded' });
+		await expect(page.locator('.tree-local-navigation')).toBeVisible();
+		await expect(page.locator('[data-tree-navigation-toggle]')).not.toBeVisible();
+		await expect(page.locator('.site-breadcrumbs')).toBeVisible();
 	});
 });
 

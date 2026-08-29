@@ -58,21 +58,46 @@
             "light",
             "dark"
           ]
-        },
-        "allowSelection": {
-          "description": "Show a site-wide control that lets visitors choose system, light, or dark mode.",
-          "type": "boolean",
-          "markdownDescription": "```yaml\ncolorMode:\n  allowSelection: true\n```\n\nShow a site-wide control that lets visitors choose system, light, or dark mode.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)"
         }
       },
       "additionalProperties": false,
       "description": "Site-wide light and dark mode behaviour.",
-      "markdownDescription": "```yaml\ncolorMode:\n  default: system\n  allowSelection: true\n```\n\nControls the initial light or dark appearance and whether visitors may choose their preferred mode.\n\n[Color modes](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
+      "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nControls the initial light or dark appearance. Enable the reader-facing choice under readerControls.\n\n[Color modes](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
       "defaultSnippets": [
         {
-          "label": "Configure color modes",
-          "markdownDescription": "Follow the system color preference and let visitors choose another mode.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
-          "body": "colorMode:\n  default: ${1:system}\n  allowSelection: ${2:true}"
+          "label": "Set the initial color mode",
+          "markdownDescription": "Follow the system color preference or choose a fixed initial appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
+          "body": "colorMode:\n  default: ${1:system}"
+        }
+      ]
+    },
+    "readerControls": {
+      "type": "object",
+      "properties": {
+        "appearance": {
+          "description": "Let readers choose System, Light, or Dark appearance in the site-wide Display panel.",
+          "type": "boolean",
+          "markdownDescription": "```yaml\nreaderControls:\n  appearance: true\n```\n\nLet readers choose System, Light, or Dark appearance in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)"
+        },
+        "readingWidth": {
+          "description": "Let readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.",
+          "type": "boolean",
+          "markdownDescription": "```yaml\nreaderControls:\n  readingWidth: true\n```\n\nLet readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)"
+        },
+        "focusReading": {
+          "description": "Let readers temporarily hide navigation and other secondary page chrome while reading.",
+          "type": "boolean",
+          "markdownDescription": "```yaml\nreaderControls:\n  focusReading: true\n```\n\nLet readers temporarily hide navigation and other secondary page chrome while reading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Site-wide reader choices grouped in one Display panel. Presets provide suitable defaults.",
+      "markdownDescription": "```yaml\nreaderControls:\n  appearance: true\n  readingWidth: true\n  focusReading: true\n```\n\nChooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.\n\n[Reader controls design](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)",
+      "defaultSnippets": [
+        {
+          "label": "Configure the Display panel",
+          "markdownDescription": "Offer bounded appearance, reading-width, and focus-reading choices.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)",
+          "body": "readerControls:\n  appearance: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}"
         }
       ]
     },

@@ -208,18 +208,42 @@ const addThemeHelp = (jsonSchema) => {
 		documentationLink('Palette and section surfaces', 'theme.md', 'palette-and-section-surfaces'),
 	], ['dark', 'light', 'paper']);
 	addHelp(jsonSchema, 'colorMode', [
-		yamlExample('colorMode:\n  default: system\n  allowSelection: true'),
-		'Controls the initial light or dark appearance and whether visitors may choose their preferred mode.',
+		yamlExample('colorMode:\n  default: system'),
+		'Controls the initial light or dark appearance. Enable the reader-facing choice under readerControls.',
 		documentationLink('Color modes', 'theme.md', 'color-modes'),
 	]);
 	addFieldHelp(jsonSchema, 'colorMode.default', 'colorMode:\n  default: system', 'theme.md', 'color-modes', ['system', 'light', 'dark']);
-	addFieldHelp(jsonSchema, 'colorMode.allowSelection', 'colorMode:\n  allowSelection: true', 'theme.md', 'color-modes');
 	addSnippets(jsonSchema, 'colorMode', [schemaSnippet({
-		label: 'Configure color modes',
-		body: 'colorMode:\n  default: ${1:system}\n  allowSelection: ${2:true}',
-		description: 'Follow the system color preference and let visitors choose another mode.',
+		label: 'Set the initial color mode',
+		body: 'colorMode:\n  default: ${1:system}',
+		description: 'Follow the system color preference or choose a fixed initial appearance.',
 		file: 'theme.md',
 		anchor: 'color-modes',
+	})]);
+	addHelp(jsonSchema, 'readerControls', [
+		yamlExample('readerControls:\n  appearance: true\n  readingWidth: true\n  focusReading: true'),
+		'Chooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.',
+		documentationLink('Reader controls design', 'design/preset-development-plan.md', 'phase-3-implement-reader-display-preferences'),
+	]);
+	for (const [propertyPath, example] of [
+		['readerControls.appearance', 'readerControls:\n  appearance: true'],
+		['readerControls.readingWidth', 'readerControls:\n  readingWidth: true'],
+		['readerControls.focusReading', 'readerControls:\n  focusReading: true'],
+	]) {
+		addFieldHelp(
+			jsonSchema,
+			propertyPath,
+			example,
+			'design/preset-development-plan.md',
+			'phase-3-implement-reader-display-preferences',
+		);
+	}
+	addSnippets(jsonSchema, 'readerControls', [schemaSnippet({
+		label: 'Configure the Display panel',
+		body: 'readerControls:\n  appearance: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}',
+		description: 'Offer bounded appearance, reading-width, and focus-reading choices.',
+		file: 'design/preset-development-plan.md',
+		anchor: 'phase-3-implement-reader-display-preferences',
 	})]);
 	addHelp(jsonSchema, 'sections', [
 		yamlExample('sections:\n  backgroundPattern: alternating'),

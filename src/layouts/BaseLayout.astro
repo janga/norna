@@ -3,6 +3,8 @@ import projectConfig from '../../scripts/lib/project-config.mjs';
 import { getPresentationCssVariables } from '../../scripts/lib/presentation.mjs';
 import { getIconLinks } from '../lib/sitePublicAssets';
 import { withBasePath } from '../lib/basePath';
+import { getReaderPreferencesScript } from '../lib/readerPreferencesScript.mjs';
+import { getTreeNavigationVisibilityScript } from '../lib/treeNavigationVisibilityScript.mjs';
 import '../styles/global.css';
 
 type FrameColors = {
@@ -20,7 +22,18 @@ type Presentation = {
 	}>;
 	colorMode: {
 		default: 'system' | 'light' | 'dark';
-		allowSelection: boolean;
+	};
+	readerPreferences: {
+		controls: {
+			appearance: boolean;
+			readingWidth: boolean;
+			focusReading: boolean;
+		};
+		defaults: {
+			appearance: 'system' | 'light' | 'dark';
+			readingWidth: 'narrow' | 'standard' | 'wide';
+			focusReading: 'off' | 'on';
+		};
 	};
 };
 type VisualTheme = {
@@ -63,6 +76,7 @@ interface Props {
 		copyrightMessage?: string;
 		buildInfo?: boolean;
 	};
+	treeNavigation?: boolean;
 }
 
 const {
@@ -73,6 +87,7 @@ const {
 	frameColors,
 	pathname = '/',
 	footer,
+	treeNavigation = false,
 } = Astro.props;
 
 const documentTitle = title;
@@ -127,79 +142,38 @@ const footerStyle = [
 	`--site-footer-background-color: ${frameColors.backgroundColor}`,
 	`--site-footer-text-color: ${frameColors.textColor}`,
 ].join('; ');
-const colorModeCookieName = 'norna-color-mode';
-const colorModeCookiePath = projectConfig.site.basePath;
-const colorModeScript = presentation.colorMode.allowSelection
-	? `(() => {
-	const root = document.documentElement;
-	const cookieName = ${JSON.stringify(colorModeCookieName)};
-	const cookiePath = ${JSON.stringify(colorModeCookiePath)};
-	const allowedModes = new Set(['system', 'light', 'dark']);
-	const readSavedMode = () => {
-		const prefix = encodeURIComponent(cookieName) + '=';
-		const cookie = document.cookie.split('; ').find((part) => part.startsWith(prefix));
-		if (!cookie) return null;
-		const mode = decodeURIComponent(cookie.slice(prefix.length));
-		return allowedModes.has(mode) ? mode : null;
-	};
-	const saveMode = (mode) => {
-		try {
-			const secure = location.protocol === 'https:' ? '; Secure' : '';
-			document.cookie = encodeURIComponent(cookieName) + '=' + encodeURIComponent(mode)
-				+ '; Path=' + cookiePath + '; Max-Age=31536000; SameSite=Lax' + secure;
-		} catch {}
-	};
-	const applyMode = (mode, persist = false) => {
-		const nextMode = allowedModes.has(mode) ? mode : ${JSON.stringify(presentation.colorMode.default)};
-		root.dataset.colorMode = nextMode;
-		if (persist) saveMode(nextMode);
-		document.querySelectorAll('[data-color-mode-selector]').forEach((selector) => {
-			selector.dataset.selectedMode = nextMode;
-			selector.querySelectorAll('[data-color-mode-option]').forEach((option) => {
-				option.setAttribute('aria-pressed', String(option.dataset.colorModeOption === nextMode));
-			});
-			const selectedOption = selector.querySelector('[data-color-mode-option="' + nextMode + '"]');
-			const trigger = selector.querySelector('[data-color-mode-trigger]');
-			if (trigger && selectedOption) {
-				trigger.setAttribute('aria-label', ${JSON.stringify(projectConfig.locale.labels.colorMode)} + ': ' + selectedOption.dataset.colorModeLabel);
-			}
-			if (persist) selector.removeAttribute('open');
-		});
-		requestAnimationFrame(() => {
-			const themeColor = getComputedStyle(root).getPropertyValue('--color-page').trim();
-			if (themeColor) document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => meta.content = themeColor);
-		});
-	};
-	applyMode(readSavedMode() ?? root.dataset.colorMode);
-	document.addEventListener('DOMContentLoaded', () => {
-		document.querySelectorAll('[data-color-mode-selector]').forEach((selector) => {
-			selector.querySelectorAll('[data-color-mode-option]').forEach((option) => {
-				option.addEventListener('click', () => applyMode(option.dataset.colorModeOption, true));
-			});
-		});
-		applyMode(root.dataset.colorMode);
-	});
-	document.addEventListener('click', (event) => {
-		document.querySelectorAll('[data-color-mode-selector][open]').forEach((selector) => {
-			if (!selector.contains(event.target)) selector.removeAttribute('open');
-		});
-	});
-	matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-		if (root.dataset.colorMode === 'system') applyMode('system');
-	});
-})();`
+const readerPreferencesEnabled = Object.values(presentation.readerPreferences.controls).some(Boolean);
+const readerPreferencesScript = readerPreferencesEnabled
+	? getReaderPreferencesScript({
+		controls: presentation.readerPreferences.controls,
+		defaults: presentation.readerPreferences.defaults,
+		cookiePath: projectConfig.site.basePath,
+	})
+	: null;
+const treeNavigationVisibilityScript = treeNavigation
+	? getTreeNavigationVisibilityScript({
+		storageKey: `norna:tree-navigation:visibility:${projectConfig.site.basePath}`,
+	})
 	: null;
 ---
 
 <!doctype html>
-<html lang={projectConfig.locale.lang} data-color-mode={presentation.colorMode.default} style={documentStyle}>
+<html
+	lang={projectConfig.locale.lang}
+	data-color-mode={presentation.readerPreferences.defaults.appearance}
+	data-reading-width={presentation.readerPreferences.defaults.readingWidth}
+	data-focus-reading={presentation.readerPreferences.defaults.focusReading}
+	data-tree-navigation={treeNavigation ? 'expanded' : undefined}
+	style={documentStyle}
+>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="format-detection" content="telephone=no" />
 		{description && <meta name="description" content={description} />}
 		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
-		{colorModeScript && <script is:inline set:html={colorModeScript} />}
+		{readerPreferencesScript && <script is:inline set:html={readerPreferencesScript} />}
+		{treeNavigationVisibilityScript && <script is:inline set:html={treeNavigationVisibilityScript} />}
 		<link rel="canonical" href={canonicalUrl} />
 		<meta name="generator" content={Astro.generator} />
 		{iconLinks.map((iconLink) => (

@@ -70,6 +70,9 @@ try {
 			colorModeDark: 'Dark',
 			colorModeLight: 'Light',
 			colorModeSystem: 'System',
+			hideNavigation: 'Hide navigation',
+			displaySettings: 'Display',
+			focusReading: 'Focus reading',
 			dismissBanner: 'Dismiss notice',
 			built: 'Built',
 			images: 'Images',
@@ -80,6 +83,12 @@ try {
 			note: 'Note',
 			pageNavigation: 'Page contents',
 			previousImage: 'Previous image',
+			readingWidth: 'Reading width',
+			readingWidthNarrow: 'Narrow',
+			readingWidthStandard: 'Standard',
+			readingWidthWide: 'Wide',
+			resetDisplaySettings: 'Reset',
+			showNavigation: 'Show navigation',
 			siteBanners: 'Site notices',
 			siteNavigation: 'Pages',
 			skipToContent: 'Skip to content',
@@ -95,6 +104,8 @@ try {
 	const localizedConfig = JSON.parse(localizedResult.stdout);
 	assert.equal(localizedConfig.language, 'sv-SE');
 	assert.equal(localizedConfig.labels.built, 'Byggd');
+	assert.equal(localizedConfig.labels.hideNavigation, 'Dölj navigation');
+	assert.equal(localizedConfig.labels.showNavigation, 'Visa navigation');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 

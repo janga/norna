@@ -136,13 +136,15 @@ try {
 		assert.ok(resolved.typography?.profile);
 		assert.ok(resolved.palette);
 		assert.ok(resolved.colorMode?.default);
-		assert.equal(resolved.colorMode?.allowSelection, true);
+		assert.equal(resolved.readerControls?.appearance, true);
 		assert.ok(resolved.sections?.backgroundPattern);
 		assert.deepEqual(themePresets[presetName], expectedPresetThemes[presetName]);
+		const { readerControls, ...expectedVisualProfiles } = expectedPresetThemes[presetName];
 		assert.deepEqual(
 			resolveThemeProfileRecipe(themePresetRecipes[presetName], `${presetName} test recipe`),
-			expectedPresetThemes[presetName],
+			expectedVisualProfiles,
 		);
+		assert.deepEqual(themePresetDefinitions[presetName].readerControls, readerControls);
 	}
 	const isolatedResolution = resolveThemeProfileRecipe(themePresetRecipes.project, 'isolated recipe');
 	isolatedResolution.layout.pageWidth = '1px';
@@ -270,7 +272,8 @@ sections:
 	assert.match(pageHtml, /--page-width: 1300px/);
 	assert.match(pageHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
 	assert.match(pageHtml, /--palette-dark-page-background: #000000/);
-	assert.match(pageHtml, /data-color-mode-selector/);
+	assert.match(pageHtml, /data-display-settings/);
+	assert.match(pageHtml, /data-reading-width="wide"/);
 	assert.match(pageHtml, /--image-width: 700px/);
 	assert.match(pageHtml, /--space-section-to-section-desktop: clamp\(2\.25rem, 5vw, 4\.5rem\)/);
 	assert.match(rootHtml, /data-navigation-mode="top"/);

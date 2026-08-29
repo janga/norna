@@ -1,8 +1,7 @@
 {
   "portfolio": {
     "colorMode": {
-      "default": "dark",
-      "allowSelection": true
+      "default": "dark"
     },
     "palette": "dark",
     "typography": {
@@ -36,12 +35,14 @@
     "shape": "square",
     "sections": {
       "backgroundPattern": "uniform"
+    },
+    "readerControls": {
+      "appearance": true
     }
   },
   "documentation": {
     "colorMode": {
-      "default": "system",
-      "allowSelection": true
+      "default": "system"
     },
     "palette": "paper",
     "typography": {
@@ -75,12 +76,16 @@
     "shape": "soft",
     "sections": {
       "backgroundPattern": "alternating"
+    },
+    "readerControls": {
+      "appearance": true,
+      "readingWidth": true,
+      "focusReading": true
     }
   },
   "project": {
     "colorMode": {
-      "default": "system",
-      "allowSelection": true
+      "default": "system"
     },
     "palette": "light",
     "typography": {
@@ -114,12 +119,16 @@
     "shape": "soft",
     "sections": {
       "backgroundPattern": "alternating"
+    },
+    "readerControls": {
+      "appearance": true,
+      "readingWidth": true,
+      "focusReading": true
     }
   },
   "statement": {
     "colorMode": {
-      "default": "system",
-      "allowSelection": true
+      "default": "system"
     },
     "palette": "paper",
     "typography": {
@@ -153,6 +162,9 @@
     "shape": "square",
     "sections": {
       "backgroundPattern": "cycling"
+    },
+    "readerControls": {
+      "appearance": true
     }
   }
 }

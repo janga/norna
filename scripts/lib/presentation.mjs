@@ -228,6 +228,7 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 	const paletteName = normalizedTheme.palette ?? 'dark';
 	const palette = getPresentationPalette(paletteName);
 	const colorMode = normalizedTheme.colorMode ?? {};
+	const readerControls = normalizedTheme.readerControls ?? {};
 	const defaultColorMode = colorMode.default ?? palette.defaultMode;
 	if (!colorModeNames.includes(defaultColorMode)) {
 		throw new Error(`colorMode.default must be one of ${colorModeNames.join(', ')} in ${sourceLabel}.`);
@@ -245,7 +246,18 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 		paletteModes: palette.modes,
 		colorMode: {
 			default: defaultColorMode,
-			allowSelection: colorMode.allowSelection === true,
+		},
+		readerPreferences: {
+			controls: {
+				appearance: readerControls.appearance === true,
+				readingWidth: readerControls.readingWidth === true,
+				focusReading: readerControls.focusReading === true,
+			},
+			defaults: {
+				appearance: defaultColorMode,
+				readingWidth: textWidth === 'narrow' ? 'narrow' : textWidth === 'wide' ? 'wide' : 'standard',
+				focusReading: 'off',
+			},
 		},
 		sectionSurfaces: getSectionSurfaces(normalizedTheme.sections?.backgroundPattern, sourceLabel),
 		typography,

@@ -3,15 +3,15 @@ import { freezeDeep, mergeDeep } from './object.mjs';
 export const themeProfileDefinitions = freezeDeep({
 	color: {
 		'monochrome-dark': {
-			colorMode: { default: 'dark', allowSelection: true },
+			colorMode: { default: 'dark' },
 			palette: 'dark',
 		},
 		'paper-adaptive': {
-			colorMode: { default: 'system', allowSelection: true },
+			colorMode: { default: 'system' },
 			palette: 'paper',
 		},
 		'clear-adaptive': {
-			colorMode: { default: 'system', allowSelection: true },
+			colorMode: { default: 'system' },
 			palette: 'light',
 		},
 	},

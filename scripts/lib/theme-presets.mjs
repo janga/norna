@@ -45,21 +45,25 @@ export const themePresetDefinitions = Object.freeze({
 		title: 'Portfolio',
 		description: 'For portfolios and image-led sites, with restrained typography and generous space for images.',
 		recipe: themePresetRecipes.portfolio,
+		readerControls: Object.freeze({ appearance: true }),
 	}),
 	documentation: Object.freeze({
 		title: 'Documentation',
 		description: 'For guides and reference material, with reading-focused typography and compact spacing.',
 		recipe: themePresetRecipes.documentation,
+		readerControls: Object.freeze({ appearance: true, readingWidth: true, focusReading: true }),
 	}),
 	project: Object.freeze({
 		title: 'Project',
 		description: 'For project and product sites that balance explanation, code, cards, and images.',
 		recipe: themePresetRecipes.project,
+		readerControls: Object.freeze({ appearance: true, readingWidth: true, focusReading: true }),
 	}),
 	statement: Object.freeze({
 		title: 'Statement',
 		description: 'For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis.',
 		recipe: themePresetRecipes.statement,
+		readerControls: Object.freeze({ appearance: true }),
 	}),
 });
 
@@ -68,10 +72,13 @@ export const themePresetNames = Object.freeze(Object.keys(themePresetDefinitions
 export const themePresets = Object.freeze(Object.fromEntries(
 	themePresetNames.map((name) => [
 		name,
-		freezeDeep(resolveThemeProfileRecipe(
-			themePresetDefinitions[name].recipe,
-			`${name} theme preset`,
-		)),
+		freezeDeep({
+			...resolveThemeProfileRecipe(
+				themePresetDefinitions[name].recipe,
+				`${name} theme preset`,
+			),
+			readerControls: themePresetDefinitions[name].readerControls,
+		}),
 	]),
 ));
 
@@ -146,7 +153,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
 	const metadata = getThemePresetMetadata(presetName);
-	const { colorMode, shape, layout, images, typography, palette, sections } = preset;
+	const { colorMode, readerControls, shape, layout, images, typography, palette, sections } = preset;
 
 	return [
 		`# Original values for Norna's "${presetName}" theme preset.`,
@@ -156,10 +163,15 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		`# Available theme presets: ${themePresetNames.join(', ')}.`,
 		`preset: ${presetName}`,
 		'',
-		'# The visitor may follow the operating-system preference or choose light or dark.',
+		'# Initial appearance. System follows the visitor\'s operating-system preference.',
 		'colorMode:',
 		`  default: ${colorMode.default}`,
-		`  allowSelection: ${colorMode.allowSelection}`,
+		'',
+		'# Optional reader controls shown together in the Display panel.',
+		'readerControls:',
+		`  appearance: ${readerControls.appearance === true}`,
+		`  readingWidth: ${readerControls.readingWidth === true}`,
+		`  focusReading: ${readerControls.focusReading === true}`,
 		'',
 		'# Alternatives: square, soft.',
 		`shape: ${shape}`,

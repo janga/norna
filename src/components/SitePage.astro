@@ -120,6 +120,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 	frameColors={frameColors}
 	pathname={currentPage.pathname}
 	footer={sitewideData.footer}
+	treeNavigation={hasTreeNavigation}
 >
 	<SiteNavigation
 		logo={logo}
@@ -127,7 +128,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 		pageNavigation={pageNavigation}
 		navigationMode={navigationModel.mode}
 		frameColors={frameColors}
-		colorMode={pagePresentation.colorMode}
+		readerPreferences={pagePresentation.readerPreferences}
 	/>
 	{siteBanners.length > 0 && <SiteBanners banners={siteBanners} />}
 

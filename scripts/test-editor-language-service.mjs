@@ -185,6 +185,15 @@ try {
 	});
 	assert.equal(typographySnippets[0].label, 'Norna: Typography overrides');
 	assert.match(typographySnippets[0].text, /headings:\n      h2:/);
+	const readerControlsSource = 'readerControls: ';
+	const readerControlSnippets = getYamlSchemaSnippetCompletions({
+		lineText: 'readerControls: ',
+		offset: readerControlsSource.length,
+		schema: themeSchema,
+		source: readerControlsSource,
+	});
+	assert.equal(readerControlSnippets[0].label, 'Norna: Configure the Display panel');
+	assert.match(readerControlSnippets[0].text, /appearance: \$\{1:true\}/);
 	const buildInfoSource = 'footer:\n  buildInfo: ';
 	const buildInfoSnippets = getYamlSchemaSnippetCompletions({
 		lineText: '  buildInfo: ',

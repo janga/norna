@@ -77,7 +77,8 @@ try {
 	assert.match(macosHtml, /class="site-nav-item site-nav-item-current-branch"/);
 	assert.doesNotMatch(macosHtml, /class="site-nav-submenu"/);
 	assert.match(macosHtml, /href="\/guides\/installation\/macos\/" aria-current="page"/);
-	assert.match(macosHtml, /<aside class="tree-local-navigation" data-navigation-root="\/guides\/">/);
+	assert.match(macosHtml, /aria-controls="tree-local-navigation" aria-expanded="true"/);
+	assert.match(macosHtml, /<aside id="tree-local-navigation" class="tree-local-navigation" data-navigation-root="\/guides\/">/);
 	assert.match(macosHtml, /<ul class="navigation-page-tree navigation-page-tree-sidebar">/);
 	assert.match(macosHtml, /<details class="navigation-page-branch navigation-page-disclosure navigation-page-disclosure-sidebar" data-page-path="guides" data-current-branch="true"/);
 	assert.match(macosHtml, /<summary class="navigation-page-summary"[^>]*><span class="navigation-page-summary-title">Guides<\/span>/);

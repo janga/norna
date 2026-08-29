@@ -71,7 +71,7 @@ test('200 percent text resizing preserves horizontal reflow', async ({ page }) =
 	const overflow = await getHorizontalOverflow(page);
 	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
 	await expect(page.locator('.site-content h1').first()).toBeVisible();
-	await expect(page.locator('.color-mode-selector summary')).toBeVisible();
+	await expect(page.locator('.display-settings summary')).toBeVisible();
 });
 
 test('authored navigation and controls meet the minimum target size', async ({ page }) => {
@@ -103,7 +103,7 @@ test('authored navigation and controls meet the minimum target size', async ({ p
 test('keyboard focus has a visible two-color indicator', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 900 });
 	await openComponents(page);
-	const control = page.locator('.color-mode-selector summary');
+	const control = page.locator('.display-settings summary');
 	await control.focus();
 	const focus = await control.evaluate((node) => {
 		const style = getComputedStyle(node);
@@ -173,4 +173,92 @@ test('forced colors preserve visible control boundaries', async ({ page }) => {
 	});
 	expect(boundary.borderStyle).toBe('solid');
 	expect(boundary.borderWidth).toBeGreaterThanOrEqual(1);
+});
+
+test('Display groups native reader controls and closes with Escape', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 900 });
+	await openComponents(page);
+	const settings = page.locator('[data-display-settings]');
+	const trigger = settings.locator('summary');
+	await trigger.click();
+
+	await expect(settings).toHaveAttribute('open', '');
+	await expect(settings.getByRole('group', { name: 'Color mode' })).toBeVisible();
+	await expect(settings.getByRole('group', { name: 'Reading width' })).toBeVisible();
+	await expect(settings.getByRole('radio', { name: 'System' })).toBeChecked();
+	await expect(settings.getByRole('radio', { name: 'Standard' })).toBeChecked();
+	await expect(settings.getByRole('checkbox', { name: 'Focus reading' })).not.toBeChecked();
+	await expect(settings.getByRole('button', { name: 'Reset' })).toBeVisible();
+
+	await settings.getByRole('radio', { name: 'Standard' }).press('Escape');
+	await expect(settings).not.toHaveAttribute('open', '');
+	await expect(trigger).toBeFocused();
+});
+
+test('reader preferences apply, persist, and reset as one bounded overlay', async ({ page, context }) => {
+	await page.setViewportSize({ width: 1280, height: 900 });
+	await openComponents(page);
+	const settings = page.locator('[data-display-settings]');
+	await settings.locator('summary').click();
+
+	const standardWidth = await page.locator('.section-markdown').first().evaluate((node) => node.getBoundingClientRect().width);
+	await settings.getByRole('radio', { name: 'Wide' }).check();
+	const wideWidth = await page.locator('.section-markdown').first().evaluate((node) => node.getBoundingClientRect().width);
+	expect(wideWidth).toBeGreaterThan(standardWidth + 20);
+	const wideAlignment = await page.locator('.site-section').first().evaluate((section) => {
+		const heading = section.querySelector('.section-header')?.getBoundingClientRect();
+		const body = section.querySelector('.section-markdown')?.getBoundingClientRect();
+		return {
+			headingLeft: heading?.left,
+			headingWidth: heading?.width,
+			bodyLeft: body?.left,
+			bodyWidth: body?.width,
+		};
+	});
+	expect(wideAlignment.headingLeft).toBeCloseTo(wideAlignment.bodyLeft ?? 0, 0);
+	expect(wideAlignment.headingWidth).toBeCloseTo(wideAlignment.bodyWidth ?? 0, 0);
+
+	await settings.getByRole('radio', { name: 'Dark' }).check();
+	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+	await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'dark');
+	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'wide');
+	await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'on');
+	await expect(page.locator('.tree-local-navigation')).toBeHidden();
+	await expect(settings.locator('summary')).toBeVisible();
+	await expect(settings.locator('.display-settings-focus-status')).toBeVisible();
+	await expect(settings.locator('.display-settings-focus-status')).toHaveText('Focus reading');
+
+	const cookieNames = (await context.cookies()).map((cookie) => cookie.name);
+	expect(cookieNames).toEqual(expect.arrayContaining([
+		'norna-color-mode',
+		'norna-reading-width',
+		'norna-focus-reading',
+	]));
+
+	await page.reload({ waitUntil: 'domcontentloaded' });
+	await page.locator('[data-carousel-ready="true"]').waitFor();
+	await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'dark');
+	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'wide');
+	await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'on');
+
+	const reloadedSettings = page.locator('[data-display-settings]');
+	await reloadedSettings.locator('summary').click();
+	await reloadedSettings.getByRole('button', { name: 'Reset' }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'system');
+	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'standard');
+	await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'off');
+	await expect(page.locator('.tree-local-navigation')).toBeVisible();
+});
+
+test('configured presentation remains usable without JavaScript', async ({ browser }) => {
+	const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
+	const page = await context.newPage();
+	await page.goto(componentsPath, { waitUntil: 'domcontentloaded' });
+
+	await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'system');
+	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'standard');
+	await expect(page.locator('.site-content h1').first()).toBeVisible();
+	await expect(page.locator('.tree-local-navigation')).toBeVisible();
+	await expect(page.locator('[data-display-settings]')).toBeHidden();
+	await context.close();
 });
