@@ -21,47 +21,6 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
-- Complete the documentation follow-up for functional commits from 2026-08-14
-  through 2026-08-28. Update each surface only after the corresponding
-  behavior has been verified:
-  - Document site-wide color modes in `docs/theme.md`: preset defaults,
-    `colorMode.default`, `colorMode.allowSelection`, system preference,
-    persisted visitor choice, and why page-local themes cannot override color
-    mode. Add a focused runnable example and point IntelliSense help to the
-    completed section.
-  - Expand the image-carousel reference with its current presentation and
-    interaction contract: sizing of portrait and landscape images, the
-    relationship to configured image-height limits, persistent controls,
-    position status, keyboard operation, touch gestures, captions, and behavior
-    on narrow screens. Make the media demo exercise both image orientations and
-    contrasting section surfaces.
-  - Add a user-facing client-JavaScript contract that states which features add
-    scripts and what remains usable without them. Cover navigation enhancement,
-    carousels, dismissible banners, selectable color modes, static image stacks,
-    cards, and CSS sidenotes; keep the statements aligned with
-    `test:client-javascript`.
-  - Turn the VS Code proof of concept into discoverable end-user guidance:
-    installation and updating, the Red Hat YAML dependency, project-local
-    engine/schema selection, recognized files, completion and image discovery,
-    Go to Definition, Problems and quick fixes, reload/activation checks, and
-    troubleshooting. Distinguish Norna completions from generic editor and AI
-    suggestions, state that the project-local schema and `norna config:check`
-    are authoritative, and include optional settings for schema-only YAML
-    completion.
-  - Add a concise migration checklist for sites created before the current YAML
-    and page model. Cover `config.yaml`, `theme.yaml`,
-    `sitewide-content.yaml`, `pages/000-home/content.md`, nested page
-    directories, page-local theme limits, generated-state ignores, and the
-    commands used to validate the migrated site. Do not imply compatibility
-    with removed formats.
-  - Review onboarding, reference links, starters, runnable examples, schema
-    descriptions, and IntelliSense links against the current heading-id and
-    navigation contract. Ensure they agree on derived versus explicit heading
-    ids, collision diagnostics, Home and nested-page rules, automatic
-    navigation selection, and desktop/mobile presentation without duplicating
-    the detailed page reference.
-- Add a short "Build your first image-led site in 5 minutes" guide with one happy path
-  and no reference material.
 - Add a complete small `site/theme.yaml` and `site/pages/000-home/content.md` example that a
   new user can compare with the starter.
 - Add standalone-project and embedded-project examples that show the expected
@@ -72,15 +31,8 @@ approachable before wider use.
   - YAML/frontmatter indentation problems;
   - stale local preview state;
   - missing, misplaced, or unreferenced images.
-- Add a plain explanation of what is versioned, what is generated, and what is
-  published.
-- Explain "opinionated" on the presentation site through a few concrete,
-  user-facing examples of decisions Norna removes or standardises. Avoid using
-  the term as a product claim before those practical benefits are visible.
 - Expand typography profile guidance with examples of when to choose each
   profile in `site/theme.yaml` without losing the complete theme-preset model.
-- Document the recommended site-upgrade workflow after a new engine version is
-  published.
 - Turn the release section in `docs/engine-development.md` into a concise
   maintainer runbook covering patch/minor/major releases, the steps performed
   automatically, rollback before the release commit, and recovery after a
@@ -92,33 +44,11 @@ approachable before wider use.
 Use this section for concrete engine behavior that should be implemented or
 verified.
 
-- Stabilize content model v2:
-  - Markdown is authoritative for section existence and section order.
-  - Level 2 Markdown headings define sections and must use explicit ids, for
-    example `## About {#about}`.
-  - Page frontmatter `sections` is an optional metadata map keyed by section id.
-  - `sections` metadata should contain only properties that do not naturally
-    belong in Markdown, such as `visible` and `presentation`.
-  - Norna-managed images are written as fenced Markdown blocks:
-    `norna-image-stack` for one or more stacked images, and
-    `norna-image-carousel` for carousels.
-  - Normal Markdown images do not participate in Norna image processing or
-    `content:sync`; local Markdown images should warn, external Markdown images
-    should not.
-  - Image filenames and section ids do not need to be globally unique for a
-    valid site.
-  - `content:sync` may move unambiguously identified image files across page
-    image roots when the Git worktree is clean.
-  - Build and render must not mutate source files.
 - Extend cross-page content sync if future section-bound metadata or assets
   need to move with an entire section. Such movement should happen only when
   source and destination are unambiguous. It should never guess, should not
   require globally unique section ids or image filenames for ordinary site
   validity, and should prefer diagnostics over unsafe mutation.
-- Review carousel control placement and carousel text/caption placement after
-  testing the content model v2 proof of concept. The current carousel UI works,
-  but controls and text placement need a deliberate pass before the model is
-  promoted to user-facing examples.
 - Consider `norna-image-grid` after the stack/carousel model has been tested.
   A first version should probably use a simple `columns` value plus a flat image
   list, fill cells in reading order, allow an incomplete final row, and avoid
@@ -141,10 +71,6 @@ verified.
 These are current constraints, not necessarily bugs.
 
 - `npm link` is not supported for testing the engine in a site repository.
-- Nested page discovery and hierarchical URLs have an implementation
-  foundation. The final global/local navigation contract, responsive
-  presentation, and preset boundaries still require evaluation before the
-  hierarchy is treated as stable user-facing behavior.
 - Source image copyright metadata is outside the current command surface.
 - `norna` assumes a file-driven site model with `config.yaml`,
   `theme.yaml`, `content.md`, source images, and static public files.

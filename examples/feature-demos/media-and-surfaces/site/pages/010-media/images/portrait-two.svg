@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Portrait carousel frame two</title>
+  <desc id="desc">A tall dark panel with two offset circles.</desc>
+  <rect width="700" height="1100" fill="#17201d"/>
+  <circle cx="290" cy="470" r="190" fill="#38645a"/>
+  <circle cx="420" cy="650" r="190" fill="#d9dfda" opacity=".88"/>
+  <path d="M170 890h360" stroke="#f7f8f7" stroke-width="14" opacity=".7"/>
+</svg>

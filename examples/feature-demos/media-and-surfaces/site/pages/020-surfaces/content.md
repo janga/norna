@@ -6,6 +6,22 @@ page:
 # Surfaces
 
 
+## Light and dark modes {#color-modes}
+
+The site preset provides coordinated light and dark colors. Use the color-mode
+selector in the navigation to compare this page in System, Light, and Dark
+mode. The choice applies to the complete site, including navigation, prose,
+section surfaces, cards, captions, and carousel controls.
+
+The root theme enables the selector with:
+
+```yaml
+colorMode:
+  default: system
+  allowSelection: true
+```
+
+
 ## Palette options {#palette-options}
 
 Norna provides a small set of named palettes. The theme chooses one

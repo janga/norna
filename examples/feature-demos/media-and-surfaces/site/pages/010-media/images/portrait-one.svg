@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Portrait carousel frame one</title>
+  <desc id="desc">A tall pale panel with a centered green arch.</desc>
+  <rect width="700" height="1100" fill="#e7ece8"/>
+  <path d="M190 880V470c0-180 320-180 320 0v410" fill="none" stroke="#38645a" stroke-width="56"/>
+  <circle cx="350" cy="260" r="72" fill="#17201d"/>
+</svg>

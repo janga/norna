@@ -210,16 +210,16 @@ const addThemeHelp = (jsonSchema) => {
 	addHelp(jsonSchema, 'colorMode', [
 		yamlExample('colorMode:\n  default: system\n  allowSelection: true'),
 		'Controls the initial light or dark appearance and whether visitors may choose their preferred mode.',
-		documentationLink('Palette and section surfaces', 'theme.md', 'palette-and-section-surfaces'),
+		documentationLink('Color modes', 'theme.md', 'color-modes'),
 	]);
-	addFieldHelp(jsonSchema, 'colorMode.default', 'colorMode:\n  default: system', 'theme.md', 'palette-and-section-surfaces', ['system', 'light', 'dark']);
-	addFieldHelp(jsonSchema, 'colorMode.allowSelection', 'colorMode:\n  allowSelection: true', 'theme.md', 'palette-and-section-surfaces');
+	addFieldHelp(jsonSchema, 'colorMode.default', 'colorMode:\n  default: system', 'theme.md', 'color-modes', ['system', 'light', 'dark']);
+	addFieldHelp(jsonSchema, 'colorMode.allowSelection', 'colorMode:\n  allowSelection: true', 'theme.md', 'color-modes');
 	addSnippets(jsonSchema, 'colorMode', [schemaSnippet({
 		label: 'Configure color modes',
 		body: 'colorMode:\n  default: ${1:system}\n  allowSelection: ${2:true}',
 		description: 'Follow the system color preference and let visitors choose another mode.',
 		file: 'theme.md',
-		anchor: 'palette-and-section-surfaces',
+		anchor: 'color-modes',
 	})]);
 	addHelp(jsonSchema, 'sections', [
 		yamlExample('sections:\n  backgroundPattern: alternating'),

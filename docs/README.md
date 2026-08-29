@@ -17,7 +17,9 @@ commands, and troubleshooting.
    page-tree rules behind the introduction.
 4. [Requirements and limitations](requirements.md) lists required software and
    current product boundaries.
-5. [Examples](../examples/README.md) pairs complete and focused source projects
+5. [VS Code Editor Support](editor-support.md) explains project-local YAML,
+   Markdown, and image assistance.
+6. [Examples](../examples/README.md) pairs complete and focused source projects
    with rendered sites.
 
 Use the web introduction to learn the normal path. Open the reference for the
@@ -69,6 +71,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Add Norna to an existing Node project](https://janga.github.io/norna/faq/#add-norna-to-an-existing-project)
 - [Start and manage local preview](local-development.md)
 - [Inspect or update the installed engine](commands.md#command-summary)
+- [Migrate an older site model](upgrading.md)
 
 ### Write Content
 
@@ -77,6 +80,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Add notes to prose](content.md#markdown-text)
 - [Add another page](pages.md)
 - [Add shared banners or footer content](sitewide-content.md)
+- [Use project-local VS Code help](editor-support.md)
 
 ### Work With Images And Public Assets
 
@@ -89,6 +93,7 @@ required, optional, convention-discovered, versioned, or generated.
 ### Change Presentation
 
 - [Choose a complete theme preset](theme.md#theme-presets)
+- [Configure light and dark modes](theme.md#color-modes)
 - [Inspect and override a preset](theme.md#overrides)
 - [Adjust limited presentation for a page subtree](theme.md#page-themes)
 - [Adjust typography](typography.md)
@@ -104,6 +109,9 @@ required, optional, convention-discovered, versioned, or generated.
 
 - [Getting Started](https://janga.github.io/norna/getting-started/) introduces
   files, sections, images, and page hierarchies as the site grows.
+- [Client-side JavaScript](client-javascript.md) identifies static features,
+  progressively enhanced navigation, and features that require browser-side
+  behavior.
 - [Images and Metadata](images-and-metadata.md) explains managed variants and
   published URLs.
 - [Command Organization](design/command-organization.md) explains standalone,
@@ -117,6 +125,8 @@ required, optional, convention-discovered, versioned, or generated.
 - [Requirements and limitations](requirements.md): runtime dependencies,
   optional tools, and current boundaries.
 - [Publishing](publishing.md): GitHub Pages workflow and deploy helpers.
+- [Upgrading](upgrading.md): pre-1.0 file-model migration and routine engine
+  updates.
 
 ## Troubleshooting
 
@@ -125,6 +135,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Rebuild a stale preview](local-development.md#rebuild-stale-preview)
 - [Check ImageMagick and other requirements](requirements.md)
 - [Validate and sync content](content.md#validation-and-sync)
+- [Troubleshoot VS Code IntelliSense](editor-support.md#troubleshooting)
 - [Inspect publishing failures](publishing.md)
 - [Report a reproducible problem](https://github.com/janga/norna/issues)
 

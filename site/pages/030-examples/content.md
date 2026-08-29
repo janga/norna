@@ -22,7 +22,7 @@ size: m
 width: normal
 
 - title: Media and surfaces
-  text: Inspect image stacks, carousels, cards, notes, palettes and section surfaces.
+  text: Inspect light and dark modes, portrait and landscape carousels, image stacks, cards, notes, palettes and section surfaces.
   link: https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/
   badge-text: Feature demo
 - title: Portfolio preset

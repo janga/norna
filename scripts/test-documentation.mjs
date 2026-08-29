@@ -22,6 +22,9 @@ const obsoleteSiteFilenames = new Set([
 	'route-content.md',
 ]);
 const ignoredSiteDirectories = new Set(['.astro', '.norna', 'dist', 'node_modules']);
+const obsoleteReferenceDocumentation = new Set([
+	path.join(repoRoot, 'docs', 'upgrading.md'),
+]);
 
 const collectMarkdownFiles = async (directory) => {
 	const files = [];
@@ -89,6 +92,7 @@ const checkObsoleteDocumentationReferences = async () => {
 	const obsolete = [];
 
 	for (const markdownPath of markdownFiles) {
+		if (obsoleteReferenceDocumentation.has(markdownPath)) continue;
 		const source = await readFile(markdownPath, 'utf8');
 		for (const reference of obsoleteSourceReferences) {
 			if (source.includes(reference)) {

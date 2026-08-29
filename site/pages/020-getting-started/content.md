@@ -298,6 +298,10 @@ A complete site theme can therefore be this short:
 preset: documentation
 ```
 
+Each preset includes coordinated light and dark colors. Presets normally let
+visitors follow their system preference or choose Light or Dark from the site
+navigation. The root theme can change that site-wide behavior.
+
 Add only values that should differ from the preset:
 
 ```yaml
@@ -322,7 +326,7 @@ that its descendants inherit.
 
 See [Theme](https://github.com/janga/norna/blob/main/docs/theme.md) and
 [Typography](https://github.com/janga/norna/blob/main/docs/typography.md) for
-presets, allowed overrides, defaults, and page-theme inheritance.
+presets, color modes, allowed overrides, defaults, and page-theme inheritance.
 
 ## Core commands {#commands}
 

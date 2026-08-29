@@ -6,6 +6,10 @@ language behavior from the `@janga/norna` installed by the current project.
 It activates only for files in a recognized Norna site and uses the schema and
 editor API version declared by that local installation.
 
+See the user-facing [VS Code Editor Support](../../docs/editor-support.md)
+guide for installation, recognized files, completion behavior, validation,
+and troubleshooting. This README keeps the extension-development workflow.
+
 The proof of concept provides:
 
 - described YAML fields and values through Red Hat YAML

@@ -136,12 +136,35 @@ navigation:
   listed: false
 ```
 
-Home is always listed. By default, Norna chooses navigation from the site
-structure:
+Home is always listed. With `navigation.mode: automatic`, Norna chooses from
+the listed page and heading hierarchy:
 
-- one listed page uses section navigation;
-- a shallow hierarchy uses top navigation;
-- deeper page or heading hierarchies use tree navigation.
+| Site structure | Selected mode |
+| --- | --- |
+| Home is the only listed page | `sections` |
+| Several listed pages, with no combined page/H2/H3 path deeper than two levels | `top` |
+| Several listed pages, with a nested page that has headings or a top-level page that has H3 headings | `tree` |
+
+The depth includes both page directories and navigable headings. A top-level
+page is level one, its H2 headings are level two, and its H3 headings are level
+three. A child page is level two, so adding H2 headings to that page also
+requires tree navigation. Unlisted pages do not influence automatic selection.
+
+The modes present the same source hierarchy differently:
+
+- `sections` keeps the one page's H1 destination and H2 sections in sticky
+  page navigation.
+- `top` keeps Home and top-level pages in the global row. Child pages use page
+  submenus, and the current page's H2 sections use local navigation when there
+  is more than one.
+- `tree` keeps top-level areas in the global row and shows the active area's
+  page hierarchy plus current-page H2 and H3 headings in a desktop sidebar.
+
+On a small screen, page and heading destinations are collected in one
+expandable menu. Expanding a branch reveals its children without navigating;
+following its page link is a separate action. Real page and anchor links remain
+usable without JavaScript. See [Client-Side JavaScript](client-javascript.md)
+for the enhancement boundary.
 
 The site-wide `navigation.mode` in `config.yaml` can explicitly select
 `automatic`, `sections`, `top`, or `tree`. See

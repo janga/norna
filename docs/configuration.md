@@ -76,7 +76,8 @@ navigation:
 
 Navigation behavior is technical and site-wide. It cannot be configured in
 `theme.yaml` or in an individual page. See [Pages](pages.md#navigation) for the
-relationship between Home, top-level pages, child pages, and headings.
+relationship between Home, top-level pages, child pages, and headings, and
+[Client-Side JavaScript](client-javascript.md) for the no-JavaScript fallback.
 
 ## `scrollBehavior`
 

@@ -43,6 +43,24 @@ Norna.{note-ref}
   caption: Third frame: a denser detail.
 ```
 
+## Portrait carousel {#portrait-carousel}
+
+Portrait images use the same carousel, but the stage is constrained by the
+theme's available image height. The controls remain next to the image instead
+of moving to the edges of the wider content area.
+
+```norna-image-carousel
+- image: portrait-one.svg
+  alt: A tall pale panel with a centered arch.
+  caption: First portrait frame: a single vertical form.
+- image: portrait-two.svg
+  alt: A tall dark panel with two offset circles.
+  caption: Second portrait frame: overlapping shapes.
+- image: portrait-three.svg
+  alt: A tall rust-colored panel with three horizontal bars.
+  caption: Third portrait frame: a compact sequence.
+```
+
 ## Card list {#cards}
 
 Cards are useful when several short items need the same visual treatment. The

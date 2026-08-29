@@ -21,7 +21,10 @@ integrates publishing with GitHub Pages only.
 - [Theme presets and overrides](https://raw.githubusercontent.com/janga/norna/main/docs/theme.md)
 - [Images and generated metadata](https://raw.githubusercontent.com/janga/norna/main/docs/images-and-metadata.md)
 - [Local development](https://raw.githubusercontent.com/janga/norna/main/docs/local-development.md)
+- [VS Code editor support](https://raw.githubusercontent.com/janga/norna/main/docs/editor-support.md)
 - [Publishing](https://raw.githubusercontent.com/janga/norna/main/docs/publishing.md)
+- [Client-side JavaScript contract](https://raw.githubusercontent.com/janga/norna/main/docs/client-javascript.md)
+- [Upgrading a site](https://raw.githubusercontent.com/janga/norna/main/docs/upgrading.md)
 
 ## Reference
 

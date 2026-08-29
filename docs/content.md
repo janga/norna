@@ -78,8 +78,8 @@ Markdown level 2 headings define the page sections and their order:
 ...
 ```
 
-Norna derives a stable lowercase id from the heading text when no explicit id
-is present:
+Norna derives a deterministic lowercase ASCII id from the heading text when no
+explicit id is present:
 
 ```md
 ## Work
@@ -92,11 +92,23 @@ text changes:
 ## Work {#work}
 ```
 
-Explicit ids must match `^[a-z0-9-]+$`. Derived and explicit ids are used for
-anchors and section navigation; the visible label still comes from the heading
-text. H3 headings use the same derivation for deeper local navigation. If two
-headings on one page resolve to the same id, `content:check` reports the page
-and both headings instead of guessing.
+Automatic ids are produced by lowercasing the heading, removing accents,
+transliterating common letters such as `æ` to `ae`, removing apostrophes, and
+replacing other runs of characters with one hyphen. For example:
+
+```text
+Crème brûlée & tools  ->  creme-brulee-tools
+```
+
+If no ASCII id can be produced, add an explicit id. Explicit ids must contain
+lowercase ASCII letters or numbers separated by single hyphens. `page-title` is
+reserved by Norna.
+
+Derived and explicit ids are used for anchors and local navigation; the visible
+label still comes from the heading text. H3 headings use the same derivation.
+All H2 and H3 ids must be unique within their page. If two headings resolve to
+the same id, `content:check` reports the page, both headings, and an example fix
+instead of guessing.
 
 Markdown section content starts at the level 2 heading and continues until the
 next level 2 heading. `###` and `####` headings are body subheadings within the
@@ -135,6 +147,19 @@ Use `norna-image-carousel` for a carousel:
   caption: Second caption.
 ```
 ````
+
+The carousel keeps each image's intrinsic proportions. Its stage is limited by
+the theme's managed-image width, the available page width, and
+`images.maxAvailableHeightPercent`. A portrait carousel therefore stays close
+to the image instead of stretching its controls across the complete content
+area; a landscape carousel may use more horizontal space. The same limits are
+resolved separately for desktop and mobile.
+
+With two or more images, Norna provides previous and next controls, a numeric
+position indicator, arrow-key operation, and touch dragging. The controls
+remain visible on the image stage and use colors coordinated with the active
+light or dark palette. The active image's caption appears below the stage. Use
+descriptive captions when the sequence needs more context than its alt text.
 
 ### Card List
 

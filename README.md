@@ -135,9 +135,10 @@ engine diagnostics, not for ordinary editing and local preview. See
 
 - [Getting Started](https://janga.github.io/norna/getting-started/)
 - [Site files](docs/site-files.md)
+- [Upgrading an existing site](docs/upgrading.md)
 - [Task-oriented documentation map](docs/README.md)
 - [Common workflows](docs/README.md#common-workflows)
-- [Concepts and explanation](docs/README.md#concepts-and-explanation)
+- [Explanation and JavaScript boundaries](docs/README.md#explanation)
 - [Command and platform reference](docs/README.md#command-and-platform-reference)
 - [Troubleshooting](docs/README.md#troubleshooting)
 - [AI-readable documentation index](https://janga.github.io/norna/llms.txt)

@@ -52,7 +52,7 @@
               "description": "Start with the palette's dark appearance."
             }
           ],
-          "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nInitial color mode. System follows the visitor's operating-system preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)",
+          "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nInitial color mode. System follows the visitor's operating-system preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
           "examples": [
             "system",
             "light",
@@ -62,16 +62,16 @@
         "allowSelection": {
           "description": "Show a site-wide control that lets visitors choose system, light, or dark mode.",
           "type": "boolean",
-          "markdownDescription": "```yaml\ncolorMode:\n  allowSelection: true\n```\n\nShow a site-wide control that lets visitors choose system, light, or dark mode.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)"
+          "markdownDescription": "```yaml\ncolorMode:\n  allowSelection: true\n```\n\nShow a site-wide control that lets visitors choose system, light, or dark mode.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)"
         }
       },
       "additionalProperties": false,
       "description": "Site-wide light and dark mode behaviour.",
-      "markdownDescription": "```yaml\ncolorMode:\n  default: system\n  allowSelection: true\n```\n\nControls the initial light or dark appearance and whether visitors may choose their preferred mode.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)",
+      "markdownDescription": "```yaml\ncolorMode:\n  default: system\n  allowSelection: true\n```\n\nControls the initial light or dark appearance and whether visitors may choose their preferred mode.\n\n[Color modes](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
       "defaultSnippets": [
         {
           "label": "Configure color modes",
-          "markdownDescription": "Follow the system color preference and let visitors choose another mode.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)",
+          "markdownDescription": "Follow the system color preference and let visitors choose another mode.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
           "body": "colorMode:\n  default: ${1:system}\n  allowSelection: ${2:true}"
         }
       ]

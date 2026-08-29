@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Portrait carousel frame three</title>
+  <desc id="desc">A tall rust-colored panel with three horizontal bars.</desc>
+  <rect width="700" height="1100" fill="#7d302b"/>
+  <g fill="#f8f5ee">
+    <rect x="130" y="260" width="440" height="120"/>
+    <rect x="130" y="490" width="340" height="120" opacity=".72"/>
+    <rect x="130" y="720" width="240" height="120" opacity=".48"/>
+  </g>
+</svg>
