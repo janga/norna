@@ -126,6 +126,12 @@ interaction and state that cannot be retained adequately with HTML and CSS.
 
 ### 4. Refine Theme And Preset Responsibilities - Proof Of Concept
 
+The detailed preset model and remaining work are defined in the
+[Preset Design Guide](preset-design-guide.md) and
+[Preset Development Plan](preset-development-plan.md). Those records refine
+this section with internal profile recipes, safe site-owner choices, and
+reader-controlled display preferences.
+
 Presets should control visual presentation, including:
 
 - color system;
