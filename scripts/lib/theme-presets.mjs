@@ -1,117 +1,42 @@
-import { mergeDeep } from './typography.mjs';
+import { freezeDeep, mergeDeep } from './object.mjs';
+import { resolveThemeProfileRecipe } from './theme-profiles.mjs';
 
-const themePresetConfigurations = Object.freeze({
+export const themePresetRecipes = Object.freeze({
 	portfolio: Object.freeze({
-		colorMode: { default: 'dark', allowSelection: true },
+		color: 'monochrome-dark',
+		typography: 'restrained-sans',
+		rhythm: 'balanced',
+		geometry: 'image-led',
+		media: 'prominent',
 		shape: 'square',
-		layout: {
-			contentSpacing: 'normal',
-			textWidth: 'wide',
-			pageWidth: '1240px',
-			localNavigationGap: 'clamp(1rem, 2vw, 1.75rem)',
-			noteWidth: '13rem',
-			noteGap: '1.5rem',
-			gutter: {
-				desktop: 'clamp(1.25rem, 4vw, 3rem)',
-				mobile: '1rem',
-			},
-		},
-		images: {
-			width: '1000px',
-			maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
-			maxAvailableHeightPercent: { desktop: 78, mobile: 68 },
-		},
-		typography: {
-			fontFamily: "'Helvetica Neue', Arial, sans-serif",
-			profile: 'restrained',
-			rhythm: 'normal',
-		},
-		palette: 'dark',
-		sections: { backgroundPattern: 'uniform' },
+		surfaces: 'uniform',
 	}),
 	documentation: Object.freeze({
-		colorMode: { default: 'system', allowSelection: true },
+		color: 'paper-adaptive',
+		typography: 'editorial-reading',
+		rhythm: 'compact',
+		geometry: 'focused-reading',
+		media: 'supporting',
 		shape: 'soft',
-		layout: {
-			contentSpacing: 'compact',
-			textWidth: 'narrow',
-			pageWidth: '1240px',
-			localNavigationGap: 'clamp(1rem, 2vw, 1.5rem)',
-			noteWidth: '12rem',
-			noteGap: '1.25rem',
-			gutter: {
-				desktop: 'clamp(1.25rem, 4vw, 3rem)',
-				mobile: '1rem',
-			},
-		},
-		images: {
-			width: '920px',
-			maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
-			maxAvailableHeightPercent: { desktop: 74, mobile: 68 },
-		},
-		typography: {
-			fontFamily: "Georgia, 'Times New Roman', serif",
-			profile: 'reading',
-			rhythm: 'compact',
-		},
-		palette: 'paper',
-		sections: { backgroundPattern: 'alternating' },
+		surfaces: 'alternating',
 	}),
 	project: Object.freeze({
-		colorMode: { default: 'system', allowSelection: true },
+		color: 'clear-adaptive',
+		typography: 'system-reading',
+		rhythm: 'compact',
+		geometry: 'balanced-site',
+		media: 'balanced',
 		shape: 'soft',
-		layout: {
-			contentSpacing: 'compact',
-			textWidth: 'normal',
-			pageWidth: '1120px',
-			localNavigationGap: 'clamp(1rem, 2vw, 1.5rem)',
-			noteWidth: '12rem',
-			noteGap: '1.25rem',
-			gutter: {
-				desktop: 'clamp(1.25rem, 4vw, 3rem)',
-				mobile: '1rem',
-			},
-		},
-		images: {
-			width: '840px',
-			maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
-			maxAvailableHeightPercent: { desktop: 70, mobile: 62 },
-		},
-		typography: {
-			fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-			profile: 'reading',
-			rhythm: 'compact',
-		},
-		palette: 'light',
-		sections: { backgroundPattern: 'alternating' },
+		surfaces: 'alternating',
 	}),
 	statement: Object.freeze({
-		colorMode: { default: 'system', allowSelection: true },
+		color: 'paper-adaptive',
+		typography: 'expressive-sans',
+		rhythm: 'expansive',
+		geometry: 'expansive-statement',
+		media: 'immersive',
 		shape: 'square',
-		layout: {
-			contentSpacing: 'spacious',
-			textWidth: 'normal',
-			pageWidth: '1280px',
-			localNavigationGap: 'clamp(1rem, 2vw, 1.75rem)',
-			noteWidth: '13rem',
-			noteGap: '1.75rem',
-			gutter: {
-				desktop: 'clamp(1.5rem, 5vw, 4rem)',
-				mobile: '1rem',
-			},
-		},
-		images: {
-			width: '1080px',
-			maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
-			maxAvailableHeightPercent: { desktop: 80, mobile: 70 },
-		},
-		typography: {
-			fontFamily: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif",
-			profile: 'statement',
-			rhythm: 'airy',
-		},
-		palette: 'paper',
-		sections: { backgroundPattern: 'cycling' },
+		surfaces: 'cycling',
 	}),
 });
 
@@ -119,29 +44,35 @@ export const themePresetDefinitions = Object.freeze({
 	portfolio: Object.freeze({
 		title: 'Portfolio',
 		description: 'For portfolios and image-led sites, with restrained typography and generous space for images.',
-		theme: themePresetConfigurations.portfolio,
+		recipe: themePresetRecipes.portfolio,
 	}),
 	documentation: Object.freeze({
 		title: 'Documentation',
 		description: 'For guides and reference material, with reading-focused typography and compact spacing.',
-		theme: themePresetConfigurations.documentation,
+		recipe: themePresetRecipes.documentation,
 	}),
 	project: Object.freeze({
 		title: 'Project',
 		description: 'For project and product sites that balance explanation, code, cards, and images.',
-		theme: themePresetConfigurations.project,
+		recipe: themePresetRecipes.project,
 	}),
 	statement: Object.freeze({
 		title: 'Statement',
 		description: 'For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis.',
-		theme: themePresetConfigurations.statement,
+		recipe: themePresetRecipes.statement,
 	}),
 });
 
 export const themePresetNames = Object.freeze(Object.keys(themePresetDefinitions));
 
 export const themePresets = Object.freeze(Object.fromEntries(
-	themePresetNames.map((name) => [name, themePresetDefinitions[name].theme]),
+	themePresetNames.map((name) => [
+		name,
+		freezeDeep(resolveThemeProfileRecipe(
+			themePresetDefinitions[name].recipe,
+			`${name} theme preset`,
+		)),
+	]),
 ));
 
 export const getThemePresetMetadata = (presetName) => {

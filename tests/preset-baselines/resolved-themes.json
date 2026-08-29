@@ -1,0 +1,158 @@
+{
+  "portfolio": {
+    "colorMode": {
+      "default": "dark",
+      "allowSelection": true
+    },
+    "palette": "dark",
+    "typography": {
+      "fontFamily": "'Helvetica Neue', Arial, sans-serif",
+      "profile": "restrained",
+      "rhythm": "normal"
+    },
+    "layout": {
+      "contentSpacing": "normal",
+      "textWidth": "wide",
+      "pageWidth": "1240px",
+      "localNavigationGap": "clamp(1rem, 2vw, 1.75rem)",
+      "noteWidth": "13rem",
+      "noteGap": "1.5rem",
+      "gutter": {
+        "desktop": "clamp(1.25rem, 4vw, 3rem)",
+        "mobile": "1rem"
+      }
+    },
+    "images": {
+      "width": "1000px",
+      "maxAvailableWidthPercent": {
+        "desktop": 100,
+        "mobile": 100
+      },
+      "maxAvailableHeightPercent": {
+        "desktop": 78,
+        "mobile": 68
+      }
+    },
+    "shape": "square",
+    "sections": {
+      "backgroundPattern": "uniform"
+    }
+  },
+  "documentation": {
+    "colorMode": {
+      "default": "system",
+      "allowSelection": true
+    },
+    "palette": "paper",
+    "typography": {
+      "fontFamily": "Georgia, 'Times New Roman', serif",
+      "profile": "reading",
+      "rhythm": "compact"
+    },
+    "layout": {
+      "contentSpacing": "compact",
+      "textWidth": "narrow",
+      "pageWidth": "1240px",
+      "localNavigationGap": "clamp(1rem, 2vw, 1.5rem)",
+      "noteWidth": "12rem",
+      "noteGap": "1.25rem",
+      "gutter": {
+        "desktop": "clamp(1.25rem, 4vw, 3rem)",
+        "mobile": "1rem"
+      }
+    },
+    "images": {
+      "width": "920px",
+      "maxAvailableWidthPercent": {
+        "desktop": 100,
+        "mobile": 100
+      },
+      "maxAvailableHeightPercent": {
+        "desktop": 74,
+        "mobile": 68
+      }
+    },
+    "shape": "soft",
+    "sections": {
+      "backgroundPattern": "alternating"
+    }
+  },
+  "project": {
+    "colorMode": {
+      "default": "system",
+      "allowSelection": true
+    },
+    "palette": "light",
+    "typography": {
+      "fontFamily": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "profile": "reading",
+      "rhythm": "compact"
+    },
+    "layout": {
+      "contentSpacing": "compact",
+      "textWidth": "normal",
+      "pageWidth": "1120px",
+      "localNavigationGap": "clamp(1rem, 2vw, 1.5rem)",
+      "noteWidth": "12rem",
+      "noteGap": "1.25rem",
+      "gutter": {
+        "desktop": "clamp(1.25rem, 4vw, 3rem)",
+        "mobile": "1rem"
+      }
+    },
+    "images": {
+      "width": "840px",
+      "maxAvailableWidthPercent": {
+        "desktop": 100,
+        "mobile": 100
+      },
+      "maxAvailableHeightPercent": {
+        "desktop": 70,
+        "mobile": 62
+      }
+    },
+    "shape": "soft",
+    "sections": {
+      "backgroundPattern": "alternating"
+    }
+  },
+  "statement": {
+    "colorMode": {
+      "default": "system",
+      "allowSelection": true
+    },
+    "palette": "paper",
+    "typography": {
+      "fontFamily": "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif",
+      "profile": "statement",
+      "rhythm": "airy"
+    },
+    "layout": {
+      "contentSpacing": "spacious",
+      "textWidth": "normal",
+      "pageWidth": "1280px",
+      "localNavigationGap": "clamp(1rem, 2vw, 1.75rem)",
+      "noteWidth": "13rem",
+      "noteGap": "1.75rem",
+      "gutter": {
+        "desktop": "clamp(1.5rem, 5vw, 4rem)",
+        "mobile": "1rem"
+      }
+    },
+    "images": {
+      "width": "1080px",
+      "maxAvailableWidthPercent": {
+        "desktop": 100,
+        "mobile": 100
+      },
+      "maxAvailableHeightPercent": {
+        "desktop": 80,
+        "mobile": 70
+      }
+    },
+    "shape": "square",
+    "sections": {
+      "backgroundPattern": "cycling"
+    }
+  }
+}

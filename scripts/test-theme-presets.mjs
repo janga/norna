@@ -6,10 +6,16 @@ import { fileURLToPath } from 'node:url';
 import { load } from 'js-yaml';
 import { getPresentationPalette, presentationPaletteNames, resolveThemePresentation } from './lib/presentation.mjs';
 import {
+	resolveThemeProfileRecipe,
+	themeProfileCategoryNames,
+	themeProfileDefinitions,
+} from './lib/theme-profiles.mjs';
+import {
 	getThemePresetMetadata,
 	resolveThemeConfig,
 	themePresetDefinitions,
 	themePresetNames,
+	themePresetRecipes,
 	themePresets,
 } from './lib/theme-presets.mjs';
 
@@ -19,6 +25,49 @@ const tempParent = path.join(repoRoot, 'node_modules', '.cache');
 await mkdir(tempParent, { recursive: true });
 const tempRoot = await mkdtemp(path.join(tempParent, 'norna theme presets-'));
 const siteDir = path.join(tempRoot, 'site');
+const expectedPresetThemes = JSON.parse(await readFile(
+	path.join(repoRoot, 'tests', 'preset-baselines', 'resolved-themes.json'),
+	'utf8',
+));
+
+const expectedPresetRecipes = {
+	portfolio: {
+		color: 'monochrome-dark',
+		typography: 'restrained-sans',
+		rhythm: 'balanced',
+		geometry: 'image-led',
+		media: 'prominent',
+		shape: 'square',
+		surfaces: 'uniform',
+	},
+	documentation: {
+		color: 'paper-adaptive',
+		typography: 'editorial-reading',
+		rhythm: 'compact',
+		geometry: 'focused-reading',
+		media: 'supporting',
+		shape: 'soft',
+		surfaces: 'alternating',
+	},
+	project: {
+		color: 'clear-adaptive',
+		typography: 'system-reading',
+		rhythm: 'compact',
+		geometry: 'balanced-site',
+		media: 'balanced',
+		shape: 'soft',
+		surfaces: 'alternating',
+	},
+	statement: {
+		color: 'paper-adaptive',
+		typography: 'expressive-sans',
+		rhythm: 'expansive',
+		geometry: 'expansive-statement',
+		media: 'immersive',
+		shape: 'square',
+		surfaces: 'cycling',
+	},
+};
 
 const runCli = (args) => spawnSync(process.execPath, [cliPath, '--site-dir', siteDir, ...args], {
 	cwd: repoRoot,
@@ -43,7 +92,34 @@ const contrastRatio = (left, right) => {
 try {
 	assert.deepEqual(Object.keys(themePresets), themePresetNames);
 	assert.deepEqual(Object.keys(themePresetDefinitions), themePresetNames);
+	assert.deepEqual(Object.keys(themePresetRecipes), themePresetNames);
+	assert.deepEqual(themePresetRecipes, expectedPresetRecipes);
+	assert.deepEqual(themeProfileCategoryNames, [
+		'color',
+		'typography',
+		'rhythm',
+		'geometry',
+		'media',
+		'shape',
+		'surfaces',
+	]);
+	assert.ok(Object.isFrozen(themeProfileDefinitions));
+	for (const [category, profiles] of Object.entries(themeProfileDefinitions)) {
+		assert.ok(Object.isFrozen(profiles), `${category} profiles must be immutable`);
+		assert.ok(Object.keys(profiles).length > 0, `${category} must provide profiles`);
+		assert.deepEqual(
+			[...new Set(Object.values(themePresetRecipes).map((recipe) => recipe[category]))].sort(),
+			Object.keys(profiles).sort(),
+			`${category} profiles must be selected by at least one built-in preset`,
+		);
+		for (const profile of Object.values(profiles)) {
+			assert.ok(Object.isFrozen(profile), `${category} profile definitions must be immutable`);
+		}
+	}
 	for (const presetName of themePresetNames) {
+		assert.ok(Object.isFrozen(themePresetRecipes[presetName]), `${presetName} recipe must be immutable`);
+		assert.ok(Object.isFrozen(themePresets[presetName]), `${presetName} resolved theme must be immutable`);
+		assert.ok(Object.isFrozen(themePresets[presetName].layout), `${presetName} resolved layout must be immutable`);
 		const metadata = getThemePresetMetadata(presetName);
 		assert.equal(metadata.name, presetName);
 		assert.ok(metadata.title);
@@ -62,7 +138,32 @@ try {
 		assert.ok(resolved.colorMode?.default);
 		assert.equal(resolved.colorMode?.allowSelection, true);
 		assert.ok(resolved.sections?.backgroundPattern);
+		assert.deepEqual(themePresets[presetName], expectedPresetThemes[presetName]);
+		assert.deepEqual(
+			resolveThemeProfileRecipe(themePresetRecipes[presetName], `${presetName} test recipe`),
+			expectedPresetThemes[presetName],
+		);
 	}
+	const isolatedResolution = resolveThemeProfileRecipe(themePresetRecipes.project, 'isolated recipe');
+	isolatedResolution.layout.pageWidth = '1px';
+	assert.equal(
+		resolveThemeProfileRecipe(themePresetRecipes.project, 'second isolated recipe').layout.pageWidth,
+		'1120px',
+	);
+	assert.throws(
+		() => resolveThemeProfileRecipe({ ...themePresetRecipes.project, color: 'unknown' }, 'invalid recipe'),
+		/Unknown color profile "unknown" in invalid recipe.*monochrome-dark, paper-adaptive, clear-adaptive/,
+	);
+	const missingProfileRecipe = { ...themePresetRecipes.project };
+	delete missingProfileRecipe.media;
+	assert.throws(
+		() => resolveThemeProfileRecipe(missingProfileRecipe, 'incomplete recipe'),
+		/Missing theme profile category "media" in incomplete recipe/,
+	);
+	assert.throws(
+		() => resolveThemeProfileRecipe({ ...themePresetRecipes.project, animation: 'busy' }, 'extended recipe'),
+		/Unknown theme profile category "animation" in extended recipe/,
+	);
 	for (const paletteName of presentationPaletteNames) {
 		const palette = getPresentationPalette(paletteName);
 		for (const [modeName, mode] of Object.entries(palette.modes)) {
