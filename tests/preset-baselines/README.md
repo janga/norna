@@ -1,6 +1,6 @@
 # Preset Visual Baselines
 
-These images record Norna's existing preset output before the profile resolver
+These images record Norna's current preset output before the profile resolver
 is reorganized. Every image uses the same source fixture:
 
 `fixtures/preset-baseline/site`
@@ -22,9 +22,8 @@ Desktop captures use a `1440 x 1000` viewport. Mobile captures use
 `390 x 844`. Both are full-page JPEG references.
 
 The mobile source deliberately contains one long unbroken inline-code token.
-Current rendering lets that token widen the document, so the recorded mobile
-images are `564` or `565` pixels wide despite the `390` pixel viewport. This is
-a baseline finding for the engine-contract phase, not intended target behavior.
+The engine contract requires that token to wrap without widening the document,
+so every mobile reference remains at the `390` pixel viewport width.
 
 ## Reproduce
 
