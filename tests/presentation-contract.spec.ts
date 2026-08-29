@@ -250,24 +250,35 @@ test('reader preferences apply, persist, and reset as one bounded overlay', asyn
 	await expect(page.locator('.tree-local-navigation')).toBeVisible();
 });
 
-test('collapsing tree navigation preserves card alignment with the reading column', async ({ page }) => {
+test('collapsing tree navigation preserves reading and media geometry', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await openComponents(page);
+	const imageStackSection = page.locator('.site-section').filter({ has: page.locator('#image-stack') });
+	const carouselSection = page.locator('.site-section').filter({ has: page.locator('#image-carousel') });
 	const cards = page.locator('.card-list').first();
 	const prose = page.locator('.section-markdown').first();
-	const cardsBefore = await cards.boundingBox();
-	const proseBefore = await prose.boundingBox();
+	const imageStackProse = imageStackSection.locator('.section-markdown');
+	const elements = [
+		prose,
+		imageStackProse,
+		imageStackSection.locator('.managed-image-frame').first(),
+		imageStackSection.locator('.image-meta').first(),
+		carouselSection.locator('.image-carousel-stage'),
+		carouselSection.locator('.image-carousel-captions'),
+		cards,
+	];
+	const before = await Promise.all(elements.map((element) => element.boundingBox()));
+	expect(before.every(Boolean)).toBe(true);
+	expect(Math.abs((before[2]?.x ?? 0) - (before[1]?.x ?? 0))).toBeLessThan(2);
 
 	await page.locator('[data-tree-navigation-toggle]').click();
 
-	const cardsAfter = await cards.boundingBox();
-	const proseAfter = await prose.boundingBox();
-	expect(cardsBefore).not.toBeNull();
-	expect(cardsAfter).not.toBeNull();
-	expect(proseBefore).not.toBeNull();
-	expect(proseAfter).not.toBeNull();
-	expect(Math.abs((cardsAfter?.x ?? 0) - (cardsBefore?.x ?? 0))).toBeLessThan(2);
-	expect(Math.abs((proseAfter?.x ?? 0) - (proseBefore?.x ?? 0))).toBeLessThan(2);
+	const after = await Promise.all(elements.map((element) => element.boundingBox()));
+	expect(after.every(Boolean)).toBe(true);
+	for (const [index, rectangle] of before.entries()) {
+		expect(Math.abs((after[index]?.x ?? 0) - (rectangle?.x ?? 0))).toBeLessThan(2);
+		expect(Math.abs((after[index]?.width ?? 0) - (rectangle?.width ?? 0))).toBeLessThan(2);
+	}
 });
 
 test('configured presentation remains usable without JavaScript', async ({ browser }) => {
