@@ -213,6 +213,14 @@ Implementation requirements:
 Test the Display control against every profile category before final tuning of
 the first preset. This avoids designing a preset around only one reader state.
 
+Implementation checkpoint (2026-08-29): the reader-preference overlay and
+accessible Display panel are implemented as a proof of concept. `documentation`
+and `project` offer all three controls by default; `portfolio` and `statement`
+offer appearance only. Browser tests cover persistence, reset, focus-reading,
+text-width changes, keyboard closing, reflow, and the no-JavaScript default.
+Public reference documentation and example migration remain pending hands-on
+approval.
+
 ### Phase 4: Design The Documentation Preset
 
 Use `documentation` as the first complete proof of concept because it exercises
@@ -257,6 +265,12 @@ Prepare alternatives that vary only meaningful relationships:
 
 Do not ask the product owner to choose pixel values. Present the result as
 realistic pages at desktop, tablet, and mobile widths.
+
+The first review harness builds three alternatives from the same representative
+fixture and preloads them in one local comparison page. Its selector changes
+the visible candidate without navigating away or rebuilding the alternatives.
+Run `npm run preset:documentation:review` and review the URL printed by the
+command.
 
 #### Decision 4: Color, Surfaces, And Shape
 

@@ -38,6 +38,15 @@ approachable before wider use.
   consistent keyboard focus, minimum control sizes, long-token reflow,
   sidenote fallback during text enlargement, reduced motion, and forced-colors
   support. Keep raw contract internals in the design documentation.
+- After the reader Display panel is tested and approved, replace the temporary
+  design-document links in the generated theme schema with user-facing theme
+  reference links. Document `readerControls`, preset defaults, the three
+  base-path-scoped preference cookies, reset behavior, focus-reading behavior,
+  and the configured no-JavaScript fallback. Migrate the existing color-mode
+  documentation and examples from `colorMode.allowSelection` at the same time.
+- After the collapsible desktop tree navigation is tested and approved,
+  document its one-click control, tab-scoped state, reading-width behavior,
+  keyboard semantics, and visible no-JavaScript fallback.
 - Turn the release section in `docs/engine-development.md` into a concise
   maintainer runbook covering patch/minor/major releases, the steps performed
   automatically, rollback before the release commit, and recovery after a
@@ -85,6 +94,13 @@ These are current constraints, not necessarily bugs.
 These ideas may be useful later, but should not distract from stabilizing the
 basic site workflow.
 
+- Evaluate optional current-section tracking in open tree navigation. A first
+  version should use progressive enhancement to mark the current H2 and, when
+  shown, H3 while the reader scrolls. It must not change the URL, browser
+  history, keyboard focus, or scroll position, and should use a specific option
+  such as `navigation.sectionTracking` rather than a general permission for
+  navigation JavaScript. The static navigation must remain fully usable when
+  tracking is disabled or JavaScript is unavailable.
 - Add opt-in static search for larger sites. Prefer a build-time index generated
   from the completed HTML in `dist/`, using Pagefind or an equivalent established
   tool rather than a Norna-specific search engine. A first version should:

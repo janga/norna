@@ -69,7 +69,8 @@ sections.
 
 ### Start with one page {#single-page-site}
 
-The generated project starts with one page named Home:
+A new Norna site starts with one Home page. Its content and images live
+together in one page directory:
 
 ```text
 site/
@@ -153,7 +154,8 @@ screen. Top-level pages normally use horizontal navigation on wide screens. As
 pages or their contents gain more levels, Norna switches to a navigation tree.
 On small screens, the same structure is presented in an expandable menu.
 
-Add a page directory beside `000-home` when the site needs another main page:
+Add peer pages when the site needs several main areas. Each page has its own
+URL, content, images, and section navigation:
 
 ```text
 site/pages/
@@ -166,10 +168,9 @@ site/pages/
     └── content.md
 ```
 
-These pages are peers. Each gets its own URL, content, images, and local
-headings. The numeric prefix orders pages among their siblings, while the
-remaining page id becomes the URL segment: `010-dogs/` appears before
-`020-adopt/` and produces a URL ending in `/dogs/`.
+The numeric prefix orders pages among their siblings, while the remaining page
+id becomes the URL segment: `010-dogs/` appears before `020-adopt/` and produces
+a URL ending in `/dogs/`.
 
 With several pages, Norna-managed images are useful for keeping each image with
 the page that uses it. These are local files referenced from Norna image,
@@ -206,8 +207,8 @@ Screenshot of the same Dogs page with its mobile navigation menu open.
 
 ### Add nested pages {#nested-pages}
 
-When a top-level area needs more structure, add a `pages/` directory inside its
-page:
+Group related pages under one top-level page, each with its own URL and section
+navigation:
 
 ```text
 site/pages/
