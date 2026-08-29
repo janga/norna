@@ -81,7 +81,11 @@ Progress:
 - Phase 0 completed in commits `5e84890` and `8a6bed7`.
 - Phase 1 completed in August 2026. Its implemented invariants are recorded in
   [Presentation Engine Contract](presentation-engine-contract.md).
-- Phase 2 is the next implementation phase.
+- Phase 2 completed in August 2026. Built-in presets now resolve from internal
+  profiles while retaining the previously captured theme values and rendered
+  output.
+- Phase 3 is the next implementation phase and requires approval of its public
+  reader-control syntax before implementation.
 
 ### Phase 0: Record And Protect The Baseline
 
@@ -162,6 +166,16 @@ Deliverables:
 - an updated reference export generated from resolved values.
 
 Commit the resolver separately from later visual tuning.
+
+Implementation:
+
+- `scripts/lib/theme-profiles.mjs` owns immutable color, typography, rhythm,
+  geometry, media, shape, and surface profiles;
+- `scripts/lib/theme-presets.mjs` expresses each built-in preset as a compact
+  recipe and expands it before applying public overrides;
+- `tests/preset-baselines/resolved-themes.json` locks every resolved preset
+  value independently of the implementation;
+- the existing screenshot baselines remain unchanged after the refactor.
 
 ### Phase 3: Implement Reader Display Preferences
 
@@ -445,16 +459,11 @@ documentation migration into proof-of-concept commits.
 
 ## Immediate Next Step
 
-Perform Phase 2 as an internal refactor that preserves the newly captured
-visual output:
+Review and approve the public root-theme syntax proposed in Phase 3 for reader
+display preferences. Confirm which controls are enabled by default for each
+preset before implementation begins.
 
-1. extract color, typography, rhythm, geometry, media, shape, and surface
-   profiles;
-2. express every current preset as a compact recipe;
-3. resolve recipes through one deterministic pipeline;
-4. retain the Phase 1 contract as the final validation boundary;
-5. verify root and inherited page themes against the baseline fixture.
-
-This phase should not redesign a preset, add public controls, migrate examples,
-or update public documentation. Product input is needed only if two values
-cannot be assigned to profile categories without changing their meaning.
+Do not redesign presets or replace their published examples until the Display
+control works across all profile categories. The shared baseline fixture should
+then become the source for the replacement public preset examples after each
+preset has been visually reviewed.

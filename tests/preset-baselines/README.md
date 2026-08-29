@@ -1,9 +1,13 @@
 # Preset Visual Baselines
 
-These images record Norna's current preset output before the profile resolver
-is reorganized. Every image uses the same source fixture:
+These images record Norna's preset output across internal resolver changes.
+Every image uses the same source fixture:
 
 `fixtures/preset-baseline/site`
+
+[`resolved-themes.json`](resolved-themes.json) records every resolved theme
+value for the same presets. It protects configuration output while the images
+protect the rendered result.
 
 The captured page contains nested navigation, H1 through H4, prose, links,
 inline and fenced code, a sidenote, an image stack, a carousel, cards, a banner,
