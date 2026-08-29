@@ -250,6 +250,26 @@ test('reader preferences apply, persist, and reset as one bounded overlay', asyn
 	await expect(page.locator('.tree-local-navigation')).toBeVisible();
 });
 
+test('collapsing tree navigation preserves card alignment with the reading column', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openComponents(page);
+	const cards = page.locator('.card-list').first();
+	const prose = page.locator('.section-markdown').first();
+	const cardsBefore = await cards.boundingBox();
+	const proseBefore = await prose.boundingBox();
+
+	await page.locator('[data-tree-navigation-toggle]').click();
+
+	const cardsAfter = await cards.boundingBox();
+	const proseAfter = await prose.boundingBox();
+	expect(cardsBefore).not.toBeNull();
+	expect(cardsAfter).not.toBeNull();
+	expect(proseBefore).not.toBeNull();
+	expect(proseAfter).not.toBeNull();
+	expect(Math.abs((cardsAfter?.x ?? 0) - (cardsBefore?.x ?? 0))).toBeLessThan(2);
+	expect(Math.abs((proseAfter?.x ?? 0) - (proseBefore?.x ?? 0))).toBeLessThan(2);
+});
+
 test('configured presentation remains usable without JavaScript', async ({ browser }) => {
 	const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
 	const page = await context.newPage();

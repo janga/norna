@@ -36,6 +36,15 @@ test.describe('desktop tree navigation', () => {
 		await expect(pageContents.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
 		await expect(pageContents.getByRole('link', { name: 'Verify', exact: true })).toBeVisible();
 		await expect(page.locator('.page-nav')).toHaveCount(0);
+
+		const toggleIconBox = await page.locator('.tree-navigation-toggle-icon-hide').boundingBox();
+		const activeRootLinkBox = await localNavigation
+			.locator('.navigation-page-tree-sidebar > .navigation-page-node .navigation-page-summary-title')
+			.first()
+			.boundingBox();
+		expect(toggleIconBox).not.toBeNull();
+		expect(activeRootLinkBox).not.toBeNull();
+		expect(Math.abs((toggleIconBox?.x ?? 0) - (activeRootLinkBox?.x ?? 0))).toBeLessThan(2);
 	});
 
 	test('collapses the local tree in one action while preserving page context and reading position', async ({ page }) => {
