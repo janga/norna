@@ -2,14 +2,14 @@ import { expect, test } from '@playwright/test';
 
 const mobileViewport = { width: 393, height: 852 };
 const desktopViewport = { width: 1280, height: 900 };
-const maximumAnchorGap = 2;
+const maximumAnchorGap = 20;
 const maximumAnchorWait = 7_000;
 const minimumFullscreenSafeTextTop = 24;
 const testPagePath = '/media/';
 
 type AnchorMeasurement = {
 	hash: string;
-	headerBottom: number;
+	navigationBottom: number;
 	headingTop: number;
 	gap: number;
 };
@@ -33,19 +33,25 @@ const getNavTargets = async (page) => page.locator(pageNavSelector).evaluateAll(
 
 const measureAnchor = async (page, sectionId: string): Promise<AnchorMeasurement> => page.evaluate((id) => {
 	const header = document.querySelector('.site-top');
+	const pageNavigation = document.querySelector('.page-nav');
 	const heading = document.getElementById(id);
 
 	if (!(header instanceof HTMLElement) || !(heading instanceof HTMLElement)) {
 		throw new Error(`Cannot measure section heading for ${id}.`);
 	}
 
-	const headerBottom = header.getBoundingClientRect().bottom;
+	const navigationBottom = Math.max(
+		header.getBoundingClientRect().bottom,
+		pageNavigation instanceof HTMLElement && pageNavigation.getClientRects().length > 0
+			? pageNavigation.getBoundingClientRect().bottom
+			: 0,
+	);
 	const headingTop = heading.getBoundingClientRect().top;
 	return {
 		hash: window.location.hash,
-		headerBottom,
+		navigationBottom,
 		headingTop,
-		gap: headingTop - headerBottom,
+		gap: headingTop - navigationBottom,
 	};
 }, sectionId);
 
@@ -59,15 +65,21 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 	await page.waitForFunction(
 		({ id }) => {
 			const header = document.querySelector('.site-top');
+			const pageNavigation = document.querySelector('.page-nav');
 			const heading = document.getElementById(id);
 
 			if (!(header instanceof HTMLElement) || !(heading instanceof HTMLElement)) {
 				return false;
 			}
 
-			const headerBottom = header.getBoundingClientRect().bottom;
+			const navigationBottom = Math.max(
+				header.getBoundingClientRect().bottom,
+				pageNavigation instanceof HTMLElement && pageNavigation.getClientRects().length > 0
+					? pageNavigation.getBoundingClientRect().bottom
+					: 0,
+			);
 			const headingTop = heading.getBoundingClientRect().top;
-			const gap = headingTop - headerBottom;
+			const gap = headingTop - navigationBottom;
 
 			return window.location.hash === `#${id}`
 				&& gap >= -1

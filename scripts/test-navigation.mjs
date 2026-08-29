@@ -10,7 +10,7 @@ const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const cliArguments = process.argv.slice(2);
 const siteDirOptionIndex = cliArguments.indexOf('--site-dir');
 const configuredSiteDir = siteDirOptionIndex === -1
-	? path.join('examples', 'feature-demos', 'media-and-surfaces', 'site')
+	? path.join('fixtures', 'top-navigation', 'site')
 	: cliArguments[siteDirOptionIndex + 1];
 if (!configuredSiteDir || configuredSiteDir.startsWith('--')) {
 	throw new Error('Use --site-dir <path> to select a navigation test site.');
