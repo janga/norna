@@ -104,15 +104,6 @@ export const getHeadingNavigation = async (
 	});
 };
 
-export const getSectionNavigation = async (
-	markdown: string,
-	sourceLabel = 'Markdown',
-): Promise<SectionNavigation[]> => (
-	(await getHeadingNavigation(markdown, sourceLabel))
-		.filter((heading) => heading.depth === 2)
-		.map(({ id, title }) => ({ id, title }))
-);
-
 const stripImageProvenanceComments = (html: string) => html.replace(imageProvenanceCommentRegex, '');
 
 const prepareContentHtml = (html: string) =>

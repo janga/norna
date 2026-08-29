@@ -1,18 +1,5 @@
 import { isPlainObject, mergeDeep } from './object.mjs';
 
-export const typographyProfileNames = [
-	'restrained',
-	'dense',
-	'reading',
-	'statement',
-];
-
-export const typographyRhythmNames = [
-	'compact',
-	'normal',
-	'airy',
-];
-
 export const typographySizeNames = [
 	'small',
 	'medium',

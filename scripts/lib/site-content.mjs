@@ -5,7 +5,6 @@ import {
 	siteDir,
 	siteDirLabel,
 	homePageDirectory,
-	siteImagesLabel,
 	sitePagesDir,
 	sitePagesLabel,
 	sitewideContentLabel,
@@ -441,25 +440,6 @@ export const getImageFiles = async (directory) => {
 	}
 
 	return files;
-};
-
-export const getImageIndex = async (contentDir, fail, contentLabel = siteImagesLabel) => {
-	const imageFiles = await getImageFiles(contentDir);
-	const imagesByName = new Map();
-
-	for (const imagePath of imageFiles) {
-		const imageName = path.basename(imagePath);
-		const existingPath = imagesByName.get(imageName);
-
-		if (existingPath) {
-			fail(`Duplicate image filename "${imageName}" found at ${contentLabel}/${toPosixPath(path.relative(contentDir, existingPath))} and ${contentLabel}/${toPosixPath(path.relative(contentDir, imagePath))}. The filename is ambiguous within this page image root.`);
-			continue;
-		}
-
-		imagesByName.set(imageName, imagePath);
-	}
-
-	return imagesByName;
 };
 
 export const getImageCandidatesByName = async (contentDir) => {

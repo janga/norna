@@ -45,13 +45,6 @@ export const getGeneratedImage = (src: string) => readGeneratedImages()[src];
 
 const displaySrc = (src: string) => withBasePath(projectConfig.site.basePath, src);
 
-export const getLinkedImageSrc = (src: string) => {
-	const image = getGeneratedImage(src);
-	return displaySrc(image?.kind === 'static'
-		? image.src ?? src
-		: image?.variants?.at(-1)?.src ?? src);
-};
-
 const getDisplayVariants = (variants: NonNullable<GeneratedImage['variants']>) => {
 	const sortedVariants = [...variants].sort((a, b) => a.width - b.width);
 	const displayVariants = sortedVariants.filter((variant) => variant.width <= maxDisplayImageWidth);

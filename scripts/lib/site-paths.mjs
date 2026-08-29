@@ -100,7 +100,6 @@ const resolveSitePaths = () => {
 const resolvedSitePaths = resolveSitePaths();
 
 export const siteProjectRoot = resolvedSitePaths.siteProjectRoot;
-export const root = siteProjectRoot;
 export const siteDirectory = resolvedSitePaths.siteDirectory;
 
 if (!siteDirectory) {
@@ -137,7 +136,6 @@ export const originalImagesDir = path.join(astroPublicDir, 'images', 'original')
 export const generatedImagesManifestPath = path.join(siteStateDir, 'generated-images.json');
 
 export const engineRootLabel = getPathLabel(engineRoot);
-export const invocationRootLabel = getPathLabel(invocationRoot);
 export const siteProjectRootLabel = getPathLabel(siteProjectRoot);
 export const siteDirLabel = getPathLabel(siteDir);
 export const siteConfigLabel = getPathLabel(siteConfigPath);
