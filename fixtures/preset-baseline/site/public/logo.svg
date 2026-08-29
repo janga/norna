@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="title">
+  <title id="title">Preset baseline</title>
+  <path d="M0 0h16v32H0z" fill="#171717"/>
+  <path d="M16 0h16v32H16z" fill="#f2eee6"/>
+  <rect x="1" y="1" width="30" height="30" fill="none" stroke="#7a756d" stroke-width="2"/>
+  <path d="M8 24V8l16 16V8" fill="none" stroke="#c18c2f" stroke-width="3"/>
+</svg>

@@ -1,0 +1,8 @@
+banners:
+  - id: baseline-notice
+    tone: warning
+    title: Reference fixture
+    text: This notice exercises site-wide presentation without changing preset values.
+footer:
+  copyrightMessage: Norna preset baseline
+  buildInfo: false

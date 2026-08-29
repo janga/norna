@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Carousel frame two</title>
+  <desc id="desc">A blue-green panel with two overlapping circles.</desc>
+  <rect width="1200" height="700" fill="#17201d"/>
+  <circle cx="485" cy="350" r="210" fill="#38645a"/>
+  <circle cx="715" cy="350" r="210" fill="#d9dfda" opacity=".88"/>
+  <path d="M370 350h460" stroke="#f7f8f7" stroke-width="12" opacity=".65"/>
+</svg>

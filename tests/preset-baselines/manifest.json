@@ -1,0 +1,24 @@
+{
+  "colorModes": [
+    "light",
+    "dark"
+  ],
+  "note": "Reference images only; system-font rendering makes pixel-perfect cross-platform assertions unsuitable.",
+  "presets": [
+    "portfolio",
+    "documentation",
+    "project",
+    "statement"
+  ],
+  "route": "/guide/components/",
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 1000
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844
+    }
+  }
+}
