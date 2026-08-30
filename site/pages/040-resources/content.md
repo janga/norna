@@ -7,11 +7,13 @@ page:
 
 ## Documentation {#documentation}
 
-- [Getting Started](/getting-started/) introduces the normal path from installation to publishing.
+- [Install Norna](/getting-started/install-norna/) creates, previews, edits, and checks a first site.
+- [Grow Your Site](/getting-started/grow-your-site/) introduces sections, pages, navigation categories, and their navigation.
+- [Build And Publish](/getting-started/build-and-publish/) covers local builds and GitHub Pages publishing.
 - [Site files](https://github.com/janga/norna/blob/main/docs/site-files.md) lists required, optional, versioned, and generated paths.
 - [Content](https://github.com/janga/norna/blob/main/docs/content.md) defines headings, ids, notes, Norna blocks, and validation rules.
 - [Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md) explains managed images, generated variants, sync, and metadata.
-- [Pages](https://github.com/janga/norna/blob/main/docs/pages.md) defines directory names, ordering, URLs, nesting, and navigation.
+- [Pages and categories](https://github.com/janga/norna/blob/main/docs/pages.md) defines marker files, creation commands, directory names, ordering, URLs, nesting, and navigation.
 - [Theme presets and overrides](https://github.com/janga/norna/blob/main/docs/theme.md#theme-presets) compares intended uses, complete defaults, overrides, and page-theme scope.
 - [Reader Display controls](https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls) defines the optional color-mode, reading-width, and focus-reading choices.
 - [Typography](https://github.com/janga/norna/blob/main/docs/typography.md) defines profiles, rhythm, heading scales, body text, and captions.

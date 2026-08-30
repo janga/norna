@@ -9,7 +9,9 @@ integrates publishing with GitHub Pages only.
 ## Start Here
 
 - [Project README](https://raw.githubusercontent.com/janga/norna/main/README.md)
-- [Getting Started](https://janga.github.io/norna/getting-started/)
+- [Install Norna](https://janga.github.io/norna/getting-started/install-norna/)
+- [Grow Your Site](https://janga.github.io/norna/getting-started/grow-your-site/)
+- [Build And Publish](https://janga.github.io/norna/getting-started/build-and-publish/)
 - [Documentation map](https://raw.githubusercontent.com/janga/norna/main/docs/README.md)
 - [Site files](https://raw.githubusercontent.com/janga/norna/main/docs/site-files.md)
 - [Requirements and limitations](https://raw.githubusercontent.com/janga/norna/main/docs/requirements.md)
@@ -17,7 +19,7 @@ integrates publishing with GitHub Pages only.
 ## How-To And Explanation
 
 - [Content and managed blocks](https://raw.githubusercontent.com/janga/norna/main/docs/content.md)
-- [Pages](https://raw.githubusercontent.com/janga/norna/main/docs/pages.md)
+- [Pages and navigation categories](https://raw.githubusercontent.com/janga/norna/main/docs/pages.md)
 - [Theme presets and overrides](https://raw.githubusercontent.com/janga/norna/main/docs/theme.md)
 - [Images and generated metadata](https://raw.githubusercontent.com/janga/norna/main/docs/images-and-metadata.md)
 - [Local development](https://raw.githubusercontent.com/janga/norna/main/docs/local-development.md)
