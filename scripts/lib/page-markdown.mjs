@@ -13,6 +13,42 @@ const normalizeMarkdown = (source) => source.replace(/\r\n?/g, '\n');
 
 const hasContent = (source) => source.trim().length > 0;
 
+export const splitPageMarkdownSource = (source) => {
+	const normalizedSource = normalizeMarkdown(source);
+	const lines = normalizedSource.split('\n');
+	if (lines[0]?.trim() !== '---') {
+		return {
+			body: normalizedSource,
+			bodyOffset: 0,
+			frontmatter: '',
+			frontmatterUnclosed: false,
+			lineOffset: 0,
+		};
+	}
+
+	const closingIndex = lines.findIndex((line, index) => index > 0 && line.trim() === '---');
+	if (closingIndex < 0) {
+		return {
+			body: '',
+			bodyOffset: normalizedSource.length,
+			frontmatter: normalizedSource,
+			frontmatterUnclosed: true,
+			lineOffset: lines.length,
+		};
+	}
+
+	const frontmatterLines = lines.slice(0, closingIndex + 1);
+	const frontmatter = frontmatterLines.join('\n');
+	const bodyOffset = frontmatter.length + (closingIndex < lines.length - 1 ? 1 : 0);
+	return {
+		body: normalizedSource.slice(bodyOffset),
+		bodyOffset,
+		frontmatter,
+		frontmatterUnclosed: false,
+		lineOffset: closingIndex + 1,
+	};
+};
+
 const getPageStructureDiagnostics = ({ headings, pageHeadings, prelude }, lineOffset) => {
 	const diagnostics = [];
 
@@ -142,6 +178,7 @@ const createRegion = ({ heading, nextHeading, headings, source, label, lineOffse
 		headings: regionHeadings,
 		id: heading.id,
 		kind: heading.depth === 1 ? 'page-intro' : 'section',
+		bodyLine: heading.line,
 		line: lineOffset + heading.line,
 		managedImages: getNornaBlockImageReferences(blockResult.blocks),
 		markdown,
@@ -171,10 +208,11 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		lineOffset,
 		source,
 	}));
+	const headingIssues = getHeadingIdentifierIssues(headings);
 	const headingDiagnostics = getHeadingDiagnostics(headings, lineOffset);
 	const structureDiagnostics = getPageStructureDiagnostics({ headings, pageHeadings, prelude }, lineOffset);
 	const blockDiagnostics = regions.flatMap((region) => region.blockErrors.map((error) => ({
-		code: 'invalid-norna-block',
+		code: error.code ?? 'invalid-norna-block',
 		line: error.line,
 		message: error.message,
 		regionId: region.id,
@@ -210,6 +248,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 			...noteDiagnostics,
 		],
 		headings,
+		headingIssues,
 		intro: regions.find((region) => region.kind === 'page-intro') ?? null,
 		label,
 		lineOffset,
@@ -218,9 +257,26 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		navigationHeadings,
 		notes: regions.flatMap((region) => region.notes),
 		pageTitle: pageHeadings[0] ?? null,
+		pageHeadings,
 		prelude,
 		regions,
 		sections: regions.filter((region) => region.kind === 'section'),
 		source,
+	};
+};
+
+export const parsePageMarkdownSource = async (source, options = {}) => {
+	const split = splitPageMarkdownSource(source);
+	const model = await parsePageMarkdown(split.body, {
+		...options,
+		lineOffset: (options.lineOffset ?? 0) + split.lineOffset,
+	});
+
+	return {
+		...model,
+		bodyOffset: split.bodyOffset,
+		frontmatter: split.frontmatter,
+		frontmatterUnclosed: split.frontmatterUnclosed,
+		fullSource: normalizeMarkdown(source),
 	};
 };

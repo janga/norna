@@ -6,12 +6,12 @@ import {
 	typographyRhythms,
 } from './lib/typography.mjs';
 import {
-	getBodySections,
 	getContentFiles,
 	readSiteFile,
 	validateContentFrontmatterStructure,
 	validateFrontmatterIndentation,
 } from './lib/site-content.mjs';
+import { parsePageMarkdown } from './lib/page-markdown.mjs';
 import {
 	siteThemeLabel,
 } from './lib/site-paths.mjs';
@@ -202,8 +202,7 @@ const readPageTypography = async (contentFile, siteThemeTypography) => {
 	}
 
 	const pageTypography = siteThemeTypography;
-	const sections = (await getBodySections(body)).sections
-		.filter((section) => section.id)
+	const sections = (await parsePageMarkdown(body, { label: contentFile.contentLabel })).sections
 		.map((section) => {
 		return {
 			id: section.id,

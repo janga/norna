@@ -3,13 +3,6 @@ import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import path from 'node:path';
 import {
-	extractInlineNoteDiagnostics,
-	extractMarkdownImageReferences,
-	extractNornaMarkdownBlockDiagnostics,
-	getNornaBlockImageReferences,
-} from './lib/norna-markdown-blocks.mjs';
-import {
-	getBodySections,
 	getContentFiles,
 	getImageCandidatesByName,
 	getDeprecatedInlineStyleReferences,
@@ -20,8 +13,8 @@ import {
 	validateFrontmatterIndentation,
 	validateThemeYamlStructure,
 } from './lib/site-content.mjs';
-import { getHeadingIdentifierIssues } from './lib/heading-ids.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
+import { parsePageMarkdown } from './lib/page-markdown.mjs';
 import {
 	siteThemeLabel,
 	siteThemePath,
@@ -41,7 +34,7 @@ const addIssue = ({ severity, message, fix, sectionId, sectionLabel }) => {
 
 const hasErrors = () => issues.some((issue) => issue.severity === 'error');
 
-const formatSectionLabel = (contentFile, section) => `${contentFile.contentLabel} [${section.id ?? section.heading}]`;
+const formatSectionLabel = (contentFile, section) => `${contentFile.contentLabel} [${section.id ?? section.title}]`;
 
 const addContentIssue = (contentFile, issue) => addIssue({
 	...issue,
@@ -51,7 +44,7 @@ const addContentIssue = (contentFile, issue) => addIssue({
 
 const addSectionIssue = (contentFile, section, issue) => addIssue({
 	...issue,
-	sectionId: issue.sectionId ?? `${contentFile.contentLabel}:${section.id ?? section.heading}`,
+	sectionId: issue.sectionId ?? `${contentFile.contentLabel}:${section.id ?? section.title}`,
 	sectionLabel: issue.sectionLabel ?? formatSectionLabel(contentFile, section),
 });
 
@@ -386,8 +379,16 @@ for (const contentFile of contentFiles) {
 	validateFrontmatterIndentation(frontmatter, addIssue);
 	validateContentFrontmatterStructure(frontmatter, addIssue);
 
-	const { headings, pageHeadings, prelude, sections } = await getBodySections(body);
-	const headingIdentifierIssues = getHeadingIdentifierIssues(headings);
+	const page = await parsePageMarkdown(body, {
+		label: contentFile.contentLabel,
+		lineOffset: bodyLineOffset,
+	});
+	const {
+		headingIssues: headingIdentifierIssues,
+		pageHeadings,
+		prelude,
+		regions: sections,
+	} = page;
 	const invalidHeadingLines = new Set();
 	for (const issue of headingIdentifierIssues) {
 		invalidHeadingLines.add(issue.heading.line);
@@ -431,10 +432,10 @@ for (const contentFile of contentFiles) {
 		});
 	}
 
-	if (sections[0] && !sections[0].isPageTitle) {
+	if (sections[0] && sections[0].kind !== 'page-intro') {
 		addContentIssue(contentFile, {
 			severity: 'error',
-			message: `The first content heading is "${sections[0].heading}", but a Norna page must start with its H1 title.`,
+			message: `The first content heading is "${sections[0].title}", but a Norna page must start with its H1 title.`,
 			fix: 'Add the page title first, for example "# About".',
 		});
 	}
@@ -448,18 +449,18 @@ for (const contentFile of contentFiles) {
 	}
 
 	for (const section of sections) {
-		if (section.isPageTitle) {
+		if (section.kind === 'page-intro') {
 			if (
 				pageHeadings.length === 1
 				&& sections[0] === section
-				&& !invalidHeadingLines.has(section.line)
+				&& !invalidHeadingLines.has(section.bodyLine)
 			) {
 				validSections.add(section);
 			}
 			continue;
 		}
 
-		if (invalidHeadingLines.has(section.line) || !section.id) continue;
+		if (invalidHeadingLines.has(section.bodyLine) || !section.id) continue;
 
 		if (sectionsById.has(section.id)) {
 			addSectionIssue(contentFile, section, {
@@ -477,24 +478,17 @@ for (const contentFile of contentFiles) {
 	for (const section of sections) {
 		if (!validSections.has(section)) continue;
 
-		const blockResults = extractNornaMarkdownBlockDiagnostics(section.text, {
-			label: contentFile.contentLabel,
-			lineOffset: bodyLineOffset + section.line - 1,
-		});
+		const blockResults = { blocks: section.blocks, errors: section.blockErrors };
 		blockResultsBySection.set(section, blockResults);
 
-		const inlineNoteResults = extractInlineNoteDiagnostics(section.text, {
-			label: contentFile.contentLabel,
-			lineOffset: bodyLineOffset + section.line - 1,
-		});
-		for (const error of inlineNoteResults.errors) {
+		for (const error of section.noteErrors) {
 			addSectionIssue(contentFile, section, {
 				severity: 'error',
 				message: error.message,
 			});
 		}
 
-		for (const reference of getNornaBlockImageReferences(blockResults.blocks)) {
+		for (const reference of section.managedImages) {
 			const expectedPath = getExpectedImagePath(contentFile, reference.image);
 			addExpectedReference(globalExpectedReferencesByPath, expectedPath, { contentFile, section, reference });
 		}
@@ -529,8 +523,7 @@ for (const context of contentFileContexts) {
 	for (const section of sections) {
 		if (!validSections.has(section)) continue;
 
-		const markdownImages = extractMarkdownImageReferences(section.text);
-		for (const reference of markdownImages) {
+		for (const reference of section.markdownImages) {
 			addSectionIssue(contentFile, section, {
 				severity: 'warning',
 				message: `Markdown image "${reference.target}" references a local image that is not managed by Norna.`,
@@ -557,7 +550,7 @@ for (const context of contentFileContexts) {
 		}
 
 		const sourcePathsByImage = new Map();
-		for (const reference of getNornaBlockImageReferences(blocks)) {
+		for (const reference of section.managedImages) {
 			const sourcePath = await validateImageReference(
 				contentFile,
 				section,

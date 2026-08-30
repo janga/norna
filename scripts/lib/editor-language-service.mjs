@@ -2,14 +2,11 @@ import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { load } from 'js-yaml';
 import {
-	extractInlineNoteDiagnostics,
-	extractMarkdownImageReferences,
-	extractNornaMarkdownBlockDiagnostics,
-	getNornaBlockImageReferences,
+	getOpenMarkdownFenceAtLine,
 	nornaMarkdownBlockDefinitions,
 } from './norna-markdown-blocks.mjs';
 import { inspectPublicAssetFilenames, logoAssetFilenames } from './public-asset-conventions.mjs';
-import { getHeadingIdentifierIssues, getMarkdownHeadings } from './heading-ids.mjs';
+import { parsePageMarkdownSource } from './page-markdown.mjs';
 import { siteSchema } from './schema-definitions.mjs';
 
 const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.svg']);
@@ -128,32 +125,6 @@ const getPageContext = (siteRoot, documentPath) => {
 	};
 };
 
-const getOpenFenceAtLine = (source, lineIndex) => {
-	const lines = source.replace(/\r\n?/g, '\n').split('\n');
-	let open = null;
-
-	for (let index = 0; index <= Math.min(lineIndex, lines.length - 1); index += 1) {
-		const match = lines[index].match(/^ {0,3}(`{3,}|~{3,})([^\r\n]*)$/);
-		if (!match) continue;
-
-		if (!open) {
-			open = {
-				character: match[1][0],
-				length: match[1].length,
-				line: index,
-				type: match[2].trim().split(/\s+/)[0] ?? '',
-			};
-			continue;
-		}
-
-		if (match[1][0] === open.character && match[1].length >= open.length && !match[2].trim()) {
-			open = null;
-		}
-	}
-
-	return open;
-};
-
 const getBlockField = (definition, key, itemField = false) => (
 	itemField ? definition.item?.fields?.[key] : definition.options?.[key]
 );
@@ -185,7 +156,7 @@ const fieldCandidate = (key, fieldDefinition, options = {}) => ({
 
 export const getNornaBlockCompletionContext = ({ source, line }) => {
 	const lines = source.replace(/\r\n?/g, '\n').split('\n');
-	const fence = getOpenFenceAtLine(source, line);
+	const fence = getOpenMarkdownFenceAtLine(source, line);
 	const definition = fence ? nornaMarkdownBlockDefinitions[fence.type] : null;
 	if (!fence || !definition) return null;
 
@@ -249,7 +220,7 @@ export const getNornaBlockCompletionContext = ({ source, line }) => {
 
 export const getNornaBlockFieldContext = ({ source, line }) => {
 	const lines = source.replace(/\r\n?/g, '\n').split('\n');
-	const fence = getOpenFenceAtLine(source, line);
+	const fence = getOpenMarkdownFenceAtLine(source, line);
 	const definition = fence ? nornaMarkdownBlockDefinitions[fence.type] : null;
 	if (!fence || !definition) return null;
 	const currentLine = lines[line] ?? '';
@@ -328,8 +299,8 @@ const getReferencesByFilename = async (siteRoot) => {
 	const references = new Map();
 	for (const contentPath of await getContentFiles(siteRoot)) {
 		const source = await readFile(contentPath, 'utf8');
-		const { blocks } = extractNornaMarkdownBlockDiagnostics(source, { label: toPosixPath(path.relative(siteRoot, contentPath)) });
-		for (const reference of getNornaBlockImageReferences(blocks)) {
+		const page = await parsePageMarkdownSource(source, { label: toPosixPath(path.relative(siteRoot, contentPath)) });
+		for (const reference of page.managedImages) {
 			if (!references.has(reference.image)) references.set(reference.image, []);
 			references.get(reference.image).push(toPosixPath(path.relative(siteRoot, contentPath)));
 		}
@@ -364,7 +335,7 @@ export const getImageCompletionContext = async ({ documentPath, source, line }) 
 	if (!siteRoot) return null;
 	const page = getPageContext(siteRoot, documentPath);
 	if (!page) return null;
-	const fence = getOpenFenceAtLine(source, line);
+	const fence = getOpenMarkdownFenceAtLine(source, line);
 	if (!fence || !['norna-image-stack', 'norna-image-carousel', 'norna-card-list'].includes(fence.type)) return null;
 
 	const currentLine = source.replace(/\r\n?/g, '\n').split('\n')[line] ?? '';
@@ -417,35 +388,6 @@ export const getImageDefinitionContext = async ({ documentPath, source, line }) 
 	};
 };
 
-const getLineFromMessage = (message, fallback = 1) => {
-	const match = String(message).match(/\bline\s+(\d+)\b/i);
-	return match ? Number.parseInt(match[1], 10) : fallback;
-};
-
-const getImageReferenceLines = (source) => {
-	const lines = source.replace(/\r\n?/g, '\n').split('\n');
-	const references = [];
-	let fence = null;
-
-	for (const [index, line] of lines.entries()) {
-		const fenceMatch = line.match(/^ {0,3}(`{3,}|~{3,})([^\r\n]*)$/);
-		if (fenceMatch) {
-			if (!fence) {
-				fence = { character: fenceMatch[1][0], length: fenceMatch[1].length, type: fenceMatch[2].trim().split(/\s+/)[0] ?? '' };
-			} else if (fenceMatch[1][0] === fence.character && fenceMatch[1].length >= fence.length && !fenceMatch[2].trim()) {
-				fence = null;
-			}
-			continue;
-		}
-		if (!fence || !fence.type.startsWith('norna-')) continue;
-
-		const match = line.match(/^\s*(?:-\s+)?image:\s*([^\s#]+)\s*(?:#.*)?$/);
-		if (match) references.push({ filename: match[1].replace(/^['"]|['"]$/g, ''), line: index + 1 });
-	}
-
-	return references;
-};
-
 const getContentFrontmatterDiagnostics = (source) => {
 	const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
 	if (!match) {
@@ -475,112 +417,20 @@ const getContentFrontmatterDiagnostics = (source) => {
 	}));
 };
 
-const getMarkdownStructure = (source) => {
-	const lines = source.replace(/\r\n?/g, '\n').split('\n');
-	let bodyStart = 0;
-	if (lines[0]?.trim() === '---') {
-		const closingIndex = lines.findIndex((line, index) => index > 0 && line.trim() === '---');
-		if (closingIndex < 0) return { bodyStart: lines.length, headings: [], lines };
-		bodyStart = closingIndex + 1;
-	}
-
-	const headings = [];
-	let fence = null;
-	for (let index = bodyStart; index < lines.length; index += 1) {
-		const line = lines[index];
-		const fenceMatch = line.match(/^ {0,3}(`{3,}|~{3,})([^\r\n]*)$/);
-		if (fenceMatch) {
-			if (!fence) {
-				fence = { character: fenceMatch[1][0], length: fenceMatch[1].length };
-			} else if (
-				fenceMatch[1][0] === fence.character
-				&& fenceMatch[1].length >= fence.length
-				&& !fenceMatch[2].trim()
-			) {
-				fence = null;
-			}
-			continue;
-		}
-		if (fence) continue;
-
-		const match = line.match(/^(#{1,2})\s+(.+?)\s*$/);
-		if (match) headings.push({ level: match[1].length, line: index + 1, source: line });
-	}
-
-	return { bodyStart, headings, lines };
-};
-
-const getPageTitleDiagnostics = (structure) => {
-	const { bodyStart, headings, lines } = structure;
-	const pageHeadings = headings.filter((heading) => heading.level === 1);
-	const diagnostics = [];
-
-	if (pageHeadings.length === 0) {
-		diagnostics.push({
-			code: 'missing-page-title',
-			severity: 'error',
-			line: 1,
-			message: 'Norna pages require exactly one Markdown H1 page title, for example "# About".',
-		});
-	} else if (pageHeadings.length > 1) {
-		for (const heading of pageHeadings.slice(1)) {
-			diagnostics.push({
-				code: 'duplicate-page-title',
-				severity: 'error',
-				line: heading.line,
-				message: 'A Norna page can contain only one Markdown H1. Use a level 2 heading with an explicit id for a section.',
-			});
-		}
-	}
-
-	if (headings[0] && headings[0].level !== 1) {
-		diagnostics.push({
-			code: 'page-title-order',
-			severity: 'error',
-			line: headings[0].line,
-			message: 'The Markdown H1 page title must come before every level 2 section.',
-		});
-	}
-
-	const firstHeadingLineIndex = (headings[0]?.line ?? lines.length + 1) - 1;
-	if (lines.slice(bodyStart, firstHeadingLineIndex).some((line) => line.trim())) {
-		diagnostics.push({
-			code: 'page-title-order',
-			severity: 'error',
-			line: bodyStart + 1,
-			message: 'The Markdown H1 page title must be the first content after optional frontmatter.',
-		});
-	}
-
-	return diagnostics;
-};
-
 export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
-	const markdownStructure = getMarkdownStructure(source);
-	const { headings } = await getMarkdownHeadings(source);
+	const document = await parsePageMarkdownSource(source, { label: path.basename(documentPath) });
 	const diagnostics = [
 		...getContentFrontmatterDiagnostics(source),
-		...getPageTitleDiagnostics(markdownStructure),
-		...getHeadingIdentifierIssues(headings).map((issue) => ({
-			code: issue.code,
-			severity: 'error',
-			line: issue.heading.line,
-			message: `${issue.message} ${issue.fix}`,
+		...document.diagnostics.map((diagnostic) => ({
+			code: diagnostic.code,
+			severity: diagnostic.severity,
+			line: diagnostic.line,
+			message: diagnostic.fix
+				? `${diagnostic.message} ${diagnostic.fix}`
+				: diagnostic.message,
 		})),
 	];
-	const blockResult = extractNornaMarkdownBlockDiagnostics(source, { label: path.basename(documentPath) });
-	for (const error of blockResult.errors) {
-		diagnostics.push({
-			code: error.message.includes('but not closed') ? 'unclosed-norna-block' : 'invalid-norna-block',
-			severity: 'error',
-			line: getLineFromMessage(error.message, error.line),
-			message: error.message,
-		});
-	}
-	for (const error of extractInlineNoteDiagnostics(source, { label: path.basename(documentPath) }).errors) {
-		diagnostics.push({ severity: 'error', line: error.line ?? getLineFromMessage(error.message), message: error.message });
-	}
-	for (const reference of extractMarkdownImageReferences(source)) {
+	for (const reference of document.markdownImages) {
 		diagnostics.push({
 			code: 'local-markdown-image',
 			severity: 'warning',
@@ -590,21 +440,22 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 	}
 
 	const siteRoot = await findNornaSiteRoot(documentPath);
-	const page = siteRoot ? getPageContext(siteRoot, documentPath) : null;
-	if (!siteRoot || !page) return diagnostics;
+	const pageContext = siteRoot ? getPageContext(siteRoot, documentPath) : null;
+	if (!siteRoot || !pageContext) return diagnostics;
 
 	const index = await createSiteImageIndex(siteRoot);
-	for (const reference of getImageReferenceLines(source)) {
-		const expectedPath = path.join(page.imagesRoot, reference.filename);
+	for (const reference of document.managedImages) {
+		const filename = reference.image;
+		const expectedPath = path.join(pageContext.imagesRoot, filename);
 		if (await fileExists(expectedPath)) continue;
 
-		const candidates = index.filesByName.get(reference.filename) ?? [];
+		const candidates = index.filesByName.get(filename) ?? [];
 		if (candidates.length === 0) {
 			diagnostics.push({
 				code: 'missing-image',
 				severity: 'error',
 				line: reference.line,
-				message: `Image "${reference.filename}" was not found in this page's images folder or elsewhere in this Norna site.`,
+				message: `Image "${filename}" was not found in this page's images folder or elsewhere in this Norna site.`,
 			});
 			continue;
 		}
@@ -613,13 +464,13 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 				code: 'ambiguous-image',
 				severity: 'warning',
 				line: reference.line,
-				message: `Image "${reference.filename}" is ambiguous. Found: ${candidates.map((candidate) => toPosixPath(path.relative(siteRoot, candidate.absolutePath))).join(', ')}.`,
+				message: `Image "${filename}" is ambiguous. Found: ${candidates.map((candidate) => toPosixPath(path.relative(siteRoot, candidate.absolutePath))).join(', ')}.`,
 			});
 			continue;
 		}
 
 		const candidate = candidates[0];
-		const referencedBy = index.referencesByFilename.get(reference.filename) ?? [];
+		const referencedBy = index.referencesByFilename.get(filename) ?? [];
 		const currentRelativePath = toPosixPath(path.relative(siteRoot, documentPath));
 		const otherReferences = referencedBy.filter((contentPath) => contentPath !== currentRelativePath);
 		diagnostics.push({
@@ -631,8 +482,8 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 			severity: 'warning',
 			line: reference.line,
 			message: otherReferences.length > 0
-				? `Image "${reference.filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))} and is still referenced by ${otherReferences.join(', ')}. Norna cannot relocate it safely.`
-				: `Image "${reference.filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))}. Run "norna content:sync" to relocate it to this page's images folder.`,
+				? `Image "${filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))} and is still referenced by ${otherReferences.join(', ')}. Norna cannot relocate it safely.`
+				: `Image "${filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))}. Run "norna content:sync" to relocate it to this page's images folder.`,
 		});
 	}
 

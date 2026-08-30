@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { parsePageMarkdown } from './lib/page-markdown.mjs';
+import { parsePageMarkdown, parsePageMarkdownSource } from './lib/page-markdown.mjs';
 
 const source = `# Dog Shelter
 
@@ -63,8 +63,28 @@ const invalid = await parsePageMarkdown(`Before title.
 
 assert.deepEqual(
 	invalid.diagnostics.map(({ code }) => code),
-	['missing-page-title', 'page-title-order', 'page-title-order', 'invalid-norna-block'],
+	['missing-page-title', 'page-title-order', 'page-title-order', 'invalid-norna-block-start'],
 );
 assert.equal(invalid.diagnostics.at(-1)?.line, 5);
+
+const withFrontmatter = await parsePageMarkdownSource(`---
+page:
+  description: Example
+---
+# Frontmatter page
+
+## Section
+`);
+assert.equal(withFrontmatter.pageTitle?.title, 'Frontmatter page');
+assert.equal(withFrontmatter.intro?.line, 5);
+assert.equal(withFrontmatter.sections[0]?.line, 7);
+assert.equal(withFrontmatter.frontmatterUnclosed, false);
+
+const unclosedFrontmatter = await parsePageMarkdownSource(`---
+page:
+  description: Missing delimiter
+`);
+assert.equal(unclosedFrontmatter.frontmatterUnclosed, true);
+assert.equal(unclosedFrontmatter.pageTitle, null);
 
 console.log('Page Markdown model tests passed.');

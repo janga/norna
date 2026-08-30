@@ -203,6 +203,35 @@ const getFenceCloseInfo = (line, opening) => {
 	return fence;
 };
 
+export const getOpenMarkdownFenceAtLine = (markdown, lineIndex) => {
+	const lines = normalizeLines(markdown);
+	let open = null;
+
+	for (let index = 0; index <= Math.min(lineIndex, lines.length - 1); index += 1) {
+		const fence = getFenceInfo(lines[index]);
+		if (!fence || fence.length < 3) continue;
+
+		if (!open) {
+			open = {
+				character: fence.markerCharacter,
+				length: fence.length,
+				line: index,
+				type: fence.info.split(/\s+/)[0] ?? '',
+			};
+			continue;
+		}
+
+		if (getFenceCloseInfo(lines[index], {
+			length: open.length,
+			markerCharacter: open.character,
+		})) {
+			open = null;
+		}
+	}
+
+	return open;
+};
+
 const getNornaLineAttempt = (line) => {
 	const match = line.match(/^ {0,3}([`~]{0,2})(norna-[a-z0-9-]+)\s*$/);
 	if (!match) return null;
@@ -249,6 +278,7 @@ const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 			if (attempt) {
 				errors.push({
 					blockType: attempt.type,
+					code: 'invalid-norna-block-start',
 					line: lineNumber,
 					source: '',
 					message: failMessage(getNornaFenceStartMessage(attempt.type, attempt.marker), { ...options, line: lineNumber }),
@@ -264,6 +294,7 @@ const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 			if (attempt) {
 				errors.push({
 					blockType: attempt.type,
+					code: 'invalid-norna-block-start',
 					line: lineNumber,
 					source: '',
 					message: failMessage(getNornaFenceStartMessage(attempt.type, attempt.marker), { ...options, line: lineNumber }),
@@ -295,6 +326,7 @@ const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 			if (isNornaLike) {
 				errors.push({
 					blockType: type,
+					code: 'unclosed-norna-block',
 					endOffset: normalizedMarkdown.length,
 					line: lineNumber,
 					startOffset: lineOffsets[index],
@@ -322,6 +354,7 @@ const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 			} else {
 				errors.push({
 					blockType: type,
+					code: 'unknown-norna-block',
 					line: lineNumber,
 					source,
 					message: failMessage(getUnknownNornaBlockMessage(type), { ...options, line: lineNumber }),
@@ -351,7 +384,7 @@ const parseImageListBlock = (source, options = {}) => {
 		const lineNumber = (options.line ?? 1) + index;
 		const itemMatch = line.match(/^(\s*)-\s+image:\s*(.*?)\s*$/);
 		if (itemMatch) {
-			current = { image: decodeScalar(itemMatch[2]) };
+			current = { image: decodeScalar(itemMatch[2]), line: lineNumber };
 			images.push(current);
 			continue;
 		}
@@ -398,7 +431,7 @@ const parseCardListBlock = (source, options = {}) => {
 		const lineNumber = (options.line ?? 1) + index;
 		const itemMatch = line.match(/^(\s*)-\s+title:\s*(.*?)\s*$/);
 		if (itemMatch) {
-			current = { title: decodeScalar(itemMatch[2]) };
+			current = { title: decodeScalar(itemMatch[2]), line: lineNumber };
 			cards.push(current);
 			continue;
 		}
@@ -545,6 +578,7 @@ export const extractNornaMarkdownBlockDiagnostics = (markdown, options = {}) => 
 		} catch (error) {
 			errors.push({
 				blockType: block.blockType,
+				code: 'invalid-norna-block',
 				line: block.line,
 				source: block.source,
 				message: error instanceof Error ? error.message : String(error),
@@ -634,7 +668,7 @@ export const getNornaBlockImageReferences = (blocks) =>
 					alt: card.title,
 					blockType: block.blockType,
 					blockDisplayType: block.type,
-					line: block.line,
+					line: card.line ?? block.line,
 				}));
 		}
 
@@ -642,7 +676,7 @@ export const getNornaBlockImageReferences = (blocks) =>
 			...image,
 			blockType: block.blockType,
 			blockDisplayType: block.type,
-			line: block.line,
+			line: image.line ?? block.line,
 		}));
 	});
 

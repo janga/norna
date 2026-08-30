@@ -4,7 +4,6 @@ import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs
 import path from 'node:path';
 import { promisify } from 'node:util';
 import {
-	getBodySections,
 	getContentFiles,
 	readSiteFile,
 	rasterImageExtensions,
@@ -13,10 +12,7 @@ import {
 	toPosixPath,
 } from './lib/site-content.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
-import {
-	extractNornaMarkdownBlocks,
-	getNornaBlockImageReferences,
-} from './lib/norna-markdown-blocks.mjs';
+import { parsePageMarkdown } from './lib/page-markdown.mjs';
 import {
 	astroPublicDir,
 	generatedImagesDir,
@@ -105,18 +101,18 @@ const getImageSourceKey = (contentFile, image) => `pages/${contentFile.pageDirec
 
 const getReferencedImages = async (contentFile) => {
 	const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
-	const { sections } = await getBodySections(body);
+	const page = await parsePageMarkdown(body, { label: contentFile.contentLabel });
 	const references = [];
 
-	for (const section of sections) {
-		const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });
-		for (const { image, line, blockDisplayType } of getNornaBlockImageReferences(blocks)) {
+	for (const region of page.regions) {
+		if (region.blockErrors.length > 0) throw new Error(region.blockErrors[0].message);
+		for (const { image, line, blockDisplayType } of region.managedImages) {
 			references.push({
 				contentFile,
 				image,
 				line,
 				blockDisplayType,
-				sectionLabel: section.id ?? 'page title',
+				sectionLabel: region.id ?? 'page title',
 				sourceKey: getImageSourceKey(contentFile, image),
 			});
 		}
@@ -182,11 +178,11 @@ const validateCarouselOrientations = async (manifest) => {
 
 	for (const contentFile of contentFiles) {
 		const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
-		const { sections } = await getBodySections(body);
+		const page = await parsePageMarkdown(body, { label: contentFile.contentLabel });
 
-		for (const section of sections) {
-			const blocks = extractNornaMarkdownBlocks(section.text, { label: contentFile.contentLabel });
-			for (const block of blocks.filter((candidate) => candidate.type === 'image-carousel')) {
+		for (const region of page.regions) {
+			if (region.blockErrors.length > 0) throw new Error(region.blockErrors[0].message);
+			for (const block of region.blocks.filter((candidate) => candidate.type === 'image-carousel')) {
 				const orientations = new Set(
 					block.images
 						.map((image) => manifest[getImageSourceKey(contentFile, image.image)])
@@ -198,7 +194,7 @@ const validateCarouselOrientations = async (manifest) => {
 				orientations.delete('square');
 				if (orientations.size > 1) {
 					throw new Error(
-						`Carousel in ${section.id ? `section "${section.id}"` : 'the page introduction'} on line ${block.line} mixes landscape and portrait images. Use landscape images with optional square images, or portrait images with optional square images.`,
+						`Carousel in ${region.id ? `section "${region.id}"` : 'the page introduction'} on line ${block.line} mixes landscape and portrait images. Use landscape images with optional square images, or portrait images with optional square images.`,
 					);
 				}
 			}
