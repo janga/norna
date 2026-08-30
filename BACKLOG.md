@@ -57,6 +57,28 @@ approachable before wider use.
 Use this section for concrete engine behavior that should be implemented or
 verified.
 
+- Consolidate Markdown handling around one shared parsed page model for
+  headings, section ids, Norna blocks, notes, and managed image references.
+  Rendering, `content:check`, `content:sync`, and editor support should consume
+  that model through focused adapters. Remove the legacy Remark marker path
+  once equivalent behavior is covered by tests.
+- Refactor `content:sync` into a pure analysis and planning phase followed by a
+  small filesystem apply and reporting phase. Preserve conservative conflict
+  handling and the current simple rename behavior; do not add speculative
+  moves or an elaborate rollback system.
+- Define explicit CSS layout invariants for the text column, optional tree
+  navigation, headings, managed media, cards, carousels, and sidenotes. Use
+  those shared coordinates to remove selector-specific alignment fixes, then
+  split `src/styles/global.css` by responsibility without changing the approved
+  visual behavior.
+- Make `scripts/dev-local.mjs` platform-independent. Replace its direct use of
+  Unix tools such as `lsof` and `tail`, and define equivalent port cleanup,
+  process termination, and log-following behavior for macOS, Linux, and
+  Windows.
+- Split `scripts/test-content-model-v2.mjs` into focused test suites for page
+  structure, managed media, content synchronization, and Markdown constructs
+  such as notes and cards. Preserve the existing behavioral coverage and keep
+  the complete suites in the normal test and release chain.
 - Extend cross-page content sync if future section-bound metadata or assets
   need to move with an entire section. Such movement should happen only when
   source and destination are unambiguous. It should never guess, should not
