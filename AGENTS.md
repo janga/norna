@@ -9,6 +9,17 @@ maintainer, put it in `README.md` instead of duplicating it here.
 ## Working Rules
 
 - Keep changes small and focused.
+- Before changing documentation, schema or IntelliSense descriptions, UI help,
+  error-message guidance, or explanatory example text, read and follow
+  `docs/design/documentation-style-guide.md`. Treat public configuration keys,
+  values, commands, and Norna content-block names as product terminology, not
+  as self-explanatory English words.
+- Do not silently preserve or rename ambiguous public terminology while doing
+  an ordinary documentation edit. Explain the conflict to the user. When the
+  user explicitly invokes `$norna-terminology-review` or requests its
+  terminology-first workflow, follow the repo skill under
+  `.agents/skills/norna-terminology-review/` and stop for approval before
+  changing files.
 - When implementing a new feature, add or update a concrete item under
   `Documentation` in `BACKLOG.md` describing which reference documentation,
   introduction content, examples, and editor help may need to be updated. Log

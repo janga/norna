@@ -143,7 +143,10 @@ required, optional, convention-discovered, versioned, or generated.
 
 Start with [Engine Development](engine-development.md). Design documents live
 under [`docs/design/`](design/), and planned work is tracked in
-[BACKLOG.md](../BACKLOG.md).
+[BACKLOG.md](../BACKLOG.md). Follow the
+[Documentation Style Guide](design/documentation-style-guide.md) when naming or
+describing public concepts, configuration, commands, diagnostics, or editor
+help.
 
 ## AI-Readable Access
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Norna Terminology Review"
+  short_description: "Review public terms before implementation"
+  default_prompt: "Use $norna-terminology-review to review these Norna terms and present a documentation-shaped proposal before changing files."
+policy:
+  allow_implicit_invocation: false
