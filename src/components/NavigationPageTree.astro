@@ -1,12 +1,12 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
-import type { PageNavigationNode } from '../lib/siteNavigation';
-import type { SitePage } from '../lib/sitePages';
+import type { SiteNavigationNode } from '../lib/siteNavigation';
+import type { SiteNode, SitePage } from '../lib/sitePages';
 import PageContentsLinks from './PageContentsLinks.astro';
 
 interface Props {
-	nodes: PageNavigationNode[];
+	nodes: SiteNavigationNode[];
 	currentPage: SitePage;
 	variant: 'mobile' | 'sidebar' | 'submenu';
 	integratePageSections?: boolean;
@@ -14,64 +14,95 @@ interface Props {
 
 const { nodes, currentPage, variant, integratePageSections = false } = Astro.props;
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
-const hasBranch = (node: PageNavigationNode) => node.children.length > 0;
+const hasBranch = (node: SiteNavigationNode) => node.children.length > 0;
 const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
-const isCurrentBranch = (page: SitePage) => (
-	currentPage.pageDirectory === page.pageDirectory
-	|| currentPage.pageDirectory.startsWith(`${page.pageDirectory}/pages/`)
+const isCurrentBranch = (node: SiteNode) => (
+	currentPage.pageDirectory === node.pageDirectory
+	|| currentPage.pageDirectory.startsWith(`${node.pageDirectory}/pages/`)
 );
-const getBranchId = (page: SitePage) => [
+const getBranchId = (node: SiteNode) => [
 	'navigation',
 	variant,
-	page.pagePath || 'home',
+	node.pagePath || 'home',
 	'children',
 ].join('-').replace(/[^a-z0-9-]+/gi, '-');
-const hasPageSections = (node: PageNavigationNode) => node.headings.some((heading) => heading.depth === 2);
-const hasPageDisclosure = (node: PageNavigationNode) => hasBranch(node) || hasPageSections(node);
+const hasPageSections = (node: SiteNavigationNode) => (
+	node.node.kind === 'page' && node.headings.some((heading) => heading.depth === 2)
+);
+const hasPageDisclosure = (node: SiteNavigationNode) => hasBranch(node) || hasPageSections(node);
 ---
 
 <ul class:list={['navigation-page-tree', `navigation-page-tree-${variant}`]}>
 	{nodes.map((node) => (
 		<li
 			class:list={['navigation-page-node', {
-				'navigation-page-node-current': isCurrentPage(node.page),
-				'navigation-page-node-current-branch': isCurrentBranch(node.page),
+				'navigation-page-node-category': node.node.kind === 'category',
+				'navigation-page-node-current': node.node.kind === 'page' && isCurrentPage(node.node),
+				'navigation-page-node-current-branch': isCurrentBranch(node.node),
 			}]}
 		>
-			{variant !== 'submenu' && integratePageSections ? (
+			{node.node.kind === 'category' ? (
+				<details
+					class:list={[
+						'navigation-page-branch',
+						'navigation-page-disclosure',
+						'navigation-category-disclosure',
+						`navigation-page-disclosure-${variant}`,
+					]}
+					data-page-path={node.node.pagePath}
+					data-current-branch={isCurrentBranch(node.node) ? 'true' : undefined}
+					open={isCurrentBranch(node.node)}
+				>
+					<summary
+						class="navigation-page-summary"
+						aria-controls={getBranchId(node.node)}
+					>
+						<span class="navigation-page-summary-title">{node.node.title}</span>
+						<span class="navigation-page-chevron" aria-hidden="true"></span>
+					</summary>
+					<div id={getBranchId(node.node)} class="navigation-page-branch-content">
+						<Astro.self
+							nodes={node.children}
+							currentPage={currentPage}
+							variant={variant}
+							integratePageSections={integratePageSections}
+						/>
+					</div>
+				</details>
+			) : variant !== 'submenu' && integratePageSections ? (
 				hasPageDisclosure(node) ? (
 					<details
 						class:list={['navigation-page-branch', 'navigation-page-disclosure', `navigation-page-disclosure-${variant}`]}
-						data-page-path={node.page.pagePath || '/'}
-						data-current-branch={isCurrentBranch(node.page) ? 'true' : undefined}
-						data-current-page={isCurrentPage(node.page) ? 'true' : undefined}
+						data-page-path={node.node.pagePath || '/'}
+						data-current-branch={isCurrentBranch(node.node) ? 'true' : undefined}
+						data-current-page={isCurrentPage(node.node) ? 'true' : undefined}
 						data-has-sections={hasPageSections(node) ? 'true' : undefined}
-						open={isCurrentBranch(node.page)}
+						open={isCurrentBranch(node.node)}
 					>
 						<summary
 							class="navigation-page-summary"
-							aria-controls={getBranchId(node.page)}
+							aria-controls={getBranchId(node.node)}
 						>
-							<span class="navigation-page-summary-title">{node.page.title}</span>
+							<span class="navigation-page-summary-title">{node.node.title}</span>
 							<span class="navigation-page-chevron" aria-hidden="true"></span>
 						</summary>
 						<a
 							class:list={['navigation-page-open-link', { 'mobile-nav-destination': variant === 'mobile' }]}
-							href={pageHref(node.page)}
-							aria-current={isCurrentPage(node.page) ? 'page' : undefined}
+							href={pageHref(node.node)}
+							aria-current={isCurrentPage(node.node) ? 'page' : undefined}
 						>
-							{node.page.title}
+							{node.node.title}
 						</a>
-						<div id={getBranchId(node.page)} class="navigation-page-branch-content">
+						<div id={getBranchId(node.node)} class="navigation-page-branch-content">
 							{hasPageSections(node) && (
 								<nav
 									class="navigation-page-sections"
-									aria-label={`${projectConfig.locale.labels.pageNavigation}: ${node.page.title}`}
+									aria-label={`${projectConfig.locale.labels.pageNavigation}: ${node.node.title}`}
 								>
 									<PageContentsLinks
 										headings={node.headings}
 										variant={variant === 'mobile' ? 'mobile' : 'desktop'}
-										pageHref={isCurrentPage(node.page) ? undefined : pageHref(node.page)}
+										pageHref={isCurrentPage(node.node) ? undefined : pageHref(node.node)}
 									/>
 								</nav>
 							)}
@@ -88,25 +119,25 @@ const hasPageDisclosure = (node: PageNavigationNode) => hasBranch(node) || hasPa
 				) : (
 					<a
 						class:list={['navigation-page-link', { 'mobile-nav-destination': variant === 'mobile' }]}
-						href={pageHref(node.page)}
-						aria-current={isCurrentPage(node.page) ? 'page' : undefined}
+						href={pageHref(node.node)}
+						aria-current={isCurrentPage(node.node) ? 'page' : undefined}
 					>
-						{node.page.title}
+						{node.node.title}
 					</a>
 				)
 			) : variant !== 'submenu' ? (
 				<>
 					<a
 						class:list={['navigation-page-link', { 'mobile-nav-destination': variant === 'mobile' }]}
-						href={pageHref(node.page)}
-						aria-current={isCurrentPage(node.page) ? 'page' : undefined}
+						href={pageHref(node.node)}
+						aria-current={isCurrentPage(node.node) ? 'page' : undefined}
 					>
-						{node.page.title}
+						{node.node.title}
 					</a>
-					{variant === 'sidebar' && isCurrentPage(node.page) && hasPageSections(node) && (
+					{variant === 'sidebar' && isCurrentPage(node.node) && hasPageSections(node) && (
 						<nav
 							class="navigation-page-sections"
-							aria-label={`${projectConfig.locale.labels.pageNavigation}: ${node.page.title}`}
+							aria-label={`${projectConfig.locale.labels.pageNavigation}: ${node.node.title}`}
 						>
 							<PageContentsLinks
 								headings={node.headings}
@@ -117,17 +148,17 @@ const hasPageDisclosure = (node: PageNavigationNode) => hasBranch(node) || hasPa
 					{hasBranch(node) && (
 						<details
 							class="navigation-page-branch"
-							data-page-path={node.page.pagePath || '/'}
-							data-current-branch={isCurrentBranch(node.page) ? 'true' : undefined}
-							open={isCurrentBranch(node.page)}
+							data-page-path={node.node.pagePath || '/'}
+							data-current-branch={isCurrentBranch(node.node) ? 'true' : undefined}
+							open={isCurrentBranch(node.node)}
 						>
-							<summary aria-controls={getBranchId(node.page)}>
+							<summary aria-controls={getBranchId(node.node)}>
 								<span class="visually-hidden">
-									{projectConfig.locale.labels.navigationChildren}: {node.page.title}
+									{projectConfig.locale.labels.navigationChildren}: {node.node.title}
 								</span>
 								<span aria-hidden="true"></span>
 							</summary>
-							<div id={getBranchId(node.page)} class="navigation-page-branch-content">
+							<div id={getBranchId(node.node)} class="navigation-page-branch-content">
 								<Astro.self
 									nodes={node.children}
 									currentPage={currentPage}
@@ -142,10 +173,10 @@ const hasPageDisclosure = (node: PageNavigationNode) => hasBranch(node) || hasPa
 				<>
 					<a
 						class="navigation-page-link"
-						href={pageHref(node.page)}
-						aria-current={isCurrentPage(node.page) ? 'page' : undefined}
+						href={pageHref(node.node)}
+						aria-current={isCurrentPage(node.node) ? 'page' : undefined}
 					>
-						{node.page.title}
+						{node.node.title}
 					</a>
 					{node.children.length > 0 && (
 						<Astro.self nodes={node.children} currentPage={currentPage} variant={variant} />

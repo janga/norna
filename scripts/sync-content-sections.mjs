@@ -3,7 +3,6 @@ import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import path from 'node:path';
 import {
-	getContentFiles,
 	getImageCandidatesByName,
 	getDeprecatedInlineStyleReferences,
 	readSiteFile,
@@ -13,6 +12,7 @@ import {
 	validateFrontmatterIndentation,
 	validateThemeYamlStructure,
 } from './lib/site-content.mjs';
+import { getSiteStructure } from './lib/site-structure.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import { parsePageMarkdown } from './lib/page-markdown.mjs';
 import {
@@ -367,7 +367,16 @@ try {
 	}
 }
 
-const contentFiles = await getContentFiles();
+const siteStructure = await getSiteStructure();
+const contentFiles = siteStructure.contentFiles;
+for (const warning of siteStructure.warnings) {
+	addIssue({
+		severity: 'warning',
+		message: warning.message,
+		sectionId: warning.label,
+		sectionLabel: warning.label,
+	});
+}
 const allImageFiles = [];
 const contentFileContexts = [];
 const globalImageCandidatesByName = new Map();

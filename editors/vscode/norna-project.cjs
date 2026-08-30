@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const supportedSchemaVersion = 2;
+const supportedSchemaVersion = 3;
 const supportedEditorApiVersion = 1;
 const homePageDirectory = '000-home';
 const pageDirectoryPattern = /^(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
@@ -93,13 +93,18 @@ const classifyDocument = (siteRoot, documentPath) => {
 	const rootFile = rootFiles.get(relativePath);
 	if (rootFile) return { ...rootFile, relativePath, pageDirectory: null };
 
-	const pageMatch = relativePath.match(/^pages\/(.+)\/(content\.md|theme\.yaml)$/);
+	const pageMatch = relativePath.match(/^pages\/(.+)\/(category\.yaml|content\.md|theme\.yaml)$/);
 	if (!pageMatch || !isPageDirectoryPath(pageMatch[1])) return null;
+	const schemaKind = pageMatch[2] === 'category.yaml'
+		? 'category'
+		: pageMatch[2] === 'content.md'
+			? 'contentFrontmatter'
+			: 'pageTheme';
 	return {
 		documentKind: pageMatch[2] === 'content.md' ? 'content' : 'yaml',
 		relativePath,
 		pageDirectory: pageMatch[1],
-		schemaKind: pageMatch[2] === 'content.md' ? 'contentFrontmatter' : 'pageTheme',
+		schemaKind,
 	};
 };
 

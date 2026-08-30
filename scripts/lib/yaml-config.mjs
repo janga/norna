@@ -1,7 +1,7 @@
 import { load } from 'js-yaml';
 import {
-	validateFrontmatterIndentation,
-} from './site-content.mjs';
+	validateYamlIndentation,
+} from './yaml-indentation.mjs';
 
 const getValueAtPath = (data, path) => path.reduce(
 	(value, key) => value?.[key],
@@ -49,7 +49,7 @@ export const parseYamlConfig = (source, label, {
 } = {}) => {
 	const issues = [];
 
-	validateFrontmatterIndentation(source, (issue) => issues.push(issue));
+	validateYamlIndentation(source, (issue) => issues.push(issue));
 	validateStructure?.(source, (issue) => issues.push(issue));
 
 	if (issues.length > 0) {

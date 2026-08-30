@@ -228,8 +228,13 @@ const sitewideShape = {
 	footer: sitewideFooter.optional().describe('Site-wide footer content.'),
 };
 
+const categoryShape = {
+	label: z.string().trim().min(1).describe('Navigation label for this non-routable page category.'),
+};
+
 export const schemaTopLevelKeys = Object.freeze({
 	config: Object.freeze(Object.keys(configShape)),
+	category: Object.freeze(Object.keys(categoryShape)),
 	content: Object.freeze(Object.keys(siteShape)),
 	sitewide: Object.freeze(Object.keys(sitewideShape)),
 	theme: Object.freeze(Object.keys(themeVisualShape)),
@@ -238,6 +243,8 @@ export const schemaTopLevelKeys = Object.freeze({
 
 export const configSchema = z.object(configShape).strict()
 	.describe('Technical settings for one Norna site. Additional pages cannot provide technical configuration.');
+export const categorySchema = z.object(categoryShape).strict()
+	.describe('A non-routable navigation category containing child pages.');
 export const siteSchema = z.object(siteShape).strict()
 	.describe('Frontmatter for a homepage or additional page content.md file.');
 export const themeVisualSchema = z.object(themeVisualShape).strict()

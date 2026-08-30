@@ -21,6 +21,7 @@ test.describe('desktop tree navigation', () => {
 		const localNavigation = page.locator('.tree-local-navigation');
 		await expect(localNavigation).toBeVisible();
 		await expect(localNavigation.locator('.navigation-page-tree-sidebar').first()).toContainText('Guides');
+		await expect(localNavigation.locator('details[data-page-path="guides"] > .navigation-page-open-link')).toHaveCount(0);
 		await expect(localNavigation.locator('details[data-page-path="guides/installation"] > summary')).toHaveText('Installation');
 		await expect(localNavigation.locator('details[data-page-path="guides/workflows"] > summary')).toHaveText('Workflows');
 		const currentPageDisclosure = localNavigation.locator('details[data-page-path="guides/installation/macos"]');
@@ -139,22 +140,15 @@ test.describe('desktop tree navigation', () => {
 		expect(Math.abs((headingTopAfter ?? 0) - (headingTopBefore ?? 0))).toBeLessThan(2);
 	});
 
-	test('keeps the breadcrumb slot stable from a top-level page to a child page', async ({ page }) => {
-		await page.goto('/guides/', { waitUntil: 'networkidle' });
-		await expect(page.locator('.site-breadcrumbs')).toHaveCount(1);
-		await expect(page.locator('.site-breadcrumbs li')).toHaveCount(0);
-		const headingTopBefore = (await page.getByRole('heading', { level: 1, name: 'Guides' }).boundingBox())?.y;
-		const installationBranch = page.locator('.tree-local-navigation details[data-page-path="guides/installation"]');
-		await installationBranch.locator(':scope > summary').click();
-		await expect(page).toHaveURL(/\/guides\/$/);
-		await installationBranch.getByRole('link', { name: 'Installation', exact: true }).click();
-
-		await expect(page).toHaveURL(/\/guides\/installation\/$/);
-		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Guides', 'Installation']);
-		const headingTopAfter = (await page.getByRole('heading', { level: 1, name: 'Installation' }).boundingBox())?.y;
-		expect(headingTopBefore).toBeDefined();
-		expect(headingTopAfter).toBeDefined();
-		expect(Math.abs((headingTopAfter ?? 0) - (headingTopBefore ?? 0))).toBeLessThan(2);
+	test('renders categories as unlinked labels while preserving descendant URLs', async ({ page }) => {
+		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
+		const category = page.locator('.tree-local-navigation details[data-page-path="guides"]');
+		await expect(category.locator(':scope > summary')).toHaveText('Guides');
+		await expect(category.getByRole('link', { name: 'Guides', exact: true })).toHaveCount(0);
+		await expect(page.locator('.site-breadcrumbs li').first()).toHaveText('Guides');
+		await expect(page.locator('.site-breadcrumbs li').first().locator('a')).toHaveCount(0);
+		await expect(page.locator('.site-nav').getByRole('link', { name: 'Guides', exact: true }))
+			.toHaveAttribute('href', '/guides/installation/');
 	});
 
 	test('aligns breadcrumbs with the current page text width', async ({ page }) => {
@@ -181,7 +175,7 @@ test.describe('desktop tree navigation', () => {
 	});
 
 	test('keeps the local navigation stable when the destination has no page sections', async ({ page }) => {
-		await page.goto('/guides/#guide-overview', { waitUntil: 'networkidle' });
+		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 		const localNavigationTopBefore = (await page.locator('.tree-local-navigation').boundingBox())?.y;
 
 		await page.locator('.tree-local-navigation').getByRole('link', { name: 'Release notes', exact: true }).click();

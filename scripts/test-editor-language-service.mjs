@@ -21,6 +21,7 @@ const siteRoot = path.join(root, 'site');
 const homeContentPath = path.join(siteRoot, 'pages', '000-home', 'content.md');
 const pageContentPath = path.join(siteRoot, 'pages', '010-about', 'content.md');
 const pageThemePath = path.join(siteRoot, 'pages', '010-about', 'theme.yaml');
+const categoryPath = path.join(siteRoot, 'pages', '020-guides', 'category.yaml');
 const nestedPageContentPath = path.join(siteRoot, 'pages', '010-about', 'pages', '020-team', 'content.md');
 const nestedPageThemePath = path.join(siteRoot, 'pages', '010-about', 'pages', '020-team', 'theme.yaml');
 const installedNornaRoot = path.join(root, 'node_modules', '@janga', 'norna');
@@ -72,6 +73,7 @@ try {
 	await writeFile(packageManifestPath, JSON.stringify({
 		editorApiVersion: supportedEditorApiVersion,
 		files: {
+			category: 'category.schema.json',
 			config: 'config.schema.json',
 			contentFrontmatter: 'content-frontmatter.schema.json',
 			pageTheme: 'page-theme.schema.json',
@@ -96,6 +98,8 @@ try {
 	await writeFile(homeContentPath, homeSource);
 	await writeFile(pageContentPath, pageSource);
 	await writeFile(pageThemePath, 'layout:\n  textWidth: wide\n');
+	await mkdir(path.dirname(categoryPath), { recursive: true });
+	await writeFile(categoryPath, 'label: Guides\n');
 	await writeFile(nestedPageContentPath, pageSource.replace('# About', '# Team'));
 	await writeFile(nestedPageThemePath, 'layout:\n  contentSpacing: compact\n');
 
@@ -108,6 +112,7 @@ try {
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'sitewide-content.yaml')).schemaKind, 'sitewideContent');
 	assert.equal(getNornaDocumentContext(pageContentPath).pageDirectory, '010-about');
 	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'pageTheme');
+	assert.equal(getNornaDocumentContext(categoryPath).schemaKind, 'category');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).pageDirectory, '010-about/pages/020-team');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).schemaKind, 'contentFrontmatter');
 	assert.equal(getNornaDocumentContext(nestedPageThemePath).schemaKind, 'pageTheme');

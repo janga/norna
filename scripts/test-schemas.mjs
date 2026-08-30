@@ -8,6 +8,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
 const expectedDocumentationRef = `v${packageJson.version}`;
 const filenames = [
+	'category.schema.json',
 	'config.schema.json',
 	'theme.schema.json',
 	'page-theme.schema.json',
@@ -15,6 +16,7 @@ const filenames = [
 	'content-frontmatter.schema.json',
 ];
 const requiredRichHelp = {
+	'category.schema.json': ['label'],
 	'config.schema.json': ['url', 'language', 'navigation', 'scrollBehavior'],
 	'theme.schema.json': ['preset', 'colorMode', 'readerControls', 'corners', 'layout', 'images', 'typography', 'palette', 'sections'],
 	'page-theme.schema.json': ['layout', 'images', 'sections'],
@@ -23,7 +25,8 @@ const requiredRichHelp = {
 };
 const manifest = JSON.parse(await readFile(path.join(root, 'schemas', 'manifest.json'), 'utf8'));
 assert.equal(manifest.editorApiVersion, 1);
-assert.equal(manifest.schemaVersion, 2);
+assert.equal(manifest.schemaVersion, 3);
+assert.equal(manifest.files.category, 'category.schema.json');
 assert.equal(manifest.files.pageTheme, 'page-theme.schema.json');
 
 const githubHeadingAnchor = (heading) => heading
@@ -109,6 +112,12 @@ const config = JSON.parse(await readFile(path.join(root, 'schemas', 'config.sche
 assert.equal(config.properties.language.default, 'en');
 assert.deepEqual(config.properties.language.examples, ['en', 'sv', 'en-GB', 'sv-SE']);
 assert.equal(config.properties.scrollBehavior.default, 'instant');
+
+const category = JSON.parse(await readFile(path.join(root, 'schemas', 'category.schema.json'), 'utf8'));
+assert.deepEqual(Object.keys(category.properties), ['label']);
+assert.deepEqual(category.required, ['label']);
+assert.match(category.markdownDescription, /creates a navigation-only group/);
+assert.match(category.markdownDescription, /produces no URL of its own/);
 
 const sitewide = JSON.parse(await readFile(path.join(root, 'schemas', 'sitewide-content.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(sitewide.properties.logo.properties), ['height']);

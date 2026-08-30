@@ -62,7 +62,7 @@
       },
       "additionalProperties": false,
       "description": "Page-local layout settings inherited by descendant pages.",
-      "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nAdjusts body-text line length and vertical content spacing for this page and its descendants.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
+      "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nAdjusts body-text line length and vertical content spacing for pages below this directory.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
     },
     "images": {
       "type": "object",
@@ -146,7 +146,7 @@
       },
       "additionalProperties": false,
       "description": "Optional defaults for managed image presentation.",
-      "markdownDescription": "```yaml\nimages:\n  width: 900px\n```\n\nAdjusts managed-image sizing for this page and its descendants.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
+      "markdownDescription": "```yaml\nimages:\n  width: 900px\n```\n\nAdjusts managed-image sizing for pages below this directory.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
     },
     "sections": {
       "type": "object",
@@ -181,12 +181,12 @@
       },
       "additionalProperties": false,
       "description": "Page-local section presentation inherited by descendant pages.",
-      "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nAdjusts the H2 section background pattern for this page and its descendants. Alternating and accented create full-width bands but are invalid when navigation resolves to tree.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
+      "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nAdjusts the H2 section background pattern for pages below this directory. Alternating and accented create full-width bands but are invalid when navigation resolves to tree.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
     }
   },
   "additionalProperties": false,
   "description": "Limited page presentation overrides inherited by descendant pages. Site colors, corners, typography and navigation remain global.",
   "$id": "https://janga.github.io/norna/schemas/page-theme.schema.json",
   "title": "Norna page theme",
-  "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nA page theme may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners and typography stay consistent.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
+  "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nA limited theme in a page or category directory may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners and typography stay consistent.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
 }

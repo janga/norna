@@ -4,8 +4,13 @@ import PanelLeftOpen from '@lucide/astro/icons/panel-left-open';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
-import { getListedPageNavigationTree, type PageNavigationEntry } from '../lib/siteNavigation';
-import type { SitePage } from '../lib/sitePages';
+import {
+	getFirstPageInNavigationNode,
+	getListedSiteNavigationTree,
+	type SiteNavigationEntry,
+	type SiteNavigationNode,
+} from '../lib/siteNavigation';
+import type { SiteNode, SitePage } from '../lib/sitePages';
 import DisplaySettings from './DisplaySettings.astro';
 import NavigationPageTree from './NavigationPageTree.astro';
 import SectionNavigationScript from './SectionNavigationScript.astro';
@@ -22,7 +27,7 @@ interface Props {
 		height?: string;
 	};
 	currentPage: SitePage;
-	pageNavigation: PageNavigationEntry[];
+	navigationEntries: SiteNavigationEntry[];
 	navigationMode: 'sections' | 'top' | 'tree';
 	frameColors: FrameColors;
 	readerPreferences: {
@@ -39,7 +44,7 @@ interface Props {
 	};
 }
 
-const { logo, currentPage, pageNavigation, navigationMode, frameColors, readerPreferences } = Astro.props;
+const { logo, currentPage, navigationEntries, navigationMode, frameColors, readerPreferences } = Astro.props;
 const siteTopBackgroundColor = frameColors.backgroundColor === 'transparent'
 	? 'var(--color-page)'
 	: frameColors.backgroundColor;
@@ -48,16 +53,17 @@ const navigationStyle = [
 	`--site-top-text-color: ${frameColors.textColor}`,
 	...(logo?.height ? [`--site-brand-logo-height: ${logo.height}`] : []),
 ].join('; ');
-const siteNavigationPages = pageNavigation.filter(({ page }) => page.isHome || page.navigation.listed);
-const siteNavigationTree = getListedPageNavigationTree(pageNavigation);
+const siteNavigationTree = getListedSiteNavigationTree(navigationEntries);
 const topLevelNavigation = siteNavigationTree;
-const showSiteNavigation = siteNavigationPages.some(({ page }) => !page.isHome);
-const homePage = pageNavigation.find(({ page }) => page.isHome)?.page ?? currentPage;
-const currentPageNavigation = pageNavigation.find(({ page }) => page.pathname === currentPage.pathname);
+const showSiteNavigation = topLevelNavigation.some(({ node }) => !node.isHome);
+const homeNode = navigationEntries.find(({ node }) => node.isHome)?.node;
+const homePage = homeNode?.kind === 'page' ? homeNode : currentPage;
+const currentPageNavigation = navigationEntries.find(({ node }) => node.kind === 'page' && node.pathname === currentPage.pathname);
 const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
-const isCurrentBranch = (page: SitePage) => currentPage.pageDirectory === page.pageDirectory
-	|| currentPage.pageDirectory.startsWith(`${page.pageDirectory}/pages/`);
+const isCurrentBranch = (node: SiteNode) => currentPage.pageDirectory === node.pageDirectory
+	|| currentPage.pageDirectory.startsWith(`${node.pageDirectory}/pages/`);
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
+const getNavigationPage = (node: SiteNavigationNode) => getFirstPageInNavigationNode(node);
 const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
 const showSinglePageTopLink = !showSiteNavigation;
 const currentPageSectionCount = currentPageNavigation?.sections.length ?? 0;
@@ -133,23 +139,28 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 				{showSiteNavigation && (
 					<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 					<ul>
-					{topLevelNavigation.map((node) => (
-						<li class:list={['site-nav-item', {
-							'site-nav-item-has-submenu': navigationMode !== 'tree' && node.children.length > 0,
-							'site-nav-item-current-branch': !isCurrentPage(node.page) && isCurrentBranch(node.page),
-						}]}>
-							<a href={pageHref(node.page)} aria-current={isCurrentPage(node.page) ? 'page' : undefined}>
-								{node.page.title}
-							</a>
-							{navigationMode !== 'tree' && node.children.length > 0 && (
-								<div class="site-nav-submenu">
-									<nav aria-label={`${node.page.title} ${projectConfig.locale.labels.siteNavigation}`}>
-										<NavigationPageTree nodes={[node]} currentPage={currentPage} variant="submenu" />
-									</nav>
+					{topLevelNavigation.map((navigationNode) => {
+						const destination = getNavigationPage(navigationNode);
+						if (!destination) return null;
+						const nodeIsCurrentPage = navigationNode.node.kind === 'page' && isCurrentPage(navigationNode.node);
+						return (
+							<li class:list={['site-nav-item', {
+								'site-nav-item-has-submenu': navigationMode !== 'tree' && navigationNode.children.length > 0,
+								'site-nav-item-current-branch': !nodeIsCurrentPage && isCurrentBranch(navigationNode.node),
+							}]}>
+								<a href={pageHref(destination)} aria-current={nodeIsCurrentPage ? 'page' : undefined}>
+									{navigationNode.node.title}
+								</a>
+								{navigationMode !== 'tree' && navigationNode.children.length > 0 && (
+									<div class="site-nav-submenu">
+										<nav aria-label={`${navigationNode.node.title} ${projectConfig.locale.labels.siteNavigation}`}>
+											<NavigationPageTree nodes={[navigationNode]} currentPage={currentPage} variant="submenu" />
+										</nav>
 									</div>
 								)}
 							</li>
-						))}
+						);
+					})}
 					</ul>
 					</nav>
 				)}

@@ -1,30 +1,30 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
-import { withBasePath } from '../lib/basePath';
-import { getListedPageNavigationTree, type PageNavigationEntry } from '../lib/siteNavigation';
+import { getListedSiteNavigationTree, type SiteNavigationEntry } from '../lib/siteNavigation';
 import type { SitePage } from '../lib/sitePages';
 import NavigationPageTree from './NavigationPageTree.astro';
 
 interface Props {
 	currentPage: SitePage;
-	pageNavigation: PageNavigationEntry[];
+	navigationEntries: SiteNavigationEntry[];
 }
 
-const { currentPage, pageNavigation } = Astro.props;
-const roots = getListedPageNavigationTree(pageNavigation);
+const { currentPage, navigationEntries } = Astro.props;
+const roots = getListedSiteNavigationTree(navigationEntries);
 const activeRoot = roots.find((node) => (
-	currentPage.pageDirectory === node.page.pageDirectory
-	|| currentPage.pageDirectory.startsWith(`${node.page.pageDirectory}/pages/`)
+	currentPage.pageDirectory === node.node.pageDirectory
+	|| currentPage.pageDirectory.startsWith(`${node.node.pageDirectory}/pages/`)
 ));
+const navigationRoot = activeRoot?.node.pagePath ? `/${activeRoot.node.pagePath}/` : '/';
 ---
 
 {activeRoot && (
 	<aside
 		id="tree-local-navigation"
 		class="tree-local-navigation"
-		data-navigation-root={withBasePath(projectConfig.site.basePath, activeRoot.page.pathname)}
+		data-navigation-root={navigationRoot}
 	>
-		<nav aria-label={`${activeRoot.page.title}: ${projectConfig.locale.labels.siteNavigation}`}>
+		<nav aria-label={`${activeRoot.node.title}: ${projectConfig.locale.labels.siteNavigation}`}>
 			<NavigationPageTree
 				nodes={[activeRoot]}
 				currentPage={currentPage}

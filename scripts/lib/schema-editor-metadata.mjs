@@ -416,19 +416,19 @@ const addThemeHelp = (jsonSchema) => {
 const addPageThemeHelp = (jsonSchema) => {
 	jsonSchema.markdownDescription = [
 		yamlExample('layout:\n  textWidth: narrow\n  contentSpacing: compact'),
-		'A page theme may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners and typography stay consistent.',
+		'A limited theme in a page or category directory may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners and typography stay consistent.',
 		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
 	].join('\n\n');
 	addHelp(jsonSchema, 'layout', [
 		yamlExample('layout:\n  textWidth: narrow\n  contentSpacing: compact'),
-		'Adjusts body-text line length and vertical content spacing for this page and its descendants.',
+		'Adjusts body-text line length and vertical content spacing for pages below this directory.',
 		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
 	]);
 	addFieldHelp(jsonSchema, 'layout.textWidth', 'layout:\n  textWidth: narrow', 'theme.md', 'page-themes', ['narrow', 'normal', 'wide']);
 	addFieldHelp(jsonSchema, 'layout.contentSpacing', 'layout:\n  contentSpacing: compact', 'theme.md', 'page-themes', ['compact', 'normal', 'spacious']);
 	addHelp(jsonSchema, 'images', [
 		yamlExample('images:\n  width: 900px'),
-		'Adjusts managed-image sizing for this page and its descendants.',
+		'Adjusts managed-image sizing for pages below this directory.',
 		documentationLink('Image sizing reference', 'theme.md', 'image-sizing'),
 	]);
 	const imageFields = [
@@ -445,7 +445,7 @@ const addPageThemeHelp = (jsonSchema) => {
 	}
 	addHelp(jsonSchema, 'sections', [
 		yamlExample('sections:\n  backgroundPattern: alternating'),
-		'Adjusts the H2 section background pattern for this page and its descendants. Alternating and accented create full-width bands but are invalid when navigation resolves to tree.',
+		'Adjusts the H2 section background pattern for pages below this directory. Alternating and accented create full-width bands but are invalid when navigation resolves to tree.',
 		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
 	]);
 	addFieldHelp(jsonSchema, 'sections.backgroundPattern', 'sections:\n  backgroundPattern: alternating', 'theme.md', 'page-themes', ['uniform', 'alternating', 'accented']);
@@ -543,8 +543,22 @@ const addContentHelp = (jsonSchema) => {
 	addFieldHelp(jsonSchema, 'navigation.listed', 'navigation:\n  listed: false', 'pages.md', 'navigation', [true, false]);
 };
 
+const addCategoryHelp = (jsonSchema) => {
+	jsonSchema.markdownDescription = [
+		yamlExample('label: Guides'),
+		'`category.yaml` creates a navigation-only group for child pages. It has no page content and produces no URL of its own.',
+		documentationLink('Navigation category reference', 'pages.md', 'navigation-categories'),
+	].join('\n\n');
+	addHelp(jsonSchema, 'label', [
+		yamlExample('label: Guides'),
+		'The category label shown in global navigation, tree navigation, mobile navigation, and breadcrumbs.',
+		documentationLink('Navigation category reference', 'pages.md', 'navigation-categories'),
+	]);
+};
+
 export const applySchemaEditorMetadata = (filename, jsonSchema) => {
 	addValueDescriptions(jsonSchema);
+	if (filename === 'category.schema.json') addCategoryHelp(jsonSchema);
 	if (filename === 'config.schema.json') {
 		addLanguageSuggestions(jsonSchema);
 		addConfigHelp(jsonSchema);

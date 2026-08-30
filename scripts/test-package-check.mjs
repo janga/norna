@@ -178,12 +178,14 @@ const assertPackageContents = async (packageRoot) => {
 		'bin/norna-cli.mjs',
 		'bin/norna.mjs',
 		'package.json',
+		'schemas/category.schema.json',
 		'schemas/config.schema.json',
 		'schemas/content-frontmatter.schema.json',
 		'schemas/manifest.json',
 		'schemas/page-theme.schema.json',
 		'schemas/sitewide-content.schema.json',
 		'schemas/theme.schema.json',
+		'scripts/add-site-node.mjs',
 		'scripts/build-site.mjs',
 		'scripts/check-config.mjs',
 		'scripts/deploy-site.mjs',
@@ -364,6 +366,8 @@ This page verifies that packaged norna sites can build additional pages.
 	const homeImagesDir = path.join(siteProjectRoot, 'site', 'pages', '000-home', 'images');
 	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'doctor'], { cwd: homeImagesDir, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'category:add', 'Guides', '--parent', '/'], { cwd: siteProjectRoot, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'page:add', 'Installation', '--parent', '/guides/'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'config:check'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'check'], { cwd: siteProjectRoot, env: npmEnv });
@@ -373,6 +377,8 @@ This page verifies that packaged norna sites can build additional pages.
 	await assertFileExists(path.join(siteProjectRoot, 'site', '.norna', 'public', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'robots.txt'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'about', 'index.html'));
+	await assertFileExists(path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'));
+	await assertFileMissing(path.join(siteProjectRoot, 'dist', 'guides', 'index.html'));
 	await assertFileMissing(path.join(siteProjectRoot, 'public', 'robots.txt'));
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -436,7 +442,7 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<nav class="page-nav" aria-label="Page contents">',
+		'<aside id="tree-local-navigation"',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -490,7 +496,7 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-background-color: var(--color-surface-base-background)',
 	);
-	await assertFileIncludes(
+	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-background-color: var(--color-surface-soft-background)',
 	);

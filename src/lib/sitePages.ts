@@ -4,12 +4,13 @@ import { decodePageDirectoryPath, parsePageDirectoryPath } from '../../scripts/l
 import { parsePageMarkdown } from '../../scripts/lib/page-markdown.mjs';
 import { readSiteFile } from '../../scripts/lib/site-content.mjs';
 import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
+import { getSiteStructure } from '../../scripts/lib/site-structure.mjs';
 import { sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
 
-export type SitePage = {
-	entry: SiteEntry;
+type SiteNodeBase = {
+	kind: 'category' | 'page';
 	isHome: boolean;
 	navigation: {
 		listed: boolean;
@@ -18,18 +19,29 @@ export type SitePage = {
 	depth: number;
 	pageDirectories: string[];
 	pathSegment: string;
-	pathname: string;
 	pageDirectory: string;
 	pageId: string;
 	pageIds: string[];
 	pageOrders: number[];
 	pagePath: string;
 	parentPagePath: string | null;
+	title: string;
+};
+
+export type SitePage = SiteNodeBase & {
+	kind: 'page';
+	entry: SiteEntry;
+	pathname: string;
 	markdown: string;
 	markdownDocument: Awaited<ReturnType<typeof parsePageMarkdown>>;
 	contentLabel: string;
-	title: string;
 };
+
+export type SiteCategory = SiteNodeBase & {
+	kind: 'category';
+};
+
+export type SiteNode = SitePage | SiteCategory;
 
 const pageIdMarker = '-page-';
 
@@ -94,6 +106,7 @@ const createSitePage = async (entry: SiteEntry): Promise<SitePage> => {
 	const navigation = entry.data.navigation ?? {};
 
 	return {
+		kind: 'page',
 		entry,
 		isHome,
 		depth: pageMetadata.depth,
@@ -117,9 +130,28 @@ const createSitePage = async (entry: SiteEntry): Promise<SitePage> => {
 	};
 };
 
+const createSiteCategory = (category: Awaited<ReturnType<typeof getSiteStructure>>['categories'][number]): SiteCategory => ({
+	kind: 'category',
+	isHome: false,
+	depth: category.depth,
+	navigation: {
+		listed: true,
+		order: category.pageOrder,
+	},
+	pathSegment: category.pagePath,
+	pageDirectory: category.pageDirectory,
+	pageDirectories: category.pageDirectories,
+	pageId: category.pageId,
+	pageIds: category.pageIds,
+	pageOrders: category.pageOrders,
+	pagePath: category.pagePath,
+	parentPagePath: category.parentPagePath,
+	title: category.label,
+});
+
 export const getSitePage = async (entry: SiteEntry): Promise<SitePage> => createSitePage(entry);
 
-export const getSitePages = async (entries: SiteEntry[]) => {
+const createSitePages = async (entries: SiteEntry[]) => {
 	const pages = await Promise.all(entries.map(createSitePage));
 	const pathnames = new Map<string, SitePage>();
 	const siblingPageIds = new Map<string, SitePage>();
@@ -166,3 +198,33 @@ export const getSitePages = async (entries: SiteEntry[]) => {
 		left.pathname.localeCompare(right.pathname, 'sv')
 	));
 };
+
+export const getSiteModel = async (entries: SiteEntry[]) => {
+	const [pages, structure] = await Promise.all([
+		createSitePages(entries),
+		getSiteStructure(),
+	]);
+	const pagesByDirectory = new Map(pages.map((page) => [page.pageDirectory, page]));
+	const nodes = structure.nodes.map((node): SiteNode => {
+		if (node.kind === 'category') return createSiteCategory(node);
+
+		const page = pagesByDirectory.get(node.pageDirectory);
+		if (!page) {
+			throw new Error(`${node.contentLabel} was discovered as a page but Astro did not load it.`);
+		}
+		return page;
+	});
+
+	if (pagesByDirectory.size !== structure.contentFiles.length) {
+		throw new Error('Astro loaded a page that is outside the validated Norna page structure.');
+	}
+
+	return {
+		categories: nodes.filter((node): node is SiteCategory => node.kind === 'category'),
+		nodes,
+		pages,
+		warnings: structure.warnings,
+	};
+};
+
+export const getSitePages = async (entries: SiteEntry[]) => (await getSiteModel(entries)).pages;

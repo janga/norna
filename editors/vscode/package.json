@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "Project-local IntelliSense for Norna configuration, content blocks, notes, and managed images.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "repository": {

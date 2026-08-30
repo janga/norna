@@ -9,7 +9,8 @@ import SiteTreeNavigation from './SiteTreeNavigation.astro';
 import TreeNavigationScript from './TreeNavigationScript.astro';
 import { getSectionsContent, type ResolvedSection } from '../lib/sectionContent';
 import { getPageTheme } from '../lib/pageThemes';
-import { getSitePages, type SitePage } from '../lib/sitePages';
+import { getSiteModel, type SitePage } from '../lib/sitePages';
+import { flattenSiteNavigationTree, getListedSiteNavigationTree } from '../lib/siteNavigation';
 import { getToday, isVisibleToday } from '../lib/visibility';
 import { getLogoAsset } from '../lib/sitePublicAssets';
 import { resolveNavigationModel } from '../../scripts/lib/navigation-model.mjs';
@@ -25,7 +26,8 @@ interface Props {
 
 const { entry } = Astro.props;
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
-const sitePages = await getSitePages(await getCollection('site'));
+const siteModel = await getSiteModel(await getCollection('site'));
+const { nodes: siteNodes, pages: sitePages } = siteModel;
 const currentPage = sitePages.find((page) => page.entry.id === entry.id);
 if (!currentPage) throw new Error(`Page entry "${entry.id}" is missing from the site page model.`);
 const [siteTheme] = await getCollection('theme');
@@ -75,23 +77,25 @@ const getPageContent = (page: SitePage) =>
 		title,
 	}));
 
-const pageNavigation = sitePages.map((page) => {
-	const headings = getPageContent(page);
+const siteNavigation = siteNodes.map((node) => {
+	const headings = node.kind === 'page' ? getPageContent(node) : [];
 	return {
-		page,
+		node,
 		headings,
 		sections: headings
 			.filter((heading) => heading.depth === 2)
 			.map(({ id, title }) => ({ id, title })),
 	};
 });
+const renderedNavigationEntries = flattenSiteNavigationTree(getListedSiteNavigationTree(siteNavigation));
 const navigationModel = resolveNavigationModel({
 	mode: projectConfig.navigation.mode,
-	pages: pageNavigation.map(({ page, headings }) => ({
-		depth: Math.max(1, page.depth),
+	nodes: renderedNavigationEntries.map(({ node, headings }) => ({
+		depth: Math.max(1, node.depth),
 		headings,
-		isHome: page.isHome,
-		listed: page.navigation.listed,
+		isHome: node.isHome,
+		kind: node.kind,
+		listed: node.navigation.listed,
 	})),
 });
 const pagePresentation = resolvePagePresentation(themeData, themeLabel, {
@@ -118,7 +122,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 	<SiteNavigation
 		logo={logo}
 		currentPage={currentPage}
-		pageNavigation={pageNavigation}
+		navigationEntries={siteNavigation}
 		navigationMode={navigationModel.mode}
 		frameColors={frameColors}
 		readerPreferences={pagePresentation.readerPreferences}
@@ -127,7 +131,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 
 	<div class:list={['site-page-layout', { 'site-page-layout-tree': hasTreeNavigation }]}>
 		{hasTreeNavigation && (
-			<SiteTreeNavigation currentPage={currentPage} pageNavigation={pageNavigation} />
+			<SiteTreeNavigation currentPage={currentPage} navigationEntries={siteNavigation} />
 		)}
 		<main
 			class:list={['site-content', { 'site-content-has-breadcrumbs': reserveBreadcrumbSpace }]}
@@ -135,7 +139,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 			style={`--page-text-width: ${pageTextWidth}`}
 		>
 			{showBreadcrumbs
-				? <SiteBreadcrumbs currentPage={currentPage} pages={sitePages} />
+				? <SiteBreadcrumbs currentPage={currentPage} nodes={siteNodes} />
 				: reserveBreadcrumbSpace && <div class="site-breadcrumbs" aria-hidden="true"></div>}
 			{renderedSections.map(({ section, sectionIndex, prioritizeFirstImage }) => (
 				<SiteSection

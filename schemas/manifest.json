@@ -1,7 +1,8 @@
 {
   "editorApiVersion": 1,
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "files": {
+    "category": "category.schema.json",
     "config": "config.schema.json",
     "contentFrontmatter": "content-frontmatter.schema.json",
     "sitewideContent": "sitewide-content.schema.json",

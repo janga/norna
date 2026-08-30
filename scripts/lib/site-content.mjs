@@ -1,16 +1,13 @@
-import { access, readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
 	siteContentLabel,
-	siteDir,
-	siteDirLabel,
-	homePageDirectory,
-	sitePagesDir,
-	sitePagesLabel,
 	sitewideContentLabel,
 } from './site-paths.mjs';
-import { parsePageDirectoryPath } from './page-model.mjs';
 import { schemaTopLevelKeys } from './schema-definitions.mjs';
+import { getIndentInfo, validateYamlIndentation } from './yaml-indentation.mjs';
+
+export { getContentFiles } from './site-structure.mjs';
 
 export const rasterImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
 export const staticImageExtensions = new Set(['.svg']);
@@ -85,107 +82,6 @@ const knownNestedFrontmatterKeys = new Set([
 
 export const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 
-const fileExists = async (filePath) => access(filePath).then(() => true, () => false);
-
-export const getContentFiles = async () => {
-	const legacyContentPath = path.join(siteDir, 'content.md');
-	const legacyImagesPath = path.join(siteDir, 'images');
-	const legacyPaths = [];
-	if (await fileExists(legacyContentPath)) legacyPaths.push(`${siteDirLabel}/content.md`);
-	if (await fileExists(legacyImagesPath)) legacyPaths.push(`${siteDirLabel}/images`);
-	if (legacyPaths.length > 0) {
-		throw new Error([
-			`The old root-page structure is no longer supported: ${legacyPaths.join(', ')}.`,
-			`Move the homepage content to ${sitePagesLabel}/${homePageDirectory}/content.md and its images to ${sitePagesLabel}/${homePageDirectory}/images/.`,
-		].join('\n'));
-	}
-
-	const legacyRoutesDir = path.join(siteDir, 'routes');
-	const legacyRoutes = await readdir(legacyRoutesDir).catch((error) => {
-		if (error?.code === 'ENOENT') return null;
-		throw error;
-	});
-	if (legacyRoutes !== null) {
-		throw new Error(`${siteDirLabel}/routes is no longer supported. Rename it to ${sitePagesLabel} and use NNN-page-id directory names.`);
-	}
-
-	const contentFiles = [];
-	const collectPageContentFiles = async (pagesDir, pagesLabel, parentPageDirectory = '') => {
-		const pageEntries = await readdir(pagesDir, { withFileTypes: true }).catch((error) => {
-		if (error?.code === 'ENOENT') {
-			return [];
-		}
-
-		throw error;
-		});
-
-		for (const entry of pageEntries.sort((left, right) => left.name.localeCompare(right.name, 'en'))) {
-			if (!entry.isDirectory()) continue;
-
-			const pageDirectory = parentPageDirectory
-				? `${parentPageDirectory}/pages/${entry.name}`
-				: entry.name;
-			const pageLabel = `${pagesLabel}/${entry.name}`;
-			const pageDir = path.join(pagesDir, entry.name);
-			const pageContentPath = path.join(pageDir, 'content.md');
-
-			if (!(await fileExists(pageContentPath))) {
-				const childPageEntries = await readdir(path.join(pageDir, 'pages'), { withFileTypes: true }).catch((error) => {
-					if (error?.code === 'ENOENT') return [];
-					throw error;
-				});
-				if (childPageEntries.some((childEntry) => childEntry.isDirectory())) {
-					throw new Error(`${pageLabel} contains nested pages but has no content.md of its own.`);
-				}
-				continue;
-			}
-			const pageMetadata = parsePageDirectoryPath(pageDirectory, pageLabel);
-			const isHome = pageDirectory === homePageDirectory;
-
-			contentFiles.push({
-				contentLabel: `${pageLabel}/content.md`,
-				contentPath: pageContentPath,
-				imagesDir: path.join(pageDir, 'images'),
-				imagesLabel: `${pageLabel}/images`,
-				isHome,
-				...pageMetadata,
-				pagePath: isHome ? '' : pageMetadata.pagePath,
-				parentPagePath: isHome ? null : pageMetadata.parentPagePath,
-			});
-
-			if (isHome) {
-				const homePagesDir = path.join(pageDir, 'pages');
-				const homeChildEntries = await readdir(homePagesDir, { withFileTypes: true }).catch((error) => {
-					if (error?.code === 'ENOENT') return [];
-					throw error;
-				});
-				const homeChildDirectories = homeChildEntries.filter((childEntry) => childEntry.isDirectory());
-				if (homeChildDirectories.length > 0) {
-					throw new Error([
-						`${pageLabel} is the homepage and cannot contain child pages.`,
-						`Move these page directories beside ${homePageDirectory} under ${sitePagesLabel}/, or below another non-home page:`,
-						...homeChildDirectories.map(({ name }) => `- ${pageLabel}/pages/${name}`),
-					].join('\n'));
-				}
-				continue;
-			}
-
-			await collectPageContentFiles(
-				path.join(pageDir, 'pages'),
-				`${pageLabel}/pages`,
-				pageDirectory,
-			);
-		}
-	};
-
-	await collectPageContentFiles(sitePagesDir, sitePagesLabel);
-	if (!contentFiles.some(({ isHome }) => isHome)) {
-		throw new Error(`Homepage content is missing. Create ${siteContentLabel}.`);
-	}
-
-	return contentFiles;
-};
-
 export const splitSiteFile = (source, label = siteContentLabel) => {
 	const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
 
@@ -210,89 +106,12 @@ export const splitSiteFile = (source, label = siteContentLabel) => {
 
 export const readSiteFile = async (sitePath, label = siteContentLabel) => splitSiteFile(await readFile(sitePath, 'utf8'), label);
 
-const getIndentInfo = (line) => {
-	const characters = Array.from(line);
-	const indentCharacters = [];
-
-	for (const character of characters) {
-		if (character === ' ' || character === '\t' || character === '\u00a0' || character === '\uFFFD' || character === '\u00c2') {
-			indentCharacters.push(character);
-			continue;
-		}
-
-		break;
-	}
-
-	return {
-		indent: indentCharacters.length,
-		hasInvalidWhitespace: indentCharacters.some((character) => character !== ' '),
-	};
-};
-
-const getNextFrontmatterEntry = (lines, startIndex) => {
-	for (let index = startIndex + 1; index < lines.length; index += 1) {
-		const line = lines[index];
-		if (!line.trim() || line.trim().startsWith('#') || frontmatterDelimiterRegex.test(line)) {
-			continue;
-		}
-
-		return {
-			index,
-			line,
-			...getIndentInfo(line),
-		};
-	}
-
-	return null;
-};
-
 export const validateFrontmatterIndentation = (frontmatter, addIssue) => {
-	const lines = frontmatter.split(/\r?\n/);
-
-	for (const [index, line] of lines.entries()) {
-		const lineNumber = index + 1;
-		const trimmed = line.trim();
-
-		if (!trimmed || trimmed.startsWith('#') || frontmatterDelimiterRegex.test(line)) {
-			continue;
-		}
-
-		const { indent, hasInvalidWhitespace } = getIndentInfo(line);
-
-		if (hasInvalidWhitespace) {
-			addIssue({
-				severity: 'error',
-				message: `Frontmatter line ${lineNumber} uses tabs, non-breaking spaces, or invalid whitespace for indentation.`,
-				fix: 'Replace the indentation on that line with ordinary spaces.',
-			});
-			continue;
-		}
-
-		if (indent % 2 !== 0) {
-			addIssue({
-				severity: 'error',
-				message: `Frontmatter line ${lineNumber} is indented with ${indent} spaces.`,
-				fix: 'Use 2-space indentation levels in frontmatter.',
-			});
-		}
-
-		const keyValueMatch = line.match(/^(\s*)[A-Za-z][A-Za-z0-9-]*:\s+(.+)$/);
-		if (!keyValueMatch) continue;
-
-		const value = keyValueMatch[2].trim();
-		if (value === '|' || value === '>' || value.startsWith('|') || value.startsWith('>')) {
-			continue;
-		}
-
-		const nextEntry = getNextFrontmatterEntry(lines, index);
-		if (!nextEntry || nextEntry.indent <= indent) continue;
-
-		addIssue({
-			severity: 'error',
-			message: `Frontmatter line ${nextEntry.index + 1} is indented under line ${lineNumber}, but line ${lineNumber} already has a value.`,
-			fix: 'Move the later line to the same indentation level as its sibling, or place it under a key that has no value.',
-		});
-	}
+	validateYamlIndentation(frontmatter, (issue) => addIssue({
+		...issue,
+		message: issue.message.replace(/^YAML/, 'Frontmatter'),
+		fix: issue.fix.replace(/YAML/g, 'frontmatter'),
+	}));
 };
 
 export const validateFrontmatterStructure = (frontmatter, addIssue, {

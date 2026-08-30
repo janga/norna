@@ -216,16 +216,19 @@ const getEmptyYamlCompletionItems = (document) => {
 	const directive = `# yaml-language-server: $schema=${schemaPath}`;
 	const presetChoices = getSchemaChoices(resolved.schema.properties?.preset).map(({ value }) => value);
 	const snippets = {
+		category: `${directive}\n\nlabel: \${1:Category label}\n`,
 		config: `${directive}\n\nurl: \${1:https://example.com/}\n`,
 		theme: `${directive}\n\npreset: \${1|${presetChoices.join(',')}|}\n`,
 		sitewideContent: `${directive}\n\nfooter:\n  copyrightMessage: \${1:Copyright owner.}\n`,
 	};
 	const labels = {
+		category: 'Norna page category',
 		config: 'Norna site configuration',
 		theme: 'Norna theme',
 		sitewideContent: 'Norna site-wide content',
 	};
 	const documentation = {
+		category: documentationLinkFor(document.uri.fsPath, 'Nested pages reference', 'pages.md', 'nested-pages'),
 		config: documentationLinkFor(document.uri.fsPath, 'Configuration reference', 'configuration.md'),
 		theme: documentationLinkFor(document.uri.fsPath, 'Theme reference', 'theme.md'),
 		sitewideContent: documentationLinkFor(document.uri.fsPath, 'Site-wide content reference', 'sitewide-content.md'),

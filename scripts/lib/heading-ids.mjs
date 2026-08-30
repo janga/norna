@@ -21,13 +21,15 @@ const transliterateToAscii = (value) => Array.from(value)
 	.map((character) => transliterations.get(character) ?? character)
 	.join('');
 
-export const slugifyHeadingText = (value) => transliterateToAscii(value
+export const slugifyAsciiIdentifier = (value) => transliterateToAscii(value
 	.normalize('NFKD')
 	.toLowerCase())
 	.replace(/\p{Mark}+/gu, '')
 	.replace(/['’]/g, '')
 	.replace(/[^a-z0-9]+/g, '-')
 	.replace(/^-+|-+$/g, '');
+
+export const slugifyHeadingText = slugifyAsciiIdentifier;
 
 const getNodeText = (node) => {
 	if (!node || typeof node !== 'object') return '';

@@ -1,31 +1,34 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
-import type { SitePage } from '../lib/sitePages';
+import type { SiteNode, SitePage } from '../lib/sitePages';
 
 interface Props {
 	currentPage: SitePage;
-	pages: SitePage[];
+	nodes: SiteNode[];
 }
 
-const { currentPage, pages } = Astro.props;
-const pagesByPath = new Map(pages.map((page) => [page.pagePath, page]));
-const ancestors: SitePage[] = [];
+const { currentPage, nodes } = Astro.props;
+const nodesByPath = new Map(nodes.map((node) => [node.pagePath, node]));
+const ancestors: SiteNode[] = [];
 let parentPagePath = currentPage.parentPagePath;
 while (parentPagePath !== null) {
-	const parentPage = pagesByPath.get(parentPagePath);
-	if (!parentPage) break;
-	ancestors.unshift(parentPage);
-	parentPagePath = parentPage.parentPagePath;
+	const parentNode = nodesByPath.get(parentPagePath);
+	if (!parentNode) break;
+	ancestors.unshift(parentNode);
+	parentPagePath = parentNode.parentPagePath;
 }
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
-const breadcrumbPages = ancestors;
 ---
 
 <nav class="site-breadcrumbs" aria-label={projectConfig.locale.labels.breadcrumb}>
 	<ol>
-		{breadcrumbPages.map((page) => (
-			<li><a href={pageHref(page)}>{page.title}</a></li>
+		{ancestors.map((node) => (
+			<li>
+				{node.kind === 'page'
+					? <a href={pageHref(node)}>{node.title}</a>
+					: <span>{node.title}</span>}
+			</li>
 		))}
 		<li><span aria-current="page">{currentPage.title}</span></li>
 	</ol>

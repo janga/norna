@@ -13,39 +13,45 @@ const assertNavigationMode = (mode) => {
 	return mode;
 };
 
-const getListedPages = (pages) => pages.filter((page) => page.isHome || page.listed !== false);
+const getListedNodes = (nodes) => nodes.filter((node) => node.isHome || node.listed !== false);
 
-const getPageNavigationDepth = (page) => {
-	const pageDepth = page.depth ?? 1;
-	return (page.headings ?? []).reduce((maximum, heading) => (
-		Math.max(maximum, pageDepth + heading.depth - 1)
-	), pageDepth);
+const getNodeNavigationDepth = (node) => {
+	const nodeDepth = node.depth ?? 1;
+	return (node.headings ?? []).reduce((maximum, heading) => (
+		Math.max(maximum, nodeDepth + heading.depth - 1)
+	), nodeDepth);
 };
 
-export const getAutomaticNavigationMode = (pages) => {
-	const listedPages = getListedPages(pages);
-	if (listedPages.length <= 1) return 'sections';
+export const getAutomaticNavigationMode = (nodes) => {
+	const listedNodes = getListedNodes(nodes);
+	if (listedNodes.length <= 1) return 'sections';
+	if (listedNodes.some((node) => node.kind === 'category')) return 'tree';
 
-	const maximumDepth = listedPages.reduce((maximum, page) => (
-		Math.max(maximum, getPageNavigationDepth(page))
+	const maximumDepth = listedNodes.reduce((maximum, node) => (
+		Math.max(maximum, getNodeNavigationDepth(node))
 	), 1);
 
 	return maximumDepth <= 2 ? 'top' : 'tree';
 };
 
-export const resolveNavigationModel = ({ mode = 'automatic', pages }) => {
+export const resolveNavigationModel = ({ mode = 'automatic', nodes }) => {
 	const requestedMode = assertNavigationMode(mode);
-	const listedPages = getListedPages(pages);
-	const maximumDepth = listedPages.reduce((maximum, page) => (
-		Math.max(maximum, getPageNavigationDepth(page))
+	const listedNodes = getListedNodes(nodes);
+	const hasCategories = listedNodes.some((node) => node.kind === 'category');
+	if (hasCategories && requestedMode !== 'automatic' && requestedMode !== 'tree') {
+		throw new Error(`Navigation categories require tree navigation. Remove navigation.mode: ${requestedMode}, or set navigation.mode: tree.`);
+	}
+	const maximumDepth = listedNodes.reduce((maximum, node) => (
+		Math.max(maximum, getNodeNavigationDepth(node))
 	), 1);
 
 	return Object.freeze({
 		mode: requestedMode === 'automatic'
-			? getAutomaticNavigationMode(listedPages)
+			? getAutomaticNavigationMode(listedNodes)
 			: requestedMode,
 		requestedMode,
-		listedPageCount: listedPages.length,
+		listedNodeCount: listedNodes.length,
+		hasCategories,
 		maximumDepth,
 	});
 };

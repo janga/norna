@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'astro/zod';
 import {
+	categorySchema,
 	configSchema,
 	pageThemeSchema,
 	siteSchema,
@@ -14,6 +15,7 @@ import { applySchemaEditorMetadata } from './lib/schema-editor-metadata.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const schemaDirectory = path.join(root, 'schemas');
 const definitions = [
+	['category.schema.json', 'Norna page category', categorySchema],
 	['config.schema.json', 'Norna site configuration', configSchema],
 	['theme.schema.json', 'Norna visual theme', themeVisualSchema],
 	['page-theme.schema.json', 'Norna page theme', pageThemeSchema],
@@ -32,8 +34,9 @@ for (const [filename, title, schema] of definitions) {
 
 schemaFiles.set('manifest.json', `${JSON.stringify({
 	editorApiVersion: 1,
-	schemaVersion: 2,
+	schemaVersion: 3,
 	files: {
+		category: 'category.schema.json',
 		config: 'config.schema.json',
 		contentFrontmatter: 'content-frontmatter.schema.json',
 		sitewideContent: 'sitewide-content.schema.json',

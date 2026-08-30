@@ -72,6 +72,7 @@ const nornaGeneratedImagesWatcher = () => ({
 			sitePagesDir,
 		].map((watchedPath) => path.resolve(watchedPath));
 		let refreshTimer;
+		let structureReloadTimer;
 		let refreshPromise = Promise.resolve();
 
 		const isRelevantSourcePath = (changedPath) => {
@@ -101,6 +102,17 @@ const nornaGeneratedImagesWatcher = () => ({
 			refreshTimer = setTimeout(refreshImages, 250);
 		};
 
+		const scheduleStructureReload = (changedPath) => {
+			if (!isRelevantSourcePath(changedPath)) return;
+			const filename = path.basename(changedPath);
+			if (filename !== 'category.yaml' && filename !== 'theme.yaml') return;
+
+			clearTimeout(structureReloadTimer);
+			structureReloadTimer = setTimeout(() => {
+				server.ws.send({ type: 'full-reload' });
+			}, 300);
+		};
+
 		server.watcher.add(manifestPath);
 		server.watcher.add(watchedSourcePaths);
 		server.watcher.on('change', (changedPath) => {
@@ -113,6 +125,9 @@ const nornaGeneratedImagesWatcher = () => ({
 		server.watcher.on('unlink', scheduleRefreshImages);
 		server.watcher.on('addDir', scheduleRefreshImages);
 		server.watcher.on('unlinkDir', scheduleRefreshImages);
+		server.watcher.on('add', scheduleStructureReload);
+		server.watcher.on('change', scheduleStructureReload);
+		server.watcher.on('unlink', scheduleStructureReload);
 	},
 });
 

@@ -1040,8 +1040,13 @@ a {
 	text-underline-offset: 0.28em;
 }
 
-.navigation-page-disclosure[open] > .navigation-page-summary > .navigation-page-summary-title {
+.navigation-page-disclosure:not(.navigation-category-disclosure)[open]
+	> .navigation-page-summary > .navigation-page-summary-title {
 	opacity: 0;
+}
+
+.navigation-category-disclosure[data-current-branch='true'] > .navigation-page-summary {
+	color: var(--color-primary-text);
 }
 
 .navigation-page-open-link {
