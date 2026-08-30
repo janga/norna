@@ -226,7 +226,14 @@ const getUnclosedNornaBlockMessage = (opening) =>
 	`This Norna block was started on line ${opening.line} but not closed. Add a closing ${opening.markerCharacter.repeat(opening.length)} line after the last entry.`;
 
 const scanMarkdownFencedBlocks = (markdown, options = {}) => {
-	const lines = normalizeLines(markdown);
+	const normalizedMarkdown = markdown.replace(/\r\n?/g, '\n');
+	const lines = normalizedMarkdown.split('\n');
+	const lineOffsets = [];
+	let nextLineOffset = 0;
+	for (const line of lines) {
+		lineOffsets.push(nextLineOffset);
+		nextLineOffset += line.length + 1;
+	}
 	const lineOffset = options.lineOffset ?? 0;
 	const blocks = [];
 	const errors = [];
@@ -288,7 +295,9 @@ const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 			if (isNornaLike) {
 				errors.push({
 					blockType: type,
+					endOffset: normalizedMarkdown.length,
 					line: lineNumber,
+					startOffset: lineOffsets[index],
 					source: lines.slice(bodyStartIndex).join('\n'),
 					message: failMessage(getUnclosedNornaBlockMessage(opening), { ...options, line: lineNumber }),
 				});
@@ -301,9 +310,14 @@ const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 			if (nornaBlockTypes.has(type)) {
 				blocks.push({
 					blockType: type,
+					endLine: lineOffset + closingIndex + 1,
+					endOffset: lineOffsets[closingIndex] + lines[closingIndex].length,
 					line: lineNumber,
+					startOffset: lineOffsets[index],
 					source,
+					sourceEndOffset: lineOffsets[closingIndex],
 					sourceLine: lineNumber + 1,
+					sourceStartOffset: lineOffsets[bodyStartIndex],
 				});
 			} else {
 				errors.push({
@@ -498,8 +512,13 @@ export const extractNornaMarkdownBlocks = (markdown, options = {}) => {
 		blocks.push({
 			...parseNornaMarkdownBlock(block.blockType, block.source, { ...options, line: block.sourceLine }),
 			blockType: block.blockType,
+			endLine: block.endLine,
+			endOffset: block.endOffset,
 			line: block.line,
+			startOffset: block.startOffset,
 			source: block.source,
+			sourceEndOffset: block.sourceEndOffset,
+			sourceStartOffset: block.sourceStartOffset,
 		});
 	}
 
@@ -515,8 +534,13 @@ export const extractNornaMarkdownBlockDiagnostics = (markdown, options = {}) => 
 			blocks.push({
 				...parseNornaMarkdownBlock(block.blockType, block.source, { ...options, line: block.sourceLine }),
 				blockType: block.blockType,
+				endLine: block.endLine,
+				endOffset: block.endOffset,
 				line: block.line,
+				startOffset: block.startOffset,
 				source: block.source,
+				sourceEndOffset: block.sourceEndOffset,
+				sourceStartOffset: block.sourceStartOffset,
 			});
 		} catch (error) {
 			errors.push({
