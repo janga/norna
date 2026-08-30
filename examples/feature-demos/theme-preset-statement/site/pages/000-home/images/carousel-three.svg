@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Carousel frame three</title>
+  <desc id="desc">A red panel with a compact grid.</desc>
+  <rect width="1200" height="700" fill="#7d302b"/>
+  <g fill="#f8f5ee">
+    <rect x="270" y="170" width="180" height="150"/>
+    <rect x="510" y="170" width="180" height="150" opacity=".72"/>
+    <rect x="750" y="170" width="180" height="150" opacity=".48"/>
+    <rect x="270" y="380" width="180" height="150" opacity=".48"/>
+    <rect x="510" y="380" width="180" height="150" opacity=".72"/>
+    <rect x="750" y="380" width="180" height="150"/>
+  </g>
+</svg>

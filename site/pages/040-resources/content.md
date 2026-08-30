@@ -12,7 +12,10 @@ page:
 - [Content](https://github.com/janga/norna/blob/main/docs/content.md) defines headings, ids, notes, Norna blocks, and validation rules.
 - [Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md) explains managed images, generated variants, sync, and metadata.
 - [Pages](https://github.com/janga/norna/blob/main/docs/pages.md) defines directory names, ordering, URLs, nesting, and navigation.
-- [Theme](https://github.com/janga/norna/blob/main/docs/theme.md) and [Typography](https://github.com/janga/norna/blob/main/docs/typography.md) define presets, overrides, and inheritance.
+- [Theme presets and overrides](https://github.com/janga/norna/blob/main/docs/theme.md#theme-presets) compares intended uses, complete defaults, overrides, and page-theme scope.
+- [Reader Display controls](https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls) defines the optional color-mode, reading-width, and focus-reading choices.
+- [Typography](https://github.com/janga/norna/blob/main/docs/typography.md) defines profiles, rhythm, heading scales, body text, and captions.
+- [Presentation guarantees](https://github.com/janga/norna/blob/main/docs/presentation-guarantees.md) defines the accessibility and readability baseline that themes cannot weaken.
 - [Client-side JavaScript](https://github.com/janga/norna/blob/main/docs/client-javascript.md) explains which features are static, progressively enhanced, or interactive.
 - [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md) defines technical settings and defaults.
 - [Commands](https://github.com/janga/norna/blob/main/docs/commands.md) documents project scripts, direct CLI forms, options, and side effects.

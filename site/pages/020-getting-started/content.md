@@ -290,35 +290,26 @@ automatic navigation contract.
 
 ## Choose the site's presentation {#theme}
 
-Norna includes four complete visual presets:
+A theme preset is a complete visual starting point. Norna includes four:
 
-- `portfolio` for restrained, image-led presentation
-- `documentation` for reading and technical explanation
-- `project` for compact project and product sites
-- `statement` for short content with a stronger editorial voice
+- `portfolio` for image-led sites with restrained typography
+- `documentation` for guides and sustained reading
+- `project` for project and product sites that balance text, code, cards, and images
+- `statement` for short sites with a stronger editorial voice
 
-A complete site theme can therefore be this short:
+Choose one in `site/theme.yaml`:
 
 ```yaml
 preset: documentation
 ```
 
-Each preset includes coordinated light and dark colors. The Display panel can
-offer bounded reader choices for color mode, text width, and a focus-reading
-view. Presets choose suitable controls by default, and the root theme can enable
-or disable each one. Without JavaScript, the configured presentation remains
-usable but readers cannot change or remember these choices.
+Start with the preset alone and review it with real content before adding
+overrides. The [preset comparison](https://janga.github.io/norna/examples/theme-presets/)
+renders identical content with all four presets, so differences in typography,
+spacing, media, and surfaces can be compared directly.
 
-Add only values that should differ from the preset:
-
-```yaml
-preset: documentation
-layout:
-  pageWidth: 1320px
-palette: near-monochrome
-```
-
-To inspect a preset before overriding it, export a commented reference file:
+If you later need an override, export the installed preset as a commented
+reference:
 
 ```sh
 npm run norna:theme:export -- documentation
@@ -327,34 +318,16 @@ npm run norna:theme:export -- documentation
 This creates `site/orig-documentation-theme.yaml`. Norna does not load the
 reference file, and the command refuses to overwrite an existing one.
 
-The root theme keeps colors, corners, typography, page frame, and navigation
-consistent. A page-local `theme.yaml` can make narrower presentation changes
-that its descendants inherit.
+Presets can also enable reader choices for color mode, text width, and focus
+reading. The site remains readable without JavaScript; JavaScript is used only
+to change and remember those choices.
 
-Presets, overrides, and reader choices remain inside engine-owned safeguards
-for contrast, keyboard focus, text measure, reflow, reduced motion, and forced
-colors.
-
-Section backgrounds are also coordinated with navigation. `uniform` keeps one
-surface throughout the page. `alternating` repeats the palette's base and soft
-surfaces. `accented` moves from base to soft to emphasis, then back through soft
-to base before repeating.
-
-On one-page and shallow top-navigation sites, the changing backgrounds extend
-across the browser width so each H2 section reads as one region; text and media
-keep their normal constrained widths.
-
-A persistent navigation tree already forms a strong visual region beside the
-document. Norna therefore uses a continuous `uniform` reading surface for tree
-navigation. Built-in presets make that adjustment automatically. An explicit
-`alternating` or `accented` override is rejected when the site resolves to tree
-navigation rather than being silently ignored.
-
-See [Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
+See [Theme presets and overrides](https://github.com/janga/norna/blob/main/docs/theme.md#theme-presets),
+[Reader Display controls](https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls),
 [Typography](https://github.com/janga/norna/blob/main/docs/typography.md), and
 [Presentation guarantees](https://github.com/janga/norna/blob/main/docs/presentation-guarantees.md)
-for Display controls, presets, allowed overrides, defaults, page-theme
-inheritance, and the engine-owned presentation baseline.
+for exact defaults, allowed overrides, page-theme scope, and the presentation
+baseline that presets cannot weaken.
 
 ## Core commands {#commands}
 

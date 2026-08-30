@@ -41,6 +41,9 @@ width: normal
   text: Plain files work naturally with Git and AI-assisted editing, while Norna helps keep content and images organised.
 ```
 
+[Compare the built-in theme presets](/examples/#theme-presets) using the same
+content and images.
+
 The browsing benefits are part of the normal workflow. Norna creates image
 versions for different screen sizes, gives early images priority and lets later
 images load lazily. Only new or changed images need to be processed, and changed

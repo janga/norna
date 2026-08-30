@@ -6,6 +6,7 @@ documentation workflow.
 
 | Example | Purpose | Live demo | Source |
 | --- | --- | --- | --- |
+| Theme preset comparison | The same content rendered with all four presets | [Compare presets](https://janga.github.io/norna/examples/theme-presets/) | See the four preset sources below |
 | Dog shelter, single page | A coherent homepage made from sections | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/) | [View files](complete-sites/dog-shelter-single-page/) |
 | Dog shelter, multi-page | A coherent site with ordered pages and page-local images | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](complete-sites/dog-shelter-multi-page/) |
 | Portfolio preset | Complete `portfolio` preset without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/) | [View files](feature-demos/theme-preset-portfolio/) |
@@ -32,9 +33,10 @@ examples/
 ```
 
 `complete-sites/` contains small sites that can be read as coherent Norna
-projects. `feature-demos/` contains focused visual test benches. Feature demos
-are useful for documentation and integration checks, but are not starter
-templates.
+projects. `feature-demos/` contains focused visual test benches. The four preset
+sites use identical page content and images so their visual differences come
+only from `theme.yaml`. Feature demos are useful for documentation and
+integration checks, but are not starter templates.
 
 ## Run An Example Locally
 

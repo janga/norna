@@ -1,38 +1,103 @@
 ---
 page:
-  description: A complete theme preset for guides and explanatory writing.
+  description: Shared source content rendered with each complete Norna theme preset.
 ---
 
-# Documentation
+# Theme preset comparison
 
-## Preset purpose
+Every preset example renders this same content and the same images. Differences
+between the examples therefore come from the selected preset rather than from
+different editorial material or page structure.
 
-This site uses the complete `documentation` preset without overrides. It
-favours readable explanatory text, compact vertical rhythm and restrained
-surface changes for longer guides.
+## Preset purpose {#preset-purpose}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean lacinia
-bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod.
+A theme preset coordinates typography, spacing, colors, corners, image sizing,
+section backgrounds, and reader controls. The source below uses no visual
+overrides, so the preset remains responsible for the complete presentation.
 
-## Reading rhythm
+The comparison includes prose, hierarchy, notes, code, images, captions,
+carousel controls, and cards.{note-ref}
 
-Nullam id dolor id nibh ultricies vehicula ut id elit. Fusce dapibus, tellus ac
-cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit
-amet risus.
+{note: Presets also coordinate margin-note width, alignment, and the narrow-screen fallback.}
 
-## Images and captions
+## Reading rhythm {#reading-rhythm}
 
-The same three-image sequence makes image width, spacing and caption treatment
-easy to compare with the other complete presets.
+Comfortable reading depends on more than font choice. Text width, line height,
+heading scale, and vertical spacing need to work together at both wide and
+narrow viewports.
+
+### A smaller heading
+
+This subsection shows how a preset distinguishes the page title, section
+heading, smaller heading, and body text. It also includes a few common inline
+elements: a [normal link](https://example.com/), `inline code`, and **strong
+text**.
+
+#### Practical details
+
+- A concise list item.
+- A longer item that wraps when the reading width becomes narrow.
+- A command shown in a code block.
+
+```sh
+npm run norna:check
+npm run norna:build
+```
+
+## Images and captions {#images-and-captions}
+
+The same image stack reveals how much room a preset gives to media, how it
+spaces consecutive images, and how captions relate to the surrounding prose.
 
 ```norna-image-stack
-- image: schnauzer-portrait.jpg
-  alt: A schnauzer-type dog sitting outdoors.
-  caption: Schnauzer portrait. Photo by Bicanski, CC0, via Pixnio.
-- image: black-schnauzer.jpg
-  alt: A black schnauzer-type dog standing on grass.
-  caption: Black hunting dog portrait. Photo by Bicanski, CC0, via Pixnio.
-- image: retriever-portrait.jpg
-  alt: A retriever-type dog sitting outdoors.
-  caption: Retriever portrait. Photo by Bicanski, CC0, via Pixnio.
+- image: grass-puppy.jpg
+  alt: A puppy standing in green grass.
+  caption: Puppy in grass. Photo by Bicanski, CC0, via Pixnio.
+- image: grey-street-dog.jpg
+  alt: A grey dog standing on a paved street.
+  caption: Grey dog on pavement. Photo by Bicanski, CC0, via Pixnio.
+- image: boxer-portrait.jpg
+  alt: A brown boxer-type dog looking at the camera.
+  caption: Brown dog portrait. Photo by Bicanski, CC0, via Pixnio.
+```
+
+## Carousel controls {#carousel-controls}
+
+These simple diagrams keep the source constant while exposing the preset's
+media constraints, caption styling, and carousel chrome.
+
+```norna-image-carousel
+- image: carousel-one.svg
+  alt: A green panel with a diagonal line.
+  caption: First frame with a broad diagonal.
+- image: carousel-two.svg
+  alt: A blue panel with overlapping circles.
+  caption: Second frame with overlapping forms.
+- image: carousel-three.svg
+  alt: A red panel with a compact grid.
+  caption: Third frame with denser detail.
+```
+
+## Cards and surfaces {#cards-and-surfaces}
+
+Cards combine typography, spacing, corners, links, and bounded surfaces. This
+list also makes the preset's relationship between prose width and structured
+content visible.
+
+```norna-card-list
+layout: image-left
+flow: grid
+size: m
+width: normal
+
+- title: Prepare the source
+  text: Keep ordinary content and related images together.
+  image: card-stack.svg
+  link: https://example.com/source
+  badge-text: First
+- title: Review the result
+  text: Compare hierarchy, spacing, and media at several widths.
+  image: card-carousel.svg
+- title: Publish deliberately
+  text: A card without an image checks alignment within the same list.
 ```

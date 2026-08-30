@@ -1,6 +1,7 @@
 # Portfolio Theme Preset
 
-This site demonstrates the complete `portfolio` preset without overrides.
+This site renders the shared preset-comparison content with the complete
+`portfolio` preset and no overrides.
 
 [Live demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/)
 |
@@ -12,5 +13,6 @@ Run it from the repository root:
 node bin/norna.mjs --site-dir examples/feature-demos/theme-preset-portfolio/site dev:local
 ```
 
-The dog photos are CC0 images by Bicanski, sourced from Pixnio. Attribution is
-included in the captions even though the licence does not require it.
+All four preset examples use identical content and assets. The dog photos are
+CC0 images by Bicanski, sourced from Pixnio; attribution is included in the
+captions even though the licence does not require it.

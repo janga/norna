@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Image stack card</title>
+  <desc id="desc">Three offset paper rectangles represent an image stack.</desc>
+  <rect width="1200" height="700" fill="#f0ebe1"/>
+  <rect x="270" y="170" width="660" height="360" fill="#d8d0c4" transform="rotate(-7 600 350)"/>
+  <rect x="270" y="170" width="660" height="360" fill="#685a43" transform="rotate(6 600 350)"/>
+  <rect x="270" y="170" width="660" height="360" fill="#f8f5ee"/>
+  <circle cx="600" cy="350" r="92" fill="#685a43"/>
+</svg>

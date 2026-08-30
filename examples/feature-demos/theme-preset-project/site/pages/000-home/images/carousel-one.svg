@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Carousel frame one</title>
+  <desc id="desc">A green panel with a diagonal line.</desc>
+  <rect width="1200" height="700" fill="#d9dfda"/>
+  <path d="M120 560 1080 140" stroke="#38645a" stroke-width="46"/>
+  <circle cx="260" cy="190" r="70" fill="#17201d"/>
+  <circle cx="940" cy="510" r="70" fill="#f7f8f7"/>
+</svg>

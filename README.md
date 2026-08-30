@@ -94,6 +94,7 @@ documentation.
 
 | Example | Live site | Source |
 | --- | --- | --- |
+| Theme preset comparison | [Compare presets](https://janga.github.io/norna/examples/theme-presets/) | See the four preset sources below |
 | Dog shelter, single page | [Open demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/) | [View files](examples/complete-sites/dog-shelter-single-page/) |
 | Dog shelter, multi-page | [Open demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](examples/complete-sites/dog-shelter-multi-page/) |
 | Portfolio preset | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/) | [View files](examples/feature-demos/theme-preset-portfolio/) |

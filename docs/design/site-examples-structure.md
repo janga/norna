@@ -83,8 +83,10 @@ together in a realistic project:
 `feature-demos/` contains focused visual test benches:
 
 - `theme-preset-*/`: one independent site per complete built-in preset, without
-  overrides. Presets are site-wide, so comparing them must not rely on
-  page-local preset changes.
+  overrides. All four sites use identical page content and images, and a
+  generated comparison page switches between their static builds. Presets are
+  site-wide, so comparing them does not rely on page-local preset changes or
+  runtime theme replacement.
 - `media-and-surfaces/`: image and card blocks, notes, palettes and section
   surfaces. This is also the broad demo-build and navigation-test target.
 - `sitewide-content/`: convention-based logo handling, navigation, banner stacks,

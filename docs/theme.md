@@ -14,27 +14,183 @@ smaller role described under [Page Themes](#page-themes).
 
 ## Theme Presets
 
-Available complete presets are:
+A theme preset is a complete, coordinated starting point for a site's visual
+presentation. Select one with `preset` in the root `site/theme.yaml`:
 
-- `portfolio`: restrained typography and a broad image area for image-led
-  presentation.
-- `documentation`: reading-focused typography, a warm-paper palette, and compact
-  structural rhythm.
-- `project`: compact layout and a cool-green presentation for project and product
-  sites.
-- `statement`: airy spacing and stronger typography for short editorial
-  content.
+```yaml
+preset: project
+```
 
 Each preset coordinates:
 
 - light and dark colors, corners, and typography
 - page width, gutters, text width, and content spacing
 - navigation spacing and visual treatment
-- managed-image sizing
-- section background pattern
+- how wide and tall images managed by Norna may appear
+- how coordinated backgrounds repeat between H2 sections
+- the reader choices available in the [Display panel](#reader-display-controls)
 
-These coordinated values keep the site's identity consistent. Page themes
-cannot select another preset.
+The preset does not create content, choose the page hierarchy, or select the
+navigation mode. Those decisions come from the page files and `config.yaml`.
+The root preset applies throughout the site; page themes cannot select another
+preset.
+
+Omit `preset` only when the root theme should define its settings explicitly.
+Any omitted setting then uses the engine default described in the corresponding
+section of this reference.
+
+### Choose A Preset
+
+| Preset | Intended use | Default direction |
+| --- | --- | --- |
+| `portfolio` | Portfolios and image-led presentation | Restrained sans-serif typography, broad text and image areas, a dark near-monochrome default, and square corners. |
+| `documentation` | Guides and reference material | Serif reading typography, narrow prose, compact spacing, warm paper colors, and rounded corners. |
+| `project` | Project and product sites that combine explanation, code, cards, and images | System sans-serif typography, normal-width prose, compact spacing, cool green colors, and rounded corners. |
+| `statement` | Short editorial, campaign, or statement-led sites | Expressive sans-serif typography, spacious rhythm, prominent media, warm paper colors, and square corners. |
+
+Choose according to the site's main reading task, not according to one color or
+font in isolation. Start without overrides and review the result with real
+content before changing individual values.
+
+[Compare all four presets with identical content](https://janga.github.io/norna/examples/theme-presets/).
+
+The following sections list the complete public settings supplied by each
+preset. Internal profile names and derived component tokens are implementation
+details and are deliberately excluded.
+
+### `portfolio`
+
+Use `portfolio` when images should carry much of the presentation and prose
+should remain visually restrained. Its broad text and media areas suit
+portfolios, collections, and image-led introductions. A dense technical
+reference will normally be better served by `documentation`.
+
+```yaml
+preset: portfolio
+```
+
+| Setting | Preset value |
+| --- | --- |
+| `palette` | `near-monochrome` |
+| `colorMode.default` | `dark` |
+| `typography.fontFamily` | `'Helvetica Neue', Arial, sans-serif` |
+| `typography.profile` | `restrained` |
+| `typography.rhythm` | `normal` |
+| `layout.textWidth` | `wide` |
+| `layout.contentSpacing` | `normal` |
+| `layout.pageWidth` | `1240px` |
+| `layout.gutter` | Desktop `clamp(1.25rem, 4vw, 3rem)`; mobile `1rem` |
+| `images.width` | `1000px` |
+| `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
+| `images.maxAvailableHeightPercent` | Desktop `78`; mobile `68` |
+| `corners` | `square` |
+| `sections.backgroundPattern` | `uniform` |
+| `readerControls` | Color mode enabled; reading width and focus reading disabled by default |
+
+[Open the rendered `portfolio` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/).
+
+### `documentation`
+
+Use `documentation` for sustained reading, technical explanation, guides, and
+reference material. It keeps prose narrow and structural spacing compact while
+allowing diagrams and other managed media to extend beyond the text column.
+The serif reading treatment is less suitable when images should dominate the
+site's identity.
+
+```yaml
+preset: documentation
+```
+
+| Setting | Preset value |
+| --- | --- |
+| `palette` | `warm-paper` |
+| `colorMode.default` | `system` |
+| `typography.fontFamily` | `Georgia, 'Times New Roman', serif` |
+| `typography.profile` | `reading` |
+| `typography.rhythm` | `compact` |
+| `layout.textWidth` | `narrow` |
+| `layout.contentSpacing` | `compact` |
+| `layout.pageWidth` | `1240px` |
+| `layout.gutter` | Desktop `clamp(1.25rem, 4vw, 3rem)`; mobile `1rem` |
+| `images.width` | `920px` |
+| `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
+| `images.maxAvailableHeightPercent` | Desktop `74`; mobile `68` |
+| `corners` | `rounded` |
+| `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
+| `readerControls` | Color mode, reading width, and focus reading enabled by default |
+
+[Open the rendered `documentation` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/).
+
+### `project`
+
+Use `project` for project and product sites that need to balance concise prose,
+code, cards, and supporting images. Its system typography and normal text width
+make it a neutral working default. Sites centered on prolonged reference
+reading or immersive images will normally benefit from a more specialized
+preset.
+
+```yaml
+preset: project
+```
+
+| Setting | Preset value |
+| --- | --- |
+| `palette` | `cool-green` |
+| `colorMode.default` | `system` |
+| `typography.fontFamily` | `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif` |
+| `typography.profile` | `reading` |
+| `typography.rhythm` | `compact` |
+| `layout.textWidth` | `normal` |
+| `layout.contentSpacing` | `compact` |
+| `layout.pageWidth` | `1120px` |
+| `layout.gutter` | Desktop `clamp(1.25rem, 4vw, 3rem)`; mobile `1rem` |
+| `images.width` | `840px` |
+| `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
+| `images.maxAvailableHeightPercent` | Desktop `70`; mobile `62` |
+| `corners` | `rounded` |
+| `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
+| `readerControls` | Color mode, reading width, and focus reading enabled by default |
+
+[Open the rendered `project` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-project/).
+
+### `statement`
+
+Use `statement` for short sites that benefit from stronger headings, generous
+spacing, and prominent media. It suits focused editorial presentations,
+campaigns, and concise public statements. Its spacious rhythm is not intended
+for dense documentation or a large reference hierarchy.
+
+```yaml
+preset: statement
+```
+
+| Setting | Preset value |
+| --- | --- |
+| `palette` | `warm-paper` |
+| `colorMode.default` | `system` |
+| `typography.fontFamily` | `'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif` |
+| `typography.profile` | `statement` |
+| `typography.rhythm` | `airy` |
+| `layout.textWidth` | `normal` |
+| `layout.contentSpacing` | `spacious` |
+| `layout.pageWidth` | `1280px` |
+| `layout.gutter` | Desktop `clamp(1.5rem, 5vw, 4rem)`; mobile `1rem` |
+| `images.width` | `1080px` |
+| `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
+| `images.maxAvailableHeightPercent` | Desktop `80`; mobile `70` |
+| `corners` | `square` |
+| `sections.backgroundPattern` | `accented`; resolves to `uniform` with tree navigation |
+| `readerControls` | Color mode enabled; reading width and focus reading disabled by default |
+
+[Open the rendered `statement` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/).
+
+The setting names and values above are defined in [Layout](#layout),
+[Image Sizing](#image-sizing), [Typography](#typography),
+[Palette And Color Mode](#palette-and-color-mode), [Corners](#corners),
+[Section Backgrounds](#section-backgrounds), and
+[Reader Display Controls](#reader-display-controls). See
+[Navigation](pages.md#navigation) for when automatic navigation resolves to a
+tree.
 
 ## Overrides
 

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { getExampleSites } from './lib/example-sites.mjs';
 import projectConfig from './lib/project-config.mjs';
 import { runInherit } from './lib/run-command.mjs';
+import { writeThemePresetComparison } from './build-theme-preset-comparison.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(root, 'bin', 'norna.mjs');
@@ -47,6 +48,8 @@ try {
 			await rm(exampleDistDirectory, { recursive: true, force: true });
 		}
 	}
+
+	await writeThemePresetComparison(path.join(artifactDirectory, 'examples', 'theme-presets'));
 } finally {
 	if (artifactStarted) {
 		await rm(distDirectory, { recursive: true, force: true });
@@ -56,6 +59,12 @@ try {
 }
 
 const documentationExamplesHtml = await readFile(path.join(distDirectory, 'examples', 'index.html'), 'utf8');
+const presetComparisonHtml = await readFile(path.join(distDirectory, 'examples', 'theme-presets', 'index.html'), 'utf8');
+const presetComparisonUrl = new URL('examples/theme-presets/', documentationUrl).href;
+
+if (!documentationExamplesHtml.includes(`href="${presetComparisonUrl}"`)) {
+	throw new Error(`Documentation is missing the theme preset comparison link ${presetComparisonUrl}.`);
+}
 
 for (const example of examples) {
 	const relativePublicPath = `examples/${example.category}/${example.name}/`;
@@ -63,7 +72,9 @@ for (const example of examples) {
 	const siteUrl = new URL(relativePublicPath, documentationUrl).href;
 	const exampleHtml = await readFile(path.join(distDirectory, relativePublicPath, 'index.html'), 'utf8');
 
-	if (!documentationExamplesHtml.includes(`href="${siteUrl}"`)) {
+	const linkedFromPresetComparison = example.name.startsWith('theme-preset-')
+		&& presetComparisonHtml.includes(`../feature-demos/${example.name}/`);
+	if (!linkedFromPresetComparison && !documentationExamplesHtml.includes(`href="${siteUrl}"`)) {
 		throw new Error(`Documentation is missing the rendered example link ${siteUrl}.`);
 	}
 	if (!exampleHtml.includes(`href="${basePath}`) && !exampleHtml.includes(`src="${basePath}`)) {
