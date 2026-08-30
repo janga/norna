@@ -5,7 +5,7 @@ import { getSitePage, getSitePages, isHomePageEntry } from '../lib/sitePages';
 
 export async function getStaticPaths() {
 	const entries = await getCollection('site');
-	const pages = getSitePages(entries);
+	const pages = await getSitePages(entries);
 
 	return pages
 		.filter((page) => !page.isHome)
@@ -21,7 +21,7 @@ if (!entry || isHomePageEntry(entry)) {
 	throw new Error('Page entry is missing.');
 }
 
-const currentPage = getSitePage(entry);
+const currentPage = await getSitePage(entry);
 
 if (!currentPage.pathSegment) {
 	throw new Error(`Page "${entry.id}" needs a page id.`);

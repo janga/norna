@@ -1,4 +1,3 @@
-import { Buffer } from 'node:buffer';
 import { documentationLink } from './documentation-links.mjs';
 
 const field = (description, options = {}) => Object.freeze({ description, ...options });
@@ -87,7 +86,6 @@ const blockTypeLabels = {
 
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
 const imageNameRegex = /^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$/i;
-const markerTagName = 'norna-block';
 const imageStackExample = [
 	'```norna-image-stack',
 	'- image: filename.jpg',
@@ -533,31 +531,6 @@ export const parseNornaMarkdownBlock = (type, source, options = {}) => {
 
 const getLineNumber = (source, index) => source.slice(0, index).split(/\r?\n/).length;
 
-export const extractNornaMarkdownBlocks = (markdown, options = {}) => {
-	const blocks = [];
-	const { blocks: scannedBlocks, errors } = scanMarkdownFencedBlocks(markdown, options);
-
-	if (errors.length > 0) {
-		throw new Error(errors[0].message);
-	}
-
-	for (const block of scannedBlocks) {
-		blocks.push({
-			...parseNornaMarkdownBlock(block.blockType, block.source, { ...options, line: block.sourceLine }),
-			blockType: block.blockType,
-			endLine: block.endLine,
-			endOffset: block.endOffset,
-			line: block.line,
-			startOffset: block.startOffset,
-			source: block.source,
-			sourceEndOffset: block.sourceEndOffset,
-			sourceStartOffset: block.sourceStartOffset,
-		});
-	}
-
-	return blocks;
-};
-
 export const extractNornaMarkdownBlockDiagnostics = (markdown, options = {}) => {
 	const blocks = [];
 	const { blocks: scannedBlocks, errors } = scanMarkdownFencedBlocks(markdown, options);
@@ -628,18 +601,6 @@ const maskFencedCodeBlocks = (markdown) => {
 const isExternalImageTarget = (target) => /^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('//');
 const isRootRelativePublicTarget = (target) => target.startsWith('/');
 
-const stripTags = (value) => value.replace(/<[^>]*>/g, '');
-
-const decodeHtmlEntities = (value) =>
-	value
-		.replace(/&amp;/g, '&')
-		.replace(/&lt;/g, '<')
-		.replace(/&gt;/g, '>')
-		.replace(/&quot;/g, '"')
-		.replace(/&#39;/g, "'")
-		.replace(/&#x([0-9a-f]+);/gi, (_match, hex) => String.fromCodePoint(Number.parseInt(hex, 16)))
-		.replace(/&#(\d+);/g, (_match, decimal) => String.fromCodePoint(Number.parseInt(decimal, 10)));
-
 export const extractMarkdownImageReferences = (markdown) => {
 	const masked = maskFencedCodeBlocks(markdown);
 	const references = [];
@@ -679,50 +640,6 @@ export const getNornaBlockImageReferences = (blocks) =>
 			line: image.line ?? block.line,
 		}));
 	});
-
-export const createNornaMarkdownBlockMarker = (type, source) => {
-	const encodedSource = Buffer.from(source, 'utf8').toString('base64');
-	return `<${markerTagName} data-type="${type}" data-source="${encodedSource}"></${markerTagName}>`;
-};
-
-export const splitNornaMarkdownBlockMarkers = (html, options = {}) => {
-	const blocks = [];
-	const markerRegex = /<norna-block\s+data-type="([^"]+)"\s+data-source="([^"]*)"\s*><\/norna-block>|<pre\b([^>]*)>\s*<code\b([^>]*)>([\s\S]*?)<\/code>\s*<\/pre>/g;
-	let cursor = 0;
-
-	for (const match of html.matchAll(markerRegex)) {
-		const start = match.index ?? 0;
-		if (start > cursor) {
-			blocks.push({ type: 'html', html: html.slice(cursor, start) });
-		}
-
-		if (match[1]) {
-			const blockType = match[1];
-			const source = Buffer.from(match[2] ?? '', 'base64').toString('utf8');
-			blocks.push(parseNornaMarkdownBlock(blockType, source, options));
-		} else {
-			const attributes = `${match[3] ?? ''} ${match[4] ?? ''}`;
-			const blockType = attributes.match(/\blanguage-(norna-[a-z0-9-]+)\b/)?.[1]
-				?? attributes.match(/\bdata-language="(norna-[a-z0-9-]+)"/)?.[1];
-			if (!nornaBlockTypes.has(blockType)) {
-				blocks.push({ type: 'html', html: match[0] });
-			} else {
-				const source = decodeHtmlEntities(stripTags(match[5] ?? ''));
-				blocks.push(parseNornaMarkdownBlock(blockType, source, options));
-			}
-		}
-
-		cursor = start + match[0].length;
-	}
-
-	if (cursor < html.length) {
-		blocks.push({ type: 'html', html: html.slice(cursor) });
-	}
-
-	return blocks.filter((block) => block.type !== 'html' || block.html.trim());
-};
-
-const normalizeBlockSource = (source) => source.replace(/\r\n?/g, '\n').trim();
 
 const inlineNoteReferenceRegex = /\{note-ref\}/g;
 const inlineNoteDeclarationOpeningRegex = /^\s*\{note:\s*(.*)$/;
@@ -975,58 +892,4 @@ export const extractInlineNoteDiagnostics = (markdown, options = {}) => {
 	reportMissingNote();
 
 	return { notes, errors };
-};
-
-export const splitNornaRenderedCodeBlocks = (html, rawBlocks, options = {}) => {
-	const blocks = [];
-	const renderedCodeRegex = /<pre\b[^>]*>\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/g;
-	let cursor = 0;
-	let rawIndex = 0;
-
-	for (const match of html.matchAll(renderedCodeRegex)) {
-		const start = match.index ?? 0;
-		if (start > cursor) {
-			blocks.push({ type: 'html', html: html.slice(cursor, start) });
-		}
-
-		const rawBlock = rawBlocks[rawIndex];
-		const renderedSource = normalizeBlockSource(decodeHtmlEntities(stripTags(match[1] ?? '')));
-		const rawSource = normalizeBlockSource(rawBlock?.source ?? '');
-
-		if (rawBlock && renderedSource === rawSource) {
-			blocks.push(parseNornaMarkdownBlock(rawBlock.blockType, rawBlock.source, options));
-			rawIndex += 1;
-		} else {
-			blocks.push({ type: 'html', html: match[0] });
-		}
-
-		cursor = start + match[0].length;
-	}
-
-	if (cursor < html.length) {
-		blocks.push({ type: 'html', html: html.slice(cursor) });
-	}
-
-	return blocks.filter((block) => block.type !== 'html' || block.html.trim());
-};
-
-const visitCodeBlocks = (node) => {
-	if (!node || typeof node !== 'object') return;
-
-	if (Array.isArray(node.children)) {
-		for (const child of node.children) {
-			visitCodeBlocks(child);
-		}
-	}
-
-	if (node.type !== 'code' || !nornaBlockTypes.has(node.lang)) return;
-
-	node.type = 'html';
-	node.value = createNornaMarkdownBlockMarker(node.lang, node.value ?? '');
-	delete node.lang;
-	delete node.meta;
-};
-
-export const nornaMarkdownBlocksRemarkPlugin = () => (tree) => {
-	visitCodeBlocks(tree);
 };

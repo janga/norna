@@ -10,7 +10,6 @@ import {
 	sitewideContentLabel,
 } from './site-paths.mjs';
 import { parsePageDirectoryPath } from './page-model.mjs';
-import { getMarkdownHeadings } from './heading-ids.mjs';
 import { schemaTopLevelKeys } from './schema-definitions.mjs';
 
 export const rasterImageExtensions = new Set(['.jpg', '.jpeg', '.png']);
@@ -393,31 +392,6 @@ export const readThemeFile = async (sitePath) => {
 
 export const getDeprecatedInlineStyleReferences = (body) => Array.from(body.matchAll(deprecatedInlineStyleReferenceRegex))
 	.map((match) => match[1]);
-
-export const getBodySections = async (body) => {
-	const { headings, source } = await getMarkdownHeadings(body);
-	const structuralHeadings = headings.filter((heading) => heading.depth <= 2);
-	const prelude = structuralHeadings.length > 0 ? source.slice(0, structuralHeadings[0].index) : source;
-	const sections = structuralHeadings.map((heading, index) => {
-		const next = structuralHeadings[index + 1];
-		const end = next?.index ?? source.length;
-
-		return {
-			...heading,
-			heading: heading.source,
-			isPageTitle: heading.depth === 1,
-			level: heading.depth,
-			text: source.slice(heading.index, end).trimEnd(),
-		};
-	});
-
-	return {
-		headings,
-		pageHeadings: sections.filter((section) => section.isPageTitle),
-		prelude,
-		sections,
-	};
-};
 
 export const getImageFiles = async (directory) => {
 	const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {

@@ -1,8 +1,5 @@
 {
 	"ignoreExportsUsedInFile": true,
-	"ignoreIssues": {
-		"scripts/lib/norna-markdown-blocks.mjs": ["exports"]
-	},
 	"workspaces": {
 		".": {
 			"entry": [

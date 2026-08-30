@@ -1,6 +1,5 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
-import path from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
 import SiteNavigation from './SiteNavigation.astro';
@@ -8,14 +7,12 @@ import SiteBanners from './SiteBanners.astro';
 import SiteSection from './SiteSection.astro';
 import SiteTreeNavigation from './SiteTreeNavigation.astro';
 import TreeNavigationScript from './TreeNavigationScript.astro';
-import { getHeadingNavigation, getSectionsContent, type ResolvedSection } from '../lib/sectionContent';
+import { getSectionsContent, type ResolvedSection } from '../lib/sectionContent';
 import { getPageTheme } from '../lib/pageThemes';
-import { getSitePage, getSitePages, type SitePage } from '../lib/sitePages';
+import { getSitePages, type SitePage } from '../lib/sitePages';
 import { getToday, isVisibleToday } from '../lib/visibility';
 import { getLogoAsset } from '../lib/sitePublicAssets';
-import { readSiteFile } from '../../scripts/lib/site-content.mjs';
 import { resolveNavigationModel } from '../../scripts/lib/navigation-model.mjs';
-import { sitePagesDir } from '../../scripts/lib/site-paths.mjs';
 import { projectConfig, resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
 import { getTextWidthCssValue, resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
 import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
@@ -28,15 +25,9 @@ interface Props {
 
 const { entry } = Astro.props;
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
-const sitePages = getSitePages(await getCollection('site'));
-const currentPage = getSitePage(entry);
-const getPageContentFile = (page: SitePage) => ({
-		label: `${siteDirectory || 'site'}/pages/${page.pageDirectory}/content.md`,
-		path: path.join(sitePagesDir, page.pageDirectory, 'content.md'),
-	});
-const pageContentFile = getPageContentFile(currentPage);
-const siteContentLabel = pageContentFile.label;
-const rawMarkdown = (await readSiteFile(pageContentFile.path, pageContentFile.label)).body;
+const sitePages = await getSitePages(await getCollection('site'));
+const currentPage = sitePages.find((page) => page.entry.id === entry.id);
+if (!currentPage) throw new Error(`Page entry "${entry.id}" is missing from the site page model.`);
 const [siteTheme] = await getCollection('theme');
 if (!siteTheme) {
 	throw new Error('site/theme.yaml is required. Add a root theme before building the site.');
@@ -64,7 +55,7 @@ const pagePresentation = resolvePagePresentation(themeData, themeLabel);
 const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
 const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: `${siteDirectory || 'site'}/${siteTheme.id}` });
 const siteHtml = entry.rendered?.html ?? '';
-const resolvedSections = await getSectionsContent(siteHtml, rawMarkdown, currentPage, siteContentLabel);
+const resolvedSections = await getSectionsContent(siteHtml, currentPage);
 const today = getToday();
 const siteBanners = (sitewideData.banners ?? []).filter((banner) => isVisibleToday(banner.visible, today));
 const hasPrioritizableImage = (section: ResolvedSection) => section.contentBlocks.some((block) => (
@@ -79,16 +70,16 @@ const renderedSections = resolvedSections.map((section, index) => ({
 	prioritizeFirstImage: index === firstImageSectionIndex,
 }));
 
-const getPageContent = async (page: SitePage) => {
-	const contentFile = getPageContentFile(page);
-	const pageMarkdown = page.pathname === currentPage.pathname
-		? rawMarkdown
-		: (await readSiteFile(contentFile.path, contentFile.label)).body;
-	return getHeadingNavigation(pageMarkdown, contentFile.label);
-};
+const getPageContent = (page: SitePage) =>
+	page.markdownDocument.navigationHeadings.map(({ depth, id, parentId, title }) => ({
+		depth,
+		id,
+		parentId,
+		title,
+	}));
 
-const pageNavigation = await Promise.all(sitePages.map(async (page) => {
-	const headings = await getPageContent(page);
+const pageNavigation = sitePages.map((page) => {
+	const headings = getPageContent(page);
 	return {
 		page,
 		headings,
@@ -96,7 +87,7 @@ const pageNavigation = await Promise.all(sitePages.map(async (page) => {
 			.filter((heading) => heading.depth === 2)
 			.map(({ id, title }) => ({ id, title })),
 	};
-}));
+});
 const navigationModel = resolveNavigationModel({
 	mode: projectConfig.navigation.mode,
 	pages: pageNavigation.map(({ page, headings }) => ({

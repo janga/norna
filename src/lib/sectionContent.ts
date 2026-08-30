@@ -2,15 +2,7 @@ import { markdownToHtml } from 'satteri';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import {
 	formatHeadingIdentifierIssue,
-	getHeadingIdentifierIssues,
 } from '../../scripts/lib/heading-ids.mjs';
-import { getBodySections } from '../../scripts/lib/site-content.mjs';
-import {
-	extractInlineNoteDiagnostics,
-	extractNornaMarkdownBlocks,
-	splitNornaMarkdownBlockMarkers,
-	splitNornaRenderedCodeBlocks,
-} from '../../scripts/lib/norna-markdown-blocks.mjs';
 import { applyBasePathToHtml } from './basePath';
 import type { SitePage } from './sitePages';
 
@@ -32,6 +24,19 @@ type CardListLayout = 'image-top' | 'image-left' | 'image-right';
 type CardListFlow = 'grid' | 'stack';
 type CardListSize = 's' | 'm' | 'l' | 'xl';
 type CardListWidth = 'text' | 'narrow' | 'normal' | 'wide';
+type ParsedImageBlock = {
+	type: 'image-stack' | 'image-carousel';
+	images: Array<{ image: string; alt?: string; caption?: string }>;
+};
+type ParsedCardListBlock = {
+	type: 'card-list';
+	layout: CardListLayout;
+	flow: CardListFlow;
+	size: CardListSize;
+	width: CardListWidth;
+	cards: CardListItem[];
+};
+type ParsedNornaBlock = ParsedImageBlock | ParsedCardListBlock;
 type InlineNote = {
 	markdown: string;
 	number: number;
@@ -62,47 +67,8 @@ export type HeadingNavigation = SectionNavigation & {
 	parentId: string | null;
 };
 
-const contentHeadingRegex = /<h([12])\b([^>]*)>([\s\S]*?)<\/h\1>/gi;
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const imageProvenanceCommentRegex = /<!--\s*norna-image-provenance:[\s\S]*?-->/gi;
-
-const stripTags = (html: string) => html.replace(/<[^>]*>/g, '');
-
-const decodeHtmlEntities = (value: string) =>
-	value
-		.replace(/&amp;/g, '&')
-		.replace(/&lt;/g, '<')
-		.replace(/&gt;/g, '>')
-		.replace(/&quot;/g, '"')
-		.replace(/&#39;/g, "'");
-
-const getHeadingTitle = (headingHtml: string) =>
-	decodeHtmlEntities(stripTags(headingHtml)).replace(explicitHeadingIdRegex, '').trim();
-
-const getHeadingTitleHtml = (headingHtml: string) =>
-	prepareContentHtml(headingHtml.replace(explicitHeadingIdRegex, '').trim());
-
-export const getHeadingNavigation = async (
-	markdown: string,
-	sourceLabel = 'Markdown',
-): Promise<HeadingNavigation[]> => {
-	const bodyStructure = await getBodySections(markdown);
-	const issues = getHeadingIdentifierIssues(bodyStructure.headings);
-	if (issues.length > 0) throw new Error(formatHeadingIdentifierIssue(issues[0], sourceLabel));
-
-	let parentId: string | null = null;
-	return bodyStructure.headings.flatMap((heading) => {
-		if (heading.depth === 1 || !heading.id) return [];
-		if (heading.depth === 2) parentId = heading.id;
-
-		return [{
-			depth: heading.depth,
-			id: heading.id,
-			parentId: heading.depth === 3 ? parentId : null,
-			title: heading.title,
-		}];
-	});
-};
 
 const stripImageProvenanceComments = (html: string) => html.replace(imageProvenanceCommentRegex, '');
 
@@ -149,21 +115,9 @@ const applyInlineNoteMarkup = (html: string, notes: InlineNote[]) => {
 	return withReferences.replace(noteDeclarationParagraphRegex, '');
 };
 
-const getRawMarkdownSections = (bodySections: Awaited<ReturnType<typeof getBodySections>>['sections']) => {
-	const sections = new Map<string, string>();
-
-	for (const section of bodySections) {
-		const id = section.isPageTitle ? '__page-title' : section.id;
-		if (!id) continue;
-		sections.set(id, section.text);
-	}
-
-	return sections;
-};
-
 const applyH3HeadingIds = (
 	html: string,
-	headings: Awaited<ReturnType<typeof getBodySections>>['headings'],
+	headings: Array<{ id: string | null }>,
 ) => {
 	let headingIndex = 0;
 	const result = html.replace(/<h3\b([^>]*)>([\s\S]*?)<\/h3>/gi, (_match, attributes, headingHtml) => {
@@ -206,21 +160,76 @@ const renderInlineNoteMarkdown = async (markdown: string) => {
 	return paragraph[1] ?? '';
 };
 
+const renderHeadingTitleHtml = async (headingSource: string) => {
+	const headingMarkdown = headingSource
+		.replace(/^#{1,6}[ \t]+/, '')
+		.replace(explicitHeadingIdRegex, '')
+		.trim();
+	const result = await markdownToHtml(headingMarkdown, {
+		features: {
+			gfm: true,
+			smartPunctuation: true,
+		},
+	});
+	const paragraph = result.html.trim().match(/^<p>([\s\S]*)<\/p>$/i);
+	if (!paragraph) throw new Error('Markdown heading could not be rendered as inline content.');
+	return prepareContentHtml(paragraph[1] ?? '');
+};
+
+const splitRenderedRegions = (html: string, regionCount: number) => {
+	const markerRegex = /<norna-region\s+data-index="(\d+)"\s*><\/norna-region>/g;
+	const markers = Array.from(html.matchAll(markerRegex));
+	if (markers.length !== regionCount) {
+		throw new Error(`Rendered Markdown contains ${markers.length} page region markers, but ${regionCount} regions were parsed.`);
+	}
+
+	return markers.map((marker, position) => {
+		const index = Number.parseInt(marker[1] ?? '', 10);
+		if (index !== position) throw new Error(`Rendered page region ${position + 1} has unexpected index ${index}.`);
+		const start = (marker.index ?? 0) + marker[0].length;
+		const end = markers[position + 1]?.index ?? html.length;
+		return html.slice(start, end).trim();
+	});
+};
+
+const splitNornaBlockMarkers = (html: string, blocks: ParsedNornaBlock[]) => {
+	const result: Array<{ type: 'html'; html: string } | ParsedNornaBlock> = [];
+	const markerRegex = /<norna-block\s+data-index="(\d+)"\s*><\/norna-block>/g;
+	const seen = new Set<number>();
+	let cursor = 0;
+
+	for (const match of html.matchAll(markerRegex)) {
+		const start = match.index ?? 0;
+		if (start > cursor) result.push({ type: 'html', html: html.slice(cursor, start) });
+
+		const index = Number.parseInt(match[1] ?? '', 10);
+		const block = blocks[index];
+		if (!block) throw new Error(`Rendered Norna block ${index + 1} has no matching parsed block.`);
+		seen.add(index);
+		result.push(block);
+		cursor = start + match[0].length;
+	}
+
+	if (cursor < html.length) result.push({ type: 'html', html: html.slice(cursor) });
+	if (seen.size !== blocks.length) {
+		throw new Error(`Rendered Markdown contains ${seen.size} Norna block markers, but ${blocks.length} blocks were parsed.`);
+	}
+
+	return result.filter((block) => block.type !== 'html' || block.html.trim());
+};
+
 const resolveContentBlocks = async (
 	html: string,
-	rawMarkdown: string,
+	blocks: ParsedNornaBlock[],
 	page: SitePage,
 	inlineNotes: InlineNote[] = [],
 ) => {
-	const rawBlocks = extractNornaMarkdownBlocks(rawMarkdown);
 	const renderedNotes = await Promise.all(inlineNotes.map(async (note) => ({
 		...note,
 		html: await renderInlineNoteMarkdown(note.markdown),
 	})));
 	const renderedHtml = applyInlineNoteMarkup(html, renderedNotes);
-	const splitBlocks = rawBlocks.length > 0
-		? splitNornaRenderedCodeBlocks(renderedHtml, rawBlocks)
-		: splitNornaMarkdownBlockMarkers(renderedHtml);
+	const splitBlocks = splitNornaBlockMarkers(renderedHtml, blocks);
 	const resolvedBlocks: SectionContentBlock[] = [];
 
 	for (const block of splitBlocks) {
@@ -258,46 +267,32 @@ const resolveContentBlocks = async (
 
 export const getSectionsContent = async (
 	html: string,
-	rawMarkdown: string,
 	page: SitePage,
-	sourceLabel = 'Markdown',
 ) => {
-	const matches = Array.from(html.matchAll(contentHeadingRegex));
-	const bodyStructure = await getBodySections(rawMarkdown);
-	const headingIdentifierIssues = getHeadingIdentifierIssues(bodyStructure.headings);
+	const pageDocument = page.markdownDocument;
+	const sourceLabel = page.contentLabel;
+	const headingIdentifierIssues = pageDocument.headingIssues;
 	if (headingIdentifierIssues.length > 0) {
 		throw new Error(formatHeadingIdentifierIssue(headingIdentifierIssues[0], sourceLabel));
 	}
-	const rawSections = getRawMarkdownSections(bodyStructure.sections);
 	const sections: ResolvedSection[] = [];
 	const sectionIds = new Set<string>();
 	let nextNoteNumber = 1;
-	const pageHeadingCount = matches.filter((match) => match[1] === '1').length;
+	const pageHeadingCount = pageDocument.pageHeadings.length;
 
-	if (pageHeadingCount !== 1 || matches[0]?.[1] !== '1') {
+	if (pageHeadingCount !== 1 || pageDocument.regions[0]?.kind !== 'page-intro') {
 		throw new Error('Each Norna page must start with exactly one Markdown H1 page title, for example "# About".');
 	}
+	const renderedRegions = splitRenderedRegions(html, pageDocument.regions.length);
 
-	for (let index = 0; index < matches.length; index += 1) {
-		const match = matches[index];
-		const bodySection = bodyStructure.sections[index];
-		const headingLevel = Number.parseInt(match[1] ?? '', 10) as 1 | 2;
-		const headingHtml = match[3] ?? '';
-		if (!bodySection || bodySection.level !== headingLevel) {
-			throw new Error('Markdown H1/H2 headings could not be matched to the rendered page content.');
-		}
+	for (let index = 0; index < renderedRegions.length; index += 1) {
+		const bodySection = pageDocument.regions[index];
+		if (!bodySection) throw new Error(`Parsed page region ${index + 1} is missing.`);
+		const headingLevel = bodySection.heading.depth as 1 | 2;
 		const id = bodySection.id;
-		const contentStart = (match.index ?? 0) + match[0].length;
-		const nextMatch = matches[index + 1];
-		const contentEnd = nextMatch?.index ?? html.length;
-		const nextBodySection = bodyStructure.sections[index + 1];
-		const h3Headings = bodyStructure.headings.filter((heading) => (
-			heading.depth === 3
-			&& heading.index > bodySection.index
-			&& heading.index < (nextBodySection?.index ?? Number.POSITIVE_INFINITY)
-		));
-		const content = applyH3HeadingIds(html.slice(contentStart, contentEnd).trim(), h3Headings);
-		const title = getHeadingTitle(headingHtml);
+		const h3Headings = bodySection.headings.filter((heading) => heading.depth === 3);
+		const content = applyH3HeadingIds(renderedRegions[index] ?? '', h3Headings);
+		const title = bodySection.title;
 
 		if (headingLevel === 2 && !id) throw new Error(`Section heading "${title}" cannot produce an automatic ASCII id.`);
 
@@ -306,15 +301,14 @@ export const getSectionsContent = async (
 		}
 
 		if (id) sectionIds.add(id);
-		const rawSection = rawSections.get(id ?? '__page-title') ?? '';
-		const inlineNoteDiagnostics = extractInlineNoteDiagnostics(rawSection, {
-			label: 'Markdown section',
-		});
-		if (inlineNoteDiagnostics.errors.length > 0) {
-			throw new Error(inlineNoteDiagnostics.errors[0].message);
+		if (bodySection.blockErrors.length > 0) {
+			throw new Error(bodySection.blockErrors[0].message);
+		}
+		if (bodySection.noteErrors.length > 0) {
+			throw new Error(bodySection.noteErrors[0].message);
 		}
 
-		const inlineNotes = inlineNoteDiagnostics.notes.map((note) => {
+		const inlineNotes = bodySection.notes.map((note) => {
 			const number = nextNoteNumber;
 			nextNoteNumber += 1;
 			const pageKey = page.pageId || 'home';
@@ -330,9 +324,9 @@ export const getSectionsContent = async (
 		sections.push({
 			id,
 			title,
-			titleHtml: getHeadingTitleHtml(headingHtml),
+			titleHtml: await renderHeadingTitleHtml(bodySection.heading.source),
 			headingLevel,
-			contentBlocks: await resolveContentBlocks(content, rawSection, page, inlineNotes),
+			contentBlocks: await resolveContentBlocks(content, bodySection.blocks, page, inlineNotes),
 		});
 	}
 

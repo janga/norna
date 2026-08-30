@@ -3,7 +3,9 @@ import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { defineConfig } from 'astro/config';
+import { satteri } from '@astrojs/markdown-satteri';
 import { getBasePathRedirectLocation } from './scripts/lib/base-path-redirect.mjs';
+import { nornaMarkdownRenderPlugin } from './scripts/lib/norna-markdown-render-plugin.mjs';
 import {
 	astroCacheDir,
 	astroDistDir,
@@ -118,6 +120,11 @@ const nornaGeneratedImagesWatcher = () => ({
 export default defineConfig({
 	base: projectConfig.site.basePath,
 	cacheDir: astroCacheDir,
+	markdown: {
+		processor: satteri({
+			mdastPlugins: [nornaMarkdownRenderPlugin],
+		}),
+	},
 	outDir: astroDistDir,
 	publicDir: astroPublicDir,
 	srcDir: path.join(engineRoot, 'src'),

@@ -1,6 +1,10 @@
 import type { CollectionEntry } from 'astro:content';
+import path from 'node:path';
 import { decodePageDirectoryPath, parsePageDirectoryPath } from '../../scripts/lib/page-model.mjs';
+import { parsePageMarkdown } from '../../scripts/lib/page-markdown.mjs';
+import { readSiteFile } from '../../scripts/lib/site-content.mjs';
 import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
+import { sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
 
@@ -21,6 +25,9 @@ export type SitePage = {
 	pageOrders: number[];
 	pagePath: string;
 	parentPagePath: string | null;
+	markdown: string;
+	markdownDocument: Awaited<ReturnType<typeof parsePageMarkdown>>;
+	contentLabel: string;
 	title: string;
 };
 
@@ -40,7 +47,7 @@ const stripPageIdPrefix = (id: string) => {
 
 export const isHomePageEntry = (entry: SiteEntry) => stripPageIdPrefix(entry.id) === homePageDirectory;
 
-const getPageDirectory = (entry: SiteEntry) => {
+export const getPageDirectory = (entry: SiteEntry) => {
 	const pageDirectory = stripPageIdPrefix(entry.id);
 	if (!pageDirectory) throw new Error(`Page entry "${entry.id}" has no valid page directory.`);
 	return pageDirectory;
@@ -63,26 +70,23 @@ const compareNumberPaths = (left: number[], right: number[]) => {
 	return left.length - right.length;
 };
 
-const decodeHtmlEntities = (value: string) => value
-	.replace(/&amp;/g, '&')
-	.replace(/&lt;/g, '<')
-	.replace(/&gt;/g, '>')
-	.replace(/&quot;/g, '"')
-	.replace(/&#39;/g, "'");
+const readPageMarkdownDocument = async (entry: SiteEntry) => {
+	const pageDirectory = getPageDirectory(entry);
+	const contentLabel = `${sitePagesLabel}/${pageDirectory}/content.md`;
+	const { body } = await readSiteFile(path.join(sitePagesDir, pageDirectory, 'content.md'), contentLabel);
+	const markdownDocument = await parsePageMarkdown(body, { label: contentLabel });
 
-const getPageTitle = (entry: SiteEntry) => {
-	const html = entry.rendered?.html ?? '';
-	const headings = Array.from(html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi));
-	if (headings.length !== 1) {
+	if (markdownDocument.pageHeadings.length !== 1 || markdownDocument.regions[0]?.kind !== 'page-intro') {
 		throw new Error(`Page entry "${entry.id}" must contain exactly one Markdown H1 page title.`);
 	}
 
-	return decodeHtmlEntities((headings[0]?.[1] ?? '').replace(/<[^>]*>/g, '')).trim();
+	return { body, contentLabel, markdownDocument };
 };
 
-export const getSitePage = (entry: SiteEntry): SitePage => {
+const createSitePage = async (entry: SiteEntry): Promise<SitePage> => {
 	const isHome = isHomePageEntry(entry);
 	const pageMetadata = getPageMetadata(entry);
+	const { body, contentLabel, markdownDocument } = await readPageMarkdownDocument(entry);
 	const pageDirectory = pageMetadata.pageDirectory;
 	const pageId = pageMetadata.pageId;
 	const pagePath = pageMetadata.pagePath;
@@ -106,12 +110,17 @@ export const getSitePage = (entry: SiteEntry): SitePage => {
 		pageOrders: pageMetadata.pageOrders,
 		pagePath,
 		parentPagePath: isHome ? null : pageMetadata.parentPagePath,
-		title: getPageTitle(entry),
+		contentLabel,
+		markdown: body,
+		markdownDocument,
+		title: markdownDocument.pageTitle.title,
 	};
 };
 
-export const getSitePages = (entries: SiteEntry[]) => {
-	const pages = entries.map(getSitePage);
+export const getSitePage = async (entry: SiteEntry): Promise<SitePage> => createSitePage(entry);
+
+export const getSitePages = async (entries: SiteEntry[]) => {
+	const pages = await Promise.all(entries.map(createSitePage));
 	const pathnames = new Map<string, SitePage>();
 	const siblingPageIds = new Map<string, SitePage>();
 	const siblingPageOrders = new Map<string, SitePage>();
