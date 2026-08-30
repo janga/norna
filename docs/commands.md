@@ -44,6 +44,8 @@ norna images
 norna engine:update [version|latest]
 norna engine:version [--latest]
 norna init <target-dir> [--type standalone|embedded] [--site-dir <path>]
+norna page:add <title> [--parent <path>] [--slug <slug>] [--order <NNN>] [--dry-run]
+norna category:add <label> [--parent <path>] [--slug <slug>] [--order <NNN>] [--dry-run]
 norna build
 norna build:local
 norna deploy
@@ -107,6 +109,40 @@ a GitHub project that embeds a Norna site next to an app, `build`
 should normally mean the repository's complete publishable artifact, while
 `norna:build` builds only the `norna` part.
 
+## Create Pages And Categories
+
+`page:add` creates a routable page with `content.md` and `images/`.
+`category:add` creates a navigation-only category with `category.yaml` and
+`pages/`; the category has no URL of its own.
+
+Use the project-local binary without a global installation:
+
+```sh
+npm exec -- norna page:add "About" --parent /
+npm exec -- norna category:add "Guides" --parent /
+npm exec -- norna page:add "Installation" --parent /guides/
+```
+
+With the optional global launcher installed, omit `npm exec --`.
+
+Both commands:
+
+- generate a lowercase ASCII slug from the title or label;
+- choose the nearest higher multiple of ten after existing siblings;
+- reject a slug or order already used by a sibling page or category;
+- accept `--slug` and `--order` when generated values are unsuitable;
+- accept `--dry-run` to report the destination without writing it.
+
+`--parent /` selects the top level. A logical path such as
+`--parent /guides/` selects an existing page or category. Without `--parent`,
+the current directory must be exactly `site/pages/` or an existing page or
+category directory; Norna reports an error instead of guessing from another
+directory.
+
+See [Pages and Categories](pages.md#create-pages-and-categories) for generated
+files, URL behavior, transliteration, ordering, and the complete structural
+contract.
+
 ## Command Summary
 
 - `doctor`: prints resolved engine root, site project root, site directory,
@@ -151,6 +187,10 @@ should normally mean the repository's complete publishable artifact, while
   standalone site project from the packaged starter, or adds a Norna site
   directory plus `norna:*` scripts to an existing project in embedded mode.
   Standalone setup pins `@janga/norna` to the version that created it.
+- `page:add <title>`: creates one complete page directory at the selected
+  parent. It writes an H1 starter to `content.md` and creates `images/`.
+- `category:add <label>`: creates one non-routable navigation category at the
+  selected parent. It writes `category.yaml` and creates `pages/`.
 - `build`: runs config check, content check, public sync, image generation, and
   Astro build.
 - `build:local`: runs `build` and restarts `dev:local`.

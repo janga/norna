@@ -1,26 +1,43 @@
-# Pages
+# Pages And Categories
 
-Every Norna page is a directory under `site/pages/` with its own `content.md`.
-The same model is used for the homepage, top-level areas, and nested pages.
+`site/pages/` is an ordered hierarchy. Every `NNN-id/` directory in that
+hierarchy must represent exactly one of two things:
+
+| Marker file | Meaning | Own URL | Editorial content and images |
+| --- | --- | --- | --- |
+| `content.md` | A page that readers can open. | Yes | The Markdown and an optional adjacent `images/` directory belong to the page. |
+| `category.yaml` | A navigation-only label that groups child pages. | No | A category has no Markdown content and cannot contain `images/`. |
+
+Do not put both marker files in one directory. A directory with neither marker
+is also invalid. This distinction lets a collection use a real introductory
+page when it has something useful to say, or a category when it only needs a
+navigation label.
+
+For example:
 
 ```text
 site/pages/
 |-- 000-home/
 |   `-- content.md
 |-- 010-guides/
-|   |-- content.md
+|   |-- category.yaml
 |   `-- pages/
 |       `-- 010-installation/
-|           `-- content.md
+|           |-- content.md
+|           `-- images/
 `-- 020-reference/
     `-- content.md
 ```
 
-Pages use the same Markdown H1, optional metadata, sections, Norna blocks, and
-managed-image model. See [Content](content.md) for what belongs inside
-`content.md`.
+`Home`, `Installation`, and `Reference` are pages. `Guides` is a category. The
+example builds `/`, `/guides/installation/`, and `/reference/`, but it does not
+build `/guides/`.
 
-## Homepage And Top-Level Pages
+Pages use the Markdown H1, optional metadata, sections, Norna blocks, and
+managed-image model described in [Content](content.md). Categories use the
+small YAML shape described under [Navigation Categories](#navigation-categories).
+
+## Homepage And Top-Level Entries
 
 The homepage is required at:
 
@@ -32,13 +49,103 @@ It builds to `/`. The `000` prefix is reserved for `000-home`, and Home cannot
 contain a nested `pages/` directory. Home is the site's front door, not the
 parent of every page.
 
-Other directories directly under `site/pages/` are top-level navigation roots.
-For example, `site/pages/010-guides/content.md` builds to `/guides/`. Place
-further pages under the nearest meaningful non-home page.
+Other directories directly under `site/pages/` are top-level navigation
+entries. A top-level page is both a navigation destination and a page. A
+top-level category is a label for its descendants; its global-navigation link
+opens the first listed descendant page instead of creating a category page.
+
+## Choose A Section, Page, Or Category
+
+A section is part of its current page and shares that page's H1, URL, metadata,
+and `content.md`. A separate page has its own directory, `content.md`, H1, URL,
+metadata, and optional images.
+
+Use a section for another part of the same reading task. Add a page for a
+distinct task or topic that remains useful when opened directly.
+
+A page is usually appropriate when all of these statements are true:
+
+- it answers a question or supports a task of its own;
+- a reader can understand it without first reading the complete parent page;
+- linking directly to it is useful and likely to remain useful;
+- its subject has a clear place in the surrounding hierarchy.
+
+Keep the content as a section when it needs the surrounding page for context,
+continues the same task or argument, or is too short to justify another
+navigation choice.
+
+Use one purpose sentence to test a proposed page:
+
+```text
+This page helps <audience> to <understand or accomplish one thing>.
+```
+
+For a child page, also complete:
+
+```text
+It belongs under <parent> because <clear relationship>.
+```
+
+For example, `Installation` can introduce installation as a whole, while
+`macOS`, `Linux`, and `Windows` are child pages that each support a distinct
+installation task. A short `Verify` procedure normally remains a section on
+each operating-system page because it completes the same task.
+
+Use a category instead of a parent page only when the collection needs a label
+in navigation but no useful introduction, overview, or other content of its
+own. Do not replace a useful parent page with a category merely to shorten its
+file tree.
+
+This is editorial guidance, not a validation rule. Norna validates the file
+structure, while the site author decides which topics deserve pages.
+
+## Navigation Categories
+
+A category is a non-routable grouping in the page hierarchy. Its directory
+contains `category.yaml` instead of `content.md`:
+
+```text
+site/pages/010-guides/
+|-- category.yaml
+`-- pages/
+    |-- 010-installation/
+    |   `-- content.md
+    `-- 020-workflows/
+        `-- content.md
+```
+
+The complete category file is:
+
+```yaml
+label: Guides
+```
+
+The directory id still contributes the `guides` segment to descendant URLs:
+
+```text
+/guides/installation/
+/guides/workflows/
+```
+
+Norna does not generate `/guides/`. The category appears as:
+
+- a link to its first listed descendant in global top navigation;
+- a disclosure-only label in the desktop tree and mobile menu;
+- non-linked text in breadcrumbs.
+
+A category may contain an optional limited `theme.yaml`; descendant pages
+inherit it. A category cannot contain `images/`, because it has no page content
+that can reference them. Put an image on a child page, or replace
+`category.yaml` with `content.md` when the collection needs editorial content.
+
+An empty category is allowed temporarily while editing, but `content:check`
+reports a warning. A category with no listed descendant is omitted from
+generated navigation.
 
 ## Nested Pages
 
-A page may contain a `pages/` directory:
+Both a page and a category may contain a `pages/` directory. A page remains the
+right parent when the broader topic needs its own useful destination:
 
 ```text
 site/pages/010-guides/
@@ -59,19 +166,21 @@ This produces:
 /guides/workflows/local/
 ```
 
-Each directory in the chain is a real page and therefore needs its own
-`content.md`. Empty grouping directories are not part of the page model.
+Replace a parent's `content.md` with `category.yaml` only when that parent is a
+navigation label rather than a page. Descendant URL segments stay the same,
+but the parent URL is then absent.
 
 ## Directory Names, Order, And URLs
 
-Page directories use:
+Page and category directories use:
 
 ```text
-NNN-page-id
+NNN-id
 ```
 
-`NNN` is a three-digit sibling presentation order. `page-id` becomes that
-page's URL segment. Valid ordinary page names include:
+`NNN` is a three-digit sibling presentation order. `id` becomes that entry's
+URL segment or, for a category, the URL prefix inherited by its descendants.
+Valid names include:
 
 ```text
 010-getting-started
@@ -90,13 +199,51 @@ Invalid names include:
 010-about--team
 ```
 
-The page id may contain only lowercase `a-z`, numbers, and single hyphens
-between alphanumeric groups. The numeric prefix is not part of the URL.
-Renaming `030-contact/` to `015-contact/` changes its order among siblings but
-keeps the URL segment `contact`.
+The id may contain only lowercase `a-z`, numbers, and single hyphens between
+alphanumeric groups. The numeric prefix is not part of the URL. Renaming
+`030-contact/` to `015-contact/` changes its order among siblings but keeps the
+URL segment `contact`.
 
-Sibling page ids and numeric orders must be unique. Reusing the same id below a
-different parent is valid because the complete URL remains different.
+Sibling ids and numeric orders must be unique across both pages and categories.
+Reusing the same id below a different parent is valid because the complete URL
+path remains different.
+
+## Create Pages And Categories
+
+Use the project-local Norna installation through `npm exec`:
+
+```sh
+npm exec -- norna category:add "Guides" --parent /
+npm exec -- norna page:add "Installation" --parent /guides/
+npm exec -- norna page:add "macOS" --parent /guides/installation/
+```
+
+If the optional global launcher is installed, the equivalent shorter commands
+start with `norna` instead of `npm exec -- norna`.
+
+`page:add` creates `content.md` with an H1 and an adjacent empty `images/`
+directory. `category:add` creates `category.yaml` and an empty `pages/`
+directory. Both commands derive an ASCII id from the supplied title or label;
+for example, `Räksmörgås` becomes `raksmorgas`.
+
+By default, a new entry uses the nearest higher multiple of ten after its
+existing siblings. Use these options when the default is unsuitable:
+
+| Option | Effect |
+| --- | --- |
+| `--parent /` | Create a top-level entry. |
+| `--parent /guides/` | Create a child below the existing logical path. |
+| `--slug custom-id` | Replace the generated ASCII id. |
+| `--order 15` | Replace the generated sibling order; the directory uses `015`. |
+| `--dry-run` | Print the destination and URL behavior without writing files. |
+
+Without `--parent`, run the command from exactly `site/pages/` to add a
+top-level entry, or from an existing page/category directory to add a child.
+Norna reports an error from any other working directory rather than guessing.
+
+The requested slug and order must be unique among siblings. Norna prepares the
+new directory under `site/.norna/create/` and then moves the complete directory
+into place, so a failed preparation does not leave a partial page or category.
 
 ## Page Content
 
@@ -123,9 +270,10 @@ provide page-local navigation according to the selected navigation model.
 
 ## Navigation
 
-Home and listed top-level pages appear in global navigation. Child pages appear
-in the local hierarchy for their top-level area. Breadcrumbs show actual parent
-pages; Home is not added as an artificial ancestor.
+Home and listed top-level entries appear in global navigation. Child pages and
+categories appear in the local hierarchy for their top-level area. Breadcrumbs
+show actual page and category ancestors; category labels are text because they
+have no URL. Home is not added as an artificial ancestor.
 
 The numeric prefix controls order among siblings. Set `navigation.listed` to
 `false` in a non-home page's frontmatter when the page should remain public but
@@ -136,14 +284,16 @@ navigation:
   listed: false
 ```
 
-Home is always listed. With `navigation.mode: automatic`, Norna chooses from
-the listed page and heading hierarchy:
+Home is always listed. Categories do not have page frontmatter; a category is
+shown only when it has a listed descendant.
+
+With `navigation.mode: automatic`, Norna chooses from the listed hierarchy:
 
 | Site structure | Selected mode |
 | --- | --- |
 | Home is the only listed page | `sections` |
-| Several listed pages, with no combined page/H2/H3 path deeper than two levels | `top` |
-| Several listed pages, with a nested page that has headings or a top-level page that has H3 headings | `tree` |
+| Several listed pages, no categories, and no combined page/H2/H3 path deeper than two levels | `top` |
+| A listed category or a deeper page/heading path | `tree` |
 
 The depth includes both page directories and navigable headings. A top-level
 page is level one, its H2 headings are level two, and its H3 headings are level
@@ -158,7 +308,12 @@ The modes present the same source hierarchy differently:
   submenus, and the current page's H2 sections use local navigation when there
   is more than one.
 - `tree` keeps top-level areas in the global row and shows the active area's
-  page hierarchy plus current-page H2 and H3 headings in a desktop sidebar.
+  page/category hierarchy plus current-page H2 and H3 headings in a desktop
+  sidebar.
+
+Categories require `tree` navigation because they need disclosure behavior
+without pretending to be page links. Explicit `sections` or `top` mode is
+therefore invalid when a listed category exists.
 
 ### Collapsible Desktop Tree
 
@@ -187,11 +342,11 @@ bands. `tree` navigation always uses one `uniform` reading surface beside its
 persistent navigation region. See
 [Section Backgrounds](theme.md#section-backgrounds).
 
-On a small screen, page and heading destinations are collected in one
-expandable menu. Expanding a branch reveals its children without navigating;
-following its page link is a separate action. Real page and anchor links remain
-usable without JavaScript. See [Client-Side JavaScript](client-javascript.md)
-for the enhancement boundary.
+On a small screen, page, category, and heading destinations are collected in
+one expandable menu. Expanding a branch reveals its children without
+navigating; following a page link is a separate action. Real page and anchor
+links remain usable without JavaScript. See
+[Client-Side JavaScript](client-javascript.md) for the enhancement boundary.
 
 The site-wide `navigation.mode` in `config.yaml` can explicitly select
 `automatic`, `sections`, `top`, or `tree`. See
@@ -221,24 +376,29 @@ filename has multiple possible sources. If a filesystem error interrupts
 several moves, run sync again after fixing the reported problem; completed
 moves are retained.
 
+Categories cannot contain images. Put an image in the `images/` directory of
+the page that references it.
+
 ## Page Themes
 
 The root `site/theme.yaml` owns the site's visual identity: preset, palette,
 corners, typography, page frame, and navigation presentation.
 
-An optional page-local `theme.yaml` may adjust only:
+An optional limited `theme.yaml` may appear in a non-home page or category
+directory. It may adjust only:
 
 - `layout.textWidth`
 - `layout.contentSpacing`
 - managed-image sizing under `images`
 - `sections.backgroundPattern` when navigation does not resolve to `tree`
 
-These values are inherited by descendant pages and merged with more local page
-settings. Page themes cannot select presets or change site colors, fonts,
-corners, page width, gutters, or navigation. Tree navigation requires a uniform
-section background, so an explicit `alternating` or `accented` override is
-invalid. See [Theme](theme.md#page-themes).
+These values are inherited by descendant pages and merged with more local
+settings. A category theme affects descendants even though the category itself
+does not render a page. Site colors, typography, corners, page width, gutters,
+and navigation remain global.
 
-Page directories also cannot contain `config.yaml` or
+Page and category directories cannot contain `config.yaml` or
 `sitewide-content.yaml`; technical configuration and shared editorial content
-remain at the selected site's top level.
+remain at the selected site's top level. Tree navigation requires a uniform
+section background, so an explicit `alternating` or `accented` local override
+is invalid. See [Theme](theme.md#page-themes).

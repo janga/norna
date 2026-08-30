@@ -16,14 +16,14 @@ site/
 |   |   |-- content.md
 |   |   `-- images/
 |   |       `-- image.jpg
-|   `-- 010-guide/
-|       |-- content.md
+|   `-- 010-guides/
+|       |-- category.yaml
 |       |-- theme.yaml
-|       |-- images/
-|       |   `-- image.jpg
 |       `-- pages/
 |           `-- 010-installation/
-|               `-- content.md
+|               |-- content.md
+|               `-- images/
+|                   `-- diagram.svg
 |-- public/
 `-- .norna/
     |-- generated-images.json
@@ -41,7 +41,7 @@ case-insensitive file systems.
 | `config.yaml` | Yes | Public URL, language, and browser scroll behavior. |
 | `theme.yaml` | Yes | Complete visual preset and optional focused overrides. |
 | `sitewide-content.yaml` | No | Shared logo display settings, banners, and footer. |
-| `pages/` | Yes | Homepage, top-level pages, and nested page hierarchies. |
+| `pages/` | Yes | Homepage plus ordered page and navigation-category hierarchies. |
 
 These responsibilities are deliberately separate:
 
@@ -54,29 +54,34 @@ These responsibilities are deliberately separate:
 - [`pages/000-home/content.md`](content.md) is the required homepage and remains
   ordinary Markdown. YAML frontmatter is optional.
 
-Pages cannot provide `config.yaml` or `sitewide-content.yaml`. Technical
-configuration and shared logo, banner, and footer settings have one site-wide
-source.
+Page and category directories cannot provide `config.yaml` or
+`sitewide-content.yaml`. Technical configuration and shared logo, banner, and
+footer settings have one site-wide source.
 
-## Pages
+## Page Hierarchy
 
-Every page is represented by a directory containing `content.md`. The homepage
-is the one reserved page:
+Every ordered directory under `site/pages/` contains exactly one marker file:
+
+| Marker | Meaning |
+| --- | --- |
+| `content.md` | A page with its own H1, content, optional images, and URL. |
+| `category.yaml` | A navigation-only category for child pages, with no content or URL of its own. |
+
+The homepage is the one reserved page:
 
 ```text
 site/pages/000-home/content.md
 ```
 
 It maps to `/`, cannot contain child pages, and appears first in global
-navigation. Other directories directly under `site/pages/` are top-level page
-roots:
+navigation. Other directories directly under `site/pages/` are top-level
+navigation entries. This example uses a category because `Guides` needs a
+navigation label but no introductory page:
 
 ```text
-site/pages/010-guide/
-|-- content.md
+site/pages/010-guides/
+|-- category.yaml
 |-- theme.yaml
-|-- images/
-|   `-- image.jpg
 `-- pages/
     `-- 010-installation/
         |-- content.md
@@ -84,14 +89,17 @@ site/pages/010-guide/
             `-- diagram.svg
 ```
 
-Nested `pages/` directories create child pages and may continue to further
-depths. Each page owns its optional `images/` directory. A page-local
-`theme.yaml` may adjust a limited set of presentation properties and is inherited
-by descendants; site colors, typography, corners, and navigation remain global.
+Nested `pages/` directories may continue to further depths below either kind
+of entry. Each page owns its optional `images/` directory; categories cannot
+contain images. A limited local `theme.yaml` may appear in a page or category
+directory and is inherited by descendant pages. Site colors, typography,
+corners, and navigation remain global.
 
-The three-digit page prefix controls sibling navigation order and is not part
-of the URL. See [Pages](pages.md) for hierarchy, URL, navigation, and page-theme
-rules. See [Images and Metadata](images-and-metadata.md) for managed files.
+The three-digit prefix controls sibling navigation order and is not part of the
+URL. Category ids remain in descendant URLs even though no category page is
+generated. See [Pages and Categories](pages.md) for exact marker files,
+hierarchy, URL, navigation, commands, and theme inheritance. See
+[Images and Metadata](images-and-metadata.md) for managed files.
 
 ## Public Files
 

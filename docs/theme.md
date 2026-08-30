@@ -9,8 +9,9 @@ preset: documentation
 ```
 
 The root theme owns site-wide colors, corners, typography, page frame, and
-navigation presentation. An optional page-local `theme.yaml` has a deliberately
-smaller role described under [Page Themes](#page-themes).
+navigation presentation. An optional limited `theme.yaml` in a page or
+navigation-category directory has the smaller role described under
+[Page Themes](#page-themes).
 
 ## Theme Presets
 
@@ -509,19 +510,28 @@ when readers collapse the tree or enable focus reading.
 
 Omit `sections.backgroundPattern` to use the selected preset. Without a preset,
 Norna uses `uniform`. Built-in presets resolve to `uniform` automatically when
-navigation resolves to `tree`. A page-local setting overrides the root pattern
-for that page and is inherited by its descendant pages. An explicit root or
-page-theme override requesting `alternating` or `accented` with tree navigation
-is invalid; remove the override or select `uniform`. Cards, code blocks,
-banners, and callouts may still use their own coordinated backgrounds.
+navigation resolves to `tree`. A local setting overrides the root pattern for
+pages below its page or category directory. An explicit root or local override
+requesting `alternating` or `accented` with tree navigation is invalid; remove
+the override or select `uniform`. Cards, code blocks, banners, and callouts may
+still use their own coordinated backgrounds.
 
 ## Page Themes
 
-Add `theme.yaml` to a non-home page directory only when that page or one of its
-descendants needs a narrower presentation adjustment:
+Add `theme.yaml` to a non-home page or navigation-category directory only when
+that part of the hierarchy needs a narrower presentation adjustment:
 
 ```text
 site/pages/010-guide/theme.yaml
+```
+
+For a category, the same file applies to its descendant pages even though the
+category has no rendered page of its own:
+
+```text
+site/pages/010-guides/category.yaml
+site/pages/010-guides/theme.yaml
+site/pages/010-guides/pages/010-installation/content.md
 ```
 
 A page theme may set only:
@@ -543,15 +553,16 @@ sections:
   backgroundPattern: uniform
 ```
 
-Page settings are merged with the root theme and inherited by descendant pages.
-A more local page theme may override the same limited fields. Site colors,
-corners, typography, page width, gutters, and navigation remain constant.
+Local settings are merged with the root theme and inherited by descendant
+pages. A more local page or category theme may override the same limited
+fields. Site colors, corners, typography, page width, gutters, and navigation
+remain constant.
 
 If `navigation.mode` is `automatic`, adding enough page or heading depth can
 make the site resolve to tree navigation. A non-uniform page override must then
 be removed or changed to `uniform`.
 
-Page themes cannot define `preset`, `palette`, `corners`, `typography`,
-`navigation`, `config.yaml`, or site-wide content. This boundary keeps one
-recognisable site while still allowing a guide, gallery, or reference area to
-use an appropriate reading width and media presentation.
+Page and category themes cannot define `preset`, `palette`, `corners`,
+`typography`, `navigation`, `config.yaml`, or site-wide content. This boundary
+keeps one recognisable site while still allowing a guide, gallery, or reference
+area to use an appropriate reading width and media presentation.

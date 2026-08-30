@@ -75,8 +75,11 @@ navigation:
 ```
 
 Navigation behavior is technical and site-wide. It cannot be configured in
-`theme.yaml` or in an individual page. See [Pages](pages.md#navigation) for the
-relationship between Home, top-level pages, child pages, and headings, and
+`theme.yaml` or in an individual page. A listed navigation category requires
+`tree`: `automatic` selects it, while explicit `sections` or `top` is invalid.
+This prevents a category with no URL from being presented as an ordinary page
+link. See [Pages and Categories](pages.md#navigation) for the relationship
+between Home, pages, categories, and headings, and
 [Client-Side JavaScript](client-javascript.md) for the no-JavaScript fallback.
 
 ## `scrollBehavior`

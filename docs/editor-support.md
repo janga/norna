@@ -70,19 +70,23 @@ site/
 `-- pages/
     |-- 000-home/
     |   `-- content.md
-    `-- 010-guide/
-        |-- content.md
-        `-- theme.yaml
+    `-- 010-guides/
+        |-- category.yaml
+        |-- theme.yaml
+        `-- pages/
+            `-- 010-installation/
+                `-- content.md
 ```
 
 The root `config.yaml`, `theme.yaml`, and `sitewide-content.yaml` use their
 matching schemas. Every valid page `content.md` receives frontmatter and Norna
-Markdown support. A page-local `theme.yaml` receives the deliberately smaller
-page-theme schema. Other YAML and Markdown files are left to their normal
-language extensions.
+Markdown support. A valid `category.yaml` receives its small category schema
+and an empty-category snippet. A limited `theme.yaml` in a page or category
+directory receives the deliberately smaller page-theme schema. Other YAML and
+Markdown files are left to their normal language extensions.
 
-See [Site Files](site-files.md) and [Pages](pages.md) for the complete directory
-contract.
+See [Site Files](site-files.md) and [Pages and Categories](pages.md) for the
+complete directory contract.
 
 ## YAML Help
 

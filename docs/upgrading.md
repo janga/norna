@@ -73,8 +73,10 @@ Check an in-place migration against the following changes.
 - In each old route directory, rename `route-content.md` to `content.md`.
 - Keep the three-digit sibling order prefix. A directory such as
   `010-guide/` still produces `/guide/`; the prefix is not part of the URL.
-- Put child pages under the nearest non-home page's `pages/` directory. Home is
-  the front door and cannot have child pages.
+- Put child entries under the nearest non-home page or category's `pages/`
+  directory. Use `content.md` when the parent needs its own page; use
+  `category.yaml` when it is only a navigation label. Home is the front door
+  and cannot have children.
 
 Every page must contain exactly one H1. H2 headings define sections. Norna now
 derives heading ids when they are omitted; keep an explicit `{#stable-id}` only
@@ -85,9 +87,10 @@ contain only `page.description` and `navigation.listed`.
 ### Move Page Presentation Into Theme Files
 
 The root `site/theme.yaml` owns preset, color modes, palette, corners, typography,
-page frame, and navigation presentation. A page-local `theme.yaml` may contain
-only the limited layout, image, and section-background fields documented under
-[Page Themes](theme.md#page-themes). Descendants inherit those limited values.
+page frame, and navigation presentation. A limited `theme.yaml` in a page or
+category directory may contain only the layout, image, and section-background
+fields documented under [Page Themes](theme.md#page-themes). Descendants
+inherit those values.
 
 Do not carry route-specific presets, fonts, colors, or navigation settings into
 page themes.

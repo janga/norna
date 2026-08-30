@@ -4,7 +4,8 @@
 the page title. Optional page metadata can be added in YAML frontmatter.
 
 Additional and nested pages use the same page model in a page directory under
-`site/pages/`. See [Pages](pages.md) for the directory and nesting rules.
+`site/pages/`. See [Pages and Categories](pages.md) for the directory and
+nesting rules.
 
 Site-wide visual defaults belong in [Theme](theme.md). Typography profiles and
 overrides are described in [Typography](typography.md). Technical site settings
@@ -27,7 +28,8 @@ Frontmatter is optional. When present, the content schema validates these
 top-level fields:
 
 - `page`: optional page metadata.
-- `navigation`: optional page-listing metadata. See [Pages](pages.md).
+- `navigation`: optional page-listing metadata. See
+  [Pages and Categories](pages.md).
 
 `page` contains:
 

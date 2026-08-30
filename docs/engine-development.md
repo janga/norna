@@ -191,19 +191,25 @@ and commit their updated `package-lock.json`.
 
 The renderer discovers a required homepage at
 `site/pages/000-home/content.md`, top-level navigation roots beside Home, and
-nested child pages under each non-home page's `pages/` directory.
+nested entries under each non-home page or category's `pages/` directory. An
+entry with `content.md` is a routable page. An entry with `category.yaml` is a
+navigation-only category whose path remains part of descendant URLs.
 
 Navigation has two related levels:
 
-- Global navigation moves between Home and top-level page areas.
-- Local navigation follows nested pages and headings within the active area.
+- Global navigation moves between Home and top-level page/category areas. A
+  category label targets its first listed descendant page.
+- Local navigation follows nested pages, categories, and headings within the
+  active area.
   Section links use real `href="#section-id"` anchors so they work without
   JavaScript.
 
 Automatic navigation selects section navigation for one-page sites, top
 navigation for shallow page structures, and tree navigation for deeper page or
-heading hierarchies. `config.yaml` may choose a mode explicitly. Home is a
-standalone front door and cannot contain child pages.
+heading hierarchies. A visible category also requires tree navigation because
+it is a disclosure rather than a page destination. `config.yaml` may choose a
+compatible mode explicitly. Home is a standalone front door and cannot contain
+child pages or categories.
 
 The optional JavaScript enhancement manages menu interaction and active local
 navigation while retaining normal links and browser history. The rendered page
