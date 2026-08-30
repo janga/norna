@@ -57,11 +57,6 @@ approachable before wider use.
 Use this section for concrete engine behavior that should be implemented or
 verified.
 
-- Consolidate Markdown handling around one shared parsed page model for
-  headings, section ids, Norna blocks, notes, and managed image references.
-  Rendering, `content:check`, `content:sync`, and editor support should consume
-  that model through focused adapters. Remove the legacy Remark marker path
-  once equivalent behavior is covered by tests.
 - Refactor `content:sync` into a pure analysis and planning phase followed by a
   small filesystem apply and reporting phase. Preserve conservative conflict
   handling and the current simple rename behavior; do not add speculative
