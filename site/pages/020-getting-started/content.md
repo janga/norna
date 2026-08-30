@@ -280,6 +280,10 @@ Windows as sibling installation pages.
   caption: A nested documentation page keeps its wider context visible on a desktop screen.
 ```
 
+On a wide screen, readers can hide or show the tree with one control. Norna
+remembers the choice for the current browser tab without moving the document
+column; without JavaScript, the tree remains visible and usable.
+
 See [Pages](https://github.com/janga/norna/blob/main/docs/pages.md) for page
 directory rules, ordering, URL segments, nesting, inheritance, and the exact
 automatic navigation contract.
@@ -299,9 +303,11 @@ A complete site theme can therefore be this short:
 preset: documentation
 ```
 
-Each preset includes coordinated light and dark colors. Presets normally let
-visitors follow their system preference or choose Light or Dark from the site
-navigation. The root theme can change that site-wide behavior.
+Each preset includes coordinated light and dark colors. The Display panel can
+offer bounded reader choices for color mode, text width, and a focus-reading
+view. Presets choose suitable controls by default, and the root theme can enable
+or disable each one. Without JavaScript, the configured presentation remains
+usable but readers cannot change or remember these choices.
 
 Add only values that should differ from the preset:
 
@@ -325,6 +331,10 @@ The root theme keeps colors, corners, typography, page frame, and navigation
 consistent. A page-local `theme.yaml` can make narrower presentation changes
 that its descendants inherit.
 
+Presets, overrides, and reader choices remain inside engine-owned safeguards
+for contrast, keyboard focus, text measure, reflow, reduced motion, and forced
+colors.
+
 Section backgrounds are also coordinated with navigation. `uniform` keeps one
 surface throughout the page. `alternating` repeats the palette's base and soft
 surfaces. `accented` moves from base to soft to emphasis, then back through soft
@@ -340,9 +350,11 @@ navigation. Built-in presets make that adjustment automatically. An explicit
 `alternating` or `accented` override is rejected when the site resolves to tree
 navigation rather than being silently ignored.
 
-See [Theme](https://github.com/janga/norna/blob/main/docs/theme.md) and
-[Typography](https://github.com/janga/norna/blob/main/docs/typography.md) for
-presets, color modes, allowed overrides, defaults, and page-theme inheritance.
+See [Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
+[Typography](https://github.com/janga/norna/blob/main/docs/typography.md), and
+[Presentation guarantees](https://github.com/janga/norna/blob/main/docs/presentation-guarantees.md)
+for Display controls, presets, allowed overrides, defaults, page-theme
+inheritance, and the engine-owned presentation baseline.
 
 ## Core commands {#commands}
 

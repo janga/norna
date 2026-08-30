@@ -77,26 +77,26 @@
         "colorMode": {
           "description": "Let readers choose System, Light, or Dark color mode in the site-wide Display panel.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n```\n\nLet readers choose System, Light, or Dark color mode in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-mode)"
+          "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n```\n\nLet readers choose System, Light, or Dark color mode in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)"
         },
         "readingWidth": {
           "description": "Let readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nreaderControls:\n  readingWidth: true\n```\n\nLet readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)"
+          "markdownDescription": "```yaml\nreaderControls:\n  readingWidth: true\n```\n\nLet readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)"
         },
         "focusReading": {
           "description": "Let readers temporarily hide navigation and other secondary page chrome while reading.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nreaderControls:\n  focusReading: true\n```\n\nLet readers temporarily hide navigation and other secondary page chrome while reading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)"
+          "markdownDescription": "```yaml\nreaderControls:\n  focusReading: true\n```\n\nLet readers temporarily hide navigation and other secondary page chrome while reading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)"
         }
       },
       "additionalProperties": false,
       "description": "Site-wide reader choices grouped in one Display panel. Presets provide suitable defaults.",
-      "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n  readingWidth: true\n  focusReading: true\n```\n\nChooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.\n\n[Reader controls design](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)",
+      "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n  readingWidth: true\n  focusReading: true\n```\n\nChooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.\n\n[Reader Display controls](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
       "defaultSnippets": [
         {
           "label": "Configure the Display panel",
-          "markdownDescription": "Offer bounded color-mode, reading-width, and focus-reading choices.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)",
+          "markdownDescription": "Offer bounded color-mode, reading-width, and focus-reading choices.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
           "body": "readerControls:\n  colorMode: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}"
         }
       ]

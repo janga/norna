@@ -215,44 +215,88 @@ uses the palette's default: `dark` for `near-monochrome`, and `light` for
 
 Current preset defaults are:
 
-| Preset | Palette | Default color mode | Reader control |
+| Preset | Palette | Default color mode | Color-mode choice in Display |
 | --- | --- | --- | --- |
 | `portfolio` | `near-monochrome` | `dark` | Enabled |
 | `documentation` | `warm-paper` | `system` | Enabled |
 | `project` | `cool-green` | `system` | Enabled |
 | `statement` | `warm-paper` | `system` | Enabled |
 
-Set `readerControls.colorMode` to `true` to let readers choose System, Light,
-or Dark from the site-wide Display panel:
-
-```yaml
-preset: documentation
-colorMode:
-  default: system
-readerControls:
-  colorMode: true
-```
-
 A preset supplies both a palette and a default color mode. Overriding only
 `palette` keeps the preset's default color mode; set both when both choices
 should change.
 
-When a visitor selects System, Light, or Dark, Norna stores the value in a
-first-party cookie named `norna-color-mode`. The cookie is limited to the site's
-base path, uses `SameSite=Lax`, and expires after one year. This keeps the choice
-for later visits without sharing it with another Norna site under a different
-path on the same domain. System stores the choice `system`; the actual mode
-continues to follow the visitor's operating-system preference.
-
-When the cookie is absent or invalid, Norna uses `colorMode.default`. Set
-`readerControls.colorMode: false` to hide the control; no color-mode preference
-script or cookie is then needed. The configured default still applies. A root
-theme without a preset does not show the reader control unless it explicitly
-enables it.
-
 Color mode belongs to the root theme because navigation, page frame, section
 backgrounds, controls, and text must change together. Page-local themes cannot
 override it. Norna does not expose arbitrary colors for individual modes.
+
+## Reader Display Controls
+
+`readerControls` chooses which bounded presentation choices readers can make
+from the site-wide Display panel. These choices temporarily adapt the resolved
+theme; they do not edit `theme.yaml`, replace the preset, or change the content
+order.
+
+Configure the controls in the root `site/theme.yaml`:
+
+```yaml
+preset: documentation
+readerControls:
+  colorMode: true
+  readingWidth: true
+  focusReading: true
+```
+
+Each field is a boolean:
+
+| Field | Reader choices | Configured default |
+| --- | --- | --- |
+| `colorMode` | System, Light, or Dark | `colorMode.default`, or the preset default |
+| `readingWidth` | Narrow, Standard, or Wide | Derived from `layout.textWidth`: `narrow`, `normal`, or `wide` |
+| `focusReading` | Off or On | Off |
+
+Narrow, Standard, and Wide limit prose to approximately `60ch`, `72ch`, and
+`80ch` respectively. Media keeps its separately configured width. Focus reading
+hides navigation, breadcrumbs, and the footer while leaving the Display control
+available so the reader can return to the normal view. Norna preserves the
+visible reading position when reading width or focus reading changes, except
+when the reader is already at the top of the page.
+
+Built-in presets provide these defaults:
+
+| Preset | Color mode | Reading width | Focus reading |
+| --- | --- | --- | --- |
+| `portfolio` | Enabled | Disabled | Disabled |
+| `documentation` | Enabled | Enabled | Enabled |
+| `project` | Enabled | Enabled | Enabled |
+| `statement` | Enabled | Disabled | Disabled |
+
+Omit `readerControls` to use the selected preset's choices. Set an individual
+field to `false` to disable that preset control. A root theme without a preset
+does not show any Display controls unless it explicitly enables them. Page-local
+themes cannot change `readerControls`.
+
+Reader choices are stored in first-party cookies:
+
+| Choice | Cookie | Stored values |
+| --- | --- | --- |
+| Color mode | `norna-color-mode` | `system`, `light`, `dark` |
+| Reading width | `norna-reading-width` | `narrow`, `standard`, `wide` |
+| Focus reading | `norna-focus-reading` | `off`, `on` |
+
+Each cookie is limited to the site's configured base path, uses `SameSite=Lax`,
+and expires after one year. HTTPS sites also mark it `Secure`. This keeps a
+choice for later visits without sharing it with another Norna site under a
+different path on the same domain. Reset removes all three cookies and restores
+the configured defaults.
+
+Without JavaScript, the configured color mode and reading width still apply.
+The reader cannot change or persist Display choices, and focus reading remains
+off. Norna includes the Display script only when at least one reader control is
+enabled. See [Client-Side JavaScript](client-javascript.md) for the complete
+progressive-enhancement boundary and
+[Presentation Guarantees](presentation-guarantees.md) for the engine limits
+that presets and reader choices cannot weaken.
 
 ## Corners
 

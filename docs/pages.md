@@ -160,6 +160,27 @@ The modes present the same source hierarchy differently:
 - `tree` keeps top-level areas in the global row and shows the active area's
   page hierarchy plus current-page H2 and H3 headings in a desktop sidebar.
 
+### Collapsible Desktop Tree
+
+With `tree` navigation on a wide screen, Norna shows one button in the sticky
+site row for hiding or showing the local navigation tree. The button is a native
+keyboard-operable control whose accessible name changes between Show navigation
+and Hide navigation. Its `aria-expanded` and `aria-controls` attributes expose
+the same state and relationship to assistive technology.
+
+Collapsing the tree removes the navigation region but deliberately preserves
+the document column's width and horizontal position. Prose, headings, images,
+cards, and section surfaces therefore do not reflow or jump sideways. The
+collapse control does not widen the prose; reading width remains the reader's
+current Display choice. The tree state is stored in `sessionStorage` under a
+key scoped to the site's base path, so it survives navigation and reloads in
+the current browser tab but is not a persistent site preference.
+
+The desktop tree control is not shown on small screens, where the complete
+hierarchy remains in the normal expandable menu. Without JavaScript, the tree
+stays visible and the inactive hide/show control is omitted; all page and
+anchor links remain usable.
+
 Navigation also sets the boundary for section backgrounds. `sections` and
 `top` navigation may use full-viewport `alternating` or `accented` H2 section
 bands. `tree` navigation always uses one `uniform` reading surface beside its

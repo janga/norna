@@ -84,8 +84,12 @@ Progress:
 - Phase 2 completed in August 2026. Built-in presets now resolve from internal
   profiles while retaining the previously captured theme values and rendered
   output.
-- Phase 3 is the next implementation phase and requires approval of its public
-  reader-control syntax before implementation.
+- Phase 3 completed in August 2026. The Display panel, bounded reader
+  preferences, persistence, progressive fallback, schema help, and public
+  reference are implemented and tested.
+- Phase 4 has a working comparison harness. The current `documentation` preset
+  is the Editorial direction; final manual approval remains the checkpoint
+  before Phase 5.
 
 ### Phase 0: Record And Protect The Baseline
 
@@ -179,15 +183,14 @@ Implementation:
 
 ### Phase 3: Implement Reader Display Preferences
 
-Implement one Display control with these initial settings:
+The implemented Display control provides:
 
 - color mode: System, Light, Dark;
 - reading width: Narrow, Standard, Wide;
 - focus reading: Off, On;
 - reset to defaults.
 
-Decide the exact root-theme syntax for enabling controls only after the profile
-bounds exist. The likely conceptual grouping is:
+The approved root-theme syntax for enabling controls is:
 
 ```yaml
 preset: documentation
@@ -196,8 +199,6 @@ readerControls:
   readingWidth: true
   focusReading: true
 ```
-
-The final names may change after schema review.
 
 Implementation requirements:
 
@@ -213,13 +214,13 @@ Implementation requirements:
 Test the Display control against every profile category before final tuning of
 the first preset. This avoids designing a preset around only one reader state.
 
-Implementation checkpoint (2026-08-29): the reader-preference overlay and
-accessible Display panel are implemented as a proof of concept. `documentation`
-and `project` offer all three controls by default; `portfolio` and `statement`
-offer color mode only. Browser tests cover persistence, reset, focus-reading,
-text-width changes, keyboard closing, reflow, and the no-JavaScript default.
-Public reference documentation and the runnable presentation example use the
-approved theme terminology.
+Completion checkpoint (2026-08-30): the reader-preference overlay and
+accessible Display panel are implemented. `documentation` and `project` offer
+all three controls by default; `portfolio` and `statement` offer color mode
+only. Browser tests cover persistence, reset, focus reading, text-width changes,
+keyboard closing, reflow, and the no-JavaScript default. Public reference,
+schema help, and the runnable presentation example use the approved theme
+terminology.
 
 ### Phase 4: Design The Documentation Preset
 
@@ -473,11 +474,7 @@ documentation migration into proof-of-concept commits.
 
 ## Immediate Next Step
 
-Review and approve the public root-theme syntax proposed in Phase 3 for reader
-display preferences. Confirm which controls are enabled by default for each
-preset before implementation begins.
-
-Do not redesign presets or replace their published examples until the Display
-control works across all profile categories. The shared baseline fixture should
-then become the source for the replacement public preset examples after each
-preset has been visually reviewed.
+Complete and record the final manual approval of the current Editorial
+`documentation` preset across its Display choices, desktop tree navigation, and
+mobile navigation. Then begin Phase 5 by hardening only the profile boundaries
+and public controls that the approved preset has exercised.

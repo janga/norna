@@ -79,6 +79,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Use image stacks, carousels, and cards](content.md#norna-blocks)
 - [Add notes to prose](content.md#markdown-text)
 - [Add another page](pages.md)
+- [Understand generated and collapsible navigation](pages.md#navigation)
 - [Add shared banners or footer content](sitewide-content.md)
 - [Use project-local VS Code help](editor-support.md)
 
@@ -93,10 +94,12 @@ required, optional, convention-discovered, versioned, or generated.
 ### Change Presentation
 
 - [Choose a complete theme preset](theme.md#theme-presets)
-- [Configure light and dark modes](theme.md#color-modes)
+- [Configure palettes and color mode](theme.md#palette-and-color-mode)
+- [Offer reader Display choices](theme.md#reader-display-controls)
 - [Inspect and override a preset](theme.md#overrides)
 - [Adjust limited presentation for a page subtree](theme.md#page-themes)
 - [Adjust typography](typography.md)
+- [Understand engine-owned presentation guarantees](presentation-guarantees.md)
 
 ### Check, Build, And Publish
 
@@ -112,6 +115,8 @@ required, optional, convention-discovered, versioned, or generated.
 - [Client-side JavaScript](client-javascript.md) identifies static features,
   progressively enhanced navigation, and features that require browser-side
   behavior.
+- [Presentation Guarantees](presentation-guarantees.md) describes the contrast,
+  focus, typography, reflow, and user-preference baseline owned by the engine.
 - [Images and Metadata](images-and-metadata.md) explains managed variants and
   published URLs.
 - [Command Organization](design/command-organization.md) explains standalone,

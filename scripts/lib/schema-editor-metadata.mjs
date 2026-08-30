@@ -223,27 +223,27 @@ const addThemeHelp = (jsonSchema) => {
 	addHelp(jsonSchema, 'readerControls', [
 		yamlExample('readerControls:\n  colorMode: true\n  readingWidth: true\n  focusReading: true'),
 		'Chooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.',
-		documentationLink('Reader controls design', 'design/preset-development-plan.md', 'phase-3-implement-reader-display-preferences'),
+		documentationLink('Reader Display controls', 'theme.md', 'reader-display-controls'),
 	]);
-	for (const [propertyPath, example, file, anchor] of [
-		['readerControls.colorMode', 'readerControls:\n  colorMode: true', 'theme.md', 'color-mode'],
-		['readerControls.readingWidth', 'readerControls:\n  readingWidth: true', 'design/preset-development-plan.md', 'phase-3-implement-reader-display-preferences'],
-		['readerControls.focusReading', 'readerControls:\n  focusReading: true', 'design/preset-development-plan.md', 'phase-3-implement-reader-display-preferences'],
+	for (const [propertyPath, example] of [
+		['readerControls.colorMode', 'readerControls:\n  colorMode: true'],
+		['readerControls.readingWidth', 'readerControls:\n  readingWidth: true'],
+		['readerControls.focusReading', 'readerControls:\n  focusReading: true'],
 	]) {
 		addFieldHelp(
 			jsonSchema,
 			propertyPath,
 			example,
-			file,
-			anchor,
+			'theme.md',
+			'reader-display-controls',
 		);
 	}
 	addSnippets(jsonSchema, 'readerControls', [schemaSnippet({
 		label: 'Configure the Display panel',
 		body: 'readerControls:\n  colorMode: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}',
 		description: 'Offer bounded color-mode, reading-width, and focus-reading choices.',
-		file: 'design/preset-development-plan.md',
-		anchor: 'phase-3-implement-reader-display-preferences',
+		file: 'theme.md',
+		anchor: 'reader-display-controls',
 	})]);
 	addHelp(jsonSchema, 'sections', [
 		yamlExample('sections:\n  backgroundPattern: alternating'),
