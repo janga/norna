@@ -14,6 +14,17 @@ maintainer, put it in `README.md` instead of duplicating it here.
   `docs/design/documentation-style-guide.md`. Treat public configuration keys,
   values, commands, and Norna content-block names as product terminology, not
   as self-explanatory English words.
+- When structuring documentation, give each page one independent reader need
+  that can be stated as: `This page helps <audience> to <understand or
+  accomplish one thing>.` Use a section for another part of the same reading
+  task. Use a child page only for a distinct task or topic that remains useful
+  when opened directly and has a clear relationship to its parent.
+- Do not split documentation mechanically at every H2 or merely because a page
+  is long. Preserve short, sequential beginner flows on one page when extra
+  navigation would interrupt the task. A parent page should remain a useful
+  entry point or deliver a coherent first result instead of becoming an empty
+  index. Keep concise commands and explanations beside the task where they are
+  needed, and link to canonical reference material for complete detail.
 - Do not silently preserve or rename ambiguous public terminology while doing
   an ordinary documentation edit. Explain the conflict to the user. When the
   user explicitly invokes `$norna-terminology-review` or requests its

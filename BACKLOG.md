@@ -38,7 +38,6 @@ approachable before wider use.
   automatically, rollback before the release commit, and recovery after a
   failed publish. Add a discoverability link from `docs/README.md` without
   duplicating the instructions.
-
 ## Implementation
 
 Use this section for concrete engine behavior that should be implemented or
