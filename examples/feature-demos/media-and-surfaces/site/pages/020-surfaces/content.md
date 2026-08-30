@@ -19,7 +19,7 @@ The root theme enables the selector with:
 colorMode:
   default: system
 readerControls:
-  appearance: true
+  colorMode: true
 ```
 
 
@@ -29,12 +29,12 @@ Norna provides a small set of named palettes. The theme chooses one
 for the whole site:
 
 ```yaml
-palette: dark
+palette: near-monochrome
 ```
 
-The available choices are `dark`, `light` and `paper`. A palette defines the
-page, navigation, frame and section colours together, so these parts stay in
-balance.
+The available choices are `near-monochrome`, `cool-green` and `warm-paper`. A
+palette defines the page, navigation, frame and section colours together, so
+these parts stay in balance.
 
 ## Emphasis surface {#emphasis-surface}
 
@@ -43,11 +43,14 @@ change of rhythm helps the reader. This is not a free-form colour override:
 
 ```yaml
 sections:
-  backgroundPattern: cycling
+  backgroundPattern: accented
 ```
 
-The theme can cycle through the selected surfaces automatically. Individual
-sections do not select their own colours.
+The theme moves through base, soft and emphasis backgrounds, then back through
+soft to base before repeating. Individual sections do not select their own
+colours. This example uses top navigation, so the changing section backgrounds
+span the browser width. Sites with tree navigation use one uniform reading
+surface instead.
 
 ## A practical rule {#practical-rule}
 

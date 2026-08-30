@@ -34,6 +34,39 @@ Accessibility is an engine contract. A preset may change character, density,
 proportion, and emphasis, but it must not weaken semantics, contrast, focus,
 keyboard behavior, zoom, reflow, or component clarity.
 
+## Section Surfaces And Navigation Regions
+
+A background is a strong grouping signal, not neutral decoration. The Gestalt
+principle of [common region](https://www.nngroup.com/articles/common-region/)
+means that content placed on the same bounded or colored surface is perceived
+as belonging together. This is useful for clear page sections, but repeated
+high-contrast bands can also add clutter or look like false endings to a long
+page.
+
+Norna therefore coordinates section backgrounds with the navigation model:
+
+- `sections` and `top` navigation may use `uniform`, `alternating`, or
+  `accented` section backgrounds;
+- non-uniform section backgrounds span the viewport from edge to edge while
+  text and media retain their configured content widths;
+- `tree` navigation always uses `uniform`, preserving one continuous reading
+  surface beside the persistent navigation region;
+- collapsing tree navigation, enabling focus reading, or moving to a small
+  viewport must not change the effective background pattern;
+- cards, callouts, code, banners, and other semantic components may still use
+  distinct surfaces inside a uniform page.
+
+The rule follows the same broad separation used by established navigation
+drawers and documentation layouts: navigation is one stable region and the
+document body is another. It also avoids turning every long-form section into
+an inset card merely to contain its color.
+
+Built-in presets may retain an `alternating` or `accented` identity for shallow
+sites. The renderer resolves that preset pattern to `uniform` when the site
+uses tree navigation. A site-owner override that explicitly requests a
+non-uniform pattern with tree navigation is invalid and must produce a clear
+diagnostic rather than being silently ignored.
+
 ## Configuration Layers
 
 Resolve presentation in this order.
@@ -53,6 +86,7 @@ all sites:
   colors;
 - component layout, states, and progressive enhancement;
 - intrinsic image sizing and safe viewport limits;
+- navigation-aware section-surface behavior;
 - the derivation and validation rules described below.
 
 These properties are not theme overrides. The engine should reject unsafe
@@ -68,13 +102,13 @@ Profiles should cover these categories:
 
 | Category | Responsibility | Example names |
 | --- | --- | --- |
-| Color system | Coordinated light/dark palettes and semantic color roles | `paper`, `neutral`, `dark` |
+| Color system | Coordinated light/dark palettes and semantic color roles | `near-monochrome`, `cool-green`, `warm-paper` |
 | Typography | Font stack, type scale, weights, and heading relationships | `reading`, `project`, `restrained`, `editorial` |
 | Rhythm | Prose and structural vertical spacing | `compact`, `normal`, `airy` |
 | Geometry | Page frame, prose measure, navigation column, notes, and gutters | `documentation`, `balanced`, `wide` |
 | Media | Image-area width and viewport constraints | `text-led`, `balanced`, `image-led` |
-| Shape | Radius scale and component edge treatment | `square`, `soft` |
-| Surfaces | Section background sequence and emphasis | `uniform`, `alternating`, `cycling` |
+| Corners | Radius scale and component edge treatment | `square`, `rounded` |
+| Surfaces | Non-tree section background sequence and emphasis | `uniform`, `alternating`, `accented` |
 
 Profile names are internal implementation vocabulary. They may appear in
 diagnostics or exported references, but site owners should normally start from
@@ -90,13 +124,13 @@ A public preset combines one profile from each relevant category:
 
 ```js
 documentation: {
-  color: 'paper',
-  typography: 'reading',
+  color: 'warm-paper-adaptive',
+  typography: 'editorial-reading',
   rhythm: 'compact',
-  geometry: 'documentation',
-  media: 'balanced',
-  shape: 'soft',
-  surfaces: 'uniform',
+  geometry: 'focused-reading',
+  media: 'supporting',
+  corners: 'rounded',
+  surfaces: 'alternating',
 }
 ```
 
@@ -126,10 +160,10 @@ construct a new design system. Public choices should be grouped by intent:
 
 | Site-owner category | Appropriate choices |
 | --- | --- |
-| Appearance | Palette family, shape profile, and color-mode default |
+| Color and corners | Palette family, corner treatment, and color-mode default |
 | Reading | Default prose width and content rhythm |
 | Media | Text-led, balanced, or image-led emphasis and a focused image-width override |
-| Sections | Uniform, alternating, or cycling surfaces |
+| Sections | Uniform surfaces, or full-width alternating/accented surfaces when tree navigation is not used |
 | Reader controls | Which personal display choices are offered to visitors |
 
 The exact YAML schema is a separate implementation decision. The conceptual
@@ -142,8 +176,10 @@ spacing overrides should not be public.
 
 Page-local themes remain narrower than the root theme. They may vary reading
 geometry, content rhythm, media emphasis, and section surfaces when that does
-not weaken the site's shared identity. Color system, typography family, shape,
-navigation treatment, and reader-control availability remain site-wide.
+not weaken the site's shared identity. A page theme cannot select a non-uniform
+surface pattern when the site resolves to tree navigation. Color system,
+typography family, corners, navigation treatment, and reader-control
+availability remain site-wide.
 
 ### 5. Reader Display Preferences
 
@@ -155,7 +191,7 @@ The first supported categories should be:
 
 | Reader category | Values | Effect |
 | --- | --- | --- |
-| Appearance | `system`, `light`, `dark` | Select a coordinated mode from the active color system. |
+| Color mode | `system`, `light`, `dark` | Select a coordinated mode from the active color system. |
 | Reading width | `narrow`, `standard`, `wide` | Adjust prose measure within safe limits defined by the geometry profile. |
 | Focus reading | `off`, `on` | Reduce surrounding navigation while keeping navigation and exit controls available. |
 
@@ -248,7 +284,7 @@ Cards, banners, code blocks, notes, carousel controls, navigation, and future
 components consume semantic tokens and shared spacing scales. A preset should
 not define component-specific hover or focus colors.
 
-Component identity can follow the selected typography, shape, palette, and
+Component identity can follow the selected typography, corners, palette, and
 rhythm profiles automatically. This lets a new preset cover existing and future
 components without adding a separate definition for each one.
 
@@ -280,8 +316,8 @@ Identity should come from a coordinated combination of a few strong signals:
 - palette temperature and accent;
 - rhythm and whitespace;
 - prose and media proportions;
-- shape and line treatment;
-- surface sequence.
+- corner and line treatment;
+- surface sequence on sites without tree navigation.
 
 Do not make identity depend on low contrast, unusual interaction, excessive
 decoration, or a layout that competes with the content. At least two major

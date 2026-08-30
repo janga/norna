@@ -1,4 +1,4 @@
-# Current Preset Inventory
+# Historical Preset Inventory
 
 This document records the theme and preset system before the profile-based
 redesign described in the [Preset Design Guide](preset-design-guide.md) and
@@ -10,6 +10,11 @@ The corresponding desktop, mobile, light, and dark screenshots are in
 It is a Phase 0 inventory, not a specification of future behavior. The values
 below were read from Norna `0.7.18` at Git commit `5e84890`. No visual or
 functional change is proposed by recording them.
+
+> This is a historical design record. Its `dark`, `light`, `paper`, `shape`,
+> `soft`, `appearance`, and `cycling` terms describe the implementation at the
+> recorded commit and are not current configuration. See
+> [Theme](../theme.md) for the current public contract.
 
 ## Summary
 

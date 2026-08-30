@@ -104,7 +104,7 @@ indicators to system colors. Component boundaries remain visible without
 depending on shadows or translucent fills.
 
 Future reader preferences are overlays after theme resolution. Initial named
-categories are appearance (`system`, `light`, `dark`), reading width (`narrow`,
+categories are color mode (`system`, `light`, `dark`), reading width (`narrow`,
 `standard`, `wide`), and focus reading (`off`, `on`). An overlay may adapt the
 site inside engine bounds but cannot reduce contrast, remove focus, exceed the
 text-measure ceiling, reorder content, or hide the control needed to undo it.

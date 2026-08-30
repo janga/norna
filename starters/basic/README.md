@@ -34,7 +34,7 @@ Norna derives `/repository-name/` as the base path. Use a root URL such as
 
 In GitHub repository settings, configure Pages to build from GitHub Actions.
 
-Page width, side gutters, content spacing, image sizing, palette, shape, and
+Page width, side gutters, content spacing, image sizing, palette, corners, and
 site-wide typography are configured in `site/theme.yaml`. A page may use a
 limited `theme.yaml` for local text width, content spacing, managed-image
 sizing, and section background pattern.

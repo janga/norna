@@ -112,8 +112,8 @@ Use a table when comparing a closed set of values. Prefer columns such as
 separate paragraphs. Format literal keys and values as code.
 
 Do not describe an enum only by paraphrasing its name. For example, a value
-named `cycling` still needs the exact sequence it cycles through, where that
-sequence appears, when it repeats, and where the value is unavailable.
+named `accented` still needs the exact surface sequence, where that sequence
+appears, when it repeats, and where the value is unavailable.
 
 ## Source Of Truth And Duplication
 
@@ -190,4 +190,3 @@ of technical writing:
 - [Diataxis: Reference](https://www.diataxis.fr/reference/) and
   [Reference and explanation](https://www.diataxis.fr/reference-explanation/)
   distinguish precise product description from background and rationale.
-

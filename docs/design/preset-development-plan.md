@@ -89,7 +89,7 @@ Progress:
 
 ### Phase 0: Record And Protect The Baseline
 
-Current audit: [Current Preset Inventory](preset-current-inventory.md) and
+Historical audit: [Historical Preset Inventory](preset-current-inventory.md) and
 [Preset Visual Baselines](../../tests/preset-baselines/README.md).
 
 Before changing resolution behavior:
@@ -142,7 +142,7 @@ Create internal definitions for:
 - rhythm;
 - geometry;
 - media emphasis;
-- shape;
+- corner treatment;
 - surface patterns.
 
 Initially express the current presets through these profiles while preserving
@@ -170,7 +170,7 @@ Commit the resolver separately from later visual tuning.
 Implementation:
 
 - `scripts/lib/theme-profiles.mjs` owns immutable color, typography, rhythm,
-  geometry, media, shape, and surface profiles;
+  geometry, media, corner, and surface profiles;
 - `scripts/lib/theme-presets.mjs` expresses each built-in preset as a compact
   recipe and expands it before applying public overrides;
 - `tests/preset-baselines/resolved-themes.json` locks every resolved preset
@@ -181,7 +181,7 @@ Implementation:
 
 Implement one Display control with these initial settings:
 
-- appearance: System, Light, Dark;
+- color mode: System, Light, Dark;
 - reading width: Narrow, Standard, Wide;
 - focus reading: Off, On;
 - reset to defaults.
@@ -192,7 +192,7 @@ bounds exist. The likely conceptual grouping is:
 ```yaml
 preset: documentation
 readerControls:
-  appearance: true
+  colorMode: true
   readingWidth: true
   focusReading: true
 ```
@@ -216,10 +216,10 @@ the first preset. This avoids designing a preset around only one reader state.
 Implementation checkpoint (2026-08-29): the reader-preference overlay and
 accessible Display panel are implemented as a proof of concept. `documentation`
 and `project` offer all three controls by default; `portfolio` and `statement`
-offer appearance only. Browser tests cover persistence, reset, focus-reading,
+offer color mode only. Browser tests cover persistence, reset, focus-reading,
 text-width changes, keyboard closing, reflow, and the no-JavaScript default.
-Public reference documentation and example migration remain pending hands-on
-approval.
+Public reference documentation and the runnable presentation example use the
+approved theme terminology.
 
 ### Phase 4: Design The Documentation Preset
 
@@ -280,9 +280,9 @@ directions. Evaluate:
 - prolonged reading comfort;
 - navigation orientation;
 - links, code, cards, banners, and captions;
-- uniform versus restrained alternating sections;
+- uniform versus restrained alternating sections on sites without tree navigation;
 - focus and selected states;
-- whether shape treatment supports technical clarity.
+- whether corner treatment supports technical clarity.
 
 Accessibility corrections are automatic constraints, not separate aesthetic
 options.

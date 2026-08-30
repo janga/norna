@@ -152,16 +152,21 @@ site identity or navigation clarity.
 The proof-of-concept contract is:
 
 - `config.yaml` owns the site-wide navigation mode;
-- the root `theme.yaml` owns presets, palette, shape, typography, the page
+- the root `theme.yaml` owns presets, palette, corners, typography, the page
   frame, global spacing primitives, and default page presentation;
 - a page-local `theme.yaml` may set only `layout.textWidth`,
   `layout.contentSpacing`, managed-image sizing, and
   `sections.backgroundPattern`;
+- `sections.backgroundPattern` may be non-uniform only when the resolved
+  navigation mode is `sections` or `top`; tree navigation always uses one
+  continuous `uniform` reading surface;
+- non-uniform section surfaces span the viewport while their text and media
+  remain constrained by the normal page geometry;
 - page-local values are inherited by descendant pages and merged field by
   field, while global visual identity is never replaced;
 - `layout.contentSpacing` replaces the ambiguous `layout.density` name;
 - `sections.backgroundPattern` replaces the low-level `sectionSurfaces` list
-  with `uniform`, `alternating`, and `cycling` choices;
+  with `uniform`, `alternating`, and `accented` choices;
 - custom presets and custom font definitions are deferred until the built-in
   contract has been tested in real sites.
 

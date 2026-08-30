@@ -309,7 +309,7 @@ Add only values that should differ from the preset:
 preset: documentation
 layout:
   pageWidth: 1320px
-palette: dark
+palette: near-monochrome
 ```
 
 To inspect a preset before overriding it, export a commented reference file:
@@ -321,9 +321,24 @@ npm run norna:theme:export -- documentation
 This creates `site/orig-documentation-theme.yaml`. Norna does not load the
 reference file, and the command refuses to overwrite an existing one.
 
-The root theme keeps colors, shape, typography, page frame, and navigation
+The root theme keeps colors, corners, typography, page frame, and navigation
 consistent. A page-local `theme.yaml` can make narrower presentation changes
 that its descendants inherit.
+
+Section backgrounds are also coordinated with navigation. `uniform` keeps one
+surface throughout the page. `alternating` repeats the palette's base and soft
+surfaces. `accented` moves from base to soft to emphasis, then back through soft
+to base before repeating.
+
+On one-page and shallow top-navigation sites, the changing backgrounds extend
+across the browser width so each H2 section reads as one region; text and media
+keep their normal constrained widths.
+
+A persistent navigation tree already forms a strong visual region beside the
+document. Norna therefore uses a continuous `uniform` reading surface for tree
+navigation. Built-in presets make that adjustment automatically. An explicit
+`alternating` or `accented` override is rejected when the site resolves to tree
+navigation rather than being silently ignored.
 
 See [Theme](https://github.com/janga/norna/blob/main/docs/theme.md) and
 [Typography](https://github.com/janga/norna/blob/main/docs/typography.md) for
