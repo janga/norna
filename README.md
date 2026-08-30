@@ -13,7 +13,7 @@ than a general-purpose site generator: you describe the site instead of
 implementing a new presentation layer for every project.
 
 [Documentation](https://janga.github.io/norna/) |
-[Getting started](https://janga.github.io/norna/getting-started/) |
+[Getting started](https://janga.github.io/norna/getting-started/install-norna/) |
 [Live examples](https://janga.github.io/norna/examples/) |
 [npm package](https://www.npmjs.com/package/@janga/norna)
 
@@ -38,7 +38,7 @@ Open the URL printed by the development server, then edit the files under
 scripts and GitHub Pages workflow needed to check, build, and publish it.
 
 Continue with the illustrated
-[Getting Started](https://janga.github.io/norna/getting-started/) guide to see
+[Getting Started](https://janga.github.io/norna/getting-started/install-norna/) guide to see
 how page content, files, navigation, and rendered output fit together.
 
 For shorter commands, install the launcher globally with
@@ -57,17 +57,22 @@ site/
 |   |-- 000-home/
 |   |   |-- content.md
 |   |   `-- images/
-|   `-- 010-guide/
-|       |-- content.md
+|   `-- 010-guides/
+|       |-- category.yaml
 |       `-- pages/
 |           `-- 010-installation/
+|               |-- content.md
+|               `-- images/
 `-- public/
 ```
 
 - `pages/000-home/content.md` is the required homepage at `/`.
-- Other top-level directories under `pages/` are global navigation roots.
-- A page may contain local images, limited presentation settings, and nested
-  child pages under its own `pages/` directory.
+- Every other ordered directory under `pages/` contains either `content.md` for
+  a routable page or `category.yaml` for a navigation-only group.
+- A page may contain local images. A page or category may contain limited
+  presentation settings and nested entries under its own `pages/` directory.
+- Category ids remain in child URLs, but categories do not generate pages of
+  their own.
 - `theme.yaml` normally selects one complete visual preset.
 - `sitewide-content.yaml` holds shared logo display settings, banners, and footer content.
 - `config.yaml` holds the public URL and optional language and scroll behavior.
@@ -134,7 +139,7 @@ engine diagnostics, not for ordinary editing and local preview. See
 
 ## Documentation
 
-- [Getting Started](https://janga.github.io/norna/getting-started/)
+- [Getting Started](https://janga.github.io/norna/getting-started/install-norna/)
 - [Site files](docs/site-files.md)
 - [Upgrading an existing site](docs/upgrading.md)
 - [Task-oriented documentation map](docs/README.md)

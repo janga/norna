@@ -1,20 +1,25 @@
 # Norna Documentation
 
 The [Norna introduction site](https://janga.github.io/norna/) explains what the
-tool is for, and its [Getting Started](https://janga.github.io/norna/getting-started/)
-page introduces the workflow with examples and diagrams. These Markdown files
-are the versioned reference for exact file contracts, syntax, defaults,
-commands, and troubleshooting.
+tool is for. Its [Getting Started](https://janga.github.io/norna/getting-started/install-norna/)
+guide begins by installing Norna and previewing a first site, then continues with
+[page structure](https://janga.github.io/norna/getting-started/grow-your-site/)
+and [publishing](https://janga.github.io/norna/getting-started/build-and-publish/).
+These Markdown files are the versioned reference for exact file contracts,
+syntax, defaults, commands, and troubleshooting.
 
 ## Start Here
 
-1. [Getting Started](https://janga.github.io/norna/getting-started/) introduces
-   installation, page content, file structure, themes, local work, and
-   publishing.
+1. [Install Norna](https://janga.github.io/norna/getting-started/install-norna/)
+   begins the Getting Started guide with installation, the first edit, a visual
+   preset, and the local check.
+   Continue with [Grow Your Site](https://janga.github.io/norna/getting-started/grow-your-site/)
+   and [Build And Publish](https://janga.github.io/norna/getting-started/build-and-publish/)
+   when those tasks become relevant.
 2. [Site Files](site-files.md) is the canonical map of every source file,
    convention-based directory, and generated location.
-3. [Content](content.md) and [Pages](pages.md) define the exact Markdown and
-   page-tree rules behind the introduction.
+3. [Content](content.md) and [Pages and Categories](pages.md) define the exact
+   Markdown and page-tree rules behind the introduction.
 4. [Requirements and limitations](requirements.md) lists required software and
    current product boundaries.
 5. [VS Code Editor Support](editor-support.md) explains project-local YAML,
@@ -39,8 +44,11 @@ site/
 |   |-- 000-home/
 |   |   |-- content.md
 |   |   `-- images/
-|   `-- 010-guide/
-|       `-- content.md
+|   `-- 010-guides/
+|       |-- category.yaml
+|       `-- pages/
+|           `-- 010-installation/
+|               `-- content.md
 `-- public/
 ```
 
@@ -50,9 +58,12 @@ site/
   overrides.
 - [`sitewide-content.yaml`](sitewide-content.md): shared logo display settings,
   banners, and footer.
-- [`pages/`](pages.md): Home, top-level areas, nested pages, ordering, and URLs.
+- [`pages/`](pages.md): Home, routable pages, navigation-only categories,
+  ordering, nesting, and URLs.
 - [`content.md`](content.md): the content file inside every page directory,
   containing its title, optional metadata, sections, prose, notes, and blocks.
+- [`category.yaml`](pages.md#navigation-categories): a label for a group of
+  child pages when the group should not produce a page of its own.
 - [`images/`](images-and-metadata.md): managed images kept inside the page that
   references them, plus variants, sync, and generated image state.
 - [`public/`](public-files.md): navigation logos, favicons, and other static
@@ -67,7 +78,7 @@ required, optional, convention-discovered, versioned, or generated.
 
 ### Create And Run A Site
 
-- [Create a standalone site](https://janga.github.io/norna/getting-started/#create)
+- [Create a standalone site](https://janga.github.io/norna/getting-started/install-norna/#create)
 - [Add Norna to an existing Node project](https://janga.github.io/norna/faq/#add-norna-to-an-existing-project)
 - [Start and manage local preview](local-development.md)
 - [Inspect or update the installed engine](commands.md#command-summary)
@@ -78,7 +89,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Write page sections](content.md#sections)
 - [Use image stacks, carousels, and cards](content.md#norna-blocks)
 - [Add notes to prose](content.md#markdown-text)
-- [Add another page](pages.md)
+- [Add a page or navigation category](pages.md#create-pages-and-categories)
 - [Understand generated and collapsible navigation](pages.md#navigation)
 - [Add shared banners or footer content](sitewide-content.md)
 - [Use project-local VS Code help](editor-support.md)
@@ -110,8 +121,10 @@ required, optional, convention-discovered, versioned, or generated.
 
 ## Explanation
 
-- [Getting Started](https://janga.github.io/norna/getting-started/) introduces
-  files, sections, images, and page hierarchies as the site grows.
+- [Install Norna](https://janga.github.io/norna/getting-started/install-norna/)
+  introduces the first local workflow in the Getting Started guide.
+- [Grow Your Site](https://janga.github.io/norna/getting-started/grow-your-site/)
+  introduces files, sections, images, and page hierarchies as the site grows.
 - [Client-side JavaScript](client-javascript.md) identifies static features,
   progressively enhanced navigation, and features that require browser-side
   behavior.

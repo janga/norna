@@ -50,6 +50,6 @@ an ordinary Norna site.
 
 These constraints are part of the product's current scope, not hidden setup
 steps. Start with the illustrated
-[Getting Started](https://janga.github.io/norna/getting-started/), and use
+[Getting Started](https://janga.github.io/norna/getting-started/install-norna/), and use
 [`norna engine:version`](commands.md#command-summary) to inspect the version
 installed by an existing project.
