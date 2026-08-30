@@ -2,17 +2,17 @@ import { freezeDeep, mergeDeep } from './object.mjs';
 
 export const themeProfileDefinitions = freezeDeep({
 	color: {
-		'monochrome-dark': {
+		'near-monochrome-dark': {
 			colorMode: { default: 'dark' },
-			palette: 'dark',
+			palette: 'near-monochrome',
 		},
-		'paper-adaptive': {
+		'warm-paper-adaptive': {
 			colorMode: { default: 'system' },
-			palette: 'paper',
+			palette: 'warm-paper',
 		},
-		'clear-adaptive': {
+		'cool-green-adaptive': {
 			colorMode: { default: 'system' },
-			palette: 'light',
+			palette: 'cool-green',
 		},
 	},
 	typography: {
@@ -139,14 +139,14 @@ export const themeProfileDefinitions = freezeDeep({
 			},
 		},
 	},
-	shape: {
-		square: { shape: 'square' },
-		soft: { shape: 'soft' },
+	corners: {
+		square: { corners: 'square' },
+		rounded: { corners: 'rounded' },
 	},
 	surfaces: {
 		uniform: { sections: { backgroundPattern: 'uniform' } },
 		alternating: { sections: { backgroundPattern: 'alternating' } },
-		cycling: { sections: { backgroundPattern: 'cycling' } },
+		accented: { sections: { backgroundPattern: 'accented' } },
 	},
 });
 

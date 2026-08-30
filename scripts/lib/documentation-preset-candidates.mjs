@@ -2,7 +2,7 @@ export const documentationPresetCandidates = Object.freeze([
 	Object.freeze({
 		id: 'editorial',
 		label: 'Editorial',
-		description: 'Serif reading typography, compact rhythm, and alternating paper surfaces.',
+		description: 'Serif reading typography, compact rhythm, and a uniform paper reading surface.',
 		theme: `preset: documentation\n`,
 	}),
 	Object.freeze({
@@ -24,7 +24,7 @@ sections:
 	Object.freeze({
 		id: 'restrained',
 		label: 'Restrained',
-		description: 'Restrained sans-serif typography, normal rhythm, and quiet alternating surfaces.',
+		description: 'Restrained sans-serif typography, normal rhythm, and a uniform paper reading surface.',
 		theme: `preset: documentation
 typography:
   fontFamily: "'Helvetica Neue', Arial, sans-serif"
@@ -33,8 +33,6 @@ typography:
 layout:
   contentSpacing: normal
   textWidth: narrow
-sections:
-  backgroundPattern: alternating
 `,
 	}),
 ]);

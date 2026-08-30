@@ -416,7 +416,7 @@ a {
 	margin: 0;
 	padding: 0.85rem;
 	border: 1px solid var(--color-border);
-	border-radius: var(--shape-radius-medium, 4px);
+	border-radius: var(--corner-radius-medium, 4px);
 	background: var(--color-surface-base-background);
 	color: var(--color-surface-base-text);
 	font-size: 0.82rem;
@@ -453,7 +453,7 @@ a {
 	gap: 1px;
 	width: 100%;
 	border: 1px solid var(--color-border);
-	border-radius: var(--shape-radius-small, 2px);
+	border-radius: var(--corner-radius-small, 2px);
 	background: var(--color-border);
 	overflow: hidden;
 }
@@ -809,6 +809,10 @@ a {
 	min-width: 0;
 }
 
+.site-page-layout-tree .site-section {
+	background-color: transparent;
+}
+
 @media (min-width: 701px) {
 	.site-page-layout-tree :is(.site-breadcrumbs, .section-header, .section-markdown) {
 		margin-right: auto;
@@ -849,6 +853,10 @@ a {
 		margin-right: auto;
 		margin-left: calc(var(--tree-navigation-width) + var(--tree-layout-gap));
 	}
+
+	:root[data-tree-navigation='collapsed'] .site-page-layout-tree .site-section::before {
+		left: calc(var(--tree-navigation-width) + var(--tree-layout-gap));
+	}
 }
 
 .tree-navigation-toggle {
@@ -861,7 +869,7 @@ a {
 	height: var(--target-size-comfortable);
 	margin: 0;
 	border: 0;
-	border-radius: var(--shape-radius-small, 2px);
+	border-radius: var(--corner-radius-small, 2px);
 	background: transparent;
 	color: currentColor;
 	cursor: pointer;
@@ -971,7 +979,7 @@ a {
 	width: 1.8rem;
 	height: 1.8rem;
 	border: 0;
-	border-radius: var(--shape-radius-small, 2px);
+	border-radius: var(--corner-radius-small, 2px);
 	list-style: none;
 	cursor: pointer;
 	color: var(--color-secondary-text);
@@ -1001,7 +1009,7 @@ a {
 	justify-content: space-between;
 	width: 100%;
 	border: 0;
-	border-radius: var(--shape-radius-small, 2px);
+	border-radius: var(--corner-radius-small, 2px);
 	padding: 0.45rem 0;
 	font-size: 0.86rem;
 	line-height: 1.35;
@@ -1464,11 +1472,10 @@ ul {
 }
 
 :root[data-focus-reading='on'] :is(
-	.site-brand,
+	.site-nav-leading,
 	.site-nav,
 	.mobile-nav-menu,
 	.page-nav,
-	.tree-navigation-toggle,
 	.tree-local-navigation,
 	.site-breadcrumbs,
 	.site-footer
@@ -1480,23 +1487,36 @@ ul {
 	justify-content: flex-end;
 }
 
-:root[data-focus-reading='on'] .site-page-layout-tree {
-	display: block;
-	width: min(calc(100% - (var(--content-gutter) * 2)), var(--page-width));
-}
+@media (min-width: 701px) {
+	:root[data-focus-reading='on'] .site-page-layout-tree {
+		display: grid;
+		grid-template-columns: var(--tree-navigation-width) minmax(0, 1fr);
+		gap: var(--tree-layout-gap);
+		width: min(calc(100% - (var(--content-gutter) * 2)), var(--tree-layout-width));
+	}
 
-:root[data-focus-reading='on'] .site-page-layout-tree > .site-content {
-	width: 100%;
-}
+	:root[data-focus-reading='on'] .site-page-layout-tree > .site-content {
+		grid-column: 2;
+		width: 100%;
+	}
 
-:root[data-focus-reading='on'] .site-page-layout-tree :is(.section-header, .section-markdown) {
-	margin-right: auto;
-	margin-left: auto;
-}
+	:root[data-focus-reading='on'] .site-page-layout-tree
+		:is(.site-breadcrumbs, .section-header) {
+		margin-right: auto;
+		margin-left: 0;
+		max-width: none;
+	}
 
-:root[data-focus-reading='on'] .site-page-layout-tree .site-section::before {
-	left: calc(50% - 50vw);
-	right: calc(50% - 50vw);
+	:root[data-focus-reading='on'] .site-page-layout-tree .section-body {
+		width: 100%;
+		margin-right: auto;
+		margin-left: auto;
+	}
+
+	:root[data-focus-reading='on'] .site-page-layout-tree .site-section::before {
+		left: 0;
+		right: calc(0px - var(--tree-layout-outer-margin));
+	}
 }
 
 :root[data-focus-reading='on'] .site-content-has-breadcrumbs > .site-section:first-of-type {
@@ -1520,7 +1540,7 @@ ul {
 .section-markdown pre.astro-code {
 	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
 	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
-	border-radius: var(--shape-radius-medium, 6px);
+	border-radius: var(--corner-radius-medium, 6px);
 	padding: 0.78rem 0.9rem;
 	background: var(--color-code-background) !important;
 	color: var(--color-code-text);
@@ -1679,9 +1699,9 @@ ul {
 	align-content: start;
 	margin: 0;
 	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
-	border-radius: var(--shape-radius-large, 8px);
+	border-radius: var(--corner-radius-large, 8px);
 	padding: var(--card-list-padding);
-	background: color-mix(in srgb, var(--section-background-color, var(--color-page)) 92%, currentColor 8%);
+	background: var(--color-surface);
 	color: inherit;
 }
 

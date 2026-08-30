@@ -3,9 +3,44 @@ import {
 	validateFrontmatterIndentation,
 } from './site-content.mjs';
 
-const formatSchemaIssues = (issues) => issues.map((issue) => {
+const getValueAtPath = (data, path) => path.reduce(
+	(value, key) => value?.[key],
+	data,
+);
+
+const getLegacyThemeHint = (issue, data) => {
+	const location = issue.path.join('.');
+	const value = getValueAtPath(data, issue.path);
+
+	if (location === 'palette') {
+		const replacements = {
+			dark: 'near-monochrome',
+			light: 'cool-green',
+			paper: 'warm-paper',
+		};
+		if (replacements[value]) {
+			return `Palette value "${value}" was replaced by "${replacements[value]}".`;
+		}
+	}
+
+	if (location === 'corners' && value === 'soft') {
+		return 'Corner value "soft" was replaced by "rounded".';
+	}
+
+	if (location === 'sections.backgroundPattern' && value === 'cycling') {
+		return 'Section background pattern "cycling" was replaced by "accented".';
+	}
+
+	if (location === 'readerControls' && issue.keys?.includes('appearance')) {
+		return 'Reader control "appearance" was replaced by "colorMode".';
+	}
+
+	return undefined;
+};
+
+const formatSchemaIssues = (issues, data) => issues.map((issue) => {
 	const location = issue.path.join('.') || '(root)';
-	return `- ${location}: ${issue.message}`;
+	return `- ${location}: ${getLegacyThemeHint(issue, data) ?? issue.message}`;
 });
 
 export const parseYamlConfig = (source, label, {
@@ -42,7 +77,7 @@ export const parseYamlConfig = (source, label, {
 	if (!parsed.success) {
 		throw new Error([
 			`${label} has invalid values.`,
-			...formatSchemaIssues(parsed.error.issues),
+			...formatSchemaIssues(parsed.error.issues, data),
 		].join('\n'));
 	}
 

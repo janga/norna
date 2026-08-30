@@ -152,41 +152,41 @@
       "type": "object",
       "properties": {
         "backgroundPattern": {
-          "description": "Section background sequence inherited by descendant pages.",
+          "description": "Section background sequence inherited by descendant pages. Non-uniform patterns are invalid with tree navigation.",
           "type": "string",
           "oneOf": [
             {
               "const": "uniform",
               "title": "Uniform",
-              "description": "Use the palette base surface for every section."
+              "description": "Use the normal page background for every H2 section. Tree navigation requires this pattern."
             },
             {
               "const": "alternating",
               "title": "Alternating",
-              "description": "Alternate between the palette base and soft surfaces."
+              "description": "Alternate normal and subtly contrasting full-width section backgrounds. Available with sections and top navigation."
             },
             {
-              "const": "cycling",
-              "title": "Cycling",
-              "description": "Cycle through the palette base, soft and emphasis surfaces."
+              "const": "accented",
+              "title": "Accented",
+              "description": "Move through base, soft, emphasis and soft full-width section backgrounds before repeating. Available with sections and top navigation."
             }
           ],
-          "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nSection background sequence inherited by descendant pages.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)",
+          "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nSection background sequence inherited by descendant pages. Non-uniform patterns are invalid with tree navigation.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)",
           "examples": [
             "uniform",
             "alternating",
-            "cycling"
+            "accented"
           ]
         }
       },
       "additionalProperties": false,
       "description": "Page-local section presentation inherited by descendant pages.",
-      "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nAdjusts the section background sequence for this page and its descendants.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
+      "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nAdjusts the H2 section background pattern for this page and its descendants. Alternating and accented create full-width bands but are invalid when navigation resolves to tree.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
     }
   },
   "additionalProperties": false,
-  "description": "Limited page presentation overrides inherited by descendant pages. Site colors, shapes, typography and navigation remain global.",
+  "description": "Limited page presentation overrides inherited by descendant pages. Site colors, corners, typography and navigation remain global.",
   "$id": "https://janga.github.io/norna/schemas/page-theme.schema.json",
   "title": "Norna page theme",
-  "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nA page theme may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Site colors, shapes and typography stay consistent.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
+  "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nA page theme may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners and typography stay consistent.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
 }

@@ -8,7 +8,7 @@ complete preset and adds only focused overrides when they are needed:
 preset: documentation
 ```
 
-The root theme owns site-wide colors, shapes, typography, page frame, and
+The root theme owns site-wide colors, corners, typography, page frame, and
 navigation presentation. An optional page-local `theme.yaml` has a deliberately
 smaller role described under [Page Themes](#page-themes).
 
@@ -18,20 +18,20 @@ Available complete presets are:
 
 - `portfolio`: restrained typography and a broad image area for image-led
   presentation.
-- `documentation`: reading-focused typography, a paper palette, and compact
+- `documentation`: reading-focused typography, a warm-paper palette, and compact
   structural rhythm.
-- `project`: compact layout and a light presentation for project and product
+- `project`: compact layout and a cool-green presentation for project and product
   sites.
 - `statement`: airy spacing and stronger typography for short editorial
   content.
 
 Each preset coordinates:
 
-- light and dark colors, shape, and typography
+- light and dark colors, corners, and typography
 - page width, gutters, text width, and content spacing
 - navigation spacing and visual treatment
 - managed-image sizing
-- section background sequence
+- section background pattern
 
 These coordinated values keep the site's identity consistent. Page themes
 cannot select another preset.
@@ -45,7 +45,7 @@ preset values remain active:
 preset: documentation
 layout:
   pageWidth: 1320px
-palette: dark
+palette: near-monochrome
 ```
 
 Nested objects are merged by key. It is valid to omit `preset` and define root
@@ -178,78 +178,142 @@ Use `norna typography profiles` to inspect built-in values and
 `norna typography show` to inspect the resolved site typography. See
 [Typography](typography.md) for every override field.
 
-## Color Modes
+## Palette And Color Mode
 
-Every preset includes coordinated light and dark variants for its palette.
-`colorMode.default` selects the initial appearance:
+Norna separates a site's color character from whether it is shown in light or
+dark mode. A `palette` selects a coordinated family of colors, with both a light
+and a dark variant. `colorMode` selects the light variant, the dark variant, or
+the variant preferred by the visitor's operating system. It does not select
+another palette.
 
-- `system`: follow the visitor's operating-system preference.
-- `light`: start with the preset's light colors.
-- `dark`: start with the preset's dark colors.
+### Palette
+
+`palette` is a site-wide root-theme setting:
+
+| Value | Color character |
+| --- | --- |
+| `near-monochrome` | Neutral grays and off-whites with almost no visible hue. |
+| `cool-green` | A restrained range of cool greens, from light page surfaces to darker accents. |
+| `warm-paper` | Warm off-whites and browns resembling paper and ink. |
+
+Omit `palette` to use the selected preset's palette. Without a preset, Norna
+uses `near-monochrome`. A page-local theme cannot select another palette.
+
+### Color Mode
+
+`colorMode.default` selects the mode used when the reader has no stored choice:
+
+| Value | Effect |
+| --- | --- |
+| `system` | Follow the visitor's operating-system light or dark preference. |
+| `light` | Use the palette's light variant. |
+| `dark` | Use the palette's dark variant. |
+
+Omit `colorMode` to use the selected preset's default. Without a preset, Norna
+uses the palette's default: `dark` for `near-monochrome`, and `light` for
+`cool-green` and `warm-paper`.
 
 Current preset defaults are:
 
-| Preset | Initial mode | Visitor selector |
-| --- | --- | --- |
-| `portfolio` | `dark` | Enabled |
-| `documentation` | `system` | Enabled |
-| `project` | `system` | Enabled |
-| `statement` | `system` | Enabled |
+| Preset | Palette | Default color mode | Reader control |
+| --- | --- | --- | --- |
+| `portfolio` | `near-monochrome` | `dark` | Enabled |
+| `documentation` | `warm-paper` | `system` | Enabled |
+| `project` | `cool-green` | `system` | Enabled |
+| `statement` | `warm-paper` | `system` | Enabled |
 
-Set `readerControls.appearance` to `true` to show a site-wide selector for
-System, Light, and Dark in the navigation:
+Set `readerControls.colorMode` to `true` to let readers choose System, Light,
+or Dark from the site-wide Display panel:
 
 ```yaml
 preset: documentation
 colorMode:
   default: system
 readerControls:
-  appearance: true
+  colorMode: true
 ```
+
+A preset supplies both a palette and a default color mode. Overriding only
+`palette` keeps the preset's default color mode; set both when both choices
+should change.
 
 When a visitor selects System, Light, or Dark, Norna stores the value in a
 first-party cookie named `norna-color-mode`. The cookie is limited to the site's
 base path, uses `SameSite=Lax`, and expires after one year. This keeps the choice
 for later visits without sharing it with another Norna site under a different
-path on the same domain. System stores the choice `system`; the actual colors
-continue to follow the visitor's operating-system preference.
+path on the same domain. System stores the choice `system`; the actual mode
+continues to follow the visitor's operating-system preference.
 
 When the cookie is absent or invalid, Norna uses `colorMode.default`. Set
-`readerControls.appearance: false` to hide the control; no color-mode preference
-script or cookie is then needed. The preset's initial mode still applies. A
-root theme without a preset also defaults selection to disabled unless it
-explicitly enables it.
+`readerControls.colorMode: false` to hide the control; no color-mode preference
+script or cookie is then needed. The configured default still applies. A root
+theme without a preset does not show the reader control unless it explicitly
+enables it.
 
 Color mode belongs to the root theme because navigation, page frame, section
-surfaces, controls, and text must change together. Page-local themes cannot
-override it. Select a palette for the site's color character, then use color
-mode to choose whether its coordinated light or dark variant is active. Norna
-does not expose arbitrary per-mode colors.
+backgrounds, controls, and text must change together. Page-local themes cannot
+override it. Norna does not expose arbitrary colors for individual modes.
 
-The runnable [Media and surfaces example](../examples/feature-demos/media-and-surfaces/)
-lets you change mode while inspecting prose, section surfaces, managed images,
-cards, and carousel controls.
+## Corners
 
-## Palette And Section Surfaces
+`corners` controls the site-wide corner treatment for navigation, cards, code
+blocks, and other framed content:
 
-These root settings are site-wide:
+| Value | Effect |
+| --- | --- |
+| `square` | Use square corners without a corner radius. |
+| `rounded` | Use restrained corner radii coordinated for small, medium, and large elements. |
 
-- `palette`: `dark`, `light`, or `paper`.
-- `shape`: `square` or `soft`.
-- `sections.backgroundPattern`: `uniform`, `alternating`, or `cycling`.
-
-Example:
+Omit `corners` to use the selected preset. Without a preset, Norna uses
+`rounded`, with `2px`, `6px`, and `8px` radii for small, medium, and large
+elements. Page-local themes cannot change the corner treatment.
 
 ```yaml
 preset: project
-palette: paper
-shape: soft
-sections:
-  backgroundPattern: cycling
+corners: rounded
 ```
 
-The background pattern uses coordinated surfaces from the active palette. It
-does not let individual sections select arbitrary colors.
+## Section Backgrounds
+
+A section background pattern controls how coordinated backgrounds are assigned
+to the H2 sections on a page. It does not set arbitrary colors for individual
+sections. The backgrounds come from the active palette.
+
+Set the pattern under `sections.backgroundPattern`:
+
+```yaml
+preset: project
+sections:
+  backgroundPattern: accented
+```
+
+| Value | Result | Navigation support |
+| --- | --- | --- |
+| `uniform` | Every H2 section uses the normal page background. | `sections`, `top`, and `tree` |
+| `alternating` | Normal and subtly contrasting backgrounds repeat in turn. | `sections` and `top` |
+| `accented` | Base, soft, emphasis, and soft backgrounds repeat in that order: `1 → 2 → 3 → 2 → 1`. | `sections` and `top` |
+
+The page introduction and first H2 section use the normal background. H3 and
+deeper headings remain within their H2 section and do not start another
+background. The sequence starts again on each page.
+
+With `alternating` or `accented`, the changing backgrounds span the complete
+viewport width. Headings, prose, images, and cards remain constrained by the
+normal page and content widths.
+
+A changing background creates a strong visual grouping. It works as a section
+cue with `sections` or `top` navigation. Tree navigation already creates a
+persistent navigation region beside the document, so it requires one continuous
+`uniform` reading background. This rule stays the same on small screens and
+when readers collapse the tree or enable focus reading.
+
+Omit `sections.backgroundPattern` to use the selected preset. Without a preset,
+Norna uses `uniform`. Built-in presets resolve to `uniform` automatically when
+navigation resolves to `tree`. A page-local setting overrides the root pattern
+for that page and is inherited by its descendant pages. An explicit root or
+page-theme override requesting `alternating` or `accented` with tree navigation
+is invalid; remove the override or select `uniform`. Cards, code blocks,
+banners, and callouts may still use their own coordinated backgrounds.
 
 ## Page Themes
 
@@ -265,7 +329,7 @@ A page theme may set only:
 - `layout.textWidth`
 - `layout.contentSpacing`
 - managed-image sizing under `images`
-- `sections.backgroundPattern`
+- `sections.backgroundPattern` when the site does not use tree navigation
 
 For example:
 
@@ -281,9 +345,13 @@ sections:
 
 Page settings are merged with the root theme and inherited by descendant pages.
 A more local page theme may override the same limited fields. Site colors,
-shape, typography, page width, gutters, and navigation remain constant.
+corners, typography, page width, gutters, and navigation remain constant.
 
-Page themes cannot define `preset`, `palette`, `shape`, `typography`,
+If `navigation.mode` is `automatic`, adding enough page or heading depth can
+make the site resolve to tree navigation. A non-uniform page override must then
+be removed or changed to `uniform`.
+
+Page themes cannot define `preset`, `palette`, `corners`, `typography`,
 `navigation`, `config.yaml`, or site-wide content. This boundary keeps one
 recognisable site while still allowing a guide, gallery, or reference area to
 use an appropriate reading width and media presentation.

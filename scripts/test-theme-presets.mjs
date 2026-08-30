@@ -32,40 +32,40 @@ const expectedPresetThemes = JSON.parse(await readFile(
 
 const expectedPresetRecipes = {
 	portfolio: {
-		color: 'monochrome-dark',
+		color: 'near-monochrome-dark',
 		typography: 'restrained-sans',
 		rhythm: 'balanced',
 		geometry: 'image-led',
 		media: 'prominent',
-		shape: 'square',
+		corners: 'square',
 		surfaces: 'uniform',
 	},
 	documentation: {
-		color: 'paper-adaptive',
+		color: 'warm-paper-adaptive',
 		typography: 'editorial-reading',
 		rhythm: 'compact',
 		geometry: 'focused-reading',
 		media: 'supporting',
-		shape: 'soft',
+		corners: 'rounded',
 		surfaces: 'alternating',
 	},
 	project: {
-		color: 'clear-adaptive',
+		color: 'cool-green-adaptive',
 		typography: 'system-reading',
 		rhythm: 'compact',
 		geometry: 'balanced-site',
 		media: 'balanced',
-		shape: 'soft',
+		corners: 'rounded',
 		surfaces: 'alternating',
 	},
 	statement: {
-		color: 'paper-adaptive',
+		color: 'warm-paper-adaptive',
 		typography: 'expressive-sans',
 		rhythm: 'expansive',
 		geometry: 'expansive-statement',
 		media: 'immersive',
-		shape: 'square',
-		surfaces: 'cycling',
+		corners: 'square',
+		surfaces: 'accented',
 	},
 };
 
@@ -100,7 +100,7 @@ try {
 		'rhythm',
 		'geometry',
 		'media',
-		'shape',
+		'corners',
 		'surfaces',
 	]);
 	assert.ok(Object.isFrozen(themeProfileDefinitions));
@@ -130,13 +130,13 @@ try {
 		assert.ok(resolved.layout?.textWidth);
 		assert.ok(resolved.layout?.noteWidth);
 		assert.ok(resolved.layout?.noteGap);
-		assert.ok(resolved.shape);
+		assert.ok(resolved.corners);
 		assert.ok(resolved.images?.width);
 		assert.ok(resolved.typography?.fontFamily);
 		assert.ok(resolved.typography?.profile);
 		assert.ok(resolved.palette);
 		assert.ok(resolved.colorMode?.default);
-		assert.equal(resolved.readerControls?.appearance, true);
+		assert.equal(resolved.readerControls?.colorMode, true);
 		assert.ok(resolved.sections?.backgroundPattern);
 		assert.deepEqual(themePresets[presetName], expectedPresetThemes[presetName]);
 		const { readerControls, ...expectedVisualProfiles } = expectedPresetThemes[presetName];
@@ -154,7 +154,7 @@ try {
 	);
 	assert.throws(
 		() => resolveThemeProfileRecipe({ ...themePresetRecipes.project, color: 'unknown' }, 'invalid recipe'),
-		/Unknown color profile "unknown" in invalid recipe.*monochrome-dark, paper-adaptive, clear-adaptive/,
+		/Unknown color profile "unknown" in invalid recipe.*near-monochrome-dark, warm-paper-adaptive, cool-green-adaptive/,
 	);
 	const missingProfileRecipe = { ...themePresetRecipes.project };
 	delete missingProfileRecipe.media;
@@ -181,7 +181,7 @@ try {
 	const overridden = resolveThemeConfig({
 		preset: 'documentation',
 		layout: { pageWidth: '1300px' },
-		palette: 'dark',
+		palette: 'near-monochrome',
 	}, 'test theme');
 	assert.equal(overridden.layout.contentSpacing, 'compact');
 	assert.equal(overridden.layout.textWidth, 'narrow');
@@ -190,7 +190,7 @@ try {
 	assert.equal(overridden.layout.noteWidth, '12rem');
 	assert.equal(overridden.layout.noteGap, '1.25rem');
 	assert.equal(overridden.images.width, '920px');
-	assert.equal(overridden.palette, 'dark');
+	assert.equal(overridden.palette, 'near-monochrome');
 	assert.equal(overridden.sections.backgroundPattern, 'alternating');
 	assert.throws(
 		() => resolveThemeConfig({ preset: 'unknown' }, 'test/theme.yaml'),
@@ -198,7 +198,7 @@ try {
 	);
 	assert.throws(
 		() => resolveThemePresentation({ sections: { backgroundPattern: 'glowing' } }, 'test/theme.yaml'),
-		/sections\.backgroundPattern must be one of uniform, alternating, cycling in test\/theme\.yaml/,
+		/sections\.backgroundPattern must be one of uniform, alternating, accented in test\/theme\.yaml/,
 	);
 
 	const listResult = runCli(['theme:presets']);
@@ -224,7 +224,8 @@ try {
 
 	await mkdir(path.join(siteDir, 'pages', '000-home'), { recursive: true });
 	await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
-	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\nnavigation:\n  mode: top\n');
+	const configPath = path.join(siteDir, 'config.yaml');
+	await writeFile(configPath, 'url: https://example.com/\nnavigation:\n  mode: top\n');
 	await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
 page:
   description: Root page
@@ -236,10 +237,10 @@ page:
 
 Root content.
 `);
-	await writeFile(path.join(siteDir, 'theme.yaml'), `preset: documentation
+await writeFile(path.join(siteDir, 'theme.yaml'), `preset: documentation
 layout:
   pageWidth: 1300px
-palette: dark
+palette: near-monochrome
 `);
 	await writeFile(path.join(siteDir, 'pages', '010-guide', 'content.md'), `---
 page:
@@ -255,8 +256,24 @@ Page content.
 images:
   width: 700px
 sections:
-  backgroundPattern: cycling
+  backgroundPattern: accented
 `);
+
+	const rootThemePath = path.join(siteDir, 'theme.yaml');
+	const rootThemeSource = await readFile(rootThemePath, 'utf8');
+	for (const [legacySource, expectedMessage] of [
+		['palette: paper\n', /Palette value "paper" was replaced by "warm-paper"/],
+		['corners: soft\n', /Corner value "soft" was replaced by "rounded"/],
+		['readerControls:\n  appearance: true\n', /Reader control "appearance" was replaced by "colorMode"/],
+		['sections:\n  backgroundPattern: cycling\n', /Section background pattern "cycling" was replaced by "accented"/],
+		['shape: soft\n', /"shape" was replaced by "corners"[\s\S]*replace the old "soft" value with "rounded"/],
+	]) {
+		await writeFile(rootThemePath, legacySource);
+		const legacyResult = runCli(['config:check']);
+		assert.notEqual(legacyResult.status, 0);
+		assert.match(legacyResult.stderr, expectedMessage);
+	}
+	await writeFile(rootThemePath, rootThemeSource);
 
 	const buildResult = runCli(['build']);
 	assert.equal(buildResult.status, 0, buildResult.stderr || buildResult.stdout);
@@ -298,6 +315,17 @@ sections:
 	assert.match(pageNavigationResult.stderr, /config\.yaml/);
 	await writeFile(pageThemePath, pageThemeSource);
 
+	await writeFile(configPath, 'url: https://example.com/\nnavigation:\n  mode: tree\n');
+	const treeSurfaceConflictResult = runCli(['config:check']);
+	assert.notEqual(treeSurfaceConflictResult.status, 0);
+	assert.match(treeSurfaceConflictResult.stderr, /sections\.backgroundPattern "accented" cannot be used with tree navigation/);
+	assert.match(treeSurfaceConflictResult.stderr, /pages\/010-guide\/theme\.yaml/);
+	await writeFile(pageThemePath, pageThemeSource.replace('backgroundPattern: accented', 'backgroundPattern: uniform'));
+	const uniformTreeResult = runCli(['config:check']);
+	assert.equal(uniformTreeResult.status, 0, uniformTreeResult.stderr || uniformTreeResult.stdout);
+	await writeFile(configPath, 'url: https://example.com/\nnavigation:\n  mode: top\n');
+	await writeFile(pageThemePath, pageThemeSource);
+
 	const exportResult = runCli(['theme:export', 'documentation']);
 	assert.equal(exportResult.status, 0, exportResult.stderr || exportResult.stdout);
 	assert.match(exportResult.stdout, /orig-documentation-theme\.yaml/);
@@ -305,11 +333,11 @@ sections:
 	const exportedSource = await readFile(exportedPath, 'utf8');
 	assert.match(exportedSource, /This is a reference file\. Norna only loads theme\.yaml\./);
 	assert.match(exportedSource, /Available theme presets: portfolio, documentation, project, statement\./);
-	assert.match(exportedSource, /# Alternatives: dark, light, paper\./);
+	assert.match(exportedSource, /# Alternatives: near-monochrome, cool-green, warm-paper\./);
 	const exportedConfig = load(exportedSource);
 	assert.equal(exportedConfig.preset, 'documentation');
 	assert.equal(exportedConfig.navigation, undefined);
-	assert.equal(exportedConfig.shape, themePresets.documentation.shape);
+	assert.equal(exportedConfig.corners, themePresets.documentation.corners);
 	assert.equal(exportedConfig.layout.pageWidth, themePresets.documentation.layout.pageWidth);
 	assert.equal(exportedConfig.layout.noteWidth, undefined);
 	assert.equal(exportedConfig.layout.noteGap, undefined);

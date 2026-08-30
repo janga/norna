@@ -176,6 +176,23 @@ test.describe('site navigation menus', () => {
 		await expect.poll(() => page.evaluate(() => window.location.hash)).toBe(targetHash);
 		await expect.poll(() => page.evaluate(() => `#${document.activeElement?.id}`)).toBe(targetHash);
 	});
+
+	test('renders non-tree section surfaces as full viewport bands', async ({ page }) => {
+		await openSite(page);
+		const section = page.locator('.site-section').filter({ has: page.locator('#carousels') });
+		const bounds = await section.evaluate((node) => {
+			const rectangle = node.getBoundingClientRect();
+			const pseudo = getComputedStyle(node, '::before');
+			return {
+				left: rectangle.left + Number.parseFloat(pseudo.left),
+				right: rectangle.right - Number.parseFloat(pseudo.right),
+				viewportWidth: document.documentElement.clientWidth,
+			};
+		});
+
+		expect(bounds.left).toBeCloseTo(0, 0);
+		expect(bounds.right).toBeCloseTo(bounds.viewportWidth, 0);
+	});
 });
 
 test.describe('mobile site navigation drawer', () => {

@@ -40,7 +40,7 @@ try {
 	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
 	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: restrained
-palette: dark
+palette: near-monochrome
 `);
 	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `banners:
   - id: expired-banner

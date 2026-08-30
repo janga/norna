@@ -10,12 +10,12 @@ import {
 } from './presentation-contract.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
 
-export const presentationPaletteNames = ['dark', 'light', 'paper'];
+export const presentationPaletteNames = ['near-monochrome', 'cool-green', 'warm-paper'];
 export const colorModeNames = ['system', 'light', 'dark'];
 const sectionBackgroundPatterns = Object.freeze({
 	uniform: ['base'],
 	alternating: ['base', 'soft'],
-	cycling: ['base', 'soft', 'emphasis'],
+	accented: ['base', 'soft', 'emphasis', 'soft'],
 });
 
 const createPaletteMode = ({ appearance, page, surfaces, frame, css }) => {
@@ -42,7 +42,7 @@ const createPaletteMode = ({ appearance, page, surfaces, frame, css }) => {
 };
 
 const presentationPalettes = Object.freeze({
-	dark: Object.freeze({
+	'near-monochrome': Object.freeze({
 		defaultMode: 'dark',
 		modes: Object.freeze({
 			light: createPaletteMode({
@@ -85,50 +85,50 @@ const presentationPalettes = Object.freeze({
 			}),
 		}),
 	}),
-	light: Object.freeze({
+	'cool-green': Object.freeze({
 		defaultMode: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#ffffff', textColor: '#17201d' },
+				page: { backgroundColor: '#e8f5e9', textColor: '#172319' },
 				surfaces: {
-					base: { backgroundColor: '#ffffff', textColor: '#17201d' },
-					soft: { backgroundColor: '#f1f4f2', textColor: '#17201d' },
-					emphasis: { backgroundColor: '#dde7e1', textColor: '#17201d' },
+					base: { backgroundColor: '#e8f5e9', textColor: '#172319' },
+					soft: { backgroundColor: '#d4ead7', textColor: '#172319' },
+					emphasis: { backgroundColor: '#b9dbbf', textColor: '#172319' },
 				},
-				frame: { backgroundColor: '#ffffff', textColor: '#17201d' },
+				frame: { backgroundColor: '#e8f5e9', textColor: '#172319' },
 				css: {
-					surface: '#f7f8f7',
-					muted: '#5e655f',
-					soft: '#d9dfda',
-					accent: '#38645a',
-					border: 'rgb(0 0 0 / 14%)',
-					navBackground: 'rgb(255 255 255 / 92%)',
-					navSeparator: 'rgb(0 0 0 / 20%)',
+					surface: '#dcecdf',
+					muted: '#596b5a',
+					soft: '#bed9c3',
+					accent: '#2f6339',
+					border: 'rgb(23 35 25 / 16%)',
+					navBackground: 'rgb(232 245 233 / 92%)',
+					navSeparator: 'rgb(23 35 25 / 22%)',
 				},
 			}),
 			dark: createPaletteMode({
 				appearance: 'dark',
-				page: { backgroundColor: '#0f1512', textColor: '#edf4ef' },
+				page: { backgroundColor: '#101a11', textColor: '#eff7ef' },
 				surfaces: {
-					base: { backgroundColor: '#0f1512', textColor: '#edf4ef' },
-					soft: { backgroundColor: '#17211c', textColor: '#edf4ef' },
-					emphasis: { backgroundColor: '#223129', textColor: '#edf4ef' },
+					base: { backgroundColor: '#101a11', textColor: '#eff7ef' },
+					soft: { backgroundColor: '#1a2d1d', textColor: '#eff7ef' },
+					emphasis: { backgroundColor: '#29462f', textColor: '#eff7ef' },
 				},
-				frame: { backgroundColor: '#0f1512', textColor: '#edf4ef' },
+				frame: { backgroundColor: '#101a11', textColor: '#eff7ef' },
 				css: {
-					surface: '#151d19',
-					muted: '#aab8b0',
-					soft: '#2c3b33',
-					accent: '#a9d2c4',
-					border: 'rgb(237 244 239 / 15%)',
-					navBackground: 'rgb(15 21 18 / 92%)',
-					navSeparator: 'rgb(237 244 239 / 26%)',
+					surface: '#162619',
+					muted: '#afc0ae',
+					soft: '#355036',
+					accent: '#99d5a4',
+					border: 'rgb(239 247 239 / 16%)',
+					navBackground: 'rgb(16 26 17 / 92%)',
+					navSeparator: 'rgb(239 247 239 / 28%)',
 				},
 			}),
 		}),
 	}),
-	paper: Object.freeze({
+	'warm-paper': Object.freeze({
 		defaultMode: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
@@ -179,7 +179,7 @@ for (const [paletteName, palette] of Object.entries(presentationPalettes)) {
 	}
 }
 
-export const getPresentationPalette = (paletteName = 'dark') => {
+export const getPresentationPalette = (paletteName = 'near-monochrome') => {
 	const palette = presentationPalettes[paletteName];
 	if (!palette) {
 		throw new Error(`Unknown presentation palette: ${paletteName}. Use one of: ${presentationPaletteNames.join(', ')}`);
@@ -225,7 +225,7 @@ const getSectionSurfaces = (pattern = 'uniform', sourceLabel = 'theme.yaml') => 
 
 export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 	const normalizedTheme = resolveThemeConfig(theme, sourceLabel);
-	const paletteName = normalizedTheme.palette ?? 'dark';
+	const paletteName = normalizedTheme.palette ?? 'near-monochrome';
 	const palette = getPresentationPalette(paletteName);
 	const colorMode = normalizedTheme.colorMode ?? {};
 	const readerControls = normalizedTheme.readerControls ?? {};
@@ -249,7 +249,7 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 		},
 		readerPreferences: {
 			controls: {
-				appearance: readerControls.appearance === true,
+				appearance: readerControls.colorMode === true,
 				readingWidth: readerControls.readingWidth === true,
 				focusReading: readerControls.focusReading === true,
 			},
@@ -264,8 +264,31 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 	};
 };
 
-export const resolvePagePresentation = (theme, sourceLabel) => {
+export const assertSectionBackgroundPatternCompatibility = (
+	theme,
+	sourceLabel = 'theme.yaml',
+	navigationMode = 'sections',
+) => {
+	const requestedPattern = theme?.sections?.backgroundPattern;
+	if (navigationMode === 'tree' && requestedPattern !== undefined && requestedPattern !== 'uniform') {
+		throw new Error([
+			`sections.backgroundPattern "${requestedPattern}" cannot be used with tree navigation in ${sourceLabel}.`,
+			'Tree navigation uses one uniform reading surface so the navigation rail and page content remain distinct.',
+			'Remove sections.backgroundPattern or set it to uniform.',
+		].join('\n'));
+	}
+};
+
+export const resolvePagePresentation = (theme, sourceLabel, { navigationMode = 'sections' } = {}) => {
+	assertSectionBackgroundPatternCompatibility(theme, sourceLabel, navigationMode);
+
 	const resolvedThemePresentation = resolveThemePresentation(theme, sourceLabel);
+	if (navigationMode === 'tree') {
+		return {
+			...resolvedThemePresentation,
+			sectionSurfaces: getSectionSurfaces('uniform', sourceLabel),
+		};
+	}
 
 	return resolvedThemePresentation;
 };

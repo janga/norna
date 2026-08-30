@@ -15,7 +15,7 @@ const textWidth = z.enum(['narrow', 'normal', 'wide']).describe('Maximum width o
 const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z.literal(700)]).describe('CSS font weight.');
 const typographyProfile = z.enum(['restrained', 'dense', 'reading', 'statement']).describe('Coordinated typography defaults. Omit this to use the selected preset.');
 const themePreset = z.enum(themePresetNames).describe('Complete Norna visual preset. Start here and add overrides only when needed.');
-const presentationPalette = z.enum(['dark', 'light', 'paper']).describe('Coordinated site color palette. Omit this to use the selected preset.');
+const presentationPalette = z.enum(['near-monochrome', 'cool-green', 'warm-paper']).describe('Coordinated site color palette. Every palette provides light and dark variants. Omit this to use the selected preset.');
 const themeColorMode = z.object({
 	default: z.enum(['system', 'light', 'dark']).optional().describe('Initial color mode. System follows the visitor\'s operating-system preference.'),
 }).strict().refine(
@@ -23,17 +23,17 @@ const themeColorMode = z.object({
 	'Specify default.',
 ).describe('Site-wide light and dark mode behaviour.');
 const readerControls = z.object({
-	appearance: z.boolean().optional().describe('Let readers choose System, Light, or Dark appearance in the site-wide Display panel.'),
+	colorMode: z.boolean().optional().describe('Let readers choose System, Light, or Dark color mode in the site-wide Display panel.'),
 	readingWidth: z.boolean().optional().describe('Let readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.'),
 	focusReading: z.boolean().optional().describe('Let readers temporarily hide navigation and other secondary page chrome while reading.'),
 }).strict().refine(
-	(value) => value.appearance !== undefined || value.readingWidth !== undefined || value.focusReading !== undefined,
-	'Specify appearance, readingWidth, focusReading, or a combination of them.',
+	(value) => value.colorMode !== undefined || value.readingWidth !== undefined || value.focusReading !== undefined,
+	'Specify colorMode, readingWidth, focusReading, or a combination of them.',
 ).describe('Site-wide reader choices grouped in one Display panel. Presets provide suitable defaults.');
 const spacingDensity = z.enum(['compact', 'normal', 'airy']).describe('Coordinated spacing density. Omit this to use the selected preset.');
 const contentSpacing = z.enum(['compact', 'normal', 'spacious']).describe('Vertical spacing between page sections and structured content blocks.');
-const backgroundPattern = z.enum(['uniform', 'alternating', 'cycling']).describe('How sections cycle through the active palette surfaces.');
-const shapeProfile = z.enum(['square', 'soft']).describe('Site-wide corner treatment for interface and content surfaces.');
+const backgroundPattern = z.enum(['uniform', 'alternating', 'accented']).describe('How coordinated backgrounds are assigned to H2 sections. Non-uniform patterns are unavailable with tree navigation.');
+const cornerTreatment = z.enum(['square', 'rounded']).describe('Site-wide corner treatment for navigation, cards and framed content.');
 const navigationMode = z.enum(navigationModeNames).describe('Site-wide navigation model. Automatic selects from the site structure.');
 const lineHeight = z.number()
 	.min(1, 'Use a unitless line height of at least 1.')
@@ -158,10 +158,10 @@ const configNavigation = z.object({
 	mode: navigationMode.optional().describe('Navigation model. Omit this to let Norna choose from the site structure.'),
 }).strict().describe('Site-wide navigation behavior.');
 const themeSections = z.object({
-	backgroundPattern: backgroundPattern.optional().describe('Section background sequence. Omit this to keep the selected preset or inherited page setting.'),
+	backgroundPattern: backgroundPattern.optional().describe('Section background pattern. Alternating and accented create full-width bands with sections or top navigation; tree navigation requires uniform.'),
 }).strict().describe('Defaults for page section presentation.');
 const pageThemeSections = z.object({
-	backgroundPattern: backgroundPattern.optional().describe('Section background sequence inherited by descendant pages.'),
+	backgroundPattern: backgroundPattern.optional().describe('Section background sequence inherited by descendant pages. Non-uniform patterns are invalid with tree navigation.'),
 }).strict().refine(
 	(value) => value.backgroundPattern !== undefined,
 	'Specify backgroundPattern.',
@@ -208,7 +208,7 @@ const themeVisualShape = {
 	preset: themePreset.optional().describe('Complete visual starting point. Add only the overrides the site actually needs.'),
 	colorMode: themeColorMode.optional(),
 	readerControls: readerControls.optional(),
-	shape: shapeProfile.optional().describe('Site-wide shape profile. Omit this to use the selected preset.'),
+	corners: cornerTreatment.optional().describe('Site-wide corner treatment. Omit this to use the selected preset.'),
 	layout: themeLayout.optional(),
 	images: themeImages.optional(),
 	typography: themeTypography.optional(),
@@ -247,6 +247,6 @@ export const pageThemeSchema = z.object(pageThemeShape).strict()
 		(value) => value.layout !== undefined || value.images !== undefined || value.sections !== undefined,
 		'Specify layout, images, sections, or a combination of them.',
 	)
-	.describe('Limited page presentation overrides inherited by descendant pages. Site colors, shapes, typography and navigation remain global.');
+	.describe('Limited page presentation overrides inherited by descendant pages. Site colors, corners, typography and navigation remain global.');
 export const sitewideSchema = z.object(sitewideShape).strict()
 	.describe('Editorial content and optional navigation logo display settings shared by every page.');

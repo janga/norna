@@ -44,7 +44,7 @@ const makePngHeader = ({ width, height }) => {
 
 const defaultTheme = `typography:
   profile: restrained
-palette: dark
+palette: near-monochrome
 `;
 
 const withTempProject = async ({ site, theme = defaultTheme, files, siteDirectory = 'site' }, run) => {

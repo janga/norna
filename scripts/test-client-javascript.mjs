@@ -60,7 +60,7 @@ try {
 	await writeConfig();
 	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: reading
-palette: paper
+palette: warm-paper
 `);
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
@@ -270,11 +270,11 @@ Ordinary content with a user-selectable color mode.
 `);
 	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: reading
-palette: paper
+palette: warm-paper
 colorMode:
   default: system
 readerControls:
-  appearance: true
+  colorMode: true
   readingWidth: true
   focusReading: true
 `);

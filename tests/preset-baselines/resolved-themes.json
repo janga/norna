@@ -3,7 +3,7 @@
     "colorMode": {
       "default": "dark"
     },
-    "palette": "dark",
+    "palette": "near-monochrome",
     "typography": {
       "fontFamily": "'Helvetica Neue', Arial, sans-serif",
       "profile": "restrained",
@@ -32,19 +32,19 @@
         "mobile": 68
       }
     },
-    "shape": "square",
+    "corners": "square",
     "sections": {
       "backgroundPattern": "uniform"
     },
     "readerControls": {
-      "appearance": true
+      "colorMode": true
     }
   },
   "documentation": {
     "colorMode": {
       "default": "system"
     },
-    "palette": "paper",
+    "palette": "warm-paper",
     "typography": {
       "fontFamily": "Georgia, 'Times New Roman', serif",
       "profile": "reading",
@@ -73,12 +73,12 @@
         "mobile": 68
       }
     },
-    "shape": "soft",
+    "corners": "rounded",
     "sections": {
       "backgroundPattern": "alternating"
     },
     "readerControls": {
-      "appearance": true,
+      "colorMode": true,
       "readingWidth": true,
       "focusReading": true
     }
@@ -87,7 +87,7 @@
     "colorMode": {
       "default": "system"
     },
-    "palette": "light",
+    "palette": "cool-green",
     "typography": {
       "fontFamily": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       "profile": "reading",
@@ -116,12 +116,12 @@
         "mobile": 62
       }
     },
-    "shape": "soft",
+    "corners": "rounded",
     "sections": {
       "backgroundPattern": "alternating"
     },
     "readerControls": {
-      "appearance": true,
+      "colorMode": true,
       "readingWidth": true,
       "focusReading": true
     }
@@ -130,7 +130,7 @@
     "colorMode": {
       "default": "system"
     },
-    "palette": "paper",
+    "palette": "warm-paper",
     "typography": {
       "fontFamily": "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif",
       "profile": "statement",
@@ -159,12 +159,12 @@
         "mobile": 70
       }
     },
-    "shape": "square",
+    "corners": "square",
     "sections": {
-      "backgroundPattern": "cycling"
+      "backgroundPattern": "accented"
     },
     "readerControls": {
-      "appearance": true
+      "colorMode": true
     }
   }
 }

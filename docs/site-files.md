@@ -87,7 +87,7 @@ site/pages/010-guide/
 Nested `pages/` directories create child pages and may continue to further
 depths. Each page owns its optional `images/` directory. A page-local
 `theme.yaml` may adjust a limited set of presentation properties and is inherited
-by descendants; site colors, typography, shape, and navigation remain global.
+by descendants; site colors, typography, corners, and navigation remain global.
 
 The three-digit page prefix controls sibling navigation order and is not part
 of the URL. See [Pages](pages.md) for hierarchy, URL, navigation, and page-theme

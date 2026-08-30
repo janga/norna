@@ -56,24 +56,24 @@ export const schemaValueDefinitions = Object.freeze([
 		reading: option('Reading', 'Reading-focused typography with narrower text and relaxed line height.'),
 		statement: option('Statement', 'Stronger headings and tighter body rhythm for short, expressive pages.'),
 	}),
-	definition(['dark', 'light', 'paper'], {
-		dark: option('Dark', 'Black page and section surfaces with light text.'),
-		light: option('Light', 'White and cool light surfaces with dark text.'),
-		paper: option('Paper', 'Warm off-white surfaces with dark text.'),
+	definition(['near-monochrome', 'cool-green', 'warm-paper'], {
+		'near-monochrome': option('Near monochrome', 'Neutral grays and off-whites with almost no visible hue, in coordinated light and dark variants.'),
+		'cool-green': option('Cool green', 'Cool neutral backgrounds with restrained green accents, in coordinated light and dark variants.'),
+		'warm-paper': option('Warm paper', 'Warm off-whites and browns resembling paper and ink, in coordinated light and dark variants.'),
 	}),
 	definition(['system', 'light', 'dark'], {
 		system: option('System', 'Follow the visitor\'s operating-system light or dark preference.'),
 		light: option('Light', 'Start with the palette\'s light appearance.'),
 		dark: option('Dark', 'Start with the palette\'s dark appearance.'),
 	}),
-	definition(['square', 'soft'], {
+	definition(['square', 'rounded'], {
 		square: option('Square', 'Use square corners for navigation, cards and framed content.'),
-		soft: option('Soft', 'Use restrained rounded corners consistently across the site.'),
+		rounded: option('Rounded', 'Use restrained rounded corners consistently across the site.'),
 	}),
-	definition(['uniform', 'alternating', 'cycling'], {
-		uniform: option('Uniform', 'Use the palette base surface for every section.'),
-		alternating: option('Alternating', 'Alternate between the palette base and soft surfaces.'),
-		cycling: option('Cycling', 'Cycle through the palette base, soft and emphasis surfaces.'),
+	definition(['uniform', 'alternating', 'accented'], {
+		uniform: option('Uniform', 'Use the normal page background for every H2 section. Tree navigation requires this pattern.'),
+		alternating: option('Alternating', 'Alternate normal and subtly contrasting full-width section backgrounds. Available with sections and top navigation.'),
+		accented: option('Accented', 'Move through base, soft, emphasis and soft full-width section backgrounds before repeating. Available with sections and top navigation.'),
 	}),
 	definition(['compact', 'normal', 'spacious'], {
 		compact: option('Compact', 'Use restrained spacing between sections and structured blocks.'),

@@ -33,6 +33,38 @@ export const getReaderPreferencesScript = ({ controls, defaults, cookiePath }) =
 		} catch {}
 	};
 	const isAllowed = (name, value) => definitions[name].allowed.includes(value);
+	const captureReadingPosition = () => {
+		if (window.scrollY <= 1) return null;
+		const contentTop = document.querySelector('.site-top')?.getBoundingClientRect().bottom ?? 0;
+		const candidates = document.querySelectorAll([
+			'#main-content .section-header',
+			'#main-content .section-markdown > *',
+			'#main-content .image-stack',
+			'#main-content .image-carousel',
+			'#main-content .card-list',
+		].join(', '));
+		const element = Array.from(candidates).find((candidate) => {
+			const rectangle = candidate.getBoundingClientRect();
+			return rectangle.height > 0 && rectangle.bottom > contentTop + 1;
+		});
+		return element ? { element, top: element.getBoundingClientRect().top } : null;
+	};
+	const restoreReadingPosition = (position) => {
+		if (!position) return;
+		requestAnimationFrame(() => {
+			const delta = position.element.getBoundingClientRect().top - position.top;
+			if (Math.abs(delta) < 0.5) return;
+			const scrollBehavior = root.style.scrollBehavior;
+			root.style.scrollBehavior = 'auto';
+			window.scrollBy(0, delta);
+			root.style.scrollBehavior = scrollBehavior;
+		});
+	};
+	const preserveReadingPosition = (change) => {
+		const position = captureReadingPosition();
+		change();
+		restoreReadingPosition(position);
+	};
 	const updateThemeColor = () => requestAnimationFrame(() => {
 		const themeColor = getComputedStyle(root).getPropertyValue('--color-page').trim();
 		if (themeColor) document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => meta.content = themeColor);
@@ -71,19 +103,23 @@ export const getReaderPreferencesScript = ({ controls, defaults, cookiePath }) =
 		});
 		document.querySelectorAll('[data-reader-width]').forEach((input) => {
 			input.addEventListener('change', () => {
-				if (input.checked) apply('readingWidth', input.value, true);
+				if (input.checked) preserveReadingPosition(() => apply('readingWidth', input.value, true));
 			});
 		});
 		document.querySelectorAll('[data-reader-focus]').forEach((input) => {
-			input.addEventListener('change', () => apply('focusReading', input.checked ? 'on' : 'off', true));
+			input.addEventListener('change', () => preserveReadingPosition(() => {
+				apply('focusReading', input.checked ? 'on' : 'off', true);
+			}));
 		});
 		document.querySelectorAll('[data-reader-reset]').forEach((button) => {
 			button.addEventListener('click', () => {
-				for (const name of Object.keys(definitions)) {
-					writeCookie(definitions[name].cookieName, '', 0);
-					apply(name, defaults[name]);
-				}
-				syncControls();
+				preserveReadingPosition(() => {
+					for (const name of Object.keys(definitions)) {
+						writeCookie(definitions[name].cookieName, '', 0);
+						apply(name, defaults[name]);
+					}
+					syncControls();
+				});
 			});
 		});
 		document.querySelectorAll('[data-display-settings]').forEach((settings) => {

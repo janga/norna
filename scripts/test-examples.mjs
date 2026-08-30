@@ -61,9 +61,11 @@ for (const example of examples) {
 		}
 
 		if (example.name === 'media-and-surfaces') {
-			const mediaHtml = await readFile(path.join(exampleDistDirectory, 'media', 'index.html'), 'utf8');
-			assert.match(mediaHtml, /data-navigation-mode="tree"/);
-			assert.match(mediaHtml, /class="tree-local-navigation"/);
+			const surfacesHtml = await readFile(path.join(exampleDistDirectory, 'surfaces', 'index.html'), 'utf8');
+			assert.match(surfacesHtml, /data-navigation-mode="top"/);
+			assert.doesNotMatch(surfacesHtml, /class="tree-local-navigation"/);
+			assert.match(surfacesHtml, /--section-background-color: var\(--color-surface-soft-background\)/);
+			assert.match(surfacesHtml, /--section-background-color: var\(--color-surface-emphasis-background\)/);
 		}
 	} finally {
 		await rm(exampleDistDirectory, { recursive: true, force: true });

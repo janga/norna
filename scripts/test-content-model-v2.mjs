@@ -193,7 +193,7 @@ test('page theme changes page presentation while preserving site visual identity
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'theme.yaml'), `preset: documentation
-palette: dark
+palette: near-monochrome
 `);
 		await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
@@ -224,7 +224,7 @@ Inherited page content.
   contentSpacing: spacious
   textWidth: wide
 sections:
-  backgroundPattern: cycling
+  backgroundPattern: uniform
 `);
 		await writeFile(path.join(siteDir, 'pages', '010-guide', 'pages', '010-detail', 'theme.yaml'), `layout:
   textWidth: narrow

@@ -16,7 +16,7 @@ const filenames = [
 ];
 const requiredRichHelp = {
 	'config.schema.json': ['url', 'language', 'navigation', 'scrollBehavior'],
-	'theme.schema.json': ['preset', 'colorMode', 'shape', 'layout', 'images', 'typography', 'palette', 'sections'],
+	'theme.schema.json': ['preset', 'colorMode', 'readerControls', 'corners', 'layout', 'images', 'typography', 'palette', 'sections'],
 	'page-theme.schema.json': ['layout', 'images', 'sections'],
 	'sitewide-content.schema.json': ['logo', 'banners', 'footer'],
 	'content-frontmatter.schema.json': ['page', 'navigation'],
@@ -142,6 +142,19 @@ const theme = JSON.parse(await readFile(path.join(root, 'schemas', 'theme.schema
 assert.equal(theme.properties.layout.properties.gutter.defaultSnippets[0].label, 'Responsive page gutter');
 assert.equal(theme.properties.colorMode.defaultSnippets[0].label, 'Set the initial color mode');
 assert.equal(theme.properties.readerControls.defaultSnippets[0].label, 'Configure the Display panel');
+assert.deepEqual(Object.keys(theme.properties.readerControls.properties), ['colorMode', 'readingWidth', 'focusReading']);
+assert.deepEqual(
+	theme.properties.palette.oneOf.map((entry) => entry.const),
+	['near-monochrome', 'cool-green', 'warm-paper'],
+);
+assert.deepEqual(
+	theme.properties.corners.oneOf.map((entry) => entry.const),
+	['square', 'rounded'],
+);
+assert.deepEqual(
+	theme.properties.sections.properties.backgroundPattern.oneOf.map((entry) => entry.const),
+	['uniform', 'alternating', 'accented'],
+);
 assert.equal(theme.properties.layout.properties.spacing.defaultSnippets[0].label, 'Layout spacing overrides');
 assert.equal(theme.properties.typography.properties.overrides.defaultSnippets[0].label, 'Typography overrides');
 assert.equal(

@@ -84,13 +84,25 @@ contain only `page.description` and `navigation.listed`.
 
 ### Move Page Presentation Into Theme Files
 
-The root `site/theme.yaml` owns preset, color modes, palette, shape, typography,
+The root `site/theme.yaml` owns preset, color modes, palette, corners, typography,
 page frame, and navigation presentation. A page-local `theme.yaml` may contain
 only the limited layout, image, and section-background fields documented under
 [Page Themes](theme.md#page-themes). Descendants inherit those limited values.
 
 Do not carry route-specific presets, fonts, colors, or navigation settings into
 page themes.
+
+Replace superseded root-theme terms when upgrading:
+
+| Previous term | Current term |
+| --- | --- |
+| `palette: dark` | `palette: near-monochrome` |
+| `palette: light` | `palette: cool-green` |
+| `palette: paper` | `palette: warm-paper` |
+| `shape: square` | `corners: square` |
+| `shape: soft` | `corners: rounded` |
+| `readerControls.appearance` | `readerControls.colorMode` |
+| `sections.backgroundPattern: cycling` | `sections.backgroundPattern: accented` |
 
 ### Update Project Scripts And Ignores
 

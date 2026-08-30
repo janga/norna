@@ -358,7 +358,7 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 	const rawTypographyConfig = assertObject(rawThemeConfig.typography ?? {}, 'typography', sourceLabel);
 	const resolvedContentSpacing = readEnum(rawLayoutConfig, 'contentSpacing', 'layout', contentSpacingNames, 'normal', sourceLabel);
 	const resolvedLayoutSpacingDefaults = contentSpacingProfiles[resolvedContentSpacing];
-	const shape = readEnum(rawThemeConfig, 'shape', 'theme', ['square', 'soft'], 'soft', sourceLabel);
+	const corners = readEnum(rawThemeConfig, 'corners', 'theme', ['square', 'rounded'], 'rounded', sourceLabel);
 
 	return Object.freeze({
 		layout: Object.freeze({
@@ -399,11 +399,11 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 		typography: Object.freeze({
 			fontFamily: readFontFamily(rawTypographyConfig, 'fontFamily', 'typography', defaultFontFamily, sourceLabel),
 		}),
-		shape: Object.freeze({
-			name: shape,
-			radiusSmall: shape === 'square' ? '0' : '2px',
-			radiusMedium: shape === 'square' ? '0' : '6px',
-			radiusLarge: shape === 'square' ? '0' : '8px',
+		corners: Object.freeze({
+			name: corners,
+			radiusSmall: corners === 'square' ? '0' : '2px',
+			radiusMedium: corners === 'square' ? '0' : '6px',
+			radiusLarge: corners === 'square' ? '0' : '8px',
 		}),
 	});
 };

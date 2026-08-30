@@ -27,7 +27,7 @@
           "description": "For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis."
         }
       ],
-      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated shapes, layout, image sizing, typography, palette and section backgrounds. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#theme-presets)"
+      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated corners, layout, image sizing, typography, palette and section backgrounds. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#theme-presets)"
     },
     "colorMode": {
       "type": "object",
@@ -52,7 +52,7 @@
               "description": "Start with the palette's dark appearance."
             }
           ],
-          "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nInitial color mode. System follows the visitor's operating-system preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
+          "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nInitial color mode. System follows the visitor's operating-system preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-mode)",
           "examples": [
             "system",
             "light",
@@ -62,11 +62,11 @@
       },
       "additionalProperties": false,
       "description": "Site-wide light and dark mode behaviour.",
-      "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nControls the initial light or dark appearance. Enable the reader-facing choice under readerControls.\n\n[Color modes](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
+      "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nControls the initial light or dark appearance. Enable the reader-facing choice under readerControls.\n\n[Color mode](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-mode)",
       "defaultSnippets": [
         {
           "label": "Set the initial color mode",
-          "markdownDescription": "Follow the system color preference or choose a fixed initial appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-modes)",
+          "markdownDescription": "Follow the system color preference or choose a fixed initial appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-mode)",
           "body": "colorMode:\n  default: ${1:system}"
         }
       ]
@@ -74,10 +74,10 @@
     "readerControls": {
       "type": "object",
       "properties": {
-        "appearance": {
-          "description": "Let readers choose System, Light, or Dark appearance in the site-wide Display panel.",
+        "colorMode": {
+          "description": "Let readers choose System, Light, or Dark color mode in the site-wide Display panel.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nreaderControls:\n  appearance: true\n```\n\nLet readers choose System, Light, or Dark appearance in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)"
+          "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n```\n\nLet readers choose System, Light, or Dark color mode in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#color-mode)"
         },
         "readingWidth": {
           "description": "Let readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.",
@@ -92,17 +92,17 @@
       },
       "additionalProperties": false,
       "description": "Site-wide reader choices grouped in one Display panel. Presets provide suitable defaults.",
-      "markdownDescription": "```yaml\nreaderControls:\n  appearance: true\n  readingWidth: true\n  focusReading: true\n```\n\nChooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.\n\n[Reader controls design](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)",
+      "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n  readingWidth: true\n  focusReading: true\n```\n\nChooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.\n\n[Reader controls design](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)",
       "defaultSnippets": [
         {
           "label": "Configure the Display panel",
-          "markdownDescription": "Offer bounded appearance, reading-width, and focus-reading choices.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)",
-          "body": "readerControls:\n  appearance: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}"
+          "markdownDescription": "Offer bounded color-mode, reading-width, and focus-reading choices.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/design/preset-development-plan.md#phase-3-implement-reader-display-preferences)",
+          "body": "readerControls:\n  colorMode: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}"
         }
       ]
     },
-    "shape": {
-      "description": "Site-wide shape profile. Omit this to use the selected preset.",
+    "corners": {
+      "description": "Site-wide corner treatment. Omit this to use the selected preset.",
       "type": "string",
       "oneOf": [
         {
@@ -111,15 +111,15 @@
           "description": "Use square corners for navigation, cards and framed content."
         },
         {
-          "const": "soft",
-          "title": "Soft",
+          "const": "rounded",
+          "title": "Rounded",
           "description": "Use restrained rounded corners consistently across the site."
         }
       ],
-      "markdownDescription": "```yaml\nshape: soft\n```\n\nChooses one consistent corner treatment for navigation, cards and framed content throughout the site.\n\n[Theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md)",
+      "markdownDescription": "```yaml\ncorners: rounded\n```\n\nChooses one consistent corner treatment for navigation, cards and framed content throughout the site.\n\n[Corner reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#corners)",
       "examples": [
         "square",
-        "soft"
+        "rounded"
       ]
     },
     "layout": {
@@ -1493,65 +1493,65 @@
     },
     "palette": {
       "type": "string",
-      "description": "Coordinated site color palette. Omit this to use the selected preset.",
+      "description": "Coordinated site color palette. Every palette provides light and dark variants. Omit this to use the selected preset.",
       "oneOf": [
         {
-          "const": "dark",
-          "title": "Dark",
-          "description": "Black page and section surfaces with light text."
+          "const": "near-monochrome",
+          "title": "Near monochrome",
+          "description": "Neutral grays and off-whites with almost no visible hue, in coordinated light and dark variants."
         },
         {
-          "const": "light",
-          "title": "Light",
-          "description": "White and cool light surfaces with dark text."
+          "const": "cool-green",
+          "title": "Cool green",
+          "description": "Cool neutral backgrounds with restrained green accents, in coordinated light and dark variants."
         },
         {
-          "const": "paper",
-          "title": "Paper",
-          "description": "Warm off-white surfaces with dark text."
+          "const": "warm-paper",
+          "title": "Warm paper",
+          "description": "Warm off-whites and browns resembling paper and ink, in coordinated light and dark variants."
         }
       ],
-      "markdownDescription": "```yaml\npalette: paper\n```\n\nChooses a coordinated color system for the page frame, navigation, footer and section surfaces.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)",
+      "markdownDescription": "```yaml\npalette: warm-paper\n```\n\nChooses the site color character. Every palette provides coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-color-mode)",
       "examples": [
-        "dark",
-        "light",
-        "paper"
+        "near-monochrome",
+        "cool-green",
+        "warm-paper"
       ]
     },
     "sections": {
       "type": "object",
       "properties": {
         "backgroundPattern": {
-          "description": "Section background sequence. Omit this to keep the selected preset or inherited page setting.",
+          "description": "Section background pattern. Alternating and accented create full-width bands with sections or top navigation; tree navigation requires uniform.",
           "type": "string",
           "oneOf": [
             {
               "const": "uniform",
               "title": "Uniform",
-              "description": "Use the palette base surface for every section."
+              "description": "Use the normal page background for every H2 section. Tree navigation requires this pattern."
             },
             {
               "const": "alternating",
               "title": "Alternating",
-              "description": "Alternate between the palette base and soft surfaces."
+              "description": "Alternate normal and subtly contrasting full-width section backgrounds. Available with sections and top navigation."
             },
             {
-              "const": "cycling",
-              "title": "Cycling",
-              "description": "Cycle through the palette base, soft and emphasis surfaces."
+              "const": "accented",
+              "title": "Accented",
+              "description": "Move through base, soft, emphasis and soft full-width section backgrounds before repeating. Available with sections and top navigation."
             }
           ],
-          "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nSection background sequence. Omit this to keep the selected preset or inherited page setting.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)",
+          "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nSection background pattern. Alternating and accented create full-width bands with sections or top navigation; tree navigation requires uniform.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#section-backgrounds)",
           "examples": [
             "uniform",
             "alternating",
-            "cycling"
+            "accented"
           ]
         }
       },
       "additionalProperties": false,
       "description": "Defaults for page section presentation.",
-      "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nChooses whether section backgrounds stay uniform, alternate between two surfaces or cycle through three.\n\n[Palette and section surfaces](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-section-surfaces)"
+      "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nChooses whether H2 section backgrounds stay uniform, alternate between two backgrounds or move from base to soft to emphasis and back through soft. Non-uniform patterns are available with sections and top navigation; tree navigation requires uniform.\n\n[Section backgrounds](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#section-backgrounds)"
     }
   },
   "additionalProperties": false,

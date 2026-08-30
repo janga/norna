@@ -13,6 +13,8 @@ import {
 	getPresentationPalette,
 	getTextWidthCssValue,
 	presentationPaletteNames,
+	resolvePagePresentation,
+	resolveSectionSurface,
 	resolveThemePresentation,
 } from './lib/presentation.mjs';
 import { themePresets } from './lib/theme-presets.mjs';
@@ -66,6 +68,41 @@ for (const [presetName, preset] of Object.entries(themePresets)) {
 		`${presetName} must satisfy the resolved presentation contract`,
 	);
 }
+
+assert.deepEqual(
+	resolvePagePresentation({ preset: 'documentation' }, 'top-theme.yaml', { navigationMode: 'top' }).sectionSurfaces,
+	['base', 'soft'],
+	'top navigation must retain the preset section background pattern',
+);
+assert.deepEqual(
+	resolvePagePresentation({ preset: 'statement' }, 'sections-theme.yaml', { navigationMode: 'sections' }).sectionSurfaces,
+	['base', 'soft', 'emphasis', 'soft'],
+	'sections navigation must retain accented section backgrounds',
+);
+const accentedPresentation = resolvePagePresentation(
+	{ preset: 'statement' },
+	'sections-theme.yaml',
+	{ navigationMode: 'sections' },
+);
+assert.deepEqual(
+	Array.from({ length: 9 }, (_, sectionIndex) => (
+		resolveSectionSurface(accentedPresentation, sectionIndex).name
+	)),
+	['base', 'soft', 'emphasis', 'soft', 'base', 'soft', 'emphasis', 'soft', 'base'],
+	'accented section backgrounds must move up and down through the three surfaces',
+);
+assert.deepEqual(
+	resolvePagePresentation({ preset: 'documentation' }, 'tree-theme.yaml', { navigationMode: 'tree' }).sectionSurfaces,
+	['base'],
+	'tree navigation must use one uniform reading surface',
+);
+assert.throws(
+	() => resolvePagePresentation({
+		preset: 'documentation',
+		sections: { backgroundPattern: 'alternating' },
+	}, 'tree-theme.yaml', { navigationMode: 'tree' }),
+	/sections\.backgroundPattern "alternating" cannot be used with tree navigation in tree-theme\.yaml[\s\S]*set it to uniform/,
+);
 
 assert.throws(
 	() => resolveTypographyConfig({

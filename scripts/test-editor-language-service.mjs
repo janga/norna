@@ -193,7 +193,7 @@ try {
 		source: readerControlsSource,
 	});
 	assert.equal(readerControlSnippets[0].label, 'Norna: Configure the Display panel');
-	assert.match(readerControlSnippets[0].text, /appearance: \$\{1:true\}/);
+	assert.match(readerControlSnippets[0].text, /colorMode: \$\{1:true\}/);
 	const buildInfoSource = 'footer:\n  buildInfo: ';
 	const buildInfoSnippets = getYamlSchemaSnippetCompletions({
 		lineText: '  buildInfo: ',

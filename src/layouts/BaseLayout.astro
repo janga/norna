@@ -58,7 +58,7 @@ type VisualTheme = {
 		maxAvailableHeightPercent: { desktop: number; mobile: number };
 	};
 	typography: { fontFamily: string };
-	shape: {
+	corners: {
 		radiusSmall: string;
 		radiusMedium: string;
 		radiusLarge: string;
@@ -101,9 +101,9 @@ const documentStyle = [
 	`scroll-behavior: ${scrollBehavior}`,
 	...Object.entries(getPresentationCssVariables(presentation)).map(([name, value]) => `${name}: ${value}`),
 	`--font-sans: ${visualTheme.typography.fontFamily}`,
-	`--shape-radius-small: ${visualTheme.shape.radiusSmall}`,
-	`--shape-radius-medium: ${visualTheme.shape.radiusMedium}`,
-	`--shape-radius-large: ${visualTheme.shape.radiusLarge}`,
+	`--corner-radius-small: ${visualTheme.corners.radiusSmall}`,
+	`--corner-radius-medium: ${visualTheme.corners.radiusMedium}`,
+	`--corner-radius-large: ${visualTheme.corners.radiusLarge}`,
 	`--page-width: ${visualTheme.layout.pageWidth}`,
 	`--local-navigation-gap: ${visualTheme.layout.localNavigationGap}`,
 	`--section-note-width: ${visualTheme.layout.noteWidth}`,

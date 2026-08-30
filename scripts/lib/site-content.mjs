@@ -51,7 +51,6 @@ const knownNestedFrontmatterKeys = new Set([
 	'image',
 	'imageGap',
 	'images',
-	'appearance',
 	'listed',
 	'logo',
 	'lineHeight',
@@ -71,7 +70,7 @@ const knownNestedFrontmatterKeys = new Set([
 	'sectionGap',
 	'backgroundPattern',
 	'sections',
-	'shape',
+	'corners',
 	'focusReading',
 	'size',
 	'spacingAfter',
@@ -332,7 +331,14 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'navigation') {
 			message = `Frontmatter line ${lineNumber}: navigation is technical, site-wide configuration and does not belong in ${fileKind}. Set it in config.yaml.`;
 			fix = 'Set the navigation mode under "navigation:" in config.yaml.';
-		} else if (fileKind === 'page theme' && ['preset', 'shape', 'palette', 'typography'].includes(key)) {
+		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'shape') {
+			message = fileKind === 'page theme'
+				? `Frontmatter line ${lineNumber}: "shape" was replaced by the site-wide "corners" setting, which page themes cannot override.`
+				: `Frontmatter line ${lineNumber}: "shape" was replaced by "corners". Use "square" or replace the old "soft" value with "rounded".`;
+			fix = fileKind === 'page theme'
+				? 'Remove "shape:" from this page theme. Set "corners: square" or "corners: rounded" in the root theme.yaml when an override is needed.'
+				: 'Replace "shape:" with "corners:". Use "square" or replace the old "soft" value with "rounded".';
+		} else if (fileKind === 'page theme' && ['preset', 'corners', 'palette', 'typography'].includes(key)) {
 			message = `Frontmatter line ${lineNumber}: page themes may not define site-wide visual identity through "${key}".`;
 			fix = `Move "${key}:" to the root theme.yaml. Page themes may set only layout.textWidth, layout.contentSpacing, images, and sections.backgroundPattern.`;
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && ['logo', 'site'].includes(key)) {

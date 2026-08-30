@@ -2,4 +2,4 @@ preset: project
 colorMode:
   default: system
 readerControls:
-  appearance: true
+  colorMode: true

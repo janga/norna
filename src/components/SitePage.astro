@@ -51,9 +51,6 @@ const logo = logoAsset
 		height: logoSettings?.height,
 	}
 	: undefined;
-const pagePresentation = resolvePagePresentation(themeData, themeLabel);
-const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
-const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: `${siteDirectory || 'site'}/${siteTheme.id}` });
 const siteHtml = entry.rendered?.html ?? '';
 const resolvedSections = await getSectionsContent(siteHtml, currentPage);
 const today = getToday();
@@ -97,6 +94,11 @@ const navigationModel = resolveNavigationModel({
 		listed: page.navigation.listed,
 	})),
 });
+const pagePresentation = resolvePagePresentation(themeData, themeLabel, {
+	navigationMode: navigationModel.mode,
+});
+const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
+const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: `${siteDirectory || 'site'}/${siteTheme.id}` });
 const hasTreeNavigation = navigationModel.mode === 'tree';
 const showBreadcrumbs = !currentPage.isHome && currentPage.parentPagePath !== null;
 const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;

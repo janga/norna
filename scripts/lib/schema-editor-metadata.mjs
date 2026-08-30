@@ -179,14 +179,14 @@ const addThemeHelp = (jsonSchema) => {
 	].join('\n\n');
 	addHelp(jsonSchema, 'preset', [
 		yamlExample('preset: documentation'),
-		'Selects coordinated shapes, layout, image sizing, typography, palette and section backgrounds. This is the normal starting point for a theme.',
+		'Selects coordinated corners, layout, image sizing, typography, palette and section backgrounds. This is the normal starting point for a theme.',
 		documentationLink('Compare theme presets', 'theme.md', 'theme-presets'),
 	]);
-	addHelp(jsonSchema, 'shape', [
-		yamlExample('shape: soft'),
+	addHelp(jsonSchema, 'corners', [
+		yamlExample('corners: rounded'),
 		'Chooses one consistent corner treatment for navigation, cards and framed content throughout the site.',
-		documentationLink('Theme reference', 'theme.md'),
-	], ['square', 'soft']);
+		documentationLink('Corner reference', 'theme.md', 'corners'),
+	], ['square', 'rounded']);
 	addHelp(jsonSchema, 'layout', [
 		yamlExample('layout:\n  contentSpacing: compact\n  textWidth: narrow'),
 		'Overrides text width, content spacing, page width and gutters after the selected preset.',
@@ -203,54 +203,54 @@ const addThemeHelp = (jsonSchema) => {
 		documentationLink('Typography configuration reference', 'typography.md', 'configuration-shape'),
 	]);
 	addHelp(jsonSchema, 'palette', [
-		yamlExample('palette: paper'),
-		'Chooses a coordinated color system for the page frame, navigation, footer and section surfaces.',
-		documentationLink('Palette and section surfaces', 'theme.md', 'palette-and-section-surfaces'),
-	], ['dark', 'light', 'paper']);
+		yamlExample('palette: warm-paper'),
+		'Chooses the site color character. Every palette provides coordinated light and dark variants.',
+		documentationLink('Palette and color mode', 'theme.md', 'palette-and-color-mode'),
+	], ['near-monochrome', 'cool-green', 'warm-paper']);
 	addHelp(jsonSchema, 'colorMode', [
 		yamlExample('colorMode:\n  default: system'),
 		'Controls the initial light or dark appearance. Enable the reader-facing choice under readerControls.',
-		documentationLink('Color modes', 'theme.md', 'color-modes'),
+		documentationLink('Color mode', 'theme.md', 'color-mode'),
 	]);
-	addFieldHelp(jsonSchema, 'colorMode.default', 'colorMode:\n  default: system', 'theme.md', 'color-modes', ['system', 'light', 'dark']);
+	addFieldHelp(jsonSchema, 'colorMode.default', 'colorMode:\n  default: system', 'theme.md', 'color-mode', ['system', 'light', 'dark']);
 	addSnippets(jsonSchema, 'colorMode', [schemaSnippet({
 		label: 'Set the initial color mode',
 		body: 'colorMode:\n  default: ${1:system}',
 		description: 'Follow the system color preference or choose a fixed initial appearance.',
 		file: 'theme.md',
-		anchor: 'color-modes',
+		anchor: 'color-mode',
 	})]);
 	addHelp(jsonSchema, 'readerControls', [
-		yamlExample('readerControls:\n  appearance: true\n  readingWidth: true\n  focusReading: true'),
+		yamlExample('readerControls:\n  colorMode: true\n  readingWidth: true\n  focusReading: true'),
 		'Chooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.',
 		documentationLink('Reader controls design', 'design/preset-development-plan.md', 'phase-3-implement-reader-display-preferences'),
 	]);
-	for (const [propertyPath, example] of [
-		['readerControls.appearance', 'readerControls:\n  appearance: true'],
-		['readerControls.readingWidth', 'readerControls:\n  readingWidth: true'],
-		['readerControls.focusReading', 'readerControls:\n  focusReading: true'],
+	for (const [propertyPath, example, file, anchor] of [
+		['readerControls.colorMode', 'readerControls:\n  colorMode: true', 'theme.md', 'color-mode'],
+		['readerControls.readingWidth', 'readerControls:\n  readingWidth: true', 'design/preset-development-plan.md', 'phase-3-implement-reader-display-preferences'],
+		['readerControls.focusReading', 'readerControls:\n  focusReading: true', 'design/preset-development-plan.md', 'phase-3-implement-reader-display-preferences'],
 	]) {
 		addFieldHelp(
 			jsonSchema,
 			propertyPath,
 			example,
-			'design/preset-development-plan.md',
-			'phase-3-implement-reader-display-preferences',
+			file,
+			anchor,
 		);
 	}
 	addSnippets(jsonSchema, 'readerControls', [schemaSnippet({
 		label: 'Configure the Display panel',
-		body: 'readerControls:\n  appearance: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}',
-		description: 'Offer bounded appearance, reading-width, and focus-reading choices.',
+		body: 'readerControls:\n  colorMode: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}',
+		description: 'Offer bounded color-mode, reading-width, and focus-reading choices.',
 		file: 'design/preset-development-plan.md',
 		anchor: 'phase-3-implement-reader-display-preferences',
 	})]);
 	addHelp(jsonSchema, 'sections', [
 		yamlExample('sections:\n  backgroundPattern: alternating'),
-		'Chooses whether section backgrounds stay uniform, alternate between two surfaces or cycle through three.',
-		documentationLink('Palette and section surfaces', 'theme.md', 'palette-and-section-surfaces'),
+		'Chooses whether H2 section backgrounds stay uniform, alternate between two backgrounds or move from base to soft to emphasis and back through soft. Non-uniform patterns are available with sections and top navigation; tree navigation requires uniform.',
+		documentationLink('Section backgrounds', 'theme.md', 'section-backgrounds'),
 	]);
-	addFieldHelp(jsonSchema, 'sections.backgroundPattern', 'sections:\n  backgroundPattern: alternating', 'theme.md', 'palette-and-section-surfaces', ['uniform', 'alternating', 'cycling']);
+	addFieldHelp(jsonSchema, 'sections.backgroundPattern', 'sections:\n  backgroundPattern: alternating', 'theme.md', 'section-backgrounds', ['uniform', 'alternating', 'accented']);
 
 	const layoutFields = [
 		['layout.contentSpacing', 'layout:\n  contentSpacing: compact'],
@@ -416,7 +416,7 @@ const addThemeHelp = (jsonSchema) => {
 const addPageThemeHelp = (jsonSchema) => {
 	jsonSchema.markdownDescription = [
 		yamlExample('layout:\n  textWidth: narrow\n  contentSpacing: compact'),
-		'A page theme may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Site colors, shapes and typography stay consistent.',
+		'A page theme may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners and typography stay consistent.',
 		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
 	].join('\n\n');
 	addHelp(jsonSchema, 'layout', [
@@ -445,10 +445,10 @@ const addPageThemeHelp = (jsonSchema) => {
 	}
 	addHelp(jsonSchema, 'sections', [
 		yamlExample('sections:\n  backgroundPattern: alternating'),
-		'Adjusts the section background sequence for this page and its descendants.',
+		'Adjusts the H2 section background pattern for this page and its descendants. Alternating and accented create full-width bands but are invalid when navigation resolves to tree.',
 		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
 	]);
-	addFieldHelp(jsonSchema, 'sections.backgroundPattern', 'sections:\n  backgroundPattern: alternating', 'theme.md', 'page-themes', ['uniform', 'alternating', 'cycling']);
+	addFieldHelp(jsonSchema, 'sections.backgroundPattern', 'sections:\n  backgroundPattern: alternating', 'theme.md', 'page-themes', ['uniform', 'alternating', 'accented']);
 };
 
 const addSitewideHelp = (jsonSchema) => {

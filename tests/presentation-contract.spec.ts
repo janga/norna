@@ -22,6 +22,17 @@ const getHorizontalOverflow = (page) => page.evaluate(() => ({
 	scrollWidth: document.documentElement.scrollWidth,
 }));
 
+const getSectionSurfaceBounds = (section) => section.evaluate((node) => {
+	const rectangle = node.getBoundingClientRect();
+	const style = getComputedStyle(node, '::before');
+	const left = Number.parseFloat(style.left);
+	const right = Number.parseFloat(style.right);
+	return {
+		left: rectangle.left + left,
+		right: rectangle.right - right,
+	};
+});
+
 test('content reflows at 320 CSS pixels with long unbroken text', async ({ page }) => {
 	await page.setViewportSize({ width: 320, height: 800 });
 	await openComponents(page);
@@ -268,17 +279,80 @@ test('collapsing tree navigation preserves reading and media geometry', async ({
 		cards,
 	];
 	const before = await Promise.all(elements.map((element) => element.boundingBox()));
+	const surfaceBefore = await getSectionSurfaceBounds(imageStackSection);
+	const sectionBackgroundsBefore = await page.locator('.site-section').evaluateAll((sections) => (
+		sections.map((section) => getComputedStyle(section).backgroundColor)
+	));
+	const sectionSurfaceTokens = await page.locator('.site-section').evaluateAll((sections) => (
+		sections.map((section) => getComputedStyle(section).getPropertyValue('--section-background-color').trim())
+	));
+	const baseSurfaceColor = await page.locator('html').evaluate((root) => (
+		getComputedStyle(root).getPropertyValue('--color-surface-base-background').trim()
+	));
 	expect(before.every(Boolean)).toBe(true);
+	expect(sectionBackgroundsBefore.every((color) => color === 'rgba(0, 0, 0, 0)')).toBe(true);
+	expect(new Set(sectionSurfaceTokens)).toEqual(new Set([baseSurfaceColor]));
 	expect(Math.abs((before[2]?.x ?? 0) - (before[1]?.x ?? 0))).toBeLessThan(2);
 
 	await page.locator('[data-tree-navigation-toggle]').click();
 
 	const after = await Promise.all(elements.map((element) => element.boundingBox()));
+	const surfaceAfter = await getSectionSurfaceBounds(imageStackSection);
+	const sectionBackgroundsAfter = await page.locator('.site-section').evaluateAll((sections) => (
+		sections.map((section) => getComputedStyle(section).backgroundColor)
+	));
 	expect(after.every(Boolean)).toBe(true);
+	expect(sectionBackgroundsAfter).toEqual(sectionBackgroundsBefore);
 	for (const [index, rectangle] of before.entries()) {
 		expect(Math.abs((after[index]?.x ?? 0) - (rectangle?.x ?? 0))).toBeLessThan(2);
 		expect(Math.abs((after[index]?.width ?? 0) - (rectangle?.width ?? 0))).toBeLessThan(2);
 	}
+	expect(surfaceAfter.left).toBeCloseTo(surfaceBefore.left, 0);
+	expect(surfaceAfter.right).toBeCloseTo(surfaceBefore.right, 0);
+});
+
+test('focus reading preserves content geometry and the reading position', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openComponents(page);
+	await page.addStyleTag({ content: '.site-brand-logo { height: 5rem !important; width: auto !important; }' });
+	const imageStackSection = page.locator('.site-section').filter({ has: page.locator('#image-stack') });
+	const imageStackHeading = imageStackSection.locator('.section-header');
+	const elements = [
+		page.locator('.section-markdown').first(),
+		page.locator('.card-list').first(),
+		imageStackSection.locator('.section-markdown'),
+		imageStackSection.locator('.managed-image-frame').first(),
+		imageStackSection.locator('.image-meta').first(),
+	];
+	await imageStackHeading.evaluate((heading) => {
+		window.scrollTo(0, window.scrollY + heading.getBoundingClientRect().top - 180);
+	});
+
+	const settings = page.locator('[data-display-settings]');
+	await settings.locator('summary').click();
+	const stickyHeaderBefore = await page.locator('.site-top').boundingBox();
+	const headingTopBefore = await imageStackHeading.evaluate((heading) => heading.getBoundingClientRect().top);
+	const geometryBefore = await Promise.all(elements.map((element) => element.boundingBox()));
+	const surfaceBefore = await getSectionSurfaceBounds(imageStackSection);
+	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+
+	const headingTopAfter = await imageStackHeading.evaluate((heading) => heading.getBoundingClientRect().top);
+	const stickyHeaderAfter = await page.locator('.site-top').boundingBox();
+	const geometryAfter = await Promise.all(elements.map((element) => element.boundingBox()));
+	const surfaceAfter = await getSectionSurfaceBounds(imageStackSection);
+	expect(geometryBefore.every(Boolean)).toBe(true);
+	expect(geometryAfter.every(Boolean)).toBe(true);
+	expect(stickyHeaderBefore).not.toBeNull();
+	expect(stickyHeaderAfter).not.toBeNull();
+	expect(stickyHeaderAfter?.height ?? Infinity).toBeLessThan(stickyHeaderBefore?.height ?? 0);
+	expect(headingTopAfter).toBeCloseTo(headingTopBefore, 0);
+	for (const [index, rectangle] of geometryBefore.entries()) {
+		expect(geometryAfter[index]?.x).toBeCloseTo(rectangle?.x ?? 0, 0);
+		expect(geometryAfter[index]?.width).toBeCloseTo(rectangle?.width ?? 0, 0);
+	}
+	expect(surfaceAfter.left).toBeCloseTo(surfaceBefore.left, 0);
+	expect(surfaceAfter.right).toBeCloseTo(surfaceBefore.right, 0);
 });
 
 test('configured presentation remains usable without JavaScript', async ({ browser }) => {

@@ -36,8 +36,8 @@ const presets = Object.freeze({
 		darkPage: '#000000',
 		pageWidth: '1240px',
 		sectionGap: 'clamp(1.4rem, 3vw, 2.75rem)',
-		shapeRadius: '0',
-		surfaces: ['base'],
+		cornerRadius: '0',
+		renderedSurfaces: ['base'],
 		textWidth: 'min(72ch, var(--image-layout-width))',
 	}),
 	documentation: Object.freeze({
@@ -48,20 +48,20 @@ const presets = Object.freeze({
 		darkPage: '#1b1916',
 		pageWidth: '1240px',
 		sectionGap: 'clamp(1.2rem, 2.4vw, 2.25rem)',
-		shapeRadius: '8px',
-		surfaces: ['base', 'soft'],
+		cornerRadius: '8px',
+		renderedSurfaces: ['base'],
 		textWidth: 'min(60ch, var(--text-width))',
 	}),
 	project: Object.freeze({
 		colorMode: 'system',
 		fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 		imageWidth: '840px',
-		lightPage: '#ffffff',
-		darkPage: '#0f1512',
+		lightPage: '#e8f5e9',
+		darkPage: '#101a11',
 		pageWidth: '1120px',
 		sectionGap: 'clamp(1.2rem, 2.4vw, 2.25rem)',
-		shapeRadius: '8px',
-		surfaces: ['base', 'soft'],
+		cornerRadius: '8px',
+		renderedSurfaces: ['base'],
 		textWidth: 'min(72ch, var(--text-width))',
 	}),
 	statement: Object.freeze({
@@ -72,8 +72,8 @@ const presets = Object.freeze({
 		darkPage: '#1b1916',
 		pageWidth: '1280px',
 		sectionGap: 'clamp(2.25rem, 5vw, 4.5rem)',
-		shapeRadius: '0',
-		surfaces: ['base', 'soft', 'emphasis'],
+		cornerRadius: '0',
+		renderedSurfaces: ['base'],
 		textWidth: 'min(72ch, var(--text-width))',
 	}),
 });
@@ -138,26 +138,26 @@ const assertPresetOutput = async (presetName, distDir) => {
 	assertIncludes(html, '--page-width: ' + expected.pageWidth, presetName);
 	assertIncludes(html, '--font-sans: ' + expected.fontFamily, presetName);
 	assertIncludes(html, '--image-width: ' + expected.imageWidth, presetName);
-	assertIncludes(html, '--shape-radius-large: ' + expected.shapeRadius, presetName);
+	assertIncludes(html, '--corner-radius-large: ' + expected.cornerRadius, presetName);
 	assertIncludes(html, '--space-section-to-section-desktop: ' + expected.sectionGap, presetName);
 	assertIncludes(html, '--section-body-width-desktop: ' + expected.textWidth, presetName);
 	assertIncludes(html, '--palette-light-page-background: ' + expected.lightPage, presetName);
 	assertIncludes(html, '--palette-dark-page-background: ' + expected.darkPage, presetName);
 
-	for (const surface of expected.surfaces) {
+	for (const surface of expected.renderedSurfaces) {
 		assertIncludes(
 			html,
 			'--section-background-color: var(--color-surface-' + surface + '-background)',
 			presetName,
 		);
 	}
-	if (!expected.surfaces.includes('soft')) {
+	if (!expected.renderedSurfaces.includes('soft')) {
 		assert.ok(
 			!html.includes('--section-background-color: var(--color-surface-soft-background)'),
 			presetName + ' must retain uniform rendered section surfaces',
 		);
 	}
-	if (!expected.surfaces.includes('emphasis')) {
+	if (!expected.renderedSurfaces.includes('emphasis')) {
 		assert.ok(
 			!html.includes('--section-background-color: var(--color-surface-emphasis-background)'),
 			presetName + ' must not render emphasis surfaces',

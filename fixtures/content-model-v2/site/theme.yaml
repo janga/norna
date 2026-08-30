@@ -1,4 +1,9 @@
 typography:
   profile: reading
   rhythm: normal
-palette: dark
+palette: cool-green
+readerControls:
+  colorMode: true
+corners: rounded
+sections:
+  backgroundPattern: accented

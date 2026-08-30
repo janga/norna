@@ -3,40 +3,40 @@ import { resolveThemeProfileRecipe } from './theme-profiles.mjs';
 
 export const themePresetRecipes = Object.freeze({
 	portfolio: Object.freeze({
-		color: 'monochrome-dark',
+		color: 'near-monochrome-dark',
 		typography: 'restrained-sans',
 		rhythm: 'balanced',
 		geometry: 'image-led',
 		media: 'prominent',
-		shape: 'square',
+		corners: 'square',
 		surfaces: 'uniform',
 	}),
 	documentation: Object.freeze({
-		color: 'paper-adaptive',
+		color: 'warm-paper-adaptive',
 		typography: 'editorial-reading',
 		rhythm: 'compact',
 		geometry: 'focused-reading',
 		media: 'supporting',
-		shape: 'soft',
+		corners: 'rounded',
 		surfaces: 'alternating',
 	}),
 	project: Object.freeze({
-		color: 'clear-adaptive',
+		color: 'cool-green-adaptive',
 		typography: 'system-reading',
 		rhythm: 'compact',
 		geometry: 'balanced-site',
 		media: 'balanced',
-		shape: 'soft',
+		corners: 'rounded',
 		surfaces: 'alternating',
 	}),
 	statement: Object.freeze({
-		color: 'paper-adaptive',
+		color: 'warm-paper-adaptive',
 		typography: 'expressive-sans',
 		rhythm: 'expansive',
 		geometry: 'expansive-statement',
 		media: 'immersive',
-		shape: 'square',
-		surfaces: 'cycling',
+		corners: 'square',
+		surfaces: 'accented',
 	}),
 });
 
@@ -45,25 +45,25 @@ export const themePresetDefinitions = Object.freeze({
 		title: 'Portfolio',
 		description: 'For portfolios and image-led sites, with restrained typography and generous space for images.',
 		recipe: themePresetRecipes.portfolio,
-		readerControls: Object.freeze({ appearance: true }),
+		readerControls: Object.freeze({ colorMode: true }),
 	}),
 	documentation: Object.freeze({
 		title: 'Documentation',
 		description: 'For guides and reference material, with reading-focused typography and compact spacing.',
 		recipe: themePresetRecipes.documentation,
-		readerControls: Object.freeze({ appearance: true, readingWidth: true, focusReading: true }),
+		readerControls: Object.freeze({ colorMode: true, readingWidth: true, focusReading: true }),
 	}),
 	project: Object.freeze({
 		title: 'Project',
 		description: 'For project and product sites that balance explanation, code, cards, and images.',
 		recipe: themePresetRecipes.project,
-		readerControls: Object.freeze({ appearance: true, readingWidth: true, focusReading: true }),
+		readerControls: Object.freeze({ colorMode: true, readingWidth: true, focusReading: true }),
 	}),
 	statement: Object.freeze({
 		title: 'Statement',
 		description: 'For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis.',
 		recipe: themePresetRecipes.statement,
-		readerControls: Object.freeze({ appearance: true }),
+		readerControls: Object.freeze({ colorMode: true }),
 	}),
 });
 
@@ -153,7 +153,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
 	const metadata = getThemePresetMetadata(presetName);
-	const { colorMode, readerControls, shape, layout, images, typography, palette, sections } = preset;
+	const { colorMode, readerControls, corners, layout, images, typography, palette, sections } = preset;
 
 	return [
 		`# Original values for Norna's "${presetName}" theme preset.`,
@@ -169,12 +169,12 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'',
 		'# Optional reader controls shown together in the Display panel.',
 		'readerControls:',
-		`  appearance: ${readerControls.appearance === true}`,
+		`  colorMode: ${readerControls.colorMode === true}`,
 		`  readingWidth: ${readerControls.readingWidth === true}`,
 		`  focusReading: ${readerControls.focusReading === true}`,
 		'',
-		'# Alternatives: square, soft.',
-		`shape: ${shape}`,
+		'# Alternatives: square, rounded.',
+		`corners: ${corners}`,
 		'',
 		'layout:',
 		'  # Alternatives: compact, normal, spacious.',
@@ -210,10 +210,11 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'  #     h2:',
 		'  #       size: large  # small, medium, large, or xlarge',
 		'',
-		'# Alternatives: dark, light, paper.',
+		'# Alternatives: near-monochrome, cool-green, warm-paper.',
 		`palette: ${palette}`,
 		'sections:',
-		'  # Alternatives: uniform, alternating, cycling.',
+		'  # Alternatives: uniform, alternating, accented.',
+		'  # Alternating and accented are full-width and unavailable with tree navigation.',
 		`  backgroundPattern: ${sections.backgroundPattern}`,
 		'',
 	].join('\n');

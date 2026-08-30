@@ -160,6 +160,12 @@ The modes present the same source hierarchy differently:
 - `tree` keeps top-level areas in the global row and shows the active area's
   page hierarchy plus current-page H2 and H3 headings in a desktop sidebar.
 
+Navigation also sets the boundary for section backgrounds. `sections` and
+`top` navigation may use full-viewport `alternating` or `accented` H2 section
+bands. `tree` navigation always uses one `uniform` reading surface beside its
+persistent navigation region. See
+[Section Backgrounds](theme.md#section-backgrounds).
+
 On a small screen, page and heading destinations are collected in one
 expandable menu. Expanding a branch reveals its children without navigating;
 following its page link is a separate action. Real page and anchor links remain
@@ -197,18 +203,20 @@ moves are retained.
 ## Page Themes
 
 The root `site/theme.yaml` owns the site's visual identity: preset, palette,
-shape, typography, page frame, and navigation presentation.
+corners, typography, page frame, and navigation presentation.
 
 An optional page-local `theme.yaml` may adjust only:
 
 - `layout.textWidth`
 - `layout.contentSpacing`
 - managed-image sizing under `images`
-- `sections.backgroundPattern`
+- `sections.backgroundPattern` when navigation does not resolve to `tree`
 
 These values are inherited by descendant pages and merged with more local page
 settings. Page themes cannot select presets or change site colors, fonts,
-shape, page width, gutters, or navigation. See [Theme](theme.md#page-themes).
+corners, page width, gutters, or navigation. Tree navigation requires a uniform
+section background, so an explicit `alternating` or `accented` override is
+invalid. See [Theme](theme.md#page-themes).
 
 Page directories also cannot contain `config.yaml` or
 `sitewide-content.yaml`; technical configuration and shared editorial content

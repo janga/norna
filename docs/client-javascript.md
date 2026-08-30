@@ -17,7 +17,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Image carousel | Yes, on pages containing a carousel | The image and caption source remains in the HTML, but carousel controls and slide switching require JavaScript. Use an image stack when sequential interaction is not needed. |
 | Dismissible banner | Yes, while a banner is present | The notice remains visible, but visitors cannot dismiss it or persist that choice. |
 | Fixed or system color mode | No | CSS applies the configured light, dark, or operating-system preference. |
-| Visitor-selectable color mode | Yes, throughout a site with `readerControls.appearance: true` | The configured default still applies, but the selector cannot apply or remember another choice. |
+| Visitor-selectable color mode | Yes, throughout a site with `readerControls.colorMode: true` | The configured default still applies, but the selector cannot apply or remember another choice. |
 
 The navigation, banner, carousel, and color-mode scripts are independent.
 Norna includes only the scripts required by the features present on the page or
