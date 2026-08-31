@@ -46,6 +46,32 @@ test('content reflows at 320 CSS pixels with long unbroken text', async ({ page 
 	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
 });
 
+test('wide Markdown tables scroll without widening the page', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 800 });
+	await openComponents(page);
+	const markdown = page.locator('.section-markdown').first();
+	await markdown.evaluate((element) => {
+		const table = document.createElement('table');
+		table.innerHTML = `
+			<thead><tr>${Array.from({ length: 8 }, (_, index) => `<th>Column ${index + 1}</th>`).join('')}</tr></thead>
+			<tbody><tr>${Array.from({ length: 8 }, () => '<td>Representative table value</td>').join('')}</tr></tbody>
+		`;
+		element.append(table);
+	});
+
+	const table = markdown.locator('table');
+	const dimensions = await table.evaluate((element) => ({
+		clientWidth: element.clientWidth,
+		overflowX: getComputedStyle(element).overflowX,
+		scrollWidth: element.scrollWidth,
+	}));
+	const overflow = await getHorizontalOverflow(page);
+
+	expect(dimensions.overflowX).toBe('auto');
+	expect(dimensions.scrollWidth).toBeGreaterThan(dimensions.clientWidth);
+	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
+});
+
 test('WCAG text-spacing overrides do not clip key content', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await openComponents(page);
@@ -88,6 +114,7 @@ test('200 percent text resizing preserves horizontal reflow', async ({ page }) =
 test('authored navigation and controls meet the minimum target size', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await openComponents(page);
+	await page.locator('.mobile-nav-menu > summary').click();
 	const targets = await page.locator([
 		'button',
 		'summary',
@@ -96,10 +123,10 @@ test('authored navigation and controls meet the minimum target size', async ({ p
 		'.site-nav a',
 	].join(', ')).evaluateAll((nodes) => nodes.flatMap((node) => {
 		const rectangle = node.getBoundingClientRect();
-		if (rectangle.width === 0 || rectangle.height === 0) return [];
+		if (!node.checkVisibility() || rectangle.width === 0 || rectangle.height === 0) return [];
 		return [{
 			height: rectangle.height,
-			label: node.getAttribute('aria-label') ?? node.textContent?.trim() ?? node.tagName,
+			label: `${node.tagName.toLowerCase()}${node.className ? `.${String(node.className).trim().replaceAll(/\s+/g, '.')}` : ''} "${node.getAttribute('aria-label') ?? node.textContent?.trim() ?? node.tagName}"`,
 			width: rectangle.width,
 		}];
 	}));

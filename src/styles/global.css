@@ -945,8 +945,37 @@ a {
 	color: var(--color-secondary-text);
 }
 
+.navigation-page-disclosure > .navigation-page-summary > .navigation-page-summary-title {
+	min-width: 0;
+	width: calc(100% - 2rem);
+	overflow-wrap: anywhere;
+}
+
 .navigation-page-disclosure {
 	position: relative;
+}
+
+.navigation-page-disclosure-sidebar {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.navigation-page-disclosure-sidebar > .navigation-page-summary,
+.navigation-page-disclosure-sidebar > .navigation-page-open-link {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.navigation-page-disclosure-sidebar > .navigation-page-open-link {
+	position: relative;
+	top: auto;
+	left: auto;
+	z-index: 1;
+}
+
+.navigation-page-disclosure-sidebar > .navigation-page-branch-content {
+	grid-column: 1;
+	grid-row: 2;
 }
 
 .navigation-page-disclosure > .navigation-page-summary::-webkit-details-marker {
@@ -1413,6 +1442,29 @@ ul {
 	font-size: var(--section-body-font-size-desktop, clamp(0.96rem, 0.94rem + 0.08vw, 1rem));
 	line-height: var(--section-body-line-height, 1.6);
 	text-align: var(--section-body-align-desktop, left);
+}
+
+.section-markdown table {
+	display: block;
+	max-width: 100%;
+	margin: var(--section-body-paragraph-spacing, 0.85em) 0;
+	border-collapse: collapse;
+	font-size: 0.92em;
+	line-height: 1.45;
+	overflow-x: auto;
+	overscroll-behavior-inline: contain;
+	scrollbar-gutter: stable;
+}
+
+.section-markdown :is(th, td) {
+	border-bottom: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+	padding: 0.65rem 0.75rem;
+	text-align: left;
+	vertical-align: top;
+}
+
+.section-markdown thead th {
+	border-bottom-color: color-mix(in srgb, currentColor 48%, transparent);
 }
 
 :root[data-focus-reading='on'] :is(

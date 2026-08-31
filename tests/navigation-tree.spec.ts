@@ -191,6 +191,27 @@ test.describe('desktop tree navigation', () => {
 		expect(Math.abs((localNavigationTopAfter ?? 0) - (localNavigationTopBefore ?? 0))).toBeLessThan(2);
 	});
 
+	test('reserves navigation height for a wrapped current-page title', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const currentPageDisclosure = page.locator(
+			'.tree-local-navigation details[data-page-path="guides/installation/macos"]',
+		);
+		const wrappedTitle = 'A deliberately long current page title that wraps';
+		await currentPageDisclosure.locator(':scope > summary .navigation-page-summary-title')
+			.evaluate((element, title) => { element.textContent = title; }, wrappedTitle);
+		await currentPageDisclosure.locator(':scope > .navigation-page-open-link')
+			.evaluate((element, title) => { element.textContent = title; }, wrappedTitle);
+
+		const openLinkBox = await currentPageDisclosure.locator(':scope > .navigation-page-open-link').boundingBox();
+		const branchContentBox = await currentPageDisclosure.locator(':scope > .navigation-page-branch-content').boundingBox();
+
+		expect(openLinkBox).not.toBeNull();
+		expect(branchContentBox).not.toBeNull();
+		expect(branchContentBox?.y ?? 0).toBeGreaterThanOrEqual(
+			(openLinkBox?.y ?? 0) + (openLinkBox?.height ?? 0) - 1,
+		);
+	});
+
 	test('scrolls a long local navigation independently on a short page', async ({ page }) => {
 		await page.setViewportSize({ width: desktopViewport.width, height: 800 });
 		await page.goto('/guides/release-notes/', { waitUntil: 'networkidle' });
