@@ -15,8 +15,9 @@ const getLegacyThemeHint = (issue, data) => {
 	if (location === 'palette') {
 		const replacements = {
 			dark: 'near-monochrome',
-			light: 'cool-green',
+			light: 'arctic-blue',
 			paper: 'warm-paper',
+			'cool-green': 'arctic-blue',
 		};
 		if (replacements[value]) {
 			return `Palette value "${value}" was replaced by "${replacements[value]}".`;

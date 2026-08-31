@@ -1,5 +1,6 @@
 import { z } from 'astro/zod';
 import { navigationModeNames } from './navigation-model.mjs';
+import { presentationPaletteNames } from './presentation-palette-metadata.mjs';
 import { themePresetNames } from './theme-presets.mjs';
 
 const isDateOnly = (value) => {
@@ -15,7 +16,7 @@ const textWidth = z.enum(['narrow', 'normal', 'wide']).describe('Maximum width o
 const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z.literal(700)]).describe('CSS font weight.');
 const typographyProfile = z.enum(['restrained', 'dense', 'reading', 'statement']).describe('Coordinated typography defaults. Omit this to use the selected preset.');
 const themePreset = z.enum(themePresetNames).describe('Complete Norna visual preset. Start here and add overrides only when needed.');
-const presentationPalette = z.enum(['near-monochrome', 'cool-green', 'warm-paper']).describe('Coordinated site color palette. Every palette provides light and dark variants. Omit this to use the selected preset.');
+const presentationPalette = z.enum(presentationPaletteNames).describe('Coordinated site color palette. Every palette provides light and dark variants. Omit this to use the selected preset.');
 const themeColorMode = z.object({
 	default: z.enum(['system', 'light', 'dark']).optional().describe('Initial color mode. System follows the visitor\'s operating-system preference.'),
 }).strict().refine(

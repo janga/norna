@@ -5,10 +5,37 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dump, load } from 'js-yaml';
 import { documentationPresetCandidates } from './lib/documentation-preset-candidates.mjs';
+import {
+	getPresentationPaletteMetadata,
+	presentationPaletteNames,
+} from './lib/presentation-palette-metadata.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const fixtureSite = path.join(repoRoot, 'fixtures', 'preset-baseline', 'site');
-const reviewRoot = path.join(repoRoot, 'node_modules', '.cache', 'norna-documentation-preset-review');
+const paletteReview = process.argv.includes('--palettes');
+const paletteCandidates = presentationPaletteNames.map((name) => {
+	const metadata = getPresentationPaletteMetadata(name);
+	return Object.freeze({
+		id: name,
+		label: metadata.title,
+		description: metadata.description,
+		theme: `preset: documentation\npalette: ${name}\ncolorMode:\n  default: system\nreaderControls:\n  colorMode: true\n  focusReading: true\n`,
+	});
+});
+const review = paletteReview
+	? {
+		candidates: paletteCandidates,
+		controlLabel: 'Palette',
+		name: 'Palette review',
+		slug: 'palette',
+	}
+	: {
+		candidates: documentationPresetCandidates,
+		controlLabel: 'Direction',
+		name: 'Documentation preset review',
+		slug: 'documentation-preset',
+	};
+const reviewRoot = path.join(repoRoot, 'node_modules', '.cache', `norna-${review.slug}-review`);
 const candidatesRoot = path.join(reviewRoot, 'candidates');
 const cliPath = path.join(repoRoot, 'bin', 'norna.mjs');
 const buildOnly = process.argv.includes('--build-only');
@@ -59,20 +86,20 @@ const escapeHtml = (value) => String(value)
 	.replaceAll('"', '&quot;');
 
 const renderReviewPage = () => {
-	const options = documentationPresetCandidates.map((candidate) => (
+	const options = review.candidates.map((candidate) => (
 		`<option value="${escapeHtml(candidate.id)}">${escapeHtml(candidate.label)}</option>`
 	)).join('');
-	const frames = documentationPresetCandidates.map((candidate, index) => (
-		`<iframe${index === 0 ? '' : ' hidden'} data-candidate-frame="${escapeHtml(candidate.id)}" title="${escapeHtml(candidate.label)} documentation preset" src="/candidates/${escapeHtml(candidate.id)}/guide/components/"></iframe>`
+	const frames = review.candidates.map((candidate, index) => (
+		`<iframe${index === 0 ? '' : ' hidden'} data-candidate-frame="${escapeHtml(candidate.id)}" title="${escapeHtml(candidate.label)} ${escapeHtml(review.name.toLowerCase())}" src="/candidates/${escapeHtml(candidate.id)}/guide/components/"></iframe>`
 	)).join('\n');
-	const descriptions = Object.fromEntries(documentationPresetCandidates.map((candidate) => [candidate.id, candidate.description]));
+	const descriptions = Object.fromEntries(review.candidates.map((candidate) => [candidate.id, candidate.description]));
 
 	return `<!doctype html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Documentation preset review</title>
+	<title>${escapeHtml(review.name)}</title>
 	<style>
 		* { box-sizing: border-box; }
 		html, body { height: 100%; margin: 0; }
@@ -96,9 +123,9 @@ const renderReviewPage = () => {
 </head>
 <body>
 	<header class="review-toolbar">
-		<h1>Documentation preset review</h1>
+		<h1>${escapeHtml(review.name)}</h1>
 		<label class="review-control">
-			<span>Direction</span>
+			<span>${escapeHtml(review.controlLabel)}</span>
 			<select data-candidate-select>${options}</select>
 		</label>
 		<p class="review-description" data-candidate-description></p>
@@ -126,7 +153,7 @@ const renderReviewPage = () => {
 const buildReview = async () => {
 	await rm(reviewRoot, { recursive: true, force: true });
 	await mkdir(candidatesRoot, { recursive: true });
-	for (const candidate of documentationPresetCandidates) await buildCandidate(candidate);
+	for (const candidate of review.candidates) await buildCandidate(candidate);
 	await writeFile(path.join(reviewRoot, 'index.html'), renderReviewPage(), 'utf8');
 };
 
@@ -162,7 +189,7 @@ const resolveRequestPath = async (requestUrl) => {
 
 await buildReview();
 if (buildOnly) {
-	console.log(`Built documentation preset review in ${path.relative(repoRoot, reviewRoot)}.`);
+	console.log(`Built ${review.name.toLowerCase()} in ${path.relative(repoRoot, reviewRoot)}.`);
 	process.exit(0);
 }
 
@@ -186,5 +213,5 @@ const server = http.createServer(async (request, response) => {
 server.listen(requestedPort, '127.0.0.1', () => {
 	const address = server.address();
 	const port = typeof address === 'object' && address ? address.port : requestedPort;
-	console.log(`Documentation preset review: http://127.0.0.1:${port}/`);
+	console.log(`${review.name}: http://127.0.0.1:${port}/`);
 });

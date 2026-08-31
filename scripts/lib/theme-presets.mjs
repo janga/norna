@@ -1,4 +1,5 @@
 import { freezeDeep, mergeDeep } from './object.mjs';
+import { presentationPaletteNames } from './presentation-palette-metadata.mjs';
 import { resolveThemeProfileRecipe } from './theme-profiles.mjs';
 
 export const themePresetRecipes = Object.freeze({
@@ -219,7 +220,7 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'  #     h2:',
 		'  #       size: large  # small, medium, large, or xlarge',
 		'',
-		'# Alternatives: near-monochrome, cool-green, warm-paper.',
+		`# Alternatives: ${presentationPaletteNames.join(', ')}.`,
 		`palette: ${palette}`,
 		'sections:',
 		'  # Alternatives: uniform, alternating, accented.',

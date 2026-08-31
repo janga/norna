@@ -8,9 +8,10 @@ import {
 	createSemanticColorRoles,
 	deriveSecondaryTextColor,
 } from './presentation-contract.mjs';
+import { presentationPaletteNames } from './presentation-palette-metadata.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
 
-export const presentationPaletteNames = ['near-monochrome', 'cool-green', 'warm-paper'];
+export { presentationPaletteNames };
 export const colorModeNames = ['system', 'light', 'dark'];
 const sectionBackgroundPatterns = Object.freeze({
 	uniform: ['base'],
@@ -85,45 +86,131 @@ const presentationPalettes = Object.freeze({
 			}),
 		}),
 	}),
-	'cool-green': Object.freeze({
+	'arctic-blue': Object.freeze({
 		defaultMode: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#e8f5e9', textColor: '#172319' },
+				page: { backgroundColor: '#f3f6f8', textColor: '#202932' },
 				surfaces: {
-					base: { backgroundColor: '#e8f5e9', textColor: '#172319' },
-					soft: { backgroundColor: '#d4ead7', textColor: '#172319' },
-					emphasis: { backgroundColor: '#b9dbbf', textColor: '#172319' },
+					base: { backgroundColor: '#f3f6f8', textColor: '#202932' },
+					soft: { backgroundColor: '#e4eaf0', textColor: '#202932' },
+					emphasis: { backgroundColor: '#d3dee8', textColor: '#202932' },
 				},
-				frame: { backgroundColor: '#e8f5e9', textColor: '#172319' },
+				frame: { backgroundColor: '#f3f6f8', textColor: '#202932' },
 				css: {
-					surface: '#dcecdf',
-					muted: '#596b5a',
-					soft: '#bed9c3',
-					accent: '#2f6339',
-					border: 'rgb(23 35 25 / 16%)',
-					navBackground: 'rgb(232 245 233 / 92%)',
-					navSeparator: 'rgb(23 35 25 / 22%)',
+					surface: '#e9eef2',
+					muted: '#5d6a76',
+					soft: '#d5dfe7',
+					accent: '#2a5877',
+					border: 'rgb(32 41 50 / 16%)',
+					navBackground: 'rgb(243 246 248 / 92%)',
+					navSeparator: 'rgb(32 41 50 / 24%)',
 				},
 			}),
 			dark: createPaletteMode({
 				appearance: 'dark',
-				page: { backgroundColor: '#101a11', textColor: '#eff7ef' },
+				page: { backgroundColor: '#17202a', textColor: '#edf3f7' },
 				surfaces: {
-					base: { backgroundColor: '#101a11', textColor: '#eff7ef' },
-					soft: { backgroundColor: '#1a2d1d', textColor: '#eff7ef' },
-					emphasis: { backgroundColor: '#29462f', textColor: '#eff7ef' },
+					base: { backgroundColor: '#17202a', textColor: '#edf3f7' },
+					soft: { backgroundColor: '#202c38', textColor: '#edf3f7' },
+					emphasis: { backgroundColor: '#2b3c4b', textColor: '#edf3f7' },
 				},
-				frame: { backgroundColor: '#101a11', textColor: '#eff7ef' },
+				frame: { backgroundColor: '#17202a', textColor: '#edf3f7' },
 				css: {
-					surface: '#162619',
-					muted: '#afc0ae',
-					soft: '#355036',
-					accent: '#99d5a4',
-					border: 'rgb(239 247 239 / 16%)',
-					navBackground: 'rgb(16 26 17 / 92%)',
-					navSeparator: 'rgb(239 247 239 / 28%)',
+					surface: '#1d2833',
+					muted: '#b2bec8',
+					soft: '#354655',
+					accent: '#9bc5de',
+					border: 'rgb(237 243 247 / 16%)',
+					navBackground: 'rgb(23 32 42 / 92%)',
+					navSeparator: 'rgb(237 243 247 / 28%)',
+				},
+			}),
+		}),
+	}),
+	'mineral-teal': Object.freeze({
+		defaultMode: 'light',
+		modes: Object.freeze({
+			light: createPaletteMode({
+				appearance: 'light',
+				page: { backgroundColor: '#eef4f1', textColor: '#203631' },
+				surfaces: {
+					base: { backgroundColor: '#eef4f1', textColor: '#203631' },
+					soft: { backgroundColor: '#dce9e4', textColor: '#203631' },
+					emphasis: { backgroundColor: '#c8ddd5', textColor: '#203631' },
+				},
+				frame: { backgroundColor: '#eef4f1', textColor: '#203631' },
+				css: {
+					surface: '#e3ece8',
+					muted: '#536560',
+					soft: '#cfdfd9',
+					accent: '#155f5a',
+					border: 'rgb(32 54 49 / 17%)',
+					navBackground: 'rgb(238 244 241 / 92%)',
+					navSeparator: 'rgb(32 54 49 / 24%)',
+				},
+			}),
+			dark: createPaletteMode({
+				appearance: 'dark',
+				page: { backgroundColor: '#102d2c', textColor: '#edf5f1' },
+				surfaces: {
+					base: { backgroundColor: '#102d2c', textColor: '#edf5f1' },
+					soft: { backgroundColor: '#173a37', textColor: '#edf5f1' },
+					emphasis: { backgroundColor: '#24504a', textColor: '#edf5f1' },
+				},
+				frame: { backgroundColor: '#102d2c', textColor: '#edf5f1' },
+				css: {
+					surface: '#153633',
+					muted: '#b2c5bf',
+					soft: '#2c554f',
+					accent: '#8bd5ca',
+					border: 'rgb(237 245 241 / 16%)',
+					navBackground: 'rgb(16 45 44 / 92%)',
+					navSeparator: 'rgb(237 245 241 / 28%)',
+				},
+			}),
+		}),
+	}),
+	'soft-lavender': Object.freeze({
+		defaultMode: 'light',
+		modes: Object.freeze({
+			light: createPaletteMode({
+				appearance: 'light',
+				page: { backgroundColor: '#f7f3fa', textColor: '#2e2736' },
+				surfaces: {
+					base: { backgroundColor: '#f7f3fa', textColor: '#2e2736' },
+					soft: { backgroundColor: '#ebe4f1', textColor: '#2e2736' },
+					emphasis: { backgroundColor: '#ddd3e8', textColor: '#2e2736' },
+				},
+				frame: { backgroundColor: '#f7f3fa', textColor: '#2e2736' },
+				css: {
+					surface: '#eee8f3',
+					muted: '#6c6273',
+					soft: '#ded5e7',
+					accent: '#604678',
+					border: 'rgb(46 39 54 / 16%)',
+					navBackground: 'rgb(247 243 250 / 92%)',
+					navSeparator: 'rgb(46 39 54 / 24%)',
+				},
+			}),
+			dark: createPaletteMode({
+				appearance: 'dark',
+				page: { backgroundColor: '#251f2e', textColor: '#f4edf8' },
+				surfaces: {
+					base: { backgroundColor: '#251f2e', textColor: '#f4edf8' },
+					soft: { backgroundColor: '#31283d', textColor: '#f4edf8' },
+					emphasis: { backgroundColor: '#42344f', textColor: '#f4edf8' },
+				},
+				frame: { backgroundColor: '#251f2e', textColor: '#f4edf8' },
+				css: {
+					surface: '#2d2538',
+					muted: '#c1b4c7',
+					soft: '#4b3d57',
+					accent: '#d4b7e3',
+					border: 'rgb(244 237 248 / 16%)',
+					navBackground: 'rgb(37 31 46 / 92%)',
+					navSeparator: 'rgb(244 237 248 / 28%)',
 				},
 			}),
 		}),
@@ -142,9 +229,9 @@ const presentationPalettes = Object.freeze({
 				frame: { backgroundColor: '#f8f5ee', textColor: '#272522' },
 				css: {
 					surface: '#f0ebe1',
-					muted: '#746e63',
+					muted: '#6b655b',
 					soft: '#d8d0c4',
-					accent: '#685a43',
+					accent: '#5f513c',
 					border: 'rgb(39 37 34 / 18%)',
 					navBackground: 'rgb(248 245 238 / 92%)',
 					navSeparator: 'rgb(39 37 34 / 24%)',
@@ -171,7 +258,186 @@ const presentationPalettes = Object.freeze({
 			}),
 		}),
 	}),
+	'retro-earth': Object.freeze({
+		defaultMode: 'light',
+		modes: Object.freeze({
+			light: createPaletteMode({
+				appearance: 'light',
+				page: { backgroundColor: '#f7efd9', textColor: '#34291c' },
+				surfaces: {
+					base: { backgroundColor: '#f7efd9', textColor: '#34291c' },
+					soft: { backgroundColor: '#eadbb8', textColor: '#34291c' },
+					emphasis: { backgroundColor: '#d8c18c', textColor: '#34291c' },
+				},
+				frame: { backgroundColor: '#f7efd9', textColor: '#34291c' },
+				css: {
+					surface: '#efe2c4',
+					muted: '#6c5e4c',
+					soft: '#deca9c',
+					accent: '#5e4514',
+					border: 'rgb(52 41 28 / 18%)',
+					navBackground: 'rgb(247 239 217 / 92%)',
+					navSeparator: 'rgb(52 41 28 / 25%)',
+				},
+			}),
+			dark: createPaletteMode({
+				appearance: 'dark',
+				page: { backgroundColor: '#282117', textColor: '#f5e8c9' },
+				surfaces: {
+					base: { backgroundColor: '#282117', textColor: '#f5e8c9' },
+					soft: { backgroundColor: '#382c1e', textColor: '#f5e8c9' },
+					emphasis: { backgroundColor: '#4b3a24', textColor: '#f5e8c9' },
+				},
+				frame: { backgroundColor: '#282117', textColor: '#f5e8c9' },
+				css: {
+					surface: '#33291c',
+					muted: '#c6b796',
+					soft: '#54422a',
+					accent: '#e5c36c',
+					border: 'rgb(245 232 201 / 16%)',
+					navBackground: 'rgb(40 33 23 / 92%)',
+					navSeparator: 'rgb(245 232 201 / 28%)',
+				},
+			}),
+		}),
+	}),
+	'clay-rose': Object.freeze({
+		defaultMode: 'light',
+		modes: Object.freeze({
+			light: createPaletteMode({
+				appearance: 'light',
+				page: { backgroundColor: '#f7efed', textColor: '#3c2929' },
+				surfaces: {
+					base: { backgroundColor: '#f7efed', textColor: '#3c2929' },
+					soft: { backgroundColor: '#ecdeda', textColor: '#3c2929' },
+					emphasis: { backgroundColor: '#ddc7c1', textColor: '#3c2929' },
+				},
+				frame: { backgroundColor: '#f7efed', textColor: '#3c2929' },
+				css: {
+					surface: '#f0e3e0',
+					muted: '#6d5558',
+					soft: '#e2cfca',
+					accent: '#71313d',
+					border: 'rgb(60 41 41 / 17%)',
+					navBackground: 'rgb(247 239 237 / 92%)',
+					navSeparator: 'rgb(60 41 41 / 25%)',
+				},
+			}),
+			dark: createPaletteMode({
+				appearance: 'dark',
+				page: { backgroundColor: '#2d1e22', textColor: '#f7ebeb' },
+				surfaces: {
+					base: { backgroundColor: '#2d1e22', textColor: '#f7ebeb' },
+					soft: { backgroundColor: '#3b282e', textColor: '#f7ebeb' },
+					emphasis: { backgroundColor: '#50343d', textColor: '#f7ebeb' },
+				},
+				frame: { backgroundColor: '#2d1e22', textColor: '#f7ebeb' },
+				css: {
+					surface: '#36252a',
+					muted: '#c8b3b7',
+					soft: '#58404a',
+					accent: '#e6a7b0',
+					border: 'rgb(247 235 235 / 16%)',
+					navBackground: 'rgb(45 30 34 / 92%)',
+					navSeparator: 'rgb(247 235 235 / 28%)',
+				},
+			}),
+		}),
+	}),
+	'forest-moss': Object.freeze({
+		defaultMode: 'light',
+		modes: Object.freeze({
+			light: createPaletteMode({
+				appearance: 'light',
+				page: { backgroundColor: '#f1f3e8', textColor: '#263225' },
+				surfaces: {
+					base: { backgroundColor: '#f1f3e8', textColor: '#263225' },
+					soft: { backgroundColor: '#e1e6d2', textColor: '#263225' },
+					emphasis: { backgroundColor: '#cbd5b7', textColor: '#263225' },
+				},
+				frame: { backgroundColor: '#f1f3e8', textColor: '#263225' },
+				css: {
+					surface: '#e7eadb',
+					muted: '#52604c',
+					soft: '#d5ddc5',
+					accent: '#324e25',
+					border: 'rgb(38 50 37 / 17%)',
+					navBackground: 'rgb(241 243 232 / 92%)',
+					navSeparator: 'rgb(38 50 37 / 24%)',
+				},
+			}),
+			dark: createPaletteMode({
+				appearance: 'dark',
+				page: { backgroundColor: '#172218', textColor: '#eef2e6' },
+				surfaces: {
+					base: { backgroundColor: '#172218', textColor: '#eef2e6' },
+					soft: { backgroundColor: '#213022', textColor: '#eef2e6' },
+					emphasis: { backgroundColor: '#314531', textColor: '#eef2e6' },
+				},
+				frame: { backgroundColor: '#172218', textColor: '#eef2e6' },
+				css: {
+					surface: '#1d2a1e',
+					muted: '#b8c3af',
+					soft: '#394c37',
+					accent: '#add493',
+					border: 'rgb(238 242 230 / 16%)',
+					navBackground: 'rgb(23 34 24 / 92%)',
+					navSeparator: 'rgb(238 242 230 / 28%)',
+				},
+			}),
+		}),
+	}),
+	'vivid-night': Object.freeze({
+		defaultMode: 'dark',
+		modes: Object.freeze({
+			light: createPaletteMode({
+				appearance: 'light',
+				page: { backgroundColor: '#f2f4fb', textColor: '#25243a' },
+				surfaces: {
+					base: { backgroundColor: '#f2f4fb', textColor: '#25243a' },
+					soft: { backgroundColor: '#e2e6f3', textColor: '#25243a' },
+					emphasis: { backgroundColor: '#d0d7eb', textColor: '#25243a' },
+				},
+				frame: { backgroundColor: '#f2f4fb', textColor: '#25243a' },
+				css: {
+					surface: '#e8eaf5',
+					muted: '#62647a',
+					soft: '#d5daec',
+					accent: '#3b568f',
+					border: 'rgb(37 36 58 / 16%)',
+					navBackground: 'rgb(242 244 251 / 92%)',
+					navSeparator: 'rgb(37 36 58 / 24%)',
+				},
+			}),
+			dark: createPaletteMode({
+				appearance: 'dark',
+				page: { backgroundColor: '#1d1b2d', textColor: '#f4f1ff' },
+				surfaces: {
+					base: { backgroundColor: '#1d1b2d', textColor: '#f4f1ff' },
+					soft: { backgroundColor: '#29263d', textColor: '#f4f1ff' },
+					emphasis: { backgroundColor: '#38334f', textColor: '#f4f1ff' },
+				},
+				frame: { backgroundColor: '#1d1b2d', textColor: '#f4f1ff' },
+				css: {
+					surface: '#252238',
+					muted: '#bbb7cc',
+					soft: '#403a58',
+					accent: '#9fe4e8',
+					border: 'rgb(244 241 255 / 16%)',
+					navBackground: 'rgb(29 27 45 / 92%)',
+					navSeparator: 'rgb(244 241 255 / 28%)',
+				},
+			}),
+		}),
+	}),
 });
+
+const implementedPaletteNames = Object.keys(presentationPalettes);
+const missingPaletteNames = presentationPaletteNames.filter((name) => !implementedPaletteNames.includes(name));
+const unexpectedPaletteNames = implementedPaletteNames.filter((name) => !presentationPaletteNames.includes(name));
+if (missingPaletteNames.length > 0 || unexpectedPaletteNames.length > 0) {
+	throw new Error(`Palette metadata and implementations differ. Missing: ${missingPaletteNames.join(', ') || '(none)'}. Unexpected: ${unexpectedPaletteNames.join(', ') || '(none)'}.`);
+}
 
 for (const [paletteName, palette] of Object.entries(presentationPalettes)) {
 	for (const [modeName, mode] of Object.entries(palette.modes)) {

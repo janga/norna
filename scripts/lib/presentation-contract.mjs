@@ -1,6 +1,6 @@
 export const presentationEngineContract = Object.freeze({
 	contrast: Object.freeze({
-		normalText: 4.5,
+		normalText: 5,
 		largeText: 3,
 		nonText: 3,
 	}),

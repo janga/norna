@@ -109,6 +109,8 @@
     "preset:baselines:capture": "node scripts/test-preset-baselines.mjs --capture",
     "preset:documentation:review": "node scripts/review-documentation-preset.mjs",
     "preset:documentation:review:build": "node scripts/review-documentation-preset.mjs --build-only",
+    "palette:review": "node scripts/review-documentation-preset.mjs --palettes",
+    "palette:review:build": "node scripts/review-documentation-preset.mjs --palettes --build-only",
     "test:site-public": "node scripts/test-site-public.mjs",
     "test:cli-discovery": "node scripts/test-cli-discovery.mjs",
     "test:engine-commands": "node scripts/test-engine-commands.mjs",

@@ -179,10 +179,16 @@ try {
 	);
 	for (const paletteName of presentationPaletteNames) {
 		const palette = getPresentationPalette(paletteName);
+		assert.deepEqual(Object.keys(palette.modes), ['light', 'dark']);
+		assert.notEqual(
+			palette.modes.light.page.backgroundColor,
+			palette.modes.dark.page.backgroundColor,
+			`${paletteName} must provide visibly distinct light and dark modes.`,
+		);
 		for (const [modeName, mode] of Object.entries(palette.modes)) {
 			for (const [surfaceName, surface] of Object.entries(mode.surfaces)) {
 				assert.ok(
-					contrastRatio(surface.backgroundColor, surface.textColor) >= 4.5,
+					contrastRatio(surface.backgroundColor, surface.textColor) >= 5,
 					`${paletteName}/${modeName}/${surfaceName} must provide readable text and reversible carousel controls.`,
 				);
 			}
@@ -276,6 +282,7 @@ sections:
 	const rootThemeSource = await readFile(rootThemePath, 'utf8');
 	for (const [legacySource, expectedMessage] of [
 		['palette: paper\n', /Palette value "paper" was replaced by "warm-paper"/],
+		['palette: cool-green\n', /Palette value "cool-green" was replaced by "arctic-blue"/],
 		['corners: soft\n', /Corner value "soft" was replaced by "rounded"/],
 		['readerControls:\n  appearance: true\n', /Reader control "appearance" was replaced by "colorMode"/],
 		['readerControls:\n  readingWidth: true\n', /Reader control "readingWidth" was removed because reading width is now always available/],
@@ -347,7 +354,7 @@ sections:
 	const exportedSource = await readFile(exportedPath, 'utf8');
 	assert.match(exportedSource, /This is a reference file\. Norna only loads theme\.yaml\./);
 	assert.match(exportedSource, /Available theme presets: portfolio, documentation, project, statement\./);
-	assert.match(exportedSource, /# Alternatives: near-monochrome, cool-green, warm-paper\./);
+	assert.match(exportedSource, new RegExp(`# Alternatives: ${presentationPaletteNames.join(', ')}\\.`));
 	const exportedConfig = load(exportedSource);
 	assert.equal(exportedConfig.preset, 'documentation');
 	assert.equal(exportedConfig.navigation, undefined);

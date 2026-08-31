@@ -1556,24 +1556,60 @@
         {
           "const": "near-monochrome",
           "title": "Near monochrome",
-          "description": "Neutral grays and off-whites with almost no visible hue, in coordinated light and dark variants."
-        },
-        {
-          "const": "cool-green",
-          "title": "Cool green",
-          "description": "Cool neutral backgrounds with restrained green accents, in coordinated light and dark variants."
+          "description": "Neutral grays and off-whites with almost no visible hue. Includes coordinated light and dark variants."
         },
         {
           "const": "warm-paper",
           "title": "Warm paper",
-          "description": "Warm off-whites and browns resembling paper and ink, in coordinated light and dark variants."
+          "description": "Warm off-whites and browns resembling paper and ink. Includes coordinated light and dark variants."
+        },
+        {
+          "const": "retro-earth",
+          "title": "Retro earth",
+          "description": "Earthy ochres, olives and warm neutrals with a subdued retro character. Includes coordinated light and dark variants."
+        },
+        {
+          "const": "clay-rose",
+          "title": "Clay rose",
+          "description": "Muted clay, rose and wine tones with a warm editorial character. Includes coordinated light and dark variants."
+        },
+        {
+          "const": "forest-moss",
+          "title": "Forest moss",
+          "description": "Botanical greens, mossy surfaces and warm lichen neutrals. Includes coordinated light and dark variants."
+        },
+        {
+          "const": "mineral-teal",
+          "title": "Mineral teal",
+          "description": "Cool mineral greens with muted teal accents and pale aqua-gray surfaces. Includes coordinated light and dark variants."
+        },
+        {
+          "const": "arctic-blue",
+          "title": "Arctic blue",
+          "description": "Cool blue-gray surfaces with clear, restrained blue accents. Includes coordinated light and dark variants."
+        },
+        {
+          "const": "soft-lavender",
+          "title": "Soft lavender",
+          "description": "Quiet lavender surfaces with low-key mauve accents. Includes coordinated light and dark variants."
+        },
+        {
+          "const": "vivid-night",
+          "title": "Vivid night",
+          "description": "Indigo surfaces with a brighter cyan accent and a dark-first character. Includes coordinated light and dark variants."
         }
       ],
       "markdownDescription": "```yaml\npalette: warm-paper\n```\n\nChooses the site color character. Every palette provides coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#palette-and-color-mode)",
       "examples": [
         "near-monochrome",
-        "cool-green",
-        "warm-paper"
+        "warm-paper",
+        "retro-earth",
+        "clay-rose",
+        "forest-moss",
+        "mineral-teal",
+        "arctic-blue",
+        "soft-lavender",
+        "vivid-night"
       ]
     },
     "sections": {

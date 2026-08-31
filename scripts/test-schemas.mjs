@@ -156,7 +156,17 @@ assert.equal(theme.properties.readerControls.defaultSnippets[0].label, 'Configur
 assert.deepEqual(Object.keys(theme.properties.readerControls.properties), ['colorMode', 'focusReading']);
 assert.deepEqual(
 	theme.properties.palette.oneOf.map((entry) => entry.const),
-	['near-monochrome', 'cool-green', 'warm-paper'],
+	[
+		'near-monochrome',
+		'warm-paper',
+		'retro-earth',
+		'clay-rose',
+		'forest-moss',
+		'mineral-teal',
+		'arctic-blue',
+		'soft-lavender',
+		'vivid-night',
+	],
 );
 assert.deepEqual(
 	theme.properties.corners.oneOf.map((entry) => entry.const),

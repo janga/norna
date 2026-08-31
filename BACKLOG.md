@@ -86,11 +86,11 @@ verified.
   A first version should probably use a simple `columns` value plus a flat image
   list, fill cells in reading order, allow an incomplete final row, and avoid
   empty cells until a real need appears.
-- Review the built-in color palettes before wider release. Redesign or replace
-  `cool-green`, which does not yet form an attractive coordinated scale, and
-  add more curated palette choices. Evaluate each palette as a complete system
-  across light and dark modes, section-surface sequences, text contrast,
-  controls, cards, and managed media rather than adding isolated colors.
+- After visual approval, document the nine curated palettes in `docs/theme.md`,
+  the HTML theme introduction, and the public comparison examples. Explain the
+  intended character of each palette, show both light and dark modes, and add
+  an upgrading note that replaces the removed `cool-green` value with
+  `arctic-blue`.
 - Improve `init --type embedded` if real mixed projects reveal missing setup
   steps.
 - Consider a lighter local-engine testing workflow than publishing to npm,

@@ -2,6 +2,10 @@ import {
 	getThemePresetMetadata,
 	themePresetNames,
 } from './theme-presets.mjs';
+import {
+	getPresentationPaletteMetadata,
+	presentationPaletteNames,
+} from './presentation-palette-metadata.mjs';
 
 const option = (title, description) => Object.freeze({ title, description });
 const definition = (values, options) => Object.freeze({
@@ -62,11 +66,10 @@ export const schemaValueDefinitions = Object.freeze([
 		reading: option('Reading', 'Reading-focused typography with narrower text and relaxed line height.'),
 		statement: option('Statement', 'Stronger headings and tighter body rhythm for short, expressive pages.'),
 	}),
-	definition(['near-monochrome', 'cool-green', 'warm-paper'], {
-		'near-monochrome': option('Near monochrome', 'Neutral grays and off-whites with almost no visible hue, in coordinated light and dark variants.'),
-		'cool-green': option('Cool green', 'Cool neutral backgrounds with restrained green accents, in coordinated light and dark variants.'),
-		'warm-paper': option('Warm paper', 'Warm off-whites and browns resembling paper and ink, in coordinated light and dark variants.'),
-	}),
+	definition(presentationPaletteNames, Object.fromEntries(presentationPaletteNames.map((name) => {
+		const metadata = getPresentationPaletteMetadata(name);
+		return [name, option(metadata.title, `${metadata.description} Includes coordinated light and dark variants.`)];
+	}))),
 	definition(['system', 'light', 'dark'], {
 		system: option('System', 'Follow the visitor\'s operating-system light or dark preference.'),
 		light: option('Light', 'Start with the palette\'s light appearance.'),

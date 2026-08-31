@@ -1,4 +1,5 @@
 import { documentationLink } from './documentation-links.mjs';
+import { presentationPaletteNames } from './presentation-palette-metadata.mjs';
 import { getSchemaValueDefinition } from './schema-value-definitions.mjs';
 
 const yamlExample = (source) => `\`\`\`yaml\n${source}\n\`\`\``;
@@ -243,7 +244,7 @@ const addThemeHelp = (jsonSchema) => {
 		yamlExample('palette: warm-paper'),
 		'Chooses the site color character. Every palette provides coordinated light and dark variants.',
 		documentationLink('Palette and color mode', 'theme.md', 'palette-and-color-mode'),
-	], ['near-monochrome', 'cool-green', 'warm-paper']);
+	], presentationPaletteNames);
 	addHelp(jsonSchema, 'colorMode', [
 		yamlExample('colorMode:\n  default: system'),
 		'Controls the initial light or dark appearance. Enable the reader-facing choice under readerControls.',

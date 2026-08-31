@@ -1,7 +1,7 @@
 typography:
   profile: reading
   rhythm: normal
-palette: cool-green
+palette: arctic-blue
 readerControls:
   colorMode: true
 corners: rounded
