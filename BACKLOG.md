@@ -21,6 +21,15 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
+- Add a focused Getting Started page for choosing a theme. Introduce the
+  built-in presets as the normal starting point, help readers choose by site
+  purpose, show the minimal `theme.yaml`, and include one short isolated
+  override example before linking to the complete theme reference.
+- Add a concise GitHub Pages setup section to Getting Started. Focus on the
+  Norna values that must be correct in `config.yaml`, explain the repository
+  and base-path cases without duplicating deployment internals, and link to
+  both Norna's canonical publishing reference and GitHub's current Pages
+  documentation.
 - Add a complete small `site/theme.yaml` and `site/pages/000-home/content.md` example that a
   new user can compare with the starter.
 - Add standalone-project and embedded-project examples that show the expected
@@ -120,13 +129,6 @@ basic site workflow.
   Use text labels or unambiguous labelled icons, preserve manually expanded
   branches when following links, support keyboard and screen-reader operation,
   and avoid motion or automatic collapsing that disrupts spatial orientation.
-- Evaluate optional current-section tracking in open tree navigation. A first
-  version should use progressive enhancement to mark the current H2 and, when
-  shown, H3 while the reader scrolls. It must not change the URL, browser
-  history, keyboard focus, or scroll position, and should use a specific option
-  such as `navigation.sectionTracking` rather than a general permission for
-  navigation JavaScript. The static navigation must remain fully usable when
-  tracking is disabled or JavaScript is unavailable.
 - Add opt-in static search for larger sites. Prefer a build-time index generated
   from the completed HTML in `dist/`, using Pagefind or an equivalent established
   tool rather than a Norna-specific search engine. A first version should:
@@ -140,6 +142,9 @@ basic site workflow.
   - define predictable development-server index refresh behavior;
   - avoid filters, ranking controls, and hosted search providers until real
     sites demonstrate a need.
+- Add a copy button to rendered code blocks. It should copy only the code
+  content, remain keyboard and screen-reader accessible, use a labelled icon,
+  and provide brief success or failure feedback without shifting the layout.
 - More polished onboarding for non-project users.
 - More preset families or richer theme helpers if several real sites need
   them.
