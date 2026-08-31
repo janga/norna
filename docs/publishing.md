@@ -1,11 +1,26 @@
 # Publishing
 
-Norna includes a GitHub Pages workflow and deploy helpers. The public URL is
-declared in `site/config.yaml`; repository and default branch are discovered from
-GitHub when a deploy command runs.
+A Norna build creates a static website in `dist/`. Norna includes one
+publishing integration: a GitHub Actions workflow for GitHub Pages. The public
+URL is declared in `site/config.yaml`; deploy helpers discover the repository
+and default branch from GitHub when they run.
 
 Do not run deploy commands from the engine repository unless you deliberately
 want to deploy the documentation site.
+
+## Requirements
+
+The included publishing workflow requires:
+
+- a Git repository hosted on GitHub;
+- `.github/workflows/deploy.yml` from a current Norna starter;
+- GitHub Pages configured to use GitHub Actions as its source;
+- `package.json` and `package-lock.json` committed with the site source.
+
+Pushing a commit to the repository's default branch starts the workflow. The
+Norna deploy helpers are optional conveniences around that Git and GitHub
+workflow. They additionally require Git, an `origin` remote that points to the
+GitHub repository, the GitHub CLI, and an authenticated `gh` session.
 
 ## GitHub Pages Workflow
 
@@ -33,7 +48,6 @@ The starter workflow:
 6. uploads `dist/`,
 7. deploys the artifact to GitHub Pages.
 
-In the GitHub repository settings, set Pages to build from GitHub Actions.
 Site-specific public files such as `site/public/CNAME`, `robots.txt`, and
 `sitemap.xml` belong in the site repository. Norna copies them, while GitHub
 Pages, crawlers, and other external consumers give those filenames their
@@ -57,7 +71,7 @@ internal links, favicons, managed images and root-relative Markdown links.
 
 ## Deploy An Already Committed Branch
 
-Use:
+Use this helper after committing the site source and lockfile:
 
 ```sh
 npm run norna:deploy
@@ -113,9 +127,21 @@ npm run norna:deploy:watch -- --sha <commit-sha>
 npm run norna:deploy:watch -- --repo owner/name --branch main
 ```
 
-The default poll interval is 10 seconds, timeout is 15 minutes and recent-run
-limit is 10. `--workflow`, `--site-url` and `--limit` provide further one-run
-overrides; these operational values do not belong in `config.yaml`.
+All watch options are operational overrides; none belongs in `config.yaml`:
+
+| Option | Effect | Default |
+| --- | --- | --- |
+| `--repo <owner/name>` | Select the GitHub repository. | Repository discovered from the current Git remote. |
+| `--workflow <name-or-file>` | Select the workflow to monitor. | `deploy.yml` |
+| `--branch <name>` | Select the branch whose runs are searched. | Repository default branch. |
+| `--sha <commit-sha>` | Select the exact commit whose run is monitored. | Current `HEAD`. |
+| `--site-url <url>` | Replace the public URL printed in status output. | `url` from `site/config.yaml`. |
+| `--interval <duration>` | Set the delay between GitHub queries. | `10s` |
+| `--timeout <duration>` | Stop waiting after this duration. | `15m` |
+| `--limit <count>` | Set how many recent workflow runs are searched for the commit. | `10` |
+
+Durations accept `ms`, `s`, or `m`, including values such as `500ms`, `5s`,
+and `0.5m`.
 
 The monitor prints the run id, run URL, Actions URL, branch, commit SHA, status
 and public site URL. On failures it fetches failed job details and a log

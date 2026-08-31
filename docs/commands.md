@@ -4,9 +4,9 @@ The `norna` binary is the stable command surface. Site repositories normally
 use starter npm scripts such as `npm run norna:content:check`; those scripts
 call the local `norna` binary from `node_modules/.bin`.
 
-Npm installation exposes the command as `norna` on macOS, Linux, and Windows
-through the package `bin` field. When a globally installed `norna` is started
-inside a project that declares and has installed its own `@janga/norna`
+Installing the npm package exposes the command as `norna` on macOS, Linux, and
+Windows through the package `bin` field. When a globally installed `norna` is
+started inside a project that declares and has installed its own `@janga/norna`
 dependency, the launcher delegates to that project-local version. If no
 project-local install is found, the version that was started continues running.
 
@@ -148,16 +148,21 @@ contract.
 - `doctor`: prints resolved engine root, site project root, site directory,
   content/config/image/public paths, generated manifest, Astro output paths, and
   cache path.
-- `config:check`: validates `site/config.yaml` against the runtime config
-  reader.
+- `config:check`: validates root configuration, the root and page/category
+  themes, `sitewide-content.yaml`, navigation and section-background
+  compatibility, and convention-based logo/public filenames. It also prints
+  the resolved site URL and main presentation settings.
 - `check`: runs `config:check` followed by `content:check`.
-- `content:check`: validates section structure, Norna block references,
-  inline styles, and common content mistakes.
-- `content:sync` / `norna:sync`: moves misplaced referenced image files after
-  showing the complete move plan and asking for confirmation when the intended
-  move is unambiguous. A failed move reports completed and remaining work so the
-  command can be run again. Moves between different filesystems must be
-  completed manually.
+- `content:check`: validates the page hierarchy, required H1 titles, heading
+  ids, frontmatter, Norna blocks, managed-image references, inline notes, and
+  common content mistakes. It reports all discovered issues before exiting and
+  never moves files.
+- `content:sync`: moves misplaced referenced image files when the intended move
+  is unambiguous. It shows the complete move plan and asks for confirmation
+  before writing; pass `--yes` to accept the displayed plan without a prompt.
+  A failed move reports completed and remaining work so the command can be run
+  again. Moves between different filesystems must be completed manually. The
+  starter npm wrapper is `npm run norna:sync`.
 - `theme:presets`: lists the available complete theme presets and explains the
   intended use of each one.
 - `theme:export <preset>`: writes a protected, commented
@@ -167,8 +172,8 @@ contract.
 - `typography profiles`: prints the exact built-in values for typography
   profiles and rhythms.
 - `typography show`: prints the selected site's resolved typography for the
-  theme, every page, and every section. Each value includes its source,
-  and inherited page or section values are marked with `inherited: true`.
+  root theme, every page, and every section. Each value identifies the profile,
+  rhythm, or root override that supplied it.
 - `site:public`: copies `site/public/` into `site/.norna/public/` and
   removes stale copied static files.
 - `images`: generates WebP variants for raster images, copies managed SVG
@@ -188,15 +193,17 @@ contract.
   directory plus `norna:*` scripts to an existing project in embedded mode.
   Standalone setup pins `@janga/norna` to the version that created it.
 - `page:add <title>`: creates one complete page directory at the selected
-  parent. It writes an H1 starter to `content.md` and creates `images/`.
+  parent. It writes an H1 and an `Introduction` H2 starter to `content.md`, and
+  creates `images/`.
 - `category:add <label>`: creates one non-routable navigation category at the
   selected parent. It writes `category.yaml` and creates `pages/`.
 - `build`: runs config check, content check, public sync, image generation, and
   Astro build.
 - `build:local`: runs `build` and restarts `dev:local`.
-- `dev:local`: starts Astro dev in background mode on `localhost:4321`. Pass
-  `--kill` to stop processes that are blocking the standard port before
-  starting.
+- `dev:local`: syncs public files, prepares managed images, and starts Astro dev
+  in background mode on `localhost:4321`. Pass `--kill` to stop an identifiable
+  process that is blocking the standard port before starting; when listener
+  information is unavailable, stop that process manually.
 - `dev:lan`: starts the same server on all local network interfaces and prints
   the IPv4 URL to open from another device on the same network. Stop it after
   testing because it is accessible to that local network.
@@ -228,4 +235,5 @@ contract.
 Durations may use `ms`, `s`, or `m`, for example `500ms`, `10s`, or `15m`.
 Without repository and branch options, Norna discovers the current GitHub
 repository and its default branch. Without `--sha`, the current `HEAD` is
-monitored.
+monitored. See [Watch A Deploy](publishing.md#watch-a-deploy) for each option's
+effect and default.

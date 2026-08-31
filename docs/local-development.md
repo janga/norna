@@ -11,9 +11,10 @@ npm run norna:dev
 The wrapper:
 
 1. syncs `site/public/` into `site/.norna/public/`,
-2. starts Astro in background mode,
-3. waits until the site responds,
-4. opens `http://localhost:4321/` unless `WALDE_NO_OPEN=1` is set.
+2. prepares new or changed managed images,
+3. starts Astro in background mode,
+4. waits until the site responds,
+5. opens `http://localhost:4321/` unless `WALDE_NO_OPEN=1` is set.
 
 The host and port are currently fixed in the script:
 
@@ -24,12 +25,15 @@ localhost:4321
 If the port is already in use, the command fails and asks you to stop the
 process using it.
 
-To stop any process that is blocking the standard port before starting, pass
-`--kill`:
+To ask Norna to stop an identifiable process that is blocking the standard port
+before starting, pass `--kill`:
 
 ```sh
 npm run norna:dev -- --kill
 ```
+
+If the operating system does not provide the listener information Norna needs,
+stop the process manually and run the command again.
 
 The standalone starter also provides this shorter alias:
 

@@ -190,15 +190,17 @@ The implemented Display control provides:
 - focus reading: Off, On;
 - reset to defaults.
 
-The approved root-theme syntax for enabling controls is:
+The approved root-theme syntax for enabling the optional controls is:
 
 ```yaml
 preset: documentation
 readerControls:
   colorMode: true
-  readingWidth: true
   focusReading: true
 ```
+
+Reading width is an engine-level reader choice and is always available. The
+theme chooses its initial value through `layout.textWidth`.
 
 Implementation requirements:
 
@@ -214,10 +216,11 @@ Implementation requirements:
 Test the Display control against every profile category before final tuning of
 the first preset. This avoids designing a preset around only one reader state.
 
-Completion checkpoint (2026-08-30): the reader-preference overlay and
-accessible Display panel are implemented. `documentation` and `project` offer
-all three controls by default; `portfolio` and `statement` offer color mode
-only. Browser tests cover persistence, reset, focus reading, text-width changes,
+Completion checkpoint (2026-08-31): the reader-preference overlay and
+accessible Display panel are implemented. Every site offers Narrow, Standard,
+and Wide reading widths; presets select the initial width. Built-in presets
+also offer color mode, while `documentation` and `project` offer focus reading.
+Browser tests cover persistence, reset, focus reading, text-width changes,
 keyboard closing, reflow, and the no-JavaScript default. Public reference,
 schema help, and the runnable presentation example use the approved theme
 terminology.

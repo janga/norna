@@ -54,6 +54,11 @@ prompt: Short prompt or editing note.
 -->
 ```
 
+The `norna-image-provenance:` marker makes the whole comment source-only. The
+fields inside it are a maintenance convention rather than validated image
+metadata: `image` identifies the nearby file, `source` records how it was
+obtained, and `prompt` records enough context to reproduce or revise it.
+
 Each filename identifies one managed source image within its page. The same
 filename may be used by another page. Automatic sync only moves misplaced
 files when the filename identifies exactly one source candidate across all
@@ -143,8 +148,8 @@ copyright metadata.
 Generated WebP files are created with ImageMagick using `-strip`, so embedded
 metadata is not a publication mechanism for generated variants. Keep licensing,
 credits, copyright notices, alt text, and captions in site-owned files such as
-`site/pages/000-home/content.md`, page content files, `COPYRIGHT.md`, or other site
-documentation.
+`site/pages/000-home/content.md`, other page content files, `COPYRIGHT.md`, or
+other site documentation.
 
 If a site wants embedded metadata in original source files, that process is
 outside the current Norna command surface.
@@ -157,10 +162,12 @@ content: future editors can understand where it came from and regenerate or
 revise it without reverse-engineering the asset.
 
 ````md
-<!--
-AI image prompt for workflow.png:
-A clean editorial illustration of ordinary project files becoming a small
-static website, restrained colors, readable composition, no text in the image.
+<!-- norna-image-provenance:
+image: workflow.png
+source: generated
+prompt: A clean editorial illustration of ordinary project files becoming a
+  static website, restrained colors, readable composition, no text in the
+  image.
 -->
 
 ```norna-image-stack
@@ -170,8 +177,8 @@ static website, restrained colors, readable composition, no text in the image.
 ```
 ````
 
-The same provenance comment style can be used next to a `norna-image-carousel`
-or `norna-card-list` block when generated images are referenced there.
+Use the same comment next to a `norna-image-carousel` or `norna-card-list`
+block when it references a generated or edited image.
 
 This is a maintenance rule for real editorial images. It is not necessary for
 throwaway test fixtures or examples where the prompt has no practical value.

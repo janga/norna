@@ -38,8 +38,8 @@ case-insensitive file systems.
 
 | Path | Required | Responsibility |
 | --- | --- | --- |
-| `config.yaml` | Yes | Public URL, language, and browser scroll behavior. |
-| `theme.yaml` | Yes | Complete visual preset and optional focused overrides. |
+| `config.yaml` | Yes | Public URL, language, navigation model, and browser scroll behavior. |
+| `theme.yaml` | Yes | Complete visual preset and optional focused presentation overrides. |
 | `sitewide-content.yaml` | No | Shared logo display settings, banners, and footer. |
 | `pages/` | Yes | Homepage plus ordered page and navigation-category hierarchies. |
 
@@ -49,8 +49,8 @@ These responsibilities are deliberately separate:
   apply to the whole site.
 - [`theme.yaml`](theme.md) controls presentation. A normal file can contain
   only a preset selection.
-- [`sitewide-content.yaml`](sitewide-content.md) contains editorial material
-  shared by every page.
+- [`sitewide-content.yaml`](sitewide-content.md) contains shared banners,
+  footer content, and optional logo display settings.
 - [`pages/000-home/content.md`](content.md) is the required homepage and remains
   ordinary Markdown. YAML frontmatter is optional.
 
@@ -93,7 +93,7 @@ Nested `pages/` directories may continue to further depths below either kind
 of entry. Each page owns its optional `images/` directory; categories cannot
 contain images. A limited local `theme.yaml` may appear in a page or category
 directory and is inherited by descendant pages. Site colors, typography,
-corners, and navigation remain global.
+corners, structured content-block defaults, and navigation remain global.
 
 The three-digit prefix controls sibling navigation order and is not part of the
 URL. Category ids remain in descendant URLs even though no category page is

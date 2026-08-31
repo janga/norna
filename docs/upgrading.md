@@ -86,11 +86,11 @@ contain only `page.description` and `navigation.listed`.
 
 ### Move Page Presentation Into Theme Files
 
-The root `site/theme.yaml` owns preset, color modes, palette, corners, typography,
-page frame, and navigation presentation. A limited `theme.yaml` in a page or
-category directory may contain only the layout, image, and section-background
-fields documented under [Page Themes](theme.md#page-themes). Descendants
-inherit those values.
+The root `site/theme.yaml` owns preset, color modes, palette, corners,
+typography, page frame, navigation presentation, and structured content-block
+defaults. A limited `theme.yaml` in a page or category directory may contain
+only the layout, image, and section-background fields documented under
+[Page Themes](theme.md#page-themes). Descendants inherit those values.
 
 Do not carry route-specific presets, fonts, colors, or navigation settings into
 page themes.
@@ -106,6 +106,10 @@ Replace superseded root-theme terms when upgrading:
 | `shape: soft` | `corners: rounded` |
 | `readerControls.appearance` | `readerControls.colorMode` |
 | `sections.backgroundPattern: cycling` | `sections.backgroundPattern: accented` |
+
+Remove `readerControls.readingWidth` from `theme.yaml`. Reading width is now an
+engine-level reader choice that is always available; `layout.textWidth` still
+selects the initial Narrow, Standard, or Wide value.
 
 ### Update Project Scripts And Ignores
 

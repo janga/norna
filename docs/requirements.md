@@ -6,9 +6,8 @@ and current product boundaries.
 ## Required For Every Site
 
 - Node.js `22.12.0` or later.
-- npm or another package manager capable of installing the project-local
-  `@janga/norna` dependency. Generated standalone sites use npm scripts and a
-  committed `package-lock.json` by default.
+- npm. Generated sites, the committed `package-lock.json`, the included GitHub
+  Actions workflow, and Norna's supported project commands use npm.
 - A terminal and a text editor.
 
 ## Required For Managed Raster Images
@@ -17,9 +16,14 @@ ImageMagick is required when Norna reads raster image dimensions or generates
 responsive raster variants. Norna accepts either the current `magick` command
 or the older `identify` and `convert` commands.
 
-Static SVG images with an intrinsic aspect ratio are rendered directly and do
-not need raster variants. See [Images and Metadata](images-and-metadata.md) for
-the supported managed-image behavior.
+See [How do I install ImageMagick?](https://janga.github.io/norna/faq/#install-imagemagick)
+for platform-specific installation commands.
+
+Managed SVG images are copied and rendered directly; they do not need
+ImageMagick or raster variants. An intrinsic aspect ratio lets Norna reserve a
+more predictable layout, but is not required for an image stack. See
+[Images and Metadata](images-and-metadata.md) for the supported behavior and
+the additional carousel warning.
 
 ## Optional Tools
 

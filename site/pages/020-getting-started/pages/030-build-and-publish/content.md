@@ -52,6 +52,10 @@ Create a GitHub repository for the site and push the project. In the repository,
 open **Settings -> Pages** and select **GitHub Actions** as the publishing
 source.
 
+Commit the site source together with `package.json` and `package-lock.json`.
+The lockfile lets the workflow install the same Norna and dependency versions
+that were checked locally.
+
 The starter includes `.github/workflows/deploy.yml`. Whenever you push to the
 repository's default branch, that workflow installs the recorded dependencies,
 checks the source, builds the site, and publishes `dist/` if the checks pass.
@@ -74,6 +78,8 @@ npm run norna:deploy:watch
 ```
 
 The command reports the workflow status, public URL, and available failure
-details. It does not publish or change the site. See
+details. It does not publish or change the site. This optional helper requires
+an installed and authenticated GitHub CLI; pushing the commit is sufficient to
+start publication. See
 [Watch a deploy](https://github.com/janga/norna/blob/main/docs/publishing.md#watch-a-deploy)
 for options and troubleshooting.

@@ -1,7 +1,8 @@
 # Content
 
-`site/pages/000-home/content.md` is the homepage file for a Norna site. Its Markdown H1 is
-the page title. Optional page metadata can be added in YAML frontmatter.
+`site/pages/000-home/content.md` is the homepage file for a Norna site. Its
+Markdown H1 is the page title. Optional page metadata can be added in YAML
+frontmatter.
 
 Additional and nested pages use the same page model in a page directory under
 `site/pages/`. See [Pages and Categories](pages.md) for the directory and
@@ -34,7 +35,7 @@ top-level fields:
 `page` contains:
 
 - `description`: optional string. Used only as the page's HTML meta description
-  for search engines, link previews, and other metadata consumers. It is not
+  for search engines and other consumers of standard HTML metadata. It is not
   rendered as visible page content.
 
 Minimal homepage without metadata:
@@ -123,6 +124,37 @@ the point where they should appear in the section. Markdown determines
 placement: move the fenced block in the page file to move the rendered image,
 carousel, or card list.
 
+Use three or more matching backticks or tildes for fenced blocks. If you need
+to document a Norna block inside another Markdown code sample, make the outer
+fence longer than the inner fence:
+
+````md
+````
+```norna-image-stack
+- image: filename.jpg
+```
+````
+````
+
+Image stacks and carousels use the same image-entry fields:
+
+| Field | Required | Effect |
+| --- | --- | --- |
+| `image` | Yes | Source filename matching `^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$`. Use a filename, not a path. |
+| `alt` | No | Alternative text. When omitted, Norna renders an empty alt attribute. |
+| `caption` | No | Visible text below the image. |
+
+Start each entry with `- image: filename.jpg`. Indent optional fields with two
+spaces:
+
+````md
+```norna-image-stack
+- image: filename.jpg
+  alt: Optional alt text.
+  caption: Optional caption.
+```
+````
+
 ### Image Stack
 
 Use `norna-image-stack` for one or more stacked images:
@@ -173,7 +205,6 @@ managed images, links, and optional badge text:
 layout: image-top
 flow: grid
 size: m
-width: normal
 
 - title: Adopt
   text: Give a dog a new home.
@@ -186,47 +217,35 @@ width: normal
 ```
 ````
 
-Card-list options:
+List-level options must appear before the first card:
 
-- `layout`: `image-top`, `image-left`, or `image-right`.
-- `flow`: `grid` or `stack`.
-- `size`: `s`, `m`, `l`, or `xl`.
-- `width`: `text`, `narrow`, `normal`, or `wide`.
+| Option | Accepted values | When omitted |
+| --- | --- | --- |
+| `layout` | `image-top`, `image-left`, `image-right` | `image-top` |
+| `flow` | `grid`, `stack` | `grid` |
+| `size` | `s`, `m`, `l`, `xl` | `m` |
+| `width` | `text`, `narrow`, `normal`, `wide` | Inherit `blocks.cardList.width` from the root theme; use `normal` if no preset or root default supplies it |
+
+The example omits `width`, so the active theme preset determines how wide the
+complete list may become. To make one list an intentional exception, add an
+explicit value:
+
+````md
+```norna-card-list
+width: wide
+
+- title: Featured project
+  text: Let this list use more of the available page width.
+```
+````
+
+An explicit block `width` takes priority over the theme for that list only.
+The root default and preset values are defined under [Content Block
+Defaults](theme.md#content-block-defaults).
 
 Each card starts with `- title: Card title`. Card fields use two spaces of
 indentation. Supported fields are `text`, `image`, `link`, and `badge-text`.
 Each card must include at least one of `text`, `image`, or `link`.
-
-Each image entry supports:
-
-- `image`: required filename matching
-  `^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$`.
-  It must be a filename, not a path.
-- `alt`: optional alt text. If omitted, Norna renders an empty alt attribute.
-- `caption`: optional caption.
-
-Start every image entry in image stacks and carousels with
-`- image: filename.jpg`. Optional fields use two spaces of indentation:
-
-````md
-```norna-image-stack
-- image: filename.jpg
-  alt: Optional alt text.
-  caption: Optional caption.
-```
-````
-
-Use three or more matching backticks or tildes for fenced blocks. If you need
-to document a Norna image block inside another Markdown code sample, make the
-outer fence longer than the inner fence:
-
-````md
-````
-```norna-image-stack
-- image: filename.jpg
-```
-````
-````
 
 `content:check` warns when carousel images have different aspect ratios. Exact
 matching proportions are recommended because mixed proportions can make the

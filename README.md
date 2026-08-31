@@ -74,8 +74,10 @@ site/
 - Category ids remain in child URLs, but categories do not generate pages of
   their own.
 - `theme.yaml` normally selects one complete visual preset.
-- `sitewide-content.yaml` holds shared logo display settings, banners, and footer content.
-- `config.yaml` holds the public URL and optional language and scroll behavior.
+- `sitewide-content.yaml` holds shared logo display settings, banners, and
+  footer content.
+- `config.yaml` holds the public URL and optional language, navigation model,
+  and scroll behavior.
 - `public/` holds static files copied without processing.
 
 Norna validates this structure, processes managed images when needed, and

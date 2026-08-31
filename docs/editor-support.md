@@ -101,9 +101,9 @@ Command. Norna supplies:
   completion cannot express clearly.
 
 Red Hat YAML renders the project-local schema information. Norna's generated
-schema and `norna config:check` are authoritative. Word-based editor completion,
-other YAML extensions, and AI assistants can also offer text that is unrelated
-to Norna and may be invalid.
+schema and `npm run norna:config:check` are authoritative. Word-based editor
+completion, other YAML extensions, and AI assistants can also offer text that
+is unrelated to Norna and may be invalid.
 
 To reduce unrelated YAML suggestions in one workspace, add settings such as:
 
@@ -153,8 +153,8 @@ If Norna help does not appear:
    missing item it reports.
 5. Run **Norna: Refresh IntelliSense** after changing the project's engine.
 6. Use **Developer: Reload Window** after installing a new VSIX.
-7. Run `norna config:check` or `norna content:check` to distinguish an editor
-   display problem from invalid site source.
+7. Run `npm run norna:config:check` or `npm run norna:content:check` to
+   distinguish an editor display problem from invalid site source.
 
 Generic suggestions may still appear beside Norna suggestions. Their presence
 does not mean that Norna accepts them; use the descriptions prefixed with

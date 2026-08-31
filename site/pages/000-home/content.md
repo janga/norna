@@ -9,14 +9,15 @@ page:
 
 ## What is Norna? {#intro}
 
-**Norna is an opinionated, open source CLI for building websites from very
-simple markdown files.**{note-ref}
+**Norna is an opinionated, open source CLI for building websites from ordinary
+files.**{note-ref}
 
 {note: This site is built by Norna.}
 
-You write the text, choose the images and place them in the content. Norna takes
-care of the repetitive website work: local preview, page structure, navigation,
-responsive layout, image processing, validation and the finished static build.
+You write the text in Markdown, choose the images and place them in the content.
+Norna takes care of the repetitive website work: local preview, page structure,
+navigation, responsive layout, image processing, validation and the finished
+static build.
 
 The working syntax stays small: mostly ordinary Markdown plus a few built-in
 blocks for image stacks, carousels, cards and notes. Optional VS Code
@@ -32,9 +33,8 @@ pages.
 ```norna-card-list
 flow: grid
 size: m
-width: normal
 - title: Fewer decisions, useful defaults
-  text: Presets, palettes and ready-made content patterns establish a coherent site without assembling a custom presentation system.
+  text: Presets, coordinated colors and ready-made content patterns establish a coherent site without assembling a custom presentation system.
 - title: Responsive images without the routine
   text: Work with source images while Norna prepares responsive output and sensible loading behaviour for the finished site.
 - title: Files that stay manageable
@@ -56,7 +56,7 @@ you review.
 
 These benefits come from Norna owning more of the presentation layer. The
 trade-off is deliberate: fewer layout decisions and less implementation work, in
-exchange for staying inside Norna's site model.
+exchange for following Norna's defined file and presentation structure.
 
 ## When is Norna a good fit? {#good-fit}
 

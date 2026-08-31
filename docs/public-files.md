@@ -24,8 +24,8 @@ enable it separately. Use the exact lowercase filename to keep the site
 portable between case-sensitive and case-insensitive file systems.
 
 The logo links to the homepage. Its alternative text comes from the homepage
-Markdown H1 in `site/pages/000-home/content.md`; no separate site name or logo alt text is
-configured.
+Markdown H1 in `site/pages/000-home/content.md`; no separate site name or logo
+alt text is configured.
 
 Configure top-level `logo` in `site/sitewide-content.yaml` only when you need
 to override the displayed height:
@@ -35,13 +35,15 @@ logo:
   height: 2rem
 ```
 
-The width follows the image's intrinsic aspect ratio. `logo` does
-not enable the logo or select a file.
+Without an override, the displayed height is `2.6rem` on wider screens. Norna
+caps it at `2.15rem` on narrow screens; that cap also applies to a custom
+height. The width follows the image's intrinsic aspect ratio. `logo` does not
+enable the logo or select a file.
 
-`norna config:check` fails when it finds multiple supported logo files, or when
-`logo` is configured but no logo file exists. A site without a logo uses its
-ordinary page-title navigation; the check reports the missing logo as a
-warning.
+`npm run norna:config:check` fails when it finds multiple supported logo files,
+or when `logo` is configured but no logo file exists. A site without a logo
+uses its ordinary page-title navigation; the check reports the missing logo as
+a warning.
 
 ## Browser Icons
 

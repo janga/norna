@@ -12,12 +12,12 @@ edit, and validate the result. This is the normal standalone setup.
 
 You need:
 
-- Node.js 22.12 or later.
-- ImageMagick
+- Node.js 22.12 or later and npm.
+- ImageMagick before adding JPEG or PNG images through Norna image blocks.
 
 Norna uses ImageMagick to prepare raster images for responsive layouts. Install
-it separately for your operating system before adding JPEG or PNG images to the
-site.{note-ref}
+it separately for your operating system when the site uses those formats.
+Managed SVG images do not require it.{note-ref}
 
 {note: [How to install ImageMagick.](/faq/#install-imagemagick)}
 
@@ -70,14 +70,15 @@ Rover enjoys long walks and quiet afternoons.
 a one-page site, Norna builds local navigation from the page title and its `##`
 sections. The preview updates as you edit the source files.
 
-See [Content](https://github.com/janga/norna/blob/main/docs/content.md) for the
-complete heading, generated-id, note, and Norna-block syntax.
+See [Content](https://github.com/janga/norna/blob/main/docs/content.md#page-title-and-frontmatter)
+for the complete heading, generated-id, note, and Norna-block syntax.
 
 ## Choose a visual starting point {#theme}
 
 The generated site uses the `project` preset. A preset supplies a complete,
-coordinated starting point for typography, spacing, colors, navigation, and
-media. Change the single value in `site/theme.yaml` to choose another preset:
+coordinated starting point for typography, spacing, colors, navigation styling,
+media, and structured content such as card lists. Change the single value in
+`site/theme.yaml` to choose another preset:
 
 ```yaml
 preset: project
@@ -89,6 +90,12 @@ Norna includes four presets:
 - `documentation` for guides and sustained reading;
 - `project` for project and product sites that combine text, code, cards, and images;
 - `statement` for short sites with a stronger editorial voice.
+
+List the presets and their intended uses from the installed Norna version:
+
+```sh
+npm run norna:theme:presets
+```
 
 Start with the preset alone and review it with real content before adding
 overrides. The [preset comparison](https://janga.github.io/norna/examples/theme-presets/)

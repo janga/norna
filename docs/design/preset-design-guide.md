@@ -164,7 +164,7 @@ construct a new design system. Public choices should be grouped by intent:
 | Reading | Default prose width and content rhythm |
 | Media | Text-led, balanced, or image-led emphasis and a focused image-width override |
 | Sections | Uniform surfaces, or full-width alternating/accented surfaces when tree navigation is not used |
-| Reader controls | Which personal display choices are offered to visitors |
+| Reader controls | Optional color-mode and focus-reading choices; reading width remains engine-owned and universal |
 
 The exact YAML schema is a separate implementation decision. The conceptual
 grouping should remain stable even if field names change.
@@ -199,9 +199,10 @@ Do not call this an accessibility mode. Different visual, cognitive, and motor
 needs require different combinations. Core accessibility remains active
 regardless of reader choices.
 
-The site owner may choose whether each reader control is offered, but every
-built-in preset should provide useful defaults. Reader values must be named and
-constrained; readers should not enter CSS values.
+Reading width is always offered; the site owner chooses its initial value
+through the theme rather than whether readers may change it. The site owner may
+choose whether color mode and focus reading are offered. Reader values must be
+named and constrained; readers should not enter CSS values.
 
 The Display panel should use one well-labeled control in the site navigation,
 native grouped form controls, full keyboard support, clear checked states, and

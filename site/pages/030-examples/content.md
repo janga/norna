@@ -8,8 +8,12 @@ page:
 ## Compare theme presets {#theme-presets}
 
 A theme preset is a complete visual starting point. It coordinates typography,
-spacing, colors, corners, image sizing, section backgrounds, and the reader
-choices available in the Display panel.
+spacing, colors, corners, image sizing, structured content widths, section
+backgrounds, and the reader choices available in the Display panel.
+
+Every example lets the reader choose Narrow, Standard, or Wide text. The preset
+selects the initial width while keeping images and the outer page layout under
+the site's control.
 
 The comparison renders the same text, images, notes, code, carousel, and cards
 with every built-in preset. Use the selector to change only the preset while
@@ -29,7 +33,6 @@ together as one project.
 ```norna-card-list
 flow: grid
 size: m
-width: normal
 
 - title: Dog shelter: single page
   text: A complete one-page site with heading-based navigation and page-local images.
@@ -49,7 +52,6 @@ rather than a complete editorial example.
 ```norna-card-list
 flow: grid
 size: m
-width: normal
 
 - title: Media and surfaces
   text: Inspect image stacks, portrait and landscape carousels, cards, notes, palettes, and section surfaces.

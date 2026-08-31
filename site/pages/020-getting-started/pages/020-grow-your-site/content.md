@@ -33,7 +33,7 @@ in one page directory:
 site/
 ├── config.yaml              # Technical settings
 ├── theme.yaml               # Visual choices
-├── sitewide-content.yaml    # Shared banners and footer
+├── sitewide-content.yaml    # Shared logo settings, banners, and footer
 │
 ├── pages/                   # The site's pages
 │   └── 000-home/            # The required home page
@@ -73,10 +73,10 @@ Adopt. Foster. Donate.
 ```
 ````
 
-On a one-page site, the page title and section headings form the navigation.
+On a one-page site, the page title and H2 section headings form the navigation.
 Desktop navigation keeps these links close to the page; the mobile menu exposes
-the same page and heading structure in one expandable panel. Subsections can be
-included when the chosen navigation model needs that extra level.
+the same destinations in one expandable panel. H3 headings structure the text
+inside a section but are not additional links in this single-page menu.
 
 <!-- norna-image-provenance:
 image: single-page-site.svg
@@ -102,7 +102,8 @@ for image placement, processing, and captions.
 ## Add top-level pages {#top-level-pages}
 
 Add top-level pages when the site needs several main areas. Each page has its
-own URL, content, images, and section navigation:
+own URL, content, and images. Its H2 headings can provide local section
+navigation:
 
 ```text
 site/pages/
@@ -135,9 +136,11 @@ documents overrides and conflict handling.
 Top-level pages normally use horizontal navigation on wide screens. On small
 screens, the same pages are collected in one expandable menu.
 
-With several pages, Norna-managed images keep each local image with the page
-that uses it. The command `npm run norna:content:check` reports missing or
-misplaced images. If an image reference moves to another page, run:
+Images referenced through Norna blocks are managed images: Norna validates,
+processes, and keeps track of their files. With several pages, each managed
+image belongs with the page that uses it. The command
+`npm run norna:content:check` reports missing or misplaced images. If an image
+reference moves to another page, run:
 
 ```sh
 # Preview and confirm an unambiguous image move

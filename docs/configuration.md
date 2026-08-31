@@ -11,9 +11,9 @@ url: https://example.com/
 ```
 
 Norna deliberately keeps this file small. Visual choices belong in
-[`theme.yaml`](theme.md), shared editorial content belongs in
-[`sitewide-content.yaml`](sitewide-content.md), and page content belongs in
-[`pages/*/content.md`](content.md).
+[`theme.yaml`](theme.md); shared banners, footer content, and logo display
+settings belong in [`sitewide-content.yaml`](sitewide-content.md); page content
+belongs in [`pages/*/content.md`](content.md).
 
 ## `url`
 
@@ -21,7 +21,7 @@ Norna deliberately keeps this file small. Visual choices belong in
 - Type: absolute `http` or `https` URL.
 - Required: yes.
 - Default: none.
-- Restrictions: no query string or fragment.
+- Restrictions: no query string, fragment, or repeated slash in the URL path.
 
 Norna adds a trailing slash when omitted. The URL pathname becomes the base
 path for generated links, browser icons, and managed images, so there is no
@@ -60,13 +60,18 @@ Editorial text remains in page content and `sitewide-content.yaml`.
 
 ## `navigation`
 
-`navigation.mode` selects the site-wide navigation model:
+`navigation.mode` selects one navigation model for the whole site. It does not
+change the page hierarchy or heading structure; it controls how Norna presents
+that discovered structure.
 
-- `automatic`: choose from the discovered page and heading structure. This is
-  the default.
-- `sections`: navigate headings on a single page.
-- `top`: use the sticky top navigation for a shallow multi-page site.
-- `tree`: combine global top-level navigation with a local page hierarchy.
+| Value | Effect | Structural constraint |
+| --- | --- | --- |
+| `automatic` | Select `sections`, `top`, or `tree` from the listed pages, categories, and navigable headings. | None beyond the selected mode's own requirements. |
+| `sections` | Keep the single page's H1 destination and H2 sections in sticky page navigation. | The listed site structure must fit the single-page model. |
+| `top` | Present Home and top-level pages in the global row, with shallow page and section menus where needed. | A listed navigation category or deeper page/heading path is invalid. |
+| `tree` | Combine global top-level areas with a local page/category hierarchy and current-page headings. | No additional hierarchy limit. |
+
+The field is optional. Its default is `automatic`.
 
 ```yaml
 url: https://example.com/
@@ -78,16 +83,20 @@ Navigation behavior is technical and site-wide. It cannot be configured in
 `theme.yaml` or in an individual page. A listed navigation category requires
 `tree`: `automatic` selects it, while explicit `sections` or `top` is invalid.
 This prevents a category with no URL from being presented as an ordinary page
-link. See [Pages and Categories](pages.md#navigation) for the relationship
-between Home, pages, categories, and headings, and
+link. See [Pages and Categories](pages.md#navigation) for the exact automatic
+selection rules and the relationship between Home, pages, categories, and
+headings, and
 [Client-Side JavaScript](client-javascript.md) for the no-JavaScript fallback.
 
 ## `scrollBehavior`
 
-- Purpose: select native same-page anchor movement.
-- Type: `instant` or `smooth`.
-- Required: no.
-- Default: `instant`.
+`scrollBehavior` controls same-page anchor movement. It does not affect links
+that load another page.
+
+| Value | Effect |
+| --- | --- |
+| `instant` | Move immediately to the target. This is the default. |
+| `smooth` | Ask the browser to animate the movement with native smooth scrolling. |
 
 Example using the browser's native smooth scrolling:
 
@@ -96,8 +105,9 @@ url: https://example.com/
 scrollBehavior: smooth
 ```
 
-Norna does not add a scripted scrolling implementation. Visitors whose system
-requests reduced motion always get immediate anchor movement.
+The field is optional. Norna does not add a scripted scrolling implementation.
+Visitors whose system requests reduced motion always get immediate anchor
+movement.
 
 ## Complete Example
 
@@ -109,17 +119,18 @@ navigation:
 scrollBehavior: instant
 ```
 
-Run `norna config:check` after changing the file.
+Run `npm run norna:config:check` after changing the file.
 
 ## Publishing Discovery
 
 GitHub repository, default branch, and deploy workflow are not fields in
 `config.yaml`.
 
-`norna deploy` discovers the current GitHub repository and default branch
-through the authenticated GitHub CLI. Norna's included workflow file is
-`.github/workflows/deploy.yml`. `deploy:watch` accepts command-line overrides
-when a one-off run needs different operational values.
+`npm run norna:deploy` discovers the current GitHub repository and default
+branch through the authenticated GitHub CLI. Norna's included workflow file is
+`.github/workflows/deploy.yml`. `npm run norna:deploy:watch -- <options>`
+accepts command-line overrides when a one-off run needs different operational
+values.
 
 See [Publishing](publishing.md) for the complete workflow.
 
@@ -127,12 +138,15 @@ See [Publishing](publishing.md) for the complete workflow.
 
 The site directory is not configured in `config.yaml`.
 
-Use one of:
+The cross-platform command-line form is:
 
 ```sh
-NORNA_SITE_DIR=presentation norna build
-norna --site-dir presentation build
+npm exec -- norna --site-dir presentation build
 ```
+
+Commands also honor the `NORNA_SITE_DIR` environment variable. The syntax for
+setting an environment variable for one command depends on the shell and
+operating system.
 
 If `NORNA_SITE_DIR` is set to an empty value, commands fail. Relative site
 directories are resolved by walking upward from the invocation directory until

@@ -19,13 +19,18 @@ This document is for work on the reusable `norna` package itself.
   blocks, and layout.
 - `tests/`: Playwright navigation diagnostics.
 - `fixtures/basic/site/`: minimal site used for engine checks.
+- `fixtures/preset-baseline/site/`: shared representative content used to
+  compare every built-in preset.
+- `tests/preset-baselines/`: resolved preset contracts and committed desktop
+  and mobile reference images.
 - `starters/basic/`: copyable site starter.
 - `examples/feature-demos/media-and-surfaces/site/`: broad visual example used
   by demo builds and navigation diagnostics.
 
 The repository-local `site/` directory is reserved for a local documentation
-site. It is useful for dogfooding `norna` documentation, but it is not the
-primary visual regression demo.
+site. It is useful for dogfooding Norna documentation. Preset regression uses
+the dedicated preset-baseline fixture so changes to the documentation content
+do not silently redefine the visual contract.
 
 ## Common Checks
 
@@ -37,6 +42,8 @@ npm run test:site-public
 npm run test:documentation
 npm run test:fixture:build
 npm run test:examples
+npm run test:preset-baselines
+npm run test:documentation-preset-review
 npm run demo:build
 npm run package:check
 ```
@@ -55,6 +62,17 @@ Markdown source linked from `llms.txt` exists.
 documentation site and assembles rendered examples under `dist/examples/` for
 the shared GitHub Pages artifact. It is not a generic Norna site command.
 
+`npm run test:preset-baselines` builds the same representative site with every
+built-in preset and verifies characterized values and rendered markup. The
+committed screenshots are human-review references rather than pixel-perfect
+test assertions. Use `npm run preset:documentation:review` for an interactive
+local comparison of the `documentation` preset candidates. Capture new
+baseline images only after the intended visual change has been reviewed:
+
+```sh
+npm run preset:baselines:capture
+```
+
 The root `site/` directory is the documentation site. Use the ordinary local
 commands for it:
 
@@ -69,8 +87,8 @@ globally installed launcher deliberately does not delegate to another package
 whose own name is `@janga/norna`, so it may continue with the published global
 implementation instead of the working tree.
 
-The media-and-surfaces feature demo is the broad visual and navigation
-diagnostic target:
+The media-and-surfaces feature demo remains a broad structured-content and
+navigation diagnostic target:
 
 ```sh
 node bin/norna.mjs --site-dir examples/feature-demos/media-and-surfaces/site dev:local

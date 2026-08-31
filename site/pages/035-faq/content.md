@@ -44,8 +44,10 @@ See the full references for
 
 ## How do I install ImageMagick? {#install-imagemagick}
 
-Norna uses ImageMagick to read raster image dimensions and create responsive
-image variants. Install it separately for your operating system.
+When a JPEG or PNG file is referenced from a Norna image stack, carousel, or
+card list, Norna uses ImageMagick to read its dimensions and create responsive
+variants. Install ImageMagick separately before using those raster formats.
+SVG images in the same blocks do not require it.
 
 ### macOS
 

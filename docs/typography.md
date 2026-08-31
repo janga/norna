@@ -1,75 +1,74 @@
 # Typography
 
-Norna typography is configured in `site/theme.yaml` through a site-wide font,
-profile, text rhythm, and optional overrides.
-
-The normal workflow is to select a complete top-level theme preset. It already
-chooses a coordinated font, typography profile, and rhythm:
+Typography is a site-wide part of the root `site/theme.yaml`. A normal site
+selects a complete theme preset, which already supplies a coordinated font
+stack, typography profile, and spacing rhythm:
 
 ```yaml
 preset: documentation
 ```
 
-Use the nested `typography` block only when those typographic choices need to
-differ from the selected theme preset. Typography is configured at root-theme
-or page-theme level, not in page or section content.
+Add `typography` only when those choices need to differ from the selected
+preset. Page and category themes cannot change the font, profile, rhythm, or
+text-role overrides. They may change the body-text width through
+`layout.textWidth`; see [Page Text Width](#page-text-width).
 
 ## Typography Profiles
 
-Available profiles:
+A typography profile supplies alignment, size, weight, and line height for
+page titles (`h1`), section headings (`h2`), body subheadings (`h3` and `h4`),
+body text, and image captions. It also supplies a baseline text width that a
+theme or page-level `layout.textWidth` may replace.
 
-- `restrained`: the default for image-led sites. Text is restrained and
-  supports the images without dominating the page.
-- `dense`: tighter typography for many sections, many images, or
-  short information blocks.
-- `reading`: more generous body text for pages where longer text carries
-  more of the experience.
-- `statement`: tighter, more declarative line-height for short programmatic
-  statements. Use it sparingly, usually as a page-level exception.
+| Profile | Intended effect | Used by preset |
+| --- | --- | --- |
+| `restrained` | Lighter headings, normal-width prose, and centered captions for image-led pages. | `portfolio` |
+| `dense` | Tighter line heights and a wider prose measure for compact, scannable information. | None by default |
+| `reading` | More generous body line height, a narrow prose measure, and left-aligned captions for sustained reading. | `documentation`, `project` |
+| `statement` | Stronger headings and tighter body text for short, declarative pages. | `statement` |
 
-If a complete top-level theme preset is selected, that preset supplies the
-typography choice. If both the top-level preset and nested typography are
-omitted, the engine default is `restrained`.
+Every built-in profile uses the size name `medium` for every text role. The
+rendered scales remain different by role, so the visual hierarchy is always
+`H1 > H2 > H3 > H4`.
 
-Profiles define alignment, size, weight, and line height for `headings.h1`
-through `headings.h4`, `body`, and `caption`. They also choose a readable body
-text width. Built-in presets use `medium` as the default size for every text
-role. Visual heading hierarchy comes from the Markdown heading level, so `h1`
-is larger than `h2`, `h2` is larger than `h3`, and so on.
+When neither a preset nor `typography.profile` supplies a profile, Norna uses
+`restrained`.
 
-The profiles use these controls deliberately:
+### Typography Rhythm
 
-- `restrained` uses restrained heading weights and a normal reading width.
-- `dense` uses stronger headings and a wider text column for short,
-  scannable content.
-- `reading` uses a narrower reading width and more generous body line
-  height.
-- `statement` uses the strongest heading weights and a narrow text column for
-  short, declarative content.
+`typography.rhythm` controls text-near vertical spacing independently of the
+profile. It supplies spacing before and after headings, between paragraphs,
+and before captions.
 
-`rhythm` defines text-near spacing for headings, paragraphs, and captions.
-Available rhythms are `compact`, `normal`, and `airy`. Built-in rhythm values
-use `em` so spacing follows the rendered text size.
+| Rhythm | Effect |
+| --- | --- |
+| `compact` | Reduces text-near spacing for dense pages and reference material. |
+| `normal` | Uses the engine's balanced text spacing. |
+| `airy` | Adds more separation for short or statement-led pages. |
 
-Use this command to inspect the exact profile and rhythm values shipped with
-the installed engine:
+Built-in rhythm values use `em`, so their spacing follows the rendered text
+size. When neither a preset nor `typography.rhythm` supplies a rhythm, Norna
+uses `normal`.
 
-```sh
-norna typography profiles
-```
-
-Use this command to inspect the effective values for the selected site after
-profiles, rhythms, and overrides have been applied:
+Inspect the exact values shipped by the installed engine with:
 
 ```sh
-norna typography show
+npm run norna:typography:profiles
 ```
 
-The output includes the site theme, every page, and every section. Each
-resolved value shows its `source`; values inherited by a page or section are
-also marked with `inherited: true`.
+Inspect the resolved typography for the selected site with:
+
+```sh
+npm run norna:typography:show
+```
+
+The second command reports the root theme and repeats the effective values for
+every page and section. Each value identifies the profile, rhythm, or root
+override that supplied it.
 
 ## Configuration Shape
+
+Write typography settings only in the root `site/theme.yaml`:
 
 ```yaml
 typography:
@@ -83,77 +82,96 @@ typography:
         weight: 600
         spacingAfter: 0.55em
       h3:
-        size: medium
         spacingBefore: 1.5em
         spacingAfter: 0.5em
     body:
-      width: narrow
+      lineHeight: 1.55
       paragraphSpacing: 0.8em
     caption:
       spacingBefore: 0.5em
 ```
 
-The typographic roles are:
+| Field | Purpose | When omitted |
+| --- | --- | --- |
+| `fontFamily` | CSS font-family fallback stack used by the whole site. | Use the selected preset; without a preset, use `Arial, 'Helvetica Neue', Helvetica, sans-serif`. |
+| `profile` | Coordinated text-role sizes, weights, alignment, and line heights. | Use the selected preset; without a preset, use `restrained`. |
+| `rhythm` | Coordinated heading, paragraph, and caption spacing. | Use the selected preset; without a preset, use `normal`. |
+| `overrides` | Focused changes applied after the profile and rhythm. | Keep all resolved profile and rhythm values. |
 
-- `headings.h1`: reserved for page-level Markdown `#` headings if the content
-  model starts supporting them.
-- `headings.h2`: Markdown `##` section headings.
-- `headings.h3`: Markdown `###` subheadings inside section body text.
-- `headings.h4`: Markdown `####` subheadings inside section body text.
-- `body`: Markdown body text inside sections.
-- `caption`: image captions.
+`fontFamily` accepts a non-empty CSS font-family stack without semicolons,
+braces, or line breaks. Norna does not load custom font files. Include suitable
+fallbacks, and use only font names that the visitor's browser can access.
 
-Allowed alignment values are `left`, `center`, and `right`. Alignment can be
-responsive:
+The override roles correspond directly to Markdown and rendered content:
+
+| Role | Content |
+| --- | --- |
+| `headings.h1` | The page's single Markdown `#` title. |
+| `headings.h2` | Markdown `##` section headings. |
+| `headings.h3` | Markdown `###` subheadings inside a section. |
+| `headings.h4` | Markdown `####` subheadings inside a section. |
+| `body` | Paragraphs, lists, and other body text. |
+| `caption` | Captions rendered with managed images. |
+
+### Override Values
+
+`align` must contain `desktop`, `mobile`, or both. Each accepts `left`,
+`center`, or `right`:
 
 ```yaml
-align:
-  desktop: left
-  mobile: center
+typography:
+  overrides:
+    headings:
+      h2:
+        align:
+          desktop: left
+          mobile: center
 ```
 
-Allowed size values are `small`, `medium`, `large`, and `xlarge`. `medium` is
-the normal reading size. Use `small` for quieter supporting text, and use
-`large` or `xlarge` only when a page or section needs stronger emphasis.
-Each heading level uses its own scale but follows the same principle:
-`medium` is the normal size for that level. Norna may render the first section
-heading as an HTML `h1` for document structure, but its visual typography still
-follows the Markdown level the user wrote: `##` uses `headings.h2`.
+`size` accepts `small`, `medium`, `large`, or `xlarge`. The same name resolves
+to a different scale for each heading level, body text, and captions. Use
+`medium` for the normal size of a role.
 
-`lineHeight` is a unitless number from `1` through `3`. `spacingBefore`,
-`spacingAfter`, and `paragraphSpacing` are CSS lengths such as `0`, `0.8em`,
-`1rem`, or `12px`. Use `em` for spacing that should track the text size.
+`weight` applies only to headings and accepts `400`, `500`, `600`, or `700`.
 
-`weight` is a controlled heading weight. Allowed values are `400`, `500`,
-`600`, and `700`. Configure readable line length with `layout.textWidth` in the
-root or page theme; it controls the prose column, not the page's maximum width
-or the width of image blocks.
+`lineHeight` is unitless. Heading line height may range from `1` through `3`,
+body line height from `1.4` through `3`, and caption line height from `1.25`
+through `3`.
 
-Supported override fields:
+`spacingBefore`, `spacingAfter`, and `paragraphSpacing` accept `0` or a CSS
+length using `px`, `rem`, `em`, `ch`, or `lh`. Use `em` when spacing should
+track the current text size.
+
+Supported fields are:
 
 - `headings.h1.align`, `headings.h1.size`, `headings.h1.weight`,
-  `headings.h1.lineHeight`,
-  `headings.h1.spacingBefore`, `headings.h1.spacingAfter`
+  `headings.h1.lineHeight`, `headings.h1.spacingBefore`,
+  `headings.h1.spacingAfter`
 - `headings.h2.align`, `headings.h2.size`, `headings.h2.weight`,
-  `headings.h2.lineHeight`,
-  `headings.h2.spacingBefore`, `headings.h2.spacingAfter`
+  `headings.h2.lineHeight`, `headings.h2.spacingBefore`,
+  `headings.h2.spacingAfter`
 - `headings.h3.align`, `headings.h3.size`, `headings.h3.weight`,
-  `headings.h3.lineHeight`,
-  `headings.h3.spacingBefore`, `headings.h3.spacingAfter`
+  `headings.h3.lineHeight`, `headings.h3.spacingBefore`,
+  `headings.h3.spacingAfter`
 - `headings.h4.align`, `headings.h4.size`, `headings.h4.weight`,
-  `headings.h4.lineHeight`,
-  `headings.h4.spacingBefore`, `headings.h4.spacingAfter`
-- `body.align`, `body.size`, `body.lineHeight`,
-  `body.paragraphSpacing`
+  `headings.h4.lineHeight`, `headings.h4.spacingBefore`,
+  `headings.h4.spacingAfter`
+- `body.align`, `body.size`, `body.lineHeight`, `body.paragraphSpacing`
 - `caption.align`, `caption.size`, `caption.lineHeight`,
   `caption.spacingBefore`
 
 ## Page Text Width
 
-Typography itself remains site-wide so pages keep the same font, heading
-hierarchy, and typographic character. A page-local `theme.yaml` may adjust the
-body-text line length when a particular page or subtree needs a narrower or
-wider reading column:
+Text width is a layout choice, not a typography override. Set
+`layout.textWidth` in the root theme when it should apply throughout the site:
+
+```yaml
+layout:
+  textWidth: narrow
+```
+
+An optional page or category `theme.yaml` may set the same field for its page
+subtree:
 
 ```yaml
 # site/pages/010-introduction/theme.yaml
@@ -161,8 +179,14 @@ layout:
   textWidth: narrow
 ```
 
-The page setting is inherited by descendant pages. Page themes cannot select a
-typography profile, rhythm, font family, or heading override.
+Accepted values are `narrow`, `normal`, and `wide`. The root or page setting
+takes priority over the baseline width supplied by the typography profile.
+Descendant pages inherit a page-local value until a more local page or category
+theme replaces it.
 
-Captions are normally centered, but `reading` uses left-aligned captions to
-support longer explanatory text.
+Every visitor may temporarily choose another bounded reading width in the
+Display panel. This engine-level reader choice cannot be disabled and does not
+change the source theme. See [Layout](theme.md#layout), [Page
+Themes](theme.md#page-themes), and [Reader Display
+Controls](theme.md#reader-display-controls) for the complete scope and
+interaction rules.

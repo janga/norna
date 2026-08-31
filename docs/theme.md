@@ -8,10 +8,10 @@ complete preset and adds only focused overrides when they are needed:
 preset: documentation
 ```
 
-The root theme owns site-wide colors, corners, typography, page frame, and
-navigation presentation. An optional limited `theme.yaml` in a page or
-navigation-category directory has the smaller role described under
-[Page Themes](#page-themes).
+The root theme owns site-wide colors, corners, typography, page frame,
+navigation presentation, and defaults for structured content blocks. An
+optional limited `theme.yaml` in a page or navigation-category directory has
+the smaller role described under [Page Themes](#page-themes).
 
 ## Theme Presets
 
@@ -28,6 +28,7 @@ Each preset coordinates:
 - page width, gutters, text width, and content spacing
 - navigation spacing and visual treatment
 - how wide and tall images managed by Norna may appear
+- the default width of card lists
 - how coordinated backgrounds repeat between H2 sections
 - the reader choices available in the [Display panel](#reader-display-controls)
 
@@ -62,8 +63,8 @@ details and are deliberately excluded.
 ### `portfolio`
 
 Use `portfolio` when images should carry much of the presentation and prose
-should remain visually restrained. Its broad text and media areas suit
-portfolios, collections, and image-led introductions. A dense technical
+should remain visually restrained. Its broad text, card-list, and media areas
+suit portfolios, collections, and image-led introductions. A dense technical
 reference will normally be better served by `documentation`.
 
 ```yaml
@@ -84,19 +85,20 @@ preset: portfolio
 | `images.width` | `1000px` |
 | `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
 | `images.maxAvailableHeightPercent` | Desktop `78`; mobile `68` |
+| `blocks.cardList.width` | `wide` |
 | `corners` | `square` |
 | `sections.backgroundPattern` | `uniform` |
-| `readerControls` | Color mode enabled; reading width and focus reading disabled by default |
+| Reader Display | Reading width always available; color mode enabled; focus reading disabled |
 
 [Open the rendered `portfolio` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/).
 
 ### `documentation`
 
 Use `documentation` for sustained reading, technical explanation, guides, and
-reference material. It keeps prose narrow and structural spacing compact while
-allowing diagrams and other managed media to extend beyond the text column.
-The serif reading treatment is less suitable when images should dominate the
-site's identity.
+reference material. It keeps prose and card lists in the reading column while
+allowing diagrams and other managed media to extend beyond it. The serif
+reading treatment is less suitable when images should dominate the site's
+identity.
 
 ```yaml
 preset: documentation
@@ -116,19 +118,20 @@ preset: documentation
 | `images.width` | `920px` |
 | `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
 | `images.maxAvailableHeightPercent` | Desktop `74`; mobile `68` |
+| `blocks.cardList.width` | `text` |
 | `corners` | `rounded` |
 | `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
-| `readerControls` | Color mode, reading width, and focus reading enabled by default |
+| Reader Display | Reading width always available; color mode and focus reading enabled |
 
 [Open the rendered `documentation` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/).
 
 ### `project`
 
 Use `project` for project and product sites that need to balance concise prose,
-code, cards, and supporting images. Its system typography and normal text width
-make it a neutral working default. Sites centered on prolonged reference
-reading or immersive images will normally benefit from a more specialized
-preset.
+code, cards, and supporting images. Its system typography and balanced text and
+card-list widths make it a neutral working default. Sites centered on prolonged
+reference reading or immersive images will normally benefit from a more
+specialized preset.
 
 ```yaml
 preset: project
@@ -148,18 +151,19 @@ preset: project
 | `images.width` | `840px` |
 | `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
 | `images.maxAvailableHeightPercent` | Desktop `70`; mobile `62` |
+| `blocks.cardList.width` | `normal` |
 | `corners` | `rounded` |
 | `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
-| `readerControls` | Color mode, reading width, and focus reading enabled by default |
+| Reader Display | Reading width always available; color mode and focus reading enabled |
 
 [Open the rendered `project` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-project/).
 
 ### `statement`
 
 Use `statement` for short sites that benefit from stronger headings, generous
-spacing, and prominent media. It suits focused editorial presentations,
-campaigns, and concise public statements. Its spacious rhythm is not intended
-for dense documentation or a large reference hierarchy.
+spacing, prominent media, and wide card lists. It suits focused editorial
+presentations, campaigns, and concise public statements. Its spacious rhythm
+is not intended for dense documentation or a large reference hierarchy.
 
 ```yaml
 preset: statement
@@ -179,17 +183,19 @@ preset: statement
 | `images.width` | `1080px` |
 | `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
 | `images.maxAvailableHeightPercent` | Desktop `80`; mobile `70` |
+| `blocks.cardList.width` | `wide` |
 | `corners` | `square` |
 | `sections.backgroundPattern` | `accented`; resolves to `uniform` with tree navigation |
-| `readerControls` | Color mode enabled; reading width and focus reading disabled by default |
+| Reader Display | Reading width always available; color mode enabled; focus reading disabled |
 
 [Open the rendered `statement` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/).
 
 The setting names and values above are defined in [Layout](#layout),
-[Image Sizing](#image-sizing), [Typography](#typography),
+[Image Sizing](#image-sizing),
+[Content Block Defaults](#content-block-defaults), [Typography](#typography),
 [Palette And Color Mode](#palette-and-color-mode), [Corners](#corners),
-[Section Backgrounds](#section-backgrounds), and
-[Reader Display Controls](#reader-display-controls). See
+[Section Backgrounds](#section-backgrounds), and [Reader Display
+Controls](#reader-display-controls). See
 [Navigation](pages.md#navigation) for when automatic navigation resolves to a
 tree.
 
@@ -304,6 +310,54 @@ images:
 
 Each responsive percentage may also be a single number.
 
+## Content Block Defaults
+
+`blocks` sets site-wide presentation defaults for structured Norna blocks when
+their Markdown does not specify the same option. It does not add blocks to a
+page or replace options written directly in Markdown.
+
+The currently configurable block default is the maximum width of a complete
+card list:
+
+```yaml
+preset: documentation
+blocks:
+  cardList:
+    width: text
+```
+
+`blocks.cardList.width` accepts:
+
+| Value | Effect |
+| --- | --- |
+| `text` | Match the active body-text width and follow the reader's current Display-panel width. |
+| `narrow` | Limit the complete card list to at most `48rem`. |
+| `normal` | Limit the complete card list to at most `56rem`. |
+| `wide` | Allow the complete card list to use the available page-layout width. |
+
+The width limits the complete list, not an individual card. Card layout,
+responsive columns, and image placement remain controlled by the
+`norna-card-list` options in the page content.
+
+When `blocks.cardList.width` is omitted, the selected preset supplies it:
+
+| Preset | Card-list width |
+| --- | --- |
+| `portfolio` | `wide` |
+| `documentation` | `text` |
+| `project` | `normal` |
+| `statement` | `wide` |
+
+Without a preset or an explicit root setting, Norna uses `normal`. A `width`
+written inside one `norna-card-list` block overrides the root default for that
+list only. Page and category themes cannot change `blocks`; this keeps the
+site's normal treatment of structured blocks consistent while allowing a
+specific list to be an intentional exception.
+
+The setting does not affect image stacks or carousels. Their available width
+comes from [Image Sizing](#image-sizing). See [Card List](content.md#card-list)
+for Markdown syntax and per-list options.
+
 ## Typography
 
 Root `typography` is site-wide. It supports:
@@ -331,8 +385,8 @@ typography:
       lineHeight: 1.55
 ```
 
-Use `norna typography profiles` to inspect built-in values and
-`norna typography show` to inspect the resolved site typography. See
+Use `npm run norna:typography:profiles` to inspect built-in values and
+`npm run norna:typography:show` to inspect the resolved site typography. See
 [Typography](typography.md) for every override field.
 
 ## Palette And Color Mode
@@ -389,10 +443,14 @@ override it. Norna does not expose arbitrary colors for individual modes.
 
 ## Reader Display Controls
 
-`readerControls` chooses which bounded presentation choices readers can make
-from the site-wide Display panel. These choices temporarily adapt the resolved
-theme; they do not edit `theme.yaml`, replace the preset, or change the content
-order.
+Every Norna site lets readers choose Narrow, Standard, or Wide in the
+site-wide Display panel. This bounded reading-width choice is part of the
+engine and cannot be disabled by a theme. The preset or `layout.textWidth`
+selects the initial width; the reader may temporarily choose another one.
+
+`readerControls` adds the optional color-mode and focus-reading choices. Reader
+choices adapt the resolved theme; they do not edit `theme.yaml`, replace the
+preset, or change the content order.
 
 Configure the controls in the root `site/theme.yaml`:
 
@@ -400,17 +458,16 @@ Configure the controls in the root `site/theme.yaml`:
 preset: documentation
 readerControls:
   colorMode: true
-  readingWidth: true
   focusReading: true
 ```
 
-Each field is a boolean:
+The Display panel then contains:
 
-| Field | Reader choices | Configured default |
+| Choice | Availability | Configured default |
 | --- | --- | --- |
-| `colorMode` | System, Light, or Dark | `colorMode.default`, or the preset default |
-| `readingWidth` | Narrow, Standard, or Wide | Derived from `layout.textWidth`: `narrow`, `normal`, or `wide` |
-| `focusReading` | Off or On | Off |
+| Reading width | Always | Derived from `layout.textWidth`: `narrow`, `normal`, or `wide` |
+| Color mode | When `readerControls.colorMode` is `true` | `colorMode.default`, or the preset default |
+| Focus reading | When `readerControls.focusReading` is `true` | Off |
 
 Narrow, Standard, and Wide limit prose to approximately `60ch`, `72ch`, and
 `80ch` respectively. Media keeps its separately configured width. Focus reading
@@ -419,19 +476,20 @@ available so the reader can return to the normal view. Norna preserves the
 visible reading position when reading width or focus reading changes, except
 when the reader is already at the top of the page.
 
-Built-in presets provide these defaults:
+Built-in presets choose these starting widths and optional controls:
 
-| Preset | Color mode | Reading width | Focus reading |
+| Preset | Initial reading width | Color mode | Focus reading |
 | --- | --- | --- | --- |
-| `portfolio` | Enabled | Disabled | Disabled |
-| `documentation` | Enabled | Enabled | Enabled |
-| `project` | Enabled | Enabled | Enabled |
-| `statement` | Enabled | Disabled | Disabled |
+| `portfolio` | Wide | Enabled | Disabled |
+| `documentation` | Narrow | Enabled | Enabled |
+| `project` | Standard | Enabled | Enabled |
+| `statement` | Standard | Enabled | Disabled |
 
-Omit `readerControls` to use the selected preset's choices. Set an individual
-field to `false` to disable that preset control. A root theme without a preset
-does not show any Display controls unless it explicitly enables them. Page-local
-themes cannot change `readerControls`.
+Omit `readerControls` to use the selected preset's optional controls. Set
+`colorMode` or `focusReading` to `false` to disable that preset control. A root
+theme without a preset still provides reading width, but does not add color
+mode or focus reading unless explicitly enabled. Page-local themes cannot
+change `readerControls`.
 
 Reader choices are stored in first-party cookies:
 
@@ -447,11 +505,12 @@ choice for later visits without sharing it with another Norna site under a
 different path on the same domain. Reset removes all three cookies and restores
 the configured defaults.
 
-Without JavaScript, the configured color mode and reading width still apply.
-The reader cannot change or persist Display choices, and focus reading remains
-off. Norna includes the Display script only when at least one reader control is
-enabled. See [Client-Side JavaScript](client-javascript.md) for the complete
-progressive-enhancement boundary and
+Without JavaScript, the configured color mode and initial reading width still
+apply. The reader cannot change or persist Display choices, and focus reading
+remains off. Norna includes the reader-preference script on every page so the
+universal reading-width choice can work and persist. See
+[Client-Side JavaScript](client-javascript.md) for the complete progressive-
+enhancement boundary and
 [Presentation Guarantees](presentation-guarantees.md) for the engine limits
 that presets and reader choices cannot weaken.
 
@@ -555,14 +614,14 @@ sections:
 
 Local settings are merged with the root theme and inherited by descendant
 pages. A more local page or category theme may override the same limited
-fields. Site colors, corners, typography, page width, gutters, and navigation
-remain constant.
+fields. Site colors, corners, typography, page width, gutters, root content
+block defaults, and navigation remain constant.
 
 If `navigation.mode` is `automatic`, adding enough page or heading depth can
 make the site resolve to tree navigation. A non-uniform page override must then
 be removed or changed to `uniform`.
 
 Page and category themes cannot define `preset`, `palette`, `corners`,
-`typography`, `navigation`, `config.yaml`, or site-wide content. This boundary
-keeps one recognisable site while still allowing a guide, gallery, or reference
-area to use an appropriate reading width and media presentation.
+`typography`, `blocks`, `navigation`, `config.yaml`, or site-wide content. This
+boundary keeps one recognisable site while still allowing a guide, gallery, or
+reference area to use an appropriate reading width and media presentation.

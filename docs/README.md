@@ -52,10 +52,10 @@ site/
 `-- public/
 ```
 
-- [`config.yaml`](configuration.md): public URL, language, and native browser
-  scroll behavior.
-- [`theme.yaml`](theme.md): complete visual presets and focused presentation
-  overrides.
+- [`config.yaml`](configuration.md): public URL, language, navigation model,
+  and native browser scroll behavior.
+- [`theme.yaml`](theme.md): complete visual presets, structured content-block
+  defaults, and focused presentation overrides.
 - [`sitewide-content.yaml`](sitewide-content.md): shared logo display settings,
   banners, and footer.
 - [`pages/`](pages.md): Home, routable pages, navigation-only categories,
@@ -106,7 +106,7 @@ required, optional, convention-discovered, versioned, or generated.
 
 - [Choose a complete theme preset](theme.md#theme-presets)
 - [Configure palettes and color mode](theme.md#palette-and-color-mode)
-- [Offer reader Display choices](theme.md#reader-display-controls)
+- [Understand and configure reader Display choices](theme.md#reader-display-controls)
 - [Inspect and override a preset](theme.md#overrides)
 - [Adjust limited presentation for a page subtree](theme.md#page-themes)
 - [Adjust typography](typography.md)

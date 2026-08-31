@@ -221,10 +221,10 @@ npm exec -- norna page:add "macOS" --parent /guides/installation/
 If the optional global launcher is installed, the equivalent shorter commands
 start with `norna` instead of `npm exec -- norna`.
 
-`page:add` creates `content.md` with an H1 and an adjacent empty `images/`
-directory. `category:add` creates `category.yaml` and an empty `pages/`
-directory. Both commands derive an ASCII id from the supplied title or label;
-for example, `Räksmörgås` becomes `raksmorgas`.
+`page:add` creates `content.md` with an H1 and an `Introduction` H2, plus an
+adjacent empty `images/` directory. `category:add` creates `category.yaml` and
+an empty `pages/` directory. Both commands derive an ASCII id from the supplied
+title or label; for example, `Räksmörgås` becomes `raksmorgas`.
 
 By default, a new entry uses the nearest higher multiple of ten after its
 existing siblings. Use these options when the default is unsuitable:
@@ -369,8 +369,8 @@ The Markdown block still uses only the filename:
 ```
 ````
 
-Run `norna content:check` to find missing or misplaced images and
-`norna content:sync` to move unambiguous files into the expected page image
+Run `npm run norna:content:check` to find missing or misplaced images and
+`npm run norna:sync` to move unambiguous files into the expected page image
 root. Sync shows its complete plan before writing and never guesses when a
 filename has multiple possible sources. If a filesystem error interrupts
 several moves, run sync again after fixing the reported problem; completed
@@ -382,7 +382,8 @@ the page that references it.
 ## Page Themes
 
 The root `site/theme.yaml` owns the site's visual identity: preset, palette,
-corners, typography, page frame, and navigation presentation.
+corners, typography, page frame, navigation presentation, and defaults for
+structured content blocks.
 
 An optional limited `theme.yaml` may appear in a non-home page or category
 directory. It may adjust only:
@@ -395,7 +396,7 @@ directory. It may adjust only:
 These values are inherited by descendant pages and merged with more local
 settings. A category theme affects descendants even though the category itself
 does not render a page. Site colors, typography, corners, page width, gutters,
-and navigation remain global.
+structured content-block defaults, and navigation remain global.
 
 Page and category directories cannot contain `config.yaml` or
 `sitewide-content.yaml`; technical configuration and shared editorial content
