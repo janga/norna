@@ -1,7 +1,12 @@
-import { mkdir, rename, stat } from 'node:fs/promises';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import path from 'node:path';
+import { applyImageSyncPlan } from './lib/content-sync-apply.mjs';
+import {
+	createImageSyncPlan,
+	getExpectedImageLabel,
+	getImageCandidateLabel,
+} from './lib/content-sync-plan.mjs';
 import {
 	getImageCandidatesByName,
 	getDeprecatedInlineStyleReferences,
@@ -25,8 +30,6 @@ const shouldWrite = args.has('--write');
 const shouldCheck = args.has('--check') || !shouldWrite;
 const skipPrompt = args.has('--yes');
 const issues = [];
-const imageMoves = [];
-const referencedImagePaths = new Set();
 
 const addIssue = ({ severity, message, fix, sectionId, sectionLabel }) => {
 	issues.push({ severity, message, fix, sectionId, sectionLabel });
@@ -50,7 +53,7 @@ const addSectionIssue = (contentFile, section, issue) => addIssue({
 
 const getMovePlanLines = (moves) => [
 	'Planned image moves:',
-	...moves.map((move) => `- ${getCandidateLabel({ contentFile: move.sourceContentFile, imagePath: move.from })} -> ${getExpectedImageLabel(move.contentFile, move.imageName)}`),
+	...moves.map((move) => `- ${getImageCandidateLabel({ contentFile: move.sourceContentFile, imagePath: move.from })} -> ${getExpectedImageLabel(move.contentFile, move.imageName)}`),
 ];
 
 const promptForWrite = async (moves) => {
@@ -166,157 +169,6 @@ const getAspectRatioLabel = ({ width, height }) => {
 	return `${width / divisor}:${height / divisor}`;
 };
 
-const getExpectedImagePath = (contentFile, imageName) =>
-	path.join(contentFile.imagesDir, imageName);
-
-const getExpectedImageLabel = (contentFile, imageName) =>
-	`${contentFile.imagesLabel}/${imageName}`;
-
-const getGlobalImageCandidates = (globalImageCandidatesByName, imageName, expectedPath) =>
-	(globalImageCandidatesByName.get(imageName) ?? []).filter(({ imagePath }) => imagePath !== expectedPath);
-
-const getReferenceLabel = (contentFile, section) => `${contentFile.contentLabel} [${section.id ?? 'page title'}]`;
-
-const getRootLabel = (contentFile) => contentFile.imagesLabel.replace(/\/images$/, '');
-
-const getCandidateLabel = ({ contentFile, imagePath }) =>
-	`${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, imagePath))}`;
-
-const addExpectedReference = (expectedReferencesByPath, expectedPath, expectedReference) => {
-	if (!expectedReferencesByPath.has(expectedPath)) {
-		expectedReferencesByPath.set(expectedPath, []);
-	}
-
-	expectedReferencesByPath.get(expectedPath).push(expectedReference);
-};
-
-const addGlobalImageCandidate = (globalImageCandidatesByName, imageName, candidate) => {
-	if (!globalImageCandidatesByName.has(imageName)) {
-		globalImageCandidatesByName.set(imageName, []);
-	}
-
-	globalImageCandidatesByName.get(imageName).push(candidate);
-};
-
-const addConflictingMoveIssues = () => {
-	const movesBySource = new Map();
-	const movesByDestination = new Map();
-
-	for (const move of imageMoves) {
-		const sourceKey = move.from;
-		const destinationKey = move.to;
-
-		if (!movesBySource.has(sourceKey)) {
-			movesBySource.set(sourceKey, []);
-		}
-		movesBySource.get(sourceKey).push(move);
-
-		if (!movesByDestination.has(destinationKey)) {
-			movesByDestination.set(destinationKey, []);
-		}
-		movesByDestination.get(destinationKey).push(move);
-	}
-
-	for (const moves of movesBySource.values()) {
-		const destinations = new Set(moves.map((move) => move.to));
-		if (destinations.size <= 1) continue;
-
-		const firstMove = moves[0];
-		addSectionIssue(firstMove.contentFile, firstMove.section, {
-			severity: 'error',
-			message: `Cannot relocate "${firstMove.imageName}" because the same source file is referenced from multiple destinations: ${moves.map((move) => getExpectedImageLabel(move.contentFile, move.imageName)).join(', ')}.`,
-			fix: 'Duplicate the image manually or rename one of the image files so each move has a single destination.',
-		});
-	}
-
-	for (const moves of movesByDestination.values()) {
-		const sources = new Set(moves.map((move) => move.from));
-		if (sources.size <= 1) continue;
-
-		const firstMove = moves[0];
-		addSectionIssue(firstMove.contentFile, firstMove.section, {
-			severity: 'error',
-			message: `Cannot relocate "${firstMove.imageName}" because multiple source files would move to ${getExpectedImageLabel(firstMove.contentFile, firstMove.imageName)}: ${moves.map((move) => getCandidateLabel(move.sourceContentFile ? { contentFile: move.sourceContentFile, imagePath: move.from } : move)).join(', ')}.`,
-			fix: 'Move the intended file manually or rename files so the destination is unambiguous.',
-		});
-	}
-};
-
-const validateImageReference = async (
-	contentFile,
-	section,
-	reference,
-	globalImageCandidatesByName,
-	expectedReferencesByPath,
-) => {
-	const imageName = reference.image;
-	const expectedPath = getExpectedImagePath(contentFile, imageName);
-	const expectedLabel = getExpectedImageLabel(contentFile, imageName);
-	const expectedExists = await stat(expectedPath).then((entry) => entry.isFile()).catch(() => false);
-
-	if (expectedExists) {
-		referencedImagePaths.add(expectedPath);
-		return expectedPath;
-	}
-
-	const candidates = getGlobalImageCandidates(globalImageCandidatesByName, imageName, expectedPath);
-	if (candidates.length === 0) {
-		addSectionIssue(contentFile, section, {
-			severity: 'error',
-			message: `Image "${imageName}" does not exist at ${expectedLabel} or anywhere under any page image root.`,
-			fix: `Add the source image directly to ${contentFile.imagesLabel}/ or remove the Norna-managed image reference.`,
-		});
-		return null;
-	}
-
-	if (candidates.length > 1) {
-		addSectionIssue(contentFile, section, {
-			severity: 'error',
-			message: `Cannot relocate "${imageName}". Multiple files with this filename were found: ${candidates.map(getCandidateLabel).join(', ')}.`,
-			fix: 'Move the intended file manually or rename files so the move is unambiguous.',
-		});
-		return null;
-	}
-
-	const sourceCandidate = candidates[0];
-	const sourcePath = sourceCandidate.imagePath;
-	const referencesAtCurrentLocation = (expectedReferencesByPath.get(sourcePath) ?? [])
-		.filter((expectedReference) => expectedReference.contentFile !== contentFile);
-
-	if (referencesAtCurrentLocation.length > 0) {
-		addSectionIssue(contentFile, section, {
-			severity: 'error',
-			message: `Cannot relocate "${imageName}" from ${getCandidateLabel(sourceCandidate)} because it is still referenced from ${referencesAtCurrentLocation.map((expectedReference) => getReferenceLabel(expectedReference.contentFile, expectedReference.section)).join(', ')}.`,
-			fix: 'Remove the extra reference, duplicate the image file manually, or rename one of the image files so the intended move is unambiguous.',
-		});
-		return null;
-	}
-
-	if (!imageMoves.some((move) => move.from === sourcePath && move.to === expectedPath)) {
-		imageMoves.push({
-			imageName,
-			from: sourcePath,
-			to: expectedPath,
-			contentFile,
-			sourceContentFile: sourceCandidate.contentFile,
-			section,
-		});
-	}
-	referencedImagePaths.add(sourcePath);
-
-	if (!shouldWrite) {
-		addSectionIssue(contentFile, section, {
-			severity: 'error',
-			message: `Image "${imageName}" is used here but is located in ${getCandidateLabel(sourceCandidate)}.`,
-			fix: sourceCandidate.contentFile === contentFile
-				? 'Run norna content:sync to move it directly into the current page image root.'
-				: `Run norna content:sync to move it from ${getRootLabel(sourceCandidate.contentFile)} to ${getRootLabel(contentFile)}.`,
-		});
-	}
-
-	return sourcePath;
-};
-
 const warnAboutCarouselAspectRatios = async (contentFile, section, block, sourcePathsByImage) => {
 	if (block.type !== 'image-carousel') return;
 
@@ -378,9 +230,8 @@ for (const warning of siteStructure.warnings) {
 	});
 }
 const allImageFiles = [];
+const managedImageReferences = [];
 const contentFileContexts = [];
-const globalImageCandidatesByName = new Map();
-const globalExpectedReferencesByPath = new Map();
 
 for (const contentFile of contentFiles) {
 	const { frontmatter, body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
@@ -421,9 +272,7 @@ for (const contentFile of contentFiles) {
 
 	for (const [imageName, candidates] of imageCandidatesByName) {
 		for (const imagePath of candidates) {
-			const candidate = { contentFile, imagePath };
-			allImageFiles.push(candidate);
-			addGlobalImageCandidate(globalImageCandidatesByName, imageName, candidate);
+			allImageFiles.push({ contentFile, imageName, imagePath });
 		}
 	}
 
@@ -498,8 +347,7 @@ for (const contentFile of contentFiles) {
 		}
 
 		for (const reference of section.managedImages) {
-			const expectedPath = getExpectedImagePath(contentFile, reference.image);
-			addExpectedReference(globalExpectedReferencesByPath, expectedPath, { contentFile, section, reference });
+			managedImageReferences.push({ contentFile, section, reference });
 		}
 	}
 
@@ -510,6 +358,31 @@ for (const contentFile of contentFiles) {
 		blockResultsBySection,
 		body,
 	});
+}
+
+const imageSyncPlan = createImageSyncPlan({
+	imageCandidates: allImageFiles,
+	references: managedImageReferences,
+	reportMisplaced: !shouldWrite,
+});
+const {
+	moves: imageMoves,
+	referencedImagePaths,
+	resolvedPathByReference,
+} = imageSyncPlan;
+const plannerIssuesByReference = new Map();
+const plannerConflictIssues = [];
+
+for (const plannerIssue of imageSyncPlan.issues) {
+	if (plannerIssue.phase === 'conflict') {
+		plannerConflictIssues.push(plannerIssue);
+		continue;
+	}
+
+	if (!plannerIssuesByReference.has(plannerIssue.reference)) {
+		plannerIssuesByReference.set(plannerIssue.reference, []);
+	}
+	plannerIssuesByReference.get(plannerIssue.reference).push(plannerIssue);
 }
 
 for (const context of contentFileContexts) {
@@ -560,13 +433,11 @@ for (const context of contentFileContexts) {
 
 		const sourcePathsByImage = new Map();
 		for (const reference of section.managedImages) {
-			const sourcePath = await validateImageReference(
-				contentFile,
-				section,
-				reference,
-				globalImageCandidatesByName,
-				globalExpectedReferencesByPath,
-			);
+			for (const plannerIssue of plannerIssuesByReference.get(reference) ?? []) {
+				addSectionIssue(plannerIssue.contentFile, plannerIssue.section, plannerIssue.issue);
+			}
+
+			const sourcePath = resolvedPathByReference.get(reference);
 			if (sourcePath) {
 				sourcePathsByImage.set(reference.image, sourcePath);
 			}
@@ -578,12 +449,14 @@ for (const context of contentFileContexts) {
 	}
 }
 
+for (const plannerIssue of plannerConflictIssues) {
+	addSectionIssue(plannerIssue.contentFile, plannerIssue.section, plannerIssue.issue);
+}
+
 const unreferencedImages = allImageFiles
 	.filter(({ imagePath }) => !referencedImagePaths.has(imagePath))
 	.map(({ contentFile, imagePath }) => `${contentFile.imagesLabel}/${toPosixPath(path.relative(contentFile.imagesDir, imagePath))}`)
 	.sort((left, right) => left.localeCompare(right, 'sv'));
-
-addConflictingMoveIssues();
 
 if (hasErrors()) {
 	printReport(shouldWrite ? 'Content sync failed.' : 'Content check failed.', unreferencedImages);
@@ -609,47 +482,45 @@ if (!canWrite) {
 	process.exit(1);
 }
 
-const completedMoves = [];
-for (const [index, move] of imageMoves.entries()) {
-	try {
-		await mkdir(path.dirname(move.to), { recursive: true });
-		await rename(move.from, move.to);
-		completedMoves.push(move);
-		console.log(`Moved image "${move.imageName}" to ${move.contentFile.imagesLabel}/.`);
-	} catch (error) {
-		const sourceLabel = getCandidateLabel({ contentFile: move.sourceContentFile, imagePath: move.from });
-		const destinationLabel = getExpectedImageLabel(move.contentFile, move.imageName);
-		const remainingMoves = imageMoves.slice(index);
-		const lines = [
-			'',
-			`Content sync stopped after ${completedMoves.length} of ${imageMoves.length} image moves.`,
-		];
+const applyResult = await applyImageSyncPlan(imageMoves);
+for (const move of applyResult.completedMoves) {
+	console.log(`Moved image "${move.imageName}" to ${move.contentFile.imagesLabel}/.`);
+}
 
-		if (error?.code === 'EXDEV') {
-			lines.push(
-				`Cannot move "${move.imageName}" because the source and destination are on different filesystems.`,
-				`Move it manually from ${sourceLabel} to ${destinationLabel}.`,
-			);
-		} else {
-			lines.push(
-				`Could not move "${move.imageName}" from ${sourceLabel} to ${destinationLabel}.`,
-				`Filesystem error${error?.code ? ` (${error.code})` : ''}: ${error?.message ?? String(error)}`,
-			);
-		}
+if (applyResult.failedMove) {
+	const move = applyResult.failedMove;
+	const error = applyResult.error;
+	const sourceLabel = getImageCandidateLabel({ contentFile: move.sourceContentFile, imagePath: move.from });
+	const destinationLabel = getExpectedImageLabel(move.contentFile, move.imageName);
+	const lines = [
+		'',
+		`Content sync stopped after ${applyResult.completedMoves.length} of ${imageMoves.length} image moves.`,
+	];
 
-		if (completedMoves.length > 0) {
-			lines.push('', 'Completed moves:', ...getMovePlanLines(completedMoves).slice(1));
-		}
-
+	if (error?.code === 'EXDEV') {
 		lines.push(
-			'',
-			'Remaining moves:',
-			...getMovePlanLines(remainingMoves).slice(1),
-			'',
-			'Fix the reported filesystem problem, then run content:sync again. Already completed moves will be kept.',
+			`Cannot move "${move.imageName}" because the source and destination are on different filesystems.`,
+			`Move it manually from ${sourceLabel} to ${destinationLabel}.`,
 		);
-
-		console.error(lines.join('\n'));
-		process.exit(1);
+	} else {
+		lines.push(
+			`Could not move "${move.imageName}" from ${sourceLabel} to ${destinationLabel}.`,
+			`Filesystem error${error?.code ? ` (${error.code})` : ''}: ${error?.message ?? String(error)}`,
+		);
 	}
+
+	if (applyResult.completedMoves.length > 0) {
+		lines.push('', 'Completed moves:', ...getMovePlanLines(applyResult.completedMoves).slice(1));
+	}
+
+	lines.push(
+		'',
+		'Remaining moves:',
+		...getMovePlanLines(applyResult.remainingMoves).slice(1),
+		'',
+		'Fix the reported filesystem problem, then run content:sync again. Already completed moves will be kept.',
+	);
+
+	console.error(lines.join('\n'));
+	process.exit(1);
 }

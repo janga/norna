@@ -26,10 +26,6 @@ approachable before wider use.
 Use this section for concrete engine behavior that should be implemented or
 verified.
 
-- Refactor `content:sync` into a pure analysis and planning phase followed by a
-  small filesystem apply and reporting phase. Preserve conservative conflict
-  handling and the current simple rename behavior; do not add speculative
-  moves or an elaborate rollback system.
 - Define explicit CSS layout invariants for the text column, optional tree
   navigation, headings, managed media, cards, carousels, and sidenotes. Use
   those shared coordinates to remove selector-specific alignment fixes, then
