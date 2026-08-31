@@ -25,11 +25,6 @@ approachable before wider use.
   built-in presets as the normal starting point, help readers choose by site
   purpose, show the minimal `theme.yaml`, and include one short isolated
   override example before linking to the complete theme reference.
-- Add a concise GitHub Pages setup section to Getting Started. Focus on the
-  Norna values that must be correct in `config.yaml`, explain the repository
-  and base-path cases without duplicating deployment internals, and link to
-  both Norna's canonical publishing reference and GitHub's current Pages
-  documentation.
 - Add a complete small `site/theme.yaml` and `site/pages/000-home/content.md` example that a
   new user can compare with the starter.
 - Add standalone-project and embedded-project examples that show the expected
@@ -40,16 +35,6 @@ approachable before wider use.
   - YAML/frontmatter indentation problems;
   - stale local preview state;
   - missing, misplaced, or unreferenced images.
-- Expand typography profile guidance with examples of when to choose each
-  profile in `site/theme.yaml` without losing the complete theme-preset model.
-- After visual approval, update the HTML introduction and preset comparison
-  where the different card-list widths clarify each preset's intended use.
-  Migrate examples to omit `width` when they are meant to demonstrate the
-  active preset rather than a local exception.
-- After local review, verify that every rendered preset example exposes Narrow,
-  Standard, and Wide reading widths and that the canonical theme reference,
-  HTML examples, schema help, and upgrade guidance describe reading width as a
-  universal reader choice rather than an optional site control.
 - Turn the release section in `docs/engine-development.md` into a concise
   maintainer runbook covering patch/minor/major releases, the steps performed
   automatically, rollback before the release commit, and recovery after a
