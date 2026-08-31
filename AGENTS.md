@@ -41,6 +41,8 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Do not push uncommitted changes.
 - Before committing, run `git status --short` and make sure untracked files are
   intentional.
+- When working through `BACKLOG.md`, commit each completed backlog item as a
+  separate logical change before starting the next item.
 - Commit before pushing.
 - Do not run `npm run deploy:watch` in this engine repository unless the user
   explicitly asks for it. Deploy monitoring is for site repositories.
