@@ -21,8 +21,6 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
-- Add standalone-project and embedded-project examples that show the expected
-  directory layout and npm scripts.
 - Add troubleshooting for common workflow errors:
   - running `npm install` before `norna init`;
   - npm authentication or permission failures during publish;
