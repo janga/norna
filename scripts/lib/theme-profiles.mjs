@@ -6,13 +6,13 @@ export const themeProfileDefinitions = freezeDeep({
 			colorMode: { default: 'dark' },
 			palette: 'near-monochrome',
 		},
+		'near-monochrome-adaptive': {
+			colorMode: { default: 'system' },
+			palette: 'near-monochrome',
+		},
 		'warm-paper-adaptive': {
 			colorMode: { default: 'system' },
 			palette: 'warm-paper',
-		},
-		'cool-green-adaptive': {
-			colorMode: { default: 'system' },
-			palette: 'cool-green',
 		},
 	},
 	typography: {

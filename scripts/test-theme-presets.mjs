@@ -52,7 +52,7 @@ const expectedPresetRecipes = {
 		surfaces: 'alternating',
 	},
 	project: {
-		color: 'cool-green-adaptive',
+		color: 'near-monochrome-adaptive',
 		typography: 'system-reading',
 		rhythm: 'compact',
 		geometry: 'balanced-site',
@@ -165,7 +165,7 @@ try {
 	);
 	assert.throws(
 		() => resolveThemeProfileRecipe({ ...themePresetRecipes.project, color: 'unknown' }, 'invalid recipe'),
-		/Unknown color profile "unknown" in invalid recipe.*near-monochrome-dark, warm-paper-adaptive, cool-green-adaptive/,
+		/Unknown color profile "unknown" in invalid recipe.*near-monochrome-dark, near-monochrome-adaptive, warm-paper-adaptive/,
 	);
 	const missingProfileRecipe = { ...themePresetRecipes.project };
 	delete missingProfileRecipe.media;

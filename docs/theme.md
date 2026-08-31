@@ -47,7 +47,7 @@ section of this reference.
 | --- | --- | --- |
 | `portfolio` | Portfolios and image-led presentation | Restrained sans-serif typography, broad text and image areas, a dark near-monochrome default, and square corners. |
 | `documentation` | Guides and reference material | Serif reading typography, narrow prose, compact spacing, warm paper colors, and rounded corners. |
-| `project` | Project and product sites that combine explanation, code, cards, and images | System sans-serif typography, normal-width prose, compact spacing, cool green colors, and rounded corners. |
+| `project` | Project and product sites that combine explanation, code, cards, and images | System sans-serif typography, normal-width prose, compact spacing, near-monochrome colors, and rounded corners. |
 | `statement` | Short editorial, campaign, or statement-led sites | Expressive sans-serif typography, spacious rhythm, prominent media, warm paper colors, and square corners. |
 
 Choose according to the site's main reading task, not according to one color or
@@ -139,7 +139,7 @@ preset: project
 
 | Setting | Preset value |
 | --- | --- |
-| `palette` | `cool-green` |
+| `palette` | `near-monochrome` |
 | `colorMode.default` | `system` |
 | `typography.fontFamily` | `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif` |
 | `typography.profile` | `reading` |
@@ -430,7 +430,7 @@ Current preset defaults are:
 | --- | --- | --- | --- |
 | `portfolio` | `near-monochrome` | `dark` | Enabled |
 | `documentation` | `warm-paper` | `system` | Enabled |
-| `project` | `cool-green` | `system` | Enabled |
+| `project` | `near-monochrome` | `system` | Enabled |
 | `statement` | `warm-paper` | `system` | Enabled |
 
 A preset supplies both a palette and a default color mode. Overriding only

@@ -23,7 +23,7 @@ export const themePresetRecipes = Object.freeze({
 		surfaces: 'alternating',
 	}),
 	project: Object.freeze({
-		color: 'cool-green-adaptive',
+		color: 'near-monochrome-adaptive',
 		typography: 'system-reading',
 		rhythm: 'compact',
 		geometry: 'balanced-site',

@@ -32,9 +32,9 @@ for the whole site:
 palette: near-monochrome
 ```
 
-The available choices are `near-monochrome`, `cool-green` and `warm-paper`. A
-palette defines the page, navigation, frame and section colours together, so
-these parts stay in balance.
+The examples use `near-monochrome` and `warm-paper`. A palette defines the page,
+navigation, frame and section colours together, so these parts stay in balance.
+See the theme reference for the complete list of supported choices.
 
 ## Emphasis surface {#emphasis-surface}
 
