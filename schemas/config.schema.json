@@ -6,7 +6,7 @@
       "type": "string",
       "format": "uri",
       "description": "Absolute public URL for the built site.",
-      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.18/docs/configuration.md#url)",
+      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.19/docs/configuration.md#url)",
       "examples": [
         "https://example.com/",
         "https://owner.github.io/repository-name/"
@@ -41,7 +41,7 @@
           "description": "Use an English or Swedish regional language tag such as en-GB or sv-SE."
         }
       ],
-      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.18/docs/configuration.md#language)"
+      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.19/docs/configuration.md#language)"
     },
     "navigation": {
       "type": "object",
@@ -71,7 +71,7 @@
               "description": "Use a hierarchical site-wide navigation tree."
             }
           ],
-          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to let Norna choose from the site structure.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/pages.md#navigation)",
+          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to let Norna choose from the site structure.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.19/docs/pages.md#navigation)",
           "examples": [
             "automatic",
             "sections",
@@ -83,7 +83,7 @@
           "default": false,
           "description": "As the reader scrolls in tree navigation, mark the last H2 or H3 that has reached the reading area below the sticky header. The URL and keyboard focus do not change.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nnavigation:\n  sectionTracking: true\n```\n\nAs the reader scrolls in tree navigation, mark the last H2 or H3 that has reached the reading area below the sticky header. The URL and keyboard focus do not change.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/configuration.md#navigationsectiontracking)",
+          "markdownDescription": "```yaml\nnavigation:\n  sectionTracking: true\n```\n\nAs the reader scrolls in tree navigation, mark the last H2 or H3 that has reached the reading area below the sticky header. The URL and keyboard focus do not change.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.19/docs/configuration.md#navigationsectiontracking)",
           "examples": [
             true,
             false
@@ -92,7 +92,7 @@
       },
       "additionalProperties": false,
       "description": "Site-wide navigation behavior.",
-      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets one navigation model for the complete site. `automatic` selects from the page hierarchy.\n\n[Navigation reference](https://github.com/janga/norna/blob/v0.7.18/docs/pages.md#navigation)"
+      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets one navigation model for the complete site. `automatic` selects from the page hierarchy.\n\n[Navigation reference](https://github.com/janga/norna/blob/v0.7.19/docs/pages.md#navigation)"
     },
     "scrollBehavior": {
       "default": "instant",
@@ -110,7 +110,7 @@
           "description": "Use the browser's native smooth scrolling for anchor navigation."
         }
       ],
-      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.18/docs/configuration.md#scrollbehavior)",
+      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.19/docs/configuration.md#scrollbehavior)",
       "examples": [
         "instant",
         "smooth"
@@ -124,5 +124,5 @@
   "description": "Technical settings for one Norna site. Additional pages cannot provide technical configuration.",
   "$id": "https://janga.github.io/norna/schemas/config.schema.json",
   "title": "Norna site configuration",
-  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.18/docs/configuration.md)"
+  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.19/docs/configuration.md)"
 }
