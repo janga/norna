@@ -164,6 +164,7 @@ const treeNavigationVisibilityScript = treeNavigation
 	data-reading-width={presentation.readerPreferences.defaults.readingWidth}
 	data-focus-reading={presentation.readerPreferences.defaults.focusReading}
 	data-tree-navigation={treeNavigation ? 'expanded' : undefined}
+	data-section-tracking={treeNavigation && projectConfig.navigation.sectionTracking ? 'enabled' : undefined}
 	style={documentStyle}
 >
 	<head>

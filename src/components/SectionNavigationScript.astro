@@ -7,6 +7,22 @@
 	const submenuItems = Array.from(document.querySelectorAll<HTMLElement>('.site-nav-item-has-submenu'));
 	const mobileDestinationLinks = Array.from(mobileMenu?.querySelectorAll<HTMLAnchorElement>('.mobile-nav-destination') ?? []);
 	const mobileMenuSummary = mobileMenu?.querySelector<HTMLElement>(':scope > summary');
+	const sectionTrackingEnabled = document.documentElement.dataset.sectionTracking === 'enabled';
+	const trackedHeadingIds = new Set(sectionLinks.flatMap((link) => {
+		const linkUrl = new URL(link.href, window.location.href);
+		if (linkUrl.pathname !== window.location.pathname || !linkUrl.hash) return [];
+
+		try {
+			return [decodeURIComponent(linkUrl.hash.slice(1))];
+		} catch {
+			return [];
+		}
+	}));
+	const trackedHeadings = sectionTrackingEnabled
+		? Array.from(document.querySelectorAll<HTMLElement>('.site-content h2[id], .site-content h3[id]'))
+			.filter((heading) => trackedHeadingIds.has(heading.id))
+		: [];
+	let sectionTrackingFrame: number | undefined;
 
 	const setAnchorOffset = () => {
 		if (!siteTop) return;
@@ -53,6 +69,33 @@
 				link.removeAttribute('aria-current');
 			}
 		});
+	};
+
+	const updateReadingPosition = () => {
+		sectionTrackingFrame = undefined;
+		const readingLine = Math.ceil(siteTop?.getBoundingClientRect().bottom ?? 0) + 8;
+		let currentHeadingId: string | undefined;
+
+		for (const heading of trackedHeadings) {
+			if (heading.getBoundingClientRect().top > readingLine) break;
+			currentHeadingId = heading.id;
+		}
+
+		sectionLinks.forEach((link) => {
+			const target = getSamePageTarget(link);
+			const isCurrent = target !== undefined && target.id === currentHeadingId;
+
+			if (isCurrent) {
+				link.setAttribute('aria-current', 'location');
+			} else if (link.getAttribute('aria-current') === 'location') {
+				link.removeAttribute('aria-current');
+			}
+		});
+	};
+
+	const scheduleReadingPositionUpdate = () => {
+		if (!sectionTrackingEnabled || sectionTrackingFrame !== undefined) return;
+		sectionTrackingFrame = window.requestAnimationFrame(updateReadingPosition);
 	};
 
 	submenuItems.forEach((item) => {
@@ -128,13 +171,24 @@
 		});
 	});
 
-	window.addEventListener('hashchange', updateCurrentSection);
+	window.addEventListener('hashchange', () => {
+		updateCurrentSection();
+		scheduleReadingPositionUpdate();
+	});
 	updateCurrentSection();
+	if (sectionTrackingEnabled) {
+		window.addEventListener('scroll', scheduleReadingPositionUpdate, { passive: true });
+		window.addEventListener('resize', scheduleReadingPositionUpdate);
+		scheduleReadingPositionUpdate();
+	}
 
 	setAnchorOffset();
 	if (window.location.hash) window.requestAnimationFrame(alignInitialHashTarget);
 
 	if (siteTop && 'ResizeObserver' in window) {
-		new ResizeObserver(setAnchorOffset).observe(siteTop);
+		new ResizeObserver(() => {
+			setAnchorOffset();
+			scheduleReadingPositionUpdate();
+		}).observe(siteTop);
 	}
 </script>

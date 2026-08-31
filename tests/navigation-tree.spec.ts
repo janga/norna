@@ -48,6 +48,40 @@ test.describe('desktop tree navigation', () => {
 		expect(Math.abs((toggleIconBox?.x ?? 0) - (activeRootLinkBox?.x ?? 0))).toBeLessThan(2);
 	});
 
+	test('marks the H2 or H3 at the reading line without changing URL or focus', async ({ page }) => {
+		await page.setViewportSize({ width: desktopViewport.width, height: 420 });
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		await page.addStyleTag({ content: 'body { padding-bottom: 100vh !important; }' });
+
+		const localNavigation = page.locator('.tree-local-navigation');
+		const installLink = localNavigation.getByRole('link', { name: 'Install', exact: true });
+		const prerequisitesLink = localNavigation.getByRole('link', { name: 'Prerequisites', exact: true });
+		const navigationToggle = page.locator('[data-tree-navigation-toggle]');
+		const initialUrl = page.url();
+		const moveHeadingToReadingLine = async (id: string) => {
+			await page.locator(`#${id}`).evaluate((heading) => {
+				const siteTop = document.querySelector('.site-top');
+				const readingLine = Math.ceil(siteTop?.getBoundingClientRect().bottom ?? 0) + 4;
+				window.scrollTo({
+					behavior: 'auto',
+					top: window.scrollY + heading.getBoundingClientRect().top - readingLine,
+				});
+			});
+		};
+
+		await navigationToggle.focus();
+		await moveHeadingToReadingLine('install');
+		await expect(installLink).toHaveAttribute('aria-current', 'location');
+		await expect(prerequisitesLink).not.toHaveAttribute('aria-current', 'location');
+
+		await moveHeadingToReadingLine('prerequisites');
+		await expect(prerequisitesLink).toHaveAttribute('aria-current', 'location');
+		await expect(installLink).not.toHaveAttribute('aria-current', 'location');
+		await expect(navigationToggle).toBeFocused();
+		expect(page.url()).toBe(initialUrl);
+		expect(await prerequisitesLink.evaluate((link) => getComputedStyle(link, '::before').width)).toBe('2px');
+	});
+
 	test('collapses the local tree in one action while preserving page context and reading position', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		const root = page.locator('html');

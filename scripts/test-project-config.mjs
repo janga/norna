@@ -16,6 +16,7 @@ const importScript = `
 		language: projectConfig.locale.lang,
 		labels: projectConfig.locale.labels,
 		navigationMode: projectConfig.navigation.mode,
+		sectionTracking: projectConfig.navigation.sectionTracking,
 		scrollBehavior: projectConfig.navigation.scrollBehavior,
 		url: projectConfig.site.url,
 	}));
@@ -94,6 +95,7 @@ try {
 			skipToContent: 'Skip to content',
 		},
 		navigationMode: 'automatic',
+		sectionTracking: false,
 		scrollBehavior: 'instant',
 		url: 'https://example.com/docs/',
 	});
@@ -109,10 +111,11 @@ try {
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 
-	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\nnavigation:\n  mode: tree\n');
+	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\nnavigation:\n  mode: tree\n  sectionTracking: true\n');
 	const treeNavigationResult = loadConfig(treeNavigationSite);
 	assert.equal(treeNavigationResult.status, 0, treeNavigationResult.stderr);
 	assert.equal(JSON.parse(treeNavigationResult.stdout).navigationMode, 'tree');
+	assert.equal(JSON.parse(treeNavigationResult.stdout).sectionTracking, true);
 
 	const overrideResult = loadConfig(minimalSite, {
 		NORNA_SITE_URL: 'http://127.0.0.1:4567/preview',
@@ -146,6 +149,10 @@ try {
 	assertFailure(
 		loadConfig(await createSite('invalid-scroll-behavior', 'url: https://example.com/\nscrollBehavior: slow\n')),
 		/scrollBehavior must be one of instant, smooth/,
+	);
+	assertFailure(
+		loadConfig(await createSite('invalid-section-tracking', 'url: https://example.com/\nnavigation:\n  sectionTracking: yes\n')),
+		/navigation.sectionTracking must be true or false/,
 	);
 	assertFailure(
 		loadConfig(await createSite('obsolete-smooth-scroll', 'url: https://example.com/\nsmoothScroll: true\n')),

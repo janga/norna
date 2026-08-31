@@ -15,6 +15,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Basic page links and anchors | No | Normal links, URLs, and browser history continue to work. |
 | Generated page and section navigation | When Norna needs to maintain sticky anchor offsets, close the mobile menu after a choice, or enhance tree interaction | Real page and anchor links remain usable. Native disclosure controls can still reveal their contents. |
 | Collapsible desktop tree | Yes, with `tree` navigation | The tree remains visible and usable; its inactive hide/show control is omitted. |
+| Current-section tracking | Yes, when `navigation.sectionTracking` is enabled and the site uses `tree` navigation | The tree remains usable, but its current-section marker does not follow scrolling. |
 | Image carousel | Yes, on pages containing a carousel | The image and caption source remains in the HTML, but carousel controls and slide switching require JavaScript. Use an image stack when sequential interaction is not needed. |
 | Dismissible banner | Yes, while a banner is present | The notice remains visible, but visitors cannot dismiss it or persist that choice. |
 | Fixed or system color mode | No | CSS applies the configured light, dark, or operating-system preference. |
@@ -27,7 +28,9 @@ features are present: adding one carousel affects only pages that contain a
 carousel. See
 [Reader Display Controls](theme.md#reader-display-controls) and
 [Collapsible Desktop Tree](pages.md#collapsible-desktop-tree) for their storage,
-defaults, and interaction contracts.
+defaults, and interaction contracts. See
+[`navigation.sectionTracking`](configuration.md#navigationsectiontracking) for
+the optional current-section marker.
 
 ## Choosing Static Alternatives
 

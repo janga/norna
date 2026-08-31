@@ -60,9 +60,14 @@ Editorial text remains in page content and `sitewide-content.yaml`.
 
 ## `navigation`
 
-`navigation.mode` selects one navigation model for the whole site. It does not
-change the page hierarchy or heading structure; it controls how Norna presents
-that discovered structure.
+`navigation` contains site-wide settings for generated navigation. These
+settings do not change the page hierarchy or heading structure. They control
+how Norna presents that discovered structure and whether the local tree follows
+the reader's position on the page.
+
+### `navigation.mode`
+
+`navigation.mode` selects one navigation model for the whole site.
 
 | Value | Effect | Structural constraint |
 | --- | --- | --- |
@@ -87,6 +92,38 @@ link. See [Pages and Categories](pages.md#navigation) for the exact automatic
 selection rules and the relationship between Home, pages, categories, and
 headings, and
 [Client-Side JavaScript](client-javascript.md) for the no-JavaScript fallback.
+
+### `navigation.sectionTracking`
+
+`navigation.sectionTracking` controls whether tree navigation follows the
+reader's position within the current page.
+
+- Type: Boolean.
+- Required: no.
+- Default: `false`.
+- Scope: the complete site.
+- Availability: only when the resolved navigation mode is `tree`.
+
+Enable it in `config.yaml`:
+
+```yaml
+navigation:
+  sectionTracking: true
+```
+
+As the reader scrolls, Norna marks the last H2 or H3 that has reached the top
+of the reading area below the sticky header. The corresponding link in the
+desktop tree receives an underline and a position marker. Norna also exposes
+the state as `aria-current="location"`.
+
+Tracking does not change the URL, browser history, keyboard focus, or scroll
+position. When JavaScript is unavailable, the page hierarchy and its ordinary
+links remain usable, but the marker does not follow scrolling. Enabling the
+setting has no visual effect when the site resolves to `sections` or `top`
+navigation.
+
+See [Navigation](pages.md#navigation) for the page and heading hierarchy shown
+by each navigation mode.
 
 ## `scrollBehavior`
 
@@ -116,6 +153,7 @@ url: https://example.com/
 language: en-GB
 navigation:
   mode: automatic
+  sectionTracking: true
 scrollBehavior: instant
 ```
 

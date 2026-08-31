@@ -336,6 +336,22 @@ hierarchy remains in the normal expandable menu. Without JavaScript, the tree
 stays visible and the inactive hide/show control is omitted; all page and
 anchor links remain usable.
 
+### Current Reading Position
+
+Tree navigation always identifies the current page. A site can additionally
+set `navigation.sectionTracking: true` in `config.yaml` to let the tree follow
+the reader within that page. When an H2 or H3 reaches the top of the reading
+area below the sticky header, Norna marks its corresponding tree link. The
+marker remains on that heading until the next navigable heading reaches the
+same position.
+
+This optional enhancement does not change the URL, browser history, keyboard
+focus, or scroll position. The link uses `aria-current="location"` as well as a
+visible marker. Without JavaScript, the page and anchor links remain usable but
+the marker does not follow scrolling. See
+[`navigation.sectionTracking`](configuration.md#navigationsectiontracking) for
+the setting, default, and availability.
+
 Navigation also sets the boundary for section backgrounds. `sections` and
 `top` navigation may use full-viewport `alternating` or `accented` H2 section
 bands. `tree` navigation always uses one `uniform` reading surface beside its

@@ -1131,6 +1131,7 @@ a {
 }
 
 .page-contents-links a {
+	position: relative;
 	display: block;
 	color: var(--color-secondary-text);
 	font-size: 0.8rem;
@@ -1144,6 +1145,17 @@ a {
 	color: var(--color-primary-text);
 	text-decoration: underline;
 	text-underline-offset: 0.25em;
+}
+
+.page-contents-links a[aria-current='location']::before {
+	position: absolute;
+	top: 0.15em;
+	bottom: 0.15em;
+	left: -0.85rem;
+	width: 2px;
+	border-radius: 1px;
+	background: currentColor;
+	content: '';
 }
 
 .site-breadcrumbs {

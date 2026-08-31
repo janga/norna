@@ -51,6 +51,16 @@ const readEnum = (object, key, path, allowedValues, fallback, sourceLabel = site
 	return value;
 };
 
+const readBoolean = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
+	const value = object[key] ?? fallback;
+
+	if (typeof value !== 'boolean') {
+		throw new Error(`${path}.${key} must be true or false in ${sourceLabel}.`);
+	}
+
+	return value;
+};
+
 const readFontFamily = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
 	const value = object[key] ?? fallback;
 
@@ -418,6 +428,13 @@ export const resolveNavigationConfig = (config, sourceLabel = siteConfigLabel) =
 			'navigation',
 			navigationModeNames,
 			'automatic',
+			sourceLabel,
+		),
+		sectionTracking: readBoolean(
+			rawNavigation,
+			'sectionTracking',
+			'navigation',
+			false,
 			sourceLabel,
 		),
 	});

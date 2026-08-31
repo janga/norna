@@ -164,6 +164,14 @@ const addConfigHelp = (jsonSchema) => {
 		'navigation',
 		['automatic', 'sections', 'top', 'tree'],
 	);
+	addFieldHelp(
+		jsonSchema,
+		'navigation.sectionTracking',
+		'navigation:\n  sectionTracking: true',
+		'configuration.md',
+		'navigationsectiontracking',
+		[true, false],
+	);
 	addHelp(jsonSchema, 'scrollBehavior', [
 		yamlExample('scrollBehavior: smooth'),
 		'Controls same-page anchor movement. `instant` is the default; `smooth` uses the browser\'s native smooth scrolling.',
