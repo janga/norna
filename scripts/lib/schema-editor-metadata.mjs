@@ -121,7 +121,7 @@ const addSitewideLogoHelp = (jsonSchema) => {
 
 	logo.markdownDescription = [
 		yamlExample('logo:\n  height: 2rem'),
-		'`logo` optionally overrides the displayed height of the convention-based logo file. The logo links home, and its alternative text comes from the homepage Markdown H1. This setting does not enable or select the file.',
+		'`logo` optionally overrides the displayed height of the convention-based logo file. Without an override, Norna uses 2.6rem on wider screens and caps the logo at 2.15rem on narrow screens. The logo links home, and its alternative text comes from the homepage Markdown H1. This setting does not enable or select the file.',
 		documentationLink('Navigation logo filenames and placement', 'public-files.md', 'navigation-logo'),
 	].join('\n\n');
 	logo.properties.height.examples = ['2rem'];
@@ -179,7 +179,7 @@ const addThemeHelp = (jsonSchema) => {
 	].join('\n\n');
 	addHelp(jsonSchema, 'preset', [
 		yamlExample('preset: documentation'),
-		'Selects coordinated corners, layout, image sizing, typography, palette and section backgrounds. This is the normal starting point for a theme.',
+		'Selects coordinated corners, layout, image sizing, content-block defaults, typography, palette and section backgrounds. This is the normal starting point for a theme.',
 		documentationLink('Compare theme presets', 'theme.md', 'theme-presets'),
 	]);
 	addHelp(jsonSchema, 'corners', [
@@ -197,6 +197,35 @@ const addThemeHelp = (jsonSchema) => {
 		'Overrides the available width and height used by Norna-managed images.',
 		documentationLink('Image sizing reference', 'theme.md', 'image-sizing'),
 	]);
+	addHelp(jsonSchema, 'blocks', [
+		yamlExample('blocks:\n  cardList:\n    width: text'),
+		'Overrides preset defaults for structured Norna content blocks throughout the site. Options written directly in a Markdown block take priority.',
+		documentationLink('Content block defaults', 'theme.md', 'content-block-defaults'),
+	]);
+	addHelp(jsonSchema, 'blocks.cardList', [
+		yamlExample('blocks:\n  cardList:\n    width: text'),
+		'Sets site-wide defaults for card lists. A `width` option in an individual `norna-card-list` block overrides this setting.',
+		documentationLink('Content block defaults', 'theme.md', 'content-block-defaults'),
+	]);
+	addFieldHelp(
+		jsonSchema,
+		'blocks.cardList.width',
+		'blocks:\n  cardList:\n    width: text',
+		'theme.md',
+		'content-block-defaults',
+		['text', 'narrow', 'normal', 'wide'],
+	);
+	addSnippets(jsonSchema, 'blocks', [schemaSnippet({
+		label: 'Override content-block defaults',
+		body: {
+			cardList: {
+				width: '${1:text}',
+			},
+		},
+		description: 'Override a preset default for structured content blocks across the site.',
+		file: 'theme.md',
+		anchor: 'content-block-defaults',
+	})]);
 	addHelp(jsonSchema, 'typography', [
 		yamlExample('typography:\n  profile: reading\n  rhythm: normal'),
 		'Overrides the preset\'s font stack, typography profile, rhythm or individual text settings.',
@@ -221,13 +250,12 @@ const addThemeHelp = (jsonSchema) => {
 		anchor: 'color-mode',
 	})]);
 	addHelp(jsonSchema, 'readerControls', [
-		yamlExample('readerControls:\n  colorMode: true\n  readingWidth: true\n  focusReading: true'),
-		'Chooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.',
+		yamlExample('readerControls:\n  colorMode: true\n  focusReading: true'),
+		'Adds optional color-mode and focus-reading choices to the site-wide Display panel. Reading width is always available and is not configured here.',
 		documentationLink('Reader Display controls', 'theme.md', 'reader-display-controls'),
 	]);
 	for (const [propertyPath, example] of [
 		['readerControls.colorMode', 'readerControls:\n  colorMode: true'],
-		['readerControls.readingWidth', 'readerControls:\n  readingWidth: true'],
 		['readerControls.focusReading', 'readerControls:\n  focusReading: true'],
 	]) {
 		addFieldHelp(
@@ -240,8 +268,8 @@ const addThemeHelp = (jsonSchema) => {
 	}
 	addSnippets(jsonSchema, 'readerControls', [schemaSnippet({
 		label: 'Configure the Display panel',
-		body: 'readerControls:\n  colorMode: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}',
-		description: 'Offer bounded color-mode, reading-width, and focus-reading choices.',
+		body: 'readerControls:\n  colorMode: ${1:true}\n  focusReading: ${2:true}',
+		description: 'Offer optional color-mode and focus-reading choices alongside the universal reading-width control.',
 		file: 'theme.md',
 		anchor: 'reader-display-controls',
 	})]);
@@ -416,7 +444,7 @@ const addThemeHelp = (jsonSchema) => {
 const addPageThemeHelp = (jsonSchema) => {
 	jsonSchema.markdownDescription = [
 		yamlExample('layout:\n  textWidth: narrow\n  contentSpacing: compact'),
-		'A limited theme in a page or category directory may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners and typography stay consistent.',
+		'A limited theme in a page or category directory may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners, typography, content-block defaults and navigation stay consistent.',
 		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
 	].join('\n\n');
 	addHelp(jsonSchema, 'layout', [

@@ -32,6 +32,11 @@
         "mobile": 68
       }
     },
+    "blocks": {
+      "cardList": {
+        "width": "wide"
+      }
+    },
     "corners": "square",
     "sections": {
       "backgroundPattern": "uniform"
@@ -73,13 +78,17 @@
         "mobile": 68
       }
     },
+    "blocks": {
+      "cardList": {
+        "width": "text"
+      }
+    },
     "corners": "rounded",
     "sections": {
       "backgroundPattern": "alternating"
     },
     "readerControls": {
       "colorMode": true,
-      "readingWidth": true,
       "focusReading": true
     }
   },
@@ -116,13 +125,17 @@
         "mobile": 62
       }
     },
+    "blocks": {
+      "cardList": {
+        "width": "normal"
+      }
+    },
     "corners": "rounded",
     "sections": {
       "backgroundPattern": "alternating"
     },
     "readerControls": {
       "colorMode": true,
-      "readingWidth": true,
       "focusReading": true
     }
   },
@@ -157,6 +170,11 @@
       "maxAvailableHeightPercent": {
         "desktop": 80,
         "mobile": 70
+      }
+    },
+    "blocks": {
+      "cardList": {
+        "width": "wide"
       }
     },
     "corners": "square",

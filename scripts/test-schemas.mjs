@@ -18,7 +18,7 @@ const filenames = [
 const requiredRichHelp = {
 	'category.schema.json': ['label'],
 	'config.schema.json': ['url', 'language', 'navigation', 'scrollBehavior'],
-	'theme.schema.json': ['preset', 'colorMode', 'readerControls', 'corners', 'layout', 'images', 'typography', 'palette', 'sections'],
+	'theme.schema.json': ['preset', 'colorMode', 'readerControls', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
 	'page-theme.schema.json': ['layout', 'images', 'sections'],
 	'sitewide-content.schema.json': ['logo', 'banners', 'footer'],
 	'content-frontmatter.schema.json': ['page', 'navigation'],
@@ -124,6 +124,8 @@ assert.deepEqual(Object.keys(sitewide.properties.logo.properties), ['height']);
 assert.match(sitewide.properties.logo.markdownDescription, /```yaml\nlogo:\n  height: 2rem\n```/);
 assert.match(sitewide.properties.logo.markdownDescription, /does not enable or select the file/);
 assert.match(sitewide.properties.logo.markdownDescription, /homepage Markdown H1/);
+assert.match(sitewide.properties.logo.markdownDescription, /2\.6rem/);
+assert.match(sitewide.properties.logo.markdownDescription, /2\.15rem/);
 assert.match(sitewide.properties.logo.markdownDescription, /docs\/public-files\.md#navigation-logo/);
 assert.equal(sitewide.properties.logo.description.length < 100, true);
 const bannerItem = sitewide.properties.banners.items;
@@ -151,7 +153,7 @@ const theme = JSON.parse(await readFile(path.join(root, 'schemas', 'theme.schema
 assert.equal(theme.properties.layout.properties.gutter.defaultSnippets[0].label, 'Responsive page gutter');
 assert.equal(theme.properties.colorMode.defaultSnippets[0].label, 'Set the initial color mode');
 assert.equal(theme.properties.readerControls.defaultSnippets[0].label, 'Configure the Display panel');
-assert.deepEqual(Object.keys(theme.properties.readerControls.properties), ['colorMode', 'readingWidth', 'focusReading']);
+assert.deepEqual(Object.keys(theme.properties.readerControls.properties), ['colorMode', 'focusReading']);
 assert.deepEqual(
 	theme.properties.palette.oneOf.map((entry) => entry.const),
 	['near-monochrome', 'cool-green', 'warm-paper'],
@@ -170,11 +172,33 @@ assert.equal(
 	theme.properties.images.properties.maxAvailableWidthPercent.defaultSnippets[0].label,
 	'Responsive image limit',
 );
+assert.deepEqual(
+	theme.properties.blocks.properties.cardList.properties.width.oneOf.map((entry) => entry.const),
+	['text', 'narrow', 'normal', 'wide'],
+);
+assert.equal(theme.properties.blocks.defaultSnippets[0].label, 'Override content-block defaults');
+assert.match(theme.properties.blocks.markdownDescription, /docs\/theme\.md#content-block-defaults/);
+assert.match(
+	theme.properties.blocks.properties.cardList.properties.width.markdownDescription,
+	/docs\/theme\.md#content-block-defaults/,
+);
 assert.equal(theme.properties.navigation, undefined);
 assert.equal(theme.properties.layout.properties.density, undefined);
 assert.ok(theme.properties.layout.properties.contentSpacing);
 assert.ok(theme.properties.layout.properties.textWidth);
 assert.ok(theme.properties.sections.properties.backgroundPattern);
+assert.equal(
+	theme.properties.typography.properties.overrides.properties.headings.properties.h1.properties.lineHeight.minimum,
+	1,
+);
+assert.equal(
+	theme.properties.typography.properties.overrides.properties.body.properties.lineHeight.minimum,
+	1.4,
+);
+assert.equal(
+	theme.properties.typography.properties.overrides.properties.caption.properties.lineHeight.minimum,
+	1.25,
+);
 
 const pageTheme = JSON.parse(await readFile(path.join(root, 'schemas', 'page-theme.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(pageTheme.properties), ['layout', 'images', 'sections']);
@@ -184,6 +208,8 @@ assert.equal(pageTheme.properties.palette, undefined);
 assert.equal(pageTheme.properties.colorMode, undefined);
 assert.equal(pageTheme.properties.readerControls, undefined);
 assert.equal(pageTheme.properties.typography, undefined);
+assert.equal(pageTheme.properties.blocks, undefined);
+assert.match(pageTheme.markdownDescription, /content-block defaults/);
 
 const content = JSON.parse(await readFile(path.join(root, 'schemas', 'content-frontmatter.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(content.properties), ['page', 'navigation']);

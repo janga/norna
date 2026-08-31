@@ -44,6 +44,12 @@ export const schemaValueDefinitions = Object.freeze([
 		normal: option('Normal', 'Use the balanced default line length.'),
 		wide: option('Wide', 'Allow body text to use more horizontal space.'),
 	}),
+	definition(['text', 'narrow', 'normal', 'wide'], {
+		text: option('Text width', 'Match the active body-text width, including a reader-selected reading width.'),
+		narrow: option('Narrow', 'Limit the complete card list to at most 48rem.'),
+		normal: option('Normal', 'Limit the complete card list to at most 56rem.'),
+		wide: option('Wide', 'Allow the complete card list to use the available page-layout width.'),
+	}),
 	definition([400, 500, 600, 700], {
 		400: option('Regular', 'Use regular font weight.'),
 		500: option('Medium', 'Use medium font weight.'),

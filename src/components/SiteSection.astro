@@ -17,6 +17,11 @@ type TextAlign = 'left' | 'center' | 'right';
 type TextSize = 'small' | 'medium' | 'large' | 'xlarge';
 type TextWidth = 'narrow' | 'normal' | 'wide';
 type ResolvedPagePresentation = {
+	blocks: {
+		cardList: {
+			width: 'text' | 'narrow' | 'normal' | 'wide';
+		};
+	};
 	palette: {
 		surfaces: Record<'base' | 'soft' | 'emphasis', { backgroundColor: string; textColor: string }>;
 	};
@@ -220,7 +225,15 @@ const sectionStyle = [
 				}
 
 				if (block.type === 'card-list') {
-					return <CardList cards={block.cards} layout={block.layout} flow={block.flow} size={block.size} width={block.width} />;
+					return (
+						<CardList
+							cards={block.cards}
+							layout={block.layout}
+							flow={block.flow}
+							size={block.size}
+							width={block.width ?? pagePresentation.blocks.cardList.width}
+						/>
+					);
 				}
 
 				return (

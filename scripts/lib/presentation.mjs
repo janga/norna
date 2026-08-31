@@ -250,13 +250,18 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 		readerPreferences: {
 			controls: {
 				appearance: readerControls.colorMode === true,
-				readingWidth: readerControls.readingWidth === true,
+				readingWidth: true,
 				focusReading: readerControls.focusReading === true,
 			},
 			defaults: {
 				appearance: defaultColorMode,
 				readingWidth: textWidth === 'narrow' ? 'narrow' : textWidth === 'wide' ? 'wide' : 'standard',
 				focusReading: 'off',
+			},
+		},
+		blocks: {
+			cardList: {
+				width: normalizedTheme.blocks?.cardList?.width ?? 'normal',
 			},
 		},
 		sectionSurfaces: getSectionSurfaces(normalizedTheme.sections?.backgroundPattern, sourceLabel),

@@ -132,7 +132,6 @@ const formatList = (values) => {
 const formatReaderControls = (readerControls) => {
 	const labels = {
 		colorMode: 'color mode',
-		readingWidth: 'reading width',
 		focusReading: 'focus reading',
 	};
 	const enabled = Object.keys(labels).filter((name) => readerControls[name] === true).map((name) => labels[name]);
@@ -142,7 +141,7 @@ const formatReaderControls = (readerControls) => {
 		disabled.length > 0 ? `${formatList(disabled)} disabled` : '',
 	].filter(Boolean).join('; ');
 
-	return `${value[0].toUpperCase()}${value.slice(1)} by default`;
+	return `Reading width always available; ${value}`;
 };
 
 const checkThemePresetReference = async () => {
@@ -178,11 +177,12 @@ const checkThemePresetReference = async () => {
 			['images.maxAvailableHeightPercent', `Desktop \`${preset.images.maxAvailableHeightPercent.desktop}\`; mobile \`${preset.images.maxAvailableHeightPercent.mobile}\``],
 			['corners', `\`${preset.corners}\``],
 			['sections.backgroundPattern', surface],
-			['readerControls', formatReaderControls(preset.readerControls)],
+			['Reader Display', formatReaderControls(preset.readerControls)],
 		];
 
 		for (const [setting, value] of rows) {
-			const row = `| \`${setting}\` | ${value} |`;
+			const settingLabel = setting === 'Reader Display' ? setting : `\`${setting}\``;
+			const row = `| ${settingLabel} | ${value} |`;
 			assert.ok(section.includes(row), `docs/theme.md ${presetName} reference is missing: ${row}`);
 		}
 

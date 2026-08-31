@@ -37,6 +37,7 @@ const presets = Object.freeze({
 		pageWidth: '1240px',
 		sectionGap: 'clamp(1.4rem, 3vw, 2.75rem)',
 		cornerRadius: '0',
+		cardListWidth: 'wide',
 		renderedSurfaces: ['base'],
 		textWidth: 'min(72ch, var(--image-layout-width))',
 	}),
@@ -49,6 +50,7 @@ const presets = Object.freeze({
 		pageWidth: '1240px',
 		sectionGap: 'clamp(1.2rem, 2.4vw, 2.25rem)',
 		cornerRadius: '8px',
+		cardListWidth: 'text',
 		renderedSurfaces: ['base'],
 		textWidth: 'min(60ch, var(--text-width))',
 	}),
@@ -61,6 +63,7 @@ const presets = Object.freeze({
 		pageWidth: '1120px',
 		sectionGap: 'clamp(1.2rem, 2.4vw, 2.25rem)',
 		cornerRadius: '8px',
+		cardListWidth: 'normal',
 		renderedSurfaces: ['base'],
 		textWidth: 'min(72ch, var(--text-width))',
 	}),
@@ -73,6 +76,7 @@ const presets = Object.freeze({
 		pageWidth: '1280px',
 		sectionGap: 'clamp(2.25rem, 5vw, 4.5rem)',
 		cornerRadius: '0',
+		cardListWidth: 'wide',
 		renderedSurfaces: ['base'],
 		textWidth: 'min(72ch, var(--text-width))',
 	}),
@@ -135,10 +139,13 @@ const assertPresetOutput = async (presetName, distDir) => {
 
 	assertIncludes(html, 'data-navigation-mode="tree"', presetName);
 	assertIncludes(html, 'data-color-mode="' + expected.colorMode + '"', presetName);
+	assertIncludes(html, '"readingWidth":true', presetName);
+	assertIncludes(html, 'data-reader-width', presetName);
 	assertIncludes(html, '--page-width: ' + expected.pageWidth, presetName);
 	assertIncludes(html, '--font-sans: ' + expected.fontFamily, presetName);
 	assertIncludes(html, '--image-width: ' + expected.imageWidth, presetName);
 	assertIncludes(html, '--corner-radius-large: ' + expected.cornerRadius, presetName);
+	assertIncludes(html, 'card-list-width-' + expected.cardListWidth, presetName);
 	assertIncludes(html, '--space-section-to-section-desktop: ' + expected.sectionGap, presetName);
 	assertIncludes(html, '--section-body-width-desktop: ' + expected.textWidth, presetName);
 	assertIncludes(html, '--palette-light-page-background: ' + expected.lightPage, presetName);

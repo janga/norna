@@ -54,13 +54,12 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 					xl: value('Extra large', 'Use the largest card and image size.'),
 				}),
 			}),
-			width: field('Limit the width of the complete card list. Defaults to normal.', {
-				default: 'normal',
+			width: field('Override the root theme\'s maximum width for this card list.', {
 				values: Object.freeze({
-					text: value('Text', 'Match the active body-text width.'),
-					narrow: value('Narrow', 'Use a narrow card-list width.'),
-					normal: value('Normal', 'Use the balanced default card-list width.'),
-					wide: value('Wide', 'Allow the card list to use more horizontal space.'),
+					text: value('Text', 'Match the active body-text width, including a reader-selected reading width.'),
+					narrow: value('Narrow', 'Limit the complete card list to at most 48rem.'),
+					normal: value('Normal', 'Limit the complete card list to at most 56rem.'),
+					wide: value('Wide', 'Allow the complete card list to use the available page-layout width.'),
 				}),
 			}),
 		}),
@@ -96,7 +95,6 @@ const cardListExample = [
 	'layout: image-top',
 	'flow: grid',
 	'size: m',
-	'width: normal',
 	'',
 	'- title: Adopt',
 	'  text: Give a dog a new home.',
@@ -420,7 +418,7 @@ const parseCardListBlock = (source, options = {}) => {
 	let layout = cardListDefinition.options.layout.default;
 	let flow = cardListDefinition.options.flow.default;
 	let size = cardListDefinition.options.size.default;
-	let width = cardListDefinition.options.width.default;
+	let width;
 	let current = null;
 
 	for (const [index, line] of normalizeLines(source).entries()) {

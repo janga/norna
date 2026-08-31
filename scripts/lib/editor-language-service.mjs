@@ -501,6 +501,6 @@ export const nornaBlockDefinitions = Object.freeze({
 	}),
 	'norna-card-list': Object.freeze({
 		...nornaMarkdownBlockDefinitions['norna-card-list'],
-		snippet: '```norna-card-list\nlayout: ${1|image-top,image-left,image-right|}\nflow: ${2|grid,stack|}\nsize: ${3|s,m,l,xl|}\nwidth: ${4|text,narrow,normal,wide|}\n\n- title: ${5:Card title}\n  text: ${6:Card text}\n  image: ${7:filename.jpg}\n```',
+		snippet: '```norna-card-list\nlayout: ${1|image-top,image-left,image-right|}\nflow: ${2|grid,stack|}\nsize: ${3|s,m,l,xl|}\n\n- title: ${4:Card title}\n  text: ${5:Card text}\n  image: ${6:filename.jpg}\n```',
 	}),
 });

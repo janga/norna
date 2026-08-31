@@ -311,6 +311,61 @@ test('collapsing tree navigation preserves reading and media geometry', async ({
 	expect(surfaceAfter.right).toBeCloseTo(surfaceBefore.right, 0);
 });
 
+test('text-width card lists follow the active reading column', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openComponents(page);
+	const cardSection = page.locator('.site-section').filter({ has: page.locator('#card-list') });
+	const cards = cardSection.locator('.card-list');
+	const prose = cardSection.locator('.section-markdown').first();
+
+	await cards.evaluate((element) => {
+		element.classList.remove('card-list-width-normal');
+		element.classList.add('card-list-width-text');
+		document.documentElement.dataset.readingWidth = 'narrow';
+	});
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+
+	const [cardsBounds, proseBounds] = await Promise.all([cards.boundingBox(), prose.boundingBox()]);
+	expect(cardsBounds).not.toBeNull();
+	expect(proseBounds).not.toBeNull();
+	expect(cardsBounds?.x).toBeCloseTo(proseBounds?.x ?? 0, 0);
+	expect(cardsBounds?.width).toBeCloseTo(proseBounds?.width ?? 0, 0);
+});
+
+test('structured content starts below a preceding margin note', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openComponents(page);
+	await page.evaluate(() => {
+		const sourceNote = document.querySelector('.section-note');
+		if (!sourceNote) throw new Error('Missing source note.');
+
+		for (const headingId of ['image-stack', 'image-carousel', 'card-list']) {
+			const heading = document.getElementById(headingId);
+			const paragraph = heading?.closest('.site-section')?.querySelector('.section-markdown p');
+			if (!paragraph) throw new Error(`Missing paragraph for ${headingId}.`);
+			const note = sourceNote.cloneNode(true) as HTMLElement;
+			note.removeAttribute('id');
+			paragraph.append(note);
+		}
+	});
+
+	for (const headingId of ['image-stack', 'image-carousel', 'card-list']) {
+		const section = page.locator('.site-section').filter({ has: page.locator(`#${headingId}`) });
+		const note = section.locator('.section-note');
+		const structuredContent = section.locator(':scope .image-stack, :scope .managed-images, :scope .card-list');
+		const [noteBounds, contentBounds] = await Promise.all([
+			note.boundingBox(),
+			structuredContent.boundingBox(),
+		]);
+
+		expect(noteBounds).not.toBeNull();
+		expect(contentBounds).not.toBeNull();
+		expect(contentBounds?.y ?? 0, headingId).toBeGreaterThanOrEqual(
+			(noteBounds?.y ?? 0) + (noteBounds?.height ?? 0),
+		);
+	}
+});
+
 test('focus reading preserves content geometry and the reading position', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await openComponents(page);

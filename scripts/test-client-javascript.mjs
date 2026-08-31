@@ -35,8 +35,16 @@ const runBuild = () => {
 
 const readPage = (pathname = 'index.html') => readFile(path.join(tempRoot, 'dist', pathname), 'utf8');
 const getScripts = (html) => html.match(/<script\b[^>]*>[\s\S]*?<\/script>/gi) ?? [];
-const assertNoClientJavaScript = (html, label) => {
-	assert.deepEqual(getScripts(html), [], `${label} should not require client-side JavaScript.`);
+const getReaderPreferenceScripts = (html) => getScripts(html).filter((script) => script.includes('norna-reading-width'));
+const getFeatureScripts = (html) => getScripts(html).filter((script) => !script.includes('norna-reading-width'));
+const assertUniversalReadingWidth = (html, label) => {
+	assert.equal(getReaderPreferenceScripts(html).length, 1, `${label} should load the universal reading-width preference script.`);
+	assert.match(html, /<html\b[^>]*data-reading-width="(?:narrow|standard|wide)"/);
+	assert.match(html, /data-reader-width/);
+};
+const assertOnlyUniversalReadingWidth = (html, label) => {
+	assertUniversalReadingWidth(html, label);
+	assert.deepEqual(getFeatureScripts(html), [], `${label} should not load unrelated client-side features.`);
 };
 const assertScrollBehavior = (html, behavior, label) => {
 	assert.match(
@@ -74,7 +82,7 @@ Ordinary page content does not need a level 2 section.
 
 	runBuild();
 	const titleOnlyHtml = await readPage();
-	assertNoClientJavaScript(titleOnlyHtml, 'A single page with only its page-title navigation');
+	assertOnlyUniversalReadingWidth(titleOnlyHtml, 'A single page with only its page-title navigation');
 	assert.match(titleOnlyHtml, /<nav class="page-nav page-nav-title-only" aria-label="Page contents">/);
 	assert.match(titleOnlyHtml, /class="page-nav-page-top" data-page-top href="\/">Minimal page<\/a>/);
 	assert.doesNotMatch(titleOnlyHtml, /class="mobile-nav-menu"/);
@@ -93,6 +101,7 @@ One section still provides a useful navigation destination after the page title.
 
 	runBuild();
 	const oneSectionHtml = await readPage();
+	assertUniversalReadingWidth(oneSectionHtml, 'A single page with section navigation');
 	assert.match(oneSectionHtml, /<nav class="page-nav" aria-label="Page contents">/);
 	assert.match(oneSectionHtml, /class="page-nav-page-top" data-page-top href="\/">One section<\/a>/);
 	assert.match(oneSectionHtml, /class="mobile-nav-menu"/);
@@ -116,12 +125,13 @@ The navigation enhancement keeps native anchors clear of the sticky header.
 
 	runBuild();
 	const instantHtml = await readPage();
+	assertUniversalReadingWidth(instantHtml, 'Sticky section navigation');
 	assert.equal(
-		getScripts(instantHtml).length,
+		getFeatureScripts(instantHtml).length,
 		1,
-		'Sticky section navigation should load only its anchor-offset enhancement.',
+		'Sticky section navigation should load only its anchor-offset enhancement in addition to reader preferences.',
 	);
-	assert.match(getScripts(instantHtml)[0], /site-top-anchor-offset/);
+	assert.match(getFeatureScripts(instantHtml)[0], /site-top-anchor-offset/);
 	assertScrollBehavior(instantHtml, 'auto', 'The default instant scroll mode');
 	assert.match(instantHtml, /<nav class="page-nav"/);
 	assert.match(instantHtml, /<nav class="page-nav" aria-label="Page contents">/);
@@ -135,10 +145,11 @@ The navigation enhancement keeps native anchors clear of the sticky header.
 	await writeConfig('smooth');
 	runBuild();
 	const browserSmoothHtml = await readPage();
+	assertUniversalReadingWidth(browserSmoothHtml, 'Browser smooth scrolling');
 	assert.equal(
-		getScripts(browserSmoothHtml).length,
+		getFeatureScripts(browserSmoothHtml).length,
 		1,
-		'Browser smooth scrolling should use the same anchor-offset enhancement.',
+		'Browser smooth scrolling should use the same anchor-offset enhancement in addition to reader preferences.',
 	);
 	assertScrollBehavior(browserSmoothHtml, 'smooth', 'The browser smooth scroll mode');
 
@@ -180,8 +191,8 @@ Static image stacks remain static.
 `);
 
 	runBuild();
-	assertNoClientJavaScript(await readPage(), 'A plain homepage in a multi-page site');
-	assertNoClientJavaScript(
+	assertOnlyUniversalReadingWidth(await readPage(), 'A plain homepage in a multi-page site');
+	assertOnlyUniversalReadingWidth(
 		await readPage(path.join('details', 'index.html')),
 		'A page with managed image stacks and cards',
 	);
@@ -219,14 +230,15 @@ page:
 	runBuild();
 	const noteHtml = await readPage();
 	const carouselHtml = await readPage(path.join('details', 'index.html'));
-	assertNoClientJavaScript(noteHtml, 'A page with CSS margin notes');
+	assertOnlyUniversalReadingWidth(noteHtml, 'A page with CSS margin notes');
 	assert.match(noteHtml, /class="section-note section-note-margin"/);
-	assert.equal(getScripts(carouselHtml).length, 1, 'A carousel page should load only the carousel implementation.');
+	assertUniversalReadingWidth(carouselHtml, 'A carousel page');
+	assert.equal(getFeatureScripts(carouselHtml).length, 1, 'A carousel page should load only the carousel implementation in addition to reader preferences.');
 	assert.match(carouselHtml, /data-carousel/);
 	assert.match(carouselHtml, /--image-carousel-width-from-height-desktop:/);
 	assert.match(carouselHtml, /aria-label="Previous image"/);
 	assert.match(carouselHtml, /aria-label="Next image"/);
-	assert.match(getScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');
+	assert.match(getFeatureScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');
 
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
@@ -255,8 +267,9 @@ Plain page content.
 
 	runBuild();
 	const bannerHtml = await readPage();
-	assert.equal(getScripts(bannerHtml).length, 1, 'A dismissible banner should load only its dismissal script.');
-	assert.match(getScripts(bannerHtml)[0], /norna-banner:/);
+	assertUniversalReadingWidth(bannerHtml, 'A page with a dismissible banner');
+	assert.equal(getFeatureScripts(bannerHtml).length, 1, 'A dismissible banner should load only its dismissal script in addition to reader preferences.');
+	assert.match(getFeatureScripts(bannerHtml)[0], /norna-banner:/);
 
 	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), '{}\n');
 	await writeFile(path.join(homeDir, 'content.md'), `---
@@ -275,7 +288,6 @@ colorMode:
   default: system
 readerControls:
   colorMode: true
-  readingWidth: true
   focusReading: true
 `);
 

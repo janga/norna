@@ -6,18 +6,18 @@
       "type": "object",
       "properties": {
         "height": {
-          "description": "Displayed logo height. Width follows the intrinsic aspect ratio.",
+          "description": "Displayed logo height on wider screens. Omit it to use 2.6rem; narrow screens cap the height at 2.15rem. Width follows the intrinsic aspect ratio.",
           "type": "string",
           "pattern": "^(?:0|(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)|clamp\\(\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*,\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:px|rem|em|vw|vh|vmin|vmax|ch|%)\\s*\\))$",
           "examples": [
             "2rem"
           ],
-          "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\nDisplayed logo height. Width follows the intrinsic aspect ratio.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/public-files.md#navigation-logo)"
+          "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\nDisplayed logo height on wider screens. Omit it to use 2.6rem; narrow screens cap the height at 2.15rem. Width follows the intrinsic aspect ratio.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/public-files.md#navigation-logo)"
         }
       },
       "additionalProperties": false,
       "description": "Optional display settings for a convention-based navigation logo.",
-      "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\n`logo` optionally overrides the displayed height of the convention-based logo file. The logo links home, and its alternative text comes from the homepage Markdown H1. This setting does not enable or select the file.\n\n[Navigation logo filenames and placement](https://github.com/janga/norna/blob/v0.7.18/docs/public-files.md#navigation-logo)"
+      "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\n`logo` optionally overrides the displayed height of the convention-based logo file. Without an override, Norna uses 2.6rem on wider screens and caps the logo at 2.15rem on narrow screens. The logo links home, and its alternative text comes from the homepage Markdown H1. This setting does not enable or select the file.\n\n[Navigation logo filenames and placement](https://github.com/janga/norna/blob/v0.7.18/docs/public-files.md#navigation-logo)"
     },
     "banners": {
       "default": [],

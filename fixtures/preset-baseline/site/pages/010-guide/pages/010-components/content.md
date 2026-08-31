@@ -78,7 +78,6 @@ images.
 layout: image-left
 flow: grid
 size: m
-width: normal
 
 - title: Prepare the source
   text: Keep ordinary content and related images together.

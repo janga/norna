@@ -24,21 +24,24 @@ const themeColorMode = z.object({
 ).describe('Site-wide light and dark mode behaviour.');
 const readerControls = z.object({
 	colorMode: z.boolean().optional().describe('Let readers choose System, Light, or Dark color mode in the site-wide Display panel.'),
-	readingWidth: z.boolean().optional().describe('Let readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.'),
 	focusReading: z.boolean().optional().describe('Let readers temporarily hide navigation and other secondary page chrome while reading.'),
 }).strict().refine(
-	(value) => value.colorMode !== undefined || value.readingWidth !== undefined || value.focusReading !== undefined,
-	'Specify colorMode, readingWidth, focusReading, or a combination of them.',
-).describe('Site-wide reader choices grouped in one Display panel. Presets provide suitable defaults.');
+	(value) => value.colorMode !== undefined || value.focusReading !== undefined,
+	'Specify colorMode, focusReading, or both.',
+).describe('Optional site-wide reader choices grouped with the always-available reading-width choice in the Display panel.');
 const spacingDensity = z.enum(['compact', 'normal', 'airy']).describe('Coordinated spacing density. Omit this to use the selected preset.');
 const contentSpacing = z.enum(['compact', 'normal', 'spacious']).describe('Vertical spacing between page sections and structured content blocks.');
 const backgroundPattern = z.enum(['uniform', 'alternating', 'accented']).describe('How coordinated backgrounds are assigned to H2 sections. Non-uniform patterns are unavailable with tree navigation.');
 const cornerTreatment = z.enum(['square', 'rounded']).describe('Site-wide corner treatment for navigation, cards and framed content.');
+const cardListWidth = z.enum(['text', 'narrow', 'normal', 'wide']).describe('Default maximum width for card lists. A width written in a norna-card-list block overrides this value.');
 const navigationMode = z.enum(navigationModeNames).describe('Site-wide navigation model. Automatic selects from the site structure.');
-const lineHeight = z.number()
-	.min(1, 'Use a unitless line height of at least 1.')
-	.max(3, 'Use a unitless line height of at most 3.')
-	.describe('Unitless line height between 1 and 3.');
+const createLineHeight = (minimum, role) => z.number()
+	.min(minimum, `Use a unitless ${role} line height of at least ${minimum}.`)
+	.max(3, `Use a unitless ${role} line height of at most 3.`)
+	.describe(`Unitless ${role} line height between ${minimum} and 3.`);
+const headingLineHeight = createLineHeight(1, 'heading');
+const bodyLineHeight = createLineHeight(1.4, 'body-text');
+const captionLineHeight = createLineHeight(1.25, 'caption');
 const cssLength = z.string().regex(
 	/^(?:0|(?:\d+(?:\.\d+)?|\.\d+)(?:px|rem|em|ch|lh))$/,
 	'Use a CSS length such as "0", "0.8em", "1rem", or "12px".',
@@ -73,10 +76,10 @@ const overrideResponsiveTextAlign = z.object({
 const commonTextPresentationOverride = {
 	align: overrideResponsiveTextAlign.optional().describe('Responsive text alignment override.'),
 	size: textSize.optional(),
-	lineHeight: lineHeight.optional(),
 };
 const headingPresentationOverride = z.object({
 	...commonTextPresentationOverride,
+	lineHeight: headingLineHeight.optional(),
 	weight: headingWeight.optional().describe('Heading font weight. Omit this to keep the profile value.'),
 	spacingBefore: cssLength.optional().describe('Vertical space before the heading.'),
 	spacingAfter: cssLength.optional().describe('Vertical space after the heading.'),
@@ -89,10 +92,12 @@ const headingLevelsPresentationOverride = z.object({
 }).strict().describe('Heading overrides by Markdown level.');
 const bodyPresentationOverride = z.object({
 	...commonTextPresentationOverride,
+	lineHeight: bodyLineHeight.optional(),
 	paragraphSpacing: cssLength.optional().describe('Vertical space between body paragraphs.'),
 }).strict().describe('Focused overrides for body text.');
 const captionPresentationOverride = z.object({
 	...commonTextPresentationOverride,
+	lineHeight: captionLineHeight.optional(),
 	spacingBefore: cssLength.optional().describe('Vertical space between an image and its caption.'),
 }).strict().describe('Focused overrides for image captions.');
 const typographyOverrides = z.object({
@@ -154,6 +159,15 @@ const themeImages = z.object({
 	maxAvailableWidthPercent: responsivePercent.optional().describe('Maximum percentage of available horizontal space used by managed images.'),
 	maxAvailableHeightPercent: responsivePercent.optional().describe('Maximum percentage of viewport height used by managed images.'),
 }).strict().describe('Optional defaults for managed image presentation.');
+const themeCardList = z.object({
+	width: cardListWidth,
+}).strict().describe('Site-wide card-list defaults.');
+const themeBlocks = z.object({
+	cardList: themeCardList.optional(),
+}).strict().refine(
+	(value) => value.cardList !== undefined,
+	'Specify cardList.',
+).describe('Optional site-wide defaults for structured Norna content blocks.');
 const configNavigation = z.object({
 	mode: navigationMode.optional().describe('Navigation model. Omit this to let Norna choose from the site structure.'),
 }).strict().describe('Site-wide navigation behavior.');
@@ -173,7 +187,7 @@ const pageMetadata = z.object({
 	description: z.string().min(1).optional().describe('Optional page-specific meta description.'),
 }).strict().describe('Optional metadata for this homepage or additional page. The Markdown H1 supplies the page title.');
 const sitewideLogo = z.object({
-	height: visualCssLength.optional().describe('Displayed logo height. Width follows the intrinsic aspect ratio.'),
+	height: visualCssLength.optional().describe('Displayed logo height on wider screens. Omit it to use 2.6rem; narrow screens cap the height at 2.15rem. Width follows the intrinsic aspect ratio.'),
 }).strict().describe('Optional display settings for a convention-based navigation logo.');
 
 const banner = z.object({
@@ -211,6 +225,7 @@ const themeVisualShape = {
 	corners: cornerTreatment.optional().describe('Site-wide corner treatment. Omit this to use the selected preset.'),
 	layout: themeLayout.optional(),
 	images: themeImages.optional(),
+	blocks: themeBlocks.optional(),
 	typography: themeTypography.optional(),
 	palette: presentationPalette.optional(),
 	sections: themeSections.optional(),
@@ -254,6 +269,6 @@ export const pageThemeSchema = z.object(pageThemeShape).strict()
 		(value) => value.layout !== undefined || value.images !== undefined || value.sections !== undefined,
 		'Specify layout, images, sections, or a combination of them.',
 	)
-	.describe('Limited page presentation overrides inherited by descendant pages. Site colors, corners, typography and navigation remain global.');
+	.describe('Limited page presentation overrides inherited by descendant pages. Site colors, corners, typography, content-block defaults and navigation remain global.');
 export const sitewideSchema = z.object(sitewideShape).strict()
 	.describe('Editorial content and optional navigation logo display settings shared by every page.');

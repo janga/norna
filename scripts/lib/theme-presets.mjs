@@ -8,6 +8,7 @@ export const themePresetRecipes = Object.freeze({
 		rhythm: 'balanced',
 		geometry: 'image-led',
 		media: 'prominent',
+		blocks: 'wide-cards',
 		corners: 'square',
 		surfaces: 'uniform',
 	}),
@@ -17,6 +18,7 @@ export const themePresetRecipes = Object.freeze({
 		rhythm: 'compact',
 		geometry: 'focused-reading',
 		media: 'supporting',
+		blocks: 'reading-column-cards',
 		corners: 'rounded',
 		surfaces: 'alternating',
 	}),
@@ -26,6 +28,7 @@ export const themePresetRecipes = Object.freeze({
 		rhythm: 'compact',
 		geometry: 'balanced-site',
 		media: 'balanced',
+		blocks: 'balanced-cards',
 		corners: 'rounded',
 		surfaces: 'alternating',
 	}),
@@ -35,6 +38,7 @@ export const themePresetRecipes = Object.freeze({
 		rhythm: 'expansive',
 		geometry: 'expansive-statement',
 		media: 'immersive',
+		blocks: 'wide-cards',
 		corners: 'square',
 		surfaces: 'accented',
 	}),
@@ -51,13 +55,13 @@ export const themePresetDefinitions = Object.freeze({
 		title: 'Documentation',
 		description: 'For guides and reference material, with reading-focused typography and compact spacing.',
 		recipe: themePresetRecipes.documentation,
-		readerControls: Object.freeze({ colorMode: true, readingWidth: true, focusReading: true }),
+		readerControls: Object.freeze({ colorMode: true, focusReading: true }),
 	}),
 	project: Object.freeze({
 		title: 'Project',
 		description: 'For project and product sites that balance explanation, code, cards, and images.',
 		recipe: themePresetRecipes.project,
-		readerControls: Object.freeze({ colorMode: true, readingWidth: true, focusReading: true }),
+		readerControls: Object.freeze({ colorMode: true, focusReading: true }),
 	}),
 	statement: Object.freeze({
 		title: 'Statement',
@@ -153,7 +157,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
 	const metadata = getThemePresetMetadata(presetName);
-	const { colorMode, readerControls, corners, layout, images, typography, palette, sections } = preset;
+	const { colorMode, readerControls, corners, layout, images, blocks, typography, palette, sections } = preset;
 
 	return [
 		`# Original values for Norna's "${presetName}" theme preset.`,
@@ -167,10 +171,9 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'colorMode:',
 		`  default: ${colorMode.default}`,
 		'',
-		'# Optional reader controls shown together in the Display panel.',
+		'# Optional reader controls shown with the always-available reading-width choice.',
 		'readerControls:',
 		`  colorMode: ${readerControls.colorMode === true}`,
-		`  readingWidth: ${readerControls.readingWidth === true}`,
 		`  focusReading: ${readerControls.focusReading === true}`,
 		'',
 		'# Alternatives: square, rounded.',
@@ -195,6 +198,12 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'  # Percent values must be greater than 0 and at most 100.',
 		...responsiveValueLines('maxAvailableWidthPercent', images.maxAvailableWidthPercent),
 		...responsiveValueLines('maxAvailableHeightPercent', images.maxAvailableHeightPercent),
+		'',
+		'blocks:',
+		'  cardList:',
+		'    # Alternatives: text, narrow, normal, wide.',
+		'    # A width written in a norna-card-list block overrides this default.',
+		`    width: ${blocks.cardList.width}`,
 		'',
 		'typography:',
 		'  # Any valid CSS font-family stack without semicolons.',

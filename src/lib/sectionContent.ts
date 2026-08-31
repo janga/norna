@@ -33,7 +33,7 @@ type ParsedCardListBlock = {
 	layout: CardListLayout;
 	flow: CardListFlow;
 	size: CardListSize;
-	width: CardListWidth;
+	width?: CardListWidth;
 	cards: CardListItem[];
 };
 type ParsedNornaBlock = ParsedImageBlock | ParsedCardListBlock;
@@ -48,7 +48,7 @@ type SectionContentBlock =
 	| { type: 'html'; html: string }
 	| { type: 'image-stack'; images: ManagedImage[] }
 	| { type: 'image-carousel'; images: ManagedImage[] }
-	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width: CardListWidth; cards: CardListItem[] };
+	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width?: CardListWidth; cards: CardListItem[] };
 export type ResolvedSection = {
 	id: string | null;
 	title: string;

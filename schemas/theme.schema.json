@@ -27,7 +27,7 @@
           "description": "For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis."
         }
       ],
-      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated corners, layout, image sizing, typography, palette and section backgrounds. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#theme-presets)"
+      "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated corners, layout, image sizing, content-block defaults, typography, palette and section backgrounds. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#theme-presets)"
     },
     "colorMode": {
       "type": "object",
@@ -79,11 +79,6 @@
           "type": "boolean",
           "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n```\n\nLet readers choose System, Light, or Dark color mode in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)"
         },
-        "readingWidth": {
-          "description": "Let readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.",
-          "type": "boolean",
-          "markdownDescription": "```yaml\nreaderControls:\n  readingWidth: true\n```\n\nLet readers choose Narrow, Standard, or Wide text measure in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)"
-        },
         "focusReading": {
           "description": "Let readers temporarily hide navigation and other secondary page chrome while reading.",
           "type": "boolean",
@@ -91,13 +86,13 @@
         }
       },
       "additionalProperties": false,
-      "description": "Site-wide reader choices grouped in one Display panel. Presets provide suitable defaults.",
-      "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n  readingWidth: true\n  focusReading: true\n```\n\nChooses which bounded reader preferences appear together in the site-wide Display panel. Presets provide suitable defaults, so override only what the site needs.\n\n[Reader Display controls](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
+      "description": "Optional site-wide reader choices grouped with the always-available reading-width choice in the Display panel.",
+      "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n  focusReading: true\n```\n\nAdds optional color-mode and focus-reading choices to the site-wide Display panel. Reading width is always available and is not configured here.\n\n[Reader Display controls](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
       "defaultSnippets": [
         {
           "label": "Configure the Display panel",
-          "markdownDescription": "Offer bounded color-mode, reading-width, and focus-reading choices.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
-          "body": "readerControls:\n  colorMode: ${1:true}\n  readingWidth: ${2:true}\n  focusReading: ${3:true}"
+          "markdownDescription": "Offer optional color-mode and focus-reading choices alongside the universal reading-width control.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
+          "body": "readerControls:\n  colorMode: ${1:true}\n  focusReading: ${2:true}"
         }
       ]
     },
@@ -607,6 +602,69 @@
       "description": "Optional defaults for managed image presentation.",
       "markdownDescription": "```yaml\nimages:\n  width: 900px\n  maxAvailableHeightPercent: 74\n```\n\nOverrides the available width and height used by Norna-managed images.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#image-sizing)"
     },
+    "blocks": {
+      "type": "object",
+      "properties": {
+        "cardList": {
+          "type": "object",
+          "properties": {
+            "width": {
+              "type": "string",
+              "description": "Default maximum width for card lists. A width written in a norna-card-list block overrides this value.",
+              "oneOf": [
+                {
+                  "const": "text",
+                  "title": "Text width",
+                  "description": "Match the active body-text width, including a reader-selected reading width."
+                },
+                {
+                  "const": "narrow",
+                  "title": "Narrow",
+                  "description": "Limit the complete card list to at most 48rem."
+                },
+                {
+                  "const": "normal",
+                  "title": "Normal",
+                  "description": "Limit the complete card list to at most 56rem."
+                },
+                {
+                  "const": "wide",
+                  "title": "Wide",
+                  "description": "Allow the complete card list to use the available page-layout width."
+                }
+              ],
+              "markdownDescription": "```yaml\nblocks:\n  cardList:\n    width: text\n```\n\nDefault maximum width for card lists. A width written in a norna-card-list block overrides this value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#content-block-defaults)",
+              "examples": [
+                "text",
+                "narrow",
+                "normal",
+                "wide"
+              ]
+            }
+          },
+          "required": [
+            "width"
+          ],
+          "additionalProperties": false,
+          "description": "Site-wide card-list defaults.",
+          "markdownDescription": "```yaml\nblocks:\n  cardList:\n    width: text\n```\n\nSets site-wide defaults for card lists. A `width` option in an individual `norna-card-list` block overrides this setting.\n\n[Content block defaults](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#content-block-defaults)"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Optional site-wide defaults for structured Norna content blocks.",
+      "markdownDescription": "```yaml\nblocks:\n  cardList:\n    width: text\n```\n\nOverrides preset defaults for structured Norna content blocks throughout the site. Options written directly in a Markdown block take priority.\n\n[Content block defaults](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#content-block-defaults)",
+      "defaultSnippets": [
+        {
+          "label": "Override content-block defaults",
+          "markdownDescription": "Override a preset default for structured content blocks across the site.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#content-block-defaults)",
+          "body": {
+            "cardList": {
+              "width": "${1:text}"
+            }
+          }
+        }
+      ]
+    },
     "typography": {
       "type": "object",
       "properties": {
@@ -770,8 +828,8 @@
                       "type": "number",
                       "minimum": 1,
                       "maximum": 3,
-                      "description": "Unitless line height between 1 and 3.",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
+                      "description": "Unitless heading line height between 1 and 3.",
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h1:\n      \n  lineHeight: 1.5\n```\n\nUnitless heading line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
                     },
                     "weight": {
                       "description": "Heading font weight. Omit this to keep the profile value.",
@@ -912,8 +970,8 @@
                       "type": "number",
                       "minimum": 1,
                       "maximum": 3,
-                      "description": "Unitless line height between 1 and 3.",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
+                      "description": "Unitless heading line height between 1 and 3.",
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h2:\n      \n  lineHeight: 1.5\n```\n\nUnitless heading line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
                     },
                     "weight": {
                       "description": "Heading font weight. Omit this to keep the profile value.",
@@ -1054,8 +1112,8 @@
                       "type": "number",
                       "minimum": 1,
                       "maximum": 3,
-                      "description": "Unitless line height between 1 and 3.",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
+                      "description": "Unitless heading line height between 1 and 3.",
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h3:\n      \n  lineHeight: 1.5\n```\n\nUnitless heading line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
                     },
                     "weight": {
                       "description": "Heading font weight. Omit this to keep the profile value.",
@@ -1196,8 +1254,8 @@
                       "type": "number",
                       "minimum": 1,
                       "maximum": 3,
-                      "description": "Unitless line height between 1 and 3.",
-                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
+                      "description": "Unitless heading line height between 1 and 3.",
+                      "markdownDescription": "```yaml\ntypography:\n  overrides:\n    headings:\n      h4:\n      \n  lineHeight: 1.5\n```\n\nUnitless heading line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
                     },
                     "weight": {
                       "description": "Heading font weight. Omit this to keep the profile value.",
@@ -1340,10 +1398,10 @@
                 },
                 "lineHeight": {
                   "type": "number",
-                  "minimum": 1,
+                  "minimum": 1.4,
                   "maximum": 3,
-                  "description": "Unitless line height between 1 and 3.",
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
+                  "description": "Unitless body-text line height between 1.4 and 3.",
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    body:\n  lineHeight: 1.5\n```\n\nUnitless body-text line height between 1.4 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
                 },
                 "paragraphSpacing": {
                   "description": "Vertical space between body paragraphs.",
@@ -1450,10 +1508,10 @@
                 },
                 "lineHeight": {
                   "type": "number",
-                  "minimum": 1,
+                  "minimum": 1.25,
                   "maximum": 3,
-                  "description": "Unitless line height between 1 and 3.",
-                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  lineHeight: 1.5\n```\n\nUnitless line height between 1 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
+                  "description": "Unitless caption line height between 1.25 and 3.",
+                  "markdownDescription": "```yaml\ntypography:\n  overrides:\n    caption:\n  lineHeight: 1.5\n```\n\nUnitless caption line height between 1.25 and 3.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/typography.md#configuration-shape)"
                 },
                 "spacingBefore": {
                   "description": "Vertical space between an image and its caption.",

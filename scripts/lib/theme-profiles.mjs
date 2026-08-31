@@ -139,6 +139,17 @@ export const themeProfileDefinitions = freezeDeep({
 			},
 		},
 	},
+	blocks: {
+		'wide-cards': {
+			blocks: { cardList: { width: 'wide' } },
+		},
+		'reading-column-cards': {
+			blocks: { cardList: { width: 'text' } },
+		},
+		'balanced-cards': {
+			blocks: { cardList: { width: 'normal' } },
+		},
+	},
 	corners: {
 		square: { corners: 'square' },
 		rounded: { corners: 'rounded' },

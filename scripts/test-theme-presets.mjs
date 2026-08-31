@@ -37,6 +37,7 @@ const expectedPresetRecipes = {
 		rhythm: 'balanced',
 		geometry: 'image-led',
 		media: 'prominent',
+		blocks: 'wide-cards',
 		corners: 'square',
 		surfaces: 'uniform',
 	},
@@ -46,6 +47,7 @@ const expectedPresetRecipes = {
 		rhythm: 'compact',
 		geometry: 'focused-reading',
 		media: 'supporting',
+		blocks: 'reading-column-cards',
 		corners: 'rounded',
 		surfaces: 'alternating',
 	},
@@ -55,6 +57,7 @@ const expectedPresetRecipes = {
 		rhythm: 'compact',
 		geometry: 'balanced-site',
 		media: 'balanced',
+		blocks: 'balanced-cards',
 		corners: 'rounded',
 		surfaces: 'alternating',
 	},
@@ -64,6 +67,7 @@ const expectedPresetRecipes = {
 		rhythm: 'expansive',
 		geometry: 'expansive-statement',
 		media: 'immersive',
+		blocks: 'wide-cards',
 		corners: 'square',
 		surfaces: 'accented',
 	},
@@ -100,6 +104,7 @@ try {
 		'rhythm',
 		'geometry',
 		'media',
+		'blocks',
 		'corners',
 		'surfaces',
 	]);
@@ -132,12 +137,18 @@ try {
 		assert.ok(resolved.layout?.noteGap);
 		assert.ok(resolved.corners);
 		assert.ok(resolved.images?.width);
+		assert.ok(resolved.blocks?.cardList?.width);
 		assert.ok(resolved.typography?.fontFamily);
 		assert.ok(resolved.typography?.profile);
 		assert.ok(resolved.palette);
 		assert.ok(resolved.colorMode?.default);
 		assert.equal(resolved.readerControls?.colorMode, true);
 		assert.ok(resolved.sections?.backgroundPattern);
+		assert.equal(
+			resolveThemePresentation({ preset: presetName }, `${presetName} presentation`).readerPreferences.controls.readingWidth,
+			true,
+			`${presetName} must always let readers choose a reading width`,
+		);
 		assert.deepEqual(themePresets[presetName], expectedPresetThemes[presetName]);
 		const { readerControls, ...expectedVisualProfiles } = expectedPresetThemes[presetName];
 		assert.deepEqual(
@@ -181,6 +192,7 @@ try {
 	const overridden = resolveThemeConfig({
 		preset: 'documentation',
 		layout: { pageWidth: '1300px' },
+		blocks: { cardList: { width: 'wide' } },
 		palette: 'near-monochrome',
 	}, 'test theme');
 	assert.equal(overridden.layout.contentSpacing, 'compact');
@@ -190,6 +202,7 @@ try {
 	assert.equal(overridden.layout.noteWidth, '12rem');
 	assert.equal(overridden.layout.noteGap, '1.25rem');
 	assert.equal(overridden.images.width, '920px');
+	assert.equal(overridden.blocks.cardList.width, 'wide');
 	assert.equal(overridden.palette, 'near-monochrome');
 	assert.equal(overridden.sections.backgroundPattern, 'alternating');
 	assert.throws(
@@ -265,6 +278,7 @@ sections:
 		['palette: paper\n', /Palette value "paper" was replaced by "warm-paper"/],
 		['corners: soft\n', /Corner value "soft" was replaced by "rounded"/],
 		['readerControls:\n  appearance: true\n', /Reader control "appearance" was replaced by "colorMode"/],
+		['readerControls:\n  readingWidth: true\n', /Reader control "readingWidth" was removed because reading width is now always available/],
 		['sections:\n  backgroundPattern: cycling\n', /Section background pattern "cycling" was replaced by "accented"/],
 		['shape: soft\n', /"shape" was replaced by "corners"[\s\S]*replace the old "soft" value with "rounded"/],
 	]) {
@@ -341,6 +355,7 @@ sections:
 	assert.equal(exportedConfig.layout.pageWidth, themePresets.documentation.layout.pageWidth);
 	assert.equal(exportedConfig.layout.noteWidth, undefined);
 	assert.equal(exportedConfig.layout.noteGap, undefined);
+	assert.equal(exportedConfig.blocks.cardList.width, 'text');
 	assert.equal(exportedConfig.typography.fontFamily, themePresets.documentation.typography.fontFamily);
 	assert.equal(exportedConfig.sections.backgroundPattern, 'alternating');
 

@@ -35,6 +35,10 @@ const getLegacyThemeHint = (issue, data) => {
 		return 'Reader control "appearance" was replaced by "colorMode".';
 	}
 
+	if (location === 'readerControls' && issue.keys?.includes('readingWidth')) {
+		return 'Reader control "readingWidth" was removed because reading width is now always available. Remove this field.';
+	}
+
 	return undefined;
 };
 

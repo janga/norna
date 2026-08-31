@@ -199,6 +199,8 @@ try {
 	});
 	assert.equal(readerControlSnippets[0].label, 'Norna: Configure the Display panel');
 	assert.match(readerControlSnippets[0].text, /colorMode: \$\{1:true\}/);
+	assert.match(readerControlSnippets[0].text, /focusReading: \$\{2:true\}/);
+	assert.doesNotMatch(readerControlSnippets[0].text, /readingWidth/);
 	const buildInfoSource = 'footer:\n  buildInfo: ';
 	const buildInfoSnippets = getYamlSchemaSnippetCompletions({
 		lineText: '  buildInfo: ',
@@ -227,6 +229,9 @@ try {
 	assert.match(nornaBlockDefinitions['norna-image-carousel'].documentation, /docs\/content\.md#image-carousel/);
 	assert.match(nornaBlockDefinitions['norna-card-list'].documentation, /docs\/content\.md#card-list/);
 	assert.equal(nornaBlockDefinitions['norna-card-list'].options.layout.default, 'image-top');
+	assert.equal(nornaBlockDefinitions['norna-card-list'].options.width.default, undefined);
+	assert.match(nornaBlockDefinitions['norna-card-list'].options.width.description, /root theme/);
+	assert.doesNotMatch(nornaBlockDefinitions['norna-card-list'].snippet, /^width:/m);
 
 	const stackFieldSource = homeSource.replace('- image: portrait.jpg', '- image: portrait.jpg\n  ');
 	const stackFieldLine = stackFieldSource.split('\n').findIndex((line) => line === '  ');

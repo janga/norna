@@ -1641,6 +1641,10 @@ ul {
 	margin-bottom: var(--space-content-block-gap);
 }
 
+.section-body > :is(.image-stack, .managed-images, .card-list) {
+	clear: both;
+}
+
 .section-body > .card-list:not(:last-child) {
 	margin-bottom: calc(var(--space-content-block-gap) + var(--space-card-list-after));
 }
@@ -1650,7 +1654,7 @@ ul {
 }
 
 .card-list-width-text {
-	--card-list-width: var(--text-width);
+	--card-list-width: var(--reader-text-width, var(--text-width));
 }
 
 .card-list-width-narrow {

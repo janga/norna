@@ -185,8 +185,8 @@
     }
   },
   "additionalProperties": false,
-  "description": "Limited page presentation overrides inherited by descendant pages. Site colors, corners, typography and navigation remain global.",
+  "description": "Limited page presentation overrides inherited by descendant pages. Site colors, corners, typography, content-block defaults and navigation remain global.",
   "$id": "https://janga.github.io/norna/schemas/page-theme.schema.json",
   "title": "Norna page theme",
-  "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nA limited theme in a page or category directory may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners and typography stay consistent.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
+  "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n  contentSpacing: compact\n```\n\nA limited theme in a page or category directory may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners, typography, content-block defaults and navigation stay consistent.\n\n[Page theme reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#page-themes)"
 }
