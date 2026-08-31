@@ -77,6 +77,11 @@ verified.
   A first version should probably use a simple `columns` value plus a flat image
   list, fill cells in reading order, allow an incomplete final row, and avoid
   empty cells until a real need appears.
+- Review the built-in color palettes before wider release. Redesign or replace
+  `cool-green`, which does not yet form an attractive coordinated scale, and
+  add more curated palette choices. Evaluate each palette as a complete system
+  across light and dark modes, section-surface sequences, text contrast,
+  controls, cards, and managed media rather than adding isolated colors.
 - Improve `init --type embedded` if real mixed projects reveal missing setup
   steps.
 - Consider a lighter local-engine testing workflow than publishing to npm,
@@ -104,6 +109,17 @@ These are current constraints, not necessarily bugs.
 These ideas may be useful later, but should not distract from stabilizing the
 basic site workflow.
 
+- Design a compact control area for long left-hand navigation trees. Keep the
+  ordinary links and disclosure controls usable without JavaScript, show the
+  extra controls only when the tree is large enough to need them, and evaluate:
+  - site search, following the separate static-search plan below;
+  - explicit `Expand all` and `Collapse all` commands that preserve keyboard
+    focus and announce the resulting state;
+  - a `Locate current page` command that returns a reader to the active item and
+    branch after exploring a long tree.
+  Use text labels or unambiguous labelled icons, preserve manually expanded
+  branches when following links, support keyboard and screen-reader operation,
+  and avoid motion or automatic collapsing that disrupts spatial orientation.
 - Evaluate optional current-section tracking in open tree navigation. A first
   version should use progressive enhancement to mark the current H2 and, when
   shown, H3 while the reader scrolls. It must not change the URL, browser

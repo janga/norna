@@ -1,75 +1,39 @@
 ---
 page:
-  description: Compare theme presets and explore complete Norna sites and focused feature demonstrations.
+  description: Explore complete Norna sites and focused demonstrations of themes, media, notes and site-wide elements.
 ---
 
 # Examples
 
-## Compare theme presets {#theme-presets}
+Start with a complete site when you want to see how the pieces work together.
+Use the focused demonstrations when you want to inspect one part of Norna and
+understand which source file controls it.
 
-A theme preset is a complete visual starting point. It coordinates typography,
-spacing, colors, corners, image sizing, structured content widths, section
-backgrounds, and the reader choices available in the Display panel.
-
-Every example lets the reader choose Narrow, Standard, or Wide text. The preset
-selects the initial width while keeping images and the outer page layout under
-the site's control.
-
-The comparison renders the same text, images, notes, code, carousel, and cards
-with every built-in preset. Use the selector to change only the preset while
-keeping the content and your place on the page unchanged.
-
-[Compare the four theme presets](https://janga.github.io/norna/examples/theme-presets/)
-
-The [theme preset reference](https://github.com/janga/norna/blob/main/docs/theme.md#theme-presets)
-explains intended uses, complete default values, overrides, and interactions
-with navigation.
-
-## Complete sites {#complete-sites}
-
-These small sites show how content, images, pages, navigation, and a preset work
-together as one project.
+Every example links to its rendered result, its source files, or the relevant
+reference. The pages below are also available directly in the site navigation.
 
 ```norna-card-list
 flow: grid
 size: m
 
-- title: Dog shelter: single page
-  text: A complete one-page site with heading-based navigation and page-local images.
-  link: https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/
-  badge-text: Complete site
-- title: Dog shelter: multiple pages
-  text: The same subject expanded with ordered pages, page-local content, and top navigation.
-  link: https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/
-  badge-text: Complete site
+- title: Complete sites
+  text: Open finished single-page and multi-page sites with intentionally simple navigation.
+  link: /examples/complete-sites/
+  badge-text: Whole projects
+- title: Themes and overrides
+  text: Compare presets and see the boundary between root settings, page overrides and reader choices.
+  link: /examples/themes-and-overrides/
+  badge-text: Presentation
+- title: Media blocks
+  text: Inspect rendered image stacks, carousels and card lists alongside their source model.
+  link: /examples/media-blocks/
+  badge-text: Content patterns
+- title: Writing and notes
+  text: See how ordinary Markdown headings and linked sidenotes behave at different widths.
+  link: /examples/writing-and-notes/
+  badge-text: Editorial
+- title: Site-wide elements
+  text: See how logos, navigation, banners and footers are shared without becoming page content.
+  link: /examples/site-wide-elements/
+  badge-text: Shared frame
 ```
-
-## Feature demonstrations {#feature-demonstrations}
-
-Use these focused sites when you need to inspect one group of Norna features
-rather than a complete editorial example.
-
-```norna-card-list
-flow: grid
-size: m
-
-- title: Media and surfaces
-  text: Inspect image stacks, portrait and landscape carousels, cards, notes, palettes, and section surfaces.
-  link: https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/
-  badge-text: Feature demo
-- title: Site-wide content
-  text: Inspect conventional logo files, navigation, dismissible banner stacks, and footer content shared across pages.
-  link: https://janga.github.io/norna/examples/feature-demos/sitewide-content/
-  badge-text: Feature demo
-```
-
-## Source files {#source-files}
-
-Every rendered example is built from files in the repository:
-
-- Theme presets: [`portfolio`](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-preset-portfolio), [`documentation`](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-preset-documentation), [`project`](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-preset-project), and [`statement`](https://github.com/janga/norna/tree/main/examples/feature-demos/theme-preset-statement).
-- Complete sites: [single-page dog shelter](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-single-page) and [multi-page dog shelter](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-multi-page).
-- Feature demonstrations: [media and surfaces](https://github.com/janga/norna/tree/main/examples/feature-demos/media-and-surfaces) and [site-wide content](https://github.com/janga/norna/tree/main/examples/feature-demos/sitewide-content).
-
-All example sites are built by the automated test suite and published with this
-documentation.

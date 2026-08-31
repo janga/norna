@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Section surfaces card</title>
+  <desc id="desc">Two horizontal surfaces show a restrained change of section background.</desc>
+  <rect width="1200" height="700" fill="#f8f5ee"/>
+  <rect x="170" y="145" width="860" height="170" fill="#f8f5ee" stroke="#272522" stroke-opacity=".25" stroke-width="5"/>
+  <rect x="170" y="385" width="860" height="170" fill="#ebe5d9"/>
+  <path d="M300 230h600M300 470h600" stroke="#685a43" stroke-width="18" opacity=".8"/>
+</svg>

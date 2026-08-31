@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Carousel card</title>
+  <desc id="desc">A framed panel with a central image and navigation marks.</desc>
+  <rect width="1200" height="700" fill="#d9dfda"/>
+  <rect x="210" y="130" width="780" height="440" rx="18" fill="#f7f8f7"/>
+  <circle cx="600" cy="320" r="135" fill="#38645a"/>
+  <path d="M300 570h600" stroke="#17201d" stroke-width="10" opacity=".35"/>
+  <circle cx="545" cy="570" r="10" fill="#17201d"/>
+  <circle cx="600" cy="570" r="10" fill="#17201d" opacity=".35"/>
+  <circle cx="655" cy="570" r="10" fill="#17201d" opacity=".35"/>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Single visual idea</title>
+  <desc id="desc">A warm panel with a large circle and a small accent line.</desc>
+  <rect width="1200" height="700" fill="#f0ebe1"/>
+  <circle cx="600" cy="330" r="190" fill="#685a43"/>
+  <rect x="260" y="555" width="680" height="12" rx="6" fill="#272522" opacity=".55"/>
+  <rect x="420" y="590" width="360" height="8" rx="4" fill="#272522" opacity=".25"/>
+</svg>

@@ -54,5 +54,117 @@
     "src": "/images/original/pages/020-getting-started/pages/020-grow-your-site/images/single-page-site-10893bac.svg",
     "width": 1080,
     "height": 620
+  },
+  "pages/030-examples/pages/010-complete-sites/images/multi-page-dog-shelter.png": {
+    "outputVersion": 2,
+    "sourceHash": "8ff3870f77aec6825aee8291475ac67d2fe8603271f0b85656528a6b3bcef9a5",
+    "width": 1200,
+    "height": 760,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/pages/010-complete-sites/images/multi-page-dog-shelter-8ff3870f-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/030-examples/pages/010-complete-sites/images/multi-page-dog-shelter-8ff3870f-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/030-examples/pages/010-complete-sites/images/multi-page-dog-shelter-8ff3870f-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/030-examples/pages/010-complete-sites/images/multi-page-dog-shelter-8ff3870f-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "pages/030-examples/pages/010-complete-sites/images/single-page-dog-shelter.png": {
+    "outputVersion": 2,
+    "sourceHash": "60d0ce458da584023fc0356638ed0a17cd476bf1d2f053a102a234aef8026857",
+    "width": 1200,
+    "height": 760,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/pages/010-complete-sites/images/single-page-dog-shelter-60d0ce45-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/030-examples/pages/010-complete-sites/images/single-page-dog-shelter-60d0ce45-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/030-examples/pages/010-complete-sites/images/single-page-dog-shelter-60d0ce45-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/030-examples/pages/010-complete-sites/images/single-page-dog-shelter-60d0ce45-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "pages/030-examples/pages/030-media-blocks/images/card-carousel.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "1447ec44c3cfe2f9041237dfd8aff42a21b82bc6762b840ab2c22d17b0454f8b",
+    "src": "/images/original/pages/030-examples/pages/030-media-blocks/images/card-carousel-1447ec44.svg",
+    "width": 1200,
+    "height": 700
+  },
+  "pages/030-examples/pages/030-media-blocks/images/card-stack.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "00e6c2d553b7cb23cc8a13d0fbca72d25a046a76db828faa5de8ccb6b2e4b2ae",
+    "src": "/images/original/pages/030-examples/pages/030-media-blocks/images/card-stack-00e6c2d5.svg",
+    "width": 1200,
+    "height": 700
+  },
+  "pages/030-examples/pages/030-media-blocks/images/card-surfaces.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "094c43e8bad8f1b8e497d21996f5cf66588f3b4c1ab9ced6dd40a3f67d827fb4",
+    "src": "/images/original/pages/030-examples/pages/030-media-blocks/images/card-surfaces-094c43e8.svg",
+    "width": 1200,
+    "height": 700
+  },
+  "pages/030-examples/pages/030-media-blocks/images/carousel-one.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "b2d1e7c0642cd1ec7b36a26da54b58739804b61db9e986fe054eb7fe3c811e88",
+    "src": "/images/original/pages/030-examples/pages/030-media-blocks/images/carousel-one-b2d1e7c0.svg",
+    "width": 1200,
+    "height": 700
+  },
+  "pages/030-examples/pages/030-media-blocks/images/carousel-three.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "08e70e38babec81507497a81dfe0136a7b9993fb885ac06155b346bfc8413cac",
+    "src": "/images/original/pages/030-examples/pages/030-media-blocks/images/carousel-three-08e70e38.svg",
+    "width": 1200,
+    "height": 700
+  },
+  "pages/030-examples/pages/030-media-blocks/images/carousel-two.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "ba65261788ba8cc8dd5162dd0a748919a01aa925f2f8e3f844745e0c54af28be",
+    "src": "/images/original/pages/030-examples/pages/030-media-blocks/images/carousel-two-ba652617.svg",
+    "width": 1200,
+    "height": 700
+  },
+  "pages/030-examples/pages/030-media-blocks/images/stack-one.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "c835acc71775886a86829989398b2e498fb2ccedafa465ee03f97dd8f6695c69",
+    "src": "/images/original/pages/030-examples/pages/030-media-blocks/images/stack-one-c835acc7.svg",
+    "width": 1200,
+    "height": 700
+  },
+  "pages/030-examples/pages/030-media-blocks/images/stack-two.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "83c64b1c1dd3b4745100baf272db7e91921b2e2967a51f0d31a9cd30cf045881",
+    "src": "/images/original/pages/030-examples/pages/030-media-blocks/images/stack-two-83c64b1c.svg",
+    "width": 1200,
+    "height": 700
   }
 }

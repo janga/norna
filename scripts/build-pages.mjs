@@ -1,4 +1,4 @@
-import { cp, mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,6 +16,19 @@ const documentationUrl = new URL(projectConfig.site.url);
 const documentationBasePath = projectConfig.site.basePath;
 const examples = await getExampleSites(root);
 let artifactStarted = false;
+let documentationExamplesHtml = '';
+
+const readHtmlTree = async (directory) => {
+	const entries = await readdir(directory, { withFileTypes: true });
+	const contents = await Promise.all(entries.map(async (entry) => {
+		const entryPath = path.join(directory, entry.name);
+		if (entry.isDirectory()) return readHtmlTree(entryPath);
+		if (entry.isFile() && entry.name.endsWith('.html')) return readFile(entryPath, 'utf8');
+		return '';
+	}));
+
+	return contents.join('\n');
+};
 
 const buildSite = (siteDirectory, env = process.env) => runInherit(
 	process.execPath,
@@ -26,6 +39,7 @@ const buildSite = (siteDirectory, env = process.env) => runInherit(
 try {
 	console.log('Building documentation site');
 	await buildSite();
+	documentationExamplesHtml = await readHtmlTree(path.join(distDirectory, 'examples'));
 	await cp(distDirectory, artifactDirectory, { recursive: true });
 	artifactStarted = true;
 
@@ -58,7 +72,6 @@ try {
 	await rm(temporaryDirectory, { recursive: true, force: true });
 }
 
-const documentationExamplesHtml = await readFile(path.join(distDirectory, 'examples', 'index.html'), 'utf8');
 const presetComparisonHtml = await readFile(path.join(distDirectory, 'examples', 'theme-presets', 'index.html'), 'utf8');
 const presetComparisonUrl = new URL('examples/theme-presets/', documentationUrl).href;
 
