@@ -309,6 +309,27 @@ test('text-width card lists follow the active reading column', async ({ page }) 
 	expect(cardsBounds?.width).toBeCloseTo(proseBounds?.width ?? 0, 0);
 });
 
+test('tree layout gives prose and structured blocks one shared inline origin', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openComponents(page);
+	const elements = [
+		page.locator('.section-header').first(),
+		page.locator('.section-markdown').first(),
+		page.locator('.card-list').first(),
+		page.locator('.managed-image-frame').first(),
+		page.locator('.image-carousel-stage').first(),
+		page.locator('.image-carousel-captions').first(),
+	];
+	const bounds = await Promise.all(elements.map((element) => element.boundingBox()));
+	const expectedLeft = bounds[0]?.x;
+
+	expect(expectedLeft).toBeDefined();
+	for (const [index, rectangle] of bounds.entries()) {
+		expect(rectangle, `layout element ${index}`).not.toBeNull();
+		expect(rectangle?.x, `layout element ${index}`).toBeCloseTo(expectedLeft ?? 0, 0);
+	}
+});
+
 test('structured content starts below a preceding margin note', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await openComponents(page);
