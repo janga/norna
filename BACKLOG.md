@@ -21,8 +21,6 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
-- Add a complete small `site/theme.yaml` and `site/pages/000-home/content.md` example that a
-  new user can compare with the starter.
 - Add standalone-project and embedded-project examples that show the expected
   directory layout and npm scripts.
 - Add troubleshooting for common workflow errors:

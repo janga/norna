@@ -79,6 +79,44 @@ See the [Theme reference](https://github.com/janga/norna/blob/main/docs/theme.md
 for every preset, accepted override, page-theme boundary, palette, and reader
 Display control.
 
+## Compare complete source files {#complete-source-files}
+
+The following two files form a complete small themed homepage. Compare them
+with the generated files in your project or use them as a known-good starting
+point.
+
+`site/theme.yaml` selects the complete Project preset without overrides:
+
+```yaml
+preset: project
+```
+
+`site/pages/000-home/content.md` supplies the page title, introduction, and two
+sections:
+
+```md
+---
+page:
+  description: A small site for a local dog shelter.
+---
+
+# Dog Shelter
+
+We help dogs find permanent homes.
+
+## Our dogs
+
+Meet the dogs currently waiting for a family.
+
+## You can help
+
+Adopt. Foster. Donate.
+```
+
+Save both files while local preview is running. Norna applies the preset to the
+Markdown structure; the files do not need templates, component imports, or
+layout code.
+
 ## Continue {#continue}
 
 - [Grow your site](/getting-started/grow-your-site/) when the content needs
