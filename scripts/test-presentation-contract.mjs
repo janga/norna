@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -25,7 +25,13 @@ import {
 } from './lib/typography.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const stylesheet = await readFile(path.join(repoRoot, 'src', 'styles', 'global.css'), 'utf8');
+const stylesDirectory = path.join(repoRoot, 'src', 'styles');
+const stylesheetFiles = (await readdir(stylesDirectory))
+	.filter((fileName) => fileName.endsWith('.css'))
+	.sort((left, right) => left.localeCompare(right, 'en'));
+const stylesheet = (await Promise.all(stylesheetFiles.map((fileName) => (
+	readFile(path.join(stylesDirectory, fileName), 'utf8')
+)))).join('\n');
 
 for (const paletteName of presentationPaletteNames) {
 	const palette = getPresentationPalette(paletteName);

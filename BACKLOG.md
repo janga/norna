@@ -26,11 +26,6 @@ approachable before wider use.
 Use this section for concrete engine behavior that should be implemented or
 verified.
 
-- Define explicit CSS layout invariants for the text column, optional tree
-  navigation, headings, managed media, cards, carousels, and sidenotes. Use
-  those shared coordinates to remove selector-specific alignment fixes, then
-  split `src/styles/global.css` by responsibility without changing the approved
-  visual behavior.
 - Make `scripts/dev-local.mjs` platform-independent. Replace its direct use of
   Unix tools such as `lsof` and `tail`, and define equivalent port cleanup,
   process termination, and log-following behavior for macOS, Linux, and

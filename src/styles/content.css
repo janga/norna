@@ -1,0 +1,426 @@
+/* Banners, footer, sections, prose, headings, and sidenotes. */
+
+.site-banners {
+	position: relative;
+	z-index: 2;
+	display: grid;
+	gap: 0.75rem;
+	width: min(calc(100% - (var(--content-gutter) * 2)), var(--page-width));
+	margin: 0 auto;
+	padding: 1rem 0 0;
+}
+
+.site-banner {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	min-width: 0;
+	gap: 1rem;
+	border: 1px solid var(--color-warning-accent);
+	border-inline-start: 0.35rem solid var(--color-warning-accent);
+	padding: 0.8rem 0.9rem;
+	background: var(--color-warning-surface);
+	color: var(--color-warning-text);
+}
+
+.site-banner[hidden] {
+	display: none;
+}
+
+.site-banner-copy {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 0.65rem;
+	min-width: 0;
+	flex: 1 1 auto;
+}
+
+.site-banner-title,
+.site-banner-text {
+	margin: 0;
+}
+
+.site-banner-title {
+	flex: 0 0 auto;
+	white-space: nowrap;
+	font-weight: 700;
+}
+
+.site-banner-text {
+	min-width: 0;
+	margin-top: 0.2rem;
+	overflow-wrap: anywhere;
+}
+
+.site-banner-dismiss {
+	flex: 0 0 auto;
+	width: 2rem;
+	height: 2rem;
+	border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+	padding: 0;
+	background: transparent;
+	color: currentColor;
+	cursor: pointer;
+	font-size: 1.25rem;
+	line-height: 1;
+}
+
+.site-banner-dismiss:hover,
+.site-banner-dismiss:focus-visible {
+	background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.site-footer {
+	position: relative;
+	isolation: isolate;
+	z-index: 2;
+	width: min(calc(100% - (var(--content-gutter) * 2)), var(--page-width));
+	margin: 0 auto;
+	padding: 0 0 2.5rem;
+	background-color: var(--site-footer-background-color, var(--color-page));
+	color: var(--site-footer-text-color, var(--color-muted));
+	font-size: 0.75rem;
+	line-height: 1.5;
+	text-align: center;
+}
+
+.site-footer::before {
+	position: absolute;
+	z-index: -1;
+	inset: 0 calc(50% - 50vw);
+	background-color: var(--site-footer-background-color, var(--color-page));
+	content: "";
+	pointer-events: none;
+}
+
+.site-footer p {
+	margin: 0;
+}
+
+.site-footer span {
+	display: block;
+}
+
+.site-section {
+	--layout-heading-width: min(100%, var(--reader-text-width, var(--section-heading-width-desktop, 760px)));
+	--layout-reading-width: min(100%, var(--reader-text-width, var(--section-body-width-desktop, var(--text-width))));
+	--layout-media-width: min(100%, var(--image-layout-width));
+	--layout-note-width: var(--section-note-width, 12rem);
+	--layout-note-gap: var(--section-note-gap, 1.25rem);
+	position: relative;
+	isolation: isolate;
+	background-color: var(--section-background-color, transparent);
+	padding: var(--space-nav-to-first-section) 0 0;
+}
+
+.site-section::before {
+	position: absolute;
+	z-index: -1;
+	inset: 0 calc(50% - 50vw);
+	background-color: var(--section-background-color, transparent);
+	content: "";
+	pointer-events: none;
+}
+
+.site-page-layout-tree .site-section::before {
+	left: 0;
+	right: calc(0px - var(--tree-layout-outer-margin));
+}
+
+.site-section + .site-section {
+	margin-top: 0;
+	padding-top: var(--space-section-to-section);
+}
+
+.site-section-page-title-empty .section-header {
+	padding-bottom: 0;
+}
+
+.site-section-page-title-empty .section-header h1 {
+	padding-bottom: 0;
+}
+
+.site-section-page-title-empty + .site-section {
+	padding-top: var(--space-page-title-to-first-section);
+}
+
+.site-section:last-child {
+	padding-bottom: var(--space-final-section-bottom);
+}
+
+.section-card {
+	background: transparent;
+	color: var(--section-text-color, var(--color-text));
+}
+
+.section-header {
+	width: var(--layout-heading-width);
+	margin-block: 0;
+	margin-inline: var(--layout-inline-start-margin) var(--layout-inline-end-margin);
+	padding: 0;
+	text-align: var(--section-heading-align-desktop, center);
+}
+
+.site-section-first-block-is-visual .section-header h1,
+.site-section-first-block-is-visual .section-header h2 {
+	padding-bottom: var(--space-heading-to-block);
+}
+
+.section-header h1,
+.section-header h2,
+p,
+ul {
+	margin-top: 0;
+}
+
+.section-header h1,
+.section-header h2 {
+	margin-bottom: 0;
+	padding-bottom: var(--section-heading-spacing-after, 0.55em);
+	color: inherit;
+	font-size: var(--section-heading-font-size-desktop, clamp(1.35rem, 1.1rem + 0.9vw, 2rem));
+	font-weight: var(--section-heading-font-weight, 400);
+	letter-spacing: 0;
+	line-height: var(--section-heading-line-height, 1.04);
+	text-transform: uppercase;
+	overflow-wrap: anywhere;
+}
+
+.section-body {
+	display: flow-root;
+	container-type: inline-size;
+	width: 100%;
+	margin: 0 auto;
+	color: inherit;
+	font-family: var(--font-sans);
+	font-size: clamp(0.96rem, 0.94rem + 0.08vw, 1rem);
+}
+
+.section-note {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	column-gap: 0.25rem;
+	width: 100%;
+	margin: var(--section-body-paragraph-spacing, 0.85em) 0 0;
+	border-inline-start: 2px solid color-mix(in srgb, currentColor 35%, transparent);
+	padding: 0 0 0 0.35rem;
+	color: var(--section-secondary-text-color, var(--color-secondary-text));
+	font-size: 0.88em;
+	line-height: 1.45;
+	scroll-margin-top: calc(var(--site-top-anchor-offset) + 1rem);
+}
+
+.section-note-number {
+	display: block;
+	margin: 0;
+	color: inherit;
+	font-size: 0.82em;
+	font-weight: 700;
+	line-height: 1;
+	text-decoration: none;
+}
+
+.section-note-ref {
+	display: inline-block;
+	margin-left: 0.03em;
+	font-size: 0.72em;
+	line-height: 0;
+	white-space: nowrap;
+	vertical-align: super;
+}
+
+.section-note-ref a {
+	color: inherit;
+	text-decoration: underline;
+	text-decoration-thickness: 0.08em;
+	text-underline-offset: 0.15em;
+}
+
+.section-note:target {
+	border-inline-start-color: currentColor;
+	background: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+.section-note-ref:has(+ .section-note:hover) a,
+.section-note-ref a:hover,
+.section-note-ref a:focus-visible {
+	text-decoration-thickness: 0.16em;
+}
+
+.section-note-content {
+	min-width: 0;
+}
+
+@media (min-width: 1101px) {
+	@container (min-width: 55rem) {
+		.section-note {
+			float: right;
+			clear: right;
+			width: var(--layout-note-width);
+			margin: 0 calc(0px - var(--layout-note-width) - var(--layout-note-gap)) 0.75rem var(--layout-note-gap);
+		}
+	}
+}
+
+.section-markdown {
+	width: var(--layout-reading-width);
+	max-width: none;
+	margin-block: 0;
+	margin-inline: var(--layout-inline-start-margin) var(--layout-inline-end-margin);
+	font-size: var(--section-body-font-size-desktop, clamp(0.96rem, 0.94rem + 0.08vw, 1rem));
+	line-height: var(--section-body-line-height, 1.6);
+	text-align: var(--section-body-align-desktop, left);
+}
+
+.section-markdown table {
+	display: block;
+	max-width: 100%;
+	margin: var(--section-body-paragraph-spacing, 0.85em) 0;
+	border-collapse: collapse;
+	font-size: 0.92em;
+	line-height: 1.45;
+	overflow-x: auto;
+	overscroll-behavior-inline: contain;
+	scrollbar-gutter: stable;
+}
+
+.section-markdown :is(th, td) {
+	border-bottom: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+	padding: 0.65rem 0.75rem;
+	text-align: left;
+	vertical-align: top;
+}
+
+.section-markdown thead th {
+	border-bottom-color: color-mix(in srgb, currentColor 48%, transparent);
+}
+
+:root[data-focus-reading='on'] :is(
+	.site-nav-leading,
+	.site-nav,
+	.mobile-nav-menu,
+	.page-nav,
+	.tree-local-navigation,
+	.site-breadcrumbs,
+	.site-footer
+) {
+	display: none !important;
+}
+
+:root[data-focus-reading='on'] .site-nav-row {
+	justify-content: flex-end;
+}
+
+@media (min-width: 701px) {
+	:root[data-focus-reading='on'] .site-page-layout-tree {
+		display: grid;
+		grid-template-columns: var(--tree-navigation-width) minmax(0, 1fr);
+		gap: var(--tree-layout-gap);
+		width: min(calc(100% - (var(--content-gutter) * 2)), var(--tree-layout-width));
+	}
+
+	:root[data-focus-reading='on'] .site-page-layout-tree > .site-content {
+		grid-column: 2;
+		width: 100%;
+	}
+
+	:root[data-focus-reading='on'] .site-page-layout-tree .site-section::before {
+		left: 0;
+		right: calc(0px - var(--tree-layout-outer-margin));
+	}
+}
+
+:root[data-focus-reading='on'] .site-content-has-breadcrumbs > .site-section:first-of-type {
+	padding-top: var(--space-nav-to-first-section);
+}
+
+.section-markdown p {
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+}
+
+.section-markdown blockquote {
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+	border-left: 1px solid color-mix(in srgb, currentColor 34%, transparent);
+	padding-left: 1rem;
+}
+
+.section-markdown blockquote > :last-child {
+	margin-bottom: 0;
+}
+
+.section-markdown pre.astro-code {
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+	border-radius: var(--corner-radius-medium, 6px);
+	padding: 0.78rem 0.9rem;
+	background: var(--color-code-background) !important;
+	color: var(--color-code-text);
+	font-size: 0.92em;
+	line-height: 1.45;
+	text-align: left;
+}
+
+.section-markdown pre.astro-code code {
+	font: inherit;
+}
+
+.section-markdown :not(pre) > code {
+	overflow-wrap: anywhere;
+	word-break: break-word;
+}
+
+.section-markdown > :last-child,
+.image-meta :last-child {
+	margin-bottom: 0;
+}
+
+.section-markdown > pre.astro-code:last-child {
+	margin-bottom: 0;
+}
+
+.section-markdown blockquote > pre.astro-code:last-child {
+	margin-bottom: 0;
+}
+
+.section-markdown h3 {
+	margin:
+		var(--section-markdown-h3-spacing-before, 1.5em)
+		0
+		var(--section-markdown-h3-spacing-after, 0.5em);
+	border-top: 1px solid var(--color-soft);
+	padding-top: 0.55em;
+	font-family: var(--font-sans);
+	font-size: var(--section-markdown-h3-font-size-desktop, 0.82rem);
+	font-weight: var(--section-markdown-h3-font-weight, 700);
+	letter-spacing: 0;
+	line-height: var(--section-markdown-h3-line-height, 1.35);
+	text-align: var(--section-markdown-h3-align-desktop, left);
+	text-transform: uppercase;
+}
+
+.section-markdown h4 {
+	margin:
+		var(--section-markdown-h4-spacing-before, 1.1em)
+		0
+		var(--section-markdown-h4-spacing-after, 0.4em);
+	color: inherit;
+	font-size: var(--section-markdown-h4-font-size-desktop, clamp(0.96rem, 0.94rem + 0.08vw, 1rem));
+	font-weight: var(--section-markdown-h4-font-weight, 400);
+	letter-spacing: 0;
+	line-height: var(--section-markdown-h4-line-height, 1.5);
+	text-align: var(--section-markdown-h4-align-desktop, left);
+}
+
+.section-markdown ul,
+.section-markdown ol {
+	display: inline-block;
+	margin-right: auto;
+	margin-left: auto;
+	padding-left: 1.2rem;
+	text-align: left;
+}
+
+.section-markdown li + li {
+	margin-top: 0.35rem;
+}
