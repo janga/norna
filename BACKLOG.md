@@ -21,10 +21,6 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
-- Add a focused Getting Started page for choosing a theme. Introduce the
-  built-in presets as the normal starting point, help readers choose by site
-  purpose, show the minimal `theme.yaml`, and include one short isolated
-  override example before linking to the complete theme reference.
 - Add a complete small `site/theme.yaml` and `site/pages/000-home/content.md` example that a
   new user can compare with the starter.
 - Add standalone-project and embedded-project examples that show the expected

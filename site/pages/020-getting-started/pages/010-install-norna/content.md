@@ -73,39 +73,6 @@ sections. The preview updates as you edit the source files.
 See [Content](https://github.com/janga/norna/blob/main/docs/content.md#page-title-and-frontmatter)
 for the complete heading, generated-id, note, and Norna-block syntax.
 
-## Choose a visual starting point {#theme}
-
-The generated site uses the `project` preset. A preset supplies a complete,
-coordinated starting point for typography, spacing, colors, navigation styling,
-media, and structured content such as card lists. Change the single value in
-`site/theme.yaml` to choose another preset:
-
-```yaml
-preset: project
-```
-
-Norna includes four presets:
-
-- `portfolio` for image-led sites with restrained typography;
-- `documentation` for guides and sustained reading;
-- `project` for project and product sites that combine text, code, cards, and images;
-- `statement` for short sites with a stronger editorial voice.
-
-List the presets and their intended uses from the installed Norna version:
-
-```sh
-npm run norna:theme:presets
-```
-
-Start with the preset alone and review it with real content before adding
-overrides. The [Theme explorer](https://janga.github.io/norna/examples/theme-presets/)
-shows identical content with every preset and lets you try a different
-site-wide palette without changing the other preset choices.
-
-See [Theme presets and overrides](https://github.com/janga/norna/blob/main/docs/theme.md#theme-presets)
-when you need exact defaults, page-theme scope, reader Display controls, or an
-override.
-
 ## Check the first result {#check}
 
 Ask Norna to validate the site before continuing:
@@ -144,6 +111,8 @@ for all npm scripts, direct CLI forms, options, and side effects.
 
 You now have a locally running, edited, and checked Norna site.
 
+- [Choose a theme](/getting-started/choose-a-theme/) to select a coordinated
+  visual starting point for the site.
 - [Grow your site](/getting-started/grow-your-site/) when the content needs
   more sections, pages, or a navigation category.
 - [Build and publish](/getting-started/build-and-publish/) when the site is
