@@ -167,47 +167,97 @@ selected explicitly through npm scripts or `node bin/norna.mjs`.
 
 ## npm Release
 
-The npm package is published under the `@janga` scope. Choose the release type
-when starting a release; the command requires a clean working tree, verifies npm
-registry authentication for the same registry/cache used by the publish step,
-updates `package.json` and `package-lock.json` without creating a commit, and
-regenerates schemas with documentation links pinned to the new `v<version>` Git
-tag. It then runs `npm test`, verifies that only release files changed, creates
-the release commit and Git tag, publishes to npm, and pushes the commit and tag.
+The npm package is published as `@janga/norna`. Use the release scripts for the
+complete release; do not run `npm version` or `npm publish` separately during a
+normal release.
+
+### 1. Choose The Version Change
+
+| Command | Use when |
+| --- | --- |
+| `npm run release:patch` | The release contains backwards-compatible fixes or maintenance changes. |
+| `npm run release:minor` | The release adds backwards-compatible functionality. |
+| `npm run release:major` | The release contains an incompatible product change. |
+
+### 2. Check The Starting State
+
+The release command requires a clean Git working tree. Before starting:
+
+```sh
+git status --short
+```
+
+Commit or remove every listed change. The command also checks npm
+authentication against the same registry and cache used for publication. If
+that preflight fails, run the exact login command printed by the script and
+start the release again. No version file, commit, or tag has changed at this
+point.
+
+### 3. Run One Release Command
+
+For example, to release a patch:
 
 ```sh
 npm run release:patch
 ```
 
-Use `patch` for backwards-compatible fixes and maintenance changes. Use `minor`
-for backwards-compatible features and `major` for incompatible changes:
+The command performs these steps in order:
+
+1. Updates `package.json` and `package-lock.json` without creating a commit.
+2. Regenerates schemas whose documentation links contain the new `v<version>`
+   Git tag.
+3. Runs the complete `npm test` release chain.
+4. Verifies that checks changed only `package.json`, `package-lock.json`, and
+   generated schemas.
+5. Creates commit `Release v<version>` and annotated tag `v<version>`.
+6. Publishes the public package to npm.
+7. Pushes the release commit and tag.
+
+GitHub Pages deployment monitoring is deliberately separate from the npm
+release.
+
+### 4. Recover At The Reported Boundary
+
+**Failure before the release commit:** the script restores the previous package
+version, lockfile, and generated schemas automatically. Correct the reported
+problem, confirm that `git status --short` is clean, and run the chosen release
+command again.
+
+**Release commit and tag remain locally, but npm publication failed:** inspect
+the retained commit and tag. After correcting authentication, permissions, or
+the reported registry problem, publish that prepared version and push it:
 
 ```sh
-npm run release:minor
-npm run release:major
+npm run release:publish
+git push --follow-tags
 ```
 
-The release command deliberately does not run GitHub Pages deployment monitoring.
-If version preparation, schema generation, or testing fails before the release
-commit, the script restores the previous package version and generated schemas.
+Do not run `release:patch`, `release:minor`, or `release:major` again merely to
+retry these two steps; that would prepare a different version.
 
-If npm publication fails, it stops before pushing; the local version commit and
-tag remain available for inspection or recovery. Retry publication with
-`npm run release:publish`, then push the existing commit and tag with
-`git push --follow-tags`. Do not start a new version bump merely to retry these
-steps.
-
-If the npm authentication preflight fails, no version commit or tag has been
-created yet. Run the printed login command:
+**Release commit exists but tag creation failed:** read the version from
+`package.json`, create the matching annotated tag, then continue with
+publication and push:
 
 ```sh
-npm login --registry=https://registry.npmjs.org/ --auth-type=web --cache /private/tmp/norna-npm-cache
+git tag -a v<version> -m "Release v<version>"
+npm run release:publish
+git push --follow-tags
 ```
 
-Then start the release command again.
+**npm publication succeeded but Git push failed:** do not publish again. Verify
+the published version with `npm view @janga/norna@<version> version`, then retry
+`git push --follow-tags`.
 
-After publication, update site repositories to the exact published npm version
-and commit their updated `package-lock.json`.
+If it is unclear whether npm accepted a publish request, check the exact version
+with `npm view` before choosing between publication and push recovery.
+
+### 5. Verify A Real Site
+
+After publication, update one real site repository to the exact released
+version, commit its `package.json` and `package-lock.json`, and run that site's
+normal checks and build. Record any friction in the release backlog before the
+next engine release.
 
 ## Rendering Notes
 

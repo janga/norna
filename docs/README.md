@@ -159,9 +159,10 @@ required, optional, convention-discovered, versioned, or generated.
 
 ## Engine Contributors
 
-Start with [Engine Development](engine-development.md). Design documents live
-under [`docs/design/`](design/), and planned work is tracked in
-[BACKLOG.md](../BACKLOG.md). Follow the
+Start with [Engine Development](engine-development.md). Use the
+[npm release runbook](engine-development.md#npm-release) when publishing an
+engine version. Design documents live under [`docs/design/`](design/), and
+planned work is tracked in [BACKLOG.md](../BACKLOG.md). Follow the
 [Documentation Style Guide](design/documentation-style-guide.md) when naming or
 describing public concepts, configuration, commands, diagnostics, or editor
 help.

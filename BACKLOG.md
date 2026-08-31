@@ -21,11 +21,6 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
-- Turn the release section in `docs/engine-development.md` into a concise
-  maintainer runbook covering patch/minor/major releases, the steps performed
-  automatically, rollback before the release commit, and recovery after a
-  failed publish. Add a discoverability link from `docs/README.md` without
-  duplicating the instructions.
 ## Implementation
 
 Use this section for concrete engine behavior that should be implemented or
