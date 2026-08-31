@@ -121,6 +121,101 @@ See the full references for
 [commands](https://github.com/janga/norna/blob/main/docs/commands.md) and
 [site files](https://github.com/janga/norna/blob/main/docs/site-files.md).
 
+## Why does npm say package.json is missing? {#initialize-before-install}
+
+`npm install` needs an existing Node project with `package.json`. For a new
+standalone site, run initialization from the directory that should contain the
+new project, then enter the created directory before installing:
+
+```sh
+npx @janga/norna@latest init my-site
+cd my-site
+npm install
+```
+
+If the site belongs inside an existing Node project, initialize it in embedded
+mode before running `npm install`. Do not create an empty `package.json` merely
+to silence the error; let Norna create a standalone project or update the real
+existing project.
+
+## How do I correct YAML or frontmatter indentation? {#yaml-indentation}
+
+YAML uses spaces to express structure. Use two ordinary spaces for each nested
+level, never tabs or non-breaking spaces:
+
+```yaml
+page:
+  description: A short page description.
+```
+
+Run the complete check after editing `config.yaml`, `theme.yaml`,
+`sitewide-content.yaml`, or Markdown frontmatter:
+
+```sh
+npm run norna:check
+```
+
+Norna reports the file and line, explains the detected indentation pattern,
+and usually describes the expected sibling or parent level. Correct the source
+instead of changing generated files. See [Content validation](https://github.com/janga/norna/blob/main/docs/content.md#validation-and-sync)
+for allowed frontmatter and the focused content check.
+
+## How do I refresh a stale local preview? {#stale-preview}
+
+First save the source file and check that the tracked server is still running:
+
+```sh
+npm run norna:dev:status
+```
+
+If content or generated images still look stale, run the complete local rebuild:
+
+```sh
+npm run norna:build:local
+```
+
+This checks and builds the site, then restarts its development server. Use
+`npm run norna:dev:logs` when the restart reports an error. The
+[local-development reference](https://github.com/janga/norna/blob/main/docs/local-development.md)
+documents server status, logs, LAN testing, and cleanup.
+
+## What do missing, misplaced, and unreferenced image reports mean? {#image-reports}
+
+- **Missing** means a Norna image block names a file that cannot be found in
+  the current page's `images/` directory or elsewhere as an unambiguous move.
+- **Misplaced** means the named file exists, but another page currently owns
+  its physical location.
+- **Unreferenced** means an image file is present in a page's `images/`
+  directory but no Norna image block on that page uses it.
+
+Inspect all reports without changing files:
+
+```sh
+npm run norna:content:check
+```
+
+After confirming that a Markdown reference intentionally moved between pages,
+apply an unambiguous relocation with `npm run norna:sync`. Sync reports its
+plan and refuses to guess between duplicate filenames. It does not delete an
+unreferenced image. See [Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md)
+for placement and processing rules.
+
+## Why does npm authentication fail while publishing Norna? {#npm-publish-authentication}
+
+Publishing an ordinary Norna site to GitHub Pages does not run `npm publish`
+and does not require npm publishing permission. It uses the public Norna
+package already recorded by the site.
+
+`npm publish` is used only when a Norna maintainer releases a new engine
+version. Run the exact `npm login` command printed by the release script so the
+login uses the same registry and cache as publication. The npm account must
+also have permission to publish `@janga/norna` and satisfy npm's current
+two-factor authentication requirements. Do not use `sudo` to bypass a package
+or cache permission problem.
+
+See the [engine release instructions](https://github.com/janga/norna/blob/main/docs/engine-development.md#npm-release)
+for the maintained command sequence and recovery boundary.
+
 ## How do I install ImageMagick? {#install-imagemagick}
 
 When a JPEG or PNG file is referenced from a Norna image stack, carousel, or

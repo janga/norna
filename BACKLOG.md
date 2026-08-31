@@ -21,12 +21,6 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
-- Add troubleshooting for common workflow errors:
-  - running `npm install` before `norna init`;
-  - npm authentication or permission failures during publish;
-  - YAML/frontmatter indentation problems;
-  - stale local preview state;
-  - missing, misplaced, or unreferenced images.
 - Turn the release section in `docs/engine-development.md` into a concise
   maintainer runbook covering patch/minor/major releases, the steps performed
   automatically, rollback before the release commit, and recovery after a
