@@ -4,7 +4,6 @@ import { getPresentationCssVariables } from '../../scripts/lib/presentation.mjs'
 import { getIconLinks } from '../lib/sitePublicAssets';
 import { withBasePath } from '../lib/basePath';
 import { getReaderPreferencesScript } from '../lib/readerPreferencesScript.mjs';
-import { getTreeNavigationVisibilityScript } from '../lib/treeNavigationVisibilityScript.mjs';
 import '../styles/global.css';
 
 type FrameColors = {
@@ -150,11 +149,6 @@ const readerPreferencesScript = readerPreferencesEnabled
 		cookiePath: projectConfig.site.basePath,
 	})
 	: null;
-const treeNavigationVisibilityScript = treeNavigation
-	? getTreeNavigationVisibilityScript({
-		storageKey: `norna:tree-navigation:visibility:${projectConfig.site.basePath}`,
-	})
-	: null;
 ---
 
 <!doctype html>
@@ -163,7 +157,6 @@ const treeNavigationVisibilityScript = treeNavigation
 	data-color-mode={presentation.readerPreferences.defaults.appearance}
 	data-reading-width={presentation.readerPreferences.defaults.readingWidth}
 	data-focus-reading={presentation.readerPreferences.defaults.focusReading}
-	data-tree-navigation={treeNavigation ? 'expanded' : undefined}
 	data-section-tracking={treeNavigation && projectConfig.navigation.sectionTracking ? 'enabled' : undefined}
 	style={documentStyle}
 >
@@ -174,7 +167,6 @@ const treeNavigationVisibilityScript = treeNavigation
 		{description && <meta name="description" content={description} />}
 		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
 		{readerPreferencesScript && <script is:inline set:html={readerPreferencesScript} />}
-		{treeNavigationVisibilityScript && <script is:inline set:html={treeNavigationVisibilityScript} />}
 		<link rel="canonical" href={canonicalUrl} />
 		<meta name="generator" content={Astro.generator} />
 		{iconLinks.map((iconLink) => (

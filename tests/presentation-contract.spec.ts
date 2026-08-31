@@ -261,56 +261,6 @@ test('reader preferences apply, persist, and reset as one bounded overlay', asyn
 	await expect(page.locator('.tree-local-navigation')).toBeVisible();
 });
 
-test('collapsing tree navigation preserves reading and media geometry', async ({ page }) => {
-	await page.setViewportSize({ width: 1440, height: 1000 });
-	await openComponents(page);
-	const imageStackSection = page.locator('.site-section').filter({ has: page.locator('#image-stack') });
-	const carouselSection = page.locator('.site-section').filter({ has: page.locator('#image-carousel') });
-	const cards = page.locator('.card-list').first();
-	const prose = page.locator('.section-markdown').first();
-	const imageStackProse = imageStackSection.locator('.section-markdown');
-	const elements = [
-		prose,
-		imageStackProse,
-		imageStackSection.locator('.managed-image-frame').first(),
-		imageStackSection.locator('.image-meta').first(),
-		carouselSection.locator('.image-carousel-stage'),
-		carouselSection.locator('.image-carousel-captions'),
-		cards,
-	];
-	const before = await Promise.all(elements.map((element) => element.boundingBox()));
-	const surfaceBefore = await getSectionSurfaceBounds(imageStackSection);
-	const sectionBackgroundsBefore = await page.locator('.site-section').evaluateAll((sections) => (
-		sections.map((section) => getComputedStyle(section).backgroundColor)
-	));
-	const sectionSurfaceTokens = await page.locator('.site-section').evaluateAll((sections) => (
-		sections.map((section) => getComputedStyle(section).getPropertyValue('--section-background-color').trim())
-	));
-	const baseSurfaceColor = await page.locator('html').evaluate((root) => (
-		getComputedStyle(root).getPropertyValue('--color-surface-base-background').trim()
-	));
-	expect(before.every(Boolean)).toBe(true);
-	expect(sectionBackgroundsBefore.every((color) => color === 'rgba(0, 0, 0, 0)')).toBe(true);
-	expect(new Set(sectionSurfaceTokens)).toEqual(new Set([baseSurfaceColor]));
-	expect(Math.abs((before[2]?.x ?? 0) - (before[1]?.x ?? 0))).toBeLessThan(2);
-
-	await page.locator('[data-tree-navigation-toggle]').click();
-
-	const after = await Promise.all(elements.map((element) => element.boundingBox()));
-	const surfaceAfter = await getSectionSurfaceBounds(imageStackSection);
-	const sectionBackgroundsAfter = await page.locator('.site-section').evaluateAll((sections) => (
-		sections.map((section) => getComputedStyle(section).backgroundColor)
-	));
-	expect(after.every(Boolean)).toBe(true);
-	expect(sectionBackgroundsAfter).toEqual(sectionBackgroundsBefore);
-	for (const [index, rectangle] of before.entries()) {
-		expect(Math.abs((after[index]?.x ?? 0) - (rectangle?.x ?? 0))).toBeLessThan(2);
-		expect(Math.abs((after[index]?.width ?? 0) - (rectangle?.width ?? 0))).toBeLessThan(2);
-	}
-	expect(surfaceAfter.left).toBeCloseTo(surfaceBefore.left, 0);
-	expect(surfaceAfter.right).toBeCloseTo(surfaceBefore.right, 0);
-});
-
 test('text-width card lists follow the active reading column', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await openComponents(page);

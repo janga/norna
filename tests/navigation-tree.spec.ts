@@ -37,15 +37,11 @@ test.describe('desktop tree navigation', () => {
 		await expect(pageContents.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
 		await expect(pageContents.getByRole('link', { name: 'Verify', exact: true })).toBeVisible();
 		await expect(page.locator('.page-nav')).toHaveCount(0);
+		await expect(page.locator('[data-tree-navigation-toggle]')).toHaveCount(0);
 
-		const toggleIconBox = await page.locator('.tree-navigation-toggle-icon-hide').boundingBox();
-		const activeRootLinkBox = await localNavigation
-			.locator('.navigation-page-tree-sidebar > .navigation-page-node .navigation-page-summary-title')
-			.first()
-			.boundingBox();
-		expect(toggleIconBox).not.toBeNull();
-		expect(activeRootLinkBox).not.toBeNull();
-		expect(Math.abs((toggleIconBox?.x ?? 0) - (activeRootLinkBox?.x ?? 0))).toBeLessThan(2);
+		const settings = page.locator('[data-display-settings]');
+		await settings.locator('summary').click();
+		await expect(settings.getByRole('checkbox', { name: 'Focus reading' })).toBeVisible();
 	});
 
 	test('marks the H2 or H3 at the reading line without changing URL or focus', async ({ page }) => {
@@ -56,7 +52,7 @@ test.describe('desktop tree navigation', () => {
 		const localNavigation = page.locator('.tree-local-navigation');
 		const installLink = localNavigation.getByRole('link', { name: 'Install', exact: true });
 		const prerequisitesLink = localNavigation.getByRole('link', { name: 'Prerequisites', exact: true });
-		const navigationToggle = page.locator('[data-tree-navigation-toggle]');
+		const displaySettingsSummary = page.locator('[data-display-settings] > summary');
 		const initialUrl = page.url();
 		const moveHeadingToReadingLine = async (id: string) => {
 			await page.locator(`#${id}`).evaluate((heading) => {
@@ -69,7 +65,7 @@ test.describe('desktop tree navigation', () => {
 			});
 		};
 
-		await navigationToggle.focus();
+		await displaySettingsSummary.focus();
 		await moveHeadingToReadingLine('install');
 		await expect(installLink).toHaveAttribute('aria-current', 'location');
 		await expect(prerequisitesLink).not.toHaveAttribute('aria-current', 'location');
@@ -77,63 +73,37 @@ test.describe('desktop tree navigation', () => {
 		await moveHeadingToReadingLine('prerequisites');
 		await expect(prerequisitesLink).toHaveAttribute('aria-current', 'location');
 		await expect(installLink).not.toHaveAttribute('aria-current', 'location');
-		await expect(navigationToggle).toBeFocused();
+		await expect(displaySettingsSummary).toBeFocused();
 		expect(page.url()).toBe(initialUrl);
 		expect(await prerequisitesLink.evaluate((link) => getComputedStyle(link, '::before').width)).toBe('2px');
 	});
 
-	test('collapses the local tree in one action while preserving page context and reading position', async ({ page }) => {
+	test('uses focus reading as the only control for hiding the local tree', async ({ page, context }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		const root = page.locator('html');
 		const localNavigation = page.locator('.tree-local-navigation');
-		const collapseButton = page.locator('[data-tree-navigation-toggle]');
-		const content = page.locator('.site-content');
 		const breadcrumbs = page.locator('.site-breadcrumbs');
-		const heading = page.locator('.section-header').first();
-		const prose = page.locator('.section-markdown').first();
-		const contentWidthBefore = (await content.boundingBox())?.width;
-		const breadcrumbsBefore = await breadcrumbs.boundingBox();
-		const headingBefore = await heading.boundingBox();
-		const proseBefore = await prose.boundingBox();
+		const settings = page.locator('[data-display-settings]');
 
-		await expect(collapseButton).toHaveAttribute('aria-expanded', 'true');
-		await expect(collapseButton).toHaveAccessibleName('Hide navigation');
-		await collapseButton.click();
+		await expect(page.locator('[data-tree-navigation-toggle]')).toHaveCount(0);
+		await settings.locator('summary').click();
+		const focusReading = settings.getByRole('checkbox', { name: 'Focus reading' });
+		await focusReading.check();
 
-		await expect(collapseButton).toBeFocused();
-		await expect(root).toHaveAttribute('data-tree-navigation', 'collapsed');
-		await expect(collapseButton).toHaveAttribute('aria-expanded', 'false');
-		await expect(collapseButton).toHaveAccessibleName('Show navigation');
+		await expect(root).toHaveAttribute('data-focus-reading', 'on');
 		await expect(localNavigation).toBeHidden();
-		await expect(page.locator('.site-nav')).toBeVisible();
-		await expect(page.locator('.site-breadcrumbs')).toBeVisible();
-
-		const contentWidthAfter = (await content.boundingBox())?.width;
-		const breadcrumbsAfter = await breadcrumbs.boundingBox();
-		const headingAfter = await heading.boundingBox();
-		const proseAfter = await prose.boundingBox();
-		expect(contentWidthBefore).toBeDefined();
-		expect(contentWidthAfter).toBeDefined();
-		expect((contentWidthAfter ?? 0) - (contentWidthBefore ?? 0)).toBeGreaterThan(100);
-		expect(proseBefore).not.toBeNull();
-		expect(proseAfter).not.toBeNull();
-		expect(headingBefore).not.toBeNull();
-		expect(headingAfter).not.toBeNull();
-		expect(breadcrumbsBefore).not.toBeNull();
-		expect(breadcrumbsAfter).not.toBeNull();
-		expect(Math.abs((proseAfter?.width ?? 0) - (proseBefore?.width ?? 0))).toBeLessThan(2);
-		expect(Math.abs((proseAfter?.x ?? 0) - (proseBefore?.x ?? 0))).toBeLessThan(2);
-		expect(Math.abs((headingAfter?.x ?? 0) - (headingBefore?.x ?? 0))).toBeLessThan(2);
-		expect(Math.abs((breadcrumbsAfter?.x ?? 0) - (breadcrumbsBefore?.x ?? 0))).toBeLessThan(2);
-		expect(await page.evaluate(() => sessionStorage.getItem('norna:tree-navigation:visibility:/'))).toBe('collapsed');
+		await expect(page.locator('.site-nav')).toBeHidden();
+		await expect(breadcrumbs).toBeHidden();
+		await expect(settings.locator('summary')).toBeVisible();
+		expect((await context.cookies()).find(({ name }) => name === 'norna-focus-reading')?.value).toBe('on');
 
 		await page.goto('/guides/workflows/', { waitUntil: 'networkidle' });
-		await expect(page.locator('html')).toHaveAttribute('data-tree-navigation', 'collapsed');
+		await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'on');
 		await expect(page.locator('.tree-local-navigation')).toBeHidden();
-		const showButton = page.locator('[data-tree-navigation-toggle]');
-		await showButton.click();
-		await expect(showButton).toBeFocused();
-		await expect(page.locator('html')).toHaveAttribute('data-tree-navigation', 'expanded');
+		const nextSettings = page.locator('[data-display-settings]');
+		await nextSettings.locator('summary').click();
+		await nextSettings.getByRole('checkbox', { name: 'Focus reading' }).uncheck();
+		await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'off');
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
 	});
 

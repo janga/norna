@@ -198,7 +198,6 @@ const localeLabels = Object.freeze({
 		colorModeDark: 'Dark',
 		colorModeLight: 'Light',
 		colorModeSystem: 'System',
-		hideNavigation: 'Hide navigation',
 		displaySettings: 'Display',
 		focusReading: 'Focus reading',
 		readingWidth: 'Reading width',
@@ -218,7 +217,6 @@ const localeLabels = Object.freeze({
 		previousImage: 'Previous image',
 		siteBanners: 'Site notices',
 		siteNavigation: 'Pages',
-		showNavigation: 'Show navigation',
 		skipToContent: 'Skip to content',
 	}),
 	sv: Object.freeze({
@@ -227,7 +225,6 @@ const localeLabels = Object.freeze({
 		colorModeDark: 'Mörkt',
 		colorModeLight: 'Ljust',
 		colorModeSystem: 'System',
-		hideNavigation: 'Dölj navigation',
 		displaySettings: 'Visning',
 		focusReading: 'Fokuserad läsning',
 		readingWidth: 'Textbredd',
@@ -247,7 +244,6 @@ const localeLabels = Object.freeze({
 		previousImage: 'Föregående bild',
 		siteBanners: 'Meddelanden',
 		siteNavigation: 'Sidor',
-		showNavigation: 'Visa navigation',
 		skipToContent: 'Hoppa till innehållet',
 	}),
 });

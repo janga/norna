@@ -557,6 +557,13 @@ export const resolvePagePresentation = (theme, sourceLabel, { navigationMode = '
 	if (navigationMode === 'tree') {
 		return {
 			...resolvedThemePresentation,
+			readerPreferences: {
+				...resolvedThemePresentation.readerPreferences,
+				controls: {
+					...resolvedThemePresentation.readerPreferences.controls,
+					focusReading: true,
+				},
+			},
 			sectionSurfaces: getSectionSurfaces('uniform', sourceLabel),
 		};
 	}

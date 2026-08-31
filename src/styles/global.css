@@ -307,7 +307,7 @@ a {
 	padding: 0.8rem 0 0.7rem;
 }
 
-:root[data-tree-navigation] .site-nav-row {
+.site-top[data-navigation-mode='tree'] .site-nav-row {
 	width: min(calc(100% - (var(--content-gutter) * 2)), max(var(--page-width), 76rem));
 }
 
@@ -836,75 +836,6 @@ a {
 		margin-left: 0;
 	}
 
-	:root[data-tree-navigation='collapsed'] .site-page-layout-tree {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 0;
-	}
-
-	:root[data-tree-navigation='collapsed'] .site-page-layout-tree
-		:is(.site-breadcrumbs, .section-header) {
-		margin-right: auto;
-		margin-left: calc(var(--tree-navigation-width) + var(--tree-layout-gap));
-		max-width: calc(100% - var(--tree-navigation-width) - var(--tree-layout-gap));
-	}
-
-	:root[data-tree-navigation='collapsed'] .site-page-layout-tree .section-body {
-		width: calc(100% - var(--tree-navigation-width) - var(--tree-layout-gap));
-		margin-right: auto;
-		margin-left: calc(var(--tree-navigation-width) + var(--tree-layout-gap));
-	}
-
-	:root[data-tree-navigation='collapsed'] .site-page-layout-tree .site-section::before {
-		left: calc(var(--tree-navigation-width) + var(--tree-layout-gap));
-	}
-}
-
-.tree-navigation-toggle {
-	position: relative;
-	inset-inline-start: -0.75rem;
-	display: grid;
-	place-items: center;
-	flex: 0 0 auto;
-	width: var(--target-size-comfortable);
-	height: var(--target-size-comfortable);
-	margin: 0;
-	border: 0;
-	border-radius: var(--corner-radius-small, 2px);
-	background: transparent;
-	color: currentColor;
-	cursor: pointer;
-	transition: background-color 0.18s ease, color 0.18s ease;
-}
-
-:root:not([data-tree-navigation-ready='true']) .tree-navigation-toggle {
-	display: none;
-}
-
-.tree-navigation-toggle:hover {
-	background: color-mix(in srgb, currentColor 9%, transparent);
-}
-
-.tree-navigation-toggle-icon {
-	display: block;
-	width: 1.25rem;
-	height: 1.25rem;
-	fill: none;
-	stroke: currentColor;
-	stroke-width: 1.8;
-	stroke-linecap: round;
-	stroke-linejoin: round;
-}
-
-.tree-navigation-toggle-icon-show {
-	display: none;
-}
-
-.tree-navigation-toggle[aria-expanded='false'] .tree-navigation-toggle-icon-hide {
-	display: none;
-}
-
-.tree-navigation-toggle[aria-expanded='false'] .tree-navigation-toggle-icon-show {
-	display: block;
 }
 
 .tree-local-navigation {
@@ -917,10 +848,6 @@ a {
 	background: var(--color-page);
 	overflow-y: auto;
 	overscroll-behavior: contain;
-}
-
-:root[data-tree-navigation='collapsed'] .tree-local-navigation {
-	display: none;
 }
 
 .navigation-page-sections {
@@ -2397,8 +2324,7 @@ ul {
 		right: calc(50% - 50vw);
 	}
 
-	.tree-local-navigation,
-	.tree-navigation-toggle {
+	.tree-local-navigation {
 		display: none;
 	}
 
@@ -2564,7 +2490,6 @@ ul {
 	.display-settings-panel,
 	.mobile-nav-panel,
 	.site-nav-submenu > nav,
-	.tree-navigation-toggle,
 	.card-list-item,
 	.image-carousel-button,
 	.image-carousel-position {

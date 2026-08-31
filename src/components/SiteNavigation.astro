@@ -1,6 +1,4 @@
 ---
-import PanelLeftClose from '@lucide/astro/icons/panel-left-close';
-import PanelLeftOpen from '@lucide/astro/icons/panel-left-open';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
@@ -85,8 +83,7 @@ const showPageNavigation = Boolean(
 const showSinglePageTitleOnly = showSinglePageTopLink && currentPageSectionCount === 0;
 const showMobileNavigation = showSiteNavigation || hasCurrentPageSectionMenu || hasTreePageContents;
 const showReaderControls = Object.values(readerPreferences.controls).some(Boolean);
-const showTreeNavigationToggle = navigationMode === 'tree';
-const showDesktopNavigationRow = showSiteNavigation || Boolean(logo) || showReaderControls || showTreeNavigationToggle;
+const showDesktopNavigationRow = showSiteNavigation || Boolean(logo) || showReaderControls;
 const showNavigationRow = showMobileNavigation || showDesktopNavigationRow;
 const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents || navigationMode === 'tree';
 ---
@@ -103,35 +100,11 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 >
 	{showNavigationRow && (
 		<div class:list={['site-nav-row', { 'site-nav-row-mobile-only': !showDesktopNavigationRow }]}>
-			{(showTreeNavigationToggle || logo) && (
+			{logo && (
 				<div class="site-nav-leading">
-					{showTreeNavigationToggle && (
-						<button
-							class="tree-navigation-toggle"
-							type="button"
-							aria-controls="tree-local-navigation"
-							aria-expanded="true"
-							aria-label={projectConfig.locale.labels.hideNavigation}
-							title={projectConfig.locale.labels.hideNavigation}
-							data-hide-label={projectConfig.locale.labels.hideNavigation}
-							data-show-label={projectConfig.locale.labels.showNavigation}
-							data-tree-navigation-toggle
-						>
-							<PanelLeftClose
-								class="tree-navigation-toggle-icon tree-navigation-toggle-icon-hide"
-								aria-hidden="true"
-							/>
-							<PanelLeftOpen
-								class="tree-navigation-toggle-icon tree-navigation-toggle-icon-show"
-								aria-hidden="true"
-							/>
-						</button>
-					)}
-					{logo && (
-						<a class="site-brand" href={pageHref(homePage)}>
-							<img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} />
-						</a>
-					)}
+					<a class="site-brand" href={pageHref(homePage)}>
+						<img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} />
+					</a>
 				</div>
 			)}
 

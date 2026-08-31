@@ -96,6 +96,12 @@ assert.deepEqual(
 	['base'],
 	'tree navigation must use one uniform reading surface',
 );
+assert.equal(
+	resolvePagePresentation({ preset: 'statement' }, 'tree-theme.yaml', { navigationMode: 'tree' })
+		.readerPreferences.controls.focusReading,
+	true,
+	'tree navigation must make focus reading available even when the preset disables it',
+);
 assert.throws(
 	() => resolvePagePresentation({
 		preset: 'documentation',
