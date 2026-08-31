@@ -90,7 +90,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Use image stacks, carousels, and cards](content.md#norna-blocks)
 - [Add notes to prose](content.md#markdown-text)
 - [Add a page or navigation category](pages.md#create-pages-and-categories)
-- [Understand generated and collapsible navigation](pages.md#navigation)
+- [Understand generated navigation](pages.md#navigation)
 - [Add shared banners or footer content](sitewide-content.md)
 - [Use project-local VS Code help](editor-support.md)
 

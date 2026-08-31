@@ -34,13 +34,36 @@ size: m
   link: https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/
 ```
 
-[Switch between all four presets without changing the comparison content](https://janga.github.io/norna/examples/theme-presets/).
+[Open the Theme explorer](https://janga.github.io/norna/examples/theme-presets/)
+to switch presets while keeping the comparison content unchanged.
 
 The selected preset is root configuration in `site/theme.yaml`:
 
 ```yaml
 preset: documentation
 ```
+
+## Choose a palette {#palettes}
+
+A palette changes the coordinated colors used by the complete site. It does
+not replace the preset's typography, spacing, corners, media sizing or other
+presentation choices.
+
+Keep the preset default unless the site needs another color character. Add one
+root setting to override it:
+
+```yaml
+preset: documentation
+palette: forest-moss
+```
+
+Every palette has light and dark variants. The
+[Theme explorer](https://janga.github.io/norna/examples/theme-presets/) lets
+you combine every built-in preset and palette, select a default color mode and
+see the resulting `theme.yaml`.
+
+See the [palette and color-mode reference](https://github.com/janga/norna/blob/main/docs/theme.md#palette-and-color-mode)
+for all accepted values, defaults and scope.
 
 ## Root theme overrides {#root-overrides}
 
@@ -56,9 +79,9 @@ blocks:
     width: text
 ```
 
-Colors, corners, typography, navigation presentation and structured-block
-defaults belong to the root theme. Keeping them site-wide gives the pages a
-shared visual identity.
+Palettes, color modes, corners, typography, navigation presentation and
+structured-block defaults belong to the root theme. Keeping them site-wide
+gives the pages a shared visual identity.
 
 ## Page theme overrides {#page-overrides}
 
@@ -81,7 +104,9 @@ corners, typography, navigation treatment or content-block defaults.
 
 Narrow, Standard and Wide reading widths are always available in the Display
 panel. The root theme chooses the initial width; a reader's selection is stored
-in that browser and does not modify `theme.yaml`.
+in that browser and does not modify `theme.yaml`. The same distinction applies
+to color mode: the root theme supplies the configured default, while a reader
+may temporarily choose System, Light or Dark when that control is enabled.
 
 The site owner may also offer color-mode and focus-reading choices:
 

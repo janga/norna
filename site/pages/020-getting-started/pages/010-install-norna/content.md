@@ -98,8 +98,9 @@ npm run norna:theme:presets
 ```
 
 Start with the preset alone and review it with real content before adding
-overrides. The [preset comparison](https://janga.github.io/norna/examples/theme-presets/)
-shows identical content rendered with all four presets.
+overrides. The [Theme explorer](https://janga.github.io/norna/examples/theme-presets/)
+shows identical content with every preset and lets you try a different
+site-wide palette without changing the other preset choices.
 
 See [Theme presets and overrides](https://github.com/janga/norna/blob/main/docs/theme.md#theme-presets)
 when you need exact defaults, page-theme scope, reader Display controls, or an

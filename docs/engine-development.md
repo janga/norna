@@ -66,8 +66,12 @@ the shared GitHub Pages artifact. It is not a generic Norna site command.
 built-in preset and verifies characterized values and rendered markup. The
 committed screenshots are human-review references rather than pixel-perfect
 test assertions. Use `npm run preset:documentation:review` for an interactive
-local comparison of the `documentation` preset candidates. Capture new
-baseline images only after the intended visual change has been reviewed:
+local comparison of the `documentation` preset candidates. Use
+`npm run palette:review` to render every built-in palette against the same
+representative content and switch between them in one browser view. The
+corresponding `*:build` commands create the review output without starting a
+server. Capture new baseline images only after the intended visual change has
+been reviewed:
 
 ```sh
 npm run preset:baselines:capture

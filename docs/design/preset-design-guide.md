@@ -51,8 +51,8 @@ Norna therefore coordinates section backgrounds with the navigation model:
   text and media retain their configured content widths;
 - `tree` navigation always uses `uniform`, preserving one continuous reading
   surface beside the persistent navigation region;
-- collapsing tree navigation, enabling focus reading, or moving to a small
-  viewport must not change the effective background pattern;
+- enabling focus reading or moving to a small viewport must not change the
+  effective background pattern;
 - cards, callouts, code, banners, and other semantic components may still use
   distinct surfaces inside a uniform page.
 
@@ -102,7 +102,7 @@ Profiles should cover these categories:
 
 | Category | Responsibility | Example names |
 | --- | --- | --- |
-| Color system | Coordinated light/dark palettes and semantic color roles | `near-monochrome`, `cool-green`, `warm-paper` |
+| Color system | Coordinated light/dark palettes and semantic color roles | `near-monochrome`, `warm-paper`, `arctic-blue`, `vivid-night` |
 | Typography | Font stack, type scale, weights, and heading relationships | `reading`, `project`, `restrained`, `editorial` |
 | Rhythm | Prose and structural vertical spacing | `compact`, `normal`, `airy` |
 | Geometry | Page frame, prose measure, navigation column, notes, and gutters | `documentation`, `balanced`, `wide` |
@@ -201,8 +201,9 @@ regardless of reader choices.
 
 Reading width is always offered; the site owner chooses its initial value
 through the theme rather than whether readers may change it. The site owner may
-choose whether color mode and focus reading are offered. Reader values must be
-named and constrained; readers should not enter CSS values.
+choose whether color mode and focus reading are offered, except that tree
+navigation always offers focus reading. Reader values must be named and
+constrained; readers should not enter CSS values.
 
 The Display panel should use one well-labeled control in the site navigation,
 native grouped form controls, full keyboard support, clear checked states, and

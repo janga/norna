@@ -24,9 +24,10 @@ resolves these engine roles:
 Presets choose a palette. Components consume roles rather than inventing
 component-specific translucent text or status colors.
 
-The resolver checks every supported foreground/background pairing. Normal
-text must reach `4.5:1`; meaningful non-text indicators and focus boundaries
-must reach `3:1`. These thresholds follow WCAG 2.2
+The resolver checks every supported foreground/background pairing. Normal and
+secondary text supplied by the engine must reach `5:1`, which keeps a margin
+above the WCAG AA minimum of `4.5:1`. Meaningful non-text indicators and focus
+boundaries must reach `3:1`. These thresholds follow WCAG 2.2
 [Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum)
 and [Non-text Contrast](https://www.w3.org/WAI/WCAG22/understanding/non-text-contrast.html).
 

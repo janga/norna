@@ -21,7 +21,7 @@ size: m
   link: /examples/complete-sites/
   badge-text: Whole projects
 - title: Themes and overrides
-  text: Compare presets and see the boundary between root settings, page overrides and reader choices.
+  text: Combine presets and palettes, then see the boundary between root settings, page overrides and reader choices.
   link: /examples/themes-and-overrides/
   badge-text: Presentation
 - title: Media blocks

@@ -260,7 +260,7 @@ const addThemeHelp = (jsonSchema) => {
 	})]);
 	addHelp(jsonSchema, 'readerControls', [
 		yamlExample('readerControls:\n  colorMode: true\n  focusReading: true'),
-		'Adds optional color-mode and focus-reading choices to the site-wide Display panel. Reading width is always available and is not configured here.',
+		'Adds optional color-mode and focus-reading choices to the site-wide Display panel. Reading width is always available, and tree navigation always provides Focus reading.',
 		documentationLink('Reader Display controls', 'theme.md', 'reader-display-controls'),
 	]);
 	for (const [propertyPath, example] of [
@@ -278,7 +278,7 @@ const addThemeHelp = (jsonSchema) => {
 	addSnippets(jsonSchema, 'readerControls', [schemaSnippet({
 		label: 'Configure the Display panel',
 		body: 'readerControls:\n  colorMode: ${1:true}\n  focusReading: ${2:true}',
-		description: 'Offer optional color-mode and focus-reading choices alongside the universal reading-width control.',
+		description: 'Offer optional color-mode and focus-reading choices alongside the universal reading-width control. Tree navigation always provides Focus reading.',
 		file: 'theme.md',
 		anchor: 'reader-display-controls',
 	})]);

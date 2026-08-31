@@ -86,11 +86,6 @@ verified.
   A first version should probably use a simple `columns` value plus a flat image
   list, fill cells in reading order, allow an incomplete final row, and avoid
   empty cells until a real need appears.
-- After visual approval, document the nine curated palettes in `docs/theme.md`,
-  the HTML theme introduction, and the public comparison examples. Explain the
-  intended character of each palette, show both light and dark modes, and add
-  an upgrading note that replaces the removed `cool-green` value with
-  `arctic-blue`.
 - Improve `init --type embedded` if real mixed projects reveal missing setup
   steps.
 - Consider a lighter local-engine testing workflow than publishing to npm,

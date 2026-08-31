@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { renderThemePresetComparison } from './build-theme-preset-comparison.mjs';
+import { presentationPaletteNames } from './lib/presentation-palette-metadata.mjs';
 import { themePresetNames, themePresets } from './lib/theme-presets.mjs';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
@@ -189,12 +191,48 @@ const checkThemePresetReference = async () => {
 		const exampleUrl = `https://janga.github.io/norna/examples/feature-demos/theme-preset-${presetName}/`;
 		assert.ok(section.includes(exampleUrl), `docs/theme.md ${presetName} reference is missing its rendered example.`);
 	}
+
+	for (const paletteName of presentationPaletteNames) {
+		assert.ok(
+			source.includes(`| \`${paletteName}\` |`),
+			`docs/theme.md is missing the ${paletteName} palette reference.`,
+		);
+	}
+	assert.ok(!source.includes('`cool-green`'), 'docs/theme.md still documents the removed cool-green palette.');
+};
+
+const checkThemeExplorer = () => {
+	const source = renderThemePresetComparison();
+	for (const presetName of themePresetNames) {
+		assert.ok(source.includes(`<option value="${presetName}">`), `Theme explorer is missing preset ${presetName}.`);
+	}
+	for (const paletteName of presentationPaletteNames) {
+		assert.ok(source.includes(`<option value="${paletteName}">`), `Theme explorer is missing palette ${paletteName}.`);
+	}
+	for (const marker of [
+		'data-preset-select',
+		'data-palette-select',
+		'data-color-mode-select',
+		'data-theme-config',
+		'data-theme-frame',
+		"const values = new URLSearchParams",
+		"frameDocument.querySelectorAll('[data-reader-appearance]')",
+	]) {
+		assert.ok(source.includes(marker), `Theme explorer is missing: ${marker}`);
+	}
+	const scripts = [...source.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+	assert.ok(scripts.length > 0, 'Theme explorer is missing its client script.');
+	assert.doesNotThrow(
+		() => new Function(scripts.at(-1)[1]),
+		'Theme explorer client script must be valid JavaScript.',
+	);
 };
 
 await checkLocalMarkdownLinks();
 await checkObsoleteDocumentationReferences();
 await checkObsoleteSiteFiles();
 await checkThemePresetReference();
+checkThemeExplorer();
 
 const llms = await readFile(path.join(repoRoot, 'site', 'public', 'llms.txt'), 'utf8');
 for (const match of llms.matchAll(/https:\/\/raw\.githubusercontent\.com\/janga\/norna\/main\/([^\s)]+)/g)) {

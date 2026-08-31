@@ -100,12 +100,17 @@ Replace superseded root-theme terms when upgrading:
 | Previous term | Current term |
 | --- | --- |
 | `palette: dark` | `palette: near-monochrome` |
-| `palette: light` | `palette: cool-green` |
+| `palette: light` | `palette: arctic-blue` |
 | `palette: paper` | `palette: warm-paper` |
+| `palette: cool-green` | `palette: arctic-blue` |
 | `shape: square` | `corners: square` |
 | `shape: soft` | `corners: rounded` |
 | `readerControls.appearance` | `readerControls.colorMode` |
 | `sections.backgroundPattern: cycling` | `sections.backgroundPattern: accented` |
+
+`cool-green` was removed when the built-in palettes were expanded. Use
+`arctic-blue` as its closest supported replacement, then review the result in
+both light and dark mode.
 
 Remove `readerControls.readingWidth` from `theme.yaml`. Reading width is now an
 engine-level reader choice that is always available; `layout.textWidth` still

@@ -15,7 +15,8 @@ selection, status messages, focus indicators, and section surfaces in both
 light and dark mode. Norna validates every foreground and background pairing
 that its components use.
 
-- normal text must reach a contrast ratio of at least `4.5:1`;
+- normal and secondary text supplied by the engine must reach a contrast ratio
+  of at least `5:1`, providing a margin above the WCAG AA minimum of `4.5:1`;
 - meaningful control boundaries and focus indicators must reach at least
   `3:1`;
 - keyboard focus uses a shared two-color indicator with an inner width of at

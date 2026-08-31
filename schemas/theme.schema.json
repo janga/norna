@@ -80,18 +80,18 @@
           "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n```\n\nLet readers choose System, Light, or Dark color mode in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)"
         },
         "focusReading": {
-          "description": "Let readers temporarily hide navigation and other secondary page chrome while reading.",
+          "description": "Let readers temporarily hide navigation and other secondary page chrome while reading. Tree navigation always provides this control.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nreaderControls:\n  focusReading: true\n```\n\nLet readers temporarily hide navigation and other secondary page chrome while reading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)"
+          "markdownDescription": "```yaml\nreaderControls:\n  focusReading: true\n```\n\nLet readers temporarily hide navigation and other secondary page chrome while reading. Tree navigation always provides this control.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)"
         }
       },
       "additionalProperties": false,
       "description": "Optional site-wide reader choices grouped with the always-available reading-width choice in the Display panel.",
-      "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n  focusReading: true\n```\n\nAdds optional color-mode and focus-reading choices to the site-wide Display panel. Reading width is always available and is not configured here.\n\n[Reader Display controls](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
+      "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n  focusReading: true\n```\n\nAdds optional color-mode and focus-reading choices to the site-wide Display panel. Reading width is always available, and tree navigation always provides Focus reading.\n\n[Reader Display controls](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
       "defaultSnippets": [
         {
           "label": "Configure the Display panel",
-          "markdownDescription": "Offer optional color-mode and focus-reading choices alongside the universal reading-width control.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
+          "markdownDescription": "Offer optional color-mode and focus-reading choices alongside the universal reading-width control. Tree navigation always provides Focus reading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.18/docs/theme.md#reader-display-controls)",
           "body": "readerControls:\n  colorMode: ${1:true}\n  focusReading: ${2:true}"
         }
       ]

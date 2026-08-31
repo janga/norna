@@ -315,26 +315,21 @@ Categories require `tree` navigation because they need disclosure behavior
 without pretending to be page links. Explicit `sections` or `top` mode is
 therefore invalid when a listed category exists.
 
-### Collapsible Desktop Tree
+### Focus Reading With A Desktop Tree
 
-With `tree` navigation on a wide screen, Norna shows one button in the sticky
-site row for hiding or showing the local navigation tree. The button is a native
-keyboard-operable control whose accessible name changes between Show navigation
-and Hide navigation. Its `aria-expanded` and `aria-controls` attributes expose
-the same state and relationship to assistive technology.
+`tree` navigation always adds Focus reading to the Display panel, even when the
+selected preset would otherwise omit that choice. Focus reading hides the local
+tree together with the other secondary navigation, breadcrumbs, and footer.
+The Display control stays visible so the reader can restore the normal view.
 
-Collapsing the tree removes the navigation region but deliberately preserves
-the document column's width and horizontal position. Prose, headings, images,
-cards, and section surfaces therefore do not reflow or jump sideways. The
-collapse control does not widen the prose; reading width remains the reader's
-current Display choice. The tree state is stored in `sessionStorage` under a
-key scoped to the site's base path, so it survives navigation and reloads in
-the current browser tab but is not a persistent site preference.
+The document column keeps its width and horizontal position while Focus reading
+changes. Prose, headings, images, cards, and section surfaces therefore do not
+reflow or jump sideways. The choice is stored in the `norna-focus-reading`
+cookie and follows the reader across pages until it is changed or reset.
 
-The desktop tree control is not shown on small screens, where the complete
-hierarchy remains in the normal expandable menu. Without JavaScript, the tree
-stays visible and the inactive hide/show control is omitted; all page and
-anchor links remain usable.
+On small screens, the complete hierarchy remains available in the expandable
+menu. Without JavaScript, Focus reading cannot be selected and the tree stays
+visible; all page and anchor links remain usable.
 
 ### Current Reading Position
 

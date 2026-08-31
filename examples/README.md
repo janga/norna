@@ -6,7 +6,7 @@ documentation workflow.
 
 | Example | Purpose | Live demo | Source |
 | --- | --- | --- | --- |
-| Theme preset comparison | The same content rendered with all four presets | [Compare presets](https://janga.github.io/norna/examples/theme-presets/) | See the four preset sources below |
+| Theme explorer | Combine all four presets and nine palettes against the same representative content | [Explore themes](https://janga.github.io/norna/examples/theme-presets/) | See the four preset sources below |
 | Dog shelter, single page | A coherent homepage made from sections | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/) | [View files](complete-sites/dog-shelter-single-page/) |
 | Dog shelter, multi-page | A coherent site with ordered pages and page-local images | [Open site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](complete-sites/dog-shelter-multi-page/) |
 | Portfolio preset | Complete `portfolio` preset without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/) | [View files](feature-demos/theme-preset-portfolio/) |

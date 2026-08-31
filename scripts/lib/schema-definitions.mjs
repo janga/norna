@@ -25,7 +25,7 @@ const themeColorMode = z.object({
 ).describe('Site-wide light and dark mode behaviour.');
 const readerControls = z.object({
 	colorMode: z.boolean().optional().describe('Let readers choose System, Light, or Dark color mode in the site-wide Display panel.'),
-	focusReading: z.boolean().optional().describe('Let readers temporarily hide navigation and other secondary page chrome while reading.'),
+	focusReading: z.boolean().optional().describe('Let readers temporarily hide navigation and other secondary page chrome while reading. Tree navigation always provides this control.'),
 }).strict().refine(
 	(value) => value.colorMode !== undefined || value.focusReading !== undefined,
 	'Specify colorMode, focusReading, or both.',

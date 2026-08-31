@@ -54,7 +54,7 @@ Choose according to the site's main reading task, not according to one color or
 font in isolation. Start without overrides and review the result with real
 content before changing individual values.
 
-[Compare all four presets with identical content](https://janga.github.io/norna/examples/theme-presets/).
+[Explore all presets and palettes with identical content](https://janga.github.io/norna/examples/theme-presets/).
 
 The following sections list the complete public settings supplied by each
 preset. Internal profile names and derived component tokens are implementation
@@ -391,24 +391,45 @@ Use `npm run norna:typography:profiles` to inspect built-in values and
 
 ## Palette And Color Mode
 
-Norna separates a site's color character from whether it is shown in light or
-dark mode. A `palette` selects a coordinated family of colors, with both a light
-and a dark variant. `colorMode` selects the light variant, the dark variant, or
-the variant preferred by the visitor's operating system. It does not select
-another palette.
+Norna separates two color choices. A `palette` selects the coordinated colors
+used for page backgrounds, section surfaces, text, links, navigation, controls,
+code, status messages, and focus indicators. `colorMode` selects whether the
+light or dark variant of those same colors is shown. Changing the palette does
+not change typography, spacing, corners, or media sizing.
 
 ### Palette
 
-`palette` is a site-wide root-theme setting:
+Set `palette` in the root `site/theme.yaml`:
 
-| Value | Color character |
-| --- | --- |
-| `near-monochrome` | Neutral grays and off-whites with almost no visible hue. |
-| `cool-green` | A restrained range of cool greens, from light page surfaces to darker accents. |
-| `warm-paper` | Warm off-whites and browns resembling paper and ink. |
+```yaml
+preset: documentation
+palette: forest-moss
+```
+
+Every built-in palette provides coordinated light and dark variants. The
+default mode in the table applies only when neither a preset nor an explicit
+`colorMode.default` supplies another default.
+
+| Value | Color character | Palette default |
+| --- | --- | --- |
+| `near-monochrome` | Neutral grays and off-whites with almost no visible hue. | Dark |
+| `warm-paper` | Warm off-whites and browns resembling paper and ink. | Light |
+| `retro-earth` | Earthy ochres, olives, and warm neutrals with a subdued retro character. | Light |
+| `clay-rose` | Muted clay, rose, and wine tones with a warm editorial character. | Light |
+| `forest-moss` | Botanical greens, mossy surfaces, and warm lichen neutrals. | Light |
+| `mineral-teal` | Cool mineral greens with muted teal accents and pale aqua-gray surfaces. | Light |
+| `arctic-blue` | Cool blue-gray surfaces with clear, restrained blue accents. | Light |
+| `soft-lavender` | Quiet lavender surfaces with low-key mauve accents. | Light |
+| `vivid-night` | Indigo surfaces with a brighter cyan accent and a dark-first character. | Dark |
 
 Omit `palette` to use the selected preset's palette. Without a preset, Norna
-uses `near-monochrome`. A page-local theme cannot select another palette.
+uses `near-monochrome`. The palette is site-wide so navigation, page content,
+controls, and status surfaces retain one visual identity. Page and category
+themes cannot select another palette.
+
+[Open the Theme explorer](https://janga.github.io/norna/examples/theme-presets/)
+to apply every palette to the same representative content and combine it with
+each built-in preset.
 
 ### Color Mode
 
@@ -421,8 +442,8 @@ uses `near-monochrome`. A page-local theme cannot select another palette.
 | `dark` | Use the palette's dark variant. |
 
 Omit `colorMode` to use the selected preset's default. Without a preset, Norna
-uses the palette's default: `dark` for `near-monochrome`, and `light` for
-`cool-green` and `warm-paper`.
+uses the palette default shown above. Overriding a preset's palette does not
+replace the preset's color-mode default.
 
 Current preset defaults are:
 
@@ -467,7 +488,7 @@ The Display panel then contains:
 | --- | --- | --- |
 | Reading width | Always | Derived from `layout.textWidth`: `narrow`, `normal`, or `wide` |
 | Color mode | When `readerControls.colorMode` is `true` | `colorMode.default`, or the preset default |
-| Focus reading | When `readerControls.focusReading` is `true` | Off |
+| Focus reading | When `readerControls.focusReading` is `true`, or navigation resolves to `tree` | Off |
 
 Narrow, Standard, and Wide limit prose to approximately `60ch`, `72ch`, and
 `80ch` respectively. Media keeps its separately configured width. Focus reading
@@ -486,10 +507,12 @@ Built-in presets choose these starting widths and optional controls:
 | `statement` | Standard | Enabled | Disabled |
 
 Omit `readerControls` to use the selected preset's optional controls. Set
-`colorMode` or `focusReading` to `false` to disable that preset control. A root
-theme without a preset still provides reading width, but does not add color
-mode or focus reading unless explicitly enabled. Page-local themes cannot
-change `readerControls`.
+`colorMode` or `focusReading` to `false` to disable that preset control on sites
+without tree navigation. Tree navigation always offers Focus reading so readers
+can temporarily remove the persistent tree and other secondary page chrome. A
+root theme without a preset still provides reading width, but does not add color
+mode or focus reading unless explicitly enabled or required by tree navigation.
+Page-local themes cannot change `readerControls`.
 
 Reader choices are stored in first-party cookies:
 
@@ -565,7 +588,7 @@ A changing background creates a strong visual grouping. It works as a section
 cue with `sections` or `top` navigation. Tree navigation already creates a
 persistent navigation region beside the document, so it requires one continuous
 `uniform` reading background. This rule stays the same on small screens and
-when readers collapse the tree or enable focus reading.
+when readers enable focus reading.
 
 Omit `sections.backgroundPattern` to use the selected preset. Without a preset,
 Norna uses `uniform`. Built-in presets resolve to `uniform` automatically when

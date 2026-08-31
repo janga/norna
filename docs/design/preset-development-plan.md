@@ -219,7 +219,8 @@ the first preset. This avoids designing a preset around only one reader state.
 Completion checkpoint (2026-08-31): the reader-preference overlay and
 accessible Display panel are implemented. Every site offers Narrow, Standard,
 and Wide reading widths; presets select the initial width. Built-in presets
-also offer color mode, while `documentation` and `project` offer focus reading.
+also offer color mode, while `documentation` and `project` offer focus reading
+by default. Tree navigation offers focus reading with every preset.
 Browser tests cover persistence, reset, focus reading, text-width changes,
 keyboard closing, reflow, and the no-JavaScript default. Public reference,
 schema help, and the runnable presentation example use the approved theme
