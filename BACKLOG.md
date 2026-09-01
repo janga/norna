@@ -13,6 +13,12 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Now` contains at most three implementation-ready items in exact technical
 order.
 
+- [`BL-010` Static redirect aliases](docs/design/backlog/BL-010-redirect-aliases.md):
+  **Ready.** Establish old URL identities, collision rules, and generated
+  redirect output before page moves can preserve public URLs.
+- [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
+  **Ready after `BL-010`.** Use the shared reverse link index and redirect alias
+  model to move a page or reconcile an already moved page without guessing.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
   **Ready.** Reuse canonical page identity and existing metadata
   before adding further generated-page behavior.
@@ -41,12 +47,6 @@ page graph, and only afterward expands Markdown or URL behavior.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Ready after `BL-005`.** Extend Markdown semantics after search and page
   output rules can consume the new structure consistently.
-- [`BL-010` Static redirect aliases](docs/design/backlog/BL-010-redirect-aliases.md):
-  **Ready.** Add old URL identities only after
-  collision, canonical URL, sitemap, and generated-output rules are stable.
-- [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
-  **Ready after `BL-010`.** Use the shared reverse link index to move a page or
-  reconcile an already moved page without guessing.
 - [`BL-011` Edit source links](docs/design/backlog/BL-011-edit-source-links.md):
   **Ready.** Add repository-derived links after page source
   identity is stable; keep Git-derived dates outside this item.
