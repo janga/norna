@@ -144,6 +144,9 @@ export default defineConfig({
 	publicDir: astroPublicDir,
 	srcDir: path.join(engineRoot, 'src'),
 	vite: {
+		server: {
+			strictPort: true,
+		},
 		plugins: [nornaBasePathRedirect(), nornaGeneratedImagesWatcher()],
 	},
 });

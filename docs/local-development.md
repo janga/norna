@@ -16,7 +16,7 @@ The wrapper:
 4. waits until the site responds,
 5. opens `http://localhost:4321/` unless `NORNA_NO_OPEN=1` is set.
 
-The host and port are currently fixed in the script:
+The default address is:
 
 ```text
 localhost:4321
@@ -26,8 +26,16 @@ Before starting, Norna asks Astro to stop any background server tracked for the
 selected site. This uses the same Astro process lifecycle on macOS, Linux, and
 Windows.
 
-If port 4321 remains occupied by another process, the command stops and asks
-you to free the port manually. Norna does not terminate unrelated processes.
+Norna never switches to another port automatically. If port 4321 is occupied
+by another process, the command stops with an error. Pass `--kill` when Norna
+should explicitly stop that process and reuse the same port:
+
+```sh
+npm run norna:dev -- --kill
+```
+
+Set `NORNA_DEV_PORT` when the site should consistently use a different port.
+The same strict behavior applies to that port.
 
 ## Test On A Phone
 
@@ -35,6 +43,12 @@ To make the local dev server available to devices on the same Wi-Fi network:
 
 ```sh
 npm run norna:dev:lan
+```
+
+Pass `--kill` after `--` to reclaim the configured port before LAN startup:
+
+```sh
+npm run norna:dev:lan -- --kill
 ```
 
 The command prints one or more local IPv4 URLs. Open one of them on the phone.

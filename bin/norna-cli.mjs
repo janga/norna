@@ -8,8 +8,8 @@ const usage = `
 Usage: norna <command> [options]
 
 Commands:
-  dev:local              Start local Astro dev server
-  dev:lan                Start dev server for this local network
+  dev:local [--kill]     Start local Astro dev server on the configured port
+  dev:lan [--kill]       Start LAN dev server on the configured port
   dev:restart            Restart local Astro dev server
   dev:status             Show local dev server status
   dev:logs               Show local dev server logs
