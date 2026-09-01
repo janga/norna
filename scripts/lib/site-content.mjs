@@ -104,7 +104,10 @@ export const splitSiteFile = (source, label = siteContentLabel) => {
 	};
 };
 
-export const readSiteFile = async (sitePath, label = siteContentLabel) => splitSiteFile(await readFile(sitePath, 'utf8'), label);
+export const readSiteFile = async (sitePath, label = siteContentLabel) => {
+	const source = await readFile(sitePath, 'utf8');
+	return { ...splitSiteFile(source, label), source };
+};
 
 export const validateFrontmatterIndentation = (frontmatter, addIssue) => {
 	validateYamlIndentation(frontmatter, (issue) => addIssue({

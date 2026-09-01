@@ -79,7 +79,7 @@ export const getMarkdownHeadings = async (source) => {
 			),
 		}));
 
-	return { headings, source: normalizedSource };
+	return { headings, source: normalizedSource, tree };
 };
 
 export const getHeadingIdentifierIssues = (headings) => {

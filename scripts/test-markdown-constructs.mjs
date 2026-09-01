@@ -12,6 +12,18 @@ import {
 	runNorna,
 } from './test-support/content-model.mjs';
 
+const writePage = async (siteDir, pageDirectory, source) => {
+	const pageDir = path.join(siteDir, 'pages', pageDirectory);
+	await mkdir(pageDir, { recursive: true });
+	await writeFile(path.join(pageDir, 'content.md'), source);
+};
+
+const writePublicRoute = async (siteDir, route) => {
+	const routeDir = path.join(siteDir, 'public', route);
+	await mkdir(routeDir, { recursive: true });
+	await writeFile(path.join(routeDir, 'index.html'), '<!doctype html><title>Fixture target</title>\n');
+};
+
 test('inline notes render as linked numbered CSS margin notes', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
@@ -38,6 +50,7 @@ The third paragraph points to a link-only note.{note-ref}
 
 {note: [Install ImageMagick.](/faq/#link-only-note)}
 `);
+		await writePublicRoute(siteDir, 'faq');
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
@@ -76,6 +89,7 @@ The introduction points to an installation note.{note-ref}
 
 Page content.
 `);
+		await writePublicRoute(siteDir, 'faq');
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
@@ -115,6 +129,12 @@ width: narrow
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images'), { recursive: true });
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'images', 'adopt.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><rect width="160" height="100"/></svg>\n');
+		await writePage(siteDir, '010-adopt', `# Adopt
+
+## Start {#start}
+
+Adoption information.
+`);
 
 		const { stdout } = await runContentScript(siteDir, ['--check']);
 		assert.match(stdout, /Content check passed\./);

@@ -13,14 +13,11 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Now` contains at most three implementation-ready items in exact technical
 order.
 
-- [`BL-001` Internal link and anchor validation](docs/design/backlog/BL-001-link-validation.md):
-  **Ready.** Establish one resolver for pages, anchors, public files, base paths,
-  content diagnostics, and editor diagnostics.
-- [`BL-002` Automatic sitemap](docs/design/backlog/BL-002-sitemap.md): **Ready
-  after `BL-001`.** Generate deterministic public URLs from the same canonical
+- [`BL-002` Automatic sitemap](docs/design/backlog/BL-002-sitemap.md): **Ready.**
+  Generate deterministic public URLs from the canonical
   page-inclusion and URL rules.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
-  **Ready after `BL-001`.** Reuse canonical page identity and existing metadata
+  **Ready.** Reuse canonical page identity and existing metadata
   before adding further generated-page behavior.
 
 ## Next
@@ -29,14 +26,14 @@ order.
 completes deterministic site output, then builds reading features on the stable
 page graph, and only afterward expands Markdown or URL behavior.
 
-- [`BL-004` Default 404 page](docs/design/backlog/BL-004-default-404.md): **Ready
-  after `BL-001`.** Add the smallest engine-owned generated page and verify
+- [`BL-004` Default 404 page](docs/design/backlog/BL-004-default-404.md): **Ready.**
+  Add the smallest engine-owned generated page and verify
   root, base-path, localization, and GitHub Pages behavior.
 - [`BL-005` Static search](docs/design/backlog/BL-005-static-search.md): **Ready
-  after `BL-001` and `BL-002`.** Index final HTML only after page inclusion,
+  after `BL-002`.** Index final HTML only after page inclusion,
   URLs, and anchors have one shared contract.
 - [`BL-006` Previous and next page navigation](docs/design/backlog/BL-006-sequential-navigation.md):
-  **Ready after `BL-001`.** Define ordered traversal over the stable listed page
+  **Ready.** Define ordered traversal over the stable listed page
   graph before exposing that graph inside content.
 - [`BL-007` Explicit child page list](docs/design/backlog/BL-007-child-page-list.md):
   **Ready after `BL-006`.** Reuse its traversal rules in one explicit Markdown
@@ -48,10 +45,13 @@ page graph, and only afterward expands Markdown or URL behavior.
   **Ready after `BL-005`.** Extend Markdown semantics after search and page
   output rules can consume the new structure consistently.
 - [`BL-010` Static redirect aliases](docs/design/backlog/BL-010-redirect-aliases.md):
-  **Ready after `BL-001` and `BL-002`.** Add old URL identities only after
+  **Ready after `BL-002`.** Add old URL identities only after
   collision, canonical URL, sitemap, and generated-output rules are stable.
+- [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
+  **Ready after `BL-010`.** Use the shared reverse link index to move a page or
+  reconcile an already moved page without guessing.
 - [`BL-011` Edit source links](docs/design/backlog/BL-011-edit-source-links.md):
-  **Ready after `BL-001`.** Add repository-derived links after page source
+  **Ready.** Add repository-derived links after page source
   identity is stable; keep Git-derived dates outside this item.
 
 ## Later
@@ -69,6 +69,9 @@ work above unless a concrete defect raises their urgency.
   standalone website rather than adding a site to an existing project.
 - `BL-015` **Needs a scoped reproducer.** Clarify dev-server recovery when
   content, images, generated state, or watchers become stale.
+- [`BL-027` Editor link diagnostics](docs/design/backlog/BL-027-editor-link-diagnostics.md):
+  **Needs design.** Improve the experimental VS Code integration's cache and
+  test boundary before connecting it to the shared site link graph.
 
 ## Documentation Follow-ups
 
@@ -83,6 +86,10 @@ verified and approved for documentation.
 - `BL-017` Document the supported pattern for embedding an image-led Norna site
   in a larger GitHub Pages project that also publishes an application or
   project homepage.
+- `BL-029` Document internal page, heading-anchor, public-file, category, and
+  card-link validation in the content and command references, the documentation
+  site, and focused examples. Keep editor behavior explicitly out of scope
+  until `BL-027` is implemented.
 
 ## Needs Decision Or Evidence
 

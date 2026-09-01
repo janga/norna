@@ -19,7 +19,16 @@ diagnostics all benefit from the same rules.
 - Ignore external schemes and keep optional network checking outside this
   feature.
 - Aggregate all failures through existing content diagnostics.
-- Reuse the resolver in the editor service where practical.
+- Preserve exact source ranges and a reverse target index so later file-aware
+  commands can update links without reformatting Markdown.
+
+## Outside First Scope
+
+- VS Code diagnostics and navigation use the shared resolver only after the
+  experimental editor integration has its own design and test boundary.
+- `page:move` consumes this link graph later; link validation never changes
+  source files.
+- Redirect aliases remain a separate generated-output feature.
 
 ## Acceptance Criteria
 
@@ -28,4 +37,6 @@ diagnostics all benefit from the same rules.
 - Encoded characters, query strings, and trailing-slash forms have defined
   tests.
 - A link is interpreted by the same page and heading model used for rendering.
+- Link records retain the target's exact source range for direct Markdown
+  links, reference definitions, and Norna card links.
 - No network request is required by `content:check`.

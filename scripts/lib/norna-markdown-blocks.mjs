@@ -495,6 +495,7 @@ const parseCardListBlock = (source, options = {}) => {
 		}
 
 		current[entry.key] = entry.value;
+		if (entry.key === 'link') current.linkLine = lineNumber;
 	}
 
 	for (const card of cards) {

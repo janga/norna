@@ -19,7 +19,11 @@ import {
 } from './lib/site-content.mjs';
 import { getSiteStructure } from './lib/site-structure.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
-import { parsePageMarkdown } from './lib/page-markdown.mjs';
+import { parsePageMarkdownSource } from './lib/page-markdown.mjs';
+import {
+	createSiteLinkGraph,
+	getSitePublicFiles,
+} from './lib/site-link-graph.mjs';
 import {
 	siteThemeLabel,
 	siteThemePath,
@@ -234,14 +238,13 @@ const managedImageReferences = [];
 const contentFileContexts = [];
 
 for (const contentFile of contentFiles) {
-	const { frontmatter, body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+	const { frontmatter, body, source } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 	const bodyLineOffset = frontmatter.split(/\r?\n/).length - 1;
 	validateFrontmatterIndentation(frontmatter, addIssue);
 	validateContentFrontmatterStructure(frontmatter, addIssue);
 
-	const page = await parsePageMarkdown(body, {
+	const page = await parsePageMarkdownSource(source, {
 		label: contentFile.contentLabel,
-		lineOffset: bodyLineOffset,
 	});
 	const {
 		headingIssues: headingIdentifierIssues,
@@ -353,11 +356,21 @@ for (const contentFile of contentFiles) {
 
 	contentFileContexts.push({
 		contentFile,
+		page,
 		sections,
 		validSections,
 		blockResultsBySection,
 		body,
 	});
+}
+
+const siteLinkGraph = createSiteLinkGraph({
+	pageDocuments: contentFileContexts.map(({ contentFile, page }) => ({ contentFile, document: page })),
+	publicFiles: await getSitePublicFiles(),
+	siteStructure,
+});
+for (const issue of siteLinkGraph.diagnostics) {
+	addContentIssue(issue.reference.sourceContentFile, issue);
 }
 
 const imageSyncPlan = createImageSyncPlan({

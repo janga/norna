@@ -3,13 +3,38 @@ import {
 	getMarkdownHeadings,
 } from './heading-ids.mjs';
 import {
+	extractMarkdownLinks,
+	extractNornaBlockLinks,
+} from './markdown-links.mjs';
+import {
 	extractInlineNoteDiagnostics,
 	extractMarkdownImageReferences,
 	extractNornaMarkdownBlockDiagnostics,
 	getNornaBlockImageReferences,
 } from './norna-markdown-blocks.mjs';
 
-const normalizeMarkdown = (source) => source.replace(/\r\n?/g, '\n');
+const normalizeMarkdownWithOffsets = (source) => {
+	const input = String(source);
+	let normalized = '';
+	const originalOffsets = [0];
+
+	for (let index = 0; index < input.length;) {
+		if (input[index] === '\r') {
+			index += input[index + 1] === '\n' ? 2 : 1;
+			normalized += '\n';
+			originalOffsets.push(index);
+			continue;
+		}
+
+		normalized += input[index];
+		index += 1;
+		originalOffsets.push(index);
+	}
+
+	return { normalized, originalOffsets };
+};
+
+const normalizeMarkdown = (source) => normalizeMarkdownWithOffsets(source).normalized;
 
 const hasContent = (source) => source.trim().length > 0;
 
@@ -194,7 +219,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	const source = normalizeMarkdown(markdown);
 	const label = options.label ?? 'Markdown';
 	const lineOffset = options.lineOffset ?? 0;
-	const { headings } = await getMarkdownHeadings(source);
+	const { headings, tree } = await getMarkdownHeadings(source);
 	const structuralHeadings = headings.filter((heading) => heading.depth <= 2);
 	const prelude = structuralHeadings.length > 0
 		? source.slice(0, structuralHeadings[0].index)
@@ -225,6 +250,14 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		regionId: region.id,
 		severity: 'error',
 	})));
+	const blocks = regions.flatMap((region) => region.blocks);
+	const links = [
+		...extractMarkdownLinks({ source, tree, lineOffset }),
+		...extractNornaBlockLinks({ source, blocks, lineOffset }),
+	].sort((left, right) => (
+		left.line - right.line
+		|| (left.range?.start ?? 0) - (right.range?.start ?? 0)
+	));
 	const navigationHeadings = [];
 	let parentId = null;
 	for (const heading of headings) {
@@ -240,7 +273,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	}
 
 	return {
-		blocks: regions.flatMap((region) => region.blocks),
+		blocks,
 		diagnostics: [
 			...structureDiagnostics,
 			...headingDiagnostics,
@@ -252,6 +285,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		intro: regions.find((region) => region.kind === 'page-intro') ?? null,
 		label,
 		lineOffset,
+		links,
 		managedImages: regions.flatMap((region) => region.managedImages),
 		markdownImages: regions.flatMap((region) => region.markdownImages),
 		navigationHeadings,
@@ -266,17 +300,33 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 };
 
 export const parsePageMarkdownSource = async (source, options = {}) => {
-	const split = splitPageMarkdownSource(source);
+	const normalization = normalizeMarkdownWithOffsets(source);
+	const split = splitPageMarkdownSource(normalization.normalized);
 	const model = await parsePageMarkdown(split.body, {
 		...options,
 		lineOffset: (options.lineOffset ?? 0) + split.lineOffset,
 	});
 
+	const toOriginalRange = (range) => {
+		if (!range) return null;
+		const normalizedStart = split.bodyOffset + range.start;
+		const normalizedEnd = split.bodyOffset + range.end;
+		return {
+			start: normalization.originalOffsets[normalizedStart] ?? normalizedStart,
+			end: normalization.originalOffsets[normalizedEnd] ?? normalizedEnd,
+		};
+	};
+
 	return {
 		...model,
-		bodyOffset: split.bodyOffset,
+		bodyOffset: normalization.originalOffsets[split.bodyOffset] ?? split.bodyOffset,
 		frontmatter: split.frontmatter,
 		frontmatterUnclosed: split.frontmatterUnclosed,
-		fullSource: normalizeMarkdown(source),
+		fullSource: String(source),
+		links: model.links.map((link) => ({
+			...link,
+			range: toOriginalRange(link.range),
+			targetRange: toOriginalRange(link.targetRange),
+		})),
 	};
 };
