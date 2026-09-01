@@ -1,6 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CodeBlockCopyScript from './CodeBlockCopyScript.astro';
 import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
 import SiteNavigation from './SiteNavigation.astro';
 import SiteBanners from './SiteBanners.astro';
@@ -55,6 +56,9 @@ const logo = logoAsset
 	: undefined;
 const siteHtml = entry.rendered?.html ?? '';
 const resolvedSections = await getSectionsContent(siteHtml, currentPage);
+const hasCodeBlocks = resolvedSections.some((section) => section.contentBlocks.some((block) => (
+	block.type === 'html' && /<pre\b[^>]*>[\s\S]*?<code\b/i.test(block.html)
+)));
 const today = getToday();
 const siteBanners = (sitewideData.banners ?? []).filter((banner) => isVisibleToday(banner.visible, today));
 const hasPrioritizableImage = (section: ResolvedSection) => section.contentBlocks.some((block) => (
@@ -153,4 +157,5 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 		</main>
 	</div>
 	{hasTreeNavigation && <TreeNavigationScript />}
+	{hasCodeBlocks && <CodeBlockCopyScript />}
 </BaseLayout>

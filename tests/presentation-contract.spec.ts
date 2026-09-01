@@ -169,6 +169,33 @@ test('keyboard focus has a visible two-color indicator', async ({ page }) => {
 	expect(position.linkTop).toBeGreaterThanOrEqual(position.headerBottom - 1);
 });
 
+test('code blocks expose an accessible copy control without changing copied text', async ({ page }) => {
+	await page.addInitScript(() => {
+		Object.defineProperty(navigator, 'clipboard', {
+			configurable: true,
+			value: {
+				writeText: async (text: string) => {
+					(window as Window & { copiedCode?: string }).copiedCode = text;
+				},
+			},
+		});
+	});
+	await openComponents(page);
+
+	const button = page.getByRole('button', { name: 'Copy code' }).first();
+	await expect(button).toBeVisible();
+	await expect(button.locator('[data-code-copy-icon="copy"]')).toBeVisible();
+	await expect(button.locator('[data-code-copy-icon="copied"]')).toBeHidden();
+	await expect(button.locator('[data-code-copy-icon="failed"]')).toBeHidden();
+	await button.focus();
+	await expect(button).toBeFocused();
+	await button.press('Enter');
+	await expect(button.locator('[data-code-copy-status]')).toHaveText('Copied');
+	await expect.poll(() => page.evaluate(() => (
+		(window as Window & { copiedCode?: string }).copiedCode
+	))).toContain('npm run norna:check');
+});
+
 test('reduced motion disables transitions and carousel animation', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.setViewportSize({ width: 1280, height: 900 });

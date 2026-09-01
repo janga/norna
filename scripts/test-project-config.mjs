@@ -71,6 +71,9 @@ try {
 			colorModeDark: 'Dark',
 			colorModeLight: 'Light',
 			colorModeSystem: 'System',
+			codeCopied: 'Copied',
+			codeCopyFailed: 'Could not copy code',
+			copyCode: 'Copy code',
 			displaySettings: 'Display',
 			focusReading: 'Focus reading',
 			dismissBanner: 'Dismiss notice',
@@ -104,6 +107,7 @@ try {
 	const localizedConfig = JSON.parse(localizedResult.stdout);
 	assert.equal(localizedConfig.language, 'sv-SE');
 	assert.equal(localizedConfig.labels.built, 'Byggd');
+	assert.equal(localizedConfig.labels.copyCode, 'Kopiera kod');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 

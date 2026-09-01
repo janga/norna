@@ -199,6 +199,30 @@ Static image stacks remain static.
 
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
+  description: A page with a copyable code block.
+---
+
+# Code example
+
+\`\`\`sh
+npm run norna:check
+\`\`\`
+`);
+
+	runBuild();
+	const codeBlockHtml = await readPage();
+	assertUniversalReadingWidth(codeBlockHtml, 'A page with a copyable code block');
+	assert.equal(
+		getFeatureScripts(codeBlockHtml).length,
+		1,
+		'A code block should load only its copy enhancement in addition to reader preferences.',
+	);
+	assert.match(codeBlockHtml, /data-code-copy-template/);
+	assert.match(codeBlockHtml, /aria-label="Copy code"/);
+	assert.match(getFeatureScripts(codeBlockHtml)[0], /navigator\.clipboard/);
+
+	await writeFile(path.join(homeDir, 'content.md'), `---
+page:
   description: A page with a CSS sidenote.
 ---
 

@@ -21,6 +21,11 @@ release.
 Documentation is sufficient for current development, but should become more
 approachable before wider use.
 
+- Document the progressive copy control for fenced code blocks after feature
+  verification. Cover its keyboard and screen-reader feedback in the Markdown
+  reference, and include a visible code-block example on the documentation
+  site without presenting JavaScript as a requirement for ordinary content.
+
 ## Implementation
 
 Use this section for concrete engine behavior that should be implemented or
@@ -86,9 +91,6 @@ basic site workflow.
   - define predictable development-server index refresh behavior;
   - avoid filters, ranking controls, and hosted search providers until real
     sites demonstrate a need.
-- Add a copy button to rendered code blocks. It should copy only the code
-  content, remain keyboard and screen-reader accessible, use a labelled icon,
-  and provide brief success or failure feedback without shifting the layout.
 - More polished onboarding for non-project users.
 - More preset families or richer theme helpers if several real sites need
   them.

@@ -361,6 +361,52 @@ ul {
 	text-align: left;
 }
 
+.section-markdown .code-block {
+	position: relative;
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+}
+
+.section-markdown .code-block > pre.astro-code {
+	margin: 0;
+	padding-right: 3.85rem;
+}
+
+.code-block-copy {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 1;
+	display: grid;
+	width: 2.25rem;
+	height: 2.25rem;
+	place-items: center;
+	padding: 0;
+	border: 1px solid color-mix(in srgb, var(--color-code-text) 35%, transparent);
+	border-radius: var(--corner-radius-small, 2px);
+	background: color-mix(in srgb, var(--color-code-background) 78%, var(--color-code-text));
+	color: var(--color-code-text);
+	cursor: pointer;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.code-block-copy:hover,
+.code-block-copy:active,
+.code-block-copy[data-copy-state] {
+	border-color: color-mix(in srgb, var(--color-code-text) 65%, transparent);
+	background: color-mix(in srgb, var(--color-code-background) 62%, var(--color-code-text));
+}
+
+.code-block-copy svg {
+	width: 1.125rem;
+	height: 1.125rem;
+	fill: none;
+	stroke: currentColor;
+}
+
+.code-block-copy [hidden] {
+	display: none;
+}
+
 .section-markdown pre.astro-code code {
 	font: inherit;
 }
@@ -379,7 +425,15 @@ ul {
 	margin-bottom: 0;
 }
 
+.section-markdown > .code-block:last-child {
+	margin-bottom: 0;
+}
+
 .section-markdown blockquote > pre.astro-code:last-child {
+	margin-bottom: 0;
+}
+
+.section-markdown blockquote > .code-block:last-child {
 	margin-bottom: 0;
 }
 

@@ -1,0 +1,92 @@
+---
+import { Check, Copy, X } from '@lucide/astro';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+
+const labels = {
+	copy: projectConfig.locale.labels.copyCode,
+	copied: projectConfig.locale.labels.codeCopied,
+	failed: projectConfig.locale.labels.codeCopyFailed,
+};
+---
+
+<template data-code-copy-template>
+	<button class="code-block-copy" type="button" aria-label={labels.copy} title={labels.copy}>
+		<Copy aria-hidden="true" data-code-copy-icon="copy" size={18} stroke-width={2} />
+		<Check aria-hidden="true" data-code-copy-icon="copied" hidden size={18} stroke-width={2} />
+		<X aria-hidden="true" data-code-copy-icon="failed" hidden size={18} stroke-width={2} />
+		<span class="visually-hidden" aria-live="polite" data-code-copy-status></span>
+	</button>
+</template>
+
+<script is:inline define:vars={{ labels }}>
+	(() => {
+		const template = document.querySelector('[data-code-copy-template]');
+		if (!(template instanceof HTMLTemplateElement)) return;
+
+		const resetTimers = new WeakMap();
+		const copyText = async (text) => {
+			if (navigator.clipboard?.writeText) {
+				try {
+					await navigator.clipboard.writeText(text);
+					return;
+				} catch {}
+			}
+
+			const input = document.createElement('textarea');
+			input.value = text;
+			input.setAttribute('readonly', '');
+			input.style.cssText = 'position:fixed;inset:0 auto auto 0;opacity:0;pointer-events:none';
+			document.body.append(input);
+			input.select();
+			const copied = document.execCommand('copy');
+			input.remove();
+			if (!copied) throw new Error('The browser rejected the copy command.');
+		};
+
+		const showState = (button, state) => {
+			button.querySelectorAll('[data-code-copy-icon]').forEach((icon) => {
+				icon.hidden = icon.getAttribute('data-code-copy-icon') !== state;
+			});
+			const status = button.querySelector('[data-code-copy-status]');
+			if (status) status.textContent = state === 'copied' ? labels.copied : labels.failed;
+			button.dataset.copyState = state;
+
+			clearTimeout(resetTimers.get(button));
+			resetTimers.set(button, setTimeout(() => {
+				button.querySelectorAll('[data-code-copy-icon]').forEach((icon) => {
+					icon.hidden = icon.getAttribute('data-code-copy-icon') !== 'copy';
+				});
+				if (status) status.textContent = '';
+				delete button.dataset.copyState;
+			}, 2000));
+		};
+
+		document.querySelectorAll('#main-content .section-markdown pre > code').forEach((code) => {
+			const pre = code.parentElement;
+			if (!pre || pre.parentElement?.classList.contains('code-block')) return;
+
+			const wrapper = document.createElement('div');
+			wrapper.className = 'code-block';
+			pre.before(wrapper);
+			wrapper.append(pre);
+
+			const button = template.content.firstElementChild?.cloneNode(true);
+			if (!(button instanceof HTMLButtonElement)) return;
+			wrapper.append(button);
+			button.addEventListener('click', async () => {
+				if (button.dataset.copyBusy === 'true') return;
+				button.dataset.copyBusy = 'true';
+				try {
+					await copyText(code.textContent ?? '');
+					showState(button, 'copied');
+				} catch {
+					showState(button, 'failed');
+				} finally {
+					delete button.dataset.copyBusy;
+				}
+			});
+		});
+
+		template.remove();
+	})();
+</script>
