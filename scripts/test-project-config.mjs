@@ -84,6 +84,8 @@ try {
 			navigationMenu: 'Menu',
 			nextImage: 'Next image',
 			note: 'Note',
+			pageMoved: 'Page moved',
+			pageMovedText: 'This address now identifies',
 			pageNavigation: 'Page contents',
 			previousImage: 'Previous image',
 			readingWidth: 'Reading width',
@@ -108,6 +110,8 @@ try {
 	assert.equal(localizedConfig.language, 'sv-SE');
 	assert.equal(localizedConfig.labels.built, 'Byggd');
 	assert.equal(localizedConfig.labels.copyCode, 'Kopiera kod');
+	assert.equal(localizedConfig.labels.pageMoved, 'Sidan har flyttats');
+	assert.equal(localizedConfig.labels.pageMovedText, 'Den här adressen identifierar nu');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 

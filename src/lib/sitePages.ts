@@ -10,6 +10,7 @@ import { sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
 type SiteEntry = CollectionEntry<'site'>;
 
 type SiteNodeBase = {
+	aliases: string[];
 	kind: 'category' | 'page';
 	isHome: boolean;
 	navigation: {
@@ -106,6 +107,7 @@ const createSitePage = async (entry: SiteEntry): Promise<SitePage> => {
 	const navigation = entry.data.navigation ?? {};
 
 	return {
+		aliases: entry.data.page?.aliases ?? [],
 		kind: 'page',
 		entry,
 		isHome,
@@ -131,6 +133,7 @@ const createSitePage = async (entry: SiteEntry): Promise<SitePage> => {
 };
 
 const createSiteCategory = (category: Awaited<ReturnType<typeof getSiteStructure>>['categories'][number]): SiteCategory => ({
+	aliases: [],
 	kind: 'category',
 	isHome: false,
 	depth: category.depth,
@@ -226,5 +229,3 @@ export const getSiteModel = async (entries: SiteEntry[]) => {
 		warnings: structure.warnings,
 	};
 };
-
-export const getSitePages = async (entries: SiteEntry[]) => (await getSiteModel(entries)).pages;

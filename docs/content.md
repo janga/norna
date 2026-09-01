@@ -37,6 +37,9 @@ top-level fields:
 - `description`: optional string. Used only as the page's HTML meta description
   for search engines and other consumers of standard HTML metadata. It is not
   rendered as visible page content.
+- `aliases`: optional list of previous site-relative URLs that permanently
+  identify this page. See
+  [Preserve Old Page URLs](pages.md#preserve-old-page-urls).
 
 Minimal homepage without metadata:
 

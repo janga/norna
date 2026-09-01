@@ -1,6 +1,14 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import {
+	createPageAliasModel,
+} from './page-aliases.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
+import {
+	parseContentFrontmatter,
+	splitSiteFile,
+	toPosixPath,
+} from './site-content.mjs';
 import {
 	sitePagesLabel,
 	sitePublicDir,
@@ -11,8 +19,6 @@ import { getSiteStructure } from './site-structure.mjs';
 
 const internalUrlOrigin = 'https://norna.invalid';
 const externalSchemePattern = /^[a-z][a-z0-9+.-]*:/i;
-
-const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 
 const readPublicFiles = async (directory, relativeDirectory = '') => {
 	const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
@@ -93,7 +99,7 @@ export const resolveInternalTarget = (target, sourcePathname) => {
 	}
 };
 
-const createPageRecord = ({ contentFile, document }) => {
+const createPageRecord = ({ contentFile, data = {}, document }) => {
 	const pathname = getSiteNodePathname(contentFile);
 	const anchors = new Map([['page-title', {
 		id: 'page-title',
@@ -107,6 +113,7 @@ const createPageRecord = ({ contentFile, document }) => {
 	}
 
 	return {
+		aliases: data.page?.aliases ?? [],
 		anchors,
 		contentFile,
 		document,
@@ -134,9 +141,9 @@ const looksLikePublicFile = (pathname) => {
 };
 
 export const createSiteLinkGraph = ({ siteStructure, pageDocuments, publicFiles = [] }) => {
-	const documentsByDirectory = new Map(pageDocuments.map(({ contentFile, document }) => [
+	const documentsByDirectory = new Map(pageDocuments.map(({ contentFile, data, document }) => [
 		contentFile.pageDirectory,
-		{ contentFile, document },
+		{ contentFile, data, document },
 	]));
 	const pages = siteStructure.contentFiles.map((contentFile) => {
 		const pageDocument = documentsByDirectory.get(contentFile.pageDirectory);
@@ -156,10 +163,15 @@ export const createSiteLinkGraph = ({ siteStructure, pageDocuments, publicFiles 
 			publicFilesByPathname.set(file.pathname.slice(0, -'index.html'.length), file);
 		}
 	}
+	const aliasModel = createPageAliasModel({
+		categories: siteStructure.categories,
+		pages,
+		publicFiles,
+	});
 
 	const references = [];
 	const referencesByTarget = new Map();
-	const diagnostics = [];
+	const diagnostics = [...aliasModel.diagnostics];
 
 	for (const page of pages) {
 		for (const sourceReference of page.document.links) {
@@ -209,6 +221,34 @@ export const createSiteLinkGraph = ({ siteStructure, pageDocuments, publicFiles 
 				continue;
 			}
 
+			const targetAlias = target.pageLookupPathname
+				? aliasModel.aliasesByPathname.get(target.pageLookupPathname)
+				: null;
+			if (targetAlias) {
+				const aliasTargetPage = pagesByPathname.get(targetAlias.targetPathname);
+				if (!aliasTargetPage) {
+					throw new Error(`Page alias "${targetAlias.pathname}" has no target page ${targetAlias.targetPathname}.`);
+				}
+				reference.resolution = {
+					alias: targetAlias,
+					kind: 'page-alias',
+					page: aliasTargetPage,
+					pathname: aliasTargetPage.pathname,
+				};
+				if (target.fragment && !aliasTargetPage.anchors.has(target.fragment)) {
+					const availableAnchors = Array.from(aliasTargetPage.anchors.keys());
+					diagnostics.push(createIssue(
+						reference,
+						'missing-internal-anchor',
+						`Internal link "${sourceReference.target}" on line ${sourceReference.line} points through alias ${targetAlias.pathname} to missing heading anchor "#${target.fragment}" on ${aliasTargetPage.pathname}.`,
+						availableAnchors.length > 0
+							? `Use an existing anchor: ${availableAnchors.slice(0, 8).map((anchor) => `#${anchor}`).join(', ')}.`
+							: 'Add the intended H2 or H3 heading, or remove the fragment from the link.',
+					));
+				}
+				continue;
+			}
+
 			const targetCategory = target.pageLookupPathname
 				? categoriesByPathname.get(target.pageLookupPathname)
 				: null;
@@ -252,6 +292,9 @@ export const createSiteLinkGraph = ({ siteStructure, pageDocuments, publicFiles 
 	}
 
 	return {
+		aliasModel,
+		aliases: aliasModel.aliases,
+		aliasesByPathname: aliasModel.aliasesByPathname,
 		categoriesByPathname,
 		diagnostics,
 		pages,
@@ -265,13 +308,15 @@ export const createSiteLinkGraph = ({ siteStructure, pageDocuments, publicFiles 
 export const getSiteLinkGraph = async (options = {}) => {
 	const siteStructure = options.siteStructure ?? await getSiteStructure();
 	const [pageDocuments, publicFiles] = await Promise.all([
-		Promise.all(siteStructure.contentFiles.map(async (contentFile) => ({
-			contentFile,
-			document: await parsePageMarkdownSource(
-				await readFile(contentFile.contentPath, 'utf8'),
-				{ label: contentFile.contentLabel },
-			),
-		}))),
+		Promise.all(siteStructure.contentFiles.map(async (contentFile) => {
+			const source = await readFile(contentFile.contentPath, 'utf8');
+			const { frontmatterBody } = splitSiteFile(source, contentFile.contentLabel);
+			return {
+				contentFile,
+				data: parseContentFrontmatter(frontmatterBody, contentFile.contentLabel),
+				document: await parsePageMarkdownSource(source, { label: contentFile.contentLabel }),
+			};
+		})),
 		readPublicFiles(options.publicDir ?? sitePublicDir),
 	]);
 

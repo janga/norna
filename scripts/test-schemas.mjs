@@ -223,7 +223,12 @@ assert.match(pageTheme.markdownDescription, /content-block defaults/);
 
 const content = JSON.parse(await readFile(path.join(root, 'schemas', 'content-frontmatter.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(content.properties), ['page', 'navigation']);
-assert.deepEqual(Object.keys(content.properties.page.properties), ['description']);
+assert.deepEqual(Object.keys(content.properties.page.properties), ['description', 'aliases']);
+assert.match(content.properties.page.properties.aliases.markdownDescription, /permanently identify this page/);
+assert.match(content.properties.page.properties.aliases.markdownDescription, /docs\/pages\.md#preserve-old-page-urls/);
+assert.match(content.properties.page.properties.aliases.items.markdownDescription, /configured base path/);
+assert.deepEqual(content.properties.page.properties.aliases.examples, [['/old-about/']]);
+assert.deepEqual(content.properties.page.properties.aliases.items.examples, ['/old-about/']);
 assert.equal(content.properties.page.required, undefined);
 assert.equal(content.required, undefined);
 assert.deepEqual(Object.keys(content.properties.navigation.properties), ['listed']);

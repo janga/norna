@@ -1,0 +1,49 @@
+---
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { getAbsolutePageUrl } from '../../scripts/lib/site-page-urls.mjs';
+import { withBasePath } from '../lib/basePath';
+
+interface Props {
+	targetPathname: string;
+	targetTitle: string;
+}
+
+const { targetPathname, targetTitle } = Astro.props;
+const { labels, lang } = projectConfig.locale;
+const targetHref = withBasePath(projectConfig.site.basePath, targetPathname);
+const canonicalUrl = getAbsolutePageUrl(projectConfig.site.url, targetPathname);
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="robots" content="noindex, follow" />
+		<meta http-equiv="refresh" content={`0; url=${targetHref}`} />
+		<link rel="canonical" href={canonicalUrl} />
+		<title>{labels.pageMoved}: {targetTitle}</title>
+		<style>
+			:root {
+				color-scheme: light dark;
+				font-family: system-ui, sans-serif;
+			}
+
+			body {
+				margin: 0;
+				padding: 2rem;
+			}
+
+			main {
+				max-width: 42rem;
+				margin-inline: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>{labels.pageMoved}</h1>
+			<p>{labels.pageMovedText} <a href={targetHref}>{targetTitle}</a>.</p>
+		</main>
+	</body>
+</html>

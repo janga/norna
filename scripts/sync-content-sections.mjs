@@ -12,6 +12,7 @@ import {
 	getDeprecatedInlineStyleReferences,
 	readSiteFile,
 	readThemeFile,
+	parseContentFrontmatter,
 	toPosixPath,
 	validateContentFrontmatterStructure,
 	validateFrontmatterIndentation,
@@ -238,10 +239,23 @@ const managedImageReferences = [];
 const contentFileContexts = [];
 
 for (const contentFile of contentFiles) {
-	const { frontmatter, body, source } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
+	const { frontmatter, frontmatterBody, body, source } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 	const bodyLineOffset = frontmatter.split(/\r?\n/).length - 1;
+	const issueCountBeforeFrontmatter = issues.length;
 	validateFrontmatterIndentation(frontmatter, addIssue);
 	validateContentFrontmatterStructure(frontmatter, addIssue);
+	let frontmatterData = {};
+	if (!issues.slice(issueCountBeforeFrontmatter).some(({ severity }) => severity === 'error')) {
+		try {
+			frontmatterData = parseContentFrontmatter(frontmatterBody, contentFile.contentLabel);
+		} catch (error) {
+			addContentIssue(contentFile, {
+				severity: 'error',
+				message: error instanceof Error ? error.message : String(error),
+				fix: 'Correct the page frontmatter using the content reference and project-local schema help.',
+			});
+		}
+	}
 
 	const page = await parsePageMarkdownSource(source, {
 		label: contentFile.contentLabel,
@@ -356,6 +370,7 @@ for (const contentFile of contentFiles) {
 
 	contentFileContexts.push({
 		contentFile,
+		frontmatterData,
 		page,
 		sections,
 		validSections,
@@ -365,12 +380,16 @@ for (const contentFile of contentFiles) {
 }
 
 const siteLinkGraph = createSiteLinkGraph({
-	pageDocuments: contentFileContexts.map(({ contentFile, page }) => ({ contentFile, document: page })),
+	pageDocuments: contentFileContexts.map(({ contentFile, frontmatterData, page }) => ({
+		contentFile,
+		data: frontmatterData,
+		document: page,
+	})),
 	publicFiles: await getSitePublicFiles(),
 	siteStructure,
 });
 for (const issue of siteLinkGraph.diagnostics) {
-	addContentIssue(issue.reference.sourceContentFile, issue);
+	addContentIssue(issue.reference?.sourceContentFile ?? issue.contentFile, issue);
 }
 
 const imageSyncPlan = createImageSyncPlan({

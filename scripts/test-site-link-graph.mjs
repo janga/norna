@@ -64,6 +64,7 @@ page:
 [Intro](#intro)
 [Install](/guides/installation)
 [Install index](/guides/installation/index.html?from=home#verify)
+[Old install URL](/install/#verify)
 [Home index](/index.html#intro)
 [Reference link][workflow]
 [Public file](/downloads/guide%20one.pdf?download=1)
@@ -101,11 +102,16 @@ const workflowsSource = `# Workflows
 `;
 
 const pageDocuments = await Promise.all([
-	[home, homeSource],
-	[installation, installationSource],
-	[workflows, workflowsSource],
-].map(async ([contentFile, source]) => ({
+	{ contentFile: home, source: homeSource },
+	{
+		contentFile: installation,
+		data: { page: { aliases: ['/install/'] } },
+		source: installationSource,
+	},
+	{ contentFile: workflows, source: workflowsSource },
+].map(async ({ contentFile, data, source }) => ({
 	contentFile,
+	data,
 	document: await parsePageMarkdownSource(source, { label: contentFile.contentLabel }),
 })));
 
@@ -122,9 +128,14 @@ const validGraph = createSiteLinkGraph({
 });
 
 assert.deepEqual(validGraph.diagnostics, []);
-assert.equal(validGraph.references.length, 9);
+assert.equal(validGraph.references.length, 10);
 assert.equal(validGraph.referencesByTarget.get('/guides/installation/#verify')?.length, 2);
 assert.equal(validGraph.referencesByTarget.get('/guides/workflows/#local')?.length, 2);
+assert.equal(validGraph.referencesByTarget.get('/install/#verify')?.length, 1);
+assert.equal(
+	validGraph.references.find(({ targetSource }) => targetSource === '/install/#verify')?.resolution?.kind,
+	'page-alias',
+);
 assert.equal(validGraph.references.some(({ target: { kind } }) => kind === 'external'), false);
 
 const allSources = new Map([

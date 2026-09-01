@@ -1,31 +1,58 @@
 ---
 import { getCollection } from 'astro:content';
+import { assertPageAliasModel, createPageAliasModel } from '../../scripts/lib/page-aliases.mjs';
+import { getSitePublicFiles } from '../../scripts/lib/site-link-graph.mjs';
+import PageAliasRedirect from '../components/PageAliasRedirect.astro';
 import SitePage from '../components/SitePage.astro';
-import { getSitePage, getSitePages, isHomePageEntry } from '../lib/sitePages';
+import { getSiteModel, getSitePage, isHomePageEntry } from '../lib/sitePages';
 
 export async function getStaticPaths() {
 	const entries = await getCollection('site');
-	const pages = await getSitePages(entries);
+	const siteModel = await getSiteModel(entries);
+	const aliasModel = assertPageAliasModel(createPageAliasModel({
+		categories: siteModel.categories,
+		pages: siteModel.pages,
+		publicFiles: await getSitePublicFiles(),
+	}));
+	const pagesByPathname = new Map(siteModel.pages.map((page) => [page.pathname, page]));
 
-	return pages
+	const pagePaths = siteModel.pages
 		.filter((page) => !page.isHome)
 		.map((page) => ({
 			params: { slug: page.pathSegment },
 			props: { entry: page.entry },
 		}));
+	const aliasPaths = aliasModel.aliases.map((alias) => {
+		const page = pagesByPathname.get(alias.targetPathname);
+		if (!page) throw new Error(`Page alias "${alias.pathname}" has no target page ${alias.targetPathname}.`);
+
+		return {
+			params: { slug: alias.pathname.slice(1, -1) },
+			props: {
+				alias: {
+					targetPathname: page.pathname,
+					targetTitle: page.title,
+				},
+			},
+		};
+	});
+
+	return [...pagePaths, ...aliasPaths];
 }
 
-const { entry } = Astro.props;
+const { alias, entry } = Astro.props;
 
-if (!entry || isHomePageEntry(entry)) {
+if (!alias && (!entry || isHomePageEntry(entry))) {
 	throw new Error('Page entry is missing.');
 }
 
-const currentPage = await getSitePage(entry);
+const currentPage = entry ? await getSitePage(entry) : null;
 
-if (!currentPage.pathSegment) {
+if (!alias && !currentPage?.pathSegment) {
 	throw new Error(`Page "${entry.id}" needs a page id.`);
 }
 ---
 
-<SitePage entry={entry} />
+{alias
+	? <PageAliasRedirect targetPathname={alias.targetPathname} targetTitle={alias.targetTitle} />
+	: <SitePage entry={entry} />}

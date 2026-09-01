@@ -1,11 +1,15 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
+	schemaTopLevelKeys,
+	siteSchema,
+} from './schema-definitions.mjs';
+import {
 	siteContentLabel,
 	sitewideContentLabel,
 } from './site-paths.mjs';
-import { schemaTopLevelKeys } from './schema-definitions.mjs';
 import { getIndentInfo, validateYamlIndentation } from './yaml-indentation.mjs';
+import { parseYamlConfig } from './yaml-config.mjs';
 
 export { getContentFiles } from './site-structure.mjs';
 
@@ -24,6 +28,7 @@ const knownPageThemeTopLevelFrontmatterKeys = new Set(
 const knownSitewideTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.sitewide);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
+	'aliases',
 	'alt',
 	'body',
 	'blockGap',
@@ -188,6 +193,15 @@ export const validateContentFrontmatterStructure = (frontmatter, addIssue) =>
 		knownTopLevelFrontmatterKeys: knownContentTopLevelFrontmatterKeys,
 		fileKind: 'content',
 	});
+
+export const parseContentFrontmatter = (frontmatterBody, label = siteContentLabel) => parseYamlConfig(
+	frontmatterBody,
+	`${label} frontmatter`,
+	{
+		schema: siteSchema,
+		validateStructure: validateContentFrontmatterStructure,
+	},
+);
 
 export const validateConfigYamlStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {

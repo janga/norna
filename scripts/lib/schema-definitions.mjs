@@ -185,8 +185,17 @@ const pageThemeSections = z.object({
 const pageNavigation = z.object({
 	listed: z.boolean().optional().default(true).describe('List this page in site navigation. The page remains public when false.'),
 }).strict();
+const pageAlias = z.string().regex(
+	/^\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)+$/,
+	'Use an old site-relative Norna page URL such as "/guides/install/". Start and end with / and use lowercase letters, numbers, and single hyphens.',
+).describe('Previous site-relative URL that permanently identifies this page.');
 const pageMetadata = z.object({
 	description: z.string().min(1).optional().describe('Optional page-specific meta description.'),
+	aliases: z.array(pageAlias)
+		.min(1)
+		.refine((values) => new Set(values).size === values.length, 'Page aliases must be unique within the page.')
+		.optional()
+		.describe('Previous site-relative URLs that permanently identify this page. The current page is always the target.'),
 }).strict().describe('Optional metadata for this homepage or additional page. The Markdown H1 supplies the page title.');
 const sitewideLogo = z.object({
 	height: visualCssLength.optional().describe('Displayed logo height on wider screens. Omit it to use 2.6rem; narrow screens cap the height at 2.15rem. Width follows the intrinsic aspect ratio.'),

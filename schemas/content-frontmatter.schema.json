@@ -13,11 +13,31 @@
           "examples": [
             "About this project."
           ]
+        },
+        "aliases": {
+          "description": "Previous site-relative URLs that permanently identify this page. The current page is always the target.",
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\\/)+$",
+            "description": "Previous site-relative URL that permanently identifies this page.",
+            "markdownDescription": "```yaml\npage:\n  aliases:\n    - /old-about/\n```\n\nUse a previous Norna page URL. Start and end with `/`; use lowercase ASCII letters, numbers, and single hyphens; do not include the configured base path, a query string, or a fragment.\n\n[Alias path rules](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#preserve-old-page-urls)",
+            "examples": [
+              "/old-about/"
+            ]
+          },
+          "markdownDescription": "```yaml\npage:\n  aliases:\n    - /old-about/\n```\n\nLists previous site-relative URLs that permanently identify this page. The page containing the list is always the target. Paths omit the configured base path and are excluded from the sitemap.\n\n[Preserve old page URLs](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#preserve-old-page-urls)",
+          "examples": [
+            [
+              "/old-about/"
+            ]
+          ]
         }
       },
       "additionalProperties": false,
       "description": "Optional metadata for this homepage or additional page. The Markdown H1 supplies the page title.",
-      "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nContains optional metadata for the current homepage or additional page. The Markdown H1 supplies its title.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.22/docs/content.md#page-title-and-frontmatter)"
+      "markdownDescription": "```yaml\npage:\n  description: About this project.\n  aliases:\n    - /old-about/\n```\n\nContains optional metadata for the current homepage or additional page. The Markdown H1 supplies its title. An alias records an old URL for this same page.\n\n[Page title and frontmatter reference](https://github.com/janga/norna/blob/v0.7.22/docs/content.md#page-title-and-frontmatter)"
     },
     "navigation": {
       "description": "Optional navigation metadata for this page.",

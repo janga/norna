@@ -208,6 +208,68 @@ Sibling ids and numeric orders must be unique across both pages and categories.
 Reusing the same id below a different parent is valid because the complete URL
 path remains different.
 
+## Preserve Old Page URLs
+
+Moving or renaming a page directory can change its public URL. Add each URL
+that readers may still use to `page.aliases` in the page's `content.md`:
+
+```md
+---
+page:
+  description: Install Norna on a new computer.
+  aliases:
+    - /installation/
+    - /guides/install/
+---
+
+# Install Norna
+```
+
+An alias is an old site-relative page URL attached to the current page. The
+declaration means:
+
+> This old URL permanently identifies this current page.
+
+The target is therefore always the page containing the declaration. An alias
+is not a general redirect rule and cannot name a separate target or an external
+website. Keep it when the page moves again, and do not reuse that old URL for a
+different page.
+
+Alias paths use the same lowercase ASCII segments as page directory ids. They
+must start and end with `/`, cannot contain a query string or fragment, and
+cannot be `/`. Write them relative to the Norna site, without its configured
+base path. For example, `/installation/` on a site configured as
+`https://owner.github.io/project/` preserves
+`https://owner.github.io/project/installation/`.
+
+Norna checks every alias against page URLs, category paths, other aliases,
+files under `site/public/`, and generated routes. A collision stops the check
+and build with both source locations. Aliases are not pages and are excluded
+from `sitemap.xml`.
+
+The publishing mechanism depends on the hosting service. A provider with
+native redirect rules can represent a permanent alias as an HTTP `301` or
+`308` when a publishing integration supports that provider. Without such an
+integration, Norna's static output contains a small redirect document with a
+canonical target, immediate browser navigation, and an ordinary link to the
+current page.
+
+> **GitHub Pages limitation:** GitHub Pages is the only publishing provider
+> integrated with Norna today. It does not let a deployed static artifact
+> define arbitrary path-level HTTP redirects. Norna therefore publishes the
+> static redirect document for each alias. It keeps old browser links useful,
+> but its response is not an HTTP `301`.
+
+When moving a page manually:
+
+1. Record the page's current site-relative URL.
+2. Move or rename its directory.
+3. Add the recorded URL to `page.aliases` in the moved `content.md`.
+4. Run `npm run norna:check`, then build and inspect the old URL.
+
+Each moved child page has its own URL identity. When a complete page subtree
+moves, add the previous URL to every moved page that must remain reachable.
+
 ## Create Pages And Categories
 
 Use the project-local Norna installation through `npm exec`:

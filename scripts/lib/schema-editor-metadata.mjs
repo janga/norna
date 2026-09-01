@@ -563,8 +563,8 @@ const addContentHelp = (jsonSchema) => {
 		documentationLink('Page title and frontmatter reference', 'content.md', 'page-title-and-frontmatter'),
 	].join('\n\n');
 	addHelp(jsonSchema, 'page', [
-		yamlExample('page:\n  description: About this project.'),
-		'Contains optional metadata for the current homepage or additional page. The Markdown H1 supplies its title.',
+		yamlExample('page:\n  description: About this project.\n  aliases:\n    - /old-about/'),
+		'Contains optional metadata for the current homepage or additional page. The Markdown H1 supplies its title. An alias records an old URL for this same page.',
 		documentationLink('Page title and frontmatter reference', 'content.md', 'page-title-and-frontmatter'),
 	]);
 	addHelp(jsonSchema, 'page.description', [
@@ -572,6 +572,16 @@ const addContentHelp = (jsonSchema) => {
 		'An optional page-specific description rendered as `<meta name="description">`. It is not visible in page content.',
 		documentationLink('Page title and frontmatter reference', 'content.md', 'page-title-and-frontmatter'),
 	], ['About this project.']);
+	addHelp(jsonSchema, 'page.aliases', [
+		yamlExample('page:\n  aliases:\n    - /old-about/'),
+		'Lists previous site-relative URLs that permanently identify this page. The page containing the list is always the target. Paths omit the configured base path and are excluded from the sitemap.',
+		documentationLink('Preserve old page URLs', 'pages.md', 'preserve-old-page-urls'),
+	], [['/old-about/']]);
+	addHelp(jsonSchema, 'page.aliases.[]', [
+		yamlExample('page:\n  aliases:\n    - /old-about/'),
+		'Use a previous Norna page URL. Start and end with `/`; use lowercase ASCII letters, numbers, and single hyphens; do not include the configured base path, a query string, or a fragment.',
+		documentationLink('Alias path rules', 'pages.md', 'preserve-old-page-urls'),
+	], ['/old-about/']);
 	addHelp(jsonSchema, 'navigation', [
 		yamlExample('navigation:\n  listed: false'),
 		'Optionally excludes an additional page from site navigation without removing its public URL.',
