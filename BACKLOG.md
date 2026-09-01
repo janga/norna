@@ -26,10 +26,6 @@ approachable before wider use.
 Use this section for concrete engine behavior that should be implemented or
 verified.
 
-- Split `scripts/test-content-model-v2.mjs` into focused test suites for page
-  structure, managed media, content synchronization, and Markdown constructs
-  such as notes and cards. Preserve the existing behavioral coverage and keep
-  the complete suites in the normal test and release chain.
 - Extend cross-page content sync if future section-bound metadata or assets
   need to move with an entire section. Such movement should happen only when
   source and destination are unambiguous. It should never guess, should not
