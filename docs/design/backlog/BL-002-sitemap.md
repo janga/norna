@@ -2,7 +2,7 @@
 
 ## Outcome
 
-Every public multi-page build receives a deterministic `sitemap.xml` generated
+Every public build receives a deterministic `sitemap.xml` generated
 from Norna's canonical page graph.
 
 ## Dependency

@@ -13,9 +13,6 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Now` contains at most three implementation-ready items in exact technical
 order.
 
-- [`BL-002` Automatic sitemap](docs/design/backlog/BL-002-sitemap.md): **Ready.**
-  Generate deterministic public URLs from the canonical
-  page-inclusion and URL rules.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
   **Ready.** Reuse canonical page identity and existing metadata
   before adding further generated-page behavior.
@@ -29,8 +26,8 @@ page graph, and only afterward expands Markdown or URL behavior.
 - [`BL-004` Default 404 page](docs/design/backlog/BL-004-default-404.md): **Ready.**
   Add the smallest engine-owned generated page and verify
   root, base-path, localization, and GitHub Pages behavior.
-- [`BL-005` Static search](docs/design/backlog/BL-005-static-search.md): **Ready
-  after `BL-002`.** Index final HTML only after page inclusion,
+- [`BL-005` Static search](docs/design/backlog/BL-005-static-search.md): **Ready.**
+  Index final HTML only after page inclusion,
   URLs, and anchors have one shared contract.
 - [`BL-006` Previous and next page navigation](docs/design/backlog/BL-006-sequential-navigation.md):
   **Ready.** Define ordered traversal over the stable listed page
@@ -45,7 +42,7 @@ page graph, and only afterward expands Markdown or URL behavior.
   **Ready after `BL-005`.** Extend Markdown semantics after search and page
   output rules can consume the new structure consistently.
 - [`BL-010` Static redirect aliases](docs/design/backlog/BL-010-redirect-aliases.md):
-  **Ready after `BL-002`.** Add old URL identities only after
+  **Ready.** Add old URL identities only after
   collision, canonical URL, sitemap, and generated-output rules are stable.
 - [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
   **Ready after `BL-010`.** Use the shared reverse link index to move a page or
@@ -90,6 +87,10 @@ verified and approved for documentation.
   card-link validation in the content and command references, the documentation
   site, and focused examples. Keep editor behavior explicitly out of scope
   until `BL-027` is implemented.
+- `BL-030` Document automatic sitemap generation in the publishing and public
+  file references and the documentation site. Replace obsolete instructions to
+  create `site/public/sitemap.xml`; explain URL/base-path handling, page
+  inclusion, category exclusion, and source-file conflicts.
 
 ## Needs Decision Or Evidence
 

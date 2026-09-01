@@ -41,7 +41,6 @@ const allowedExactPaths = new Set([
 	`${sitePublicLabel}/favicon.ico`,
 	`${sitePublicLabel}/favicon.svg`,
 	`${sitePublicLabel}/robots.txt`,
-	`${sitePublicLabel}/sitemap.xml`,
 	'tsconfig.json',
 ]);
 const failedConclusions = new Set(['action_required', 'cancelled', 'failure', 'startup_failure', 'timed_out']);

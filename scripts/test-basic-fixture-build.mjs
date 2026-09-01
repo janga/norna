@@ -1,4 +1,4 @@
-import { access, cp, mkdir, mkdtemp, rm } from 'node:fs/promises';
+import { access, cp, mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runInherit } from './lib/run-command.mjs';
@@ -16,6 +16,10 @@ try {
 	await cp(fixtureRoot, fixtureCopyRoot, { recursive: true });
 	await runInherit(process.execPath, [cliPath, '--site-dir', siteDir, 'build'], { cwd: repoRoot });
 	await access(path.join(fixtureCopyRoot, 'dist', 'index.html'));
+	const sitemap = await readFile(path.join(fixtureCopyRoot, 'dist', 'sitemap.xml'), 'utf8');
+	if (!sitemap.includes('<loc>https://example.com/</loc>')) {
+		throw new Error('Basic fixture sitemap does not contain its canonical homepage URL.');
+	}
 	await access(path.join(siteDir, '.norna', '.astro'));
 	console.log('Basic fixture build passed with isolated output and cache.');
 } finally {

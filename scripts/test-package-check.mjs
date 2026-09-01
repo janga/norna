@@ -218,7 +218,9 @@ const assertPackageContents = async (packageRoot) => {
 		'scripts/lib/astro-command.mjs',
 		'scripts/lib/documentation-links.mjs',
 		'scripts/lib/editor-language-service.mjs',
+		'scripts/lib/site-page-urls.mjs',
 		'scripts/lib/site-paths.mjs',
+		'scripts/lib/sitemap.mjs',
 		'scripts/list-theme-presets.mjs',
 		'scripts/show-typography.mjs',
 		'scripts/sync-content-sections.mjs',
@@ -410,7 +412,20 @@ This page verifies that packaged norna sites can build additional pages.
 	await assertPathExists(path.join(siteProjectRoot, 'site', '.norna', '.astro'));
 	await assertPathMissing(path.join(siteProjectRoot, '.astro'));
 	await assertFileExists(path.join(siteProjectRoot, 'site', '.norna', 'public', 'robots.txt'));
+	await assertFileExists(path.join(siteProjectRoot, 'site', '.norna', 'public', 'sitemap.xml'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'robots.txt'));
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'sitemap.xml'),
+		'<loc>https://example.com/site/</loc>',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'sitemap.xml'),
+		'<loc>https://example.com/site/about/</loc>',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'sitemap.xml'),
+		'<loc>https://example.com/site/guides/installation/</loc>',
+	);
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'about', 'index.html'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'));
 	await assertFileMissing(path.join(siteProjectRoot, 'dist', 'guides', 'index.html'));

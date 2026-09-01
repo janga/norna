@@ -6,6 +6,7 @@ import {
 	sitePublicDir,
 	sitePublicLabel,
 } from './site-paths.mjs';
+import { getSiteNodePathname } from './site-page-urls.mjs';
 import { getSiteStructure } from './site-structure.mjs';
 
 const internalUrlOrigin = 'https://norna.invalid';
@@ -38,10 +39,6 @@ const readPublicFiles = async (directory, relativeDirectory = '') => {
 
 	return files;
 };
-
-const getPagePathname = (node) => node.isHome || !node.pagePath
-	? '/'
-	: `/${node.pagePath}/`;
 
 const decodePathname = (pathname) => {
 	const decodedSegments = pathname.split('/').map((segment) => decodeURIComponent(segment));
@@ -97,7 +94,7 @@ export const resolveInternalTarget = (target, sourcePathname) => {
 };
 
 const createPageRecord = ({ contentFile, document }) => {
-	const pathname = getPagePathname(contentFile);
+	const pathname = getSiteNodePathname(contentFile);
 	const anchors = new Map([['page-title', {
 		id: 'page-title',
 		line: document.pageTitle?.line ?? 1,
@@ -148,8 +145,8 @@ export const createSiteLinkGraph = ({ siteStructure, pageDocuments, publicFiles 
 	});
 	const pagesByPathname = new Map(pages.map((page) => [page.pathname, page]));
 	const categoriesByPathname = new Map(siteStructure.categories.map((category) => [
-		getPagePathname(category),
-		{ ...category, pathname: getPagePathname(category) },
+		getSiteNodePathname(category),
+		{ ...category, pathname: getSiteNodePathname(category) },
 	]));
 	const publicFilesByPathname = new Map();
 	for (const file of publicFiles) {
