@@ -1,5 +1,9 @@
 .vscode/**
+.vscode-test/**
+test/**
 node_modules/**
-!node_modules/yaml/**
 package-lock.json
 *.vsix
+extension.cjs
+norna-project.cjs
+yaml-schema-completions.cjs

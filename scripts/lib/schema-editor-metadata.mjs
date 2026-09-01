@@ -33,6 +33,13 @@ const schemaProperty = (schema, propertyPath) => schemaProperties(schema, proper
 const addHelp = (schema, propertyPath, paragraphs, examples = []) => {
 	for (const property of schemaProperties(schema, propertyPath)) {
 		property.markdownDescription = paragraphs.join('\n\n');
+		const reference = paragraphs.findLast((paragraph) => /^\[[^\]]+\]\(https:\/\//.test(paragraph));
+		if (reference && Array.isArray(property.oneOf)) {
+			for (const candidate of property.oneOf) {
+				if (!Object.hasOwn(candidate, 'const') || !candidate.description) continue;
+				candidate.markdownDescription = [candidate.description, reference].join('\n\n');
+			}
+		}
 		if (examples.length > 0) property.examples = examples;
 	}
 };

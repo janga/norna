@@ -19,6 +19,7 @@ const diagnosticTimers = new Map();
 const publicAssetDiagnosticUrisByRoot = new Map();
 let diagnostics;
 let output;
+let statusBar;
 
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
@@ -66,8 +67,11 @@ const getLanguageService = async (documentPath) => {
 	if (!nornaPackage) return null;
 	if (!serviceByRoot.has(nornaPackage.root)) {
 		const servicePath = path.join(nornaPackage.root, 'scripts', 'lib', 'editor-language-service.mjs');
+		const revision = fs.existsSync(servicePath)
+			? `${nornaPackage.packageJson.version}-${fs.statSync(servicePath).mtimeMs}`
+			: 'missing';
 		serviceByRoot.set(nornaPackage.root, fs.existsSync(servicePath)
-			? import(pathToFileURL(servicePath).href)
+			? import(`${pathToFileURL(servicePath).href}?revision=${encodeURIComponent(revision)}`)
 			: Promise.resolve(null));
 	}
 	return serviceByRoot.get(nornaPackage.root);
@@ -196,12 +200,13 @@ const makeWholeDocumentSnippet = (document, label, detail, source, documentation
 };
 
 const getEmptyContentCompletionItems = (document) => {
-	if (document.getText().trim()) return [];
+	const context = getDocumentContext(document.uri.fsPath);
+	if (document.getText().trim() || !context?.schemaCompatible || !context.editorCompatible) return [];
 	return [makeWholeDocumentSnippet(
 		document,
 		'Norna content page',
-		'Create minimal Norna page frontmatter and the first section.',
-		'---\ntitle: ${1:Page title}\ndescription: ${2:Short page description}\n---\n\n## ${3:Introduction} {#${4:introduction}}\n\n${0}',
+		'Create a Norna page with optional metadata, one page title, and its first section.',
+		'---\npage:\n  description: ${1:Short page description.}\n---\n\n# ${2:Page title}\n\n## ${3:Introduction} {#${4:introduction}}\n\n${0}',
 		documentationLinkFor(document.uri.fsPath, 'Content reference', 'content.md'),
 	)];
 };
@@ -507,6 +512,64 @@ const registerYamlSchemas = async (context) => {
 	if (disposable?.dispose) context.subscriptions.push(disposable);
 };
 
+const getSupportStatus = (document) => {
+	if (!document) return null;
+	const project = getProjectContext(document.uri.fsPath);
+	if (!project) return null;
+	const documentContext = getDocumentContext(document.uri.fsPath);
+	if (!documentContext) return null;
+	const version = project.nornaPackage?.packageJson?.version;
+
+	if (!project.nornaPackage) {
+		return {
+			message: 'Run npm install in this project so Norna can load support for the project\'s declared engine version.',
+			state: 'warning',
+		};
+	}
+	if (!project.schemaCompatible) {
+		return {
+			message: `Norna ${version} uses schema format ${project.nornaPackage.manifest.schemaVersion ?? '(missing)'}; this extension supports format ${supportedSchemaVersion}. Update Norna or the extension.`,
+			state: 'warning',
+		};
+	}
+	if (documentContext.documentKind === 'yaml' && !vscode.extensions.getExtension('redhat.vscode-yaml')) {
+		return {
+			message: 'Install or enable Red Hat YAML to use Norna YAML completion and validation.',
+			state: 'warning',
+		};
+	}
+	if (!project.editorCompatible) {
+		return {
+			message: `Norna ${version} schemas are available, but Markdown help and diagnostics require editor API ${supportedEditorApiVersion}. Update Norna or the extension.`,
+			state: 'warning',
+		};
+	}
+
+	return {
+		message: `Norna ${version} editor support is active for ${documentContext.relativePath}.`,
+		state: 'ready',
+	};
+};
+
+const updateStatusBar = (editor = vscode.window.activeTextEditor) => {
+	if (!statusBar) return;
+	const status = getSupportStatus(editor?.document);
+	if (!status) {
+		statusBar.hide();
+		return;
+	}
+
+	statusBar.text = status.state === 'ready' ? '$(check) Norna' : '$(warning) Norna';
+	statusBar.tooltip = status.message;
+	statusBar.accessibilityInformation = {
+		label: status.state === 'ready'
+			? 'Norna editor support is active'
+			: `Norna editor support needs attention. ${status.message}`,
+		role: 'button',
+	};
+	statusBar.show();
+};
+
 const showStatus = async () => {
 	const editor = vscode.window.activeTextEditor;
 	if (!editor) {
@@ -515,7 +578,7 @@ const showStatus = async () => {
 	}
 	const project = getProjectContext(editor.document.uri.fsPath);
 	if (!project) {
-		void vscode.window.showWarningMessage('The active file is not inside a Norna site containing config.yaml and content.md.');
+		void vscode.window.showWarningMessage('The active file is not inside a current Norna site containing config.yaml and pages/000-home/content.md.');
 		return;
 	}
 	const resolved = project.nornaPackage;
@@ -567,13 +630,16 @@ const showStatus = async () => {
 	if (action === 'Show details') output.show(true);
 };
 
-const refresh = () => {
+const refresh = ({ notify = false } = {}) => {
 	documentContextByPath.clear();
 	projectContextByPath.clear();
 	schemaContentByUri.clear();
+	serviceByRoot.clear();
+	diagnostics.clear();
 	for (const siteRoot of publicAssetDiagnosticUrisByRoot.keys()) clearPublicAssetDiagnostics(siteRoot);
 	for (const document of vscode.workspace.textDocuments) scheduleDiagnostics(document, 0);
-	void vscode.window.showInformationMessage('Norna IntelliSense refreshed.');
+	updateStatusBar();
+	if (notify) void vscode.window.showInformationMessage('Norna IntelliSense refreshed.');
 };
 
 const makeCloseFenceAction = (document, diagnostic) => {
@@ -649,12 +715,15 @@ const runContentSync = (uri) => {
 async function activate(context) {
 	output = vscode.window.createOutputChannel('Norna');
 	diagnostics = vscode.languages.createDiagnosticCollection('norna');
-	context.subscriptions.push(output, diagnostics);
+	statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 80);
+	statusBar.name = 'Norna editor support';
+	statusBar.command = 'nornaEditor.showStatus';
+	context.subscriptions.push(output, diagnostics, statusBar);
 
 	await registerYamlSchemas(context);
 
 	context.subscriptions.push(vscode.commands.registerCommand('nornaEditor.showStatus', showStatus));
-	context.subscriptions.push(vscode.commands.registerCommand('nornaEditor.refresh', refresh));
+	context.subscriptions.push(vscode.commands.registerCommand('nornaEditor.refresh', () => refresh({ notify: true })));
 	context.subscriptions.push(vscode.commands.registerCommand('nornaEditor.runContentSync', runContentSync));
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
 		{ language: 'yaml', scheme: 'file' },
@@ -789,9 +858,10 @@ async function activate(context) {
 	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((document) => scheduleDiagnostics(document, 0)));
 	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((event) => scheduleDiagnostics(event.document)));
 	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((document) => scheduleDiagnostics(document, 0)));
-	context.subscriptions.push(vscode.workspace.onDidDeleteFiles(refresh));
-	context.subscriptions.push(vscode.workspace.onDidCreateFiles(refresh));
-	context.subscriptions.push(vscode.workspace.onDidRenameFiles(refresh));
+	context.subscriptions.push(vscode.workspace.onDidDeleteFiles(() => refresh()));
+	context.subscriptions.push(vscode.workspace.onDidCreateFiles(() => refresh()));
+	context.subscriptions.push(vscode.workspace.onDidRenameFiles(() => refresh()));
+	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBar));
 	context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((document) => {
 		if (isNornaContentDocument(document) || isNornaYamlDocument(document)) diagnostics.delete(document.uri);
 	}));
@@ -814,6 +884,7 @@ async function activate(context) {
 	);
 
 	for (const document of vscode.workspace.textDocuments) scheduleDiagnostics(document, 0);
+	updateStatusBar();
 }
 
 function deactivate() {

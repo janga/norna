@@ -120,6 +120,23 @@ try {
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'public', 'logo.svg')), null);
 	assert.equal(getNornaDocumentContext(path.join(root, 'README.md')), null);
 	assert.equal(getNornaDocumentContext(path.join(root, 'docs', 'content.md')), null);
+	const legacySiteRoot = path.join(root, 'legacy-site');
+	await mkdir(legacySiteRoot, { recursive: true });
+	await writeFile(path.join(legacySiteRoot, 'config.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(legacySiteRoot, 'content.md'), '# Legacy page\n');
+	assert.equal(projectContext.findNornaSiteRoot(path.join(legacySiteRoot, 'content.md')), null);
+	const uninstalledRoot = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-uninstalled-'));
+	try {
+		const uninstalledSite = path.join(uninstalledRoot, 'site');
+		const uninstalledContent = path.join(uninstalledSite, 'pages', '000-home', 'content.md');
+		await mkdir(path.dirname(uninstalledContent), { recursive: true });
+		await writeFile(path.join(uninstalledSite, 'config.yaml'), 'url: https://example.com/\n');
+		await writeFile(uninstalledContent, '# Uninstalled\n');
+		assert.equal(getNornaProjectContext(uninstalledContent).nornaPackage, null);
+		assert.equal(getNornaDocumentContext(uninstalledContent).schemaCompatible, false);
+	} finally {
+		await rm(uninstalledRoot, { recursive: true, force: true });
+	}
 	await mkdir(path.join(siteRoot, 'pages', 'about'), { recursive: true });
 	await writeFile(path.join(siteRoot, 'pages', 'about', 'content.md'), pageSource);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', 'about', 'content.md')), null);

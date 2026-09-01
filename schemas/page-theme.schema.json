@@ -12,17 +12,20 @@
             {
               "const": "compact",
               "title": "Compact",
-              "description": "Use restrained spacing between sections and structured blocks."
+              "description": "Use restrained spacing between sections and structured blocks.",
+              "markdownDescription": "Use restrained spacing between sections and structured blocks.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)"
             },
             {
               "const": "normal",
               "title": "Normal",
-              "description": "Use balanced content spacing."
+              "description": "Use balanced content spacing.",
+              "markdownDescription": "Use balanced content spacing.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)"
             },
             {
               "const": "spacious",
               "title": "Spacious",
-              "description": "Use more expansive spacing between sections and structured blocks."
+              "description": "Use more expansive spacing between sections and structured blocks.",
+              "markdownDescription": "Use more expansive spacing between sections and structured blocks.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)"
             }
           ],
           "markdownDescription": "```yaml\nlayout:\n  contentSpacing: compact\n```\n\nPage content spacing. Descendant pages inherit this value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)",
@@ -39,17 +42,20 @@
             {
               "const": "narrow",
               "title": "Narrow",
-              "description": "Use a shorter line length suited to reading-focused text."
+              "description": "Use a shorter line length suited to reading-focused text.",
+              "markdownDescription": "Use a shorter line length suited to reading-focused text.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)"
             },
             {
               "const": "normal",
               "title": "Normal",
-              "description": "Use the balanced default line length."
+              "description": "Use the balanced default line length.",
+              "markdownDescription": "Use the balanced default line length.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)"
             },
             {
               "const": "wide",
               "title": "Wide",
-              "description": "Allow body text to use more horizontal space."
+              "description": "Allow body text to use more horizontal space.",
+              "markdownDescription": "Allow body text to use more horizontal space.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)"
             }
           ],
           "markdownDescription": "```yaml\nlayout:\n  textWidth: narrow\n```\n\nBody-text line length. Descendant pages inherit this value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)",
@@ -158,17 +164,20 @@
             {
               "const": "uniform",
               "title": "Uniform",
-              "description": "Use the normal page background for every H2 section. Tree navigation requires this pattern."
+              "description": "Use the normal page background for every H2 section. Tree navigation requires this pattern.",
+              "markdownDescription": "Use the normal page background for every H2 section. Tree navigation requires this pattern.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)"
             },
             {
               "const": "alternating",
               "title": "Alternating",
-              "description": "Alternate normal and subtly contrasting full-width section backgrounds. Available with sections and top navigation."
+              "description": "Alternate normal and subtly contrasting full-width section backgrounds. Available with sections and top navigation.",
+              "markdownDescription": "Alternate normal and subtly contrasting full-width section backgrounds. Available with sections and top navigation.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)"
             },
             {
               "const": "accented",
               "title": "Accented",
-              "description": "Move through base, soft, emphasis and soft full-width section backgrounds before repeating. Available with sections and top navigation."
+              "description": "Move through base, soft, emphasis and soft full-width section backgrounds before repeating. Available with sections and top navigation.",
+              "markdownDescription": "Move through base, soft, emphasis and soft full-width section backgrounds before repeating. Available with sections and top navigation.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)"
             }
           ],
           "markdownDescription": "```yaml\nsections:\n  backgroundPattern: alternating\n```\n\nSection background sequence inherited by descendant pages. Non-uniform patterns are invalid with tree navigation.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#page-themes)",

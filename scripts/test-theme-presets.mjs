@@ -239,6 +239,7 @@ try {
 		const metadata = getThemePresetMetadata(entry.const);
 		assert.equal(entry.title, metadata.title);
 		assert.equal(entry.description, metadata.description);
+		assert.match(entry.markdownDescription, /docs\/theme\.md#theme-presets/);
 	}
 
 	await mkdir(path.join(siteDir, 'pages', '000-home'), { recursive: true });

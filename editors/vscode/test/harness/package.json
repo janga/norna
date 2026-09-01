@@ -1,0 +1,13 @@
+{
+  "name": "norna-vscode-test-harness",
+  "displayName": "Norna VS Code test harness",
+  "version": "0.0.1",
+  "publisher": "norna-tests",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./extension.cjs"
+}

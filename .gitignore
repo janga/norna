@@ -16,6 +16,8 @@ node_modules/
 
 # local editor packages
 editors/vscode/*.vsix
+editors/vscode/.vscode-test/
+editors/vscode/dist/
 
 # logs
 npm-debug.log*

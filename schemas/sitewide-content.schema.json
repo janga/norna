@@ -40,7 +40,8 @@
               {
                 "const": "warning",
                 "title": "Warning",
-                "description": "Present the banner as an important warning notice."
+                "description": "Present the banner as an important warning notice.",
+                "markdownDescription": "Present the banner as an important warning notice.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"
               }
             ],
             "markdownDescription": "```yaml\nbanners:\n  - tone: warning\n```\n\nSemantic banner tone.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"

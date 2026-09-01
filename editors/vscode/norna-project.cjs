@@ -30,10 +30,7 @@ const isPageDirectoryPath = (pageDirectory) => {
 
 const hasSiteMarkers = (directory) => (
 	isFile(path.join(directory, 'config.yaml'))
-	&& (
-		isFile(path.join(directory, 'pages', homePageDirectory, 'content.md'))
-		|| isFile(path.join(directory, 'content.md'))
-	)
+	&& isFile(path.join(directory, 'pages', homePageDirectory, 'content.md'))
 );
 
 const isRootFileBeingCreated = (documentPath, directory) => {
