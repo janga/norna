@@ -8,9 +8,9 @@ a second URL model.
 
 ## Dependencies
 
-Build on the canonical site link graph from `BL-001`. Do not begin until the
-experimental editor integration has a defined caching, invalidation, and test
-boundary.
+Build on the canonical site link graph from `BL-001` and the supported editor
+distribution, versioning, caching, invalidation, and test boundaries established
+by `BL-030` Production-ready IntelliSense.
 
 ## First Scope
 

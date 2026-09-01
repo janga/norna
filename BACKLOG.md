@@ -13,12 +13,13 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Now` contains at most three implementation-ready items in exact technical
 order.
 
-- [`BL-010` Static redirect aliases](docs/design/backlog/BL-010-redirect-aliases.md):
-  **Ready.** Establish old URL identities, collision rules, and generated
-  redirect output before page moves can preserve public URLs.
+- [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
+  **Ready.** Turn the proof-of-concept editor integration into a supported,
+  installable, version-aligned feature before describing IntelliSense as
+  complete.
 - [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
-  **Ready after `BL-010`.** Use the shared reverse link index and redirect alias
-  model to move a page or reconcile an already moved page without guessing.
+  **Ready.** Use the shared reverse link index and redirect alias model to move
+  a page or reconcile an already moved page without guessing.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
   **Ready.** Reuse canonical page identity and existing metadata
   before adding further generated-page behavior.
@@ -67,8 +68,9 @@ work above unless a concrete defect raises their urgency.
 - `BL-015` **Needs a scoped reproducer.** Clarify dev-server recovery when
   content, images, generated state, or watchers become stale.
 - [`BL-027` Editor link diagnostics](docs/design/backlog/BL-027-editor-link-diagnostics.md):
-  **Needs design.** Improve the experimental VS Code integration's cache and
-  test boundary before connecting it to the shared site link graph.
+  **Ready after `BL-030` Production-ready IntelliSense.** Connect the editor to
+  the shared site link graph only after its distribution, versioning, cache,
+  and test boundaries are stable.
 
 ## Documentation Follow-ups
 
