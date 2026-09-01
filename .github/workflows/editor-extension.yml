@@ -1,0 +1,67 @@
+name: Editor extension
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/editor-extension.yml"
+      - "editors/vscode/**"
+      - "package-lock.json"
+      - "package.json"
+      - "schemas/**"
+      - "scripts/generate-schemas.mjs"
+      - "scripts/lib/editor-language-service.mjs"
+      - "scripts/lib/schema-editor-metadata.mjs"
+      - "scripts/lib/schema-value-definitions.mjs"
+      - "scripts/test-editor-language-service.mjs"
+      - "scripts/test-schemas.mjs"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/editor-extension.yml"
+      - "editors/vscode/**"
+      - "package-lock.json"
+      - "package.json"
+      - "schemas/**"
+      - "scripts/generate-schemas.mjs"
+      - "scripts/lib/editor-language-service.mjs"
+      - "scripts/lib/schema-editor-metadata.mjs"
+      - "scripts/lib/schema-value-definitions.mjs"
+      - "scripts/test-editor-language-service.mjs"
+      - "scripts/test-schemas.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.18.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            editors/vscode/package-lock.json
+
+      - name: Install engine dependencies
+        run: npm ci
+
+      - name: Install extension dependencies
+        run: npm ci --prefix editors/vscode
+
+      - name: Check language support and VSIX contents
+        run: npm run test:editor-language
+
+      - name: Audit shipped extension dependencies
+        run: npm --prefix editors/vscode run audit:runtime
+
+      - name: Test the packaged extension in VS Code
+        run: xvfb-run -a npm run test:editor-integration

@@ -124,6 +124,7 @@
     "test:dev-local": "node scripts/test-dev-local.mjs",
     "test:engine-commands": "node scripts/test-engine-commands.mjs",
     "test:editor-language": "node scripts/test-editor-language-service.mjs && npm --prefix editors/vscode run check",
+    "test:editor-integration": "npm --prefix editors/vscode run test:integration",
     "test:documentation": "node scripts/test-documentation.mjs",
     "test:ci-lockfile": "node scripts/test-ci-lockfile.mjs",
     "test:banner-visibility": "node scripts/test-banner-visibility.mjs",
