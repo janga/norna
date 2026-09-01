@@ -65,3 +65,5 @@ jobs:
 
       - name: Test the packaged extension in VS Code
         run: xvfb-run -a npm run test:editor-integration
+        env:
+          NORNA_VSCODE_TEST_VERSION: 1.96.0

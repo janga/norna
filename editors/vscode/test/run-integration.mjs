@@ -16,7 +16,12 @@ const workspaceRoot = path.join(cacheRoot, 'workspace');
 const extensionsDirectory = path.join(cacheRoot, 'extensions');
 const userDataDirectory = path.join(cacheRoot, 'user-data');
 const engineRoot = path.join(workspaceRoot, 'node_modules', '@janga', 'norna');
-const version = process.env.NORNA_VSCODE_TEST_VERSION ?? 'stable';
+const commandArguments = process.argv.slice(2);
+const versionArgument = commandArguments[0] === '--version' ? commandArguments[1] : undefined;
+if (commandArguments.length > 0 && (!versionArgument || commandArguments.length !== 2)) {
+	throw new Error('Usage: node test/run-integration.mjs [--version <VS Code version>]');
+}
+const version = versionArgument ?? process.env.NORNA_VSCODE_TEST_VERSION ?? 'stable';
 let engineVersion;
 
 const write = async (relativePath, source) => {
@@ -57,6 +62,7 @@ page:
 Text with an unmatched note reference {note-ref}.
 
 \`\`\`norna-image-stack
+- image: portrait.jpg
 - image: 
 \`\`\`
 `);
@@ -75,6 +81,13 @@ Team content.
 
 \`\`\`norna-
 \`\`\`
+`);
+	await write('site/pages/040-unclosed/content.md', `# Unclosed block
+
+## Example {#example}
+
+\`\`\`norna-image-stack
+- image: missing.jpg
 `);
 	await write('site/notes.md', '# Ordinary Markdown\n');
 	await write('other.yaml', 'preset: \n');

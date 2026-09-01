@@ -93,6 +93,26 @@ async function run() {
 	assert.ok(imageItems.some((item) => labelOf(item) === 'portrait.jpg'));
 	const portrait = imageItems.find((item) => labelOf(item) === 'portrait.jpg');
 	assert.match(documentationOf(portrait), /Run `norna content:sync`/);
+	const portraitLine = Array.from({ length: home.lineCount }, (_value, line) => line)
+		.find((line) => home.lineAt(line).text.includes('portrait.jpg'));
+	const definitions = await vscode.commands.executeCommand(
+		'vscode.executeDefinitionProvider',
+		home.uri,
+		new vscode.Position(portraitLine, home.lineAt(portraitLine).text.indexOf('portrait.jpg') + 2),
+	);
+	assert.ok(definitions.some((location) => location.uri.fsPath.endsWith(path.join('images', 'team', 'portrait.jpg'))));
+	const fenceLine = Array.from({ length: home.lineCount }, (_value, line) => line)
+		.find((line) => home.lineAt(line).text.includes('norna-image-stack'));
+	const hovers = await vscode.commands.executeCommand(
+		'vscode.executeHoverProvider',
+		home.uri,
+		new vscode.Position(fenceLine, 6),
+	);
+	const hoverText = hovers.flatMap((hover) => hover.contents)
+		.map((content) => typeof content === 'string' ? content : content.value ?? '')
+		.join('\n');
+	assert.match(hoverText, /managed images in a vertical stack/);
+	assert.match(hoverText, /docs\/content\.md#image-stack/);
 
 	const diagnostics = await waitFor(
 		() => vscode.languages.getDiagnostics(home.uri).filter((diagnostic) => diagnostic.source === 'Norna'),
@@ -100,6 +120,20 @@ async function run() {
 		'Norna Markdown diagnostics did not reach the Problems model.',
 	);
 	assert.ok(diagnostics.every((diagnostic) => diagnostic.source === 'Norna'));
+	const unclosed = await openDocument('site/pages/040-unclosed/content.md');
+	const unclosedDiagnostic = await waitFor(
+		() => vscode.languages.getDiagnostics(unclosed.uri)
+			.find((diagnostic) => diagnostic.source === 'Norna' && diagnostic.code === 'unclosed-norna-block'),
+		Boolean,
+		'Norna did not report the unclosed block.',
+	);
+	const codeActions = await vscode.commands.executeCommand(
+		'vscode.executeCodeActionProvider',
+		unclosed.uri,
+		unclosedDiagnostic.range,
+		vscode.CodeActionKind.QuickFix.value,
+	);
+	assert.ok(codeActions.some((action) => action.title.startsWith('Close block with')));
 
 	const ordinaryMarkdown = await openDocument('site/notes.md');
 	const ordinaryMarkdownItems = await getCompletions(ordinaryMarkdown, 0);
