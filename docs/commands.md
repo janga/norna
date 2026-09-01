@@ -174,8 +174,9 @@ contract.
 - `typography show`: prints the selected site's resolved typography for the
   root theme, every page, and every section. Each value identifies the profile,
   rhythm, or root override that supplied it.
-- `site:public`: copies `site/public/` into `site/.norna/public/` and
-  removes stale copied static files.
+- `site:public`: copies `site/public/` into `site/.norna/public/`, removes stale
+  copied static files, and generates `sitemap.xml` from pages that produce URLs
+  and from the configured public URL.
 - `images`: generates WebP variants for raster images, copies managed SVG
   images, and writes `site/.norna/generated-images.json`.
 - `engine:update [version|latest]`: updates the site repository's

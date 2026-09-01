@@ -228,10 +228,30 @@ const checkThemeExplorer = () => {
 	);
 };
 
+const checkSitemapReference = async () => {
+	const publicFiles = await readFile(path.join(repoRoot, 'docs', 'public-files.md'), 'utf8');
+	const publishing = await readFile(path.join(repoRoot, 'docs', 'publishing.md'), 'utf8');
+
+	for (const expectedText of [
+		'## Generated Sitemap',
+		'`navigation.listed: false`',
+		'`site/.norna/public/sitemap.xml`',
+		'`dist/sitemap.xml`',
+	]) {
+		assert.ok(publicFiles.includes(expectedText), `Public-files reference is missing: ${expectedText}`);
+	}
+	assert.doesNotMatch(
+		publishing,
+		/Site-specific public files[^.]*`sitemap\.xml` belong in the site repository/s,
+		'Publishing reference still describes sitemap.xml as a site-owned source file.',
+	);
+};
+
 await checkLocalMarkdownLinks();
 await checkObsoleteDocumentationReferences();
 await checkObsoleteSiteFiles();
 await checkThemePresetReference();
+await checkSitemapReference();
 checkThemeExplorer();
 
 const llms = await readFile(path.join(repoRoot, 'site', 'public', 'llms.txt'), 'utf8');

@@ -31,8 +31,9 @@ url: https://owner.github.io/repository/
 ```
 
 Norna uses the URL to derive the base path for internal links, public files,
-and generated images. Use a root URL such as `https://example.com/` for a
-custom domain.
+and generated images. It also uses the URL for the sitemap, an automatically
+generated list of public page URLs for search crawlers. Use a root URL such as
+`https://example.com/` for a custom domain.
 
 ## Build the static site {#build}
 
@@ -45,6 +46,13 @@ npm run norna:build
 
 Treat `dist/` as generated output. Edit the files under `site/` and build again
 instead of changing the generated files.
+
+The build also creates `dist/sitemap.xml` from every page that has its own URL.
+Norna uses the public URL above for its absolute links, includes pages omitted
+from navigation, and excludes navigation categories because they do not have
+URLs. Do not create a source sitemap at `site/public/sitemap.xml`. See the
+[generated sitemap reference](https://github.com/janga/norna/blob/main/docs/public-files.md#generated-sitemap)
+for the exact inclusion and conflict rules.
 
 ## Publish with GitHub Pages {#publish}
 

@@ -48,10 +48,16 @@ The starter workflow:
 6. uploads `dist/`,
 7. deploys the artifact to GitHub Pages.
 
-Site-specific public files such as `site/public/CNAME`, `robots.txt`, and
-`sitemap.xml` belong in the site repository. Norna copies them, while GitHub
-Pages, crawlers, and other external consumers give those filenames their
-meaning. See [Public Files](public-files.md).
+Site-specific public files such as `site/public/CNAME` and `robots.txt` belong
+in the site repository. Norna copies them, while GitHub Pages, crawlers, and
+other external consumers give those filenames their meaning.
+
+Norna generates `sitemap.xml` from the pages that produce URLs and from the
+configured public URL. Do not add a source sitemap at
+`site/public/sitemap.xml`; the generated file is included in `dist/` and
+published by the same workflow. See
+[Public Files: Generated Sitemap](public-files.md#generated-sitemap) for page
+inclusion and conflict rules.
 
 For a project site without a custom domain, include the repository path in
 `site/config.yaml`:
@@ -67,7 +73,8 @@ url: https://example.com/
 ```
 
 Norna derives the base path from the URL pathname and applies it to generated
-internal links, favicons, managed images and root-relative Markdown links.
+internal links, sitemap entries, favicons, managed images, and root-relative
+Markdown links.
 
 ## Deploy An Already Committed Branch
 

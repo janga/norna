@@ -67,9 +67,9 @@ site/
 - [`images/`](images-and-metadata.md): managed images kept inside the page that
   references them, plus variants, sync, and generated image state.
 - [`public/`](public-files.md): navigation logos, favicons, and other static
-  files copied without managed-image processing.
+  source files copied without managed-image processing.
 - [Generated files](site-files.md#generated-files): `site/.norna/public/`,
-  `site/.norna/.astro/`, and `dist/`.
+  `site/.norna/.astro/`, `dist/`, and the generated sitemap.
 
 The [complete Site Files reference](site-files.md) explains which paths are
 required, optional, convention-discovered, versioned, or generated.
@@ -101,6 +101,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Add a navigation logo](public-files.md#navigation-logo)
 - [Add browser icons](public-files.md#browser-icons)
 - [Add other static files](public-files.md#other-static-files)
+- [Understand the generated sitemap](public-files.md#generated-sitemap)
 
 ### Change Presentation
 

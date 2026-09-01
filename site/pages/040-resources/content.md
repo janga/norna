@@ -13,7 +13,7 @@ page:
 - [Site files](https://github.com/janga/norna/blob/main/docs/site-files.md) lists required, optional, versioned, and generated paths.
 - [Content](https://github.com/janga/norna/blob/main/docs/content.md) defines headings, ids, notes, Norna blocks, and validation rules.
 - [Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md) explains managed images, generated variants, sync, and metadata.
-- [Public files](https://github.com/janga/norna/blob/main/docs/public-files.md) defines conventional logo and browser-icon filenames, custom-domain files, and static assets copied unchanged.
+- [Public files](https://github.com/janga/norna/blob/main/docs/public-files.md) defines conventional logo and browser-icon filenames, custom-domain files, static assets copied unchanged, and the generated sitemap.
 - [Pages and categories](https://github.com/janga/norna/blob/main/docs/pages.md) defines marker files, creation commands, directory names, ordering, URLs, nesting, and navigation.
 - [Theme](https://github.com/janga/norna/blob/main/docs/theme.md) compares preset uses and defaults, root overrides, structured content-block defaults, and page-theme scope.
 - [Reader Display controls](https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls) defines the universal reading-width choice and the optional color-mode and focus-reading controls.

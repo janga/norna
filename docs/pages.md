@@ -284,6 +284,10 @@ navigation:
   listed: false
 ```
 
+An unlisted page still has a public URL and remains in the generated sitemap.
+This setting is not access control. See
+[Public Files: Generated Sitemap](public-files.md#generated-sitemap).
+
 Home is always listed. Categories do not have page frontmatter; a category is
 shown only when it has a listed descendant.
 

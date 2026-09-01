@@ -10,7 +10,7 @@ npm run norna:dev
 
 The wrapper:
 
-1. syncs `site/public/` into `site/.norna/public/`,
+1. syncs `site/public/` and generates `site/.norna/public/sitemap.xml`,
 2. prepares new or changed managed images,
 3. starts Astro in background mode,
 4. waits until the site responds,

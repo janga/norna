@@ -83,7 +83,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
   regression checks.
 - Keep site-specific static files in the selected site `public/`; the default
   path is `site/public/`. The selected site's `.norna/public/` directory
-  is copied build preparation output plus generated image output.
+  is copied build preparation output plus generated image and sitemap output.
+  Do not create a source `site/public/sitemap.xml`; Norna reserves it for the
+  generated page-tree sitemap.
 - Keep Home at `site/pages/000-home/` without child pages. Put global
   navigation roots beside it and nested pages under the nearest meaningful
   non-home page.

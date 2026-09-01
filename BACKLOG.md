@@ -87,11 +87,6 @@ verified and approved for documentation.
   card-link validation in the content and command references, the documentation
   site, and focused examples. Keep editor behavior explicitly out of scope
   until `BL-027` is implemented.
-- `BL-030` Document automatic sitemap generation in the publishing and public
-  file references and the documentation site. Replace obsolete instructions to
-  create `site/public/sitemap.xml`; explain URL/base-path handling, page
-  inclusion, category exclusion, and source-file conflicts.
-
 ## Needs Decision Or Evidence
 
 These items have no implementation position yet. Move one into `Now`, `Next`,

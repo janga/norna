@@ -1,13 +1,13 @@
 # Public Files
 
-`site/public/` contains static files that Norna copies into the published site
+`site/public/` contains source files that Norna copies into the published site
 without managed-image processing. Use it for browser icons, verification files,
 `robots.txt`, a custom-domain `CNAME`, downloadable files, and other assets that
 must keep their original format.
 
 Most files and subdirectories under `public/` are site-owned. Logos and browser
-icons are exceptions: Norna discovers a small set of exact filenames by
-convention.
+icons are discovered from exact filenames. `sitemap.xml` is also an exception:
+Norna reserves that name for generated output.
 
 ## Navigation Logo
 
@@ -80,6 +80,37 @@ Norna does not discover or interpret `CNAME`; it copies the file to the root of
 the generated website. GitHub Pages gives the filename its meaning. The public
 `url` in `site/config.yaml` should use the same domain.
 
+## Generated Sitemap
+
+A sitemap is an XML file that gives search crawlers the canonical URL of each
+public page. Norna generates `sitemap.xml` from the page tree whenever it
+prepares public output. You do not configure or maintain a separate page list.
+
+The generated sitemap follows these rules:
+
+- every page that produces a URL is included, including a page with
+  `navigation.listed: false`;
+- a navigation category is excluded because it has no page or URL of its own;
+- every entry is an absolute URL derived from `url` in `site/config.yaml`,
+  including any configured base path;
+- entries use a deterministic URL order, independent of numeric presentation
+  prefixes on page directories;
+- `lastmod` is omitted because Norna does not own a reliable page-modification
+  date.
+
+Setting `navigation.listed: false` removes a page from generated navigation. It
+does not make the page private or remove it from the sitemap. See
+[Pages and Categories: Navigation](pages.md#navigation) for the listing rules.
+
+During build preparation, the generated file is
+`site/.norna/public/sitemap.xml`. A completed build publishes it as
+`dist/sitemap.xml`. Both locations are generated output and must not be edited
+or versioned.
+
+Do not add a file or directory named `sitemap.xml` directly under
+`site/public/`. Norna stops before changing generated public output when that
+name conflicts with the generated sitemap.
+
 ## Other Static Files
 
 Other names are not restricted. For example:
@@ -92,10 +123,11 @@ site/public/
     `-- project-overview.pdf
 ```
 
-Except for the navigation logo and browser icons documented above, Norna does
-not attach meaning to filenames or inspect their contents. It copies them
-unchanged. Browsers, crawlers, hosting services, and verification providers may
-still require their own exact filenames and locations.
+Except for the navigation logo, browser icons, and reserved generated sitemap
+documented above, Norna does not attach meaning to filenames or inspect their
+contents. It copies them unchanged. Browsers, crawlers, hosting services, and
+verification providers may still require their own exact filenames and
+locations.
 
 Norna preserves subdirectories while copying these files. A source file such
 as `site/public/downloads/project-overview.pdf` is published at
@@ -116,5 +148,5 @@ validated, synced, processed, and captioned. See
 ## Generated Copy
 
 `norna site:public` copies source files from `site/public/` to
-`site/.norna/public/`. The latter directory is generated build-preparation
-output and must not be edited or versioned.
+`site/.norna/public/` and writes the generated sitemap there. The latter
+directory is build-preparation output and must not be edited or versioned.
