@@ -31,12 +31,17 @@ maintainer, put it in `README.md` instead of duplicating it here.
   terminology-first workflow, follow the repo skill under
   `.agents/skills/norna-terminology-review/` and stop for approval before
   changing files.
-- When implementing a new feature, add or update a concrete item under
-  `Documentation Follow-ups` in `BACKLOG.md` describing which reference
-  documentation, introduction content, examples, and editor help may need to be
-  updated. Log the documentation work as part of the feature change, but do not
-  perform the wider documentation or example update until the feature has been
-  tested and the user has approved proceeding with it.
+- When implementing a new feature, update its reference documentation in the
+  same work once deterministic regression tests cover the overwhelming
+  majority of the relevant contract. Do not require separate human testing or
+  approval merely because the feature needs documentation.
+- Add or update a concrete item under `Documentation Follow-ups` in
+  `BACKLOG.md` only when reference documentation, introduction content,
+  examples, or editor help must intentionally be deferred.
+- Defer documentation or example updates until after human testing only when
+  the feature changes rendered HTML or visible or interactive site behavior,
+  that behavior should be documented, and automated regression tests cannot
+  cover the overwhelming majority of the relevant cases.
 - When a reproducible user-correctable content or configuration error exposes
   an avoidable Astro, YAML, or parser stack trace, replace it with a focused
   Norna diagnostic and add a regression test. Record concrete unresolved cases
