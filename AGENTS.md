@@ -32,11 +32,15 @@ maintainer, put it in `README.md` instead of duplicating it here.
   `.agents/skills/norna-terminology-review/` and stop for approval before
   changing files.
 - When implementing a new feature, add or update a concrete item under
-  `Documentation` in `BACKLOG.md` describing which reference documentation,
-  introduction content, examples, and editor help may need to be updated. Log
-  the documentation work as part of the feature change, but do not perform the
-  wider documentation or example update until the feature has been tested and
-  the user has approved proceeding with it.
+  `Documentation Follow-ups` in `BACKLOG.md` describing which reference
+  documentation, introduction content, examples, and editor help may need to be
+  updated. Log the documentation work as part of the feature change, but do not
+  perform the wider documentation or example update until the feature has been
+  tested and the user has approved proceeding with it.
+- When a reproducible user-correctable content or configuration error exposes
+  an avoidable Astro, YAML, or parser stack trace, replace it with a focused
+  Norna diagnostic and add a regression test. Record concrete unresolved cases
+  in `BACKLOG.md`; do not add open-ended "improve diagnostics" tasks.
 - Do not create branches unless the user asks for one.
 - Do not push uncommitted changes.
 - Before committing, run `git status --short` and make sure untracked files are
