@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { access, cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
+import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -93,6 +94,24 @@ const npmEnv = {
 	...process.env,
 	npm_config_cache: npmCachePath,
 };
+
+const getAvailablePort = () => new Promise((resolve, reject) => {
+	const server = createServer();
+	server.once('error', reject);
+	server.listen(0, '127.0.0.1', () => {
+		const address = server.address();
+		if (!address || typeof address === 'string') {
+			server.close();
+			reject(new Error('Could not allocate a local preview port.'));
+			return;
+		}
+
+		server.close((error) => {
+			if (error) reject(error);
+			else resolve(address.port);
+		});
+	});
+});
 
 const assertFileExists = async (filePath) => {
 	try {
@@ -372,6 +391,22 @@ This page verifies that packaged norna sites can build additional pages.
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
+	const previewPort = await getAvailablePort();
+	const previewEnv = {
+		...npmEnv,
+		NORNA_DEV_PORT: String(previewPort),
+		NORNA_NO_OPEN: '1',
+	};
+	try {
+		await runInherit(npxBin, ['norna', 'dev:local'], { cwd: siteProjectRoot, env: previewEnv });
+		const status = await run(npxBin, ['norna', 'dev:status'], { cwd: siteProjectRoot, env: previewEnv });
+		assert.match(status.stdout, new RegExp(`dev:local is running at http://127\\.0\\.0\\.1:${previewPort}/site/`));
+		const response = await fetch(`http://127.0.0.1:${previewPort}/site/`);
+		assert.equal(response.status, 200);
+		assert.match(await response.text(), /<h1 id="page-title">Package Check Site<\/h1>/);
+	} finally {
+		await runInherit(npxBin, ['norna', 'dev:stop'], { cwd: siteProjectRoot, env: previewEnv });
+	}
 	await assertPathExists(path.join(siteProjectRoot, 'site', '.norna', '.astro'));
 	await assertPathMissing(path.join(siteProjectRoot, '.astro'));
 	await assertFileExists(path.join(siteProjectRoot, 'site', '.norna', 'public', 'robots.txt'));
