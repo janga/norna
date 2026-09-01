@@ -259,6 +259,74 @@ version, commit its `package.json` and `package-lock.json`, and run that site's
 normal checks and build. Record any friction in the release backlog before the
 next engine release.
 
+## VS Code Extension Release
+
+The VS Code extension has its own version in `editors/vscode/package.json`.
+Engine and extension releases are independent because the extension selects
+and checks the editor API supplied by each project's installed Norna engine.
+
+### First Marketplace Release
+
+The publisher ID in the extension manifest is `janga`. Before the first public
+release, create or obtain access to that publisher in the Visual Studio
+Marketplace. Follow the current
+[official authentication and publisher instructions](https://code.visualstudio.com/api/working-with-extensions/publishing-extension);
+do not store Marketplace credentials in the repository.
+
+The first public release is also a product checkpoint. Confirm the publisher
+identity, extension name, icon, description, license, and support links in the
+Marketplace preview before making it public.
+
+### Prepare A Version
+
+Start from a clean working tree. Update the extension version and its lockfile
+without creating an npm tag or commit:
+
+```sh
+npm --prefix editors/vscode version patch --no-git-tag-version
+```
+
+Use `minor` or `major` instead of `patch` when the extension's own compatibility
+or behavior requires it. Then run:
+
+```sh
+npm run test:editor-language
+npm run test:editor-integration:minimum
+npm run test:editor-integration
+npm --prefix editors/vscode run audit:runtime
+npm --prefix editors/vscode run package
+```
+
+These checks inspect the shipped VSIX, install it together with Red Hat YAML in
+isolated VS Code instances, and exercise both VS Code 1.96 and the current
+stable release. Inspect `editors/vscode/norna-vscode.vsix` through VS Code's
+**Install from VSIX...** command before the first public release.
+
+Commit the extension version and related changes. Use an extension-specific tag
+so it cannot be confused with an engine npm release:
+
+```sh
+git tag -a vscode-v<version> -m "VS Code extension v<version>"
+```
+
+### Publish And Verify
+
+After authenticating according to the current Marketplace instructions,
+publish the committed version:
+
+```sh
+npm --prefix editors/vscode run publish:marketplace
+git push --follow-tags
+```
+
+Do not bump the version again merely because the Git push failed after a
+successful Marketplace publication. Retry the push. If publication fails,
+correct the reported problem and retry the same unpublished extension version.
+
+Finally, install **Norna** from a clean VS Code profile, open a site using a
+published `@janga/norna` version, and verify the status item, YAML suggestions,
+Markdown suggestions, Problems diagnostics, and versioned documentation links.
+
 ## Rendering Notes
 
 The renderer discovers a required homepage at

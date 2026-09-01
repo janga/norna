@@ -14,9 +14,9 @@ are in the [backlog process](docs/design/backlog/README.md).
 order.
 
 - [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
-  **Ready.** Turn the proof-of-concept editor integration into a supported,
-  installable, version-aligned feature before describing IntelliSense as
-  complete.
+  **In progress.** The version-aligned package and real VS Code tests are ready;
+  complete the first Marketplace publication before describing IntelliSense as
+  a supported installable feature.
 - [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
   **Ready.** Use the shared reverse link index and redirect alias model to move
   a page or reconcile an already moved page without guessing.

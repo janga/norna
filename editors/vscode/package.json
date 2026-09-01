@@ -72,6 +72,7 @@
     "build": "esbuild extension.cjs --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.cjs",
     "check": "npm run build && node --check extension.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/package-contract.mjs",
     "package": "vsce package --out norna-vscode.vsix",
+    "publish:marketplace": "vsce publish",
     "vscode:prepublish": "npm run build",
     "test:integration": "node test/run-integration.mjs",
     "test:integration:minimum": "node test/run-integration.mjs --version 1.96.0"

@@ -10,6 +10,18 @@ recognized Norna files.
 Do not describe IntelliSense as complete until the acceptance criteria below are
 met.
 
+## Current Status
+
+Implementation, packaging, compatibility handling, documentation, and
+packaged-extension tests are complete. The tests install both Norna and Red Hat
+YAML into isolated VS Code instances and run against the minimum supported and
+current VS Code releases.
+
+The remaining acceptance step is the first public Visual Studio Marketplace
+release. Until that external publisher setup is complete, the repository-built
+VSIX is suitable for final evaluation but is not the supported installation and
+automatic-update channel promised by this item.
+
 ## First Scope
 
 - Publish and version the VS Code extension through a supported installation and

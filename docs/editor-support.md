@@ -1,66 +1,72 @@
 # VS Code Editor Support
 
-Norna includes a proof-of-concept VS Code extension for project-local YAML and
-Markdown assistance. It is not currently published in the VS Code Marketplace;
-build and install the VSIX from this repository when evaluating it.
+The Norna extension adds project-aware help while you edit a Norna site in
+Visual Studio Code. It suggests valid configuration and Markdown syntax,
+reports content problems in the editor, and helps you find managed images.
+The command-line checks remain authoritative.
+
+## Public Availability
+
+The extension package and compatibility tests are ready for the first public
+release. It has not yet been published in the Visual Studio Marketplace. Until
+that release, install the repository-built VSIX only when evaluating the editor
+support.
+
+After Marketplace publication, install **Norna** from VS Code's Extensions
+view. Marketplace installation also supplies automatic extension updates. The
+Norna extension declares
+[Red Hat YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
+as a dependency, so VS Code installs the YAML support it needs.
+
+## What You See In VS Code
+
+Open a Norna project and select a recognized Norna file. A **Norna** item then
+appears on the right side of the status bar:
+
+- a check mark means that project-local editor support is ready;
+- a warning symbol means that the local Norna package is missing or
+  incompatible;
+- no Norna item means that the active file is not part of a recognized Norna
+  site.
+
+Select the status item for a detailed report. The same report is available from
+the Command Palette as **Norna: Show IntelliSense Status**.
+
+Norna uses standard VS Code features:
+
+| Feature | How to use it | What Norna adds |
+| --- | --- | --- |
+| Suggestions | Start typing or press `Ctrl+Space`. On macOS, use the Control key, not Command. | Valid fields, values, blocks, and managed-image filenames for the current file. |
+| Hover help | Hold the pointer over supported syntax. | A short explanation and a link to reference documentation matching the installed Norna version. |
+| Problems | Open **View > Problems**. | Content errors and warnings for recognized page files. |
+| Quick Fix | Place the cursor on a reported problem and select the light-bulb action. | Safe repairs for selected problems, such as closing an unfinished Norna block. |
+| Go to Definition | Place the cursor on a managed-image filename and run **Go to Definition**. | Opens the matching source image, including an unambiguous image found under another page. |
+
+Editor diagnostics are immediate guidance, not a replacement for
+`norna config:check` or `norna content:check`. Run the command-line checks before
+building or publishing.
 
 ## Requirements
 
 - VS Code 1.96 or later.
-- The [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml).
-- A Norna site with its project-local `@janga/norna` dependency installed by
-  `npm install`.
+- A trusted local filesystem workspace. Virtual and untrusted workspaces are
+  not supported because the extension reads the project's installed engine.
+- A Norna site whose project-local `@janga/norna` dependency has been installed
+  with `npm install`.
 
-The Norna extension declares Red Hat YAML as an extension dependency. Verify
-that both extensions are enabled in VS Code's Extensions view if YAML help is
-missing.
+Open the site project itself rather than an unrelated parent directory. The
+extension finds the surrounding Norna site and loads schemas and Markdown
+behavior from that project's installed `@janga/norna` package.
 
-## Build And Install The Current Extension
-
-From a Norna repository checkout:
-
-```sh
-cd editors/vscode
-npm ci
-npm run package
-code --install-extension norna-vscode.vsix
-```
-
-If the `code` shell command is unavailable, open VS Code's Extensions view,
-choose **Install from VSIX...**, and select the generated file.
-
-Reload the current VS Code window from the Command Palette with
-**Developer: Reload Window**. Rebuild and reinstall the VSIX after changing the
-extension itself.
-
-## Project-Local Behavior
-
-Open the site project, not an unrelated parent directory, and run `npm install`
-before using editor help. For each recognized Norna file, the extension finds
-the surrounding site and then loads schemas and Markdown behavior from that
-project's installed `@janga/norna` package.
-
-This keeps editor suggestions aligned with the engine version recorded by the
-project. If two site projects install different Norna versions, opening a file
-inside each project selects that project's local schema. The extension disables
-Norna-specific help when the installed package uses an unsupported schema or
-editor API version instead of silently applying incompatible rules.
-
-Run **Norna: Show IntelliSense Status** from the Command Palette to see:
-
-- the detected site directory;
-- the installed Norna package and version;
-- schema and editor API compatibility;
-- the schema selected for the active file;
-- detected logo and browser-icon status where relevant.
-
-Run **Norna: Refresh IntelliSense** after installing or changing the local
-Norna package. Use **Developer: Reload Window** if the extension itself has
-been installed or replaced.
+This keeps suggestions aligned with the Norna version recorded by the project.
+Two projects may use different Norna versions; each receives help from its own
+installation. If the local engine and extension use incompatible schema or
+editor API versions, the extension disables Norna-specific help and reports how
+to recover instead of applying incorrect rules.
 
 ## Recognized Files
 
-Norna-specific support activates only inside a valid current site structure:
+Norna-specific support activates only inside the current site structure:
 
 ```text
 site/
@@ -78,68 +84,74 @@ site/
                 `-- content.md
 ```
 
-The root `config.yaml`, `theme.yaml`, and `sitewide-content.yaml` use their
-matching schemas. Every valid page `content.md` receives frontmatter and Norna
-Markdown support. A valid `category.yaml` receives its small category schema
-and an empty-category snippet. A limited `theme.yaml` in a page or category
-directory receives the deliberately smaller page-theme schema. Other YAML and
-Markdown files are left to their normal language extensions.
+The three root YAML files use their matching schemas. Every valid page
+`content.md` receives frontmatter and Norna Markdown support. A valid
+`category.yaml` receives its category schema. A `theme.yaml` inside a page or
+category directory receives the deliberately smaller page-theme schema.
+Unrelated YAML and Markdown files keep their normal editor behavior and do not
+receive Norna suggestions or diagnostics.
 
-See [Site Files](site-files.md) and [Pages and Categories](pages.md) for the
+See [Site Files](site-files.md) and [Pages And Categories](pages.md) for the
 complete directory contract.
 
-## YAML Help
+## Configuration Help
 
-Inside a recognized YAML file, use `Ctrl+Space` to request completion. On macOS
-this is still written as `Ctrl+Space`, using the Control key rather than
-Command. Norna supplies:
+Inside a recognized YAML file, start typing or press `Ctrl+Space`. Norna
+supplies:
 
-- valid fields and values for the active file;
-- short syntax examples;
-- descriptions and version-matched reference links;
-- `Norna:` snippets for structured objects and list entries that generic YAML
-  completion cannot express clearly.
+- valid fields and values for that file;
+- small snippets for structured objects and list entries;
+- descriptions that explain the effect of each choice;
+- links to reference documentation for the project's installed Norna version.
 
-Red Hat YAML renders the project-local schema information. Norna's generated
-schema and `npm run norna:config:check` are authoritative. Word-based editor
-completion, other YAML extensions, and AI assistants can also offer text that
-is unrelated to Norna and may be invalid.
-
-To reduce unrelated YAML suggestions in one workspace, add settings such as:
-
-```json
-{
-  "[yaml]": {
-    "editor.wordBasedSuggestions": "off",
-    "editor.inlineSuggest.enabled": false
-  },
-  "github.copilot.enable": {
-    "yaml": false
-  }
-}
-```
-
-Omit the Copilot setting when Copilot is not installed or when AI suggestions
-are useful. These settings do not replace schema validation.
+Red Hat YAML displays the project-local schemas. Norna contributes the
+structured snippets that are specific to its file model. Other extensions,
+word-based completion, and AI assistants may still offer unrelated text. A
+suggestion from another source is not necessarily valid Norna configuration.
 
 ## Markdown And Image Help
 
-In a recognized page `content.md`, the extension provides:
+In a recognized page `content.md`, Norna provides:
 
-- snippets and field completion for Norna image stacks, carousels, and card
-  lists;
+- a complete starting snippet when the file is empty;
+- snippets and field suggestions for image stacks, carousels, and card lists;
 - inline-note syntax help;
-- managed-image filename completion, including candidates currently located
-  under another page;
+- managed-image filename suggestions from the current page and other pages;
 - Go to Definition from an image filename to matching source files;
-- Norna diagnostics in VS Code's **Problems** panel;
-- safe quick fixes for an unclosed Norna block, a movable image that needs
+- Norna diagnostics in the **Problems** panel;
+- safe quick fixes for an unclosed Norna block, an image that needs
   `content:sync`, and a local Markdown image that can become an image stack.
 
-Image completion can show candidates from other pages because
-`content:sync` can relocate an unambiguous referenced file. If the same filename
-exists in several page image directories, the editor and command must not guess
-which source was intended.
+Image suggestions can include files under another page because `content:sync`
+can relocate an unambiguous referenced image. If several page image directories
+contain the same filename, neither the editor nor the command guesses which
+source was intended.
+
+## Refresh After An Engine Change
+
+Run **Norna: Refresh IntelliSense** from the Command Palette after installing,
+upgrading, or downgrading the project's `@janga/norna` package. The command
+clears cached project support and reloads the current engine contract.
+
+Use **Developer: Reload Window** after installing or replacing the extension
+itself. Reloading the window does not replace the project's command-line
+checks.
+
+## Evaluate A Repository Build
+
+Before the first Marketplace release, build an installable VSIX from a Norna
+repository checkout:
+
+```sh
+cd editors/vscode
+npm ci
+npm run package
+code --install-extension norna-vscode.vsix
+```
+
+If the `code` shell command is unavailable, open the Extensions view, select
+**Views and More Actions**, choose **Install from VSIX...**, and select
+`editors/vscode/norna-vscode.vsix`. Then run **Developer: Reload Window**.
 
 ## Troubleshooting
 
@@ -148,14 +160,16 @@ If Norna help does not appear:
 1. Open a recognized file inside the current site structure.
 2. Run `npm install` in the site project and confirm that
    `node_modules/@janga/norna` exists.
-3. Confirm that Norna and Red Hat YAML are enabled in the Extensions view.
-4. Run **Norna: Show IntelliSense Status** and address the first incompatible or
-   missing item it reports.
+3. Check the **Norna** status item. Select it for the first missing or
+   incompatible requirement.
+4. Confirm that Norna and Red Hat YAML are enabled in the Extensions view.
 5. Run **Norna: Refresh IntelliSense** after changing the project's engine.
-6. Use **Developer: Reload Window** after installing a new VSIX.
+6. Use **Developer: Reload Window** after installing a different VSIX.
 7. Run `npm run norna:config:check` or `npm run norna:content:check` to
-   distinguish an editor display problem from invalid site source.
+   distinguish an editor problem from invalid site source.
 
-Generic suggestions may still appear beside Norna suggestions. Their presence
-does not mean that Norna accepts them; use the descriptions prefixed with
-`Norna:`, the project-local schema, and command validation as the contract.
+If unrelated YAML suggestions make the list difficult to read, first check the
+source label shown by VS Code. Norna's structured YAML snippets are prefixed
+with `Norna:`. Word completion, inline AI completion, and other extensions can
+be disabled per language in workspace settings, but doing so is optional and
+does not change what Norna accepts.
