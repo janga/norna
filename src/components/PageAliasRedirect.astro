@@ -23,7 +23,7 @@ const canonicalUrl = getAbsolutePageUrl(projectConfig.site.url, targetPathname);
 		<meta http-equiv="refresh" content={`0; url=${targetHref}`} />
 		<link rel="canonical" href={canonicalUrl} />
 		<title>{labels.pageMoved}: {targetTitle}</title>
-		<style>
+		<style is:inline>
 			:root {
 				color-scheme: light dark;
 				font-family: system-ui, sans-serif;

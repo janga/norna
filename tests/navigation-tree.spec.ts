@@ -9,6 +9,7 @@ test.describe('desktop tree navigation', () => {
 
 	test('connects the current page contents to its node in the active branch', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		expect(await page.locator('body').evaluate((body) => getComputedStyle(body).paddingTop)).toBe('0px');
 
 		await expect(page.locator('.site-nav > ul > li > a')).toHaveText([
 			'Nested pages',
