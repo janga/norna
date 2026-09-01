@@ -71,6 +71,20 @@ async function run() {
 			documentation: documentationOf(documentationPreset),
 		})}`,
 	);
+	const typographyItems = await getCompletions(theme, 3);
+	for (const property of ['overrides', 'profile', 'rhythm']) {
+		assert.ok(typographyItems.some((item) => labelOf(item) === property), `Missing typography completion ${property}.`);
+	}
+	assert.ok(!typographyItems.some((item) => labelOf(item) === 'headings'));
+	const invalidTypographyEdit = new vscode.WorkspaceEdit();
+	invalidTypographyEdit.insert(theme.uri, new vscode.Position(3, 2), 'headings:\n    fontFamily: "Inter, sans-serif"');
+	await vscode.workspace.applyEdit(invalidTypographyEdit);
+	const invalidTypographyDiagnostics = await waitFor(
+		() => vscode.languages.getDiagnostics(theme.uri),
+		(items) => items.some((item) => /Property headings is not allowed/i.test(item.message)),
+		'YAML schema validation did not reject typography.headings.',
+	);
+	assert.ok(invalidTypographyDiagnostics.some((item) => /Property headings is not allowed/i.test(item.message)));
 
 	const emptyPage = await openDocument('site/pages/020-empty/content.md');
 	const emptyItems = await getCompletions(emptyPage, 0, 0);

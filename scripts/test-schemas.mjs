@@ -58,8 +58,42 @@ const assertDocumentationLinks = async (markdownDescription, location) => {
 	}
 };
 
+const assertSnippetShape = (schema, value, location) => {
+	if (Array.isArray(value)) {
+		const arraySchema = schema.items
+			? schema
+			: [...(schema.anyOf ?? []), ...(schema.oneOf ?? []), ...(schema.allOf ?? [])]
+				.find((candidate) => candidate.type === 'array' || candidate.items);
+		assert.ok(arraySchema?.items, `${location} inserts an array where the schema has no array items.`);
+		for (const [index, item] of value.entries()) {
+			assertSnippetShape(arraySchema.items, item, `${location}[${index}]`);
+		}
+		return;
+	}
+
+	if (!value || typeof value !== 'object') return;
+	const objectSchema = schema.type === 'object' || schema.properties
+		? schema
+		: [...(schema.anyOf ?? []), ...(schema.oneOf ?? []), ...(schema.allOf ?? [])]
+			.find((candidate) => candidate.type === 'object' || candidate.properties);
+	assert.ok(objectSchema, `${location} inserts an object into a non-object schema.`);
+	for (const [key, child] of Object.entries(value)) {
+		const childSchema = objectSchema.properties?.[key]
+			?? (objectSchema.additionalProperties && typeof objectSchema.additionalProperties === 'object'
+				? objectSchema.additionalProperties
+				: null);
+		assert.ok(childSchema, `${location} inserts unknown property "${key}".`);
+		assertSnippetShape(childSchema, child, `${location}.${key}`);
+	}
+};
+
 const visitSchema = (schema, location, richProperties) => {
 	assert.equal(schema.enum, undefined, `${location} uses an undescribed enum.`);
+	for (const [index, snippet] of (schema.defaultSnippets ?? []).entries()) {
+		assert.ok(snippet && typeof snippet === 'object', `${location}.defaultSnippets[${index}] is invalid.`);
+		assert.ok(Object.hasOwn(snippet, 'body'), `${location}.defaultSnippets[${index}] has no body.`);
+		assertSnippetShape(schema, snippet.body, `${location}.defaultSnippets[${index}].body`);
+	}
 	if (schema.properties) {
 		for (const [name, property] of Object.entries(schema.properties)) {
 			assert.ok(property.description, `${location}.${name} has no description.`);

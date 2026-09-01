@@ -18,6 +18,7 @@ const serviceByRoot = new Map();
 const diagnosticTimers = new Map();
 const publicAssetDiagnosticUrisByRoot = new Map();
 let diagnostics;
+let extensionVersion;
 let output;
 let statusBar;
 
@@ -546,7 +547,7 @@ const getSupportStatus = (document) => {
 	}
 
 	return {
-		message: `Norna ${version} editor support is active for ${documentContext.relativePath}.`,
+		message: `Norna editor ${extensionVersion} is using engine ${version} for ${documentContext.relativePath}.`,
 		state: 'ready',
 	};
 };
@@ -608,7 +609,8 @@ const showStatus = async () => {
 		: 'none';
 	const issueCount = assetStatus?.issues.length ?? 0;
 	output.appendLine([
-		`Norna ${resolved.packageJson.version}`,
+		`Norna editor extension: ${extensionVersion}`,
+		`Norna engine: ${resolved.packageJson.version}`,
 		`Schema format: ${manifest.schemaVersion}`,
 		`Editor API: ${manifest.editorApiVersion ?? '(missing)'}${project.editorCompatible ? '' : ` (extension supports ${supportedEditorApiVersion})`}`,
 		`Schemas: ${resolved.root}`,
@@ -623,7 +625,7 @@ const showStatus = async () => {
 	].filter((line) => line !== null).join('\n'));
 	const action = await vscode.window.showInformationMessage(
 		project.editorCompatible
-			? `Norna ${resolved.packageJson.version}. Logo: ${logo}. Browser icons: ${browserIcons}. ${issueCount} public asset issue${issueCount === 1 ? '' : 's'}.`
+			? `Norna editor ${extensionVersion} with engine ${resolved.packageJson.version}. Logo: ${logo}. Browser icons: ${browserIcons}. ${issueCount} public asset issue${issueCount === 1 ? '' : 's'}.`
 			: `Norna ${resolved.packageJson.version} schemas are active, but Norna-specific Markdown support requires editor API ${supportedEditorApiVersion}.`,
 		'Show details',
 	);
@@ -713,6 +715,7 @@ const runContentSync = (uri) => {
 };
 
 async function activate(context) {
+	extensionVersion = context.extension.packageJSON.version;
 	output = vscode.window.createOutputChannel('Norna');
 	diagnostics = vscode.languages.createDiagnosticCollection('norna');
 	statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 80);

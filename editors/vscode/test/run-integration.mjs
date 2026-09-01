@@ -48,7 +48,13 @@ const prepareWorkspace = async () => {
 		version: '1.0.0',
 	}, null, 2));
 	await write('site/config.yaml', 'url: https://example.com/\n');
-	await write('site/theme.yaml', 'preset: \n');
+	await write('site/theme.yaml', [
+		'preset: ',
+		'typography:',
+		'  fontFamily: "Inter, sans-serif"',
+		'  ',
+		'',
+	].join('\n'));
 	await write('site/sitewide-content.yaml', 'footer:\n  copyrightMessage: Example\n');
 	await write('site/pages/000-home/content.md', `---
 page:

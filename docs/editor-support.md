@@ -30,7 +30,9 @@ appears on the right side of the status bar:
   site.
 
 Select the status item for a detailed report. The same report is available from
-the Command Palette as **Norna: Show IntelliSense Status**.
+the Command Palette as **Norna: Show IntelliSense Status**. The report names
+both the installed extension version and the project-local Norna engine version
+so stale editor support can be distinguished from stale project dependencies.
 
 Norna uses standard VS Code features:
 
@@ -108,6 +110,8 @@ Red Hat YAML displays the project-local schemas. Norna contributes the
 structured snippets that are specific to its file model. Other extensions,
 word-based completion, and AI assistants may still offer unrelated text. A
 suggestion from another source is not necessarily valid Norna configuration.
+VS Code combines these sources in one list; an unknown field is rejected by the
+Norna schema in the **Problems** panel even if another source suggested it.
 
 ## Markdown And Image Help
 
