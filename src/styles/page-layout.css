@@ -176,9 +176,6 @@
 }
 
 .navigation-page-disclosure-sidebar > .navigation-page-open-link {
-	position: relative;
-	top: auto;
-	left: auto;
 	z-index: 1;
 }
 

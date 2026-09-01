@@ -25,8 +25,20 @@ test.describe('desktop tree navigation', () => {
 		await expect(localNavigation.locator('details[data-page-path="guides/installation"] > summary')).toHaveText('Installation');
 		await expect(localNavigation.locator('details[data-page-path="guides/workflows"] > summary')).toHaveText('Workflows');
 		const currentPageDisclosure = localNavigation.locator('details[data-page-path="guides/installation/macos"]');
-		await expect(currentPageDisclosure.locator(':scope > summary')).toHaveText('macOS');
-		await expect(currentPageDisclosure.getByRole('link', { name: 'macOS', exact: true })).toHaveAttribute('aria-current', 'page');
+		const currentPageSummary = currentPageDisclosure.locator(':scope > summary');
+		const currentPageLink = currentPageDisclosure.getByRole('link', { name: 'macOS', exact: true });
+		await expect(currentPageSummary).toHaveText('macOS');
+		await expect(currentPageLink).toHaveAttribute('aria-current', 'page');
+		const [summaryBox, linkBox] = await Promise.all([
+			currentPageSummary.boundingBox(),
+			currentPageLink.boundingBox(),
+		]);
+		expect(summaryBox).not.toBeNull();
+		expect(linkBox).not.toBeNull();
+		expect(Math.abs(
+			(summaryBox?.y ?? 0) + (summaryBox?.height ?? 0) / 2
+			- ((linkBox?.y ?? 0) + (linkBox?.height ?? 0) / 2),
+		)).toBeLessThanOrEqual(1);
 		await expect(localNavigation.getByRole('link', { name: 'Reference', exact: true })).toHaveCount(0);
 
 		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Guides', 'Installation', 'macOS']);
