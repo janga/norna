@@ -14,7 +14,7 @@ The wrapper:
 2. prepares new or changed managed images,
 3. starts Astro in background mode,
 4. waits until the site responds,
-5. opens `http://localhost:4321/` unless `WALDE_NO_OPEN=1` is set.
+5. opens `http://localhost:4321/` unless `NORNA_NO_OPEN=1` is set.
 
 The host and port are currently fixed in the script:
 
@@ -22,32 +22,12 @@ The host and port are currently fixed in the script:
 localhost:4321
 ```
 
-If the port is already in use, the command fails and asks you to stop the
-process using it.
+Before starting, Norna asks Astro to stop any background server tracked for the
+selected site. This uses the same Astro process lifecycle on macOS, Linux, and
+Windows.
 
-To ask Norna to stop an identifiable process that is blocking the standard port
-before starting, pass `--kill`:
-
-```sh
-npm run norna:dev -- --kill
-```
-
-If the operating system does not provide the listener information Norna needs,
-stop the process manually and run the command again.
-
-The standalone starter also provides this shorter alias:
-
-```sh
-npm run dev -- --kill
-```
-
-With the optional global launcher installed, the direct form is:
-
-```sh
-norna dev --kill
-```
-
-The launcher selects the current project's locally installed Norna version.
+If port 4321 remains occupied by another process, the command stops and asks
+you to free the port manually. Norna does not terminate unrelated processes.
 
 ## Test On A Phone
 

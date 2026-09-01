@@ -13,7 +13,7 @@ npm run norna:dev
 If the standard local port is blocked, start with:
 
 ```sh
-npm run norna:dev -- --kill
+npm run norna:dev
 ```
 
 ## Files

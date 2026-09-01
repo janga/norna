@@ -201,9 +201,9 @@ contract.
   Astro build.
 - `build:local`: runs `build` and restarts `dev:local`.
 - `dev:local`: syncs public files, prepares managed images, and starts Astro dev
-  in background mode on `localhost:4321`. Pass `--kill` to stop an identifiable
-  process that is blocking the standard port before starting; when listener
-  information is unavailable, stop that process manually.
+  in background mode on `localhost:4321`. It replaces the background server
+  tracked for the selected site. If another process owns the port, stop that
+  process manually; Norna does not terminate unrelated processes.
 - `dev:lan`: starts the same server on all local network interfaces and prints
   the IPv4 URL to open from another device on the same network. Stop it after
   testing because it is accessible to that local network.

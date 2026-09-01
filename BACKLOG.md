@@ -26,10 +26,6 @@ approachable before wider use.
 Use this section for concrete engine behavior that should be implemented or
 verified.
 
-- Make `scripts/dev-local.mjs` platform-independent. Replace its direct use of
-  Unix tools such as `lsof` and `tail`, and define equivalent port cleanup,
-  process termination, and log-following behavior for macOS, Linux, and
-  Windows.
 - Split `scripts/test-content-model-v2.mjs` into focused test suites for page
   structure, managed media, content synchronization, and Markdown constructs
   such as notes and cards. Preserve the existing behavioral coverage and keep
