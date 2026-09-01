@@ -47,6 +47,8 @@ maintainer, put it in `README.md` instead of duplicating it here.
   intentional.
 - When working through `BACKLOG.md`, commit each completed backlog item as a
   separate logical change before starting the next item.
+- When referring to a backlog item, always show both its `BL-NNN` identifier and
+  its title. Never present a backlog identifier without the title.
 - Commit before pushing.
 - Do not run `npm run deploy:watch` in this engine repository unless the user
   explicitly asks for it. Deploy monitoring is for site repositories.
