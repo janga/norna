@@ -116,10 +116,3 @@ Adopt. Foster. Donate.
 Save both files while local preview is running. Norna applies the preset to the
 Markdown structure; the files do not need templates, component imports, or
 layout code.
-
-## Continue {#continue}
-
-- [Grow your site](/getting-started/grow-your-site/) when the content needs
-  more sections, pages, or a navigation category.
-- [Build and publish](/getting-started/build-and-publish/) when the site is
-  ready for its public URL.

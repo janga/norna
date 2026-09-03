@@ -105,16 +105,3 @@ norna check
 Inside a project, the launcher delegates to that project's locally installed
 Norna version. See [Commands](https://github.com/janga/norna/blob/main/docs/commands.md)
 for all npm scripts, direct CLI forms, options, and side effects.
-
-## Continue {#continue}
-
-You now have a locally running, edited, and checked Norna site.
-
-- [Choose a theme](/getting-started/choose-a-theme/) to select a coordinated
-  visual starting point for the site.
-- [Grow your site](/getting-started/grow-your-site/) when the content needs
-  more sections, pages, or a navigation category.
-- [Build and publish](/getting-started/build-and-publish/) when the site is
-  ready for a public URL and GitHub Pages.
-- Open [Resources](/resources/) when you need the complete file, content,
-  theme, command, or publishing reference.
