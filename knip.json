@@ -16,6 +16,7 @@
 			]
 		},
 		"editors/vscode": {
+			"entry": ["extension.cjs"],
 			"project": ["*.cjs"]
 		}
 	}
