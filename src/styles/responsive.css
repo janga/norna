@@ -47,6 +47,20 @@
 		display: none;
 	}
 
+	.display-settings {
+		position: static;
+	}
+
+	.display-settings-panel {
+		top: calc(100% + 0.35rem);
+		right: max(var(--content-gutter), env(safe-area-inset-right, 0px));
+		left: max(var(--content-gutter), env(safe-area-inset-left, 0px));
+		width: auto;
+		max-height: calc(
+			100dvh - 100% - max(var(--content-gutter), env(safe-area-inset-bottom, 0px)) - 0.35rem
+		);
+	}
+
 	.mobile-nav-menu {
 		display: block;
 		position: relative;

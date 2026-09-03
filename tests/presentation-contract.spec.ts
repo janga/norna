@@ -260,6 +260,40 @@ test('Display groups native reader controls and closes with Escape', async ({ pa
 	await expect(trigger).toBeFocused();
 });
 
+for (const viewport of [
+	{ name: 'portrait', width: 320, height: 568 },
+	{ name: 'landscape', width: 667, height: 375 },
+]) {
+	test(`Display panel stays visible and distinct in mobile ${viewport.name}`, async ({ page }) => {
+		await page.setViewportSize({ width: viewport.width, height: viewport.height });
+		await openComponents(page);
+		const settings = page.locator('[data-display-settings]');
+		await settings.locator('summary').click();
+
+		const panel = settings.locator('.display-settings-panel');
+		await expect(panel).toBeVisible();
+		const presentation = await panel.evaluate((node) => {
+			const rectangle = node.getBoundingClientRect();
+			const panelStyle = getComputedStyle(node);
+			const rootStyle = getComputedStyle(document.documentElement);
+			return {
+				bottom: rectangle.bottom,
+				left: rectangle.left,
+				panelBackground: panelStyle.backgroundColor,
+				pageBackground: rootStyle.getPropertyValue('--color-page').trim(),
+				right: rectangle.right,
+				viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+				viewportWidth: window.visualViewport?.width ?? window.innerWidth,
+			};
+		});
+
+		expect(presentation.left).toBeGreaterThanOrEqual(0);
+		expect(presentation.right).toBeLessThanOrEqual(presentation.viewportWidth + 1);
+		expect(presentation.bottom).toBeLessThanOrEqual(presentation.viewportHeight + 1);
+		expect(presentation.panelBackground).not.toBe(presentation.pageBackground);
+	});
+}
+
 test('reader preferences apply, persist, and reset as one bounded overlay', async ({ page, context }) => {
 	await page.setViewportSize({ width: 1280, height: 900 });
 	await openComponents(page);
