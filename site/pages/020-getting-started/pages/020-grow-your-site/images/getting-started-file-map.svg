@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 1060" role="img" aria-labelledby="title desc">
+  <title id="title">Getting Started files mapped to the rendered documentation</title>
+  <desc id="desc">The actual Norna documentation file tree is shown above the corresponding Getting Started navigation and Grow Your Site page. The 020-getting-started category directory maps to the Getting Started navigation group. Its numbered child directories map in order to Install Norna, Choose A Theme, Grow Your Site, and Build And Publish. The highlighted 020-grow-your-site content file maps to the current Grow Your Site page and its section links.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M1 1 L9 5 L1 9" fill="none" stroke="#8a625f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .sans { font-family: Arial, Helvetica, sans-serif; }
+      .mono { font-family: Menlo, Consolas, monospace; }
+      .panel { fill: #fffdf9; stroke: #cfc4b8; stroke-width: 1.5; }
+      .soft { fill: #eee2dd; }
+      .ink { fill: #342d2b; }
+      .secondary { fill: #6c605d; }
+      .accent { fill: #7d454a; }
+      .category { fill: #5f513c; font-weight: 700; }
+      .current { fill: #7d454a; font-weight: 700; }
+      .tree { font-size: 17px; }
+      .label { font-size: 13px; font-weight: 700; }
+      .nav { font-size: 17px; font-weight: 650; }
+      .section-link { font-size: 14px; }
+      .mapping { font-size: 15px; }
+      .connector { fill: none; stroke: #8a625f; stroke-width: 1.5; stroke-dasharray: 5 5; }
+    </style>
+  </defs>
+
+  <g class="sans">
+    <rect class="panel" x="20" y="24" width="720" height="460" rx="8"/>
+    <text class="label secondary" x="44" y="54">FILES</text>
+
+    <g class="mono tree ink">
+      <text x="44" y="86">site/pages/</text>
+      <text x="44" y="107">├── 000-home/</text>
+      <text x="44" y="128">│   └── content.md</text>
+      <text class="category" x="44" y="149">├── 020-getting-started/</text>
+      <text x="44" y="170">│   ├── category.yaml</text>
+      <text x="44" y="191">│   └── pages/</text>
+      <text x="44" y="212">│       ├── 010-install-norna/</text>
+      <text x="44" y="233">│       │   └── content.md</text>
+      <text x="44" y="254">│       ├── 015-choose-a-theme/</text>
+      <text x="44" y="275">│       │   └── content.md</text>
+      <text class="current" x="44" y="296">│       ├── 020-grow-your-site/</text>
+      <text class="current" x="44" y="317">│       │   ├── content.md</text>
+      <text x="44" y="338">│       │   └── images/</text>
+      <text x="44" y="359">│       └── 030-build-and-publish/</text>
+      <text x="44" y="380">│           └── content.md</text>
+      <text x="44" y="401">├── 030-examples/</text>
+      <text x="44" y="422">├── 035-faq/</text>
+      <text x="44" y="443">└── 040-resources/</text>
+    </g>
+
+    <rect class="soft" x="20" y="506" width="720" height="108" rx="8"/>
+    <text class="mono mapping category" x="44" y="543">020-getting-started/</text>
+    <path class="connector" d="M257 538 H408" marker-end="url(#arrow)"/>
+    <text class="mapping ink" x="428" y="543">Getting Started group</text>
+    <text class="mono mapping current" x="44" y="582">020-grow-your-site/content.md</text>
+    <path class="connector" d="M323 577 H408" marker-end="url(#arrow)"/>
+    <text class="mapping ink" x="428" y="582">current page and sections</text>
+
+    <rect class="panel" x="20" y="636" width="720" height="408" rx="8"/>
+    <rect class="soft" x="20.75" y="636.75" width="718.5" height="44" rx="7"/>
+    <circle cx="43" cy="659" r="4" fill="#a78277"/>
+    <circle cx="57" cy="659" r="4" fill="#c5afa8"/>
+    <circle cx="71" cy="659" r="4" fill="#d6c8c2"/>
+    <rect x="92" y="648" width="620" height="22" rx="3" fill="#fffdf9" stroke="#cfc4b8"/>
+    <text class="mono secondary" x="106" y="663" font-size="11">janga.github.io/norna/getting-started/grow-your-site/</text>
+
+    <line x1="20" y1="724" x2="740" y2="724" stroke="#d8cec6"/>
+    <text class="ink" x="45" y="708" font-size="12" font-weight="700">NORNA</text>
+    <text class="accent" x="317" y="708" font-size="11" font-weight="700">GETTING STARTED</text>
+    <line x1="317" y1="714" x2="418" y2="714" stroke="#7d454a" stroke-width="1.5"/>
+    <text class="secondary" x="449" y="708" font-size="11">EXAMPLES</text>
+    <text class="secondary" x="534" y="708" font-size="11">FAQ</text>
+    <text class="secondary" x="580" y="708" font-size="11">RESOURCES</text>
+
+    <line x1="305" y1="744" x2="305" y2="1012" stroke="#d8cec6"/>
+    <g transform="translate(44 758)">
+      <text class="nav category" x="0" y="0">Getting Started</text>
+      <text class="secondary" x="236" y="0" font-size="15">⌄</text>
+      <line x1="5" y1="14" x2="5" y2="245" stroke="#d8cec6"/>
+
+      <text class="nav ink" x="20" y="38">Install Norna</text>
+      <text class="secondary" x="236" y="38" font-size="15">›</text>
+      <text class="nav ink" x="20" y="76">Choose A Theme</text>
+      <text class="secondary" x="236" y="76" font-size="15">›</text>
+      <text class="nav current" x="20" y="114">Grow Your Site</text>
+      <text class="secondary" x="236" y="114" font-size="15">⌄</text>
+      <line x1="26" y1="127" x2="26" y2="216" stroke="#b99b96" stroke-width="1.5"/>
+      <text class="section-link secondary" x="43" y="146">Choose sections or pages</text>
+      <text class="section-link secondary" x="43" y="169">Start with one page</text>
+      <text class="section-link secondary" x="43" y="192">Add top-level pages</text>
+      <text class="section-link current" x="43" y="215">Add nested pages</text>
+      <text class="nav ink" x="20" y="251">Build And Publish</text>
+      <text class="secondary" x="236" y="251" font-size="15">›</text>
+    </g>
+
+    <g transform="translate(338 760)">
+      <text class="secondary" x="0" y="0" font-size="12">Getting Started / Grow Your Site</text>
+      <text class="ink" x="0" y="44" font-size="27" font-weight="700">GROW YOUR SITE</text>
+      <text class="ink" x="0" y="77" font-size="15">A new Norna site begins with one page.</text>
+      <text class="ink" x="0" y="100" font-size="15">Add pages as distinct topics emerge.</text>
+      <text class="ink" x="0" y="154" font-size="22" font-weight="700">ADD NESTED PAGES</text>
+      <text class="ink" x="0" y="185" font-size="15">Use nested pages when several pages</text>
+      <text class="ink" x="0" y="208" font-size="15">belong under one broader heading.</text>
+      <rect x="0" y="226" width="354" height="57" rx="4" fill="#eee2dd"/>
+      <text class="mono current" x="17" y="249" font-size="13">020-grow-your-site/</text>
+      <text class="mono ink" x="17" y="271" font-size="13">└── content.md</text>
+    </g>
+  </g>
+</svg>

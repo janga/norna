@@ -178,101 +178,85 @@ Screenshot of the same Dogs page with its mobile navigation menu open.
 
 ## Add nested pages {#child-pages}
 
-Use nested pages when several distinct pages belong under one broader heading. The page you are currently reading is an example.
-The heading can be a real parent page or a navigation category.
+Use nested pages when several distinct pages belong under one broader heading.
+The heading can be a real parent page or a navigation category. The `Getting
+Started` area you are reading is a category with four child pages.
 
 Choose a parent page when the broader topic needs an introduction or overview
 of its own. Choose a category when the heading only needs to group child pages
 in navigation.
 
-This documentation example uses `Guides` as a category:
+The illustration maps the documentation's real page directories to the
+navigation visible on this page. Numeric prefixes determine sibling order but
+are omitted from the displayed labels. The highlighted
+`020-grow-your-site/content.md` file supplies the current page title and its H2
+section links.
 
-```text
-site/pages/
-├── 000-home/
-│   └── content.md
-└── 010-guides/
-    ├── category.yaml
-    └── pages/
-        └── 010-installation/
-            ├── content.md
-            └── pages/
-                ├── 010-macos/
-                │   └── content.md
-                ├── 020-linux/
-                │   └── content.md
-                └── 030-windows/
-                    └── content.md
+<!-- norna-image-provenance:
+image: getting-started-file-map.svg
+source: hand-authored
+Hand-authored SVG diagram based on the actual Getting Started page hierarchy
+and navigation in the Norna documentation site.
+-->
+
+```norna-image-stack
+- image: getting-started-file-map.svg
+  alt: The actual documentation file tree mapped to the rendered Getting Started navigation. The 020-getting-started category contains Install Norna, Choose A Theme, Grow Your Site, and Build And Publish in numeric order. The highlighted 020-grow-your-site content file maps to the current page and its H2 section links.
+  caption: The page directories and their content become the navigation and page you are using now.
 ```
 
 The category file contains only its navigation label:
 
 ```yaml
-label: Guides
+label: Getting Started
 ```
 
 Create the category and its first page with:
 
 ```sh
-npm exec -- norna category:add "Guides" --parent /
-npm exec -- norna page:add "Installation" --parent /guides/
+npm exec -- norna category:add "Getting Started" --parent /
+npm exec -- norna page:add "Install Norna" --parent /getting-started/
 ```
 
-`Guides` has no page or URL of its own. The category id still remains in the
-child URLs, so the commands create `/guides/installation/`; further child pages
-produce `/guides/installation/macos/`, `/guides/installation/linux/`, and
-`/guides/installation/windows/`.
+`Getting Started` has no page or URL of its own. Its category id remains in the
+child URLs, so the second command creates `/getting-started/install-norna/`.
+The other child pages follow the same pattern.
 
-If `Guides` needs an introduction or overview, use `content.md` instead of
-`category.yaml`. It then becomes a real page at `/guides/`, while the child URLs
-remain unchanged. A page/category directory must contain exactly one of those
-two marker files.
+If `Getting Started` needs an introduction or overview, use `content.md`
+instead of `category.yaml`. It then becomes a real page at
+`/getting-started/`, while the child URLs remain unchanged. A page/category
+directory must contain exactly one of those two marker files.
 
-The macOS page remains an ordinary Markdown file:
+Each child page remains an ordinary Markdown file. This page begins with:
 
 ```md
 ---
 page:
-  description: A macOS installation page.
+  description:
+    Choose between sections, pages, and navigation categories as a Norna site
+    grows.
 ---
 
-# macOS
+# Grow Your Site
 
-## Install
+## Choose sections or pages
 
-This page is available at `/guides/installation/macos/`.
+Use a section for another part of the same reading task.
 
-### Prerequisites
+## Start with one page
 
-Add details that belong under the installation step.
-
-## Verify
-
-Explain how the reader can verify the installation.
+Each page keeps its Markdown content and images together.
 ```
 
 The top-level category stays in global navigation and opens its first child
-page. In the local tree and breadcrumbs, `Guides` remains a non-linked grouping
-label. The current page's H2 and H3 headings appear with the page hierarchy. On
+page. In the local tree and breadcrumbs, `Getting Started` remains a non-linked
+grouping label. The current page's H2 and H3 headings appear with the page hierarchy. On
 a small screen, the same structure becomes one expandable menu instead of a
 separate desktop sidebar.
 
 Home is the exception: `000-home` is the site's front door and cannot have child
 pages or categories. Start each navigable hierarchy with another top-level
 entry beside it.
-
-<!-- norna-image-provenance:
-image: nested-pages-desktop.png
-source: local screenshot
-Screenshot of the Installation page in the nested-pages fixture after Guides
-became a navigation category above the operating-system pages.
--->
-
-```norna-image-stack
-- image: nested-pages-desktop.png
-  alt: A rendered Installation page with Guides in global navigation and as a category above Installation, macOS, Linux, and Windows in the left navigation tree.
-  caption: A category groups related pages without adding another page to read.
-```
 
 On a wide screen, readers can hide or show the tree with one control. Norna
 remembers the choice for the current browser tab without moving the document

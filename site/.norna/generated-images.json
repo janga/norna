@@ -23,29 +23,13 @@
       }
     ]
   },
-  "pages/020-getting-started/pages/020-grow-your-site/images/nested-pages-desktop.png": {
+  "pages/020-getting-started/pages/020-grow-your-site/images/getting-started-file-map.svg": {
+    "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "f3321d0accaa533ac03583ffa51842b93fe492523057f6479e8fef1203e2fadf",
-    "width": 1440,
-    "height": 1000,
-    "variants": [
-      {
-        "src": "/images/generated/pages/020-getting-started/pages/020-grow-your-site/images/nested-pages-desktop-f3321d0a-480.webp",
-        "width": 480
-      },
-      {
-        "src": "/images/generated/pages/020-getting-started/pages/020-grow-your-site/images/nested-pages-desktop-f3321d0a-768.webp",
-        "width": 768
-      },
-      {
-        "src": "/images/generated/pages/020-getting-started/pages/020-grow-your-site/images/nested-pages-desktop-f3321d0a-1080.webp",
-        "width": 1080
-      },
-      {
-        "src": "/images/generated/pages/020-getting-started/pages/020-grow-your-site/images/nested-pages-desktop-f3321d0a-1440.webp",
-        "width": 1440
-      }
-    ]
+    "sourceHash": "7c324701bac70c6afef2473e1e0122c0d607c6d3335ac39590cd579f01bdb231",
+    "src": "/images/original/pages/020-getting-started/pages/020-grow-your-site/images/getting-started-file-map-7c324701.svg",
+    "width": 760,
+    "height": 1060
   },
   "pages/020-getting-started/pages/020-grow-your-site/images/single-page-site.svg": {
     "kind": "static",
