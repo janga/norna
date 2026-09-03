@@ -13,6 +13,7 @@ import {
 	getNornaBlockCompletionContext,
 	getNornaBlockFieldContext,
 	getSitePublicAssetStatus,
+	getThemeDiagnostics,
 	nornaBlockDefinitions,
 } from './lib/editor-language-service.mjs';
 
@@ -116,6 +117,19 @@ try {
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).pageDirectory, '010-about/pages/020-team');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).schemaKind, 'contentFrontmatter');
 	assert.equal(getNornaDocumentContext(nestedPageThemePath).schemaKind, 'pageTheme');
+	const treeThemeDiagnostics = await getThemeDiagnostics({
+		documentPath: path.join(siteRoot, 'theme.yaml'),
+		source: 'preset: documentation\nsections:\n  backgroundPattern: alternating\n',
+	});
+	assert.deepEqual(
+		treeThemeDiagnostics.map(({ code, line, severity }) => ({ code, line, severity })),
+		[{ code: 'tree-section-background-pattern', line: 3, severity: 'error' }],
+	);
+	assert.match(treeThemeDiagnostics[0].message, /site resolves to tree navigation/);
+	assert.deepEqual(await getThemeDiagnostics({
+		documentPath: path.join(siteRoot, 'theme.yaml'),
+		source: 'preset: documentation\nsections:\n  backgroundPattern: uniform\n',
+	}), []);
 	assert.equal(getNornaProjectContext(path.join(siteRoot, 'public', 'logo.svg')).siteRoot, siteRoot);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'public', 'logo.svg')), null);
 	assert.equal(getNornaDocumentContext(path.join(root, 'README.md')), null);
@@ -215,7 +229,7 @@ try {
 		source: readerControlsSource,
 	});
 	assert.equal(readerControlSnippets[0].label, 'Norna: Configure the Display panel');
-	assert.match(readerControlSnippets[0].text, /colorMode: \$\{1:true\}/);
+	assert.match(readerControlSnippets[0].text, /appearance: \$\{1:true\}/);
 	assert.match(readerControlSnippets[0].text, /focusReading: \$\{2:true\}/);
 	assert.doesNotMatch(readerControlSnippets[0].text, /readingWidth/);
 	const buildInfoSource = 'footer:\n  buildInfo: ';

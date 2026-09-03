@@ -469,6 +469,11 @@ const refreshDiagnostics = async (document) => {
 		if (isNornaContentDocument(document)) {
 			const issues = await service.getMarkdownDiagnostics({ documentPath: document.uri.fsPath, source: document.getText() });
 			diagnostics.set(document.uri, issues.map((issue) => toDiagnostic(document, issue)));
+		} else if (['theme', 'pageTheme'].includes(getYamlSchemaKind(document))) {
+			const issues = typeof service.getThemeDiagnostics === 'function'
+				? await service.getThemeDiagnostics({ documentPath: document.uri.fsPath, source: document.getText() })
+				: [];
+			diagnostics.set(document.uri, issues.map((issue) => toDiagnostic(document, issue)));
 		}
 		await refreshPublicAssetDiagnostics(document.uri.fsPath, service);
 	} catch (error) {
@@ -484,6 +489,16 @@ const scheduleDiagnostics = (document, delay = 350) => {
 		diagnosticTimers.delete(key);
 		void refreshDiagnostics(document);
 	}, delay));
+};
+
+const scheduleOpenThemeDiagnostics = (documentPath, delay = 350) => {
+	const siteRoot = getProjectContext(documentPath)?.siteRoot;
+	if (!siteRoot) return;
+	for (const document of vscode.workspace.textDocuments) {
+		if (!['theme', 'pageTheme'].includes(getYamlSchemaKind(document))) continue;
+		if (getProjectContext(document.uri.fsPath)?.siteRoot !== siteRoot) continue;
+		scheduleDiagnostics(document, delay);
+	}
 };
 
 const registerYamlSchemas = async (context) => {
@@ -860,7 +875,10 @@ async function activate(context) {
 
 	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((document) => scheduleDiagnostics(document, 0)));
 	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((event) => scheduleDiagnostics(event.document)));
-	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((document) => scheduleDiagnostics(document, 0)));
+	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((document) => {
+		scheduleDiagnostics(document, 0);
+		scheduleOpenThemeDiagnostics(document.uri.fsPath, 0);
+	}));
 	context.subscriptions.push(vscode.workspace.onDidDeleteFiles(() => refresh()));
 	context.subscriptions.push(vscode.workspace.onDidCreateFiles(() => refresh()));
 	context.subscriptions.push(vscode.workspace.onDidRenameFiles(() => refresh()));

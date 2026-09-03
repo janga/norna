@@ -5,9 +5,11 @@ import {
 	getOpenMarkdownFenceAtLine,
 	nornaMarkdownBlockDefinitions,
 } from './norna-markdown-blocks.mjs';
+import { resolveNavigationModel } from './navigation-model.mjs';
 import { inspectPublicAssetFilenames, logoAssetFilenames } from './public-asset-conventions.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
 import { siteSchema } from './schema-definitions.mjs';
+import { homePageDirectory } from './site-conventions.mjs';
 
 const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.svg']);
 const siteConfigNames = ['config.yaml'];
@@ -31,6 +33,132 @@ export const findNornaSiteRoot = async (documentPath) => {
 		if (parent === current) return null;
 		current = parent;
 	}
+};
+
+const readEditorYaml = async (filePath) => {
+	try {
+		const source = await readFile(filePath, 'utf8');
+		const data = load(source) ?? {};
+		return data && typeof data === 'object' && !Array.isArray(data) ? data : {};
+	} catch {
+		return null;
+	}
+};
+
+const readContentFrontmatterForEditor = (source) => {
+	const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+	if (!match) return {};
+	try {
+		const data = load(match[1]) ?? {};
+		return data && typeof data === 'object' && !Array.isArray(data) ? data : {};
+	} catch {
+		return {};
+	}
+};
+
+const getNavigationNodesForEditor = async (siteRoot) => {
+	const nodes = [];
+
+	const visit = async (pagesDirectory, depth = 1) => {
+		const entries = (await readdir(pagesDirectory, { withFileTypes: true }).catch((error) => {
+			if (error?.code === 'ENOENT') return [];
+			throw error;
+		}))
+			.filter((entry) => entry.isDirectory())
+			.sort((left, right) => left.name.localeCompare(right.name, 'en'));
+
+		for (const entry of entries) {
+			const nodeDirectory = path.join(pagesDirectory, entry.name);
+			const contentPath = path.join(nodeDirectory, 'content.md');
+			const categoryPath = path.join(nodeDirectory, 'category.yaml');
+			const [hasContent, hasCategory] = await Promise.all([
+				fileExists(contentPath),
+				fileExists(categoryPath),
+			]);
+
+			if (hasContent !== hasCategory) {
+				if (hasCategory) {
+					nodes.push({
+						depth,
+						headings: [],
+						isHome: false,
+						kind: 'category',
+						listed: true,
+					});
+				} else {
+					const source = await readFile(contentPath, 'utf8');
+					const data = readContentFrontmatterForEditor(source);
+					const document = await parsePageMarkdownSource(source, { label: contentPath });
+					nodes.push({
+						depth,
+						headings: document.navigationHeadings,
+						isHome: depth === 1 && entry.name === homePageDirectory,
+						kind: 'page',
+						listed: data.navigation?.listed !== false,
+					});
+				}
+			}
+
+			await visit(path.join(nodeDirectory, 'pages'), depth + 1);
+		}
+	};
+
+	await visit(path.join(siteRoot, 'pages'));
+	return nodes;
+};
+
+const getNavigationModeForEditor = async (siteRoot) => {
+	const config = await readEditorYaml(path.join(siteRoot, 'config.yaml'));
+	if (!config) return null;
+	const requestedMode = config.navigation?.mode ?? 'automatic';
+	if (requestedMode !== 'automatic') return requestedMode;
+
+	try {
+		return resolveNavigationModel({
+			mode: requestedMode,
+			nodes: await getNavigationNodesForEditor(siteRoot),
+		}).mode;
+	} catch {
+		return null;
+	}
+};
+
+const findNestedYamlPropertyLine = (source, parentKey, propertyKey) => {
+	const lines = source.replace(/\r\n?/g, '\n').split('\n');
+	let insideParent = false;
+	for (let index = 0; index < lines.length; index += 1) {
+		const line = lines[index];
+		if (new RegExp(`^${parentKey}:\\s*(?:#.*)?$`).test(line)) {
+			insideParent = true;
+			continue;
+		}
+		if (!insideParent) continue;
+		if (/^[A-Za-z][A-Za-z0-9-]*:/.test(line)) return 1;
+		if (new RegExp(`^  ${propertyKey}:`).test(line)) return index + 1;
+	}
+	return 1;
+};
+
+export const getThemeDiagnostics = async ({ documentPath, source }) => {
+	let theme;
+	try {
+		theme = load(source) ?? {};
+	} catch {
+		return [];
+	}
+	if (!theme || typeof theme !== 'object' || Array.isArray(theme)) return [];
+
+	const backgroundPattern = theme.sections?.backgroundPattern;
+	if (backgroundPattern === undefined || backgroundPattern === 'uniform') return [];
+	const siteRoot = await findNornaSiteRoot(documentPath);
+	if (!siteRoot || await getNavigationModeForEditor(siteRoot) !== 'tree') return [];
+
+	return [{
+		code: 'tree-section-background-pattern',
+		line: findNestedYamlPropertyLine(source, 'sections', 'backgroundPattern'),
+		message: `sections.backgroundPattern "${backgroundPattern}" cannot be used because this site resolves to tree navigation. Tree navigation uses one uniform reading surface so the navigation rail and page content remain distinct. Remove sections.backgroundPattern or set it to uniform.`,
+		severity: 'error',
+	}];
 };
 
 const readSitewideLogoForEditor = async (siteRoot) => {

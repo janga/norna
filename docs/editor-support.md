@@ -40,7 +40,7 @@ Norna uses standard VS Code features:
 | --- | --- | --- |
 | Suggestions | Start typing or press `Ctrl+Space`. On macOS, use the Control key, not Command. | Valid fields, values, blocks, and managed-image filenames for the current file. |
 | Hover help | Hold the pointer over supported syntax. | A short explanation and a link to reference documentation matching the installed Norna version. |
-| Problems | Open **View > Problems**. | Content errors and warnings for recognized page files. |
+| Problems | Open **View > Problems**. | Content errors, warnings, and project-aware theme conflicts in recognized Norna files. |
 | Quick Fix | Place the cursor on a reported problem and select the light-bulb action. | Safe repairs for selected problems, such as closing an unfinished Norna block. |
 | Go to Definition | Place the cursor on a managed-image filename and run **Go to Definition**. | Opens the matching source image, including an unambiguous image found under another page. |
 
@@ -112,6 +112,9 @@ word-based completion, and AI assistants may still offer unrelated text. A
 suggestion from another source is not necessarily valid Norna configuration.
 VS Code combines these sources in one list; an unknown field is rejected by the
 Norna schema in the **Problems** panel even if another source suggested it.
+Norna also checks combinations that JSON Schema cannot decide in isolation. For
+example, it reports a non-uniform `sections.backgroundPattern` when the current
+page hierarchy makes navigation resolve to `tree`.
 
 ## Markdown And Image Help
 

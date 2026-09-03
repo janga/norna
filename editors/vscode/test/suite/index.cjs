@@ -71,6 +71,16 @@ async function run() {
 			documentation: documentationOf(documentationPreset),
 		})}`,
 	);
+	const treeSurfaceDiagnostic = await waitFor(
+		() => vscode.languages.getDiagnostics(theme.uri),
+		(items) => items.some((item) => item.source === 'Norna' && item.code === 'tree-section-background-pattern'),
+		'Norna did not report a non-uniform section background for tree navigation.',
+	);
+	assert.ok(treeSurfaceDiagnostic.some((item) => (
+		item.source === 'Norna'
+		&& item.code === 'tree-section-background-pattern'
+		&& item.range.start.line === 5
+	)));
 	const typographyItems = await getCompletions(theme, 3);
 	for (const property of ['overrides', 'profile', 'rhythm']) {
 		assert.ok(typographyItems.some((item) => labelOf(item) === property), `Missing typography completion ${property}.`);

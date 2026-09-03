@@ -53,6 +53,8 @@ const prepareWorkspace = async () => {
 		'typography:',
 		'  fontFamily: "Inter, sans-serif"',
 		'  ',
+		'sections:',
+		'  backgroundPattern: alternating',
 		'',
 	].join('\n'));
 	await write('site/sitewide-content.yaml', 'footer:\n  copyrightMessage: Example\n');
@@ -78,6 +80,12 @@ Text with an unmatched note reference {note-ref}.
 ## Team {#team}
 
 Team content.
+`);
+	await write('site/pages/010-about/pages/010-team/content.md', `# Team
+
+## People {#people}
+
+Team members.
 `);
 	await write('site/pages/010-about/images/team/portrait.jpg', 'test image');
 	await write('site/pages/020-empty/content.md', '');
