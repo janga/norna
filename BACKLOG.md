@@ -30,18 +30,18 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Next` is the intended implementation sequence after `Now`. The order first
 completes deterministic site output, then builds reading features on the stable
 page graph, and only afterward expands Markdown or URL behavior.
-- [`BL-036` Contextual navigation rails](docs/design/backlog/BL-036-contextual-navigation-rails.md):
+- [`BL-036` Contextual page and contents rails](docs/design/backlog/BL-036-contextual-navigation-rails.md):
   **Ready after `BL-035` Navigation surfaces and managed-image alignment.**
-  Keep the global top navigation stable while showing a desktop tree rail only
-  for the active top-level branch whose page hierarchy requires one.
+  Keep global navigation stable while separating the active branch's page tree
+  on the left from the current page's H2/H3 outline on the right.
 - [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
   **Ready after `BL-036` Contextual navigation rails.**
   Ground the file-tree example in the documentation hierarchy without forcing
   explanatory media into artwork geometry.
-- [`BL-034` Automatic tree section tracking](docs/design/backlog/BL-034-automatic-tree-section-tracking.md):
-  **Ready after `BL-036` Contextual navigation rails.** Track the reader's
-  current H2 or H3 automatically in tree navigation and remove the low-value
-  public on/off setting.
+- [`BL-034` Automatic contents-rail section tracking](docs/design/backlog/BL-034-automatic-tree-section-tracking.md):
+  **Ready after `BL-036` Contextual page and contents rails.** Track the
+  reader's current H2 or H3 automatically in the right contents rail and remove
+  the low-value public on/off setting.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
   **Ready.** Reuse canonical page identity and existing metadata
   before adding further generated-page behavior.
