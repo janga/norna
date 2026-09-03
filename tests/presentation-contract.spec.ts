@@ -468,33 +468,50 @@ test('centered-fit images are centered and constrained by viewport height', asyn
 	const stackBody = stackSection.locator('.section-body');
 	const frame = stackSection.locator('.managed-image-frame');
 	const stackCaption = stackSection.locator('.image-meta');
+	const stackCaptionText = stackCaption.locator('.image-details span');
 	const portrait = stackSection.getByAltText('A tall composition with a large circle above two bars.');
 	const carouselSection = page.locator('.site-section').filter({ has: page.locator('#centered-fit-carousel') });
 	const carouselStage = carouselSection.locator('.image-carousel-stage');
 	const carouselCaptions = carouselSection.locator('.image-carousel-captions');
+	const carouselCaptionText = carouselCaptions.locator('.image-carousel-caption').first().locator('.image-details span');
 	const carousel = carouselStage.locator('..');
-	const [bodyBounds, frameBounds, stackCaptionBounds, portraitBounds, carouselBounds, carouselCaptionBounds] = await Promise.all([
+	const [
+		bodyBounds,
+		frameBounds,
+		stackCaptionBounds,
+		stackCaptionTextBounds,
+		portraitBounds,
+		carouselBounds,
+		carouselCaptionBounds,
+		carouselCaptionTextBounds,
+	] = await Promise.all([
 		stackBody.boundingBox(),
 		frame.boundingBox(),
 		stackCaption.boundingBox(),
+		stackCaptionText.boundingBox(),
 		portrait.boundingBox(),
 		carouselStage.boundingBox(),
 		carouselCaptions.boundingBox(),
+		carouselCaptionText.boundingBox(),
 	]);
 	const center = (rectangle) => (rectangle?.x ?? 0) + ((rectangle?.width ?? 0) / 2);
 
 	expect(bodyBounds).not.toBeNull();
 	expect(frameBounds).not.toBeNull();
 	expect(stackCaptionBounds).not.toBeNull();
+	expect(stackCaptionTextBounds).not.toBeNull();
 	expect(portraitBounds).not.toBeNull();
 	expect(carouselBounds).not.toBeNull();
 	expect(carouselCaptionBounds).not.toBeNull();
+	expect(carouselCaptionTextBounds).not.toBeNull();
 	expect(center(frameBounds)).toBeCloseTo(center(bodyBounds), 0);
 	expect(center(stackCaptionBounds)).toBeCloseTo(center(frameBounds), 0);
+	expect(center(stackCaptionTextBounds)).toBeCloseTo(center(frameBounds), 0);
 	expect(portraitBounds?.x ?? 0).toBeGreaterThan((frameBounds?.x ?? 0) + 1);
 	expect(portraitBounds?.height ?? Infinity).toBeLessThanOrEqual(740 + 1);
 	expect(center(carouselBounds)).toBeCloseTo(center(bodyBounds), 0);
 	expect(center(carouselCaptionBounds)).toBeCloseTo(center(carouselBounds), 0);
+	expect(center(carouselCaptionTextBounds)).toBeCloseTo(center(carouselBounds), 0);
 	expect(carouselBounds?.height ?? Infinity).toBeLessThanOrEqual(740 + 1);
 	expect(await carousel.getAttribute('style')).toContain('--image-carousel-width-from-height-desktop');
 });

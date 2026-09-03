@@ -105,18 +105,22 @@ test.describe('top-navigation content canvas', () => {
 		const body = page.locator('.section-body').filter({ has: page.locator('.managed-image-frame') });
 		const frame = page.locator('.managed-image-frame');
 		const caption = page.locator('.image-meta');
-		const [bodyBounds, frameBounds, captionBounds] = await Promise.all([
+		const captionText = caption.locator('.image-details span');
+		const [bodyBounds, frameBounds, captionBounds, captionTextBounds] = await Promise.all([
 			body.boundingBox(),
 			frame.boundingBox(),
 			caption.boundingBox(),
+			captionText.boundingBox(),
 		]);
 		const center = (rectangle) => (rectangle?.x ?? 0) + ((rectangle?.width ?? 0) / 2);
 
 		expect(bodyBounds).not.toBeNull();
 		expect(frameBounds).not.toBeNull();
 		expect(captionBounds).not.toBeNull();
+		expect(captionTextBounds).not.toBeNull();
 		expect(center(frameBounds)).toBeCloseTo(center(bodyBounds), 0);
 		expect(center(captionBounds)).toBeCloseTo(center(frameBounds), 0);
+		expect(center(captionTextBounds)).toBeCloseTo(center(frameBounds), 0);
 	});
 });
 

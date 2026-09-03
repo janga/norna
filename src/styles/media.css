@@ -461,6 +461,11 @@
 
 :root[data-image-presentation='centered-fit'] .image-carousel-captions {
 	margin-inline: auto;
+	text-align: center;
+}
+
+:root[data-image-presentation='centered-fit'] .image-carousel-captions .image-details {
+	justify-content: center;
 }
 
 .image-carousel-caption {
@@ -496,6 +501,11 @@
 
 :root[data-image-presentation='centered-fit'] .image-stack .image-meta {
 	margin-inline: auto;
+	text-align: center;
+}
+
+:root[data-image-presentation='centered-fit'] .image-stack .image-details {
+	justify-content: center;
 }
 
 .image-details {
