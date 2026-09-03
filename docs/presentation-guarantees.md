@@ -28,6 +28,11 @@ Theme settings select coordinated palettes and appearances rather than
 arbitrary component colors. See
 [Palette And Appearance](theme.md#palette-and-appearance).
 
+Desktop navigation uses the same opaque base background as the page. The
+sticky top bar uses a subtle boundary against scrolling content, and a
+persistent tree rail uses spacing, hierarchy, current states and one
+low-contrast separator instead of a contrasting navigation panel.
+
 ## Typography And Reading Width
 
 The engine keeps the visible heading hierarchy ordered as `H1 > H2 > H3 > H4`
@@ -40,10 +45,12 @@ choices may make the measure narrower or wider, but cannot exceed the engine's
 to follow it.
 
 Managed image stacks and carousels preserve intrinsic proportions and do not
-crop by default. Prose-aligned media keeps a stable edge with the body text;
-centered-fit media remains within both the available width and its configured
-viewport-height limit. Both methods return to the available content width on
-narrow screens. See [Image Sizing](theme.md#image-sizing).
+crop by default. Norna positions them inside the current page's content canvas,
+after persistent navigation and its gap have been excluded. Prose-aligned media
+keeps a stable edge with the body text; centered-fit media shares one center
+axis with its caption and remains within both the available width and its
+configured viewport-height limit. Both methods return to the available content
+width on narrow screens. See [Image Sizing](theme.md#image-sizing).
 
 ## Reflow And Text Adaptation
 

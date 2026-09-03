@@ -9,6 +9,11 @@ Norna blocks extend ordinary Markdown for recurring presentation needs. The
 author supplies images, captions and short options; Norna supplies responsive
 output, layout and interaction without a page-specific component.
 
+Image stacks and carousels are positioned inside the page's content area, not
+against the complete browser window. A persistent navigation rail remains
+outside that area, so adding navigation does not reinterpret the theme's image
+presentation.
+
 ## Image stacks {#image-stacks}
 
 Use an image stack when every image should remain visible in reading order.

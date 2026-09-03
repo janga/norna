@@ -210,7 +210,7 @@ const addThemeHelp = (jsonSchema) => {
 	]);
 	addHelp(jsonSchema, 'images', [
 		yamlExample('images:\n  presentation: prose-aligned\n  width: 900px'),
-		'Overrides how Norna-managed image stacks and carousels align within the page and how much horizontal space they may use.',
+		'Overrides how Norna-managed image stacks and carousels align inside the page content area and how much space they may use. Persistent navigation remains outside this area.',
 		documentationLink('Image sizing reference', 'theme.md', 'image-sizing'),
 	]);
 	addHelp(jsonSchema, 'blocks', [
@@ -475,7 +475,7 @@ const addPageThemeHelp = (jsonSchema) => {
 	addFieldHelp(jsonSchema, 'layout.contentSpacing', 'layout:\n  contentSpacing: compact', 'theme.md', 'page-themes', ['compact', 'normal', 'spacious']);
 	addHelp(jsonSchema, 'images', [
 		yamlExample('images:\n  presentation: prose-aligned\n  width: 900px'),
-		'Adjusts managed-image presentation and sizing for pages below this directory.',
+		'Adjusts managed-image presentation and sizing inside the content area for pages below this directory. Persistent navigation remains outside this area.',
 		documentationLink('Image sizing reference', 'theme.md', 'image-sizing'),
 	]);
 	const imageFields = [

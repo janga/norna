@@ -12,10 +12,10 @@ These rails appear only where the active top-level branch and current page have
 enough structure to benefit from them. A deep documentation area must not force
 unrelated landing pages or simple top-level pages into the same layout.
 
-## Dependency
+## Foundation
 
-Implement after `BL-035`, which establishes the visual and geometric contract
-for pages with and without a tree rail.
+Build on `BL-035`, which established the visual and geometric contract for
+pages with and without a tree rail.
 
 ## Design Contract
 

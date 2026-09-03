@@ -293,19 +293,35 @@ the selected preset. It is intentionally not a separate public override.
 ## Image Sizing
 
 `images` controls how standalone `norna-image-stack` and
-`norna-image-carousel` blocks relate to the page and how much space they may
-use. Card-list images follow their card layout instead.
+`norna-image-carousel` blocks relate to the body text and how much space they
+may use. Card-list images follow their card layout instead.
+
+The body text and media area sit inside the page's content canvas. The content
+canvas is the horizontal space available to the current page after any
+persistent navigation rail and its gap have been excluded. The body text may
+use a narrower reading width inside it; the media area may be broader.
 
 `images.presentation` accepts two methods:
 
 | Value | Placement and sizing |
 | --- | --- |
 | `prose-aligned` | Start the image and its caption at the body-text edge. The image may extend to the right into the media area and is sized from available horizontal space without a viewport-height limit. |
-| `centered-fit` | Center the image and its caption in the media area. Fit the image within both the available width and a configured share of the viewport height. |
+| `centered-fit` | Center the media frame, rendered image and caption on the same horizontal axis. Fit the image within both the available width and a configured share of the viewport height. |
 
 The selected preset supplies the normal method. `documentation` and `project`
 use `prose-aligned`; `portfolio` and `statement` use `centered-fit`. Without a
 preset or explicit value, Norna uses `prose-aligned`.
+
+Navigation does not select another image-presentation method. With tree
+navigation, Norna removes the persistent rail and its gap from the available
+content canvas before positioning media. `prose-aligned` retains the body-text
+edge, while `centered-fit` remains centered in the space that is left. Norna
+never centers either method against the complete browser viewport.
+
+If viewport-height fitting makes a portrait `centered-fit` image narrower than
+its frame, the image and visible caption remain centered on the frame's axis.
+Neither method crops an image or changes its intrinsic proportions by default.
+Both return to the available content width on narrow screens.
 
 A root or page theme can override the method for all standalone image stacks
 and carousels in its scope:

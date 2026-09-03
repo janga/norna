@@ -523,14 +523,14 @@
             {
               "const": "prose-aligned",
               "title": "Prose-aligned",
-              "description": "Start managed images at the body-text edge and size them from available horizontal space.",
-              "markdownDescription": "Start managed images at the body-text edge and size them from available horizontal space.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
+              "description": "Start managed images and captions at the body-text edge and size them from the page content area.",
+              "markdownDescription": "Start managed images and captions at the body-text edge and size them from the page content area.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
             },
             {
               "const": "centered-fit",
               "title": "Centered fit",
-              "description": "Center managed images in a broad media area constrained by available width and viewport height.",
-              "markdownDescription": "Center managed images in a broad media area constrained by available width and viewport height.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
+              "description": "Center managed images and captions in the page media area and constrain them by available width and viewport height.",
+              "markdownDescription": "Center managed images and captions in the page media area and constrain them by available width and viewport height.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
             }
           ],
           "markdownDescription": "```yaml\nimages:\n  presentation: prose-aligned\n```\n\nManaged-image presentation method. Omit this to keep the selected preset or inherited page setting.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
@@ -633,8 +633,8 @@
         }
       },
       "additionalProperties": false,
-      "description": "Optional defaults for managed image presentation.",
-      "markdownDescription": "```yaml\nimages:\n  presentation: prose-aligned\n  width: 900px\n```\n\nOverrides how Norna-managed image stacks and carousels align within the page and how much horizontal space they may use.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
+      "description": "Optional defaults for placing managed images inside the page content area. Persistent navigation remains outside this area.",
+      "markdownDescription": "```yaml\nimages:\n  presentation: prose-aligned\n  width: 900px\n```\n\nOverrides how Norna-managed image stacks and carousels align inside the page content area and how much space they may use. Persistent navigation remains outside this area.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
     },
     "blocks": {
       "type": "object",

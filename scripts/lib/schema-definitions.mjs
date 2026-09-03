@@ -162,7 +162,7 @@ const themeImages = z.object({
 	width: visualCssLength.optional().describe('Maximum managed-image width. Omit this to keep the selected preset.'),
 	maxAvailableWidthPercent: responsivePercent.optional().describe('Maximum percentage of available horizontal space used by managed images.'),
 	maxAvailableHeightPercent: responsivePercent.optional().describe('Maximum percentage of viewport height used by centered-fit images. This setting is unavailable with prose-aligned presentation.'),
-}).strict().describe('Optional defaults for managed image presentation.');
+}).strict().describe('Optional defaults for placing managed images inside the page content area. Persistent navigation remains outside this area.');
 const themeCardList = z.object({
 	width: cardListWidth,
 }).strict().describe('Site-wide card-list defaults.');

@@ -12,11 +12,6 @@ are in the [backlog process](docs/design/backlog/README.md).
 
 `Now` contains at most three active items in exact technical order.
 
-- [`BL-035` Navigation surfaces and managed-image alignment](docs/design/backlog/BL-035-navigation-surfaces-and-image-alignment.md):
-  **In progress; human visual review and documentation pending.** Apply one
-  coherent content canvas across top and tree navigation, keep desktop
-  navigation visually quiet, and verify prose-aligned and centered-fit geometry
-  without adding author-controlled positioning options.
 - [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
   **In progress.** The version-aligned package and real VS Code tests are ready;
   complete the first Marketplace publication before describing IntelliSense as
@@ -31,11 +26,10 @@ are in the [backlog process](docs/design/backlog/README.md).
 completes deterministic site output, then builds reading features on the stable
 page graph, and only afterward expands Markdown or URL behavior.
 - [`BL-036` Contextual page and contents rails](docs/design/backlog/BL-036-contextual-navigation-rails.md):
-  **Ready after `BL-035` Navigation surfaces and managed-image alignment.**
-  Keep global navigation stable while separating the active branch's page tree
-  on the left from the current page's H2/H3 outline on the right.
+  **Ready.** Keep global navigation stable while separating the active branch's
+  page tree on the left from the current page's H2/H3 outline on the right.
 - [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
-  **Ready after `BL-036` Contextual navigation rails.**
+  **Ready after `BL-036` Contextual page and contents rails.**
   Ground the file-tree example in the documentation hierarchy without forcing
   explanatory media into artwork geometry.
 - [`BL-034` Automatic contents-rail section tracking](docs/design/backlog/BL-034-automatic-tree-section-tracking.md):

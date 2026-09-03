@@ -55,8 +55,8 @@ export const schemaValueDefinitions = Object.freeze([
 		wide: option('Wide', 'Allow the complete card list to use the available page-layout width.'),
 	}),
 	definition(['prose-aligned', 'centered-fit'], {
-		'prose-aligned': option('Prose-aligned', 'Start managed images at the body-text edge and size them from available horizontal space.'),
-		'centered-fit': option('Centered fit', 'Center managed images in a broad media area constrained by available width and viewport height.'),
+		'prose-aligned': option('Prose-aligned', 'Start managed images and captions at the body-text edge and size them from the page content area.'),
+		'centered-fit': option('Centered fit', 'Center managed images and captions in the page media area and constrain them by available width and viewport height.'),
 	}),
 	definition([400, 500, 600, 700], {
 		400: option('Regular', 'Use regular font weight.'),

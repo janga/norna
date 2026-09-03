@@ -70,12 +70,21 @@ and reports the paths for a manual move.
 ## Managed Image Presentation
 
 The selected theme preset also determines how standalone image stacks and
-carousels are placed:
+carousels are placed. Norna positions them inside the page's content canvas:
+the horizontal space left for the current page after any persistent navigation
+rail and its gap have been excluded. Body text may use a narrower reading area
+inside that canvas, while managed media may use a broader media area.
 
 - `prose-aligned` starts the image and caption at the body-text edge and sizes
-  the image from available horizontal space;
-- `centered-fit` centers the image and caption in a broader media area and fits
-  the image within both available width and viewport height.
+  the image from available horizontal space without a viewport-height limit;
+- `centered-fit` centers the frame, rendered image and caption on the same axis
+  in the broader media area, then fits the image within both available width
+  and viewport height.
+
+Both methods use the content canvas rather than the browser viewport. A
+persistent navigation rail can reduce the available media width, but it does
+not change the selected method. At narrow widths, both methods use the
+available content width.
 
 The presentation method applies to all standalone image stacks and carousels
 in the root or page theme's scope. It does not affect images inside cards and

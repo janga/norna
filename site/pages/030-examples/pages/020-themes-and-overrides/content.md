@@ -101,8 +101,10 @@ images:
 
 `prose-aligned` starts image stacks and carousels at the body-text edge.
 `centered-fit` instead centers them and fits them within the available width and
-viewport height. Use a page override only when that page's role differs from
-the preset; individual image blocks do not choose their own method.
+viewport height. Both methods use the page's content area after any persistent
+navigation has been excluded; they are never positioned against the complete
+browser window. Use a page override only when that page's role differs from the
+preset; individual image blocks do not choose their own method.
 
 A page theme cannot select another preset or replace the site's colors,
 corners, typography, navigation treatment or content-block defaults.
