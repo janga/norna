@@ -178,7 +178,7 @@ Screenshot of the same Dogs page with its mobile navigation menu open.
 
 ## Add nested pages {#child-pages}
 
-Use nested pages when several distinct pages belong under one broader heading.
+Use nested pages when several distinct pages belong under one broader heading. The page you are currently reading is an example.
 The heading can be a real parent page or a navigation category.
 
 Choose a parent page when the broader topic needs an introduction or overview
