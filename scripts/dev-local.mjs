@@ -5,7 +5,6 @@ import { networkInterfaces } from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { getAstroArgs, runAstroInherit } from './lib/astro-command.mjs';
-import projectConfig from './lib/project-config.mjs';
 import { astroCacheDir, engineRoot, siteProjectRoot } from './lib/site-paths.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -13,6 +12,13 @@ const execFileAsync = promisify(execFile);
 const port = Number.parseInt(process.env.NORNA_DEV_PORT ?? '4321', 10);
 if (!Number.isInteger(port) || port < 1 || port > 65_535) {
 	throw new Error('NORNA_DEV_PORT must be an integer from 1 through 65535.');
+}
+let projectConfig;
+try {
+	({ default: projectConfig } = await import('./lib/project-config.mjs'));
+} catch (error) {
+	console.error(error instanceof Error ? error.message : String(error));
+	process.exit(1);
 }
 const localHost = '127.0.0.1';
 const localUrl = `http://${localHost}:${port}${projectConfig.site.basePath}`;
@@ -75,6 +81,26 @@ const writeState = async (host) => {
 
 const removeState = async () => {
 	await rm(statePath, { force: true });
+};
+
+const readDevLog = async () => {
+	try {
+		return await readFile(logPath, 'utf8');
+	} catch (error) {
+		if (error.code === 'ENOENT') return '';
+		throw error;
+	}
+};
+
+const getLogExcerpt = (source) => {
+	const lines = source.trim().split('\n');
+	if (lines.length === 1 && lines[0] === '') return '';
+
+	const structuredErrorIndex = lines.findLastIndex((line) => /^\[[^\]]*Error\]/u.test(line.trim()));
+	const genericErrorIndex = lines.findLastIndex((line) => /^Error(?::|\s+(?!reference\b))/u.test(line.trim()));
+	const errorIndex = structuredErrorIndex >= 0 ? structuredErrorIndex : genericErrorIndex;
+	const firstLine = errorIndex >= 0 ? errorIndex : Math.max(0, lines.length - 30);
+	return lines.slice(firstLine, firstLine + 30).join('\n');
 };
 
 const isPortFreeOnHost = (loopbackHost) => new Promise((resolve, reject) => {
@@ -293,7 +319,21 @@ const startServer = async ({ host = localHost, open = true, killBlockingPort = f
 
 	await syncSitePublic();
 	await generateImages();
-	await runAstroInherit(['dev', '--background', '--host', host, '--port', String(port)]);
+	const previousLog = await readDevLog();
+	try {
+		await runAstroInherit(['dev', '--background', '--host', host, '--port', String(port)]);
+	} catch (error) {
+		const currentLog = await readDevLog();
+		const newLog = currentLog.startsWith(previousLog)
+			? currentLog.slice(previousLog.length)
+			: currentLog;
+		const excerpt = getLogExcerpt(newLog || currentLog);
+		throw new Error([
+			`Could not start the dev server at ${localUrl}.`,
+			excerpt ? `Astro reported:\n${excerpt}` : 'Astro did not write a detailed startup error.',
+			`Full log: ${logPath}`,
+		].join('\n\n'), { cause: error });
+	}
 	await waitForServer();
 
 	await writeState(host);
@@ -360,23 +400,32 @@ const showLogs = async () => {
 	}
 };
 
-if (command === 'start') {
-	await startServer({ open: !skipOpen, killBlockingPort: shouldKillBlockingPort });
-} else if (command === 'lan') {
-	await startServer({ host: '0.0.0.0', open: !skipOpen, killBlockingPort: shouldKillBlockingPort });
-} else if (command === 'status') {
-	await showStatus();
-} else if (command === 'logs') {
-	await showLogs();
-} else if (command === 'restart') {
-	const state = await readState();
-	await startServer({
-		host: state?.host === '0.0.0.0' ? '0.0.0.0' : localHost,
-		open: false,
-		killBlockingPort: shouldKillBlockingPort,
-	});
-} else if (command === 'stop') {
-	await stopServer();
-} else {
-	throw new Error(`Unknown dev-local command: ${command}`);
+const runCommand = async () => {
+	if (command === 'start') {
+		await startServer({ open: !skipOpen, killBlockingPort: shouldKillBlockingPort });
+	} else if (command === 'lan') {
+		await startServer({ host: '0.0.0.0', open: !skipOpen, killBlockingPort: shouldKillBlockingPort });
+	} else if (command === 'status') {
+		await showStatus();
+	} else if (command === 'logs') {
+		await showLogs();
+	} else if (command === 'restart') {
+		const state = await readState();
+		await startServer({
+			host: state?.host === '0.0.0.0' ? '0.0.0.0' : localHost,
+			open: false,
+			killBlockingPort: shouldKillBlockingPort,
+		});
+	} else if (command === 'stop') {
+		await stopServer();
+	} else {
+		throw new Error(`Unknown dev-local command: ${command}`);
+	}
+};
+
+try {
+	await runCommand();
+} catch (error) {
+	console.error(error instanceof Error ? error.message : String(error));
+	process.exit(1);
 }

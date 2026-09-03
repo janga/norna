@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { cp, mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -138,6 +138,35 @@ try {
 	const stoppedStatus = run('status');
 	assertSucceeded(stoppedStatus, 'stopped dev status');
 	assert.match(stoppedStatus.stdout, /No dev server is running/u);
+
+	const themePath = path.join(siteDir, 'theme.yaml');
+	const validTheme = await readFile(themePath, 'utf8');
+	await writeFile(themePath, 'unknownThemeSetting: true\n');
+	const invalidThemeStart = run('start');
+	assert.notEqual(invalidThemeStart.status, 0, 'dev start unexpectedly accepted an invalid theme');
+	assert.match(
+		`${invalidThemeStart.stdout}\n${invalidThemeStart.stderr}`,
+		/site\/theme\.yaml has invalid YAML structure.*unknownThemeSetting/su,
+	);
+	assert.doesNotMatch(invalidThemeStart.stderr, /yaml-config\.mjs:\d+/u);
+	await writeFile(themePath, validTheme);
+
+	const contentPath = path.join(siteDir, 'pages', '000-home', 'content.md');
+	const validContent = await readFile(contentPath, 'utf8');
+	await writeFile(contentPath, `---
+unknownPageSetting: true
+---
+
+# Invalid page
+`);
+	const invalidContentStart = run('start');
+	assert.notEqual(invalidContentStart.status, 0, 'dev start unexpectedly accepted invalid page frontmatter');
+	assert.match(
+		`${invalidContentStart.stdout}\n${invalidContentStart.stderr}`,
+		/Could not start the dev server.*Astro reported:.*site-page-000-home data does not match collection schema.*unknownPageSetting.*content\.md.*Full log:/su,
+	);
+	assert.doesNotMatch(invalidContentStart.stderr, /dev-local\.mjs:\d+/u);
+	await writeFile(contentPath, validContent);
 
 	blocker = await startPortBlocker();
 	cleanupPort = blocker.port;
