@@ -21,8 +21,9 @@ order.
   **Ready.** Use the shared reverse link index and redirect alias model to move
   a page or reconcile an already moved page without guessing.
 - [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
-  **Needs improvement.** Ground the file-tree example in the documentation
-  hierarchy the reader is currently using.
+  **Needs design through `BL-033`.** Ground the file-tree example in the
+  documentation hierarchy without forcing explanatory media into artwork
+  geometry.
 
 ## Next
 
@@ -99,6 +100,9 @@ verified and approved for documentation.
 These items have no implementation position yet. Move one into `Now`, `Next`,
 or `Later` only after the stated evidence or design decision exists.
 
+- [`BL-033` Illustration-aware managed image presentation](docs/design/backlog/BL-033-illustration-presentation.md):
+  **Needs decision.** Give explanatory diagrams and screenshots predictable,
+  readable geometry without changing how photographs and artwork are presented.
 - `BL-018` **Needs evidence.** Extend cross-page sync to whole-section metadata
   or additional assets only when a real section-bound resource exists; retain
   unambiguous discovery and never guess.
