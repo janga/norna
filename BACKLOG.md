@@ -13,8 +13,9 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Now` contains at most three active items in exact technical order.
 
 - [`BL-033` Preset-driven managed image presentation](docs/design/backlog/BL-033-preset-driven-image-presentation.md):
-  **Ready.** Let each preset choose a reading- or showcase-oriented image model,
-  with a bounded page-theme override and no per-image layout decisions.
+  **In progress; documentation and final verification pending.** Let each preset
+  choose a prose-aligned or centered-fit image model, with a bounded page-theme
+  override and no per-image layout decisions.
 - [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
   **In progress.** The version-aligned package and real VS Code tests are ready;
   complete the first Marketplace publication before describing IntelliSense as
@@ -28,10 +29,18 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Next` is the intended implementation sequence after `Now`. The order first
 completes deterministic site output, then builds reading features on the stable
 page graph, and only afterward expands Markdown or URL behavior.
+- [`BL-035` Navigation surfaces and managed-image alignment](docs/design/backlog/BL-035-navigation-surfaces-and-image-alignment.md):
+  **Ready after `BL-033` Preset-driven managed image presentation.** Apply one
+  coherent content canvas across top and tree navigation, keep desktop
+  navigation visually quiet, and verify prose-aligned and centered-fit geometry
+  without adding author-controlled positioning options.
 - [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
-  **Ready after `BL-033` Preset-driven managed image presentation.**
+  **Ready after `BL-035` Navigation surfaces and managed-image alignment.**
   Ground the file-tree example in the documentation hierarchy without forcing
   explanatory media into artwork geometry.
+- [`BL-034` Automatic tree section tracking](docs/design/backlog/BL-034-automatic-tree-section-tracking.md):
+  **Ready.** Track the reader's current H2 or H3 automatically in tree
+  navigation and remove the low-value public on/off setting.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
   **Ready.** Reuse canonical page identity and existing metadata
   before adding further generated-page behavior.
@@ -86,6 +95,9 @@ These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
+- `BL-033` After visual approval, document preset-driven `prose-aligned` and
+  `centered-fit` image presentation in the theme and content references, the
+  documentation site, preset examples, and generated preset descriptions.
 - `BL-016` Document progressive copy controls for fenced code blocks in the
   Markdown reference and documentation site, including keyboard and
   screen-reader feedback without implying that ordinary content needs
