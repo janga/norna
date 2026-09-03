@@ -10,9 +10,11 @@ are in the [backlog process](docs/design/backlog/README.md).
 
 ## Now
 
-`Now` contains at most three implementation-ready items in exact technical
-order.
+`Now` contains at most three active items in exact technical order.
 
+- [`BL-033` Preset-driven managed image presentation](docs/design/backlog/BL-033-preset-driven-image-presentation.md):
+  **Ready.** Let each preset choose a reading- or showcase-oriented image model,
+  with a bounded page-theme override and no per-image layout decisions.
 - [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
   **In progress.** The version-aligned package and real VS Code tests are ready;
   complete the first Marketplace publication before describing IntelliSense as
@@ -20,16 +22,16 @@ order.
 - [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
   **Ready.** Use the shared reverse link index and redirect alias model to move
   a page or reconcile an already moved page without guessing.
-- [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
-  **Needs design through `BL-033`.** Ground the file-tree example in the
-  documentation hierarchy without forcing explanatory media into artwork
-  geometry.
 
 ## Next
 
 `Next` is the intended implementation sequence after `Now`. The order first
 completes deterministic site output, then builds reading features on the stable
 page graph, and only afterward expands Markdown or URL behavior.
+- [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
+  **Ready after `BL-033` Preset-driven managed image presentation.**
+  Ground the file-tree example in the documentation hierarchy without forcing
+  explanatory media into artwork geometry.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
   **Ready.** Reuse canonical page identity and existing metadata
   before adding further generated-page behavior.
@@ -100,9 +102,6 @@ verified and approved for documentation.
 These items have no implementation position yet. Move one into `Now`, `Next`,
 or `Later` only after the stated evidence or design decision exists.
 
-- [`BL-033` Illustration-aware managed image presentation](docs/design/backlog/BL-033-illustration-presentation.md):
-  **Needs decision.** Give explanatory diagrams and screenshots predictable,
-  readable geometry without changing how photographs and artwork are presented.
 - `BL-018` **Needs evidence.** Extend cross-page sync to whole-section metadata
   or additional assets only when a real section-bound resource exists; retain
   unambiguous discovery and never guess.
