@@ -505,6 +505,7 @@ test('centered-fit images are centered and constrained by viewport height', asyn
 	expect(carouselCaptionBounds).not.toBeNull();
 	expect(carouselCaptionTextBounds).not.toBeNull();
 	expect(center(frameBounds)).toBeCloseTo(center(bodyBounds), 0);
+	expect(center(portraitBounds)).toBeCloseTo(center(frameBounds), 0);
 	expect(center(stackCaptionBounds)).toBeCloseTo(center(frameBounds), 0);
 	expect(center(stackCaptionTextBounds)).toBeCloseTo(center(frameBounds), 0);
 	expect(portraitBounds?.x ?? 0).toBeGreaterThan((frameBounds?.x ?? 0) + 1);

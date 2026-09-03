@@ -18,6 +18,10 @@ images.
 - Derive navigation and the reading surface from the same palette background.
 - Position managed images relative to the page's content canvas, never the
   browser viewport.
+- Define the content canvas as the horizontal space left after persistent
+  navigation rails and their gaps have been excluded. Adding or removing a
+  rail may resize that canvas, but must not reinterpret the selected image
+  presentation method.
 - Keep each caption attached to and aligned with its image.
 - Preserve intrinsic proportions and never crop by default.
 - Let the preset choose the normal image presentation. Retain only the bounded
@@ -68,6 +72,12 @@ images.
   preserves legibility.
 - In `centered-fit`, constrain both available width and viewport height so prominent
   imagery remains inspectable without dominating the page accidentally.
+- When a viewport-height constraint makes a portrait image narrower than its
+  frame, keep the rendered image centered on the frame's horizontal axis.
+- Center a `centered-fit` caption on the rendered image's horizontal axis, not
+  on the prose column or an unrelated page region. The implementation need not
+  force the caption box to equal the image width when the same visual axis can
+  be preserved more robustly.
 - Do not infer `prose-aligned` or `centered-fit` from file format, filename, dimensions,
   or aspect ratio. Intrinsic dimensions may still constrain safe rendering
   inside the already selected presentation method.
@@ -97,6 +107,9 @@ Do not add:
 - `prose-aligned` stacks and carousels share the prose edge in top and tree layouts.
 - `centered-fit` stacks and carousels are centered in the content canvas, excluding
   any persistent navigation rail.
+- A portrait `centered-fit` image, its media frame, and its visible caption
+  share one horizontal center even when viewport-height fitting makes the
+  rendered image substantially narrower than the frame.
 - A page may use `centered-fit` with tree navigation, but no built-in tree-oriented
   default selects that combination.
 - Portrait, landscape, square, SVG, and raster sources retain their proportions
