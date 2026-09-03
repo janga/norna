@@ -20,16 +20,18 @@ order.
 - [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
   **Ready.** Use the shared reverse link index and redirect alias model to move
   a page or reconcile an already moved page without guessing.
-- [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
-  **Ready.** Reuse canonical page identity and existing metadata
-  before adding further generated-page behavior.
+- [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
+  **Needs improvement.** Ground the file-tree example in the documentation
+  hierarchy the reader is currently using.
 
 ## Next
 
 `Next` is the intended implementation sequence after `Now`. The order first
 completes deterministic site output, then builds reading features on the stable
 page graph, and only afterward expands Markdown or URL behavior.
-
+- [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
+  **Ready.** Reuse canonical page identity and existing metadata
+  before adding further generated-page behavior.
 - [`BL-004` Default 404 page](docs/design/backlog/BL-004-default-404.md): **Ready.**
   Add the smallest engine-owned generated page and verify
   root, base-path, localization, and GitHub Pages behavior.
@@ -67,6 +69,9 @@ work above unless a concrete defect raises their urgency.
   standalone website rather than adding a site to an existing project.
 - `BL-015` **Needs a scoped reproducer.** Clarify dev-server recovery when
   content, images, generated state, or watchers become stale.
+- [`BL-031` System appearance as the universal default](docs/design/backlog/BL-031-system-appearance-default.md):
+  **Ready.** Make themes and built-in presets follow the visitor's system
+  preference unless the site explicitly selects Light or Dark.
 - [`BL-027` Editor link diagnostics](docs/design/backlog/BL-027-editor-link-diagnostics.md):
   **Ready after `BL-030` Production-ready IntelliSense.** Connect the editor to
   the shared site link graph only after its distribution, versioning, cache,
