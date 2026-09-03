@@ -25,7 +25,7 @@ const presetEntries = themePresetNames.map((name) => {
 	return {
 		...getThemePresetMetadata(name),
 		defaultPalette: theme.palette,
-		defaultColorMode: theme.colorMode.default,
+		defaultAppearance: theme.appearance.default,
 		href: `../feature-demos/theme-preset-${name}/`,
 		source: `https://github.com/janga/norna/tree/main/examples/feature-demos/theme-preset-${name}`,
 	};
@@ -51,7 +51,7 @@ export const renderThemePresetComparison = () => {
 			`<option value="${escapeHtml(name)}">${escapeHtml(title)}</option>`
 		)),
 	].join('');
-	const colorModeOptions = [
+	const appearanceOptions = [
 		['', 'Preset default'],
 		['system', 'System'],
 		['light', 'Light'],
@@ -65,12 +65,12 @@ export const renderThemePresetComparison = () => {
 		title,
 		description,
 		defaultPalette,
-		defaultColorMode,
+		defaultAppearance,
 		href,
 		source,
 	}) => [
 		name,
-		{ title, description, defaultPalette, defaultColorMode, href, source },
+		{ title, description, defaultPalette, defaultAppearance, href, source },
 	]));
 	const palettes = Object.fromEntries(paletteEntries.map(({
 		name,
@@ -186,14 +186,14 @@ export const renderThemePresetComparison = () => {
 				<select data-palette-select>${paletteOptions}</select>
 			</label>
 			<label class="comparison-control">
-				<span>Default mode</span>
-				<select data-color-mode-select>${colorModeOptions}</select>
+				<span>Appearance</span>
+				<select data-appearance-select>${appearanceOptions}</select>
 			</label>
 		</div>
 		<nav class="comparison-links" aria-label="Selected preset links">
 			<a data-preset-open href="${escapeHtml(initial.href)}">Open preset site</a>
 			<a data-preset-source href="${escapeHtml(initial.source)}">View source</a>
-			<a href="https://github.com/janga/norna/blob/main/docs/theme.md#palette-and-color-mode">Theme reference</a>
+			<a href="https://github.com/janga/norna/blob/main/docs/theme.md#palette-and-appearance">Theme reference</a>
 		</nav>
 		<p class="comparison-description" data-theme-description aria-live="polite"></p>
 		<div class="comparison-config">
@@ -215,10 +215,10 @@ export const renderThemePresetComparison = () => {
 		const palettes = ${JSON.stringify(palettes)};
 		const presetNames = Object.keys(presets);
 		const paletteNames = Object.keys(palettes);
-		const colorModes = ['system', 'light', 'dark'];
+		const appearances = ['system', 'light', 'dark'];
 		const presetSelect = document.querySelector('[data-preset-select]');
 		const paletteSelect = document.querySelector('[data-palette-select]');
-		const colorModeSelect = document.querySelector('[data-color-mode-select]');
+		const appearanceSelect = document.querySelector('[data-appearance-select]');
 		const description = document.querySelector('[data-theme-description]');
 		const config = document.querySelector('[data-theme-config]');
 		const frame = document.querySelector('[data-theme-frame]');
@@ -230,7 +230,7 @@ export const renderThemePresetComparison = () => {
 		const sanitizeState = (candidate = {}) => ({
 			preset: presetNames.includes(candidate.preset) ? candidate.preset : presetNames[0],
 			palette: paletteNames.includes(candidate.palette) ? candidate.palette : '',
-			colorMode: colorModes.includes(candidate.colorMode) ? candidate.colorMode : '',
+			appearance: appearances.includes(candidate.appearance) ? candidate.appearance : '',
 		});
 
 		const readHash = () => {
@@ -240,25 +240,25 @@ export const renderThemePresetComparison = () => {
 			return sanitizeState({
 				preset: values.get('preset'),
 				palette: values.get('palette'),
-				colorMode: values.get('mode'),
+				appearance: values.get('appearance'),
 			});
 		};
 
 		const writeHash = () => {
-			if (!state.palette && !state.colorMode) {
+			if (!state.palette && !state.appearance) {
 				history.replaceState(null, '', '#' + state.preset);
 				return;
 			}
 			const values = new URLSearchParams({ preset: state.preset });
 			if (state.palette) values.set('palette', state.palette);
-			if (state.colorMode) values.set('mode', state.colorMode);
+			if (state.appearance) values.set('appearance', state.appearance);
 			history.replaceState(null, '', '#' + values.toString());
 		};
 
 		const renderConfig = () => {
 			const lines = ['preset: ' + state.preset];
 			if (state.palette) lines.push('palette: ' + state.palette);
-			if (state.colorMode) lines.push('colorMode:', '  default: ' + state.colorMode);
+			if (state.appearance) lines.push('appearance:', '  default: ' + state.appearance);
 			config.textContent = lines.join('\\n');
 		};
 
@@ -287,10 +287,10 @@ export const renderThemePresetComparison = () => {
 					root.style.setProperty(name, value);
 				}
 			}
-			const mode = state.colorMode || presets[state.preset].defaultColorMode;
-			root.dataset.colorMode = mode;
+			const appearance = state.appearance || presets[state.preset].defaultAppearance;
+			root.dataset.appearance = appearance;
 			frameDocument.querySelectorAll('[data-reader-appearance]').forEach((input) => {
-				input.checked = input.value === mode;
+				input.checked = input.value === appearance;
 			});
 			requestAnimationFrame(() => {
 				const themeColor = getComputedStyle(root).getPropertyValue('--color-page').trim();
@@ -307,7 +307,7 @@ export const renderThemePresetComparison = () => {
 			const preset = presets[state.preset];
 			presetSelect.value = state.preset;
 			paletteSelect.value = state.palette;
-			colorModeSelect.value = state.colorMode;
+			appearanceSelect.value = state.appearance;
 			openLink.href = preset.href;
 			sourceLink.href = preset.source;
 			updateDescription();
@@ -319,7 +319,7 @@ export const renderThemePresetComparison = () => {
 
 		presetSelect.addEventListener('change', () => applyState({ ...state, preset: presetSelect.value }));
 		paletteSelect.addEventListener('change', () => applyState({ ...state, palette: paletteSelect.value }));
-		colorModeSelect.addEventListener('change', () => applyState({ ...state, colorMode: colorModeSelect.value }));
+		appearanceSelect.addEventListener('change', () => applyState({ ...state, appearance: appearanceSelect.value }));
 		frame.addEventListener('load', applyFrameTheme);
 		window.addEventListener('hashchange', () => applyState(readHash(), false));
 		applyState(readHash());

@@ -160,11 +160,11 @@ construct a new design system. Public choices should be grouped by intent:
 
 | Site-owner category | Appropriate choices |
 | --- | --- |
-| Color and corners | Palette family, corner treatment, and color-mode default |
+| Color and corners | Palette family, corner treatment, and Appearance default |
 | Reading | Default prose width and content rhythm |
 | Media | Text-led, balanced, or image-led emphasis and a focused image-width override |
 | Sections | Uniform surfaces, or full-width alternating/accented surfaces when tree navigation is not used |
-| Reader controls | Optional color-mode and focus-reading choices; reading width remains engine-owned and universal |
+| Reader controls | Optional Appearance and Focus reading choices; reading width remains engine-owned and universal |
 
 The exact YAML schema is a separate implementation decision. The conceptual
 grouping should remain stable even if field names change.
@@ -191,7 +191,7 @@ The first supported categories should be:
 
 | Reader category | Values | Effect |
 | --- | --- | --- |
-| Color mode | `system`, `light`, `dark` | Select a coordinated mode from the active color system. |
+| Appearance | `system`, `light`, `dark` | Select a coordinated light or dark variant from the active palette. |
 | Reading width | `narrow`, `standard`, `wide` | Adjust prose measure within safe limits defined by the geometry profile. |
 | Focus reading | `off`, `on` | Reduce surrounding navigation while keeping navigation and exit controls available. |
 
@@ -201,7 +201,7 @@ regardless of reader choices.
 
 Reading width is always offered; the site owner chooses its initial value
 through the theme rather than whether readers may change it. The site owner may
-choose whether color mode and focus reading are offered, except that tree
+choose whether Appearance and Focus reading are offered, except that tree
 navigation always offers focus reading. Reader values must be named and
 constrained; readers should not enter CSS values.
 
@@ -231,7 +231,7 @@ semantic role rather than by component:
 - focus, selection, warning, error, and success states.
 
 The engine should derive repeated component values and verify every permitted
-foreground/background pair. Light and dark modes are coordinated variants, not
+foreground/background pair. Light and Dark appearances are coordinated variants, not
 a blind inversion. Muted content is still content and must retain sufficient
 contrast.
 

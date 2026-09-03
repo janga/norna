@@ -141,8 +141,8 @@ try {
 		assert.ok(resolved.typography?.fontFamily);
 		assert.ok(resolved.typography?.profile);
 		assert.ok(resolved.palette);
-		assert.ok(resolved.colorMode?.default);
-		assert.equal(resolved.readerControls?.colorMode, true);
+		assert.ok(resolved.appearance?.default);
+		assert.equal(resolved.readerControls?.appearance, true);
 		assert.ok(resolved.sections?.backgroundPattern);
 		assert.equal(
 			resolveThemePresentation({ preset: presetName }, `${presetName} presentation`).readerPreferences.controls.readingWidth,
@@ -183,7 +183,7 @@ try {
 		assert.notEqual(
 			palette.modes.light.page.backgroundColor,
 			palette.modes.dark.page.backgroundColor,
-			`${paletteName} must provide visibly distinct light and dark modes.`,
+			`${paletteName} must provide visibly distinct Light and Dark appearances.`,
 		);
 		for (const [modeName, mode] of Object.entries(palette.modes)) {
 			for (const [surfaceName, surface] of Object.entries(mode.surfaces)) {
@@ -285,7 +285,8 @@ sections:
 		['palette: paper\n', /Palette value "paper" was replaced by "warm-paper"/],
 		['palette: cool-green\n', /Palette value "cool-green" was replaced by "arctic-blue"/],
 		['corners: soft\n', /Corner value "soft" was replaced by "rounded"/],
-		['readerControls:\n  appearance: true\n', /Reader control "appearance" was replaced by "colorMode"/],
+		['colorMode:\n  default: system\n', /Theme setting "colorMode" was replaced by "appearance"/],
+		['readerControls:\n  colorMode: true\n', /Reader control "colorMode" was replaced by "appearance"/],
 		['readerControls:\n  readingWidth: true\n', /Reader control "readingWidth" was removed because reading width is now always available/],
 		['sections:\n  backgroundPattern: cycling\n', /Section background pattern "cycling" was replaced by "accented"/],
 		['shape: soft\n', /"shape" was replaced by "corners"[\s\S]*replace the old "soft" value with "rounded"/],
@@ -305,7 +306,7 @@ sections:
 	assert.match(rootHtml, /--section-note-width: 12rem/);
 	assert.match(rootHtml, /--section-note-gap: 1\.25rem/);
 	assert.match(rootHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
-	assert.match(rootHtml, /data-color-mode="system"/);
+	assert.match(rootHtml, /data-appearance="system"/);
 	assert.match(rootHtml, /--palette-light-page-background: #f7f7f5/);
 	assert.match(rootHtml, /--palette-dark-page-background: #000000/);
 	assert.match(pageHtml, /--page-width: 1300px/);

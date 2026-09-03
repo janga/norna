@@ -20,9 +20,9 @@ interface Props {
 const { controls, defaults } = Astro.props;
 const labels = projectConfig.locale.labels;
 const appearanceOptions = [
-	{ value: 'system', label: labels.colorModeSystem },
-	{ value: 'light', label: labels.colorModeLight },
-	{ value: 'dark', label: labels.colorModeDark },
+	{ value: 'system', label: labels.appearanceSystem },
+	{ value: 'light', label: labels.appearanceLight },
+	{ value: 'dark', label: labels.appearanceDark },
 ] as const;
 const widthOptions = [
 	{ value: 'narrow', label: labels.readingWidthNarrow },
@@ -51,7 +51,7 @@ const widthOptions = [
 
 		{controls.appearance && (
 			<fieldset>
-				<legend>{labels.colorMode}</legend>
+				<legend>{labels.appearance}</legend>
 				<div class="display-settings-segmented">
 					{appearanceOptions.map((option) => (
 						<label>

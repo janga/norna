@@ -298,43 +298,43 @@ Plain page content.
 	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), '{}\n');
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
-  description: A plain page with selectable color modes.
+  description: A plain page with selectable appearances.
 ---
 
-# Color modes
+# Appearance
 
-Ordinary content with a user-selectable color mode.
+Ordinary content with a reader-selectable appearance.
 `);
 	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: reading
 palette: warm-paper
-colorMode:
+appearance:
   default: system
 readerControls:
-  colorMode: true
+  appearance: true
   focusReading: true
 `);
 
 	runBuild();
-	const selectableColorModeHtml = await readPage();
+	const selectableAppearanceHtml = await readPage();
 	assert.equal(
-		getScripts(selectableColorModeHtml).length,
+		getScripts(selectableAppearanceHtml).length,
 		1,
-		'A selectable color mode should load only its preference script on a plain page.',
+		'A selectable appearance should load only its preference script on a plain page.',
 	);
-	assert.match(selectableColorModeHtml, /<html\b[^>]*data-color-mode="system"/);
-	assert.match(selectableColorModeHtml, /<details\b[^>]*data-display-settings/);
-	assert.match(selectableColorModeHtml, /data-reader-appearance/);
-	assert.match(selectableColorModeHtml, /data-reader-width/);
-	assert.match(selectableColorModeHtml, /data-reader-focus/);
-	assert.match(selectableColorModeHtml, /data-reader-reset/);
-	assert.match(getScripts(selectableColorModeHtml)[0], /norna-color-mode/);
-	assert.match(getScripts(selectableColorModeHtml)[0], /norna-reading-width/);
-	assert.match(getScripts(selectableColorModeHtml)[0], /norna-focus-reading/);
-	assert.match(getScripts(selectableColorModeHtml)[0], /document\.cookie/);
-	assert.match(getScripts(selectableColorModeHtml)[0], /SameSite=Lax/);
-	assert.match(getScripts(selectableColorModeHtml)[0], /maxAge = 31536000/);
-	assert.doesNotMatch(getScripts(selectableColorModeHtml)[0], /localStorage/);
+	assert.match(selectableAppearanceHtml, /<html\b[^>]*data-appearance="system"/);
+	assert.match(selectableAppearanceHtml, /<details\b[^>]*data-display-settings/);
+	assert.match(selectableAppearanceHtml, /data-reader-appearance/);
+	assert.match(selectableAppearanceHtml, /data-reader-width/);
+	assert.match(selectableAppearanceHtml, /data-reader-focus/);
+	assert.match(selectableAppearanceHtml, /data-reader-reset/);
+	assert.match(getScripts(selectableAppearanceHtml)[0], /norna-appearance/);
+	assert.match(getScripts(selectableAppearanceHtml)[0], /norna-reading-width/);
+	assert.match(getScripts(selectableAppearanceHtml)[0], /norna-focus-reading/);
+	assert.match(getScripts(selectableAppearanceHtml)[0], /document\.cookie/);
+	assert.match(getScripts(selectableAppearanceHtml)[0], /SameSite=Lax/);
+	assert.match(getScripts(selectableAppearanceHtml)[0], /maxAge = 31536000/);
+	assert.doesNotMatch(getScripts(selectableAppearanceHtml)[0], /localStorage/);
 
 	console.log('Client JavaScript boundaries test passed.');
 } finally {

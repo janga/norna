@@ -12,7 +12,7 @@ import { presentationPaletteNames } from './presentation-palette-metadata.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
 
 export { presentationPaletteNames };
-export const colorModeNames = ['system', 'light', 'dark'];
+export const appearanceNames = ['system', 'light', 'dark'];
 const sectionBackgroundPatterns = Object.freeze({
 	uniform: ['base'],
 	alternating: ['base', 'soft'],
@@ -44,7 +44,7 @@ const createPaletteMode = ({ appearance, page, surfaces, frame, css }) => {
 
 const presentationPalettes = Object.freeze({
 	'near-monochrome': Object.freeze({
-		defaultMode: 'dark',
+		defaultAppearance: 'dark',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -87,7 +87,7 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'arctic-blue': Object.freeze({
-		defaultMode: 'light',
+		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -130,7 +130,7 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'mineral-teal': Object.freeze({
-		defaultMode: 'light',
+		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -173,7 +173,7 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'soft-lavender': Object.freeze({
-		defaultMode: 'light',
+		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -216,7 +216,7 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'warm-paper': Object.freeze({
-		defaultMode: 'light',
+		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -259,7 +259,7 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'retro-earth': Object.freeze({
-		defaultMode: 'light',
+		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -302,7 +302,7 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'clay-rose': Object.freeze({
-		defaultMode: 'light',
+		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -345,7 +345,7 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'forest-moss': Object.freeze({
-		defaultMode: 'light',
+		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -388,7 +388,7 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'vivid-night': Object.freeze({
-		defaultMode: 'dark',
+		defaultAppearance: 'dark',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -493,11 +493,11 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 	const normalizedTheme = resolveThemeConfig(theme, sourceLabel);
 	const paletteName = normalizedTheme.palette ?? 'near-monochrome';
 	const palette = getPresentationPalette(paletteName);
-	const colorMode = normalizedTheme.colorMode ?? {};
+	const appearance = normalizedTheme.appearance ?? {};
 	const readerControls = normalizedTheme.readerControls ?? {};
-	const defaultColorMode = colorMode.default ?? palette.defaultMode;
-	if (!colorModeNames.includes(defaultColorMode)) {
-		throw new Error(`colorMode.default must be one of ${colorModeNames.join(', ')} in ${sourceLabel}.`);
+	const defaultAppearance = appearance.default ?? palette.defaultAppearance;
+	if (!appearanceNames.includes(defaultAppearance)) {
+		throw new Error(`appearance.default must be one of ${appearanceNames.join(', ')} in ${sourceLabel}.`);
 	}
 	const typography = resolveTypographyConfig(normalizedTheme.typography ?? defaultTypography, sourceLabel);
 	const textWidth = normalizedTheme.layout?.textWidth;
@@ -508,19 +508,19 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 
 	return {
 		paletteName,
-		palette: palette.modes[defaultColorMode === 'dark' ? 'dark' : 'light'],
+		palette: palette.modes[defaultAppearance === 'dark' ? 'dark' : 'light'],
 		paletteModes: palette.modes,
-		colorMode: {
-			default: defaultColorMode,
+		appearance: {
+			default: defaultAppearance,
 		},
 		readerPreferences: {
 			controls: {
-				appearance: readerControls.colorMode === true,
+				appearance: readerControls.appearance === true,
 				readingWidth: true,
 				focusReading: readerControls.focusReading === true,
 			},
 			defaults: {
-				appearance: defaultColorMode,
+				appearance: defaultAppearance,
 				readingWidth: textWidth === 'narrow' ? 'narrow' : textWidth === 'wide' ? 'wide' : 'standard',
 				focusReading: 'off',
 			},

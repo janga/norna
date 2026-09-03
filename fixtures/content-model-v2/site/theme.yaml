@@ -3,7 +3,7 @@ typography:
   rhythm: normal
 palette: arctic-blue
 readerControls:
-  colorMode: true
+  appearance: true
 corners: rounded
 sections:
   backgroundPattern: accented

@@ -74,7 +74,7 @@ preset: portfolio
 | Setting | Preset value |
 | --- | --- |
 | `palette` | `near-monochrome` |
-| `colorMode.default` | `dark` |
+| `appearance.default` | `dark` |
 | `typography.fontFamily` | `'Helvetica Neue', Arial, sans-serif` |
 | `typography.profile` | `restrained` |
 | `typography.rhythm` | `normal` |
@@ -88,7 +88,7 @@ preset: portfolio
 | `blocks.cardList.width` | `wide` |
 | `corners` | `square` |
 | `sections.backgroundPattern` | `uniform` |
-| Reader Display | Reading width always available; color mode enabled; focus reading disabled |
+| Reader Display | Reading width always available; Appearance enabled; Focus reading disabled |
 
 [Open the rendered `portfolio` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/).
 
@@ -107,7 +107,7 @@ preset: documentation
 | Setting | Preset value |
 | --- | --- |
 | `palette` | `warm-paper` |
-| `colorMode.default` | `system` |
+| `appearance.default` | `system` |
 | `typography.fontFamily` | `Georgia, 'Times New Roman', serif` |
 | `typography.profile` | `reading` |
 | `typography.rhythm` | `compact` |
@@ -121,7 +121,7 @@ preset: documentation
 | `blocks.cardList.width` | `text` |
 | `corners` | `rounded` |
 | `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
-| Reader Display | Reading width always available; color mode and focus reading enabled |
+| Reader Display | Reading width always available; Appearance and Focus reading enabled |
 
 [Open the rendered `documentation` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/).
 
@@ -140,7 +140,7 @@ preset: project
 | Setting | Preset value |
 | --- | --- |
 | `palette` | `near-monochrome` |
-| `colorMode.default` | `system` |
+| `appearance.default` | `system` |
 | `typography.fontFamily` | `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif` |
 | `typography.profile` | `reading` |
 | `typography.rhythm` | `compact` |
@@ -154,7 +154,7 @@ preset: project
 | `blocks.cardList.width` | `normal` |
 | `corners` | `rounded` |
 | `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
-| Reader Display | Reading width always available; color mode and focus reading enabled |
+| Reader Display | Reading width always available; Appearance and Focus reading enabled |
 
 [Open the rendered `project` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-project/).
 
@@ -172,7 +172,7 @@ preset: statement
 | Setting | Preset value |
 | --- | --- |
 | `palette` | `warm-paper` |
-| `colorMode.default` | `system` |
+| `appearance.default` | `system` |
 | `typography.fontFamily` | `'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif` |
 | `typography.profile` | `statement` |
 | `typography.rhythm` | `airy` |
@@ -186,14 +186,14 @@ preset: statement
 | `blocks.cardList.width` | `wide` |
 | `corners` | `square` |
 | `sections.backgroundPattern` | `accented`; resolves to `uniform` with tree navigation |
-| Reader Display | Reading width always available; color mode enabled; focus reading disabled |
+| Reader Display | Reading width always available; Appearance enabled; Focus reading disabled |
 
 [Open the rendered `statement` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/).
 
 The setting names and values above are defined in [Layout](#layout),
 [Image Sizing](#image-sizing),
 [Content Block Defaults](#content-block-defaults), [Typography](#typography),
-[Palette And Color Mode](#palette-and-color-mode), [Corners](#corners),
+[Palette And Appearance](#palette-and-appearance), [Corners](#corners),
 [Section Backgrounds](#section-backgrounds), and [Reader Display
 Controls](#reader-display-controls). See
 [Navigation](pages.md#navigation) for when automatic navigation resolves to a
@@ -389,13 +389,14 @@ Use `npm run norna:typography:profiles` to inspect built-in values and
 `npm run norna:typography:show` to inspect the resolved site typography. See
 [Typography](typography.md) for every override field.
 
-## Palette And Color Mode
+## Palette And Appearance
 
-Norna separates two color choices. A `palette` selects the coordinated colors
+Norna separates two related choices. A `palette` selects the coordinated colors
 used for page backgrounds, section surfaces, text, links, navigation, controls,
-code, status messages, and focus indicators. `colorMode` selects whether the
-light or dark variant of those same colors is shown. Changing the palette does
-not change typography, spacing, corners, or media sizing.
+code, status messages, and focus indicators. `appearance` selects whether the
+palette starts with its light variant, its dark variant, or the variant preferred
+by the visitor's operating system. Changing either choice does not change
+typography, spacing, corners, or media sizing.
 
 ### Palette
 
@@ -407,10 +408,10 @@ palette: forest-moss
 ```
 
 Every built-in palette provides coordinated light and dark variants. The
-default mode in the table applies only when neither a preset nor an explicit
-`colorMode.default` supplies another default.
+default appearance in the table applies only when neither a preset nor an
+explicit `appearance.default` supplies another default.
 
-| Value | Color character | Palette default |
+| Value | Color character | Palette default appearance |
 | --- | --- | --- |
 | `near-monochrome` | Neutral grays and off-whites with almost no visible hue. | Dark |
 | `warm-paper` | Warm off-whites and browns resembling paper and ink. | Light |
@@ -431,9 +432,15 @@ themes cannot select another palette.
 to apply every palette to the same representative content and combine it with
 each built-in preset.
 
-### Color Mode
+### Appearance
 
-`colorMode.default` selects the mode used when the reader has no stored choice:
+`appearance.default` selects what a visitor sees when the browser has no stored
+choice for this site:
+
+```yaml
+appearance:
+  default: system
+```
 
 | Value | Effect |
 | --- | --- |
@@ -441,26 +448,27 @@ each built-in preset.
 | `light` | Use the palette's light variant. |
 | `dark` | Use the palette's dark variant. |
 
-Omit `colorMode` to use the selected preset's default. Without a preset, Norna
+Omit `appearance` to use the selected preset's default. Without a preset, Norna
 uses the palette default shown above. Overriding a preset's palette does not
-replace the preset's color-mode default.
+replace the preset's appearance default.
 
 Current preset defaults are:
 
-| Preset | Palette | Default color mode | Color-mode choice in Display |
+| Preset | Palette | Default appearance | Appearance choice in Display |
 | --- | --- | --- | --- |
 | `portfolio` | `near-monochrome` | `dark` | Enabled |
 | `documentation` | `warm-paper` | `system` | Enabled |
 | `project` | `near-monochrome` | `system` | Enabled |
 | `statement` | `warm-paper` | `system` | Enabled |
 
-A preset supplies both a palette and a default color mode. Overriding only
-`palette` keeps the preset's default color mode; set both when both choices
+A preset supplies both a palette and a default appearance. Overriding only
+`palette` keeps the preset's default appearance; set both when both choices
 should change.
 
-Color mode belongs to the root theme because navigation, page frame, section
+Appearance belongs to the root theme because navigation, page frame, section
 backgrounds, controls, and text must change together. Page-local themes cannot
-override it. Norna does not expose arbitrary colors for individual modes.
+override it. Norna does not expose arbitrary colors for individual appearance
+variants.
 
 ## Reader Display Controls
 
@@ -469,7 +477,7 @@ site-wide Display panel. This bounded reading-width choice is part of the
 engine and cannot be disabled by a theme. The preset or `layout.textWidth`
 selects the initial width; the reader may temporarily choose another one.
 
-`readerControls` adds the optional color-mode and focus-reading choices. Reader
+`readerControls` adds the optional Appearance and Focus reading choices. Reader
 choices adapt the resolved theme; they do not edit `theme.yaml`, replace the
 preset, or change the content order.
 
@@ -478,7 +486,7 @@ Configure the controls in the root `site/theme.yaml`:
 ```yaml
 preset: documentation
 readerControls:
-  colorMode: true
+  appearance: true
   focusReading: true
 ```
 
@@ -487,7 +495,7 @@ The Display panel then contains:
 | Choice | Availability | Configured default |
 | --- | --- | --- |
 | Reading width | Always | Derived from `layout.textWidth`: `narrow`, `normal`, or `wide` |
-| Color mode | When `readerControls.colorMode` is `true` | `colorMode.default`, or the preset default |
+| Appearance | When `readerControls.appearance` is `true` | `appearance.default`, or the preset default |
 | Focus reading | When `readerControls.focusReading` is `true`, or navigation resolves to `tree` | Off |
 
 Narrow, Standard, and Wide limit prose to approximately `60ch`, `72ch`, and
@@ -499,7 +507,7 @@ when the reader is already at the top of the page.
 
 Built-in presets choose these starting widths and optional controls:
 
-| Preset | Initial reading width | Color mode | Focus reading |
+| Preset | Initial reading width | Appearance | Focus reading |
 | --- | --- | --- | --- |
 | `portfolio` | Wide | Enabled | Disabled |
 | `documentation` | Narrow | Enabled | Enabled |
@@ -507,18 +515,19 @@ Built-in presets choose these starting widths and optional controls:
 | `statement` | Standard | Enabled | Disabled |
 
 Omit `readerControls` to use the selected preset's optional controls. Set
-`colorMode` or `focusReading` to `false` to disable that preset control on sites
+`appearance` or `focusReading` to `false` to disable that preset control on sites
 without tree navigation. Tree navigation always offers Focus reading so readers
 can temporarily remove the persistent tree and other secondary page chrome. A
-root theme without a preset still provides reading width, but does not add color
-mode or focus reading unless explicitly enabled or required by tree navigation.
+root theme without a preset still provides reading width, but does not add an
+Appearance or Focus reading control unless explicitly enabled or required by
+tree navigation.
 Page-local themes cannot change `readerControls`.
 
 Reader choices are stored in first-party cookies:
 
 | Choice | Cookie | Stored values |
 | --- | --- | --- |
-| Color mode | `norna-color-mode` | `system`, `light`, `dark` |
+| Appearance | `norna-appearance` | `system`, `light`, `dark` |
 | Reading width | `norna-reading-width` | `narrow`, `standard`, `wide` |
 | Focus reading | `norna-focus-reading` | `off`, `on` |
 
@@ -528,7 +537,7 @@ choice for later visits without sharing it with another Norna site under a
 different path on the same domain. Reset removes all three cookies and restores
 the configured defaults.
 
-Without JavaScript, the configured color mode and initial reading width still
+Without JavaScript, the configured Appearance and initial reading width still
 apply. The reader cannot change or persist Display choices, and focus reading
 remains off. Norna includes the reader-preference script on every page so the
 universal reading-width choice can work and persist. See

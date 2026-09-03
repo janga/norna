@@ -25,7 +25,7 @@ Norna currently has four public presets:
 - `project`
 - `statement`
 
-Each preset is a complete nested object containing color mode, shape, layout,
+Each preset is a complete nested object containing Appearance, shape, layout,
 image, typography, palette, and section-surface values. The current model works,
 but the inventory exposes five structural issues:
 
@@ -62,7 +62,7 @@ theme.yaml
     -> deep merge with a complete preset object
     -> two separate resolver paths
        -> visual resolver: geometry, media, font family, shape
-       -> presentation resolver: palette, color mode, surfaces, typography
+       -> presentation resolver: palette, Appearance, surfaces, typography
     -> optional inherited page-theme merge
     -> CSS variables and component properties
 ```
@@ -79,7 +79,7 @@ Important implementation locations:
 | Page-theme inheritance | `src/lib/pageThemes.ts` |
 | Root plus page-theme consumption | `src/components/SitePage.astro` |
 | Responsive type-size lookup and section tokens | `src/components/SiteSection.astro` |
-| Document-level CSS variables and color-mode behavior | `src/layouts/BaseLayout.astro` |
+| Document-level CSS variables and Appearance behavior | `src/layouts/BaseLayout.astro` |
 | Component styling and remaining hard-coded values | `src/styles/global.css` |
 
 `resolveThemeConfig()` deep-merges a root theme over its selected preset.
@@ -94,7 +94,7 @@ preset recipes.
 
 | Field | `portfolio` | `documentation` | `project` | `statement` |
 | --- | --- | --- | --- | --- |
-| `colorMode.default` | `dark` | `system` | `system` | `system` |
+| `appearance.default` | `dark` | `system` | `system` | `system` |
 | `readerControls.appearance` | `true` | `true` | `true` | `true` |
 | `readerControls.readingWidth` | `false` | `true` | `true` | `false` |
 | `readerControls.focusReading` | `false` | `true` | `true` | `false` |
@@ -274,7 +274,7 @@ width.
 | `square` | `0` | `0` | `0` |
 | `soft` | `2px` | `6px` | `8px` |
 
-The shape tokens currently affect the color-mode menu, navigation disclosure
+The shape tokens currently affect the Appearance menu, navigation disclosure
 surfaces, code blocks, and cards. Deliberately pill-shaped controls and badges
 continue to use `999px` under both profiles.
 
@@ -291,15 +291,15 @@ sequence independently of the H1.
 
 ## Color Systems
 
-Every color system contains coordinated light and dark modes. Consequently,
+Every color system contains coordinated Light and Dark appearances. Consequently,
 the current names `dark` and `light` describe palette character and default
-mode imperfectly: `dark` still has a light variant and `light` still has a dark
+appearance imperfectly: `dark` still has a light variant and `light` still has a dark
 variant.
 
 Surface text is the same primary text color on `base`, `soft`, and `emphasis`.
 `base` has the same background as the page.
 
-| Palette / mode | Page and base | Soft surface | Emphasis surface | Primary text | Muted | Accent |
+| Palette / appearance | Page and base | Soft surface | Emphasis surface | Primary text | Muted | Accent |
 | --- | --- | --- | --- | --- | --- | --- |
 | `dark` / light | `#f7f7f5` | `#ececea` | `#dadad6` | `#171717` | `#666660` | `#4b4b46` |
 | `dark` / dark | `#000000` | `#171717` | `#252525` | `#f2eee6` | `#aaa49a` | `#d8d2c8` |
@@ -308,7 +308,7 @@ Surface text is the same primary text color on `base`, `soft`, and `emphasis`.
 | `paper` / light | `#f8f5ee` | `#ebe5d9` | `#ded4c5` | `#272522` | `#746e63` | `#685a43` |
 | `paper` / dark | `#1b1916` | `#25211c` | `#342d25` | `#f3ede2` | `#b9ad9c` | `#d5bea0` |
 
-| Palette / mode | UI surface | UI soft | Border | Navigation background | Navigation separator |
+| Palette / appearance | UI surface | UI soft | Border | Navigation background | Navigation separator |
 | --- | --- | --- | --- | --- | --- |
 | `dark` / light | `#eeeeeb` | `#d8d8d3` | `rgb(23 23 23 / 16%)` | `rgb(247 247 245 / 92%)` | `rgb(23 23 23 / 24%)` |
 | `dark` / dark | `#101010` | `#302f2c` | `rgb(255 255 255 / 14%)` | `rgb(0 0 0 / 90%)` | `rgb(255 255 255 / 28%)` |
@@ -317,14 +317,14 @@ Surface text is the same primary text color on `base`, `soft`, and `emphasis`.
 | `paper` / light | `#f0ebe1` | `#d8d0c4` | `rgb(39 37 34 / 18%)` | `rgb(248 245 238 / 92%)` | `rgb(39 37 34 / 24%)` |
 | `paper` / dark | `#211e1a` | `#3b342b` | `rgb(243 237 226 / 16%)` | `rgb(27 25 22 / 92%)` | `rgb(243 237 226 / 26%)` |
 
-Frame colors currently repeat page colors in every palette and mode.
+Frame colors currently repeat page colors in every palette and appearance.
 
 ### Contrast Snapshot
 
 The following ratios use each opaque foreground against the least favorable of
 page, base, soft, and emphasis backgrounds.
 
-| Palette / mode | Primary minimum | Accent minimum | Muted minimum |
+| Palette / appearance | Primary minimum | Accent minimum | Muted minimum |
 | --- | --- | --- | --- |
 | `dark` / light | `12.79` | `6.26` | `4.12` |
 | `dark` / dark | `13.25` | `10.20` | `6.19` |
@@ -360,7 +360,7 @@ presets use installed system fonts rather than bundled web fonts.
 | Source value | Expansion or resolver | Main consumer |
 | --- | --- | --- |
 | `preset` | Deep merge in `resolveThemeConfig()` | Both resolver paths |
-| `colorMode.*` | `resolveThemePresentation()` | `BaseLayout.astro` mode attributes, selector, cookie, and CSS mode variables |
+| `appearance.*` | `resolveThemePresentation()` | `BaseLayout.astro` Appearance attributes, selector, cookie, and CSS variables |
 | `shape` | `resolveThemeVisualConfig()` to three radii | Menus, navigation disclosures, code blocks, cards |
 | `layout.contentSpacing` | Six-value profile in `project-config.mjs` | Section, block, image, and final-page spacing CSS variables |
 | `layout.textWidth` | Named CSS expression in `presentation.mjs` | Page prose width, section headings, body text, and caption bounds |
@@ -389,7 +389,7 @@ about and test as one resolved object.
 The strict root schema currently exposes:
 
 - preset selection;
-- color-mode default and selector availability;
+- Appearance default and selector availability;
 - shape;
 - named and raw layout values;
 - named and raw managed-image values;
@@ -413,7 +413,7 @@ Page-local `theme.yaml` files may currently set only:
 - `sections.backgroundPattern`.
 
 Page values inherit through all ancestor page directories. Palette, font,
-typography profile, shape, color-mode behavior, page frame, and navigation
+typography profile, shape, Appearance behavior, page frame, and navigation
 remain site-wide.
 
 ## Engine Values Outside Presets
@@ -446,7 +446,7 @@ schema change.
 | Current field | Initial disposition | Reason |
 | --- | --- | --- |
 | `preset` | Retain | It is the intended one-line path. |
-| `colorMode.default` | Retain as a named site-owner choice | It expresses a clear site default. |
+| `appearance.default` | Retain as a named site-owner choice | It expresses a clear site default. |
 | `readerControls` | Retain as bounded reader choices | Appearance, reading width, and focus reading belong together rather than inside visual identity. |
 | `shape` | Retain as a named root choice | It is understandable and can remain accessibility-safe. |
 | `palette` | Retain concept; review names | Named color systems are useful, but `dark` and `light` each contain both modes. |

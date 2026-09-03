@@ -59,10 +59,10 @@ palette: forest-moss
 
 Every palette has light and dark variants. The
 [Theme explorer](https://janga.github.io/norna/examples/theme-presets/) lets
-you combine every built-in preset and palette, select a default color mode and
+you combine every built-in preset and palette, select a default appearance and
 see the resulting `theme.yaml`.
 
-See the [palette and color-mode reference](https://github.com/janga/norna/blob/main/docs/theme.md#palette-and-color-mode)
+See the [palette and Appearance reference](https://github.com/janga/norna/blob/main/docs/theme.md#palette-and-appearance)
 for all accepted values, defaults and scope.
 
 ## Root theme overrides {#root-overrides}
@@ -79,7 +79,7 @@ blocks:
     width: text
 ```
 
-Palettes, color modes, corners, typography, navigation presentation and
+Palettes, appearance, corners, typography, navigation presentation and
 structured-block defaults belong to the root theme. Keeping them site-wide
 gives the pages a shared visual identity.
 
@@ -105,14 +105,14 @@ corners, typography, navigation treatment or content-block defaults.
 Narrow, Standard and Wide reading widths are always available in the Display
 panel. The root theme chooses the initial width; a reader's selection is stored
 in that browser and does not modify `theme.yaml`. The same distinction applies
-to color mode: the root theme supplies the configured default, while a reader
+to appearance: the root theme supplies the configured default, while a reader
 may temporarily choose System, Light or Dark when that control is enabled.
 
-The site owner may also offer color-mode and focus-reading choices:
+The site owner may also offer Appearance and Focus reading choices:
 
 ```yaml
 readerControls:
-  colorMode: true
+  appearance: true
   focusReading: true
 ```
 

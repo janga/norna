@@ -32,8 +32,12 @@ const getLegacyThemeHint = (issue, data) => {
 		return 'Section background pattern "cycling" was replaced by "accented".';
 	}
 
-	if (location === 'readerControls' && issue.keys?.includes('appearance')) {
-		return 'Reader control "appearance" was replaced by "colorMode".';
+	if (location === '' && issue.keys?.includes('colorMode')) {
+		return 'Theme setting "colorMode" was replaced by "appearance".';
+	}
+
+	if (location === 'readerControls' && issue.keys?.includes('colorMode')) {
+		return 'Reader control "colorMode" was replaced by "appearance".';
 	}
 
 	if (location === 'readerControls' && issue.keys?.includes('readingWidth')) {

@@ -18,7 +18,7 @@ const filenames = [
 const requiredRichHelp = {
 	'category.schema.json': ['label'],
 	'config.schema.json': ['url', 'language', 'navigation', 'scrollBehavior'],
-	'theme.schema.json': ['preset', 'colorMode', 'readerControls', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
+	'theme.schema.json': ['preset', 'appearance', 'readerControls', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
 	'page-theme.schema.json': ['layout', 'images', 'sections'],
 	'sitewide-content.schema.json': ['logo', 'banners', 'footer'],
 	'content-frontmatter.schema.json': ['page', 'navigation'],
@@ -185,9 +185,25 @@ assert.match(buildInfo.markdownDescription, /footer:\n  buildInfo: true/);
 
 const theme = JSON.parse(await readFile(path.join(root, 'schemas', 'theme.schema.json'), 'utf8'));
 assert.equal(theme.properties.layout.properties.gutter.defaultSnippets[0].label, 'Responsive page gutter');
-assert.equal(theme.properties.colorMode.defaultSnippets[0].label, 'Set the initial color mode');
+assert.equal(theme.properties.appearance.defaultSnippets[0].label, 'Set the initial appearance');
 assert.equal(theme.properties.readerControls.defaultSnippets[0].label, 'Configure the Display panel');
-assert.deepEqual(Object.keys(theme.properties.readerControls.properties), ['colorMode', 'focusReading']);
+assert.deepEqual(Object.keys(theme.properties.readerControls.properties), ['appearance', 'focusReading']);
+assert.match(
+	theme.properties.readerControls.markdownDescription,
+	/Choose which optional controls readers can use in the site-wide Display panel\./,
+);
+assert.match(
+	theme.properties.readerControls.markdownDescription,
+	/Reading width is always included\. Sites with tree navigation always include Focus reading/,
+);
+assert.match(
+	theme.properties.readerControls.properties.appearance.markdownDescription,
+	/Show an Appearance control that lets readers choose System, Light, or Dark\./,
+);
+assert.match(
+	theme.properties.readerControls.properties.focusReading.markdownDescription,
+	/lets readers hide navigation, breadcrumbs, and the footer/,
+);
 assert.deepEqual(
 	theme.properties.palette.oneOf.map((entry) => entry.const),
 	[
@@ -249,7 +265,7 @@ assert.deepEqual(Object.keys(pageTheme.properties), ['layout', 'images', 'sectio
 assert.deepEqual(Object.keys(pageTheme.properties.layout.properties), ['contentSpacing', 'textWidth']);
 assert.equal(pageTheme.properties.preset, undefined);
 assert.equal(pageTheme.properties.palette, undefined);
-assert.equal(pageTheme.properties.colorMode, undefined);
+assert.equal(pageTheme.properties.appearance, undefined);
 assert.equal(pageTheme.properties.readerControls, undefined);
 assert.equal(pageTheme.properties.typography, undefined);
 assert.equal(pageTheme.properties.blocks, undefined);

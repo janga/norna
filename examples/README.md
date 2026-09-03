@@ -13,7 +13,7 @@ documentation workflow.
 | Documentation preset | Complete `documentation` preset without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/) | [View files](feature-demos/theme-preset-documentation/) |
 | Project preset | Complete `project` preset without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-preset-project/) | [View files](feature-demos/theme-preset-project/) |
 | Statement preset | Complete `statement` preset without overrides | [Open site](https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/) | [View files](feature-demos/theme-preset-statement/) |
-| Media and surfaces | Light/dark modes, portrait and landscape carousels, image stacks, cards, notes, palettes, and section surfaces | [Open site](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/) | [View files](feature-demos/media-and-surfaces/) |
+| Media and surfaces | Light/Dark Appearance, portrait and landscape carousels, image stacks, cards, notes, palettes, and section surfaces | [Open site](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/) | [View files](feature-demos/media-and-surfaces/) |
 | Sitewide content | Shared logo settings, banners, and footer content | [Open site](https://janga.github.io/norna/examples/feature-demos/sitewide-content/) | [View files](feature-demos/sitewide-content/) |
 
 ## Directory Structure

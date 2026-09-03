@@ -19,7 +19,7 @@ const paletteCandidates = presentationPaletteNames.map((name) => {
 		id: name,
 		label: metadata.title,
 		description: metadata.description,
-		theme: `preset: documentation\npalette: ${name}\ncolorMode:\n  default: system\nreaderControls:\n  colorMode: true\n  focusReading: true\n`,
+		theme: `preset: documentation\npalette: ${name}\nappearance:\n  default: system\nreaderControls:\n  appearance: true\n  focusReading: true\n`,
 	});
 });
 const review = paletteReview

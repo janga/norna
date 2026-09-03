@@ -248,7 +248,7 @@ test('Display groups native reader controls and closes with Escape', async ({ pa
 	await trigger.click();
 
 	await expect(settings).toHaveAttribute('open', '');
-	await expect(settings.getByRole('group', { name: 'Color mode' })).toBeVisible();
+	await expect(settings.getByRole('group', { name: 'Appearance' })).toBeVisible();
 	await expect(settings.getByRole('group', { name: 'Reading width' })).toBeVisible();
 	await expect(settings.getByRole('radio', { name: 'System' })).toBeChecked();
 	await expect(settings.getByRole('radio', { name: 'Standard' })).toBeChecked();
@@ -285,7 +285,7 @@ test('reader preferences apply, persist, and reset as one bounded overlay', asyn
 
 	await settings.getByRole('radio', { name: 'Dark' }).check();
 	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
-	await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'dark');
+	await expect(page.locator('html')).toHaveAttribute('data-appearance', 'dark');
 	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'wide');
 	await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'on');
 	await expect(page.locator('.tree-local-navigation')).toBeHidden();
@@ -295,21 +295,21 @@ test('reader preferences apply, persist, and reset as one bounded overlay', asyn
 
 	const cookieNames = (await context.cookies()).map((cookie) => cookie.name);
 	expect(cookieNames).toEqual(expect.arrayContaining([
-		'norna-color-mode',
+		'norna-appearance',
 		'norna-reading-width',
 		'norna-focus-reading',
 	]));
 
 	await page.reload({ waitUntil: 'domcontentloaded' });
 	await page.locator('[data-carousel-ready="true"]').waitFor();
-	await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'dark');
+	await expect(page.locator('html')).toHaveAttribute('data-appearance', 'dark');
 	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'wide');
 	await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'on');
 
 	const reloadedSettings = page.locator('[data-display-settings]');
 	await reloadedSettings.locator('summary').click();
 	await reloadedSettings.getByRole('button', { name: 'Reset' }).click();
-	await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'system');
+	await expect(page.locator('html')).toHaveAttribute('data-appearance', 'system');
 	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'standard');
 	await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'off');
 	await expect(page.locator('.tree-local-navigation')).toBeVisible();
@@ -440,7 +440,7 @@ test('configured presentation remains usable without JavaScript', async ({ brows
 	const page = await context.newPage();
 	await page.goto(componentsPath, { waitUntil: 'domcontentloaded' });
 
-	await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'system');
+	await expect(page.locator('html')).toHaveAttribute('data-appearance', 'system');
 	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'standard');
 	await expect(page.locator('.site-content h1').first()).toBeVisible();
 	await expect(page.locator('.tree-local-navigation')).toBeVisible();

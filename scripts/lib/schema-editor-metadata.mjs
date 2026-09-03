@@ -250,28 +250,30 @@ const addThemeHelp = (jsonSchema) => {
 	addHelp(jsonSchema, 'palette', [
 		yamlExample('palette: warm-paper'),
 		'Chooses the site color character. Every palette provides coordinated light and dark variants.',
-		documentationLink('Palette and color mode', 'theme.md', 'palette-and-color-mode'),
+		documentationLink('Palette and appearance', 'theme.md', 'palette-and-appearance'),
 	], presentationPaletteNames);
-	addHelp(jsonSchema, 'colorMode', [
-		yamlExample('colorMode:\n  default: system'),
-		'Controls the initial light or dark appearance. Enable the reader-facing choice under readerControls.',
-		documentationLink('Color mode', 'theme.md', 'color-mode'),
+	addHelp(jsonSchema, 'appearance', [
+		yamlExample('appearance:\n  default: system'),
+		'Selects the initial appearance. Enable the reader-facing choice under readerControls.',
+		documentationLink('Appearance', 'theme.md', 'appearance'),
 	]);
-	addFieldHelp(jsonSchema, 'colorMode.default', 'colorMode:\n  default: system', 'theme.md', 'color-mode', ['system', 'light', 'dark']);
-	addSnippets(jsonSchema, 'colorMode', [schemaSnippet({
-		label: 'Set the initial color mode',
-		body: 'colorMode:\n  default: ${1:system}',
+	addFieldHelp(jsonSchema, 'appearance.default', 'appearance:\n  default: system', 'theme.md', 'appearance', ['system', 'light', 'dark']);
+	addSnippets(jsonSchema, 'appearance', [schemaSnippet({
+		label: 'Set the initial appearance',
+		body: 'appearance:\n  default: ${1:system}',
 		description: 'Follow the system color preference or choose a fixed initial appearance.',
 		file: 'theme.md',
-		anchor: 'color-mode',
+		anchor: 'appearance',
 	})]);
 	addHelp(jsonSchema, 'readerControls', [
-		yamlExample('readerControls:\n  colorMode: true\n  focusReading: true'),
-		'Adds optional color-mode and focus-reading choices to the site-wide Display panel. Reading width is always available, and tree navigation always provides Focus reading.',
+		yamlExample('readerControls:\n  appearance: true\n  focusReading: true'),
+		'Choose which optional controls readers can use in the site-wide Display panel.',
+		'`appearance: true` lets readers choose System, Light, or Dark. `focusReading: true` lets them hide navigation, breadcrumbs, and the footer while reading.',
+		'Reading width is always included. Sites with tree navigation always include Focus reading, even when it is not enabled here.',
 		documentationLink('Reader Display controls', 'theme.md', 'reader-display-controls'),
 	]);
 	for (const [propertyPath, example] of [
-		['readerControls.colorMode', 'readerControls:\n  colorMode: true'],
+		['readerControls.appearance', 'readerControls:\n  appearance: true'],
 		['readerControls.focusReading', 'readerControls:\n  focusReading: true'],
 	]) {
 		addFieldHelp(
@@ -284,8 +286,8 @@ const addThemeHelp = (jsonSchema) => {
 	}
 	addSnippets(jsonSchema, 'readerControls', [schemaSnippet({
 		label: 'Configure the Display panel',
-		body: 'readerControls:\n  colorMode: ${1:true}\n  focusReading: ${2:true}',
-		description: 'Offer optional color-mode and focus-reading choices alongside the universal reading-width control. Tree navigation always provides Focus reading.',
+		body: 'readerControls:\n  appearance: ${1:true}\n  focusReading: ${2:true}',
+		description: 'Show optional Appearance and Focus reading controls. Reading width is already included, and tree navigation always includes Focus reading.',
 		file: 'theme.md',
 		anchor: 'reader-display-controls',
 	})]);

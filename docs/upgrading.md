@@ -86,7 +86,7 @@ contain only `page.description` and `navigation.listed`.
 
 ### Move Page Presentation Into Theme Files
 
-The root `site/theme.yaml` owns preset, color modes, palette, corners,
+The root `site/theme.yaml` owns the preset, Appearance, palette, corners,
 typography, page frame, navigation presentation, and structured content-block
 defaults. A limited `theme.yaml` in a page or category directory may contain
 only the layout, image, and section-background fields documented under
@@ -105,12 +105,17 @@ Replace superseded root-theme terms when upgrading:
 | `palette: cool-green` | `palette: arctic-blue` |
 | `shape: square` | `corners: square` |
 | `shape: soft` | `corners: rounded` |
-| `readerControls.appearance` | `readerControls.colorMode` |
+| `colorMode` | `appearance` |
+| `readerControls.colorMode` | `readerControls.appearance` |
 | `sections.backgroundPattern: cycling` | `sections.backgroundPattern: accented` |
+
+The corresponding reader cookie is now named `norna-appearance`. Existing
+`norna-color-mode` cookies are not migrated, so a returning visitor sees the
+configured appearance once before making a new Display choice.
 
 `cool-green` was removed when the built-in palettes were expanded. Use
 `arctic-blue` as its closest supported replacement, then review the result in
-both light and dark mode.
+both Light and Dark appearances.
 
 Remove `readerControls.readingWidth` from `theme.yaml`. Reading width is now an
 engine-level reader choice that is always available; `layout.textWidth` still

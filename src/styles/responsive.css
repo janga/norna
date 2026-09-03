@@ -444,8 +444,8 @@
 
 @media (forced-colors: active) {
 	:root,
-	:root[data-color-mode='dark'],
-	:root[data-color-mode='system'] {
+	:root[data-appearance='dark'],
+	:root[data-appearance='system'] {
 		--color-page: Canvas;
 		--color-primary-text: CanvasText;
 		--color-secondary-text: CanvasText;

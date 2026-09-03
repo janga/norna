@@ -12,8 +12,8 @@ accessibility conformance for every site's authored content.
 
 Built-in palettes define semantic roles for text, links, controls, code,
 selection, status messages, focus indicators, and section surfaces in both
-light and dark mode. Norna validates every foreground and background pairing
-that its components use.
+Light and Dark appearances. Norna validates every foreground and background
+pairing that its components use.
 
 - normal and secondary text supplied by the engine must reach a contrast ratio
   of at least `5:1`, providing a margin above the WCAG AA minimum of `4.5:1`;
@@ -24,8 +24,9 @@ that its components use.
 - hover, current, selected, warning, and focus states do not rely on color
   alone.
 
-Theme settings select coordinated palettes and modes rather than arbitrary
-component colors. See [Palette And Color Mode](theme.md#palette-and-color-mode).
+Theme settings select coordinated palettes and appearances rather than
+arbitrary component colors. See
+[Palette And Appearance](theme.md#palette-and-appearance).
 
 ## Typography And Reading Width
 
@@ -60,10 +61,10 @@ The engine honors operating-system preferences:
 - `prefers-reduced-motion` removes decorative transitions, smooth scrolling,
   and carousel movement;
 - forced-colors mode uses system colors and keeps component boundaries visible;
-- System color mode follows `prefers-color-scheme`.
+- The System option for Appearance follows `prefers-color-scheme`.
 
 Reader Display choices are bounded overlays on the resolved theme. They can
-change color mode, prose width, or the visibility of secondary page chrome, but
+change appearance, prose width, or the visibility of secondary page chrome, but
 cannot reduce contrast, remove keyboard focus, reorder content, or hide the
 Display control needed to undo the choice. See
 [Reader Display Controls](theme.md#reader-display-controls).

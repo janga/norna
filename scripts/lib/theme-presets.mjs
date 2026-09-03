@@ -50,25 +50,25 @@ export const themePresetDefinitions = Object.freeze({
 		title: 'Portfolio',
 		description: 'For portfolios and image-led sites, with restrained typography and generous space for images.',
 		recipe: themePresetRecipes.portfolio,
-		readerControls: Object.freeze({ colorMode: true }),
+		readerControls: Object.freeze({ appearance: true }),
 	}),
 	documentation: Object.freeze({
 		title: 'Documentation',
 		description: 'For guides and reference material, with reading-focused typography and compact spacing.',
 		recipe: themePresetRecipes.documentation,
-		readerControls: Object.freeze({ colorMode: true, focusReading: true }),
+		readerControls: Object.freeze({ appearance: true, focusReading: true }),
 	}),
 	project: Object.freeze({
 		title: 'Project',
 		description: 'For project and product sites that balance explanation, code, cards, and images.',
 		recipe: themePresetRecipes.project,
-		readerControls: Object.freeze({ colorMode: true, focusReading: true }),
+		readerControls: Object.freeze({ appearance: true, focusReading: true }),
 	}),
 	statement: Object.freeze({
 		title: 'Statement',
 		description: 'For short, expressive sites, with larger typography, airy spacing, and stronger section emphasis.',
 		recipe: themePresetRecipes.statement,
-		readerControls: Object.freeze({ colorMode: true }),
+		readerControls: Object.freeze({ appearance: true }),
 	}),
 });
 
@@ -158,7 +158,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
 	const metadata = getThemePresetMetadata(presetName);
-	const { colorMode, readerControls, corners, layout, images, blocks, typography, palette, sections } = preset;
+	const { appearance, readerControls, corners, layout, images, blocks, typography, palette, sections } = preset;
 
 	return [
 		`# Original values for Norna's "${presetName}" theme preset.`,
@@ -169,12 +169,12 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		`preset: ${presetName}`,
 		'',
 		'# Initial appearance. System follows the visitor\'s operating-system preference.',
-		'colorMode:',
-		`  default: ${colorMode.default}`,
+		'appearance:',
+		`  default: ${appearance.default}`,
 		'',
 		'# Optional reader controls shown with the always-available reading-width choice.',
 		'readerControls:',
-		`  colorMode: ${readerControls.colorMode === true}`,
+		`  appearance: ${readerControls.appearance === true}`,
 		`  focusReading: ${readerControls.focusReading === true}`,
 		'',
 		'# Alternatives: square, rounded.',

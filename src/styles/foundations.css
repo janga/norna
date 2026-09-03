@@ -1,4 +1,4 @@
-/* Foundations: tokens, color modes, global elements, and accessibility primitives. */
+/* Foundations: tokens, Appearance variants, global elements, and accessibility primitives. */
 
 *,
 *::before,
@@ -97,7 +97,7 @@
 	scroll-padding-top: var(--site-top-anchor-offset);
 }
 
-:root[data-color-mode='dark'] {
+:root[data-appearance='dark'] {
 	--color-page: var(--palette-dark-page-background);
 	--color-primary-text: var(--palette-dark-primary-text);
 	--color-secondary-text: var(--palette-dark-secondary-text);
@@ -143,7 +143,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	:root[data-color-mode='system'] {
+	:root[data-appearance='system'] {
 		--color-page: var(--palette-dark-page-background);
 		--color-primary-text: var(--palette-dark-primary-text);
 		--color-secondary-text: var(--palette-dark-secondary-text);

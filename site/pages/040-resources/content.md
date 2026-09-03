@@ -16,7 +16,7 @@ page:
 - [Public files](https://github.com/janga/norna/blob/main/docs/public-files.md) defines conventional logo and browser-icon filenames, custom-domain files, static assets copied unchanged, and the generated sitemap.
 - [Pages and categories](https://github.com/janga/norna/blob/main/docs/pages.md) defines marker files, creation commands, directory names, ordering, URLs, nesting, and navigation.
 - [Theme](https://github.com/janga/norna/blob/main/docs/theme.md) compares preset uses and defaults, root overrides, structured content-block defaults, and page-theme scope.
-- [Reader Display controls](https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls) defines the universal reading-width choice and the optional color-mode and focus-reading controls.
+- [Reader Display controls](https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls) defines the universal reading-width choice and the optional Appearance and Focus reading controls.
 - [Typography](https://github.com/janga/norna/blob/main/docs/typography.md) defines profiles, rhythm, heading scales, body text, and captions.
 - [Site-wide content](https://github.com/janga/norna/blob/main/docs/sitewide-content.md) defines shared logo display settings, dismissible banners, and footer content.
 - [Presentation guarantees](https://github.com/janga/norna/blob/main/docs/presentation-guarantees.md) defines the accessibility and readability baseline that themes cannot weaken.

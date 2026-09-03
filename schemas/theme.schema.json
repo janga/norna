@@ -33,33 +33,33 @@
       ],
       "markdownDescription": "```yaml\npreset: documentation\n```\n\nSelects coordinated corners, layout, image sizing, content-block defaults, typography, palette and section backgrounds. This is the normal starting point for a theme.\n\n[Compare theme presets](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#theme-presets)"
     },
-    "colorMode": {
+    "appearance": {
       "type": "object",
       "properties": {
         "default": {
-          "description": "Initial color mode. System follows the visitor's operating-system preference.",
+          "description": "Initial appearance. System follows the visitor's operating-system preference.",
           "type": "string",
           "oneOf": [
             {
               "const": "system",
               "title": "System",
               "description": "Follow the visitor's operating-system light or dark preference.",
-              "markdownDescription": "Follow the visitor's operating-system light or dark preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#color-mode)"
+              "markdownDescription": "Follow the visitor's operating-system light or dark preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#appearance)"
             },
             {
               "const": "light",
               "title": "Light",
               "description": "Start with the palette's light appearance.",
-              "markdownDescription": "Start with the palette's light appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#color-mode)"
+              "markdownDescription": "Start with the palette's light appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#appearance)"
             },
             {
               "const": "dark",
               "title": "Dark",
               "description": "Start with the palette's dark appearance.",
-              "markdownDescription": "Start with the palette's dark appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#color-mode)"
+              "markdownDescription": "Start with the palette's dark appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#appearance)"
             }
           ],
-          "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nInitial color mode. System follows the visitor's operating-system preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#color-mode)",
+          "markdownDescription": "```yaml\nappearance:\n  default: system\n```\n\nInitial appearance. System follows the visitor's operating-system preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#appearance)",
           "examples": [
             "system",
             "light",
@@ -68,38 +68,38 @@
         }
       },
       "additionalProperties": false,
-      "description": "Site-wide light and dark mode behaviour.",
-      "markdownDescription": "```yaml\ncolorMode:\n  default: system\n```\n\nControls the initial light or dark appearance. Enable the reader-facing choice under readerControls.\n\n[Color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#color-mode)",
+      "description": "Site-wide initial appearance.",
+      "markdownDescription": "```yaml\nappearance:\n  default: system\n```\n\nSelects the initial appearance. Enable the reader-facing choice under readerControls.\n\n[Appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#appearance)",
       "defaultSnippets": [
         {
-          "label": "Set the initial color mode",
-          "markdownDescription": "Follow the system color preference or choose a fixed initial appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#color-mode)",
-          "body": "colorMode:\n  default: ${1:system}"
+          "label": "Set the initial appearance",
+          "markdownDescription": "Follow the system color preference or choose a fixed initial appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#appearance)",
+          "body": "appearance:\n  default: ${1:system}"
         }
       ]
     },
     "readerControls": {
       "type": "object",
       "properties": {
-        "colorMode": {
-          "description": "Let readers choose System, Light, or Dark color mode in the site-wide Display panel.",
+        "appearance": {
+          "description": "Show an Appearance control that lets readers choose System, Light, or Dark.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n```\n\nLet readers choose System, Light, or Dark color mode in the site-wide Display panel.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#reader-display-controls)"
+          "markdownDescription": "```yaml\nreaderControls:\n  appearance: true\n```\n\nShow an Appearance control that lets readers choose System, Light, or Dark.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#reader-display-controls)"
         },
         "focusReading": {
-          "description": "Let readers temporarily hide navigation and other secondary page chrome while reading. Tree navigation always provides this control.",
+          "description": "Show a Focus reading control that lets readers hide navigation, breadcrumbs, and the footer. Sites with tree navigation always show this control.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nreaderControls:\n  focusReading: true\n```\n\nLet readers temporarily hide navigation and other secondary page chrome while reading. Tree navigation always provides this control.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#reader-display-controls)"
+          "markdownDescription": "```yaml\nreaderControls:\n  focusReading: true\n```\n\nShow a Focus reading control that lets readers hide navigation, breadcrumbs, and the footer. Sites with tree navigation always show this control.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#reader-display-controls)"
         }
       },
       "additionalProperties": false,
-      "description": "Optional site-wide reader choices grouped with the always-available reading-width choice in the Display panel.",
-      "markdownDescription": "```yaml\nreaderControls:\n  colorMode: true\n  focusReading: true\n```\n\nAdds optional color-mode and focus-reading choices to the site-wide Display panel. Reading width is always available, and tree navigation always provides Focus reading.\n\n[Reader Display controls](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#reader-display-controls)",
+      "description": "Optional controls for the site-wide Display panel.",
+      "markdownDescription": "```yaml\nreaderControls:\n  appearance: true\n  focusReading: true\n```\n\nChoose which optional controls readers can use in the site-wide Display panel.\n\n`appearance: true` lets readers choose System, Light, or Dark. `focusReading: true` lets them hide navigation, breadcrumbs, and the footer while reading.\n\nReading width is always included. Sites with tree navigation always include Focus reading, even when it is not enabled here.\n\n[Reader Display controls](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#reader-display-controls)",
       "defaultSnippets": [
         {
           "label": "Configure the Display panel",
-          "markdownDescription": "Offer optional color-mode and focus-reading choices alongside the universal reading-width control. Tree navigation always provides Focus reading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#reader-display-controls)",
-          "body": "readerControls:\n  colorMode: ${1:true}\n  focusReading: ${2:true}"
+          "markdownDescription": "Show optional Appearance and Focus reading controls. Reading width is already included, and tree navigation always includes Focus reading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#reader-display-controls)",
+          "body": "readerControls:\n  appearance: ${1:true}\n  focusReading: ${2:true}"
         }
       ]
     },
@@ -1659,58 +1659,58 @@
           "const": "near-monochrome",
           "title": "Near monochrome",
           "description": "Neutral grays and off-whites with almost no visible hue. Includes coordinated light and dark variants.",
-          "markdownDescription": "Neutral grays and off-whites with almost no visible hue. Includes coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)"
+          "markdownDescription": "Neutral grays and off-whites with almost no visible hue. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)"
         },
         {
           "const": "warm-paper",
           "title": "Warm paper",
           "description": "Warm off-whites and browns resembling paper and ink. Includes coordinated light and dark variants.",
-          "markdownDescription": "Warm off-whites and browns resembling paper and ink. Includes coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)"
+          "markdownDescription": "Warm off-whites and browns resembling paper and ink. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)"
         },
         {
           "const": "retro-earth",
           "title": "Retro earth",
           "description": "Earthy ochres, olives and warm neutrals with a subdued retro character. Includes coordinated light and dark variants.",
-          "markdownDescription": "Earthy ochres, olives and warm neutrals with a subdued retro character. Includes coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)"
+          "markdownDescription": "Earthy ochres, olives and warm neutrals with a subdued retro character. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)"
         },
         {
           "const": "clay-rose",
           "title": "Clay rose",
           "description": "Muted clay, rose and wine tones with a warm editorial character. Includes coordinated light and dark variants.",
-          "markdownDescription": "Muted clay, rose and wine tones with a warm editorial character. Includes coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)"
+          "markdownDescription": "Muted clay, rose and wine tones with a warm editorial character. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)"
         },
         {
           "const": "forest-moss",
           "title": "Forest moss",
           "description": "Botanical greens, mossy surfaces and warm lichen neutrals. Includes coordinated light and dark variants.",
-          "markdownDescription": "Botanical greens, mossy surfaces and warm lichen neutrals. Includes coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)"
+          "markdownDescription": "Botanical greens, mossy surfaces and warm lichen neutrals. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)"
         },
         {
           "const": "mineral-teal",
           "title": "Mineral teal",
           "description": "Cool mineral greens with muted teal accents and pale aqua-gray surfaces. Includes coordinated light and dark variants.",
-          "markdownDescription": "Cool mineral greens with muted teal accents and pale aqua-gray surfaces. Includes coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)"
+          "markdownDescription": "Cool mineral greens with muted teal accents and pale aqua-gray surfaces. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)"
         },
         {
           "const": "arctic-blue",
           "title": "Arctic blue",
           "description": "Cool blue-gray surfaces with clear, restrained blue accents. Includes coordinated light and dark variants.",
-          "markdownDescription": "Cool blue-gray surfaces with clear, restrained blue accents. Includes coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)"
+          "markdownDescription": "Cool blue-gray surfaces with clear, restrained blue accents. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)"
         },
         {
           "const": "soft-lavender",
           "title": "Soft lavender",
           "description": "Quiet lavender surfaces with low-key mauve accents. Includes coordinated light and dark variants.",
-          "markdownDescription": "Quiet lavender surfaces with low-key mauve accents. Includes coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)"
+          "markdownDescription": "Quiet lavender surfaces with low-key mauve accents. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)"
         },
         {
           "const": "vivid-night",
           "title": "Vivid night",
           "description": "Indigo surfaces with a brighter cyan accent and a dark-first character. Includes coordinated light and dark variants.",
-          "markdownDescription": "Indigo surfaces with a brighter cyan accent and a dark-first character. Includes coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)"
+          "markdownDescription": "Indigo surfaces with a brighter cyan accent and a dark-first character. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)"
         }
       ],
-      "markdownDescription": "```yaml\npalette: warm-paper\n```\n\nChooses the site color character. Every palette provides coordinated light and dark variants.\n\n[Palette and color mode](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-color-mode)",
+      "markdownDescription": "```yaml\npalette: warm-paper\n```\n\nChooses the site color character. Every palette provides coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#palette-and-appearance)",
       "examples": [
         "near-monochrome",
         "warm-paper",

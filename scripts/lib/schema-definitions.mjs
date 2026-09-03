@@ -17,19 +17,19 @@ const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z
 const typographyProfile = z.enum(['restrained', 'dense', 'reading', 'statement']).describe('Coordinated typography defaults. Omit this to use the selected preset.');
 const themePreset = z.enum(themePresetNames).describe('Complete Norna visual preset. Start here and add overrides only when needed.');
 const presentationPalette = z.enum(presentationPaletteNames).describe('Coordinated site color palette. Every palette provides light and dark variants. Omit this to use the selected preset.');
-const themeColorMode = z.object({
-	default: z.enum(['system', 'light', 'dark']).optional().describe('Initial color mode. System follows the visitor\'s operating-system preference.'),
+const themeAppearance = z.object({
+	default: z.enum(['system', 'light', 'dark']).optional().describe('Initial appearance. System follows the visitor\'s operating-system preference.'),
 }).strict().refine(
 	(value) => value.default !== undefined,
 	'Specify default.',
-).describe('Site-wide light and dark mode behaviour.');
+).describe('Site-wide initial appearance.');
 const readerControls = z.object({
-	colorMode: z.boolean().optional().describe('Let readers choose System, Light, or Dark color mode in the site-wide Display panel.'),
-	focusReading: z.boolean().optional().describe('Let readers temporarily hide navigation and other secondary page chrome while reading. Tree navigation always provides this control.'),
+	appearance: z.boolean().optional().describe('Show an Appearance control that lets readers choose System, Light, or Dark.'),
+	focusReading: z.boolean().optional().describe('Show a Focus reading control that lets readers hide navigation, breadcrumbs, and the footer. Sites with tree navigation always show this control.'),
 }).strict().refine(
-	(value) => value.colorMode !== undefined || value.focusReading !== undefined,
-	'Specify colorMode, focusReading, or both.',
-).describe('Optional site-wide reader choices grouped with the always-available reading-width choice in the Display panel.');
+	(value) => value.appearance !== undefined || value.focusReading !== undefined,
+	'Specify appearance, focusReading, or both.',
+).describe('Optional controls for the site-wide Display panel.');
 const spacingDensity = z.enum(['compact', 'normal', 'airy']).describe('Coordinated spacing density. Omit this to use the selected preset.');
 const contentSpacing = z.enum(['compact', 'normal', 'spacious']).describe('Vertical spacing between page sections and structured content blocks.');
 const backgroundPattern = z.enum(['uniform', 'alternating', 'accented']).describe('How coordinated backgrounds are assigned to H2 sections. Non-uniform patterns are unavailable with tree navigation.');
@@ -231,7 +231,7 @@ const siteShape = {
 
 const themeVisualShape = {
 	preset: themePreset.optional().describe('Complete visual starting point. Add only the overrides the site actually needs.'),
-	colorMode: themeColorMode.optional(),
+	appearance: themeAppearance.optional(),
 	readerControls: readerControls.optional(),
 	corners: cornerTreatment.optional().describe('Site-wide corner treatment. Omit this to use the selected preset.'),
 	layout: themeLayout.optional(),

@@ -19,7 +19,7 @@ type Presentation = {
 		page: FrameColors;
 		css: Record<string, string>;
 	}>;
-	colorMode: {
+	appearance: {
 		default: 'system' | 'light' | 'dark';
 	};
 	readerPreferences: {
@@ -154,7 +154,7 @@ const readerPreferencesScript = readerPreferencesEnabled
 <!doctype html>
 <html
 	lang={projectConfig.locale.lang}
-	data-color-mode={presentation.readerPreferences.defaults.appearance}
+	data-appearance={presentation.readerPreferences.defaults.appearance}
 	data-reading-width={presentation.readerPreferences.defaults.readingWidth}
 	data-focus-reading={presentation.readerPreferences.defaults.focusReading}
 	data-section-tracking={treeNavigation && projectConfig.navigation.sectionTracking ? 'enabled' : undefined}

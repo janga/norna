@@ -24,4 +24,4 @@ Markdown parsing, presentation, localization, and search semantics together.
 - Syntax remains readable and diagnosable in plain Markdown.
 - Meaning does not depend on color or icon alone.
 - Callout text participates predictably in search and copy operations.
-- All presets provide sufficient light- and dark-mode contrast.
+- All presets provide sufficient contrast in Light and Dark appearances.

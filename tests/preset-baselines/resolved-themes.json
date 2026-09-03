@@ -1,6 +1,6 @@
 {
   "portfolio": {
-    "colorMode": {
+    "appearance": {
       "default": "dark"
     },
     "palette": "near-monochrome",
@@ -42,11 +42,11 @@
       "backgroundPattern": "uniform"
     },
     "readerControls": {
-      "colorMode": true
+      "appearance": true
     }
   },
   "documentation": {
-    "colorMode": {
+    "appearance": {
       "default": "system"
     },
     "palette": "warm-paper",
@@ -88,12 +88,12 @@
       "backgroundPattern": "alternating"
     },
     "readerControls": {
-      "colorMode": true,
+      "appearance": true,
       "focusReading": true
     }
   },
   "project": {
-    "colorMode": {
+    "appearance": {
       "default": "system"
     },
     "palette": "near-monochrome",
@@ -135,12 +135,12 @@
       "backgroundPattern": "alternating"
     },
     "readerControls": {
-      "colorMode": true,
+      "appearance": true,
       "focusReading": true
     }
   },
   "statement": {
-    "colorMode": {
+    "appearance": {
       "default": "system"
     },
     "palette": "warm-paper",
@@ -182,7 +182,7 @@
       "backgroundPattern": "accented"
     },
     "readerControls": {
-      "colorMode": true
+      "appearance": true
     }
   }
 }

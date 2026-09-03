@@ -6,20 +6,20 @@ page:
 # Surfaces
 
 
-## Light and dark modes {#color-modes}
+## Appearance {#appearance}
 
-The site preset provides coordinated light and dark colors. Use the color-mode
-selector in the navigation to compare this page in System, Light, and Dark
-mode. The choice applies to the complete site, including navigation, prose,
+The site preset provides coordinated Light and Dark colors. Use the Appearance
+selector in the navigation to compare this page using System, Light, and Dark.
+The choice applies to the complete site, including navigation, prose,
 section surfaces, cards, captions, and carousel controls.
 
 The root theme enables the selector with:
 
 ```yaml
-colorMode:
+appearance:
   default: system
 readerControls:
-  colorMode: true
+  appearance: true
 ```
 
 

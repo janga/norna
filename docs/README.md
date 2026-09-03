@@ -106,7 +106,7 @@ required, optional, convention-discovered, versioned, or generated.
 ### Change Presentation
 
 - [Choose a complete theme preset](theme.md#theme-presets)
-- [Configure palettes and color mode](theme.md#palette-and-color-mode)
+- [Configure palettes and Appearance](theme.md#palette-and-appearance)
 - [Understand and configure reader Display choices](theme.md#reader-display-controls)
 - [Inspect and override a preset](theme.md#overrides)
 - [Adjust limited presentation for a page subtree](theme.md#page-themes)

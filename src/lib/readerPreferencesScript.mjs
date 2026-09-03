@@ -1,7 +1,7 @@
 const preferenceDefinitions = Object.freeze({
 	appearance: Object.freeze({
 		allowed: Object.freeze(['system', 'light', 'dark']),
-		cookieName: 'norna-color-mode',
+		cookieName: 'norna-appearance',
 	}),
 	readingWidth: Object.freeze({
 		allowed: Object.freeze(['narrow', 'standard', 'wide']),
@@ -72,7 +72,7 @@ export const getReaderPreferencesScript = ({ controls, defaults, cookiePath }) =
 	const apply = (name, value, persist = false) => {
 		const nextValue = isAllowed(name, value) ? value : defaults[name];
 		values[name] = nextValue;
-		if (name === 'appearance') root.dataset.colorMode = nextValue;
+		if (name === 'appearance') root.dataset.appearance = nextValue;
 		if (name === 'readingWidth') root.dataset.readingWidth = nextValue;
 		if (name === 'focusReading') root.dataset.focusReading = nextValue;
 		if (persist) writeCookie(definitions[name].cookieName, nextValue);

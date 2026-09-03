@@ -9,8 +9,8 @@ complete accessibility conformance.
 
 ## Semantic Color Roles
 
-Every built-in palette provides coordinated light and dark modes. Each mode
-resolves these engine roles:
+Every built-in palette provides coordinated Light and Dark appearances. Each
+variant resolves these engine roles:
 
 - primary and secondary text;
 - link text;
@@ -105,7 +105,7 @@ indicators to system colors. Component boundaries remain visible without
 depending on shadows or translucent fills.
 
 Reader preferences are overlays after theme resolution. The current categories
-are color mode (`system`, `light`, `dark`), reading width (`narrow`, `standard`,
+are Appearance (`system`, `light`, `dark`), reading width (`narrow`, `standard`,
 `wide`), and focus reading (`off`, `on`). An overlay may adapt the site inside
 engine bounds but cannot reduce contrast, remove focus, exceed the text-measure
 ceiling, reorder content, or hide the control needed to undo it.
@@ -127,7 +127,7 @@ and required CSS contract hooks.
 - forced-colors control boundaries.
 
 `npm run preset:baselines:capture` records all four presets at desktop and
-mobile widths in light and dark modes for human review. These screenshots are
+mobile widths in Light and Dark appearances for human review. These screenshots are
 references rather than cross-platform pixel assertions.
 
 The engine contract should expand when a new component or reader preference

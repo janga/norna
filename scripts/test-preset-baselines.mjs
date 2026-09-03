@@ -29,7 +29,7 @@ const tempParent = path.join(repoRoot, 'node_modules', '.cache');
 
 const presets = Object.freeze({
 	portfolio: Object.freeze({
-		colorMode: 'dark',
+		appearance: 'dark',
 		fontFamily: "'Helvetica Neue', Arial, sans-serif",
 		imageWidth: '1000px',
 		lightPage: '#f7f7f5',
@@ -42,7 +42,7 @@ const presets = Object.freeze({
 		textWidth: 'min(72ch, var(--image-layout-width))',
 	}),
 	documentation: Object.freeze({
-		colorMode: 'system',
+		appearance: 'system',
 		fontFamily: "Georgia, 'Times New Roman', serif",
 		imageWidth: '920px',
 		lightPage: '#f8f5ee',
@@ -55,7 +55,7 @@ const presets = Object.freeze({
 		textWidth: 'min(60ch, var(--text-width))',
 	}),
 	project: Object.freeze({
-		colorMode: 'system',
+		appearance: 'system',
 		fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 		imageWidth: '840px',
 		lightPage: '#f7f7f5',
@@ -68,7 +68,7 @@ const presets = Object.freeze({
 		textWidth: 'min(72ch, var(--text-width))',
 	}),
 	statement: Object.freeze({
-		colorMode: 'system',
+		appearance: 'system',
 		fontFamily: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif",
 		imageWidth: '1080px',
 		lightPage: '#f8f5ee',
@@ -86,7 +86,7 @@ const viewports = Object.freeze({
 	desktop: Object.freeze({ width: 1440, height: 1000 }),
 	mobile: Object.freeze({ width: 390, height: 844 }),
 });
-const colorModes = Object.freeze(['light', 'dark']);
+const appearances = Object.freeze(['light', 'dark']);
 const captureRoute = 'guide/components/';
 
 const runBuild = (siteDir) => {
@@ -138,7 +138,7 @@ const assertPresetOutput = async (presetName, distDir) => {
 	const html = await readFile(htmlPath, 'utf8');
 
 	assertIncludes(html, 'data-navigation-mode="tree"', presetName);
-	assertIncludes(html, 'data-color-mode="' + expected.colorMode + '"', presetName);
+	assertIncludes(html, 'data-appearance="' + expected.appearance + '"', presetName);
 	assertIncludes(html, '"readingWidth":true', presetName);
 	assertIncludes(html, 'data-reader-width', presetName);
 	assertIncludes(html, '--page-width: ' + expected.pageWidth, presetName);
@@ -259,12 +259,12 @@ const captureScreenshots = async (builds) => {
 			const server = await startStaticServer(distDir);
 			try {
 				for (const [viewportName, viewport] of Object.entries(viewports)) {
-					for (const mode of colorModes) {
+					for (const appearance of appearances) {
 						const page = await browser.newPage({ viewport });
 						await page.goto(server.baseUrl + captureRoute, { waitUntil: 'networkidle' });
-						await page.evaluate((selectedMode) => {
-							document.documentElement.dataset.colorMode = selectedMode;
-						}, mode);
+						await page.evaluate((selectedAppearance) => {
+							document.documentElement.dataset.appearance = selectedAppearance;
+						}, appearance);
 						await page.addStyleTag({
 							content: '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}',
 						});
@@ -274,7 +274,7 @@ const captureScreenshots = async (builds) => {
 						));
 						await page.evaluate(() => document.fonts.ready);
 
-						const filename = presetName + '-' + viewportName + '-' + mode + '.jpg';
+						const filename = presetName + '-' + viewportName + '-' + appearance + '.jpg';
 						await page.screenshot({
 							animations: 'disabled',
 							fullPage: true,
@@ -294,7 +294,7 @@ const captureScreenshots = async (builds) => {
 	}
 
 	await writeFile(path.join(outputDir, 'manifest.json'), JSON.stringify({
-		colorModes,
+		appearances,
 		note: 'Reference images only; system-font rendering makes pixel-perfect cross-platform assertions unsuitable.',
 		presets: Object.keys(presets),
 		route: '/' + captureRoute,

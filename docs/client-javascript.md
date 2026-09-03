@@ -18,8 +18,8 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Current-section tracking | Yes, when `navigation.sectionTracking` is enabled and the site uses `tree` navigation | The tree remains usable, but its current-section marker does not follow scrolling. |
 | Image carousel | Yes, on pages containing a carousel | The image and caption source remains in the HTML, but carousel controls and slide switching require JavaScript. Use an image stack when sequential interaction is not needed. |
 | Dismissible banner | Yes, while a banner is present | The notice remains visible, but visitors cannot dismiss it or persist that choice. |
-| Fixed or system color mode | No | CSS applies the configured light, dark, or operating-system preference. |
-| Reader Display controls | Yes, on every page because reading width is a universal reader choice | The configured color mode and initial reading width still apply. Readers cannot change or persist a choice, and focus reading remains off. |
+| Configured Appearance | No | CSS applies the configured Light, Dark, or operating-system preference. |
+| Reader Display controls | Yes, on every page because reading width is a universal reader choice | The configured appearance and initial reading width still apply. Readers cannot change or persist a choice, and Focus reading remains off. |
 
 The navigation, banner, carousel, and reader-preference scripts are independent.
 The reader-preference script is site-wide because
@@ -37,7 +37,7 @@ the optional current-section marker.
 Prefer ordinary Markdown, image stacks, cards, and side notes when they express
 the content adequately. Choose a carousel when the ability to move through a
 related sequence is worth requiring its small interaction script. Enable
-dismissible banners, color-mode selection, or focus reading only when visitors
+dismissible banners, an Appearance selector, or Focus reading only when visitors
 need those controls. Reading width remains part of every site's base reader
 contract.
 

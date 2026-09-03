@@ -133,8 +133,8 @@ const formatList = (values) => {
 
 const formatReaderControls = (readerControls) => {
 	const labels = {
-		colorMode: 'color mode',
-		focusReading: 'focus reading',
+		appearance: 'Appearance',
+		focusReading: 'Focus reading',
 	};
 	const enabled = Object.keys(labels).filter((name) => readerControls[name] === true).map((name) => labels[name]);
 	const disabled = Object.keys(labels).filter((name) => readerControls[name] !== true).map((name) => labels[name]);
@@ -166,7 +166,7 @@ const checkThemePresetReference = async () => {
 			: `\`${preset.sections.backgroundPattern}\`; resolves to \`uniform\` with tree navigation`;
 		const rows = [
 			['palette', `\`${preset.palette}\``],
-			['colorMode.default', `\`${preset.colorMode.default}\``],
+			['appearance.default', `\`${preset.appearance.default}\``],
 			['typography.fontFamily', `\`${preset.typography.fontFamily}\``],
 			['typography.profile', `\`${preset.typography.profile}\``],
 			['typography.rhythm', `\`${preset.typography.rhythm}\``],
@@ -212,7 +212,7 @@ const checkThemeExplorer = () => {
 	for (const marker of [
 		'data-preset-select',
 		'data-palette-select',
-		'data-color-mode-select',
+		'data-appearance-select',
 		'data-theme-config',
 		'data-theme-frame',
 		"const values = new URLSearchParams",

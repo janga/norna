@@ -1,5 +1,5 @@
 preset: project
-colorMode:
+appearance:
   default: system
 readerControls:
-  colorMode: true
+  appearance: true

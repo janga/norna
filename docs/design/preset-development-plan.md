@@ -185,7 +185,7 @@ Implementation:
 
 The implemented Display control provides:
 
-- color mode: System, Light, Dark;
+- Appearance: System, Light, Dark;
 - reading width: Narrow, Standard, Wide;
 - focus reading: Off, On;
 - reset to defaults.
@@ -195,7 +195,7 @@ The approved root-theme syntax for enabling the optional controls is:
 ```yaml
 preset: documentation
 readerControls:
-  colorMode: true
+  appearance: true
   focusReading: true
 ```
 
@@ -219,7 +219,7 @@ the first preset. This avoids designing a preset around only one reader state.
 Completion checkpoint (2026-08-31): the reader-preference overlay and
 accessible Display panel are implemented. Every site offers Narrow, Standard,
 and Wide reading widths; presets select the initial width. Built-in presets
-also offer color mode, while `documentation` and `project` offer focus reading
+also offer Appearance, while `documentation` and `project` offer Focus reading
 by default. Tree navigation offers focus reading with every preset.
 Browser tests cover persistence, reset, focus reading, text-width changes,
 keyboard closing, reflow, and the no-JavaScript default. Public reference,
@@ -379,7 +379,7 @@ that satisfy all of these conditions:
 5. it does not require retesting an uncontrolled number of combinations.
 
 Expected normal controls include named reading width, rhythm, media emphasis,
-surface pattern, color-mode default, and reader-control availability. Exact
+surface pattern, Appearance default, and reader-control availability. Exact
 lengths should remain limited to demonstrated cases such as a necessary image
 or page-width adjustment.
 

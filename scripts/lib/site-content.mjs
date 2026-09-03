@@ -33,7 +33,7 @@ const knownNestedFrontmatterKeys = new Set([
 	'body',
 	'blockGap',
 	'caption',
-	'colorMode',
+	'appearance',
 	'carousel',
 	'contentSpacing',
 	'desktop',
@@ -165,7 +165,12 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 			fix = fileKind === 'page theme'
 				? 'Remove "shape:" from this page theme. Set "corners: square" or "corners: rounded" in the root theme.yaml when an override is needed.'
 				: 'Replace "shape:" with "corners:". Use "square" or replace the old "soft" value with "rounded".';
-		} else if (fileKind === 'page theme' && ['preset', 'corners', 'palette', 'typography'].includes(key)) {
+		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'colorMode') {
+			message = `Frontmatter line ${lineNumber}: Theme setting "colorMode" was replaced by "appearance".`;
+			fix = fileKind === 'page theme'
+				? 'Remove "colorMode:" from this page theme. Set "appearance:" in the root theme.yaml when an override is needed.'
+				: 'Replace "colorMode:" with "appearance:".';
+		} else if (fileKind === 'page theme' && ['preset', 'appearance', 'readerControls', 'corners', 'palette', 'typography'].includes(key)) {
 			message = `Frontmatter line ${lineNumber}: page themes may not define site-wide visual identity through "${key}".`;
 			fix = `Move "${key}:" to the root theme.yaml. Page themes may set only layout.textWidth, layout.contentSpacing, images, and sections.backgroundPattern.`;
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && ['logo', 'site'].includes(key)) {
