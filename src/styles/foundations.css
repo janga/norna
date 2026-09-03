@@ -35,7 +35,6 @@
 	--color-soft: var(--palette-light-soft, #d9dfda);
 	--color-accent: var(--color-link-text);
 	--color-border: var(--palette-light-border, rgb(0 0 0 / 14%));
-	--color-nav-background: var(--palette-light-nav-background, rgb(255 255 255 / 92%));
 	--color-nav-separator: var(--palette-light-nav-separator, rgb(0 0 0 / 20%));
 	--color-frame-background: var(--palette-light-frame-background, #fff);
 	--color-frame-text: var(--palette-light-frame-text, #17201d);
@@ -126,7 +125,6 @@
 	--color-soft: var(--palette-dark-soft);
 	--color-accent: var(--color-link-text);
 	--color-border: var(--palette-dark-border);
-	--color-nav-background: var(--palette-dark-nav-background);
 	--color-nav-separator: var(--palette-dark-nav-separator);
 	--color-frame-background: var(--palette-dark-frame-background);
 	--color-frame-text: var(--palette-dark-frame-text);
@@ -172,7 +170,6 @@
 		--color-soft: var(--palette-dark-soft);
 		--color-accent: var(--color-link-text);
 		--color-border: var(--palette-dark-border);
-		--color-nav-background: var(--palette-dark-nav-background);
 		--color-nav-separator: var(--palette-dark-nav-separator);
 		--color-frame-background: var(--palette-dark-frame-background);
 		--color-frame-text: var(--palette-dark-frame-text);

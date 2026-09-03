@@ -53,6 +53,7 @@
 	z-index: 3;
 	min-height: 0;
 	max-height: calc(100svh - var(--site-top-anchor-offset) - 2.5rem);
+	border-inline-end: 1px solid var(--color-nav-separator);
 	padding: 1.5rem 0;
 	background: var(--color-page);
 	overflow-y: auto;

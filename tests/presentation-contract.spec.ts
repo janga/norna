@@ -376,6 +376,49 @@ test('text-width card lists follow the active reading column', async ({ page }) 
 	expect(cardsBounds?.width).toBeCloseTo(proseBounds?.width ?? 0, 0);
 });
 
+for (const appearance of ['light', 'dark']) {
+	test(`tree navigation shares the opaque page surface in ${appearance} appearance`, async ({ page }) => {
+		await page.setViewportSize({ width: 1440, height: 1000 });
+		await openComponents(page);
+		await page.locator('html').evaluate((root, value) => {
+			root.dataset.appearance = value;
+		}, appearance);
+		await page.waitForTimeout(250);
+
+		const presentation = await page.evaluate(() => {
+			const header = document.querySelector('.site-top');
+			const navigation = document.querySelector('.tree-local-navigation');
+			const navigationRow = document.querySelector('.site-nav-row');
+			const layout = document.querySelector('.site-page-layout-tree');
+			if (!header || !navigation || !navigationRow || !layout) {
+				throw new Error('Missing tree-navigation layout elements.');
+			}
+			const headerStyle = getComputedStyle(header);
+			const navigationStyle = getComputedStyle(navigation);
+			const navigationRowBounds = navigationRow.getBoundingClientRect();
+			const layoutBounds = layout.getBoundingClientRect();
+			return {
+				headerBackground: headerStyle.backgroundColor,
+				layoutLeft: layoutBounds.left,
+				layoutRight: layoutBounds.right,
+				navigationBackground: navigationStyle.backgroundColor,
+				navigationBorderStyle: navigationStyle.borderInlineEndStyle,
+				navigationBorderWidth: Number.parseFloat(navigationStyle.borderInlineEndWidth),
+				navigationRowLeft: navigationRowBounds.left,
+				navigationRowRight: navigationRowBounds.right,
+				pageBackground: getComputedStyle(document.body).backgroundColor,
+			};
+		});
+
+		expect(presentation.headerBackground).toBe(presentation.pageBackground);
+		expect(presentation.navigationBackground).toBe(presentation.pageBackground);
+		expect(presentation.navigationBorderStyle).toBe('solid');
+		expect(presentation.navigationBorderWidth).toBeGreaterThanOrEqual(1);
+		expect(presentation.navigationRowLeft).toBeCloseTo(presentation.layoutLeft, 0);
+		expect(presentation.navigationRowRight).toBeCloseTo(presentation.layoutRight, 0);
+	});
+}
+
 test('prose-aligned images follow the prose edge without viewport-height shrinking', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await openComponents(page);
@@ -384,25 +427,32 @@ test('prose-aligned images follow the prose edge without viewport-height shrinki
 	const stackSection = page.locator('.site-section').filter({ has: page.locator('#image-stack') });
 	const prose = stackSection.locator('.section-markdown').first();
 	const frame = stackSection.locator('.managed-image-frame').first();
+	const stackCaption = stackSection.locator('.image-meta').first();
 	const portrait = stackSection.getByAltText('A tall diagram with three connected panels.');
-	const carouselStage = page.locator('.site-section')
-		.filter({ has: page.locator('#image-carousel') })
-		.locator('.image-carousel-stage');
+	const carouselSection = page.locator('.site-section').filter({ has: page.locator('#image-carousel') });
+	const carouselStage = carouselSection.locator('.image-carousel-stage');
+	const carouselCaptions = carouselSection.locator('.image-carousel-captions');
 	const carousel = carouselStage.locator('..');
-	const [proseBounds, frameBounds, portraitBounds, carouselBounds] = await Promise.all([
+	const [proseBounds, frameBounds, stackCaptionBounds, portraitBounds, carouselBounds, carouselCaptionBounds] = await Promise.all([
 		prose.boundingBox(),
 		frame.boundingBox(),
+		stackCaption.boundingBox(),
 		portrait.boundingBox(),
 		carouselStage.boundingBox(),
+		carouselCaptions.boundingBox(),
 	]);
 
 	expect(proseBounds).not.toBeNull();
 	expect(frameBounds).not.toBeNull();
+	expect(stackCaptionBounds).not.toBeNull();
 	expect(portraitBounds).not.toBeNull();
 	expect(carouselBounds).not.toBeNull();
+	expect(carouselCaptionBounds).not.toBeNull();
 	expect(frameBounds?.x).toBeCloseTo(proseBounds?.x ?? 0, 0);
+	expect(stackCaptionBounds?.x).toBeCloseTo(frameBounds?.x ?? 0, 0);
 	expect(portraitBounds?.x).toBeCloseTo(frameBounds?.x ?? 0, 0);
 	expect(carouselBounds?.x).toBeCloseTo(proseBounds?.x ?? 0, 0);
+	expect(carouselCaptionBounds?.x).toBeCloseTo(carouselBounds?.x ?? 0, 0);
 	expect(frameBounds?.width ?? 0).toBeGreaterThan(proseBounds?.width ?? Infinity);
 	expect(await portrait.evaluate((image) => getComputedStyle(image).maxHeight)).toBe('none');
 	expect(await carouselStage.evaluate((stage) => getComputedStyle(stage).maxHeight)).toBe('none');
@@ -417,32 +467,34 @@ test('centered-fit images are centered and constrained by viewport height', asyn
 	const stackSection = page.locator('.site-section').filter({ has: page.locator('#centered-fit-stack') });
 	const stackBody = stackSection.locator('.section-body');
 	const frame = stackSection.locator('.managed-image-frame');
+	const stackCaption = stackSection.locator('.image-meta');
 	const portrait = stackSection.getByAltText('A tall composition with a large circle above two bars.');
-	const carouselStage = page.locator('.site-section')
-		.filter({ has: page.locator('#centered-fit-carousel') })
-		.locator('.image-carousel-stage');
+	const carouselSection = page.locator('.site-section').filter({ has: page.locator('#centered-fit-carousel') });
+	const carouselStage = carouselSection.locator('.image-carousel-stage');
+	const carouselCaptions = carouselSection.locator('.image-carousel-captions');
 	const carousel = carouselStage.locator('..');
-	const [bodyBounds, frameBounds, portraitBounds, carouselBounds] = await Promise.all([
+	const [bodyBounds, frameBounds, stackCaptionBounds, portraitBounds, carouselBounds, carouselCaptionBounds] = await Promise.all([
 		stackBody.boundingBox(),
 		frame.boundingBox(),
+		stackCaption.boundingBox(),
 		portrait.boundingBox(),
 		carouselStage.boundingBox(),
+		carouselCaptions.boundingBox(),
 	]);
+	const center = (rectangle) => (rectangle?.x ?? 0) + ((rectangle?.width ?? 0) / 2);
 
 	expect(bodyBounds).not.toBeNull();
 	expect(frameBounds).not.toBeNull();
+	expect(stackCaptionBounds).not.toBeNull();
 	expect(portraitBounds).not.toBeNull();
 	expect(carouselBounds).not.toBeNull();
-	expect((frameBounds?.x ?? 0) + ((frameBounds?.width ?? 0) / 2)).toBeCloseTo(
-		(bodyBounds?.x ?? 0) + ((bodyBounds?.width ?? 0) / 2),
-		0,
-	);
+	expect(carouselCaptionBounds).not.toBeNull();
+	expect(center(frameBounds)).toBeCloseTo(center(bodyBounds), 0);
+	expect(center(stackCaptionBounds)).toBeCloseTo(center(frameBounds), 0);
 	expect(portraitBounds?.x ?? 0).toBeGreaterThan((frameBounds?.x ?? 0) + 1);
 	expect(portraitBounds?.height ?? Infinity).toBeLessThanOrEqual(740 + 1);
-	expect((carouselBounds?.x ?? 0) + ((carouselBounds?.width ?? 0) / 2)).toBeCloseTo(
-		(bodyBounds?.x ?? 0) + ((bodyBounds?.width ?? 0) / 2),
-		0,
-	);
+	expect(center(carouselBounds)).toBeCloseTo(center(bodyBounds), 0);
+	expect(center(carouselCaptionBounds)).toBeCloseTo(center(carouselBounds), 0);
 	expect(carouselBounds?.height ?? Infinity).toBeLessThanOrEqual(740 + 1);
 	expect(await carousel.getAttribute('style')).toContain('--image-carousel-width-from-height-desktop');
 });

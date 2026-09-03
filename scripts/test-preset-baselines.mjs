@@ -247,6 +247,35 @@ const startStaticServer = (distDir) => new Promise((resolve, reject) => {
 	});
 });
 
+const loadLazyImages = async (page, label) => {
+	await page.evaluate(async () => {
+		const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+		for (let pass = 0; pass < 3; pass += 1) {
+			const step = Math.max(240, Math.floor(window.innerHeight * 0.75));
+			const height = document.documentElement.scrollHeight;
+			for (let top = 0; top <= height; top += step) {
+				window.scrollTo(0, top);
+				await nextFrame();
+			}
+		}
+		window.scrollTo(0, 0);
+		await nextFrame();
+	});
+
+	try {
+		await page.waitForFunction(() => (
+			Array.from(document.images).every((image) => image.complete && image.naturalWidth > 0)
+		));
+	} catch (error) {
+		const failedImages = await page.locator('img').evaluateAll((images) => images
+			.filter((image) => !image.complete || image.naturalWidth === 0)
+			.map((image) => image.currentSrc || image.src));
+		throw new Error(`${label} did not load all images: ${failedImages.join(', ') || '(unknown image)'}`, {
+			cause: error,
+		});
+	}
+};
+
 const captureScreenshots = async (builds) => {
 	const { chromium } = await import('@playwright/test');
 	await mkdir(outputDir, { recursive: true });
@@ -269,9 +298,7 @@ const captureScreenshots = async (builds) => {
 							content: '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}',
 						});
 						await page.waitForSelector('[data-carousel-ready="true"]');
-						await page.waitForFunction(() => (
-							Array.from(document.images).every((image) => image.complete)
-						));
+						await loadLazyImages(page, `${presetName}/${viewportName}/${appearance}`);
 						await page.evaluate(() => document.fonts.ready);
 
 						const filename = presetName + '-' + viewportName + '-' + appearance + '.jpg';

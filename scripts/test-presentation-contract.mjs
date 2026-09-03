@@ -36,6 +36,16 @@ const stylesheet = (await Promise.all(stylesheetFiles.map((fileName) => (
 for (const paletteName of presentationPaletteNames) {
 	const palette = getPresentationPalette(paletteName);
 	for (const [modeName, mode] of Object.entries(palette.modes)) {
+		assert.deepEqual(
+			mode.frame,
+			mode.page,
+			`${paletteName}/${modeName} must use the page colors for the site frame`,
+		);
+		assert.equal(
+			mode.surfaces.base.backgroundColor,
+			mode.page.backgroundColor,
+			`${paletteName}/${modeName} base surface must match the page background`,
+		);
 		for (const pair of getPaletteContrastPairs(mode)) {
 			const ratio = contrastRatio(pair.foreground, pair.background, pair.backdrop);
 			assert.ok(
@@ -50,6 +60,11 @@ for (const paletteName of presentationPaletteNames) {
 		assert.equal(
 			variables[`--palette-${modeName}-surface-base-secondary-text`],
 			mode.surfaces.base.secondaryTextColor,
+		);
+		assert.equal(
+			Object.hasOwn(variables, `--palette-${modeName}-nav-background`),
+			false,
+			`${paletteName}/${modeName} must not define a separate navigation background`,
 		);
 	}
 }
@@ -163,5 +178,21 @@ for (const requiredSource of [
 ]) {
 	assert.match(stylesheet, new RegExp(requiredSource.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'));
 }
+
+assert.match(
+	stylesheet,
+	/\.site-top\s*\{[\s\S]*?background-color:\s*var\(--site-top-background-color,\s*var\(--color-page\)\)/u,
+	'the sticky header must fall back to the page background',
+);
+assert.doesNotMatch(
+	stylesheet,
+	/backdrop-filter\s*:/u,
+	'opaque navigation surfaces must not depend on backdrop filtering',
+);
+assert.match(
+	stylesheet,
+	/\.tree-local-navigation\s*\{[\s\S]*?border-inline-end:\s*1px solid var\(--color-nav-separator\)/u,
+	'tree navigation must use one low-contrast boundary against the content canvas',
+);
 
 console.log('Presentation engine contract tests passed.');

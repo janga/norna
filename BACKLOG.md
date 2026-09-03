@@ -13,9 +13,10 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Now` contains at most three active items in exact technical order.
 
 - [`BL-035` Navigation surfaces and managed-image alignment](docs/design/backlog/BL-035-navigation-surfaces-and-image-alignment.md):
-  **Ready.** Apply one coherent content canvas across top and tree navigation,
-  keep desktop navigation visually quiet, and verify prose-aligned and
-  centered-fit geometry without adding author-controlled positioning options.
+  **In progress; human visual review and documentation pending.** Apply one
+  coherent content canvas across top and tree navigation, keep desktop
+  navigation visually quiet, and verify prose-aligned and centered-fit geometry
+  without adding author-controlled positioning options.
 - [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
   **In progress.** The version-aligned package and real VS Code tests are ready;
   complete the first Marketplace publication before describing IntelliSense as

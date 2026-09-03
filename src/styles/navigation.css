@@ -7,9 +7,8 @@
 	padding-top: var(--nav-top-safety-inset);
 	padding-top: max(env(safe-area-inset-top, 0px), var(--nav-top-safety-inset));
 	border-bottom: 1px solid var(--color-border);
-	background-color: var(--site-top-background-color, var(--color-nav-background));
+	background-color: var(--site-top-background-color, var(--color-page));
 	color: var(--site-top-text-color, var(--color-text));
-	backdrop-filter: blur(16px);
 	transition: background-color 0.18s ease, color 0.18s ease;
 }
 
@@ -342,7 +341,7 @@
 .site-nav-submenu > nav {
 	border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
 	padding: 0.8rem 1rem;
-	background: var(--site-top-background-color, var(--color-nav-background));
+	background: var(--site-top-background-color, var(--color-page));
 	box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 0.22);
 }
 

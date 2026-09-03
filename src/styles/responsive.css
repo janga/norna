@@ -15,10 +15,6 @@
 		--site-top-anchor-offset: 6.25rem;
 	}
 
-	.site-top {
-		backdrop-filter: none;
-	}
-
 	.image-carousel {
 		--image-carousel-width-from-height: var(--image-carousel-width-from-height-mobile, var(--image-layout-width));
 	}
@@ -118,7 +114,7 @@
 		max-height: none;
 		border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent);
 		padding: clamp(1.25rem, 5vw, 2rem) var(--content-gutter) max(1.5rem, env(safe-area-inset-bottom));
-		background: var(--site-top-background-color, var(--color-nav-background));
+		background: var(--site-top-background-color, var(--color-page));
 		box-shadow: 0 1.5rem 3.5rem rgb(0 0 0 / 0.32);
 		color: var(--site-top-text-color, var(--color-text));
 		overflow-y: auto;
@@ -470,7 +466,6 @@
 		--color-surface: Canvas;
 		--color-soft: CanvasText;
 		--color-border: CanvasText;
-		--color-nav-background: Canvas;
 		--color-nav-separator: CanvasText;
 		--color-frame-background: Canvas;
 		--color-frame-text: CanvasText;
@@ -501,10 +496,6 @@
 		--color-success-accent: Highlight;
 		--color-success-surface: Canvas;
 		--color-success-text: CanvasText;
-	}
-
-	.site-top {
-		backdrop-filter: none;
 	}
 
 	.display-settings-panel,
