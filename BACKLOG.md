@@ -30,13 +30,18 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Next` is the intended implementation sequence after `Now`. The order first
 completes deterministic site output, then builds reading features on the stable
 page graph, and only afterward expands Markdown or URL behavior.
-- [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
+- [`BL-036` Contextual navigation rails](docs/design/backlog/BL-036-contextual-navigation-rails.md):
   **Ready after `BL-035` Navigation surfaces and managed-image alignment.**
+  Keep the global top navigation stable while showing a desktop tree rail only
+  for the active top-level branch whose page hierarchy requires one.
+- [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
+  **Ready after `BL-036` Contextual navigation rails.**
   Ground the file-tree example in the documentation hierarchy without forcing
   explanatory media into artwork geometry.
 - [`BL-034` Automatic tree section tracking](docs/design/backlog/BL-034-automatic-tree-section-tracking.md):
-  **Ready.** Track the reader's current H2 or H3 automatically in tree
-  navigation and remove the low-value public on/off setting.
+  **Ready after `BL-036` Contextual navigation rails.** Track the reader's
+  current H2 or H3 automatically in tree navigation and remove the low-value
+  public on/off setting.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
   **Ready.** Reuse canonical page identity and existing metadata
   before adding further generated-page behavior.
@@ -52,9 +57,10 @@ page graph, and only afterward expands Markdown or URL behavior.
 - [`BL-007` Explicit child page list](docs/design/backlog/BL-007-child-page-list.md):
   **Ready after `BL-006`.** Reuse its traversal rules in one explicit Markdown
   block rather than creating a parallel hierarchy.
-- [`BL-008` Long navigation tree controls](docs/design/backlog/BL-008-long-tree-controls.md):
-  **Ready after `BL-006`.** Add progressive controls only after active-page,
-  expansion, and traversal behavior are stable.
+- [`BL-008` Long navigation tree controls and filtering](docs/design/backlog/BL-008-long-tree-controls.md):
+  **Ready after `BL-006` and `BL-036`.** Add progressive controls and a
+  title filter only after tree scope, active-page, expansion, and traversal
+  behavior are stable.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Ready after `BL-005`.** Extend Markdown semantics after search and page
   output rules can consume the new structure consistently.
