@@ -73,6 +73,25 @@
     "images": {
       "type": "object",
       "properties": {
+        "presentation": {
+          "description": "Managed-image presentation method. Omit this to keep the selected preset or inherited page setting.",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "prose-aligned",
+              "title": "Prose-aligned",
+              "description": "Start managed images at the body-text edge and size them from available horizontal space.",
+              "markdownDescription": "Start managed images at the body-text edge and size them from available horizontal space.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
+            },
+            {
+              "const": "centered-fit",
+              "title": "Centered fit",
+              "description": "Center managed images in a broad media area constrained by available width and viewport height.",
+              "markdownDescription": "Center managed images in a broad media area constrained by available width and viewport height.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
+            }
+          ],
+          "markdownDescription": "```yaml\nimages:\n  presentation: prose-aligned\n```\n\nManaged-image presentation method. Omit this to keep the selected preset or inherited page setting.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
+        },
         "width": {
           "description": "Maximum managed-image width. Omit this to keep the selected preset.",
           "type": "string",
@@ -115,7 +134,7 @@
           "markdownDescription": "```yaml\nimages:\n  maxAvailableWidthPercent:\n    desktop: 100\n    mobile: 100\n```\n\nMaximum percentage of available horizontal space used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
         },
         "maxAvailableHeightPercent": {
-          "description": "Maximum percentage of viewport height used by managed images.",
+          "description": "Maximum percentage of viewport height used by centered-fit images. This setting is unavailable with prose-aligned presentation.",
           "anyOf": [
             {
               "type": "number",
@@ -147,12 +166,12 @@
               "additionalProperties": false
             }
           ],
-          "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n    mobile: 68\n```\n\nMaximum percentage of viewport height used by managed images.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
+          "markdownDescription": "```yaml\nimages:\n  maxAvailableHeightPercent:\n    desktop: 74\n    mobile: 68\n```\n\nMaximum percentage of viewport height used by centered-fit images. This setting is unavailable with prose-aligned presentation.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
         }
       },
       "additionalProperties": false,
       "description": "Optional defaults for managed image presentation.",
-      "markdownDescription": "```yaml\nimages:\n  width: 900px\n```\n\nAdjusts managed-image sizing for pages below this directory.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
+      "markdownDescription": "```yaml\nimages:\n  presentation: prose-aligned\n  width: 900px\n```\n\nAdjusts managed-image presentation and sizing for pages below this directory.\n\n[Image sizing reference](https://github.com/janga/norna/blob/v0.7.22/docs/theme.md#image-sizing)"
     },
     "sections": {
       "type": "object",

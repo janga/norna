@@ -23,8 +23,9 @@ One image is valid, and additional entries create a vertical sequence.
   caption: Related images continue in the same stack.
 ```
 
-The image list and captions belong to the block in `content.md`. Image sizing
-comes from the root preset or an allowed page-theme image override.
+The image list and captions belong to the block in `content.md`. Its alignment
+and maximum size come from the root preset or an allowed page-theme image
+override.
 
 ## Carousels {#carousels}
 
@@ -44,8 +45,10 @@ switching.
   caption: Third frame: a denser detail.
 ```
 
-The carousel order belongs to `content.md`. Its maximum image area comes from
-the theme; individual carousel blocks do not choose an unrelated page width.
+The carousel order belongs to `content.md`. Its presentation comes from the
+theme: `prose-aligned` starts it at the body-text edge, while `centered-fit`
+centers it and also limits its viewport height. Individual carousel blocks do
+not choose a separate method or page width.
 
 ## Card lists {#card-lists}
 
@@ -79,9 +82,10 @@ coordinated preset default.
 | --- | --- | --- |
 | Images, captions, order and block options | Norna block in `content.md` | One block |
 | Default card-list width | Root `theme.yaml` | Complete site |
-| Managed-image size | Root or page `theme.yaml` | Site or page subtree |
+| Managed-image presentation and size | Root or page `theme.yaml` | Site or page subtree |
 | Responsive variants and carousel behavior | Norna engine | Not configurable per block |
 
 Open the complete [media and surfaces test site](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/),
 go directly to its [media page](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/media/),
-or read the [content block reference](https://github.com/janga/norna/blob/main/docs/content.md#norna-blocks).
+or read the [content block reference](https://github.com/janga/norna/blob/main/docs/content.md#norna-blocks)
+and [image presentation reference](https://github.com/janga/norna/blob/main/docs/theme.md#image-sizing).

@@ -1,9 +1,15 @@
 import { expect, test } from '@playwright/test';
 
 const componentsPath = '/guide/components/';
+const centeredFitPath = '/reference/';
 
 const openComponents = async (page) => {
 	await page.goto(componentsPath, { waitUntil: 'domcontentloaded' });
+	await page.locator('[data-carousel-ready="true"]').waitFor();
+};
+
+const openCenteredFit = async (page) => {
+	await page.goto(centeredFitPath, { waitUntil: 'domcontentloaded' });
 	await page.locator('[data-carousel-ready="true"]').waitFor();
 };
 
@@ -368,6 +374,124 @@ test('text-width card lists follow the active reading column', async ({ page }) 
 	expect(proseBounds).not.toBeNull();
 	expect(cardsBounds?.x).toBeCloseTo(proseBounds?.x ?? 0, 0);
 	expect(cardsBounds?.width).toBeCloseTo(proseBounds?.width ?? 0, 0);
+});
+
+test('prose-aligned images follow the prose edge without viewport-height shrinking', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openComponents(page);
+	await expect(page.locator('html')).toHaveAttribute('data-image-presentation', 'prose-aligned');
+
+	const stackSection = page.locator('.site-section').filter({ has: page.locator('#image-stack') });
+	const prose = stackSection.locator('.section-markdown').first();
+	const frame = stackSection.locator('.managed-image-frame').first();
+	const portrait = stackSection.getByAltText('A tall diagram with three connected panels.');
+	const carouselStage = page.locator('.site-section')
+		.filter({ has: page.locator('#image-carousel') })
+		.locator('.image-carousel-stage');
+	const carousel = carouselStage.locator('..');
+	const [proseBounds, frameBounds, portraitBounds, carouselBounds] = await Promise.all([
+		prose.boundingBox(),
+		frame.boundingBox(),
+		portrait.boundingBox(),
+		carouselStage.boundingBox(),
+	]);
+
+	expect(proseBounds).not.toBeNull();
+	expect(frameBounds).not.toBeNull();
+	expect(portraitBounds).not.toBeNull();
+	expect(carouselBounds).not.toBeNull();
+	expect(frameBounds?.x).toBeCloseTo(proseBounds?.x ?? 0, 0);
+	expect(portraitBounds?.x).toBeCloseTo(frameBounds?.x ?? 0, 0);
+	expect(carouselBounds?.x).toBeCloseTo(proseBounds?.x ?? 0, 0);
+	expect(frameBounds?.width ?? 0).toBeGreaterThan(proseBounds?.width ?? Infinity);
+	expect(await portrait.evaluate((image) => getComputedStyle(image).maxHeight)).toBe('none');
+	expect(await carouselStage.evaluate((stage) => getComputedStyle(stage).maxHeight)).toBe('none');
+	expect(await carousel.getAttribute('style')).not.toContain('--image-carousel-width-from-height-desktop');
+});
+
+test('centered-fit images are centered and constrained by viewport height', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openCenteredFit(page);
+	await expect(page.locator('html')).toHaveAttribute('data-image-presentation', 'centered-fit');
+
+	const stackSection = page.locator('.site-section').filter({ has: page.locator('#centered-fit-stack') });
+	const stackBody = stackSection.locator('.section-body');
+	const frame = stackSection.locator('.managed-image-frame');
+	const portrait = stackSection.getByAltText('A tall composition with a large circle above two bars.');
+	const carouselStage = page.locator('.site-section')
+		.filter({ has: page.locator('#centered-fit-carousel') })
+		.locator('.image-carousel-stage');
+	const carousel = carouselStage.locator('..');
+	const [bodyBounds, frameBounds, portraitBounds, carouselBounds] = await Promise.all([
+		stackBody.boundingBox(),
+		frame.boundingBox(),
+		portrait.boundingBox(),
+		carouselStage.boundingBox(),
+	]);
+
+	expect(bodyBounds).not.toBeNull();
+	expect(frameBounds).not.toBeNull();
+	expect(portraitBounds).not.toBeNull();
+	expect(carouselBounds).not.toBeNull();
+	expect((frameBounds?.x ?? 0) + ((frameBounds?.width ?? 0) / 2)).toBeCloseTo(
+		(bodyBounds?.x ?? 0) + ((bodyBounds?.width ?? 0) / 2),
+		0,
+	);
+	expect(portraitBounds?.x ?? 0).toBeGreaterThan((frameBounds?.x ?? 0) + 1);
+	expect(portraitBounds?.height ?? Infinity).toBeLessThanOrEqual(740 + 1);
+	expect((carouselBounds?.x ?? 0) + ((carouselBounds?.width ?? 0) / 2)).toBeCloseTo(
+		(bodyBounds?.x ?? 0) + ((bodyBounds?.width ?? 0) / 2),
+		0,
+	);
+	expect(carouselBounds?.height ?? Infinity).toBeLessThanOrEqual(740 + 1);
+	expect(await carousel.getAttribute('style')).toContain('--image-carousel-width-from-height-desktop');
+});
+
+test('centered-fit image stacks and carousels stay within a 320 pixel viewport', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 800 });
+	await openCenteredFit(page);
+
+	const overflow = await getHorizontalOverflow(page);
+	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
+	await expect(page.locator('.managed-image-frame')).toBeVisible();
+	await expect(page.locator('.image-carousel-stage')).toBeVisible();
+	await expect(page.locator('.image-carousel-button-previous')).toBeVisible();
+	await expect(page.locator('.image-carousel-button-next')).toBeVisible();
+});
+
+test('prose-aligned presentation can expand the same portrait carousel without moving cards', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openCenteredFit(page);
+	const centeredFitStage = await page.locator('.image-carousel-stage').boundingBox();
+	await page.locator('html').evaluate((root) => {
+		root.dataset.imagePresentation = 'prose-aligned';
+	});
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+	const proseAlignedStage = await page.locator('.image-carousel-stage').boundingBox();
+	const prose = await page.locator('.site-section')
+		.filter({ has: page.locator('#centered-fit-carousel') })
+		.locator('.section-markdown')
+		.first()
+		.boundingBox();
+
+	expect(centeredFitStage).not.toBeNull();
+	expect(proseAlignedStage).not.toBeNull();
+	expect(prose).not.toBeNull();
+	expect(proseAlignedStage?.width ?? 0).toBeGreaterThan(centeredFitStage?.width ?? Infinity);
+	expect(proseAlignedStage?.x).toBeCloseTo(prose?.x ?? 0, 0);
+
+	await openComponents(page);
+	const cards = page.locator('.card-list');
+	const cardsBefore = await cards.boundingBox();
+	await page.locator('html').evaluate((root) => {
+		root.dataset.imagePresentation = 'centered-fit';
+	});
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+	const cardsAfter = await cards.boundingBox();
+	expect(cardsBefore).not.toBeNull();
+	expect(cardsAfter).not.toBeNull();
+	expect(cardsAfter?.x).toBeCloseTo(cardsBefore?.x ?? 0, 0);
+	expect(cardsAfter?.width).toBeCloseTo(cardsBefore?.width ?? 0, 0);
 });
 
 test('tree layout gives prose and structured blocks one shared inline origin', async ({ page }) => {

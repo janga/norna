@@ -33,7 +33,12 @@ type ResolvedPagePresentation = {
 };
 type VisualTheme = {
 	images: {
+		presentation: 'prose-aligned' | 'centered-fit';
 		maxAvailableWidthPercent: {
+			desktop: number;
+			mobile: number;
+		};
+		maxAvailableHeightPercent?: {
 			desktop: number;
 			mobile: number;
 		};

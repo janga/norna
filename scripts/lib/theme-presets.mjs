@@ -115,35 +115,56 @@ export const resolveThemeConfig = (theme = {}, sourceLabel = 'theme.yaml') => {
 	const overrides = structuredClone(theme ?? {});
 	delete overrides.preset;
 
-	return {
+	const resolved = {
 		preset: presetName,
 		...mergeDeep(getThemePreset(presetName, sourceLabel), overrides),
 	};
+
+	if (
+		overrides.images?.presentation === 'prose-aligned'
+		&& overrides.images.maxAvailableHeightPercent === undefined
+	) {
+		delete resolved.images.maxAvailableHeightPercent;
+	}
+
+	return resolved;
 };
 
 const mergePageThemePart = (base, override, keys) => Object.fromEntries(keys
 	.filter((key) => override?.[key] !== undefined || base?.[key] !== undefined)
 	.map((key) => [key, override?.[key] ?? base?.[key]]));
 
-export const mergePageThemeConfig = (base = {}, override = {}) => ({
-	...base,
-	layout: {
-		...(base.layout ?? {}),
-		...mergePageThemePart(base.layout, override.layout, ['contentSpacing', 'textWidth']),
-	},
-	images: {
+export const mergePageThemeConfig = (base = {}, override = {}) => {
+	const images = {
 		...(base.images ?? {}),
 		...mergePageThemePart(base.images, override.images, [
+			'presentation',
 			'width',
 			'maxAvailableWidthPercent',
 			'maxAvailableHeightPercent',
 		]),
-	},
-	sections: {
-		...(base.sections ?? {}),
-		...mergePageThemePart(base.sections, override.sections, ['backgroundPattern']),
-	},
-});
+	};
+
+	if (
+		override.images?.presentation === 'prose-aligned'
+		&& override.images.maxAvailableHeightPercent === undefined
+	) {
+		delete images.maxAvailableHeightPercent;
+	}
+
+	return {
+		...base,
+		layout: {
+			...(base.layout ?? {}),
+			...mergePageThemePart(base.layout, override.layout, ['contentSpacing', 'textWidth']),
+		},
+		images,
+		sections: {
+			...(base.sections ?? {}),
+			...mergePageThemePart(base.sections, override.sections, ['backgroundPattern']),
+		},
+	};
+};
 
 const quote = (value) => JSON.stringify(value);
 const responsiveValueLines = (label, value, indent = 2) => {
@@ -194,11 +215,18 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'  # firstSectionTop, headingToBlock, imageGap, and sectionGap.',
 		'',
 		'images:',
+		'  # Alternatives: prose-aligned, centered-fit.',
+		`  presentation: ${images.presentation}`,
 		'  # width accepts a positive CSS length.',
 		`  width: ${images.width}`,
 		'  # Percent values must be greater than 0 and at most 100.',
 		...responsiveValueLines('maxAvailableWidthPercent', images.maxAvailableWidthPercent),
-		...responsiveValueLines('maxAvailableHeightPercent', images.maxAvailableHeightPercent),
+		...(images.maxAvailableHeightPercent
+			? [
+				'  # Viewport-height limits apply only to centered-fit presentation.',
+				...responsiveValueLines('maxAvailableHeightPercent', images.maxAvailableHeightPercent),
+			]
+			: []),
 		'',
 		'blocks:',
 		'  cardList:',

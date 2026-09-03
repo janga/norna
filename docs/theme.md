@@ -27,7 +27,8 @@ Each preset coordinates:
 - light and dark colors, corners, and typography
 - page width, gutters, text width, and content spacing
 - navigation spacing and visual treatment
-- how wide and tall images managed by Norna may appear
+- how managed images align with prose or a centered media area, and how much
+  space they may use
 - the default width of card lists
 - how coordinated backgrounds repeat between H2 sections
 - the reader choices available in the [Display panel](#reader-display-controls)
@@ -82,6 +83,7 @@ preset: portfolio
 | `layout.contentSpacing` | `normal` |
 | `layout.pageWidth` | `1240px` |
 | `layout.gutter` | Desktop `clamp(1.25rem, 4vw, 3rem)`; mobile `1rem` |
+| `images.presentation` | `centered-fit` |
 | `images.width` | `1000px` |
 | `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
 | `images.maxAvailableHeightPercent` | Desktop `78`; mobile `68` |
@@ -115,9 +117,9 @@ preset: documentation
 | `layout.contentSpacing` | `compact` |
 | `layout.pageWidth` | `1240px` |
 | `layout.gutter` | Desktop `clamp(1.25rem, 4vw, 3rem)`; mobile `1rem` |
+| `images.presentation` | `prose-aligned` |
 | `images.width` | `920px` |
 | `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
-| `images.maxAvailableHeightPercent` | Desktop `74`; mobile `68` |
 | `blocks.cardList.width` | `text` |
 | `corners` | `rounded` |
 | `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
@@ -148,9 +150,9 @@ preset: project
 | `layout.contentSpacing` | `compact` |
 | `layout.pageWidth` | `1120px` |
 | `layout.gutter` | Desktop `clamp(1.25rem, 4vw, 3rem)`; mobile `1rem` |
+| `images.presentation` | `prose-aligned` |
 | `images.width` | `840px` |
 | `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
-| `images.maxAvailableHeightPercent` | Desktop `70`; mobile `62` |
 | `blocks.cardList.width` | `normal` |
 | `corners` | `rounded` |
 | `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
@@ -180,6 +182,7 @@ preset: statement
 | `layout.contentSpacing` | `spacious` |
 | `layout.pageWidth` | `1280px` |
 | `layout.gutter` | Desktop `clamp(1.5rem, 5vw, 4rem)`; mobile `1rem` |
+| `images.presentation` | `centered-fit` |
 | `images.width` | `1080px` |
 | `images.maxAvailableWidthPercent` | Desktop and mobile `100` |
 | `images.maxAvailableHeightPercent` | Desktop `80`; mobile `70` |
@@ -289,26 +292,57 @@ the selected preset. It is intentionally not a separate public override.
 
 ## Image Sizing
 
-`images` controls managed image sizing:
+`images` controls how standalone `norna-image-stack` and
+`norna-image-carousel` blocks relate to the page and how much space they may
+use. Card-list images follow their card layout instead.
 
-- `width`: maximum rendered image-area width.
-- `maxAvailableWidthPercent`: maximum share of available horizontal space.
-- `maxAvailableHeightPercent`: maximum share of viewport height.
+`images.presentation` accepts two methods:
 
-Example:
+| Value | Placement and sizing |
+| --- | --- |
+| `prose-aligned` | Start the image and its caption at the body-text edge. The image may extend to the right into the media area and is sized from available horizontal space without a viewport-height limit. |
+| `centered-fit` | Center the image and its caption in the media area. Fit the image within both the available width and a configured share of the viewport height. |
+
+The selected preset supplies the normal method. `documentation` and `project`
+use `prose-aligned`; `portfolio` and `statement` use `centered-fit`. Without a
+preset or explicit value, Norna uses `prose-aligned`.
+
+A root or page theme can override the method for all standalone image stacks
+and carousels in its scope:
 
 ```yaml
 images:
+  presentation: prose-aligned
   width: 900px
   maxAvailableWidthPercent:
     desktop: 100
     mobile: 100
-  maxAvailableHeightPercent:
-    desktop: 74
-    mobile: 68
 ```
 
-Each responsive percentage may also be a single number.
+The size settings mean:
+
+- `width`: maximum intended width of the image area for either method.
+- `maxAvailableWidthPercent`: maximum share of available horizontal space for
+  either method.
+- `maxAvailableHeightPercent`: maximum share of viewport height for
+  `centered-fit` only.
+
+For a centered presentation with an explicit height limit:
+
+```yaml
+images:
+  presentation: centered-fit
+  width: 1080px
+  maxAvailableWidthPercent: 100
+  maxAvailableHeightPercent:
+    desktop: 80
+    mobile: 70
+```
+
+Each responsive percentage may also be one number. Norna rejects
+`maxAvailableHeightPercent` with `prose-aligned` because the setting would have
+no effect. Image presentation cannot be selected for an individual section,
+block, or image.
 
 ## Content Block Defaults
 
@@ -354,9 +388,9 @@ list only. Page and category themes cannot change `blocks`; this keeps the
 site's normal treatment of structured blocks consistent while allowing a
 specific list to be an intentional exception.
 
-The setting does not affect image stacks or carousels. Their available width
-comes from [Image Sizing](#image-sizing). See [Card List](content.md#card-list)
-for Markdown syntax and per-list options.
+The setting does not affect image stacks or carousels. Their placement and
+available width come from [Image Sizing](#image-sizing). See [Card
+List](content.md#card-list) for Markdown syntax and per-list options.
 
 ## Typography
 
@@ -629,7 +663,7 @@ A page theme may set only:
 
 - `layout.textWidth`
 - `layout.contentSpacing`
-- managed-image sizing under `images`
+- managed-image presentation and sizing under `images`
 - `sections.backgroundPattern` when the site does not use tree navigation
 
 For example:
@@ -639,6 +673,7 @@ layout:
   textWidth: narrow
   contentSpacing: compact
 images:
+  presentation: prose-aligned
   width: 760px
 sections:
   backgroundPattern: uniform

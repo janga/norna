@@ -44,6 +44,9 @@ An image stack exercises media width, spacing, intrinsic aspect ratio, captions,
 and section-surface contrast.
 
 ```norna-image-stack
+- image: stack-portrait.svg
+  alt: A tall diagram with three connected panels.
+  caption: A portrait diagram checks the reading edge and width-driven sizing.
 - image: stack-one.svg
   alt: A pale panel with a circle and two horizontal lines.
   caption: A concise caption below the first image.

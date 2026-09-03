@@ -1,9 +1,11 @@
-import { siteConfigLabel, sitePublicLabel, siteThemeLabel } from './lib/site-paths.mjs';
+import path from 'node:path';
+import { siteConfigLabel, sitePagesDir, sitePublicLabel, siteThemeLabel } from './lib/site-paths.mjs';
 import { getLogoAssets, getPublicAssetInspection } from './lib/logo-assets.mjs';
 import { logoAssetFilenames } from './lib/public-asset-conventions.mjs';
 import { readSitewideContent } from './lib/sitewide-content.mjs';
 import { assertSectionBackgroundPatternCompatibility } from './lib/presentation.mjs';
 import { readThemeConfig, validatePageThemeFiles } from './lib/theme-config.mjs';
+import { mergePageThemeConfig } from './lib/theme-presets.mjs';
 
 const formatErrorMessage = (error) => {
 	if (error instanceof Error) {
@@ -14,10 +16,26 @@ const formatErrorMessage = (error) => {
 };
 
 try {
-	const { projectConfig } = await import('./lib/project-config.mjs');
+	const { projectConfig, resolveThemeVisualConfig } = await import('./lib/project-config.mjs');
 	const themeConfig = await readThemeConfig();
 	const sitewideContent = await readSitewideContent();
 	const pageThemeFiles = await validatePageThemeFiles();
+	const pageThemesByDirectory = new Map(pageThemeFiles.map((file) => [path.dirname(file.path), file]));
+	for (const pageThemeFile of pageThemeFiles) {
+		const ancestorThemes = [];
+		let directory = path.dirname(pageThemeFile.path);
+		while (directory.startsWith(`${sitePagesDir}${path.sep}`)) {
+			const ancestorTheme = pageThemesByDirectory.get(directory);
+			if (ancestorTheme) ancestorThemes.unshift(ancestorTheme);
+			directory = path.dirname(directory);
+		}
+
+		const resolvedPageTheme = ancestorThemes.reduce(
+			(current, ancestor) => mergePageThemeConfig(current, ancestor.config),
+			themeConfig,
+		);
+		resolveThemeVisualConfig(resolvedPageTheme, pageThemeFile.label);
+	}
 	if (projectConfig.navigation.mode === 'tree') {
 		assertSectionBackgroundPatternCompatibility(themeConfig, siteThemeLabel, 'tree');
 		for (const pageThemeFile of pageThemeFiles) {
@@ -54,9 +72,12 @@ try {
 	console.log(`Gutter: desktop ${projectConfig.layout.gutter.desktop}, mobile ${projectConfig.layout.gutter.mobile}`);
 	console.log(`Content spacing: ${projectConfig.layout.contentSpacing}`);
 	console.log(`Text width: ${projectConfig.layout.textWidth}`);
+	console.log(`Image presentation: ${projectConfig.images.presentation}`);
 	console.log(`Image area width: ${projectConfig.images.width}`);
 	console.log(`Image max available width: desktop ${projectConfig.images.maxAvailableWidthPercent.desktop}%, mobile ${projectConfig.images.maxAvailableWidthPercent.mobile}%`);
-	console.log(`Image max available height: desktop ${projectConfig.images.maxAvailableHeightPercent.desktop}%, mobile ${projectConfig.images.maxAvailableHeightPercent.mobile}%`);
+	if (projectConfig.images.maxAvailableHeightPercent) {
+		console.log(`Image max available height: desktop ${projectConfig.images.maxAvailableHeightPercent.desktop}%, mobile ${projectConfig.images.maxAvailableHeightPercent.mobile}%`);
+	}
 	console.log(`Font family: ${projectConfig.typography.fontFamily}`);
 	console.log(`Language: ${projectConfig.locale.lang}`);
 	console.log(`Navigation mode: ${projectConfig.navigation.mode}`);

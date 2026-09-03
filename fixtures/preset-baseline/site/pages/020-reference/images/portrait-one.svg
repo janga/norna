@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Portrait circle composition</title>
+  <desc id="desc">A large circle above two horizontal bars.</desc>
+  <rect width="700" height="1100" fill="#ddd4c5"/>
+  <circle cx="350" cy="390" r="220" fill="#685a43"/>
+  <rect x="110" y="740" width="480" height="40" rx="20" fill="#272522"/>
+  <rect x="190" y="830" width="320" height="24" rx="12" fill="#272522" opacity=".45"/>
+</svg>

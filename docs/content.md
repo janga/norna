@@ -158,6 +158,13 @@ spaces:
 ```
 ````
 
+Image stacks and carousels use the resolved theme's managed-image presentation.
+`prose-aligned` starts media at the body-text edge and sizes it from available
+horizontal space. `centered-fit` centers media in a broader area and also
+limits its viewport height. Presets choose the normal method; an author can
+override it for a site or page subtree, but not inside an individual image
+block. See [Image Sizing](theme.md#image-sizing).
+
 ### Image Stack
 
 Use `norna-image-stack` for one or more stacked images:
@@ -185,12 +192,12 @@ Use `norna-image-carousel` for a carousel:
 ```
 ````
 
-The carousel keeps each image's intrinsic proportions. Its stage is limited by
-the theme's managed-image width, the available page width, and
-`images.maxAvailableHeightPercent`. A portrait carousel therefore stays close
-to the image instead of stretching its controls across the complete content
-area; a landscape carousel may use more horizontal space. The same limits are
-resolved separately for desktop and mobile.
+The carousel keeps each image's intrinsic proportions. Its stage follows the
+theme's managed-image width and presentation method. In `prose-aligned`, the
+stage is width-driven and starts at the body-text edge. In `centered-fit`, it is
+centered and constrained by both available width and viewport height. Controls
+stay next to the rendered stage rather than moving to the edges of a wider
+content area.
 
 With two or more images, Norna provides previous and next controls, a numeric
 position indicator, arrow-key operation, and touch dragging. The controls

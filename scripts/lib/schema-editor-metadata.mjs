@@ -209,8 +209,8 @@ const addThemeHelp = (jsonSchema) => {
 		documentationLink('Layout reference', 'theme.md', 'layout'),
 	]);
 	addHelp(jsonSchema, 'images', [
-		yamlExample('images:\n  width: 900px\n  maxAvailableHeightPercent: 74'),
-		'Overrides the available width and height used by Norna-managed images.',
+		yamlExample('images:\n  presentation: prose-aligned\n  width: 900px'),
+		'Overrides how Norna-managed image stacks and carousels align within the page and how much horizontal space they may use.',
 		documentationLink('Image sizing reference', 'theme.md', 'image-sizing'),
 	]);
 	addHelp(jsonSchema, 'blocks', [
@@ -361,6 +361,7 @@ const addThemeHelp = (jsonSchema) => {
 	})]);
 
 	const imageFields = [
+		['images.presentation', 'images:\n  presentation: prose-aligned'],
 		['images.width', 'images:\n  width: 900px'],
 		['images.maxAvailableWidthPercent', 'images:\n  maxAvailableWidthPercent:\n    desktop: 100\n    mobile: 100'],
 		['images.maxAvailableWidthPercent.desktop', 'images:\n  maxAvailableWidthPercent:\n    desktop: 100'],
@@ -473,11 +474,12 @@ const addPageThemeHelp = (jsonSchema) => {
 	addFieldHelp(jsonSchema, 'layout.textWidth', 'layout:\n  textWidth: narrow', 'theme.md', 'page-themes', ['narrow', 'normal', 'wide']);
 	addFieldHelp(jsonSchema, 'layout.contentSpacing', 'layout:\n  contentSpacing: compact', 'theme.md', 'page-themes', ['compact', 'normal', 'spacious']);
 	addHelp(jsonSchema, 'images', [
-		yamlExample('images:\n  width: 900px'),
-		'Adjusts managed-image sizing for pages below this directory.',
+		yamlExample('images:\n  presentation: prose-aligned\n  width: 900px'),
+		'Adjusts managed-image presentation and sizing for pages below this directory.',
 		documentationLink('Image sizing reference', 'theme.md', 'image-sizing'),
 	]);
 	const imageFields = [
+		['images.presentation', 'images:\n  presentation: prose-aligned'],
 		['images.width', 'images:\n  width: 900px'],
 		['images.maxAvailableWidthPercent', 'images:\n  maxAvailableWidthPercent:\n    desktop: 100\n    mobile: 100'],
 		['images.maxAvailableWidthPercent.desktop', 'images:\n  maxAvailableWidthPercent:\n    desktop: 100'],

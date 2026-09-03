@@ -52,9 +52,10 @@ type VisualTheme = {
 		};
 	};
 	images: {
+		presentation: 'prose-aligned' | 'centered-fit';
 		width: string;
 		maxAvailableWidthPercent: { desktop: number; mobile: number };
-		maxAvailableHeightPercent: { desktop: number; mobile: number };
+		maxAvailableHeightPercent?: { desktop: number; mobile: number };
 	};
 	typography: { fontFamily: string };
 	corners: {
@@ -124,8 +125,12 @@ const documentStyle = [
 	`--image-width: ${visualTheme.images.width}`,
 	`--image-max-available-width-desktop: ${formatPercent(visualTheme.images.maxAvailableWidthPercent.desktop)}`,
 	`--image-max-available-width-mobile: ${formatPercent(visualTheme.images.maxAvailableWidthPercent.mobile)}`,
-	`--image-max-height-desktop: ${formatViewportHeightPercent(visualTheme.images.maxAvailableHeightPercent.desktop)}`,
-	`--image-max-height-mobile: ${formatViewportHeightPercent(visualTheme.images.maxAvailableHeightPercent.mobile)}`,
+	...(visualTheme.images.maxAvailableHeightPercent
+		? [
+			`--image-max-height-desktop: ${formatViewportHeightPercent(visualTheme.images.maxAvailableHeightPercent.desktop)}`,
+			`--image-max-height-mobile: ${formatViewportHeightPercent(visualTheme.images.maxAvailableHeightPercent.mobile)}`,
+		]
+		: []),
 ].join('; ');
 const { buildInfo, copyrightMessage } = footer ?? {};
 const showBuildInfo = buildInfo === true;
@@ -155,6 +160,7 @@ const readerPreferencesScript = readerPreferencesEnabled
 <html
 	lang={projectConfig.locale.lang}
 	data-appearance={presentation.readerPreferences.defaults.appearance}
+	data-image-presentation={visualTheme.images.presentation}
 	data-reading-width={presentation.readerPreferences.defaults.readingWidth}
 	data-focus-reading={presentation.readerPreferences.defaults.focusReading}
 	data-section-tracking={treeNavigation && projectConfig.navigation.sectionTracking ? 'enabled' : undefined}

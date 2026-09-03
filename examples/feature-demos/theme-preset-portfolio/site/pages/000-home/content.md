@@ -48,6 +48,8 @@ npm run norna:build
 
 The same image stack reveals how much room a preset gives to media, how it
 spaces consecutive images, and how captions relate to the surrounding prose.
+The selected preset supplies either `prose-aligned`, which starts media at the
+body-text edge, or `centered-fit`, which centers and height-limits the media.
 
 ```norna-image-stack
 - image: grass-puppy.jpg

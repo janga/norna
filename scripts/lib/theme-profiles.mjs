@@ -112,6 +112,7 @@ export const themeProfileDefinitions = freezeDeep({
 	media: {
 		prominent: {
 			images: {
+				presentation: 'centered-fit',
 				width: '1000px',
 				maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
 				maxAvailableHeightPercent: { desktop: 78, mobile: 68 },
@@ -119,20 +120,21 @@ export const themeProfileDefinitions = freezeDeep({
 		},
 		supporting: {
 			images: {
+				presentation: 'prose-aligned',
 				width: '920px',
 				maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
-				maxAvailableHeightPercent: { desktop: 74, mobile: 68 },
 			},
 		},
 		balanced: {
 			images: {
+				presentation: 'prose-aligned',
 				width: '840px',
 				maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
-				maxAvailableHeightPercent: { desktop: 70, mobile: 62 },
 			},
 		},
 		immersive: {
 			images: {
+				presentation: 'centered-fit',
 				width: '1080px',
 				maxAvailableWidthPercent: { desktop: 100, mobile: 100 },
 				maxAvailableHeightPercent: { desktop: 80, mobile: 70 },

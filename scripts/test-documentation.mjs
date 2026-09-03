@@ -174,9 +174,15 @@ const checkThemePresetReference = async () => {
 			['layout.contentSpacing', `\`${preset.layout.contentSpacing}\``],
 			['layout.pageWidth', `\`${preset.layout.pageWidth}\``],
 			['layout.gutter', `Desktop \`${preset.layout.gutter.desktop}\`; mobile \`${preset.layout.gutter.mobile}\``],
+			['images.presentation', `\`${preset.images.presentation}\``],
 			['images.width', `\`${preset.images.width}\``],
 			['images.maxAvailableWidthPercent', `Desktop and mobile \`${preset.images.maxAvailableWidthPercent.desktop}\``],
-			['images.maxAvailableHeightPercent', `Desktop \`${preset.images.maxAvailableHeightPercent.desktop}\`; mobile \`${preset.images.maxAvailableHeightPercent.mobile}\``],
+			...(preset.images.maxAvailableHeightPercent
+				? [[
+					'images.maxAvailableHeightPercent',
+					`Desktop \`${preset.images.maxAvailableHeightPercent.desktop}\`; mobile \`${preset.images.maxAvailableHeightPercent.mobile}\``,
+				]]
+				: []),
 			['corners', `\`${preset.corners}\``],
 			['sections.backgroundPattern', surface],
 			['Reader Display', formatReaderControls(preset.readerControls)],
@@ -186,6 +192,13 @@ const checkThemePresetReference = async () => {
 			const settingLabel = setting === 'Reader Display' ? setting : `\`${setting}\``;
 			const row = `| ${settingLabel} | ${value} |`;
 			assert.ok(section.includes(row), `docs/theme.md ${presetName} reference is missing: ${row}`);
+		}
+		if (!preset.images.maxAvailableHeightPercent) {
+			assert.doesNotMatch(
+				section,
+				/\| `images\.maxAvailableHeightPercent` \|/,
+				`docs/theme.md ${presetName} should not document an inactive viewport-height limit.`,
+			);
 		}
 
 		const exampleUrl = `https://janga.github.io/norna/examples/feature-demos/theme-preset-${presetName}/`;

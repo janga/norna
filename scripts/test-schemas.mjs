@@ -223,6 +223,14 @@ assert.deepEqual(
 	['square', 'rounded'],
 );
 assert.deepEqual(
+	theme.properties.images.properties.presentation.oneOf.map((entry) => entry.const),
+	['prose-aligned', 'centered-fit'],
+);
+assert.match(
+	theme.properties.images.properties.presentation.oneOf[0].description,
+	/body-text edge/,
+);
+assert.deepEqual(
 	theme.properties.sections.properties.backgroundPattern.oneOf.map((entry) => entry.const),
 	['uniform', 'alternating', 'accented'],
 );
@@ -262,6 +270,7 @@ assert.equal(
 
 const pageTheme = JSON.parse(await readFile(path.join(root, 'schemas', 'page-theme.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(pageTheme.properties), ['layout', 'images', 'sections']);
+assert.ok(pageTheme.properties.images.properties.presentation);
 assert.deepEqual(Object.keys(pageTheme.properties.layout.properties), ['contentSpacing', 'textWidth']);
 assert.equal(pageTheme.properties.preset, undefined);
 assert.equal(pageTheme.properties.palette, undefined);

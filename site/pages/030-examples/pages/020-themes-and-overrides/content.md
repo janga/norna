@@ -13,8 +13,9 @@ Display panel.
 ## Start with a preset {#presets}
 
 A preset supplies a complete visual starting point rather than one isolated
-color or font. Compare the presets with identical text, code, notes, images,
-captions, a carousel and cards:
+color or font. It also decides whether standalone images normally follow the
+prose edge or occupy a centered media area. Compare the presets with identical
+text, code, notes, images, captions, a carousel and cards:
 
 ```norna-card-list
 flow: grid
@@ -86,16 +87,22 @@ gives the pages a shared visual identity.
 ## Page theme overrides {#page-overrides}
 
 An optional `theme.yaml` beside a page or navigation category has a deliberately
-smaller scope. It may adjust layout, content spacing, managed-image sizing and
-the section background pattern for that page subtree:
+smaller scope. It may adjust layout, content spacing, managed-image presentation
+and sizing, and the section background pattern for that page subtree:
 
 ```yaml
 layout:
   textWidth: wide
   contentSpacing: normal
 images:
+  presentation: prose-aligned
   width: 1000px
 ```
+
+`prose-aligned` starts image stacks and carousels at the body-text edge.
+`centered-fit` instead centers them and fits them within the available width and
+viewport height. Use a page override only when that page's role differs from
+the preset; individual image blocks do not choose their own method.
 
 A page theme cannot select another preset or replace the site's colors,
 corners, typography, navigation treatment or content-block defaults.
@@ -120,4 +127,5 @@ These settings expose bounded reader controls. They do not let a reader edit
 the theme or change the published source.
 
 See the complete [Theme reference](https://github.com/janga/norna/blob/main/docs/theme.md)
-for accepted values, preset defaults and the exact page-theme boundary.
+for accepted values, preset defaults and the exact page-theme boundary, including
+[managed image presentation](https://github.com/janga/norna/blob/main/docs/theme.md#image-sizing).

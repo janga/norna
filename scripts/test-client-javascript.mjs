@@ -258,11 +258,25 @@ page:
 	assert.match(noteHtml, /class="section-note section-note-margin"/);
 	assertUniversalReadingWidth(carouselHtml, 'A carousel page');
 	assert.equal(getFeatureScripts(carouselHtml).length, 1, 'A carousel page should load only the carousel implementation in addition to reader preferences.');
+	assert.match(carouselHtml, /<html\b[^>]*data-image-presentation="prose-aligned"/);
 	assert.match(carouselHtml, /data-carousel/);
-	assert.match(carouselHtml, /--image-carousel-width-from-height-desktop:/);
+	assert.doesNotMatch(carouselHtml, /--image-carousel-width-from-height-desktop:/);
 	assert.match(carouselHtml, /aria-label="Previous image"/);
 	assert.match(carouselHtml, /aria-label="Next image"/);
 	assert.match(getFeatureScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');
+
+	await writeFile(path.join(pageDir, 'theme.yaml'), `images:
+  presentation: centered-fit
+`);
+	runBuild();
+	const centeredFitCarouselHtml = await readPage(path.join('details', 'index.html'));
+	assert.match(centeredFitCarouselHtml, /<html\b[^>]*data-image-presentation="centered-fit"/);
+	assert.match(centeredFitCarouselHtml, /--image-carousel-width-from-height-desktop:/);
+	assert.equal(
+		getFeatureScripts(centeredFitCarouselHtml).length,
+		1,
+		'Centered-fit presentation should not add client-side JavaScript to a carousel page.',
+	);
 
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:

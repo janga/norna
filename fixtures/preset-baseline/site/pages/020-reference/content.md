@@ -5,12 +5,25 @@ page:
 
 # Reference
 
-## Tokens {#tokens}
+## Centered-fit stack {#centered-fit-stack}
 
-This secondary page keeps global navigation representative without adding more
-visual variables to the captured component page.
+This page uses the page-level centered-fit presentation to exercise portrait media.
 
-## Boundaries {#boundaries}
+```norna-image-stack
+- image: portrait-one.svg
+  alt: A tall composition with a large circle above two bars.
+  caption: Centered-fit presentation centers portrait artwork in its media area.
+```
 
-Preset baselines characterize presentation. They do not define navigation
-semantics or page hierarchy.
+## Centered-fit carousel {#centered-fit-carousel}
+
+The portrait carousel makes viewport-height constraints visible.
+
+```norna-image-carousel
+- image: portrait-one.svg
+  alt: A tall composition with a large circle above two bars.
+  caption: First portrait frame.
+- image: portrait-two.svg
+  alt: A tall composition with two offset squares above a bar.
+  caption: Second portrait frame.
+```

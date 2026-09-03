@@ -467,7 +467,7 @@ directory. It may adjust only:
 
 - `layout.textWidth`
 - `layout.contentSpacing`
-- managed-image sizing under `images`
+- managed-image presentation and sizing under `images`
 - `sections.backgroundPattern` when navigation does not resolve to `tree`
 
 These values are inherited by descendant pages and merged with more local

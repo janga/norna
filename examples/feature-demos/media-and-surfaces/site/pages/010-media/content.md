@@ -14,6 +14,10 @@ responsive output used by the browser.{note-ref}
 
 {note: Local image references are validated against the image folder for this section before the site is built.}
 
+This example uses the `project` preset's `prose-aligned` presentation. The
+image and caption begin at the body-text edge and may extend to the right when
+the media area has more room.
+
 ```norna-image-stack
 - image: stack-one.svg
   alt: A pale panel with a single large circle.
@@ -45,9 +49,9 @@ Norna.{note-ref}
 
 ## Portrait carousel {#portrait-carousel}
 
-Portrait images use the same carousel, but the stage is constrained by the
-theme's available image height. The controls remain next to the image instead
-of moving to the edges of the wider content area.
+Portrait images use the same prose-aligned carousel. Its size follows available
+horizontal space without a viewport-height limit, and its controls remain next
+to the rendered stage instead of moving to the edges of a wider content area.
 
 ```norna-image-carousel
 - image: portrait-one.svg

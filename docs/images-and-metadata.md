@@ -67,6 +67,26 @@ page image roots, and when the move will not break another reference.
 for each file. If source and destination are on different filesystems, it stops
 and reports the paths for a manual move.
 
+## Managed Image Presentation
+
+The selected theme preset also determines how standalone image stacks and
+carousels are placed:
+
+- `prose-aligned` starts the image and caption at the body-text edge and sizes
+  the image from available horizontal space;
+- `centered-fit` centers the image and caption in a broader media area and fits
+  the image within both available width and viewport height.
+
+The presentation method applies to all standalone image stacks and carousels
+in the root or page theme's scope. It does not affect images inside cards and
+cannot be selected for an individual image entry. See [Image
+Sizing](theme.md#image-sizing) for preset defaults, overrides, and size
+settings.
+
+Presentation does not change source discovery, responsive variant generation,
+hashing, or sync. Those operations use the same managed source image regardless
+of where the rendered image is aligned.
+
 ## Markdown Images
 
 Use ordinary Markdown images for external images or static public assets:

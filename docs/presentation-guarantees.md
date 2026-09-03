@@ -39,6 +39,12 @@ choices may make the measure narrower or wider, but cannot exceed the engine's
 `80ch` ceiling. Managed media can use a wider media column without forcing prose
 to follow it.
 
+Managed image stacks and carousels preserve intrinsic proportions and do not
+crop by default. Prose-aligned media keeps a stable edge with the body text;
+centered-fit media remains within both the available width and its configured
+viewport-height limit. Both methods return to the available content width on
+narrow screens. See [Image Sizing](theme.md#image-sizing).
+
 ## Reflow And Text Adaptation
 
 Ordinary content reflows without document-level horizontal scrolling at a

@@ -17,7 +17,7 @@ interface Props {
 		desktop: number;
 		mobile: number;
 	};
-	maxAvailableHeightPercent: {
+	maxAvailableHeightPercent?: {
 		desktop: number;
 		mobile: number;
 	};
@@ -36,8 +36,12 @@ const carouselAspectRatio = getCarouselAspectRatio(images);
 const carouselStyle = carouselAspectRatio
 	? [
 		`--image-carousel-aspect-ratio: ${carouselAspectRatio}`,
-		`--image-carousel-width-from-height-desktop: ${carouselAspectRatio * maxAvailableHeightPercent.desktop}svh`,
-		`--image-carousel-width-from-height-mobile: ${carouselAspectRatio * maxAvailableHeightPercent.mobile}svh`,
+		...(maxAvailableHeightPercent
+			? [
+				`--image-carousel-width-from-height-desktop: ${carouselAspectRatio * maxAvailableHeightPercent.desktop}svh`,
+				`--image-carousel-width-from-height-mobile: ${carouselAspectRatio * maxAvailableHeightPercent.mobile}svh`,
+			]
+			: []),
 	].join('; ')
 	: undefined;
 ---

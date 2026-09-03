@@ -6,10 +6,13 @@ Norna chooses an appropriate presentation method for managed images as part of
 the selected theme preset. Authors should not have to classify every image or
 repair the layout with arbitrary widths and alignment values.
 
-The initial model has two image-presentation methods:
+The initial model has two image-presentation methods named after their layout
+contracts rather than their intended content:
 
-- `reading` treats images as supporting material in a reading flow;
-- `showcase` treats images as prominent visual content.
+- `prose-aligned` starts images at the body-text edge and sizes them from the
+  available horizontal space;
+- `centered-fit` centers images in a broad media area and fits them within both
+  the available width and viewport height.
 
 The resolved theme applies one method consistently to the page. A page can
 override its preset when its role genuinely differs from the rest of the site.
@@ -45,27 +48,27 @@ can each contain either explanatory material or artwork.
 
 Accessibility semantics remain separate from visual presentation. Alternative
 text describes the image in its current context; it must not be inferred from
-or replaced by `reading` or `showcase`.
+or replaced by `prose-aligned` or `centered-fit`.
 
 ## Preset Defaults
 
 | Preset | Image presentation | Reason |
 | --- | --- | --- |
-| `documentation` | `reading` | Diagrams and screenshots normally support sequential prose and benefit from a stable reading edge. |
-| `project` | `reading` | Explanations, code, screenshots, and product images should remain part of one balanced content flow. |
-| `portfolio` | `showcase` | Artwork and project imagery are normally primary content and should receive a broad, centered media area. |
-| `statement` | `showcase` | A small number of expressive images should carry visual weight in a spacious presentation. |
+| `documentation` | `prose-aligned` | Diagrams and screenshots normally support sequential prose and benefit from a stable reading edge. |
+| `project` | `prose-aligned` | Explanations, code, screenshots, and product images should remain part of one balanced content flow. |
+| `portfolio` | `centered-fit` | Artwork and project imagery are normally primary content and should receive a broad, centered media area. |
+| `statement` | `centered-fit` | A small number of expressive images should carry visual weight in a spacious presentation. |
 
 The paired presets share a presentation method, not a complete layout.
 Typography, rhythm, text width, image width, and spacing continue to distinguish
 `documentation` from `project` and `portfolio` from `statement`.
 
 When no preset or explicit image presentation is present, the engine default is
-`reading`.
+`prose-aligned`.
 
 ## Presentation Contract
 
-### Reading
+### Prose-Aligned
 
 - Align the image, caption, and surrounding content to a stable reading axis.
 - Let the image start at the prose edge and extend to the right into the
@@ -76,7 +79,7 @@ When no preset or explicit image presentation is present, the engine default is
 - Preserve intrinsic proportions and never crop by default.
 - Use the available content width on narrow screens.
 
-### Showcase
+### Centered Fit
 
 - Center the image in the resolved media area.
 - Allow the preset's broader image width to take visual priority over the prose
@@ -98,14 +101,14 @@ in the root or page theme:
 ```yaml
 preset: documentation
 images:
-  presentation: showcase
+  presentation: centered-fit
 ```
 
 The public values are:
 
 ```text
-reading
-showcase
+prose-aligned
+centered-fit
 ```
 
 A page-theme override applies to all standalone managed-image blocks on that
@@ -142,8 +145,8 @@ explicit:
 - `images.width` limits the intended media width for both methods;
 - `images.maxAvailableWidthPercent` limits available horizontal space for both
   methods;
-- `images.maxAvailableHeightPercent` constrains `showcase` media and must not
-  silently shrink or recenter `reading` media.
+- `images.maxAvailableHeightPercent` constrains `centered-fit` media and must
+  not silently shrink or recenter `prose-aligned` media.
 
 Reading-oriented built-in profiles should not depend on a viewport-height value
 for their normal geometry. Validation should reject combinations that have no
@@ -169,7 +172,7 @@ assets; this feature changes the resolved layout of their output.
 ## Acceptance Criteria
 
 - Every built-in preset supplies an explicit image-presentation method.
-- Sites without a preset resolve deterministically to `reading`.
+- Sites without a preset resolve deterministically to `prose-aligned`.
 - A root or page theme can override the preset with `images.presentation`.
 - No new field is added to individual image entries or section metadata.
 - Documentation and project pages use a stable reading edge for managed images.

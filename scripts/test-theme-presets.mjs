@@ -72,6 +72,12 @@ const expectedPresetRecipes = {
 		surfaces: 'accented',
 	},
 };
+const expectedImagePresentations = Object.freeze({
+	portfolio: 'centered-fit',
+	documentation: 'prose-aligned',
+	project: 'prose-aligned',
+	statement: 'centered-fit',
+});
 
 const runCli = (args) => spawnSync(process.execPath, [cliPath, '--site-dir', siteDir, ...args], {
 	cwd: repoRoot,
@@ -137,6 +143,12 @@ try {
 		assert.ok(resolved.layout?.noteGap);
 		assert.ok(resolved.corners);
 		assert.ok(resolved.images?.width);
+		assert.equal(resolved.images?.presentation, expectedImagePresentations[presetName]);
+		assert.equal(
+			resolved.images?.maxAvailableHeightPercent !== undefined,
+			expectedImagePresentations[presetName] === 'centered-fit',
+			`${presetName} must use viewport-height limits only for centered-fit images`,
+		);
 		assert.ok(resolved.blocks?.cardList?.width);
 		assert.ok(resolved.typography?.fontFamily);
 		assert.ok(resolved.typography?.profile);
@@ -207,10 +219,23 @@ try {
 	assert.equal(overridden.layout.localNavigationGap, 'clamp(1rem, 2vw, 1.5rem)');
 	assert.equal(overridden.layout.noteWidth, '12rem');
 	assert.equal(overridden.layout.noteGap, '1.25rem');
+	assert.equal(overridden.images.presentation, 'prose-aligned');
 	assert.equal(overridden.images.width, '920px');
 	assert.equal(overridden.blocks.cardList.width, 'wide');
 	assert.equal(overridden.palette, 'near-monochrome');
 	assert.equal(overridden.sections.backgroundPattern, 'alternating');
+	const proseAlignedOverride = resolveThemeConfig({
+		preset: 'portfolio',
+		images: { presentation: 'prose-aligned' },
+	}, 'prose-aligned override');
+	assert.equal(proseAlignedOverride.images.presentation, 'prose-aligned');
+	assert.equal(proseAlignedOverride.images.maxAvailableHeightPercent, undefined);
+	const centeredFitOverride = resolveThemeConfig({
+		preset: 'documentation',
+		images: { presentation: 'centered-fit' },
+	}, 'centered-fit override');
+	assert.equal(centeredFitOverride.images.presentation, 'centered-fit');
+	assert.equal(centeredFitOverride.images.maxAvailableHeightPercent, undefined);
 	assert.throws(
 		() => resolveThemeConfig({ preset: 'unknown' }, 'test/theme.yaml'),
 		/Unknown theme preset "unknown" in test\/theme\.yaml.*portfolio, documentation, project, statement/,
@@ -274,6 +299,7 @@ Page content.
   contentSpacing: spacious
   textWidth: wide
 images:
+  presentation: centered-fit
   width: 700px
 sections:
   backgroundPattern: accented
@@ -307,6 +333,8 @@ sections:
 	assert.match(rootHtml, /--section-note-gap: 1\.25rem/);
 	assert.match(rootHtml, /--font-sans: Georgia, 'Times New Roman', serif/);
 	assert.match(rootHtml, /data-appearance="system"/);
+	assert.match(rootHtml, /data-image-presentation="prose-aligned"/);
+	assert.doesNotMatch(rootHtml, /--image-max-height-desktop:/);
 	assert.match(rootHtml, /--palette-light-page-background: #f7f7f5/);
 	assert.match(rootHtml, /--palette-dark-page-background: #000000/);
 	assert.match(pageHtml, /--page-width: 1300px/);
@@ -314,7 +342,9 @@ sections:
 	assert.match(pageHtml, /--palette-dark-page-background: #000000/);
 	assert.match(pageHtml, /data-display-settings/);
 	assert.match(pageHtml, /data-reading-width="wide"/);
+	assert.match(pageHtml, /data-image-presentation="centered-fit"/);
 	assert.match(pageHtml, /--image-width: 700px/);
+	assert.match(pageHtml, /--image-max-height-desktop: 74svh/);
 	assert.match(pageHtml, /--space-section-to-section-desktop: clamp\(2\.25rem, 5vw, 4\.5rem\)/);
 	assert.match(rootHtml, /data-navigation-mode="top"/);
 	assert.match(pageHtml, /data-navigation-mode="top"/);
@@ -336,6 +366,16 @@ sections:
 	assert.notEqual(pageNavigationResult.status, 0);
 	assert.match(pageNavigationResult.stderr, /navigation is technical, site-wide configuration/);
 	assert.match(pageNavigationResult.stderr, /config\.yaml/);
+	await writeFile(pageThemePath, pageThemeSource);
+	await writeFile(pageThemePath, `images:
+  presentation: prose-aligned
+  maxAvailableHeightPercent: 70
+`);
+	const invalidProseAlignedHeightResult = runCli(['config:check']);
+	assert.notEqual(invalidProseAlignedHeightResult.status, 0);
+	assert.match(invalidProseAlignedHeightResult.stderr, /images\.maxAvailableHeightPercent cannot be used with images\.presentation "prose-aligned"/);
+	assert.match(invalidProseAlignedHeightResult.stderr, /pages\/010-guide\/theme\.yaml/);
+	assert.match(invalidProseAlignedHeightResult.stderr, /Remove images\.maxAvailableHeightPercent or set images\.presentation to "centered-fit"/);
 	await writeFile(pageThemePath, pageThemeSource);
 
 	await writeFile(configPath, 'url: https://example.com/\nnavigation:\n  mode: tree\n');
@@ -364,6 +404,8 @@ sections:
 	assert.equal(exportedConfig.layout.pageWidth, themePresets.documentation.layout.pageWidth);
 	assert.equal(exportedConfig.layout.noteWidth, undefined);
 	assert.equal(exportedConfig.layout.noteGap, undefined);
+	assert.equal(exportedConfig.images.presentation, 'prose-aligned');
+	assert.equal(exportedConfig.images.maxAvailableHeightPercent, undefined);
 	assert.equal(exportedConfig.blocks.cardList.width, 'text');
 	assert.equal(exportedConfig.typography.fontFamily, themePresets.documentation.typography.fontFamily);
 	assert.equal(exportedConfig.sections.backgroundPattern, 'alternating');

@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { imagePresentationNames } from './image-presentation.mjs';
 import { navigationModeNames } from './navigation-model.mjs';
 import { presentationPaletteNames } from './presentation-palette-metadata.mjs';
 import { themePresetNames } from './theme-presets.mjs';
@@ -35,6 +36,7 @@ const contentSpacing = z.enum(['compact', 'normal', 'spacious']).describe('Verti
 const backgroundPattern = z.enum(['uniform', 'alternating', 'accented']).describe('How coordinated backgrounds are assigned to H2 sections. Non-uniform patterns are unavailable with tree navigation.');
 const cornerTreatment = z.enum(['square', 'rounded']).describe('Site-wide corner treatment for navigation, cards and framed content.');
 const cardListWidth = z.enum(['text', 'narrow', 'normal', 'wide']).describe('Default maximum width for card lists. A width written in a norna-card-list block overrides this value.');
+const imagePresentation = z.enum(imagePresentationNames).describe('How managed image stacks and carousels are placed on the page. Prose-aligned starts them at the body-text edge; centered-fit centers them and constrains them by available width and viewport height.');
 const navigationMode = z.enum(navigationModeNames).describe('Site-wide navigation model. Automatic selects from the site structure.');
 const createLineHeight = (minimum, role) => z.number()
 	.min(minimum, `Use a unitless ${role} line height of at least ${minimum}.`)
@@ -156,9 +158,10 @@ const pageThemeLayout = z.object({
 	'Specify contentSpacing, textWidth, or both.',
 ).describe('Page-local layout settings inherited by descendant pages.');
 const themeImages = z.object({
+	presentation: imagePresentation.optional().describe('Managed-image presentation method. Omit this to keep the selected preset or inherited page setting.'),
 	width: visualCssLength.optional().describe('Maximum managed-image width. Omit this to keep the selected preset.'),
 	maxAvailableWidthPercent: responsivePercent.optional().describe('Maximum percentage of available horizontal space used by managed images.'),
-	maxAvailableHeightPercent: responsivePercent.optional().describe('Maximum percentage of viewport height used by managed images.'),
+	maxAvailableHeightPercent: responsivePercent.optional().describe('Maximum percentage of viewport height used by centered-fit images. This setting is unavailable with prose-aligned presentation.'),
 }).strict().describe('Optional defaults for managed image presentation.');
 const themeCardList = z.object({
 	width: cardListWidth,

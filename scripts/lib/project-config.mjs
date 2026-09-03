@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import {
 	validateConfigYamlStructure,
 } from './site-content.mjs';
+import { defaultImagePresentation, imagePresentationNames } from './image-presentation.mjs';
 import { navigationModeNames } from './navigation-model.mjs';
 import {
 	siteConfigLabel,
@@ -375,6 +376,21 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 	const resolvedContentSpacing = readEnum(rawLayoutConfig, 'contentSpacing', 'layout', contentSpacingNames, 'normal', sourceLabel);
 	const resolvedLayoutSpacingDefaults = contentSpacingProfiles[resolvedContentSpacing];
 	const corners = readEnum(rawThemeConfig, 'corners', 'theme', ['square', 'rounded'], 'rounded', sourceLabel);
+	const imagePresentation = readEnum(
+		rawImagesConfig,
+		'presentation',
+		'images',
+		imagePresentationNames,
+		defaultImagePresentation,
+		sourceLabel,
+	);
+	if (imagePresentation === 'prose-aligned' && rawImagesConfig.maxAvailableHeightPercent !== undefined) {
+		throw new Error([
+			`images.maxAvailableHeightPercent cannot be used with images.presentation "prose-aligned" in ${sourceLabel}.`,
+			'Prose-aligned images follow available horizontal space instead of a viewport-height limit.',
+			'Remove images.maxAvailableHeightPercent or set images.presentation to "centered-fit".',
+		].join('\n'));
+	}
 
 	return Object.freeze({
 		layout: Object.freeze({
@@ -402,10 +418,15 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 			}),
 		}),
 		images: Object.freeze({
-			maxAvailableHeightPercent: readResponsivePercent(rawImagesConfig, 'maxAvailableHeightPercent', 'images', Object.freeze({
-				desktop: 74,
-				mobile: 68,
-			}), sourceLabel),
+			presentation: imagePresentation,
+			...(imagePresentation === 'centered-fit'
+				? {
+					maxAvailableHeightPercent: readResponsivePercent(rawImagesConfig, 'maxAvailableHeightPercent', 'images', Object.freeze({
+						desktop: 74,
+						mobile: 68,
+					}), sourceLabel),
+				}
+				: {}),
 			maxAvailableWidthPercent: readResponsivePercent(rawImagesConfig, 'maxAvailableWidthPercent', 'images', Object.freeze({
 				desktop: 100,
 				mobile: 100,
