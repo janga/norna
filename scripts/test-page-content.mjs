@@ -31,6 +31,24 @@ test('content model v2 fixture checks and builds', async () => {
 	}
 });
 
+test('comment-only root YAML files use the same empty defaults during checks and builds', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'theme.yaml'), '# yaml-language-server: $schema=../schemas/theme.schema.json\n');
+		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), '# Shared content is optional.\n');
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), '# Empty theme\n\nThe defaults render this page.\n');
+
+		await runNorna(['--site-dir', siteDir, 'config:check']);
+		await runNorna(['--site-dir', siteDir, 'build']);
+
+		const homepageHtml = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+		assert.match(homepageHtml, /<title>Empty theme<\/title>/);
+		assert.match(homepageHtml, /The defaults render this page\./);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
 test('the removed root page structure is rejected with a migration hint', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {

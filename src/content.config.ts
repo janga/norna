@@ -1,5 +1,6 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 import { basename } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
@@ -19,7 +20,9 @@ const siteEntryId = `${siteDirLabel
 	.replace(/^[./\\]+/, '')
 	.replace(/[^a-zA-Z0-9-]+/g, '-')
 	.replace(/^-+|-+$/g, '') || 'site'}-content`;
-const siteThemeSchema = themeVisualSchema;
+const emptyYamlMapping = (value: unknown) => value ?? {};
+const siteThemeSchema = z.preprocess(emptyYamlMapping, themeVisualSchema);
+const sitewideContentSchema = z.preprocess(emptyYamlMapping, sitewideSchema);
 
 const site = defineCollection({
 	loader: glob({
@@ -52,7 +55,7 @@ const sitewide = defineCollection({
 		base: pathToFileURL(siteDir),
 		generateId: () => `${siteEntryId.replace(/-content$/, '')}-sitewide`,
 	}),
-	schema: sitewideSchema,
+	schema: sitewideContentSchema,
 });
 
 export const collections = { site, theme, sitewide };
