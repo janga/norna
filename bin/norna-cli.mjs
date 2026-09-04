@@ -28,6 +28,7 @@ Commands:
   engine:version         Show installed engine and Astro versions
   init                   Create a new site project from the starter
   page:add               Add a page to the site page tree
+  page:move              Move a page subtree and update internal links
   category:add           Add a non-routable category to the site page tree
   build                  Build the selected site
   build:local            Build and restart local dev server
@@ -163,6 +164,8 @@ try {
 		await runScript('scripts/init-site.mjs', rest);
 	} else if (command === 'page:add') {
 		await runScript('scripts/add-site-node.mjs', ['page', ...rest]);
+	} else if (command === 'page:move') {
+		await runScript('scripts/move-site-page.mjs', rest);
 	} else if (command === 'category:add') {
 		await runScript('scripts/add-site-node.mjs', ['category', ...rest]);
 	} else if (command === 'build') {

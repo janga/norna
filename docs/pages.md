@@ -260,15 +260,64 @@ current page.
 > static redirect document for each alias. It keeps old browser links useful,
 > but its response is not an HTTP `301`.
 
-When moving a page manually:
+`page:move` normally adds these aliases automatically. Add an alias by hand
+only when preserving an old URL that did not result from a page move Norna can
+reconcile.
 
-1. Record the page's current site-relative URL.
-2. Move or rename its directory.
-3. Add the recorded URL to `page.aliases` in the moved `content.md`.
-4. Run `npm run norna:check`, then build and inspect the old URL.
+## Move Or Reconcile A Page
 
-Each moved child page has its own URL identity. When a complete page subtree
-moves, add the previous URL to every moved page that must remain reachable.
+Use the old and new site-relative URLs to preview a move:
+
+```sh
+npm exec -- norna page:move /guides/install/ /reference/install/
+```
+
+The preview reports:
+
+- the source and destination directories;
+- every page URL changed in the moved subtree;
+- direct Markdown links, shared reference definitions, and Norna card links
+  that need new targets;
+- the old URLs that will be added to `page.aliases`.
+
+No source file changes during the preview. Apply that exact operation with
+`--write`:
+
+```sh
+npm exec -- norna page:move /guides/install/ /reference/install/ --write
+```
+
+When `/guides/install/` exists and `/reference/install/` does not, Norna moves
+the complete page directory, including descendants, images, and a local
+`theme.yaml`. When the old page is absent and the new page exists, Norna treats
+the same request as reconciliation after a manual directory move. Both paths
+produce the same links and aliases.
+
+Norna preserves query strings and heading fragments while changing a page
+pathname. It edits a shared Markdown reference definition once, even when the
+definition is used several times. A relative link is left untouched when it
+still identifies the same target from the page's new location; otherwise it is
+made site-relative.
+
+Moving within one parent keeps the page's numeric order. Moving to another
+parent uses the nearest higher multiple of ten after its new siblings. Pass
+`--order NNN` to select another unused order. Reconciliation keeps the existing
+directory name and does not accept `--order`.
+
+Every routable page in the moved subtree receives its previous URL as an alias
+unless `--no-aliases` is present. That option intentionally retires the old
+URLs; it does not disable internal-link updates.
+
+The command stops without changing files when both URLs exist, neither URL
+exists, the destination parent is missing, the destination collides with a
+page or category, or the proposed result contains a broken link or URL
+collision. A page cannot move below its own subtree, and the homepage cannot be
+moved. Reconciliation also stops when one relative link identifies different
+existing resources from the old and new page locations; make the intended
+target site-relative before trying again. The final directory rename must stay
+within one filesystem so the subtree move is atomic. After writing, Norna runs
+the shared page and link checks again and attempts to restore the original
+directory and content if that validation fails.
 
 ## Create Pages And Categories
 

@@ -222,6 +222,7 @@ const assertPackageContents = async (packageRoot) => {
 		'scripts/lib/site-paths.mjs',
 		'scripts/lib/sitemap.mjs',
 		'scripts/list-theme-presets.mjs',
+		'scripts/move-site-page.mjs',
 		'scripts/show-typography.mjs',
 		'scripts/sync-content-sections.mjs',
 		'scripts/sync-site-public.mjs',
@@ -389,6 +390,13 @@ This page verifies that packaged norna sites can build additional pages.
 	await runInherit(npxBin, ['norna', 'doctor'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'category:add', 'Guides', '--parent', '/'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'page:add', 'Installation', '--parent', '/guides/'], { cwd: siteProjectRoot, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'page:move', '/guides/installation/', '/guides/setup/', '--write'], { cwd: siteProjectRoot, env: npmEnv });
+	const guidesDirectory = (await readdir(path.join(siteProjectRoot, 'site', 'pages')))
+		.find((entry) => entry.endsWith('-guides'));
+	assert.ok(guidesDirectory, 'Expected the packaged page commands to create a guides directory.');
+	await assert.doesNotReject(access(
+		path.join(siteProjectRoot, 'site', 'pages', guidesDirectory, 'pages', '010-setup', 'content.md'),
+	));
 	await runInherit(npxBin, ['norna', 'config:check'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'check'], { cwd: siteProjectRoot, env: npmEnv });
@@ -424,9 +432,14 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'sitemap.xml'),
+		'<loc>https://example.com/site/guides/setup/</loc>',
+	);
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', 'sitemap.xml'),
 		'<loc>https://example.com/site/guides/installation/</loc>',
 	);
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'about', 'index.html'));
+	await assertFileExists(path.join(siteProjectRoot, 'dist', 'guides', 'setup', 'index.html'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'));
 	await assertFileMissing(path.join(siteProjectRoot, 'dist', 'guides', 'index.html'));
 	await assertFileMissing(path.join(siteProjectRoot, 'public', 'robots.txt'));
@@ -499,7 +512,7 @@ This page verifies that packaged norna sites can build additional pages.
 		'data-navigation-mode="top"',
 	);
 	await assertFileIncludes(
-		path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'),
+		path.join(siteProjectRoot, 'dist', 'guides', 'setup', 'index.html'),
 		'<aside id="tree-local-navigation"',
 	);
 	await assertFileIncludes(
@@ -559,7 +572,7 @@ This page verifies that packaged norna sites can build additional pages.
 		'--section-background-color: var(--color-surface-soft-background)',
 	);
 	await assertFileExcludes(
-		path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'),
+		path.join(siteProjectRoot, 'dist', 'guides', 'setup', 'index.html'),
 		'--section-background-color: var(--color-surface-soft-background)',
 	);
 	await assertFileIncludes(

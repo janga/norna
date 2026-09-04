@@ -275,9 +275,16 @@ descendant pages. See [Pages and categories](https://github.com/janga/norna/blob
 for exact marker files, creation options, directory names, ordering, URL
 segments, inheritance, warnings, and automatic navigation behavior.
 
-When moving or renaming an existing page changes its URL, keep the old address
-attached to the moved page instead of reusing it elsewhere. The
-[FAQ entry on preserving old page URLs](/faq/maintenance-and-publishing/#preserve-old-page-urls) shows the
-short frontmatter form; the
-[page reference](https://github.com/janga/norna/blob/main/docs/pages.md#preserve-old-page-urls)
-defines collision and hosting behavior.
+When moving or renaming a page changes its URL, preview the complete operation
+before changing files:
+
+```sh
+npm exec -- norna page:move /guides/install/ /reference/install/
+```
+
+Norna can then move the page with `--write`, update internal references, and
+keep the old URL attached to the moved page. The same command can reconcile a
+directory that was already moved by hand. The
+[FAQ entry on moving pages](/faq/maintenance-and-publishing/#preserve-old-page-urls) shows the short workflow; the
+[page reference](https://github.com/janga/norna/blob/main/docs/pages.md#move-or-reconcile-a-page)
+defines subtree handling, ordering, aliases, and failure behavior.

@@ -12,15 +12,15 @@ are in the [backlog process](docs/design/backlog/README.md).
 
 `Now` contains at most three active items in exact technical order.
 
-- [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
-  **Ready.** Use the shared reverse link index and redirect alias model to move
-  a page or reconcile an already moved page without guessing.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
   **Ready.** Reuse canonical page identity and existing metadata to improve
   shared links without adding routine page configuration.
 - [`BL-004` Default 404 page](docs/design/backlog/BL-004-default-404.md): **Ready.**
   Add a localized engine-owned missing-page response that works at root and
   configured base paths without client-side JavaScript.
+- [`BL-031` System appearance as the universal default](docs/design/backlog/BL-031-system-appearance-default.md):
+  **Ready.** Make every preset and a theme without a preset follow the visitor's
+  system preference unless the site explicitly selects Light or Dark.
 
 ## Next
 
@@ -28,11 +28,8 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-031` System appearance as the universal default](docs/design/backlog/BL-031-system-appearance-default.md):
-  **Ready.** Make every preset and a theme without a preset follow the visitor's
-  system preference unless the site explicitly selects Light or Dark.
 - [`BL-038` Selling homepage and product positioning](docs/design/backlog/BL-038-selling-homepage.md):
-  **Ready after `BL-028`, `BL-003`, and `BL-004`.** Turn implemented strengths
+  **Ready after `BL-003` and `BL-004`.** Turn implemented strengths
   into a concise, proof-led front page and remove duplicated technical detail.
 - [`BL-037` Refine left-navigation visual hierarchy](docs/design/backlog/BL-037-left-navigation-visual-hierarchy.md):
   **Ready.** Make the existing page rail clearer and more visually polished,

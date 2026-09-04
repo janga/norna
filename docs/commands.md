@@ -45,6 +45,7 @@ norna engine:update [version|latest]
 norna engine:version [--latest]
 norna init <target-dir> [--type standalone|embedded] [--site-dir <path>]
 norna page:add <title> [--parent <path>] [--slug <slug>] [--order <NNN>] [--dry-run]
+norna page:move <old-url> <new-url> [--order <NNN>] [--no-aliases] [--write]
 norna category:add <label> [--parent <path>] [--slug <slug>] [--order <NNN>] [--dry-run]
 norna build
 norna build:local
@@ -143,6 +144,31 @@ See [Pages and Categories](pages.md#create-pages-and-categories) for generated
 files, URL behavior, transliteration, ordering, and the complete structural
 contract.
 
+## Move A Page
+
+`page:move` moves a page or a complete page subtree and updates internal links
+that would otherwise break. Give it the page's current URL and intended URL:
+
+```sh
+npm exec -- norna page:move /guides/install/ /reference/install/
+```
+
+This first command is a dry run. It lists the directory move, old and new URLs,
+link edits, and aliases without changing files. Apply the displayed plan only
+after reviewing it:
+
+```sh
+npm exec -- norna page:move /guides/install/ /reference/install/ --write
+```
+
+The same command repairs references and adds aliases when the directory was
+already moved by hand: the old URL must then be absent and the new URL present.
+Use `--order NNN` to choose the destination's sibling order. Use
+`--no-aliases` only when the old URLs should deliberately stop working.
+
+See [Move or reconcile a page](pages.md#move-or-reconcile-a-page) for subtree
+behavior, ordering, link formats, aliases, and failure handling.
+
 ## Command Summary
 
 - `doctor`: prints resolved engine root, site project root, site directory,
@@ -196,6 +222,9 @@ contract.
 - `page:add <title>`: creates one complete page directory at the selected
   parent. It writes an H1 and an `Introduction` H2 starter to `content.md`, and
   creates `images/`.
+- `page:move <old-url> <new-url>`: previews a safe page-subtree move, including
+  exact internal-link edits and old-URL aliases. `--write` applies the validated
+  plan; the same command reconciles a directory already moved by hand.
 - `category:add <label>`: creates one non-routable navigation category at the
   selected parent. It writes `category.yaml` and creates `pages/`.
 - `build`: runs config check, content check, public sync, image generation, and
