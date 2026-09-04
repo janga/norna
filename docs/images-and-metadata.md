@@ -3,6 +3,11 @@
 This document describes Norna's image pipeline. Site repositories own their
 source images and any copyright or licensing policy for those images.
 
+The convention-based social sharing image is a static public file rather than
+a managed editorial image. See
+[Public Files: Social Sharing Image](public-files.md#social-sharing-image) for
+its filename, scope, and generated metadata.
+
 ## Managed Source Images
 
 Norna-managed local images are referenced from Markdown with

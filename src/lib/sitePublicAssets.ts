@@ -4,6 +4,7 @@ import { sitePublicDir } from '../../scripts/lib/site-paths.mjs';
 import { browserIconAssetDefinitions } from '../../scripts/lib/public-asset-conventions.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 export { getLogoAsset } from '../../scripts/lib/logo-assets.mjs';
+export { getSocialImageAsset } from '../../scripts/lib/social-image-assets.mjs';
 import { withBasePath } from './basePath';
 
 type IconLink = {

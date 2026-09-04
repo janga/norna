@@ -66,8 +66,9 @@ site/
   child pages when the group should not produce a page of its own.
 - [`images/`](images-and-metadata.md): managed images kept inside the page that
   references them, plus variants, sync, and generated image state.
-- [`public/`](public-files.md): navigation logos, favicons, and other static
-  source files copied without managed-image processing.
+- [`public/`](public-files.md): navigation logos, browser icons, a social
+  sharing image, and other static source files copied without managed-image
+  processing.
 - [Generated files](site-files.md#generated-files): `site/.norna/public/`,
   `site/.norna/.astro/`, `dist/`, and the generated sitemap.
 
@@ -100,6 +101,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Check and sync moved image references](content.md#validation-and-sync)
 - [Add a navigation logo](public-files.md#navigation-logo)
 - [Add browser icons](public-files.md#browser-icons)
+- [Add a social sharing image](public-files.md#social-sharing-image)
 - [Add other static files](public-files.md#other-static-files)
 - [Understand the generated sitemap](public-files.md#generated-sitemap)
 

@@ -24,8 +24,8 @@ belongs in [`pages/*/content.md`](content.md).
 - Restrictions: no query string, fragment, or repeated slash in the URL path.
 
 Norna adds a trailing slash when omitted. The URL pathname becomes the base
-path for generated links, sitemap entries, browser icons, and managed images,
-so there is no separate `basePath` setting.
+path for generated links, canonical and social sharing URLs, sitemap entries,
+browser icons, and managed images, so there is no separate `basePath` setting.
 
 Root-hosted site or custom domain:
 
@@ -40,9 +40,10 @@ url: https://owner.github.io/repository-name/
 ```
 
 In the second example, Norna derives `/repository-name/` as the base path.
-Root-relative Markdown links are prefixed when rendered, and the generated
-sitemap uses absolute URLs below that path. See
-[Public Files: Generated Sitemap](public-files.md#generated-sitemap).
+Root-relative Markdown links are prefixed when rendered. Canonical links,
+social sharing metadata, and the generated sitemap use absolute URLs below that
+path. See [Public Files](public-files.md) for social sharing images and the
+generated sitemap.
 
 ## `language`
 

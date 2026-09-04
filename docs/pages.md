@@ -375,8 +375,12 @@ Introductory text.
 Text...
 ```
 
-The H1 supplies the visible page title, document title, and navigation label.
-`page.description` is optional metadata and is not rendered. H2 and H3 headings
+The H1 supplies the visible page title, document title, navigation label, and
+social sharing title. `page.description` is optional search and social sharing
+metadata and is not rendered. The canonical page URL is also emitted as
+sharing metadata. See
+[Public Files: Social Sharing Image](public-files.md#social-sharing-image) for
+the optional site-wide preview image and omission rules. H2 and H3 headings
 provide page-local navigation according to the selected navigation model.
 
 ## Navigation

@@ -6,7 +6,11 @@ import {
 	nornaMarkdownBlockDefinitions,
 } from './norna-markdown-blocks.mjs';
 import { resolveNavigationModel } from './navigation-model.mjs';
-import { inspectPublicAssetFilenames, logoAssetFilenames } from './public-asset-conventions.mjs';
+import {
+	inspectPublicAssetFilenames,
+	logoAssetFilenames,
+	socialImageAssetFilenames,
+} from './public-asset-conventions.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
 import { siteSchema } from './schema-definitions.mjs';
 import { homePageDirectory } from './site-conventions.mjs';
@@ -211,6 +215,18 @@ export const getSitePublicAssetStatus = async (documentPath) => {
 			issues.push({
 				absolutePath: path.join(publicDirectory, filename),
 				code: 'multiple-logo-files',
+				filename,
+				message,
+				severity: 'error',
+			});
+		}
+	}
+	if (inspection.socialImages.length > 1) {
+		const message = `Multiple social sharing images were found: ${inspection.socialImages.join(', ')}. Keep exactly one of ${socialImageAssetFilenames.join(', ')} in site/public.`;
+		for (const filename of inspection.socialImages) {
+			issues.push({
+				absolutePath: path.join(publicDirectory, filename),
+				code: 'multiple-social-image-files',
 				filename,
 				message,
 				severity: 'error',

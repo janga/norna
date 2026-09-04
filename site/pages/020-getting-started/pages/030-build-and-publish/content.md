@@ -31,9 +31,20 @@ url: https://owner.github.io/repository/
 ```
 
 Norna uses the URL to derive the base path for internal links, public files,
-and generated images. It also uses the URL for the sitemap, an automatically
-generated list of public page URLs for search crawlers. Use a root URL such as
-`https://example.com/` for a custom domain.
+and generated images. It also uses the URL for canonical links, social sharing
+metadata, and the sitemap. Use a root URL such as `https://example.com/` for a
+custom domain.
+
+## Add a sharing image {#sharing-image}
+
+Norna already uses each page's title, optional description, and public URL when
+the link is shared. To add one preview image for the whole site, place exactly
+one of `social-image.png`, `social-image.jpg`, or `social-image.jpeg` directly
+in `site/public/`.
+
+The image is optional and needs no configuration. See the
+[social sharing image reference](https://github.com/janga/norna/blob/main/docs/public-files.md#social-sharing-image)
+for formats, metadata, and omission behavior.
 
 ## Build the static site {#build}
 

@@ -219,12 +219,58 @@ Public but unlisted content.
 
 		assert.match(homeHtml, /<title>Welcome<\/title>/);
 		assert.doesNotMatch(homeHtml, /<meta name="description"/);
+		assert.match(homeHtml, /<meta property="og:type" content="website">/);
+		assert.match(homeHtml, /<meta property="og:title" content="Welcome">/);
+		assert.match(homeHtml, /<meta property="og:url" content="https:\/\/example\.com\/">/);
+		assert.doesNotMatch(homeHtml, /property="og:description"/);
+		assert.doesNotMatch(homeHtml, /property="og:image"/);
+		assert.match(homeHtml, /<meta name="twitter:card" content="summary">/);
+		assert.match(homeHtml, /<meta name="twitter:title" content="Welcome">/);
+		assert.doesNotMatch(homeHtml, /name="twitter:description"/);
+		assert.doesNotMatch(homeHtml, /name="twitter:image"/);
 		assert.match(homeHtml, /<img class="site-brand-logo"[^>]+alt="Welcome"/);
 		assert.match(homeHtml, /<a href="\/" aria-current="page">\s*Welcome\s*<\/a>/);
 		assert.match(homeHtml, /<a href="\/guide\/">\s*Guide\s*<\/a>/);
 		assert.doesNotMatch(homeHtml, />\s*Unlisted\s*<\/a>/);
 		assert.match(guideHtml, /<meta name="description" content="The visible guide page\."/);
+		assert.match(guideHtml, /<meta property="og:description" content="The visible guide page\."/);
+		assert.match(guideHtml, /<meta name="twitter:description" content="The visible guide page\."/);
 		assert.match(unlistedHtml, /Public but unlisted content/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('social sharing metadata uses absolute base-path URLs and one conventional image', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/project/\n');
+		await mkdir(path.join(siteDir, 'public'), { recursive: true });
+		await writeFile(path.join(siteDir, 'public', 'social-image.jpg'), 'preview');
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), '# Home\n\nHome content.\n');
+		await mkdir(path.join(siteDir, 'pages', '010-guides', 'pages', '010-install'), { recursive: true });
+		await writeFile(path.join(siteDir, 'pages', '010-guides', 'category.yaml'), 'label: Guides\n');
+		await writeFile(path.join(siteDir, 'pages', '010-guides', 'pages', '010-install', 'content.md'), `---
+page:
+  description: Install the project.
+---
+
+# Install
+
+Instructions.
+`);
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(root, 'dist', 'guides', 'install', 'index.html'), 'utf8');
+		assert.match(html, /<meta property="og:title" content="Install">/);
+		assert.match(html, /<meta property="og:url" content="https:\/\/example\.com\/project\/guides\/install\/">/);
+		assert.match(html, /<meta property="og:description" content="Install the project\."/);
+		assert.match(html, /<meta property="og:image" content="https:\/\/example\.com\/project\/social-image\.jpg">/);
+		assert.match(html, /<meta property="og:image:type" content="image\/jpeg">/);
+		assert.match(html, /<meta name="twitter:card" content="summary_large_image">/);
+		assert.match(html, /<meta name="twitter:title" content="Install">/);
+		assert.match(html, /<meta name="twitter:description" content="Install the project\."/);
+		assert.match(html, /<meta name="twitter:image" content="https:\/\/example\.com\/project\/social-image\.jpg">/);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -329,6 +375,27 @@ test('multiple conventional navigation logo files stop config validation', async
 				assert.match(error.output, /Found multiple logo files/);
 				assert.match(error.output, /site\/public\/logo\.svg/);
 				assert.match(error.output, /site\/public\/logo\.png/);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('multiple conventional social sharing images stop config validation', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await mkdir(path.join(siteDir, 'public'), { recursive: true });
+		await writeFile(path.join(siteDir, 'public', 'social-image.png'), 'png');
+		await writeFile(path.join(siteDir, 'public', 'social-image.jpeg'), 'jpeg');
+
+		await assert.rejects(
+			runNorna(['--site-dir', siteDir, 'config:check']),
+			(error) => {
+				assert.match(error.output, /Found multiple social sharing images/);
+				assert.match(error.output, /site\/public\/social-image\.png/);
+				assert.match(error.output, /site\/public\/social-image\.jpeg/);
 				return true;
 			},
 		);

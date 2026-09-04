@@ -176,8 +176,9 @@ behavior, ordering, link formats, aliases, and failure handling.
   cache path.
 - `config:check`: validates root configuration, the root and page/category
   themes, `sitewide-content.yaml`, navigation and section-background
-  compatibility, and convention-based logo/public filenames. It also prints
-  the resolved site URL and main presentation settings.
+  compatibility, and convention-based logo, browser-icon, and social-image
+  filenames. It also prints the resolved site URL and main presentation
+  settings.
 - `check`: runs `config:check` followed by `content:check`.
 - `content:check`: validates the page hierarchy, required H1 titles, heading
   ids, frontmatter, Norna blocks, managed-image references, inline notes, and

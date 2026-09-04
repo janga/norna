@@ -18,10 +18,22 @@ export const browserIconAssetFilenames = Object.freeze(
 	browserIconAssetDefinitions.map(({ filename }) => filename),
 );
 
+export const socialImageAssetDefinitions = Object.freeze([
+	Object.freeze({ filename: 'social-image.png', type: 'image/png' }),
+	Object.freeze({ filename: 'social-image.jpg', type: 'image/jpeg' }),
+	Object.freeze({ filename: 'social-image.jpeg', type: 'image/jpeg' }),
+]);
+
+export const socialImageAssetFilenames = Object.freeze(
+	socialImageAssetDefinitions.map(({ filename }) => filename),
+);
+
 const logoExtensions = new Set(['.svg', '.png', '.jpg', '.jpeg']);
 const faviconExtensions = new Set(['.svg', '.png', '.ico']);
+const socialImageExtensions = new Set(['.png', '.jpg', '.jpeg']);
 const exactLogoNames = new Set(logoAssetFilenames);
 const exactBrowserIconNames = new Set(browserIconAssetFilenames);
+const exactSocialImageNames = new Set(socialImageAssetFilenames);
 
 export const isLogoAssetFilename = (filename) => exactLogoNames.has(filename);
 
@@ -60,6 +72,13 @@ const getSuspiciousAsset = (filename) => {
 		};
 	}
 
+	if (exactSocialImageNames.has(lowerFilename) && filename !== lowerFilename) {
+		return {
+			code: 'public-asset-case',
+			message: `Norna does not recognize "${filename}" as the social sharing image on case-sensitive file systems. Rename it to "${lowerFilename}".`,
+		};
+	}
+
 	if (parsed.name === 'logo' && !logoExtensions.has(parsed.ext)) {
 		return {
 			code: 'unsupported-logo-file',
@@ -71,6 +90,13 @@ const getSuspiciousAsset = (filename) => {
 		return {
 			code: 'unsupported-favicon-file',
 			message: `Norna does not link "${filename}" as a browser icon. Use favicon.svg, favicon.ico, or favicon.png.`,
+		};
+	}
+
+	if (parsed.name === 'social-image' && !socialImageExtensions.has(parsed.ext)) {
+		return {
+			code: 'unsupported-social-image-file',
+			message: `Norna does not recognize "${filename}" as the social sharing image. Use exactly one of ${socialImageAssetFilenames.join(', ')}.`,
 		};
 	}
 
@@ -95,6 +121,13 @@ const getSuspiciousAsset = (filename) => {
 		};
 	}
 
+	if (socialImageExtensions.has(parsed.ext) && editDistance(parsed.name, 'social-image') <= 2) {
+		return {
+			code: 'possible-social-image-typo',
+			message: `"${filename}" looks like a misspelled social sharing image filename. Norna recognizes ${socialImageAssetFilenames.join(', ')}.`,
+		};
+	}
+
 	return null;
 };
 
@@ -102,11 +135,12 @@ export const inspectPublicAssetFilenames = (filenames) => {
 	const files = [...filenames].sort((left, right) => left.localeCompare(right, 'en'));
 	const logos = files.filter(isLogoAssetFilename);
 	const browserIcons = files.filter((filename) => exactBrowserIconNames.has(filename));
+	const socialImages = files.filter((filename) => exactSocialImageNames.has(filename));
 	const suspicious = files.flatMap((filename) => {
-		if (isLogoAssetFilename(filename) || exactBrowserIconNames.has(filename)) return [];
+		if (isLogoAssetFilename(filename) || exactBrowserIconNames.has(filename) || exactSocialImageNames.has(filename)) return [];
 		const issue = getSuspiciousAsset(filename);
 		return issue ? [{ filename, ...issue }] : [];
 	});
 
-	return { browserIcons, files, logos, suspicious };
+	return { browserIcons, files, logos, socialImages, suspicious };
 };

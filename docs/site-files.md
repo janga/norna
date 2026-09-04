@@ -105,13 +105,13 @@ hierarchy, URL, navigation, commands, and theme inheritance. See
 
 `site/public/` contains static files copied without image processing. Most
 names are site-owned, but Norna recognizes a small set of exact conventional
-filenames for the navigation logo and browser icons. The root filename
-`sitemap.xml` is reserved for Norna's generated sitemap and must not exist in
-this source directory.
+filenames for the navigation logo, browser icons, and social sharing image. The
+root filename `sitemap.xml` is reserved for Norna's generated sitemap and must
+not exist in this source directory.
 
-See [Public Files](public-files.md) for navigation-logo and browser-icon
-filenames, GitHub Pages `CNAME`, arbitrary static files, root-relative links,
-publishing paths, and generated sitemap rules.
+See [Public Files](public-files.md) for navigation-logo, browser-icon, and
+social-image filenames, GitHub Pages `CNAME`, arbitrary static files,
+root-relative links, publishing paths, and generated sitemap rules.
 
 ## Selecting The Site Directory
 

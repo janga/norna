@@ -221,6 +221,7 @@ const assertPackageContents = async (packageRoot) => {
 		'scripts/lib/site-page-urls.mjs',
 		'scripts/lib/site-paths.mjs',
 		'scripts/lib/sitemap.mjs',
+		'scripts/lib/social-image-assets.mjs',
 		'scripts/list-theme-presets.mjs',
 		'scripts/move-site-page.mjs',
 		'scripts/show-typography.mjs',
@@ -329,6 +330,7 @@ try {
 		path.join(siteProjectRoot, 'site', 'public', 'logo.svg'),
 		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="black"/></svg>\n',
 	);
+	await writeFile(path.join(siteProjectRoot, 'site', 'public', 'social-image.png'), 'social preview');
 	await writeFile(path.join(siteProjectRoot, 'site', 'pages', '000-home', 'content.md'), `---
 page:
   description: Site used by package checks.
@@ -487,6 +489,19 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
 		'<link rel="canonical" href="https://example.com/site/about/">',
 	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
+		'<meta property="og:title" content="About the site">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
+		'<meta property="og:image" content="https://example.com/site/social-image.png">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
+		'<meta name="twitter:card" content="summary_large_image">',
+	);
+	await assertFileExists(path.join(siteProjectRoot, 'dist', 'social-image.png'));
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
 		'href="/site/about/" aria-current="page"',

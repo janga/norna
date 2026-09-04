@@ -34,9 +34,10 @@ top-level fields:
 
 `page` contains:
 
-- `description`: optional string. Used only as the page's HTML meta description
-  for search engines and other consumers of standard HTML metadata. It is not
-  rendered as visible page content.
+- `description`: optional string. Used as the page's HTML meta description and
+  social sharing description for search engines and other metadata consumers.
+  It is not rendered as visible page content and is not inferred from prose
+  when omitted.
 - `aliases`: optional list of previous site-relative URLs that permanently
   identify this page. See
   [Preserve Old Page URLs](pages.md#preserve-old-page-urls).
@@ -53,7 +54,7 @@ Introductory text.
 Text...
 ```
 
-Homepage with a meta description:
+Homepage with a metadata description:
 
 ```md
 ---
@@ -65,6 +66,10 @@ page:
 
 Introductory text.
 ```
+
+Norna also emits the H1 and canonical page URL as social sharing metadata. A
+conventionally named site-wide preview image can be added under `site/public/`.
+See [Public Files: Social Sharing Image](public-files.md#social-sharing-image).
 
 ## Sections
 

@@ -622,6 +622,11 @@ const showStatus = async () => {
 	const browserIcons = assetStatus?.browserIcons.length > 0
 		? assetStatus.browserIcons.join(', ')
 		: 'none';
+	const socialImage = assetStatus?.socialImages.length === 1
+		? assetStatus.socialImages[0]
+		: assetStatus?.socialImages.length > 1
+			? `${assetStatus.socialImages.length} conflicting files`
+			: 'none';
 	const issueCount = assetStatus?.issues.length ?? 0;
 	output.appendLine([
 		`Norna editor extension: ${extensionVersion}`,
@@ -634,13 +639,14 @@ const showStatus = async () => {
 		assetStatus ? `Public directory: ${assetStatus.publicDirectory}` : null,
 		`Navigation logo: ${logo}`,
 		`Browser icons: ${browserIcons}`,
+		`Social sharing image: ${socialImage}`,
 		`Public asset issues: ${issueCount}`,
 		...(assetStatus?.issues.map((issue) => `- ${issue.filename}: ${issue.message}`) ?? []),
 		'',
 	].filter((line) => line !== null).join('\n'));
 	const action = await vscode.window.showInformationMessage(
 		project.editorCompatible
-			? `Norna editor ${extensionVersion} with engine ${resolved.packageJson.version}. Logo: ${logo}. Browser icons: ${browserIcons}. ${issueCount} public asset issue${issueCount === 1 ? '' : 's'}.`
+			? `Norna editor ${extensionVersion} with engine ${resolved.packageJson.version}. Logo: ${logo}. Browser icons: ${browserIcons}. Social image: ${socialImage}. ${issueCount} public asset issue${issueCount === 1 ? '' : 's'}.`
 			: `Norna ${resolved.packageJson.version} schemas are active, but Norna-specific Markdown support requires editor API ${supportedEditorApiVersion}.`,
 		'Show details',
 	);

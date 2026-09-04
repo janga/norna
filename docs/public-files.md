@@ -5,9 +5,10 @@ without managed-image processing. Use it for browser icons, verification files,
 `robots.txt`, a custom-domain `CNAME`, downloadable files, and other assets that
 must keep their original format.
 
-Most files and subdirectories under `public/` are site-owned. Logos and browser
-icons are discovered from exact filenames. `sitemap.xml` is also an exception:
-Norna reserves that name for generated output.
+Most files and subdirectories under `public/` are site-owned. Navigation logos,
+browser icons, and the social sharing image are discovered from exact
+filenames. `sitemap.xml` is also an exception: Norna reserves that name for
+generated output.
 
 ## Navigation Logo
 
@@ -66,6 +67,36 @@ Browser icons are separate from the navigation logo. The logo appears inside
 the website, while browser icons identify it in tabs, bookmarks, and similar
 browser interfaces.
 
+## Social Sharing Image
+
+A social sharing image is the preview image that a social service can show when
+someone shares a page URL. To provide one image for the whole site, place
+exactly one supported file directly in `site/public/`:
+
+- `social-image.png`
+- `social-image.jpg`
+- `social-image.jpeg`
+
+Norna discovers the image from its exact lowercase filename. No path or enable
+setting is required. PNG and JPEG are supported because social preview clients
+commonly accept those formats; SVG is not used for this convention.
+
+Every generated page identifies its H1 as the sharing title and its canonical
+URL as the sharing URL. When the page frontmatter contains
+`page.description`, Norna includes that description in Open Graph and
+X/Twitter metadata. When a social sharing image exists, Norna publishes its
+absolute URL as `og:image` and `twitter:image` and selects a large-image card.
+
+The image is site-wide in this first model. Page-specific sharing images and
+generated text-on-image cards are not supported. If the file is absent, Norna
+omits image metadata and uses a text summary card. If `page.description` is
+absent, description metadata is omitted instead of being inferred from page
+prose.
+
+`npm run norna:config:check` fails when it finds more than one supported social
+sharing image. This prevents file extension order from deciding which image is
+published.
+
 ## GitHub Pages Custom Domain
 
 To use a custom domain with GitHub Pages, place a file named exactly `CNAME`
@@ -123,11 +154,11 @@ site/public/
     `-- project-overview.pdf
 ```
 
-Except for the navigation logo, browser icons, and reserved generated sitemap
-documented above, Norna does not attach meaning to filenames or inspect their
-contents. It copies them unchanged. Browsers, crawlers, hosting services, and
-verification providers may still require their own exact filenames and
-locations.
+Except for the navigation logo, browser icons, social sharing image, and
+reserved generated sitemap documented above, Norna does not attach meaning to
+filenames or inspect their contents. It copies them unchanged. Browsers,
+crawlers, hosting services, and verification providers may still require their
+own exact filenames and locations.
 
 Norna preserves subdirectories while copying these files. A source file such
 as `site/public/downloads/project-overview.pdf` is published at

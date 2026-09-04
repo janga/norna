@@ -52,8 +52,12 @@ Site-specific public files such as `site/public/CNAME` and `robots.txt` belong
 in the site repository. Norna copies them, while GitHub Pages, crawlers, and
 other external consumers give those filenames their meaning.
 
-Norna generates `sitemap.xml` from the pages that produce URLs and from the
-configured public URL. Do not add a source sitemap at
+Norna generates canonical links, social sharing URLs, and `sitemap.xml` from
+the pages that produce URLs and from the configured public URL. An optional
+conventionally named file under `site/public/` supplies one site-wide social
+sharing image. See
+[Public Files: Social Sharing Image](public-files.md#social-sharing-image) for
+filenames, emitted metadata, and omission rules. Do not add a source sitemap at
 `site/public/sitemap.xml`; the generated file is included in `dist/` and
 published by the same workflow. See
 [Public Files: Generated Sitemap](public-files.md#generated-sitemap) for page

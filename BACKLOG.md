@@ -12,9 +12,6 @@ are in the [backlog process](docs/design/backlog/README.md).
 
 `Now` contains at most three active items in exact technical order.
 
-- [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
-  **Ready.** Reuse canonical page identity and existing metadata to improve
-  shared links without adding routine page configuration.
 - [`BL-004` Default 404 page](docs/design/backlog/BL-004-default-404.md): **Ready.**
   Add a localized engine-owned missing-page response that works at root and
   configured base paths without client-side JavaScript.

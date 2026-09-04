@@ -1,7 +1,8 @@
 import path from 'node:path';
 import { siteConfigLabel, sitePagesDir, sitePublicLabel, siteThemeLabel } from './lib/site-paths.mjs';
 import { getLogoAssets, getPublicAssetInspection } from './lib/logo-assets.mjs';
-import { logoAssetFilenames } from './lib/public-asset-conventions.mjs';
+import { logoAssetFilenames, socialImageAssetFilenames } from './lib/public-asset-conventions.mjs';
+import { getSocialImageAssets } from './lib/social-image-assets.mjs';
 import { readSitewideContent } from './lib/sitewide-content.mjs';
 import { assertSectionBackgroundPatternCompatibility } from './lib/presentation.mjs';
 import { readThemeConfig, validatePageThemeFiles } from './lib/theme-config.mjs';
@@ -43,6 +44,7 @@ try {
 		}
 	}
 	const logoAssets = getLogoAssets();
+	const socialImageAssets = getSocialImageAssets();
 	const publicAssetInspection = getPublicAssetInspection();
 	const logoAssetPaths = logoAssetFilenames.map((filename) => `${sitePublicLabel}/${filename}`);
 	for (const issue of publicAssetInspection.suspicious) {
@@ -53,6 +55,13 @@ try {
 		throw new Error([
 			`Found multiple logo files in ${sitePublicLabel}. Keep exactly one of ${logoAssetFilenames.join(', ')}.`,
 			...logoAssets.map(({ filename }) => `- ${sitePublicLabel}/${filename}`),
+		].join('\n'));
+	}
+
+	if (socialImageAssets.length > 1) {
+		throw new Error([
+			`Found multiple social sharing images in ${sitePublicLabel}. Keep exactly one of ${socialImageAssetFilenames.join(', ')}.`,
+			...socialImageAssets.map(({ filename }) => `- ${sitePublicLabel}/${filename}`),
 		].join('\n'));
 	}
 

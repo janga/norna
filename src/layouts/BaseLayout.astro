@@ -1,7 +1,7 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { getPresentationCssVariables } from '../../scripts/lib/presentation.mjs';
-import { getIconLinks } from '../lib/sitePublicAssets';
+import { getIconLinks, getSocialImageAsset } from '../lib/sitePublicAssets';
 import { withBasePath } from '../lib/basePath';
 import { getReaderPreferencesScript } from '../lib/readerPreferencesScript.mjs';
 import '../styles/global.css';
@@ -93,6 +93,10 @@ const {
 const documentTitle = title;
 const canonicalUrl = new URL(withBasePath(projectConfig.site.basePath, pathname), projectConfig.site.url).href;
 const iconLinks = getIconLinks();
+const socialImageAsset = getSocialImageAsset();
+const socialImageUrl = socialImageAsset
+	? new URL(withBasePath(projectConfig.site.basePath, socialImageAsset.href), projectConfig.site.url).href
+	: null;
 const scrollBehavior = projectConfig.navigation.scrollBehavior === 'smooth' ? 'smooth' : 'auto';
 const formatPercent = (value: number) => `${value}%`;
 const formatViewportHeightPercent = (value: number) => `${value}svh`;
@@ -171,6 +175,16 @@ const readerPreferencesScript = readerPreferencesEnabled
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="format-detection" content="telephone=no" />
 		{description && <meta name="description" content={description} />}
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={documentTitle} />
+		<meta property="og:url" content={canonicalUrl} />
+		{description && <meta property="og:description" content={description} />}
+		{socialImageUrl && <meta property="og:image" content={socialImageUrl} />}
+		{socialImageAsset && <meta property="og:image:type" content={socialImageAsset.type} />}
+		<meta name="twitter:card" content={socialImageUrl ? 'summary_large_image' : 'summary'} />
+		<meta name="twitter:title" content={documentTitle} />
+		{description && <meta name="twitter:description" content={description} />}
+		{socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
 		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
 		{readerPreferencesScript && <script is:inline set:html={readerPreferencesScript} />}
 		<link rel="canonical" href={canonicalUrl} />

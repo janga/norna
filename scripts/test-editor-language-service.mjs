@@ -96,6 +96,9 @@ try {
 	await writeFile(path.join(siteRoot, 'public', 'Logo.JPG'), 'wrong case');
 	await writeFile(path.join(siteRoot, 'public', 'favion.ico'), 'typo');
 	await writeFile(path.join(siteRoot, 'public', 'favicon-32x32.png'), 'unrecognized');
+	await writeFile(path.join(siteRoot, 'public', 'social-image.png'), 'social');
+	await writeFile(path.join(siteRoot, 'public', 'social-image.jpg'), 'social');
+	await writeFile(path.join(siteRoot, 'public', 'social-imag.jpeg'), 'typo');
 	await writeFile(homeContentPath, homeSource);
 	await writeFile(pageContentPath, pageSource);
 	await writeFile(pageThemePath, 'layout:\n  textWidth: wide\n');
@@ -244,10 +247,13 @@ try {
 	const publicAssetStatus = await getSitePublicAssetStatus(homeContentPath);
 	assert.deepEqual(publicAssetStatus.logos, ['logo.png', 'logo.svg']);
 	assert.deepEqual(publicAssetStatus.browserIcons, ['favicon.svg']);
+	assert.deepEqual(publicAssetStatus.socialImages, ['social-image.jpg', 'social-image.png']);
 	assert.equal(publicAssetStatus.issues.filter(({ code }) => code === 'multiple-logo-files').length, 2);
+	assert.equal(publicAssetStatus.issues.filter(({ code }) => code === 'multiple-social-image-files').length, 2);
 	assert.ok(publicAssetStatus.issues.some(({ code }) => code === 'possible-favicon-typo'));
 	assert.ok(publicAssetStatus.issues.some(({ code }) => code === 'unrecognized-favicon-file'));
 	assert.ok(publicAssetStatus.issues.some(({ code, filename }) => code === 'public-asset-case' && filename === 'Logo.JPG'));
+	assert.ok(publicAssetStatus.issues.some(({ code, filename }) => code === 'possible-social-image-typo' && filename === 'social-imag.jpeg'));
 	await rm(path.join(siteRoot, 'public', 'logo.svg'), { force: true });
 	await rm(path.join(siteRoot, 'public', 'logo.png'), { force: true });
 	const missingLogoStatus = await getSitePublicAssetStatus(homeContentPath);
