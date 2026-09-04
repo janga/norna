@@ -5,8 +5,8 @@ banners:
     tone: warning
     visible:
       from: "2026-01-01"
-    title: Experimental code
-    text: Not for production use.
+    title: Pre-1.0 software
+    text: Norna is under active development. Pin your project version and expect file and CLI changes before 1.0.
 footer:
   copyrightMessage: norna is licensed under GNU GPL v3.
   buildInfo: true
