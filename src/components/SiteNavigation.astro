@@ -27,6 +27,8 @@ interface Props {
 	currentPage: SitePage;
 	navigationEntries: SiteNavigationEntry[];
 	navigationMode: 'sections' | 'top' | 'tree';
+	showTopNavigationSubmenus: boolean;
+	hasNavigationRailFrame: boolean;
 	frameColors: FrameColors;
 	readerPreferences: {
 		controls: {
@@ -42,7 +44,16 @@ interface Props {
 	};
 }
 
-const { logo, currentPage, navigationEntries, navigationMode, frameColors, readerPreferences } = Astro.props;
+const {
+	logo,
+	currentPage,
+	navigationEntries,
+	navigationMode,
+	showTopNavigationSubmenus,
+	hasNavigationRailFrame,
+	frameColors,
+	readerPreferences,
+} = Astro.props;
 const siteTopBackgroundColor = frameColors.backgroundColor === 'transparent'
 	? 'var(--color-page)'
 	: frameColors.backgroundColor;
@@ -94,6 +105,7 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 	class:list={['site-top', {
 		'site-top-has-site-nav': showSiteNavigation,
 		'site-top-has-navigation-row': showDesktopNavigationRow,
+		'site-top-has-navigation-rail-frame': hasNavigationRailFrame,
 	}]}
 	data-navigation-mode={navigationMode}
 	style={navigationStyle}
@@ -118,13 +130,13 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 						const nodeIsCurrentPage = navigationNode.node.kind === 'page' && isCurrentPage(navigationNode.node);
 						return (
 							<li class:list={['site-nav-item', {
-								'site-nav-item-has-submenu': navigationMode !== 'tree' && navigationNode.children.length > 0,
+								'site-nav-item-has-submenu': showTopNavigationSubmenus && navigationNode.children.length > 0,
 								'site-nav-item-current-branch': !nodeIsCurrentPage && isCurrentBranch(navigationNode.node),
 							}]}>
 								<a href={pageHref(destination)} aria-current={nodeIsCurrentPage ? 'page' : undefined}>
 									{navigationNode.node.title}
 								</a>
-								{navigationMode !== 'tree' && navigationNode.children.length > 0 && (
+								{showTopNavigationSubmenus && navigationNode.children.length > 0 && (
 									<div class="site-nav-submenu">
 										<nav aria-label={`${navigationNode.node.title} ${projectConfig.locale.labels.siteNavigation}`}>
 											<NavigationPageTree nodes={[navigationNode]} currentPage={currentPage} variant="submenu" />

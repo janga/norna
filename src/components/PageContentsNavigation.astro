@@ -1,0 +1,21 @@
+---
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import type { HeadingNavigation } from '../lib/sectionContent';
+import PageContentsLinks from './PageContentsLinks.astro';
+
+interface Props {
+	headings: HeadingNavigation[];
+	pageTitle: string;
+	variant: 'inline' | 'rail';
+}
+
+const { headings, pageTitle, variant } = Astro.props;
+const label = `${projectConfig.locale.labels.pageNavigation}: ${pageTitle}`;
+---
+
+<aside class={`page-contents-navigation page-contents-navigation-${variant}`}>
+	<nav aria-label={label}>
+		<p class="page-contents-navigation-label">{projectConfig.locale.labels.pageNavigation}</p>
+		<PageContentsLinks headings={headings} variant="desktop" />
+	</nav>
+</aside>

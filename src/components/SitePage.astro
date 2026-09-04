@@ -5,6 +5,7 @@ import CodeBlockCopyScript from './CodeBlockCopyScript.astro';
 import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
 import SiteNavigation from './SiteNavigation.astro';
 import SiteBanners from './SiteBanners.astro';
+import PageContentsNavigation from './PageContentsNavigation.astro';
 import SiteSection from './SiteSection.astro';
 import SiteTreeNavigation from './SiteTreeNavigation.astro';
 import TreeNavigationScript from './TreeNavigationScript.astro';
@@ -100,7 +101,12 @@ const navigationModel = resolveNavigationModel({
 		isHome: node.isHome,
 		kind: node.kind,
 		listed: node.navigation.listed,
+		pagePath: node.pagePath,
 	})),
+	currentPage: {
+		isHome: currentPage.isHome,
+		pagePath: currentPage.pagePath,
+	},
 });
 const pagePresentation = resolvePagePresentation(themeData, themeLabel, {
 	navigationMode: navigationModel.mode,
@@ -108,6 +114,16 @@ const pagePresentation = resolvePagePresentation(themeData, themeLabel, {
 const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
 const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: `${siteDirectory || 'site'}/${siteTheme.id}` });
 const hasTreeNavigation = navigationModel.mode === 'tree';
+const currentPageNavigation = siteNavigation.find(({ node }) => (
+	node.kind === 'page' && node.pathname === currentPage.pathname
+));
+const pageContentsHeadings = currentPageNavigation?.headings.filter(({ depth }) => depth === 2 || depth === 3) ?? [];
+const hasContentsNavigation = hasTreeNavigation && pageContentsHeadings.length > 1;
+const hasNavigationRailFrame = navigationModel.requestedMode === 'tree'
+	|| (
+		navigationModel.requestedMode === 'automatic'
+		&& (navigationModel.hasNestedPages || navigationModel.hasCategories)
+	);
 const showBreadcrumbs = !currentPage.isHome && currentPage.parentPagePath !== null;
 const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 
@@ -128,12 +144,17 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 		currentPage={currentPage}
 		navigationEntries={siteNavigation}
 		navigationMode={navigationModel.mode}
+		showTopNavigationSubmenus={navigationModel.requestedMode !== 'automatic' && navigationModel.mode !== 'tree'}
+		hasNavigationRailFrame={hasNavigationRailFrame}
 		frameColors={frameColors}
 		readerPreferences={pagePresentation.readerPreferences}
 	/>
 	{siteBanners.length > 0 && <SiteBanners banners={siteBanners} />}
 
-	<div class:list={['site-page-layout', { 'site-page-layout-tree': hasTreeNavigation }]}>
+	<div class:list={['site-page-layout', {
+		'site-page-layout-tree': hasTreeNavigation,
+		'site-page-layout-contents': hasContentsNavigation,
+	}]}>
 		{hasTreeNavigation && (
 			<SiteTreeNavigation currentPage={currentPage} navigationEntries={siteNavigation} />
 		)}
@@ -145,6 +166,13 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 			{showBreadcrumbs
 				? <SiteBreadcrumbs currentPage={currentPage} nodes={siteNodes} />
 				: reserveBreadcrumbSpace && <div class="site-breadcrumbs" aria-hidden="true"></div>}
+			{hasContentsNavigation && (
+				<PageContentsNavigation
+					headings={pageContentsHeadings}
+					pageTitle={currentPage.title}
+					variant="inline"
+				/>
+			)}
 			{renderedSections.map(({ section, sectionIndex, prioritizeFirstImage }) => (
 				<SiteSection
 					section={section}
@@ -155,6 +183,13 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 				/>
 			))}
 		</main>
+		{hasContentsNavigation && (
+			<PageContentsNavigation
+				headings={pageContentsHeadings}
+				pageTitle={currentPage.title}
+				variant="rail"
+			/>
+		)}
 	</div>
 	{hasTreeNavigation && <TreeNavigationScript />}
 	{hasCodeBlocks && <CodeBlockCopyScript />}

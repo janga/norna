@@ -344,6 +344,10 @@
 		display: none;
 	}
 
+	.page-contents-navigation {
+		display: none;
+	}
+
 	.site-banners {
 		width: min(calc(100% - 2rem), var(--page-width));
 		padding-top: 0.75rem;

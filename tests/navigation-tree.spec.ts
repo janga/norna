@@ -7,7 +7,7 @@ const testPagePath = '/guides/installation/macos/';
 test.describe('desktop tree navigation', () => {
 	test.use({ hasTouch: false, isMobile: false, viewport: desktopViewport });
 
-	test('connects the current page contents to its node in the active branch', async ({ page }) => {
+	test('separates the active page branch from the current page contents', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		expect(await page.locator('body').evaluate((body) => getComputedStyle(body).paddingTop)).toBe('0px');
 
@@ -24,31 +24,25 @@ test.describe('desktop tree navigation', () => {
 		await expect(localNavigation.locator('.navigation-page-tree-sidebar').first()).toContainText('Guides');
 		await expect(localNavigation.locator('details[data-page-path="guides"] > .navigation-page-open-link')).toHaveCount(0);
 		await expect(localNavigation.locator('details[data-page-path="guides/installation"] > summary')).toHaveText('Installation');
-		await expect(localNavigation.locator('details[data-page-path="guides/workflows"] > summary')).toHaveText('Workflows');
-		const currentPageDisclosure = localNavigation.locator('details[data-page-path="guides/installation/macos"]');
-		const currentPageSummary = currentPageDisclosure.locator(':scope > summary');
-		const currentPageLink = currentPageDisclosure.getByRole('link', { name: 'macOS', exact: true });
-		await expect(currentPageSummary).toHaveText('macOS');
+		await expect(localNavigation.getByRole('link', { name: 'Workflows', exact: true })).toBeVisible();
+		await expect(localNavigation.locator('details[data-page-path="guides/workflows"]')).toHaveCount(0);
+		const currentPageNode = localNavigation.locator('.navigation-page-node-current');
+		const currentPageLink = currentPageNode.getByRole('link', { name: 'macOS', exact: true });
 		await expect(currentPageLink).toHaveAttribute('aria-current', 'page');
-		const [summaryBox, linkBox] = await Promise.all([
-			currentPageSummary.boundingBox(),
-			currentPageLink.boundingBox(),
-		]);
-		expect(summaryBox).not.toBeNull();
-		expect(linkBox).not.toBeNull();
-		expect(Math.abs(
-			(summaryBox?.y ?? 0) + (summaryBox?.height ?? 0) / 2
-			- ((linkBox?.y ?? 0) + (linkBox?.height ?? 0) / 2),
-		)).toBeLessThanOrEqual(1);
+		await expect(currentPageNode.locator(':scope > details')).toHaveCount(0);
+		await expect(localNavigation.getByRole('link', { name: 'Install', exact: true })).toHaveCount(0);
+		await expect(localNavigation.getByRole('link', { name: 'Prerequisites', exact: true })).toHaveCount(0);
 		await expect(localNavigation.getByRole('link', { name: 'Reference', exact: true })).toHaveCount(0);
 
 		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Guides', 'Installation', 'macOS']);
-		const currentPageNode = localNavigation.locator('.navigation-page-node-current');
-		const pageContents = currentPageNode.locator('.navigation-page-sections');
+		const pageContents = page.locator('.page-contents-navigation-rail');
 		await expect(pageContents).toBeVisible();
+		await expect(pageContents).toHaveAttribute('class', /page-contents-navigation-rail/);
+		await expect(pageContents.getByRole('navigation')).toHaveAttribute('aria-label', 'Page contents: macOS');
 		await expect(pageContents.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
 		await expect(pageContents.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
 		await expect(pageContents.getByRole('link', { name: 'Verify', exact: true })).toBeVisible();
+		await expect(page.locator('.page-contents-navigation-inline')).toBeHidden();
 		await expect(page.locator('.page-nav')).toHaveCount(0);
 		await expect(page.locator('[data-tree-navigation-toggle]')).toHaveCount(0);
 
@@ -62,9 +56,9 @@ test.describe('desktop tree navigation', () => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		await page.addStyleTag({ content: 'body { padding-bottom: 100vh !important; }' });
 
-		const localNavigation = page.locator('.tree-local-navigation');
-		const installLink = localNavigation.getByRole('link', { name: 'Install', exact: true });
-		const prerequisitesLink = localNavigation.getByRole('link', { name: 'Prerequisites', exact: true });
+		const contentsNavigation = page.locator('.page-contents-navigation-rail');
+		const installLink = contentsNavigation.getByRole('link', { name: 'Install', exact: true });
+		const prerequisitesLink = contentsNavigation.getByRole('link', { name: 'Prerequisites', exact: true });
 		const displaySettingsSummary = page.locator('[data-display-settings] > summary');
 		const initialUrl = page.url();
 		const moveHeadingToReadingLine = async (id: string) => {
@@ -105,6 +99,7 @@ test.describe('desktop tree navigation', () => {
 
 		await expect(root).toHaveAttribute('data-focus-reading', 'on');
 		await expect(localNavigation).toBeHidden();
+		await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
 		await expect(page.locator('.site-nav')).toBeHidden();
 		await expect(breadcrumbs).toBeHidden();
 		await expect(settings.locator('summary')).toBeVisible();
@@ -120,34 +115,30 @@ test.describe('desktop tree navigation', () => {
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
 	});
 
-	test('preserves open page sections and vertical positions across navigation', async ({ page }) => {
+	test('preserves open page branches and vertical positions across navigation', async ({ page }) => {
 		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 		const localNavigation = page.locator('.tree-local-navigation');
 		const installationBranch = localNavigation.locator('details[data-page-path="guides/installation"]');
 		await expect(installationBranch).toHaveAttribute('open', '');
-		await expect(installationBranch.getByRole('link', { name: 'Installation details', exact: true })).toBeVisible();
+		await expect(installationBranch.getByRole('link', { name: 'Installation', exact: true })).toBeVisible();
 
-		const macosBranch = localNavigation.locator('details[data-page-path="guides/installation/macos"]');
-		await expect(macosBranch).not.toHaveAttribute('open', '');
-		await expect(macosBranch.getByRole('link', { name: 'macOS', exact: true })).not.toBeVisible();
-		await macosBranch.locator(':scope > summary').click();
-		await expect(page).toHaveURL(/\/guides\/installation\/$/);
-		await expect(macosBranch.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
-		await expect(macosBranch.getByRole('link', { name: 'macOS', exact: true })).toBeVisible();
-		const macosTopBefore = (await macosBranch.locator(':scope > summary').boundingBox())?.y;
+		const macosLink = localNavigation.getByRole('link', { name: 'macOS', exact: true });
+		await expect(macosLink).toBeVisible();
+		await expect(localNavigation.getByRole('link', { name: 'Install', exact: true })).toHaveCount(0);
+		const macosTopBefore = (await macosLink.boundingBox())?.y;
 		const headingTopBefore = (await page.getByRole('heading', { level: 1, name: 'Installation' }).boundingBox())?.y;
 
-		await macosBranch.getByRole('link', { name: 'macOS', exact: true }).click();
+		await macosLink.click();
 		await expect(page).toHaveURL(/\/guides\/installation\/macos\/$/);
 		const nextLocalNavigation = page.locator('.tree-local-navigation');
 		const nextInstallationBranch = nextLocalNavigation.locator('details[data-page-path="guides/installation"]');
-		const nextMacosBranch = nextLocalNavigation.locator('details[data-page-path="guides/installation/macos"]');
 		await expect(nextInstallationBranch).toHaveAttribute('open', '');
-		await expect(nextInstallationBranch.getByRole('link', { name: 'Installation details', exact: true })).toBeVisible();
-		await expect(nextMacosBranch).toHaveAttribute('open', '');
-		await expect(nextMacosBranch.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
+		await expect(nextInstallationBranch.getByRole('link', { name: 'Installation', exact: true })).toBeVisible();
+		const nextMacosLink = nextLocalNavigation.getByRole('link', { name: 'macOS', exact: true });
+		await expect(nextMacosLink).toHaveAttribute('aria-current', 'page');
+		await expect(nextLocalNavigation.getByRole('link', { name: 'Install', exact: true })).toHaveCount(0);
 
-		const macosTopAfter = (await nextMacosBranch.locator(':scope > summary').boundingBox())?.y;
+		const macosTopAfter = (await nextMacosLink.boundingBox())?.y;
 		const headingTopAfter = (await page.getByRole('heading', { level: 1, name: 'macOS' }).boundingBox())?.y;
 		expect(macosTopBefore).toBeDefined();
 		expect(macosTopAfter).toBeDefined();
@@ -202,12 +193,13 @@ test.describe('desktop tree navigation', () => {
 		expect(localNavigationTopBefore).toBeDefined();
 		expect(localNavigationTopAfter).toBeDefined();
 		expect(Math.abs((localNavigationTopAfter ?? 0) - (localNavigationTopBefore ?? 0))).toBeLessThan(2);
+		await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
 	});
 
 	test('reserves navigation height for a wrapped current-page title', async ({ page }) => {
-		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 		const currentPageDisclosure = page.locator(
-			'.tree-local-navigation details[data-page-path="guides/installation/macos"]',
+			'.tree-local-navigation details[data-page-path="guides/installation"]',
 		);
 		const wrappedTitle = 'A deliberately long current page title that wraps';
 		await currentPageDisclosure.locator(':scope > summary .navigation-page-summary-title')
@@ -240,6 +232,99 @@ test.describe('desktop tree navigation', () => {
 		await localNavigation.evaluate((element) => { element.scrollTop = 120; });
 		expect(await localNavigation.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
 		expect(await page.evaluate(() => window.scrollY)).toBe(0);
+	});
+
+	test('keeps sidenotes in normal flow beside a persistent contents rail', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const note = page.locator('.section-note').first();
+		const paragraph = page.locator('.section-markdown p').first();
+		const contentsNavigation = page.locator('.page-contents-navigation-rail');
+		const [noteBox, paragraphBox, contentsBox] = await Promise.all([
+			note.boundingBox(),
+			paragraph.boundingBox(),
+			contentsNavigation.boundingBox(),
+		]);
+
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(noteBox).not.toBeNull();
+		expect(paragraphBox).not.toBeNull();
+		expect(contentsBox).not.toBeNull();
+		expect(noteBox?.x ?? 0).toBeGreaterThanOrEqual((paragraphBox?.x ?? 0) - 1);
+		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThan((contentsBox?.x ?? 0) - 8);
+	});
+});
+
+test.describe('contextual automatic navigation', () => {
+	test.use({ hasTouch: false, isMobile: false, viewport: desktopViewport });
+
+	test('keeps Home simple while introducing both rails inside a nested branch', async ({ page }) => {
+		await page.goto('/', { waitUntil: 'networkidle' });
+		await expect(page.locator('.site-top')).toHaveAttribute('data-navigation-mode', 'top');
+		await expect(page.locator('.tree-local-navigation')).toHaveCount(0);
+		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
+		await expect(page.locator('.site-nav-submenu')).toHaveCount(0);
+		await expect(page.locator('.site-nav > ul > li > a')).toHaveText([
+			'Nested pages',
+			'Guides',
+			'Reference',
+		]);
+		const homeNavigationX = (await page.locator('.site-nav-row').boundingBox())?.x;
+
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		await expect(page.locator('.site-top')).toHaveAttribute('data-navigation-mode', 'tree');
+		await expect(page.locator('.tree-local-navigation')).toBeVisible();
+		await expect(page.locator('.page-contents-navigation-rail')).toBeVisible();
+		await expect(page.locator('.site-nav > ul > li > a')).toHaveText([
+			'Nested pages',
+			'Guides',
+			'Reference',
+		]);
+		const branchNavigationX = (await page.locator('.site-nav-row').boundingBox())?.x;
+		expect(homeNavigationX).toBeDefined();
+		expect(branchNavigationX).toBeDefined();
+		expect(Math.abs((homeNavigationX ?? 0) - (branchNavigationX ?? 0))).toBeLessThan(1);
+	});
+
+	test('reflows page contents into the document at intermediate widths', async ({ page }) => {
+		await page.setViewportSize({ width: 960, height: 900 });
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		await expect(page.locator('.tree-local-navigation')).toBeVisible();
+		await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
+		await expect(page.locator('.page-contents-navigation-inline')).toBeVisible();
+	});
+
+	test('keeps the page axis stable when a short page omits the contents rail', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const positionsWithContents = await page.locator('.site-page-layout-tree').evaluate((layout) => {
+			const pageRail = layout.querySelector('.tree-local-navigation');
+			const content = layout.querySelector('.site-content');
+			if (!(pageRail instanceof HTMLElement) || !(content instanceof HTMLElement)) {
+				throw new Error('Expected page rail and content.');
+			}
+
+			return {
+				pageRailX: pageRail.getBoundingClientRect().x,
+				contentX: content.getBoundingClientRect().x,
+			};
+		});
+
+		await page.goto('/guides/release-notes/', { waitUntil: 'networkidle' });
+		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
+		const positionsWithoutContents = await page.locator('.site-page-layout-tree').evaluate((layout) => {
+			const pageRail = layout.querySelector('.tree-local-navigation');
+			const content = layout.querySelector('.site-content');
+			if (!(pageRail instanceof HTMLElement) || !(content instanceof HTMLElement)) {
+				throw new Error('Expected page rail and content.');
+			}
+
+			return {
+				pageRailX: pageRail.getBoundingClientRect().x,
+				contentX: content.getBoundingClientRect().x,
+			};
+		});
+
+		expect(Math.abs(positionsWithContents.pageRailX - positionsWithoutContents.pageRailX)).toBeLessThan(1);
+		expect(Math.abs(positionsWithContents.contentX - positionsWithoutContents.contentX)).toBeLessThan(1);
 	});
 });
 

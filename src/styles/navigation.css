@@ -22,10 +22,6 @@
 	padding: 0.8rem 0 0.7rem;
 }
 
-.site-top[data-navigation-mode='tree'] .site-nav-row {
-	width: min(calc(100% - (var(--content-gutter) * 2)), max(var(--page-width), 76rem));
-}
-
 .site-nav-row-mobile-only {
 	display: none;
 }
@@ -272,6 +268,10 @@
 	width: auto;
 	height: var(--site-brand-logo-height, 2.6rem);
 	max-width: min(30vw, 18rem);
+}
+
+.site-top-has-navigation-rail-frame .site-nav-row {
+	width: min(calc(100% - (var(--content-gutter) * 2)), max(var(--page-width), 86rem));
 }
 
 .site-nav ul,

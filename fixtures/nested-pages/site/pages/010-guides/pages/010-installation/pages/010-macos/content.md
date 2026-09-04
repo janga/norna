@@ -7,7 +7,9 @@ page:
 
 ## Install
 
-This third-level page is available at `/guides/installation/macos/`.
+This third-level page is available at `/guides/installation/macos/`. {note-ref}
+
+{note: Notes stay in the reading flow when the right contents rail is present.}
 
 ### Prerequisites
 

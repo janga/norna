@@ -490,8 +490,16 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'href="/site/about/">About the site</a>',
 	);
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'<aside id="tree-local-navigation"',
+	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'data-navigation-mode="top"',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'),
 		'<aside id="tree-local-navigation"',
 	);
 	await assertFileIncludes(
@@ -546,8 +554,12 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-background-color: var(--color-surface-base-background)',
 	);
-	await assertFileExcludes(
+	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'--section-background-color: var(--color-surface-soft-background)',
+	);
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'),
 		'--section-background-color: var(--color-surface-soft-background)',
 	);
 	await assertFileIncludes(

@@ -63,6 +63,8 @@ try {
 	}
 	assert.match(rootHtml, /--image-width: 920px/);
 	assert.match(rootHtml, /--space-section-to-section-desktop: clamp\(1\.2rem, 2\.4vw, 2\.25rem\)/);
+	assert.match(rootHtml, /data-navigation-mode="top"/);
+	assert.doesNotMatch(rootHtml, /class="tree-local-navigation"/);
 	assert.match(installationHtml, /--image-width: 760px/);
 	assert.match(installationHtml, /--space-section-to-section-desktop: clamp\(2\.25rem, 5vw, 4\.5rem\)/);
 	assert.match(installationHtml, /--section-body-width-desktop: min\(60ch,/);
@@ -79,13 +81,18 @@ try {
 	assert.match(macosHtml, /<input\b[^>]*data-reader-focus/);
 	assert.match(macosHtml, /"focusReading":true/);
 	assert.match(macosHtml, /<aside id="tree-local-navigation" class="tree-local-navigation" data-navigation-root="\/guides\/">/);
+	const treeNavigationStart = macosHtml.indexOf('<aside id="tree-local-navigation"');
+	const treeNavigationEnd = macosHtml.indexOf('</aside>', treeNavigationStart);
+	const treeNavigationHtml = macosHtml.slice(treeNavigationStart, treeNavigationEnd);
+	assert.doesNotMatch(treeNavigationHtml, /class="navigation-page-sections"/);
+	assert.doesNotMatch(treeNavigationHtml, /class="page-contents-links/);
 	assert.match(macosHtml, /<ul class="navigation-page-tree navigation-page-tree-sidebar">/);
 	assert.match(macosHtml, /<details class="navigation-page-branch navigation-page-disclosure navigation-category-disclosure navigation-page-disclosure-sidebar" data-page-path="guides" data-current-branch="true"/);
 	assert.match(macosHtml, /<summary class="navigation-page-summary"[^>]*><span class="navigation-page-summary-title">Guides<\/span>/);
 	assert.doesNotMatch(macosHtml, /class="navigation-category-disclosure"[^>]*>[\s\S]*?class="navigation-page-open-link"[^>]*>Guides<\/a>/);
 	assert.match(macosHtml, /<nav class="site-breadcrumbs" aria-label="Breadcrumb"><ol><li><span>Guides<\/span><\/li><li><a href="\/guides\/installation\/">Installation<\/a><\/li><li><span aria-current="page">macOS<\/span>/);
-	assert.match(macosHtml, /<nav class="navigation-page-sections" aria-label="Page contents: macOS">/);
-	assert.doesNotMatch(macosHtml, /class="tree-page-contents"/);
+	assert.match(macosHtml, /<aside class="page-contents-navigation page-contents-navigation-inline"><nav aria-label="Page contents: macOS">/);
+	assert.match(macosHtml, /<aside class="page-contents-navigation page-contents-navigation-rail"><nav aria-label="Page contents: macOS">/);
 	assert.match(macosHtml, /href="#install">Install<\/a><ol><li><a href="#prerequisites">Prerequisites<\/a>/);
 	assert.doesNotMatch(macosHtml, /<nav class="page-nav"/);
 	assert.ok(

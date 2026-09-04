@@ -194,5 +194,10 @@ assert.match(
 	/\.tree-local-navigation\s*\{[\s\S]*?border-inline-end:\s*1px solid var\(--color-nav-separator\)/u,
 	'tree navigation must use one low-contrast boundary against the content canvas',
 );
+assert.match(
+	stylesheet,
+	/\.page-contents-navigation-rail\s*\{[\s\S]*?border-inline-start:\s*1px solid var\(--color-nav-separator\)/u,
+	'the contents rail must close the opposite edge of the content canvas',
+);
 
 console.log('Presentation engine contract tests passed.');
