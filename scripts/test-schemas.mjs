@@ -186,6 +186,11 @@ assert.match(buildInfo.markdownDescription, /footer:\n  buildInfo: true/);
 const theme = JSON.parse(await readFile(path.join(root, 'schemas', 'theme.schema.json'), 'utf8'));
 assert.equal(theme.properties.layout.properties.gutter.defaultSnippets[0].label, 'Responsive page gutter');
 assert.equal(theme.properties.appearance.defaultSnippets[0].label, 'Set the initial appearance');
+assert.match(theme.properties.appearance.description, /The default is system\./);
+assert.match(
+	theme.properties.appearance.properties.default.description,
+	/Omit this setting to follow the visitor's operating-system preference\./,
+);
 assert.equal(theme.properties.readerControls.defaultSnippets[0].label, 'Configure the Display panel');
 assert.deepEqual(Object.keys(theme.properties.readerControls.properties), ['appearance', 'focusReading']);
 assert.match(
@@ -204,6 +209,7 @@ assert.match(
 	theme.properties.readerControls.properties.focusReading.markdownDescription,
 	/lets readers hide navigation, breadcrumbs, and the footer/,
 );
+assert.match(theme.properties.palette.description, /without changing the initial appearance/);
 assert.deepEqual(
 	theme.properties.palette.oneOf.map((entry) => entry.const),
 	[

@@ -37,7 +37,7 @@
       "type": "object",
       "properties": {
         "default": {
-          "description": "Initial appearance. System follows the visitor's operating-system preference.",
+          "description": "Initial appearance. Omit this setting to follow the visitor's operating-system preference.",
           "type": "string",
           "oneOf": [
             {
@@ -59,7 +59,7 @@
               "markdownDescription": "Start with the palette's dark appearance.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#appearance)"
             }
           ],
-          "markdownDescription": "```yaml\nappearance:\n  default: system\n```\n\nInitial appearance. System follows the visitor's operating-system preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#appearance)",
+          "markdownDescription": "```yaml\nappearance:\n  default: system\n```\n\nInitial appearance. Omit this setting to follow the visitor's operating-system preference.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#appearance)",
           "examples": [
             "system",
             "light",
@@ -68,8 +68,8 @@
         }
       },
       "additionalProperties": false,
-      "description": "Site-wide initial appearance.",
-      "markdownDescription": "```yaml\nappearance:\n  default: system\n```\n\nSelects the initial appearance. Enable the reader-facing choice under readerControls.\n\n[Appearance](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#appearance)",
+      "description": "Site-wide initial appearance. The default is system.",
+      "markdownDescription": "```yaml\nappearance:\n  default: system\n```\n\nSelects the initial Appearance. Omit this setting to follow the visitor's system preference. Enable the reader-facing choice under readerControls.\n\n[Appearance](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#appearance)",
       "defaultSnippets": [
         {
           "label": "Set the initial appearance",
@@ -1672,7 +1672,7 @@
     },
     "palette": {
       "type": "string",
-      "description": "Coordinated site color palette. Every palette provides light and dark variants. Omit this to use the selected preset.",
+      "description": "Coordinated site color palette. Every palette provides light and dark variants without changing the initial appearance. Omit this to use the selected preset.",
       "oneOf": [
         {
           "const": "near-monochrome",
@@ -1725,11 +1725,11 @@
         {
           "const": "vivid-night",
           "title": "Vivid night",
-          "description": "Indigo surfaces with a brighter cyan accent and a dark-first character. Includes coordinated light and dark variants.",
-          "markdownDescription": "Indigo surfaces with a brighter cyan accent and a dark-first character. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#palette-and-appearance)"
+          "description": "Indigo-led surfaces with brighter cyan and blue accents. Includes coordinated light and dark variants.",
+          "markdownDescription": "Indigo-led surfaces with brighter cyan and blue accents. Includes coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#palette-and-appearance)"
         }
       ],
-      "markdownDescription": "```yaml\npalette: warm-paper\n```\n\nChooses the site color character. Every palette provides coordinated light and dark variants.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#palette-and-appearance)",
+      "markdownDescription": "```yaml\npalette: warm-paper\n```\n\nChooses the site color character. Every palette provides coordinated light and dark variants without changing the initial Appearance.\n\n[Palette and appearance](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#palette-and-appearance)",
       "examples": [
         "near-monochrome",
         "warm-paper",

@@ -46,7 +46,7 @@ section of this reference.
 
 | Preset | Intended use | Default direction |
 | --- | --- | --- |
-| `portfolio` | Portfolios and image-led presentation | Restrained sans-serif typography, broad text and image areas, a dark near-monochrome default, and square corners. |
+| `portfolio` | Portfolios and image-led presentation | Restrained sans-serif typography, broad text and image areas, near-monochrome colors, and square corners. |
 | `documentation` | Guides and reference material | Serif reading typography, narrow prose, compact spacing, warm paper colors, and rounded corners. |
 | `project` | Project and product sites that combine explanation, code, cards, and images | System sans-serif typography, normal-width prose, compact spacing, near-monochrome colors, and rounded corners. |
 | `statement` | Short editorial, campaign, or statement-led sites | Expressive sans-serif typography, spacious rhythm, prominent media, warm paper colors, and square corners. |
@@ -75,7 +75,7 @@ preset: portfolio
 | Setting | Preset value |
 | --- | --- |
 | `palette` | `near-monochrome` |
-| `appearance.default` | `dark` |
+| `appearance.default` | `system` |
 | `typography.fontFamily` | `'Helvetica Neue', Arial, sans-serif` |
 | `typography.profile` | `restrained` |
 | `typography.rhythm` | `normal` |
@@ -460,20 +460,19 @@ palette: forest-moss
 ```
 
 Every built-in palette provides coordinated light and dark variants. The
-default appearance in the table applies only when neither a preset nor an
-explicit `appearance.default` supplies another default.
+palette does not choose which variant visitors see initially.
 
-| Value | Color character | Palette default appearance |
-| --- | --- | --- |
-| `near-monochrome` | Neutral grays and off-whites with almost no visible hue. | Dark |
-| `warm-paper` | Warm off-whites and browns resembling paper and ink. | Light |
-| `retro-earth` | Earthy ochres, olives, and warm neutrals with a subdued retro character. | Light |
-| `clay-rose` | Muted clay, rose, and wine tones with a warm editorial character. | Light |
-| `forest-moss` | Botanical greens, mossy surfaces, and warm lichen neutrals. | Light |
-| `mineral-teal` | Cool mineral greens with muted teal accents and pale aqua-gray surfaces. | Light |
-| `arctic-blue` | Cool blue-gray surfaces with clear, restrained blue accents. | Light |
-| `soft-lavender` | Quiet lavender surfaces with low-key mauve accents. | Light |
-| `vivid-night` | Indigo surfaces with a brighter cyan accent and a dark-first character. | Dark |
+| Value | Color character |
+| --- | --- |
+| `near-monochrome` | Neutral grays and off-whites with almost no visible hue. |
+| `warm-paper` | Warm off-whites and browns resembling paper and ink. |
+| `retro-earth` | Earthy ochres, olives, and warm neutrals with a subdued retro character. |
+| `clay-rose` | Muted clay, rose, and wine tones with a warm editorial character. |
+| `forest-moss` | Botanical greens, mossy surfaces, and warm lichen neutrals. |
+| `mineral-teal` | Cool mineral greens with muted teal accents and pale aqua-gray surfaces. |
+| `arctic-blue` | Cool blue-gray surfaces with clear, restrained blue accents. |
+| `soft-lavender` | Quiet lavender surfaces with low-key mauve accents. |
+| `vivid-night` | Indigo-led surfaces with brighter cyan and blue accents. |
 
 Omit `palette` to use the selected preset's palette. Without a preset, Norna
 uses `near-monochrome`. The palette is site-wide so navigation, page content,
@@ -500,22 +499,23 @@ appearance:
 | `light` | Use the palette's light variant. |
 | `dark` | Use the palette's dark variant. |
 
-Omit `appearance` to use the selected preset's default. Without a preset, Norna
-uses the palette default shown above. Overriding a preset's palette does not
-replace the preset's appearance default.
+Omit `appearance` to use `system`. This default is the same for every built-in
+preset and for a root theme without a preset. Changing only `palette` never
+changes the initial Appearance.
 
 Current preset defaults are:
 
 | Preset | Palette | Default appearance | Appearance choice in Display |
 | --- | --- | --- | --- |
-| `portfolio` | `near-monochrome` | `dark` | Enabled |
+| `portfolio` | `near-monochrome` | `system` | Enabled |
 | `documentation` | `warm-paper` | `system` | Enabled |
 | `project` | `near-monochrome` | `system` | Enabled |
 | `statement` | `warm-paper` | `system` | Enabled |
 
-A preset supplies both a palette and a default appearance. Overriding only
-`palette` keeps the preset's default appearance; set both when both choices
-should change.
+All built-in presets explicitly use the universal `system` default. Set
+`appearance.default` to `light` or `dark` only when the site should start with
+one fixed variant. A reader's stored Appearance choice takes precedence over
+that site default.
 
 Appearance belongs to the root theme because navigation, page frame, section
 backgrounds, controls, and text must change together. Page-local themes cannot
@@ -547,7 +547,7 @@ The Display panel then contains:
 | Choice | Availability | Configured default |
 | --- | --- | --- |
 | Reading width | Always | Derived from `layout.textWidth`: `narrow`, `normal`, or `wide` |
-| Appearance | When `readerControls.appearance` is `true` | `appearance.default`, or the preset default |
+| Appearance | When `readerControls.appearance` is `true` | `appearance.default`, otherwise `system` |
 | Focus reading | When `readerControls.focusReading` is `true`, or navigation resolves to `tree` | Off |
 
 Narrow, Standard, and Wide limit prose to approximately `60ch`, `72ch`, and

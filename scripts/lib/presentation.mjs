@@ -44,7 +44,6 @@ const createPaletteMode = ({ appearance, page, surfaces, frame, css }) => {
 
 const presentationPalettes = Object.freeze({
 	'near-monochrome': Object.freeze({
-		defaultAppearance: 'dark',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -85,7 +84,6 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'arctic-blue': Object.freeze({
-		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -126,7 +124,6 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'mineral-teal': Object.freeze({
-		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -167,7 +164,6 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'soft-lavender': Object.freeze({
-		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -208,7 +204,6 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'warm-paper': Object.freeze({
-		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -249,7 +244,6 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'retro-earth': Object.freeze({
-		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -290,7 +284,6 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'clay-rose': Object.freeze({
-		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -331,7 +324,6 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'forest-moss': Object.freeze({
-		defaultAppearance: 'light',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -372,7 +364,6 @@ const presentationPalettes = Object.freeze({
 		}),
 	}),
 	'vivid-night': Object.freeze({
-		defaultAppearance: 'dark',
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
@@ -477,7 +468,7 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 	const palette = getPresentationPalette(paletteName);
 	const appearance = normalizedTheme.appearance ?? {};
 	const readerControls = normalizedTheme.readerControls ?? {};
-	const defaultAppearance = appearance.default ?? palette.defaultAppearance;
+	const defaultAppearance = appearance.default ?? 'system';
 	if (!appearanceNames.includes(defaultAppearance)) {
 		throw new Error(`appearance.default must be one of ${appearanceNames.join(', ')} in ${sourceLabel}.`);
 	}

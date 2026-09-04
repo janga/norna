@@ -32,7 +32,7 @@ const expectedPresetThemes = JSON.parse(await readFile(
 
 const expectedPresetRecipes = {
 	portfolio: {
-		color: 'near-monochrome-dark',
+		color: 'near-monochrome-adaptive',
 		typography: 'restrained-sans',
 		rhythm: 'balanced',
 		geometry: 'image-led',
@@ -177,7 +177,7 @@ try {
 	);
 	assert.throws(
 		() => resolveThemeProfileRecipe({ ...themePresetRecipes.project, color: 'unknown' }, 'invalid recipe'),
-		/Unknown color profile "unknown" in invalid recipe.*near-monochrome-dark, near-monochrome-adaptive, warm-paper-adaptive/,
+		/Unknown color profile "unknown" in invalid recipe.*near-monochrome-adaptive, warm-paper-adaptive/,
 	);
 	const missingProfileRecipe = { ...themePresetRecipes.project };
 	delete missingProfileRecipe.media;
@@ -205,7 +205,15 @@ try {
 				);
 			}
 		}
+		assert.equal(
+			resolveThemePresentation({ palette: paletteName }, `${paletteName} default appearance`).appearance.default,
+			'system',
+			`${paletteName} must not change the universal system Appearance default.`,
+		);
 	}
+	assert.equal(resolveThemePresentation({}).appearance.default, 'system');
+	assert.equal(resolveThemePresentation({ appearance: { default: 'light' } }).appearance.default, 'light');
+	assert.equal(resolveThemePresentation({ appearance: { default: 'dark' } }).appearance.default, 'dark');
 
 	const overridden = resolveThemeConfig({
 		preset: 'documentation',

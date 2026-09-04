@@ -4,7 +4,7 @@ import { resolveThemeProfileRecipe } from './theme-profiles.mjs';
 
 export const themePresetRecipes = Object.freeze({
 	portfolio: Object.freeze({
-		color: 'near-monochrome-dark',
+		color: 'near-monochrome-adaptive',
 		typography: 'restrained-sans',
 		rhythm: 'balanced',
 		geometry: 'image-led',

@@ -35,7 +35,7 @@ export const presentationPaletteMetadata = Object.freeze({
 	),
 	'vivid-night': palette(
 		'Vivid night',
-		'Indigo surfaces with a brighter cyan accent and a dark-first character.',
+		'Indigo-led surfaces with brighter cyan and blue accents.',
 	),
 });
 

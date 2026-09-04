@@ -29,7 +29,7 @@ const tempParent = path.join(repoRoot, 'node_modules', '.cache');
 
 const presets = Object.freeze({
 	portfolio: Object.freeze({
-		appearance: 'dark',
+		appearance: 'system',
 		fontFamily: "'Helvetica Neue', Arial, sans-serif",
 		imageWidth: '1000px',
 		lightPage: '#f7f7f5',

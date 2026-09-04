@@ -241,12 +241,12 @@ const addThemeHelp = (jsonSchema) => {
 	]);
 	addHelp(jsonSchema, 'palette', [
 		yamlExample('palette: warm-paper'),
-		'Chooses the site color character. Every palette provides coordinated light and dark variants.',
+		'Chooses the site color character. Every palette provides coordinated light and dark variants without changing the initial Appearance.',
 		documentationLink('Palette and appearance', 'theme.md', 'palette-and-appearance'),
 	], presentationPaletteNames);
 	addHelp(jsonSchema, 'appearance', [
 		yamlExample('appearance:\n  default: system'),
-		'Selects the initial appearance. Enable the reader-facing choice under readerControls.',
+		'Selects the initial Appearance. Omit this setting to follow the visitor\'s system preference. Enable the reader-facing choice under readerControls.',
 		documentationLink('Appearance', 'theme.md', 'appearance'),
 	]);
 	addFieldHelp(jsonSchema, 'appearance.default', 'appearance:\n  default: system', 'theme.md', 'appearance', ['system', 'light', 'dark']);

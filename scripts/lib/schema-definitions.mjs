@@ -17,13 +17,13 @@ const textWidth = z.enum(['narrow', 'normal', 'wide']).describe('Maximum width o
 const headingWeight = z.union([z.literal(400), z.literal(500), z.literal(600), z.literal(700)]).describe('CSS font weight.');
 const typographyProfile = z.enum(['restrained', 'dense', 'reading', 'statement']).describe('Coordinated typography defaults. Omit this to use the selected preset.');
 const themePreset = z.enum(themePresetNames).describe('Complete Norna visual preset. Start here and add overrides only when needed.');
-const presentationPalette = z.enum(presentationPaletteNames).describe('Coordinated site color palette. Every palette provides light and dark variants. Omit this to use the selected preset.');
+const presentationPalette = z.enum(presentationPaletteNames).describe('Coordinated site color palette. Every palette provides light and dark variants without changing the initial appearance. Omit this to use the selected preset.');
 const themeAppearance = z.object({
-	default: z.enum(['system', 'light', 'dark']).optional().describe('Initial appearance. System follows the visitor\'s operating-system preference.'),
+	default: z.enum(['system', 'light', 'dark']).optional().describe('Initial appearance. Omit this setting to follow the visitor\'s operating-system preference.'),
 }).strict().refine(
 	(value) => value.default !== undefined,
 	'Specify default.',
-).describe('Site-wide initial appearance.');
+).describe('Site-wide initial appearance. The default is system.');
 const readerControls = z.object({
 	appearance: z.boolean().optional().describe('Show an Appearance control that lets readers choose System, Light, or Dark.'),
 	focusReading: z.boolean().optional().describe('Show a Focus reading control that lets readers hide navigation, breadcrumbs, and the footer. Sites with tree navigation always show this control.'),

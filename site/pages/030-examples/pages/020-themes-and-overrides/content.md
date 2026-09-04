@@ -114,8 +114,9 @@ corners, typography, navigation treatment or content-block defaults.
 Narrow, Standard and Wide reading widths are always available in the Display
 panel. The root theme chooses the initial width; a reader's selection is stored
 in that browser and does not modify `theme.yaml`. The same distinction applies
-to appearance: the root theme supplies the configured default, while a reader
-may temporarily choose System, Light or Dark when that control is enabled.
+to appearance: the root theme supplies the configured default, or System when
+it is omitted, while a reader may choose System, Light or Dark when that control
+is enabled.
 
 The site owner may also offer Appearance and Focus reading choices:
 
