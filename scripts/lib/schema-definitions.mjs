@@ -37,7 +37,7 @@ const backgroundPattern = z.enum(['uniform', 'alternating', 'accented']).describ
 const cornerTreatment = z.enum(['square', 'rounded']).describe('Site-wide corner treatment for navigation, cards and framed content.');
 const cardListWidth = z.enum(['text', 'narrow', 'normal', 'wide']).describe('Default maximum width for card lists. A width written in a norna-card-list block overrides this value.');
 const imagePresentation = z.enum(imagePresentationNames).describe('How managed image stacks and carousels are placed on the page. Prose-aligned starts them at the body-text edge; centered-fit centers them and constrains them by available width and viewport height.');
-const navigationMode = z.enum(navigationModeNames).describe('Site-wide navigation model. Automatic selects from the site structure.');
+const navigationMode = z.enum(navigationModeNames).describe('Site-wide navigation policy. Automatic selects an effective mode for each page from its active top-level branch.');
 const createLineHeight = (minimum, role) => z.number()
 	.min(minimum, `Use a unitless ${role} line height of at least ${minimum}.`)
 	.max(3, `Use a unitless ${role} line height of at most 3.`)
@@ -174,7 +174,7 @@ const themeBlocks = z.object({
 ).describe('Optional site-wide defaults for structured Norna content blocks.');
 const configNavigation = z.object({
 	mode: navigationMode.optional().describe('Navigation model. Omit this to let Norna choose from the site structure.'),
-	sectionTracking: z.boolean().optional().default(false).describe('As the reader scrolls in tree navigation, mark the last H2 or H3 that has reached the reading area below the sticky header. The URL and keyboard focus do not change.'),
+	sectionTracking: z.boolean().optional().default(false).describe('As the reader scrolls in tree navigation, mark the last H2 or H3 in the right contents rail that has reached the reading area below the sticky header. The URL and keyboard focus do not change.'),
 }).strict().describe('Site-wide navigation behavior.');
 const themeSections = z.object({
 	backgroundPattern: backgroundPattern.optional().describe('Section background pattern. Alternating and accented create full-width bands with sections or top navigation; tree navigation requires uniform.'),

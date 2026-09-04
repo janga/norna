@@ -23,10 +23,10 @@ export const schemaValueDefinitions = Object.freeze([
 		smooth: option('Browser smooth', 'Use the browser\'s native smooth scrolling for anchor navigation.'),
 	}),
 	definition(['automatic', 'sections', 'top', 'tree'], {
-		automatic: option('Automatic', 'Choose sections for one page, top navigation for a shallow multi-page site, and tree navigation for deeper content.'),
+		automatic: option('Automatic', 'Choose sections for one page, top navigation for Home and independent top-level pages, and tree navigation inside branches with listed children or categories.'),
 		sections: option('Sections', 'Navigate the sections of the current page.'),
 		top: option('Top', 'Use pages in the top navigation and sections below them.'),
-		tree: option('Tree', 'Use a hierarchical site-wide navigation tree.'),
+		tree: option('Tree', 'Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.'),
 	}),
 	definition(['en', 'sv'], {
 		en: option('English', 'Use Norna\'s built-in English interface text.'),

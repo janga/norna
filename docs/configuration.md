@@ -69,14 +69,15 @@ the reader's position on the page.
 
 ### `navigation.mode`
 
-`navigation.mode` selects one navigation model for the whole site.
+`navigation.mode` selects the site-wide navigation policy. The default policy
+can resolve to a different effective mode for each page.
 
 | Value | Effect | Structural constraint |
 | --- | --- | --- |
-| `automatic` | Select `sections`, `top`, or `tree` from the listed pages, categories, and navigable headings. | None beyond the selected mode's own requirements. |
+| `automatic` | Use `sections` for a one-page site, `top` for Home and independent top-level pages, and `tree` inside a top-level branch with listed child pages or categories. | None beyond the effective mode's own requirements. |
 | `sections` | Keep the single page's H1 destination and H2 sections in sticky page navigation. | The listed site structure must fit the single-page model. |
-| `top` | Present Home and top-level pages in the global row, with shallow page and section menus where needed. | A listed navigation category or deeper page/heading path is invalid. |
-| `tree` | Combine global top-level areas with a local page/category hierarchy and current-page headings. | No additional hierarchy limit. |
+| `top` | Present Home and top-level pages in the global row, with page and section menus where needed. | A listed navigation category is invalid. |
+| `tree` | Combine global top-level areas with a left page/category rail and, on sufficiently structured pages, a separate right H2/H3 contents rail. | No additional hierarchy limit. |
 
 The field is optional. Its default is `automatic`.
 
@@ -86,9 +87,11 @@ navigation:
   mode: automatic
 ```
 
-Navigation behavior is technical and site-wide. It cannot be configured in
-`theme.yaml` or in an individual page. A listed navigation category requires
-`tree`: `automatic` selects it, while explicit `sections` or `top` is invalid.
+Navigation policy is technical and site-wide. It cannot be configured in
+`theme.yaml` or in an individual page. In `automatic`, only pages inside a
+branch that needs a page hierarchy receive `tree`; unrelated pages retain
+their simpler navigation. A listed navigation category requires `tree` within
+its branch, so explicit `sections` or `top` is invalid when a category exists.
 This prevents a category with no URL from being presented as an ordinary page
 link. See [Pages and Categories](pages.md#navigation) for the exact automatic
 selection rules and the relationship between Home, pages, categories, and
@@ -97,8 +100,8 @@ headings, and
 
 ### `navigation.sectionTracking`
 
-`navigation.sectionTracking` controls whether tree navigation follows the
-reader's position within the current page.
+`navigation.sectionTracking` controls whether the right contents rail follows
+the reader's position within the current page.
 
 - Type: Boolean.
 - Required: no.
@@ -115,8 +118,8 @@ navigation:
 
 As the reader scrolls, Norna marks the last H2 or H3 that has reached the top
 of the reading area below the sticky header. The corresponding link in the
-desktop tree receives an underline and a position marker. Norna also exposes
-the state as `aria-current="location"`.
+right contents rail receives an underline and a position marker. Norna also
+exposes the state as `aria-current="location"`.
 
 Tracking does not change the URL, browser history, keyboard focus, or scroll
 position. When JavaScript is unavailable, the page hierarchy and its ordinary

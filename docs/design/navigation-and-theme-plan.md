@@ -70,15 +70,16 @@ The accepted information architecture is:
 - a small global navigation for the site's top-level areas;
 - a larger local page tree for the selected area;
 - breadcrumbs for location and ancestry;
-- headings for the current page integrated below that page in the local tree;
+- a separate contents rail for the current page's H2 and H3 headings;
 - one unified mobile navigation containing the whole page hierarchy and the
   current page headings.
 
 Navigation modes follow the site structure:
 
 - a single-page site uses section navigation;
-- an ordinary shallow multi-page site uses top navigation;
-- a deeper documentation-style hierarchy uses tree navigation.
+- Home and independent top-level pages use top navigation;
+- pages inside a top-level branch with listed children or categories use tree
+  navigation.
 
 The tree contract is:
 
@@ -90,8 +91,10 @@ The tree contract is:
 - an open expandable page title links to that page, while its chevron can
   collapse the node;
 - a page without headings or child pages is always a direct link;
-- headings on the current page appear under its page node rather than in a
-  separate `On this page` region;
+- the left rail contains only pages and categories from the active top-level
+  branch;
+- a separate right rail contains the current page's H2 and H3 headings when
+  there are enough to aid orientation;
 - opening one branch does not implicitly close another branch;
 - long desktop trees scroll independently of short page content;
 - mobile uses one drawer for the complete hierarchy instead of requiring a
@@ -116,7 +119,7 @@ mobile, no-JavaScript, spatial-stability, and long-navigation tests.
 Implement and verify the navigation model in this order:
 
 1. page-tree data and validation;
-2. desktop global navigation, local tree, breadcrumbs, and `On this page`;
+2. desktop global navigation, page rail, contents rail, and breadcrumbs;
 3. unified mobile navigation;
 4. keyboard, focus, current-page, and progressive-enhancement behavior;
 5. visual evaluation at representative viewport sizes.
@@ -139,7 +142,7 @@ Presets should control visual presentation, including:
 - spacing and density;
 - page and content widths;
 - the visual treatment of global navigation, local navigation, breadcrumbs,
-  and `On this page`.
+  and the contents rail.
 
 Presets must not determine page hierarchy, link membership, or semantic
 navigation structure. Those must remain stable when a preset changes.

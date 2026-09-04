@@ -81,6 +81,8 @@ pages with and without a tree rail.
   documentation branch without showing the desktop tree rail everywhere.
 - Entering the nested branch introduces its left page rail without changing
   the global top navigation; leaving the branch removes it.
+- The global top navigation does not shift horizontally when the effective
+  page mode changes between `top` and `tree`.
 - The branch landing page and every descendant expose the same local hierarchy
   and current-page context.
 - The left rail never contains unrelated top-level branches or the current
@@ -88,6 +90,8 @@ pages with and without a tree rail.
 - A qualifying page exposes H2 and H3 links in a separately named right
   contents rail, with current-location feedback when enhancement is available.
 - Pages too short to benefit do not receive an empty or redundant right rail.
+- Moving between pages with and without the right rail does not shift the left
+  rail or central document axis.
 - Breadcrumbs, active states, direct URLs, keyboard navigation, mobile
   navigation, no-JavaScript navigation, and Focus reading remain coherent.
 - At 320 CSS pixels and browser zoom up to 400 percent, prose and controls

@@ -335,21 +335,23 @@ nested entries under each non-home page or category's `pages/` directory. An
 entry with `content.md` is a routable page. An entry with `category.yaml` is a
 navigation-only category whose path remains part of descendant URLs.
 
-Navigation has two related levels:
+Navigation has three related levels:
 
 - Global navigation moves between Home and top-level page/category areas. A
   category label targets its first listed descendant page.
-- Local navigation follows nested pages, categories, and headings within the
-  active area.
-  Section links use real `href="#section-id"` anchors so they work without
-  JavaScript.
+- A left page rail follows nested pages and categories within the active
+  top-level area.
+- A separate right contents rail follows the current page's H2 and H3 headings
+  when the page has enough headings to benefit. Section links use real
+  `href="#section-id"` anchors so they work without JavaScript.
 
-Automatic navigation selects section navigation for one-page sites, top
-navigation for shallow page structures, and tree navigation for deeper page or
-heading hierarchies. A visible category also requires tree navigation because
-it is a disclosure rather than a page destination. `config.yaml` may choose a
-compatible mode explicitly. Home is a standalone front door and cannot contain
-child pages or categories.
+Automatic navigation selects section navigation for one-page sites and top
+navigation for Home and independent top-level pages. It adds tree navigation
+only within an active top-level branch that contains listed child pages or
+categories. A visible category requires tree navigation in its branch because
+it is a disclosure rather than a page destination. H2 and H3 headings do not
+change that choice. `config.yaml` may choose a compatible mode explicitly. Home
+is a standalone front door and cannot contain child pages or categories.
 
 The optional JavaScript enhancement manages menu interaction and active local
 navigation while retaining normal links and browser history. The rendered page

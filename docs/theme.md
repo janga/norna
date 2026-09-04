@@ -244,8 +244,8 @@ Optional logo display settings, banners, and the footer belong in
 
 Root `layout` settings control the site frame and default content geometry:
 
-- `pageWidth`: maximum width of the full site layout, including local tree
-  navigation where present.
+- `pageWidth`: maximum width of the full site layout, including local
+  navigation rails where present.
 - `gutter`: horizontal viewport gutter, either one CSS length or separate
   `desktop` and `mobile` values.
 - `textWidth`: body-text line length: `narrow`, `normal`, or `wide`.
@@ -287,8 +287,9 @@ The `contentSpacing` profiles supply coordinated defaults for these values.
 Text-near spacing inside Markdown, including paragraph and subheading spacing,
 belongs to typography rhythm.
 
-The horizontal gap between tree navigation and page content is coordinated by
-the selected preset. It is intentionally not a separate public override.
+The horizontal gaps between persistent navigation rails and page content are
+coordinated by the selected preset. They are intentionally not separate public
+overrides.
 
 ## Image Sizing
 
@@ -313,10 +314,11 @@ use `prose-aligned`; `portfolio` and `statement` use `centered-fit`. Without a
 preset or explicit value, Norna uses `prose-aligned`.
 
 Navigation does not select another image-presentation method. With tree
-navigation, Norna removes the persistent rail and its gap from the available
-content canvas before positioning media. `prose-aligned` retains the body-text
-edge, while `centered-fit` remains centered in the space that is left. Norna
-never centers either method against the complete browser viewport.
+navigation, Norna removes the persistent page and contents rails and their gaps
+from the available content canvas before positioning media. `prose-aligned`
+retains the body-text edge, while `centered-fit` remains centered in the space
+that is left. Norna never centers either method against the complete browser
+viewport.
 
 If viewport-height fitting makes a portrait `centered-fit` image narrower than
 its frame, the image and visible caption remain centered on the frame's axis.
@@ -644,10 +646,10 @@ viewport width. Headings, prose, images, and cards remain constrained by the
 normal page and content widths.
 
 A changing background creates a strong visual grouping. It works as a section
-cue with `sections` or `top` navigation. Tree navigation already creates a
-persistent navigation region beside the document, so it requires one continuous
-`uniform` reading background. This rule stays the same on small screens and
-when readers enable focus reading.
+cue on a page whose effective navigation is `sections` or `top`. Tree
+navigation already creates persistent navigation regions beside the document,
+so that page requires one continuous `uniform` reading background. This rule
+stays the same on small screens and when readers enable Focus reading.
 
 Omit `sections.backgroundPattern` to use the selected preset. Without a preset,
 Norna uses `uniform`. Built-in presets resolve to `uniform` automatically when
@@ -680,7 +682,8 @@ A page theme may set only:
 - `layout.textWidth`
 - `layout.contentSpacing`
 - managed-image presentation and sizing under `images`
-- `sections.backgroundPattern` when the site does not use tree navigation
+- `sections.backgroundPattern` when pages in its inherited scope do not use
+  tree navigation
 
 For example:
 
@@ -700,9 +703,11 @@ pages. A more local page or category theme may override the same limited
 fields. Site colors, corners, typography, page width, gutters, root content
 block defaults, and navigation remain constant.
 
-If `navigation.mode` is `automatic`, adding enough page or heading depth can
-make the site resolve to tree navigation. A non-uniform page override must then
-be removed or changed to `uniform`.
+If `navigation.mode` is `automatic`, adding listed children or categories to a
+top-level branch makes pages in that branch resolve to tree navigation. A
+non-uniform page override inherited by that branch must then be removed or
+changed to `uniform`. H2 and H3 headings do not change the effective navigation
+mode.
 
 Page and category themes cannot define `preset`, `palette`, `corners`,
 `typography`, `blocks`, `navigation`, `config.yaml`, or site-wide content. This

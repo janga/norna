@@ -55,8 +55,8 @@
             {
               "const": "automatic",
               "title": "Automatic",
-              "description": "Choose sections for one page, top navigation for a shallow multi-page site, and tree navigation for deeper content.",
-              "markdownDescription": "Choose sections for one page, top navigation for a shallow multi-page site, and tree navigation for deeper content.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
+              "description": "Choose sections for one page, top navigation for Home and independent top-level pages, and tree navigation inside branches with listed children or categories.",
+              "markdownDescription": "Choose sections for one page, top navigation for Home and independent top-level pages, and tree navigation inside branches with listed children or categories.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
             },
             {
               "const": "sections",
@@ -73,8 +73,8 @@
             {
               "const": "tree",
               "title": "Tree",
-              "description": "Use a hierarchical site-wide navigation tree.",
-              "markdownDescription": "Use a hierarchical site-wide navigation tree.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
+              "description": "Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.",
+              "markdownDescription": "Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
             }
           ],
           "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to let Norna choose from the site structure.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)",
@@ -87,9 +87,9 @@
         },
         "sectionTracking": {
           "default": false,
-          "description": "As the reader scrolls in tree navigation, mark the last H2 or H3 that has reached the reading area below the sticky header. The URL and keyboard focus do not change.",
+          "description": "As the reader scrolls in tree navigation, mark the last H2 or H3 in the right contents rail that has reached the reading area below the sticky header. The URL and keyboard focus do not change.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nnavigation:\n  sectionTracking: true\n```\n\nAs the reader scrolls in tree navigation, mark the last H2 or H3 that has reached the reading area below the sticky header. The URL and keyboard focus do not change.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#navigationsectiontracking)",
+          "markdownDescription": "```yaml\nnavigation:\n  sectionTracking: true\n```\n\nAs the reader scrolls in tree navigation, mark the last H2 or H3 in the right contents rail that has reached the reading area below the sticky header. The URL and keyboard focus do not change.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#navigationsectiontracking)",
           "examples": [
             true,
             false
@@ -98,7 +98,7 @@
       },
       "additionalProperties": false,
       "description": "Site-wide navigation behavior.",
-      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets one navigation model for the complete site. `automatic` selects from the page hierarchy.\n\n[Navigation reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
+      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation policy. `automatic` selects an effective mode for each page from its active top-level branch.\n\n[Navigation reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
     },
     "scrollBehavior": {
       "default": "instant",

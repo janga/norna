@@ -249,21 +249,21 @@ Each page keeps its Markdown content and images together.
 ```
 
 The top-level category stays in global navigation and opens its first child
-page. In the local tree and breadcrumbs, `Getting Started` remains a non-linked
-grouping label. The current page's H2 and H3 headings appear with the page hierarchy. On
-a small screen, the same structure becomes one expandable menu instead of a
-separate desktop sidebar.
+page. In the left page rail and breadcrumbs, `Getting Started` remains a
+non-linked grouping label. A longer page gets a separate H2/H3 contents rail on
+the right. On a small screen, pages, categories, and headings move into one
+expandable menu.
 
 Home is the exception: `000-home` is the site's front door and cannot have child
 pages or categories. Start each navigable hierarchy with another top-level
 entry beside it.
 
-On a wide screen, readers can hide or show the tree with one control. Norna
-remembers the choice for the current browser tab without moving the document
-column; without JavaScript, the tree remains visible and usable.
+On a wide screen, Focus reading can hide both rails together with other
+secondary page elements. The document column keeps its position. Without
+JavaScript, the rails remain visible and their links remain usable.
 
-For longer pages, the tree can also mark the H2 or H3 at the top of the reading
-area while the reader scrolls. Enable this optional behavior in
+For longer pages, the right contents rail can mark the H2 or H3 at the top of
+the reading area while the reader scrolls. Enable this optional behavior in
 `site/config.yaml`:
 
 ```yaml

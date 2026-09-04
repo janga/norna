@@ -49,8 +49,8 @@ Norna therefore coordinates section backgrounds with the navigation model:
   `accented` section backgrounds;
 - non-uniform section backgrounds span the viewport from edge to edge while
   text and media retain their configured content widths;
-- `tree` navigation always uses `uniform`, preserving one continuous reading
-  surface beside the persistent navigation region;
+- a page with effective `tree` navigation always uses `uniform`, preserving
+  one continuous reading surface between its persistent navigation regions;
 - enabling focus reading or moving to a small viewport must not change the
   effective background pattern;
 - cards, callouts, code, banners, and other semantic components may still use
@@ -61,11 +61,11 @@ drawers and documentation layouts: navigation is one stable region and the
 document body is another. It also avoids turning every long-form section into
 an inset card merely to contain its color.
 
-Built-in presets may retain an `alternating` or `accented` identity for shallow
-sites. The renderer resolves that preset pattern to `uniform` when the site
-uses tree navigation. A site-owner override that explicitly requests a
-non-uniform pattern with tree navigation is invalid and must produce a clear
-diagnostic rather than being silently ignored.
+Built-in presets may retain an `alternating` or `accented` identity for pages
+with `sections` or `top` navigation. The renderer resolves that preset pattern
+to `uniform` when a page uses tree navigation. A site-owner override that
+explicitly requests a non-uniform pattern for such a page is invalid and must
+produce a clear diagnostic rather than being silently ignored.
 
 ## Configuration Layers
 
@@ -163,7 +163,7 @@ construct a new design system. Public choices should be grouped by intent:
 | Color and corners | Palette family, corner treatment, and Appearance default |
 | Reading | Default prose width and content rhythm |
 | Media | Text-led, balanced, or image-led emphasis and a focused image-width override |
-| Sections | Uniform surfaces, or full-width alternating/accented surfaces when tree navigation is not used |
+| Sections | Uniform surfaces, or full-width alternating/accented surfaces on pages without tree navigation |
 | Reader controls | Optional Appearance and Focus reading choices; reading width remains engine-owned and universal |
 
 The exact YAML schema is a separate implementation decision. The conceptual
@@ -177,7 +177,7 @@ spacing overrides should not be public.
 Page-local themes remain narrower than the root theme. They may vary reading
 geometry, content rhythm, media emphasis, and section surfaces when that does
 not weaken the site's shared identity. A page theme cannot select a non-uniform
-surface pattern when the site resolves to tree navigation. Color system,
+surface pattern for pages that resolve to tree navigation. Color system,
 typography family, corners, navigation treatment, and reader-control
 availability remain site-wide.
 

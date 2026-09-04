@@ -353,40 +353,55 @@ This setting is not access control. See
 Home is always listed. Categories do not have page frontmatter; a category is
 shown only when it has a listed descendant.
 
-With `navigation.mode: automatic`, Norna chooses from the listed hierarchy:
+With `navigation.mode: automatic`, Norna chooses the effective navigation for
+each page from the listed page hierarchy:
 
-| Site structure | Selected mode |
+| Current page context | Effective mode |
 | --- | --- |
 | Home is the only listed page | `sections` |
-| Several listed pages, no categories, and no combined page/H2/H3 path deeper than two levels | `top` |
-| A listed category or a deeper page/heading path | `tree` |
+| Home in a site with additional top-level entries | `top` |
+| An independent top-level page with no listed children | `top` |
+| A page in a top-level branch that contains listed child pages or categories | `tree` |
 
-The depth includes both page directories and navigable headings. A top-level
-page is level one, its H2 headings are level two, and its H3 headings are level
-three. A child page is level two, so adding H2 headings to that page also
-requires tree navigation. Unlisted pages do not influence automatic selection.
+This choice is contextual. A deeply nested documentation branch can use
+`tree` while Home and an unrelated top-level page continue to use `top`.
+H2 and H3 headings do not make a page branch deeper and do not change the
+effective mode. Unlisted pages do not make a branch require a page rail. The
+global top row retains one width and the same destinations while readers move
+between these page contexts.
 
 The modes present the same source hierarchy differently:
 
 - `sections` keeps the one page's H1 destination and H2 sections in sticky
   page navigation.
-- `top` keeps Home and top-level pages in the global row. Child pages use page
-  submenus, and the current page's H2 sections use local navigation when there
-  is more than one.
-- `tree` keeps top-level areas in the global row and shows the active area's
-  page/category hierarchy plus current-page H2 and H3 headings in a desktop
-  sidebar.
+- `top` keeps Home and top-level pages in the global row. With an explicit
+  `top` override, child pages use page submenus. The current page's H2 sections
+  use local navigation when there is more than one.
+- `tree` keeps top-level areas in the global row. A left page rail shows only
+  pages and categories from the active top-level branch. On a page with at
+  least two H2/H3 destinations, a separate right contents rail shows those
+  headings. It omits the page H1 and H4-or-deeper headings.
+
+On wide screens, pages in the same tree branch keep a common content axis when
+the right rail is absent. The unused rail is not rendered, but moving between a
+short page and a page with a contents rail does not shift the left rail or
+document column.
+
+When there is not enough horizontal room for both rails, the contents links
+move into the document flow. On a small screen, the complete page hierarchy
+and the current page's headings remain available in the expandable menu.
 
 Categories require `tree` navigation because they need disclosure behavior
 without pretending to be page links. Explicit `sections` or `top` mode is
 therefore invalid when a listed category exists.
 
-### Focus Reading With A Desktop Tree
+### Focus Reading With Desktop Rails
 
 `tree` navigation always adds Focus reading to the Display panel, even when the
-selected preset would otherwise omit that choice. Focus reading hides the local
-tree together with the other secondary navigation, breadcrumbs, and footer.
-The Display control stays visible so the reader can restore the normal view.
+selected preset would otherwise omit that choice. Focus reading hides both
+local rails together with the other secondary navigation, breadcrumbs, and
+footer. The Display control stays visible so the reader can restore the normal
+view.
 
 The document column keeps its width and horizontal position while Focus reading
 changes. Prose, headings, images, cards, and section surfaces therefore do not
@@ -394,17 +409,17 @@ reflow or jump sideways. The choice is stored in the `norna-focus-reading`
 cookie and follows the reader across pages until it is changed or reset.
 
 On small screens, the complete hierarchy remains available in the expandable
-menu. Without JavaScript, Focus reading cannot be selected and the tree stays
-visible; all page and anchor links remain usable.
+menu. Without JavaScript, Focus reading cannot be selected and the ordinary
+navigation stays visible; all page and anchor links remain usable.
 
 ### Current Reading Position
 
-Tree navigation always identifies the current page. A site can additionally
-set `navigation.sectionTracking: true` in `config.yaml` to let the tree follow
-the reader within that page. When an H2 or H3 reaches the top of the reading
-area below the sticky header, Norna marks its corresponding tree link. The
-marker remains on that heading until the next navigable heading reaches the
-same position.
+Tree navigation identifies the current page in the left page rail. A site can
+additionally set `navigation.sectionTracking: true` in `config.yaml` to let the
+right contents rail follow the reader within that page. When an H2 or H3
+reaches the top of the reading area below the sticky header, Norna marks its
+corresponding contents link. The marker remains on that heading until the next
+navigable heading reaches the same position.
 
 This optional enhancement does not change the URL, browser history, keyboard
 focus, or scroll position. The link uses `aria-current="location"` as well as a
@@ -413,10 +428,10 @@ the marker does not follow scrolling. See
 [`navigation.sectionTracking`](configuration.md#navigationsectiontracking) for
 the setting, default, and availability.
 
-Navigation also sets the boundary for section backgrounds. `sections` and
-`top` navigation may use full-viewport `alternating` or `accented` H2 section
-bands. `tree` navigation always uses one `uniform` reading surface beside its
-persistent navigation region. See
+Navigation also sets the boundary for section backgrounds. Pages whose
+effective mode is `sections` or `top` may use full-viewport `alternating` or
+`accented` H2 section bands. A page whose effective mode is `tree` always uses
+one `uniform` reading surface between its persistent rails. See
 [Section Backgrounds](theme.md#section-backgrounds).
 
 On a small screen, page, category, and heading destinations are collected in

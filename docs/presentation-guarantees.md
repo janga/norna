@@ -29,9 +29,11 @@ arbitrary component colors. See
 [Palette And Appearance](theme.md#palette-and-appearance).
 
 Desktop navigation uses the same opaque base background as the page. The
-sticky top bar uses a subtle boundary against scrolling content, and a
-persistent tree rail uses spacing, hierarchy, current states and one
-low-contrast separator instead of a contrasting navigation panel.
+sticky top bar uses a subtle boundary against scrolling content. In a nested
+branch, the left page rail and optional right contents rail use spacing,
+hierarchy, current states, and low-contrast separators instead of contrasting
+navigation panels. Tree pages reserve a common desktop content axis whether or
+not the current page has enough headings to show the right rail.
 
 ## Typography And Reading Width
 
@@ -46,11 +48,12 @@ to follow it.
 
 Managed image stacks and carousels preserve intrinsic proportions and do not
 crop by default. Norna positions them inside the current page's content canvas,
-after persistent navigation and its gap have been excluded. Prose-aligned media
-keeps a stable edge with the body text; centered-fit media shares one center
-axis with its caption and remains within both the available width and its
-configured viewport-height limit. Both methods return to the available content
-width on narrow screens. See [Image Sizing](theme.md#image-sizing).
+after persistent navigation rails and their gaps have been excluded.
+Prose-aligned media keeps a stable edge with the body text; centered-fit media
+shares one center axis with its caption and remains within both the available
+width and its configured viewport-height limit. Both methods return to the
+available content width on narrow screens. See
+[Image Sizing](theme.md#image-sizing).
 
 ## Reflow And Text Adaptation
 
