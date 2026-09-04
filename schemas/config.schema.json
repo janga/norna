@@ -84,16 +84,6 @@
             "top",
             "tree"
           ]
-        },
-        "sectionTracking": {
-          "default": false,
-          "description": "As the reader scrolls in tree navigation, mark the last H2 or H3 in the right contents rail that has reached the reading area below the sticky header. The URL and keyboard focus do not change.",
-          "type": "boolean",
-          "markdownDescription": "```yaml\nnavigation:\n  sectionTracking: true\n```\n\nAs the reader scrolls in tree navigation, mark the last H2 or H3 in the right contents rail that has reached the reading area below the sticky header. The URL and keyboard focus do not change.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#navigationsectiontracking)",
-          "examples": [
-            true,
-            false
-          ]
         }
       },
       "additionalProperties": false,

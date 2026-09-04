@@ -16,7 +16,6 @@ const importScript = `
 		language: projectConfig.locale.lang,
 		labels: projectConfig.locale.labels,
 		navigationMode: projectConfig.navigation.mode,
-		sectionTracking: projectConfig.navigation.sectionTracking,
 		scrollBehavior: projectConfig.navigation.scrollBehavior,
 		url: projectConfig.site.url,
 	}));
@@ -98,7 +97,6 @@ try {
 			skipToContent: 'Skip to content',
 		},
 		navigationMode: 'automatic',
-		sectionTracking: false,
 		scrollBehavior: 'instant',
 		url: 'https://example.com/docs/',
 	});
@@ -115,11 +113,10 @@ try {
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 
-	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\nnavigation:\n  mode: tree\n  sectionTracking: true\n');
+	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\nnavigation:\n  mode: tree\n');
 	const treeNavigationResult = loadConfig(treeNavigationSite);
 	assert.equal(treeNavigationResult.status, 0, treeNavigationResult.stderr);
 	assert.equal(JSON.parse(treeNavigationResult.stdout).navigationMode, 'tree');
-	assert.equal(JSON.parse(treeNavigationResult.stdout).sectionTracking, true);
 
 	const overrideResult = loadConfig(minimalSite, {
 		NORNA_SITE_URL: 'http://127.0.0.1:4567/preview',
@@ -155,8 +152,8 @@ try {
 		/scrollBehavior must be one of instant, smooth/,
 	);
 	assertFailure(
-		loadConfig(await createSite('invalid-section-tracking', 'url: https://example.com/\nnavigation:\n  sectionTracking: yes\n')),
-		/navigation.sectionTracking must be true or false/,
+		loadConfig(await createSite('removed-section-tracking', 'url: https://example.com/\nnavigation:\n  sectionTracking: true\n')),
+		/navigation\.sectionTracking is no longer supported[\s\S]*Section tracking is automatic on pages with a contents rail[\s\S]*Remove navigation\.sectionTracking/,
 	);
 	assertFailure(
 		loadConfig(await createSite('obsolete-smooth-scroll', 'url: https://example.com/\nsmoothScroll: true\n')),

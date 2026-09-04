@@ -76,7 +76,7 @@ interface Props {
 		copyrightMessage?: string;
 		buildInfo?: boolean;
 	};
-	treeNavigation?: boolean;
+	contentsNavigation?: boolean;
 }
 
 const {
@@ -87,7 +87,7 @@ const {
 	frameColors,
 	pathname = '/',
 	footer,
-	treeNavigation = false,
+	contentsNavigation = false,
 } = Astro.props;
 
 const documentTitle = title;
@@ -163,7 +163,7 @@ const readerPreferencesScript = readerPreferencesEnabled
 	data-image-presentation={visualTheme.images.presentation}
 	data-reading-width={presentation.readerPreferences.defaults.readingWidth}
 	data-focus-reading={presentation.readerPreferences.defaults.focusReading}
-	data-section-tracking={treeNavigation && projectConfig.navigation.sectionTracking ? 'enabled' : undefined}
+	data-section-tracking={contentsNavigation ? 'enabled' : undefined}
 	style={documentStyle}
 >
 	<head>

@@ -37,6 +37,12 @@ const readPage = (pathname = 'index.html') => readFile(path.join(tempRoot, 'dist
 const getScripts = (html) => html.match(/<script\b[^>]*>[\s\S]*?<\/script>/gi) ?? [];
 const getReaderPreferenceScripts = (html) => getScripts(html).filter((script) => script.includes('norna-reading-width'));
 const getFeatureScripts = (html) => getScripts(html).filter((script) => !script.includes('norna-reading-width'));
+const readDeliveredScript = async (script) => {
+	const sourcePath = script.match(/\ssrc="([^"]+)"/)?.[1];
+	if (!sourcePath) return script;
+
+	return readFile(path.join(tempRoot, 'dist', sourcePath.replace(/^\/+/, '')), 'utf8');
+};
 const assertUniversalReadingWidth = (html, label) => {
 	assert.equal(getReaderPreferenceScripts(html).length, 1, `${label} should load the universal reading-width preference script.`);
 	assert.match(html, /<html\b[^>]*data-reading-width="(?:narrow|standard|wide)"/);
@@ -131,7 +137,7 @@ The navigation enhancement keeps native anchors clear of the sticky header.
 		1,
 		'Sticky section navigation should load only its anchor-offset enhancement in addition to reader preferences.',
 	);
-	assert.match(getFeatureScripts(instantHtml)[0], /site-top-anchor-offset/);
+	assert.match(await readDeliveredScript(getFeatureScripts(instantHtml)[0]), /site-top-anchor-offset/);
 	assertScrollBehavior(instantHtml, 'auto', 'The default instant scroll mode');
 	assert.match(instantHtml, /<nav class="page-nav"/);
 	assert.match(instantHtml, /<nav class="page-nav" aria-label="Page contents">/);
@@ -219,7 +225,7 @@ npm run norna:check
 	);
 	assert.match(codeBlockHtml, /data-code-copy-template/);
 	assert.match(codeBlockHtml, /aria-label="Copy code"/);
-	assert.match(getFeatureScripts(codeBlockHtml)[0], /navigator\.clipboard/);
+	assert.match(await readDeliveredScript(getFeatureScripts(codeBlockHtml)[0]), /navigator\.clipboard/);
 
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
@@ -307,7 +313,7 @@ Plain page content.
 	const bannerHtml = await readPage();
 	assertUniversalReadingWidth(bannerHtml, 'A page with a dismissible banner');
 	assert.equal(getFeatureScripts(bannerHtml).length, 1, 'A dismissible banner should load only its dismissal script in addition to reader preferences.');
-	assert.match(getFeatureScripts(bannerHtml)[0], /norna-banner:/);
+	assert.match(await readDeliveredScript(getFeatureScripts(bannerHtml)[0]), /norna-banner:/);
 
 	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), '{}\n');
 	await writeFile(path.join(homeDir, 'content.md'), `---
@@ -342,13 +348,14 @@ readerControls:
 	assert.match(selectableAppearanceHtml, /data-reader-width/);
 	assert.match(selectableAppearanceHtml, /data-reader-focus/);
 	assert.match(selectableAppearanceHtml, /data-reader-reset/);
-	assert.match(getScripts(selectableAppearanceHtml)[0], /norna-appearance/);
-	assert.match(getScripts(selectableAppearanceHtml)[0], /norna-reading-width/);
-	assert.match(getScripts(selectableAppearanceHtml)[0], /norna-focus-reading/);
-	assert.match(getScripts(selectableAppearanceHtml)[0], /document\.cookie/);
-	assert.match(getScripts(selectableAppearanceHtml)[0], /SameSite=Lax/);
-	assert.match(getScripts(selectableAppearanceHtml)[0], /maxAge = 31536000/);
-	assert.doesNotMatch(getScripts(selectableAppearanceHtml)[0], /localStorage/);
+	const readerPreferenceScript = await readDeliveredScript(getScripts(selectableAppearanceHtml)[0]);
+	assert.match(readerPreferenceScript, /norna-appearance/);
+	assert.match(readerPreferenceScript, /norna-reading-width/);
+	assert.match(readerPreferenceScript, /norna-focus-reading/);
+	assert.match(readerPreferenceScript, /document\.cookie/);
+	assert.match(readerPreferenceScript, /SameSite=Lax/);
+	assert.match(readerPreferenceScript, /maxAge = 31536000/);
+	assert.doesNotMatch(readerPreferenceScript, /localStorage/);
 
 	console.log('Client JavaScript boundaries test passed.');
 } finally {

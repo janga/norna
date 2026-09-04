@@ -23,6 +23,36 @@
 			.filter((heading) => trackedHeadingIds.has(heading.id))
 		: [];
 	let sectionTrackingFrame: number | undefined;
+	let sectionTrackingPaused = false;
+	let sectionTrackingResumeTimer: number | undefined;
+
+	const resumeSectionTracking = () => {
+		window.clearTimeout(sectionTrackingResumeTimer);
+		window.removeEventListener('scrollend', resumeSectionTracking);
+		sectionTrackingPaused = false;
+		sectionTrackingResumeTimer = undefined;
+	};
+
+	const pauseSectionTrackingForAnchorNavigation = () => {
+		if (!sectionTrackingEnabled) return;
+
+		sectionTrackingPaused = true;
+		if (sectionTrackingFrame !== undefined) {
+			window.cancelAnimationFrame(sectionTrackingFrame);
+			sectionTrackingFrame = undefined;
+		}
+		window.clearTimeout(sectionTrackingResumeTimer);
+		window.removeEventListener('scrollend', resumeSectionTracking);
+		if ('onscrollend' in document.documentElement) {
+			window.addEventListener('scrollend', resumeSectionTracking, { once: true });
+		}
+
+		const scrollBehavior = getComputedStyle(document.documentElement).scrollBehavior;
+		sectionTrackingResumeTimer = window.setTimeout(
+			resumeSectionTracking,
+			scrollBehavior === 'smooth' ? 2000 : 120,
+		);
+	};
 
 	const setAnchorOffset = () => {
 		if (!siteTop) return;
@@ -73,12 +103,35 @@
 
 	const updateReadingPosition = () => {
 		sectionTrackingFrame = undefined;
-		const readingLine = Math.ceil(siteTop?.getBoundingClientRect().bottom ?? 0) + 8;
-		let currentHeadingId: string | undefined;
+		if (trackedHeadings.length === 0) return;
 
-		for (const heading of trackedHeadings) {
-			if (heading.getBoundingClientRect().top > readingLine) break;
-			currentHeadingId = heading.id;
+		let currentHeadingId: string | undefined = trackedHeadings[0]?.id;
+
+		if (window.scrollY > 1) {
+			const viewportHeight = window.innerHeight;
+			const documentHeight = Math.max(
+				document.body.scrollHeight,
+				document.body.offsetHeight,
+				document.documentElement.clientHeight,
+				document.documentElement.scrollHeight,
+				document.documentElement.offsetHeight,
+			);
+			const maximumScroll = Math.max(0, documentHeight - viewportHeight);
+			const remainingScroll = Math.max(0, maximumScroll - window.scrollY);
+			const normalReadingLine = Math.max(
+				Math.ceil(siteTop?.getBoundingClientRect().bottom ?? 0) + 8,
+				Math.round(viewportHeight / 2),
+			);
+			const terminalReadingLine = viewportHeight - remainingScroll;
+			const readingLine = Math.min(
+				viewportHeight,
+				Math.max(normalReadingLine, terminalReadingLine),
+			);
+
+			for (const heading of trackedHeadings) {
+				if (heading.getBoundingClientRect().top > readingLine) break;
+				currentHeadingId = heading.id;
+			}
 		}
 
 		sectionLinks.forEach((link) => {
@@ -94,7 +147,7 @@
 	};
 
 	const scheduleReadingPositionUpdate = () => {
-		if (!sectionTrackingEnabled || sectionTrackingFrame !== undefined) return;
+		if (!sectionTrackingEnabled || sectionTrackingPaused || sectionTrackingFrame !== undefined) return;
 		sectionTrackingFrame = window.requestAnimationFrame(updateReadingPosition);
 	};
 
@@ -154,6 +207,7 @@
 			const target = getSamePageTarget(link);
 			if (!target) return;
 
+			pauseSectionTrackingForAnchorNavigation();
 			if (mobileMenu) mobileMenu.open = false;
 			link.closest<HTMLElement>('.site-nav-item')?.setAttribute('data-submenu-dismissed', 'true');
 
@@ -172,9 +226,11 @@
 	});
 
 	window.addEventListener('hashchange', () => {
+		pauseSectionTrackingForAnchorNavigation();
 		updateCurrentSection();
 		scheduleReadingPositionUpdate();
 	});
+	if (window.location.hash) pauseSectionTrackingForAnchorNavigation();
 	updateCurrentSection();
 	if (sectionTrackingEnabled) {
 		window.addEventListener('scroll', scheduleReadingPositionUpdate, { passive: true });

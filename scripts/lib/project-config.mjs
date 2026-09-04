@@ -52,16 +52,6 @@ const readEnum = (object, key, path, allowedValues, fallback, sourceLabel = site
 	return value;
 };
 
-const readBoolean = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
-	const value = object[key] ?? fallback;
-
-	if (typeof value !== 'boolean') {
-		throw new Error(`${path}.${key} must be true or false in ${sourceLabel}.`);
-	}
-
-	return value;
-};
-
 const readFontFamily = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
 	const value = object[key] ?? fallback;
 
@@ -447,6 +437,13 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 
 export const resolveNavigationConfig = (config, sourceLabel = siteConfigLabel) => {
 	const rawNavigation = assertObject(config.navigation ?? {}, 'navigation', sourceLabel);
+	if (Object.hasOwn(rawNavigation, 'sectionTracking')) {
+		throw new Error([
+			`navigation.sectionTracking is no longer supported in ${sourceLabel}.`,
+			'Section tracking is automatic on pages with a contents rail.',
+			'Remove navigation.sectionTracking.',
+		].join('\n'));
+	}
 
 	return Object.freeze({
 		mode: readEnum(
@@ -455,13 +452,6 @@ export const resolveNavigationConfig = (config, sourceLabel = siteConfigLabel) =
 			'navigation',
 			navigationModeNames,
 			'automatic',
-			sourceLabel,
-		),
-		sectionTracking: readBoolean(
-			rawNavigation,
-			'sectionTracking',
-			'navigation',
-			false,
 			sourceLabel,
 		),
 	});

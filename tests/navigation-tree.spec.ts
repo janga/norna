@@ -51,38 +51,60 @@ test.describe('desktop tree navigation', () => {
 		await expect(settings.getByRole('checkbox', { name: 'Focus reading' })).toBeVisible();
 	});
 
-	test('marks the H2 or H3 at the reading line without changing URL or focus', async ({ page }) => {
+	test('marks every H2 or H3 through the end of a short page without changing URL or focus', async ({ page }) => {
 		await page.setViewportSize({ width: desktopViewport.width, height: 420 });
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
-		await page.addStyleTag({ content: 'body { padding-bottom: 100vh !important; }' });
 
 		const contentsNavigation = page.locator('.page-contents-navigation-rail');
-		const installLink = contentsNavigation.getByRole('link', { name: 'Install', exact: true });
-		const prerequisitesLink = contentsNavigation.getByRole('link', { name: 'Prerequisites', exact: true });
 		const displaySettingsSummary = page.locator('[data-display-settings] > summary');
 		const initialUrl = page.url();
-		const moveHeadingToReadingLine = async (id: string) => {
-			await page.locator(`#${id}`).evaluate((heading) => {
-				const siteTop = document.querySelector('.site-top');
-				const readingLine = Math.ceil(siteTop?.getBoundingClientRect().bottom ?? 0) + 4;
-				window.scrollTo({
-					behavior: 'auto',
-					top: window.scrollY + heading.getBoundingClientRect().top - readingLine,
-				});
-			});
-		};
 
 		await displaySettingsSummary.focus();
-		await moveHeadingToReadingLine('install');
-		await expect(installLink).toHaveAttribute('aria-current', 'location');
-		await expect(prerequisitesLink).not.toHaveAttribute('aria-current', 'location');
+		const transitions = await page.evaluate(async () => {
+			const rail = document.querySelector('.page-contents-navigation-rail');
+			const maximumScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+			const step = Math.max(1, Math.floor(maximumScroll / 72));
+			const waitForTracking = () => new Promise<void>((resolve) => {
+				window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
+			});
+			const getActiveId = () => {
+				const active = rail?.querySelector<HTMLAnchorElement>('a[aria-current="location"]');
+				return active ? new URL(active.href).hash.slice(1) : undefined;
+			};
+			const collect = async (positions: number[]) => {
+				const observed: string[] = [];
+				for (const position of positions) {
+					window.scrollTo({ behavior: 'auto', top: position });
+					await waitForTracking();
+					const activeId = getActiveId();
+					if (activeId && observed.at(-1) !== activeId) observed.push(activeId);
+				}
+				return observed;
+			};
+			const downPositions = [];
+			for (let position = 0; position < maximumScroll; position += step) {
+				downPositions.push(position);
+			}
+			downPositions.push(maximumScroll);
+			const upPositions = [...downPositions].reverse();
 
-		await moveHeadingToReadingLine('prerequisites');
-		await expect(prerequisitesLink).toHaveAttribute('aria-current', 'location');
-		await expect(installLink).not.toHaveAttribute('aria-current', 'location');
+			return {
+				down: await collect(downPositions),
+				up: await collect(upPositions),
+			};
+		});
+
+		expect(transitions.down).toEqual(['install', 'prerequisites', 'verify']);
+		expect(transitions.up).toEqual(['verify', 'prerequisites', 'install']);
 		await expect(displaySettingsSummary).toBeFocused();
 		expect(page.url()).toBe(initialUrl);
-		expect(await prerequisitesLink.evaluate((link) => getComputedStyle(link, '::before').width)).toBe('2px');
+		expect(await contentsNavigation.getByRole('link', { name: 'Install', exact: true })
+			.evaluate((link) => getComputedStyle(link, '::before').width)).toBe('2px');
+
+		const prerequisitesLink = contentsNavigation.getByRole('link', { name: 'Prerequisites', exact: true });
+		await prerequisitesLink.click();
+		await expect(page).toHaveURL(/#prerequisites$/);
+		await expect(prerequisitesLink).toHaveAttribute('aria-current', 'location');
 	});
 
 	test('uses focus reading as the only control for hiding the local tree', async ({ page, context }) => {

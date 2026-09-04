@@ -174,7 +174,6 @@ const themeBlocks = z.object({
 ).describe('Optional site-wide defaults for structured Norna content blocks.');
 const configNavigation = z.object({
 	mode: navigationMode.optional().describe('Navigation model. Omit this to let Norna choose from the site structure.'),
-	sectionTracking: z.boolean().optional().default(false).describe('As the reader scrolls in tree navigation, mark the last H2 or H3 in the right contents rail that has reached the reading area below the sticky header. The URL and keyboard focus do not change.'),
 }).strict().describe('Site-wide navigation behavior.');
 const themeSections = z.object({
 	backgroundPattern: backgroundPattern.optional().describe('Section background pattern. Alternating and accented create full-width bands with sections or top navigation; tree navigation requires uniform.'),

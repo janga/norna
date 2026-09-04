@@ -1,7 +1,5 @@
 # yaml-language-server: $schema=../schemas/config.schema.json
 
 url: https://janga.github.io/norna/
-navigation:
-  sectionTracking: true
 language: en
 scrollBehavior: smooth

@@ -72,6 +72,8 @@ try {
 	assert.match(installationHtml, /Three nested page levels connected in sequence/);
 	assert.match(installationHtml, /\/original\/pages\/010-guides\/pages\/010-installation\/images\/diagram-[a-f0-9]+\.svg/);
 	assert.match(macosHtml, /data-navigation-mode="tree"/);
+	assert.match(macosHtml, /data-section-tracking="enabled"/);
+	assert.doesNotMatch(rootHtml, /data-section-tracking=/);
 	assert.match(macosHtml, /class="site-nav-item site-nav-item-current-branch"/);
 	assert.match(macosHtml, /<a href="\/guides\/installation\/">Guides<\/a>/);
 	assert.doesNotMatch(macosHtml, /class="site-nav-submenu"/);
