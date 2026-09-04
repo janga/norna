@@ -64,8 +64,7 @@ Editorial text remains in page content and `sitewide-content.yaml`.
 
 `navigation` contains site-wide settings for generated navigation. These
 settings do not change the page hierarchy or heading structure. They control
-how Norna presents that discovered structure and whether the local tree follows
-the reader's position on the page.
+how Norna presents that discovered structure.
 
 ### `navigation.mode`
 
@@ -98,38 +97,6 @@ selection rules and the relationship between Home, pages, categories, and
 headings, and
 [Client-Side JavaScript](client-javascript.md) for the no-JavaScript fallback.
 
-### `navigation.sectionTracking`
-
-`navigation.sectionTracking` controls whether the right contents rail follows
-the reader's position within the current page.
-
-- Type: Boolean.
-- Required: no.
-- Default: `false`.
-- Scope: the complete site.
-- Availability: only when the resolved navigation mode is `tree`.
-
-Enable it in `config.yaml`:
-
-```yaml
-navigation:
-  sectionTracking: true
-```
-
-As the reader scrolls, Norna marks the last H2 or H3 that has reached the top
-of the reading area below the sticky header. The corresponding link in the
-right contents rail receives an underline and a position marker. Norna also
-exposes the state as `aria-current="location"`.
-
-Tracking does not change the URL, browser history, keyboard focus, or scroll
-position. When JavaScript is unavailable, the page hierarchy and its ordinary
-links remain usable, but the marker does not follow scrolling. Enabling the
-setting has no visual effect when the site resolves to `sections` or `top`
-navigation.
-
-See [Navigation](pages.md#navigation) for the page and heading hierarchy shown
-by each navigation mode.
-
 ## `scrollBehavior`
 
 `scrollBehavior` controls same-page anchor movement. It does not affect links
@@ -158,7 +125,6 @@ url: https://example.com/
 language: en-GB
 navigation:
   mode: automatic
-  sectionTracking: true
 scrollBehavior: instant
 ```
 

@@ -262,20 +262,13 @@ On a wide screen, Focus reading can hide both rails together with other
 secondary page elements. The document column keeps its position. Without
 JavaScript, the rails remain visible and their links remain usable.
 
-For longer pages, the right contents rail can mark the H2 or H3 at the top of
-the reading area while the reader scrolls. Enable this optional behavior in
-`site/config.yaml`:
-
-```yaml
-navigation:
-  sectionTracking: true
-```
-
-The marker follows the reading position without changing the URL or keyboard
-focus. The ordinary page and section links still work when JavaScript is
-unavailable. See the
-[`navigation.sectionTracking` reference](https://github.com/janga/norna/blob/main/docs/configuration.md#navigationsectiontracking)
-for its default and scope.
+For longer pages, the right contents rail automatically marks the H2 or H3 at
+the reading position while the reader scrolls. The marker does not change the
+URL or keyboard focus. Ordinary page and section links still work when
+JavaScript is unavailable, but the marker then remains at the explicitly
+selected destination. See the
+[navigation reference](https://github.com/janga/norna/blob/main/docs/pages.md#current-reading-position)
+for the complete behavior.
 
 An optional limited `theme.yaml` in the category directory is inherited by its
 descendant pages. See [Pages and categories](https://github.com/janga/norna/blob/main/docs/pages.md)

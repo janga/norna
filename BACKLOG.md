@@ -31,9 +31,6 @@ page graph, and only afterward expands Markdown or URL behavior.
 - [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
   **Ready.** Ground the file-tree example in the documentation hierarchy
   without forcing explanatory media into artwork geometry.
-- [`BL-034` Automatic contents-rail section tracking](docs/design/backlog/BL-034-automatic-tree-section-tracking.md):
-  **Ready.** Track the reader's current H2 or H3 automatically in the right
-  contents rail and remove the low-value public on/off setting.
 - [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
   **Ready.** Reuse canonical page identity and existing metadata
   before adding further generated-page behavior.

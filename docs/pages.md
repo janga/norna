@@ -415,18 +415,15 @@ navigation stays visible; all page and anchor links remain usable.
 ### Current Reading Position
 
 Tree navigation identifies the current page in the left page rail. A site can
-additionally set `navigation.sectionTracking: true` in `config.yaml` to let the
-right contents rail follow the reader within that page. When an H2 or H3
-reaches the top of the reading area below the sticky header, Norna marks its
-corresponding contents link. The marker remains on that heading until the next
-navigable heading reaches the same position.
+right contents rail follow the reader automatically when that rail is present.
+Norna marks the H2 or H3 at the effective reading position and moves the marker
+toward the end of the page as the reader scrolls. Every heading remains
+reachable by the marker, including headings near the document end.
 
-This optional enhancement does not change the URL, browser history, keyboard
-focus, or scroll position. The link uses `aria-current="location"` as well as a
-visible marker. Without JavaScript, the page and anchor links remain usable but
-the marker does not follow scrolling. See
-[`navigation.sectionTracking`](configuration.md#navigationsectiontracking) for
-the setting, default, and availability.
+Tracking does not change the URL, browser history, keyboard focus, or scroll
+position. The current link uses `aria-current="location"` as well as a visible
+marker. Without JavaScript, the page and anchor links remain usable, but the
+marker does not follow scrolling.
 
 Navigation also sets the boundary for section backgrounds. Pages whose
 effective mode is `sections` or `top` may use full-viewport `alternating` or
