@@ -8,7 +8,8 @@ must keep their original format.
 Most files and subdirectories under `public/` are site-owned. Navigation logos,
 browser icons, and the social sharing image are discovered from exact
 filenames. `sitemap.xml` is also an exception: Norna reserves that name for
-generated output.
+generated output. Norna also reserves `404.html` for the missing-page response
+created during a build.
 
 ## Navigation Logo
 
@@ -142,6 +143,37 @@ Do not add a file or directory named `sitemap.xml` directly under
 `site/public/`. Norna stops before changing generated public output when that
 name conflicts with the generated sitemap.
 
+## Generated 404 Page
+
+A 404 page gives someone a way back into the site when a requested URL does
+not identify a generated page. Every Norna build creates `dist/404.html`; you
+do not add or configure a separate content file for it.
+
+The generated page:
+
+- uses the language configured in `site/config.yaml` for its heading,
+  explanation, and homepage link;
+- uses the root theme and shared logo, banners, footer, and navigation;
+- keeps internal links and assets valid when the site has a base path;
+- does not mark any navigation entry as the current page;
+- includes `noindex` and omits canonical and social sharing metadata;
+- provides its message and homepage link without requiring client-side
+  JavaScript.
+
+The content is intentionally fixed in the current model. A custom editorial
+404 page is not supported.
+
+Do not add a file or directory named `404.html` directly under `site/public/`.
+Norna reserves that output path and stops before changing generated public
+files when it finds a conflict.
+
+Whether and how `404.html` is served is determined by the hosting service.
+GitHub Pages recognizes a `404.html` file in the published site, so the
+included workflow publishes Nornas generated page without additional setup.
+See GitHub's
+[custom 404 page documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site)
+for its hosting behavior.
+
 ## Other Static Files
 
 Other names are not restricted. For example:
@@ -154,11 +186,11 @@ site/public/
     `-- project-overview.pdf
 ```
 
-Except for the navigation logo, browser icons, social sharing image, and
-reserved generated sitemap documented above, Norna does not attach meaning to
-filenames or inspect their contents. It copies them unchanged. Browsers,
-crawlers, hosting services, and verification providers may still require their
-own exact filenames and locations.
+Except for the navigation logo, browser icons, social sharing image, and the
+reserved `sitemap.xml` and `404.html` output paths documented above, Norna does
+not attach meaning to filenames or inspect their contents. It copies them
+unchanged. Browsers, crawlers, hosting services, and verification providers may
+still require their own exact filenames and locations.
 
 Norna preserves subdirectories while copying these files. A source file such
 as `site/public/downloads/project-overview.pdf` is published at

@@ -25,11 +25,23 @@ const readDirectory = async (directory) => {
 };
 
 const sourceEntries = await readDirectory(sitePublicDir);
-const sitemapConflict = sourceEntries.find(({ name }) => name.toLowerCase() === sitemapFilename);
-if (sitemapConflict) {
+const generatedPublicFiles = [
+	{
+		filename: sitemapFilename,
+		explanation: `Norna generates ${sitemapFilename} from the public page tree and the URL in site/config.yaml.`,
+	},
+	{
+		filename: '404.html',
+		explanation: 'Norna generates 404.html as the site\'s localized missing-page response.',
+	},
+];
+for (const generatedFile of generatedPublicFiles) {
+	const conflict = sourceEntries.find(({ name }) => name.toLowerCase() === generatedFile.filename);
+	if (!conflict) continue;
+
 	throw new Error([
-		`${sitePublicLabel}/${sitemapConflict.name} conflicts with Norna's generated ${sitemapFilename}.`,
-		`Remove that source file. Norna generates ${sitemapFilename} from the public page tree and the URL in site/config.yaml.`,
+		`${sitePublicLabel}/${conflict.name} conflicts with Norna's generated ${generatedFile.filename}.`,
+		`Remove that source file. ${generatedFile.explanation}`,
 	].join('\n'));
 }
 

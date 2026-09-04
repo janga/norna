@@ -106,12 +106,13 @@ hierarchy, URL, navigation, commands, and theme inheritance. See
 `site/public/` contains static files copied without image processing. Most
 names are site-owned, but Norna recognizes a small set of exact conventional
 filenames for the navigation logo, browser icons, and social sharing image. The
-root filename `sitemap.xml` is reserved for Norna's generated sitemap and must
-not exist in this source directory.
+root filenames `sitemap.xml` and `404.html` are reserved for generated output
+and must not exist in this source directory.
 
 See [Public Files](public-files.md) for navigation-logo, browser-icon, and
 social-image filenames, GitHub Pages `CNAME`, arbitrary static files,
-root-relative links, publishing paths, and generated sitemap rules.
+root-relative links, publishing paths, the generated sitemap, and the default
+missing-page response.
 
 ## Selecting The Site Directory
 
@@ -143,7 +144,8 @@ Do not edit these by hand:
   plus generated or copied managed images and `sitemap.xml`;
 - `site/.norna/.astro/`: site-local Astro cache, generated types, and local
   dev-server state;
-- `dist/`: final static website output;
+- `dist/`: final static website output, including generated `404.html` and
+  `sitemap.xml` files;
 - `.astro/`: legacy Astro cache location, which can be removed after upgrading.
 
 `norna site:public` removes stale copied static files from

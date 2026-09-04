@@ -230,6 +230,7 @@ const assertPackageContents = async (packageRoot) => {
 		'scripts/update-engine.mjs',
 		'scripts/watch-pages-deploy.mjs',
 		'src/pages/index.astro',
+		'src/pages/404.astro',
 		'starters/basic/.github/workflows/deploy.yml',
 		'starters/basic/package.json',
 		'starters/basic/site/pages/000-home/content.md',
@@ -441,6 +442,19 @@ This page verifies that packaged norna sites can build additional pages.
 		'<loc>https://example.com/site/guides/installation/</loc>',
 	);
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'about', 'index.html'));
+	await assertFileExists(path.join(siteProjectRoot, 'dist', '404.html'));
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', '404.html'),
+		'<meta name="robots" content="noindex">',
+	);
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', '404.html'),
+		'<a href="/site/">Go to the homepage</a>',
+	);
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', '404.html'),
+		'rel="canonical"',
+	);
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'guides', 'setup', 'index.html'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'));
 	await assertFileMissing(path.join(siteProjectRoot, 'dist', 'guides', 'index.html'));

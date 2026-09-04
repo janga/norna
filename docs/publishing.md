@@ -63,6 +63,13 @@ published by the same workflow. See
 [Public Files: Generated Sitemap](public-files.md#generated-sitemap) for page
 inclusion and conflict rules.
 
+Every build also includes a localized `dist/404.html` that uses the root theme,
+site navigation, and a base-path-aware homepage link. GitHub Pages recognizes
+this file as the site's custom missing-page response, so the included workflow
+needs no separate 404 configuration. Other hosts determine how that file is
+served. See [Public Files: Generated 404 Page](public-files.md#generated-404-page)
+for the exact content, metadata, and source-file conflict rules.
+
 For a project site without a custom domain, include the repository path in
 `site/config.yaml`:
 

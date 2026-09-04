@@ -7,7 +7,7 @@ import PageContentsLinks from './PageContentsLinks.astro';
 
 interface Props {
 	nodes: SiteNavigationNode[];
-	currentPage: SitePage;
+	currentPage?: SitePage;
 	variant: 'mobile' | 'sidebar' | 'submenu';
 	integratePageSections?: boolean;
 }
@@ -15,11 +15,11 @@ interface Props {
 const { nodes, currentPage, variant, integratePageSections = false } = Astro.props;
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
 const hasBranch = (node: SiteNavigationNode) => node.children.length > 0;
-const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
-const isCurrentBranch = (node: SiteNode) => (
+const isCurrentPage = (page: SitePage) => currentPage?.pathname === page.pathname;
+const isCurrentBranch = (node: SiteNode) => Boolean(currentPage && (
 	currentPage.pageDirectory === node.pageDirectory
 	|| currentPage.pageDirectory.startsWith(`${node.pageDirectory}/pages/`)
-);
+));
 const getBranchId = (node: SiteNode) => [
 	'navigation',
 	variant,

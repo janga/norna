@@ -119,6 +119,25 @@ test('site:public rejects a source sitemap before changing generated public outp
 	});
 });
 
+test('site:public rejects a source 404 page before changing generated public output', async () => {
+	await withTempProject(async (root) => {
+		await writeSiteFiles(root);
+		await writeFixtureFile(root, 'custom-site/public/404.html', 'source error page\n');
+		await writeFixtureFile(root, 'custom-site/.norna/public/404.html', 'previous generated error page\n');
+		await writeFixtureFile(root, 'custom-site/.norna/public/stale.txt', 'keep after failed preflight\n');
+
+		const result = runSyncScript(root, { NORNA_SITE_DIR: 'custom-site' });
+		const output = getOutput(result);
+
+		assert.notEqual(result.status, 0, output);
+		assert.match(output, /custom-site\/public\/404\.html conflicts with Norna's generated 404\.html/);
+		assert.match(output, /localized missing-page response/);
+		assert.equal(await readFixtureFile(root, 'custom-site/public/404.html'), 'source error page\n');
+		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/404.html'), 'previous generated error page\n');
+		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/stale.txt'), 'keep after failed preflight\n');
+	});
+});
+
 let failed = 0;
 
 for (const { name, run } of tests) {

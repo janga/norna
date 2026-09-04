@@ -24,7 +24,7 @@ interface Props {
 		alt: string;
 		height?: string;
 	};
-	currentPage: SitePage;
+	currentPage?: SitePage;
 	navigationEntries: SiteNavigationEntry[];
 	navigationMode: 'sections' | 'top' | 'tree';
 	showTopNavigationSubmenus: boolean;
@@ -67,10 +67,15 @@ const topLevelNavigation = siteNavigationTree;
 const showSiteNavigation = topLevelNavigation.some(({ node }) => !node.isHome);
 const homeNode = navigationEntries.find(({ node }) => node.isHome)?.node;
 const homePage = homeNode?.kind === 'page' ? homeNode : currentPage;
-const currentPageNavigation = navigationEntries.find(({ node }) => node.kind === 'page' && node.pathname === currentPage.pathname);
-const isCurrentPage = (page: SitePage) => page.pathname === currentPage.pathname;
-const isCurrentBranch = (node: SiteNode) => currentPage.pageDirectory === node.pageDirectory
-	|| currentPage.pageDirectory.startsWith(`${node.pageDirectory}/pages/`);
+if (!homePage) throw new Error('Site navigation requires a homepage.');
+const currentPageNavigation = currentPage
+	? navigationEntries.find(({ node }) => node.kind === 'page' && node.pathname === currentPage.pathname)
+	: undefined;
+const isCurrentPage = (page: SitePage) => currentPage?.pathname === page.pathname;
+const isCurrentBranch = (node: SiteNode) => Boolean(currentPage && (
+	currentPage.pageDirectory === node.pageDirectory
+	|| currentPage.pageDirectory.startsWith(`${node.pageDirectory}/pages/`)
+));
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
 const getNavigationPage = (node: SiteNavigationNode) => getFirstPageInNavigationNode(node);
 const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
@@ -172,7 +177,7 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 						</nav>
 					)}
 
-					{navigationMode !== 'tree' && hasCurrentPageSectionMenu && currentPageNavigation && (
+					{navigationMode !== 'tree' && hasCurrentPageSectionMenu && currentPageNavigation && currentPage && (
 						<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.pageNavigation}>
 							{!showSinglePageTopLink && (
 								<h2 tabindex="-1">{projectConfig.locale.labels.pageNavigation}</h2>
@@ -204,7 +209,7 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 		</div>
 	)}
 
-	{showPageNavigation && currentPageNavigation && (
+	{showPageNavigation && currentPageNavigation && currentPage && (
 		<nav
 			class:list={['page-nav', { 'page-nav-title-only': showSinglePageTitleOnly }]}
 			aria-label={projectConfig.locale.labels.pageNavigation}

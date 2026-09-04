@@ -65,6 +65,12 @@ URLs. Do not create a source sitemap at `site/public/sitemap.xml`. See the
 [generated sitemap reference](https://github.com/janga/norna/blob/main/docs/public-files.md#generated-sitemap)
 for the exact inclusion and conflict rules.
 
+The same build creates `dist/404.html`. It uses the site's language, root
+theme, navigation, and a homepage link that respects the configured base path.
+GitHub Pages uses this file when a requested page does not exist. See the
+[generated 404 page reference](https://github.com/janga/norna/blob/main/docs/public-files.md#generated-404-page)
+for metadata, hosting, and reserved-filename details.
+
 ## Publish with GitHub Pages {#publish}
 
 Create a GitHub repository for the site and push the project. In the repository,

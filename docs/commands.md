@@ -203,7 +203,8 @@ behavior, ordering, link formats, aliases, and failure handling.
   rhythm, or root override that supplied it.
 - `site:public`: copies `site/public/` into `site/.norna/public/`, removes stale
   copied static files, and generates `sitemap.xml` from pages that produce URLs
-  and from the configured public URL.
+  and from the configured public URL. Its preflight check rejects source paths
+  named `sitemap.xml` or `404.html`, which Norna reserves for generated output.
 - `images`: generates WebP variants for raster images, copies managed SVG
   images, and writes `site/.norna/generated-images.json`.
 - `engine:update [version|latest]`: updates the site repository's
