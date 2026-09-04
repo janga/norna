@@ -16,7 +16,7 @@ ImageMagick is required when Norna reads raster image dimensions or generates
 responsive raster variants. Norna accepts either the current `magick` command
 or the older `identify` and `convert` commands.
 
-See [How do I install ImageMagick?](https://janga.github.io/norna/faq/#install-imagemagick)
+See [How do I install ImageMagick?](https://janga.github.io/norna/faq/installation/#install-imagemagick)
 for platform-specific installation commands.
 
 Managed SVG images are copied and rendered directly; they do not need

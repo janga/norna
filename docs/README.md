@@ -79,7 +79,7 @@ required, optional, convention-discovered, versioned, or generated.
 ### Create And Run A Site
 
 - [Create a standalone site](https://janga.github.io/norna/getting-started/install-norna/#create)
-- [Add Norna to an existing Node project](https://janga.github.io/norna/faq/#add-norna-to-an-existing-project)
+- [Add Norna to an existing Node project](https://janga.github.io/norna/faq/project-setup/#add-norna-to-an-existing-project)
 - [Start and manage local preview](local-development.md)
 - [Inspect or update the installed engine](commands.md#command-summary)
 - [Migrate an older site model](upgrading.md)
@@ -150,7 +150,7 @@ required, optional, convention-discovered, versioned, or generated.
 
 ## Troubleshooting
 
-- [Frequently asked questions](https://janga.github.io/norna/faq/)
+- [Frequently asked questions](https://janga.github.io/norna/faq/installation/)
 - [Manage and restart local preview](local-development.md#manage-preview)
 - [Rebuild a stale preview](local-development.md#rebuild-stale-preview)
 - [Check ImageMagick and other requirements](requirements.md)

@@ -31,7 +31,7 @@ page:
 ## Help and examples {#help}
 
 - [Examples](/examples/) shows complete sites and focused feature demonstrations.
-- [Norna FAQ](/faq/) answers common setup and maintenance questions.
+- [Norna FAQ](/faq/installation/) answers common setup and maintenance questions.
 - [Requirements and limitations](https://github.com/janga/norna/blob/main/docs/requirements.md) defines supported runtimes, external tools, and current product boundaries.
 - [AI-readable documentation index](/llms.txt) links directly to the Markdown reference sources.
 

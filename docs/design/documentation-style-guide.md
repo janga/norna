@@ -56,6 +56,21 @@ Explain why the model exists, the trade-offs it makes, and how its concepts
 relate. Keep the topic bounded and link back to the authoritative reference for
 exact behavior.
 
+## Pages And Navigation Categories
+
+Give a page its own URL only when it serves an independent reader need. A useful
+parent page may introduce a subject, provide an overview that adds understanding,
+or help the reader complete a task before choosing a child page.
+
+Use a navigation category when a collection needs a shared label but no useful
+content of its own. If a proposed parent page would only repeat the names,
+descriptions, or links already present in the navigation tree, replace it with a
+category. Do not add generic introductory prose merely to justify a parent URL.
+
+Do not remove a useful parent page simply to shorten the navigation. The test is
+whether the page remains worth opening independently, not how many children it
+has or how long its content is.
+
 ## Terminology Contract
 
 Public names are part of the product interface. This includes configuration
@@ -169,6 +184,7 @@ Before completing a documentation change, check:
 - Are defaults, scope, inheritance, interactions, and invalid combinations
   visible where readers choose a value?
 - Is detail located in reference while introductions remain readable?
+- Does every parent page add value beyond repeating its child-page navigation?
 - Do schemas, IntelliSense, diagnostics, examples, and canonical reference use
   the same terminology?
 - Are links directed to the exact canonical section?

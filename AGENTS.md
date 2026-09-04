@@ -25,6 +25,11 @@ maintainer, put it in `README.md` instead of duplicating it here.
   entry point or deliver a coherent first result instead of becoming an empty
   index. Keep concise commands and explanations beside the task where they are
   needed, and link to canonical reference material for complete detail.
+- Use a navigation category instead of a parent page when the proposed page
+  would only repeat its child-page names, descriptions, or links. Do not create
+  editorial content solely to give a collection its own URL. Keep a parent page
+  only when its introduction, overview, or task is useful independently of the
+  navigation tree.
 - Do not silently preserve or rename ambiguous public terminology while doing
   an ordinary documentation edit. Explain the conflict to the user. When the
   user explicitly invokes `$norna-terminology-review` or requests its

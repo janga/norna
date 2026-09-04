@@ -284,7 +284,7 @@ segments, inheritance, warnings, and automatic navigation behavior.
 
 When moving or renaming an existing page changes its URL, keep the old address
 attached to the moved page instead of reusing it elsewhere. The
-[FAQ entry on preserving old page URLs](/faq/#preserve-old-page-urls) shows the
+[FAQ entry on preserving old page URLs](/faq/maintenance-and-publishing/#preserve-old-page-urls) shows the
 short frontmatter form; the
 [page reference](https://github.com/janga/norna/blob/main/docs/pages.md#preserve-old-page-urls)
 defines collision and hosting behavior.

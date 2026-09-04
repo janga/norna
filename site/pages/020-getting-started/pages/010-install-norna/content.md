@@ -18,7 +18,7 @@ You need:
 Norna needs ImageMagick to prepare raster images for responsive layouts. Install
 it separately for your operating system when the site uses those formats.{note-ref} SVG images do not require it.
 
-{note: [How to install ImageMagick.](/faq/#install-imagemagick)}
+{note: [How to install ImageMagick.](/faq/installation/#install-imagemagick)}
 
 ```sh
 # Create a new site project in my-site/
