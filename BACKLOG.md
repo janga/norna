@@ -19,6 +19,9 @@ are in the [backlog process](docs/design/backlog/README.md).
 - [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
   **Ready.** Use the shared reverse link index and redirect alias model to move
   a page or reconcile an already moved page without guessing.
+- [`BL-037` Refine left-navigation visual hierarchy](docs/design/backlog/BL-037-left-navigation-visual-hierarchy.md):
+  **Ready.** Make the existing page rail clearer and more visually polished,
+  using Linear Docs as a reference without changing its navigation behavior.
 
 ## Next
 
