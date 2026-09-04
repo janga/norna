@@ -12,12 +12,12 @@
           "examples": [
             "2rem"
           ],
-          "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\nDisplayed logo height on wider screens. Omit it to use 2.6rem; narrow screens cap the height at 2.15rem. Width follows the intrinsic aspect ratio.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/public-files.md#navigation-logo)"
+          "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\nDisplayed logo height on wider screens. Omit it to use 2.6rem; narrow screens cap the height at 2.15rem. Width follows the intrinsic aspect ratio.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/public-files.md#navigation-logo)"
         }
       },
       "additionalProperties": false,
       "description": "Optional display settings for a convention-based navigation logo.",
-      "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\n`logo` optionally overrides the displayed height of the convention-based logo file. Without an override, Norna uses 2.6rem on wider screens and caps the logo at 2.15rem on narrow screens. The logo links home, and its alternative text comes from the homepage Markdown H1. This setting does not enable or select the file.\n\n[Navigation logo filenames and placement](https://github.com/janga/norna/blob/v0.7.22/docs/public-files.md#navigation-logo)"
+      "markdownDescription": "```yaml\nlogo:\n  height: 2rem\n```\n\n`logo` optionally overrides the displayed height of the convention-based logo file. Without an override, Norna uses 2.6rem on wider screens and caps the logo at 2.15rem on narrow screens. The logo links home, and its alternative text comes from the homepage Markdown H1. This setting does not enable or select the file.\n\n[Navigation logo filenames and placement](https://github.com/janga/norna/blob/v0.7.23/docs/public-files.md#navigation-logo)"
     },
     "banners": {
       "default": [],
@@ -30,7 +30,7 @@
             "type": "string",
             "pattern": "^[a-z0-9-]+$",
             "description": "Stable banner identifier used for dismissal state.",
-            "markdownDescription": "```yaml\nbanners:\n  - id: project-status\n```\n\nStable banner identifier used for dismissal state.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"
+            "markdownDescription": "```yaml\nbanners:\n  - id: project-status\n```\n\nStable banner identifier used for dismissal state.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)"
           },
           "tone": {
             "default": "warning",
@@ -41,10 +41,10 @@
                 "const": "warning",
                 "title": "Warning",
                 "description": "Present the banner as an important warning notice.",
-                "markdownDescription": "Present the banner as an important warning notice.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"
+                "markdownDescription": "Present the banner as an important warning notice.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)"
               }
             ],
-            "markdownDescription": "```yaml\nbanners:\n  - tone: warning\n```\n\nSemantic banner tone.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"
+            "markdownDescription": "```yaml\nbanners:\n  - tone: warning\n```\n\nSemantic banner tone.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)"
           },
           "visible": {
             "description": "Optional date window for the banner.",
@@ -54,21 +54,21 @@
                 "description": "First date on which the content is visible.",
                 "type": "string",
                 "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-                "markdownDescription": "```yaml\nbanners:\n  - visible:\n      from: \"2026-01-01\"\n```\n\nFirst date on which the content is visible.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"
+                "markdownDescription": "```yaml\nbanners:\n  - visible:\n      from: \"2026-01-01\"\n```\n\nFirst date on which the content is visible.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)"
               },
               "until": {
                 "description": "First date on which the content is no longer visible.",
                 "type": "string",
                 "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-                "markdownDescription": "```yaml\nbanners:\n  - visible:\n      until: \"2026-02-01\"\n```\n\nFirst date on which the content is no longer visible.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"
+                "markdownDescription": "```yaml\nbanners:\n  - visible:\n      until: \"2026-02-01\"\n```\n\nFirst date on which the content is no longer visible.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)"
               }
             },
             "additionalProperties": false,
-            "markdownDescription": "```yaml\nbanners:\n  - visible:\n      from: \"2026-01-01\"\n      until: \"2026-02-01\"\n```\n\nOptional date window for the banner.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)",
+            "markdownDescription": "```yaml\nbanners:\n  - visible:\n      from: \"2026-01-01\"\n      until: \"2026-02-01\"\n```\n\nOptional date window for the banner.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)",
             "defaultSnippets": [
               {
                 "label": "Visibility window",
-                "markdownDescription": "Show the banner from the first date up to, but not including, the second date.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)",
+                "markdownDescription": "Show the banner from the first date up to, but not including, the second date.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)",
                 "body": {
                   "from": "${1:2026-01-01}",
                   "until": "${2:2026-02-01}"
@@ -80,13 +80,13 @@
             "type": "string",
             "minLength": 1,
             "description": "Short banner heading.",
-            "markdownDescription": "```yaml\nbanners:\n  - title: Important notice\n```\n\nShort banner heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"
+            "markdownDescription": "```yaml\nbanners:\n  - title: Important notice\n```\n\nShort banner heading.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)"
           },
           "text": {
             "type": "string",
             "minLength": 1,
             "description": "Concise banner message.",
-            "markdownDescription": "```yaml\nbanners:\n  - text: Brief explanation.\n```\n\nConcise banner message.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"
+            "markdownDescription": "```yaml\nbanners:\n  - text: Brief explanation.\n```\n\nConcise banner message.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)"
           }
         },
         "required": [
@@ -97,11 +97,11 @@
         "additionalProperties": false,
         "description": "Dismissible site-wide warning shown above page content for important temporary information.",
         "title": "Warning banner",
-        "markdownDescription": "A `warning` is a dismissible site-wide notice shown above page content. Use it for important temporary information visitors should notice, rather than ordinary page content.\n\n[Banner reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)",
+        "markdownDescription": "A `warning` is a dismissible site-wide notice shown above page content. Use it for important temporary information visitors should notice, rather than ordinary page content.\n\n[Banner reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)",
         "defaultSnippets": [
           {
             "label": "Warning banner",
-            "markdownDescription": "A `warning` is a dismissible site-wide notice shown above page content. Use it for important temporary information visitors should notice, rather than ordinary page content.\n\n[Banner reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)",
+            "markdownDescription": "A `warning` is a dismissible site-wide notice shown above page content. Use it for important temporary information visitors should notice, rather than ordinary page content.\n\n[Banner reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)",
             "body": {
               "id": "${1:project-status}",
               "tone": "warning",
@@ -111,7 +111,7 @@
           }
         ]
       },
-      "markdownDescription": "```yaml\nbanners:\n  - id: project-status\n    tone: warning\n    title: Experimental code\n    text: Not for production use.\n```\n\nAdds dismissible notices above page content. List order controls their presentation order; each `id` must be unique.\n\n[Banner reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#banners)"
+      "markdownDescription": "```yaml\nbanners:\n  - id: project-status\n    tone: warning\n    title: Experimental code\n    text: Not for production use.\n```\n\nAdds dismissible notices above page content. List order controls their presentation order; each `id` must be unique.\n\n[Banner reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#banners)"
     },
     "footer": {
       "description": "Site-wide footer content.",
@@ -121,22 +121,22 @@
           "description": "Copyright or ownership text shown in the site footer.",
           "type": "string",
           "minLength": 1,
-          "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\nCopyright or ownership text shown in the site footer.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#footer)"
+          "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\nCopyright or ownership text shown in the site footer.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#footer)"
         },
         "buildInfo": {
           "default": false,
           "description": "Show a localized generated build timestamp in the footer.",
           "type": "boolean",
-          "markdownDescription": "```yaml\nfooter:\n  buildInfo: true\n```\n\nShow a localized generated build timestamp in the footer.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#footer)"
+          "markdownDescription": "```yaml\nfooter:\n  buildInfo: true\n```\n\nShow a localized generated build timestamp in the footer.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#footer)"
         }
       },
       "additionalProperties": false,
-      "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\nAdds shared footer content. Generated build information is optional.\n\n[Footer reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md#footer)"
+      "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\nAdds shared footer content. Generated build information is optional.\n\n[Footer reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md#footer)"
     }
   },
   "additionalProperties": false,
   "description": "Editorial content and optional navigation logo display settings shared by every page.",
   "$id": "https://janga.github.io/norna/schemas/sitewide-content.schema.json",
   "title": "Norna site-wide content",
-  "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\n`sitewide-content.yaml` optionally defines banners, footer content, and logo display settings shared by every page.\n\n[Site-wide content reference](https://github.com/janga/norna/blob/v0.7.22/docs/sitewide-content.md)"
+  "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\n`sitewide-content.yaml` optionally defines banners, footer content, and logo display settings shared by every page.\n\n[Site-wide content reference](https://github.com/janga/norna/blob/v0.7.23/docs/sitewide-content.md)"
 }

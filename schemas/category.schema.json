@@ -6,7 +6,7 @@
       "type": "string",
       "minLength": 1,
       "description": "Navigation label for this non-routable page category.",
-      "markdownDescription": "```yaml\nlabel: Guides\n```\n\nThe category label shown in global navigation, tree navigation, mobile navigation, and breadcrumbs.\n\n[Navigation category reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation-categories)"
+      "markdownDescription": "```yaml\nlabel: Guides\n```\n\nThe category label shown in global navigation, tree navigation, mobile navigation, and breadcrumbs.\n\n[Navigation category reference](https://github.com/janga/norna/blob/v0.7.23/docs/pages.md#navigation-categories)"
     }
   },
   "required": [
@@ -16,5 +16,5 @@
   "description": "A non-routable navigation category containing child pages.",
   "$id": "https://janga.github.io/norna/schemas/category.schema.json",
   "title": "Norna page category",
-  "markdownDescription": "```yaml\nlabel: Guides\n```\n\n`category.yaml` creates a navigation-only group for child pages. It has no page content and produces no URL of its own.\n\n[Navigation category reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation-categories)"
+  "markdownDescription": "```yaml\nlabel: Guides\n```\n\n`category.yaml` creates a navigation-only group for child pages. It has no page content and produces no URL of its own.\n\n[Navigation category reference](https://github.com/janga/norna/blob/v0.7.23/docs/pages.md#navigation-categories)"
 }

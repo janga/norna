@@ -6,7 +6,7 @@
       "type": "string",
       "format": "uri",
       "description": "Absolute public URL for the built site.",
-      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#url)",
+      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#url)",
       "examples": [
         "https://example.com/",
         "https://owner.github.io/repository-name/"
@@ -28,13 +28,13 @@
           "const": "en",
           "title": "English",
           "description": "Use Norna's built-in English interface text.",
-          "markdownDescription": "Use Norna's built-in English interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in English interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#language)"
         },
         {
           "const": "sv",
           "title": "Swedish",
           "description": "Use Norna's built-in Swedish interface text.",
-          "markdownDescription": "Use Norna's built-in Swedish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Swedish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#language)"
         },
         {
           "type": "string",
@@ -43,7 +43,7 @@
           "description": "Use an English or Swedish regional language tag such as en-GB or sv-SE."
         }
       ],
-      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#language)"
+      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#language)"
     },
     "navigation": {
       "type": "object",
@@ -56,28 +56,28 @@
               "const": "automatic",
               "title": "Automatic",
               "description": "Choose sections for one page, top navigation for Home and independent top-level pages, and tree navigation inside branches with listed children or categories.",
-              "markdownDescription": "Choose sections for one page, top navigation for Home and independent top-level pages, and tree navigation inside branches with listed children or categories.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
+              "markdownDescription": "Choose sections for one page, top navigation for Home and independent top-level pages, and tree navigation inside branches with listed children or categories.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/pages.md#navigation)"
             },
             {
               "const": "sections",
               "title": "Sections",
               "description": "Navigate the sections of the current page.",
-              "markdownDescription": "Navigate the sections of the current page.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
+              "markdownDescription": "Navigate the sections of the current page.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/pages.md#navigation)"
             },
             {
               "const": "top",
               "title": "Top",
               "description": "Use pages in the top navigation and sections below them.",
-              "markdownDescription": "Use pages in the top navigation and sections below them.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
+              "markdownDescription": "Use pages in the top navigation and sections below them.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/pages.md#navigation)"
             },
             {
               "const": "tree",
               "title": "Tree",
               "description": "Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.",
-              "markdownDescription": "Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
+              "markdownDescription": "Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/pages.md#navigation)"
             }
           ],
-          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to let Norna choose from the site structure.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)",
+          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to let Norna choose from the site structure.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/pages.md#navigation)",
           "examples": [
             "automatic",
             "sections",
@@ -88,7 +88,7 @@
       },
       "additionalProperties": false,
       "description": "Site-wide navigation behavior.",
-      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation policy. `automatic` selects an effective mode for each page from its active top-level branch.\n\n[Navigation reference](https://github.com/janga/norna/blob/v0.7.22/docs/pages.md#navigation)"
+      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation policy. `automatic` selects an effective mode for each page from its active top-level branch.\n\n[Navigation reference](https://github.com/janga/norna/blob/v0.7.23/docs/pages.md#navigation)"
     },
     "scrollBehavior": {
       "default": "instant",
@@ -99,16 +99,16 @@
           "const": "instant",
           "title": "Instant",
           "description": "Jump directly to anchors without animated scrolling. This is the default.",
-          "markdownDescription": "Jump directly to anchors without animated scrolling. This is the default.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#scrollbehavior)"
+          "markdownDescription": "Jump directly to anchors without animated scrolling. This is the default.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#scrollbehavior)"
         },
         {
           "const": "smooth",
           "title": "Browser smooth",
           "description": "Use the browser's native smooth scrolling for anchor navigation.",
-          "markdownDescription": "Use the browser's native smooth scrolling for anchor navigation.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#scrollbehavior)"
+          "markdownDescription": "Use the browser's native smooth scrolling for anchor navigation.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#scrollbehavior)"
         }
       ],
-      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md#scrollbehavior)",
+      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#scrollbehavior)",
       "examples": [
         "instant",
         "smooth"
@@ -122,5 +122,5 @@
   "description": "Technical settings for one Norna site. Additional pages cannot provide technical configuration.",
   "$id": "https://janga.github.io/norna/schemas/config.schema.json",
   "title": "Norna site configuration",
-  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.22/docs/configuration.md)"
+  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md)"
 }
