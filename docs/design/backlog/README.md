@@ -8,6 +8,8 @@ acceptance criteria before implementation.
 
 - `Now` contains at most three implementation-ready items in exact order.
 - `Next` is an exact technical implementation sequence, not a value ranking.
+- `External Gate` keeps high-value work that requires an account, publication,
+  credential, or other user-owned prerequisite from blocking autonomous work.
 - `Documentation Follow-ups` tracks documentation debt for implemented
   behavior.
 - `Needs Decision Or Evidence` contains ideas that must not enter the ordered

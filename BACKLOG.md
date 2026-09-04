@@ -3,7 +3,7 @@
 This file is the ordered index of unfinished Norna work. It is not product
 documentation, a release promise, or a completion log. Work from top to bottom
 within `Now` and `Next`; dependencies take precedence over perceived feature
-value.
+value. Items under `External Gate` do not block autonomous work.
 
 Status definitions, ID rules, and the process for adding or completing items
 are in the [backlog process](docs/design/backlog/README.md).
@@ -12,49 +12,59 @@ are in the [backlog process](docs/design/backlog/README.md).
 
 `Now` contains at most three active items in exact technical order.
 
-- [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
-  **In progress.** The version-aligned package and real VS Code tests are ready;
-  complete the first Marketplace publication before describing IntelliSense as
-  a supported installable feature.
 - [`BL-028` Automatic page move and reconciliation](docs/design/backlog/BL-028-page-move.md):
   **Ready.** Use the shared reverse link index and redirect alias model to move
   a page or reconcile an already moved page without guessing.
-- [`BL-037` Refine left-navigation visual hierarchy](docs/design/backlog/BL-037-left-navigation-visual-hierarchy.md):
-  **Ready.** Make the existing page rail clearer and more visually polished,
-  using Linear Docs as a reference without changing its navigation behavior.
+- [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
+  **Ready.** Reuse canonical page identity and existing metadata to improve
+  shared links without adding routine page configuration.
+- [`BL-004` Default 404 page](docs/design/backlog/BL-004-default-404.md): **Ready.**
+  Add a localized engine-owned missing-page response that works at root and
+  configured base paths without client-side JavaScript.
 
 ## Next
 
-`Next` is the intended implementation sequence after `Now`. The order first
-completes deterministic site output, then builds reading features on the stable
-page graph, and only afterward expands Markdown or URL behavior.
-- [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
-  **Ready.** Ground the file-tree example in the documentation hierarchy
-  without forcing explanatory media into artwork geometry.
-- [`BL-003` Social sharing metadata](docs/design/backlog/BL-003-social-metadata.md):
-  **Ready.** Reuse canonical page identity and existing metadata
-  before adding further generated-page behavior.
-- [`BL-004` Default 404 page](docs/design/backlog/BL-004-default-404.md): **Ready.**
-  Add the smallest engine-owned generated page and verify
-  root, base-path, localization, and GitHub Pages behavior.
-- [`BL-005` Static search](docs/design/backlog/BL-005-static-search.md): **Ready.**
-  Index final HTML only after page inclusion,
-  URLs, and anchors have one shared contract.
+`Next` is the exact implementation sequence after `Now`. Bounded deterministic
+work comes before changes that need visual review. Larger features follow the
+smaller page-graph additions they can reuse.
+
+- [`BL-031` System appearance as the universal default](docs/design/backlog/BL-031-system-appearance-default.md):
+  **Ready.** Make every preset and a theme without a preset follow the visitor's
+  system preference unless the site explicitly selects Light or Dark.
+- [`BL-038` Selling homepage and product positioning](docs/design/backlog/BL-038-selling-homepage.md):
+  **Ready after `BL-028`, `BL-003`, and `BL-004`.** Turn implemented strengths
+  into a concise, proof-led front page and remove duplicated technical detail.
+- [`BL-037` Refine left-navigation visual hierarchy](docs/design/backlog/BL-037-left-navigation-visual-hierarchy.md):
+  **Ready.** Make the existing page rail clearer and more visually polished,
+  using Linear Docs as a quality reference without changing navigation behavior.
 - [`BL-006` Previous and next page navigation](docs/design/backlog/BL-006-sequential-navigation.md):
   **Ready.** Define ordered traversal over the stable listed page
   graph before exposing that graph inside content.
 - [`BL-007` Explicit child page list](docs/design/backlog/BL-007-child-page-list.md):
   **Ready after `BL-006`.** Reuse its traversal rules in one explicit Markdown
   block rather than creating a parallel hierarchy.
+- [`BL-011` Edit source links](docs/design/backlog/BL-011-edit-source-links.md):
+  **Ready.** Add repository-derived links after page source identity is stable;
+  keep Git-derived dates outside this item.
+- [`BL-005` Static search](docs/design/backlog/BL-005-static-search.md): **Ready.**
+  Index final HTML only after page inclusion, URLs, and anchors have one shared
+  contract; adopt an external indexer only after reviewing its package impact.
 - [`BL-008` Long navigation tree controls and filtering](docs/design/backlog/BL-008-long-tree-controls.md):
   **Ready after `BL-006`.** Add progressive controls and a title filter only
   after tree scope, active-page, expansion, and traversal behavior are stable.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Ready after `BL-005`.** Extend Markdown semantics after search and page
   output rules can consume the new structure consistently.
-- [`BL-011` Edit source links](docs/design/backlog/BL-011-edit-source-links.md):
-  **Ready.** Add repository-derived links after page source
-  identity is stable; keep Git-derived dates outside this item.
+
+## External Gate
+
+These items have high product value but require an external account, publishing
+action, or another user-owned prerequisite. They do not block `Now` or `Next`.
+
+- [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
+  **In progress.** The version-aligned package and real VS Code tests are ready;
+  complete the first Visual Studio Marketplace publication before describing
+  IntelliSense as a supported installable feature.
 
 ## Later
 
@@ -71,9 +81,6 @@ work above unless a concrete defect raises their urgency.
   standalone website rather than adding a site to an existing project.
 - `BL-015` **Needs a scoped reproducer.** Clarify dev-server recovery when
   content, images, generated state, or watchers become stale.
-- [`BL-031` System appearance as the universal default](docs/design/backlog/BL-031-system-appearance-default.md):
-  **Ready.** Make themes and built-in presets follow the visitor's system
-  preference unless the site explicitly selects Light or Dark.
 - [`BL-027` Editor link diagnostics](docs/design/backlog/BL-027-editor-link-diagnostics.md):
   **Ready after `BL-030` Production-ready IntelliSense.** Connect the editor to
   the shared site link graph only after its distribution, versioning, cache,
@@ -85,6 +92,9 @@ These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
+- [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
+  **Ready for final visual review.** The example now maps the real documentation
+  hierarchy to its navigation; close the item once that presentation is accepted.
 - `BL-016` Document progressive copy controls for fenced code blocks in the
   Markdown reference and documentation site, including keyboard and
   screen-reader feedback without implying that ordinary content needs
@@ -132,3 +142,9 @@ that the expanded audience is worth the permanent complexity.
 - `BL-026` **Deferred.** A general template, component, or plugin API; prefer
   narrow engine-owned constructs and a general-purpose generator when a
   project requires implementation freedom.
+- `BL-039` **Deferred.** Draft and scheduled page publication; reconsider only
+  when a representative site needs publication state that Git branches cannot
+  provide, because every page consumer must share the same inclusion rules.
+- `BL-040` **Deferred.** Convention-based local fonts; retain built-in font
+  stacks until representative sites justify the licensing, preload, fallback,
+  weight, and performance contracts.
