@@ -1,5 +1,7 @@
 # Docs Introduction
 
+<p data-source-comparison><a href="https://docusaurus.io/docs/docs-introduction" target="_blank" rel="noopener noreferrer">Compare with the original Docusaurus page (opens in a new tab)</a>.</p>
+
 The docs feature provides users with a way to organize Markdown files in a hierarchical format.
 
 Check the Docs Plugin API Reference documentation for an exhaustive list of options.

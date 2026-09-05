@@ -1,5 +1,7 @@
 # Extensions
 
+<p data-source-comparison><a href="https://squidfunk.github.io/mkdocs-material/setup/extensions/" target="_blank" rel="noopener noreferrer">Compare with the original Material for MkDocs page (opens in a new tab)</a>.</p>
+
 Markdown is a very small language with a kind-of reference implementation called
 [John Gruber's Markdown]. [Python Markdown] and [Python Markdown Extensions]
 are two packages that enhance the Markdown writing experience, adding useful

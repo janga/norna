@@ -13,4 +13,6 @@ and adaptation boundary.
 | `docusaurus-docs-guide` | Deep, up to four levels | Separate rail to the right of the page |
 
 Start each site from its own directory by following its `README.md`. The sites
-use ports 4350, 4351, and 4352, so they can run at the same time.
+use ports 4350, 4351, and 4352, so they can run at the same time. Every page
+provides a new-tab link to the corresponding live source page for direct
+comparison.

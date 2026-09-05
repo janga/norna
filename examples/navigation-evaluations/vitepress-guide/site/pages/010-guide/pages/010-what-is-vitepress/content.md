@@ -1,5 +1,7 @@
 # What is VitePress?
 
+<p data-source-comparison><a href="https://vitepress.dev/guide/what-is-vitepress" target="_blank" rel="noopener noreferrer">Compare with the original VitePress page (opens in a new tab)</a>.</p>
+
 VitePress is a [Static Site Generator](https://en.wikipedia.org/wiki/Static_site_generator) (SSG) designed for building fast, content-centric websites. In a nutshell, VitePress takes your source content written in [Markdown](https://en.wikipedia.org/wiki/Markdown), applies a theme to it, and generates static HTML pages that can be easily deployed anywhere.
 
 Just want to try it out? Skip to the Quickstart.

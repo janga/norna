@@ -1,5 +1,7 @@
 # Getting Started
 
+<p data-source-comparison><a href="https://vitepress.dev/guide/getting-started" target="_blank" rel="noopener noreferrer">Compare with the original VitePress page (opens in a new tab)</a>.</p>
+
 ## Try It Online {#try-it-online}
 
 You can try VitePress directly in your browser on [StackBlitz](https://vitepress.new).

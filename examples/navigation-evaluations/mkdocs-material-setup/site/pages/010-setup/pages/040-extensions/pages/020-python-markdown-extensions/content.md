@@ -1,5 +1,7 @@
 # Python Markdown Extensions
 
+<p data-source-comparison><a href="https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/" target="_blank" rel="noopener noreferrer">Compare with the original Material for MkDocs page (opens in a new tab)</a>.</p>
+
 The [Python Markdown Extensions] package is an excellent collection of
 additional extensions perfectly suited for advanced technical writing. Material
 for MkDocs lists this package as an explicit dependency, so it's automatically

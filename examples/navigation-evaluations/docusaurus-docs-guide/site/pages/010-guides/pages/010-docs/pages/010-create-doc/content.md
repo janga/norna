@@ -1,5 +1,7 @@
 # Create a doc
 
+<p data-source-comparison><a href="https://docusaurus.io/docs/create-doc" target="_blank" rel="noopener noreferrer">Compare with the original Docusaurus page (opens in a new tab)</a>.</p>
+
 Create a Markdown file, `greeting.md`, and place it under the `docs` directory.
 
 ```bash

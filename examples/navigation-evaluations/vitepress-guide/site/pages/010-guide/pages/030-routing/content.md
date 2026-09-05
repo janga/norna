@@ -1,5 +1,7 @@
 # Routing
 
+<p data-source-comparison><a href="https://vitepress.dev/guide/routing" target="_blank" rel="noopener noreferrer">Compare with the original VitePress page (opens in a new tab)</a>.</p>
+
 ## File-Based Routing {#file-based-routing}
 
 VitePress uses file-based routing, which means the generated HTML pages are mapped from the directory structure of the source Markdown files. For example, given the following directory structure:

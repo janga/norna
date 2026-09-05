@@ -1,5 +1,7 @@
 # Docusaurus Docs Navigation
 
+<p data-source-comparison><a href="https://docusaurus.io/docs" target="_blank" rel="noopener noreferrer">Open the original Docusaurus documentation (opens in a new tab)</a>.</p>
+
 ## Evaluation scope {#evaluation-scope}
 
 A four-level guide branch adapted from the Docusaurus documentation.

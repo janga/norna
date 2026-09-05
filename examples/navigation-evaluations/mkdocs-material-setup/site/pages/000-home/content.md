@@ -1,5 +1,7 @@
 # Material for MkDocs Setup Navigation
 
+<p data-source-comparison><a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener noreferrer">Open the original Material for MkDocs documentation (opens in a new tab)</a>.</p>
+
 ## Evaluation scope {#evaluation-scope}
 
 A three-level setup branch adapted from the Material for MkDocs documentation.

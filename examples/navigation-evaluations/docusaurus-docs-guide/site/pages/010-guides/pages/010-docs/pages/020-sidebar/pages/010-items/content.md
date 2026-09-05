@@ -1,5 +1,7 @@
 # Sidebar items
 
+<p data-source-comparison><a href="https://docusaurus.io/docs/sidebar/items" target="_blank" rel="noopener noreferrer">Compare with the original Docusaurus page (opens in a new tab)</a>.</p>
+
 The sidebar supports various item types:
 
 - **Doc**: link to a doc page, associating it with the sidebar

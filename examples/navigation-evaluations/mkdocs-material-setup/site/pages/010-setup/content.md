@@ -1,5 +1,7 @@
 # Setup
 
+<p data-source-comparison><a href="https://squidfunk.github.io/mkdocs-material/setup/" target="_blank" rel="noopener noreferrer">Compare with the original Material for MkDocs page (opens in a new tab)</a>.</p>
+
 Material for MkDocs offers a wide range of options for customizing your
 documentation. In this section, we will explain how you can create a meaningful
 structure for your site, change the look and feel, add a blog and comment system,

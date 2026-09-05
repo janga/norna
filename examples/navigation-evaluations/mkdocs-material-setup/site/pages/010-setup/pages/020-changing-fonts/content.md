@@ -1,5 +1,7 @@
 # Changing the fonts
 
+<p data-source-comparison><a href="https://squidfunk.github.io/mkdocs-material/setup/changing-the-fonts/" target="_blank" rel="noopener noreferrer">Compare with the original Material for MkDocs page (opens in a new tab)</a>.</p>
+
 Material for MkDocs makes it easy to change the typeface of your project
 documentation, as it directly integrates with [Google Fonts]. Alternatively,
 fonts can be custom-loaded if self-hosting is preferred for data privacy reasons

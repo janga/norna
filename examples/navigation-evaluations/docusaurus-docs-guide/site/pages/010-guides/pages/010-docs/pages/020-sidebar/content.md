@@ -1,5 +1,7 @@
 # Sidebar
 
+<p data-source-comparison><a href="https://docusaurus.io/docs/sidebar" target="_blank" rel="noopener noreferrer">Compare with the original Docusaurus page (opens in a new tab)</a>.</p>
+
 Creating a sidebar is useful to:
 
 - Group multiple **related documents** into an ordered tree

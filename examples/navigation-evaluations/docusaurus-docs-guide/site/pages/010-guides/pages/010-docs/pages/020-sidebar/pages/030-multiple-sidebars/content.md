@@ -1,5 +1,7 @@
 # Using multiple sidebars
 
+<p data-source-comparison><a href="https://docusaurus.io/docs/sidebar/multiple-sidebars" target="_blank" rel="noopener noreferrer">Compare with the original Docusaurus page (opens in a new tab)</a>.</p>
+
 You can create a sidebar for each **set of Markdown files** that you want to **group together**.
 
 The Docusaurus site is a good example of using multiple sidebars:

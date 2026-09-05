@@ -1,5 +1,7 @@
 # Setting up navigation
 
+<p data-source-comparison><a href="https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/" target="_blank" rel="noopener noreferrer">Compare with the original Material for MkDocs page (opens in a new tab)</a>.</p>
+
 A clear and concise navigation structure is an important aspect of good project
 documentation. Material for MkDocs provides a multitude of options to configure
 the behavior of navigational elements, including [tabs] and [sections], and one

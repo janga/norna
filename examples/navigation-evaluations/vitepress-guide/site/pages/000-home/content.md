@@ -1,5 +1,7 @@
 # VitePress Guide Navigation
 
+<p data-source-comparison><a href="https://vitepress.dev/" target="_blank" rel="noopener noreferrer">Open the original VitePress documentation (opens in a new tab)</a>.</p>
+
 ## Evaluation scope {#evaluation-scope}
 
 A shallow two-level guide branch adapted from the VitePress documentation.

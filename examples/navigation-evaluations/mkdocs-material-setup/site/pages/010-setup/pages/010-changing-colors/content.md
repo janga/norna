@@ -1,5 +1,7 @@
 # Changing the colors
 
+<p data-source-comparison><a href="https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/" target="_blank" rel="noopener noreferrer">Compare with the original Material for MkDocs page (opens in a new tab)</a>.</p>
+
 As any proper Material Design implementation, Material for MkDocs supports
 Google's original [color palette], which can be easily configured through
 `mkdocs.yml`. Furthermore, colors can be customized with a few lines of CSS to

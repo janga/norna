@@ -1,5 +1,7 @@
 # Deploy Your VitePress Site
 
+<p data-source-comparison><a href="https://vitepress.dev/guide/deploy" target="_blank" rel="noopener noreferrer">Compare with the original VitePress page (opens in a new tab)</a>.</p>
+
 The following guides are based on some shared assumptions:
 
 - The VitePress site is inside the `docs` directory of your project.

@@ -1,5 +1,7 @@
 # Python Markdown
 
+<p data-source-comparison><a href="https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/" target="_blank" rel="noopener noreferrer">Compare with the original Material for MkDocs page (opens in a new tab)</a>.</p>
+
 Material for MkDocs supports a large number of [Python Markdown] extensions,
 which is part of what makes it so attractive for technical writing. Following
 is a list of all supported extensions, linking to the relevant sections of the
