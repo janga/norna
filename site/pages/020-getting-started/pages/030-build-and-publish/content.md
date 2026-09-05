@@ -28,11 +28,11 @@ Run the complete check before building:
 
 ```sh
 # Validate the site without changing source files
-npm run norna:check
+norna check
 ```
 
 Correct reported problems in the source files. The focused
-`norna:config:check` and `norna:content:check` scripts run the same checks
+`norna config:check` and `norna content:check` commands run the same checks
 separately when you need to diagnose a problem.
 
 ## Build the static site {#build}
@@ -41,7 +41,7 @@ Build the site locally:
 
 ```sh
 # Check the source and create dist/
-npm run norna:build
+norna build
 ```
 
 Treat `dist/` as generated output. Edit the files under `site/` and build again
@@ -81,7 +81,7 @@ GitHub Actions or Pages can occasionally be delayed or report a temporary
 service problem. Norna can follow the current workflow run from the terminal:
 
 ```sh
-npm run norna:deploy:watch
+norna deploy:watch
 ```
 
 The command reports the workflow status, public URL, and available failure

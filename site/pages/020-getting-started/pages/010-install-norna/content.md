@@ -82,20 +82,25 @@ npm run norna:check
 ```
 
 The check reports problems together so you can correct them in the source. Use
-the focused `norna:config:check` and `norna:content:check` scripts only when you
-need to narrow down a problem.
+the focused `npm run norna:config:check` and
+`npm run norna:content:check` scripts only when you need to narrow down a
+problem.
 
-### Optional shorter commands
+### Use shorter commands
 
 The `norna:*` npm scripts use the Norna version installed in the project and
-work without a global installation. If you prefer shorter direct commands,
+work without a global installation. They remain the portable form for
+automated builds and embedded projects, where a script may also select a
+nonstandard site directory.
+
+For shorter interactive commands in the standalone site used by this guide,
 install the cross-platform launcher once:
 
 ```sh
 npm install --global @janga/norna@latest
 ```
 
-You can then replace the two commands used so far with:
+You can then write:
 
 ```sh
 norna dev
@@ -103,5 +108,6 @@ norna check
 ```
 
 Inside a project, the launcher delegates to that project's locally installed
-Norna version. See [Commands](https://github.com/janga/norna/blob/main/docs/commands.md)
-for all npm scripts, direct CLI forms, options, and side effects.
+and recorded Norna version. The rest of Getting Started uses this shorter form.
+See [Commands](https://github.com/janga/norna/blob/main/docs/commands.md) for
+the equivalent npm scripts, direct CLI forms, options, and side effects.

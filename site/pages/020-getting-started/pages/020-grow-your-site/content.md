@@ -119,13 +119,9 @@ site/pages/
 Create the two pages with the project's installed Norna version:
 
 ```sh
-npm exec -- norna page:add "Dogs" --parent /
-npm exec -- norna page:add "Adopt" --parent /
+norna page:add "Dogs" --parent /
+norna page:add "Adopt" --parent /
 ```
-
-If you installed the optional global launcher in the first guide, the shorter
-forms are `norna page:add "Dogs" --parent /` and
-`norna page:add "Adopt" --parent /`.
 
 Link to the new pages with ordinary Markdown in any page's `content.md`:
 
@@ -135,7 +131,7 @@ Link to the new pages with ordinary Markdown in any page's `content.md`:
 ```
 
 Norna adapts site-relative links to the configured publishing path.
-`npm run norna:content:check` reports links to missing pages or headings. See
+`norna content:check` reports links to missing pages or headings. See
 [Internal Links](https://github.com/janga/norna/blob/main/docs/content.md#internal-links)
 for page, section, relative, and public-file links.
 
@@ -155,12 +151,12 @@ page, run:
 
 ```sh
 # Preview and confirm an unambiguous image move
-npm run norna:sync
+norna content:sync
 ```
 
 Norna moves the uniquely identified file into the receiving page's `images/`
-directory. `npm run norna:content:check` reports a missing, misplaced, or
-ambiguous image instead of guessing. See
+directory. `norna content:check` reports a missing, misplaced, or ambiguous
+image instead of guessing. See
 [Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md)
 for the complete placement and synchronization rules.
 
@@ -227,8 +223,8 @@ label: Getting Started
 Create the category and its first page with:
 
 ```sh
-npm exec -- norna category:add "Getting Started" --parent /
-npm exec -- norna page:add "Install Norna" --parent /getting-started/
+norna category:add "Getting Started" --parent /
+norna page:add "Install Norna" --parent /getting-started/
 ```
 
 `Getting Started` has no page or URL of its own. Its category id remains in the

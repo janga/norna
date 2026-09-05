@@ -52,7 +52,7 @@ List the same choices from the Norna version installed in the project:
 
 ```sh
 # Show the available presets and their intended uses
-npm run norna:theme:presets
+norna theme:presets
 ```
 
 The [Theme explorer](https://janga.github.io/norna/examples/theme-presets/)
