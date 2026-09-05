@@ -142,6 +142,7 @@
     "test:dead-code": "knip --include files,exports",
     "test:navigation": "node scripts/test-navigation.mjs",
     "test:navigation:tree": "node scripts/test-navigation.mjs --site-dir fixtures/nested-pages/site tests/navigation-tree.spec.ts",
+    "test:navigation:placement": "node scripts/test-navigation.mjs --site-dir fixtures/nested-pages/site tests/page-contents-placement.spec.ts",
     "test:navigation:stress": "node scripts/test-navigation.mjs tests/navigation-stress.spec.ts",
     "test:navigation:preview": "node scripts/test-navigation-preview.mjs",
     "package:check": "node scripts/test-package-check.mjs",
