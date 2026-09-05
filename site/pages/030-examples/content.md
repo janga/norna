@@ -5,35 +5,29 @@ page:
 
 # Examples
 
-Start with a complete site when you want to see how the pieces work together.
-Use the focused demonstrations when you want to inspect one part of Norna and
-understand which source file controls it.
+Norna's examples serve two different purposes. Complete sites show how content,
+images, presentation, navigation, and publishing files work together. Focused
+demonstrations hold most of that context still so one feature can be inspected
+and compared.
 
-Every example links to its rendered result, its source files, or the relevant
-reference. The pages below are also available directly in the site navigation.
+## Choose the right kind of example {#choose}
 
-```norna-card-list
-flow: grid
-size: m
+Use a complete site when you want to understand the shape of a real project or
+decide whether Norna suits a particular kind of website. Use a focused
+demonstration when you are choosing a theme, comparing media behavior, or
+learning which source file owns one visible result.
 
-- title: Complete sites
-  text: Open finished single-page and multi-page sites with intentionally simple navigation.
-  link: /examples/complete-sites/
-  badge-text: Whole projects
-- title: Themes and overrides
-  text: Combine presets and palettes, then see the boundary between root settings, page overrides and reader choices.
-  link: /examples/themes-and-overrides/
-  badge-text: Presentation
-- title: Media blocks
-  text: Inspect rendered image stacks, carousels and card lists alongside their source model.
-  link: /examples/media-blocks/
-  badge-text: Content patterns
-- title: Writing and notes
-  text: See how ordinary Markdown headings and linked sidenotes behave at different widths.
-  link: /examples/writing-and-notes/
-  badge-text: Editorial
-- title: Site-wide elements
-  text: See how logos, navigation, banners and footers are shared without becoming page content.
-  link: /examples/site-wide-elements/
-  badge-text: Shared frame
-```
+The navigation contains each maintained example area directly. It remains the
+index rather than being repeated as a list of links in this page.
+
+## Compare result, source, and reference {#compare}
+
+An example should answer three questions: what does the browser show, which
+ordinary files produce it, and where is the exact behavior defined? The pages
+in this area connect those views without treating an example as the normative
+specification.
+
+All source projects under `examples/` are built by the repository test suite
+and published with the documentation. That keeps the visible demonstrations
+close to current Norna behavior while the Markdown reference remains the source
+of truth for syntax, defaults, and constraints.

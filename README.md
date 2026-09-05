@@ -97,22 +97,16 @@ builds the generated website into `dist/`.
 ## Examples
 
 Every example is built in the repository test suite and published with the
-documentation.
+documentation. Start with the
+[single-page](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/)
+and [multi-page](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/)
+dog-shelter sites to inspect complete projects. Use the
+[Theme explorer](https://janga.github.io/norna/examples/theme-presets/) to
+compare presets and palettes against unchanged representative content.
 
-| Example | Live site | Source |
-| --- | --- | --- |
-| Theme explorer | [Combine presets and palettes](https://janga.github.io/norna/examples/theme-presets/) | See the four preset sources below |
-| Dog shelter, single page | [Open demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/) | [View files](examples/complete-sites/dog-shelter-single-page/) |
-| Dog shelter, multi-page | [Open demo](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/) | [View files](examples/complete-sites/dog-shelter-multi-page/) |
-| Portfolio preset | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/) | [View files](examples/feature-demos/theme-preset-portfolio/) |
-| Documentation preset | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/) | [View files](examples/feature-demos/theme-preset-documentation/) |
-| Project preset | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-project/) | [View files](examples/feature-demos/theme-preset-project/) |
-| Statement preset | [Open demo](https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/) | [View files](examples/feature-demos/theme-preset-statement/) |
-| Media and surfaces | [Open demo](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/) | [View files](examples/feature-demos/media-and-surfaces/) |
-| Sitewide content | [Open demo](https://janga.github.io/norna/examples/feature-demos/sitewide-content/) | [View files](examples/feature-demos/sitewide-content/) |
-
-See [examples/README.md](examples/README.md) for what each example is intended
-to demonstrate and how to run it locally.
+The [example source index](examples/README.md) describes every maintained
+complete site and feature demonstration, links its live result, and shows how
+to run it locally.
 
 ## Is Norna A Good Fit?
 

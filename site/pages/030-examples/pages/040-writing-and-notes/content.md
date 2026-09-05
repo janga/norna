@@ -61,3 +61,5 @@ the note width, spacing, color and narrow-screen fallback with the rest of the
 site.
 
 Read the complete [note syntax reference](https://github.com/janga/norna/blob/main/docs/content.md#side-notes).
+The [source for this page](https://github.com/janga/norna/blob/main/site/pages/030-examples/pages/040-writing-and-notes/content.md)
+shows the same note next to its surrounding Markdown.

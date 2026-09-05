@@ -92,5 +92,6 @@ coordinated preset default.
 
 Open the complete [media and surfaces test site](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/),
 go directly to its [media page](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/media/),
+inspect the [maintained source files](https://github.com/janga/norna/tree/main/examples/feature-demos/media-and-surfaces),
 or read the [content block reference](https://github.com/janga/norna/blob/main/docs/content.md#norna-blocks)
 and [image presentation reference](https://github.com/janga/norna/blob/main/docs/theme.md#image-sizing).

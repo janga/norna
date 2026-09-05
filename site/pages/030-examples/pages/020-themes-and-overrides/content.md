@@ -38,6 +38,10 @@ size: m
 [Open the Theme explorer](https://janga.github.io/norna/examples/theme-presets/)
 to switch presets while keeping the comparison content unchanged.
 
+[Browse the four maintained preset source sites](https://github.com/janga/norna/tree/main/examples/feature-demos),
+which use the same page content and assets with one preset selected in each
+root `theme.yaml`.
+
 The selected preset is root configuration in `site/theme.yaml`:
 
 ```yaml

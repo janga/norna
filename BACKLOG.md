@@ -85,9 +85,9 @@ verified and approved for documentation.
   changes are complete; review the rendered progression with the revised
   homepage before closing it.
 - [`BL-042` Examples audit and teaching structure](docs/design/backlog/BL-042-examples-audit.md):
-  **Ready after `BL-041` Beginner-first Getting Started audit.** Make every
-  example discoverable, purposeful, current, and clearly separated from
-  tutorial and reference material.
+  **Implemented; awaiting human review.** The example roles, source map, and
+  documentation hierarchy are reconciled; review the rendered Examples pages
+  before closing it.
 - [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
   **Ready for final visual review.** The example now maps the real documentation
   hierarchy to its navigation; close the item once that presentation is accepted.

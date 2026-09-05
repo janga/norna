@@ -38,6 +38,10 @@ sites use identical page content and images so their visual differences come
 only from `theme.yaml`. Feature demos are useful for documentation and
 integration checks, but are not starter templates.
 
+The documentation site under `site/` uses selected example output inside its
+teaching pages and is itself the maintained hierarchical-site example. Those
+pages explain what to notice; this file remains the source-project index.
+
 ## Run An Example Locally
 
 From the Norna repository root, pass the example's `site/` directory:

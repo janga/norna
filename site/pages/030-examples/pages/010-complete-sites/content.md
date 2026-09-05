@@ -5,9 +5,11 @@ page:
 
 # Complete sites
 
-These are complete, independently built Norna sites rather than fragments
-embedded in the documentation. Both keep navigation in the top area because
-their structures are simple enough not to need a hierarchical navigation tree.
+The dog-shelter examples are complete, independently built Norna sites rather
+than fragments embedded in the documentation. Both keep navigation in the top
+area because their structures are simple enough not to need a hierarchical
+navigation tree. This documentation site provides the contrasting example of a
+deeper page hierarchy with navigation rails.
 
 The single-page site lists its sections. The multi-page site lists its pages.
 Open the rendered sites to inspect their responsive navigation, then browse the
@@ -42,3 +44,13 @@ a deeper hierarchy.
 
 [Open the multi-page site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/)
 or [browse its source files](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-multi-page).
+
+## Hierarchical documentation {#hierarchical-documentation}
+
+The site you are reading uses categories, nested pages, a persistent page tree,
+and a separate contents rail for headings on the current page. It is a real
+Norna site rather than a special documentation frontend.
+
+[Browse the documentation-site source](https://github.com/janga/norna/tree/main/site)
+or read [Grow Your Site](/getting-started/grow-your-site/) for the shorter
+illustrated progression from one page to this structure.

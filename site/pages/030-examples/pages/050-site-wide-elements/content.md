@@ -9,7 +9,8 @@ Some visible elements belong to the complete site rather than one page. Norna
 keeps their editorial content, assets, structure and visual treatment in
 separate sources so that each concern has one clear owner.
 
-[Open the complete site-wide elements demonstration](https://janga.github.io/norna/examples/feature-demos/sitewide-content/).
+[Open the complete site-wide elements demonstration](https://janga.github.io/norna/examples/feature-demos/sitewide-content/)
+or [browse its maintained source](https://github.com/janga/norna/tree/main/examples/feature-demos/sitewide-content).
 
 ## Logo and navigation {#logo-and-navigation}
 
