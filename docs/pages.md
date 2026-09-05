@@ -133,6 +133,11 @@ Norna does not generate `/guides/`. The category appears as:
 - a disclosure-only label in the desktop tree and mobile menu;
 - non-linked text in breadcrumbs.
 
+Because a category has no generated page, `/guides/` is not a valid internal
+link target. Link to a descendant page, or replace `category.yaml` with
+`content.md` when the collection needs its own destination. See
+[Content: Internal Links](content.md#internal-links).
+
 A category may contain an optional limited `theme.yaml`; descendant pages
 inherit it. A category cannot contain `images/`, because it has no page content
 that can reference them. Put an image on a child page, or replace

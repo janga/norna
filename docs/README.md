@@ -90,6 +90,7 @@ required, optional, convention-discovered, versioned, or generated.
 ### Write Content
 
 - [Write page sections](content.md#sections)
+- [Link pages, headings, cards, and public files](content.md#internal-links)
 - [Write copyable fenced code blocks](content.md#code-blocks)
 - [Use image stacks, carousels, and cards](content.md#norna-blocks)
 - [Add notes to prose](content.md#markdown-text)

@@ -125,6 +125,43 @@ Markdown section content starts at the level 2 heading and continues until the
 next level 2 heading. `###` and `####` headings are body subheadings within the
 current section, not new sections.
 
+## Internal Links
+
+Norna checks links between its pages, heading anchors, card destinations, and
+files under `site/public/`. Write a link with ordinary Markdown or a card's
+`link` field:
+
+```md
+[Another page](/guides/installation/)
+[A section on this page](#requirements)
+[A section on another page](/guides/installation/#requirements)
+[Download the guide](/downloads/guide.pdf)
+```
+
+The paths in `content.md` describe the Norna site rather than its deployment
+location. Start a site-relative path with `/` and omit the configured base
+path. For a site published at `https://example.com/project/`, Norna renders
+`/guides/installation/` as `/project/guides/installation/`. A relative path
+such as `../workflows/` is resolved from the current page. Query strings and
+fragments are preserved.
+
+Use the page URL to link to its H1. The explicit anchor `#page-title` also
+identifies the H1. H2 and H3 anchors use the derived or explicit ids described
+under [Sections](#sections). Prefer the current page URL even though a declared
+[page alias](pages.md#preserve-old-page-urls) also resolves to its destination.
+
+A navigation category has no page of its own. A link to a category path is
+therefore an error: link to one of its pages, or replace `category.yaml` with
+`content.md` when the collection needs a destination. A public-file link must
+match the exact relative path of a file under `site/public/`, including its
+filename and letter case.
+
+`content:check` validates inline Markdown links, shared Markdown reference
+links, and `link` fields in `norna-card-list`. It reports missing pages,
+headings, and public files; invalid internal URLs; and links to categories.
+External URLs and protocol-relative URLs are left to their remote services and
+are not requested during the check.
+
 ## Norna Blocks
 
 Norna-managed local images and cards are written in Markdown fenced blocks at
@@ -388,11 +425,11 @@ Run:
 npm run norna:content:check
 ```
 
-This checks section heading ids, duplicate image names,
-missing image files, misplaced referenced images, duplicate image references,
-invalid Norna blocks, unreferenced images, removed inline style syntax,
-Markdown image references to unmanaged local files, and common frontmatter
-indentation and structure mistakes.
+This checks section heading ids, internal page, heading, card, and public-file
+links, duplicate image names, missing image files, misplaced referenced images,
+duplicate image references, invalid Norna blocks, unreferenced images, removed
+inline style syntax, Markdown image references to unmanaged local files, and
+common frontmatter indentation and structure mistakes.
 
 Frontmatter uses YAML indentation. Use ordinary spaces, not tabs or
 non-breaking spaces. `content:check` reports a focused error when indentation is

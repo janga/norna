@@ -91,10 +91,6 @@ verified and approved for documentation.
 - [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
   **Ready for final visual review.** The example now maps the real documentation
   hierarchy to its navigation; close the item once that presentation is accepted.
-- `BL-029` Document internal page, heading-anchor, public-file, category, and
-  card-link validation in the content and command references, the documentation
-  site, and focused examples. Keep editor behavior explicitly out of scope
-  until `BL-027` is implemented.
 ## Needs Decision Or Evidence
 
 These items have no implementation position yet. Move one into `Now`, `Next`,

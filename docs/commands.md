@@ -184,9 +184,12 @@ behavior, ordering, link formats, aliases, and failure handling.
   settings.
 - `check`: runs `config:check` followed by `content:check`.
 - `content:check`: validates the page hierarchy, required H1 titles, heading
-  ids, frontmatter, Norna blocks, managed-image references, inline notes, and
-  common content mistakes. It reports all discovered issues before exiting and
-  never moves files.
+  ids, frontmatter, Norna blocks, managed-image references, inline notes,
+  internal Markdown and card links, and common content mistakes. Link targets
+  may be pages, H2 or H3 anchors, page aliases, or files under `site/public/`;
+  navigation categories are not link destinations. The command reports all
+  discovered issues before exiting and never moves files. See
+  [Content: Internal Links](content.md#internal-links).
 - `content:sync`: moves misplaced referenced image files when the intended move
   is unambiguous. It shows the complete move plan and asks for confirmation
   before writing; pass `--yes` to accept the displayed plan without a prompt.

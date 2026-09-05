@@ -25,6 +25,26 @@ structure the text inside the current section:
 The same headings provide document semantics and navigation. Authors do not
 maintain a separate section list.
 
+## Internal links {#internal-links}
+
+Use ordinary Markdown links for another page, a heading on this page, or a
+static file in `site/public/`:
+
+```md
+[Theme examples](/examples/themes-and-overrides/)
+[Root overrides](/examples/themes-and-overrides/#root-overrides)
+[Sidenotes on this page](#sidenotes)
+[Crawler rules](/robots.txt)
+```
+
+Write site-relative paths without the deployment base path. Norna adds that
+path when it renders the site. `content:check` reports a missing page, heading,
+or public file before the site is built. It checks the same destinations in
+card links.
+
+The complete [internal-link reference](https://github.com/janga/norna/blob/main/docs/content.md#internal-links)
+also covers relative paths, navigation categories, aliases, and external URLs.
+
 ## Code examples {#code-examples}
 
 Use ordinary fenced Markdown for a command or source example:

@@ -197,6 +197,17 @@ as `site/public/downloads/project-overview.pdf` is published at
 `/downloads/project-overview.pdf`, prefixed with the site's configured base path
 when the site is published below a path such as `/repository-name/`.
 
+Links in `content.md` use that source-relative public path and omit the
+configured base path:
+
+```md
+[Download the project overview](/downloads/project-overview.pdf)
+```
+
+`content:check` reports an error when the exact file does not exist under
+`site/public/`. See [Content: Internal Links](content.md#internal-links) for
+page, heading, card, category, and public-file link rules.
+
 Ordinary Markdown image syntax may reference a public asset with a root-relative
 URL:
 
