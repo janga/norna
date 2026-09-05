@@ -152,6 +152,13 @@ Keep one canonical reference definition for each public concept:
   specification;
 - design guides explain rationale without redefining behavior.
 
+Link direction normally runs from the introductory HTML site to the canonical
+Markdown reference. Do not add a reciprocal link from reference material to an
+HTML documentation page merely because both exist. Link back to HTML only when
+the rendered page supplies distinct reader value, such as an interactive
+demonstration, a visual comparison, or a guided beginner workflow that the
+reference does not provide.
+
 Duplication is justified only when the reader needs enough local context to
 continue. Keep duplicated statements short and ensure automated link or schema
 tests cover them where practical.
@@ -194,6 +201,8 @@ Before completing a documentation change, check:
 - Do schemas, IntelliSense, diagnostics, examples, and canonical reference use
   the same terminology?
 - Are links directed to the exact canonical section?
+- Does every link from canonical reference to HTML documentation provide
+  distinct visual, interactive, or instructional value?
 - Does the wording remain understandable without relying on color or layout
   alone?
 
