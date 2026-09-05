@@ -4,42 +4,49 @@
 
 The authoritative documentation is maintained as Markdown in the Norna GitHub
 repository. Norna is pre-1.0, requires Node.js 22.12 or later, and currently
-integrates publishing with GitHub Pages only.
+integrates publishing with GitHub Pages only. Rendered HTML links are used below
+only for the guided introduction and visual examples.
 
-## Start Here
+## Guided Introduction
 
-- [Project README](https://raw.githubusercontent.com/janga/norna/main/README.md)
 - [Install Norna](https://janga.github.io/norna/getting-started/install-norna/)
+- [Choose A Theme](https://janga.github.io/norna/getting-started/choose-a-theme/)
 - [Grow Your Site](https://janga.github.io/norna/getting-started/grow-your-site/)
 - [Prepare Your Site](https://janga.github.io/norna/getting-started/prepare-your-site/)
 - [Build And Publish](https://janga.github.io/norna/getting-started/build-and-publish/)
+
+## Site Structure And Content
+
+- [Project overview](https://raw.githubusercontent.com/janga/norna/main/README.md)
 - [Documentation map](https://raw.githubusercontent.com/janga/norna/main/docs/README.md)
 - [Site files](https://raw.githubusercontent.com/janga/norna/main/docs/site-files.md)
-- [Requirements and limitations](https://raw.githubusercontent.com/janga/norna/main/docs/requirements.md)
+- [Pages, categories, navigation, and page moves](https://raw.githubusercontent.com/janga/norna/main/docs/pages.md)
+- [Content, links, notes, and managed blocks](https://raw.githubusercontent.com/janga/norna/main/docs/content.md)
+- [Images, metadata, and image synchronization](https://raw.githubusercontent.com/janga/norna/main/docs/images-and-metadata.md)
+- [Public files, logos, browser icons, and social images](https://raw.githubusercontent.com/janga/norna/main/docs/public-files.md)
 
-## How-To And Explanation
+## Presentation And Shared Content
 
-- [Content and managed blocks](https://raw.githubusercontent.com/janga/norna/main/docs/content.md)
-- [Pages and navigation categories](https://raw.githubusercontent.com/janga/norna/main/docs/pages.md)
-- [Theme presets and overrides](https://raw.githubusercontent.com/janga/norna/main/docs/theme.md)
-- [Images and generated metadata](https://raw.githubusercontent.com/janga/norna/main/docs/images-and-metadata.md)
-- [Local development](https://raw.githubusercontent.com/janga/norna/main/docs/local-development.md)
-- [VS Code editor support](https://raw.githubusercontent.com/janga/norna/main/docs/editor-support.md)
-- [Publishing](https://raw.githubusercontent.com/janga/norna/main/docs/publishing.md)
-- [Client-side JavaScript contract](https://raw.githubusercontent.com/janga/norna/main/docs/client-javascript.md)
-- [Upgrading a site](https://raw.githubusercontent.com/janga/norna/main/docs/upgrading.md)
-
-## Reference
-
-- [Configuration](https://raw.githubusercontent.com/janga/norna/main/docs/configuration.md)
-- [Sitewide content](https://raw.githubusercontent.com/janga/norna/main/docs/sitewide-content.md)
-- [Public files, logos, and favicons](https://raw.githubusercontent.com/janga/norna/main/docs/public-files.md)
+- [Theme presets, palettes, and overrides](https://raw.githubusercontent.com/janga/norna/main/docs/theme.md)
 - [Typography](https://raw.githubusercontent.com/janga/norna/main/docs/typography.md)
-- [Commands](https://raw.githubusercontent.com/janga/norna/main/docs/commands.md)
+- [Site-wide logo settings, banners, and footer](https://raw.githubusercontent.com/janga/norna/main/docs/sitewide-content.md)
+- [Presentation guarantees](https://raw.githubusercontent.com/janga/norna/main/docs/presentation-guarantees.md)
 
-## Examples
+## Configuration And Operation
+
+- [Technical configuration](https://raw.githubusercontent.com/janga/norna/main/docs/configuration.md)
+- [Commands and project scripts](https://raw.githubusercontent.com/janga/norna/main/docs/commands.md)
+- [Local development](https://raw.githubusercontent.com/janga/norna/main/docs/local-development.md)
+- [Requirements and limitations](https://raw.githubusercontent.com/janga/norna/main/docs/requirements.md)
+- [Publishing](https://raw.githubusercontent.com/janga/norna/main/docs/publishing.md)
+- [Upgrading a site](https://raw.githubusercontent.com/janga/norna/main/docs/upgrading.md)
+- [VS Code editor support](https://raw.githubusercontent.com/janga/norna/main/docs/editor-support.md)
+- [Client-side JavaScript contract](https://raw.githubusercontent.com/janga/norna/main/docs/client-javascript.md)
+
+## Examples And Project
 
 - [Rendered examples](https://janga.github.io/norna/examples/)
 - [Example source index](https://raw.githubusercontent.com/janga/norna/main/examples/README.md)
+- [Engine development](https://raw.githubusercontent.com/janga/norna/main/docs/engine-development.md)
 - [GitHub repository](https://github.com/janga/norna)
 - [Issue tracker](https://github.com/janga/norna/issues)
