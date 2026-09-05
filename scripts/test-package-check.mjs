@@ -405,7 +405,15 @@ This page verifies that packaged norna sites can build additional pages.
 	await runInherit(npxBin, ['norna', 'config:check'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'check'], { cwd: siteProjectRoot, env: npmEnv });
-	await runInherit(npxBin, ['norna', 'navigation:review', '--format', 'json'], { cwd: siteProjectRoot, env: npmEnv });
+	const navigationReviewResult = await run(
+		npxBin,
+		['norna', 'navigation:review', '--format', 'json'],
+		{ cwd: siteProjectRoot, env: npmEnv },
+	);
+	const navigationReview = JSON.parse(navigationReviewResult.stdout);
+	assert.equal(navigationReview.command, 'navigation:review');
+	assert.equal(navigationReview.schemaVersion, 1);
+	assert.equal(navigationReview.site.pageCount, 3);
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
 	const previewPort = await getAvailablePort();
 	const previewEnv = {
