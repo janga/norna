@@ -137,10 +137,9 @@ Top-level pages normally use horizontal navigation on wide screens. On small
 screens, the same pages are collected in one expandable menu.
 
 Images referenced through Norna blocks are managed images: Norna validates,
-processes, and keeps track of their files. With several pages, each managed
-image belongs with the page that uses it. The command
-`npm run norna:content:check` reports missing or misplaced images. If an image
-reference moves to another page, run:
+processes, and keeps track of their files. Each one belongs in the `images/`
+directory beside the page that uses it. If an image reference moves to another
+page, run:
 
 ```sh
 # Preview and confirm an unambiguous image move
@@ -148,8 +147,10 @@ npm run norna:sync
 ```
 
 Norna moves the uniquely identified file into the receiving page's `images/`
-directory. Moving a reference between sections on the same page requires no file
-move because those sections share the same image directory.
+directory. `npm run norna:content:check` reports a missing, misplaced, or
+ambiguous image instead of guessing. See
+[Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md)
+for the complete placement and synchronization rules.
 
 The following views show the Dogs page before and after opening its mobile
 navigation.
@@ -227,7 +228,7 @@ instead of `category.yaml`. It then becomes a real page at
 `/getting-started/`, while the child URLs remain unchanged. A page/category
 directory must contain exactly one of those two marker files.
 
-Each child page remains an ordinary Markdown file. This page begins with:
+Each child page remains an ordinary Markdown file. For example:
 
 ```md
 ---
@@ -258,33 +259,6 @@ Home is the exception: `000-home` is the site's front door and cannot have child
 pages or categories. Start each navigable hierarchy with another top-level
 entry beside it.
 
-On a wide screen, Focus reading can hide both rails together with other
-secondary page elements. The document column keeps its position. Without
-JavaScript, the rails remain visible and their links remain usable.
-
-For longer pages, the right contents rail automatically marks the H2 or H3 at
-the reading position while the reader scrolls. The marker does not change the
-URL or keyboard focus. Ordinary page and section links still work when
-JavaScript is unavailable, but the marker then remains at the explicitly
-selected destination. See the
-[navigation reference](https://github.com/janga/norna/blob/main/docs/pages.md#current-reading-position)
-for the complete behavior.
-
-An optional limited `theme.yaml` in the category directory is inherited by its
-descendant pages. See [Pages and categories](https://github.com/janga/norna/blob/main/docs/pages.md)
-for exact marker files, creation options, directory names, ordering, URL
-segments, inheritance, warnings, and automatic navigation behavior.
-
-When moving or renaming a page changes its URL, preview the complete operation
-before changing files:
-
-```sh
-npm exec -- norna page:move /guides/install/ /reference/install/
-```
-
-Norna can then move the page with `--write`, update internal references, and
-keep the old URL attached to the moved page. The same command can reconcile a
-directory that was already moved by hand. The
-[FAQ entry on moving pages](/faq/maintenance-and-publishing/#preserve-old-page-urls) shows the short workflow; the
-[page reference](https://github.com/janga/norna/blob/main/docs/pages.md#move-or-reconcile-a-page)
-defines subtree handling, ordering, aliases, and failure behavior.
+See [Pages and categories](https://github.com/janga/norna/blob/main/docs/pages.md)
+for exact marker files, creation options, ordering, URLs, inherited page themes,
+navigation behavior, and safe page moves.

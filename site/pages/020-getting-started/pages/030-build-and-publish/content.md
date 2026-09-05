@@ -8,19 +8,6 @@ page:
 Norna turns the checked source files into a static website and includes the
 GitHub Actions workflow needed to publish it with GitHub Pages.
 
-## Check the site {#check}
-
-Run the complete check before building:
-
-```sh
-# Validate the site without changing source files
-npm run norna:check
-```
-
-Correct reported problems in the source files. The focused
-`norna:config:check` and `norna:content:check` scripts run the same checks
-separately when you need to diagnose a problem.
-
 ## Set the public URL {#public-url}
 
 Before the first build for publication, set the final site URL in
@@ -35,16 +22,18 @@ and generated images. It also uses the URL for canonical links, social sharing
 metadata, and the sitemap. Use a root URL such as `https://example.com/` for a
 custom domain.
 
-## Add a sharing image {#sharing-image}
+## Check the site {#check}
 
-Norna already uses each page's title, optional description, and public URL when
-the link is shared. To add one preview image for the whole site, place exactly
-one of `social-image.png`, `social-image.jpg`, or `social-image.jpeg` directly
-in `site/public/`.
+Run the complete check before building:
 
-The image is optional and needs no configuration. See the
-[social sharing image reference](https://github.com/janga/norna/blob/main/docs/public-files.md#social-sharing-image)
-for formats, metadata, and omission behavior.
+```sh
+# Validate the site without changing source files
+npm run norna:check
+```
+
+Correct reported problems in the source files. The focused
+`norna:config:check` and `norna:content:check` scripts run the same checks
+separately when you need to diagnose a problem.
 
 ## Build the static site {#build}
 
@@ -58,18 +47,11 @@ npm run norna:build
 Treat `dist/` as generated output. Edit the files under `site/` and build again
 instead of changing the generated files.
 
-The build also creates `dist/sitemap.xml` from every page that has its own URL.
-Norna uses the public URL above for its absolute links, includes pages omitted
-from navigation, and excludes navigation categories because they do not have
-URLs. Do not create a source sitemap at `site/public/sitemap.xml`. See the
-[generated sitemap reference](https://github.com/janga/norna/blob/main/docs/public-files.md#generated-sitemap)
-for the exact inclusion and conflict rules.
-
-The same build creates `dist/404.html`. It uses the site's language, root
-theme, navigation, and a homepage link that respects the configured base path.
-GitHub Pages uses this file when a requested page does not exist. See the
-[generated 404 page reference](https://github.com/janga/norna/blob/main/docs/public-files.md#generated-404-page)
-for metadata, hosting, and reserved-filename details.
+The build includes responsive image output, canonical and social metadata, a
+sitemap, and a default `404.html`. A conventionally named optional image under
+`site/public/` supplies the site's social preview. See
+[Public files](https://github.com/janga/norna/blob/main/docs/public-files.md)
+for its filename and for the exact generated-output rules.
 
 ## Publish with GitHub Pages {#publish}
 

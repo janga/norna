@@ -81,9 +81,9 @@ of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
 - [`BL-041` Beginner-first Getting Started audit](docs/design/backlog/BL-041-getting-started-audit.md):
-  **Ready after `BL-038` Selling homepage and product positioning.** Reconcile
-  all introductory, reference, starter, and example material into one concise
-  path for a newcomer who wants to understand and try Norna.
+  **Implemented; awaiting human review.** The audited beginner path and starter
+  changes are complete; review the rendered progression with the revised
+  homepage before closing it.
 - [`BL-042` Examples audit and teaching structure](docs/design/backlog/BL-042-examples-audit.md):
   **Ready after `BL-041` Beginner-first Getting Started audit.** Make every
   example discoverable, purposeful, current, and clearly separated from

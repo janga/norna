@@ -1,4 +1,4 @@
-# norna Starter
+# Norna Starter
 
 This is a minimal site repository starter for `@janga/norna`.
 
@@ -9,11 +9,8 @@ npm install
 npm run norna:dev
 ```
 
-If the standard local port is blocked, start with:
-
-```sh
-npm run norna:dev
-```
+Open the address printed by the development server. Stop it later with
+`npm run norna:dev:stop`.
 
 Edit shared logo settings, banners, and footer in
 `site/sitewide-content.yaml`,
@@ -63,16 +60,6 @@ still selects this project's locally installed Norna version.
 Use `npm run norna:engine:version` to inspect the installed engine and
 `npm run norna:engine:update` to update it.
 
-Generic documentation lives in the `norna` repository:
-
-- `docs/README.md`
-- `docs/site-files.md`
-- `docs/public-files.md`
-- `docs/content.md`
-- `docs/theme.md`
-- `docs/typography.md`
-- `docs/pages.md`
-- `docs/configuration.md`
-- `docs/commands.md`
-- `docs/images-and-metadata.md`
-- `docs/publishing.md`
+Start with the [illustrated Getting Started guide](https://janga.github.io/norna/getting-started/install-norna/).
+Use the [Markdown reference index](https://github.com/janga/norna/blob/main/docs/README.md)
+for exact file contracts, syntax, commands, and publishing behavior.

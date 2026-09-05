@@ -11,8 +11,10 @@ syntax, defaults, commands, and troubleshooting.
 ## Start Here
 
 1. [Install Norna](https://janga.github.io/norna/getting-started/install-norna/)
-   begins the Getting Started guide with installation, the first edit, a visual
-   preset, and the local check.
+   begins the Getting Started guide with installation, the first edit, and the
+   local check.
+   [Choose A Theme](https://janga.github.io/norna/getting-started/choose-a-theme/)
+   introduces complete visual presets before focused overrides.
    Continue with [Grow Your Site](https://janga.github.io/norna/getting-started/grow-your-site/)
    and [Build And Publish](https://janga.github.io/norna/getting-started/build-and-publish/)
    when those tasks become relevant.
