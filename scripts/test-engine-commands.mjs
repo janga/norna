@@ -102,7 +102,7 @@ try {
 	assert.match(showResult.stdout, /\s+\/:/);
 	assert.match(showResult.stdout, /value: reading/);
 	assert.match(showResult.stdout, /source: "site\/theme\.yaml"/);
-	assert.match(showResult.stdout, /intro:/);
+	assert.match(showResult.stdout, /welcome:/);
 
 	const initAgainResult = runCli(['init', initializedSiteRoot]);
 	assert.notEqual(initAgainResult.status, 0);
