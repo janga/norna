@@ -67,6 +67,12 @@ content of its own. If a proposed parent page would only repeat the names,
 descriptions, or links already present in the navigation tree, replace it with a
 category. Do not add generic introductory prose merely to justify a parent URL.
 
+Do not reproduce child-page navigation as a list of links on an overview page.
+Link to a child page only when the surrounding text explains why the reader
+should open it or establishes a recommended sequence. If a parent would
+otherwise only summarize or link to its children, use a navigation category
+instead.
+
 Do not remove a useful parent page simply to shorten the navigation. The test is
 whether the page remains worth opening independently, not how many children it
 has or how long its content is.
