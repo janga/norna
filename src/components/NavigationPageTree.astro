@@ -29,10 +29,15 @@ const getBranchId = (node: SiteNode) => [
 const hasPageSections = (node: SiteNavigationNode) => (
 	node.node.kind === 'page' && node.headings.some((heading) => heading.depth === 2)
 );
-const hasPageDisclosure = (node: SiteNavigationNode) => hasBranch(node) || hasPageSections(node);
+const showsPageSections = (node: SiteNavigationNode) => (
+	integratePageSections
+	&& hasPageSections(node)
+	&& (variant !== 'sidebar' || (node.node.kind === 'page' && isCurrentPage(node.node)))
+);
+const hasPageDisclosure = (node: SiteNavigationNode) => hasBranch(node) || showsPageSections(node);
 const usesPageDisclosure = (node: SiteNavigationNode) => (
 	variant === 'sidebar'
-		? hasBranch(node)
+		? hasPageDisclosure(node)
 		: integratePageSections && hasPageDisclosure(node)
 );
 ---
@@ -80,7 +85,7 @@ const usesPageDisclosure = (node: SiteNavigationNode) => (
 					data-page-path={node.node.pagePath || '/'}
 					data-current-branch={isCurrentBranch(node.node) ? 'true' : undefined}
 					data-current-page={isCurrentPage(node.node) ? 'true' : undefined}
-					data-has-sections={hasPageSections(node) ? 'true' : undefined}
+					data-has-sections={showsPageSections(node) ? 'true' : undefined}
 					open={isCurrentBranch(node.node)}
 				>
 					<summary
@@ -98,11 +103,14 @@ const usesPageDisclosure = (node: SiteNavigationNode) => (
 						{node.node.title}
 					</a>
 					<div id={getBranchId(node.node)} class="navigation-page-branch-content">
-						{integratePageSections && hasPageSections(node) && (
+						{showsPageSections(node) && (
 							<nav
 								class="navigation-page-sections"
 								aria-label={`${projectConfig.locale.labels.pageNavigation}: ${node.node.title}`}
 							>
+								{variant === 'sidebar' && (
+									<p class="navigation-page-sections-label">{projectConfig.locale.labels.pageSections}</p>
+								)}
 								<PageContentsLinks
 									headings={node.headings}
 									variant={variant === 'mobile' ? 'mobile' : 'desktop'}

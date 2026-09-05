@@ -7,9 +7,10 @@ import NavigationPageTree from './NavigationPageTree.astro';
 interface Props {
 	currentPage: SitePage;
 	navigationEntries: SiteNavigationEntry[];
+	integratePageSections?: boolean;
 }
 
-const { currentPage, navigationEntries } = Astro.props;
+const { currentPage, navigationEntries, integratePageSections = false } = Astro.props;
 const roots = getListedSiteNavigationTree(navigationEntries);
 const activeRoot = roots.find((node) => (
 	currentPage.pageDirectory === node.node.pageDirectory
@@ -29,6 +30,7 @@ const navigationRoot = activeRoot?.node.pagePath ? `/${activeRoot.node.pagePath}
 				nodes={[activeRoot]}
 				currentPage={currentPage}
 				variant="sidebar"
+				integratePageSections={integratePageSections}
 			/>
 		</nav>
 	</aside>

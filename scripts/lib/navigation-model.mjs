@@ -19,6 +19,17 @@ const getNodeDepth = (node) => node.depth ?? 1;
 
 const getTopLevelPagePath = (pagePath) => pagePath?.split('/')[0] ?? '';
 
+const getActiveBranchNodes = (nodes, currentPage) => {
+	if (!currentPage) return [];
+	if (currentPage.isHome) return nodes.filter((node) => node.isHome);
+
+	const rootPath = getTopLevelPagePath(currentPage.pagePath);
+	return nodes.filter((node) => (
+		node.pagePath === rootPath
+		|| node.pagePath?.startsWith(`${rootPath}/`)
+	));
+};
+
 const branchNeedsPageRail = (nodes, pagePath) => {
 	const rootPath = getTopLevelPagePath(pagePath);
 	if (!rootPath) return false;
@@ -64,5 +75,30 @@ export const resolveNavigationModel = ({ mode = 'automatic', nodes, currentPage 
 		hasCategories,
 		hasNestedPages,
 		maximumDepth,
+	});
+};
+
+export const resolvePageContentsPlacement = ({
+	navigationMode,
+	nodes,
+	currentPage,
+	headingCount,
+}) => {
+	const listedNodes = getListedNodes(nodes);
+	const activeBranchNodes = getActiveBranchNodes(listedNodes, currentPage);
+	const activeBranchDepth = activeBranchNodes.reduce((maximum, node) => (
+		Math.max(maximum, getNodeDepth(node))
+	), 0);
+	const hasPageContents = headingCount >= 2;
+	const placement = navigationMode !== 'tree' || !hasPageContents
+		? 'none'
+		: activeBranchDepth <= 2
+			? 'page-tree'
+			: 'contents-rail';
+
+	return Object.freeze({
+		activeBranchDepth,
+		hasPageContents,
+		placement,
 	});
 };

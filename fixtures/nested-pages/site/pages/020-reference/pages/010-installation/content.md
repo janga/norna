@@ -5,7 +5,15 @@ page:
 
 # Reference installation
 
-## Options
+## Install
 
 This page should be available at `/reference/installation/` without conflicting
 with `/guides/installation/`.
+
+### Prerequisites
+
+Add details that belong under the installation step.
+
+## Verify
+
+Explain how the reader can verify the installation.

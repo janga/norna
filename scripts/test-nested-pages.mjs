@@ -57,6 +57,10 @@ try {
 	const rootHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
 	const installationHtml = await readFile(path.join(distDir, 'guides', 'installation', 'index.html'), 'utf8');
 	const macosHtml = await readFile(path.join(distDir, 'guides', 'installation', 'macos', 'index.html'), 'utf8');
+	const referenceInstallationHtml = await readFile(
+		path.join(distDir, 'reference', 'installation', 'index.html'),
+		'utf8',
+	);
 	for (const html of [rootHtml, installationHtml, macosHtml]) {
 		assert.match(html, /--palette-light-page-background: #f8f5ee/);
 		assert.match(html, /--font-sans: Georgia, 'Times New Roman', serif/);
@@ -72,6 +76,7 @@ try {
 	assert.match(installationHtml, /Three nested page levels connected in sequence/);
 	assert.match(installationHtml, /\/original\/pages\/010-guides\/pages\/010-installation\/images\/diagram-[a-f0-9]+\.svg/);
 	assert.match(macosHtml, /data-navigation-mode="tree"/);
+	assert.match(macosHtml, /data-page-contents-placement="contents-rail"/);
 	assert.match(macosHtml, /data-section-tracking="enabled"/);
 	assert.doesNotMatch(rootHtml, /data-section-tracking=/);
 	assert.match(macosHtml, /class="site-nav-item site-nav-item-current-branch"/);
@@ -101,6 +106,18 @@ try {
 		macosHtml.indexOf('href="/guides/installation/"') < macosHtml.indexOf('href="/guides/workflows/"'),
 		'Nested sibling navigation should follow page directory order.',
 	);
+	assert.match(referenceInstallationHtml, /data-navigation-mode="tree"/);
+	assert.match(referenceInstallationHtml, /data-page-contents-placement="page-tree"/);
+	assert.doesNotMatch(referenceInstallationHtml, /class="page-contents-navigation/);
+	const referenceTreeStart = referenceInstallationHtml.indexOf('<aside id="tree-local-navigation"');
+	const referenceTreeEnd = referenceInstallationHtml.indexOf('</aside>', referenceTreeStart);
+	const referenceTreeHtml = referenceInstallationHtml.slice(referenceTreeStart, referenceTreeEnd);
+	assert.match(referenceTreeHtml, /class="navigation-page-sections"/);
+	assert.match(referenceTreeHtml, /<p class="navigation-page-sections-label">Sections<\/p>/);
+	assert.match(referenceTreeHtml, /aria-label="Page contents: Reference installation"/);
+	assert.match(referenceTreeHtml, /href="#install">Install<\/a><ol><li><a href="#prerequisites">Prerequisites<\/a>/);
+	assert.match(referenceTreeHtml, /href="#verify">Verify<\/a>/);
+	assert.doesNotMatch(referenceTreeHtml, /href="\/guides\/installation\/macos\/"/);
 
 	await runGit(['init']);
 	await runGit(['add', '.']);

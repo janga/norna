@@ -15,7 +15,10 @@ import { getSiteModel, type SitePage } from '../lib/sitePages';
 import { flattenSiteNavigationTree, getListedSiteNavigationTree } from '../lib/siteNavigation';
 import { getToday, isVisibleToday } from '../lib/visibility';
 import { getLogoAsset } from '../lib/sitePublicAssets';
-import { resolveNavigationModel } from '../../scripts/lib/navigation-model.mjs';
+import {
+	resolveNavigationModel,
+	resolvePageContentsPlacement,
+} from '../../scripts/lib/navigation-model.mjs';
 import { projectConfig, resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
 import { getTextWidthCssValue, resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
 import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
@@ -118,7 +121,23 @@ const currentPageNavigation = siteNavigation.find(({ node }) => (
 	node.kind === 'page' && node.pathname === currentPage.pathname
 ));
 const pageContentsHeadings = currentPageNavigation?.headings.filter(({ depth }) => depth === 2 || depth === 3) ?? [];
-const hasContentsNavigation = hasTreeNavigation && pageContentsHeadings.length > 1;
+const pageContentsPlacement = resolvePageContentsPlacement({
+	navigationMode: navigationModel.mode,
+	nodes: renderedNavigationEntries.map(({ node }) => ({
+		depth: Math.max(1, node.depth),
+		isHome: node.isHome,
+		listed: node.navigation.listed,
+		pagePath: node.pagePath,
+	})),
+	currentPage: {
+		isHome: currentPage.isHome,
+		pagePath: currentPage.pagePath,
+	},
+	headingCount: pageContentsHeadings.length,
+});
+const hasContentsNavigation = pageContentsPlacement.placement !== 'none';
+const integratePageContentsInTree = pageContentsPlacement.placement === 'page-tree';
+const showContentsRail = pageContentsPlacement.placement === 'contents-rail';
 const hasNavigationRailFrame = navigationModel.requestedMode === 'tree'
 	|| (
 		navigationModel.requestedMode === 'automatic'
@@ -153,10 +172,16 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 
 	<div class:list={['site-page-layout', {
 		'site-page-layout-tree': hasTreeNavigation,
-		'site-page-layout-contents': hasContentsNavigation,
-	}]}>
+		'site-page-layout-contents': showContentsRail,
+	}]}
+		data-page-contents-placement={hasContentsNavigation ? pageContentsPlacement.placement : undefined}
+	>
 		{hasTreeNavigation && (
-			<SiteTreeNavigation currentPage={currentPage} navigationEntries={siteNavigation} />
+			<SiteTreeNavigation
+				currentPage={currentPage}
+				navigationEntries={siteNavigation}
+				integratePageSections={integratePageContentsInTree}
+			/>
 		)}
 		<main
 			class:list={['site-content', { 'site-content-has-breadcrumbs': reserveBreadcrumbSpace }]}
@@ -166,7 +191,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 			{showBreadcrumbs
 				? <SiteBreadcrumbs currentPage={currentPage} nodes={siteNodes} />
 				: reserveBreadcrumbSpace && <div class="site-breadcrumbs" aria-hidden="true"></div>}
-			{hasContentsNavigation && (
+			{showContentsRail && (
 				<PageContentsNavigation
 					headings={pageContentsHeadings}
 					pageTitle={currentPage.title}
@@ -183,7 +208,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 				/>
 			))}
 		</main>
-		{hasContentsNavigation && (
+		{showContentsRail && (
 			<PageContentsNavigation
 				headings={pageContentsHeadings}
 				pageTitle={currentPage.title}

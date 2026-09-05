@@ -116,6 +116,14 @@
 	padding: 0.2rem 0 0.25rem 0.85rem;
 }
 
+.navigation-page-sections-label {
+	margin: 0 0 0.45rem;
+	color: var(--color-primary-text);
+	font-size: 0.7rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
 .navigation-page-tree,
 .page-contents-links {
 	margin: 0;
