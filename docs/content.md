@@ -331,6 +331,28 @@ Deprecated syntax such as `[highlighted text]{.yellow}` is rejected by
 `content:check`. Keep the page visually coherent through its `theme.yaml`
 instead of styling individual phrases.
 
+### Code Blocks
+
+Use an ordinary fenced Markdown code block for commands, configuration, and
+source examples:
+
+````md
+```sh
+npm run norna:check
+```
+````
+
+When JavaScript is available, Norna adds a button labelled **Copy code** to each
+rendered fenced code block. Activating it copies only the code text, without the
+fence or a displayed language name. The button works with pointer and keyboard
+input, changes icon after success or failure, and announces **Copied** or
+**Could not copy code** through a live status message for screen readers.
+
+The code remains ordinary selectable text when JavaScript or clipboard access
+is unavailable. The copy control is then absent or reports failure; it is not
+required to read or select the example. Inline code does not receive a copy
+control.
+
 ### Side Notes
 
 Add one numbered side note to a paragraph by placing `{note-ref}` where its

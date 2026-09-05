@@ -12,6 +12,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Image stacks | No | Images, responsive sources, alt text, and captions remain available. |
 | Card lists | No | Cards and links remain available. |
 | Side notes | No | CSS places notes in the margin when space permits and in the reading flow otherwise. |
+| Fenced code-block copy control | Only on pages containing rendered code blocks | Code remains readable and selectable; the copy button is absent. |
 | Basic page links and anchors | No | Normal links, URLs, and browser history continue to work. |
 | Generated page and section navigation | When Norna needs to maintain sticky anchor offsets, close the mobile menu after a choice, or enhance tree interaction | Real page and anchor links remain usable. Native disclosure controls can still reveal their contents. |
 | Focus reading | Yes, when the Display panel offers it; always with `tree` navigation | The normal navigation, breadcrumbs, and footer remain visible. |
@@ -24,8 +25,8 @@ responsive layout, and responsive image markup are generated ahead of time.
 The navigation, banner, carousel, and reader-preference scripts are independent.
 The reader-preference script is site-wide because
 reading width is always available. Other scripts are included only when their
-features are present: adding one carousel affects only pages that contain a
-carousel. See
+features are present: adding one code block or carousel affects only pages that
+contain that feature. See
 [Reader Display Controls](theme.md#reader-display-controls) and
 [Focus Reading With Desktop Rails](pages.md#focus-reading-with-desktop-rails)
 for their storage, defaults, and interaction contracts. See

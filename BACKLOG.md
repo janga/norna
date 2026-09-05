@@ -91,10 +91,6 @@ verified and approved for documentation.
 - [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
   **Ready for final visual review.** The example now maps the real documentation
   hierarchy to its navigation; close the item once that presentation is accepted.
-- `BL-016` Document progressive copy controls for fenced code blocks in the
-  Markdown reference and documentation site, including keyboard and
-  screen-reader feedback without implying that ordinary content needs
-  JavaScript.
 - `BL-017` Document the supported pattern for embedding an image-led Norna site
   in a larger GitHub Pages project that also publishes an application or
   project homepage.

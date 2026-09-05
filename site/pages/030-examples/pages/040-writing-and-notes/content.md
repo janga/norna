@@ -25,6 +25,18 @@ structure the text inside the current section:
 The same headings provide document semantics and navigation. Authors do not
 maintain a separate section list.
 
+## Code examples {#code-examples}
+
+Use ordinary fenced Markdown for a command or source example:
+
+```sh
+npm run norna:check
+```
+
+With JavaScript available, the rendered block receives an accessible copy
+button. It copies the code itself and announces success or failure. Without
+JavaScript, the same code remains readable and selectable without the button.
+
 ## Sidenotes {#sidenotes}
 
 A note reference stays with the sentence it qualifies, while the explanation
