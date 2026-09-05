@@ -125,6 +125,20 @@ See the full references for
 [commands](https://github.com/janga/norna/blob/main/docs/commands.md) and
 [site files](https://github.com/janga/norna/blob/main/docs/site-files.md).
 
+## How do I publish an embedded Norna site beside a project homepage? {#publish-embedded-site}
+
+Publish both outputs as one GitHub Pages artifact. Give the Norna site its final
+subpath in `presentation/config.yaml`, build it first, move its generated
+`dist/` aside, build the surrounding project, and copy the Norna output into the
+matching subdirectory of the final artifact.
+
+The surrounding project owns the combined workflow and root-level hosting
+files. Embedded initialization therefore preserves its existing `build` and
+deployment commands instead of adding Norna's standalone workflow. See
+[Publish an embedded site beside another static build](https://github.com/janga/norna/blob/main/docs/publishing.md#publish-an-embedded-site-beside-another-static-build)
+for the complete build order, GitHub Actions steps, base-path rule, image cache,
+and root-file limitations.
+
 ## Why should I commit package-lock.json to Git? {#why-commit-package-lock}
 
 `package-lock.json` records the exact Norna and dependency versions installed

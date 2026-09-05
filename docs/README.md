@@ -125,6 +125,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Run configuration and content checks](commands.md#starter-npm-scripts)
 - [Build and inspect generated output](site-files.md#generated-files)
 - [Publish through GitHub Pages](publishing.md#github-pages-workflow)
+- [Publish an embedded Norna site beside another static build](publishing.md#publish-an-embedded-site-beside-another-static-build)
 - [Monitor or troubleshoot deployment](publishing.md)
 
 ## Explanation

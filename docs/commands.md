@@ -73,6 +73,9 @@ usage.
 The starter uses `norna:*` for norna-specific work. This avoids collisions
 when a Norna site is embedded inside a larger GitHub project
 whose own `build`, `test`, or deploy scripts mean something different.
+The surrounding project must combine both static outputs when they share one
+GitHub Pages artifact; see
+[Publish An Embedded Site Beside Another Static Build](publishing.md#publish-an-embedded-site-beside-another-static-build).
 
 The stable project scripts are:
 
