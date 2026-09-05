@@ -35,6 +35,7 @@ norna check
 norna config:check
 norna content:check
 norna content:sync
+norna navigation:review [--format text|json]
 norna theme:presets
 norna theme:export <preset>
 norna typography profiles
@@ -90,6 +91,7 @@ npm run norna:check
 npm run norna:config:check
 npm run norna:content:check
 npm run norna:sync
+npm run norna:navigation:review -- [--format text|json]
 npm run norna:theme:presets
 npm run norna:theme:export -- <preset>
 npm run norna:typography:profiles
@@ -172,6 +174,58 @@ Use `--order NNN` to choose the destination's sibling order. Use
 See [Move or reconcile a page](pages.md#move-or-reconcile-a-page) for subtree
 behavior, ordering, link formats, aliases, and failure handling.
 
+## Review Navigation Structure
+
+`navigation:review` describes the page hierarchy Norna derives from the source
+files. It does not change pages, categories, links, headings, or configuration:
+
+```sh
+npm run norna:navigation:review
+```
+
+The text report contains five kinds of information:
+
+- the number of pages, navigation categories, top-level branches, visible
+  levels, and entries in the widest sibling group;
+- each branch's page and category counts;
+- every page's H2 and H3 counts, resolved incoming and outgoing page links, and
+  effective navigation mode;
+- each category's total and listed direct-child counts;
+- separate errors, observations, and recommendations.
+
+Here, a **top-level branch** is Home or one listed entry directly below
+`site/pages/`, together with that entry's listed descendants. A **listed** page
+is present in generated navigation; when a page sets `navigation.listed: false`,
+its complete descendant subtree is excluded from navigation measurements but
+remains in the page inventory. An internal reference is any checked local link,
+including page, heading, category, and public-file targets. A resolved page link
+is one that reaches a current page directly or through an alias.
+
+Errors come from the same site link and navigation models used by Norna's
+checks and generated site. They produce a non-zero exit status. Observations
+and recommendations are advisory and leave the exit status successful.
+
+The first release uses deliberately conservative review thresholds:
+
+- a navigation category with exactly one listed direct child;
+- a top-level branch with four or more visible levels;
+- a sibling group with ten or more listed entries;
+- a page with eight or more H2 sections.
+
+Crossing a threshold is not a content error. The report asks the author to
+review whether the current structure still serves its readers; it does not
+prescribe or perform a rewrite.
+
+Use JSON when another tool should consume the same ordered report:
+
+```sh
+npm run norna:navigation:review -- --format json
+```
+
+The JSON object has `schemaVersion: 1` and includes the thresholds used for the
+report. Norna does not add a timestamp, so unchanged source produces stable
+output suitable for comparison.
+
 ## Command Summary
 
 - `doctor`: prints resolved engine root, site project root, site directory,
@@ -196,6 +250,9 @@ behavior, ordering, link formats, aliases, and failure handling.
   A failed move reports completed and remaining work so the command can be run
   again. Moves between different filesystems must be completed manually. The
   starter npm wrapper is `npm run norna:sync`.
+- `navigation:review [--format text|json]`: reads the shared page, Markdown,
+  link, and navigation models and reports their derived structure. It never
+  writes source files. Text is the default; JSON uses a versioned stable shape.
 - `theme:presets`: lists the available complete theme presets and explains the
   intended use of each one.
 - `theme:export <preset>`: writes a protected, commented

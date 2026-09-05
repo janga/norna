@@ -99,6 +99,9 @@ Exact behavior: [Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
 - **Safe page creation and movement.** Commands create ordered pages and
   categories. Page moves begin with a dry run, move complete subtrees, update
   internal references, and preserve old URLs by default.
+- **Read-only structure review.** A command summarizes hierarchy depth, sibling
+  groups, page outlines, internal page links, and effective navigation before
+  an author decides whether to reorganize the site.
 - **Conservative image synchronization.** `content:sync` moves a referenced
   image only when its source and intended destination are unambiguous.
 - **Version-aware project commands.** Project scripts use the locally installed

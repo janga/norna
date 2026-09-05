@@ -270,3 +270,22 @@ entry beside it.
 See [Pages and categories](https://github.com/janga/norna/blob/main/docs/pages.md)
 for exact marker files, creation options, ordering, URLs, inherited page themes,
 navigation behavior, and safe page moves.
+
+## Review the resulting structure {#review-structure}
+
+As the hierarchy grows, inspect the structure Norna actually derives without
+changing any source files:
+
+```sh
+norna navigation:review
+```
+
+The report lists branches, pages, categories, H2/H3 outlines, internal page
+links, and each page's effective navigation mode. Errors are reported
+separately from advisory prompts, such as reviewing a category that contains
+only one listed child. Those prompts are starting points for editorial judgment,
+not validation failures or automatic rewrites.
+
+The [command reference](https://github.com/janga/norna/blob/main/docs/commands.md#review-navigation-structure)
+defines every reported term, the conservative review thresholds, exit behavior,
+and the stable JSON format for tools.

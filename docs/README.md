@@ -97,6 +97,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Add notes to prose](content.md#markdown-text)
 - [Add a page or navigation category](pages.md#create-pages-and-categories)
 - [Understand generated navigation](pages.md#navigation)
+- [Review the derived navigation structure](commands.md#review-navigation-structure)
 - [Add shared banners or footer content](sitewide-content.md)
 - [Use project-local VS Code help](editor-support.md)
 

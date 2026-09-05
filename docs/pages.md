@@ -99,6 +99,25 @@ file tree.
 This is editorial guidance, not a validation rule. Norna validates the file
 structure, while the site author decides which topics deserve pages.
 
+## Review An Existing Hierarchy
+
+Use the read-only navigation review before deciding whether a growing site
+needs another page, category, or hierarchy level:
+
+```sh
+npm run norna:navigation:review
+```
+
+The report describes the hierarchy Norna actually derives, including branch
+depth, sibling counts, H2/H3 outlines, internal page links, unlisted subtrees,
+and the effective navigation mode for each page. It identifies link errors and
+offers conservative prompts for structures worth reviewing, such as a
+single-child category. It does not edit the site or treat an advisory threshold
+as a validation rule.
+
+See [Review Navigation Structure](commands.md#review-navigation-structure) for
+the exact terms, thresholds, exit behavior, and JSON format.
+
 ## Navigation Categories
 
 A category is a non-routable grouping in the page hierarchy. Its directory
