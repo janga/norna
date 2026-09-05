@@ -12,15 +12,17 @@ are in the [backlog process](docs/design/backlog/README.md).
 
 `Now` contains at most three active items in exact technical order.
 
+- [`BL-044` Adaptive page-contents placement](docs/design/backlog/BL-044-adaptive-page-contents-placement.md):
+  **Implemented; awaiting human review.** Shallow desktop branches integrate
+  the current page's H2/H3 outline in the left tree; deep branches retain the
+  separate contents rail. Review the representative navigation sites before
+  adding canonical documentation.
 - [`BL-043` Restore margin notes in Focus reading](docs/design/backlog/BL-043-focus-reading-margin-notes.md):
   **Ready.** Let Focus reading reuse the margin vacated by the hidden page
   contents rail on desktop while preserving normal-flow notes everywhere else.
 - [`BL-038` Selling homepage and product positioning](docs/design/backlog/BL-038-selling-homepage.md):
   **Ready.** Turn implemented strengths into a concise, proof-led front page
   and remove duplicated technical detail.
-- [`BL-037` Refine left-navigation visual hierarchy](docs/design/backlog/BL-037-left-navigation-visual-hierarchy.md):
-  **Ready.** Make the existing page rail clearer and more visually polished,
-  using Linear Docs as a quality reference without changing navigation behavior.
 
 ## Next
 
@@ -28,6 +30,9 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
+- [`BL-037` Refine left-navigation visual hierarchy](docs/design/backlog/BL-037-left-navigation-visual-hierarchy.md):
+  **Ready after `BL-044` Adaptive page-contents placement.** Polish the page
+  rail after its shallow- and deep-branch content contract is implemented.
 - [`BL-006` Previous and next page navigation](docs/design/backlog/BL-006-sequential-navigation.md):
   **Ready.** Define ordered traversal over the stable listed page
   graph before exposing that graph inside content.
