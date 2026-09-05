@@ -60,6 +60,7 @@ try {
 	const initializedPackageJson = JSON.parse(await readFile(path.join(initializedSiteRoot, 'package.json'), 'utf8'));
 	assert.equal(initializedPackageJson.dependencies['@janga/norna'], packageJson.version);
 	assert.equal(initializedPackageJson.scripts['norna:check'], 'norna check');
+	assert.equal(initializedPackageJson.scripts['norna:navigation:review'], 'norna navigation:review');
 	assert.equal(initializedPackageJson.scripts['norna:engine:update'], 'norna engine:update');
 	assert.equal(initializedPackageJson.scripts['norna:engine:version'], 'norna engine:version');
 	assert.equal(initializedPackageJson.scripts['norna:theme:presets'], 'norna theme:presets');
@@ -116,6 +117,7 @@ try {
 	assert.equal(customStandalonePackageJson.scripts.build, 'npm run norna:build');
 	assert.equal(customStandalonePackageJson.scripts['norna:dev'], 'norna --site-dir presentation dev:local');
 	assert.equal(customStandalonePackageJson.scripts['norna:check'], 'norna --site-dir presentation check');
+	assert.equal(customStandalonePackageJson.scripts['norna:navigation:review'], 'norna --site-dir presentation navigation:review');
 	assert.equal(customStandalonePackageJson.scripts['norna:build'], 'norna --site-dir presentation build');
 	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'pages', '000-home', 'content.md'));
 	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'config.yaml'));

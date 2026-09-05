@@ -117,6 +117,9 @@ const createPageRecord = ({ contentFile, data = {}, document }) => {
 		anchors,
 		contentFile,
 		document,
+		navigation: {
+			listed: data.navigation?.listed ?? true,
+		},
 		pathname,
 		title: document.pageTitle?.title ?? contentFile.pageId,
 	};

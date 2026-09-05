@@ -18,6 +18,7 @@ Commands:
   config:check           Validate site/config.yaml
   content:check          Validate page content and managed image references
   content:sync           Move misplaced Norna-managed images and refresh generated images
+  navigation:review      Review the derived navigation structure without changing files
   theme:presets          List available theme presets and their intended uses
   theme:export           Export a commented theme preset reference
   typography profiles    Show built-in typography profile values
@@ -140,6 +141,8 @@ try {
 	} else if (command === 'content:sync') {
 		await runScript('scripts/sync-content-sections.mjs', ['--write', ...rest]);
 		await runScript('scripts/generate-images.mjs', rest);
+	} else if (command === 'navigation:review') {
+		await runScript('scripts/review-navigation.mjs', rest);
 	} else if (command === 'theme:presets') {
 		await runScript('scripts/list-theme-presets.mjs', rest);
 	} else if (command === 'theme:export') {

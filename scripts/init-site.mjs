@@ -165,6 +165,7 @@ const nornaScripts = {
 	'norna:config:check': cliCommand('config:check'),
 	'norna:content:check': cliCommand('content:check'),
 	'norna:sync': cliCommand('content:sync'),
+	'norna:navigation:review': cliCommand('navigation:review'),
 	'norna:theme:presets': cliCommand('theme:presets'),
 	'norna:theme:export': cliCommand('theme:export'),
 	'norna:typography:profiles': cliCommand('typography profiles'),

@@ -224,6 +224,7 @@ const assertPackageContents = async (packageRoot) => {
 		'scripts/lib/social-image-assets.mjs',
 		'scripts/list-theme-presets.mjs',
 		'scripts/move-site-page.mjs',
+		'scripts/review-navigation.mjs',
 		'scripts/show-typography.mjs',
 		'scripts/sync-content-sections.mjs',
 		'scripts/sync-site-public.mjs',
@@ -312,6 +313,7 @@ try {
 	const packageJsonPath = path.join(siteProjectRoot, 'package.json');
 	const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'));
 	assert.equal(packageJson.scripts['norna:check'], 'norna check');
+	assert.equal(packageJson.scripts['norna:navigation:review'], 'norna navigation:review');
 	packageJson.name = 'norna-package-check-site';
 	packageJson.dependencies['@janga/norna'] = tarballPath;
 	await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
@@ -403,6 +405,7 @@ This page verifies that packaged norna sites can build additional pages.
 	await runInherit(npxBin, ['norna', 'config:check'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'check'], { cwd: siteProjectRoot, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'navigation:review', '--format', 'json'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
 	const previewPort = await getAvailablePort();
 	const previewEnv = {

@@ -4,7 +4,6 @@ import {
 	flattenSiteNavigationTree as flattenSiteNavigationTreeShared,
 	getFirstPageInNavigationNode as getFirstPageInNavigationNodeShared,
 	getListedSiteNavigationTree as getListedSiteNavigationTreeShared,
-	getSiteNavigationTree as getSiteNavigationTreeShared,
 } from '../../scripts/lib/site-navigation-tree.mjs';
 
 export type SiteNavigationEntry = {
@@ -16,10 +15,6 @@ export type SiteNavigationEntry = {
 export type SiteNavigationNode = SiteNavigationEntry & {
 	children: SiteNavigationNode[];
 };
-
-export const getSiteNavigationTree = (entries: SiteNavigationEntry[]) => (
-	getSiteNavigationTreeShared(entries) as SiteNavigationNode[]
-);
 
 export const getListedSiteNavigationTree = (entries: SiteNavigationEntry[]) => (
 	getListedSiteNavigationTreeShared(entries) as SiteNavigationNode[]
