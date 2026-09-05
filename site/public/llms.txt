@@ -11,6 +11,7 @@ integrates publishing with GitHub Pages only.
 - [Project README](https://raw.githubusercontent.com/janga/norna/main/README.md)
 - [Install Norna](https://janga.github.io/norna/getting-started/install-norna/)
 - [Grow Your Site](https://janga.github.io/norna/getting-started/grow-your-site/)
+- [Prepare Your Site](https://janga.github.io/norna/getting-started/prepare-your-site/)
 - [Build And Publish](https://janga.github.io/norna/getting-started/build-and-publish/)
 - [Documentation map](https://raw.githubusercontent.com/janga/norna/main/docs/README.md)
 - [Site files](https://raw.githubusercontent.com/janga/norna/main/docs/site-files.md)

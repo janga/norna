@@ -15,7 +15,8 @@ syntax, defaults, commands, and troubleshooting.
    local check.
    [Choose A Theme](https://janga.github.io/norna/getting-started/choose-a-theme/)
    introduces complete visual presets before focused overrides.
-   Continue with [Grow Your Site](https://janga.github.io/norna/getting-started/grow-your-site/)
+   Continue with [Grow Your Site](https://janga.github.io/norna/getting-started/grow-your-site/),
+   [Prepare Your Site](https://janga.github.io/norna/getting-started/prepare-your-site/),
    and [Build And Publish](https://janga.github.io/norna/getting-started/build-and-publish/)
    when those tasks become relevant.
 2. [Site Files](site-files.md) is the canonical map of every source file,

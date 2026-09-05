@@ -36,6 +36,8 @@ available in a fresh clone and is therefore not an instructional dependency.
 | Where do files and images belong? | Grow Your Site | `docs/site-files.md` and `docs/images-and-metadata.md` | Use the illustrated page progression; retain one concise managed-image synchronization example. |
 | When should content become another page? | Grow Your Site | `docs/pages.md` | Introduce sections, pages, and categories in that order; defer inheritance and edge cases. |
 | How does navigation grow? | Grow Your Site | `docs/pages.md` | Show one-page, top-level, and nested outcomes; defer Focus reading and tracking mechanics. |
+| How do pages link to each other? | Grow Your Site | `docs/content.md` | Show site-relative Markdown links after creating top-level pages; defer every accepted link form and error case. |
+| Where do language, page descriptions, site identity, banners, and footer belong? | Prepare Your Site | `docs/configuration.md`, `docs/content.md`, `docs/public-files.md`, and `docs/sitewide-content.md` | Introduce ownership with one minimal example for each source; keep exact filenames, metadata rules, and optional fields in reference. |
 | How do I check the site? | Install Norna, then Build And Publish | `docs/commands.md` | Run the full check after the first edit and repeat it as the pre-build gate. |
 | How do I publish? | Build And Publish | `docs/publishing.md` | Keep the GitHub Pages happy path; summarize generated metadata, sitemap, and 404 output in one place. |
 | How do I move pages safely? | FAQ | `docs/pages.md` | Remove the operational detail from Getting Started. |
@@ -54,6 +56,9 @@ available in a fresh clone and is therefore not an instructional dependency.
 - Grow Your Site mixed the beginner page model with Focus reading, automatic
   contents tracking, theme inheritance, and page-move recovery. Those details
   remain in reference and FAQ material.
+- Prepare Your Site now closes the gap between page content and publication by
+  introducing site language, page descriptions, convention-discovered identity
+  files, banners, and footer without reproducing their complete reference.
 - Build And Publish gave sitemap, social image, and 404 output separate tutorial
   weight. They now appear as one build outcome with a reference link.
 

@@ -127,6 +127,18 @@ If you installed the optional global launcher in the first guide, the shorter
 forms are `norna page:add "Dogs" --parent /` and
 `norna page:add "Adopt" --parent /`.
 
+Link to the new pages with ordinary Markdown in any page's `content.md`:
+
+```md
+[Meet the dogs](/dogs/)
+[Learn how to adopt](/adopt/)
+```
+
+Norna adapts site-relative links to the configured publishing path.
+`npm run norna:content:check` reports links to missing pages or headings. See
+[Internal Links](https://github.com/janga/norna/blob/main/docs/content.md#internal-links)
+for page, section, relative, and public-file links.
+
 The numeric prefix orders pages among their siblings, while the remaining page
 id becomes the URL segment: `010-dogs/` appears before `020-adopt/` and produces
 a URL ending in `/dogs/`. The command chooses those ten-step order values and
@@ -181,7 +193,7 @@ Screenshot of the same Dogs page with its mobile navigation menu open.
 
 Use nested pages when several distinct pages belong under one broader heading.
 The heading can be a real parent page or a navigation category. The `Getting
-Started` area you are reading is a category with four child pages.
+Started` area you are reading is a category with five child pages.
 
 Choose a parent page when the broader topic needs an introduction or overview
 of its own. Choose a category when the heading only needs to group child pages
@@ -202,7 +214,7 @@ and navigation in the Norna documentation site.
 
 ```norna-image-stack
 - image: getting-started-file-map.svg
-  alt: The actual documentation file tree mapped to the rendered Getting Started navigation. The 020-getting-started category contains Install Norna, Choose A Theme, Grow Your Site, and Build And Publish in numeric order. The highlighted 020-grow-your-site content file maps to the current page and its H2 section links.
+  alt: The actual documentation file tree mapped to the rendered Getting Started navigation. The 020-getting-started category contains Install Norna, Choose A Theme, Grow Your Site, Prepare Your Site, and Build And Publish in numeric order. The highlighted 020-grow-your-site content file maps to the current page and its H2 section links.
   caption: The page directories and their content become the navigation and page you are using now.
 ```
 
