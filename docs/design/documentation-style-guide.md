@@ -56,6 +56,16 @@ Explain why the model exists, the trade-offs it makes, and how its concepts
 relate. Keep the topic bounded and link back to the authoritative reference for
 exact behavior.
 
+### Capability Overview
+
+Help a reader evaluate the current product without reconstructing it from the
+reference. Group capabilities by user outcome rather than source filename,
+internal module, or implementation history. Give every item a short,
+concrete effect, link each group to canonical reference material, and identify
+experimental or unavailable behavior explicitly. Include current product
+boundaries so omission cannot be mistaken for support. Do not reproduce full
+syntax, defaults, or command options.
+
 ## Pages And Navigation Categories
 
 Give a page its own URL only when it serves an independent reader need. A useful
@@ -197,6 +207,8 @@ Before completing a documentation change, check:
 - Are defaults, scope, inheritance, interactions, and invalid combinations
   visible where readers choose a value?
 - Is detail located in reference while introductions remain readable?
+- Does a capability overview describe only current behavior, group it by user
+  outcome, and distinguish evaluation features and product boundaries?
 - Does every parent page add value beyond repeating its child-page navigation?
 - Do schemas, IntelliSense, diagnostics, examples, and canonical reference use
   the same terminology?

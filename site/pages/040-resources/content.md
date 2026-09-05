@@ -1,13 +1,20 @@
 ---
 page:
-  description: Find exact Norna reference material, working examples, project links, and machine-readable documentation.
+  description: Review Norna's current capabilities, exact reference material, working examples, project links, and machine-readable documentation.
 ---
 
 # Resources
 
 Use this area when you need to look beyond the introductory workflow. Different
-resources answer different questions: the reference defines exact behavior,
-examples show complete results, and the FAQ addresses common problems.
+resources answer different questions: the capability overview shows what Norna
+currently provides, the reference defines exact behavior, examples show
+complete results, and the FAQ addresses common problems.
+
+## See what Norna includes {#capabilities}
+
+The **Capabilities** page groups implemented behavior by what it helps authors
+and readers accomplish. Use it to evaluate whether Norna fits a site before
+looking up individual files or settings.
 
 ## Find an exact answer {#reference}
 
