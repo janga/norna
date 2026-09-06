@@ -10,6 +10,40 @@ const shallowPagePath = '/reference/installation/';
 test.describe('adaptive page contents on desktop', () => {
 	test.use({ hasTouch: false, isMobile: false, viewport: desktopViewport });
 
+	test('uses a leading disclosure column without disturbing the label axis', async ({ page }) => {
+		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
+
+		const tree = page.locator('.tree-local-navigation');
+		const installation = tree.locator('details[data-page-path="guides/installation"]');
+		const summary = installation.locator(':scope > summary');
+		const chevron = summary.locator('.navigation-page-chevron');
+		const summaryTitle = summary.locator('.navigation-page-summary-title');
+		const openLink = installation.locator(':scope > .navigation-page-open-link');
+		const siblingLink = tree.getByRole('link', { name: 'Workflows', exact: true });
+		const [treeBox, chevronBox, titleBox, openLinkBox, siblingTextX] = await Promise.all([
+			tree.boundingBox(),
+			chevron.boundingBox(),
+			summaryTitle.boundingBox(),
+			openLink.boundingBox(),
+			siblingLink.evaluate((link) => {
+				const textNode = link.firstChild;
+				if (!textNode) throw new Error('Expected the sibling link to contain text.');
+				const range = document.createRange();
+				range.selectNodeContents(textNode);
+				return range.getBoundingClientRect().x;
+			}),
+		]);
+
+		expect(treeBox).not.toBeNull();
+		expect(chevronBox).not.toBeNull();
+		expect(titleBox).not.toBeNull();
+		expect(openLinkBox).not.toBeNull();
+		expect((chevronBox?.x ?? 0) + (chevronBox?.width ?? 0)).toBeLessThan((titleBox?.x ?? 0) - 4);
+		expect(Math.abs((titleBox?.x ?? 0) - (openLinkBox?.x ?? 0))).toBeLessThan(1);
+		expect(Math.abs((titleBox?.x ?? 0) - siblingTextX)).toBeLessThan(1);
+		expect((treeBox?.x ?? 0) + (treeBox?.width ?? 0) - (chevronBox?.x ?? 0)).toBeGreaterThan(40);
+	});
+
 	test('integrates the current outline into a shallow page tree', async ({ page }) => {
 		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
 
