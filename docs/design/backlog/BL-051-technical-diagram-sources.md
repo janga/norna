@@ -13,6 +13,25 @@ good information-preserving migration path. Native source rendering adds value
 only when maintainers need to edit diagrams often enough to justify another
 build dependency and content syntax.
 
+## Syntax Status: Conditional
+
+No new syntax is justified while managed SVG remains the recommended path. If
+the evidence supports native Mermaid rendering, reuse the established fenced
+language form documented by
+[Docusaurus](https://docusaurus.io/docs/markdown-features/diagrams) and
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/diagrams/):
+
+````md
+```mermaid
+graph LR
+  Source --> Website
+```
+````
+
+Do not introduce `norna-diagram`. A design is still required for an accessible
+description, appearance-aware output, and the checked-in source or provenance
+needed to regenerate the SVG.
+
 ## Evidence Required
 
 - Collect at least two maintained Norna sites whose diagram source changes as

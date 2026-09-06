@@ -14,6 +14,27 @@ MkDocs files, 16 of 94 Docusaurus files, and 8 of 37 English Starlight files.
 The construct is common enough to require a migration rule, but frequency
 alone does not settle a suitable Norna syntax.
 
+## Syntax Status: Design Required
+
+The competing forms solve similar reader needs but do not provide one syntax
+that Norna can safely copy:
+
+- [Docusaurus tabs](https://docusaurus.io/docs/markdown-features/tabs) and
+  [Starlight tabs](https://starlight.astro.build/components/tabs/) use MDX
+  components. They are explicit but too verbose and implementation-oriented
+  for Norna's ordinary Markdown model.
+- [Material for MkDocs content tabs](https://squidfunk.github.io/mkdocs-material/reference/content-tabs/)
+  use `=== "Label"` followed by indented content. The source is compact, but
+  nested fences and long Markdown panels make indentation fragile.
+- [VitePress code groups](https://vitepress.dev/guide/markdown#code-groups)
+  use a closed container and attach labels to code fences. This is a useful
+  model for code-only alternatives, not a proven grammar for arbitrary prose,
+  images, or sections.
+
+Use ordinary consecutive H3 headings as the migration fallback. Prototype a
+code-only group before considering arbitrary Markdown panels. No native syntax
+is approved by this backlog item.
+
 ## Decisions Required
 
 - Decide whether the first native scope is code groups only or arbitrary

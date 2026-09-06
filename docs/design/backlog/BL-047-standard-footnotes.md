@@ -14,6 +14,20 @@ localization, style, and regression coverage. Reference footnotes occur in 31
 of the 96 Material for MkDocs source files reviewed by the completed `BL-046`
 migration inventory, and are also documented by VitePress.
 
+## Syntax Status: Settled
+
+Reuse the established GFM form already accepted by Norna:
+
+```md
+The setting applies to every page.[^scope]
+
+[^scope]: A page-local theme may override presentation values.
+```
+
+Do not add a Norna-specific equivalent. Migration may translate VitePress's
+nonstandard inline form to this reference form, but Norna source should keep
+the interoperable syntax.
+
 ## First Scope
 
 - Keep the interoperable `[^id]` reference and `[^id]: definition` syntax.

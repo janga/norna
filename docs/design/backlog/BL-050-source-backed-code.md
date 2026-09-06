@@ -12,6 +12,22 @@ source inclusion. The completed `BL-046` migration inventory found that the
 feature solves real drift in documentation kept beside software, but has less
 value for standalone content sites.
 
+## Syntax Status: Design Required
+
+[VitePress imported snippets](https://vitepress.dev/guide/markdown#import-code-snippets)
+use the concise `<<< path#region` form. It is the strongest candidate to copy
+because the source path is visible and no closing marker is needed. Its symbols
+are unfamiliar, however, and it combines path, region, line selection, and
+language inference in one compact expression.
+
+[Material for MkDocs snippets](https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/#snippets)
+use a different symbolic include form, while
+[Starlight code](https://starlight.astro.build/components/code/) relies on MDX
+imports and component properties. Do not support multiple source dialects in
+normal Norna content. Before selecting the VitePress form or a small explicit
+Norna block, test which one gives clearer diagnostics for missing paths,
+regions, and forbidden files.
+
 ## Decisions Required
 
 - Define whether source may be read only from the site project root or from a

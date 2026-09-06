@@ -12,6 +12,26 @@ titles and richer code emphasis. The source reviewed by the completed `BL-046`
 migration inventory uses rich code metadata widely, while Norna currently
 preserves only the fence language and code text.
 
+## Syntax Status: Bounded Review Required
+
+Keep this extension on ordinary fenced code blocks. Docusaurus, VitePress, and
+Material for MkDocs all add metadata to a fence, but their line-selection
+grammars differ. The Docusaurus-style quoted title is a useful candidate
+because it is explicit and remains adjacent to the code it describes:
+
+````md
+```js title="src/config.js" {2}
+export const mode = 'safe';
+```
+````
+
+Reuse `title="..."` unless parser tests reveal an ambiguity. Choose the line
+selector only after comparing the documented
+[Docusaurus](https://docusaurus.io/docs/markdown-features/code-blocks),
+[VitePress](https://vitepress.dev/guide/markdown#syntax-highlighting-in-code-blocks),
+and [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/code-blocks/)
+forms. Do not combine several dialects or introduce a `norna-code` block.
+
 ## Dependency
 
 Implement after `BL-009` so the two Markdown grammar additions are introduced
