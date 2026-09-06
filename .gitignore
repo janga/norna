@@ -33,6 +33,9 @@ blob-report/
 # local scratch work
 todos/
 
+# private local product research (separate Git repository)
+/marketing/
+
 # environment variables
 .env
 .env.production
