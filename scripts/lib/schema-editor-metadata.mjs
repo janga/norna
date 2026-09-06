@@ -161,7 +161,7 @@ const addConfigHelp = (jsonSchema) => {
 	], ['en', 'sv', 'en-GB', 'sv-SE']);
 	addHelp(jsonSchema, 'navigation', [
 		yamlExample('navigation:\n  mode: automatic'),
-		'Sets the site-wide navigation policy. `automatic` selects an effective mode for each page from its active top-level branch.',
+		'Sets the site-wide navigation policy. `automatic` uses sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a hierarchical site.',
 		documentationLink('Navigation reference', 'pages.md', 'navigation'),
 	]);
 	addFieldHelp(

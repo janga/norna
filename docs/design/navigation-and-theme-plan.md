@@ -77,9 +77,9 @@ The accepted information architecture is:
 Navigation modes follow the site structure:
 
 - a single-page site uses section navigation;
-- Home and independent top-level pages use top navigation;
-- pages inside a top-level branch with listed children or categories use tree
-  navigation.
+- a flat multi-page site uses top navigation;
+- a site with any listed child page or category uses the stable tree frame on
+  every page.
 
 The tree contract is:
 
@@ -92,9 +92,10 @@ The tree contract is:
   collapse the node;
 - a page without headings or child pages is always a direct link;
 - the left rail contains only pages and categories from the active top-level
-  branch;
-- a separate right rail contains the current page's H2 and H3 headings when
-  there are enough to aid orientation;
+  branch, while Home and independent pages use that position for their own
+  local context;
+- a shallow area integrates the current page's H2 and H3 outline in the left
+  rail, while a sufficiently deep area uses a separate right contents rail;
 - opening one branch does not implicitly close another branch;
 - long desktop trees scroll independently of short page content;
 - mobile uses one drawer for the complete hierarchy instead of requiring a

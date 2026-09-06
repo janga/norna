@@ -57,15 +57,13 @@ assert.equal(
 );
 assert.equal(getAutomaticNavigationMode([home([h2]), category()]), 'tree');
 
-const contextualNodes = [
+const hierarchicalNodes = [
 	home([h2]),
 	page([h2], { pagePath: 'about' }),
 	category(),
 	page([h2], { pagePath: 'guides/install', depth: 2 }),
 ];
-assert.equal(getAutomaticNavigationMode(contextualNodes, home()), 'top');
-assert.equal(getAutomaticNavigationMode(contextualNodes, page([], { pagePath: 'about' })), 'top');
-assert.equal(getAutomaticNavigationMode(contextualNodes, page([], { pagePath: 'guides/install', depth: 2 })), 'tree');
+assert.equal(getAutomaticNavigationMode(hierarchicalNodes), 'tree');
 
 for (const mode of ['sections', 'top', 'tree']) {
 	const resolved = resolveNavigationModel({
@@ -77,18 +75,16 @@ for (const mode of ['sections', 'top', 'tree']) {
 }
 
 const automatic = resolveNavigationModel({
-	nodes: contextualNodes,
-	currentPage: page([], { pagePath: 'about' }),
+	nodes: hierarchicalNodes,
 });
 assert.equal(automatic.requestedMode, 'automatic');
-assert.equal(automatic.mode, 'top');
+assert.equal(automatic.mode, 'tree');
 assert.equal(automatic.listedNodeCount, 4);
 assert.equal(automatic.hasNestedPages, true);
 assert.equal(automatic.maximumDepth, 2);
 
 const nestedAutomatic = resolveNavigationModel({
-	nodes: contextualNodes,
-	currentPage: page([], { pagePath: 'guides/install', depth: 2 }),
+	nodes: hierarchicalNodes,
 });
 assert.equal(nestedAutomatic.mode, 'tree');
 

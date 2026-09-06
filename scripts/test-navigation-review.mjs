@@ -120,7 +120,7 @@ The parent hides this page from navigation too.
 
 	assert.equal(review.command, 'navigation:review');
 	assert.equal(review.schemaVersion, 1);
-	assert.deepEqual(review.site.effectiveNavigationModes, ['top', 'tree']);
+	assert.deepEqual(review.site.effectiveNavigationModes, ['tree']);
 	assert.equal(review.site.pageCount, 16);
 	assert.equal(review.site.listedPageCount, 14);
 	assert.equal(review.site.categoryCount, 2);
@@ -143,7 +143,7 @@ The parent hides this page from navigation too.
 		h2Count: 1,
 		h3Count: 1,
 		incomingPageLinkCount: 1,
-		navigationMode: 'top',
+		navigationMode: 'tree',
 		outgoingPageLinkCount: 1,
 	});
 	assert.equal(review.pages.find(({ pathname }) => pathname === '/guides/installation/macos/').navigationMode, 'tree');

@@ -430,22 +430,21 @@ This setting is not access control. See
 Home is always listed. Categories do not have page frontmatter; a category is
 shown only when it has a listed descendant.
 
-With `navigation.mode: automatic`, Norna chooses the effective navigation for
-each page from the listed page hierarchy:
+With `navigation.mode: automatic`, Norna chooses one navigation model from the
+listed hierarchy and keeps that model stable across the site:
 
 | Current page context | Effective mode |
 | --- | --- |
 | Home is the only listed page | `sections` |
-| Home in a site with additional top-level entries | `top` |
-| An independent top-level page with no listed children | `top` |
-| A page in a top-level branch that contains listed child pages or categories | `tree` |
+| A flat site with Home and additional top-level pages | `top` |
+| A site with any listed child page or navigation category | `tree` on every page |
 
-This choice is contextual. A deeply nested documentation branch can use
-`tree` while Home and an unrelated top-level page continue to use `top`.
-H2 and H3 headings do not make a page branch deeper and do not change the
-effective mode. Unlisted pages do not make a branch require a page rail. The
-global top row retains one width and the same destinations while readers move
-between these page contexts.
+H2 and H3 headings do not make the site hierarchy deeper and do not change the
+effective mode. Unlisted pages do not make a site require a page rail. Once the
+listed hierarchy requires `tree`, Home and independent top-level pages also
+use the left rail. This keeps local navigation in one position while readers
+move between simple pages and nested branches. The global top row retains one
+width and the same destinations throughout.
 
 The modes present the same source hierarchy differently:
 
@@ -455,9 +454,13 @@ The modes present the same source hierarchy differently:
   `top` override, child pages use page submenus. The current page's H2 sections
   use local navigation when there is more than one.
 - `tree` keeps top-level areas in the global row. A left page rail shows only
-  pages and categories from the active top-level branch. On a page with at
-  least two H2/H3 destinations, a separate right contents rail shows those
-  headings. It omits the page H1 and H4-or-deeper headings.
+  the current top-level area, so it does not duplicate unrelated destinations
+  from the global row. Home and independent top-level pages use the same rail
+  for their page and section context. On a shallow branch, the current page's
+  H2/H3 outline is integrated beneath that page in the left rail. A branch at
+  least three visible levels deep keeps the page tree on the left and places
+  the current H2/H3 outline in a separate right contents rail. Page outlines
+  omit the H1 and H4-or-deeper headings.
 
 On wide screens, pages in the same tree branch keep a common content axis when
 the right rail is absent. The unused rail is not rendered, but moving between a

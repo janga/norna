@@ -67,8 +67,13 @@ try {
 	}
 	assert.match(rootHtml, /--image-width: 920px/);
 	assert.match(rootHtml, /--space-section-to-section-desktop: clamp\(1\.2rem, 2\.4vw, 2\.25rem\)/);
-	assert.match(rootHtml, /data-navigation-mode="top"/);
-	assert.doesNotMatch(rootHtml, /class="tree-local-navigation"/);
+	assert.match(rootHtml, /data-navigation-mode="tree"/);
+	assert.match(rootHtml, /data-page-contents-placement="page-tree"/);
+	assert.match(rootHtml, /<aside id="tree-local-navigation" class="tree-local-navigation" data-navigation-root="\/">/);
+	assert.match(rootHtml, /aria-label="Page contents: Nested pages"/);
+	assert.match(rootHtml, /href="#start-here">Start here<\/a>/);
+	assert.match(rootHtml, /href="#what-to-inspect">What to inspect<\/a>/);
+	assert.doesNotMatch(rootHtml, /<nav class="page-nav"/);
 	assert.match(installationHtml, /--image-width: 760px/);
 	assert.match(installationHtml, /--space-section-to-section-desktop: clamp\(2\.25rem, 5vw, 4\.5rem\)/);
 	assert.match(installationHtml, /--section-body-width-desktop: min\(60ch,/);
@@ -78,7 +83,7 @@ try {
 	assert.match(macosHtml, /data-navigation-mode="tree"/);
 	assert.match(macosHtml, /data-page-contents-placement="contents-rail"/);
 	assert.match(macosHtml, /data-section-tracking="enabled"/);
-	assert.doesNotMatch(rootHtml, /data-section-tracking=/);
+	assert.match(rootHtml, /data-section-tracking="enabled"/);
 	assert.match(macosHtml, /class="site-nav-item site-nav-item-current-branch"/);
 	assert.match(macosHtml, /<a href="\/guides\/installation\/">Guides<\/a>/);
 	assert.doesNotMatch(macosHtml, /class="site-nav-submenu"/);

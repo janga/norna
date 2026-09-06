@@ -70,11 +70,11 @@ how Norna presents that discovered structure.
 ### `navigation.mode`
 
 `navigation.mode` selects the site-wide navigation policy. The default policy
-can resolve to a different effective mode for each page.
+uses one stable desktop navigation model for the complete site.
 
 | Value | Effect | Structural constraint |
 | --- | --- | --- |
-| `automatic` | Use `sections` for a one-page site, `top` for Home and independent top-level pages, and `tree` inside a top-level branch with listed child pages or categories. | None beyond the effective mode's own requirements. |
+| `automatic` | Use `sections` for a one-page site, `top` for a flat multi-page site, and `tree` throughout a site with listed child pages or categories. | None beyond the effective mode's own requirements. |
 | `sections` | Keep the single page's H1 destination and H2 sections in sticky page navigation. | The listed site structure must fit the single-page model. |
 | `top` | Present Home and top-level pages in the global row, with page and section menus where needed. | A listed navigation category is invalid. |
 | `tree` | Combine global top-level areas with a left page/category rail and, on sufficiently structured pages, a separate right H2/H3 contents rail. | No additional hierarchy limit. |
@@ -88,12 +88,15 @@ navigation:
 ```
 
 Navigation policy is technical and site-wide. It cannot be configured in
-`theme.yaml` or in an individual page. In `automatic`, only pages inside a
-branch that needs a page hierarchy receive `tree`; unrelated pages retain
-their simpler navigation. A listed navigation category requires `tree` within
-its branch, so explicit `sections` or `top` is invalid when a category exists.
-This prevents a category with no URL from being presented as an ordinary page
-link. See [Pages and Categories](pages.md#navigation) for the exact automatic
+`theme.yaml` or in an individual page. In `automatic`, any listed child page
+or category gives every ordinary desktop page the same left-rail frame. The
+rail shows only the active top-level area, so destinations already available
+in global navigation are not repeated. On Home and an independent top-level
+page, it provides local page and section context instead of moving that
+information below the sticky header. A listed navigation category requires
+`tree`, so explicit `sections` or `top` is invalid when a category exists. This
+prevents a category with no URL from being presented as an ordinary page link.
+See [Pages and Categories](pages.md#navigation) for the exact automatic
 selection rules and the relationship between Home, pages, categories, and
 headings, and
 [Client-Side JavaScript](client-javascript.md) for the no-JavaScript fallback.

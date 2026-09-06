@@ -339,19 +339,22 @@ Navigation has three related levels:
 
 - Global navigation moves between Home and top-level page/category areas. A
   category label targets its first listed descendant page.
-- A left page rail follows nested pages and categories within the active
-  top-level area.
-- A separate right contents rail follows the current page's H2 and H3 headings
-  when the page has enough headings to benefit. Section links use real
-  `href="#section-id"` anchors so they work without JavaScript.
+- On a hierarchical site, a stable left rail shows the active top-level area.
+  Home and independent top-level pages use the same rail for their local page
+  and section context.
+- A shallow area can integrate the current page's H2 and H3 outline in the left
+  rail. An area at least three visible levels deep uses a separate right
+  contents rail when the page has enough headings to benefit. Section links
+  use real `href="#section-id"` anchors so they work without JavaScript.
 
 Automatic navigation selects section navigation for one-page sites and top
-navigation for Home and independent top-level pages. It adds tree navigation
-only within an active top-level branch that contains listed child pages or
-categories. A visible category requires tree navigation in its branch because
-it is a disclosure rather than a page destination. H2 and H3 headings do not
-change that choice. `config.yaml` may choose a compatible mode explicitly. Home
-is a standalone front door and cannot contain child pages or categories.
+navigation for flat multi-page sites. Any listed child page or category selects
+tree navigation for every page, keeping the desktop navigation position stable
+while the rail remains scoped to the active top-level area. A visible category
+requires tree navigation because it is a disclosure rather than a page
+destination. H2 and H3 headings do not change that choice. `config.yaml` may
+choose a compatible mode explicitly. Home is a standalone front door and cannot
+contain child pages or categories.
 
 The optional JavaScript enhancement manages menu interaction and active local
 navigation while retaining normal links and browser history. The rendered page

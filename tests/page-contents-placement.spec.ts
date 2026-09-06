@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 const desktopViewport = { width: 1440, height: 1000 };
 const intermediateViewport = { width: 960, height: 900 };
 const mobileViewport = { width: 393, height: 852 };
+const homePagePath = '/';
 const deepPagePath = '/guides/installation/macos/';
 const shallowPagePath = '/reference/installation/';
 
@@ -42,6 +43,38 @@ test.describe('adaptive page contents on desktop', () => {
 		);
 		await expect(page.locator('.tree-local-navigation .navigation-page-sections')).toHaveCount(0);
 		await expect(page.locator('.page-contents-navigation-rail')).toBeVisible();
+	});
+
+	test('keeps the local rail and content axis stable from Home into a nested branch', async ({ page }) => {
+		await page.goto(homePagePath, { waitUntil: 'networkidle' });
+
+		const homeLayout = page.locator('.site-page-layout');
+		const homeTree = page.locator('.tree-local-navigation');
+		await expect(page.locator('.site-top')).toHaveAttribute('data-navigation-mode', 'tree');
+		await expect(homeLayout).toHaveAttribute('data-page-contents-placement', 'page-tree');
+		await expect(homeTree).toBeVisible();
+		await expect(homeTree.getByRole('link', { name: 'Start here', exact: true })).toBeVisible();
+
+		const [homeTreeBox, homeContentBox] = await Promise.all([
+			homeTree.boundingBox(),
+			page.locator('.site-content').boundingBox(),
+		]);
+
+		await page.locator('.site-nav').getByRole('link', { name: 'Guides', exact: true }).click();
+		await expect(page).toHaveURL(/\/guides\/installation\/$/);
+
+		const nestedTree = page.locator('.tree-local-navigation');
+		const [nestedTreeBox, nestedContentBox] = await Promise.all([
+			nestedTree.boundingBox(),
+			page.locator('.site-content').boundingBox(),
+		]);
+
+		expect(homeTreeBox).not.toBeNull();
+		expect(homeContentBox).not.toBeNull();
+		expect(nestedTreeBox).not.toBeNull();
+		expect(nestedContentBox).not.toBeNull();
+		expect(nestedTreeBox?.x).toBeCloseTo(homeTreeBox?.x ?? 0, 0);
+		expect(nestedContentBox?.x).toBeCloseTo(homeContentBox?.x ?? 0, 0);
 	});
 });
 

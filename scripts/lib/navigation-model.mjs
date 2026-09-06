@@ -30,31 +30,16 @@ const getActiveBranchNodes = (nodes, currentPage) => {
 	));
 };
 
-const branchNeedsPageRail = (nodes, pagePath) => {
-	const rootPath = getTopLevelPagePath(pagePath);
-	if (!rootPath) return false;
-
-	return nodes.some((node) => (
-		(node.pagePath === rootPath && node.kind === 'category')
-		|| node.pagePath?.startsWith(`${rootPath}/`)
-	));
-};
-
-export const getAutomaticNavigationMode = (nodes, currentPage = null) => {
+export const getAutomaticNavigationMode = (nodes) => {
 	const listedNodes = getListedNodes(nodes);
 	if (listedNodes.length <= 1) return 'sections';
-
-	if (currentPage) {
-		if (currentPage.isHome) return 'top';
-		return branchNeedsPageRail(listedNodes, currentPage.pagePath) ? 'tree' : 'top';
-	}
 
 	return listedNodes.some((node) => node.kind === 'category' || getNodeDepth(node) > 1)
 		? 'tree'
 		: 'top';
 };
 
-export const resolveNavigationModel = ({ mode = 'automatic', nodes, currentPage = null }) => {
+export const resolveNavigationModel = ({ mode = 'automatic', nodes }) => {
 	const requestedMode = assertNavigationMode(mode);
 	const listedNodes = getListedNodes(nodes);
 	const hasCategories = listedNodes.some((node) => node.kind === 'category');
@@ -68,7 +53,7 @@ export const resolveNavigationModel = ({ mode = 'automatic', nodes, currentPage 
 
 	return Object.freeze({
 		mode: requestedMode === 'automatic'
-			? getAutomaticNavigationMode(listedNodes, currentPage)
+			? getAutomaticNavigationMode(listedNodes)
 			: requestedMode,
 		requestedMode,
 		listedNodeCount: listedNodes.length,

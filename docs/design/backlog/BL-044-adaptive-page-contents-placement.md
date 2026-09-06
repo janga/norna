@@ -16,6 +16,10 @@ rather than a universal usability standard.
 
 - Apply this rule only to tree navigation. Sections and top navigation keep
   their existing presentation.
+- In automatic mode, any listed child page or category selects tree navigation
+  throughout the site. Keep the left-rail position on Home and independent
+  top-level pages instead of moving their section navigation below the sticky
+  header.
 - Resolve placement once for the active top-level branch so it remains stable
   while the reader moves between pages in that branch.
 - Count every visible listed page and category level in that branch. Do not
@@ -54,6 +58,9 @@ rather than a universal usability standard.
   individual page is shallower than another page in that branch.
 - A shallow fixture renders the current page's H2/H3 links under its active
   left-tree entry and does not render a separate contents rail.
+- A hierarchical fixture renders Home in the same left-rail frame, integrates
+  its qualifying H2/H3 outline there, and keeps the document axis stable when
+  the reader follows a global link into a nested branch.
 - A deep fixture with the same H2/H3 outline keeps those links out of the page
   tree and renders the established contents rail.
 - Pages below the existing heading threshold render neither placement.

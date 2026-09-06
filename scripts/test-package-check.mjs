@@ -543,13 +543,13 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'href="/site/about/">About the site</a>',
 	);
-	await assertFileExcludes(
+	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'<aside id="tree-local-navigation"',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'data-navigation-mode="top"',
+		'data-navigation-mode="tree"',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'guides', 'setup', 'index.html'),
@@ -607,7 +607,7 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-background-color: var(--color-surface-base-background)',
 	);
-	await assertFileIncludes(
+	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'--section-background-color: var(--color-surface-soft-background)',
 	);

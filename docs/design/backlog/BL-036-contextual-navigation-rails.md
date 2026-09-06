@@ -1,4 +1,4 @@
-# BL-036: Contextual Page And Contents Rails
+# BL-036: Stable Page And Contents Rails
 
 ## Outcome
 
@@ -8,9 +8,10 @@ navigation questions on complex desktop pages:
 - the left page rail answers where the current page belongs in the site;
 - the right contents rail answers where the reader is on the current page.
 
-These rails appear only where the active top-level branch and current page have
-enough structure to benefit from them. A deep documentation area must not force
-unrelated landing pages or simple top-level pages into the same layout.
+When a site contains listed child pages or categories, the left-rail position
+remains stable on every ordinary desktop page. Its contents stay contextual to
+the active top-level area. The right rail appears only when a sufficiently deep
+area and the current page have enough structure to benefit from it.
 
 ## Foundation
 
@@ -20,20 +21,18 @@ pages with and without a tree rail.
 ## Design Contract
 
 - Keep listed top-level pages and categories in one stable top navigation.
-- In `automatic` mode, resolve the desktop tree rail from the active top-level
-  branch rather than from the maximum depth of the complete site.
-- Show the left page rail on a branch landing page and its descendants when
-  that branch contains listed child pages or navigation categories that cannot
-  be represented clearly by top navigation alone.
-- Omit the rail from Home and from independent top-level pages whose local
-  structure can use the existing page navigation.
+- In `automatic` mode, use section navigation for a one-page site, top
+  navigation for a flat multi-page site, and the stable left-rail frame for
+  every page in a site with listed child pages or categories.
+- On Home and independent top-level pages, use the rail for the current page
+  and its qualifying H2/H3 outline instead of moving that local navigation
+  below the sticky header.
 - Scope the left page rail to the active branch. Do not repeat unrelated
   top-level destinations that remain available in the top navigation.
-- Keep pages and categories in the left rail. Do not insert the current page's
-  H2 or H3 headings into that hierarchy.
-- Show a separate right contents rail when the current page has enough H2 or
-  H3 headings to make persistent local orientation useful. Do not include the
-  page H1 or H4-and-deeper headings by default.
+- Keep pages and categories as the primary left-rail hierarchy. Following
+  `BL-044`, integrate the current page's H2/H3 outline beneath that page in a
+  shallow area; use a separate right contents rail in areas at least three
+  visible levels deep. Do not include H4-and-deeper headings by default.
 - Mark the current page in the left rail and the current reading location in
   the right rail without making either visual marker the only available source
   of orientation.
@@ -43,7 +42,7 @@ pages with and without a tree rail.
   navigation or an in-flow local outline rather than requiring horizontal page
   scrolling.
 - Preserve explicit `sections`, `top`, and `tree` modes as site-wide overrides.
-  The contextual behavior changes only `automatic` mode.
+  The structure-derived stable rail changes only `automatic` mode.
 - Resolve page presentation, section-surface compatibility, breadcrumbs, and
   section tracking against the page's effective navigation mode.
 - Treat whole-rail hiding as a reading preference, not as the mechanism that
@@ -78,17 +77,18 @@ pages with and without a tree rail.
 ## Acceptance Criteria
 
 - A site can combine Home, simple top-level pages, and a deeply nested
-  documentation branch without showing the desktop tree rail everywhere.
-- Entering the nested branch introduces its left page rail without changing
-  the global top navigation; leaving the branch removes it.
+  documentation branch while keeping one stable desktop left-rail position.
+- Entering or leaving a nested branch changes the contextual rail contents
+  without adding, removing, or moving the rail itself.
 - The global top navigation does not shift horizontally when the effective
   page mode changes between `top` and `tree`.
 - The branch landing page and every descendant expose the same local hierarchy
   and current-page context.
-- The left rail never contains unrelated top-level branches or the current
-  page's heading outline.
-- A qualifying page exposes H2 and H3 links in a separately named right
-  contents rail, with current-location feedback when enhancement is available.
+- The left rail never contains unrelated top-level branches. In a shallow
+  area, the current page's outline is visibly distinguished from child pages.
+- A qualifying page in a deep area exposes H2 and H3 links in a separately
+  named right contents rail, with current-location feedback when enhancement
+  is available.
 - Pages too short to benefit do not receive an empty or redundant right rail.
 - Moving between pages with and without the right rail does not shift the left
   rail or central document axis.
@@ -109,7 +109,10 @@ pages with and without a tree rail.
 Linear's [documentation](https://linear.app/docs/account-preferences) separates
 the page hierarchy in a left rail from the current page's heading outline in a
 right rail. Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
-separate broad Design destinations in the top navigation from a contextual
-hierarchy beside the content. Norna should combine these principles
-selectively: a deep branch may require local rails without imposing them on
-independent top-level pages elsewhere on the same site.
+separate broad destinations in the top navigation from a contextual hierarchy
+beside the content. [WCAG 2.2](https://www.w3.org/TR/WCAG22/#consistent-navigation)
+favors consistent navigation placement, while the W3C's
+[design guidance](https://www.w3.org/WAI/tips/designing/) recommends clear
+orientation cues. Norna combines those principles by keeping the global
+row and left-rail position stable while adapting the rail contents to the
+current area.

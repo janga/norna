@@ -703,11 +703,10 @@ pages. A more local page or category theme may override the same limited
 fields. Site colors, corners, typography, page width, gutters, root content
 block defaults, and navigation remain constant.
 
-If `navigation.mode` is `automatic`, adding listed children or categories to a
-top-level branch makes pages in that branch resolve to tree navigation. A
-non-uniform page override inherited by that branch must then be removed or
-changed to `uniform`. H2 and H3 headings do not change the effective navigation
-mode.
+If `navigation.mode` is `automatic`, adding any listed child page or category
+makes the complete site resolve to tree navigation. Any non-uniform page
+override must then be removed or changed to `uniform`. H2 and H3 headings do
+not change the effective navigation mode.
 
 Page and category themes cannot define `preset`, `palette`, `corners`,
 `typography`, `blocks`, `navigation`, `config.yaml`, or site-wide content. This

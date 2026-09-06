@@ -258,10 +258,17 @@ Each page keeps its Markdown content and images together.
 ```
 
 The top-level category stays in global navigation and opens its first child
-page. In the left page rail and breadcrumbs, `Getting Started` remains a
-non-linked grouping label. A longer page gets a separate H2/H3 contents rail on
-the right. On a small screen, pages, categories, and headings move into one
-expandable menu.
+page. Once a site has listed child pages or categories, the same left-rail
+position is used on every ordinary desktop page. On Home and independent
+top-level pages, that rail shows the current page and its section links. Inside
+a hierarchy, it shows only the active top-level area, so the global destinations
+are not duplicated.
+
+In the left page rail and breadcrumbs, `Getting Started` remains a non-linked
+grouping label. Shallow areas can place the current page's H2/H3 outline below
+that page in the same rail. Areas at least three visible levels deep keep a
+separate page-contents rail on the right. On a small screen, pages, categories,
+and headings move into one expandable menu.
 
 Home is the exception: `000-home` is the site's front door and cannot have child
 pages or categories. Start each navigable hierarchy with another top-level
