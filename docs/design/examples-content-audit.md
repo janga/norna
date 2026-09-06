@@ -10,9 +10,9 @@ The review covered the complete documentation-site Examples subtree, every
 tracked file below `examples/`, example material embedded elsewhere in the
 documentation site, both starters, the root and documentation READMEs, all
 canonical Markdown reference pages, and the tests that build and publish the
-examples. The locally excluded `norna-feature-landscape` site was also reviewed
-as analysis material; because it is absent from a fresh clone, no public
-example depends on it.
+examples. The private product-research site was also reviewed as analysis
+material; because it is absent from a fresh clone, no public example depends on
+it.
 
 ## Maintained Example Map
 

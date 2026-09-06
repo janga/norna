@@ -8,9 +8,9 @@ without surrounding prose having to recreate code-block presentation.
 ## Evidence
 
 Docusaurus, VitePress, Material for MkDocs, and Starlight all document code
-titles and richer code emphasis. The reviewed source uses rich code metadata
-widely, while Norna currently preserves only the fence language and code text.
-See the [migration compatibility inventory](../migration-compatibility.md).
+titles and richer code emphasis. The source reviewed by the completed `BL-046`
+migration inventory uses rich code metadata widely, while Norna currently
+preserves only the fence language and code text.
 
 ## Dependency
 
@@ -42,4 +42,3 @@ and tested in sequence rather than changing the parser contract concurrently.
 - Long titles and narrow screens do not overlap the copy control or code.
 - Migration examples cover the equivalent Docusaurus, VitePress, Material,
   and Starlight forms.
-

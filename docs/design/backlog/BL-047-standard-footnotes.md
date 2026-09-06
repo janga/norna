@@ -11,9 +11,8 @@ side-note model.
 Norna's Satteri renderer already parses `[^id]` references and definitions.
 The behavior is not documented as a Norna contract and lacks focused page,
 localization, style, and regression coverage. Reference footnotes occur in 31
-of the 96 Material for MkDocs source files reviewed in the
-[migration compatibility inventory](../migration-compatibility.md), and are
-also documented by VitePress.
+of the 96 Material for MkDocs source files reviewed by the completed `BL-046`
+migration inventory, and are also documented by VitePress.
 
 ## First Scope
 
@@ -37,4 +36,3 @@ also documented by VitePress.
 - Existing Norna side notes keep their current authoring and placement rules.
 - Canonical content documentation describes both note models without implying
   that one is a visual alias for the other.
-

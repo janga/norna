@@ -8,9 +8,9 @@ without maintaining a second copied version of that code in `content.md`.
 ## Evidence
 
 VitePress, Material for MkDocs, and Starlight provide direct or component-based
-source inclusion. The feature solves real drift in documentation kept beside
-software, but has less value for standalone content sites. See the
-[migration compatibility inventory](../migration-compatibility.md).
+source inclusion. The completed `BL-046` migration inventory found that the
+feature solves real drift in documentation kept beside software, but has less
+value for standalone content sites.
 
 ## Decisions Required
 
@@ -36,4 +36,3 @@ software, but has less value for standalone content sites. See the
 - Local preview refreshes after an included source file changes.
 - A migration can expand the same source to an ordinary fenced block when the
   native feature is unavailable or deliberately disabled.
-

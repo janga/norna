@@ -15,7 +15,7 @@ present planned work as current behavior.
 
 ## Source Material
 
-Treat the complete Norna Feature Landscape example as reusable source material,
+Treat the private Norna Product Research site as reusable source material,
 including its positioning, product-boundary analysis, comparisons, diagrams,
 and wording. Select by relevance to a prospective user rather than preserving
 the analysis site's structure. Do not copy its roadmap or unimplemented

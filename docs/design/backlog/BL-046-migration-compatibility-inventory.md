@@ -21,7 +21,7 @@ systems into Norna.
 
 ## Deliverable
 
-Create `docs/design/migration-compatibility.md` with:
+Record a private `Documentation Migration Compatibility` study with:
 
 - the Norna version and commit reviewed, review date, source boundaries, and
   representative official source links;

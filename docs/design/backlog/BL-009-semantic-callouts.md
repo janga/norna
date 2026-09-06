@@ -12,10 +12,9 @@ Markdown parsing, presentation, localization, and search semantics together.
 
 ## Evidence
 
-Callouts are the most prevalent unsupported content construct in the primary
-sources reviewed by the
-[migration compatibility inventory](../migration-compatibility.md). They occur
-in 76 of 94 reviewed Docusaurus documentation files, 44 of 96 Material for
+Callouts were the most prevalent unsupported content construct in the primary
+sources reviewed by the completed `BL-046` migration inventory. They occur in
+76 of 94 reviewed Docusaurus documentation files, 44 of 96 Material for
 MkDocs files, 15 of 36 VitePress files, and 10 of 37 English Starlight files.
 All four systems attach meaning such as note, tip, warning, or danger rather
 than exposing an arbitrary background color.

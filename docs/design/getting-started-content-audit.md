@@ -16,8 +16,7 @@ The review covered these source groups:
 - `starters/basic/`, `starters/project/`, their generated site files, and the
   command set produced by `scripts/init-site.mjs`;
 - every tracked complete site, feature demo, and README under `examples/`;
-- the locally excluded `examples/complete-sites/norna-feature-landscape/`
-  analysis site available during this audit;
+- the private product-research analysis available during this audit;
 - schemas, command help, implementation, and tests used to verify current file
   names, defaults, and command behavior.
 

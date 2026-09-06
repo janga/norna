@@ -8,11 +8,11 @@ documentation systems.
 
 ## Evidence
 
-Tabs occur in all four primary documentation systems reviewed in the
-[migration compatibility inventory](../migration-compatibility.md). They occur
-in 38 of 96 reviewed Material for MkDocs files, 16 of 94 Docusaurus files, and
-8 of 37 English Starlight files. The construct is common enough to require a
-migration rule, but frequency alone does not settle a suitable Norna syntax.
+Tabs occur in all four primary documentation systems reviewed by the completed
+`BL-046` migration inventory. They occur in 38 of 96 reviewed Material for
+MkDocs files, 16 of 94 Docusaurus files, and 8 of 37 English Starlight files.
+The construct is common enough to require a migration rule, but frequency
+alone does not settle a suitable Norna syntax.
 
 ## Decisions Required
 
@@ -40,4 +40,3 @@ migration rule, but frequency alone does not settle a suitable Norna syntax.
   scheduled.
 - The design explains why content alternatives add enough value beyond visible
   consecutive headings.
-
