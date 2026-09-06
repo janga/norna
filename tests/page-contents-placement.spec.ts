@@ -54,13 +54,56 @@ test.describe('adaptive page contents on desktop', () => {
 
 		await expect(layout).toHaveAttribute('data-page-contents-placement', 'page-tree');
 		await expect(tree).toBeVisible();
-		await expect(currentPage.locator(':scope > details')).toHaveAttribute('open', '');
+		const currentPageDisclosure = currentPage.locator(':scope > .navigation-page-sections-disclosure');
+		await expect(currentPageDisclosure).toHaveAttribute('open', '');
+		await expect(currentPageDisclosure.locator(':scope > summary')).toHaveAttribute(
+			'aria-label',
+			'Sections: Reference installation',
+		);
+		await expect(currentPage.locator(':scope > .navigation-page-link')).toHaveAttribute(
+			'aria-current',
+			'page',
+		);
+		await expect(currentPage.locator('.navigation-page-chevron')).toHaveCount(1);
+		await expect(tree.locator('details[data-page-path="reference"]')).toHaveCount(1);
 		await expect(sections).toBeVisible();
-		await expect(sections.locator('.navigation-page-sections-label')).toHaveText('Sections');
+		await expect(sections.locator('.navigation-page-sections-label')).toHaveCount(0);
+		await expect(tree.locator('.navigation-page-sections')).toHaveCount(1);
 		await expect(sections.getByRole('navigation')).toHaveCount(0);
 		await expect(sections).toHaveAttribute('aria-label', 'Page contents: Reference installation');
 		await expect(sections.getByRole('link')).toHaveText(['Install', 'Prerequisites', 'Verify']);
 		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
+
+		const [pageTitleTextX, sectionLineX, installTextX, subsectionLineX] = await Promise.all([
+			currentPage.locator(':scope > .navigation-page-link').evaluate((link) => {
+				const textNode = link.firstChild;
+				if (!textNode) throw new Error('Expected the current page link to contain text.');
+				const range = document.createRange();
+				range.selectNodeContents(textNode);
+				return range.getBoundingClientRect().x;
+			}),
+			sections.evaluate((navigation) => navigation.getBoundingClientRect().x),
+			sections.getByRole('link', { name: 'Install', exact: true }).evaluate((link) => {
+				const textNode = link.firstChild;
+				if (!textNode) throw new Error('Expected the section link to contain text.');
+				const range = document.createRange();
+				range.selectNodeContents(textNode);
+				return range.getBoundingClientRect().x;
+			}),
+			sections.locator('.page-contents-links > li:first-child > ol').evaluate((list) => (
+				list.getBoundingClientRect().x
+			)),
+		]);
+		expect(Math.abs(sectionLineX - pageTitleTextX)).toBeLessThan(1);
+		expect(Math.abs(subsectionLineX - installTextX)).toBeLessThan(1);
+
+		await currentPageDisclosure.locator('.navigation-page-chevron').click();
+		await expect(currentPageDisclosure).not.toHaveAttribute('open', '');
+		await expect(sections).not.toBeVisible();
+		await expect(currentPage.locator(':scope > .navigation-page-link')).toBeVisible();
+		await expect(tree.locator('details[data-page-path="reference"]')).toHaveAttribute('open', '');
+		await currentPageDisclosure.locator('.navigation-page-chevron').click();
+		await expect(sections).toBeVisible();
 
 		const verifyLink = sections.getByRole('link', { name: 'Verify', exact: true });
 		await verifyLink.click();
@@ -164,7 +207,7 @@ test.describe('adaptive page contents without JavaScript', () => {
 		await page.goto(shallowPagePath, { waitUntil: 'domcontentloaded' });
 
 		const currentPage = page.locator('.tree-local-navigation .navigation-page-node-current');
-		await expect(currentPage.locator(':scope > details')).toHaveAttribute('open', '');
+		await expect(currentPage.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
 		await expect(currentPage.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
 		await expect(currentPage.getByRole('link', { name: 'Verify', exact: true })).toBeVisible();
 	});

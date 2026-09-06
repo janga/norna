@@ -237,6 +237,14 @@
 		margin: 0 0 0.45rem;
 	}
 
+	.navigation-page-tree-mobile .navigation-page-sections-disclosure > summary {
+		top: 0;
+		right: 0;
+		left: auto;
+		width: 2.5rem;
+		height: 3.25rem;
+	}
+
 	.navigation-page-branch-content > .navigation-page-tree-mobile > .navigation-page-node {
 		border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
 	}

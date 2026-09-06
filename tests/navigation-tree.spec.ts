@@ -440,13 +440,18 @@ test.describe('mobile tree navigation', () => {
 		await expect(menu.locator('nav[aria-label="Pages"] h2')).toHaveText('Pages');
 		await expect(menu.locator('details[data-page-path="guides"]')).toHaveAttribute('open', '');
 		await expect(menu.locator('details[data-page-path="guides"] > summary')).toHaveText('Guides');
-		const currentPageDisclosure = menu.locator('details[data-page-path="guides/installation/macos"]');
+		const currentPageNode = menu.locator('.navigation-page-node-current');
+		const currentPageDisclosure = currentPageNode.locator(':scope > .navigation-page-sections-disclosure');
 		await expect(currentPageDisclosure).toHaveAttribute('open', '');
-		await expect(currentPageDisclosure.locator(':scope > summary')).toHaveText('macOS');
-		await expect(currentPageDisclosure.getByRole('link', { name: 'macOS', exact: true })).toHaveAttribute('aria-current', 'page');
-		const currentPageSections = menu.locator('.navigation-page-node-current > .navigation-page-disclosure .navigation-page-sections');
+		await expect(currentPageDisclosure.locator(':scope > summary')).toHaveAttribute(
+			'aria-label',
+			'Sections: macOS',
+		);
+		await expect(currentPageNode.getByRole('link', { name: 'macOS', exact: true })).toHaveAttribute('aria-current', 'page');
+		const currentPageSections = currentPageDisclosure.locator('.navigation-page-sections');
 		await expect(currentPageSections).toBeVisible();
 		await expect(currentPageSections.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
+		await expect(menu.getByText('Sections', { exact: true })).toHaveCount(0);
 
 		const releaseNotesLink = menu.getByRole('link', { name: 'Release notes', exact: true });
 		const releaseNotesNode = releaseNotesLink.locator('..');
@@ -454,25 +459,34 @@ test.describe('mobile tree navigation', () => {
 		await expect(releaseNotesNode.locator(':scope > details')).toHaveCount(0);
 	});
 
-	test('expands a page before its title becomes a page link', async ({ page }) => {
+	test('reserves disclosures for child pages and shows only the current page sections', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		const menu = page.locator('.mobile-nav-menu');
 		await menu.locator(':scope > summary').click();
-		const workflowsDisclosure = menu.locator('details[data-page-path="guides/workflows"]');
-		await expect(workflowsDisclosure).not.toHaveAttribute('open', '');
-		await expect(workflowsDisclosure.getByRole('link', { name: 'Workflows', exact: true })).not.toBeVisible();
-		await workflowsDisclosure.locator(':scope > summary').click();
-		await expect(page).toHaveURL(new RegExp(`${testPagePath}$`));
-		await expect(workflowsDisclosure).toHaveAttribute('open', '');
-		await expect(workflowsDisclosure.getByRole('link', { name: 'Workflows', exact: true })).toBeVisible();
-		await workflowsDisclosure.getByRole('link', { name: 'Workflows', exact: true }).click();
+		const guidesDisclosure = menu.locator('details[data-page-path="guides"]');
+		const installationDisclosure = menu.locator('details[data-page-path="guides/installation"]');
+		const referenceDisclosure = menu.locator('details[data-page-path="reference"]');
+		await expect(guidesDisclosure).toHaveAttribute('open', '');
+		await expect(installationDisclosure).toHaveAttribute('open', '');
+		await expect(menu.locator('details[data-page-path="guides/workflows"]')).toHaveCount(0);
+		await expect(menu.getByRole('link', { name: 'Local work', exact: true })).toHaveCount(0);
+
+		await referenceDisclosure.locator(':scope > summary').click({ force: true });
+		await expect(referenceDisclosure).toHaveAttribute('open', '');
+		await expect(guidesDisclosure).toHaveAttribute('open', '');
+		await expect(installationDisclosure).toHaveAttribute('open', '');
+
+		await menu.getByRole('link', { name: 'Workflows', exact: true }).click();
 
 		await expect(page).toHaveURL(/\/guides\/workflows\/$/);
 		await expect(page.locator('.mobile-nav-menu')).not.toHaveAttribute('open', '');
 		await menu.locator(':scope > summary').click();
-		await expect(menu.locator('details[data-page-path="guides/installation/macos"]')).toHaveAttribute('open', '');
-		await expect(menu.locator('details[data-page-path="guides/installation/macos"] .navigation-page-sections')).toBeVisible();
-		await expect(menu.locator('details[data-page-path="guides/workflows"]')).toHaveAttribute('open', '');
+		const workflowsNode = menu.locator('.navigation-page-node-current');
+		await expect(workflowsNode.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
+		await expect(workflowsNode.getByRole('link', { name: 'Workflows', exact: true })).toHaveAttribute('aria-current', 'page');
+		await expect(workflowsNode.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
+		await expect(menu.getByRole('link', { name: 'Prerequisites', exact: true })).toHaveCount(0);
+		await expect(menu.locator('details[data-page-path="reference"]')).toHaveAttribute('open', '');
 	});
 });
 
@@ -505,9 +519,8 @@ test.describe('tree navigation without JavaScript', () => {
 		const menu = page.locator('.mobile-nav-menu');
 		await menu.locator(':scope > summary').click();
 		await expect(menu.locator('details[data-page-path="guides"]')).toHaveAttribute('open', '');
-		const workflowsDisclosure = menu.locator('details[data-page-path="guides/workflows"]');
-		await workflowsDisclosure.locator(':scope > summary').click();
-		await workflowsDisclosure.getByRole('link', { name: 'Workflows', exact: true }).click();
+		await expect(menu.locator('details[data-page-path="guides/workflows"]')).toHaveCount(0);
+		await menu.getByRole('link', { name: 'Workflows', exact: true }).click();
 		await expect(page).toHaveURL(/\/guides\/workflows\/$/);
 	});
 });

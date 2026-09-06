@@ -118,7 +118,7 @@ try {
 	const referenceTreeEnd = referenceInstallationHtml.indexOf('</aside>', referenceTreeStart);
 	const referenceTreeHtml = referenceInstallationHtml.slice(referenceTreeStart, referenceTreeEnd);
 	assert.match(referenceTreeHtml, /class="navigation-page-sections"/);
-	assert.match(referenceTreeHtml, /<p class="navigation-page-sections-label">Sections<\/p>/);
+	assert.doesNotMatch(referenceTreeHtml, /navigation-page-sections-label/);
 	assert.match(referenceTreeHtml, /aria-label="Page contents: Reference installation"/);
 	assert.match(referenceTreeHtml, /href="#install">Install<\/a><ol><li><a href="#prerequisites">Prerequisites<\/a>/);
 	assert.match(referenceTreeHtml, /href="#verify">Verify<\/a>/);

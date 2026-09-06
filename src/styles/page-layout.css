@@ -119,12 +119,39 @@
 	padding: 0.2rem 0 0.25rem 0.85rem;
 }
 
-.navigation-page-sections-label {
-	margin: 0 0 0.45rem;
+.navigation-page-tree-sidebar
+	.navigation-page-sections-disclosure > .navigation-page-sections {
+	margin-inline-start: var(--tree-disclosure-offset);
+}
+
+.navigation-page-sections-disclosure > summary {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: grid;
+	place-items: center;
+	width: var(--tree-disclosure-offset);
+	height: 2.05rem;
+	border: 0;
+	border-radius: var(--corner-radius-small, 2px);
+	list-style: none;
+	cursor: pointer;
+	color: var(--color-secondary-text);
+}
+
+.navigation-page-sections-disclosure > summary::-webkit-details-marker {
+	display: none;
+}
+
+.navigation-page-sections-disclosure > summary:hover,
+.navigation-page-sections-disclosure > summary:focus-visible {
+	background: color-mix(in srgb, currentColor 8%, transparent);
 	color: var(--color-primary-text);
-	font-size: 0.7rem;
-	font-weight: 700;
-	line-height: 1.3;
+}
+
+.navigation-page-sections-disclosure[open]
+	> summary .navigation-page-chevron::before {
+	transform: rotate(90deg);
 }
 
 .navigation-page-tree,
@@ -166,39 +193,6 @@
 	margin: 0.25rem 0 0.25rem 0.3rem;
 	border-left: 1px solid color-mix(in srgb, currentColor 18%, transparent);
 	padding-left: 0.85rem;
-}
-
-.navigation-page-branch:not(.navigation-page-disclosure) > summary {
-	position: absolute;
-	top: 0.25rem;
-	right: 0;
-	display: grid;
-	place-items: center;
-	width: 1.8rem;
-	height: 1.8rem;
-	border: 0;
-	border-radius: var(--corner-radius-small, 2px);
-	list-style: none;
-	cursor: pointer;
-	color: var(--color-secondary-text);
-}
-
-.navigation-page-branch:not(.navigation-page-disclosure) > summary::-webkit-details-marker {
-	display: none;
-}
-
-.navigation-page-branch:not(.navigation-page-disclosure) > summary:hover,
-.navigation-page-branch:not(.navigation-page-disclosure) > summary:focus-visible {
-	background: color-mix(in srgb, currentColor 8%, transparent);
-	color: var(--color-primary-text);
-}
-
-.navigation-page-branch:not(.navigation-page-disclosure) > summary > [aria-hidden='true']::before {
-	content: "+";
-}
-
-.navigation-page-branch:not(.navigation-page-disclosure)[open] > summary > [aria-hidden='true']::before {
-	content: "−";
 }
 
 .navigation-page-disclosure > .navigation-page-summary {
@@ -363,11 +357,6 @@
 	margin: 0.25rem 0;
 	border-left: 0;
 	padding-left: 0;
-}
-
-.navigation-page-disclosure[data-current-branch='true']:not([data-current-page='true']):not([data-sections-open='true'])
-	> .navigation-page-branch-content > .navigation-page-sections {
-	display: none;
 }
 
 .page-contents-links li + li {

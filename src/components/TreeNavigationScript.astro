@@ -1,7 +1,6 @@
 <script>
 	type NavigationState = {
 		openPaths: string[];
-		sectionPaths: string[];
 		scrollTop: number;
 	};
 
@@ -11,13 +10,12 @@
 		const branches = Array.from(container.querySelectorAll<HTMLDetailsElement>(
 			'.navigation-page-disclosure[data-page-path]',
 		));
-		let storedState: NavigationState = { openPaths: [], sectionPaths: [], scrollTop: 0 };
+		let storedState: NavigationState = { openPaths: [], scrollTop: 0 };
 
 		try {
 			const parsedState = JSON.parse(sessionStorage.getItem(stateKey) ?? '{}');
 			storedState = {
 				openPaths: Array.isArray(parsedState.openPaths) ? parsedState.openPaths : [],
-				sectionPaths: Array.isArray(parsedState.sectionPaths) ? parsedState.sectionPaths : [],
 				scrollTop: Number.isFinite(Number(parsedState.scrollTop)) ? Number(parsedState.scrollTop) : 0,
 			};
 
@@ -25,10 +23,6 @@
 				const pagePath = branch.dataset.pagePath ?? '';
 				branch.open = branch.dataset.currentBranch === 'true'
 					|| storedState.openPaths.includes(pagePath);
-
-				if (storedState.sectionPaths.includes(pagePath)) {
-					branch.dataset.sectionsOpen = 'true';
-				}
 			});
 
 			if (storedState.scrollTop > 0) {
@@ -45,12 +39,6 @@
 				const openBranches = branches.filter((branch) => branch.open);
 				const state: NavigationState = {
 					openPaths: openBranches.map((branch) => branch.dataset.pagePath ?? ''),
-					sectionPaths: openBranches
-						.filter((branch) => (
-							branch.dataset.sectionsOpen === 'true'
-							|| branch.dataset.currentPage === 'true'
-						))
-						.map((branch) => branch.dataset.pagePath ?? ''),
 					scrollTop: container.scrollTop,
 				};
 				sessionStorage.setItem(stateKey, JSON.stringify(state));
@@ -60,14 +48,7 @@
 		};
 
 		requestAnimationFrame(() => {
-			branches.forEach((branch) => branch.addEventListener('toggle', () => {
-				if (branch.open && branch.dataset.hasSections === 'true') {
-					branch.dataset.sectionsOpen = 'true';
-				} else if (!branch.open) {
-					delete branch.dataset.sectionsOpen;
-				}
-				saveState();
-			}));
+			branches.forEach((branch) => branch.addEventListener('toggle', saveState));
 		});
 
 		container.addEventListener('scroll', saveState, { passive: true });

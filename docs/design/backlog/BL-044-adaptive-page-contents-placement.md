@@ -28,9 +28,14 @@ rather than a universal usability standard.
   beneath its page entry in the left tree.
 - At three or more visible levels, keep the left tree page-only and place the
   current page's H2/H3 outline in the separate contents rail.
-- Use the short visible label `Sections` (`Avsnitt` in Swedish) to distinguish
-  headings from child pages in an integrated tree. Give the nested navigation
-  an accessible name that also identifies the current page.
+- Render an integrated outline only for the current page. Keep the page title
+  as the link to the page top, and group its H2/H3 links in one disclosure that
+  is open by default. Do not make individual H2/H3 entries collapsible.
+- Do not add a visible `Sections` label. Give the disclosure and its nested
+  navigation accessible names that identify both their purpose and current
+  page.
+- Keep child-page disclosures independent. Opening one branch must not close a
+  previously opened branch.
 - Keep the existing threshold: no page-contents navigation is rendered unless
   the current page has at least two H2/H3 destinations.
 - Add no author-facing setting. The file structure is the source of the
@@ -43,6 +48,8 @@ rather than a universal usability standard.
 - At intermediate widths, a deep branch may retain the existing contents list
   in normal document flow instead of showing two side rails.
 - Keep source order and native links usable without JavaScript.
+- Leave the current page's section disclosure open in the no-JavaScript
+  fallback.
 - When section tracking is enabled, update the active H2/H3 link in either
   placement without changing focus or the URL.
 - Focus reading may hide navigational rails; the document headings remain the
