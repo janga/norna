@@ -66,6 +66,16 @@ test.describe('adaptive page contents on desktop', () => {
 		await verifyLink.click();
 		await expect(page).toHaveURL(/#verify$/);
 		await expect(verifyLink).toHaveAttribute('aria-current', 'location');
+		const currentSectionStyle = await verifyLink.evaluate((link) => ({
+			backgroundColor: getComputedStyle(link).backgroundColor,
+			markerContent: getComputedStyle(link, '::before').content,
+			textDecorationLine: getComputedStyle(link).textDecorationLine,
+			textDecorationThickness: getComputedStyle(link).textDecorationThickness,
+		}));
+		expect(currentSectionStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+		expect(currentSectionStyle.markerContent).toBe('none');
+		expect(currentSectionStyle.textDecorationLine).toContain('underline');
+		expect(currentSectionStyle.textDecorationThickness).toBe('2px');
 	});
 
 	test('keeps the outline in a separate rail for every page in a deep branch', async ({ page }) => {
@@ -76,7 +86,11 @@ test.describe('adaptive page contents on desktop', () => {
 			'contents-rail',
 		);
 		await expect(page.locator('.tree-local-navigation .navigation-page-sections')).toHaveCount(0);
-		await expect(page.locator('.page-contents-navigation-rail')).toBeVisible();
+		const contentsRail = page.locator('.page-contents-navigation-rail');
+		await expect(contentsRail).toBeVisible();
+		const currentSection = contentsRail.getByRole('link', { name: 'Install', exact: true });
+		await expect(currentSection).toHaveAttribute('aria-current', 'location');
+		expect(await currentSection.evaluate((link) => getComputedStyle(link, '::before').width)).toBe('2px');
 	});
 
 	test('keeps the local rail and content axis stable from Home into a nested branch', async ({ page }) => {

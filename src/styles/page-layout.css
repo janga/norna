@@ -409,6 +409,24 @@
 	content: '';
 }
 
+.navigation-page-tree-sidebar .navigation-page-sections .page-contents-links a {
+	margin-inline: -0.4rem 0.2rem;
+	border-radius: var(--corner-radius-small, 2px);
+	padding-inline: 0.4rem;
+}
+
+.navigation-page-tree-sidebar
+	.navigation-page-sections .page-contents-links a[aria-current='location'] {
+	background: var(--color-surface-soft-background);
+	color: var(--color-surface-soft-text);
+	text-decoration-thickness: 2px;
+}
+
+.navigation-page-tree-sidebar
+	.navigation-page-sections .page-contents-links a[aria-current='location']::before {
+	content: none;
+}
+
 .site-breadcrumbs {
 	min-height: calc(clamp(1rem, 2.5vw, 1.5rem) + 1.35rem);
 	width: min(100%, var(--reader-text-width, var(--page-text-width, var(--text-width))));
