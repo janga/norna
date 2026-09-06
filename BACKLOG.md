@@ -104,6 +104,9 @@ verified and approved for documentation.
 These items have no implementation position yet. Move one into `Now`, `Next`,
 or `Later` only after the stated evidence or design decision exists.
 
+- [`BL-046` Migration compatibility inventory](docs/design/backlog/BL-046-migration-compatibility-inventory.md):
+  **In progress.** Map representative competitor documentation constructs to
+  loss-minimizing Norna rewrites and evidence-based product candidates.
 - `BL-018` **Needs evidence.** Extend cross-page sync to whole-section metadata
   or additional assets only when a real section-bound resource exists; retain
   unambiguous discovery and never guess.
