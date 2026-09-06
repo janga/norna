@@ -8,7 +8,9 @@ page:
 ## Install
 
 This page should be available at `/reference/installation/` without conflicting
-with `/guides/installation/`.
+with `/guides/installation/`. {note-ref}
+
+{note: This note can use the empty right track because this shallow branch has no separate page-contents rail.}
 
 ### Prerequisites
 

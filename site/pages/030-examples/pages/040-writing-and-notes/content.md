@@ -64,6 +64,16 @@ moves into the margin when enough horizontal space is available.{note-ref}
 
 {note: This note is linked to its numbered reference. It remains part of the document immediately after the paragraph for reading-order and accessibility purposes.}
 
+Several paragraphs may each have their own note, and the notes retain the same
+order as their references.{note-ref}
+
+{note: This second note makes the spacing and sequence between neighboring notes visible.}
+
+Changing the reading width may leave too little room for the complete note
+lane.{note-ref}
+
+{note: When the margin is too narrow, this note returns to the ordinary reading flow instead of overlapping other content.}
+
 Write the reference and note in the same paragraph context:
 
 ```md
@@ -78,8 +88,8 @@ to which reference.
 
 ## Narrow-screen presentation {#narrow-screens}
 
-On a wide screen, the previous note uses the available margin beside its
-paragraph. On a narrow screen, it returns to the ordinary document flow below
+On a wide screen, the preceding notes use the available margin beside their
+paragraphs. On a narrow screen, they return to the ordinary document flow below
 the paragraph, so the text remains readable without horizontal scrolling.
 
 The author does not choose left, right or inline placement. Norna and the active

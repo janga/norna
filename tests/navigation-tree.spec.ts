@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 const desktopViewport = { width: 1440, height: 1000 };
 const mobileViewport = { width: 393, height: 852 };
 const testPagePath = '/guides/installation/macos/';
+const shallowPagePath = '/reference/installation/';
 
 test.describe('desktop tree navigation', () => {
 	test.use({ hasTouch: false, isMobile: false, viewport: desktopViewport });
@@ -256,23 +257,89 @@ test.describe('desktop tree navigation', () => {
 		expect(await page.evaluate(() => window.scrollY)).toBe(0);
 	});
 
-	test('keeps sidenotes in normal flow beside a persistent contents rail', async ({ page }) => {
+	test('uses the margin only when a sidenote fits beside the selected reading width', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		const note = page.locator('.section-note').first();
 		const paragraph = page.locator('.section-markdown p').first();
+		const sectionBody = page.locator('.section-body').first();
 		const contentsNavigation = page.locator('.page-contents-navigation-rail');
-		const [noteBox, paragraphBox, contentsBox] = await Promise.all([
+		const [noteBox, paragraphBox, sectionBodyBox, contentsBox] = await Promise.all([
 			note.boundingBox(),
 			paragraph.boundingBox(),
+			sectionBody.boundingBox(),
 			contentsNavigation.boundingBox(),
 		]);
 
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
 		expect(noteBox).not.toBeNull();
 		expect(paragraphBox).not.toBeNull();
+		expect(sectionBodyBox).not.toBeNull();
 		expect(contentsBox).not.toBeNull();
-		expect(noteBox?.x ?? 0).toBeGreaterThanOrEqual((paragraphBox?.x ?? 0) - 1);
+		expect(noteBox?.x ?? 0).toBeGreaterThanOrEqual(
+			(paragraphBox?.x ?? 0) + (paragraphBox?.width ?? 0) + 8,
+		);
+		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThanOrEqual(
+			(sectionBodyBox?.x ?? 0) + (sectionBodyBox?.width ?? 0) + 1,
+		);
 		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThan((contentsBox?.x ?? 0) - 8);
+
+		const settings = page.locator('[data-display-settings]');
+		await settings.locator('summary').click();
+		await settings.getByRole('radio', { name: 'Wide' }).check();
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await page.evaluate(() => document.documentElement.scrollWidth))
+			.toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth + 1));
+
+		await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+		await expect(contentsNavigation).toBeHidden();
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		const [focusNoteBox, pageLayoutBox] = await Promise.all([
+			note.boundingBox(),
+			page.locator('.site-page-layout').boundingBox(),
+		]);
+		expect(focusNoteBox).not.toBeNull();
+		expect(pageLayoutBox).not.toBeNull();
+		expect((focusNoteBox?.x ?? 0) + (focusNoteBox?.width ?? 0)).toBeLessThanOrEqual(
+			(pageLayoutBox?.x ?? 0) + (pageLayoutBox?.width ?? 0) + 1,
+		);
+
+		await settings.getByRole('checkbox', { name: 'Focus reading' }).uncheck();
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+
+		await settings.getByRole('radio', { name: 'Standard' }).check();
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+
+		await page.setViewportSize({ width: 1100, height: desktopViewport.height });
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+	});
+
+	test('uses the empty right track for a wide sidenote on a shallow page', async ({ page }) => {
+		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
+		await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
+
+		const settings = page.locator('[data-display-settings]');
+		await settings.locator('summary').click();
+		await settings.getByRole('radio', { name: 'Wide' }).check();
+
+		const note = page.locator('.section-note').first();
+		const paragraph = page.locator('.section-markdown p').first();
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		const [noteBox, paragraphBox, pageLayoutBox] = await Promise.all([
+			note.boundingBox(),
+			paragraph.boundingBox(),
+			page.locator('.site-page-layout').boundingBox(),
+		]);
+		expect(noteBox).not.toBeNull();
+		expect(paragraphBox).not.toBeNull();
+		expect(pageLayoutBox).not.toBeNull();
+		expect(noteBox?.x ?? 0).toBeGreaterThanOrEqual(
+			(paragraphBox?.x ?? 0) + (paragraphBox?.width ?? 0) + 8,
+		);
+		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThanOrEqual(
+			(pageLayoutBox?.x ?? 0) + (pageLayoutBox?.width ?? 0) + 1,
+		);
 	});
 });
 

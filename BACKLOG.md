@@ -12,9 +12,10 @@ are in the [backlog process](docs/design/backlog/README.md).
 
 `Now` contains at most three active items in exact technical order.
 
-- [`BL-043` Restore margin notes in Focus reading](docs/design/backlog/BL-043-focus-reading-margin-notes.md):
-  **Ready.** Let Focus reading reuse the margin vacated by the hidden page
-  contents rail on desktop while preserving normal-flow notes everywhere else.
+- [`BL-043` Use margin notes when they fit](docs/design/backlog/BL-043-focus-reading-margin-notes.md):
+  **Implemented; awaiting human review.** Use the margin when the selected
+  reading width and preset note lane fit without colliding with page navigation;
+  otherwise preserve the normal-flow fallback.
 - [`BL-038` Selling homepage and product positioning](docs/design/backlog/BL-038-selling-homepage.md):
   **Ready.** Turn implemented strengths into a concise, proof-led front page
   and remove duplicated technical detail.

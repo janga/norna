@@ -1,11 +1,10 @@
-# BL-043: Restore Margin Notes In Focus Reading
+# BL-043: Use Margin Notes When They Fit
 
 ## Outcome
 
-Show numbered notes in the available right margin when Focus reading hides the
-page contents rail on a sufficiently wide desktop layout. Keep notes in the
-normal reading flow whenever the contents rail is visible or the viewport is
-too narrow.
+Show numbered notes in the available right margin whenever the current desktop
+layout has enough room for the selected reading width, note width, and note
+gap. Keep notes in the normal reading flow when that complete lane does not fit.
 
 ## Observed Behavior
 
@@ -13,11 +12,12 @@ Pages with a page contents rail receive the `site-page-layout-contents` class.
 The corresponding rule in `src/styles/content.css` deliberately overrides the
 general margin-note rule so notes cannot collide with that rail.
 
-Focus reading hides the rail but retains the layout class. The override
-therefore continues to keep the note in the paragraph flow even though the
-right margin has become available. The general margin-note container threshold
-of `55rem` is also slightly wider than the effective content area in the
-observed layout.
+That class-based decision is too coarse. Narrow and standard prose can leave
+enough room for a note before the rail, while wide prose may not. Focus reading
+also retains the layout class after hiding the rail, so the same override keeps
+notes inline regardless of the available geometry. The general margin-note
+container threshold of `55rem` does not account for the selected reading width
+or preset note dimensions.
 
 At a 1440px viewport, the measured geometry was approximately:
 
@@ -31,28 +31,36 @@ overflow, including at the lowest desktop breakpoint. This establishes that
 the missing behavior is an interaction between existing rules rather than a
 need for a new layout model.
 
-## First Scope
+## Scope
 
-- Preserve normal-flow notes while the page contents rail is visible.
-- When Focus reading is active at `1101px` or wider, restore the existing
-  right-floating margin-note presentation.
+- At `1101px` or wider, use the margin when the section body can hold the
+  selected reading width plus the preset's note width and note gap.
+- Apply the same fit rule with or without a visible page contents rail and with
+  or without Focus reading.
+- Count the reserved right track as available note space when no contents rail
+  is rendered or when Focus reading hides that rail. Do not move or resize the
+  reading column to reclaim it.
 - Keep notes in normal flow below that breakpoint.
 - Reuse the established note width and gap variables; add no theme setting or
   author-facing Markdown option.
+- Use CSS container queries generated from validated theme values. Do not add
+  runtime measurement or layout JavaScript.
 - Preserve source order, linked note references, keyboard behavior, and screen
   reader semantics.
 
 ## Acceptance Criteria
 
-- On a tree-navigation page with a contents rail, a numbered note has
-  `float: none` while Focus reading is off.
-- On the same page at a viewport of at least `1101px`, enabling Focus reading
-  gives the note `float: right` and places it beside its prose.
+- On a tree-navigation page with a contents rail, narrow and standard reading
+  widths place a numbered note in the margin when the complete note lane fits.
+- A wide reading width keeps the same note in normal flow when its complete
+  lane does not fit before a visible contents rail.
+- Focus reading lets a wide note use the right track vacated by the hidden
+  contents rail without moving the reading column.
+- A shallow tree-navigation page without a contents rail lets the same wide
+  note use its empty reserved right track.
 - The note and its gap fit within the centered page layout without horizontal
-  overflow or collision with the prose.
+  overflow or collision with the prose or contents rail.
 - Below `1101px`, the note remains in normal flow regardless of Focus reading.
-- Toggling Focus reading preserves the current reading position according to
-  the existing reader-preference contract.
-- A Playwright regression test covers the normal layout, Focus reading, and
-  desktop fit assertions. Existing note parsing, accessibility, and navigation
-  tests continue to pass.
+- A Playwright regression test covers fitting and non-fitting reading widths,
+  the desktop breakpoint, and horizontal bounds. Existing note parsing,
+  accessibility, and navigation tests continue to pass.

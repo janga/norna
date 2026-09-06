@@ -138,6 +138,39 @@ const documentStyle = [
 		]
 		: []),
 ].join('; ');
+const marginNoteReadingWidths = [
+	['narrow', 'min(60ch, 680px)'],
+	['standard', 'min(72ch, 680px)'],
+	['wide', `min(80ch, ${visualTheme.images.width})`],
+] as const;
+const vacantContentsTrackWidth = `11rem + ${visualTheme.layout.localNavigationGap}`;
+const marginNoteDeclarations = [
+	'float: right;',
+	'clear: right;',
+	'width: var(--layout-note-width);',
+	'margin: 0 calc(0px - var(--layout-note-width) - var(--layout-note-gap)) 0.75rem var(--layout-note-gap);',
+].join('\n');
+const marginNoteLayoutCss = [
+	'@media (min-width: 1101px) {',
+	...marginNoteReadingWidths.flatMap(([readingWidth, textWidth]) => [
+		[
+			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap})) {`,
+			`:root[data-reading-width="${readingWidth}"] .section-note {`,
+				marginNoteDeclarations,
+			'}',
+		'}',
+		].join('\n'),
+		[
+			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} - ${vacantContentsTrackWidth})) {`,
+			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note,`,
+			`:root[data-reading-width="${readingWidth}"][data-focus-reading="on"] .site-page-layout-tree .section-note {`,
+				marginNoteDeclarations,
+			'}',
+		'}',
+		].join('\n'),
+	]),
+	'}',
+].join('\n');
 const { buildInfo, copyrightMessage } = footer ?? {};
 const showBuildInfo = buildInfo === true;
 const buildTime = showBuildInfo
@@ -190,6 +223,7 @@ const readerPreferencesScript = readerPreferencesEnabled
 		{indexable && socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
 		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
 		{readerPreferencesScript && <script is:inline set:html={readerPreferencesScript} />}
+		<style is:inline set:html={marginNoteLayoutCss} />
 		{indexable && <link rel="canonical" href={canonicalUrl} />}
 		<meta name="generator" content={Astro.generator} />
 		{iconLinks.map((iconLink) => (
