@@ -30,6 +30,9 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
+- [`BL-047` Standard reference footnotes](docs/design/backlog/BL-047-standard-footnotes.md):
+  **Ready.** Turn existing GFM parsing into a tested, localized, documented
+  contract before adding more Markdown syntax.
 - [`BL-037` Refine left-navigation visual hierarchy](docs/design/backlog/BL-037-left-navigation-visual-hierarchy.md):
   **Ready after `BL-044` Adaptive page-contents placement.** Polish the page
   rail after its shallow- and deep-branch content contract is implemented.
@@ -51,6 +54,9 @@ smaller page-graph additions they can reuse.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Ready after `BL-005`.** Extend Markdown semantics after search and page
   output rules can consume the new structure consistently.
+- [`BL-048` Code titles and line emphasis](docs/design/backlog/BL-048-rich-code-examples.md):
+  **Ready after `BL-009`.** Add one closed metadata grammar to ordinary code
+  fences after the callout grammar is stable.
 
 ## External Gate
 
@@ -104,9 +110,15 @@ verified and approved for documentation.
 These items have no implementation position yet. Move one into `Now`, `Next`,
 or `Later` only after the stated evidence or design decision exists.
 
-- [`BL-046` Migration compatibility inventory](docs/design/backlog/BL-046-migration-compatibility-inventory.md):
-  **In progress.** Map representative competitor documentation constructs to
-  loss-minimizing Norna rewrites and evidence-based product candidates.
+- [`BL-049` Content alternatives](docs/design/backlog/BL-049-content-alternatives.md):
+  **Needs design.** Choose an authoring and no-JavaScript contract before tabs
+  or code groups enter Norna's content model.
+- [`BL-050` Source-backed code excerpts](docs/design/backlog/BL-050-source-backed-code.md):
+  **Needs design.** Establish path, package, watch, and sensitive-file
+  boundaries before source files can be included in documentation.
+- [`BL-051` Technical diagram sources](docs/design/backlog/BL-051-technical-diagram-sources.md):
+  **Needs evidence.** Retain managed SVG as the migration path until maintained
+  Norna sites demonstrate a recurring need for build-time diagram rendering.
 - `BL-018` **Needs evidence.** Extend cross-page sync to whole-section metadata
   or additional assets only when a real section-bound resource exists; retain
   unambiguous discovery and never guess.
