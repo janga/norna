@@ -75,7 +75,7 @@ test.describe('adaptive page contents on desktop', () => {
 		expect(currentSectionStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
 		expect(currentSectionStyle.markerContent).toBe('none');
 		expect(currentSectionStyle.textDecorationLine).toContain('underline');
-		expect(currentSectionStyle.textDecorationThickness).toBe('2px');
+		expect(currentSectionStyle.textDecorationThickness).toBe('1.5px');
 	});
 
 	test('keeps the outline in a separate rail for every page in a deep branch', async ({ page }) => {

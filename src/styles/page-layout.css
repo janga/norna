@@ -419,7 +419,7 @@
 	.navigation-page-sections .page-contents-links a[aria-current='location'] {
 	background: var(--color-surface-soft-background);
 	color: var(--color-surface-soft-text);
-	text-decoration-thickness: 2px;
+	text-decoration-thickness: 1.5px;
 }
 
 .navigation-page-tree-sidebar
