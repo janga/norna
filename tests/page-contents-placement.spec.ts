@@ -15,16 +15,21 @@ test.describe('adaptive page contents on desktop', () => {
 
 		const tree = page.locator('.tree-local-navigation');
 		const installation = tree.locator('details[data-page-path="guides/installation"]');
+		const installationNode = installation.locator('..');
 		const summary = installation.locator(':scope > summary');
 		const chevron = summary.locator('.navigation-page-chevron');
-		const summaryTitle = summary.locator('.navigation-page-summary-title');
-		const openLink = installation.locator(':scope > .navigation-page-open-link');
+		const openLink = installationNode.locator(':scope > .navigation-page-open-link');
 		const siblingLink = tree.getByRole('link', { name: 'Workflows', exact: true });
-		const [treeBox, chevronBox, titleBox, openLinkBox, siblingTextX] = await Promise.all([
+		const [treeBox, chevronBox, openLinkTextX, siblingTextX] = await Promise.all([
 			tree.boundingBox(),
 			chevron.boundingBox(),
-			summaryTitle.boundingBox(),
-			openLink.boundingBox(),
+			openLink.evaluate((link) => {
+				const textNode = link.firstChild;
+				if (!textNode) throw new Error('Expected the branch link to contain text.');
+				const range = document.createRange();
+				range.selectNodeContents(textNode);
+				return range.getBoundingClientRect().x;
+			}),
 			siblingLink.evaluate((link) => {
 				const textNode = link.firstChild;
 				if (!textNode) throw new Error('Expected the sibling link to contain text.');
@@ -36,12 +41,89 @@ test.describe('adaptive page contents on desktop', () => {
 
 		expect(treeBox).not.toBeNull();
 		expect(chevronBox).not.toBeNull();
-		expect(titleBox).not.toBeNull();
-		expect(openLinkBox).not.toBeNull();
-		expect((chevronBox?.x ?? 0) + (chevronBox?.width ?? 0)).toBeLessThan((titleBox?.x ?? 0) - 4);
-		expect(Math.abs((titleBox?.x ?? 0) - (openLinkBox?.x ?? 0))).toBeLessThan(1);
-		expect(Math.abs((titleBox?.x ?? 0) - siblingTextX)).toBeLessThan(1);
+		expect((chevronBox?.x ?? 0) + (chevronBox?.width ?? 0)).toBeLessThan(openLinkTextX - 4);
+		expect(Math.abs(openLinkTextX - siblingTextX)).toBeLessThan(1);
 		expect((treeBox?.x ?? 0) + (treeBox?.width ?? 0) - (chevronBox?.x ?? 0)).toBeGreaterThan(40);
+	});
+
+	test('separates branch disclosure from page navigation', async ({ page }) => {
+		await page.goto('/guides/workflows/', { waitUntil: 'networkidle' });
+
+		const installation = page.locator(
+			'.tree-local-navigation details[data-page-path="guides/installation"]',
+		);
+		const installationNode = installation.locator('..');
+		const disclosure = installation.locator(':scope > summary');
+		const pageLink = installationNode.locator(':scope > .navigation-page-open-link');
+		const initialUrl = page.url();
+
+		await expect(installation).not.toHaveAttribute('open', '');
+		await expect(pageLink).toBeVisible();
+		await expect(pageLink).toHaveAttribute('href', '/guides/installation/');
+
+		await disclosure.click();
+		await expect(installation).toHaveAttribute('open', '');
+		expect(page.url()).toBe(initialUrl);
+		await disclosure.click();
+		await expect(installation).not.toHaveAttribute('open', '');
+
+		await pageLink.click();
+		await expect(page).toHaveURL(/\/guides\/installation\/$/);
+		await expect(page.locator(
+			'.tree-local-navigation details[data-page-path="guides/installation"]',
+		)).toHaveAttribute('open', '');
+	});
+
+	test('communicates page hierarchy and keeps focus inside the scrolling rail', async ({ page }) => {
+		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
+
+		const tree = page.locator('.tree-local-navigation');
+		const rootSummary = tree.locator('details[data-page-path="guides"] > summary');
+		const currentPage = tree.locator('.navigation-page-node-current');
+		const currentPageSummary = currentPage.locator(
+			':scope > details[data-page-path="guides/installation"] > summary',
+		);
+		const currentPageLink = currentPage.locator(':scope > .navigation-page-open-link');
+		const siblingLink = tree.getByRole('link', { name: 'Workflows', exact: true });
+		const [rootStyle, currentStyle, currentSummaryStyle, siblingStyle] = await Promise.all([
+			rootSummary.evaluate((element) => ({
+				fontSize: Number.parseFloat(getComputedStyle(element).fontSize),
+			})),
+			currentPageLink.evaluate((element) => ({
+				fontWeight: Number.parseInt(getComputedStyle(element).fontWeight, 10),
+				textDecorationLine: getComputedStyle(element).textDecorationLine,
+			})),
+			currentPageSummary.evaluate((element) => ({
+				backgroundColor: getComputedStyle(element).backgroundColor,
+			})),
+			siblingLink.evaluate((element) => ({
+				fontSize: Number.parseFloat(getComputedStyle(element).fontSize),
+				fontWeight: Number.parseInt(getComputedStyle(element).fontWeight, 10),
+			})),
+		]);
+
+		expect(rootStyle.fontSize).toBeGreaterThan(siblingStyle.fontSize);
+		expect(currentStyle.fontWeight).toBeGreaterThan(siblingStyle.fontWeight);
+		expect(currentStyle.textDecorationLine).toContain('underline');
+		expect(currentSummaryStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+
+		await rootSummary.focus();
+		const [treeBox, focusBox, focusStyle] = await Promise.all([
+			tree.boundingBox(),
+			rootSummary.boundingBox(),
+			rootSummary.evaluate((element) => ({
+				outlineOffset: Number.parseFloat(getComputedStyle(element).outlineOffset),
+				outlineWidth: Number.parseFloat(getComputedStyle(element).outlineWidth),
+			})),
+		]);
+		const focusExtent = focusStyle.outlineOffset + focusStyle.outlineWidth;
+
+		expect(treeBox).not.toBeNull();
+		expect(focusBox).not.toBeNull();
+		expect((focusBox?.x ?? 0) - focusExtent).toBeGreaterThanOrEqual((treeBox?.x ?? 0) - 0.5);
+		expect((focusBox?.x ?? 0) + (focusBox?.width ?? 0) + focusExtent).toBeLessThanOrEqual(
+			(treeBox?.x ?? 0) + (treeBox?.width ?? 0) + 0.5,
+		);
 	});
 
 	test('integrates page outlines into expanded shallow tree branches', async ({ page }) => {
@@ -50,7 +132,7 @@ test.describe('adaptive page contents on desktop', () => {
 		const layout = page.locator('.site-page-layout');
 		const tree = page.locator('.tree-local-navigation');
 		const referenceBranch = tree.locator('details[data-page-path="reference"]');
-		const referenceSections = referenceBranch.locator(
+		const referenceSections = referenceBranch.locator('..').locator(
 			':scope > .navigation-page-branch-content > .navigation-page-sections',
 		);
 		const currentPage = tree.locator('.navigation-page-node-current');
@@ -128,7 +210,7 @@ test.describe('adaptive page contents on desktop', () => {
 		expect(currentSectionStyle.textDecorationThickness).toBe('1.5px');
 	});
 
-	test('remembers an explicitly closed page outline across shallow page navigation', async ({ page }) => {
+	test('opens a page outline when its page link is followed', async ({ page }) => {
 		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
 
 		const currentSections = page.locator(
@@ -138,9 +220,10 @@ test.describe('adaptive page contents on desktop', () => {
 		await currentSections.locator(':scope > summary').click();
 		await expect(currentSections).not.toHaveAttribute('open', '');
 
-		await page.locator(
-			'.tree-local-navigation details[data-page-path="reference"] > .navigation-page-open-link',
-		).click();
+		await page.locator('.tree-local-navigation').getByRole('link', {
+			name: 'Reference',
+			exact: true,
+		}).click();
 		await expect(page).toHaveURL(/\/reference\/$/);
 		await page.locator('.tree-local-navigation').getByRole('link', {
 			name: 'Reference installation',
@@ -150,7 +233,7 @@ test.describe('adaptive page contents on desktop', () => {
 
 		await expect(page.locator(
 			'.tree-local-navigation .navigation-page-node-current > .navigation-page-sections-disclosure',
-		)).not.toHaveAttribute('open', '');
+		)).toHaveAttribute('open', '');
 	});
 
 	test('keeps the outline in a separate rail for every page in a deep branch', async ({ page }) => {
@@ -243,9 +326,10 @@ test.describe('adaptive page contents without JavaScript', () => {
 		await page.goto(shallowPagePath, { waitUntil: 'domcontentloaded' });
 
 		const referenceBranch = page.locator('.tree-local-navigation details[data-page-path="reference"]');
+		const referenceNode = referenceBranch.locator('..');
 		const currentPage = page.locator('.tree-local-navigation .navigation-page-node-current');
 		await expect(referenceBranch).toHaveAttribute('open', '');
-		await expect(referenceBranch.getByRole('link', { name: 'Reference overview', exact: true }))
+		await expect(referenceNode.getByRole('link', { name: 'Reference overview', exact: true }))
 			.toHaveAttribute('href', '/reference/#reference-overview');
 		await expect(currentPage.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
 		await expect(currentPage.getByRole('link', { name: 'Install', exact: true })).toBeVisible();

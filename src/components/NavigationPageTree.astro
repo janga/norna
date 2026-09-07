@@ -47,6 +47,7 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 		<li
 			class:list={['navigation-page-node', {
 				'navigation-page-node-category': node.node.kind === 'category',
+				'navigation-page-node-page-disclosure': node.node.kind === 'page' && usesPageDisclosure(node),
 				'navigation-page-node-current': node.node.kind === 'page' && isCurrentPage(node.node),
 				'navigation-page-node-current-branch': isCurrentBranch(node.node),
 			}]}
@@ -92,39 +93,38 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 						aria-controls={getBranchId(node.node)}
 						aria-label={`${projectConfig.locale.labels.navigationChildren}: ${node.node.title}`}
 					>
-						<span class="navigation-page-summary-title">{node.node.title}</span>
 						<span class="navigation-page-chevron" aria-hidden="true"></span>
 					</summary>
-					<a
-						class:list={['navigation-page-open-link', { 'mobile-nav-destination': variant === 'mobile' }]}
-						href={pageHref(node.node)}
-						aria-current={isCurrentPage(node.node) ? 'page' : undefined}
-					>
-						{node.node.title}
-					</a>
-					<div id={getBranchId(node.node)} class="navigation-page-branch-content">
-						{showsPageSections(node) && (
-							<nav
-								class="navigation-page-sections"
-								aria-label={`${projectConfig.locale.labels.pageNavigation}: ${node.node.title}`}
-							>
-								<PageContentsLinks
-									headings={node.headings}
-									variant={variant === 'mobile' ? 'mobile' : 'desktop'}
-									pageHref={isCurrentPage(node.node) ? undefined : pageHref(node.node)}
-								/>
-							</nav>
-						)}
-						{hasBranch(node) && (
-							<Astro.self
-								nodes={node.children}
-								currentPage={currentPage}
-								variant={variant}
-								integratePageSections={integratePageSections}
-							/>
-						)}
-					</div>
 				</details>
+				<a
+					class:list={['navigation-page-open-link', { 'mobile-nav-destination': variant === 'mobile' }]}
+					href={pageHref(node.node)}
+					aria-current={isCurrentPage(node.node) ? 'page' : undefined}
+				>
+					{node.node.title}
+				</a>
+				<div id={getBranchId(node.node)} class="navigation-page-branch-content">
+					{showsPageSections(node) && (
+						<nav
+							class="navigation-page-sections"
+							aria-label={`${projectConfig.locale.labels.pageNavigation}: ${node.node.title}`}
+						>
+							<PageContentsLinks
+								headings={node.headings}
+								variant={variant === 'mobile' ? 'mobile' : 'desktop'}
+								pageHref={isCurrentPage(node.node) ? undefined : pageHref(node.node)}
+							/>
+						</nav>
+					)}
+					{hasBranch(node) && (
+						<Astro.self
+							nodes={node.children}
+							currentPage={currentPage}
+							variant={variant}
+							integratePageSections={integratePageSections}
+						/>
+					)}
+				</div>
 			) : variant !== 'submenu' ? (
 				<>
 					<a

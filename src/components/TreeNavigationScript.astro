@@ -53,28 +53,43 @@
 		const saveState = () => {
 			try {
 				const openBranches = branches.filter((branch) => branch.open);
+				const sectionOpenByPath = Object.fromEntries(sectionBranches.map((branch) => [
+					branch.dataset.pagePath ?? '',
+					branch.open,
+				]));
 				const state: NavigationState = {
 					openPaths: openBranches.map((branch) => branch.dataset.pagePath ?? ''),
-					sectionOpenByPath: storedState.sectionOpenByPath,
+					sectionOpenByPath,
 					scrollTop: container.scrollTop,
 				};
+				storedState = state;
 				sessionStorage.setItem(stateKey, JSON.stringify(state));
 			} catch {
 				// Navigation state persistence is an optional enhancement.
 			}
 		};
+		const openLinkedPage = (link: HTMLAnchorElement) => {
+			const pageNode = link.closest<HTMLElement>('.navigation-page-node');
+			const pageDisclosure = pageNode?.querySelector<HTMLDetailsElement>(
+				':scope > .navigation-page-disclosure:not(.navigation-category-disclosure)',
+			);
+			const sectionDisclosure = pageNode?.querySelector<HTMLDetailsElement>(
+				':scope > .navigation-page-sections-disclosure[data-page-path]',
+			);
+
+			if (pageDisclosure) pageDisclosure.open = true;
+			if (sectionDisclosure) sectionDisclosure.open = true;
+			saveState();
+		};
 
 		requestAnimationFrame(() => {
 			branches.forEach((branch) => branch.addEventListener('toggle', saveState));
-			sectionBranches.forEach((branch) => branch.addEventListener('toggle', () => {
-				const pagePath = branch.dataset.pagePath ?? '';
-				storedState.sectionOpenByPath[pagePath] = branch.open;
-				saveState();
-			}));
+			sectionBranches.forEach((branch) => branch.addEventListener('toggle', saveState));
 		});
 
 		container.addEventListener('scroll', saveState, { passive: true });
-		container.querySelectorAll('a').forEach((link) => link.addEventListener('click', saveState));
+		container.querySelectorAll<HTMLAnchorElement>('.navigation-page-link, .navigation-page-open-link')
+			.forEach((link) => link.addEventListener('click', () => openLinkedPage(link)));
 		window.addEventListener('pagehide', saveState);
 	};
 
