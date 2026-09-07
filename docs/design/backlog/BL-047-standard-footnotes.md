@@ -2,9 +2,9 @@
 
 ## Outcome
 
-Authors can use standard GFM reference footnotes for citations and
-supplemental material that does not belong in Norna's one-note-per-paragraph
-side-note model.
+Authors can use the established Markdown reference-footnote syntax for
+citations and supplemental material that does not belong in Norna's
+one-note-per-paragraph side-note model.
 
 ## Evidence
 
@@ -16,7 +16,7 @@ migration inventory, and are also documented by VitePress.
 
 ## Syntax Status: Settled
 
-Reuse the established GFM form already accepted by Norna:
+Reuse the established reference-footnote form already accepted by Norna:
 
 ```md
 The setting applies to every page.[^scope]
