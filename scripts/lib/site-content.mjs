@@ -30,6 +30,7 @@ const knownNestedFrontmatterKeys = new Set([
 	'align',
 	'aliases',
 	'alt',
+	'baseUrl',
 	'body',
 	'blockGap',
 	'caption',

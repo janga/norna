@@ -1,0 +1,17 @@
+---
+import { PencilLine } from '@lucide/astro';
+
+interface Props {
+	href: string;
+	label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<p class="edit-source-link">
+	<a href={href}>
+		<PencilLine aria-hidden="true" />
+		<span>{label}</span>
+	</a>
+</p>

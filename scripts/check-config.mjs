@@ -76,6 +76,7 @@ try {
 	console.log('Config check passed.');
 	console.log(`Site URL: ${projectConfig.site.url}`);
 	console.log(`Base path: ${projectConfig.site.basePath}`);
+	console.log(`Edit links: ${projectConfig.editLink?.baseUrl ?? '(disabled)'}`);
 	console.log(`Theme preset: ${themeConfig.preset ?? '(none)'}`);
 	console.log(`Page width: ${projectConfig.layout.pageWidth}`);
 	console.log(`Gutter: desktop ${projectConfig.layout.gutter.desktop}, mobile ${projectConfig.layout.gutter.mobile}`);

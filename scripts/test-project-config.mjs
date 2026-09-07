@@ -13,6 +13,7 @@ const importScript = `
 	const { projectConfig } = await import(${JSON.stringify(projectConfigUrl)});
 	console.log(JSON.stringify({
 		basePath: projectConfig.site.basePath,
+		editLink: projectConfig.editLink,
 		language: projectConfig.locale.lang,
 		labels: projectConfig.locale.labels,
 		navigationMode: projectConfig.navigation.mode,
@@ -63,6 +64,7 @@ try {
 	assert.equal(minimalResult.status, 0, minimalResult.stderr);
 	assert.deepEqual(JSON.parse(minimalResult.stdout), {
 		basePath: '/docs/',
+		editLink: null,
 		language: 'en',
 		labels: {
 			breadcrumb: 'Breadcrumb',
@@ -73,6 +75,7 @@ try {
 			codeCopied: 'Copied',
 			codeCopyFailed: 'Could not copy code',
 			copyCode: 'Copy code',
+			editSource: 'Edit this page',
 			displaySettings: 'Display',
 			focusReading: 'Focus reading',
 			footnoteBackReference: 'Back to reference {reference}',
@@ -117,6 +120,7 @@ try {
 	assert.equal(localizedConfig.language, 'sv-SE');
 	assert.equal(localizedConfig.labels.built, 'Byggd');
 	assert.equal(localizedConfig.labels.copyCode, 'Kopiera kod');
+	assert.equal(localizedConfig.labels.editSource, 'Redigera den här sidan');
 	assert.equal(localizedConfig.labels.footnoteBackReference, 'Tillbaka till referens {reference}');
 	assert.equal(localizedConfig.labels.footnotes, 'Fotnoter');
 	assert.equal(localizedConfig.labels.notFound, 'Sidan hittades inte');
@@ -135,6 +139,16 @@ try {
 	const treeNavigationResult = loadConfig(treeNavigationSite);
 	assert.equal(treeNavigationResult.status, 0, treeNavigationResult.stderr);
 	assert.equal(JSON.parse(treeNavigationResult.stdout).navigationMode, 'tree');
+
+	const editLinkSite = await createSite(
+		'edit-link',
+		'url: https://example.com/\neditLink:\n  baseUrl: https://github.com/example/project/edit/release-2/packages/docs\n',
+	);
+	const editLinkResult = loadConfig(editLinkSite);
+	assert.equal(editLinkResult.status, 0, editLinkResult.stderr);
+	assert.deepEqual(JSON.parse(editLinkResult.stdout).editLink, {
+		baseUrl: 'https://github.com/example/project/edit/release-2/packages/docs/',
+	});
 
 	const overrideResult = loadConfig(minimalSite, {
 		NORNA_SITE_URL: 'http://127.0.0.1:4567/preview',
@@ -164,6 +178,18 @@ try {
 	assertFailure(
 		loadConfig(await createSite('invalid-url', 'url: example.com\n')),
 		/url must be an absolute URL/,
+	);
+	assertFailure(
+		loadConfig(await createSite('missing-edit-base-url', 'url: https://example.com/\neditLink: {}\n')),
+		/editLink\.baseUrl is required when editLink is configured/,
+	);
+	assertFailure(
+		loadConfig(await createSite('invalid-edit-url', 'url: https://example.com/\neditLink:\n  baseUrl: file:\/\/\/tmp\/site\n')),
+		/editLink\.baseUrl must use http or https/,
+	);
+	assertFailure(
+		loadConfig(await createSite('edit-url-query', 'url: https://example.com/\neditLink:\n  baseUrl: https:\/\/example.com\/edit\/main\/?preview=true\n')),
+		/editLink\.baseUrl must not contain a query string or fragment/,
 	);
 	assertFailure(
 		loadConfig(await createSite('invalid-scroll-behavior', 'url: https://example.com/\nscrollBehavior: slow\n')),

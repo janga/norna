@@ -61,6 +61,47 @@ would be misleading.
 Interface labels are part of the engine and are not configured individually.
 Editorial text remains in page content and `sitewide-content.yaml`.
 
+## Edit Link
+
+- Purpose: add a localized **Edit this page** link after each page's content.
+- Type: an object containing one absolute `baseUrl`.
+- Required: no.
+- Default: no edit link.
+- Restrictions: `baseUrl` must use `http` or `https` and cannot contain
+  credentials, a query string, or a fragment.
+
+The base URL identifies the source host, repository, branch, and any repository
+subdirectory that comes before the Norna project. Norna appends the current
+page's project-relative `content.md` path:
+
+```yaml
+url: https://example.com/
+editLink:
+  baseUrl: https://github.com/owner/repository/edit/main/
+```
+
+For a Norna project in `packages/docs/` on a branch named `release-2`, use:
+
+```yaml
+editLink:
+  baseUrl: https://github.com/owner/repository/edit/release-2/packages/docs/
+```
+
+The generated target for a nested page can then be:
+
+```text
+https://github.com/owner/repository/edit/release-2/packages/docs/site/pages/010-guides/pages/020-deploy/content.md
+```
+
+This follows the page model rather than inspecting Git. Moving a page through
+Norna therefore changes its generated source link, shallow clones do not affect
+the result, and a non-default branch works when it is part of `baseUrl`.
+
+The same link is shown in local preview and published builds. Omit `editLink`
+when a local or private source should not expose an editing destination. Norna
+does not check whether the remote source host permits the visitor to edit the
+file; authentication and permissions remain the source host's responsibility.
+
 ## `navigation`
 
 `navigation` contains site-wide settings for generated navigation. These
@@ -127,6 +168,8 @@ movement.
 ```yaml
 url: https://example.com/
 language: en-GB
+editLink:
+  baseUrl: https://github.com/owner/repository/edit/main/
 navigation:
   mode: automatic
 scrollBehavior: instant
@@ -136,8 +179,9 @@ Run `npm run norna:config:check` after changing the file.
 
 ## Publishing Discovery
 
-GitHub repository, default branch, and deploy workflow are not fields in
-`config.yaml`.
+The GitHub repository, default deployment branch, and deploy workflow are not
+deployment fields in `config.yaml`. An optional `editLink.baseUrl` only creates
+links to a source host's editing interface; it does not configure publishing.
 
 `npm run norna:deploy` discovers the current GitHub repository and default
 branch through the authenticated GitHub CLI. Norna's included workflow file is

@@ -146,6 +146,10 @@ const config = JSON.parse(await readFile(path.join(root, 'schemas', 'config.sche
 assert.equal(config.properties.language.default, 'en');
 assert.deepEqual(config.properties.language.examples, ['en', 'sv', 'en-GB', 'sv-SE']);
 assert.equal(config.properties.scrollBehavior.default, 'instant');
+assert.match(config.properties.editLink.markdownDescription, /Edit this page/);
+assert.match(config.properties.editLink.markdownDescription, /repository, branch/);
+assert.match(config.properties.editLink.properties.baseUrl.markdownDescription, /content\.md/);
+assert.match(config.properties.editLink.properties.baseUrl.markdownDescription, /docs\/configuration\.md#edit-link/);
 
 const category = JSON.parse(await readFile(path.join(root, 'schemas', 'category.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(category.properties), ['label']);

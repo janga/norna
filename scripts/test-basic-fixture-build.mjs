@@ -15,7 +15,10 @@ const cliPath = path.join(repoRoot, 'bin', 'norna.mjs');
 try {
 	await cp(fixtureRoot, fixtureCopyRoot, { recursive: true });
 	await runInherit(process.execPath, [cliPath, '--site-dir', siteDir, 'build'], { cwd: repoRoot });
-	await access(path.join(fixtureCopyRoot, 'dist', 'index.html'));
+	const homepage = await readFile(path.join(fixtureCopyRoot, 'dist', 'index.html'), 'utf8');
+	if (homepage.includes('class="edit-source-link"')) {
+		throw new Error('Basic fixture unexpectedly renders an edit-source link without editLink configuration.');
+	}
 	const sitemap = await readFile(path.join(fixtureCopyRoot, 'dist', 'sitemap.xml'), 'utf8');
 	if (!sitemap.includes('<loc>https://example.com/</loc>')) {
 		throw new Error('Basic fixture sitemap does not contain its canonical homepage URL.');

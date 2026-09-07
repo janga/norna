@@ -68,6 +68,7 @@ try {
 	assert.match(rootHtml, /--image-width: 920px/);
 	assert.match(rootHtml, /--space-section-to-section-desktop: clamp\(1\.2rem, 2\.4vw, 2\.25rem\)/);
 	assert.match(rootHtml, /data-navigation-mode="tree"/);
+	assert.match(rootHtml, /<p class="edit-source-link">[\s\S]*?href="https:\/\/github\.com\/example\/docs\/edit\/release-2\/packages\/docs\/site\/pages\/000-home\/content\.md"[\s\S]*?Edit this page/);
 	assert.match(rootHtml, /data-page-contents-placement="page-tree"/);
 	assert.match(rootHtml, /<aside id="tree-local-navigation" class="tree-local-navigation" data-navigation-root="\/">/);
 	assert.match(rootHtml, /aria-label="Page contents: Nested pages"/);
@@ -93,6 +94,7 @@ try {
 	assert.match(installationHtml, /href="\/guides\/installation\/macos\/" rel="next"/);
 	assert.doesNotMatch(rootHtml, /class="page-sequence-navigation"/);
 	assert.match(macosHtml, /data-navigation-mode="tree"/);
+	assert.match(macosHtml, /href="https:\/\/github\.com\/example\/docs\/edit\/release-2\/packages\/docs\/site\/pages\/010-guides\/pages\/010-installation\/pages\/010-macos\/content\.md"/);
 	assert.match(macosHtml, /data-page-contents-placement="contents-rail"/);
 	assert.match(macosHtml, /data-section-tracking="enabled"/);
 	assert.match(rootHtml, /data-section-tracking="enabled"/);

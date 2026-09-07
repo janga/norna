@@ -9,6 +9,7 @@ import {
 	siteConfigPath,
 	siteThemeLabel,
 } from './site-paths.mjs';
+import { normalizeEditLinkBaseUrl } from './edit-source-link.mjs';
 import { readThemeConfig } from './theme-config.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
@@ -192,6 +193,7 @@ const localeLabels = Object.freeze({
 		codeCopied: 'Copied',
 		codeCopyFailed: 'Could not copy code',
 		copyCode: 'Copy code',
+		editSource: 'Edit this page',
 		displaySettings: 'Display',
 		focusReading: 'Focus reading',
 		footnoteBackReference: 'Back to reference {reference}',
@@ -233,6 +235,7 @@ const localeLabels = Object.freeze({
 		codeCopied: 'Kopierat',
 		codeCopyFailed: 'Kunde inte kopiera koden',
 		copyCode: 'Kopiera kod',
+		editSource: 'Redigera den här sidan',
 		displaySettings: 'Visning',
 		focusReading: 'Fokuserad läsning',
 		footnoteBackReference: 'Tillbaka till referens {reference}',
@@ -475,12 +478,35 @@ export const resolveNavigationConfig = (config, sourceLabel = siteConfigLabel) =
 	});
 };
 
+export const resolveEditLinkConfig = (config, sourceLabel = siteConfigLabel) => {
+	if (config.editLink === undefined) return null;
+
+	const rawEditLink = assertObject(config.editLink, 'editLink', sourceLabel);
+	if (!Object.hasOwn(rawEditLink, 'baseUrl')) {
+		throw new Error(`editLink.baseUrl is required when editLink is configured in ${sourceLabel}.`);
+	}
+	const unknownKeys = Object.keys(rawEditLink).filter((key) => key !== 'baseUrl');
+	if (unknownKeys.length > 0) {
+		throw new Error(`editLink.${unknownKeys[0]} is not a valid setting in ${sourceLabel}.`);
+	}
+
+	try {
+		return Object.freeze({
+			baseUrl: normalizeEditLinkBaseUrl(rawEditLink.baseUrl, 'editLink.baseUrl'),
+		});
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		throw new Error(`${message.replace(/\.$/, '')} in ${sourceLabel}.`);
+	}
+};
+
 export const projectConfig = Object.freeze({
 	site: Object.freeze({
 		basePath: siteUrl.pathname,
 		url: siteUrl.href,
 	}),
 	...resolveThemeVisualConfig(rawTheme, siteThemeLabel),
+	editLink: resolveEditLinkConfig(rawConfig, siteConfigLabel),
 	navigation: Object.freeze({
 		...resolveNavigationConfig(rawConfig, siteConfigLabel),
 		scrollBehavior: readEnum(

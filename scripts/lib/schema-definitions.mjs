@@ -38,6 +38,21 @@ const cornerTreatment = z.enum(['square', 'rounded']).describe('Site-wide corner
 const cardListWidth = z.enum(['text', 'narrow', 'normal', 'wide']).describe('Default maximum width for card lists. A width written in a norna-card-list block overrides this value.');
 const imagePresentation = z.enum(imagePresentationNames).describe('How managed image stacks and carousels are placed on the page. Prose-aligned starts them at the body-text edge; centered-fit centers them and constrains them by available width and viewport height.');
 const navigationMode = z.enum(navigationModeNames).describe('Site-wide navigation policy. Automatic uses sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a hierarchical site.');
+const editLink = z.object({
+	baseUrl: z.string().url().refine((value) => {
+		try {
+			const url = new URL(value);
+			return ['http:', 'https:'].includes(url.protocol)
+				&& !url.username
+				&& !url.password
+				&& !url.search
+				&& !url.hash;
+		} catch {
+			return false;
+		}
+	}, 'Use an absolute http or https URL without credentials, a query string, or a fragment.')
+		.describe('Absolute edit URL prefix containing the repository, branch, and any repository subdirectory.'),
+}).strict().describe('Optional base URL for links from rendered pages to their Markdown source files.');
 const createLineHeight = (minimum, role) => z.number()
 	.min(minimum, `Use a unitless ${role} line height of at least ${minimum}.`)
 	.max(3, `Use a unitless ${role} line height of at most 3.`)
@@ -222,6 +237,7 @@ const sitewideFooter = z.object({
 const configShape = {
 	url: z.string().url().describe('Absolute public URL for the built site.'),
 	language: z.string().regex(/^(?:en|sv)(?:-[a-zA-Z0-9]+)*$/).optional().describe('Site language tag using Norna\'s English or Swedish interface text; the default is en.'),
+	editLink: editLink.optional(),
 	navigation: configNavigation.optional(),
 	scrollBehavior: z.enum(['instant', 'smooth']).optional().default('instant').describe('Use instant anchors by default or the browser\'s native smooth scrolling.'),
 };

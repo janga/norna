@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CodeBlockCopyScript from './CodeBlockCopyScript.astro';
+import EditSourceLink from './EditSourceLink.astro';
 import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
 import SiteNavigation from './SiteNavigation.astro';
 import SiteBanners from './SiteBanners.astro';
@@ -26,6 +27,7 @@ import {
 	resolvePageContentsPlacement,
 } from '../../scripts/lib/navigation-model.mjs';
 import { projectConfig, resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
+import { getEditSourceUrl } from '../../scripts/lib/edit-source-link.mjs';
 import { getTextWidthCssValue, resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
 import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
 
@@ -106,6 +108,12 @@ const renderedSections = resolvedSections.map((section, index) => ({
 	prioritizeFirstImage: index === firstImageSectionIndex,
 }));
 const hasPageSequence = Boolean(pageSequence.previous || pageSequence.next);
+const editSourceUrl = projectConfig.editLink
+	? getEditSourceUrl({
+		baseUrl: projectConfig.editLink.baseUrl,
+		sourcePath: currentPage.contentLabel,
+	})
+	: null;
 const navigationModel = resolveNavigationModel({
 	mode: projectConfig.navigation.mode,
 	nodes: renderedNavigationEntries.map(({ node, headings }) => ({
@@ -196,6 +204,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 		<main
 			class:list={['site-content', {
 				'site-content-has-breadcrumbs': reserveBreadcrumbSpace,
+				'site-content-has-edit-source': Boolean(editSourceUrl),
 				'site-content-has-page-sequence': hasPageSequence,
 			}]}
 			id="main-content"
@@ -220,6 +229,9 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 					prioritizeFirstImage={prioritizeFirstImage}
 				/>
 			))}
+			{editSourceUrl && (
+				<EditSourceLink href={editSourceUrl} label={projectConfig.locale.labels.editSource} />
+			)}
 			<PageSequenceNavigation previous={pageSequence.previous} next={pageSequence.next} />
 		</main>
 		{showContentsRail && (

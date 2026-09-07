@@ -45,6 +45,26 @@
       ],
       "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#language)"
     },
+    "editLink": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Absolute edit URL prefix containing the repository, branch, and any repository subdirectory.",
+          "markdownDescription": "```yaml\neditLink:\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nAbsolute edit URL prefix. Include any repository subdirectory and branch in this URL. Norna adds the project-relative path to each page's `content.md` file.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#edit-link)",
+          "examples": [
+            "https://github.com/owner/repository/edit/main/"
+          ]
+        }
+      },
+      "required": [
+        "baseUrl"
+      ],
+      "additionalProperties": false,
+      "description": "Optional base URL for links from rendered pages to their Markdown source files.",
+      "markdownDescription": "```yaml\neditLink:\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nAdds a localized **Edit this page** link from each rendered page to its `content.md` source file. The base URL identifies the repository, branch, and any repository subdirectory; Norna appends the page source path.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#edit-link)"
+    },
     "navigation": {
       "type": "object",
       "properties": {

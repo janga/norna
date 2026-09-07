@@ -159,6 +159,16 @@ const addConfigHelp = (jsonSchema) => {
 		'Sets the page language and selects Norna\'s built-in English or Swedish interface text. The default is `en`.',
 		documentationLink('Language reference', 'configuration.md', 'language'),
 	], ['en', 'sv', 'en-GB', 'sv-SE']);
+	addHelp(jsonSchema, 'editLink', [
+		yamlExample('editLink:\n  baseUrl: https://github.com/owner/repository/edit/main/'),
+		'Adds a localized **Edit this page** link from each rendered page to its `content.md` source file. The base URL identifies the repository, branch, and any repository subdirectory; Norna appends the page source path.',
+		documentationLink('Edit-link reference', 'configuration.md', 'edit-link'),
+	]);
+	addHelp(jsonSchema, 'editLink.baseUrl', [
+		yamlExample('editLink:\n  baseUrl: https://github.com/owner/repository/edit/main/'),
+		'Absolute edit URL prefix. Include any repository subdirectory and branch in this URL. Norna adds the project-relative path to each page\'s `content.md` file.',
+		documentationLink('Edit-link reference', 'configuration.md', 'edit-link'),
+	], ['https://github.com/owner/repository/edit/main/']);
 	addHelp(jsonSchema, 'navigation', [
 		yamlExample('navigation:\n  mode: automatic'),
 		'Sets the site-wide navigation policy. `automatic` uses sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a hierarchical site.',
