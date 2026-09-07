@@ -51,6 +51,9 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 				'navigation-page-node-current': node.node.kind === 'page' && isCurrentPage(node.node),
 				'navigation-page-node-current-branch': isCurrentBranch(node.node),
 			}]}
+			data-navigation-title={node.node.title}
+			data-navigation-kind={node.node.kind}
+			data-navigation-current-page={node.node.kind === 'page' && isCurrentPage(node.node) ? 'true' : undefined}
 		>
 			{node.node.kind === 'category' ? (
 				<details

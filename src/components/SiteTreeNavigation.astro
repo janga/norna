@@ -3,6 +3,7 @@ import projectConfig from '../../scripts/lib/project-config.mjs';
 import { getListedSiteNavigationTree, type SiteNavigationEntry } from '../lib/siteNavigation';
 import type { SitePage } from '../lib/sitePages';
 import NavigationPageTree from './NavigationPageTree.astro';
+import NavigationTreeControls from './NavigationTreeControls.astro';
 
 interface Props {
 	currentPage: SitePage;
@@ -25,6 +26,10 @@ const navigationRoot = activeRoot?.node.pagePath ? `/${activeRoot.node.pagePath}
 		class="tree-local-navigation"
 		data-navigation-root={navigationRoot}
 	>
+		<NavigationTreeControls
+			idPrefix="desktop-tree-navigation"
+			nodes={[activeRoot]}
+		/>
 		<nav aria-label={`${activeRoot.node.title}: ${projectConfig.locale.labels.siteNavigation}`}>
 			<NavigationPageTree
 				nodes={[activeRoot]}

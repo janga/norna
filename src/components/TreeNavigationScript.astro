@@ -4,6 +4,11 @@
 		sectionOpenByPath: Record<string, boolean>;
 		scrollTop: number;
 	};
+	type NavigationSnapshot = {
+		branchOpen: boolean[];
+		sectionOpen: boolean[];
+		scrollTop: number;
+	};
 
 	const setupNavigationState = (container: HTMLElement, scope: 'desktop' | 'mobile') => {
 		const root = container.dataset.navigationRoot ?? '/';
@@ -14,11 +19,25 @@
 		const sectionBranches = Array.from(container.querySelectorAll<HTMLDetailsElement>(
 			'.navigation-page-sections-disclosure[data-page-path]',
 		));
-		let storedState: NavigationState = { openPaths: [], sectionOpenByPath: {}, scrollTop: 0 };
+		const navigationNodes = Array.from(container.querySelectorAll<HTMLElement>(
+			'.navigation-page-node[data-navigation-title]',
+		));
+		const getScrollContainer = () => {
+			let candidate: HTMLElement | null = container;
+
+			while (candidate) {
+				if (/auto|scroll/.test(getComputedStyle(candidate).overflowY)) return candidate;
+				candidate = candidate.parentElement;
+			}
+
+			return container;
+		};
+		const scrollContainer = getScrollContainer();
+		let filterSnapshot: NavigationSnapshot | null = null;
 
 		try {
 			const parsedState = JSON.parse(sessionStorage.getItem(stateKey) ?? '{}');
-			storedState = {
+			const storedState: NavigationState = {
 				openPaths: Array.isArray(parsedState.openPaths) ? parsedState.openPaths : [],
 				sectionOpenByPath: parsedState.sectionOpenByPath
 					&& typeof parsedState.sectionOpenByPath === 'object'
@@ -43,7 +62,7 @@
 
 			if (storedState.scrollTop > 0) {
 				requestAnimationFrame(() => {
-					container.scrollTop = storedState.scrollTop;
+					scrollContainer.scrollTop = storedState.scrollTop;
 				});
 			}
 		} catch {
@@ -51,6 +70,8 @@
 		}
 
 		const saveState = () => {
+			if (filterSnapshot) return;
+
 			try {
 				const openBranches = branches.filter((branch) => branch.open);
 				const sectionOpenByPath = Object.fromEntries(sectionBranches.map((branch) => [
@@ -60,15 +81,145 @@
 				const state: NavigationState = {
 					openPaths: openBranches.map((branch) => branch.dataset.pagePath ?? ''),
 					sectionOpenByPath,
-					scrollTop: container.scrollTop,
+					scrollTop: scrollContainer.scrollTop,
 				};
-				storedState = state;
 				sessionStorage.setItem(stateKey, JSON.stringify(state));
 			} catch {
 				// Navigation state persistence is an optional enhancement.
 			}
 		};
+		const controls = container.querySelector<HTMLElement>('[data-tree-controls]');
+		const filterInput = controls?.querySelector<HTMLInputElement>('[data-tree-filter]') ?? null;
+		const expandButton = controls?.querySelector<HTMLButtonElement>('[data-tree-expand-all]') ?? null;
+		const collapseButton = controls?.querySelector<HTMLButtonElement>('[data-tree-collapse-all]') ?? null;
+		const locateButton = controls?.querySelector<HTMLButtonElement>('[data-tree-locate-current]') ?? null;
+		const emptyMessage = controls?.querySelector<HTMLElement>('[data-tree-filter-empty]') ?? null;
+		const status = controls?.querySelector<HTMLElement>('[data-tree-status]') ?? null;
+		const currentPageNode = container.querySelector<HTMLElement>(
+			'.navigation-page-node[data-navigation-current-page="true"]',
+		);
+		const labels = {
+			collapsed: controls?.dataset.treeLabelCollapsed ?? '',
+			expanded: controls?.dataset.treeLabelExpanded ?? '',
+			filterMatches: controls?.dataset.treeLabelFilterMatches ?? '{count}',
+			located: controls?.dataset.treeLabelLocated ?? '',
+		};
+		const normalizeTitle = (value: string) => value
+			.normalize('NFKD')
+			.replace(/\p{Mark}+/gu, '')
+			.toLocaleLowerCase(document.documentElement.lang || undefined)
+			.trim();
+		const setStatus = (message: string) => {
+			if (status) status.textContent = message;
+		};
+		const getSnapshot = (): NavigationSnapshot => ({
+			branchOpen: branches.map((branch) => branch.open),
+			sectionOpen: sectionBranches.map((branch) => branch.open),
+			scrollTop: scrollContainer.scrollTop,
+		});
+		const revealNodeAndAncestors = (node: HTMLElement) => {
+			let currentNode: HTMLElement | null = node;
+
+			while (currentNode && container.contains(currentNode)) {
+				currentNode.hidden = false;
+				const parentNode = currentNode.parentElement?.closest<HTMLElement>(
+					'.navigation-page-node[data-navigation-title]',
+				) ?? null;
+				const parentBranch = parentNode?.querySelector<HTMLDetailsElement>(
+					':scope > .navigation-page-disclosure[data-page-path]',
+				);
+				if (parentBranch) parentBranch.open = true;
+				currentNode = parentNode;
+			}
+		};
+		const restoreFilterSnapshot = () => {
+			if (!filterSnapshot) return;
+
+			branches.forEach((branch, index) => { branch.open = filterSnapshot?.branchOpen[index] ?? false; });
+			sectionBranches.forEach((branch, index) => { branch.open = filterSnapshot?.sectionOpen[index] ?? false; });
+			scrollContainer.scrollTop = filterSnapshot.scrollTop;
+			filterSnapshot = null;
+			requestAnimationFrame(saveState);
+		};
+		const clearFilter = () => {
+			navigationNodes.forEach((node) => { node.hidden = false; });
+			delete container.dataset.treeFilterActive;
+			if (emptyMessage) emptyMessage.hidden = true;
+			if (expandButton) expandButton.disabled = false;
+			if (collapseButton) collapseButton.disabled = false;
+			restoreFilterSnapshot();
+			setStatus('');
+		};
+		const applyFilter = () => {
+			const query = normalizeTitle(filterInput?.value ?? '');
+
+			if (!query) {
+				clearFilter();
+				return;
+			}
+
+			if (!filterSnapshot) filterSnapshot = getSnapshot();
+			container.dataset.treeFilterActive = 'true';
+			if (expandButton) expandButton.disabled = true;
+			if (collapseButton) collapseButton.disabled = true;
+			navigationNodes.forEach((node) => { node.hidden = true; });
+
+			const matches = navigationNodes.filter((node) => normalizeTitle(
+				node.dataset.navigationTitle ?? '',
+			).includes(query));
+			matches.forEach((node) => {
+				revealNodeAndAncestors(node);
+
+				if (node.dataset.navigationKind === 'category') {
+					node.querySelectorAll<HTMLElement>('.navigation-page-node[data-navigation-title]')
+						.forEach((descendant) => { descendant.hidden = false; });
+					const categoryBranch = node.querySelector<HTMLDetailsElement>(
+						':scope > .navigation-category-disclosure',
+					);
+					if (categoryBranch) categoryBranch.open = true;
+				}
+			});
+
+			if (matches.length === 0 && currentPageNode) revealNodeAndAncestors(currentPageNode);
+			if (emptyMessage) emptyMessage.hidden = matches.length > 0;
+			setStatus(labels.filterMatches.replace('{count}', String(matches.length)));
+		};
+		const setAllOpen = (open: boolean) => {
+			branches.forEach((branch) => { branch.open = open; });
+			sectionBranches.forEach((branch) => { branch.open = open; });
+			saveState();
+			setStatus(open ? labels.expanded : labels.collapsed);
+		};
+		const locateCurrentPage = () => {
+			if (!currentPageNode) return;
+
+			if (filterInput?.value) {
+				filterInput.value = '';
+				clearFilter();
+			}
+			revealNodeAndAncestors(currentPageNode);
+			currentPageNode.querySelectorAll<HTMLDetailsElement>(
+				':scope > .navigation-page-disclosure, :scope > .navigation-page-sections-disclosure',
+			).forEach((branch) => { branch.open = true; });
+			saveState();
+
+			const currentPageLink = currentPageNode.querySelector<HTMLAnchorElement>(
+				':scope > .navigation-page-link, :scope > .navigation-page-open-link',
+			);
+			if (!currentPageLink) return;
+
+			currentPageLink.focus({ preventScroll: true });
+			const scrollBox = scrollContainer.getBoundingClientRect();
+			const linkBox = currentPageLink.getBoundingClientRect();
+			scrollContainer.scrollTop += linkBox.top - scrollBox.top
+				- Math.max(0, (scrollContainer.clientHeight - linkBox.height) / 2);
+			setStatus(labels.located);
+		};
 		const openLinkedPage = (link: HTMLAnchorElement) => {
+			if (filterInput?.value) {
+				filterInput.value = '';
+				clearFilter();
+			}
 			const pageNode = link.closest<HTMLElement>('.navigation-page-node');
 			const pageDisclosure = pageNode?.querySelector<HTMLDetailsElement>(
 				':scope > .navigation-page-disclosure:not(.navigation-category-disclosure)',
@@ -87,7 +238,19 @@
 			sectionBranches.forEach((branch) => branch.addEventListener('toggle', saveState));
 		});
 
-		container.addEventListener('scroll', saveState, { passive: true });
+		if (controls) controls.hidden = false;
+		if (locateButton && !currentPageNode) locateButton.disabled = true;
+		filterInput?.addEventListener('input', applyFilter);
+		filterInput?.addEventListener('keydown', (event) => {
+			if (event.key !== 'Escape' || !filterInput.value) return;
+			event.preventDefault();
+			filterInput.value = '';
+			clearFilter();
+		});
+		expandButton?.addEventListener('click', () => setAllOpen(true));
+		collapseButton?.addEventListener('click', () => setAllOpen(false));
+		locateButton?.addEventListener('click', locateCurrentPage);
+		scrollContainer.addEventListener('scroll', saveState, { passive: true });
 		container.querySelectorAll<HTMLAnchorElement>('.navigation-page-link, .navigation-page-open-link')
 			.forEach((link) => link.addEventListener('click', () => openLinkedPage(link)));
 		window.addEventListener('pagehide', saveState);

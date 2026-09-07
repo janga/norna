@@ -70,6 +70,113 @@
 	scrollbar-gutter: stable;
 }
 
+.navigation-tree-controls {
+	position: sticky;
+	top: 0;
+	z-index: 4;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 0.45rem;
+	margin: 0 0 0.85rem;
+	border-bottom: 1px solid var(--color-nav-separator);
+	padding: 0 0 0.75rem;
+	background: var(--color-page);
+}
+
+.navigation-tree-filter {
+	position: relative;
+	grid-column: 1 / -1;
+	display: flex;
+	align-items: center;
+}
+
+.navigation-tree-filter > svg {
+	position: absolute;
+	left: 0.55rem;
+	width: 0.95rem;
+	height: 0.95rem;
+	pointer-events: none;
+	opacity: 0.62;
+}
+
+.navigation-tree-filter > input {
+	min-width: 0;
+	width: 100%;
+	min-height: 2.15rem;
+	border: 1px solid var(--color-border);
+	border-radius: var(--corner-radius-small, 2px);
+	padding: 0.4rem 0.55rem 0.4rem 1.85rem;
+	background: var(--color-page);
+	color: var(--color-primary-text);
+	font: inherit;
+	font-size: 0.78rem;
+	letter-spacing: 0;
+}
+
+.navigation-tree-filter > input::placeholder {
+	color: var(--color-secondary-text);
+	opacity: 0.8;
+}
+
+.navigation-tree-filter > input:focus-visible {
+	outline: 2px solid var(--color-focus-ring);
+	outline-offset: 2px;
+}
+
+.navigation-tree-commands {
+	grid-column: 1 / -1;
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.35rem;
+}
+
+.navigation-tree-commands > button {
+	display: grid;
+	place-items: center;
+	width: 2.15rem;
+	height: 2.15rem;
+	border: 1px solid var(--color-border);
+	border-radius: var(--corner-radius-small, 2px);
+	padding: 0;
+	background: var(--color-page);
+	color: var(--color-secondary-text);
+	cursor: pointer;
+}
+
+.navigation-tree-commands > button:hover,
+.navigation-tree-commands > button:focus-visible {
+	background: var(--color-surface-soft-background);
+	color: var(--color-primary-text);
+}
+
+.navigation-tree-commands > button:focus-visible {
+	outline: 2px solid var(--color-focus-ring);
+	outline-offset: 2px;
+}
+
+.navigation-tree-commands > button:disabled {
+	cursor: not-allowed;
+	opacity: 0.38;
+}
+
+.navigation-tree-commands svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.navigation-tree-filter-empty {
+	grid-column: 1 / -1;
+	margin: 0.2rem 0 0;
+	color: var(--color-secondary-text);
+	font-size: 0.75rem;
+	line-height: 1.4;
+}
+
+[data-tree-filter-active='true'] .navigation-page-sections,
+[data-tree-filter-active='true'] .navigation-page-sections-disclosure {
+	display: none;
+}
+
 :root[data-appearance='dark'] .tree-local-navigation {
 	--tree-current-item-background: var(--color-surface-soft-background);
 }
@@ -179,6 +286,10 @@
 
 .navigation-page-node {
 	position: relative;
+}
+
+.navigation-page-node[hidden] {
+	display: none !important;
 }
 
 .navigation-page-tree-sidebar .navigation-page-link {

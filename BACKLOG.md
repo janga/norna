@@ -19,6 +19,10 @@ are in the [backlog process](docs/design/backlog/README.md).
 - [`BL-038` Selling homepage and product positioning](docs/design/backlog/BL-038-selling-homepage.md):
   **Implemented; awaiting human review.** The proof-led front page now presents
   implemented strengths before product boundaries and technical detail.
+- [`BL-008` Long navigation tree controls and filtering](docs/design/backlog/BL-008-long-tree-controls.md):
+  **Implemented; awaiting human review.** Long trees now gain progressively
+  enhanced filtering, expand/collapse commands, and a control that locates the
+  current page without weakening the no-JavaScript navigation fallback.
 
 ## Next
 
@@ -26,9 +30,6 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-008` Long navigation tree controls and filtering](docs/design/backlog/BL-008-long-tree-controls.md):
-  **Ready after `BL-006`.** Add progressive controls and a title filter only
-  after tree scope, active-page, expansion, and traversal behavior are stable.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Ready.** Extend Markdown semantics now that search and page output share
   the completed rendered structure.

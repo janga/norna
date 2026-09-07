@@ -135,6 +135,29 @@
 		text-transform: none;
 	}
 
+	.mobile-nav-panel .navigation-tree-controls {
+		position: static;
+		margin-bottom: 1rem;
+		padding-bottom: 1rem;
+		background: var(--site-top-background-color, var(--color-page));
+	}
+
+	.mobile-nav-panel .navigation-tree-filter > input {
+		min-height: 2.75rem;
+		font-size: 0.9rem;
+	}
+
+	.mobile-nav-panel .navigation-tree-commands > button {
+		width: 2.75rem;
+		height: 2.75rem;
+		background: var(--site-top-background-color, var(--color-page));
+	}
+
+	.mobile-nav-panel .navigation-tree-commands svg {
+		width: 1.15rem;
+		height: 1.15rem;
+	}
+
 	.mobile-nav-panel :is(ul, ol) {
 		display: grid;
 		gap: 0;

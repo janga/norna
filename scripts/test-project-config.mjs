@@ -85,7 +85,17 @@ try {
 			built: 'Built',
 			images: 'Images',
 			imageCarousel: 'image carousel',
+			navigationCollapsedAll: 'All navigation items collapsed.',
+			navigationCollapseAll: 'Collapse all',
+			navigationControls: 'Navigation tree controls',
 			navigationChildren: 'Child pages',
+			navigationExpandedAll: 'All navigation items expanded.',
+			navigationExpandAll: 'Expand all',
+			navigationFilter: 'Filter pages and groups',
+			navigationFilterEmpty: 'No matching pages or groups. The current page remains available.',
+			navigationFilterMatches: 'Matching navigation items: {count}',
+			navigationLocatedCurrent: 'Current page located.',
+			navigationLocateCurrent: 'Locate current page',
 			navigationMenu: 'Menu',
 			nextImage: 'Next image',
 			nextPage: 'Next page',
@@ -135,6 +145,9 @@ try {
 	assert.equal(localizedConfig.labels.pageMoved, 'Sidan har flyttats');
 	assert.equal(localizedConfig.labels.pageMovedText, 'Den här adressen identifierar nu');
 	assert.equal(localizedConfig.labels.nextPage, 'Nästa sida');
+	assert.equal(localizedConfig.labels.navigationCollapseAll, 'Fäll ihop alla');
+	assert.equal(localizedConfig.labels.navigationFilter, 'Filtrera sidor och grupper');
+	assert.equal(localizedConfig.labels.navigationLocateCurrent, 'Hitta aktuell sida');
 	assert.equal(localizedConfig.labels.pageSequence, 'Sidföljd');
 	assert.equal(localizedConfig.labels.pageSections, 'Avsnitt');
 	assert.equal(localizedConfig.labels.previousPage, 'Föregående sida');

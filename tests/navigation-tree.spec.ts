@@ -291,6 +291,83 @@ test.describe('desktop tree navigation', () => {
 		expect(await page.evaluate(() => window.scrollY)).toBe(0);
 	});
 
+	test('adds controls only when the active navigation tree is long', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const controls = page.locator('.tree-local-navigation [data-tree-controls]');
+		await expect(controls).toBeVisible();
+		await expect(controls.getByRole('searchbox', { name: 'Filter pages and groups' })).toBeVisible();
+		await expect(controls.getByRole('button', { name: 'Expand all' })).toBeVisible();
+		await expect(controls.getByRole('button', { name: 'Collapse all' })).toBeVisible();
+		await expect(controls.getByRole('button', { name: 'Locate current page' })).toBeVisible();
+
+		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
+		await expect(page.locator('.tree-local-navigation [data-tree-controls]')).toHaveCount(0);
+	});
+
+	test('expands, collapses, and locates the current page predictably', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const tree = page.locator('.tree-local-navigation');
+		const controls = tree.locator('[data-tree-controls]');
+		const branches = tree.locator('.navigation-page-disclosure[data-page-path]');
+		const status = controls.locator('[data-tree-status]');
+
+		await controls.getByRole('button', { name: 'Collapse all' }).click();
+		await expect(tree.locator('.navigation-page-disclosure[data-page-path][open]')).toHaveCount(0);
+		await expect(status).toHaveText('All navigation items collapsed.');
+
+		await controls.getByRole('button', { name: 'Expand all' }).click();
+		expect(await branches.evaluateAll((items) => items.every((item) => item.hasAttribute('open')))).toBe(true);
+		await expect(status).toHaveText('All navigation items expanded.');
+
+		await controls.getByRole('button', { name: 'Collapse all' }).click();
+		await controls.getByRole('button', { name: 'Locate current page' }).click();
+		const currentPageLink = tree.getByRole('link', { name: 'macOS', exact: true });
+		await expect(currentPageLink).toBeFocused();
+		await expect(currentPageLink).toBeVisible();
+		await expect(status).toHaveText('Current page located.');
+		await expect(tree.locator('details[data-page-path="guides"]')).toHaveAttribute('open', '');
+		await expect(tree.locator('details[data-page-path="guides/installation"]')).toHaveAttribute('open', '');
+	});
+
+	test('filters page titles with hierarchy and restores prior branch state', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const tree = page.locator('.tree-local-navigation');
+		const controls = tree.locator('[data-tree-controls]');
+		const filter = controls.getByRole('searchbox', { name: 'Filter pages and groups' });
+		const installation = tree.locator('details[data-page-path="guides/installation"]');
+
+		await installation.locator(':scope > summary').click();
+		await expect(installation).not.toHaveAttribute('open', '');
+		await filter.fill('localization');
+		await expect(tree.getByRole('link', { name: 'Localization', exact: true })).toBeVisible();
+		await expect(tree.getByRole('link', { name: 'Installation', exact: true })).not.toBeVisible();
+		await expect(tree.locator('details[data-page-path="guides"]')).toHaveAttribute('open', '');
+		await expect(controls.locator('[data-tree-status]')).toHaveText('Matching navigation items: 1');
+		await expect(controls.getByRole('button', { name: 'Expand all' })).toBeDisabled();
+
+		await filter.press('Escape');
+		await expect(filter).toHaveValue('');
+		await expect(installation).not.toHaveAttribute('open', '');
+		await expect(tree.getByRole('link', { name: 'Installation', exact: true })).toBeVisible();
+		await expect(controls.getByRole('button', { name: 'Expand all' })).toBeEnabled();
+	});
+
+	test('keeps the current page available when a filter has no matches', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const tree = page.locator('.tree-local-navigation');
+		const controls = tree.locator('[data-tree-controls]');
+		const filter = controls.getByRole('searchbox', { name: 'Filter pages and groups' });
+
+		await filter.fill('no such navigation item');
+		await expect(controls.locator('[data-tree-filter-empty]')).toBeVisible();
+		await expect(controls.locator('[data-tree-status]')).toHaveText('Matching navigation items: 0');
+		await expect(tree.getByRole('link', { name: 'macOS', exact: true })).toBeVisible();
+
+		await controls.getByRole('button', { name: 'Locate current page' }).click();
+		await expect(filter).toHaveValue('');
+		await expect(tree.getByRole('link', { name: 'macOS', exact: true })).toBeFocused();
+	});
+
 	test('uses the margin only when a sidenote fits beside the selected reading width', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		const note = page.locator('.section-note').first();
@@ -552,6 +629,26 @@ test.describe('mobile tree navigation', () => {
 		await expect(restoredWorkflowsSections).toHaveAttribute('open', '');
 		await expect(menu.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
 	});
+
+	test('filters a long mobile tree with touch-sized controls', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const menu = page.locator('.mobile-nav-menu');
+		await menu.locator(':scope > summary').click();
+		const controls = menu.locator('[data-tree-controls]');
+		const filter = controls.getByRole('searchbox', { name: 'Filter pages and groups' });
+		await expect(controls).toBeVisible();
+
+		for (const button of await controls.getByRole('button').all()) {
+			const box = await button.boundingBox();
+			expect(box?.width ?? 0).toBeGreaterThanOrEqual(44);
+			expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+		}
+
+		await filter.fill('security');
+		await expect(menu.getByRole('link', { name: 'Security', exact: true })).toBeVisible();
+		await expect(menu.getByRole('link', { name: 'Themes', exact: true })).not.toBeVisible();
+		await expect(controls.locator('[data-tree-status]')).toHaveText('Matching navigation items: 1');
+	});
 });
 
 test.describe('desktop tree navigation without JavaScript', () => {
@@ -566,6 +663,8 @@ test.describe('desktop tree navigation without JavaScript', () => {
 		await page.goto(testPagePath, { waitUntil: 'domcontentloaded' });
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
 		await expect(page.locator('[data-tree-navigation-toggle]')).not.toBeVisible();
+		const controls = page.locator('[data-tree-controls]');
+		expect(await controls.evaluateAll((items) => items.every((item) => item.hasAttribute('hidden')))).toBe(true);
 		await expect(page.locator('.site-breadcrumbs')).toBeVisible();
 		const sequence = page.getByRole('navigation', { name: 'Page sequence' });
 		await expect(sequence.getByRole('link', { name: /Previous page\s+Installation/ })).toBeVisible();

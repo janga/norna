@@ -1,0 +1,77 @@
+---
+import { ChevronsDownUp, ChevronsUpDown, ListFilter, LocateFixed } from '@lucide/astro';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import type { SiteNavigationNode } from '../lib/siteNavigation';
+
+interface Props {
+	idPrefix: string;
+	nodes: SiteNavigationNode[];
+}
+
+const { idPrefix, nodes } = Astro.props;
+const countNodes = (tree: SiteNavigationNode[]): number => tree.reduce(
+	(total, node) => total + 1 + countNodes(node.children),
+	0,
+);
+const minimumUsefulNodeCount = 12;
+const showControls = countNodes(nodes) >= minimumUsefulNodeCount;
+const labels = projectConfig.locale.labels;
+const filterId = `${idPrefix}-filter`;
+const statusId = `${idPrefix}-status`;
+---
+
+{showControls && (
+	<div
+		class="navigation-tree-controls"
+		data-tree-controls
+		data-tree-label-collapsed={labels.navigationCollapsedAll}
+		data-tree-label-expanded={labels.navigationExpandedAll}
+		data-tree-label-filter-matches={labels.navigationFilterMatches}
+		data-tree-label-located={labels.navigationLocatedCurrent}
+		hidden
+	>
+		<label class="navigation-tree-filter" for={filterId}>
+			<ListFilter aria-hidden="true" />
+			<span class="visually-hidden">{labels.navigationFilter}</span>
+			<input
+				id={filterId}
+				type="search"
+				autocomplete="off"
+				spellcheck="false"
+				placeholder={labels.navigationFilter}
+				aria-describedby={statusId}
+				data-tree-filter
+			/>
+		</label>
+		<div class="navigation-tree-commands" role="group" aria-label={labels.navigationControls}>
+			<button
+				type="button"
+				aria-label={labels.navigationExpandAll}
+				title={labels.navigationExpandAll}
+				data-tree-expand-all
+			>
+				<ChevronsUpDown aria-hidden="true" />
+			</button>
+			<button
+				type="button"
+				aria-label={labels.navigationCollapseAll}
+				title={labels.navigationCollapseAll}
+				data-tree-collapse-all
+			>
+				<ChevronsDownUp aria-hidden="true" />
+			</button>
+			<button
+				type="button"
+				aria-label={labels.navigationLocateCurrent}
+				title={labels.navigationLocateCurrent}
+				data-tree-locate-current
+			>
+				<LocateFixed aria-hidden="true" />
+			</button>
+		</div>
+		<p class="navigation-tree-filter-empty" data-tree-filter-empty hidden>
+			{labels.navigationFilterEmpty}
+		</p>
+		<p id={statusId} class="visually-hidden" role="status" aria-live="polite" data-tree-status></p>
+	</div>
+)}

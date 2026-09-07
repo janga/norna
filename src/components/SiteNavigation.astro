@@ -12,6 +12,7 @@ import {
 import type { SiteNode, SitePage } from '../lib/sitePages';
 import DisplaySettings from './DisplaySettings.astro';
 import NavigationPageTree from './NavigationPageTree.astro';
+import NavigationTreeControls from './NavigationTreeControls.astro';
 import SectionNavigationScript from './SectionNavigationScript.astro';
 
 type FrameColors = {
@@ -185,6 +186,10 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 					{showSiteNavigation && (
 						<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.siteNavigation}>
 							<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>
+							<NavigationTreeControls
+								idPrefix="mobile-tree-navigation"
+								nodes={siteNavigationTree}
+							/>
 							<NavigationPageTree
 								nodes={siteNavigationTree}
 								currentPage={currentPage}
