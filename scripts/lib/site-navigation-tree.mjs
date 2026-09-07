@@ -75,8 +75,11 @@ export const getDirectChildPages = (nodes, currentPagePath) => {
 	const current = flattenSiteNavigationTree(nodes)
 		.find(({ node }) => node.pagePath === currentPagePath);
 	if (!current) return [];
+	const children = current.node.isHome
+		? nodes.filter(({ node }) => !node.isHome)
+		: current.children;
 
-	return current.children
+	return children
 		.filter(({ node }) => node.kind === 'page')
 		.map(({ node }) => node);
 };
