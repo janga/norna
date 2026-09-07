@@ -262,6 +262,26 @@ ul {
 	text-align: var(--section-body-align-desktop, left);
 }
 
+.norna-search {
+	--pagefind-ui-scale: 0.88;
+	--pagefind-ui-primary: var(--color-link-text);
+	--pagefind-ui-text: var(--color-primary-text);
+	--pagefind-ui-background: var(--color-page);
+	--pagefind-ui-border: var(--color-nav-separator);
+	--pagefind-ui-tag: var(--color-surface-soft-background);
+	--pagefind-ui-border-width: 1px;
+	--pagefind-ui-border-radius: var(--corner-radius-medium);
+	--pagefind-ui-image-border-radius: var(--corner-radius-medium);
+	--pagefind-ui-font: var(--font-sans);
+	width: var(--layout-reading-width);
+	margin: var(--space-content-block-gap) var(--layout-inline-end-margin) 0 var(--layout-inline-start-margin);
+}
+
+.norna-search > [data-search-status] {
+	margin: 0;
+	color: var(--color-secondary-text);
+}
+
 .child-page-list {
 	width: var(--layout-reading-width);
 	margin-block: 0;

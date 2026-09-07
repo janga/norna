@@ -175,6 +175,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 	pathname={currentPage.pathname}
 	footer={sitewideData.footer}
 	contentsNavigation={hasContentsNavigation}
+	searchable
 >
 	<SiteNavigation
 		logo={logo}
@@ -208,6 +209,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 				'site-content-has-page-sequence': hasPageSequence,
 			}]}
 			id="main-content"
+			data-pagefind-body
 			style={`--page-text-width: ${pageTextWidth}`}
 		>
 			{showBreadcrumbs

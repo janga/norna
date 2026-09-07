@@ -1,8 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import { assertPageAliasModel, createPageAliasModel } from '../../scripts/lib/page-aliases.mjs';
+import { getGeneratedSiteRoutes } from '../../scripts/lib/page-aliases.mjs';
 import { getSitePublicFiles } from '../../scripts/lib/site-link-graph.mjs';
+import projectConfig from '../../scripts/lib/project-config.mjs';
 import PageAliasRedirect from '../components/PageAliasRedirect.astro';
+import SearchPage from '../components/SearchPage.astro';
 import SitePage from '../components/SitePage.astro';
 import { getSiteModel, getSitePage, isHomePageEntry } from '../lib/sitePages';
 
@@ -13,6 +16,7 @@ export async function getStaticPaths() {
 		categories: siteModel.categories,
 		pages: siteModel.pages,
 		publicFiles: await getSitePublicFiles(),
+		generatedRoutes: getGeneratedSiteRoutes({ searchEnabled: projectConfig.search.enabled }),
 	}));
 	const pagesByPathname = new Map(siteModel.pages.map((page) => [page.pathname, page]));
 
@@ -37,22 +41,28 @@ export async function getStaticPaths() {
 		};
 	});
 
-	return [...pagePaths, ...aliasPaths];
+	const searchPath = projectConfig.search.enabled
+		? [{ params: { slug: 'search' }, props: { searchPage: true } }]
+		: [];
+
+	return [...pagePaths, ...aliasPaths, ...searchPath];
 }
 
-const { alias, entry } = Astro.props;
+const { alias, entry, searchPage } = Astro.props;
 
-if (!alias && (!entry || isHomePageEntry(entry))) {
+if (!searchPage && !alias && (!entry || isHomePageEntry(entry))) {
 	throw new Error('Page entry is missing.');
 }
 
 const currentPage = entry ? await getSitePage(entry) : null;
 
-if (!alias && !currentPage?.pathSegment) {
+if (!searchPage && !alias && !currentPage?.pathSegment) {
 	throw new Error(`Page "${entry.id}" needs a page id.`);
 }
 ---
 
-{alias
+{searchPage
+	? <SearchPage />
+	: alias
 	? <PageAliasRedirect targetPathname={alias.targetPathname} targetTitle={alias.targetTitle} />
 	: <SitePage entry={entry} />}

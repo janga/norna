@@ -17,6 +17,7 @@ const importScript = `
 		language: projectConfig.locale.lang,
 		labels: projectConfig.locale.labels,
 		navigationMode: projectConfig.navigation.mode,
+		searchEnabled: projectConfig.search.enabled,
 		scrollBehavior: projectConfig.navigation.scrollBehavior,
 		url: projectConfig.site.url,
 	}));
@@ -104,11 +105,17 @@ try {
 			readingWidthWide: 'Wide',
 			resetDisplaySettings: 'Reset',
 			returnHome: 'Go to the homepage',
+			search: 'Search',
+			searchDescription: 'Search the published content on this site.',
+			searchLoading: 'Loading search…',
+			searchNoScript: 'Search requires JavaScript. Use the page navigation when JavaScript is unavailable.',
+			searchUnavailable: 'Search is unavailable. During local work, run norna build:local to create or refresh the search index.',
 			siteBanners: 'Site notices',
 			siteNavigation: 'Pages',
 			skipToContent: 'Skip to content',
 		},
 		navigationMode: 'automatic',
+		searchEnabled: false,
 		scrollBehavior: 'instant',
 		url: 'https://example.com/docs/',
 	});
@@ -132,6 +139,8 @@ try {
 	assert.equal(localizedConfig.labels.pageSections, 'Avsnitt');
 	assert.equal(localizedConfig.labels.previousPage, 'Föregående sida');
 	assert.equal(localizedConfig.labels.returnHome, 'Gå till startsidan');
+	assert.equal(localizedConfig.labels.search, 'Sök');
+	assert.equal(localizedConfig.labels.searchDescription, 'Sök i det publicerade innehållet på webbplatsen.');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 
@@ -139,6 +148,11 @@ try {
 	const treeNavigationResult = loadConfig(treeNavigationSite);
 	assert.equal(treeNavigationResult.status, 0, treeNavigationResult.stderr);
 	assert.equal(JSON.parse(treeNavigationResult.stdout).navigationMode, 'tree');
+
+	const searchSite = await createSite('search', 'url: https://example.com/\nsearch: true\n');
+	const searchResult = loadConfig(searchSite);
+	assert.equal(searchResult.status, 0, searchResult.stderr);
+	assert.equal(JSON.parse(searchResult.stdout).searchEnabled, true);
 
 	const editLinkSite = await createSite(
 		'edit-link',
@@ -194,6 +208,10 @@ try {
 	assertFailure(
 		loadConfig(await createSite('invalid-scroll-behavior', 'url: https://example.com/\nscrollBehavior: slow\n')),
 		/scrollBehavior must be one of instant, smooth/,
+	);
+	assertFailure(
+		loadConfig(await createSite('invalid-search', 'url: https://example.com/\nsearch: yes\n')),
+		/config YAML\.search must be true or false/,
 	);
 	assertFailure(
 		loadConfig(await createSite('removed-section-tracking', 'url: https://example.com/\nnavigation:\n  sectionTracking: true\n')),

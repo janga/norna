@@ -1,13 +1,20 @@
 import { getSiteNodePathname } from './site-page-urls.mjs';
 import { sitemapFilename } from './sitemap.mjs';
 
-export const generatedSiteRoutes = Object.freeze([
+export const getGeneratedSiteRoutes = ({ searchEnabled = false } = {}) => Object.freeze([
 	Object.freeze({
 		kind: 'generated-route',
 		label: `Norna generated ${sitemapFilename}`,
 		pathname: `/${sitemapFilename}`,
 	}),
+	...(searchEnabled ? [Object.freeze({
+		kind: 'generated-route',
+		label: 'Norna generated search page',
+		pathname: '/search/',
+	})] : []),
 ]);
+
+export const generatedSiteRoutes = getGeneratedSiteRoutes();
 
 const getPagePathname = (page) => page.pathname ?? getSiteNodePathname(page.contentFile ?? page);
 const getPageLabel = (page) => page.contentLabel ?? page.contentFile?.contentLabel ?? page.entry?.id ?? getPagePathname(page);
@@ -99,6 +106,19 @@ export const createPageAliasModel = ({
 		for (const identity of getPublicFileIdentities(file)) addIdentity(identity);
 	}
 	for (const route of generatedRoutes) {
+		const conflict = identitiesByPathname.get(route.pathname);
+		if (conflict) {
+			diagnostics.push({
+				code: 'generated-route-collision',
+				contentFile: conflict.kind === 'page'
+					? conflict.source.contentFile ?? conflict.source
+					: undefined,
+				fix: `Move or rename the conflicting source. ${route.label} owns ${route.pathname} while the feature is enabled.`,
+				message: `Generated route "${route.pathname}" from ${route.label} conflicts with ${describeIdentity(conflict)}.`,
+				severity: 'error',
+			});
+			continue;
+		}
 		addIdentity(createIdentity({ ...route, source: route }));
 	}
 

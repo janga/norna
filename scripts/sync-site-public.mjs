@@ -10,7 +10,10 @@ import {
 } from './lib/site-paths.mjs';
 import { getSiteStructure } from './lib/site-structure.mjs';
 
-const keepAstroPublicEntries = new Set(['images']);
+const keepAstroPublicEntries = new Set([
+	'images',
+	...(projectConfig.search.enabled ? ['pagefind'] : []),
+]);
 
 const readDirectory = async (directory) => {
 	try {
@@ -34,6 +37,10 @@ const generatedPublicFiles = [
 		filename: '404.html',
 		explanation: 'Norna generates 404.html as the site\'s localized missing-page response.',
 	},
+	...(projectConfig.search.enabled ? [{
+		filename: 'pagefind',
+		explanation: 'Norna generates pagefind/ from the rendered editorial content when search is enabled.',
+	}] : []),
 ];
 for (const generatedFile of generatedPublicFiles) {
 	const conflict = sourceEntries.find(({ name }) => name.toLowerCase() === generatedFile.filename);

@@ -2,6 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
 	createPageAliasModel,
+	generatedSiteRoutes,
 } from './page-aliases.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
 import {
@@ -143,7 +144,13 @@ const looksLikePublicFile = (pathname) => {
 	return (pathname.split('/').at(-1) ?? '').includes('.');
 };
 
-export const createSiteLinkGraph = ({ siteStructure, pageDocuments, publicFiles = [] }) => {
+export const createSiteLinkGraph = ({
+	siteStructure,
+	pageDocuments,
+	publicFiles = [],
+	generatedRoutes,
+}) => {
+	const activeGeneratedRoutes = generatedRoutes ?? generatedSiteRoutes;
 	const documentsByDirectory = new Map(pageDocuments.map(({ contentFile, data, document }) => [
 		contentFile.pageDirectory,
 		{ contentFile, data, document },
@@ -170,7 +177,11 @@ export const createSiteLinkGraph = ({ siteStructure, pageDocuments, publicFiles 
 		categories: siteStructure.categories,
 		pages,
 		publicFiles,
+		generatedRoutes: activeGeneratedRoutes,
 	});
+	const generatedRoutesByPathname = new Map(
+		activeGeneratedRoutes.map((route) => [route.pathname, route]),
+	);
 
 	const references = [];
 	const referencesByTarget = new Map();
@@ -252,6 +263,18 @@ export const createSiteLinkGraph = ({ siteStructure, pageDocuments, publicFiles 
 				continue;
 			}
 
+			const generatedRoute = generatedRoutesByPathname.get(
+				target.pageLookupPathname ?? target.pathname,
+			);
+			if (generatedRoute && !target.fragment) {
+				reference.resolution = {
+					kind: 'generated-route',
+					pathname: generatedRoute.pathname,
+					route: generatedRoute,
+				};
+				continue;
+			}
+
 			const targetCategory = target.pageLookupPathname
 				? categoriesByPathname.get(target.pageLookupPathname)
 				: null;
@@ -323,7 +346,12 @@ export const getSiteLinkGraph = async (options = {}) => {
 		readPublicFiles(options.publicDir ?? sitePublicDir),
 	]);
 
-	return createSiteLinkGraph({ pageDocuments, publicFiles, siteStructure });
+	return createSiteLinkGraph({
+		pageDocuments,
+		publicFiles,
+		siteStructure,
+		generatedRoutes: options.generatedRoutes,
+	});
 };
 
 export const getSitePublicFiles = async (publicDir = sitePublicDir) => readPublicFiles(publicDir);

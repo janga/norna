@@ -110,6 +110,16 @@
       "description": "Site-wide navigation behavior.",
       "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation policy. `automatic` uses sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a hierarchical site.\n\n[Navigation reference](https://github.com/janga/norna/blob/v0.7.23/docs/pages.md#navigation)"
     },
+    "search": {
+      "default": false,
+      "description": "Generate a static site search page and Pagefind index. The default is false.",
+      "type": "boolean",
+      "markdownDescription": "```yaml\nsearch: true\n```\n\nGenerates a localized `/search/` page and a static Pagefind index during each build. Search is off by default, and only the search page loads the search JavaScript.\n\n[Search reference](https://github.com/janga/norna/blob/v0.7.23/docs/configuration.md#search)",
+      "examples": [
+        true,
+        false
+      ]
+    },
     "scrollBehavior": {
       "default": "instant",
       "description": "Use instant anchors by default or the browser's native smooth scrolling.",

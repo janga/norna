@@ -78,6 +78,7 @@ interface Props {
 	};
 	contentsNavigation?: boolean;
 	indexable?: boolean;
+	searchable?: boolean;
 }
 
 const {
@@ -90,6 +91,7 @@ const {
 	footer,
 	contentsNavigation = false,
 	indexable = true,
+	searchable = false,
 } = Astro.props;
 
 const documentTitle = title;
@@ -203,6 +205,7 @@ const readerPreferencesScript = readerPreferencesEnabled
 	data-reading-width={presentation.readerPreferences.defaults.readingWidth}
 	data-focus-reading={presentation.readerPreferences.defaults.focusReading}
 	data-section-tracking={contentsNavigation ? 'enabled' : undefined}
+	data-pagefind-ignore={searchable ? undefined : 'all'}
 	style={documentStyle}
 >
 	<head>
@@ -234,6 +237,7 @@ const readerPreferencesScript = readerPreferencesEnabled
 				href={iconLink.href}
 			/>
 		))}
+		<slot name="head" />
 		<title>{documentTitle}</title>
 	</head>
 	<body>

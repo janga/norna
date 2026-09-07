@@ -35,6 +35,37 @@
 	margin-left: auto;
 }
 
+.site-search-link {
+	display: grid;
+	place-items: center;
+	flex: 0 0 auto;
+	width: 2.25rem;
+	height: 2.25rem;
+	border: 1px solid color-mix(in srgb, currentColor 38%, transparent);
+	border-radius: 50%;
+	color: currentColor;
+	text-decoration: none;
+	transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.site-search-link:hover,
+.site-search-link[aria-current='page'] {
+	border-color: currentColor;
+	background: color-mix(in srgb, currentColor 9%, transparent);
+}
+
+.site-search-link:focus-visible {
+	outline: var(--focus-indicator-width) solid var(--color-focus-ring);
+	outline-offset: 2px;
+}
+
+.site-search-link svg {
+	display: block;
+	width: 1.05rem;
+	height: 1.05rem;
+	stroke-width: 2;
+}
+
 .site-nav-leading {
 	display: flex;
 	align-items: center;

@@ -138,6 +138,37 @@ assert.equal(
 );
 assert.equal(validGraph.references.some(({ target: { kind } }) => kind === 'external'), false);
 
+const searchSource = '# Search link\n\n[Search the site](/search/)\n';
+const searchGraph = createSiteLinkGraph({
+	pageDocuments: [{
+		contentFile: home,
+		document: await parsePageMarkdownSource(searchSource, { label: home.contentLabel }),
+	}],
+	generatedRoutes: [{
+		kind: 'generated-route',
+		label: 'Norna generated search page',
+		pathname: '/search/',
+	}],
+	siteStructure: {
+		categories: [],
+		contentFiles: [home],
+	},
+});
+assert.deepEqual(searchGraph.diagnostics, []);
+assert.equal(searchGraph.references[0].resolution.kind, 'generated-route');
+
+const searchDisabledGraph = createSiteLinkGraph({
+	pageDocuments: [{
+		contentFile: home,
+		document: await parsePageMarkdownSource(searchSource, { label: home.contentLabel }),
+	}],
+	siteStructure: {
+		categories: [],
+		contentFiles: [home],
+	},
+});
+assert.equal(searchDisabledGraph.diagnostics[0].code, 'missing-internal-page');
+
 const allSources = new Map([
 	[home.contentLabel, homeSource],
 	[installation.contentLabel, installationSource],

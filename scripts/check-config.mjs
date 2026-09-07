@@ -91,6 +91,7 @@ try {
 	console.log(`Font family: ${projectConfig.typography.fontFamily}`);
 	console.log(`Language: ${projectConfig.locale.lang}`);
 	console.log(`Navigation mode: ${projectConfig.navigation.mode}`);
+	console.log(`Static search: ${projectConfig.search.enabled ? 'enabled' : 'disabled'}`);
 	console.log(`Scroll behavior: ${projectConfig.navigation.scrollBehavior}`);
 } catch (error) {
 	console.error('Config check failed.');

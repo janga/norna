@@ -213,6 +213,7 @@ const assertPackageContents = async (packageRoot) => {
 		'scripts/engine-version.mjs',
 		'scripts/export-theme-preset.mjs',
 		'scripts/generate-images.mjs',
+		'scripts/generate-search-index.mjs',
 		'scripts/generate-schemas.mjs',
 		'scripts/init-site.mjs',
 		'scripts/lib/astro-command.mjs',

@@ -9,7 +9,7 @@ interface Props {
 const { href, label } = Astro.props;
 ---
 
-<p class="edit-source-link">
+<p class="edit-source-link" data-pagefind-ignore="all">
 	<a href={href}>
 		<PencilLine aria-hidden="true" />
 		<span>{label}</span>

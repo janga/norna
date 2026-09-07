@@ -239,6 +239,7 @@ const configShape = {
 	language: z.string().regex(/^(?:en|sv)(?:-[a-zA-Z0-9]+)*$/).optional().describe('Site language tag using Norna\'s English or Swedish interface text; the default is en.'),
 	editLink: editLink.optional(),
 	navigation: configNavigation.optional(),
+	search: z.boolean().optional().default(false).describe('Generate a static site search page and Pagefind index. The default is false.'),
 	scrollBehavior: z.enum(['instant', 'smooth']).optional().default('instant').describe('Use instant anchors by default or the browser\'s native smooth scrolling.'),
 };
 

@@ -1,0 +1,139 @@
+---
+import { getCollection } from 'astro:content';
+import { resolveNavigationModel } from '../../scripts/lib/navigation-model.mjs';
+import { getTextWidthCssValue, resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
+import { projectConfig, resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
+import SiteBanners from './SiteBanners.astro';
+import SiteNavigation from './SiteNavigation.astro';
+import SiteSection from './SiteSection.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { ResolvedSection } from '../lib/sectionContent';
+import { flattenSiteNavigationTree, getListedSiteNavigationTree } from '../lib/siteNavigation';
+import { getSiteModel, type SitePage } from '../lib/sitePages';
+import { getLogoAsset } from '../lib/sitePublicAssets';
+import { getToday, isVisibleToday } from '../lib/visibility';
+import { withBasePath } from '../lib/basePath';
+
+const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
+const siteModel = await getSiteModel(await getCollection('site'));
+const { nodes: siteNodes, pages: sitePages } = siteModel;
+const homePage = sitePages.find((page) => page.isHome);
+if (!homePage) throw new Error('The required homepage is missing from the site page model.');
+
+const [siteTheme] = await getCollection('theme');
+if (!siteTheme) throw new Error('site/theme.yaml is required. Add a root theme before building the site.');
+const [sitewide] = await getCollection('sitewide');
+const sitewideData = sitewide?.data ?? {};
+const siteThemeData = siteTheme.data;
+const themeLabel = `${siteDirectory || 'site'}/${siteTheme.id}`;
+const visualTheme = resolveThemeVisualConfig(siteThemeData, themeLabel);
+const getPageContent = (page: SitePage) => page.markdownDocument.navigationHeadings.map((heading) => ({ ...heading }));
+const siteNavigation = siteNodes.map((node) => {
+	const headings = node.kind === 'page' ? getPageContent(node) : [];
+	return {
+		node,
+		headings,
+		sections: headings
+			.filter((heading) => heading.depth === 2)
+			.map(({ id, title }) => ({ id, title })),
+	};
+});
+const renderedNavigationEntries = flattenSiteNavigationTree(getListedSiteNavigationTree(siteNavigation));
+const navigationModel = resolveNavigationModel({
+	mode: projectConfig.navigation.mode,
+	nodes: renderedNavigationEntries.map(({ node, headings }) => ({
+		depth: Math.max(1, node.depth),
+		headings,
+		isHome: node.isHome,
+		kind: node.kind,
+		listed: node.navigation.listed,
+		pagePath: node.pagePath,
+	})),
+});
+const pagePresentation = resolvePagePresentation(siteThemeData, themeLabel, {
+	navigationMode: navigationModel.mode,
+});
+const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
+const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: themeLabel });
+const logoAsset = getLogoAsset();
+const logo = logoAsset
+	? {
+		src: logoAsset.href,
+		alt: homePage.title,
+		height: sitewideData.logo?.height,
+	}
+	: undefined;
+const today = getToday();
+const siteBanners = (sitewideData.banners ?? []).filter((banner) => isVisibleToday(banner.visible, today));
+const labels = projectConfig.locale.labels;
+const searchSection: ResolvedSection = {
+	id: null,
+	title: labels.search,
+	titleHtml: labels.search,
+	headingLevel: 1,
+	contentBlocks: [{
+		type: 'html',
+		html: `<p>${labels.searchDescription}</p><div class="norna-search" id="norna-search"><p data-search-status>${labels.searchLoading}</p><noscript><p>${labels.searchNoScript}</p></noscript></div>`,
+	}],
+};
+const hasNavigationRailFrame = navigationModel.requestedMode === 'tree'
+	|| (
+		navigationModel.requestedMode === 'automatic'
+		&& (navigationModel.hasNestedPages || navigationModel.hasCategories)
+	);
+const bundlePath = withBasePath(projectConfig.site.basePath, '/pagefind/');
+const searchScript = `(() => {
+	const root = document.querySelector('#norna-search');
+	const status = root?.querySelector('[data-search-status]');
+	if (!root) return;
+	const script = document.createElement('script');
+	script.src = ${JSON.stringify(`${bundlePath}pagefind-ui.js`)};
+	script.onload = () => {
+		status?.remove();
+		new window.PagefindUI({
+			element: '#norna-search',
+			bundlePath: ${JSON.stringify(bundlePath)},
+			baseUrl: ${JSON.stringify(projectConfig.site.basePath)},
+			showImages: false,
+			showSubResults: true
+		});
+	};
+	script.onerror = () => {
+		if (status) status.textContent = ${JSON.stringify(labels.searchUnavailable)};
+	};
+	document.head.append(script);
+})();`;
+---
+
+<BaseLayout
+	title={labels.search}
+	description={labels.searchDescription}
+	presentation={pagePresentation}
+	visualTheme={visualTheme}
+	frameColors={frameColors}
+	pathname="/search/"
+	footer={sitewideData.footer}
+	indexable={false}
+>
+	<link slot="head" rel="stylesheet" href={`${bundlePath}pagefind-ui.css`} />
+	<SiteNavigation
+		logo={logo}
+		navigationEntries={siteNavigation}
+		navigationMode={navigationModel.mode}
+		showTopNavigationSubmenus={navigationModel.requestedMode !== 'automatic' && navigationModel.mode !== 'tree'}
+		hasNavigationRailFrame={hasNavigationRailFrame}
+		frameColors={frameColors}
+		readerPreferences={pagePresentation.readerPreferences}
+		searchPage
+	/>
+	{siteBanners.length > 0 && <SiteBanners banners={siteBanners} />}
+	<main class="site-content search-page-content" id="main-content" style={`--page-text-width: ${pageTextWidth}`}>
+		<SiteSection
+			section={searchSection}
+			pagePresentation={pagePresentation}
+			visualTheme={visualTheme}
+			sectionIndex={0}
+		/>
+	</main>
+	<script is:inline set:html={searchScript} />
+</BaseLayout>

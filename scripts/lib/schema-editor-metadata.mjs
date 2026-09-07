@@ -174,6 +174,11 @@ const addConfigHelp = (jsonSchema) => {
 		'Sets the site-wide navigation policy. `automatic` uses sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a hierarchical site.',
 		documentationLink('Navigation reference', 'pages.md', 'navigation'),
 	]);
+	addHelp(jsonSchema, 'search', [
+		yamlExample('search: true'),
+		'Generates a localized `/search/` page and a static Pagefind index during each build. Search is off by default, and only the search page loads the search JavaScript.',
+		documentationLink('Search reference', 'configuration.md', 'search'),
+	], [true, false]);
 	addFieldHelp(
 		jsonSchema,
 		'navigation.mode',

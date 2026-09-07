@@ -29,6 +29,8 @@ import {
 	createSiteLinkGraph,
 	getSitePublicFiles,
 } from './lib/site-link-graph.mjs';
+import { getGeneratedSiteRoutes } from './lib/page-aliases.mjs';
+import projectConfig from './lib/project-config.mjs';
 import {
 	siteThemeLabel,
 	siteThemePath,
@@ -426,9 +428,15 @@ const siteLinkGraph = createSiteLinkGraph({
 	})),
 	publicFiles: await getSitePublicFiles(),
 	siteStructure,
+	generatedRoutes: getGeneratedSiteRoutes({ searchEnabled: projectConfig.search.enabled }),
 });
 for (const issue of siteLinkGraph.diagnostics) {
-	addContentIssue(issue.reference?.sourceContentFile ?? issue.contentFile, issue);
+	const issueContentFile = issue.reference?.sourceContentFile ?? issue.contentFile;
+	if (issueContentFile) {
+		addContentIssue(issueContentFile, issue);
+	} else {
+		addIssue(issue);
+	}
 }
 
 const imageSyncPlan = createImageSyncPlan({

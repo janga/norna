@@ -142,6 +142,46 @@ selection rules and the relationship between Home, pages, categories, and
 headings, and
 [Client-Side JavaScript](client-javascript.md) for the no-JavaScript fallback.
 
+## Search
+
+- Purpose: generate site-wide search from the completed static pages.
+- Type: boolean.
+- Required: no.
+- Default: `false`.
+
+Enable search with one site-wide setting:
+
+```yaml
+url: https://example.com/
+search: true
+```
+
+Each build then generates `/search/` and a Pagefind index under
+`dist/pagefind/`. Norna adds a search button to the site header. The search
+page uses the configured language and visual theme, and result URLs include
+the base path derived from `url`.
+
+Norna indexes the rendered editorial content rather than the Markdown source.
+Page titles, H2 sections, H3 subsections, prose, captions, notes, and structured
+content therefore become searchable as they appear in the finished site.
+Navigation, banners, the footer, page-sequence links, source edit links, the
+404 page, redirect aliases, and the search page itself are excluded. Matching
+sections can appear as links to their heading anchors.
+
+Search is static: no search server or hosted service is required. Ordinary
+pages still load no search JavaScript. The generated `/search/` page loads the
+Pagefind interface and index only after a visitor opens it. Without JavaScript,
+the site's normal page navigation remains available.
+
+During local work, run `norna build:local` after searchable content changes.
+It rebuilds the final HTML and index, then restarts local preview. A plain
+`norna dev` can serve the most recently built index but does not regenerate it.
+Published builds always generate a fresh index.
+
+When search is enabled, `/search/` and `pagefind/` are generated locations. A
+source page, alias, or public file cannot use the same public destination.
+Norna uses [Pagefind](https://pagefind.app/) as its post-build indexer.
+
 ## `scrollBehavior`
 
 `scrollBehavior` controls same-page anchor movement. It does not affect links
@@ -172,6 +212,7 @@ editLink:
   baseUrl: https://github.com/owner/repository/edit/main/
 navigation:
   mode: automatic
+search: true
 scrollBehavior: instant
 ```
 

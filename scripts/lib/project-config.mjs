@@ -53,6 +53,16 @@ const readEnum = (object, key, path, allowedValues, fallback, sourceLabel = site
 	return value;
 };
 
+const readBoolean = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
+	const value = object[key] ?? fallback;
+
+	if (typeof value !== 'boolean') {
+		throw new Error(`${path}.${key} must be true or false in ${sourceLabel}.`);
+	}
+
+	return value;
+};
+
 const readFontFamily = (object, key, path, fallback, sourceLabel = siteConfigLabel) => {
 	const value = object[key] ?? fallback;
 
@@ -222,6 +232,11 @@ const localeLabels = Object.freeze({
 		previousImage: 'Previous image',
 		previousPage: 'Previous page',
 		returnHome: 'Go to the homepage',
+		search: 'Search',
+		searchDescription: 'Search the published content on this site.',
+		searchLoading: 'Loading search…',
+		searchNoScript: 'Search requires JavaScript. Use the page navigation when JavaScript is unavailable.',
+		searchUnavailable: 'Search is unavailable. During local work, run norna build:local to create or refresh the search index.',
 		siteBanners: 'Site notices',
 		siteNavigation: 'Pages',
 		skipToContent: 'Skip to content',
@@ -264,6 +279,11 @@ const localeLabels = Object.freeze({
 		previousImage: 'Föregående bild',
 		previousPage: 'Föregående sida',
 		returnHome: 'Gå till startsidan',
+		search: 'Sök',
+		searchDescription: 'Sök i det publicerade innehållet på webbplatsen.',
+		searchLoading: 'Laddar sökning…',
+		searchNoScript: 'Sökning kräver JavaScript. Använd sidnavigeringen när JavaScript inte är tillgängligt.',
+		searchUnavailable: 'Sökningen är inte tillgänglig. Kör norna build:local under lokalt arbete för att skapa eller uppdatera sökindexet.',
 		siteBanners: 'Meddelanden',
 		siteNavigation: 'Sidor',
 		skipToContent: 'Hoppa till innehållet',
@@ -507,6 +527,9 @@ export const projectConfig = Object.freeze({
 	}),
 	...resolveThemeVisualConfig(rawTheme, siteThemeLabel),
 	editLink: resolveEditLinkConfig(rawConfig, siteConfigLabel),
+	search: Object.freeze({
+		enabled: readBoolean(rawConfig, 'search', 'config YAML', false),
+	}),
 	navigation: Object.freeze({
 		...resolveNavigationConfig(rawConfig, siteConfigLabel),
 		scrollBehavior: readEnum(
