@@ -377,6 +377,14 @@ for (const contentFile of contentFiles) {
 			});
 		}
 
+		for (const error of section.codeFenceErrors) {
+			addSectionIssue(contentFile, section, {
+				severity: 'error',
+				message: error.message,
+				fix: error.fix,
+			});
+		}
+
 		for (const reference of section.managedImages) {
 			managedImageReferences.push({ contentFile, section, reference });
 		}

@@ -65,10 +65,15 @@ const labels = {
 			const pre = code.parentElement;
 			if (!pre || pre.parentElement?.classList.contains('code-block')) return;
 
-			const wrapper = document.createElement('div');
-			wrapper.className = 'code-block';
-			pre.before(wrapper);
-			wrapper.append(pre);
+			const codeExample = pre.parentElement?.classList.contains('norna-code-example')
+				? pre.parentElement
+				: null;
+			const wrapper = codeExample ?? document.createElement('div');
+			wrapper.classList.add('code-block');
+			if (!codeExample) {
+				pre.before(wrapper);
+				wrapper.append(pre);
+			}
 
 			const button = template.content.firstElementChild?.cloneNode(true);
 			if (!(button instanceof HTMLButtonElement)) return;

@@ -188,6 +188,24 @@ test('code blocks expose an accessible copy control without changing copied text
 	});
 	await openComponents(page);
 
+	const example = page.locator('.norna-code-example').first();
+	const title = example.locator('.norna-code-title');
+	const highlightedLine = example.locator('.norna-code-line-highlighted');
+	await expect(title).toHaveText('Terminal');
+	await expect(example.locator('figcaption + pre')).toBeVisible();
+	await expect(highlightedLine).toHaveAttribute('data-line', '2');
+	const emphasis = await highlightedLine.evaluate((node) => {
+		const style = getComputedStyle(node);
+		return {
+			backgroundColor: style.backgroundColor,
+			borderStyle: style.borderInlineStartStyle,
+			borderWidth: Number.parseFloat(style.borderInlineStartWidth),
+		};
+	});
+	expect(emphasis.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+	expect(emphasis.borderStyle).toBe('solid');
+	expect(emphasis.borderWidth).toBeGreaterThanOrEqual(3);
+
 	const button = page.getByRole('button', { name: 'Copy code' }).first();
 	await expect(button).toBeVisible();
 	await expect(button.locator('[data-code-copy-icon="copy"]')).toBeVisible();
@@ -200,6 +218,23 @@ test('code blocks expose an accessible copy control without changing copied text
 	await expect.poll(() => page.evaluate(() => (
 		(window as Window & { copiedCode?: string }).copiedCode
 	))).toContain('npm run norna:check');
+	await expect.poll(() => page.evaluate(() => (
+		(window as Window & { copiedCode?: string }).copiedCode
+	))).not.toContain('Terminal');
+
+	await page.setViewportSize({ width: 320, height: 800 });
+	await title.evaluate((node) => {
+		node.textContent = 'site/pages/010-guide/pages/010-components/a-deliberately-long-code-example-filename.js';
+	});
+	const [titleBounds, buttonBounds, overflow] = await Promise.all([
+		title.boundingBox(),
+		button.boundingBox(),
+		getHorizontalOverflow(page),
+	]);
+	expect(titleBounds).not.toBeNull();
+	expect(buttonBounds).not.toBeNull();
+	expect(titleBounds.y + titleBounds.height).toBeGreaterThanOrEqual(buttonBounds.y + buttonBounds.height);
+	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
 });
 
 test('reduced motion disables transitions and carousel animation', async ({ page }) => {
@@ -244,6 +279,17 @@ test('forced colors preserve visible control boundaries', async ({ page }) => {
 	});
 	expect(boundary.borderStyle).toBe('solid');
 	expect(boundary.borderWidth).toBeGreaterThanOrEqual(1);
+
+	const highlightedLine = page.locator('.norna-code-line-highlighted');
+	const lineCue = await highlightedLine.evaluate((node) => {
+		const style = getComputedStyle(node);
+		return {
+			borderStyle: style.borderInlineStartStyle,
+			borderWidth: Number.parseFloat(style.borderInlineStartWidth),
+		};
+	});
+	expect(lineCue.borderStyle).toBe('solid');
+	expect(lineCue.borderWidth).toBeGreaterThanOrEqual(3);
 });
 
 test('Display groups native reader controls and closes with Escape', async ({ page }) => {

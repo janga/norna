@@ -506,9 +506,53 @@ ul {
 	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
 }
 
+.section-markdown .norna-code-example {
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+	border: 1px solid color-mix(in srgb, var(--color-code-text) 18%, transparent);
+	border-radius: var(--corner-radius-medium, 6px);
+	overflow: hidden;
+	background: var(--color-code-background);
+	color: var(--color-code-text);
+}
+
+.section-markdown .norna-code-title {
+	min-height: 3.25rem;
+	margin: 0;
+	padding: 0.85rem 3.85rem 0.75rem 0.9rem;
+	border-bottom: 1px solid color-mix(in srgb, var(--color-code-text) 22%, transparent);
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 0.82rem;
+	font-weight: 650;
+	line-height: 1.35;
+	overflow-wrap: anywhere;
+}
+
+.section-markdown .norna-code-example > pre.astro-code {
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+}
+
+.section-markdown .norna-code-example.code-block > pre.astro-code {
+	padding-right: 0.9rem;
+}
+
 .section-markdown .code-block > pre.astro-code {
 	margin: 0;
 	padding-right: 3.85rem;
+}
+
+.section-markdown pre.astro-code.norna-code-has-highlighted-lines code {
+	display: block;
+}
+
+.section-markdown pre.astro-code .norna-code-line-highlighted {
+	display: inline-block;
+	width: calc(100% + 1.8rem);
+	margin-inline: -0.9rem;
+	padding-inline: calc(0.9rem - 3px) 0.9rem;
+	border-inline-start: 3px solid var(--color-code-text);
+	background: color-mix(in srgb, var(--color-code-text) 14%, var(--color-code-background));
 }
 
 .code-block-copy {
@@ -566,6 +610,10 @@ ul {
 }
 
 .section-markdown > .code-block:last-child {
+	margin-bottom: 0;
+}
+
+.section-markdown > .norna-code-example:last-child {
 	margin-bottom: 0;
 }
 

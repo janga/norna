@@ -33,7 +33,7 @@ theme overrides:
 - one longer item that wraps at narrower reading widths;
 - one item containing `npm run norna:check`.
 
-```sh
+```sh title="Terminal" {2}
 npm run norna:check
 npm run norna:build
 ```

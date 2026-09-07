@@ -35,8 +35,9 @@ smaller page-graph additions they can reuse.
   blockquotes now render as localized, accessible semantic callouts with a
   closed meaning set and deterministic diagnostics.
 - [`BL-048` Code titles and line emphasis](docs/design/backlog/BL-048-rich-code-examples.md):
-  **Ready after `BL-009`.** Add one closed metadata grammar to ordinary code
-  fences after the callout grammar is stable.
+  **Implemented; awaiting human review and documentation.** Ordinary code
+  fences now accept one closed title and line-emphasis grammar with shared
+  diagnostics, accessible static output, and copy-safe source text.
 
 ## External Gate
 

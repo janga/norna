@@ -247,6 +247,70 @@ test('content:check rejects unsupported semantic callout syntax', async () => {
 	}
 });
 
+test('code titles and selected lines render without changing copied code', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Code examples
+
+## Configuration {#configuration}
+
+\`\`\`js title="src/config.js" {2,4-5}
+const first = true;
+const second = true;
+const third = true;
+const fourth = true;
+const fifth = true;
+\`\`\`
+
+\`\`\`sh
+npm run build
+\`\`\`
+`);
+
+		const { stdout } = await runContentScript(siteDir, ['--check']);
+		assert.match(stdout, /Content check passed\./);
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+
+		assert.match(html, /<figure class="norna-code-example">/);
+		assert.match(html, /<figcaption class="norna-code-title">src\/config\.js<\/figcaption>/);
+		assert.match(html, /class="astro-code github-dark norna-code-has-highlighted-lines"/);
+		assert.match(html, /class="line norna-code-line-highlighted" data-line="2"/);
+		assert.match(html, /class="line norna-code-line-highlighted" data-line="4"/);
+		assert.match(html, /class="line norna-code-line-highlighted" data-line="5"/);
+		assert.doesNotMatch(html, /class="line norna-code-line-highlighted" data-line="3"/);
+		assert.match(html, /<pre class="astro-code github-dark"[^>]*data-language="sh">/);
+		assert.doesNotMatch(html, /title=&quot;src\/config\.js&quot;|\{2,4-5\}/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check rejects malformed code fence metadata', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Invalid code
+
+## Example {#example}
+
+\`\`\`js {1} title="src/config.js"
+const value = true;
+\`\`\`
+`);
+
+		await assert.rejects(
+			runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /line selector must come after the optional title/);
+				assert.match(error.output, /title="src\/config\.js" \{2,4-6\}/);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
 test('norna-card-list images are managed image references', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {

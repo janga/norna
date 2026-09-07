@@ -1,3 +1,4 @@
+import { getCodeFenceMetadataDiagnostics } from './code-fence-metadata.mjs';
 import {
 	getHeadingIdentifierIssues,
 	getMarkdownHeadings,
@@ -11,6 +12,7 @@ import {
 	extractMarkdownImageReferences,
 	extractNornaMarkdownBlockDiagnostics,
 	getNornaBlockImageReferences,
+	nornaBlockTypes,
 } from './norna-markdown-blocks.mjs';
 import { getSemanticCalloutDiagnostics } from './semantic-callouts.mjs';
 
@@ -173,7 +175,7 @@ const getRegionContent = (regionMarkdown, blocks, regionOffset) => {
 	return content.filter((item) => item.kind !== 'markdown' || item.markdown.length > 0);
 };
 
-const createRegion = ({ calloutErrors, heading, nextHeading, headings, source, label, lineOffset }) => {
+const createRegion = ({ calloutErrors, codeFenceErrors, heading, nextHeading, headings, source, label, lineOffset }) => {
 	const endOffset = nextHeading?.index ?? source.length;
 	const markdown = source.slice(heading.index, endOffset).trimEnd();
 	const regionLineOffset = lineOffset + heading.line - 1;
@@ -199,6 +201,7 @@ const createRegion = ({ calloutErrors, heading, nextHeading, headings, source, l
 		blocks: blockResult.blocks,
 		blockErrors: blockResult.errors,
 		calloutErrors: calloutErrors.filter((error) => error.offset >= heading.index && error.offset < endOffset),
+		codeFenceErrors: codeFenceErrors.filter((error) => error.offset >= heading.index && error.offset < endOffset),
 		content: getRegionContent(markdown, blockResult.blocks, heading.index),
 		endOffset,
 		heading,
@@ -223,6 +226,11 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	const lineOffset = options.lineOffset ?? 0;
 	const { headings, tree } = await getMarkdownHeadings(source);
 	const calloutErrors = getSemanticCalloutDiagnostics(tree, { label, lineOffset });
+	const codeFenceErrors = getCodeFenceMetadataDiagnostics(tree, {
+		excludedLanguages: nornaBlockTypes,
+		label,
+		lineOffset,
+	});
 	const structuralHeadings = headings.filter((heading) => heading.depth <= 2);
 	const prelude = structuralHeadings.length > 0
 		? source.slice(0, structuralHeadings[0].index)
@@ -230,6 +238,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	const pageHeadings = structuralHeadings.filter((heading) => heading.depth === 1);
 	const regions = structuralHeadings.map((heading, index) => createRegion({
 		calloutErrors,
+		codeFenceErrors,
 		heading,
 		nextHeading: structuralHeadings[index + 1],
 		headings,
@@ -255,6 +264,14 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		severity: 'error',
 	})));
 	const calloutDiagnostics = regions.flatMap((region) => region.calloutErrors.map((error) => ({
+		code: error.code,
+		fix: error.fix,
+		line: error.line,
+		message: error.message,
+		regionId: region.id,
+		severity: 'error',
+	})));
+	const codeFenceDiagnostics = regions.flatMap((region) => region.codeFenceErrors.map((error) => ({
 		code: error.code,
 		fix: error.fix,
 		line: error.line,
@@ -292,6 +309,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 			...blockDiagnostics,
 			...noteDiagnostics,
 			...calloutDiagnostics,
+			...codeFenceDiagnostics,
 		],
 		headings,
 		headingIssues,

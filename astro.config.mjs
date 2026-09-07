@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 import { defineConfig } from 'astro/config';
 import { satteri } from '@astrojs/markdown-satteri';
 import { getBasePathRedirectLocation } from './scripts/lib/base-path-redirect.mjs';
+import { nornaCodeFenceTransformer } from './scripts/lib/code-fence-metadata.mjs';
 import { nornaMarkdownRenderPlugin } from './scripts/lib/norna-markdown-render-plugin.mjs';
 import {
 	astroCacheDir,
@@ -136,6 +137,9 @@ export default defineConfig({
 	base: projectConfig.site.basePath,
 	cacheDir: astroCacheDir,
 	markdown: {
+		shikiConfig: {
+			transformers: [nornaCodeFenceTransformer],
+		},
 		processor: satteri({
 			features: {
 				gfm: {

@@ -12,7 +12,7 @@ titles and richer code emphasis. The source reviewed by the completed `BL-046`
 migration inventory uses rich code metadata widely, while Norna currently
 preserves only the fence language and code text.
 
-## Syntax Status: Bounded Review Required
+## Syntax Contract
 
 Keep this extension on ordinary fenced code blocks. Docusaurus, VitePress, and
 Material for MkDocs all add metadata to a fence, but their line-selection
@@ -25,12 +25,25 @@ export const mode = 'safe';
 ```
 ````
 
-Reuse `title="..."` unless parser tests reveal an ambiguity. Choose the line
-selector only after comparing the documented
+Norna accepts a language, an optional quoted title, and an optional line
+selector, in that order. A selector contains positive line numbers or inclusive
+ranges without spaces, for example `{2,4-6}`. Unknown attributes, repeated
+lines, reversed or out-of-range ranges, and a selector placed before the title
+are errors.
+
+This deliberately adopts the shared part of the documented
 [Docusaurus](https://docusaurus.io/docs/markdown-features/code-blocks),
 [VitePress](https://vitepress.dev/guide/markdown#syntax-highlighting-in-code-blocks),
 and [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/code-blocks/)
-forms. Do not combine several dialects or introduce a `norna-code` block.
+forms. Norna does not combine their additional dialects or introduce a
+`norna-code` block.
+
+## Implementation Status
+
+Implemented; awaiting human review and public documentation. The shared page
+model validates metadata for `content:check` and editor diagnostics. Shiki
+renders titles and emphasized lines without additional client JavaScript, and
+the existing copy control copies only source code.
 
 ## Dependency
 

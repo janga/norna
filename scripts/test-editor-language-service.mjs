@@ -331,6 +331,14 @@ try {
 	});
 	assert.equal(codeHeadingDiagnostics.some(({ code }) => code === 'duplicate-page-title'), false);
 	assert.equal(codeHeadingDiagnostics.some(({ code }) => code === 'duplicate-heading-id'), false);
+	const codeMetadataDiagnostics = await getMarkdownDiagnostics({
+		documentPath: homeContentPath,
+		source: `${homeSource}\n\`\`\`js {1} title="late.js"\nconst value = true;\n\`\`\`\n`,
+	});
+	assert.ok(codeMetadataDiagnostics.some(({ code, message }) => (
+		code === 'invalid-code-fence-metadata'
+		&& message.includes('title="src/config.js" {2,4-6}')
+	)));
 	const unclosedBlockDiagnostics = await getMarkdownDiagnostics({
 		documentPath: homeContentPath,
 		source: homeSource.replace(/\n```\n$/, '\n'),

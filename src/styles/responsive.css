@@ -567,6 +567,7 @@
 	.mobile-nav-panel,
 	.site-nav-submenu > nav,
 	.norna-callout,
+	.norna-code-example,
 	.card-list-item,
 	.page-sequence-link,
 	.image-carousel-button,
@@ -579,6 +580,11 @@
 		border-color: ButtonText;
 		background: ButtonFace;
 		color: ButtonText;
+	}
+
+	.norna-code-line-highlighted {
+		border-inline-start-color: Highlight !important;
+		background: Canvas !important;
 	}
 
 	:is(.display-settings-segmented input:checked + span, .image-carousel-button:hover:not(:disabled)) {

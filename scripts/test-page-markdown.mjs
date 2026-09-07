@@ -144,4 +144,61 @@ assert.deepEqual(
 assert.match(invalidCallouts.diagnostics[0].message, /invalid-callouts\.md line 5/);
 assert.match(invalidCallouts.diagnostics[1].fix, /NOTE, TIP, IMPORTANT, WARNING, CAUTION, DANGER/);
 
+const validCodeMetadata = await parsePageMarkdown(`# Code examples
+
+## Configuration {#configuration}
+
+\`\`\`js title="src/config.js" {2,4-6}
+const first = true;
+const second = true;
+const third = true;
+const fourth = true;
+const fifth = true;
+const sixth = true;
+\`\`\`
+
+\`\`\`sh {1}
+npm run build
+\`\`\`
+`);
+assert.deepEqual(validCodeMetadata.diagnostics, []);
+
+for (const [metadata, expectedMessage] of [
+	['highlight=2', /Unknown code fence metadata/],
+	['{2} title="late.js"', /line selector must come after/],
+	['title=""', /title cannot be empty/],
+	['title="open.js', /missing its closing double quote/],
+	['{0}', /Invalid code line range/],
+	['{3-2}', /Invalid code line range/],
+	['{2,2}', /selected more than once/],
+	['{3}', /block has 2 lines/],
+]) {
+	const invalidCodeMetadata = await parsePageMarkdown(`# Invalid code
+
+## Example {#example}
+
+\`\`\`js ${metadata}
+one();
+two();
+\`\`\`
+`, { label: 'invalid-code.md' });
+	assert.equal(invalidCodeMetadata.diagnostics.length, 1);
+	assert.equal(invalidCodeMetadata.diagnostics[0].code, 'invalid-code-fence-metadata');
+	assert.equal(invalidCodeMetadata.diagnostics[0].line, 5);
+	assert.match(invalidCodeMetadata.diagnostics[0].message, /invalid-code\.md line 5/);
+	assert.match(invalidCodeMetadata.diagnostics[0].message, expectedMessage);
+}
+
+const codeMetadataWithoutLanguage = await parsePageMarkdown(`# Missing language
+
+## Example {#example}
+
+\`\`\` title="src/config.js"
+const value = true;
+\`\`\`
+`, { label: 'missing-language.md' });
+assert.equal(codeMetadataWithoutLanguage.diagnostics[0].code, 'invalid-code-fence-metadata');
+assert.match(codeMetadataWithoutLanguage.diagnostics[0].message, /requires a language/);
+assert.match(codeMetadataWithoutLanguage.diagnostics[0].fix, /```js title="src\/config\.js" \{2\}/);
+
 console.log('Page Markdown model tests passed.');
