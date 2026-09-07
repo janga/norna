@@ -12,6 +12,7 @@ import {
 	extractNornaMarkdownBlockDiagnostics,
 	getNornaBlockImageReferences,
 } from './norna-markdown-blocks.mjs';
+import { getSemanticCalloutDiagnostics } from './semantic-callouts.mjs';
 
 const normalizeMarkdownWithOffsets = (source) => {
 	const input = String(source);
@@ -172,7 +173,7 @@ const getRegionContent = (regionMarkdown, blocks, regionOffset) => {
 	return content.filter((item) => item.kind !== 'markdown' || item.markdown.length > 0);
 };
 
-const createRegion = ({ heading, nextHeading, headings, source, label, lineOffset }) => {
+const createRegion = ({ calloutErrors, heading, nextHeading, headings, source, label, lineOffset }) => {
 	const endOffset = nextHeading?.index ?? source.length;
 	const markdown = source.slice(heading.index, endOffset).trimEnd();
 	const regionLineOffset = lineOffset + heading.line - 1;
@@ -197,6 +198,7 @@ const createRegion = ({ heading, nextHeading, headings, source, label, lineOffse
 		bodyMarkdown: source.slice(heading.index + heading.source.length, endOffset).trimEnd(),
 		blocks: blockResult.blocks,
 		blockErrors: blockResult.errors,
+		calloutErrors: calloutErrors.filter((error) => error.offset >= heading.index && error.offset < endOffset),
 		content: getRegionContent(markdown, blockResult.blocks, heading.index),
 		endOffset,
 		heading,
@@ -220,12 +222,14 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	const label = options.label ?? 'Markdown';
 	const lineOffset = options.lineOffset ?? 0;
 	const { headings, tree } = await getMarkdownHeadings(source);
+	const calloutErrors = getSemanticCalloutDiagnostics(tree, { label, lineOffset });
 	const structuralHeadings = headings.filter((heading) => heading.depth <= 2);
 	const prelude = structuralHeadings.length > 0
 		? source.slice(0, structuralHeadings[0].index)
 		: source;
 	const pageHeadings = structuralHeadings.filter((heading) => heading.depth === 1);
 	const regions = structuralHeadings.map((heading, index) => createRegion({
+		calloutErrors,
 		heading,
 		nextHeading: structuralHeadings[index + 1],
 		headings,
@@ -245,6 +249,14 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	})));
 	const noteDiagnostics = regions.flatMap((region) => region.noteErrors.map((error) => ({
 		code: 'invalid-inline-note',
+		line: error.line,
+		message: error.message,
+		regionId: region.id,
+		severity: 'error',
+	})));
+	const calloutDiagnostics = regions.flatMap((region) => region.calloutErrors.map((error) => ({
+		code: error.code,
+		fix: error.fix,
 		line: error.line,
 		message: error.message,
 		regionId: region.id,
@@ -279,6 +291,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 			...headingDiagnostics,
 			...blockDiagnostics,
 			...noteDiagnostics,
+			...calloutDiagnostics,
 		],
 		headings,
 		headingIssues,

@@ -154,6 +154,99 @@ About this fixture.
 	}
 });
 
+test('semantic callouts render every supported meaning with localized accessible labels', async () => {
+	for (const locale of [
+		{
+			language: 'en',
+			labels: ['Note', 'Tip', 'Important', 'Warning', 'Caution', 'Danger'],
+		},
+		{
+			language: 'sv',
+			labels: ['Notera', 'Tips', 'Viktigt', 'Varning', 'Var försiktig', 'Fara'],
+		},
+	]) {
+		const { root, siteDir } = await createTempSite({ underRepoCache: true });
+		try {
+			await writeFile(path.join(siteDir, 'config.yaml'), `url: https://example.com/\nlanguage: ${locale.language}\n`);
+			await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Callouts
+
+## Meanings {#meanings}
+
+> [!NOTE]
+> Context with [a link](/about/) and **emphasis**.
+
+> [!TIP]
+> Optional guidance.
+
+> [!IMPORTANT]
+> Required information.
+
+> [!WARNING]
+> Immediate attention.
+
+> [!CAUTION]
+> A negative consequence.
+
+> [!DANGER]
+> Severe or irreversible harm.
+
+> An ordinary blockquote remains ordinary.
+`);
+			await writePage(siteDir, '010-about', `# About
+
+## Context {#context}
+
+Linked content.
+`);
+
+			const { stdout } = await runContentScript(siteDir, ['--check']);
+			assert.match(stdout, /Content check passed\./);
+			await runNorna(['--site-dir', siteDir, 'build']);
+			const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+
+			for (const [index, type] of ['note', 'tip', 'important', 'warning', 'caution', 'danger'].entries()) {
+				assert.match(
+					html,
+					new RegExp(`<aside aria-labelledby="norna-callout-label-${index}" class="norna-callout norna-callout-${type}" role="note">`),
+				);
+				assert.match(
+					html,
+					new RegExp(`<p class="norna-callout-label" id="norna-callout-label-${index}">${locale.labels[index]}<\\/p>`),
+				);
+			}
+			assert.match(html, /Context with <a href="\/about\/">a link<\/a> and <strong>emphasis<\/strong>\./);
+			assert.match(html, /<blockquote>\s*<p>An ordinary blockquote remains ordinary\.<\/p>\s*<\/blockquote>/);
+			assert.doesNotMatch(html, /\[!(?:NOTE|TIP|IMPORTANT|WARNING|CAUTION|DANGER)\]/);
+		} finally {
+			await rm(root, { recursive: true, force: true });
+		}
+	}
+});
+
+test('content:check rejects unsupported semantic callout syntax', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Invalid callout
+
+## Warning {#warning}
+
+> [!INFO]
+> This type is not supported.
+`);
+
+		await assert.rejects(
+			runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Unknown semantic callout type "INFO"/);
+				assert.match(error.output, /Use one of: NOTE, TIP, IMPORTANT, WARNING, CAUTION, DANGER/);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
 test('norna-card-list images are managed image references', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {

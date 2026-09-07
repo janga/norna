@@ -434,6 +434,61 @@ ul {
 	margin-bottom: 0;
 }
 
+.section-markdown .norna-callout {
+	--callout-accent: var(--color-accent);
+	--callout-background: var(--color-surface-soft-background);
+	--callout-text: var(--color-surface-soft-text);
+	display: flow-root;
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+	border: 1px solid color-mix(in srgb, var(--callout-accent) 52%, transparent);
+	border-inline-start: 0.3rem solid var(--callout-accent);
+	border-radius: var(--corner-radius-medium, 6px);
+	padding: 0.85rem 1rem;
+	background: var(--callout-background);
+	color: var(--callout-text);
+}
+
+.section-markdown .norna-callout-important {
+	--callout-background: var(--color-surface-emphasis-background);
+	--callout-text: var(--color-surface-emphasis-text);
+}
+
+.section-markdown .norna-callout-tip {
+	--callout-accent: var(--color-success-accent);
+	--callout-background: var(--color-success-surface);
+	--callout-text: var(--color-success-text);
+}
+
+.section-markdown :is(.norna-callout-warning, .norna-callout-caution) {
+	--callout-accent: var(--color-warning-accent);
+	--callout-background: var(--color-warning-surface);
+	--callout-text: var(--color-warning-text);
+}
+
+.section-markdown .norna-callout-danger {
+	--callout-accent: var(--color-error-accent);
+	--callout-background: var(--color-error-surface);
+	--callout-text: var(--color-error-text);
+}
+
+.section-markdown .norna-callout-label {
+	margin: 0 0 0.35rem;
+	color: inherit;
+	font-family: var(--font-sans);
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0;
+	line-height: 1.35;
+}
+
+.section-markdown .norna-callout a {
+	color: inherit;
+}
+
+.section-markdown .norna-callout > :last-child {
+	margin-bottom: 0;
+}
+
 .section-markdown pre.astro-code {
 	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
 	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);

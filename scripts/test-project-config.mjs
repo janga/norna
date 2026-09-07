@@ -76,6 +76,12 @@ try {
 			codeCopied: 'Copied',
 			codeCopyFailed: 'Could not copy code',
 			copyCode: 'Copy code',
+			calloutCaution: 'Caution',
+			calloutDanger: 'Danger',
+			calloutImportant: 'Important',
+			calloutNote: 'Note',
+			calloutTip: 'Tip',
+			calloutWarning: 'Warning',
 			editSource: 'Edit this page',
 			displaySettings: 'Display',
 			focusReading: 'Focus reading',
@@ -136,6 +142,12 @@ try {
 	const localizedConfig = JSON.parse(localizedResult.stdout);
 	assert.equal(localizedConfig.language, 'sv-SE');
 	assert.equal(localizedConfig.labels.built, 'Byggd');
+	assert.equal(localizedConfig.labels.calloutCaution, 'Var försiktig');
+	assert.equal(localizedConfig.labels.calloutDanger, 'Fara');
+	assert.equal(localizedConfig.labels.calloutImportant, 'Viktigt');
+	assert.equal(localizedConfig.labels.calloutNote, 'Notera');
+	assert.equal(localizedConfig.labels.calloutTip, 'Tips');
+	assert.equal(localizedConfig.labels.calloutWarning, 'Varning');
 	assert.equal(localizedConfig.labels.copyCode, 'Kopiera kod');
 	assert.equal(localizedConfig.labels.editSource, 'Redigera den här sidan');
 	assert.equal(localizedConfig.labels.footnoteBackReference, 'Tillbaka till referens {reference}');

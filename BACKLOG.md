@@ -31,8 +31,9 @@ work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
-  **Ready.** Extend Markdown semantics now that search and page output share
-  the completed rendered structure.
+  **Implemented; awaiting human review and documentation.** GitHub-style alert
+  blockquotes now render as localized, accessible semantic callouts with a
+  closed meaning set and deterministic diagnostics.
 - [`BL-048` Code titles and line emphasis](docs/design/backlog/BL-048-rich-code-examples.md):
   **Ready after `BL-009`.** Add one closed metadata grammar to ordinary code
   fences after the callout grammar is stable.

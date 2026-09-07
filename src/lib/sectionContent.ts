@@ -333,6 +333,9 @@ export const getSectionsContent = async (
 		if (bodySection.noteErrors.length > 0) {
 			throw new Error(bodySection.noteErrors[0].message);
 		}
+		if (bodySection.calloutErrors.length > 0) {
+			throw new Error(bodySection.calloutErrors[0].message);
+		}
 
 		const inlineNotes = bodySection.notes.map((note) => {
 			const number = nextNoteNumber;

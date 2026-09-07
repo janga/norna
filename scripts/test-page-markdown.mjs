@@ -87,4 +87,61 @@ page:
 assert.equal(unclosedFrontmatter.frontmatterUnclosed, true);
 assert.equal(unclosedFrontmatter.pageTitle, null);
 
+const validCallouts = await parsePageMarkdown(`# Callouts
+
+## Meanings {#meanings}
+
+> [!NOTE]
+> Context.
+
+> [!TIP]
+> Optional guidance.
+
+> [!IMPORTANT]
+> Required information.
+
+> [!WARNING]
+> Immediate attention.
+
+> [!CAUTION]
+> A negative consequence.
+
+> [!DANGER]
+> Severe or irreversible harm.
+`);
+assert.deepEqual(validCallouts.diagnostics, []);
+
+const invalidCallouts = await parsePageMarkdown(`# Invalid callouts
+
+## Problems {#problems}
+
+> [!warning]
+> Wrong case.
+
+> [!INFO]
+> Unknown meaning.
+
+> [!TIP] Custom title
+> Titles are not supported.
+
+> [!NOTE]
+
+> Ordinary blockquote.
+>
+> > [!DANGER]
+> > Nested callout.
+`, { label: 'invalid-callouts.md' });
+assert.deepEqual(
+	invalidCallouts.diagnostics.map(({ code }) => code),
+	[
+		'invalid-semantic-callout-type-case',
+		'unknown-semantic-callout-type',
+		'unsupported-semantic-callout-title',
+		'empty-semantic-callout',
+		'nested-semantic-callout',
+	],
+);
+assert.match(invalidCallouts.diagnostics[0].message, /invalid-callouts\.md line 5/);
+assert.match(invalidCallouts.diagnostics[1].fix, /NOTE, TIP, IMPORTANT, WARNING, CAUTION, DANGER/);
+
 console.log('Page Markdown model tests passed.');
