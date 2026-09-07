@@ -265,10 +265,12 @@ a hierarchy, it shows only the active top-level area, so the global destinations
 are not duplicated.
 
 In the left page rail and breadcrumbs, `Getting Started` remains a non-linked
-grouping label. Shallow areas can place the current page's H2/H3 outline below
-that page in the same rail. Areas at least three visible levels deep keep a
-separate page-contents rail on the right. On a small screen, pages, categories,
-and headings move into one expandable menu.
+grouping label. In a shallow area, each page's H2/H3 outline can be expanded
+below that page in the same rail. Norna remembers which page and outline
+branches you open or close while you move through the site. Areas at least
+three visible levels deep keep the current page's outline in a separate rail on
+the right. On a small screen, pages, categories, and expandable page outlines
+move into one menu.
 
 Home is the exception: `000-home` is the site's front door and cannot have child
 pages or categories. Start each navigable hierarchy with another top-level

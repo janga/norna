@@ -70,9 +70,11 @@ The accepted information architecture is:
 - a small global navigation for the site's top-level areas;
 - a larger local page tree for the selected area;
 - breadcrumbs for location and ancestry;
-- a separate contents rail for the current page's H2 and H3 headings;
+- expandable H2/H3 page outlines in shallow left-navigation trees;
+- a separate contents rail for the current page's H2 and H3 headings in deep
+  trees;
 - one unified mobile navigation containing the whole page hierarchy and the
-  current page headings.
+  available page outlines.
 
 Navigation modes follow the site structure:
 
@@ -94,18 +96,20 @@ The tree contract is:
 - the left rail contains only pages and categories from the active top-level
   branch, while Home and independent pages use that position for their own
   local context;
-- a shallow area integrates the current page's H2 and H3 outline in the left
-  rail, while a sufficiently deep area uses a separate right contents rail;
+- a shallow area makes every page's H2 and H3 outline available in its expanded
+  left-rail branch, while a sufficiently deep area uses a separate right
+  contents rail for the current page;
 - opening one branch does not implicitly close another branch;
 - long desktop trees scroll independently of short page content;
 - mobile uses one drawer for the complete hierarchy instead of requiring a
   separate page-selection and section-selection sequence.
 
 Real links and native disclosure elements provide the fallback. JavaScript
-preserves explicitly opened branches, restores navigation scroll position,
-enhances focus handling, and keeps measured sticky offsets stable. Without
-JavaScript, navigation remains usable but manually opened branches are not
-preserved across page loads.
+preserves explicitly opened page branches and explicitly opened or closed page
+outlines, restores navigation scroll position, enhances focus handling, and
+keeps measured sticky offsets stable. Without JavaScript, navigation remains
+usable but manually selected disclosure states are not preserved across page
+loads.
 
 The contract should also define the fallback and override behavior for the
 supported navigation modes. Structural behavior belongs to site-level engine

@@ -30,9 +30,10 @@ pages with and without a tree rail.
 - Scope the left page rail to the active branch. Do not repeat unrelated
   top-level destinations that remain available in the top navigation.
 - Keep pages and categories as the primary left-rail hierarchy. Following
-  `BL-044`, integrate the current page's H2/H3 outline beneath that page in a
-  shallow area; use a separate right contents rail in areas at least three
-  visible levels deep. Do not include H4-and-deeper headings by default.
+  `BL-044`, make every page's H2/H3 outline available beneath that page in a
+  shallow area; use a separate right contents rail for the current page in
+  areas at least three visible levels deep. Do not include H4-and-deeper
+  headings by default.
 - Mark the current page in the left rail and the current reading location in
   the right rail without making either visual marker the only available source
   of orientation.
@@ -85,7 +86,8 @@ pages with and without a tree rail.
 - The branch landing page and every descendant expose the same local hierarchy
   and current-page context.
 - The left rail never contains unrelated top-level branches. In a shallow
-  area, the current page's outline is visibly distinguished from child pages.
+  area, each page outline is available in its page branch and the current
+  page's outline is open by default.
 - A qualifying page in a deep area exposes H2 and H3 links in a separately
   named right contents rail, with current-location feedback when enhancement
   is available.

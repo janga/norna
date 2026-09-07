@@ -456,11 +456,12 @@ The modes present the same source hierarchy differently:
 - `tree` keeps top-level areas in the global row. A left page rail shows only
   the current top-level area, so it does not duplicate unrelated destinations
   from the global row. Home and independent top-level pages use the same rail
-  for their page and section context. On a shallow branch, the current page's
-  H2/H3 outline is integrated beneath that page in the left rail. A branch at
-  least three visible levels deep keeps the page tree on the left and places
-  the current H2/H3 outline in a separate right contents rail. Page outlines
-  omit the H1 and H4-or-deeper headings.
+  for their page and section context. On a shallow branch, every page's H2/H3
+  outline is available beneath that page in the left rail. The current page's
+  outline is open by default; other page outlines can be expanded without
+  leaving the current page. A branch at least three visible levels deep keeps
+  the page tree on the left and places the current H2/H3 outline in a separate
+  right contents rail. Page outlines omit the H1 and H4-or-deeper headings.
 
 On wide screens, pages in the same tree branch keep a common content axis when
 the right rail is absent. The unused rail is not rendered, but moving between a
@@ -469,7 +470,11 @@ document column.
 
 When there is not enough horizontal room for both rails, the contents links
 move into the document flow. On a small screen, the complete page hierarchy
-and the current page's headings remain available in the expandable menu.
+and its expandable page outlines remain available in one menu.
+
+Norna remembers explicit outline and page-branch choices during the browser
+session. Without JavaScript, the same links and native disclosure controls
+remain usable, but their state is not carried across page loads.
 
 Categories require `tree` navigation because they need disclosure behavior
 without pretending to be page links. Explicit `sections` or `top` mode is

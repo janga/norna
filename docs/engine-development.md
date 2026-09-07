@@ -342,10 +342,11 @@ Navigation has three related levels:
 - On a hierarchical site, a stable left rail shows the active top-level area.
   Home and independent top-level pages use the same rail for their local page
   and section context.
-- A shallow area can integrate the current page's H2 and H3 outline in the left
-  rail. An area at least three visible levels deep uses a separate right
-  contents rail when the page has enough headings to benefit. Section links
-  use real `href="#section-id"` anchors so they work without JavaScript.
+- A shallow area makes every page's H2 and H3 outline expandable below that
+  page in the left rail. An area at least three visible levels deep uses a
+  separate right contents rail for the current page when it has enough
+  headings to benefit. Section links use real anchors, including the page path
+  when necessary, so they work without JavaScript.
 
 Automatic navigation selects section navigation for one-page sites and top
 navigation for flat multi-page sites. Any listed child page or category selects
