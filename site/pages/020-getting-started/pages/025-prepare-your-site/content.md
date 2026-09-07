@@ -94,3 +94,21 @@ for the complete fields, defaults, date behavior, and logo-height override.
 The [site-wide elements demonstration](https://janga.github.io/norna/examples/feature-demos/sitewide-content/)
 is useful when you need to inspect the rendered result before choosing an
 element.
+
+## Add site search {#search}
+
+For a site with enough pages that navigation alone is no longer sufficient,
+enable static search in `site/config.yaml`:
+
+```yaml
+search: true
+```
+
+Norna adds a Search button and builds an index from the finished page content.
+The index needs no search service and follows the site's configured language
+and public base path. Search itself uses JavaScript, but ordinary pages do not
+load it.
+
+See [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md#search)
+for indexed content, generated paths, URL constraints, and local refresh
+behavior.

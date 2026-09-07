@@ -42,6 +42,9 @@ Exact behavior: [Content](https://github.com/janga/norna/blob/main/docs/content.
 - **Reading context on larger sites.** Tree navigation supplies breadcrumbs, a
   persistent page rail, and an H2/H3 contents rail with the current reading
   position marked as the reader scrolls.
+- **Optional static search.** A single setting adds a localized search page
+  backed by the finished rendered content, with section-level results and no
+  search server.
 - **Stable, checked destinations.** Deterministic page URLs and heading ids,
   collision checks, and static aliases keep links predictable.
 
@@ -143,10 +146,9 @@ project-defined templates, arbitrary components, or a general plugin API. A
 dynamic application, database-backed site, or visual CMS needs a different
 platform.
 
-Static search, multilingual page trees, collections, taxonomies, pagination,
-feeds, and versioned documentation are not currently part of Norna. These
-larger models are considered separately rather than being added as isolated
-settings.
+Multilingual page trees, collections, taxonomies, pagination, feeds, and
+versioned documentation are not currently part of Norna. These larger models
+are considered separately rather than being added as isolated settings.
 
 Norna is pre-1.0, and its file and command contracts can still change between
 releases. See

@@ -10,6 +10,8 @@ browser icons, and the social sharing image are discovered from exact
 filenames. `sitemap.xml` is also an exception: Norna reserves that name for
 generated output. Norna also reserves `404.html` for the missing-page response
 created during a build.
+When `search: true`, Norna also reserves the `pagefind/` directory for its
+generated search index.
 
 ## Navigation Logo
 
@@ -187,10 +189,10 @@ site/public/
 ```
 
 Except for the navigation logo, browser icons, social sharing image, and the
-reserved `sitemap.xml` and `404.html` output paths documented above, Norna does
-not attach meaning to filenames or inspect their contents. It copies them
-unchanged. Browsers, crawlers, hosting services, and verification providers may
-still require their own exact filenames and locations.
+reserved generated paths documented above, Norna does not attach meaning to
+filenames or inspect their contents. It copies them unchanged. Browsers,
+crawlers, hosting services, and verification providers may still require their
+own exact filenames and locations.
 
 Norna preserves subdirectories while copying these files. A source file such
 as `site/public/downloads/project-overview.pdf` is published at
@@ -222,5 +224,8 @@ validated, synced, processed, and captioned. See
 ## Generated Copy
 
 `norna site:public` copies source files from `site/public/` to
-`site/.norna/public/` and writes the generated sitemap there. The latter
-directory is build-preparation output and must not be edited or versioned.
+`site/.norna/public/` and writes the generated sitemap there. When static search
+is enabled, a completed build also copies the generated `pagefind/` bundle to
+that directory so a restarted local server can serve the latest index. The
+latter directory is build-preparation output and must not be edited or
+versioned.

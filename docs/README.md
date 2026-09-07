@@ -55,8 +55,8 @@ site/
 `-- public/
 ```
 
-- [`config.yaml`](configuration.md): public URL, language, source edit link, navigation model,
-  and native browser scroll behavior.
+- [`config.yaml`](configuration.md): public URL, language, source edit link,
+  navigation model, static search, and native browser scroll behavior.
 - [`theme.yaml`](theme.md): complete visual presets, structured content-block
   defaults, and focused presentation overrides.
 - [`sitewide-content.yaml`](sitewide-content.md): shared logo display settings,
@@ -111,6 +111,7 @@ required, optional, convention-discovered, versioned, or generated.
 - [Add other static files](public-files.md#other-static-files)
 - [Understand the generated sitemap](public-files.md#generated-sitemap)
 - [Understand the generated 404 page](public-files.md#generated-404-page)
+- [Enable static site search](configuration.md#search)
 
 ### Change Presentation
 

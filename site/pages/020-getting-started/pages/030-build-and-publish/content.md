@@ -48,8 +48,9 @@ Treat `dist/` as generated output. Edit the files under `site/` and build again
 instead of changing the generated files.
 
 The build includes responsive image output, canonical and social metadata, a
-sitemap, and a default `404.html`. A conventionally named optional image under
-`site/public/` supplies the site's social preview. See
+sitemap, and a default `404.html`. When static search is enabled, the same
+build also refreshes its page index. A conventionally named optional image
+under `site/public/` supplies the site's social preview. See
 [Public files](https://github.com/janga/norna/blob/main/docs/public-files.md)
 for its filename and for the exact generated-output rules.
 

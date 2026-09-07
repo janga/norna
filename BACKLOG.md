@@ -26,15 +26,12 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-005` Static search](docs/design/backlog/BL-005-static-search.md): **Ready.**
-  Index final HTML only after page inclusion, URLs, and anchors have one shared
-  contract; adopt an external indexer only after reviewing its package impact.
 - [`BL-008` Long navigation tree controls and filtering](docs/design/backlog/BL-008-long-tree-controls.md):
   **Ready after `BL-006`.** Add progressive controls and a title filter only
   after tree scope, active-page, expansion, and traversal behavior are stable.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
-  **Ready after `BL-005`.** Extend Markdown semantics after search and page
-  output rules can consume the new structure consistently.
+  **Ready.** Extend Markdown semantics now that search and page output share
+  the completed rendered structure.
 - [`BL-048` Code titles and line emphasis](docs/design/backlog/BL-048-rich-code-examples.md):
   **Ready after `BL-009`.** Add one closed metadata grammar to ordinary code
   fences after the callout grammar is stable.

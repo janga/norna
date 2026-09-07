@@ -38,7 +38,7 @@ case-insensitive file systems.
 
 | Path | Required | Responsibility |
 | --- | --- | --- |
-| `config.yaml` | Yes | Public URL and optional language, edit link, navigation model, and browser scroll behavior. |
+| `config.yaml` | Yes | Public URL and optional language, edit link, navigation model, static search, and browser scroll behavior. |
 | `theme.yaml` | Yes | Complete visual preset and optional focused presentation overrides. |
 | `sitewide-content.yaml` | No | Shared logo display settings, banners, and footer. |
 | `pages/` | Yes | Homepage plus ordered page and navigation-category hierarchies. |
@@ -141,16 +141,18 @@ Source images and files under `site/public/` are also versioned site input.
 Do not edit these by hand:
 
 - `site/.norna/public/`: build-preparation output copied from `site/public/`,
-  plus generated or copied managed images and `sitemap.xml`;
+  plus generated or copied managed images, `sitemap.xml`, and the most recently
+  built `pagefind/` search bundle when search is enabled;
 - `site/.norna/.astro/`: site-local Astro cache, generated types, and local
   dev-server state;
 - `dist/`: final static website output, including generated `404.html` and
-  `sitemap.xml` files;
+  `sitemap.xml` files, plus `/search/` and `pagefind/` when search is enabled;
 - `.astro/`: legacy Astro cache location, which can be removed after upgrading.
 
 `norna site:public` removes stale copied static files from
 `site/.norna/public/`, preserves managed image output under its `images/`
-directory, and regenerates `sitemap.xml` from the current page tree.
+directory and the most recently built Pagefind bundle when search is enabled,
+and regenerates `sitemap.xml` from the current page tree.
 
 ## Engine Repository Layout
 

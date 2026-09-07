@@ -34,7 +34,7 @@ only for the guided introduction and visual examples.
 
 ## Configuration And Operation
 
-- [Technical configuration](https://raw.githubusercontent.com/janga/norna/main/docs/configuration.md)
+- [Technical configuration, including static search](https://raw.githubusercontent.com/janga/norna/main/docs/configuration.md)
 - [Commands and project scripts](https://raw.githubusercontent.com/janga/norna/main/docs/commands.md)
 - [Local development](https://raw.githubusercontent.com/janga/norna/main/docs/local-development.md)
 - [Requirements and limitations](https://raw.githubusercontent.com/janga/norna/main/docs/requirements.md)

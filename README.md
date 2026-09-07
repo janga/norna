@@ -76,8 +76,8 @@ site/
 - `theme.yaml` normally selects one complete visual preset.
 - `sitewide-content.yaml` holds shared logo display settings, banners, and
   footer content.
-- `config.yaml` holds the public URL and optional language, source edit link, navigation model,
-  and scroll behavior.
+- `config.yaml` holds the public URL and optional language, source edit link,
+  navigation model, static search, and scroll behavior.
 - `public/` holds static files copied without processing.
 
 Norna validates this structure, processes managed images when needed, and
@@ -93,6 +93,8 @@ builds the generated website into `dist/`.
   reviewed, versioned, and edited with the tools you already use.
 - **A complete publishing path.** The starter includes validation, static
   builds, and an integrated GitHub Pages workflow.
+- **Static search without a service.** One optional setting indexes the
+  completed pages and adds section-level search results.
 
 ## Examples
 

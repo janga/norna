@@ -267,7 +267,8 @@ output suitable for comparison.
 - `site:public`: copies `site/public/` into `site/.norna/public/`, removes stale
   copied static files, and generates `sitemap.xml` from pages that produce URLs
   and from the configured public URL. Its preflight check rejects source paths
-  named `sitemap.xml` or `404.html`, which Norna reserves for generated output.
+  named `sitemap.xml` or `404.html`, which Norna reserves for generated output,
+  and `pagefind/` when static search is enabled.
 - `images`: generates WebP variants for raster images, copies managed SVG
   images, and writes `site/.norna/generated-images.json`.
 - `engine:update [version|latest]`: updates the site repository's
@@ -292,8 +293,8 @@ output suitable for comparison.
   plan; the same command reconciles a directory already moved by hand.
 - `category:add <label>`: creates one non-routable navigation category at the
   selected parent. It writes `category.yaml` and creates `pages/`.
-- `build`: runs config check, content check, public sync, image generation, and
-  Astro build.
+- `build`: runs config check, content check, public sync, image generation,
+  Astro build, and the optional final-HTML search index.
 - `build:local`: runs `build` and restarts `dev:local`.
 - `dev:local`: syncs public files, prepares managed images, and starts Astro dev
   in background mode on `localhost:4321`, or `NORNA_DEV_PORT` when set. It

@@ -97,6 +97,18 @@ const searchScript = `(() => {
 			showImages: false,
 			showSubResults: true
 		});
+		const labelInput = () => {
+			const input = root.querySelector('.pagefind-ui__search-input');
+			if (!input) return false;
+			input.setAttribute('aria-label', ${JSON.stringify(labels.search)});
+			return true;
+		};
+		if (!labelInput()) {
+			const observer = new MutationObserver(() => {
+				if (labelInput()) observer.disconnect();
+			});
+			observer.observe(root, { childList: true, subtree: true });
+		}
 	};
 	script.onerror = () => {
 		if (status) status.textContent = ${JSON.stringify(labels.searchUnavailable)};

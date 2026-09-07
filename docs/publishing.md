@@ -70,6 +70,12 @@ needs no separate 404 configuration. Other hosts determine how that file is
 served. See [Public Files: Generated 404 Page](public-files.md#generated-404-page)
 for the exact content, metadata, and source-file conflict rules.
 
+When `search: true`, Norna indexes the completed HTML after the static build.
+The generated `/search/` page and `pagefind/` bundle are included in the same
+`dist/` artifact as the rest of the site, so GitHub Pages needs no separate
+search service or deployment step. See [Configuration: Search](configuration.md#search)
+for indexed content, generated paths, and local refresh behavior.
+
 For a project site without a custom domain, include the repository path in
 `site/config.yaml`:
 
