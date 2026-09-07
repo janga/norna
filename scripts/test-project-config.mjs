@@ -75,6 +75,8 @@ try {
 			copyCode: 'Copy code',
 			displaySettings: 'Display',
 			focusReading: 'Focus reading',
+			footnoteBackReference: 'Back to reference {reference}',
+			footnotes: 'Footnotes',
 			dismissBanner: 'Dismiss notice',
 			built: 'Built',
 			images: 'Images',
@@ -112,6 +114,8 @@ try {
 	assert.equal(localizedConfig.language, 'sv-SE');
 	assert.equal(localizedConfig.labels.built, 'Byggd');
 	assert.equal(localizedConfig.labels.copyCode, 'Kopiera kod');
+	assert.equal(localizedConfig.labels.footnoteBackReference, 'Tillbaka till referens {reference}');
+	assert.equal(localizedConfig.labels.footnotes, 'Fotnoter');
 	assert.equal(localizedConfig.labels.notFound, 'Sidan hittades inte');
 	assert.equal(localizedConfig.labels.notFoundText, 'Den begärda sidan finns inte eller kan ha flyttats.');
 	assert.equal(localizedConfig.labels.pageMoved, 'Sidan har flyttats');

@@ -137,6 +137,14 @@ export default defineConfig({
 	cacheDir: astroCacheDir,
 	markdown: {
 		processor: satteri({
+			features: {
+				gfm: {
+					footnotes: {
+						label: projectConfig.locale.labels.footnotes,
+						backLabel: projectConfig.locale.labels.footnoteBackReference,
+					},
+				},
+			},
 			mdastPlugins: [nornaMarkdownRenderPlugin],
 		}),
 	},

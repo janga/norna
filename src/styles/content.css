@@ -474,3 +474,53 @@ ul {
 .section-markdown li + li {
 	margin-top: 0.35rem;
 }
+
+.section-markdown [data-footnote-ref] {
+	color: inherit;
+	font-size: 0.72em;
+	font-weight: 700;
+	text-decoration-thickness: 0.08em;
+	text-underline-offset: 0.15em;
+}
+
+.section-markdown [data-footnotes] {
+	margin-top: calc(var(--section-body-paragraph-spacing, 1em) * 1.75);
+	border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+	padding-top: var(--section-body-paragraph-spacing, 1em);
+	font-size: 0.88em;
+	line-height: 1.5;
+}
+
+.section-markdown [data-footnotes] > .sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.section-markdown [data-footnotes] ol {
+	display: block;
+	margin: 0;
+	padding-inline-start: 1.5rem;
+}
+
+.section-markdown [data-footnotes] li {
+	padding-inline-start: 0.2rem;
+	scroll-margin-top: calc(var(--site-top-anchor-offset) + 1rem);
+}
+
+.section-markdown [data-footnotes] li:target {
+	background: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+.section-markdown [data-footnote-backref] {
+	margin-inline-start: 0.15em;
+	color: inherit;
+	text-decoration: none;
+}

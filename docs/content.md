@@ -417,6 +417,36 @@ screens it remains in the normal reading flow. A paragraph may contain one
 note pair; both `{note-ref}` and `{note: ...}` are required. `content:check`
 reports missing, repeated, nested, or unpaired note syntax.
 
+### Reference Footnotes
+
+Use standard Markdown reference footnotes for citations or supporting material
+that belongs at the end of the page rather than beside one paragraph:
+
+```md
+The setting applies to every page.[^scope]
+
+[^scope]: A page-local theme may override presentation values.
+```
+
+The same definition may be referenced more than once. Definitions may contain
+links and continuation lines, and may be declared in a later section of the
+same page:
+
+```md
+The source explains the constraint.[^source] The same source also describes
+the fallback.[^source]
+
+[^source]: Read the [configuration reference](configuration.md).
+    This continuation remains part of the same footnote.
+```
+
+Norna renders reference footnotes as a numbered list at the end of the page.
+Reference and return links remain usable without client-side JavaScript, and
+their generated labels follow the site's configured language. Use a
+[side note](#side-notes) when a short explanation should stay beside its
+paragraph whenever space permits; use a reference footnote when the material
+acts as a citation or page-level endnote.
+
 ## Validation And Sync
 
 Run:

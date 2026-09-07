@@ -6,8 +6,8 @@ page:
 # Writing and notes
 
 Markdown remains the main writing format. Norna uses its heading hierarchy to
-organise pages and adds a small note syntax for supporting context that should
-not interrupt the main argument.
+organise pages and supports both nearby explanations and page-level reference
+notes without replacing ordinary Markdown.
 
 ## Markdown hierarchy {#markdown-hierarchy}
 
@@ -86,6 +86,24 @@ Each paragraph supports one paired reference and note. `content:check` reports
 missing, repeated or unclosed note syntax instead of guessing which text belongs
 to which reference.
 
+## Reference footnotes {#reference-footnotes}
+
+Use a standard Markdown footnote when supporting material belongs at the end of
+the page rather than beside one paragraph.[^standard]
+
+```md
+The source supports this claim.[^source]
+
+[^source]: The full citation or explanation belongs here.
+```
+
+Footnotes may be referenced repeatedly and may contain links.[^standard] Norna
+numbers them, links each reference to its definition, and provides return links
+without requiring JavaScript.
+
+[^standard]: This endnote uses interoperable GFM syntax. Read the complete
+    [reference-footnote documentation](https://github.com/janga/norna/blob/main/docs/content.md#reference-footnotes).
+
 ## Narrow-screen presentation {#narrow-screens}
 
 On a wide screen, the preceding notes use the available margin beside their
@@ -97,10 +115,10 @@ preset provide one responsive treatment for the same semantic content.
 
 ## Configuration boundary {#configuration-boundary}
 
-Note text and placement references belong to `content.md`. There is no
-note-specific page option or per-note visual override. The preset coordinates
-the note width, spacing, color and narrow-screen fallback with the rest of the
-site.
+Note text and references belong to `content.md`. There is no note-specific page
+option or per-note visual override. The preset coordinates side-note width,
+spacing, color and narrow-screen fallback with the rest of the site; reference
+footnotes use the page's ordinary endnote treatment.
 
 Read the complete [note syntax reference](https://github.com/janga/norna/blob/main/docs/content.md#side-notes).
 The [source for this page](https://github.com/janga/norna/blob/main/site/pages/030-examples/pages/040-writing-and-notes/content.md)

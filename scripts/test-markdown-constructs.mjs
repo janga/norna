@@ -100,6 +100,60 @@ Page content.
 	}
 });
 
+test('reference footnotes render page-wide with localized accessible links', async () => {
+	for (const locale of [
+		{
+			language: 'en',
+			label: 'Footnotes',
+			backLabel: 'Back to reference',
+		},
+		{
+			language: 'sv',
+			label: 'Fotnoter',
+			backLabel: 'Tillbaka till referens',
+		},
+	]) {
+		const { root, siteDir } = await createTempSite({ underRepoCache: true });
+		try {
+			await writeFile(path.join(siteDir, 'config.yaml'), `url: https://example.com/docs/\nlanguage: ${locale.language}\n`);
+			await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Reference footnotes
+
+The first section cites one source twice.[^scope] A second reference points to
+the same definition.[^scope]
+
+## Details {#details}
+
+The definition may live in another page section.
+
+[^scope]: The first line of the definition continues on a second line and
+    links to the [About page](/about/).
+`);
+			await writePage(siteDir, '010-about', `# About
+
+## Scope {#scope}
+
+About this fixture.
+`);
+
+			const { stdout } = await runContentScript(siteDir, ['--check']);
+			assert.match(stdout, /Content check passed\./);
+
+			await runNorna(['--site-dir', siteDir, 'build']);
+			const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+			assert.match(html, /<section data-footnotes class="footnotes">/);
+			assert.match(html, new RegExp(`<h2 class="sr-only" id="footnote-label">${locale.label}<\\/h2>`));
+			assert.match(html, /id="user-content-fnref-scope" data-footnote-ref aria-describedby="footnote-label">1<\/a>/);
+			assert.match(html, /id="user-content-fnref-scope-2" data-footnote-ref aria-describedby="footnote-label">1<\/a>/);
+			assert.match(html, new RegExp(`aria-label="${locale.backLabel} 1"`));
+			assert.match(html, new RegExp(`aria-label="${locale.backLabel} 1-2"`));
+			assert.match(html, /href="\/docs\/about\/">About page<\/a>/);
+			assert.match(html, /The first line of the definition continues on a second line and\s+links to the/);
+		} finally {
+			await rm(root, { recursive: true, force: true });
+		}
+	}
+});
+
 test('norna-card-list images are managed image references', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {

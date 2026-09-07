@@ -26,9 +26,6 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-047` Standard reference footnotes](docs/design/backlog/BL-047-standard-footnotes.md):
-  **Ready.** Turn existing GFM parsing into a tested, localized, documented
-  contract before adding more Markdown syntax.
 - [`BL-037` Refine left-navigation visual hierarchy](docs/design/backlog/BL-037-left-navigation-visual-hierarchy.md):
   **Ready.** Polish the page rail now that its shallow- and deep-branch content
   contract is implemented.
