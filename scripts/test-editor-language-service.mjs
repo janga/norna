@@ -265,6 +265,8 @@ try {
 	);
 	assert.match(nornaBlockDefinitions['norna-image-carousel'].documentation, /docs\/content\.md#image-carousel/);
 	assert.match(nornaBlockDefinitions['norna-card-list'].documentation, /docs\/content\.md#card-list/);
+	assert.match(nornaBlockDefinitions['norna-page-list'].documentation, /docs\/content\.md#child-page-list/);
+	assert.equal(nornaBlockDefinitions['norna-page-list'].snippet, '```norna-page-list\n```');
 	assert.equal(nornaBlockDefinitions['norna-card-list'].options.layout.default, 'image-top');
 	assert.equal(nornaBlockDefinitions['norna-card-list'].options.width.default, undefined);
 	assert.match(nornaBlockDefinitions['norna-card-list'].options.width.description, /root theme/);

@@ -9,6 +9,7 @@ import {
 import CardList from './CardList.astro';
 import ImageCarousel from './ImageCarousel.astro';
 import ImageStack from './ImageStack.astro';
+import PageList from './PageList.astro';
 import type { ResolvedSection } from '../lib/sectionContent';
 
 type ResponsiveValue<T> = { desktop: T; mobile: T };
@@ -113,6 +114,7 @@ const isStructuredBlock = (block: ResolvedSection['contentBlocks'][number]) => (
 	block.type === 'image-stack'
 	|| block.type === 'image-carousel'
 	|| block.type === 'card-list'
+	|| block.type === 'page-list'
 );
 const hasMedia = section.contentBlocks.some((block) => (
 	block.type === 'image-stack'
@@ -121,7 +123,7 @@ const hasMedia = section.contentBlocks.some((block) => (
 ));
 const contentGroups: Array<
 	| { type: 'reading'; blocks: ResolvedSection['contentBlocks'] }
-	| { type: 'media'; block: Extract<ResolvedSection['contentBlocks'][number], { type: 'image-stack' | 'image-carousel' | 'card-list' }> }
+	| { type: 'structured'; block: Extract<ResolvedSection['contentBlocks'][number], { type: 'image-stack' | 'image-carousel' | 'card-list' | 'page-list' }> }
 > = [];
 let readingBlocks: ResolvedSection['contentBlocks'] = [];
 const flushReadingBlocks = () => {
@@ -133,14 +135,17 @@ const flushReadingBlocks = () => {
 for (const block of section.contentBlocks) {
 	if (isStructuredBlock(block)) {
 		flushReadingBlocks();
-		contentGroups.push({ type: 'media', block });
+		contentGroups.push({ type: 'structured', block });
 	} else {
 		readingBlocks = [...readingBlocks, block];
 	}
 }
 
 flushReadingBlocks();
-const firstMediaGroupIndex = contentGroups.findIndex((group) => group.type === 'media');
+const firstMediaGroupIndex = contentGroups.findIndex((group) => (
+	group.type === 'structured'
+	&& (group.block.type === 'image-stack' || group.block.type === 'image-carousel')
+));
 const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 	const headingConfig = markdownHeadings[level];
 	const fontSize = getHeadingTypographySizeValue(level, headingConfig.size);
@@ -239,6 +244,9 @@ const sectionStyle = [
 							width={block.width ?? pagePresentation.blocks.cardList.width}
 						/>
 					);
+				}
+				if (block.type === 'page-list') {
+					return <PageList pages={block.pages} />;
 				}
 
 				return (

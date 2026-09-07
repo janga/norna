@@ -15,6 +15,7 @@ import { getPageTheme } from '../lib/pageThemes';
 import { getSiteModel, type SitePage } from '../lib/sitePages';
 import {
 	flattenSiteNavigationTree,
+	getDirectChildPages,
 	getListedSiteNavigationTree,
 	getSequentialPageNavigation,
 } from '../lib/siteNavigation';
@@ -63,24 +64,8 @@ const logo = logoAsset
 		height: logoSettings?.height,
 	}
 	: undefined;
-const siteHtml = entry.rendered?.html ?? '';
-const resolvedSections = await getSectionsContent(siteHtml, currentPage);
-const hasCodeBlocks = resolvedSections.some((section) => section.contentBlocks.some((block) => (
-	block.type === 'html' && /<pre\b[^>]*>[\s\S]*?<code\b/i.test(block.html)
-)));
 const today = getToday();
 const siteBanners = (sitewideData.banners ?? []).filter((banner) => isVisibleToday(banner.visible, today));
-const hasPrioritizableImage = (section: ResolvedSection) => section.contentBlocks.some((block) => (
-	block.type === 'image-stack'
-	|| block.type === 'image-carousel'
-));
-const firstImageSectionIndex = resolvedSections.findIndex(hasPrioritizableImage);
-let contentSectionIndex = 0;
-const renderedSections = resolvedSections.map((section, index) => ({
-	section,
-	sectionIndex: section.headingLevel === 1 ? 0 : contentSectionIndex++,
-	prioritizeFirstImage: index === firstImageSectionIndex,
-}));
 
 const getPageContent = (page: SitePage) =>
 	page.markdownDocument.navigationHeadings.map(({ depth, id, parentId, title }) => ({
@@ -103,6 +88,23 @@ const siteNavigation = siteNodes.map((node) => {
 const listedNavigationTree = getListedSiteNavigationTree(siteNavigation);
 const renderedNavigationEntries = flattenSiteNavigationTree(listedNavigationTree);
 const pageSequence = getSequentialPageNavigation(listedNavigationTree, currentPage.pagePath);
+const childPages = getDirectChildPages(listedNavigationTree, currentPage.pagePath);
+const siteHtml = entry.rendered?.html ?? '';
+const resolvedSections = await getSectionsContent(siteHtml, currentPage, childPages);
+const hasCodeBlocks = resolvedSections.some((section) => section.contentBlocks.some((block) => (
+	block.type === 'html' && /<pre\b[^>]*>[\s\S]*?<code\b/i.test(block.html)
+)));
+const hasPrioritizableImage = (section: ResolvedSection) => section.contentBlocks.some((block) => (
+	block.type === 'image-stack'
+	|| block.type === 'image-carousel'
+));
+const firstImageSectionIndex = resolvedSections.findIndex(hasPrioritizableImage);
+let contentSectionIndex = 0;
+const renderedSections = resolvedSections.map((section, index) => ({
+	section,
+	sectionIndex: section.headingLevel === 1 ? 0 : contentSectionIndex++,
+	prioritizeFirstImage: index === firstImageSectionIndex,
+}));
 const hasPageSequence = Boolean(pageSequence.previous || pageSequence.next);
 const navigationModel = resolveNavigationModel({
 	mode: projectConfig.navigation.mode,

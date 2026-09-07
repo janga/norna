@@ -647,4 +647,8 @@ export const nornaBlockDefinitions = Object.freeze({
 		...nornaMarkdownBlockDefinitions['norna-card-list'],
 		snippet: '```norna-card-list\nlayout: ${1|image-top,image-left,image-right|}\nflow: ${2|grid,stack|}\nsize: ${3|s,m,l,xl|}\n\n- title: ${4:Card title}\n  text: ${5:Card text}\n  image: ${6:filename.jpg}\n```',
 	}),
+	'norna-page-list': Object.freeze({
+		...nornaMarkdownBlockDefinitions['norna-page-list'],
+		snippet: '```norna-page-list\n```',
+	}),
 });

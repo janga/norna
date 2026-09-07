@@ -2,6 +2,7 @@ import type { HeadingNavigation, SectionNavigation } from './sectionContent';
 import type { SiteNode, SitePage } from './sitePages';
 import {
 	flattenSiteNavigationTree as flattenSiteNavigationTreeShared,
+	getDirectChildPages as getDirectChildPagesShared,
 	getFirstPageInNavigationNode as getFirstPageInNavigationNodeShared,
 	getListedSiteNavigationTree as getListedSiteNavigationTreeShared,
 	getSequentialPageNavigation as getSequentialPageNavigationShared,
@@ -38,3 +39,8 @@ export const getSequentialPageNavigation = (
 		next: SitePage | null;
 	}
 );
+
+export const getDirectChildPages = (
+	nodes: SiteNavigationNode[],
+	currentPagePath: string,
+): SitePage[] => getDirectChildPagesShared(nodes, currentPagePath) as SitePage[];

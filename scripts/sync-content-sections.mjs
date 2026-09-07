@@ -22,6 +22,10 @@ import { getSiteStructure } from './lib/site-structure.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import { parsePageMarkdownSource } from './lib/page-markdown.mjs';
 import {
+	getDirectChildPages,
+	getListedSiteNavigationTree,
+} from './lib/site-navigation-tree.mjs';
+import {
 	createSiteLinkGraph,
 	getSitePublicFiles,
 } from './lib/site-link-graph.mjs';
@@ -377,6 +381,41 @@ for (const contentFile of contentFiles) {
 		blockResultsBySection,
 		body,
 	});
+}
+
+const contentContextByPageDirectory = new Map(contentFileContexts.map((context) => [
+	context.contentFile.pageDirectory,
+	context,
+]));
+const listedNavigationTree = getListedSiteNavigationTree(siteStructure.nodes.map((node) => {
+	const context = contentContextByPageDirectory.get(node.pageDirectory);
+	return {
+		node: {
+			...node,
+			navigation: {
+				listed: node.kind === 'category'
+					? true
+					: context?.frontmatterData.navigation?.listed ?? true,
+			},
+		},
+	};
+}));
+
+for (const context of contentFileContexts) {
+	const childPages = getDirectChildPages(listedNavigationTree, context.contentFile.pagePath);
+	if (childPages.length > 0) continue;
+
+	for (const section of context.sections) {
+		if (!context.validSections.has(section)) continue;
+		for (const block of section.blocks) {
+			if (block.type !== 'page-list') continue;
+			addSectionIssue(context.contentFile, section, {
+				severity: 'error',
+				message: `norna-page-list on line ${block.line} has no listed direct child pages to display. Navigation categories are not pages.`,
+				fix: 'Add a listed direct child page or remove the block.',
+			});
+		}
+	}
 }
 
 const siteLinkGraph = createSiteLinkGraph({

@@ -70,3 +70,13 @@ export const getSequentialPageNavigation = (nodes, currentPagePath) => {
 		next: pages[currentIndex + 1] ?? null,
 	};
 };
+
+export const getDirectChildPages = (nodes, currentPagePath) => {
+	const current = flattenSiteNavigationTree(nodes)
+		.find(({ node }) => node.pagePath === currentPagePath);
+	if (!current) return [];
+
+	return current.children
+		.filter(({ node }) => node.kind === 'page')
+		.map(({ node }) => node);
+};

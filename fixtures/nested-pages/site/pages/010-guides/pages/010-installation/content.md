@@ -10,6 +10,9 @@ page:
 This page should be available at `/guides/installation/` and inherit the Guides
 theme.
 
+```norna-page-list
+```
+
 ## Examples
 
 The managed image belongs to this nested page and section.

@@ -200,6 +200,23 @@ test.describe('desktop tree navigation', () => {
 			.toHaveAttribute('href', '/guides/installation/');
 	});
 
+	test('renders a direct child page list on the reading axis', async ({ page }) => {
+		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
+		const pageList = page.getByRole('navigation', { name: 'Child pages' });
+		await expect(pageList.getByRole('link')).toHaveText([
+			'macOSA third-level macOS installation page.',
+			'LinuxA third-level Linux installation page.',
+			'Windows',
+		]);
+		const listBox = await pageList.boundingBox();
+		const headingBox = await page.getByRole('heading', { level: 1, name: 'Installation' }).boundingBox();
+
+		expect(listBox).not.toBeNull();
+		expect(headingBox).not.toBeNull();
+		expect(Math.abs((listBox?.x ?? 0) - (headingBox?.x ?? 0))).toBeLessThan(2);
+		expect(Math.abs((listBox?.width ?? 0) - (headingBox?.width ?? 0))).toBeLessThan(2);
+	});
+
 	test('aligns breadcrumbs with the current page text width', async ({ page }) => {
 		await page.goto('/guides/workflows/#local-work', { waitUntil: 'networkidle' });
 		const breadcrumbBox = await page.locator('.site-breadcrumbs').boundingBox();

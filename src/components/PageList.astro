@@ -1,0 +1,33 @@
+---
+import { ArrowRight } from '@lucide/astro';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { withBasePath } from '../lib/basePath';
+
+type PageListItem = {
+	title: string;
+	pathname: string;
+	description?: string;
+};
+
+interface Props {
+	pages: PageListItem[];
+}
+
+const { pages } = Astro.props;
+---
+
+<nav class="child-page-list" aria-label={projectConfig.locale.labels.navigationChildren}>
+	<ul>
+		{pages.map((page) => (
+			<li>
+				<a href={withBasePath(projectConfig.site.basePath, page.pathname)}>
+					<span class="child-page-list-copy">
+						<strong>{page.title}</strong>
+						{page.description && <span>{page.description}</span>}
+					</span>
+					<ArrowRight aria-hidden="true" />
+				</a>
+			</li>
+		))}
+	</ul>
+</nav>

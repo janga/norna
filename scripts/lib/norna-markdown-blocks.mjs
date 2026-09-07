@@ -73,6 +73,10 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 			}),
 		}),
 	}),
+	'norna-page-list': Object.freeze({
+		description: 'Display the current page\'s listed direct child pages in navigation order.',
+		documentation: documentationLink('Child page list reference', 'content.md', 'child-page-list'),
+	}),
 });
 
 export const nornaBlockTypes = new Set(Object.keys(nornaMarkdownBlockDefinitions));
@@ -81,6 +85,7 @@ const blockTypeLabels = {
 	'norna-image-stack': 'norna-image-stack',
 	'norna-image-carousel': 'norna-image-carousel',
 	'norna-card-list': 'norna-card-list',
+	'norna-page-list': 'norna-page-list',
 };
 
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
@@ -101,6 +106,10 @@ const cardListExample = [
 	'  image: adopt.jpg',
 	'  link: /adopt/',
 	'  badge-text: Recommended',
+	'```',
+].join('\n');
+const pageListExample = [
+	'```norna-page-list',
 	'```',
 ].join('\n');
 const cardListDefinition = nornaMarkdownBlockDefinitions['norna-card-list'];
@@ -239,7 +248,11 @@ const getNornaLineAttempt = (line) => {
 };
 
 const getNornaFenceStartMessage = (type, marker = '') => {
-	const example = type === 'norna-card-list' ? cardListExample : `\`\`\`${type}\n- image: filename.jpg\n\`\`\``;
+	const example = type === 'norna-card-list'
+		? cardListExample
+		: type === 'norna-page-list'
+			? pageListExample
+			: `\`\`\`${type}\n- image: filename.jpg\n\`\`\``;
 	if (marker) {
 		return `Invalid Norna block start for "${type}". Use three backticks or three tildes. Example:\n${example}`;
 	}
@@ -517,15 +530,23 @@ const parseCardListBlock = (source, options = {}) => {
 	return { type: 'card-list', layout, flow, size, width, cards };
 };
 
+const parsePageListBlock = (source, options = {}) => {
+	if (source.trim()) {
+		fail(`${options.type} does not accept options or items. Leave the block empty. Example:\n${pageListExample}`, options);
+	}
+
+	return { type: 'page-list' };
+};
+
 export const parseNornaMarkdownBlock = (type, source, options = {}) => {
 	if (!nornaBlockTypes.has(type)) {
 		fail(getUnknownNornaBlockMessage(type), options);
 	}
 
 	const parseOptions = { ...options, type: blockTypeLabels[type] };
-	return type === 'norna-card-list'
-		? parseCardListBlock(source, parseOptions)
-		: parseImageListBlock(source, parseOptions);
+	if (type === 'norna-card-list') return parseCardListBlock(source, parseOptions);
+	if (type === 'norna-page-list') return parsePageListBlock(source, parseOptions);
+	return parseImageListBlock(source, parseOptions);
 };
 
 const getLineNumber = (source, index) => source.slice(0, index).split(/\r?\n/).length;
@@ -631,6 +652,7 @@ export const getNornaBlockImageReferences = (blocks) =>
 					line: card.line ?? block.line,
 				}));
 		}
+		if (block.type === 'page-list') return [];
 
 		return block.images.map((image) => ({
 			...image,

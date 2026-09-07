@@ -423,7 +423,7 @@ page:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list\./);
+				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list, norna-page-list\./);
 				assert.match(error.output, /Use norna-image-stack for one or more stacked images\./);
 				assert.match(error.output, /Example: ```norna-image-stack\n- image: filename\.jpg\n```/);
 				return true;
@@ -454,12 +454,56 @@ This block is no longer supported.
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Unknown Norna block "norna-note"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list\./);
+				assert.match(error.output, /Unknown Norna block "norna-note"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list, norna-page-list\./);
 				return true;
 			},
 		);
 	} finally {
 		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('norna-page-list rejects options and reports pages without direct child pages', async () => {
+	const invalid = await createTempSite();
+	try {
+		await writeFile(path.join(invalid.siteDir, 'pages', '000-home', 'content.md'), `# Invalid child page list
+
+## Pages {#pages}
+
+\`\`\`norna-page-list
+depth: all
+\`\`\`
+`);
+		await assert.rejects(
+			() => runContentScript(invalid.siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /norna-page-list does not accept options or items\. Leave the block empty\./);
+				return true;
+			},
+		);
+	} finally {
+		await rm(invalid.root, { recursive: true, force: true });
+	}
+
+	const empty = await createTempSite();
+	try {
+		await writeFile(path.join(empty.siteDir, 'pages', '000-home', 'content.md'), `# Empty child page list
+
+## Pages {#pages}
+
+\`\`\`norna-page-list
+\`\`\`
+`);
+		await assert.rejects(
+			() => runContentScript(empty.siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /norna-page-list on line \d+ has no listed direct child pages to display\. Navigation categories are not pages\./);
+				assert.match(error.output, /Fix: Add a listed direct child page or remove the block\./);
+				return true;
+			},
+		);
+	} finally {
+		await rm(empty.root, { recursive: true, force: true });
 	}
 });
 

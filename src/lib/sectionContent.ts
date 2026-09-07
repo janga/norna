@@ -36,7 +36,16 @@ type ParsedCardListBlock = {
 	width?: CardListWidth;
 	cards: CardListItem[];
 };
-type ParsedNornaBlock = ParsedImageBlock | ParsedCardListBlock;
+type ParsedPageListBlock = {
+	type: 'page-list';
+	line: number;
+};
+type ParsedNornaBlock = ParsedImageBlock | ParsedCardListBlock | ParsedPageListBlock;
+type PageListItem = {
+	title: string;
+	pathname: string;
+	description?: string;
+};
 type InlineNote = {
 	markdown: string;
 	number: number;
@@ -48,7 +57,8 @@ type SectionContentBlock =
 	| { type: 'html'; html: string }
 	| { type: 'image-stack'; images: ManagedImage[] }
 	| { type: 'image-carousel'; images: ManagedImage[] }
-	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width?: CardListWidth; cards: CardListItem[] };
+	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width?: CardListWidth; cards: CardListItem[] }
+	| { type: 'page-list'; pages: PageListItem[] };
 export type ResolvedSection = {
 	id: string | null;
 	title: string;
@@ -222,6 +232,7 @@ const resolveContentBlocks = async (
 	html: string,
 	blocks: ParsedNornaBlock[],
 	page: SitePage,
+	childPages: SitePage[],
 	inlineNotes: InlineNote[] = [],
 ) => {
 	const renderedNotes = await Promise.all(inlineNotes.map(async (note) => ({
@@ -252,6 +263,20 @@ const resolveContentBlocks = async (
 			});
 			continue;
 		}
+		if (block.type === 'page-list') {
+			if (childPages.length === 0) {
+				throw new Error(`${page.contentLabel} line ${block.line}: norna-page-list has no listed direct child pages to display. Navigation categories are not pages. Add a listed direct child page or remove the block.`);
+			}
+			resolvedBlocks.push({
+				type: 'page-list',
+				pages: childPages.map((childPage) => ({
+					title: childPage.title,
+					pathname: childPage.pathname,
+					description: childPage.entry.data.page?.description,
+				})),
+			});
+			continue;
+		}
 
 		resolvedBlocks.push({
 			type: block.type,
@@ -268,6 +293,7 @@ const resolveContentBlocks = async (
 export const getSectionsContent = async (
 	html: string,
 	page: SitePage,
+	childPages: SitePage[] = [],
 ) => {
 	const pageDocument = page.markdownDocument;
 	const sourceLabel = page.contentLabel;
@@ -326,7 +352,7 @@ export const getSectionsContent = async (
 			title,
 			titleHtml: await renderHeadingTitleHtml(bodySection.heading.source),
 			headingLevel,
-			contentBlocks: await resolveContentBlocks(content, bodySection.blocks, page, inlineNotes),
+			contentBlocks: await resolveContentBlocks(content, bodySection.blocks, page, childPages, inlineNotes),
 		});
 	}
 

@@ -79,6 +79,15 @@ try {
 	assert.match(installationHtml, /--section-body-width-desktop: min\(60ch,/);
 	assert.match(macosHtml, /--section-body-width-desktop: min\(60ch,/);
 	assert.match(installationHtml, /Three nested page levels connected in sequence/);
+	assert.match(installationHtml, /<nav class="child-page-list" aria-label="Child pages">/);
+	assert.match(installationHtml, /href="\/guides\/installation\/macos\/"[\s\S]*?<strong>macOS<\/strong>[\s\S]*?A third-level macOS installation page\./);
+	assert.match(installationHtml, /href="\/guides\/installation\/linux\/"[\s\S]*?<strong>Linux<\/strong>[\s\S]*?A third-level Linux installation page\./);
+	assert.match(installationHtml, /href="\/guides\/installation\/windows\/"[\s\S]*?<strong>Windows<\/strong>\s*<\/span>\s*<svg/);
+	assert.ok(
+		installationHtml.indexOf('<strong>macOS</strong>') < installationHtml.indexOf('<strong>Linux</strong>')
+		&& installationHtml.indexOf('<strong>Linux</strong>') < installationHtml.indexOf('<strong>Windows</strong>'),
+		'Child page lists should follow navigation order.',
+	);
 	assert.match(installationHtml, /\/original\/pages\/010-guides\/pages\/010-installation\/images\/diagram-[a-f0-9]+\.svg/);
 	assert.doesNotMatch(installationHtml, /rel="prev"/);
 	assert.match(installationHtml, /href="\/guides\/installation\/macos\/" rel="next"/);

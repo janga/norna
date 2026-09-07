@@ -6,6 +6,7 @@ import {
 	resolvePageContentsPlacement,
 } from './lib/navigation-model.mjs';
 import {
+	getDirectChildPages,
 	getListedSiteNavigationTree,
 	getSequentialPageNavigation,
 } from './lib/site-navigation-tree.mjs';
@@ -227,5 +228,19 @@ assert.deepEqual(
 );
 assert.deepEqual(getSequentialPageNavigation(sequenceTree, 'reference'), { previous: null, next: null });
 assert.deepEqual(getSequentialPageNavigation(sequenceTree, 'guides/install/private'), { previous: null, next: null });
+assert.deepEqual(
+	getDirectChildPages(sequenceTree, 'guides/install'),
+	[sequenceTree[1].children[0].children[0].node],
+);
+assert.deepEqual(
+	getDirectChildPages(sequenceTree, 'guides'),
+	[
+		sequenceTree[1].children[0].node,
+		sequenceTree[1].children[1].node,
+	],
+);
+assert.deepEqual(getDirectChildPages(sequenceTree, ''), [sequenceTree[2].node]);
+assert.deepEqual(getDirectChildPages(sequenceTree, 'guides/install/private'), []);
+assert.deepEqual(getDirectChildPages(sequenceTree, 'missing'), []);
 
 console.log('Navigation model test passed.');

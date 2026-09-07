@@ -1,8 +1,3 @@
----
-page:
-  description: A third-level Windows installation page.
----
-
 # Windows
 
 ## Install
