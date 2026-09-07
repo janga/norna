@@ -17,8 +17,8 @@ are in the [backlog process](docs/design/backlog/README.md).
   reading width and preset note lane fit without colliding with page navigation;
   otherwise preserve the normal-flow fallback.
 - [`BL-038` Selling homepage and product positioning](docs/design/backlog/BL-038-selling-homepage.md):
-  **Ready.** Turn implemented strengths into a concise, proof-led front page
-  and remove duplicated technical detail.
+  **Implemented; awaiting human review.** The proof-led front page now presents
+  implemented strengths before product boundaries and technical detail.
 
 ## Next
 
