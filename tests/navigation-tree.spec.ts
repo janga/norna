@@ -430,7 +430,7 @@ test.describe('stable automatic navigation', () => {
 test.describe('mobile tree navigation', () => {
 	test.use({ hasTouch: true, isMobile: true, viewport: mobileViewport });
 
-	test('combines the complete page tree and current-page contents', async ({ page }) => {
+	test('combines the complete page tree and expandable page contents', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		await expect(page.locator('.tree-local-navigation')).not.toBeVisible();
 		await expect(page.locator('[data-tree-navigation-toggle]')).not.toBeVisible();
@@ -459,34 +459,64 @@ test.describe('mobile tree navigation', () => {
 		await expect(releaseNotesNode.locator(':scope > details')).toHaveCount(0);
 	});
 
-	test('reserves disclosures for child pages and shows only the current page sections', async ({ page }) => {
+	test('keeps every page outline available without closing other page branches', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		const menu = page.locator('.mobile-nav-menu');
 		await menu.locator(':scope > summary').click();
 		const guidesDisclosure = menu.locator('details[data-page-path="guides"]');
 		const installationDisclosure = menu.locator('details[data-page-path="guides/installation"]');
 		const referenceDisclosure = menu.locator('details[data-page-path="reference"]');
+		const workflowsLink = menu.getByRole('link', { name: 'Workflows', exact: true });
+		const workflowsNode = workflowsLink.locator('..');
+		const workflowsSectionsDisclosure = workflowsNode.locator(':scope > .navigation-page-sections-disclosure');
 		await expect(guidesDisclosure).toHaveAttribute('open', '');
 		await expect(installationDisclosure).toHaveAttribute('open', '');
-		await expect(menu.locator('details[data-page-path="guides/workflows"]')).toHaveCount(0);
-		await expect(menu.getByRole('link', { name: 'Local work', exact: true })).toHaveCount(0);
+		await expect(workflowsSectionsDisclosure).not.toHaveAttribute('open', '');
+		await expect(menu.getByRole('link', { name: 'Local work', exact: true })).not.toBeVisible();
+		await workflowsSectionsDisclosure.locator(':scope > summary').click();
+		await expect(menu.getByRole('link', { name: 'Local work', exact: true }))
+			.toHaveAttribute('href', '/guides/workflows/#local-work');
+		await expect(menu.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
 
 		await referenceDisclosure.locator(':scope > summary').click({ force: true });
 		await expect(referenceDisclosure).toHaveAttribute('open', '');
 		await expect(guidesDisclosure).toHaveAttribute('open', '');
 		await expect(installationDisclosure).toHaveAttribute('open', '');
 
-		await menu.getByRole('link', { name: 'Workflows', exact: true }).click();
+		await workflowsLink.click();
 
 		await expect(page).toHaveURL(/\/guides\/workflows\/$/);
 		await expect(page.locator('.mobile-nav-menu')).not.toHaveAttribute('open', '');
 		await menu.locator(':scope > summary').click();
-		const workflowsNode = menu.locator('.navigation-page-node-current');
-		await expect(workflowsNode.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
-		await expect(workflowsNode.getByRole('link', { name: 'Workflows', exact: true })).toHaveAttribute('aria-current', 'page');
-		await expect(workflowsNode.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
-		await expect(menu.getByRole('link', { name: 'Prerequisites', exact: true })).toHaveCount(0);
+		const currentWorkflowsNode = menu.locator('.navigation-page-node-current');
+		await expect(currentWorkflowsNode.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
+		await expect(currentWorkflowsNode.getByRole('link', { name: 'Workflows', exact: true })).toHaveAttribute('aria-current', 'page');
+		await expect(currentWorkflowsNode.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
+		await expect(menu.getByRole('link', { name: 'Prerequisites', exact: true })).not.toBeVisible();
 		await expect(menu.locator('details[data-page-path="reference"]')).toHaveAttribute('open', '');
+	});
+
+	test('remembers an expanded page outline across mobile page navigation', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const menu = page.locator('.mobile-nav-menu');
+		await menu.locator(':scope > summary').click();
+		const workflowsLink = menu.getByRole('link', { name: 'Workflows', exact: true });
+		const workflowsSectionsDisclosure = workflowsLink.locator('..').locator(
+			':scope > .navigation-page-sections-disclosure',
+		);
+
+		await workflowsSectionsDisclosure.locator(':scope > summary').click();
+		await expect(workflowsSectionsDisclosure).toHaveAttribute('open', '');
+		await menu.getByRole('link', { name: 'Linux', exact: true }).click();
+		await expect(page).toHaveURL(/\/guides\/installation\/linux\/$/);
+
+		await menu.locator(':scope > summary').click();
+		const restoredWorkflowsLink = menu.getByRole('link', { name: 'Workflows', exact: true });
+		const restoredWorkflowsSections = restoredWorkflowsLink.locator('..').locator(
+			':scope > .navigation-page-sections-disclosure',
+		);
+		await expect(restoredWorkflowsSections).toHaveAttribute('open', '');
+		await expect(menu.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
 	});
 });
 
@@ -514,13 +544,19 @@ test.describe('tree navigation without JavaScript', () => {
 		viewport: mobileViewport,
 	});
 
-	test('keeps the page tree and route links usable', async ({ page }) => {
+	test('keeps page outlines and route links usable', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'domcontentloaded' });
 		const menu = page.locator('.mobile-nav-menu');
 		await menu.locator(':scope > summary').click();
 		await expect(menu.locator('details[data-page-path="guides"]')).toHaveAttribute('open', '');
-		await expect(menu.locator('details[data-page-path="guides/workflows"]')).toHaveCount(0);
-		await menu.getByRole('link', { name: 'Workflows', exact: true }).click();
+		const workflowsLink = menu.getByRole('link', { name: 'Workflows', exact: true });
+		const workflowsSectionsDisclosure = workflowsLink.locator('..').locator(
+			':scope > .navigation-page-sections-disclosure',
+		);
+		await workflowsSectionsDisclosure.locator(':scope > summary').click();
+		await expect(menu.getByRole('link', { name: 'Local work', exact: true }))
+			.toHaveAttribute('href', '/guides/workflows/#local-work');
+		await workflowsLink.click();
 		await expect(page).toHaveURL(/\/guides\/workflows\/$/);
 	});
 });

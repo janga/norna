@@ -44,11 +44,15 @@ test.describe('adaptive page contents on desktop', () => {
 		expect((treeBox?.x ?? 0) + (treeBox?.width ?? 0) - (chevronBox?.x ?? 0)).toBeGreaterThan(40);
 	});
 
-	test('integrates the current outline into a shallow page tree', async ({ page }) => {
+	test('integrates page outlines into expanded shallow tree branches', async ({ page }) => {
 		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
 
 		const layout = page.locator('.site-page-layout');
 		const tree = page.locator('.tree-local-navigation');
+		const referenceBranch = tree.locator('details[data-page-path="reference"]');
+		const referenceSections = referenceBranch.locator(
+			':scope > .navigation-page-branch-content > .navigation-page-sections',
+		);
 		const currentPage = tree.locator('.navigation-page-node-current');
 		const sections = currentPage.locator('.navigation-page-sections');
 
@@ -65,10 +69,13 @@ test.describe('adaptive page contents on desktop', () => {
 			'page',
 		);
 		await expect(currentPage.locator('.navigation-page-chevron')).toHaveCount(1);
-		await expect(tree.locator('details[data-page-path="reference"]')).toHaveCount(1);
+		await expect(referenceBranch).toHaveAttribute('open', '');
+		await expect(referenceSections).toBeVisible();
+		await expect(referenceSections.getByRole('link', { name: 'Reference overview', exact: true }))
+			.toHaveAttribute('href', '/reference/#reference-overview');
 		await expect(sections).toBeVisible();
 		await expect(sections.locator('.navigation-page-sections-label')).toHaveCount(0);
-		await expect(tree.locator('.navigation-page-sections')).toHaveCount(1);
+		await expect(tree.locator('.navigation-page-sections')).toHaveCount(2);
 		await expect(sections.getByRole('navigation')).toHaveCount(0);
 		await expect(sections).toHaveAttribute('aria-label', 'Page contents: Reference installation');
 		await expect(sections.getByRole('link')).toHaveText(['Install', 'Prerequisites', 'Verify']);
@@ -119,6 +126,31 @@ test.describe('adaptive page contents on desktop', () => {
 		expect(currentSectionStyle.markerContent).toBe('none');
 		expect(currentSectionStyle.textDecorationLine).toContain('underline');
 		expect(currentSectionStyle.textDecorationThickness).toBe('1.5px');
+	});
+
+	test('remembers an explicitly closed page outline across shallow page navigation', async ({ page }) => {
+		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
+
+		const currentSections = page.locator(
+			'.tree-local-navigation .navigation-page-node-current > .navigation-page-sections-disclosure',
+		);
+		await expect(currentSections).toHaveAttribute('open', '');
+		await currentSections.locator(':scope > summary').click();
+		await expect(currentSections).not.toHaveAttribute('open', '');
+
+		await page.locator(
+			'.tree-local-navigation details[data-page-path="reference"] > .navigation-page-open-link',
+		).click();
+		await expect(page).toHaveURL(/\/reference\/$/);
+		await page.locator('.tree-local-navigation').getByRole('link', {
+			name: 'Reference installation',
+			exact: true,
+		}).click();
+		await expect(page).toHaveURL(/\/reference\/installation\/$/);
+
+		await expect(page.locator(
+			'.tree-local-navigation .navigation-page-node-current > .navigation-page-sections-disclosure',
+		)).not.toHaveAttribute('open', '');
 	});
 
 	test('keeps the outline in a separate rail for every page in a deep branch', async ({ page }) => {
@@ -172,11 +204,13 @@ test.describe('adaptive page contents on desktop', () => {
 test.describe('adaptive page contents at intermediate widths', () => {
 	test.use({ hasTouch: false, isMobile: false, viewport: intermediateViewport });
 
-	test('keeps shallow contents in the tree without adding an inline duplicate', async ({ page }) => {
+	test('keeps every expanded shallow outline in the tree without adding an inline duplicate', async ({ page }) => {
 		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
 
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
-		await expect(page.locator('.tree-local-navigation .navigation-page-sections')).toBeVisible();
+		await expect(page.locator('.tree-local-navigation .navigation-page-sections')).toHaveCount(2);
+		await expect(page.getByRole('navigation', { name: 'Page contents: Reference', exact: true })).toBeVisible();
+		await expect(page.getByRole('navigation', { name: 'Page contents: Reference installation' })).toBeVisible();
 		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
 	});
 });
@@ -184,7 +218,7 @@ test.describe('adaptive page contents at intermediate widths', () => {
 test.describe('adaptive page contents on mobile', () => {
 	test.use({ hasTouch: true, isMobile: true, viewport: mobileViewport });
 
-	test('keeps the established consolidated page and section menu', async ({ page }) => {
+	test('keeps page outlines available in the consolidated page and section menu', async ({ page }) => {
 		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
 
 		const menu = page.locator('.mobile-nav-menu');
@@ -192,6 +226,8 @@ test.describe('adaptive page contents on mobile', () => {
 		const currentPage = menu.locator('.navigation-page-node-current');
 		await expect(currentPage.locator('.navigation-page-sections')).toBeVisible();
 		await expect(currentPage.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
+		await expect(menu.getByRole('link', { name: 'Reference overview', exact: true }))
+			.toHaveAttribute('href', '/reference/#reference-overview');
 	});
 });
 
@@ -203,10 +239,14 @@ test.describe('adaptive page contents without JavaScript', () => {
 		viewport: desktopViewport,
 	});
 
-	test('renders the active shallow outline as native links', async ({ page }) => {
+	test('renders expanded shallow outlines as native links', async ({ page }) => {
 		await page.goto(shallowPagePath, { waitUntil: 'domcontentloaded' });
 
+		const referenceBranch = page.locator('.tree-local-navigation details[data-page-path="reference"]');
 		const currentPage = page.locator('.tree-local-navigation .navigation-page-node-current');
+		await expect(referenceBranch).toHaveAttribute('open', '');
+		await expect(referenceBranch.getByRole('link', { name: 'Reference overview', exact: true }))
+			.toHaveAttribute('href', '/reference/#reference-overview');
 		await expect(currentPage.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
 		await expect(currentPage.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
 		await expect(currentPage.getByRole('link', { name: 'Verify', exact: true })).toBeVisible();

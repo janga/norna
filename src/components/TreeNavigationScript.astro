@@ -1,6 +1,7 @@
 <script>
 	type NavigationState = {
 		openPaths: string[];
+		sectionOpenByPath: Record<string, boolean>;
 		scrollTop: number;
 	};
 
@@ -10,12 +11,20 @@
 		const branches = Array.from(container.querySelectorAll<HTMLDetailsElement>(
 			'.navigation-page-disclosure[data-page-path]',
 		));
-		let storedState: NavigationState = { openPaths: [], scrollTop: 0 };
+		const sectionBranches = Array.from(container.querySelectorAll<HTMLDetailsElement>(
+			'.navigation-page-sections-disclosure[data-page-path]',
+		));
+		let storedState: NavigationState = { openPaths: [], sectionOpenByPath: {}, scrollTop: 0 };
 
 		try {
 			const parsedState = JSON.parse(sessionStorage.getItem(stateKey) ?? '{}');
 			storedState = {
 				openPaths: Array.isArray(parsedState.openPaths) ? parsedState.openPaths : [],
+				sectionOpenByPath: parsedState.sectionOpenByPath
+					&& typeof parsedState.sectionOpenByPath === 'object'
+					? Object.fromEntries(Object.entries(parsedState.sectionOpenByPath)
+						.filter((entry): entry is [string, boolean] => typeof entry[1] === 'boolean'))
+					: {},
 				scrollTop: Number.isFinite(Number(parsedState.scrollTop)) ? Number(parsedState.scrollTop) : 0,
 			};
 
@@ -23,6 +32,13 @@
 				const pagePath = branch.dataset.pagePath ?? '';
 				branch.open = branch.dataset.currentBranch === 'true'
 					|| storedState.openPaths.includes(pagePath);
+			});
+			sectionBranches.forEach((branch) => {
+				const pagePath = branch.dataset.pagePath ?? '';
+				const storedOpen = storedState.sectionOpenByPath[pagePath];
+				branch.open = typeof storedOpen === 'boolean'
+					? storedOpen
+					: branch.dataset.currentPage === 'true';
 			});
 
 			if (storedState.scrollTop > 0) {
@@ -39,6 +55,7 @@
 				const openBranches = branches.filter((branch) => branch.open);
 				const state: NavigationState = {
 					openPaths: openBranches.map((branch) => branch.dataset.pagePath ?? ''),
+					sectionOpenByPath: storedState.sectionOpenByPath,
 					scrollTop: container.scrollTop,
 				};
 				sessionStorage.setItem(stateKey, JSON.stringify(state));
@@ -49,6 +66,11 @@
 
 		requestAnimationFrame(() => {
 			branches.forEach((branch) => branch.addEventListener('toggle', saveState));
+			sectionBranches.forEach((branch) => branch.addEventListener('toggle', () => {
+				const pagePath = branch.dataset.pagePath ?? '';
+				storedState.sectionOpenByPath[pagePath] = branch.open;
+				saveState();
+			}));
 		});
 
 		container.addEventListener('scroll', saveState, { passive: true });

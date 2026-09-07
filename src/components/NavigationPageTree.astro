@@ -38,8 +38,6 @@ const hasPageSections = (node: SiteNavigationNode) => (
 const showsPageSections = (node: SiteNavigationNode) => (
 	integratePageSections
 	&& hasPageSections(node)
-	&& node.node.kind === 'page'
-	&& isCurrentPage(node.node)
 );
 const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' && hasBranch(node);
 ---
@@ -137,7 +135,12 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 						{node.node.title}
 					</a>
 					{showsPageSections(node) && (
-						<details class="navigation-page-sections-disclosure" open>
+						<details
+							class="navigation-page-sections-disclosure"
+							data-page-path={node.node.pagePath || '/'}
+							data-current-page={isCurrentPage(node.node) ? 'true' : undefined}
+							open={isCurrentPage(node.node)}
+						>
 							<summary
 								aria-controls={getSectionsId(node.node)}
 								aria-label={`${projectConfig.locale.labels.pageSections}: ${node.node.title}`}
@@ -152,6 +155,7 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 								<PageContentsLinks
 									headings={node.headings}
 									variant={variant === 'mobile' ? 'mobile' : 'desktop'}
+									pageHref={isCurrentPage(node.node) ? undefined : pageHref(node.node)}
 								/>
 							</nav>
 						</details>
