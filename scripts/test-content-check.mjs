@@ -51,6 +51,7 @@ const withTempProject = async ({ site, theme = defaultTheme, files, siteDirector
 	const root = await mkdtemp(path.join(tmpdir(), 'walde-content-check-'));
 
 	try {
+		await writeFixtureFile(root, `${siteDirectory}/config.yaml`, 'url: https://example.com/\n');
 		await writeFixtureFile(root, `${siteDirectory}/pages/000-home/content.md`, site);
 		await writeFixtureFile(root, `${siteDirectory}/theme.yaml`, theme);
 
