@@ -26,9 +26,6 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-011` Edit source links](docs/design/backlog/BL-011-edit-source-links.md):
-  **Ready.** Add repository-derived links after page source identity is stable;
-  keep Git-derived dates outside this item.
 - [`BL-005` Static search](docs/design/backlog/BL-005-static-search.md): **Ready.**
   Index final HTML only after page inclusion, URLs, and anchors have one shared
   contract; adopt an external indexer only after reviewing its package impact.

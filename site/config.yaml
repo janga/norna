@@ -2,4 +2,6 @@
 
 url: https://janga.github.io/norna/
 language: en
+editLink:
+  baseUrl: https://github.com/janga/norna/edit/main/
 scrollBehavior: smooth
