@@ -5,6 +5,10 @@ import {
 	resolveNavigationModel,
 	resolvePageContentsPlacement,
 } from './lib/navigation-model.mjs';
+import {
+	getListedSiteNavigationTree,
+	getSequentialPageNavigation,
+} from './lib/site-navigation-tree.mjs';
 
 const home = (headings = []) => ({
 	pagePath: '',
@@ -172,5 +176,56 @@ assert.equal(resolvePageContentsPlacement({
 	currentPage: { isHome: false, pagePath: 'guides/install' },
 	headingCount: 3,
 }).placement, 'none');
+
+const sequenceEntry = ({
+	pagePath,
+	kind = 'page',
+	parentPagePath = null,
+	listed = true,
+	title = pagePath || 'Home',
+}) => ({
+	node: {
+		isHome: pagePath === '',
+		kind,
+		navigation: { listed },
+		pagePath,
+		parentPagePath,
+		title,
+	},
+	headings: [],
+	sections: [],
+});
+const sequenceTree = getListedSiteNavigationTree([
+	sequenceEntry({ pagePath: '' }),
+	sequenceEntry({ pagePath: 'guides', kind: 'category', title: 'Guides' }),
+	sequenceEntry({ pagePath: 'guides/install', parentPagePath: 'guides', title: 'Install' }),
+	sequenceEntry({ pagePath: 'guides/install/macos', parentPagePath: 'guides/install', title: 'macOS' }),
+	sequenceEntry({ pagePath: 'guides/install/private', parentPagePath: 'guides/install', listed: false }),
+	sequenceEntry({ pagePath: 'guides/work', parentPagePath: 'guides', title: 'Work' }),
+	sequenceEntry({ pagePath: 'reference', title: 'Reference' }),
+]);
+assert.deepEqual(
+	getSequentialPageNavigation(sequenceTree, 'guides/install'),
+	{
+		previous: null,
+		next: sequenceTree[1].children[0].children[0].node,
+	},
+);
+assert.deepEqual(
+	getSequentialPageNavigation(sequenceTree, 'guides/install/macos'),
+	{
+		previous: sequenceTree[1].children[0].node,
+		next: sequenceTree[1].children[1].node,
+	},
+);
+assert.deepEqual(
+	getSequentialPageNavigation(sequenceTree, 'guides/work'),
+	{
+		previous: sequenceTree[1].children[0].children[0].node,
+		next: null,
+	},
+);
+assert.deepEqual(getSequentialPageNavigation(sequenceTree, 'reference'), { previous: null, next: null });
+assert.deepEqual(getSequentialPageNavigation(sequenceTree, 'guides/install/private'), { previous: null, next: null });
 
 console.log('Navigation model test passed.');

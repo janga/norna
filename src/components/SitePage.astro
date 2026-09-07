@@ -6,13 +6,18 @@ import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
 import SiteNavigation from './SiteNavigation.astro';
 import SiteBanners from './SiteBanners.astro';
 import PageContentsNavigation from './PageContentsNavigation.astro';
+import PageSequenceNavigation from './PageSequenceNavigation.astro';
 import SiteSection from './SiteSection.astro';
 import SiteTreeNavigation from './SiteTreeNavigation.astro';
 import TreeNavigationScript from './TreeNavigationScript.astro';
 import { getSectionsContent, type ResolvedSection } from '../lib/sectionContent';
 import { getPageTheme } from '../lib/pageThemes';
 import { getSiteModel, type SitePage } from '../lib/sitePages';
-import { flattenSiteNavigationTree, getListedSiteNavigationTree } from '../lib/siteNavigation';
+import {
+	flattenSiteNavigationTree,
+	getListedSiteNavigationTree,
+	getSequentialPageNavigation,
+} from '../lib/siteNavigation';
 import { getToday, isVisibleToday } from '../lib/visibility';
 import { getLogoAsset } from '../lib/sitePublicAssets';
 import {
@@ -95,7 +100,10 @@ const siteNavigation = siteNodes.map((node) => {
 			.map(({ id, title }) => ({ id, title })),
 	};
 });
-const renderedNavigationEntries = flattenSiteNavigationTree(getListedSiteNavigationTree(siteNavigation));
+const listedNavigationTree = getListedSiteNavigationTree(siteNavigation);
+const renderedNavigationEntries = flattenSiteNavigationTree(listedNavigationTree);
+const pageSequence = getSequentialPageNavigation(listedNavigationTree, currentPage.pagePath);
+const hasPageSequence = Boolean(pageSequence.previous || pageSequence.next);
 const navigationModel = resolveNavigationModel({
 	mode: projectConfig.navigation.mode,
 	nodes: renderedNavigationEntries.map(({ node, headings }) => ({
@@ -184,7 +192,10 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 			/>
 		)}
 		<main
-			class:list={['site-content', { 'site-content-has-breadcrumbs': reserveBreadcrumbSpace }]}
+			class:list={['site-content', {
+				'site-content-has-breadcrumbs': reserveBreadcrumbSpace,
+				'site-content-has-page-sequence': hasPageSequence,
+			}]}
 			id="main-content"
 			style={`--page-text-width: ${pageTextWidth}`}
 		>
@@ -207,6 +218,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 					prioritizeFirstImage={prioritizeFirstImage}
 				/>
 			))}
+			<PageSequenceNavigation previous={pageSequence.previous} next={pageSequence.next} />
 		</main>
 		{showContentsRail && (
 			<PageContentsNavigation

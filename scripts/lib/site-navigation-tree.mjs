@@ -52,3 +52,21 @@ export const flattenSiteNavigationTree = (nodes) => nodes.flatMap((node) => [
 	node,
 	...flattenSiteNavigationTree(node.children),
 ]);
+
+export const getSequentialPageNavigation = (nodes, currentPagePath) => {
+	const activeRoot = nodes.find((root) => (
+		flattenSiteNavigationTree([root]).some(({ node }) => node.pagePath === currentPagePath)
+	));
+	if (!activeRoot) return { previous: null, next: null };
+
+	const pages = flattenSiteNavigationTree([activeRoot])
+		.filter(({ node }) => node.kind === 'page')
+		.map(({ node }) => node);
+	const currentIndex = pages.findIndex(({ pagePath }) => pagePath === currentPagePath);
+	if (currentIndex < 0) return { previous: null, next: null };
+
+	return {
+		previous: pages[currentIndex - 1] ?? null,
+		next: pages[currentIndex + 1] ?? null,
+	};
+};

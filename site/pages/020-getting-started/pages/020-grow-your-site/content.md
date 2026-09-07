@@ -272,6 +272,10 @@ three visible levels deep keep the current page's outline in a separate rail on
 the right. On a small screen, pages, categories, and expandable page outlines
 move into one menu.
 
+At the end of each page, previous and next links follow this same listed branch
+in depth-first order. They make a guide readable in sequence without carrying
+the reader into another top-level area.
+
 Home is the exception: `000-home` is the site's front door and cannot have child
 pages or categories. Start each navigable hierarchy with another top-level
 entry beside it.

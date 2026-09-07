@@ -378,6 +378,14 @@
 		display: none;
 	}
 
+	.page-sequence-navigation {
+		grid-template-columns: 1fr;
+	}
+
+	.page-sequence-empty {
+		display: none;
+	}
+
 	.site-banners {
 		width: min(calc(100% - 2rem), var(--page-width));
 		padding-top: 0.75rem;
@@ -536,6 +544,7 @@
 	.mobile-nav-panel,
 	.site-nav-submenu > nav,
 	.card-list-item,
+	.page-sequence-link,
 	.image-carousel-button,
 	.image-carousel-position {
 		border: 1px solid CanvasText;

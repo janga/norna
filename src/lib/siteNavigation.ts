@@ -4,6 +4,7 @@ import {
 	flattenSiteNavigationTree as flattenSiteNavigationTreeShared,
 	getFirstPageInNavigationNode as getFirstPageInNavigationNodeShared,
 	getListedSiteNavigationTree as getListedSiteNavigationTreeShared,
+	getSequentialPageNavigation as getSequentialPageNavigationShared,
 } from '../../scripts/lib/site-navigation-tree.mjs';
 
 export type SiteNavigationEntry = {
@@ -26,4 +27,14 @@ export const getFirstPageInNavigationNode = (node: SiteNavigationNode): SitePage
 
 export const flattenSiteNavigationTree = (nodes: SiteNavigationNode[]): SiteNavigationNode[] => (
 	flattenSiteNavigationTreeShared(nodes) as SiteNavigationNode[]
+);
+
+export const getSequentialPageNavigation = (
+	nodes: SiteNavigationNode[],
+	currentPagePath: string,
+): { previous: SitePage | null; next: SitePage | null } => (
+	getSequentialPageNavigationShared(nodes, currentPagePath) as {
+		previous: SitePage | null;
+		next: SitePage | null;
+	}
 );

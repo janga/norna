@@ -26,9 +26,6 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-006` Previous and next page navigation](docs/design/backlog/BL-006-sequential-navigation.md):
-  **Ready.** Define ordered traversal over the stable listed page
-  graph before exposing that graph inside content.
 - [`BL-007` Explicit child page list](docs/design/backlog/BL-007-child-page-list.md):
   **Ready after `BL-006`.** Reuse its traversal rules in one explicit Markdown
   block rather than creating a parallel hierarchy.

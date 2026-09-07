@@ -141,6 +141,19 @@ test.describe('desktop tree navigation', () => {
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
 	});
 
+	test('links adjacent pages within the active top-level area', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const sequence = page.getByRole('navigation', { name: 'Page sequence' });
+		await expect(sequence).toBeVisible();
+		await expect(sequence.getByRole('link', { name: /Previous page\s+Installation/ }))
+			.toHaveAttribute('rel', 'prev');
+		const next = sequence.getByRole('link', { name: /Next page\s+Linux/ });
+		await expect(next).toHaveAttribute('rel', 'next');
+
+		await next.click();
+		await expect(page).toHaveURL(/\/guides\/installation\/linux\/$/);
+	});
+
 	test('preserves open page branches and vertical positions across navigation', async ({ page }) => {
 		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 		const localNavigation = page.locator('.tree-local-navigation');
@@ -537,6 +550,9 @@ test.describe('desktop tree navigation without JavaScript', () => {
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
 		await expect(page.locator('[data-tree-navigation-toggle]')).not.toBeVisible();
 		await expect(page.locator('.site-breadcrumbs')).toBeVisible();
+		const sequence = page.getByRole('navigation', { name: 'Page sequence' });
+		await expect(sequence.getByRole('link', { name: /Previous page\s+Installation/ })).toBeVisible();
+		await expect(sequence.getByRole('link', { name: /Next page\s+Linux/ })).toBeVisible();
 	});
 });
 

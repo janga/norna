@@ -476,6 +476,13 @@ Norna remembers explicit outline and page-branch choices during the browser
 session. Without JavaScript, the same links and native disclosure controls
 remain usable, but their state is not carried across page loads.
 
+Pages in a listed branch also receive **Previous page** and **Next page** links
+after their content. Norna follows the same numeric sibling order as navigation
+and traverses child pages depth-first. Navigation-only categories are skipped,
+and the sequence stops at the boundary of the current top-level area rather
+than continuing into another global navigation destination. The links are
+ordinary HTML and do not require JavaScript.
+
 Categories require `tree` navigation because they need disclosure behavior
 without pretending to be page links. Explicit `sections` or `top` mode is
 therefore invalid when a listed category exists.

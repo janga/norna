@@ -84,14 +84,17 @@ try {
 			navigationChildren: 'Child pages',
 			navigationMenu: 'Menu',
 			nextImage: 'Next image',
+			nextPage: 'Next page',
 			note: 'Note',
 			notFound: 'Page not found',
 			notFoundText: 'The requested page does not exist or may have moved.',
 			pageMoved: 'Page moved',
 			pageMovedText: 'This address now identifies',
 			pageNavigation: 'Page contents',
+			pageSequence: 'Page sequence',
 			pageSections: 'Sections',
 			previousImage: 'Previous image',
+			previousPage: 'Previous page',
 			readingWidth: 'Reading width',
 			readingWidthNarrow: 'Narrow',
 			readingWidthStandard: 'Standard',
@@ -120,7 +123,10 @@ try {
 	assert.equal(localizedConfig.labels.notFoundText, 'Den begärda sidan finns inte eller kan ha flyttats.');
 	assert.equal(localizedConfig.labels.pageMoved, 'Sidan har flyttats');
 	assert.equal(localizedConfig.labels.pageMovedText, 'Den här adressen identifierar nu');
+	assert.equal(localizedConfig.labels.nextPage, 'Nästa sida');
+	assert.equal(localizedConfig.labels.pageSequence, 'Sidföljd');
 	assert.equal(localizedConfig.labels.pageSections, 'Avsnitt');
+	assert.equal(localizedConfig.labels.previousPage, 'Föregående sida');
 	assert.equal(localizedConfig.labels.returnHome, 'Gå till startsidan');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');

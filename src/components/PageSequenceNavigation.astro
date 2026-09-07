@@ -1,0 +1,37 @@
+---
+import { ArrowLeft, ArrowRight } from '@lucide/astro';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { withBasePath } from '../lib/basePath';
+import type { SitePage } from '../lib/sitePages';
+
+interface Props {
+	previous: SitePage | null;
+	next: SitePage | null;
+}
+
+const { previous, next } = Astro.props;
+const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
+---
+
+{(previous || next) && (
+	<nav class="page-sequence-navigation" aria-label={projectConfig.locale.labels.pageSequence}>
+		{previous ? (
+			<a class="page-sequence-link page-sequence-previous" href={pageHref(previous)} rel="prev">
+				<ArrowLeft aria-hidden="true" />
+				<span>
+					<span class="page-sequence-direction">{projectConfig.locale.labels.previousPage}</span>
+					<span class="page-sequence-title">{previous.title}</span>
+				</span>
+			</a>
+		) : <span class="page-sequence-empty" aria-hidden="true"></span>}
+		{next ? (
+			<a class="page-sequence-link page-sequence-next" href={pageHref(next)} rel="next">
+				<span>
+					<span class="page-sequence-direction">{projectConfig.locale.labels.nextPage}</span>
+					<span class="page-sequence-title">{next.title}</span>
+				</span>
+				<ArrowRight aria-hidden="true" />
+			</a>
+		) : <span class="page-sequence-empty" aria-hidden="true"></span>}
+	</nav>
+)}

@@ -80,6 +80,9 @@ try {
 	assert.match(macosHtml, /--section-body-width-desktop: min\(60ch,/);
 	assert.match(installationHtml, /Three nested page levels connected in sequence/);
 	assert.match(installationHtml, /\/original\/pages\/010-guides\/pages\/010-installation\/images\/diagram-[a-f0-9]+\.svg/);
+	assert.doesNotMatch(installationHtml, /rel="prev"/);
+	assert.match(installationHtml, /href="\/guides\/installation\/macos\/" rel="next"/);
+	assert.doesNotMatch(rootHtml, /class="page-sequence-navigation"/);
 	assert.match(macosHtml, /data-navigation-mode="tree"/);
 	assert.match(macosHtml, /data-page-contents-placement="contents-rail"/);
 	assert.match(macosHtml, /data-section-tracking="enabled"/);
@@ -88,6 +91,9 @@ try {
 	assert.match(macosHtml, /<a href="\/guides\/installation\/">Guides<\/a>/);
 	assert.doesNotMatch(macosHtml, /class="site-nav-submenu"/);
 	assert.match(macosHtml, /href="\/guides\/installation\/macos\/" aria-current="page"/);
+	assert.match(macosHtml, /<nav class="page-sequence-navigation" aria-label="Page sequence">/);
+	assert.match(macosHtml, /href="\/guides\/installation\/" rel="prev"[\s\S]*?Previous page[\s\S]*?Installation/);
+	assert.match(macosHtml, /href="\/guides\/installation\/linux\/" rel="next"[\s\S]*?Next page[\s\S]*?Linux/);
 	assert.doesNotMatch(macosHtml, /data-tree-navigation-toggle/);
 	assert.match(macosHtml, /<details\b[^>]*data-display-settings/);
 	assert.match(macosHtml, /<input\b[^>]*data-reader-focus/);
@@ -123,6 +129,8 @@ try {
 	assert.match(referenceTreeHtml, /href="#install">Install<\/a><ol><li><a href="#prerequisites">Prerequisites<\/a>/);
 	assert.match(referenceTreeHtml, /href="#verify">Verify<\/a>/);
 	assert.doesNotMatch(referenceTreeHtml, /href="\/guides\/installation\/macos\/"/);
+	assert.match(referenceInstallationHtml, /href="\/reference\/" rel="prev"/);
+	assert.doesNotMatch(referenceInstallationHtml, /rel="next"/);
 
 	await runGit(['init']);
 	await runGit(['add', '.']);
