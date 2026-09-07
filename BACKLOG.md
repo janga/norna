@@ -26,9 +26,6 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-007` Explicit child page list](docs/design/backlog/BL-007-child-page-list.md):
-  **Ready after `BL-006`.** Reuse its traversal rules in one explicit Markdown
-  block rather than creating a parallel hierarchy.
 - [`BL-011` Edit source links](docs/design/backlog/BL-011-edit-source-links.md):
   **Ready.** Add repository-derived links after page source identity is stable;
   keep Git-derived dates outside this item.

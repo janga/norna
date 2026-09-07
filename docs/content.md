@@ -164,10 +164,10 @@ are not requested during the check.
 
 ## Norna Blocks
 
-Norna-managed local images and cards are written in Markdown fenced blocks at
-the point where they should appear in the section. Markdown determines
-placement: move the fenced block in the page file to move the rendered image,
-carousel, or card list.
+Managed local images, cards, and generated child-page lists are written in
+Markdown fenced blocks at the point where they should appear. Markdown
+determines placement: move the fenced block in the page file to move the
+rendered block.
 
 Use three or more matching backticks or tildes for fenced blocks. If you need
 to document a Norna block inside another Markdown code sample, make the outer
@@ -180,6 +180,34 @@ fence longer than the inner fence:
 ```
 ````
 ````
+
+### Child Page List
+
+Use an empty `norna-page-list` block when an overview page should show its
+direct child pages in the normal content flow:
+
+````md
+```norna-page-list
+```
+````
+
+The block takes no options or items. Norna derives its entries from the same
+page graph used by site navigation. It includes listed direct child pages in
+directory-prefix order and uses each child's H1 as the link title. When a child
+defines `page.description`, the description appears below its title; otherwise
+the entry remains title-only.
+
+The list does not recurse, include unlisted pages, or pass through navigation
+categories. Categories have no page URL, so they are omitted rather than
+rendered as links. Use a page with `content.md` instead of `category.yaml` when
+a collection needs introductory content and a generated child-page list. See
+[Pages and Categories](pages.md).
+
+Adding, moving, or removing a direct child page updates the rendered list
+without repeating page membership in Markdown. `content:check` and the build
+stop with a diagnostic if the current page has no listed direct child pages.
+The generated list consists of ordinary links and needs no client-side
+JavaScript.
 
 Image stacks and carousels use the same image-entry fields:
 
