@@ -158,3 +158,8 @@ that the expanded audience is worth the permanent complexity.
 - `BL-040` **Deferred.** Convention-based local fonts; retain built-in font
   stacks until representative sites justify the licensing, preload, fallback,
   weight, and performance contracts.
+- `BL-054` **Deferred idea.** Reconsider optional instant navigation modelled
+  on Material for MkDocs `navigation.instant` only if measurements show that
+  normal static-page navigation harms real Norna sites. Preserve ordinary
+  links and full-page fallback, fetch only likely or selected destinations,
+  and never preload the complete navigation tree.
