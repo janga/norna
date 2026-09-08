@@ -35,7 +35,7 @@ Norna.{note-ref}
 
 {note: The carousel provides controls, keyboard interaction and readable position status without page-specific components.}
 
-```carousel
+```image-carousel
 - image: carousel-one.svg
   alt: A green panel with a diagonal line.
   caption: First frame: a broad direction.
@@ -53,7 +53,7 @@ Portrait images use the same prose-aligned carousel. Its size follows available
 horizontal space without a viewport-height limit, and its controls remain next
 to the rendered stage instead of moving to the edges of a wider content area.
 
-```carousel
+```image-carousel
 - image: portrait-one.svg
   alt: A tall pale panel with a centered arch.
   caption: First portrait frame: a single vertical form.
@@ -73,7 +73,7 @@ card.{note-ref}
 
 {note: Card layout stays within named options, so the same content remains predictable at narrow widths.}
 
-```norna-card-list
+```card-list
 layout: image-top
 flow: grid
 size: m

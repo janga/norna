@@ -10,7 +10,7 @@ them a permanent home.
 Visit **Dogs** to meet two current residents, or **Adopt** to learn how the
 adoption process works.
 
-```norna-card-list
+```card-list
 layout: image-right
 flow: stack
 size: s

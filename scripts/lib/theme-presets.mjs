@@ -231,7 +231,7 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 		'blocks:',
 		'  cardList:',
 		'    # Alternatives: text, narrow, normal, wide.',
-		'    # A width written in a norna-card-list block overrides this default.',
+		'    # A width written in a card-list block overrides this default.',
 		`    width: ${blocks.cardList.width}`,
 		'',
 		'typography:',

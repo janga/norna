@@ -129,7 +129,7 @@ metadata merely to control image geometry.
 The first implementation applies to:
 
 - `image-stack`;
-- `carousel`.
+- `image-carousel`.
 
 Each component interprets the same page-level method through its own layout,
 while retaining its established caption and control behavior. Card-list images

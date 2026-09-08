@@ -132,7 +132,7 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`carousel
+\`\`\`image-carousel
 - image: first.svg
   alt: First
 - image: second.svg
@@ -189,7 +189,7 @@ page:
 
 ## Plain {#plain}
 
-\`\`\`carousel
+\`\`\`image-carousel
  - image: foo.jpg
 \`\`\`
 `);
@@ -197,7 +197,7 @@ page:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /carousel on line \d+ contains 1 image\. A carousel needs at least two images\./);
+				assert.match(error.output, /image-carousel on line \d+ contains 1 image\. An image carousel needs at least two images\./);
 				assert.match(error.output, /Image "foo\.jpg" does not exist at .*site\/pages\/000-home\/images\/foo\.jpg or anywhere under any page image root\./);
 				return true;
 			},

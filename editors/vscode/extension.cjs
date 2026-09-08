@@ -838,7 +838,7 @@ async function activate(context) {
 						].filter(Boolean).join('\n\n')), keyRange);
 					}
 				}
-				const wordRange = document.getWordRangeAtPosition(position, /(?:image-stack|carousel|norna-[a-z-]+)/);
+				const wordRange = document.getWordRangeAtPosition(position, /(?:image-stack|image-carousel|card-list|page-list|norna-[a-z-]+)/);
 				if (wordRange) {
 					const name = document.getText(wordRange);
 					const definition = service?.nornaBlockDefinitions?.[name];

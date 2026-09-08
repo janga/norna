@@ -60,7 +60,7 @@ and section-surface contrast.
 The carousel checks the relationship between image constraints, controls,
 position status, and captions.
 
-```carousel
+```image-carousel
 - image: carousel-one.svg
   alt: A green panel with a diagonal line.
   caption: First frame with a broad diagonal.
@@ -77,7 +77,7 @@ position status, and captions.
 Cards combine shape, surface, spacing, type hierarchy, links, and optional
 images.
 
-```norna-card-list
+```card-list
 layout: image-left
 flow: grid
 size: m

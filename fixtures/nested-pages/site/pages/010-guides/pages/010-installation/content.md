@@ -10,7 +10,7 @@ page:
 This page should be available at `/guides/installation/` and inherit the Guides
 theme.
 
-```norna-page-list
+```page-list
 ```
 
 ## Examples

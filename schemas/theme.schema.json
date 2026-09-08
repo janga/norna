@@ -644,7 +644,7 @@
           "properties": {
             "width": {
               "type": "string",
-              "description": "Default maximum width for card lists. A width written in a norna-card-list block overrides this value.",
+              "description": "Default maximum width for card lists. A width written in a card-list block overrides this value.",
               "oneOf": [
                 {
                   "const": "text",
@@ -671,7 +671,7 @@
                   "markdownDescription": "Allow the complete card list to use the available page-layout width.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#content-block-defaults)"
                 }
               ],
-              "markdownDescription": "```yaml\nblocks:\n  cardList:\n    width: text\n```\n\nDefault maximum width for card lists. A width written in a norna-card-list block overrides this value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#content-block-defaults)",
+              "markdownDescription": "```yaml\nblocks:\n  cardList:\n    width: text\n```\n\nDefault maximum width for card lists. A width written in a card-list block overrides this value.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#content-block-defaults)",
               "examples": [
                 "text",
                 "narrow",
@@ -685,7 +685,7 @@
           ],
           "additionalProperties": false,
           "description": "Site-wide card-list defaults.",
-          "markdownDescription": "```yaml\nblocks:\n  cardList:\n    width: text\n```\n\nSets site-wide defaults for card lists. A `width` option in an individual `norna-card-list` block overrides this setting.\n\n[Content block defaults](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#content-block-defaults)"
+          "markdownDescription": "```yaml\nblocks:\n  cardList:\n    width: text\n```\n\nSets site-wide defaults for card lists. A `width` option in an individual `card-list` block overrides this setting.\n\n[Content block defaults](https://github.com/janga/norna/blob/v0.7.23/docs/theme.md#content-block-defaults)"
         }
       },
       "additionalProperties": false,

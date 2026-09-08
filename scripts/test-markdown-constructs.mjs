@@ -311,7 +311,7 @@ const value = true;
 	}
 });
 
-test('norna-card-list images are managed image references', async () => {
+test('card-list images are managed image references', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
@@ -323,7 +323,7 @@ page:
 
 ## Help {#help}
 
-\`\`\`norna-card-list
+\`\`\`card-list
 layout: image-left
 flow: stack
 size: l
@@ -370,7 +370,7 @@ Adoption information.
 	}
 });
 
-test('content:check fails when a norna-card-list image file is missing', async () => {
+test('content:check fails when a card-list image file is missing', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
@@ -382,7 +382,7 @@ page:
 
 ## Help {#help}
 
-\`\`\`norna-card-list
+\`\`\`card-list
 - title: Adopt
   image: missing.svg
 \`\`\`
@@ -400,7 +400,7 @@ page:
 	}
 });
 
-test('content:check fails for malformed norna-card-list blocks', async () => {
+test('content:check fails for malformed card-list blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
@@ -412,7 +412,7 @@ page:
 
 ## Help {#help}
 
-\`\`\`norna-card-list
+\`\`\`card-list
 - text: Missing title
 \`\`\`
 `);
@@ -420,7 +420,7 @@ page:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid norna-card-list entry "- text: Missing title"\. Start each card with "- title: Card title"\./);
+				assert.match(error.output, /Invalid card-list entry "- text: Missing title"\. Start each card with "- title: Card title"\./);
 				return true;
 			},
 		);
@@ -429,7 +429,7 @@ page:
 	}
 });
 
-test('content:check fails for invalid norna-card-list options', async () => {
+test('content:check fails for invalid card-list options', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
@@ -441,7 +441,7 @@ page:
 
 ## Help {#help}
 
-\`\`\`norna-card-list
+\`\`\`card-list
 layout: floating
 flow: list
 size: huge
@@ -455,7 +455,7 @@ width: full
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid norna-card-list layout "floating"\. Use one of: image-top, image-left, image-right\./);
+				assert.match(error.output, /Invalid card-list layout "floating"\. Use one of: image-top, image-left, image-right\./);
 				return true;
 			},
 		);
@@ -464,7 +464,7 @@ width: full
 	}
 });
 
-test('content:check fails for invalid norna-card-list width', async () => {
+test('content:check fails for invalid card-list width', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
@@ -476,7 +476,7 @@ page:
 
 ## Help {#help}
 
-\`\`\`norna-card-list
+\`\`\`card-list
 width: full
 
 - title: Adopt
@@ -487,7 +487,7 @@ width: full
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid norna-card-list width "full"\. Use one of: text, narrow, normal, wide\./);
+				assert.match(error.output, /Invalid card-list width "full"\. Use one of: text, narrow, normal, wide\./);
 				return true;
 			},
 		);
@@ -496,7 +496,7 @@ width: full
 	}
 });
 
-test('content:check fails for invalid norna-card-list size', async () => {
+test('content:check fails for invalid card-list size', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
@@ -508,7 +508,7 @@ page:
 
 ## Help {#help}
 
-\`\`\`norna-card-list
+\`\`\`card-list
 size: huge
 
 - title: Adopt
@@ -519,7 +519,7 @@ size: huge
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid norna-card-list size "huge"\. Use one of: s, m, l, xl\./);
+				assert.match(error.output, /Invalid card-list size "huge"\. Use one of: s, m, l, xl\./);
 				return true;
 			},
 		);
@@ -580,7 +580,7 @@ page:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: image-stack, carousel, norna-card-list, norna-page-list\./);
+				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: image-stack, image-carousel, card-list, page-list\./);
 				assert.match(error.output, /Use image-stack for one or more stacked images\./);
 				assert.match(error.output, /Example: ```image-stack\n- image: filename\.jpg\n```/);
 				return true;
@@ -591,7 +591,7 @@ page:
 	}
 });
 
-test('content:check explains renamed image block names', async () => {
+test('content:check explains renamed content block names', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Renamed blocks
@@ -611,6 +611,19 @@ test('content:check explains renamed image block names', async () => {
 - image: first.jpg
 - image: second.jpg
 \`\`\`
+
+\`\`\`carousel
+- image: first.jpg
+- image: second.jpg
+\`\`\`
+
+\`\`\`norna-card-list
+- title: First card
+  text: Card text.
+\`\`\`
+
+\`\`\`norna-page-list
+\`\`\`
 `);
 
 		await assert.rejects(
@@ -618,9 +631,14 @@ test('content:check explains renamed image block names', async () => {
 			(error) => {
 				assert.match(error.output, /Norna block "norna-image-stack" was renamed to "image-stack"/);
 				assert.match(error.output, /Example: ```image-stack\n- image: filename\.jpg\n```/);
-				assert.match(error.output, /Norna block "norna-image-carousel" was renamed to "carousel"/);
-				assert.match(error.output, /Norna block "norna-carousel" was renamed to "carousel"/);
-				assert.match(error.output, /Example: ```carousel\n- image: first\.jpg\n- image: second\.jpg\n```/);
+				assert.match(error.output, /Norna block "norna-image-carousel" was renamed to "image-carousel"/);
+				assert.match(error.output, /Norna block "norna-carousel" was renamed to "image-carousel"/);
+				assert.match(error.output, /Norna block "carousel" was renamed to "image-carousel"/);
+				assert.match(error.output, /Example: ```image-carousel\n- image: first\.jpg\n- image: second\.jpg\n```/);
+				assert.match(error.output, /Norna block "norna-card-list" was renamed to "card-list"/);
+				assert.match(error.output, /Example: ```card-list\nlayout: image-top/);
+				assert.match(error.output, /Norna block "norna-page-list" was renamed to "page-list"/);
+				assert.match(error.output, /Example: ```page-list\n```/);
 				return true;
 			},
 		);
@@ -649,7 +667,7 @@ This block is no longer supported.
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Unknown Norna block "norna-note"\. Use one of: image-stack, carousel, norna-card-list, norna-page-list\./);
+				assert.match(error.output, /Unknown Norna block "norna-note"\. Use one of: image-stack, image-carousel, card-list, page-list\./);
 				return true;
 			},
 		);
@@ -658,21 +676,21 @@ This block is no longer supported.
 	}
 });
 
-test('norna-page-list rejects options and reports pages without direct child pages', async () => {
+test('page-list rejects options and reports pages without direct child pages', async () => {
 	const invalid = await createTempSite();
 	try {
 		await writeFile(path.join(invalid.siteDir, 'pages', '000-home', 'content.md'), `# Invalid child page list
 
 ## Pages {#pages}
 
-\`\`\`norna-page-list
+\`\`\`page-list
 depth: all
 \`\`\`
 `);
 		await assert.rejects(
 			() => runContentScript(invalid.siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /norna-page-list does not accept options or items\. Leave the block empty\./);
+				assert.match(error.output, /page-list does not accept options or items\. Leave the block empty\./);
 				return true;
 			},
 		);
@@ -686,13 +704,13 @@ depth: all
 
 ## Pages {#pages}
 
-\`\`\`norna-page-list
+\`\`\`page-list
 \`\`\`
 `);
 		await assert.rejects(
 			() => runContentScript(empty.siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /norna-page-list on line \d+ has no listed direct child pages to display\. Navigation categories are not pages\./);
+				assert.match(error.output, /page-list on line \d+ has no listed direct child pages to display\. Navigation categories are not pages\./);
 				assert.match(error.output, /Fix: Add a listed direct child page or remove the block\./);
 				return true;
 			},

@@ -190,7 +190,7 @@ Static image stacks remain static.
   caption: Second image.
 \`\`\`
 
-\`\`\`norna-card-list
+\`\`\`card-list
 - title: Static card
   text: Cards do not require client-side behaviour.
 \`\`\`
@@ -249,7 +249,7 @@ page:
 
 ## Details {#details}
 
-\`\`\`carousel
+\`\`\`image-carousel
 - image: first.svg
   caption: First slide.
 - image: second.svg

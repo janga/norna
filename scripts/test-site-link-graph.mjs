@@ -95,7 +95,7 @@ const workflowsSource = `# Workflows
 
 ## Local work {#local}
 
-\`\`\`norna-card-list
+\`\`\`card-list
 - title: Installation
   link: /guides/installation/#details
 \`\`\`

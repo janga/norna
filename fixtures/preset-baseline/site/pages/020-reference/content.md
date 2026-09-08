@@ -19,7 +19,7 @@ This page uses the page-level centered-fit presentation to exercise portrait med
 
 The portrait carousel makes viewport-height constraints visible.
 
-```carousel
+```image-carousel
 - image: portrait-one.svg
   alt: A tall composition with a large circle above two bars.
   caption: First portrait frame.

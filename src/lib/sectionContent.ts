@@ -265,7 +265,7 @@ const resolveContentBlocks = async (
 		}
 		if (block.type === 'page-list') {
 			if (childPages.length === 0) {
-				throw new Error(`${page.contentLabel} line ${block.line}: norna-page-list has no listed direct child pages to display. Navigation categories are not pages. Add a listed direct child page or remove the block.`);
+				throw new Error(`${page.contentLabel} line ${block.line}: page-list has no listed direct child pages to display. Navigation categories are not pages. Add a listed direct child page or remove the block.`);
 			}
 			resolvedBlocks.push({
 				type: 'page-list',

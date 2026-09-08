@@ -227,7 +227,7 @@ const addThemeHelp = (jsonSchema) => {
 	]);
 	addHelp(jsonSchema, 'blocks.cardList', [
 		yamlExample('blocks:\n  cardList:\n    width: text'),
-		'Sets site-wide defaults for card lists. A `width` option in an individual `norna-card-list` block overrides this setting.',
+		'Sets site-wide defaults for card lists. A `width` option in an individual `card-list` block overrides this setting.',
 		documentationLink('Content block defaults', 'theme.md', 'content-block-defaults'),
 	]);
 	addFieldHelp(

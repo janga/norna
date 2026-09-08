@@ -17,7 +17,7 @@ color or font. It also decides whether standalone images normally follow the
 prose edge or occupy a centered media area. Compare the presets with identical
 text, code, notes, images, captions, a carousel and cards:
 
-```norna-card-list
+```card-list
 flow: grid
 size: m
 

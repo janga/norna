@@ -12,7 +12,7 @@ rules.
 
 ## First Scope
 
-- Add an explicit `norna-page-list` block with no manually repeated membership.
+- Add an explicit `page-list` block with no manually repeated membership.
 - Derive order, titles, URLs, and optional descriptions from the page graph.
 - Keep placement under editorial control; never inject a list automatically.
 - Define how direct navigation-only categories and missing descriptions render

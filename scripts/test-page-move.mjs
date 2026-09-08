@@ -42,7 +42,7 @@ const createFixture = async (name) => {
 
 [install]: /guides/install/#steps
 
-\`\`\`norna-card-list
+\`\`\`card-list
 - title: Installation reference
   text: Open the detailed reference.
   link: /guides/install/reference/#details

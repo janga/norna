@@ -15,7 +15,7 @@ separately.
 
 Norna includes four presets:
 
-```norna-card-list
+```card-list
 flow: grid
 size: m
 

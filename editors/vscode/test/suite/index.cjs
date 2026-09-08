@@ -105,7 +105,7 @@ async function run() {
 
 	const blockPage = await openDocument('site/pages/030-block/content.md');
 	const blockItems = await getCompletions(blockPage, 4);
-	for (const block of ['image-stack', 'carousel', 'norna-card-list']) {
+	for (const block of ['image-stack', 'image-carousel', 'card-list']) {
 		assert.ok(blockItems.some((item) => labelOf(item) === block), `Missing block completion ${block}.`);
 	}
 
@@ -181,7 +181,7 @@ async function run() {
 		(items) => items.some((item) => labelOf(item) === 'image-stack'),
 		'Markdown completion did not recover after restoring a compatible editor API.',
 	);
-	assert.ok(restoredBlockItems.some((item) => labelOf(item) === 'norna-card-list'));
+	assert.ok(restoredBlockItems.some((item) => labelOf(item) === 'card-list'));
 
 	writeManifest({ ...compatibleManifest, schemaVersion: compatibleManifest.schemaVersion + 1 });
 	await vscode.commands.executeCommand('nornaEditor.refresh');

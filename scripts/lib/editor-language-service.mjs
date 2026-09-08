@@ -480,7 +480,7 @@ export const getImageCompletionContext = async ({ documentPath, source, line }) 
 	const page = getPageContext(siteRoot, documentPath);
 	if (!page) return null;
 	const fence = getOpenMarkdownFenceAtLine(source, line);
-	if (!fence || !['image-stack', 'carousel', 'norna-card-list'].includes(fence.type)) return null;
+	if (!fence || !['image-stack', 'image-carousel', 'card-list'].includes(fence.type)) return null;
 
 	const currentLine = source.replace(/\r\n?/g, '\n').split('\n')[line] ?? '';
 	if (!/^\s*(?:-\s+)?image:\s*[^\s]*$/.test(currentLine)) return null;
@@ -579,7 +579,7 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 			code: 'local-markdown-image',
 			severity: 'warning',
 			line: reference.line,
-			message: `Local Markdown image "${reference.target}" is not managed by Norna. Use image-stack, carousel, or norna-card-list for validated and synchronized site images.`,
+			message: `Local Markdown image "${reference.target}" is not managed by Norna. Use image-stack, image-carousel, or card-list for validated and synchronized site images.`,
 		});
 	}
 
@@ -639,16 +639,16 @@ export const nornaBlockDefinitions = Object.freeze({
 		...nornaMarkdownBlockDefinitions['image-stack'],
 		snippet: '```image-stack\n- image: ${1:filename.jpg}\n  alt: ${2:Alternative text}\n  caption: ${3:Caption}\n```',
 	}),
-	'carousel': Object.freeze({
-		...nornaMarkdownBlockDefinitions['carousel'],
-		snippet: '```carousel\n- image: ${1:first.jpg}\n  alt: ${2:Alternative text}\n- image: ${3:second.jpg}\n  alt: ${4:Alternative text}\n```',
+	'image-carousel': Object.freeze({
+		...nornaMarkdownBlockDefinitions['image-carousel'],
+		snippet: '```image-carousel\n- image: ${1:first.jpg}\n  alt: ${2:Alternative text}\n- image: ${3:second.jpg}\n  alt: ${4:Alternative text}\n```',
 	}),
-	'norna-card-list': Object.freeze({
-		...nornaMarkdownBlockDefinitions['norna-card-list'],
-		snippet: '```norna-card-list\nlayout: ${1|image-top,image-left,image-right|}\nflow: ${2|grid,stack|}\nsize: ${3|s,m,l,xl|}\n\n- title: ${4:Card title}\n  text: ${5:Card text}\n  image: ${6:filename.jpg}\n```',
+	'card-list': Object.freeze({
+		...nornaMarkdownBlockDefinitions['card-list'],
+		snippet: '```card-list\nlayout: ${1|image-top,image-left,image-right|}\nflow: ${2|grid,stack|}\nsize: ${3|s,m,l,xl|}\n\n- title: ${4:Card title}\n  text: ${5:Card text}\n  image: ${6:filename.jpg}\n```',
 	}),
-	'norna-page-list': Object.freeze({
-		...nornaMarkdownBlockDefinitions['norna-page-list'],
-		snippet: '```norna-page-list\n```',
+	'page-list': Object.freeze({
+		...nornaMarkdownBlockDefinitions['page-list'],
+		snippet: '```page-list\n```',
 	}),
 });

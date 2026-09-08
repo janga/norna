@@ -53,7 +53,7 @@ const blockRegion = model.sections[0];
 assert.deepEqual(blockRegion.content.map(({ kind }) => kind), ['markdown', 'norna-block']);
 assert.equal(source.slice(blockRegion.content[1].range.start, blockRegion.content[1].range.end).startsWith('```image-stack'), true);
 
-const renamedImageBlocks = await parsePageMarkdown(`# Renamed image blocks
+const renamedContentBlocks = await parsePageMarkdown(`# Renamed content blocks
 
 ## Examples {#examples}
 
@@ -70,14 +70,30 @@ const renamedImageBlocks = await parsePageMarkdown(`# Renamed image blocks
 - image: first.jpg
 - image: second.jpg
 \`\`\`
+
+\`\`\`carousel
+- image: first.jpg
+- image: second.jpg
+\`\`\`
+
+\`\`\`norna-card-list
+- title: First card
+  text: Card text.
+\`\`\`
+
+\`\`\`norna-page-list
+\`\`\`
 `, { label: 'renamed-blocks.md' });
 assert.deepEqual(
-	renamedImageBlocks.diagnostics.map(({ code }) => code),
-	['renamed-norna-block', 'renamed-norna-block', 'renamed-norna-block'],
+	renamedContentBlocks.diagnostics.map(({ code }) => code),
+	Array(6).fill('renamed-norna-block'),
 );
-assert.match(renamedImageBlocks.diagnostics[0].message, /"norna-image-stack" was renamed to "image-stack"/);
-assert.match(renamedImageBlocks.diagnostics[1].message, /"norna-image-carousel" was renamed to "carousel"/);
-assert.match(renamedImageBlocks.diagnostics[2].message, /"norna-carousel" was renamed to "carousel"/);
+assert.match(renamedContentBlocks.diagnostics[0].message, /"norna-image-stack" was renamed to "image-stack"/);
+assert.match(renamedContentBlocks.diagnostics[1].message, /"norna-image-carousel" was renamed to "image-carousel"/);
+assert.match(renamedContentBlocks.diagnostics[2].message, /"norna-carousel" was renamed to "image-carousel"/);
+assert.match(renamedContentBlocks.diagnostics[3].message, /"carousel" was renamed to "image-carousel"/);
+assert.match(renamedContentBlocks.diagnostics[4].message, /"norna-card-list" was renamed to "card-list"/);
+assert.match(renamedContentBlocks.diagnostics[5].message, /"norna-page-list" was renamed to "page-list"/);
 
 const carouselAsProse = await parsePageMarkdown(`# Carousel prose
 

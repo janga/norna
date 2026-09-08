@@ -6,7 +6,7 @@ page:
 # Dogs
 Meet Rover and Rex.
 
-```norna-card-list
+```card-list
 layout: image-top
 flow: grid
 size: s

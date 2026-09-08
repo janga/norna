@@ -38,7 +38,7 @@ Use a carousel for a related sequence that should occupy one visual position.
 Norna provides the controls, keyboard interaction, position status and caption
 switching.
 
-```carousel
+```image-carousel
 - image: carousel-one.svg
   alt: A green panel with a broad diagonal line.
   caption: First frame: a broad direction.
@@ -61,7 +61,7 @@ Use cards for a short collection of comparable choices, resources or steps.
 The block controls layout, flow and size while the root theme supplies the
 normal maximum width.
 
-```norna-card-list
+```card-list
 layout: image-top
 flow: grid
 size: m

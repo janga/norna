@@ -28,7 +28,7 @@ The authoring surface stays deliberately small. Ordinary Markdown handles
 prose, while a few built-in blocks cover image stacks, carousels, cards, and
 notes. Norna supplies the site behavior around them.
 
-```norna-card-list
+```card-list
 flow: grid
 size: m
 width: text

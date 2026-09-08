@@ -10,7 +10,7 @@ page:
 
 We rescue dogs, give them time to recover and find homes that suit their needs.
 
-```norna-card-list
+```card-list
 layout: image-right
 flow: stack
 size: s
@@ -25,7 +25,7 @@ width: narrow
 
 Adopt, foster or support the everyday work at the shelter.
 
-```norna-card-list
+```card-list
 layout: image-left
 flow: stack
 size: s

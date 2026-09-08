@@ -35,7 +35,7 @@ Text can continue after a Norna-managed image.
 This section demonstrates an image carousel without duplicating section order
 in frontmatter.
 
-```carousel
+```image-carousel
 - image: slide-one.jpg
   alt: A russet-brown dog beginning a gallop in a grassy field.
   caption: Gallop phase one: push-off.
@@ -60,7 +60,7 @@ This section is defined entirely by Markdown.
 
 Cards are very limited but may be developed in the future.
 
-```norna-card-list
+```card-list
 layout: image-right
 flow: stack
 size: s

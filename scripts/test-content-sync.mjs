@@ -312,7 +312,7 @@ page:
 
 ## Work {#work}
 
-\`\`\`carousel
+\`\`\`image-carousel
 - image: slide-one.jpg
   alt: Slide one
 - image: slide-two.jpg

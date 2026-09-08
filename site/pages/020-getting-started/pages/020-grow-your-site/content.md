@@ -176,7 +176,7 @@ source: local screenshot
 Screenshot of the same Dogs page with its mobile navigation menu open.
 -->
 
-```carousel
+```image-carousel
 - image: dog-shelter-mobile-page.png
   alt: The Dog Shelter Dogs page on a small screen with the navigation menu closed and a Menu button in the top-right corner.
   caption: The page on a small screen. Select Menu to open navigation.

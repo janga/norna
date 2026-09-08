@@ -429,7 +429,7 @@ for (const context of contentFileContexts) {
 			if (block.type !== 'page-list') continue;
 			addSectionIssue(context.contentFile, section, {
 				severity: 'error',
-				message: `norna-page-list on line ${block.line} has no listed direct child pages to display. Navigation categories are not pages.`,
+				message: `page-list on line ${block.line} has no listed direct child pages to display. Navigation categories are not pages.`,
 				fix: 'Add a listed direct child page or remove the block.',
 			});
 		}
@@ -504,7 +504,7 @@ for (const context of contentFileContexts) {
 			addSectionIssue(contentFile, section, {
 				severity: 'warning',
 				message: `Markdown image "${reference.target}" references a local image that is not managed by Norna.`,
-				fix: 'Use an image-stack, carousel, or norna-card-list block for site images that should be validated, processed and synced.',
+				fix: 'Use an image-stack, image-carousel, or card-list block for site images that should be validated, processed and synced.',
 			});
 		}
 
@@ -520,7 +520,7 @@ for (const context of contentFileContexts) {
 			if (block.type === 'image-carousel' && block.images.length < 2) {
 				addSectionIssue(contentFile, section, {
 					severity: 'error',
-					message: `carousel on line ${block.line} contains ${block.images.length} image. A carousel needs at least two images.`,
+					message: `image-carousel on line ${block.line} contains ${block.images.length} image. An image carousel needs at least two images.`,
 					fix: 'Add another image entry, or use image-stack for a single image.',
 				});
 			}

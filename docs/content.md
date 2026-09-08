@@ -157,7 +157,7 @@ match the exact relative path of a file under `site/public/`, including its
 filename and letter case.
 
 `content:check` validates inline Markdown links, shared Markdown reference
-links, and `link` fields in `norna-card-list`. It reports missing pages,
+links, and `link` fields in `card-list`. It reports missing pages,
 headings, and public files; invalid internal URLs; and links to categories.
 External URLs and protocol-relative URLs are left to their remote services and
 are not requested during the check.
@@ -183,11 +183,11 @@ fence longer than the inner fence:
 
 ### Child Page List
 
-Use an empty `norna-page-list` block when an overview page should show its
+Use an empty `page-list` block when an overview page should show its
 direct child pages in the normal content flow:
 
 ````md
-```norna-page-list
+```page-list
 ```
 ````
 
@@ -249,10 +249,10 @@ Use `image-stack` for one or more stacked images:
 
 ### Image Carousel
 
-Use `carousel` for a carousel:
+Use `image-carousel` to present two or more images as a carousel:
 
 ````md
-```carousel
+```image-carousel
 - image: first.jpg
   alt: First image.
   caption: First caption.
@@ -277,11 +277,11 @@ descriptive captions when the sequence needs more context than its alt text.
 
 ### Card List
 
-Use `norna-card-list` for a list of compact cards. Cards can include text,
+Use `card-list` for a list of compact cards. Cards can include text,
 managed images, links, and optional badge text:
 
 ````md
-```norna-card-list
+```card-list
 layout: image-top
 flow: grid
 size: m
@@ -311,7 +311,7 @@ complete list may become. To make one list an intentional exception, add an
 explicit value:
 
 ````md
-```norna-card-list
+```card-list
 width: wide
 
 - title: Featured project
@@ -379,8 +379,8 @@ Markdown image syntax is allowed for external images and public static assets:
 ```
 
 Relative local Markdown images such as `![Portrait](portrait.jpg)` are not
-managed by Norna. Use `image-stack`, `carousel`, or
-`norna-card-list` for local site images that should be validated, processed and
+managed by Norna. Use `image-stack`, `image-carousel`, or
+`card-list` for local site images that should be validated, processed and
 synced.
 
 ## Markdown Text

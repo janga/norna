@@ -68,7 +68,7 @@ body-text edge, or `centered-fit`, which centers and height-limits the media.
 These simple diagrams keep the source constant while exposing the preset's
 media constraints, caption styling, and carousel chrome.
 
-```carousel
+```image-carousel
 - image: carousel-one.svg
   alt: A green panel with a diagonal line.
   caption: First frame with a broad diagonal.
@@ -86,7 +86,7 @@ Cards combine typography, spacing, corners, links, and bounded surfaces. This
 list also makes the preset's relationship between prose width and structured
 content visible.
 
-```norna-card-list
+```card-list
 layout: image-left
 flow: grid
 size: m

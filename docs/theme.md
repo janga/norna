@@ -294,7 +294,7 @@ overrides.
 ## Image Sizing
 
 `images` controls how standalone `image-stack` and
-`carousel` blocks relate to the body text and how much space they
+`image-carousel` blocks relate to the body text and how much space they
 may use. Card-list images follow their card layout instead.
 
 The body text and media area sit inside the page's content canvas. The content
@@ -389,7 +389,7 @@ blocks:
 
 The width limits the complete list, not an individual card. Card layout,
 responsive columns, and image placement remain controlled by the
-`norna-card-list` options in the page content.
+`card-list` options in the page content.
 
 When `blocks.cardList.width` is omitted, the selected preset supplies it:
 
@@ -401,7 +401,7 @@ When `blocks.cardList.width` is omitted, the selected preset supplies it:
 | `statement` | `wide` |
 
 Without a preset or an explicit root setting, Norna uses `normal`. A `width`
-written inside one `norna-card-list` block overrides the root default for that
+written inside one `card-list` block overrides the root default for that
 list only. Page and category themes cannot change `blocks`; this keeps the
 site's normal treatment of structured blocks consistent while allowing a
 specific list to be an intentional exception.

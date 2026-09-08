@@ -15,7 +15,7 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 			}),
 		}),
 	}),
-	carousel: Object.freeze({
+	'image-carousel': Object.freeze({
 		description: 'Display two or more managed images in an interactive carousel.',
 		documentation: documentationLink('Image carousel reference', 'content.md', 'image-carousel'),
 		item: Object.freeze({
@@ -26,7 +26,7 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 			}),
 		}),
 	}),
-	'norna-card-list': Object.freeze({
+	'card-list': Object.freeze({
 		description: 'Display a structured list of cards.',
 		documentation: documentationLink('Card list reference', 'content.md', 'card-list'),
 		options: Object.freeze({
@@ -73,7 +73,7 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 			}),
 		}),
 	}),
-	'norna-page-list': Object.freeze({
+	'page-list': Object.freeze({
 		description: 'Display the current page\'s listed direct child pages in navigation order.',
 		documentation: documentationLink('Child page list reference', 'content.md', 'child-page-list'),
 	}),
@@ -83,15 +83,18 @@ export const nornaBlockTypes = new Set(Object.keys(nornaMarkdownBlockDefinitions
 
 const renamedNornaBlockTypes = Object.freeze({
 	'norna-image-stack': 'image-stack',
-	'norna-image-carousel': 'carousel',
-	'norna-carousel': 'carousel',
+	'norna-image-carousel': 'image-carousel',
+	'norna-carousel': 'image-carousel',
+	carousel: 'image-carousel',
+	'norna-card-list': 'card-list',
+	'norna-page-list': 'page-list',
 });
 
 const blockTypeLabels = {
 	'image-stack': 'image-stack',
-	carousel: 'carousel',
-	'norna-card-list': 'norna-card-list',
-	'norna-page-list': 'norna-page-list',
+	'image-carousel': 'image-carousel',
+	'card-list': 'card-list',
+	'page-list': 'page-list',
 };
 
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
@@ -102,13 +105,13 @@ const imageStackExample = [
 	'```',
 ].join('\n');
 const carouselExample = [
-	'```carousel',
+	'```image-carousel',
 	'- image: first.jpg',
 	'- image: second.jpg',
 	'```',
 ].join('\n');
 const cardListExample = [
-	'```norna-card-list',
+	'```card-list',
 	'layout: image-top',
 	'flow: grid',
 	'size: m',
@@ -121,10 +124,16 @@ const cardListExample = [
 	'```',
 ].join('\n');
 const pageListExample = [
-	'```norna-page-list',
+	'```page-list',
 	'```',
 ].join('\n');
-const cardListDefinition = nornaMarkdownBlockDefinitions['norna-card-list'];
+const blockExamples = Object.freeze({
+	'image-stack': imageStackExample,
+	'image-carousel': carouselExample,
+	'card-list': cardListExample,
+	'page-list': pageListExample,
+});
+const cardListDefinition = nornaMarkdownBlockDefinitions['card-list'];
 const cardListLayouts = new Set(Object.keys(cardListDefinition.options.layout.values));
 const cardListFlows = new Set(Object.keys(cardListDefinition.options.flow.values));
 const cardListSizes = new Set(Object.keys(cardListDefinition.options.size.values));
@@ -147,14 +156,14 @@ const getUnknownNornaBlockMessage = (type) => [
 	type === 'norna-gallery-stack'
 		? 'Use image-stack for one or more stacked images.'
 		: null,
-	type === 'norna-image-carousel' || type === 'norna-carousel'
-		? 'Use carousel for an image carousel.'
+	type === 'norna-image-carousel' || type === 'norna-carousel' || type === 'carousel'
+		? 'Use image-carousel for an image carousel.'
 		: null,
 	type === 'norna-image'
 		? 'Use image-stack for a single image or a stacked list of images.'
 		: null,
 	'Example:',
-	renamedNornaBlockTypes[type] === 'carousel' ? carouselExample : imageStackExample,
+	blockExamples[renamedNornaBlockTypes[type] ?? type] ?? imageStackExample,
 ].filter(Boolean).join(' ');
 
 const decodeScalar = (value) => {
@@ -257,7 +266,7 @@ const getNornaLineAttempt = (line) => {
 	const marker = match[1];
 	const type = match[2];
 	const isNamespacedAttempt = type.startsWith('norna-');
-	if (!isNamespacedAttempt && !nornaBlockTypes.has(type)) return null;
+	if (!isNamespacedAttempt && !nornaBlockTypes.has(type) && !renamedNornaBlockTypes[type]) return null;
 	if (!marker && type === 'carousel') return null;
 
 	return {
@@ -268,13 +277,7 @@ const getNornaLineAttempt = (line) => {
 
 const getNornaFenceStartMessage = (type, marker = '') => {
 	const supportedType = renamedNornaBlockTypes[type] ?? type;
-	const example = supportedType === 'norna-card-list'
-		? cardListExample
-		: supportedType === 'norna-page-list'
-			? pageListExample
-			: supportedType === 'carousel'
-				? carouselExample
-				: imageStackExample;
+	const example = blockExamples[supportedType] ?? imageStackExample;
 	if (marker) {
 		return `Invalid Norna block start for "${type}". Use three backticks or three tildes. Example:\n${example}`;
 	}
@@ -352,7 +355,7 @@ const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 			}
 		}
 
-		const isNornaLike = type.startsWith('norna-') || nornaBlockTypes.has(type);
+		const isNornaLike = type.startsWith('norna-') || nornaBlockTypes.has(type) || Boolean(renamedNornaBlockTypes[type]);
 		if (closingIndex === -1) {
 			if (isNornaLike) {
 				errors.push({
@@ -441,10 +444,10 @@ const parseImageListBlock = (source, options = {}) => {
 	}
 
 	if (images.length === 0) {
-		fail(`${options.type} must contain at least one image. Example:\n${imageStackExample}`, options);
+		fail(`${options.type} must contain at least one image. Example:\n${blockExamples[options.type]}`, options);
 	}
 
-	return { type: options.type === 'carousel' ? 'image-carousel' : 'image-stack', images };
+	return { type: options.type === 'image-carousel' ? 'image-carousel' : 'image-stack', images };
 };
 
 const parseCardListBlock = (source, options = {}) => {
@@ -566,8 +569,8 @@ export const parseNornaMarkdownBlock = (type, source, options = {}) => {
 	}
 
 	const parseOptions = { ...options, type: blockTypeLabels[type] };
-	if (type === 'norna-card-list') return parseCardListBlock(source, parseOptions);
-	if (type === 'norna-page-list') return parsePageListBlock(source, parseOptions);
+	if (type === 'card-list') return parseCardListBlock(source, parseOptions);
+	if (type === 'page-list') return parsePageListBlock(source, parseOptions);
 	return parseImageListBlock(source, parseOptions);
 };
 

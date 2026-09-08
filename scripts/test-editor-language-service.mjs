@@ -263,21 +263,21 @@ try {
 		nornaBlockDefinitions['image-stack'].documentation,
 		new RegExp(`/blob/${documentationRef.replaceAll('.', '\\.')}\/docs/content\\.md#image-stack`),
 	);
-	assert.match(nornaBlockDefinitions['carousel'].documentation, /docs\/content\.md#image-carousel/);
-	assert.match(nornaBlockDefinitions['norna-card-list'].documentation, /docs\/content\.md#card-list/);
-	assert.match(nornaBlockDefinitions['norna-page-list'].documentation, /docs\/content\.md#child-page-list/);
-	assert.equal(nornaBlockDefinitions['norna-page-list'].snippet, '```norna-page-list\n```');
-	assert.equal(nornaBlockDefinitions['norna-card-list'].options.layout.default, 'image-top');
-	assert.equal(nornaBlockDefinitions['norna-card-list'].options.width.default, undefined);
-	assert.match(nornaBlockDefinitions['norna-card-list'].options.width.description, /root theme/);
-	assert.doesNotMatch(nornaBlockDefinitions['norna-card-list'].snippet, /^width:/m);
+	assert.match(nornaBlockDefinitions['image-carousel'].documentation, /docs\/content\.md#image-carousel/);
+	assert.match(nornaBlockDefinitions['card-list'].documentation, /docs\/content\.md#card-list/);
+	assert.match(nornaBlockDefinitions['page-list'].documentation, /docs\/content\.md#child-page-list/);
+	assert.equal(nornaBlockDefinitions['page-list'].snippet, '```page-list\n```');
+	assert.equal(nornaBlockDefinitions['card-list'].options.layout.default, 'image-top');
+	assert.equal(nornaBlockDefinitions['card-list'].options.width.default, undefined);
+	assert.match(nornaBlockDefinitions['card-list'].options.width.description, /root theme/);
+	assert.doesNotMatch(nornaBlockDefinitions['card-list'].snippet, /^width:/m);
 
 	const stackFieldSource = homeSource.replace('- image: portrait.jpg', '- image: portrait.jpg\n  ');
 	const stackFieldLine = stackFieldSource.split('\n').findIndex((line) => line === '  ');
 	const stackFieldCompletion = getNornaBlockCompletionContext({ source: stackFieldSource, line: stackFieldLine });
 	assert.deepEqual(stackFieldCompletion.candidates.map(({ key }) => key), ['alt', 'caption']);
 
-	const cardValueSource = `${homeSource}\n\`\`\`norna-card-list\nlayout: \n\`\`\`\n`;
+	const cardValueSource = `${homeSource}\n\`\`\`card-list\nlayout: \n\`\`\`\n`;
 	const cardValueLine = cardValueSource.split('\n').findIndex((line) => line === 'layout: ');
 	const cardValueCompletion = getNornaBlockCompletionContext({ source: cardValueSource, line: cardValueLine });
 	assert.equal(cardValueCompletion.mode, 'value');
