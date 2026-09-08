@@ -13,9 +13,10 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Now` contains at most three active items in exact technical order.
 
 - [`BL-043` Use margin notes when they fit](docs/design/backlog/BL-043-focus-reading-margin-notes.md):
-  **Implemented; awaiting human review.** Use the margin when the selected
-  reading width and preset note lane fit without colliding with page navigation;
-  otherwise preserve the normal-flow fallback.
+  **Partially implemented.** Use the margin when the selected reading width and
+  preset note lane fit without colliding with page navigation or a wide content
+  block; otherwise preserve the normal-flow fallback. The general wide-block
+  boundary remains to be implemented.
 - [`BL-038` Selling homepage and product positioning](docs/design/backlog/BL-038-selling-homepage.md):
   **Implemented; awaiting human review.** The proof-led front page now presents
   implemented strengths before product boundaries and technical detail.
@@ -38,6 +39,15 @@ smaller page-graph additions they can reuse.
   **Implemented; awaiting human review and documentation.** Ordinary code
   fences now accept one closed title and line-emphasis grammar with shared
   diagnostics, accessible static output, and copy-safe source text.
+- [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
+  **Ready after `BL-043` Use margin notes when they fit.** Give Markdown tables
+  an accessible wide-data layout, additional room in Focus reading, sticky
+  column headings where compatible, and horizontal scrolling as the narrow
+  layout fallback.
+- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
+  **Ready after `BL-055` Wide, readable tables with sticky headings.** Replace
+  persistent rails with an overlay navigation trigger while keeping the full
+  site hierarchy reachable and the reading layout stable.
 
 ## External Gate
 
@@ -108,8 +118,6 @@ or `Later` only after the stated evidence or design decision exists.
 - [`BL-053` Accessible mathematics](docs/design/backlog/BL-053-accessible-mathematics.md):
   **Needs evidence and syntax review.** Keep static conversion as the migration
   path until scientific or mathematical Norna sites justify native rendering.
-- `BL-055` **Sticky table headings. Needs evidence.** Keep table column
-  headings visible while scrolling long tables.
 - `BL-018` **Needs evidence.** Extend cross-page sync to whole-section metadata
   or additional assets only when a real section-bound resource exists; retain
   unambiguous discovery and never guess.

@@ -4,7 +4,8 @@
 
 Show numbered notes in the available right margin whenever the current desktop
 layout has enough room for the selected reading width, note width, and note
-gap. Keep notes in the normal reading flow when that complete lane does not fit.
+gap, and no wide content block needs the same space. Keep notes in the normal
+reading flow when that complete lane is unavailable.
 
 ## Observed Behavior
 
@@ -40,6 +41,18 @@ need for a new layout model.
 - Count the reserved right track as available note space when no contents rail
   is rendered or when Focus reading hides that rail. Do not move or resize the
   reading column to reclaim it.
+- Treat the note lane as a shared layout resource rather than special-casing
+  tables or named media components. A block claims the lane whenever its
+  resolved inline box extends beyond the reading width into that space.
+- Prevent a margin note and a lane-claiming block from occupying the same
+  vertical region. Render the affected note in normal flow instead of
+  shrinking, shifting, or overlaying the block.
+- Apply the same boundary to wide tables, managed images, carousels, card
+  lists, diagrams, and future content blocks whenever their resolved layout
+  claims the note lane. Blocks that remain within the reading width do not
+  affect note placement.
+- Keep the boundary local. A wide block must not force unrelated notes before
+  or after its occupied region into normal flow.
 - Keep notes in normal flow below that breakpoint.
 - Reuse the established note width and gap variables; add no theme setting or
   author-facing Markdown option.
@@ -58,6 +71,11 @@ need for a new layout model.
   contents rail without moving the reading column.
 - A shallow tree-navigation page without a contents rail lets the same wide
   note use its empty reserved right track.
+- A note that would overlap any block claiming the note lane falls back to
+  normal flow, while notes outside that occupied region can still use the
+  margin.
+- Adding a new lane-claiming block type does not require a component-specific
+  note-placement rule.
 - The note and its gap fit within the centered page layout without horizontal
   overflow or collision with the prose or contents rail.
 - Below `1101px`, the note remains in normal flow regardless of Focus reading.
