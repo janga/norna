@@ -39,6 +39,8 @@ const noteLaneBoundaryComponents = await Promise.all([
 ].map((fileName) => readFile(path.join(repoRoot, 'src', 'components', fileName), 'utf8')));
 const tableRenderPlugin = await readFile(path.join(repoRoot, 'scripts', 'lib', 'table-render-plugin.mjs'), 'utf8');
 const tableOverflowScript = await readFile(path.join(repoRoot, 'src', 'components', 'TableOverflowScript.astro'), 'utf8');
+const siteNavigationSource = await readFile(path.join(repoRoot, 'src', 'components', 'SiteNavigation.astro'), 'utf8');
+const sectionNavigationScript = await readFile(path.join(repoRoot, 'src', 'components', 'SectionNavigationScript.astro'), 'utf8');
 
 for (const paletteName of presentationPaletteNames) {
 	const palette = getPresentationPalette(paletteName);
@@ -254,6 +256,38 @@ for (const requiredSource of [
 		tableOverflowScript,
 		new RegExp(requiredSource.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'),
 		'table overflow enhancement must expose measured, keyboard-reachable overflow state',
+	);
+}
+assert.match(
+	stylesheet,
+	/:root\[data-reader-preferences-ready='true'\]\[data-focus-reading='on'\] \.mobile-nav-menu\s*\{[\s\S]*?display:\s*block/u,
+	'Focus reading must expose the compact navigation trigger only after its enhancement is ready',
+);
+assert.match(
+	stylesheet,
+	/:root\[data-reader-preferences-ready='true'\]\[data-focus-reading='on'\] :is\([\s\S]*?\.site-nav,[\s\S]*?\.tree-local-navigation,[\s\S]*?\.page-contents-navigation/u,
+	'Focus reading must replace persistent navigation with the compact trigger',
+);
+assert.match(
+	siteNavigationSource,
+	/data-compact-navigation-panel[\s\S]*?role="dialog"[\s\S]*?aria-modal="true"/u,
+	'the compact navigation overlay must expose modal dialog semantics',
+);
+assert.match(
+	siteNavigationSource,
+	/data-compact-navigation-close[\s\S]*?aria-label=\{projectConfig\.locale\.labels\.closeNavigation\}/u,
+	'the compact navigation overlay must provide a localized close control',
+);
+for (const requiredSource of [
+	"element.setAttribute('inert', '')",
+	"element.removeAttribute('inert')",
+	'mobileMenuClose?.focus()',
+	'mobileMenuSummary?.focus()',
+]) {
+	assert.match(
+		sectionNavigationScript,
+		new RegExp(requiredSource.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'),
+		'compact navigation must contain focus and restore the surrounding document',
 	);
 }
 

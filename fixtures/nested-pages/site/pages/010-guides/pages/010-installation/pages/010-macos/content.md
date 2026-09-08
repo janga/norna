@@ -24,3 +24,9 @@ Add details that belong under the installation step.
 Explain how the reader can verify the installation. {note-ref}
 
 {note: This third note makes spacing and vertical order easier to inspect while scrolling.}
+
+| Check | Command | Expected result | Recovery |
+| --- | --- | --- | --- |
+| Runtime | `node --version` | A supported Node.js version | Install the current supported release |
+| Configuration | `norna config:check` | Configuration check passed | Correct the reported file and key |
+| Content | `norna content:check` | Content check passed | Correct the reported page or image reference |

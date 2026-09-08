@@ -82,6 +82,7 @@ try {
 			calloutNote: 'Note',
 			calloutTip: 'Tip',
 			calloutWarning: 'Warning',
+			closeNavigation: 'Close navigation',
 			editSource: 'Edit this page',
 			displaySettings: 'Display',
 			focusReading: 'Focus reading',

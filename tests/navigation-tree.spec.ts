@@ -128,6 +128,12 @@ test.describe('desktop tree navigation', () => {
 		const localNavigation = page.locator('.tree-local-navigation');
 		const breadcrumbs = page.locator('.site-breadcrumbs');
 		const settings = page.locator('[data-display-settings]');
+		const tableFrame = page.locator('[data-table-frame]');
+		const prose = tableFrame.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " section-markdown ")]');
+		const [tableBefore, proseBefore] = await Promise.all([
+			tableFrame.boundingBox(),
+			prose.boundingBox(),
+		]);
 
 		await expect(page.locator('[data-tree-navigation-toggle]')).toHaveCount(0);
 		await settings.locator('summary').click();
@@ -140,6 +146,39 @@ test.describe('desktop tree navigation', () => {
 		await expect(page.locator('.site-nav')).toBeHidden();
 		await expect(breadcrumbs).toBeHidden();
 		await expect(settings.locator('summary')).toBeVisible();
+		const [tableAfterFocus, proseAfterFocus] = await Promise.all([
+			tableFrame.boundingBox(),
+			prose.boundingBox(),
+		]);
+		expect(tableAfterFocus?.x).toBeCloseTo(tableBefore?.x ?? 0, 0);
+		expect(tableAfterFocus?.width ?? 0).toBeGreaterThan((tableBefore?.width ?? 0) + 100);
+		expect(proseAfterFocus?.x).toBeCloseTo(proseBefore?.x ?? 0, 0);
+		expect(proseAfterFocus?.width).toBeCloseTo(proseBefore?.width ?? 0, 0);
+		const compactNavigation = page.locator('[data-compact-navigation]');
+		const compactTrigger = compactNavigation.locator(':scope > summary');
+		const contentBoundsBefore = await page.locator('.site-content').boundingBox();
+		const scrollBefore = await page.evaluate(() => window.scrollY);
+		await expect(compactTrigger).toBeVisible();
+		await compactTrigger.click();
+		const compactPanel = compactNavigation.locator('[data-compact-navigation-panel]');
+		await expect(compactPanel).toBeVisible();
+		await expect(compactPanel).toHaveAttribute('role', 'dialog');
+		await expect(compactPanel).toHaveAttribute('aria-modal', 'true');
+		await expect(page.locator('.site-page-layout')).toHaveAttribute('inert', '');
+		await expect(compactPanel.getByRole('button', { name: 'Close navigation' })).toBeFocused();
+		await page.keyboard.press('Escape');
+		await expect(compactNavigation).not.toHaveAttribute('open', '');
+		await expect(page.locator('.site-page-layout')).not.toHaveAttribute('inert', '');
+		await expect(compactTrigger).toBeFocused();
+		const [contentBoundsAfter, tableAfterMenu] = await Promise.all([
+			page.locator('.site-content').boundingBox(),
+			tableFrame.boundingBox(),
+		]);
+		expect(contentBoundsAfter?.x).toBeCloseTo(contentBoundsBefore?.x ?? 0, 0);
+		expect(contentBoundsAfter?.width).toBeCloseTo(contentBoundsBefore?.width ?? 0, 0);
+		expect(tableAfterMenu?.x).toBeCloseTo(tableAfterFocus?.x ?? 0, 0);
+		expect(tableAfterMenu?.width).toBeCloseTo(tableAfterFocus?.width ?? 0, 0);
+		expect(await page.evaluate(() => window.scrollY)).toBeCloseTo(scrollBefore, 0);
 		expect((await context.cookies()).find(({ name }) => name === 'norna-focus-reading')?.value).toBe('on');
 
 		await page.goto('/guides/workflows/', { waitUntil: 'networkidle' });

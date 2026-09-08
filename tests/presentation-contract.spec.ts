@@ -92,7 +92,7 @@ test('wide Markdown tables scroll without widening the page', async ({ page }) =
 	))).toBeLessThan(0.1);
 });
 
-test('Focus reading gives tables the released auxiliary lane without moving prose', async ({ page }) => {
+test('Focus reading preserves a table already using the vacant auxiliary lane', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await openComponents(page);
 	const section = page.locator('.site-section').filter({ has: page.locator('#data-table') });
@@ -110,7 +110,7 @@ test('Focus reading gives tables the released auxiliary lane without moving pros
 	expect(before.every(Boolean)).toBe(true);
 	expect(after.every(Boolean)).toBe(true);
 	expect(after[0]?.x).toBeCloseTo(before[0]?.x ?? 0, 0);
-	expect(after[0]?.width ?? 0).toBeGreaterThan((before[0]?.width ?? 0) + 100);
+	expect(after[0]?.width).toBeCloseTo(before[0]?.width ?? 0, 0);
 	expect(after[1]?.x).toBeCloseTo(before[1]?.x ?? 0, 0);
 	expect(after[1]?.width).toBeCloseTo(before[1]?.width ?? 0, 0);
 });
@@ -810,7 +810,7 @@ test('focus reading preserves content geometry and the reading position', async 
 	expect(geometryAfter.every(Boolean)).toBe(true);
 	expect(stickyHeaderBefore).not.toBeNull();
 	expect(stickyHeaderAfter).not.toBeNull();
-	expect(stickyHeaderAfter?.height ?? Infinity).toBeLessThan(stickyHeaderBefore?.height ?? 0);
+	expect(stickyHeaderAfter?.height).toBeCloseTo(stickyHeaderBefore?.height ?? 0, 0);
 	expect(headingTopAfter).toBeCloseTo(headingTopBefore, 0);
 	for (const [index, rectangle] of geometryBefore.entries()) {
 		expect(geometryAfter[index]?.x).toBeCloseTo(rectangle?.x ?? 0, 0);

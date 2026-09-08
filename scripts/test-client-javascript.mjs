@@ -110,7 +110,9 @@ One section still provides a useful navigation destination after the page title.
 	assertUniversalReadingWidth(oneSectionHtml, 'A single page with section navigation');
 	assert.match(oneSectionHtml, /<nav class="page-nav" aria-label="Page contents">/);
 	assert.match(oneSectionHtml, /class="page-nav-page-top" data-page-top href="\/">One section<\/a>/);
-	assert.match(oneSectionHtml, /class="mobile-nav-menu"/);
+	assert.match(oneSectionHtml, /class="mobile-nav-menu" data-compact-navigation/);
+	assert.match(oneSectionHtml, /data-compact-navigation-panel role="dialog" aria-modal="true" aria-label="Menu"/);
+	assert.match(oneSectionHtml, /data-compact-navigation-close aria-label="Close navigation"/);
 	assert.match(oneSectionHtml, /href="#intro"/);
 
 	await writeFile(path.join(homeDir, 'content.md'), `---

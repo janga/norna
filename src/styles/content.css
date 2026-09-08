@@ -447,7 +447,8 @@ ul {
 
 @media (min-width: 1101px) {
 	.site-page-layout-tree:not(.site-page-layout-contents) .section-markdown > .norna-table-frame,
-	:root[data-focus-reading='on'] .site-page-layout-tree .section-markdown > .norna-table-frame {
+	:root[data-reader-preferences-ready='true'][data-focus-reading='on']
+		.site-page-layout-tree .section-markdown > .norna-table-frame {
 		width: calc(100cqi + var(--contents-navigation-width) + var(--tree-layout-gap));
 	}
 
@@ -462,10 +463,8 @@ ul {
 	}
 }
 
-:root[data-focus-reading='on'] :is(
-	.site-nav-leading,
+:root[data-reader-preferences-ready='true'][data-focus-reading='on'] :is(
 	.site-nav,
-	.mobile-nav-menu,
 	.page-nav,
 	.tree-local-navigation,
 	.page-contents-navigation,
@@ -475,36 +474,33 @@ ul {
 	display: none !important;
 }
 
-:root[data-focus-reading='on'] .site-nav-row {
-	justify-content: flex-end;
-}
-
 @media (min-width: 701px) {
-	:root[data-focus-reading='on'] .site-page-layout-tree {
+	:root[data-reader-preferences-ready='true'][data-focus-reading='on'] .site-page-layout-tree {
 		display: grid;
 		grid-template-columns: var(--tree-navigation-width) minmax(0, 1fr);
 		gap: var(--tree-layout-gap);
 		width: min(calc(100% - (var(--content-gutter) * 2)), var(--tree-layout-width));
 	}
 
-	:root[data-focus-reading='on'] .site-page-layout-tree > .site-content {
+	:root[data-reader-preferences-ready='true'][data-focus-reading='on'] .site-page-layout-tree > .site-content {
 		grid-column: 2;
 		width: 100%;
 	}
 
-	:root[data-focus-reading='on'] .site-page-layout-tree .site-section::before {
+	:root[data-reader-preferences-ready='true'][data-focus-reading='on'] .site-page-layout-tree .site-section::before {
 		left: 0;
 		right: calc(0px - var(--tree-layout-outer-margin));
 	}
 }
 
 @media (min-width: 1101px) {
-	:root[data-focus-reading='on'] .site-page-layout-tree {
+	:root[data-reader-preferences-ready='true'][data-focus-reading='on'] .site-page-layout-tree {
 		grid-template-columns: var(--tree-navigation-width) minmax(0, 1fr) var(--contents-navigation-width);
 	}
 }
 
-:root[data-focus-reading='on'] .site-content-has-breadcrumbs > .site-section:first-of-type {
+:root[data-reader-preferences-ready='true'][data-focus-reading='on']
+	.site-content-has-breadcrumbs > .site-section:first-of-type {
 	padding-top: var(--space-nav-to-first-section);
 }
 

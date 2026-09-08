@@ -40,14 +40,14 @@ smaller page-graph additions they can reuse.
   fences now accept one closed title and line-emphasis grammar with shared
   diagnostics, accessible static output, and copy-safe source text.
 - [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
-  **Implemented; awaiting consolidated browser and human review.** Markdown
-  tables now have an accessible wide-data layout, directional overflow cues,
-  additional room in Focus reading, sticky headings where compatible, and a
-  bounded horizontal-scrolling fallback.
+  **Implemented and browser-tested; awaiting human review and documentation.**
+  Markdown tables now have an accessible wide-data layout, directional
+  overflow cues, additional room in Focus reading, sticky headings where
+  compatible, and a bounded horizontal-scrolling fallback.
 - [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
-  **Ready after `BL-055` Wide, readable tables with sticky headings.** Replace
-  persistent rails with an overlay navigation trigger while keeping the full
-  site hierarchy reachable and the reading layout stable.
+  **Implemented and browser-tested; awaiting human review and documentation.**
+  Focus reading replaces persistent rails with an accessible overlay that
+  reuses the full site hierarchy without moving the reading layout.
 
 ## External Gate
 

@@ -1,5 +1,5 @@
 ---
-import { Search } from '@lucide/astro';
+import { Menu, Search, X } from '@lucide/astro';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
@@ -177,56 +177,76 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 					<DisplaySettings controls={readerPreferences.controls} defaults={readerPreferences.defaults} />
 				)}
 
-				{showMobileNavigation && <details class="mobile-nav-menu">
-			<summary>
-				<span>{projectConfig.locale.labels.navigationMenu}</span>
-			</summary>
-			<div class="mobile-nav-panel">
-			<div class="mobile-site-nav" data-navigation-root={pageHref(homePage)}>
-					{showSiteNavigation && (
-						<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.siteNavigation}>
-							<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>
-							<NavigationTreeControls
-								idPrefix="mobile-tree-navigation"
-								nodes={siteNavigationTree}
-							/>
-							<NavigationPageTree
-								nodes={siteNavigationTree}
-								currentPage={currentPage}
-								variant="mobile"
-								integratePageSections={navigationMode === 'tree'}
-							/>
-						</nav>
-					)}
+					{showMobileNavigation && (
+						<details class="mobile-nav-menu" data-compact-navigation>
+							<summary>
+								<span>{projectConfig.locale.labels.navigationMenu}</span>
+								<Menu class="mobile-nav-trigger-icon mobile-nav-trigger-open" aria-hidden="true" />
+								<X class="mobile-nav-trigger-icon mobile-nav-trigger-close" aria-hidden="true" />
+							</summary>
+							<div
+								class="mobile-nav-panel"
+								data-compact-navigation-panel
+								role="dialog"
+								aria-modal="true"
+								aria-label={projectConfig.locale.labels.navigationMenu}
+							>
+								<div class="mobile-nav-panel-actions">
+									<button
+										type="button"
+										class="mobile-nav-close"
+										data-compact-navigation-close
+										aria-label={projectConfig.locale.labels.closeNavigation}
+									>
+										<X aria-hidden="true" />
+									</button>
+								</div>
+								<div class="mobile-site-nav" data-navigation-root={pageHref(homePage)}>
+									{showSiteNavigation && (
+										<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.siteNavigation}>
+											<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>
+											<NavigationTreeControls
+												idPrefix="mobile-tree-navigation"
+												nodes={siteNavigationTree}
+											/>
+											<NavigationPageTree
+												nodes={siteNavigationTree}
+												currentPage={currentPage}
+												variant="mobile"
+												integratePageSections={navigationMode === 'tree'}
+											/>
+										</nav>
+									)}
 
-					{navigationMode !== 'tree' && hasCurrentPageSectionMenu && currentPageNavigation && currentPage && (
-						<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.pageNavigation}>
-							{!showSinglePageTopLink && (
-								<h2 tabindex="-1">{projectConfig.locale.labels.pageNavigation}</h2>
-							)}
-							<ul class="mobile-nav-sections">
-								{showSinglePageTopLink && (
-									<li class="mobile-nav-page-top-item">
-										<a
-											class="mobile-nav-destination mobile-nav-page-top"
-											data-page-top
-											href={pageHref(currentPage)}
-										>
-											{currentPage.title}
-										</a>
-									</li>
-								)}
-									{currentPageNavigation.sections.map((section) => (
-										<li>
-											<a class="mobile-nav-destination" href={`#${section.id}`}>{section.title}</a>
-										</li>
-								))}
-							</ul>
-						</nav>
+									{navigationMode !== 'tree' && hasCurrentPageSectionMenu && currentPageNavigation && currentPage && (
+										<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.pageNavigation}>
+											{!showSinglePageTopLink && (
+												<h2 tabindex="-1">{projectConfig.locale.labels.pageNavigation}</h2>
+											)}
+											<ul class="mobile-nav-sections">
+												{showSinglePageTopLink && (
+													<li class="mobile-nav-page-top-item">
+														<a
+															class="mobile-nav-destination mobile-nav-page-top"
+															data-page-top
+															href={pageHref(currentPage)}
+														>
+															{currentPage.title}
+														</a>
+													</li>
+												)}
+												{currentPageNavigation.sections.map((section) => (
+													<li>
+														<a class="mobile-nav-destination" href={`#${section.id}`}>{section.title}</a>
+													</li>
+												))}
+											</ul>
+										</nav>
+									)}
+								</div>
+							</div>
+						</details>
 					)}
-				</div>
-			</div>
-				</details>}
 			</div>
 		</div>
 	)}

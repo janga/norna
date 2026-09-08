@@ -165,7 +165,7 @@ const marginNoteLayoutCss = [
 		[
 			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} - ${vacantContentsTrackWidth})) {`,
 			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note,`,
-			`:root[data-reading-width="${readingWidth}"][data-focus-reading="on"] .site-page-layout-tree .section-note {`,
+			`:root[data-reader-preferences-ready="true"][data-reading-width="${readingWidth}"][data-focus-reading="on"] .site-page-layout-tree .section-note {`,
 				marginNoteDeclarations,
 			'}',
 		'}',
