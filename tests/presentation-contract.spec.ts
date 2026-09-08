@@ -115,6 +115,71 @@ test('Focus reading preserves a table already using the vacant auxiliary lane', 
 	expect(after[1]?.width).toBeCloseTo(before[1]?.width ?? 0, 0);
 });
 
+test('Focus reading releases both side lanes only for a table that needs them', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openComponents(page);
+	const layout = page.locator('.site-page-layout-tree');
+	const navigation = page.locator('.tree-local-navigation');
+	const prose = page.locator('.site-section').filter({ has: page.locator('#data-table') }).locator('.section-markdown');
+	const frame = prose.locator('[data-table-frame]');
+	const table = frame.locator('table');
+	const [layoutBefore, navigationBefore, proseBefore] = await Promise.all([
+		layout.boundingBox(),
+		navigation.boundingBox(),
+		prose.boundingBox(),
+	]);
+	expect(layoutBefore).not.toBeNull();
+	expect(navigationBefore).not.toBeNull();
+	expect(proseBefore).not.toBeNull();
+	const normalEndWidth = (layoutBefore?.x ?? 0) + (layoutBefore?.width ?? 0) - (proseBefore?.x ?? 0);
+	const targetWidth = normalEndWidth + (((layoutBefore?.width ?? 0) - normalEndWidth) / 2);
+
+	await table.evaluate((element, width) => {
+		element.style.width = `${width}px`;
+		element.style.minWidth = `${width}px`;
+		element.style.tableLayout = 'fixed';
+	}, targetWidth);
+	await expect(frame).toHaveAttribute('data-table-layout', 'canvas');
+	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
+	const normalFrame = await frame.boundingBox();
+	expect(normalFrame?.x ?? 0).toBeGreaterThanOrEqual(
+		(navigationBefore?.x ?? 0) + (navigationBefore?.width ?? 0),
+	);
+
+	const settings = page.locator('[data-display-settings]');
+	await settings.locator('summary').click();
+	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+	await expect(frame).toHaveAttribute('data-table-layout', 'canvas');
+	await expect(frame).toHaveAttribute('data-table-overflow', 'false');
+	const [layoutAfter, frameAfter, proseAfter, tableAfter] = await Promise.all([
+		layout.boundingBox(),
+		frame.boundingBox(),
+		prose.boundingBox(),
+		table.boundingBox(),
+	]);
+	expect(frameAfter?.x).toBeCloseTo(layoutAfter?.x ?? 0, 0);
+	expect(frameAfter?.width).toBeCloseTo(layoutAfter?.width ?? 0, 0);
+	expect(proseAfter?.x).toBeCloseTo(proseBefore?.x ?? 0, 0);
+	expect(proseAfter?.width).toBeCloseTo(proseBefore?.width ?? 0, 0);
+	expect(Math.abs(
+		((tableAfter?.x ?? 0) + (tableAfter?.width ?? 0))
+		- ((layoutAfter?.x ?? 0) + (layoutAfter?.width ?? 0)),
+	)).toBeLessThanOrEqual(
+		1.1,
+	);
+
+	await table.evaluate((element, width) => {
+		element.style.width = `${width}px`;
+		element.style.minWidth = `${width}px`;
+	}, (layoutAfter?.width ?? 0) + 300);
+	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
+	const documentWidths = await page.evaluate(() => ({
+		client: document.documentElement.clientWidth,
+		scroll: document.documentElement.scrollWidth,
+	}));
+	expect(documentWidths.scroll).toBeLessThanOrEqual(documentWidths.client + 1);
+});
+
 test('a fitting long table keeps its headings below the sticky site header and releases them at its end', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 720 });
 	await openComponents(page);

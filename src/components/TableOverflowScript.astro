@@ -1,10 +1,15 @@
 <script>
+	type TableLayout = 'contained' | 'prose' | 'end' | 'canvas';
+	const layoutUpdaters = new Set<() => void>();
+
 	const initializeTableFrame = (frame: HTMLElement) => {
 		const scrollRegion = frame.querySelector<HTMLElement>('[data-table-scroll]');
 		const table = scrollRegion?.querySelector('table');
 		if (!scrollRegion || frame.dataset.tableReady === 'true') return;
+		const isTopLevel = frame.parentElement?.classList.contains('section-markdown') === true;
+		let scheduledFrame: number | null = null;
 
-		const update = () => {
+		const updateOverflow = () => {
 			const maximumScroll = Math.max(0, scrollRegion.scrollWidth - scrollRegion.clientWidth);
 			const hasOverflow = maximumScroll > 1;
 			const scrollOffset = Math.max(0, scrollRegion.scrollLeft);
@@ -16,20 +21,54 @@
 			else scrollRegion.removeAttribute('tabindex');
 		};
 
+		const tableFitsLayout = (layout: TableLayout) => {
+			frame.dataset.tableLayout = layout;
+			return scrollRegion.scrollWidth - scrollRegion.clientWidth <= 1;
+		};
+
+		const updateLayout = () => {
+			scheduledFrame = null;
+			if (!isTopLevel || !table) {
+				frame.dataset.tableLayout = 'contained';
+				updateOverflow();
+				return;
+			}
+
+			const candidates: TableLayout[] = ['prose', 'end', 'canvas'];
+			const selected = candidates.find(tableFitsLayout) ?? 'canvas';
+			frame.dataset.tableLayout = selected;
+			updateOverflow();
+		};
+
+		const scheduleLayoutUpdate = () => {
+			if (scheduledFrame !== null) return;
+			scheduledFrame = requestAnimationFrame(updateLayout);
+		};
+
 		frame.dataset.tableReady = 'true';
-		scrollRegion.addEventListener('scroll', update, { passive: true });
+		scrollRegion.addEventListener('scroll', updateOverflow, { passive: true });
+		layoutUpdaters.add(scheduleLayoutUpdate);
 		if ('ResizeObserver' in window) {
-			const observer = new ResizeObserver(update);
+			const observer = new ResizeObserver(scheduleLayoutUpdate);
 			observer.observe(frame);
 			observer.observe(scrollRegion);
 			if (table) observer.observe(table);
+			if (frame.parentElement) observer.observe(frame.parentElement);
 		} else {
-			window.addEventListener('resize', update, { passive: true });
+			window.addEventListener('resize', scheduleLayoutUpdate, { passive: true });
 		}
 
-		update();
-		document.fonts?.ready.then(update).catch(() => {});
+		updateLayout();
+		document.fonts?.ready.then(scheduleLayoutUpdate).catch(() => {});
 	};
 
-	document.querySelectorAll<HTMLElement>('[data-table-frame]').forEach(initializeTableFrame);
+	const frames = Array.from(document.querySelectorAll<HTMLElement>('[data-table-frame]'));
+	frames.forEach(initializeTableFrame);
+	if (frames.length > 0) {
+		const preferenceObserver = new MutationObserver(() => layoutUpdaters.forEach((update) => update()));
+		preferenceObserver.observe(document.documentElement, {
+			attributeFilter: ['data-focus-reading', 'data-reading-width'],
+			attributes: true,
+		});
+	}
 </script>

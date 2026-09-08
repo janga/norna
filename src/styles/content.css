@@ -354,12 +354,30 @@ ul {
 .norna-table-frame {
 	position: relative;
 	width: 100%;
-	margin: var(--section-body-paragraph-spacing, 0.85em) 0;
+	margin-block: var(--section-body-paragraph-spacing, 0.85em);
+	margin-inline: 0;
 	color: inherit;
 }
 
 .section-markdown > .norna-table-frame {
-	width: calc((100cqi + var(--layout-reading-width)) / 2);
+	--table-prose-width: 100%;
+	--table-end-width: calc((100cqi + var(--layout-reading-width)) / 2);
+	--table-canvas-width: 100cqi;
+	--table-canvas-inline-offset: calc((var(--layout-reading-width) - 100cqi) / 2);
+	width: var(--table-end-width);
+}
+
+.section-markdown > .norna-table-frame[data-table-layout='prose'] {
+	width: var(--table-prose-width);
+}
+
+.section-markdown > .norna-table-frame[data-table-layout='end'] {
+	width: var(--table-end-width);
+}
+
+.section-markdown > .norna-table-frame[data-table-layout='canvas'] {
+	width: var(--table-canvas-width);
+	margin-inline-start: var(--table-canvas-inline-offset);
 }
 
 .norna-table-scroll {
@@ -427,6 +445,11 @@ ul {
 	line-height: 1.45;
 }
 
+.section-markdown
+	> .norna-table-frame[data-table-layout='canvas'][data-table-overflow='false'] table {
+	margin-inline-start: auto;
+}
+
 .norna-table-frame :is(th, td) {
 	border-bottom: 1px solid color-mix(in srgb, currentColor 24%, transparent);
 	padding: 0.65rem 0.75rem;
@@ -441,15 +464,34 @@ ul {
 
 @media (min-width: 701px) {
 	.site-page-layout-tree .section-markdown > .norna-table-frame {
-		width: 100cqi;
+		--table-end-width: 100cqi;
+		--table-canvas-width: var(--table-end-width);
+		--table-canvas-inline-offset: 0px;
+	}
+
+	:root[data-reader-preferences-ready='true'][data-focus-reading='on']
+		.site-page-layout-tree .section-markdown > .norna-table-frame {
+		--table-canvas-width: calc(100cqi + var(--tree-navigation-width) + var(--tree-layout-gap));
+		--table-canvas-inline-offset: calc(0px - var(--tree-navigation-width) - var(--tree-layout-gap));
 	}
 }
 
 @media (min-width: 1101px) {
-	.site-page-layout-tree:not(.site-page-layout-contents) .section-markdown > .norna-table-frame,
+	.site-page-layout-tree:not(.site-page-layout-contents) .section-markdown > .norna-table-frame {
+		--table-end-width: calc(100cqi + var(--contents-navigation-width) + var(--tree-layout-gap));
+		--table-canvas-width: var(--table-end-width);
+	}
+
 	:root[data-reader-preferences-ready='true'][data-focus-reading='on']
 		.site-page-layout-tree .section-markdown > .norna-table-frame {
-		width: calc(100cqi + var(--contents-navigation-width) + var(--tree-layout-gap));
+		--table-end-width: calc(100cqi + var(--contents-navigation-width) + var(--tree-layout-gap));
+		--table-canvas-width: calc(
+			100cqi
+			+ var(--tree-navigation-width)
+			+ var(--contents-navigation-width)
+			+ (var(--tree-layout-gap) * 2)
+		);
+		--table-canvas-inline-offset: calc(0px - var(--tree-navigation-width) - var(--tree-layout-gap));
 	}
 
 	.section-markdown > .norna-table-frame[data-table-overflow='false'] .norna-table-scroll {

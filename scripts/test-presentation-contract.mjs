@@ -237,8 +237,8 @@ assert.match(
 );
 assert.match(
 	stylesheet,
-	/\.norna-table-frame\s*\{[\s\S]*?width:\s*100%[\s\S]*?\.section-markdown > \.norna-table-frame\s*\{[\s\S]*?width:\s*calc/u,
-	'nested tables must stay within their parent while top-level tables may use the data lane',
+	/\.norna-table-frame\s*\{[\s\S]*?width:\s*100%[\s\S]*?\.section-markdown > \.norna-table-frame\s*\{[\s\S]*?--table-prose-width:\s*100%[\s\S]*?--table-end-width:[\s\S]*?--table-canvas-width:/u,
+	'nested tables must stay within their parent while top-level tables expose adaptive data lanes',
 );
 assert.doesNotMatch(
 	stylesheet,
@@ -251,6 +251,9 @@ for (const requiredSource of [
 	"frame.dataset.tableAtEnd = scrollOffset >= maximumScroll - 1 ? 'true' : 'false'",
 	"scrollRegion.setAttribute('tabindex', '0')",
 	'scrollRegion.removeAttribute(\'tabindex\')',
+	"const isTopLevel = frame.parentElement?.classList.contains('section-markdown') === true",
+	"const candidates: TableLayout[] = ['prose', 'end', 'canvas']",
+	'const selected = candidates.find(tableFitsLayout)',
 ]) {
 	assert.match(
 		tableOverflowScript,
