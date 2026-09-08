@@ -5,8 +5,8 @@ banners:
     tone: warning
     visible:
       from: "2026-01-01"
-    title: Pre-1.0 software
-    text: Norna is under active development. Pin your project version and expect file and CLI changes before 1.0.
+    title: Pre-1.0
+    text: Usable today, still evolving. Pin your version; upgrades may break compatibility.
 footer:
   copyrightMessage: norna is licensed under GNU GPL v3.
   buildInfo: true
