@@ -27,7 +27,7 @@ import {
 	resolvePageContentsPlacement,
 } from '../../scripts/lib/navigation-model.mjs';
 import { projectConfig, resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
-import { getEditSourceUrl } from '../../scripts/lib/edit-source-link.mjs';
+import { resolveEditSourceTarget } from '../../scripts/lib/edit-source-link.mjs';
 import { getTextWidthCssValue, resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
 import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
 
@@ -108,10 +108,13 @@ const renderedSections = resolvedSections.map((section, index) => ({
 	prioritizeFirstImage: index === firstImageSectionIndex,
 }));
 const hasPageSequence = Boolean(pageSequence.previous || pageSequence.next);
-const editSourceUrl = projectConfig.editLink
-	? getEditSourceUrl({
-		baseUrl: projectConfig.editLink.baseUrl,
-		sourcePath: currentPage.contentLabel,
+const editSourceTarget = projectConfig.editLink
+	? resolveEditSourceTarget({
+		...projectConfig.editLink,
+		development: import.meta.env.DEV,
+		hostname: Astro.url.hostname,
+		sourceLabel: currentPage.contentLabel,
+		sourcePath: currentPage.contentPath,
 	})
 	: null;
 const navigationModel = resolveNavigationModel({
@@ -205,7 +208,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 		<main
 			class:list={['site-content', {
 				'site-content-has-breadcrumbs': reserveBreadcrumbSpace,
-				'site-content-has-edit-source': Boolean(editSourceUrl),
+				'site-content-has-edit-source': Boolean(editSourceTarget),
 				'site-content-has-page-sequence': hasPageSequence,
 			}]}
 			id="main-content"
@@ -231,8 +234,13 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 					prioritizeFirstImage={prioritizeFirstImage}
 				/>
 			))}
-			{editSourceUrl && (
-				<EditSourceLink href={editSourceUrl} label={projectConfig.locale.labels.editSource} />
+			{editSourceTarget && (
+				<EditSourceLink
+					href={editSourceTarget.href}
+					label={editSourceTarget.kind === 'local'
+						? projectConfig.locale.labels.openInVsCode
+						: projectConfig.locale.labels.editSource}
+				/>
 			)}
 			<PageSequenceNavigation previous={pageSequence.previous} next={pageSequence.next} />
 		</main>

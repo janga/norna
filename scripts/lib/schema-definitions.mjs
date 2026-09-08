@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { localEditorNames } from './edit-source-link.mjs';
 import { imagePresentationNames } from './image-presentation.mjs';
 import { navigationModeNames } from './navigation-model.mjs';
 import { presentationPaletteNames } from './presentation-palette-metadata.mjs';
@@ -51,8 +52,15 @@ const editLink = z.object({
 			return false;
 		}
 	}, 'Use an absolute http or https URL without credentials, a query string, or a fragment.')
-		.describe('Absolute edit URL prefix containing the repository, branch, and any repository subdirectory.'),
-}).strict().describe('Optional base URL for links from rendered pages to their Markdown source files.');
+		.describe('Absolute edit URL prefix containing the repository, branch, and any repository subdirectory.')
+		.optional(),
+	localEditor: z.enum(localEditorNames)
+		.optional()
+		.describe('Editor used by source links in a development preview opened through a loopback address.'),
+}).strict().refine(
+	(value) => value.baseUrl !== undefined || value.localEditor !== undefined,
+	'Specify baseUrl, localEditor, or both.',
+).describe('Optional local and remote links from rendered pages to their Markdown source files.');
 const createLineHeight = (minimum, role) => z.number()
 	.min(minimum, `Use a unitless ${role} line height of at least ${minimum}.`)
 	.max(3, `Use a unitless ${role} line height of at most 3.`)

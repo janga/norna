@@ -36,6 +36,7 @@ export type SitePage = SiteNodeBase & {
 	markdown: string;
 	markdownDocument: Awaited<ReturnType<typeof parsePageMarkdown>>;
 	contentLabel: string;
+	contentPath: string;
 };
 
 export type SiteCategory = SiteNodeBase & {
@@ -86,20 +87,21 @@ const compareNumberPaths = (left: number[], right: number[]) => {
 const readPageMarkdownDocument = async (entry: SiteEntry) => {
 	const pageDirectory = getPageDirectory(entry);
 	const contentLabel = `${sitePagesLabel}/${pageDirectory}/content.md`;
-	const { body } = await readSiteFile(path.join(sitePagesDir, pageDirectory, 'content.md'), contentLabel);
+	const contentPath = path.join(sitePagesDir, pageDirectory, 'content.md');
+	const { body } = await readSiteFile(contentPath, contentLabel);
 	const markdownDocument = await parsePageMarkdown(body, { label: contentLabel });
 
 	if (markdownDocument.pageHeadings.length !== 1 || markdownDocument.regions[0]?.kind !== 'page-intro') {
 		throw new Error(`Page entry "${entry.id}" must contain exactly one Markdown H1 page title.`);
 	}
 
-	return { body, contentLabel, markdownDocument };
+	return { body, contentLabel, contentPath, markdownDocument };
 };
 
 const createSitePage = async (entry: SiteEntry): Promise<SitePage> => {
 	const isHome = isHomePageEntry(entry);
 	const pageMetadata = getPageMetadata(entry);
-	const { body, contentLabel, markdownDocument } = await readPageMarkdownDocument(entry);
+	const { body, contentLabel, contentPath, markdownDocument } = await readPageMarkdownDocument(entry);
 	const pageDirectory = pageMetadata.pageDirectory;
 	const pageId = pageMetadata.pageId;
 	const pagePath = pageMetadata.pagePath;
@@ -126,6 +128,7 @@ const createSitePage = async (entry: SiteEntry): Promise<SitePage> => {
 		pagePath,
 		parentPagePath: isHome ? null : pageMetadata.parentPagePath,
 		contentLabel,
+		contentPath,
 		markdown: body,
 		markdownDocument,
 		title: markdownDocument.pageTitle.title,

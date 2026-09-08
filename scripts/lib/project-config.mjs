@@ -13,7 +13,7 @@ import {
 	siteConfigPath,
 	siteThemeLabel,
 } from './site-paths.mjs';
-import { normalizeEditLinkBaseUrl } from './edit-source-link.mjs';
+import { localEditorNames, normalizeEditLinkBaseUrl } from './edit-source-link.mjs';
 import { readThemeConfig } from './theme-config.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
@@ -242,6 +242,7 @@ const localeLabels = Object.freeze({
 		nextImage: 'Next image',
 		nextPage: 'Next page',
 		note: 'Note',
+		openInVsCode: 'Open in VS Code',
 		notFound: 'Page not found',
 		notFoundText: 'The requested page does not exist or may have moved.',
 		pageMoved: 'Page moved',
@@ -305,6 +306,7 @@ const localeLabels = Object.freeze({
 		nextImage: 'Nästa bild',
 		nextPage: 'Nästa sida',
 		note: 'Not',
+		openInVsCode: 'Öppna i VS Code',
 		notFound: 'Sidan hittades inte',
 		notFoundText: 'Den begärda sidan finns inte eller kan ha flyttats.',
 		pageMoved: 'Sidan har flyttats',
@@ -541,22 +543,30 @@ export const resolveEditLinkConfig = (config, sourceLabel = siteConfigLabel) => 
 	if (config.editLink === undefined) return null;
 
 	const rawEditLink = assertObject(config.editLink, 'editLink', sourceLabel);
-	if (!Object.hasOwn(rawEditLink, 'baseUrl')) {
-		throw new Error(`editLink.baseUrl is required when editLink is configured in ${sourceLabel}.`);
-	}
-	const unknownKeys = Object.keys(rawEditLink).filter((key) => key !== 'baseUrl');
+	const unknownKeys = Object.keys(rawEditLink).filter((key) => !['baseUrl', 'localEditor'].includes(key));
 	if (unknownKeys.length > 0) {
 		throw new Error(`editLink.${unknownKeys[0]} is not a valid setting in ${sourceLabel}.`);
 	}
-
-	try {
-		return Object.freeze({
-			baseUrl: normalizeEditLinkBaseUrl(rawEditLink.baseUrl, 'editLink.baseUrl'),
-		});
-	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		throw new Error(`${message.replace(/\.$/, '')} in ${sourceLabel}.`);
+	if (!Object.hasOwn(rawEditLink, 'baseUrl') && !Object.hasOwn(rawEditLink, 'localEditor')) {
+		throw new Error(`editLink must specify baseUrl, localEditor, or both in ${sourceLabel}.`);
 	}
+
+	let baseUrl = null;
+	if (Object.hasOwn(rawEditLink, 'baseUrl')) {
+		try {
+			baseUrl = normalizeEditLinkBaseUrl(rawEditLink.baseUrl, 'editLink.baseUrl');
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			throw new Error(`${message.replace(/\.$/, '')} in ${sourceLabel}.`);
+		}
+	}
+
+	return Object.freeze({
+		baseUrl,
+		localEditor: Object.hasOwn(rawEditLink, 'localEditor')
+			? readEnum(rawEditLink, 'localEditor', 'editLink', localEditorNames, undefined, sourceLabel)
+			: null,
+	});
 };
 
 export const projectConfig = Object.freeze({

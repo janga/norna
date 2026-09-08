@@ -17,7 +17,7 @@ const filenames = [
 ];
 const requiredRichHelp = {
 	'category.schema.json': ['label'],
-	'config.schema.json': ['url', 'language', 'navigation', 'search', 'scrollBehavior'],
+	'config.schema.json': ['url', 'language', 'editLink', 'navigation', 'search', 'scrollBehavior'],
 	'theme.schema.json': ['preset', 'appearance', 'readerControls', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
 	'page-theme.schema.json': ['layout', 'images', 'sections'],
 	'sitewide-content.schema.json': ['logo', 'banners', 'footer'],
@@ -146,10 +146,18 @@ const config = JSON.parse(await readFile(path.join(root, 'schemas', 'config.sche
 assert.equal(config.properties.language.default, 'en');
 assert.deepEqual(config.properties.language.examples, ['en', 'sv', 'en-GB', 'sv-SE']);
 assert.equal(config.properties.scrollBehavior.default, 'instant');
-assert.match(config.properties.editLink.markdownDescription, /Edit this page/);
-assert.match(config.properties.editLink.markdownDescription, /repository, branch/);
+assert.match(config.properties.editLink.markdownDescription, /Links each rendered page/);
+assert.match(config.properties.editLink.markdownDescription, /loopback development preview/);
+assert.deepEqual(config.properties.editLink.anyOf, [
+	{ required: ['localEditor'] },
+	{ required: ['baseUrl'] },
+]);
 assert.match(config.properties.editLink.properties.baseUrl.markdownDescription, /content\.md/);
 assert.match(config.properties.editLink.properties.baseUrl.markdownDescription, /docs\/configuration\.md#edit-link/);
+assert.match(config.properties.editLink.properties.localEditor.markdownDescription, /localhost or another loopback address/);
+assert.match(config.properties.editLink.properties.localEditor.markdownDescription, /docs\/configuration\.md#edit-link/);
+assert.equal(config.properties.editLink.properties.localEditor.oneOf[0].const, 'vscode');
+assert.equal(config.properties.editLink.properties.localEditor.oneOf[0].title, 'Visual Studio Code');
 
 const category = JSON.parse(await readFile(path.join(root, 'schemas', 'category.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(category.properties), ['label']);

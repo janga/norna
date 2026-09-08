@@ -8,6 +8,17 @@ const shallowPagePath = '/reference/installation/';
 test.describe('desktop tree navigation', () => {
 	test.use({ hasTouch: false, isMobile: false, viewport: desktopViewport });
 
+	test('opens the current source in VS Code from a same-computer preview', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+
+		const sourceLink = page.locator('.edit-source-link a');
+		await expect(sourceLink).toHaveText('Open in VS Code');
+		await expect(sourceLink).toHaveAttribute(
+			'href',
+			/^vscode:\/\/file\/.*\/fixtures\/nested-pages\/site\/pages\/010-guides\/pages\/010-installation\/pages\/010-macos\/content\.md$/,
+		);
+	});
+
 	test('separates the active page branch from the current page contents', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		expect(await page.locator('body').evaluate((body) => getComputedStyle(body).paddingTop)).toBe('0px');

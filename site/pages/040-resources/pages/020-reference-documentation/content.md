@@ -55,7 +55,7 @@ defines shared navigation identity, banners, and footer content.
 
 [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md)
 defines the technical settings in `config.yaml`, including language,
-navigation, source edit links, static search, and anchor scrolling.
+navigation, local and remote source links, static search, and anchor scrolling.
 
 [Commands](https://github.com/janga/norna/blob/main/docs/commands.md) lists the
 CLI commands and project scripts, including their options and side effects.

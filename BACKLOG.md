@@ -30,10 +30,6 @@ are in the [backlog process](docs/design/backlog/README.md).
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-058` Local source links in VS Code](docs/design/backlog/BL-058-local-vscode-edit-links.md):
-  **Ready.** Let an explicitly configured local preview open the current
-  `content.md` in VS Code while published output continues to use its remote
-  source link and never contains a local filesystem path.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Implemented; awaiting human review and documentation.** GitHub-style alert
   blockquotes now render as localized, accessible semantic callouts with a

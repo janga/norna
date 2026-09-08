@@ -3,6 +3,7 @@
 url: https://janga.github.io/norna/
 language: en
 editLink:
+  localEditor: vscode
   baseUrl: https://github.com/janga/norna/edit/main/
 search: true
 scrollBehavior: smooth

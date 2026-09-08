@@ -38,7 +38,7 @@ case-insensitive file systems.
 
 | Path | Required | Responsibility |
 | --- | --- | --- |
-| `config.yaml` | Yes | Public URL and optional language, edit link, navigation model, static search, and browser scroll behavior. |
+| `config.yaml` | Yes | Public URL and optional language, local and remote source links, navigation model, static search, and browser scroll behavior. |
 | `theme.yaml` | Yes | Complete visual preset and optional focused presentation overrides. |
 | `sitewide-content.yaml` | No | Shared logo display settings, banners, and footer. |
 | `pages/` | Yes | Homepage plus ordered page and navigation-category hierarchies. |

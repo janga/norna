@@ -32,6 +32,9 @@ export const schemaValueDefinitions = Object.freeze([
 		en: option('English', 'Use Norna\'s built-in English interface text.'),
 		sv: option('Swedish', 'Use Norna\'s built-in Swedish interface text.'),
 	}),
+	definition(['vscode'], {
+		vscode: option('Visual Studio Code', 'Open the current page source in the locally installed Visual Studio Code application.'),
+	}),
 	definition(['left', 'center', 'right'], {
 		left: option('Left', 'Align text with the left edge of its text area.'),
 		center: option('Center', 'Center text within its text area.'),

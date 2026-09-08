@@ -55,8 +55,9 @@ site/
 `-- public/
 ```
 
-- [`config.yaml`](configuration.md): public URL, language, source edit link,
-  navigation model, static search, and native browser scroll behavior.
+- [`config.yaml`](configuration.md): public URL, language, local and remote
+  source links, navigation model, static search, and native browser scroll
+  behavior.
 - [`theme.yaml`](theme.md): complete visual presets, structured content-block
   defaults, and focused presentation overrides.
 - [`sitewide-content.yaml`](sitewide-content.md): shared logo display settings,

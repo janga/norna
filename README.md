@@ -76,8 +76,8 @@ site/
 - `theme.yaml` normally selects one complete visual preset.
 - `sitewide-content.yaml` holds shared logo display settings, banners, and
   footer content.
-- `config.yaml` holds the public URL and optional language, source edit link,
-  navigation model, static search, and scroll behavior.
+- `config.yaml` holds the public URL and optional language, local and remote
+  source links, navigation model, static search, and scroll behavior.
 - `public/` holds static files copied without processing.
 
 Norna validates this structure, processes managed images when needed, and

@@ -52,18 +52,53 @@
           "type": "string",
           "format": "uri",
           "description": "Absolute edit URL prefix containing the repository, branch, and any repository subdirectory.",
-          "markdownDescription": "```yaml\neditLink:\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nAbsolute edit URL prefix. Include any repository subdirectory and branch in this URL. Norna adds the project-relative path to each page's `content.md` file.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)",
+          "markdownDescription": "```yaml\neditLink:\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nOptional absolute remote edit URL prefix. Include any repository subdirectory and branch. Norna adds the project-relative path to each page's `content.md` file. This destination is used by published output and LAN previews.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)",
           "examples": [
             "https://github.com/owner/repository/edit/main/"
           ]
+        },
+        "localEditor": {
+          "description": "Editor used by source links in a development preview opened through a loopback address.",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "vscode",
+              "title": "Visual Studio Code",
+              "description": "Open the current page source in the locally installed Visual Studio Code application.",
+              "markdownDescription": "Open the current page source in the locally installed Visual Studio Code application.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)"
+            }
+          ],
+          "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n```\n\nOptional editor for a development preview opened through localhost or another loopback address. `vscode` opens the absolute page source path through VS Code's registered URL handler. The setting is never emitted as a local path in published output.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)",
+          "examples": [
+            "vscode"
+          ]
         }
       },
-      "required": [
-        "baseUrl"
-      ],
       "additionalProperties": false,
-      "description": "Optional base URL for links from rendered pages to their Markdown source files.",
-      "markdownDescription": "```yaml\neditLink:\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nAdds a localized **Edit this page** link from each rendered page to its `content.md` source file. The base URL identifies the repository, branch, and any repository subdirectory; Norna appends the page source path.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)"
+      "description": "Optional local and remote links from rendered pages to their Markdown source files.",
+      "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nLinks each rendered page to its `content.md` source. A loopback development preview uses the explicitly selected local editor; published output and LAN previews use the optional remote base URL. Specify either destination or both.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)",
+      "anyOf": [
+        {
+          "required": [
+            "localEditor"
+          ]
+        },
+        {
+          "required": [
+            "baseUrl"
+          ]
+        }
+      ],
+      "defaultSnippets": [
+        {
+          "label": "Local and remote source links",
+          "markdownDescription": "Open page source in VS Code during same-computer development and on the remote source host elsewhere.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)",
+          "body": {
+            "localEditor": "vscode",
+            "baseUrl": "https://github.com/${1:owner}/${2:repository}/edit/${3:main}/"
+          }
+        }
+      ]
     },
     "navigation": {
       "type": "object",

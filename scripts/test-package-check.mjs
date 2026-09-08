@@ -538,6 +538,10 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
+		'vscode://file',
+	);
+	await assertFileExcludes(
+		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'<div class="site-nav-submenu">',
 	);
 	await assertFileIncludes(

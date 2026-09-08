@@ -63,12 +63,56 @@ Editorial text remains in page content and `sitewide-content.yaml`.
 
 ## Edit Link
 
-- Purpose: add a localized **Edit this page** link after each page's content.
-- Type: an object containing one absolute `baseUrl`.
+- Purpose: link each rendered page to its `content.md` source in a local editor,
+  on a remote source host, or both.
+- Type: an object containing `localEditor`, `baseUrl`, or both.
 - Required: no.
-- Default: no edit link.
+- Default: no source link.
+- Scope: site-wide.
+- Values: `localEditor` currently accepts `vscode`. `baseUrl` accepts an
+  absolute remote edit URL.
 - Restrictions: `baseUrl` must use `http` or `https` and cannot contain
-  credentials, a query string, or a fragment.
+  credentials, a query string, or a fragment. An empty `editLink` object is
+  invalid.
+
+Use both settings when authors should be able to open the source directly in
+VS Code during same-computer development and use the repository link elsewhere:
+
+```yaml
+url: https://example.com/
+editLink:
+  localEditor: vscode
+  baseUrl: https://github.com/owner/repository/edit/main/
+```
+
+Norna chooses the destination from the request and build context:
+
+| Context | Destination |
+| --- | --- |
+| Development preview opened through `localhost` or another loopback address | `localEditor` when configured; otherwise `baseUrl` |
+| Development preview opened through a LAN hostname or address | `baseUrl` when configured; otherwise no link |
+| Static or production build | `baseUrl` when configured; otherwise no link |
+
+The loopback restriction matters because only a browser running on the same
+computer can use an absolute local source path reliably. A LAN visitor may be
+viewing a server whose filesystem is not available on their device.
+
+### Local Editor
+
+Use `localEditor: vscode` to show **Open in VS Code** after each page in a
+same-computer development preview:
+
+```yaml
+editLink:
+  localEditor: vscode
+```
+
+VS Code must be installed and registered for `vscode://` links. The browser may
+ask for confirmation before it opens the application. Norna emits the editor
+URL only while serving a loopback development request; static output never
+contains the absolute local path.
+
+### Remote Source Host
 
 The base URL identifies the source host, repository, branch, and any repository
 subdirectory that comes before the Norna project. Norna appends the current
@@ -97,10 +141,14 @@ This follows the page model rather than inspecting Git. Moving a page through
 Norna therefore changes its generated source link, shallow clones do not affect
 the result, and a non-default branch works when it is part of `baseUrl`.
 
-The same link is shown in local preview and published builds. Omit `editLink`
-when a local or private source should not expose an editing destination. Norna
-does not check whether the remote source host permits the visitor to edit the
-file; authentication and permissions remain the source host's responsibility.
+The remote link is shown in published builds and LAN previews. It is also the
+fallback for a loopback preview when `localEditor` is omitted. Norna does not
+check whether the source host permits the visitor to edit the file;
+authentication and permissions remain the source host's responsibility.
+
+Omit `editLink` when the site should expose no source destination. Omit only
+`baseUrl` when a private source should be available in the local editor but not
+linked from the published site.
 
 ## `navigation`
 
@@ -209,6 +257,7 @@ movement.
 url: https://example.com/
 language: en-GB
 editLink:
+  localEditor: vscode
   baseUrl: https://github.com/owner/repository/edit/main/
 navigation:
   mode: automatic

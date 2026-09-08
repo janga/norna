@@ -106,6 +106,7 @@ try {
 			nextImage: 'Next image',
 			nextPage: 'Next page',
 			note: 'Note',
+			openInVsCode: 'Open in VS Code',
 			notFound: 'Page not found',
 			notFoundText: 'The requested page does not exist or may have moved.',
 			pageMoved: 'Page moved',
@@ -152,6 +153,7 @@ try {
 	assert.equal(localizedConfig.labels.editSource, 'Redigera den här sidan');
 	assert.equal(localizedConfig.labels.footnoteBackReference, 'Tillbaka till referens {reference}');
 	assert.equal(localizedConfig.labels.footnotes, 'Fotnoter');
+	assert.equal(localizedConfig.labels.openInVsCode, 'Öppna i VS Code');
 	assert.equal(localizedConfig.labels.notFound, 'Sidan hittades inte');
 	assert.equal(localizedConfig.labels.notFoundText, 'Den begärda sidan finns inte eller kan ha flyttats.');
 	assert.equal(localizedConfig.labels.pageMoved, 'Sidan har flyttats');
@@ -187,6 +189,29 @@ try {
 	assert.equal(editLinkResult.status, 0, editLinkResult.stderr);
 	assert.deepEqual(JSON.parse(editLinkResult.stdout).editLink, {
 		baseUrl: 'https://github.com/example/project/edit/release-2/packages/docs/',
+		localEditor: null,
+	});
+
+	const localEditLinkSite = await createSite(
+		'local-edit-link',
+		'url: https://example.com/\neditLink:\n  localEditor: vscode\n',
+	);
+	const localEditLinkResult = loadConfig(localEditLinkSite);
+	assert.equal(localEditLinkResult.status, 0, localEditLinkResult.stderr);
+	assert.deepEqual(JSON.parse(localEditLinkResult.stdout).editLink, {
+		baseUrl: null,
+		localEditor: 'vscode',
+	});
+
+	const combinedEditLinkSite = await createSite(
+		'combined-edit-link',
+		'url: https://example.com/\neditLink:\n  localEditor: vscode\n  baseUrl: https://github.com/example/project/edit/main/\n',
+	);
+	const combinedEditLinkResult = loadConfig(combinedEditLinkSite);
+	assert.equal(combinedEditLinkResult.status, 0, combinedEditLinkResult.stderr);
+	assert.deepEqual(JSON.parse(combinedEditLinkResult.stdout).editLink, {
+		baseUrl: 'https://github.com/example/project/edit/main/',
+		localEditor: 'vscode',
 	});
 
 	const overrideResult = loadConfig(minimalSite, {
@@ -220,7 +245,11 @@ try {
 	);
 	assertFailure(
 		loadConfig(await createSite('missing-edit-base-url', 'url: https://example.com/\neditLink: {}\n')),
-		/editLink\.baseUrl is required when editLink is configured/,
+		/editLink must specify baseUrl, localEditor, or both/,
+	);
+	assertFailure(
+		loadConfig(await createSite('invalid-local-editor', 'url: https://example.com/\neditLink:\n  localEditor: cursor\n')),
+		/editLink\.localEditor must be one of vscode/,
 	);
 	assertFailure(
 		loadConfig(await createSite('invalid-edit-url', 'url: https://example.com/\neditLink:\n  baseUrl: file:\/\/\/tmp\/site\n')),
