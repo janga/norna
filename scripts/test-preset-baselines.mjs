@@ -180,7 +180,7 @@ const assertPresetOutput = async (presetName, distDir) => {
 		'<figcaption class="norna-code-title">Terminal</figcaption>',
 		'class="line norna-code-line-highlighted" data-line="2"',
 		'class="section-note ',
-		'class="image-stack"',
+		'class="image-stack ',
 		'data-carousel',
 		'class="card-list ',
 		'class="site-banner ',
