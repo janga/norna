@@ -45,8 +45,8 @@ need for a new layout model.
   tables or named media components. A block claims the lane whenever its
   resolved inline box extends beyond the reading width into that space.
 - Prevent a margin note and a lane-claiming block from occupying the same
-  vertical region. Render the affected note in normal flow instead of
-  shrinking, shifting, or overlaying the block.
+  vertical region. Start the block below any preceding note that still occupies
+  the lane instead of shrinking, shifting, or overlaying either element.
 - Apply the same boundary to wide tables, managed images, carousels, card
   lists, diagrams, and future content blocks whenever their resolved layout
   claims the note lane. Blocks that remain within the reading width do not
@@ -71,9 +71,8 @@ need for a new layout model.
   contents rail without moving the reading column.
 - A shallow tree-navigation page without a contents rail lets the same wide
   note use its empty reserved right track.
-- A note that would overlap any block claiming the note lane falls back to
-  normal flow, while notes outside that occupied region can still use the
-  margin.
+- A block that would overlap a preceding margin note starts below that note,
+  while notes before and after this local boundary can still use the margin.
 - Adding a new lane-claiming block type does not require a component-specific
   note-placement rule.
 - The note and its gap fit within the centered page layout without horizontal

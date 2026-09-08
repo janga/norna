@@ -23,7 +23,10 @@ const { title, images, maxAvailableWidthPercent, priorityFirstImage = false } = 
 const managedImageSizes = getManagedImageSizes(maxAvailableWidthPercent);
 ---
 
-<div class="image-stack" aria-label={`${projectConfig.locale.labels.images}: ${title}`}>
+<div
+	class="image-stack content-block-note-lane-boundary"
+	aria-label={`${projectConfig.locale.labels.images}: ${title}`}
+>
 	{images.map((image, itemIndex) => {
 		const isPriorityItem = priorityFirstImage && itemIndex === 0;
 		const captionId = image.caption ? getCaptionId(image, itemIndex) : undefined;

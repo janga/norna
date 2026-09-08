@@ -32,6 +32,11 @@ const stylesheetFiles = (await readdir(stylesDirectory))
 const stylesheet = (await Promise.all(stylesheetFiles.map((fileName) => (
 	readFile(path.join(stylesDirectory, fileName), 'utf8')
 )))).join('\n');
+const noteLaneBoundaryComponents = await Promise.all([
+	'CardList.astro',
+	'ImageCarousel.astro',
+	'ImageStack.astro',
+].map((fileName) => readFile(path.join(repoRoot, 'src', 'components', fileName), 'utf8')));
 
 for (const paletteName of presentationPaletteNames) {
 	const palette = getPresentationPalette(paletteName);
@@ -199,5 +204,17 @@ assert.match(
 	/\.page-contents-navigation-rail\s*\{[\s\S]*?border-inline-start:\s*1px solid var\(--color-nav-separator\)/u,
 	'the contents rail must close the opposite edge of the content canvas',
 );
+assert.match(
+	stylesheet,
+	/\.content-block-note-lane-boundary\s*\{[\s\S]*?clear:\s*both/u,
+	'wide content blocks must clear preceding margin notes through one shared layout boundary',
+);
+for (const componentSource of noteLaneBoundaryComponents) {
+	assert.match(
+		componentSource,
+		/content-block-note-lane-boundary/u,
+		'every existing wide structured block must use the shared note-lane boundary',
+	);
+}
 
 console.log('Presentation engine contract tests passed.');

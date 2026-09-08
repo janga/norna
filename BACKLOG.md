@@ -13,10 +13,10 @@ are in the [backlog process](docs/design/backlog/README.md).
 `Now` contains at most three active items in exact technical order.
 
 - [`BL-043` Use margin notes when they fit](docs/design/backlog/BL-043-focus-reading-margin-notes.md):
-  **Partially implemented.** Use the margin when the selected reading width and
-  preset note lane fit without colliding with page navigation or a wide content
-  block; otherwise preserve the normal-flow fallback. The general wide-block
-  boundary remains to be implemented.
+  **Implemented; awaiting consolidated browser review.** Use the margin when
+  the selected reading width and preset note lane fit without colliding with
+  page navigation or a wide content block; otherwise preserve a deterministic
+  no-overlap boundary.
 - [`BL-038` Selling homepage and product positioning](docs/design/backlog/BL-038-selling-homepage.md):
   **Implemented; awaiting human review.** The proof-led front page now presents
   implemented strengths before product boundaries and technical detail.
