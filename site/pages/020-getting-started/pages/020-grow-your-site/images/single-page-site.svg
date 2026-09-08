@@ -60,14 +60,14 @@
         <text x="22" y="32">site/</text>
         <text x="22" y="54">├── config.yaml</text>
         <text x="22" y="72">├── pages/</text>
-        <text x="22" y="90">│   └── 000-home/</text>
-        <text x="22" y="108">│       ├── content.md</text>
-        <text x="22" y="126">│       └── images/</text>
-        <text x="22" y="144">│           ├── dog-house.svg</text>
-        <text x="22" y="162">│           └── heart.svg</text>
+        <text x="22" y="90">│&#160;&#160;&#160;└── 000-home/</text>
+        <text x="22" y="108">│&#160;&#160;&#160;&#160;&#160;&#160;&#160;├── content.md</text>
+        <text x="22" y="126">│&#160;&#160;&#160;&#160;&#160;&#160;&#160;└── images/</text>
+        <text x="22" y="144">│&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;├── dog-house.svg</text>
+        <text x="22" y="162">│&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;└── heart.svg</text>
         <text x="22" y="180">├── public/</text>
-        <text x="22" y="198">│   ├── favicon.svg</text>
-        <text x="22" y="216">│   └── robots.txt</text>
+        <text x="22" y="198">│&#160;&#160;&#160;├── favicon.svg</text>
+        <text x="22" y="216">│&#160;&#160;&#160;└── robots.txt</text>
         <text x="22" y="234">├── sitewide-content.yaml</text>
         <text x="22" y="252">└── theme.yaml</text>
       </g>
@@ -95,8 +95,8 @@
       </g>
     </g>
 
-    <path class="line" d="M226 184 L438 224" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-    <path class="line" d="M196 202 L438 392" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M254 184 L438 224" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M229 202 L438 392" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
     <path class="flow" d="M666 310 H748" marker-end="url(#arrow)"/>
 
     <g transform="translate(756 40)">
