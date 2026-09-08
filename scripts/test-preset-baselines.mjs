@@ -177,7 +177,7 @@ const assertPresetOutput = async (presetName, distDir) => {
 		'>A level-three heading</h3>',
 		'>A level-four heading</h4>',
 		'<figure class="norna-code-example">',
-		'<figcaption class="norna-code-title">Terminal</figcaption>',
+		'<figcaption class="norna-code-title"><span class="norna-code-title-text">Terminal</span></figcaption>',
 		'class="line norna-code-line-highlighted" data-line="2"',
 		'class="section-note ',
 		'class="image-stack ',

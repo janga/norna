@@ -77,7 +77,8 @@ const labels = {
 
 			const button = template.content.firstElementChild?.cloneNode(true);
 			if (!(button instanceof HTMLButtonElement)) return;
-			wrapper.append(button);
+			const title = codeExample?.querySelector(':scope > .norna-code-title');
+			(title ?? wrapper).append(button);
 			button.addEventListener('click', async () => {
 				if (button.dataset.copyBusy === 'true') return;
 				button.dataset.copyBusy = 'true';

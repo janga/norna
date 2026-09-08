@@ -210,12 +210,17 @@ export const nornaCodeFenceTransformer = {
 			tagName: 'figure',
 			properties: { className: ['norna-code-example'] },
 			children: [
-				{
-					type: 'element',
-					tagName: 'figcaption',
-					properties: { className: ['norna-code-title'] },
-					children: [{ type: 'text', value: metadata.title }],
-				},
+					{
+						type: 'element',
+						tagName: 'figcaption',
+						properties: { className: ['norna-code-title'] },
+						children: [{
+							type: 'element',
+							tagName: 'span',
+							properties: { className: ['norna-code-title-text'] },
+							children: [{ type: 'text', value: metadata.title }],
+						}],
+					},
 				node,
 			],
 		};

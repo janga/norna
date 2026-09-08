@@ -310,7 +310,7 @@ npm run build
 		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
 
 		assert.match(html, /<figure class="norna-code-example">/);
-		assert.match(html, /<figcaption class="norna-code-title">src\/config\.js<\/figcaption>/);
+		assert.match(html, /<figcaption class="norna-code-title"><span class="norna-code-title-text">src\/config\.js<\/span><\/figcaption>/);
 		assert.match(html, /class="astro-code github-dark norna-code-has-highlighted-lines"/);
 		assert.match(html, /class="line norna-code-line-highlighted" data-line="2"/);
 		assert.match(html, /class="line norna-code-line-highlighted" data-line="4"/);

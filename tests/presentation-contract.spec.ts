@@ -375,7 +375,7 @@ test('code blocks expose an accessible copy control without changing copied text
 	))).not.toContain('Terminal');
 
 	await page.setViewportSize({ width: 320, height: 800 });
-	await title.evaluate((node) => {
+	await title.locator('.norna-code-title-text').evaluate((node) => {
 		node.textContent = 'site/pages/010-guide/pages/010-components/a-deliberately-long-code-example-filename.js';
 	});
 	const [titleBounds, buttonBounds, overflow] = await Promise.all([
@@ -387,6 +387,43 @@ test('code blocks expose an accessible copy control without changing copied text
 	expect(buttonBounds).not.toBeNull();
 	expect(titleBounds.y + titleBounds.height).toBeGreaterThanOrEqual(buttonBounds.y + buttonBounds.height);
 	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
+});
+
+test('a long titled code example keeps and releases its context bar at its own boundaries', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 600 });
+	await openComponents(page);
+	const example = page.locator('.norna-code-example').first();
+	const title = example.locator('.norna-code-title');
+	const button = example.getByRole('button', { name: 'Copy code' });
+	await example.locator('pre').evaluate((node) => {
+		node.style.minHeight = '1400px';
+	});
+
+	await example.evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + window.scrollY + 180));
+	await expect.poll(async () => {
+		const [header, context, control] = await Promise.all([
+			page.locator('.site-top').boundingBox(),
+			title.boundingBox(),
+			button.boundingBox(),
+		]);
+		if (!header || !context || !control) return null;
+		return control.y >= context.y
+			&& control.y + control.height <= context.y + context.height
+			&& Math.abs(context.y - (header.y + header.height)) <= 1;
+	}).toBe(true);
+
+	await example.evaluate((node) => {
+		const bottom = node.getBoundingClientRect().bottom + window.scrollY;
+		window.scrollTo(0, bottom - 10);
+	});
+	await expect.poll(async () => {
+		const [header, context] = await Promise.all([
+			page.locator('.site-top').boundingBox(),
+			title.boundingBox(),
+		]);
+		if (!header || !context) return false;
+		return context.y + context.height < header.y + header.height;
+	}).toBe(true);
 });
 
 test('reduced motion disables transitions and carousel animation', async ({ page }) => {

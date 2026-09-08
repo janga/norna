@@ -636,16 +636,21 @@ ul {
 	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
 	border: 1px solid color-mix(in srgb, var(--color-code-text) 18%, transparent);
 	border-radius: var(--corner-radius-medium, 6px);
-	overflow: hidden;
+	overflow: visible;
 	background: var(--color-code-background);
 	color: var(--color-code-text);
 }
 
 .section-markdown .norna-code-title {
+	position: sticky;
+	top: var(--site-top-anchor-offset);
+	z-index: 2;
 	min-height: 3.25rem;
 	margin: 0;
 	padding: 0.85rem 3.85rem 0.75rem 0.9rem;
 	border-bottom: 1px solid color-mix(in srgb, var(--color-code-text) 22%, transparent);
+	border-radius: calc(var(--corner-radius-medium, 6px) - 1px) calc(var(--corner-radius-medium, 6px) - 1px) 0 0;
+	background: var(--color-code-background);
 	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 	font-size: 0.82rem;
 	font-weight: 650;
@@ -656,7 +661,7 @@ ul {
 .section-markdown .norna-code-example > pre.astro-code {
 	margin: 0;
 	border: 0;
-	border-radius: 0;
+	border-radius: 0 0 calc(var(--corner-radius-medium, 6px) - 1px) calc(var(--corner-radius-medium, 6px) - 1px);
 }
 
 .section-markdown .norna-code-example.code-block > pre.astro-code {
