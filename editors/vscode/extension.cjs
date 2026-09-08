@@ -340,8 +340,13 @@ const getNoteCompletionItems = (document, position) => {
 const getBlockCompletionItems = async (document, position, service) => {
 	const lineText = document.lineAt(position.line).text;
 	const trimmed = lineText.trim();
-	if (/^(?:```|~~~)norna-[a-z-]*$/.test(trimmed)) {
-		return Object.entries(service.nornaBlockDefinitions).map(([name, definition]) => {
+	const blockPrefix = trimmed.match(/^(?:```|~~~)([a-z-]*)$/)?.[1];
+	const matchingBlocks = blockPrefix === undefined
+		? []
+		: Object.entries(service.nornaBlockDefinitions)
+			.filter(([name]) => name.startsWith(blockPrefix));
+	if (matchingBlocks.length > 0) {
+		return matchingBlocks.map(([name, definition]) => {
 			const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Snippet);
 			item.detail = definition.description;
 			item.documentation = new vscode.MarkdownString([
@@ -695,7 +700,7 @@ const makeManagedImageAction = (document, diagnostic) => {
 	const match = line.text.match(/^\s*!\[([^\]\n]*)\]\(([a-z0-9][a-z0-9.-]*\.(?:jpe?g|png|svg))\)\s*$/i);
 	if (!match) return null;
 	const alt = match[1] ? `\n  alt: ${match[1]}` : '';
-	const replacement = `\`\`\`norna-image-stack\n- image: ${match[2]}${alt}\n\`\`\``;
+	const replacement = `\`\`\`image-stack\n- image: ${match[2]}${alt}\n\`\`\``;
 	const edit = new vscode.WorkspaceEdit();
 	edit.replace(document.uri, line.range, replacement);
 	const action = new vscode.CodeAction('Convert to a managed Norna image stack', vscode.CodeActionKind.QuickFix);
@@ -833,7 +838,7 @@ async function activate(context) {
 						].filter(Boolean).join('\n\n')), keyRange);
 					}
 				}
-				const wordRange = document.getWordRangeAtPosition(position, /norna-[a-z-]+/);
+				const wordRange = document.getWordRangeAtPosition(position, /(?:image-stack|carousel|norna-[a-z-]+)/);
 				if (wordRange) {
 					const name = document.getText(wordRange);
 					const definition = service?.nornaBlockDefinitions?.[name];

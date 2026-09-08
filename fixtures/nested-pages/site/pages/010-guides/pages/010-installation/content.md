@@ -17,7 +17,7 @@ theme.
 
 The managed image belongs to this nested page and section.
 
-```norna-image-stack
+```image-stack
 - image: diagram.svg
   alt: Three nested page levels connected in sequence.
   caption: A managed SVG resolved from the nested page image directory.

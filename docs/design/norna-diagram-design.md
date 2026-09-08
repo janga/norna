@@ -120,7 +120,7 @@ source: hand-authored
 Short maintenance note explaining why the diagram exists.
 -->
 
-```norna-image-stack
+```image-stack
 - image: diagram-name.svg
   alt: Concise explanation of what the diagram shows.
 ```

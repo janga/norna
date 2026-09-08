@@ -46,7 +46,7 @@ page:
 
 Text with a missing note {note-ref}.
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: local.jpg
 - image: portrait.jpg
 \`\`\`
@@ -258,12 +258,12 @@ try {
 	await rm(path.join(siteRoot, 'public', 'logo.png'), { force: true });
 	const missingLogoStatus = await getSitePublicAssetStatus(homeContentPath);
 	assert.ok(missingLogoStatus.issues.some(({ code, line }) => code === 'missing-logo-file' && line === 1));
-	assert.equal(nornaBlockDefinitions['norna-image-stack'].description.includes('vertical stack'), true);
+	assert.equal(nornaBlockDefinitions['image-stack'].description.includes('vertical stack'), true);
 	assert.match(
-		nornaBlockDefinitions['norna-image-stack'].documentation,
+		nornaBlockDefinitions['image-stack'].documentation,
 		new RegExp(`/blob/${documentationRef.replaceAll('.', '\\.')}\/docs/content\\.md#image-stack`),
 	);
-	assert.match(nornaBlockDefinitions['norna-image-carousel'].documentation, /docs\/content\.md#image-carousel/);
+	assert.match(nornaBlockDefinitions['carousel'].documentation, /docs\/content\.md#image-carousel/);
 	assert.match(nornaBlockDefinitions['norna-card-list'].documentation, /docs\/content\.md#card-list/);
 	assert.match(nornaBlockDefinitions['norna-page-list'].documentation, /docs\/content\.md#child-page-list/);
 	assert.equal(nornaBlockDefinitions['norna-page-list'].snippet, '```norna-page-list\n```');
@@ -350,7 +350,7 @@ try {
 	});
 	assert.ok(markdownImageDiagnostics.some(({ code }) => code === 'local-markdown-image'));
 
-	await writeFile(pageContentPath, pageSource.replace('Page content.', `\`\`\`norna-image-stack
+	await writeFile(pageContentPath, pageSource.replace('Page content.', `\`\`\`image-stack
 - image: portrait.jpg
 \`\`\``));
 	const sharedDiagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });

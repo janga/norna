@@ -4,7 +4,7 @@ const field = (description, options = {}) => Object.freeze({ description, ...opt
 const value = (title, description) => Object.freeze({ title, description });
 
 export const nornaMarkdownBlockDefinitions = Object.freeze({
-	'norna-image-stack': Object.freeze({
+	'image-stack': Object.freeze({
 		description: 'Display one or more managed images in a vertical stack.',
 		documentation: documentationLink('Image stack reference', 'content.md', 'image-stack'),
 		item: Object.freeze({
@@ -15,7 +15,7 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 			}),
 		}),
 	}),
-	'norna-image-carousel': Object.freeze({
+	carousel: Object.freeze({
 		description: 'Display two or more managed images in an interactive carousel.',
 		documentation: documentationLink('Image carousel reference', 'content.md', 'image-carousel'),
 		item: Object.freeze({
@@ -81,9 +81,15 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 
 export const nornaBlockTypes = new Set(Object.keys(nornaMarkdownBlockDefinitions));
 
+const renamedNornaBlockTypes = Object.freeze({
+	'norna-image-stack': 'image-stack',
+	'norna-image-carousel': 'carousel',
+	'norna-carousel': 'carousel',
+});
+
 const blockTypeLabels = {
-	'norna-image-stack': 'norna-image-stack',
-	'norna-image-carousel': 'norna-image-carousel',
+	'image-stack': 'image-stack',
+	carousel: 'carousel',
 	'norna-card-list': 'norna-card-list',
 	'norna-page-list': 'norna-page-list',
 };
@@ -91,8 +97,14 @@ const blockTypeLabels = {
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
 const imageNameRegex = /^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$/i;
 const imageStackExample = [
-	'```norna-image-stack',
+	'```image-stack',
 	'- image: filename.jpg',
+	'```',
+].join('\n');
+const carouselExample = [
+	'```carousel',
+	'- image: first.jpg',
+	'- image: second.jpg',
 	'```',
 ].join('\n');
 const cardListExample = [
@@ -129,18 +141,20 @@ const fail = (message, options) => {
 };
 
 const getUnknownNornaBlockMessage = (type) => [
-	`Unknown Norna block "${type}". Use one of: ${knownBlockTypeList}.`,
+	renamedNornaBlockTypes[type]
+		? `Norna block "${type}" was renamed to "${renamedNornaBlockTypes[type]}".`
+		: `Unknown Norna block "${type}". Use one of: ${knownBlockTypeList}.`,
 	type === 'norna-gallery-stack'
-		? 'Use norna-image-stack for one or more stacked images.'
+		? 'Use image-stack for one or more stacked images.'
 		: null,
-	type === 'norna-carousel'
-		? 'Use norna-image-carousel for an image carousel.'
+	type === 'norna-image-carousel' || type === 'norna-carousel'
+		? 'Use carousel for an image carousel.'
 		: null,
 	type === 'norna-image'
-		? 'Use norna-image-stack for a single image or a stacked list of images.'
+		? 'Use image-stack for a single image or a stacked list of images.'
 		: null,
 	'Example:',
-	imageStackExample,
+	renamedNornaBlockTypes[type] === 'carousel' ? carouselExample : imageStackExample,
 ].filter(Boolean).join(' ');
 
 const decodeScalar = (value) => {
@@ -238,21 +252,29 @@ export const getOpenMarkdownFenceAtLine = (markdown, lineIndex) => {
 };
 
 const getNornaLineAttempt = (line) => {
-	const match = line.match(/^ {0,3}([`~]{0,2})(norna-[a-z0-9-]+)\s*$/);
+	const match = line.match(/^ {0,3}([`~]{0,2})([a-z][a-z0-9-]+)\s*$/);
 	if (!match) return null;
+	const marker = match[1];
+	const type = match[2];
+	const isNamespacedAttempt = type.startsWith('norna-');
+	if (!isNamespacedAttempt && !nornaBlockTypes.has(type)) return null;
+	if (!marker && type === 'carousel') return null;
 
 	return {
-		marker: match[1],
-		type: match[2],
+		marker,
+		type,
 	};
 };
 
 const getNornaFenceStartMessage = (type, marker = '') => {
-	const example = type === 'norna-card-list'
+	const supportedType = renamedNornaBlockTypes[type] ?? type;
+	const example = supportedType === 'norna-card-list'
 		? cardListExample
-		: type === 'norna-page-list'
+		: supportedType === 'norna-page-list'
 			? pageListExample
-			: `\`\`\`${type}\n- image: filename.jpg\n\`\`\``;
+			: supportedType === 'carousel'
+				? carouselExample
+				: imageStackExample;
 	if (marker) {
 		return `Invalid Norna block start for "${type}". Use three backticks or three tildes. Example:\n${example}`;
 	}
@@ -330,7 +352,7 @@ const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 			}
 		}
 
-		const isNornaLike = type.startsWith('norna-');
+		const isNornaLike = type.startsWith('norna-') || nornaBlockTypes.has(type);
 		if (closingIndex === -1) {
 			if (isNornaLike) {
 				errors.push({
@@ -363,7 +385,7 @@ const scanMarkdownFencedBlocks = (markdown, options = {}) => {
 			} else {
 				errors.push({
 					blockType: type,
-					code: 'unknown-norna-block',
+					code: renamedNornaBlockTypes[type] ? 'renamed-norna-block' : 'unknown-norna-block',
 					line: lineNumber,
 					source,
 					message: failMessage(getUnknownNornaBlockMessage(type), { ...options, line: lineNumber }),
@@ -422,7 +444,7 @@ const parseImageListBlock = (source, options = {}) => {
 		fail(`${options.type} must contain at least one image. Example:\n${imageStackExample}`, options);
 	}
 
-	return { type: options.type === 'norna-image-carousel' ? 'image-carousel' : 'image-stack', images };
+	return { type: options.type === 'carousel' ? 'image-carousel' : 'image-stack', images };
 };
 
 const parseCardListBlock = (source, options = {}) => {

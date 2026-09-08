@@ -84,6 +84,19 @@ when a public anchor must survive a heading-text change. Remove old `sections`
 frontmatter and page-level presentation settings. Current page frontmatter may
 contain only `page.description` and `navigation.listed`.
 
+### Rename Managed Image Blocks
+
+Replace the previous managed-image fence names throughout page Markdown:
+
+| Previous name | Current name |
+| --- | --- |
+| `norna-image-stack` | `image-stack` |
+| `norna-image-carousel` | `carousel` |
+
+Only the fence name changes. Keep each block's image entries, alternative text,
+captions, and position in the page unchanged. `content:check` reports a focused
+migration error if it encounters one of the previous names.
+
 ### Move Page Presentation Into Theme Files
 
 The root `site/theme.yaml` owns the preset, Appearance, palette, corners,

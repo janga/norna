@@ -51,7 +51,7 @@ spaces consecutive images, and how captions relate to the surrounding prose.
 The selected preset supplies either `prose-aligned`, which starts media at the
 body-text edge, or `centered-fit`, which centers and height-limits the media.
 
-```norna-image-stack
+```image-stack
 - image: grass-puppy.jpg
   alt: A puppy standing in green grass.
   caption: Puppy in grass. Photo by Bicanski, CC0, via Pixnio.
@@ -68,7 +68,7 @@ body-text edge, or `centered-fit`, which centers and height-limits the media.
 These simple diagrams keep the source constant while exposing the preset's
 media constraints, caption styling, and carousel chrome.
 
-```norna-image-carousel
+```carousel
 - image: carousel-one.svg
   alt: A green panel with a diagonal line.
   caption: First frame with a broad diagonal.

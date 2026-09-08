@@ -183,7 +183,7 @@ page:
 # Details
 Static image stacks remain static.
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: first.svg
   caption: First image.
 - image: second.svg
@@ -249,7 +249,7 @@ page:
 
 ## Details {#details}
 
-\`\`\`norna-image-carousel
+\`\`\`carousel
 - image: first.svg
   caption: First slide.
 - image: second.svg

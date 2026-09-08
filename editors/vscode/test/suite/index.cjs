@@ -105,7 +105,7 @@ async function run() {
 
 	const blockPage = await openDocument('site/pages/030-block/content.md');
 	const blockItems = await getCompletions(blockPage, 4);
-	for (const block of ['norna-image-stack', 'norna-image-carousel', 'norna-card-list']) {
+	for (const block of ['image-stack', 'carousel', 'norna-card-list']) {
 		assert.ok(blockItems.some((item) => labelOf(item) === block), `Missing block completion ${block}.`);
 	}
 
@@ -126,7 +126,7 @@ async function run() {
 	);
 	assert.ok(definitions.some((location) => location.uri.fsPath.endsWith(path.join('images', 'team', 'portrait.jpg'))));
 	const fenceLine = Array.from({ length: home.lineCount }, (_value, line) => line)
-		.find((line) => home.lineAt(line).text.includes('norna-image-stack'));
+		.find((line) => home.lineAt(line).text.includes('image-stack'));
 	const hovers = await vscode.commands.executeCommand(
 		'vscode.executeHoverProvider',
 		home.uri,
@@ -172,13 +172,13 @@ async function run() {
 	writeManifest({ ...compatibleManifest, editorApiVersion: compatibleManifest.editorApiVersion + 1 });
 	await vscode.commands.executeCommand('nornaEditor.refresh');
 	const incompatibleBlockItems = await getCompletions(blockPage, 4);
-	assert.ok(!incompatibleBlockItems.some((item) => labelOf(item) === 'norna-image-stack'));
+	assert.ok(!incompatibleBlockItems.some((item) => labelOf(item) === 'image-stack'));
 
 	writeManifest(compatibleManifest);
 	await vscode.commands.executeCommand('nornaEditor.refresh');
 	const restoredBlockItems = await waitFor(
 		() => getCompletions(blockPage, 4),
-		(items) => items.some((item) => labelOf(item) === 'norna-image-stack'),
+		(items) => items.some((item) => labelOf(item) === 'image-stack'),
 		'Markdown completion did not recover after restoring a compatible editor API.',
 	);
 	assert.ok(restoredBlockItems.some((item) => labelOf(item) === 'norna-card-list'));

@@ -21,7 +21,7 @@ One page contains the complete presentation. Its H2 sections become local
 navigation destinations, while the content and images remain together in the
 homepage directory.
 
-```norna-image-stack
+```image-stack
 - image: single-page-dog-shelter.png
   alt: The complete single-page dog shelter example shown in a desktop browser.
   caption: One page with section links in the top navigation.
@@ -36,7 +36,7 @@ The same subject is divided into Home, Dogs and Adopt. The pages appear in top
 navigation, and each page keeps its own content and images without introducing
 a deeper hierarchy.
 
-```norna-image-stack
+```image-stack
 - image: multi-page-dog-shelter.png
   alt: The complete multi-page dog shelter example shown in a desktop browser.
   caption: Several top-level pages without a hierarchical navigation tree.

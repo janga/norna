@@ -81,13 +81,13 @@
         <text class="key" x="46" y="72"># Dog Shelter</text>
         <text class="key" x="46" y="108">## What we do</text>
         <text class="code" x="46" y="130">We rescue and rehome dogs.</text>
-        <text class="code" x="46" y="162">```norna-image-stack</text>
+        <text class="code" x="46" y="162">```image-stack</text>
         <text class="code" x="46" y="184">- image: dog-house.svg</text>
         <text class="code" x="46" y="206">  caption: Ready for adoption.</text>
         <text class="code" x="46" y="228">```</text>
         <text class="key" x="46" y="276">## You can help</text>
         <text class="code" x="46" y="298">Adopt. Foster. Donate.</text>
-        <text class="code" x="46" y="330">```norna-image-stack</text>
+        <text class="code" x="46" y="330">```image-stack</text>
         <text class="code" x="46" y="352">- image: heart.svg</text>
         <text class="code" x="46" y="374">  caption: Foster care creates space.</text>
         <text class="code" x="46" y="396">```</text>

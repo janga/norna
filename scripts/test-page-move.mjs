@@ -62,7 +62,7 @@ page:
 [Child](reference/#details)
 [Manual](../../manual.pdf)
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: example.svg
   alt: Example diagram.
 \`\`\`

@@ -11,7 +11,7 @@ page:
 This fixture validates that Markdown defines sections. It also checks **inline
 emphasis**.
 
-```norna-image-stack
+```image-stack
 - image: hero.jpg
   alt: A black Labrador-type dog sitting on grass.
   caption: Dog portrait one: a black Labrador-type dog.
@@ -21,7 +21,7 @@ emphasis**.
 
 Text can continue after a Norna-managed image.
 
-```norna-image-stack
+```image-stack
 - image: detail.jpg
   alt: A small tan terrier-type dog standing in grass.
   caption: Dog portrait two: a small tan terrier-type dog.
@@ -35,7 +35,7 @@ Text can continue after a Norna-managed image.
 This section demonstrates an image carousel without duplicating section order
 in frontmatter.
 
-```norna-image-carousel
+```carousel
 - image: slide-one.jpg
   alt: A russet-brown dog beginning a gallop in a grassy field.
   caption: Gallop phase one: push-off.
@@ -51,7 +51,7 @@ in frontmatter.
 
 This section is defined entirely by Markdown.
 
-```norna-image-stack
+```image-stack
 - image: image.jpg
   caption: a dog
 ```

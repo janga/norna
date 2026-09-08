@@ -293,8 +293,8 @@ overrides.
 
 ## Image Sizing
 
-`images` controls how standalone `norna-image-stack` and
-`norna-image-carousel` blocks relate to the body text and how much space they
+`images` controls how standalone `image-stack` and
+`carousel` blocks relate to the body text and how much space they
 may use. Card-list images follow their card layout instead.
 
 The body text and media area sit inside the page's content canvas. The content

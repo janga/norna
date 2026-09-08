@@ -52,7 +52,7 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: diagram.svg
   alt: Diagram
 \`\`\`
@@ -88,7 +88,7 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: diagram.svg
   alt: Diagram
 \`\`\`
@@ -132,7 +132,7 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`norna-image-carousel
+\`\`\`carousel
 - image: first.svg
   alt: First
 - image: second.svg
@@ -165,7 +165,7 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: hero.jpg
 \`\`\`
 `);
@@ -189,7 +189,7 @@ page:
 
 ## Plain {#plain}
 
-\`\`\`norna-image-carousel
+\`\`\`carousel
  - image: foo.jpg
 \`\`\`
 `);
@@ -197,7 +197,7 @@ page:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /norna-image-carousel on line \d+ contains 1 image\. A carousel needs at least two images\./);
+				assert.match(error.output, /carousel on line \d+ contains 1 image\. A carousel needs at least two images\./);
 				assert.match(error.output, /Image "foo\.jpg" does not exist at .*site\/pages\/000-home\/images\/foo\.jpg or anywhere under any page image root\./);
 				return true;
 			},
@@ -219,7 +219,7 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: missing.jpg
   alt: Missing
 \`\`\`

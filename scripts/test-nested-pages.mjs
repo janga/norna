@@ -155,7 +155,7 @@ try {
 		'content.md',
 	);
 	const workflowsContentPath = path.join(siteDir, 'pages', '010-guides', 'pages', '020-workflows', 'content.md');
-	const imageBlockPattern = /\n```norna-image-stack\n[\s\S]*?\n```\n/;
+	const imageBlockPattern = /\n```image-stack\n[\s\S]*?\n```\n/;
 	const installationContent = await readFile(installationContentPath, 'utf8');
 	const imageBlock = installationContent.match(imageBlockPattern)?.[0];
 	assert.ok(imageBlock, 'The nested fixture needs a managed image block to exercise content:sync.');

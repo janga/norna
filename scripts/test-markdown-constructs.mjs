@@ -540,7 +540,7 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 image hero.jpg
   alt: Hero
 \`\`\`
@@ -549,7 +549,7 @@ image hero.jpg
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid norna-image-stack entry "image hero\.jpg"\. Start each image with "- image: filename\.jpg"\./);
+				assert.match(error.output, /Invalid image-stack entry "image hero\.jpg"\. Start each image with "- image: filename\.jpg"\./);
 				return true;
 			},
 		);
@@ -580,9 +580,47 @@ page:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list, norna-page-list\./);
-				assert.match(error.output, /Use norna-image-stack for one or more stacked images\./);
-				assert.match(error.output, /Example: ```norna-image-stack\n- image: filename\.jpg\n```/);
+				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: image-stack, carousel, norna-card-list, norna-page-list\./);
+				assert.match(error.output, /Use image-stack for one or more stacked images\./);
+				assert.match(error.output, /Example: ```image-stack\n- image: filename\.jpg\n```/);
+				return true;
+			},
+		);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check explains renamed image block names', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Renamed blocks
+
+## Examples {#examples}
+
+\`\`\`norna-image-stack
+- image: first.jpg
+\`\`\`
+
+\`\`\`norna-image-carousel
+- image: first.jpg
+- image: second.jpg
+\`\`\`
+
+\`\`\`norna-carousel
+- image: first.jpg
+- image: second.jpg
+\`\`\`
+`);
+
+		await assert.rejects(
+			() => runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Norna block "norna-image-stack" was renamed to "image-stack"/);
+				assert.match(error.output, /Example: ```image-stack\n- image: filename\.jpg\n```/);
+				assert.match(error.output, /Norna block "norna-image-carousel" was renamed to "carousel"/);
+				assert.match(error.output, /Norna block "norna-carousel" was renamed to "carousel"/);
+				assert.match(error.output, /Example: ```carousel\n- image: first\.jpg\n- image: second\.jpg\n```/);
 				return true;
 			},
 		);
@@ -611,7 +649,7 @@ This block is no longer supported.
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Unknown Norna block "norna-note"\. Use one of: norna-image-stack, norna-image-carousel, norna-card-list, norna-page-list\./);
+				assert.match(error.output, /Unknown Norna block "norna-note"\. Use one of: image-stack, carousel, norna-card-list, norna-page-list\./);
 				return true;
 			},
 		);
@@ -678,7 +716,7 @@ page:
 
 ## Intro {#intro}
 
-~~~norna-image-stack
+~~~image-stack
 - image: hero.jpg
 ~~~
 `);
@@ -703,7 +741,7 @@ page:
 ## Intro {#intro}
 
 \`\`\`\`md
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: missing-example.jpg
 \`\`\`
 \`\`\`\`
@@ -728,15 +766,15 @@ page:
 
 ## Intro {#intro}
 
-norna-image-stack
+image-stack
 - image: hero.jpg
 `);
 
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Found "norna-image-stack" outside a code block\./);
-				assert.match(error.output, /Start the block like this:\n```norna-image-stack\n- image: filename\.jpg\n```/);
+				assert.match(error.output, /Found "image-stack" outside a code block\./);
+				assert.match(error.output, /Start the block like this:\n```image-stack\n- image: filename\.jpg\n```/);
 				return true;
 			},
 		);
@@ -757,7 +795,7 @@ page:
 
 ## Intro {#intro}
 
-\`\`norna-image-stack
+\`\`image-stack
 - image: hero.jpg
 \`\`
 `);
@@ -765,7 +803,7 @@ page:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid Norna block start for "norna-image-stack"\./);
+				assert.match(error.output, /Invalid Norna block start for "image-stack"\./);
 				assert.match(error.output, /Use three backticks or three tildes/);
 				return true;
 			},
@@ -787,7 +825,7 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: hero.jpg
 ~~~
 `);
@@ -817,19 +855,19 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 image broken.jpg
   alt: Broken
 \`\`\`
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: missing-intro.jpg
   alt: Missing intro
 \`\`\`
 
 ## More {#more}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: missing-more.jpg
   alt: Missing more
 \`\`\`
@@ -838,7 +876,7 @@ image broken.jpg
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid norna-image-stack entry "image broken\.jpg"\. Start each image with "- image: filename\.jpg"\./);
+				assert.match(error.output, /Invalid image-stack entry "image broken\.jpg"\. Start each image with "- image: filename\.jpg"\./);
 				assert.match(error.output, /Image "missing-intro\.jpg" does not exist at .*site\/pages\/000-home\/images\/missing-intro\.jpg or anywhere under any page image root\./);
 				assert.match(error.output, /Image "missing-more\.jpg" does not exist at .*site\/pages\/000-home\/images\/missing-more\.jpg or anywhere under any page image root\./);
 				return true;

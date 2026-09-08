@@ -504,7 +504,7 @@ for (const context of contentFileContexts) {
 			addSectionIssue(contentFile, section, {
 				severity: 'warning',
 				message: `Markdown image "${reference.target}" references a local image that is not managed by Norna.`,
-				fix: 'Use a norna-image-stack, norna-image-carousel, or norna-card-list block for site images that should be validated, processed and synced.',
+				fix: 'Use an image-stack, carousel, or norna-card-list block for site images that should be validated, processed and synced.',
 			});
 		}
 
@@ -520,8 +520,8 @@ for (const context of contentFileContexts) {
 			if (block.type === 'image-carousel' && block.images.length < 2) {
 				addSectionIssue(contentFile, section, {
 					severity: 'error',
-					message: `norna-image-carousel on line ${block.line} contains ${block.images.length} image. A carousel needs at least two images.`,
-					fix: 'Add another image entry, or use norna-image-stack for a single image.',
+					message: `carousel on line ${block.line} contains ${block.images.length} image. A carousel needs at least two images.`,
+					fix: 'Add another image entry, or use image-stack for a single image.',
 				});
 			}
 		}

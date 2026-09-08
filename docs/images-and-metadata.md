@@ -11,7 +11,7 @@ its filename, scope, and generated metadata.
 ## Managed Source Images
 
 Norna-managed local images are referenced from Markdown with
-`norna-image-stack`, `norna-image-carousel`, or `norna-card-list` blocks. See
+`image-stack`, `carousel`, or `norna-card-list` blocks. See
 [Content](content.md#norna-blocks) for the block syntax.
 
 Homepage source images live under:
@@ -38,7 +38,7 @@ Supported source extensions:
 Managed image block references use only the filename:
 
 ````md
-```norna-image-stack
+```image-stack
 - image: portrait.jpg
   alt: Optional alt text.
   caption: Optional caption.
@@ -204,14 +204,14 @@ prompt: A clean editorial illustration of ordinary project files becoming a
   image.
 -->
 
-```norna-image-stack
+```image-stack
 - image: workflow.png
   alt: Abstract illustration of project files becoming a website.
   caption: Generated illustration.
 ```
 ````
 
-Use the same comment next to a `norna-image-carousel` or `norna-card-list`
+Use the same comment next to a `carousel` or `norna-card-list`
 block when it references a generated or edited image.
 
 This is a maintenance rule for real editorial images. It is not necessary for

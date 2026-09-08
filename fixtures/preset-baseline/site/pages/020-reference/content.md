@@ -9,7 +9,7 @@ page:
 
 This page uses the page-level centered-fit presentation to exercise portrait media.
 
-```norna-image-stack
+```image-stack
 - image: portrait-one.svg
   alt: A tall composition with a large circle above two bars.
   caption: Centered-fit presentation centers portrait artwork in its media area.
@@ -19,7 +19,7 @@ This page uses the page-level centered-fit presentation to exercise portrait med
 
 The portrait carousel makes viewport-height constraints visible.
 
-```norna-image-carousel
+```carousel
 - image: portrait-one.svg
   alt: A tall composition with a large circle above two bars.
   caption: First portrait frame.

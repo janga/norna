@@ -69,7 +69,7 @@ page:
 
 Text with an unmatched note reference {note-ref}.
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: portrait.jpg
 - image: 
 \`\`\`
@@ -93,14 +93,14 @@ Team members.
 
 ## Example {#example}
 
-\`\`\`norna-
+\`\`\`
 \`\`\`
 `);
 	await write('site/pages/040-unclosed/content.md', `# Unclosed block
 
 ## Example {#example}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: missing.jpg
 `);
 	await write('site/notes.md', '# Ordinary Markdown\n');

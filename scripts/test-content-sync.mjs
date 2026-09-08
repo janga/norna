@@ -24,7 +24,7 @@ page:
 
 ## Work {#work}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: moved.jpg
   alt: Moved image
 \`\`\`
@@ -53,7 +53,7 @@ page:
 
 ## Work {#work}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: moved.svg
   alt: Moved diagram
 \`\`\`
@@ -108,7 +108,7 @@ page:
 
 ## Work {#work}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: moved.jpg
 \`\`\`
 `);
@@ -163,7 +163,7 @@ page:
 
 ## Work {#work}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: moved.jpg
 \`\`\`
 `);
@@ -219,7 +219,7 @@ page:
 
 ## Work {#work}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: moved.jpg
 \`\`\`
 `);
@@ -267,7 +267,7 @@ page:
 
 ## Old {#old}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: shared.jpg
 \`\`\`
 `);
@@ -280,7 +280,7 @@ page:
 
 ## Work {#work}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: shared.jpg
 \`\`\`
 `);
@@ -312,7 +312,7 @@ page:
 
 ## Work {#work}
 
-\`\`\`norna-image-carousel
+\`\`\`carousel
 - image: slide-one.jpg
   alt: Slide one
 - image: slide-two.jpg
@@ -346,7 +346,7 @@ page:
 
 ## Work {#work}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: shared.jpg
   alt: Shared
 \`\`\`
@@ -386,14 +386,14 @@ page:
 
 ## Intro {#intro}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: shared.jpg
   alt: Shared original
 \`\`\`
 
 ## Plain {#plain}
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: shared.jpg
   alt: Shared copy
 \`\`\`

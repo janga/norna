@@ -43,7 +43,7 @@ npm run norna:build
 An image stack exercises media width, spacing, intrinsic aspect ratio, captions,
 and section-surface contrast.
 
-```norna-image-stack
+```image-stack
 - image: stack-portrait.svg
   alt: A tall diagram with three connected panels.
   caption: A portrait diagram checks the reading edge and width-driven sizing.
@@ -60,7 +60,7 @@ and section-surface contrast.
 The carousel checks the relationship between image constraints, controls,
 position status, and captions.
 
-```norna-image-carousel
+```carousel
 - image: carousel-one.svg
   alt: A green panel with a diagonal line.
   caption: First frame with a broad diagonal.

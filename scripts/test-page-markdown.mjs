@@ -13,7 +13,7 @@ Meet the dogs.
 
 ### Rover
 
-\`\`\`norna-image-stack
+\`\`\`image-stack
 - image: rover.svg
   caption: Rover
 \`\`\`
@@ -51,13 +51,47 @@ assert.deepEqual(model.diagnostics, []);
 
 const blockRegion = model.sections[0];
 assert.deepEqual(blockRegion.content.map(({ kind }) => kind), ['markdown', 'norna-block']);
-assert.equal(source.slice(blockRegion.content[1].range.start, blockRegion.content[1].range.end).startsWith('```norna-image-stack'), true);
+assert.equal(source.slice(blockRegion.content[1].range.start, blockRegion.content[1].range.end).startsWith('```image-stack'), true);
+
+const renamedImageBlocks = await parsePageMarkdown(`# Renamed image blocks
+
+## Examples {#examples}
+
+\`\`\`norna-image-stack
+- image: first.jpg
+\`\`\`
+
+\`\`\`norna-image-carousel
+- image: first.jpg
+- image: second.jpg
+\`\`\`
+
+\`\`\`norna-carousel
+- image: first.jpg
+- image: second.jpg
+\`\`\`
+`, { label: 'renamed-blocks.md' });
+assert.deepEqual(
+	renamedImageBlocks.diagnostics.map(({ code }) => code),
+	['renamed-norna-block', 'renamed-norna-block', 'renamed-norna-block'],
+);
+assert.match(renamedImageBlocks.diagnostics[0].message, /"norna-image-stack" was renamed to "image-stack"/);
+assert.match(renamedImageBlocks.diagnostics[1].message, /"norna-image-carousel" was renamed to "carousel"/);
+assert.match(renamedImageBlocks.diagnostics[2].message, /"norna-carousel" was renamed to "carousel"/);
+
+const carouselAsProse = await parsePageMarkdown(`# Carousel prose
+
+## Name {#name}
+
+carousel
+`);
+assert.deepEqual(carouselAsProse.diagnostics, []);
 
 const invalid = await parsePageMarkdown(`Before title.
 
 ## Section
 
-\`\`norna-image-stack
+\`\`image-stack
 - image: missing.jpg
 `, { label: 'invalid.md' });
 

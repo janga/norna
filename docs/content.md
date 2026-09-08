@@ -175,7 +175,7 @@ fence longer than the inner fence:
 
 ````md
 ````
-```norna-image-stack
+```image-stack
 - image: filename.jpg
 ```
 ````
@@ -221,7 +221,7 @@ Start each entry with `- image: filename.jpg`. Indent optional fields with two
 spaces:
 
 ````md
-```norna-image-stack
+```image-stack
 - image: filename.jpg
   alt: Optional alt text.
   caption: Optional caption.
@@ -237,10 +237,10 @@ block. See [Image Sizing](theme.md#image-sizing).
 
 ### Image Stack
 
-Use `norna-image-stack` for one or more stacked images:
+Use `image-stack` for one or more stacked images:
 
 ````md
-```norna-image-stack
+```image-stack
 - image: work.jpg
   alt: A woven artwork on a white wall.
   caption: Work in progress.
@@ -249,10 +249,10 @@ Use `norna-image-stack` for one or more stacked images:
 
 ### Image Carousel
 
-Use `norna-image-carousel` for a carousel:
+Use `carousel` for a carousel:
 
 ````md
-```norna-image-carousel
+```carousel
 - image: first.jpg
   alt: First image.
   caption: First caption.
@@ -354,7 +354,7 @@ site/pages/010-guide/pages/020-installation/images/
 Image references in Norna managed image blocks use only the filename:
 
 ````md
-```norna-image-stack
+```image-stack
 - image: portrait.jpg
 ```
 ````
@@ -379,7 +379,7 @@ Markdown image syntax is allowed for external images and public static assets:
 ```
 
 Relative local Markdown images such as `![Portrait](portrait.jpg)` are not
-managed by Norna. Use `norna-image-stack`, `norna-image-carousel`, or
+managed by Norna. Use `image-stack`, `carousel`, or
 `norna-card-list` for local site images that should be validated, processed and
 synced.
 

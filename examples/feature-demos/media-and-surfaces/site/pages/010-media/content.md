@@ -18,7 +18,7 @@ This example uses the `project` preset's `prose-aligned` presentation. The
 image and caption begin at the body-text edge and may extend to the right when
 the media area has more room.
 
-```norna-image-stack
+```image-stack
 - image: stack-one.svg
   alt: A pale panel with a single large circle.
   caption: One image can introduce a visual idea.
@@ -35,7 +35,7 @@ Norna.{note-ref}
 
 {note: The carousel provides controls, keyboard interaction and readable position status without page-specific components.}
 
-```norna-image-carousel
+```carousel
 - image: carousel-one.svg
   alt: A green panel with a diagonal line.
   caption: First frame: a broad direction.
@@ -53,7 +53,7 @@ Portrait images use the same prose-aligned carousel. Its size follows available
 horizontal space without a viewport-height limit, and its controls remain next
 to the rendered stage instead of moving to the edges of a wider content area.
 
-```norna-image-carousel
+```carousel
 - image: portrait-one.svg
   alt: A tall pale panel with a centered arch.
   caption: First portrait frame: a single vertical form.

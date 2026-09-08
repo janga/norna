@@ -153,7 +153,7 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 		} else if (fileKind === 'content' && key === 'description') {
 			fix = 'Indent "description:" under "page:". The optional meta description belongs in the page object.';
 		} else if (fileKind === 'content' && key === 'images') {
-			fix = 'Put local image references in norna-image-stack or norna-image-carousel blocks in the Markdown body.';
+			fix = 'Put local image references in image-stack or carousel blocks in the Markdown body.';
 		} else if (fileKind === 'content' && knownThemeTopLevelFrontmatterKeys.has(key)) {
 			fix = `Move "${key}:" to theme.yaml. Visual settings do not belong in content frontmatter.`;
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'navigation') {

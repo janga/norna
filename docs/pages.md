@@ -544,7 +544,7 @@ site/pages/010-guides/pages/020-workflows/images/diagram.svg
 The Markdown block still uses only the filename:
 
 ````md
-```norna-image-stack
+```image-stack
 - image: diagram.svg
   alt: The local workflow.
 ```

@@ -19,7 +19,7 @@ presentation.
 Use an image stack when every image should remain visible in reading order.
 One image is valid, and additional entries create a vertical sequence.
 
-```norna-image-stack
+```image-stack
 - image: stack-one.svg
   alt: A pale panel with one large circle and two horizontal lines.
   caption: The first image introduces one visual idea.
@@ -38,7 +38,7 @@ Use a carousel for a related sequence that should occupy one visual position.
 Norna provides the controls, keyboard interaction, position status and caption
 switching.
 
-```norna-image-carousel
+```carousel
 - image: carousel-one.svg
   alt: A green panel with a broad diagonal line.
   caption: First frame: a broad direction.
