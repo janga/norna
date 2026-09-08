@@ -54,6 +54,8 @@ action, or another user-owned prerequisite. They do not block `Now` or `Next`.
 These accepted maintenance and workflow outcomes follow the ordered product
 work above unless a concrete defect raises their urgency.
 
+- `BL-056` **Lighter Dark navigation markers.** Make the surfaces that mark the
+  current page and current heading slightly lighter in Dark appearance.
 - `BL-012` **Needs a scoped reproducer.** Improve generated-image diagnostics
   and cache reuse reporting, then decide whether a repair or reset command is
   still necessary.
@@ -106,6 +108,8 @@ or `Later` only after the stated evidence or design decision exists.
 - [`BL-053` Accessible mathematics](docs/design/backlog/BL-053-accessible-mathematics.md):
   **Needs evidence and syntax review.** Keep static conversion as the migration
   path until scientific or mathematical Norna sites justify native rendering.
+- `BL-055` **Sticky table headings. Needs evidence.** Keep table column
+  headings visible while scrolling long tables.
 - `BL-018` **Needs evidence.** Extend cross-page sync to whole-section metadata
   or additional assets only when a real section-bound resource exists; retain
   unambiguous discovery and never guess.
