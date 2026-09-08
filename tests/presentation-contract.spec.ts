@@ -465,7 +465,7 @@ for (const appearance of ['light', 'dark']) {
 	});
 }
 
-test('prose-aligned images follow the prose edge without viewport-height shrinking', async ({ page }) => {
+test('prose-aligned stacks stay width-driven while carousels fit the viewport height', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await openComponents(page);
 	await expect(page.locator('html')).toHaveAttribute('data-image-presentation', 'prose-aligned');
@@ -501,8 +501,8 @@ test('prose-aligned images follow the prose edge without viewport-height shrinki
 	expect(carouselCaptionBounds?.x).toBeCloseTo(carouselBounds?.x ?? 0, 0);
 	expect(frameBounds?.width ?? 0).toBeGreaterThan(proseBounds?.width ?? Infinity);
 	expect(await portrait.evaluate((image) => getComputedStyle(image).maxHeight)).toBe('none');
-	expect(await carouselStage.evaluate((stage) => getComputedStyle(stage).maxHeight)).toBe('none');
-	expect(await carousel.getAttribute('style')).not.toContain('--image-carousel-width-from-height-desktop');
+	expect(carouselBounds?.height ?? Infinity).toBeLessThanOrEqual(740 + 1);
+	expect(await carousel.getAttribute('style')).toContain('--image-carousel-width-from-height-desktop');
 });
 
 test('centered-fit images are centered and constrained by viewport height', async ({ page }) => {
@@ -575,7 +575,29 @@ test('centered-fit image stacks and carousels stay within a 320 pixel viewport',
 	await expect(page.locator('.image-carousel-button-next')).toBeVisible();
 });
 
-test('prose-aligned presentation can expand the same portrait carousel without moving cards', async ({ page }) => {
+test('prose-aligned portrait carousels retain the automatic mobile height limit', async ({ page }) => {
+	await page.setViewportSize({ width: 700, height: 800 });
+	await openCenteredFit(page);
+	await page.locator('html').evaluate((root) => {
+		root.dataset.imagePresentation = 'prose-aligned';
+	});
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+
+	const carouselStage = page.locator('.image-carousel-stage');
+	const carouselBounds = await carouselStage.boundingBox();
+	const proseBounds = await page.locator('.site-section')
+		.filter({ has: page.locator('#centered-fit-carousel') })
+		.locator('.section-markdown')
+		.first()
+		.boundingBox();
+
+	expect(carouselBounds).not.toBeNull();
+	expect(proseBounds).not.toBeNull();
+	expect(carouselBounds?.height ?? Infinity).toBeLessThanOrEqual(544 + 1);
+	expect(carouselBounds?.x).toBeCloseTo(proseBounds?.x ?? 0, 0);
+});
+
+test('image presentation changes carousel alignment without removing viewport fitting', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await openCenteredFit(page);
 	const centeredFitStage = await page.locator('.image-carousel-stage').boundingBox();
@@ -593,8 +615,10 @@ test('prose-aligned presentation can expand the same portrait carousel without m
 	expect(centeredFitStage).not.toBeNull();
 	expect(proseAlignedStage).not.toBeNull();
 	expect(prose).not.toBeNull();
-	expect(proseAlignedStage?.width ?? 0).toBeGreaterThan(centeredFitStage?.width ?? Infinity);
+	expect(proseAlignedStage?.width).toBeCloseTo(centeredFitStage?.width ?? 0, 0);
+	expect(proseAlignedStage?.height ?? Infinity).toBeLessThanOrEqual(740 + 1);
 	expect(proseAlignedStage?.x).toBeCloseTo(prose?.x ?? 0, 0);
+	expect(centeredFitStage?.x ?? 0).toBeGreaterThan(proseAlignedStage?.x ?? Infinity);
 
 	await openComponents(page);
 	const cards = page.locator('.card-list');

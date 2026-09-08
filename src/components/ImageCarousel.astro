@@ -1,5 +1,6 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
+import { defaultImageMaxAvailableHeightPercent } from '../../scripts/lib/image-presentation.mjs';
 import { getImageAttributes } from '../lib/generatedImages';
 import {
 	getCaptionId,
@@ -33,15 +34,13 @@ const {
 } = Astro.props;
 const managedImageSizes = getManagedImageSizes(maxAvailableWidthPercent);
 const carouselAspectRatio = getCarouselAspectRatio(images);
+const carouselMaxAvailableHeightPercent = maxAvailableHeightPercent
+	?? defaultImageMaxAvailableHeightPercent;
 const carouselStyle = carouselAspectRatio
 	? [
 		`--image-carousel-aspect-ratio: ${carouselAspectRatio}`,
-		...(maxAvailableHeightPercent
-			? [
-				`--image-carousel-width-from-height-desktop: ${carouselAspectRatio * maxAvailableHeightPercent.desktop}svh`,
-				`--image-carousel-width-from-height-mobile: ${carouselAspectRatio * maxAvailableHeightPercent.mobile}svh`,
-			]
-			: []),
+		`--image-carousel-width-from-height-desktop: ${carouselAspectRatio * carouselMaxAvailableHeightPercent.desktop}svh`,
+		`--image-carousel-width-from-height-mobile: ${carouselAspectRatio * carouselMaxAvailableHeightPercent.mobile}svh`,
 	].join('; ')
 	: undefined;
 ---

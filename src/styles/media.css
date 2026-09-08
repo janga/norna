@@ -291,10 +291,6 @@
 	outline: none;
 }
 
-:root[data-image-presentation='prose-aligned'] .image-carousel {
-	--layout-carousel-width: min(100%, var(--layout-media-width));
-}
-
 .image-carousel:focus-visible {
 	outline: var(--focus-indicator-width) solid var(--color-focus-ring);
 	outline-offset: 0.5rem;
@@ -317,7 +313,6 @@
 }
 
 :root[data-image-presentation='prose-aligned'] .image-carousel-stage {
-	max-height: none;
 	margin-inline: 0 auto;
 }
 

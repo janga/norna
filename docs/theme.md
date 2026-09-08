@@ -306,7 +306,7 @@ use a narrower reading width inside it; the media area may be broader.
 
 | Value | Placement and sizing |
 | --- | --- |
-| `prose-aligned` | Start the image and its caption at the body-text edge. The image may extend to the right into the media area and is sized from available horizontal space without a viewport-height limit. |
+| `prose-aligned` | Start the image and its caption at the body-text edge. An image stack is sized from available horizontal space and may extend to the right into the media area. |
 | `centered-fit` | Center the media frame, rendered image and caption on the same horizontal axis. Fit the image within both the available width and a configured share of the viewport height. |
 
 The selected preset supplies the normal method. `documentation` and `project`
@@ -320,10 +320,17 @@ retains the body-text edge, while `centered-fit` remains centered in the space
 that is left. Norna never centers either method against the complete browser
 viewport.
 
-If viewport-height fitting makes a portrait `centered-fit` image narrower than
-its frame, the image and visible caption remain centered on the frame's axis.
-Neither method crops an image or changes its intrinsic proportions by default.
-Both return to the available content width on narrow screens.
+Every image carousel also fits within the available width and an engine-owned
+share of the viewport height. This rule applies with either presentation
+method so one portrait slide cannot make the controls and caption difficult to
+reach. A prose-aligned carousel uses a maximum of 74 percent of the viewport
+height on desktop and 68 percent on mobile. It retains the body-text edge
+rather than becoming centered.
+
+If viewport-height fitting makes an image narrower than its frame, the image
+and visible caption retain the presentation method's horizontal axis. Neither
+method crops an image or changes its intrinsic proportions by default. Both
+return to the available content width on narrow screens.
 
 A root or page theme can override the method for all standalone image stacks
 and carousels in its scope:
@@ -342,8 +349,8 @@ The size settings mean:
 - `width`: maximum intended width of the image area for either method.
 - `maxAvailableWidthPercent`: maximum share of available horizontal space for
   either method.
-- `maxAvailableHeightPercent`: maximum share of viewport height for
-  `centered-fit` only.
+- `maxAvailableHeightPercent`: maximum share of viewport height for all
+  `centered-fit` image stacks and carousels.
 
 For a centered presentation with an explicit height limit:
 
@@ -359,8 +366,9 @@ images:
 
 Each responsive percentage may also be one number. Norna rejects
 `maxAvailableHeightPercent` with `prose-aligned` because the setting would have
-no effect. Image presentation cannot be selected for an individual section,
-block, or image.
+no effect on prose-aligned image stacks and prose-aligned carousels use the
+engine-owned automatic limit. Image presentation cannot be selected for an
+individual section, block, or image.
 
 ## Content Block Defaults
 

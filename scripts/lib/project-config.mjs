@@ -2,7 +2,11 @@ import { readFile } from 'node:fs/promises';
 import {
 	validateConfigYamlStructure,
 } from './site-content.mjs';
-import { defaultImagePresentation, imagePresentationNames } from './image-presentation.mjs';
+import {
+	defaultImageMaxAvailableHeightPercent,
+	defaultImagePresentation,
+	imagePresentationNames,
+} from './image-presentation.mjs';
 import { navigationModeNames } from './navigation-model.mjs';
 import {
 	siteConfigLabel,
@@ -484,10 +488,13 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 			presentation: imagePresentation,
 			...(imagePresentation === 'centered-fit'
 				? {
-					maxAvailableHeightPercent: readResponsivePercent(rawImagesConfig, 'maxAvailableHeightPercent', 'images', Object.freeze({
-						desktop: 74,
-						mobile: 68,
-					}), sourceLabel),
+					maxAvailableHeightPercent: readResponsivePercent(
+						rawImagesConfig,
+						'maxAvailableHeightPercent',
+						'images',
+						defaultImageMaxAvailableHeightPercent,
+						sourceLabel,
+					),
 				}
 				: {}),
 			maxAvailableWidthPercent: readResponsivePercent(rawImagesConfig, 'maxAvailableWidthPercent', 'images', Object.freeze({

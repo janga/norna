@@ -81,10 +81,16 @@ rail and its gap have been excluded. Body text may use a narrower reading area
 inside that canvas, while managed media may use a broader media area.
 
 - `prose-aligned` starts the image and caption at the body-text edge and sizes
-  the image from available horizontal space without a viewport-height limit;
+  image stacks from available horizontal space;
 - `centered-fit` centers the frame, rendered image and caption on the same axis
   in the broader media area, then fits the image within both available width
   and viewport height.
+
+Every carousel also receives an automatic viewport-height limit. The limit
+keeps a portrait slide, its controls, and its caption usable as one composition
+without changing the selected horizontal presentation. Image stacks remain
+width-driven with `prose-aligned`, so a detailed tall image can still be read
+progressively while scrolling.
 
 Both methods use the content canvas rather than the browser viewport. A
 persistent navigation rail can reduce the available media width, but it does

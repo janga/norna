@@ -266,7 +266,7 @@ page:
 	assert.equal(getFeatureScripts(carouselHtml).length, 1, 'A carousel page should load only the carousel implementation in addition to reader preferences.');
 	assert.match(carouselHtml, /<html\b[^>]*data-image-presentation="prose-aligned"/);
 	assert.match(carouselHtml, /data-carousel/);
-	assert.doesNotMatch(carouselHtml, /--image-carousel-width-from-height-desktop:/);
+	assert.match(carouselHtml, /--image-carousel-width-from-height-desktop:/);
 	assert.match(carouselHtml, /aria-label="Previous image"/);
 	assert.match(carouselHtml, /aria-label="Next image"/);
 	assert.match(getFeatureScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');

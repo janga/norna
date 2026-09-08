@@ -50,8 +50,9 @@ Norna.{note-ref}
 ## Portrait carousel {#portrait-carousel}
 
 Portrait images use the same prose-aligned carousel. Its size follows available
-horizontal space without a viewport-height limit, and its controls remain next
-to the rendered stage instead of moving to the edges of a wider content area.
+horizontal space until the automatic viewport-height limit becomes narrower.
+Its controls remain next to the rendered stage instead of moving to the edges
+of a wider content area.
 
 ```image-carousel
 - image: portrait-one.svg

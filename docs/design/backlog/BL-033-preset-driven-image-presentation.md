@@ -1,5 +1,9 @@
 # BL-033: Preset-Driven Managed Image Presentation
 
+`BL-057` later refined this contract by giving every carousel an automatic
+viewport-height limit while preserving the presentation method's horizontal
+alignment. Prose-aligned image stacks remain width-driven as specified here.
+
 ## Outcome
 
 Norna chooses an appropriate presentation method for managed images as part of
@@ -73,9 +77,9 @@ When no preset or explicit image presentation is present, the engine default is
 - Align the image, caption, and surrounding content to a stable reading axis.
 - Let the image start at the prose edge and extend to the right into the
   available media area when additional width is useful.
-- Determine inline size from available width and the resolved image-width
-  settings. A viewport-height limit must not make a portrait image drift toward
-  the horizontal center.
+- Determine image-stack inline size from available width and the resolved
+  image-width settings. A viewport-height limit must not make a portrait image
+  drift toward the horizontal center.
 - Preserve intrinsic proportions and never crop by default.
 - Use the available content width on narrow screens.
 
@@ -145,8 +149,9 @@ explicit:
 - `images.width` limits the intended media width for both methods;
 - `images.maxAvailableWidthPercent` limits available horizontal space for both
   methods;
-- `images.maxAvailableHeightPercent` constrains `centered-fit` media and must
-  not silently shrink or recenter `prose-aligned` media.
+- `images.maxAvailableHeightPercent` constrains `centered-fit` media. The
+  engine-owned carousel limit introduced by `BL-057` must not recenter
+  `prose-aligned` carousels.
 
 Reading-oriented built-in profiles should not depend on a viewport-height value
 for their normal geometry. Validation should reject combinations that have no

@@ -51,7 +51,9 @@ crop by default. Norna positions them inside the current page's content canvas,
 after persistent navigation rails and their gaps have been excluded.
 Prose-aligned media keeps a stable edge with the body text; centered-fit media
 shares one center axis with its caption and remains within both the available
-width and its configured viewport-height limit. Both methods return to the
+width and its configured viewport-height limit. Every carousel also receives
+an automatic viewport-height limit regardless of its horizontal presentation;
+prose-aligned image stacks remain width-driven. Both methods return to the
 available content width on narrow screens. See
 [Image Sizing](theme.md#image-sizing).
 

@@ -1,5 +1,9 @@
 # BL-035: Navigation Surfaces And Managed-Image Alignment
 
+`BL-057` later added an automatic viewport-height limit to every carousel.
+That limit changes carousel size without changing the horizontal alignment
+defined here. Prose-aligned image stacks remain width-driven.
+
 ## Outcome
 
 Norna uses one predictable content canvas for text, navigation, and managed
@@ -64,9 +68,9 @@ images.
 
 ## Image Sizing
 
-- In `prose-aligned`, keep a stable prose edge and size from available width. Do not
-  use a viewport-height limit that makes portrait explanatory material shrink
-  and drift toward the center.
+- In `prose-aligned`, keep a stable prose edge and size image stacks from
+  available width. A carousel height limit must not make portrait material
+  drift toward the center.
 - Do not enlarge small or portrait images merely to fill the full media width.
 - Allow a tall explanatory image to require vertical scrolling when that
   preserves legibility.

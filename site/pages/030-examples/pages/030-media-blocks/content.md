@@ -52,8 +52,9 @@ switching.
 
 The carousel order belongs to `content.md`. Its presentation comes from the
 theme: `prose-aligned` starts it at the body-text edge, while `centered-fit`
-centers it and also limits its viewport height. Individual carousel blocks do
-not choose a separate method or page width.
+centers it. Norna limits every carousel by the available viewport height so a
+portrait slide cannot push its controls and caption far apart. Individual
+carousel blocks do not choose a separate method or page width.
 
 ## Card lists {#card-lists}
 
