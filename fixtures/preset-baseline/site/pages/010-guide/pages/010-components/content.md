@@ -38,6 +38,19 @@ npm run norna:check
 npm run norna:build
 ```
 
+## Data table {#data-table}
+
+Tables keep related values comparable. A data table should preserve its
+column relationships, remain usable on a narrow screen, and reveal when more
+columns are available outside the visible area.
+
+| Capability | Author input | Generated result | Narrow-screen behavior |
+| --- | --- | --- | --- |
+| Page hierarchy | Ordered page directories | Stable URLs and navigation | Available from the compact menu |
+| Managed images | Image references in Markdown | Responsive image variants | Sized to the available viewport |
+| Reader choices | Theme defaults | Appearance and reading-width controls | Kept inside the Display panel |
+| Static output | Content and configuration files | Deployable HTML and assets | No application shell required |
+
 ## Image stack {#image-stack}
 
 An image stack exercises media width, spacing, intrinsic aspect ratio, captions,

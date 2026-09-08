@@ -587,6 +587,27 @@
 		background: Canvas !important;
 	}
 
+	.norna-table-frame::before,
+	.norna-table-frame::after {
+		top: 50%;
+		bottom: auto;
+		width: 0.55rem;
+		height: 0.55rem;
+		border-block-start: 2px solid CanvasText;
+		border-inline-end: 2px solid CanvasText;
+		background: none;
+	}
+
+	.norna-table-frame::before {
+		left: 0.4rem;
+		transform: translateY(-50%) rotate(-135deg);
+	}
+
+	.norna-table-frame::after {
+		right: 0.4rem;
+		transform: translateY(-50%) rotate(45deg);
+	}
+
 	:is(.display-settings-segmented input:checked + span, .image-carousel-button:hover:not(:disabled)) {
 		background: Highlight;
 		color: HighlightText;

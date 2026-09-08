@@ -247,6 +247,43 @@ test('content:check rejects unsupported semantic callout syntax', async () => {
 	}
 });
 
+test('Markdown tables retain native semantics inside one focusable overflow frame', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Data table
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Native table | Ready | Header and cell relationships stay intact. |
+| Wide layout | Ready | The wrapper owns horizontal overflow. |
+
+> [!NOTE]
+> A compact table may remain inside a callout.
+>
+> | Scope | Behavior |
+> | --- | --- |
+> | Nested | Stays inside the callout. |
+`);
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+		assert.match(
+			html,
+			/<div\b(?=[^>]*class="norna-table-frame content-block-note-lane-boundary")(?=[^>]*data-table-frame)[^>]*><div\b(?=[^>]*class="norna-table-scroll")(?=[^>]*data-table-scroll)(?=[^>]*tabindex="0")[^>]*><table>/,
+		);
+		assert.match(html, /<thead>[\s\S]*?<th>Feature<\/th>[\s\S]*?<th>Status<\/th>[\s\S]*?<th>Notes<\/th>[\s\S]*?<\/thead>/);
+		assert.match(html, /<tbody>[\s\S]*?<td>Native table<\/td>[\s\S]*?<td>Ready<\/td>[\s\S]*?<\/tbody>/);
+		assert.match(
+			html,
+			/<aside\b[^>]*class="norna-callout norna-callout-note"[^>]*>[\s\S]*?<div\b(?=[^>]*class="norna-table-frame content-block-note-lane-boundary")(?=[^>]*data-table-frame)[^>]*>[\s\S]*?<th>Scope<\/th>[\s\S]*?<\/aside>/,
+			'A table inside a callout must remain a nested native table.',
+		);
+		assert.equal((html.match(/<table>/gu) ?? []).length, 2, 'Each source table must render exactly once.');
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
 test('code titles and selected lines render without changing copied code', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {

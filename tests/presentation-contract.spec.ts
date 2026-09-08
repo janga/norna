@@ -55,27 +55,114 @@ test('content reflows at 320 CSS pixels with long unbroken text', async ({ page 
 test('wide Markdown tables scroll without widening the page', async ({ page }) => {
 	await page.setViewportSize({ width: 320, height: 800 });
 	await openComponents(page);
-	const markdown = page.locator('.section-markdown').first();
-	await markdown.evaluate((element) => {
-		const table = document.createElement('table');
-		table.innerHTML = `
-			<thead><tr>${Array.from({ length: 8 }, (_, index) => `<th>Column ${index + 1}</th>`).join('')}</tr></thead>
-			<tbody><tr>${Array.from({ length: 8 }, () => '<td>Representative table value</td>').join('')}</tr></tbody>
-		`;
-		element.append(table);
+	const section = page.locator('.site-section').filter({ has: page.locator('#data-table') });
+	const frame = section.locator('[data-table-frame]');
+	const scrollRegion = frame.locator('[data-table-scroll]');
+	await section.locator('table').evaluate((table) => {
+		table.style.whiteSpace = 'nowrap';
 	});
+	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
+	await expect(frame).toHaveAttribute('data-table-at-start', 'true');
+	await expect(frame).toHaveAttribute('data-table-at-end', 'false');
 
-	const table = markdown.locator('table');
-	const dimensions = await table.evaluate((element) => ({
+	const dimensions = await scrollRegion.evaluate((element) => ({
 		clientWidth: element.clientWidth,
 		overflowX: getComputedStyle(element).overflowX,
 		scrollWidth: element.scrollWidth,
+		tabIndex: element.tabIndex,
 	}));
 	const overflow = await getHorizontalOverflow(page);
 
 	expect(dimensions.overflowX).toBe('auto');
 	expect(dimensions.scrollWidth).toBeGreaterThan(dimensions.clientWidth);
+	expect(dimensions.tabIndex).toBe(0);
+	await expect.poll(() => frame.evaluate((element) => (
+		Number.parseFloat(getComputedStyle(element, '::after').opacity)
+	))).toBeGreaterThan(0.9);
 	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
+
+	await scrollRegion.evaluate((element) => element.scrollTo({ left: element.scrollWidth }));
+	await expect(frame).toHaveAttribute('data-table-at-start', 'false');
+	await expect(frame).toHaveAttribute('data-table-at-end', 'true');
+	await expect.poll(() => frame.evaluate((element) => (
+		Number.parseFloat(getComputedStyle(element, '::before').opacity)
+	))).toBeGreaterThan(0.9);
+	await expect.poll(() => frame.evaluate((element) => (
+		Number.parseFloat(getComputedStyle(element, '::after').opacity)
+	))).toBeLessThan(0.1);
+});
+
+test('Focus reading gives tables the released auxiliary lane without moving prose', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await openComponents(page);
+	const section = page.locator('.site-section').filter({ has: page.locator('#data-table') });
+	const frame = section.locator('[data-table-frame]');
+	const prose = section.locator('.section-markdown');
+	await expect(frame).toHaveAttribute('data-table-ready', 'true');
+
+	const before = await Promise.all([frame.boundingBox(), prose.boundingBox()]);
+	const settings = page.locator('[data-display-settings]');
+	await settings.locator('summary').click();
+	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+	const after = await Promise.all([frame.boundingBox(), prose.boundingBox()]);
+
+	expect(before.every(Boolean)).toBe(true);
+	expect(after.every(Boolean)).toBe(true);
+	expect(after[0]?.x).toBeCloseTo(before[0]?.x ?? 0, 0);
+	expect(after[0]?.width ?? 0).toBeGreaterThan((before[0]?.width ?? 0) + 100);
+	expect(after[1]?.x).toBeCloseTo(before[1]?.x ?? 0, 0);
+	expect(after[1]?.width).toBeCloseTo(before[1]?.width ?? 0, 0);
+});
+
+test('a fitting long table keeps its headings below the sticky site header and releases them at its end', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 720 });
+	await openComponents(page);
+	const section = page.locator('.site-section').filter({ has: page.locator('#data-table') });
+	const frame = section.locator('[data-table-frame]');
+	const table = frame.locator('table');
+	const firstHeading = table.locator('thead th').first();
+	await table.evaluate((element) => {
+		element.style.width = '100%';
+		element.style.tableLayout = 'fixed';
+		element.querySelectorAll<HTMLElement>('th, td').forEach((cell) => {
+			cell.style.overflowWrap = 'anywhere';
+			cell.style.whiteSpace = 'normal';
+		});
+		const body = element.tBodies[0];
+		const sourceRows = Array.from(body.rows);
+		for (let index = 0; index < 18; index += 1) {
+			for (const row of sourceRows) body.append(row.cloneNode(true));
+		}
+	});
+	await expect(frame).toHaveAttribute('data-table-overflow', 'false');
+	await expect(frame.locator('[data-table-scroll]')).not.toHaveAttribute('tabindex', '0');
+
+	await frame.evaluate((element) => {
+		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 120);
+	});
+	const [stickyHeading, stickyOffset] = await Promise.all([
+		firstHeading.boundingBox(),
+		page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'))),
+	]);
+	expect(stickyHeading).not.toBeNull();
+	expect(stickyHeading?.y).toBeCloseTo(stickyOffset, 0);
+
+	await frame.evaluate((element, offset) => {
+		const rectangle = element.getBoundingClientRect();
+		const absoluteBottom = window.scrollY + rectangle.bottom;
+		window.scrollTo(0, absoluteBottom - offset - 8);
+	}, stickyOffset);
+	const [releasedHeading, releasedFrame] = await Promise.all([
+		firstHeading.boundingBox(),
+		frame.boundingBox(),
+	]);
+	expect(releasedHeading).not.toBeNull();
+	expect(releasedFrame).not.toBeNull();
+	expect((releasedHeading?.y ?? Infinity) + (releasedHeading?.height ?? 0)).toBeLessThanOrEqual(
+		(releasedFrame?.y ?? 0) + (releasedFrame?.height ?? 0) + 1,
+	);
+	expect(releasedHeading?.y ?? Infinity).toBeLessThan(stickyOffset);
 });
 
 test('WCAG text-spacing overrides do not clip key content', async ({ page }) => {
@@ -662,7 +749,7 @@ test('structured content starts below a preceding margin note', async ({ page })
 		const sourceNote = document.querySelector('.section-note');
 		if (!sourceNote) throw new Error('Missing source note.');
 
-		for (const headingId of ['image-stack', 'image-carousel', 'card-list']) {
+		for (const headingId of ['data-table', 'image-stack', 'image-carousel', 'card-list']) {
 			const heading = document.getElementById(headingId);
 			const paragraph = heading?.closest('.site-section')?.querySelector('.section-markdown p');
 			if (!paragraph) throw new Error(`Missing paragraph for ${headingId}.`);
@@ -672,10 +759,10 @@ test('structured content starts below a preceding margin note', async ({ page })
 		}
 	});
 
-	for (const headingId of ['image-stack', 'image-carousel', 'card-list']) {
+	for (const headingId of ['data-table', 'image-stack', 'image-carousel', 'card-list']) {
 		const section = page.locator('.site-section').filter({ has: page.locator(`#${headingId}`) });
 		const note = section.locator('.section-note');
-		const structuredContent = section.locator(':scope .image-stack, :scope .managed-images, :scope .card-list');
+		const structuredContent = section.locator(':scope .norna-table-frame, :scope .image-stack, :scope .managed-images, :scope .card-list');
 		const [noteBounds, contentBounds] = await Promise.all([
 			note.boundingBox(),
 			structuredContent.boundingBox(),

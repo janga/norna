@@ -40,12 +40,18 @@ therefore choose a responsive presentation deliberately rather than adding
   unchanged.
 - Do not stretch a naturally narrow table merely to fill the available data
   width.
+- Keep a table nested in a callout or another bounded Markdown container inside
+  that container. It retains local horizontal overflow feedback but does not
+  claim the page data lane or use sticky headings.
 - Make a table that extends into the note lane a lane-claiming block under
   `BL-043`. A sidenote must never overlay the table or cause its columns to
   shrink unpredictably.
 - Keep horizontal scrolling as the fallback whenever the table still exceeds
   its available canvas. Do not introduce horizontal scrolling for the whole
   page.
+- Show a directional edge cue whenever columns continue beyond the visible
+  scroll region. Update the cue as the reader scrolls so a table never appears
+  to end merely because its remaining columns are clipped.
 - Preserve table captions, header-cell relationships, source order, text
   selection, and screen-reader table semantics.
 
@@ -88,8 +94,9 @@ maximum width but must not change the prose measure.
 - A long table that fits its desktop data canvas keeps its heading row visible
   below the site header and releases it at the table bottom.
 - A table requiring horizontal overflow remains keyboard reachable, exposes a
-  visible scrolling affordance, and keeps its non-sticky heading row associated
-  with the scrolled columns.
+  visible directional scrolling affordance, updates that affordance at both
+  ends, and keeps its non-sticky heading row associated with the scrolled
+  columns.
 - Small tables retain natural width and do not acquire unnecessary visual
   weight.
 - Light, Dark, forced-colors, tree navigation, top navigation, Focus reading,

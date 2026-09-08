@@ -1,0 +1,35 @@
+<script>
+	const initializeTableFrame = (frame: HTMLElement) => {
+		const scrollRegion = frame.querySelector<HTMLElement>('[data-table-scroll]');
+		const table = scrollRegion?.querySelector('table');
+		if (!scrollRegion || frame.dataset.tableReady === 'true') return;
+
+		const update = () => {
+			const maximumScroll = Math.max(0, scrollRegion.scrollWidth - scrollRegion.clientWidth);
+			const hasOverflow = maximumScroll > 1;
+			const scrollOffset = Math.max(0, scrollRegion.scrollLeft);
+
+			frame.dataset.tableOverflow = hasOverflow ? 'true' : 'false';
+			frame.dataset.tableAtStart = scrollOffset <= 1 ? 'true' : 'false';
+			frame.dataset.tableAtEnd = scrollOffset >= maximumScroll - 1 ? 'true' : 'false';
+			if (hasOverflow) scrollRegion.setAttribute('tabindex', '0');
+			else scrollRegion.removeAttribute('tabindex');
+		};
+
+		frame.dataset.tableReady = 'true';
+		scrollRegion.addEventListener('scroll', update, { passive: true });
+		if ('ResizeObserver' in window) {
+			const observer = new ResizeObserver(update);
+			observer.observe(frame);
+			observer.observe(scrollRegion);
+			if (table) observer.observe(table);
+		} else {
+			window.addEventListener('resize', update, { passive: true });
+		}
+
+		update();
+		document.fonts?.ready.then(update).catch(() => {});
+	};
+
+	document.querySelectorAll<HTMLElement>('[data-table-frame]').forEach(initializeTableFrame);
+</script>

@@ -229,6 +229,34 @@ npm run norna:check
 
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
+  description: A page with an adaptively wide data table.
+---
+
+# Data table
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Native semantics | Ready | The table remains one native element. |
+| Overflow feedback | Ready | Edge cues follow the scroll position. |
+`);
+
+	runBuild();
+	const tableHtml = await readPage();
+	assertUniversalReadingWidth(tableHtml, 'A page with a Markdown table');
+	assert.equal(
+		getFeatureScripts(tableHtml).length,
+		1,
+		'A table page should load only its overflow measurement in addition to reader preferences.',
+	);
+	assert.match(tableHtml, /data-table-frame/);
+	assert.match(tableHtml, /<div\b(?=[^>]*data-table-scroll)(?=[^>]*tabindex="0")[^>]*>/);
+	const tableScript = await readDeliveredScript(getFeatureScripts(tableHtml)[0]);
+	assert.match(tableScript, /\.scrollWidth\s*-\s*[^;]+?\.clientWidth/);
+	assert.match(tableScript, /dataset\.tableOverflow/);
+	assert.match(tableScript, /ResizeObserver/);
+
+	await writeFile(path.join(homeDir, 'content.md'), `---
+page:
   description: A page with a CSS sidenote.
 ---
 

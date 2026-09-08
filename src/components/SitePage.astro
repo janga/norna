@@ -10,6 +10,7 @@ import PageContentsNavigation from './PageContentsNavigation.astro';
 import PageSequenceNavigation from './PageSequenceNavigation.astro';
 import SiteSection from './SiteSection.astro';
 import SiteTreeNavigation from './SiteTreeNavigation.astro';
+import TableOverflowScript from './TableOverflowScript.astro';
 import TreeNavigationScript from './TreeNavigationScript.astro';
 import { getSectionsContent, type ResolvedSection } from '../lib/sectionContent';
 import { getPageTheme } from '../lib/pageThemes';
@@ -95,6 +96,9 @@ const siteHtml = entry.rendered?.html ?? '';
 const resolvedSections = await getSectionsContent(siteHtml, currentPage, childPages);
 const hasCodeBlocks = resolvedSections.some((section) => section.contentBlocks.some((block) => (
 	block.type === 'html' && /<pre\b[^>]*>[\s\S]*?<code\b/i.test(block.html)
+)));
+const hasTables = resolvedSections.some((section) => section.contentBlocks.some((block) => (
+	block.type === 'html' && /\bdata-table-frame(?:="")?/i.test(block.html)
 )));
 const hasPrioritizableImage = (section: ResolvedSection) => section.contentBlocks.some((block) => (
 	block.type === 'image-stack'
@@ -259,4 +263,5 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 	</div>
 	{hasTreeNavigation && <TreeNavigationScript />}
 	{hasCodeBlocks && <CodeBlockCopyScript />}
+	{hasTables && <TableOverflowScript />}
 </BaseLayout>

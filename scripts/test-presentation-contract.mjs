@@ -37,6 +37,8 @@ const noteLaneBoundaryComponents = await Promise.all([
 	'ImageCarousel.astro',
 	'ImageStack.astro',
 ].map((fileName) => readFile(path.join(repoRoot, 'src', 'components', fileName), 'utf8')));
+const tableRenderPlugin = await readFile(path.join(repoRoot, 'scripts', 'lib', 'table-render-plugin.mjs'), 'utf8');
+const tableOverflowScript = await readFile(path.join(repoRoot, 'src', 'components', 'TableOverflowScript.astro'), 'utf8');
 
 for (const paletteName of presentationPaletteNames) {
 	const palette = getPresentationPalette(paletteName);
@@ -214,6 +216,44 @@ for (const componentSource of noteLaneBoundaryComponents) {
 		componentSource,
 		/content-block-note-lane-boundary/u,
 		'every existing wide structured block must use the shared note-lane boundary',
+	);
+}
+assert.match(
+	tableRenderPlugin,
+	/className:\s*\['norna-table-frame',\s*'content-block-note-lane-boundary'\]/u,
+	'Markdown tables must claim the shared note lane through their generated frame',
+);
+assert.match(
+	stylesheet,
+	/\.norna-table-frame\[data-table-overflow='true'\]\[data-table-at-end='false'\]::after[\s\S]*?opacity:\s*1/u,
+	'a horizontally clipped table must expose a visible cue toward hidden columns',
+);
+assert.match(
+	stylesheet,
+	/\.section-markdown > \.norna-table-frame\[data-table-overflow='false'\] thead th\s*\{[\s\S]*?position:\s*sticky[\s\S]*?top:\s*var\(--site-top-anchor-offset\)/u,
+	'only a table without an internal horizontal scroller may use sticky column headings',
+);
+assert.match(
+	stylesheet,
+	/\.norna-table-frame\s*\{[\s\S]*?width:\s*100%[\s\S]*?\.section-markdown > \.norna-table-frame\s*\{[\s\S]*?width:\s*calc/u,
+	'nested tables must stay within their parent while top-level tables may use the data lane',
+);
+assert.doesNotMatch(
+	stylesheet,
+	/\.section-markdown table\s*\{[\s\S]*?display:\s*block/u,
+	'the native table must not double as its horizontal scrolling container',
+);
+for (const requiredSource of [
+	"frame.dataset.tableOverflow = hasOverflow ? 'true' : 'false'",
+	"frame.dataset.tableAtStart = scrollOffset <= 1 ? 'true' : 'false'",
+	"frame.dataset.tableAtEnd = scrollOffset >= maximumScroll - 1 ? 'true' : 'false'",
+	"scrollRegion.setAttribute('tabindex', '0')",
+	'scrollRegion.removeAttribute(\'tabindex\')',
+]) {
+	assert.match(
+		tableOverflowScript,
+		new RegExp(requiredSource.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'),
+		'table overflow enhancement must expose measured, keyboard-reachable overflow state',
 	);
 }
 

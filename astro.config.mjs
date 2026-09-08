@@ -7,6 +7,7 @@ import { satteri } from '@astrojs/markdown-satteri';
 import { getBasePathRedirectLocation } from './scripts/lib/base-path-redirect.mjs';
 import { nornaCodeFenceTransformer } from './scripts/lib/code-fence-metadata.mjs';
 import { nornaMarkdownRenderPlugin } from './scripts/lib/norna-markdown-render-plugin.mjs';
+import { nornaTableRenderPlugin } from './scripts/lib/table-render-plugin.mjs';
 import {
 	astroCacheDir,
 	astroDistDir,
@@ -150,6 +151,7 @@ export default defineConfig({
 				},
 			},
 			mdastPlugins: [nornaMarkdownRenderPlugin],
+			hastPlugins: [nornaTableRenderPlugin],
 		}),
 	},
 	outDir: astroDistDir,
