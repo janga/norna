@@ -465,13 +465,14 @@ test.describe('desktop tree navigation', () => {
 	});
 });
 
-test.describe('stable automatic navigation', () => {
+test.describe('automatic navigation across site areas', () => {
 	test.use({ hasTouch: false, isMobile: false, viewport: desktopViewport });
 
-	test('keeps the global row, local rail, and page axis stable across site areas', async ({ page }) => {
+	test('keeps global destinations while reserving the local tree for hierarchical pages', async ({ page }) => {
 		await page.goto('/', { waitUntil: 'networkidle' });
 		await expect(page.locator('.site-top')).toHaveAttribute('data-navigation-mode', 'tree');
-		await expect(page.locator('.tree-local-navigation')).toBeVisible();
+		await expect(page.locator('.tree-local-navigation')).toHaveCount(0);
+		await expect(page.locator('.site-page-layout-tree')).toHaveCount(0);
 		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
 		await expect(page.locator('.site-nav-submenu')).toHaveCount(0);
 		await expect(page.locator('.site-nav > ul > li > a')).toHaveText([
@@ -479,9 +480,6 @@ test.describe('stable automatic navigation', () => {
 			'Guides',
 			'Reference',
 		]);
-		const homeNavigationX = (await page.locator('.site-nav-row').boundingBox())?.x;
-		const homeTreeX = (await page.locator('.tree-local-navigation').boundingBox())?.x;
-		const homeContentX = (await page.locator('.site-content').boundingBox())?.x;
 
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		await expect(page.locator('.site-top')).toHaveAttribute('data-navigation-mode', 'tree');
@@ -492,18 +490,6 @@ test.describe('stable automatic navigation', () => {
 			'Guides',
 			'Reference',
 		]);
-		const branchNavigationX = (await page.locator('.site-nav-row').boundingBox())?.x;
-		const branchTreeX = (await page.locator('.tree-local-navigation').boundingBox())?.x;
-		const branchContentX = (await page.locator('.site-content').boundingBox())?.x;
-		expect(homeNavigationX).toBeDefined();
-		expect(branchNavigationX).toBeDefined();
-		expect(homeTreeX).toBeDefined();
-		expect(branchTreeX).toBeDefined();
-		expect(homeContentX).toBeDefined();
-		expect(branchContentX).toBeDefined();
-		expect(Math.abs((homeNavigationX ?? 0) - (branchNavigationX ?? 0))).toBeLessThan(1);
-		expect(Math.abs((homeTreeX ?? 0) - (branchTreeX ?? 0))).toBeLessThan(1);
-		expect(Math.abs((homeContentX ?? 0) - (branchContentX ?? 0))).toBeLessThan(1);
 	});
 
 	test('reflows page contents into the document at intermediate widths', async ({ page }) => {

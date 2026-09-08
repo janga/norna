@@ -70,8 +70,8 @@ try {
 	assert.match(rootHtml, /data-navigation-mode="tree"/);
 	assert.match(rootHtml, /<p class="edit-source-link"[^>]*>[\s\S]*?href="https:\/\/github\.com\/example\/docs\/edit\/release-2\/packages\/docs\/site\/pages\/000-home\/content\.md"[\s\S]*?Edit this page/);
 	assert.doesNotMatch(rootHtml, /vscode:\/\/file|\/Users\/|[A-Za-z]:%5C/);
-	assert.match(rootHtml, /data-page-contents-placement="page-tree"/);
-	assert.match(rootHtml, /<aside id="tree-local-navigation" class="tree-local-navigation" data-navigation-root="\/">/);
+	assert.doesNotMatch(rootHtml, /data-page-contents-placement=/);
+	assert.doesNotMatch(rootHtml, /<aside id="tree-local-navigation"/);
 	assert.match(rootHtml, /aria-label="Page contents: Nested pages"/);
 	assert.match(rootHtml, /href="#start-here">Start here<\/a>/);
 	assert.match(rootHtml, /href="#what-to-inspect">What to inspect<\/a>/);

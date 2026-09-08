@@ -133,6 +133,19 @@ assert.deepEqual(
 		placement: 'page-tree',
 	},
 );
+assert.deepEqual(
+	resolvePageContentsPlacement({
+		navigationMode: 'tree',
+		nodes: shallowBranch,
+		currentPage: { isHome: true, pagePath: '' },
+		headingCount: 3,
+	}),
+	{
+		activeBranchDepth: 1,
+		hasPageContents: true,
+		placement: 'none',
+	},
+);
 assert.equal(resolvePageContentsPlacement({
 	navigationMode: 'tree',
 	nodes: deepBranch,

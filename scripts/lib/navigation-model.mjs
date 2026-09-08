@@ -75,7 +75,7 @@ export const resolvePageContentsPlacement = ({
 		Math.max(maximum, getNodeDepth(node))
 	), 0);
 	const hasPageContents = headingCount >= 2;
-	const placement = navigationMode !== 'tree' || !hasPageContents
+	const placement = currentPage?.isHome || navigationMode !== 'tree' || !hasPageContents
 		? 'none'
 		: activeBranchDepth <= 2
 			? 'page-tree'

@@ -138,6 +138,7 @@ const pagePresentation = resolvePagePresentation(themeData, themeLabel, {
 const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
 const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: `${siteDirectory || 'site'}/${siteTheme.id}` });
 const hasTreeNavigation = navigationModel.mode === 'tree';
+const showTreeNavigation = hasTreeNavigation && !currentPage.isHome;
 const currentPageNavigation = siteNavigation.find(({ node }) => (
 	node.kind === 'page' && node.pathname === currentPage.pathname
 ));
@@ -157,15 +158,19 @@ const pageContentsPlacement = resolvePageContentsPlacement({
 	headingCount: pageContentsHeadings.length,
 });
 const hasContentsNavigation = pageContentsPlacement.placement !== 'none';
+const hasTrackedSectionNavigation = hasContentsNavigation
+	|| (hasTreeNavigation && currentPage.isHome && pageContentsHeadings.length >= 2);
 const integratePageContentsInTree = pageContentsPlacement.placement === 'page-tree';
 const showContentsRail = pageContentsPlacement.placement === 'contents-rail';
-const hasNavigationRailFrame = navigationModel.requestedMode === 'tree'
+const hasNavigationRailFrame = !currentPage.isHome && (
+	navigationModel.requestedMode === 'tree'
 	|| (
 		navigationModel.requestedMode === 'automatic'
 		&& (navigationModel.hasNestedPages || navigationModel.hasCategories)
-	);
+	)
+);
 const showBreadcrumbs = !currentPage.isHome && currentPage.parentPagePath !== null;
-const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
+const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 
 ---
 
@@ -177,7 +182,7 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 	frameColors={frameColors}
 	pathname={currentPage.pathname}
 	footer={sitewideData.footer}
-	contentsNavigation={hasContentsNavigation}
+	contentsNavigation={hasTrackedSectionNavigation}
 	searchable
 >
 	<SiteNavigation
@@ -193,12 +198,12 @@ const reserveBreadcrumbSpace = hasTreeNavigation || showBreadcrumbs;
 	{siteBanners.length > 0 && <SiteBanners banners={siteBanners} />}
 
 	<div class:list={['site-page-layout', {
-		'site-page-layout-tree': hasTreeNavigation,
+		'site-page-layout-tree': showTreeNavigation,
 		'site-page-layout-contents': showContentsRail,
 	}]}
 		data-page-contents-placement={hasContentsNavigation ? pageContentsPlacement.placement : undefined}
 	>
-		{hasTreeNavigation && (
+		{showTreeNavigation && (
 			<SiteTreeNavigation
 				currentPage={currentPage}
 				navigationEntries={siteNavigation}

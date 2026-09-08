@@ -548,7 +548,7 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'href="/site/about/">About the site</a>',
 	);
-	await assertFileIncludes(
+	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'<aside id="tree-local-navigation"',
 	);
