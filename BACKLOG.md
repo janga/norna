@@ -16,10 +16,10 @@ when implementation can begin.
 
 `Now` contains at most three active items in exact technical order.
 
-- ★ [`BL-066` Sticky headings in horizontally scrolling tables](docs/design/backlog/BL-066-sticky-headings-in-scrolling-tables.md):
-  **In progress.** Keep column headings visible during page scrolling while
-  preserving their horizontal synchronization with a table's native internal
-  scroller.
+- ★ [`BL-068` Responsive fallback for deep navigation](docs/design/backlog/BL-068-responsive-deep-navigation.md):
+  **In progress.** Preserve one page-and-section hierarchy while deep
+  navigation moves from separate rails to a combined tree and then to a
+  compact menu as available width decreases.
 - [`BL-065` Restore the Page contents reading marker](docs/design/backlog/BL-065-page-contents-reading-marker.md):
   **Ready.** Reproduce and restore the missing palette-derived current-heading
   marker in the right Page contents rail on a deeply nested page.
@@ -69,6 +69,11 @@ work above unless a concrete defect raises their urgency.
 These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
+
+- ★ [`BL-066` Sticky headings in horizontally scrolling tables](docs/design/backlog/BL-066-sticky-headings-in-scrolling-tables.md):
+  **Implemented and browser-tested; documentation remains.** Overflowing
+  tables keep a visual copy of their column headings synchronized with the
+  semantic table while the table passes beneath the sticky site header.
 
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Implemented; awaiting human review and documentation.** GitHub-style alert
