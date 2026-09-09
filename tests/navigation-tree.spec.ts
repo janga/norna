@@ -480,6 +480,30 @@ test.describe('desktop tree navigation', () => {
 		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
 	});
 
+	test('keeps a sidenote inline when Page contents moves into the page tree', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const note = page.locator('.section-note').first();
+		const contentsNavigation = page.locator('.page-contents-navigation-rail');
+
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		await expect(contentsNavigation).toBeVisible();
+
+		await page.setViewportSize({ width: 1281, height: desktopViewport.height });
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		await expect(contentsNavigation).toBeVisible();
+
+		await page.setViewportSize({ width: 1280, height: desktopViewport.height });
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		await expect(contentsNavigation).toBeHidden();
+
+		const settings = page.locator('[data-display-settings]');
+		await settings.locator('summary').click();
+		await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		expect(await page.evaluate(() => document.documentElement.scrollWidth))
+			.toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth + 1));
+	});
+
 	test('uses the empty right track for a wide sidenote on a shallow page', async ({ page }) => {
 		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
 		await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
@@ -830,6 +854,18 @@ test.describe('desktop tree navigation without JavaScript', () => {
 		await menu.locator(':scope > summary').click();
 		await expect(menu.getByRole('link', { name: 'macOS', exact: true })).toBeVisible();
 		await expect(menu.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
+	});
+
+	test('keeps a sidenote inline across the Page contents breakpoint', async ({ page }) => {
+		await page.setViewportSize({ width: 1281, height: 900 });
+		await page.goto(testPagePath, { waitUntil: 'domcontentloaded' });
+		const note = page.locator('.section-note').first();
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		await expect(page.locator('.page-contents-navigation-rail')).toBeVisible();
+
+		await page.setViewportSize({ width: 1280, height: 900 });
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
 	});
 });
 

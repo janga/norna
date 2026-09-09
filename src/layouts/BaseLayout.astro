@@ -157,8 +157,7 @@ const marginNoteLayoutCss = [
 	...marginNoteReadingWidths.flatMap(([readingWidth, textWidth]) => [
 		[
 			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap})) {`,
-			`:root[data-reading-width="${readingWidth}"] .site-page-layout:not(.site-page-layout-tree) .section-note,`,
-			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree.site-page-layout-contents .section-note {`,
+			`:root[data-reading-width="${readingWidth}"] .site-page-layout:not(.site-page-layout-tree) .section-note {`,
 				marginNoteDeclarations,
 			'}',
 		'}',
@@ -182,13 +181,22 @@ const marginNoteLayoutCss = [
 	].join('\n')),
 	'}',
 	'@media (min-width: 1281px) {',
-	...marginNoteReadingWidths.map(([readingWidth, textWidth]) => [
-		`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve} - 11rem - ${visualTheme.layout.localNavigationGap})) {`,
-		`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note {`,
-			marginNoteDeclarations,
+	...marginNoteReadingWidths.flatMap(([readingWidth, textWidth]) => [
+		[
+			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap})) {`,
+			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree.site-page-layout-contents .section-note {`,
+				marginNoteDeclarations,
+			'}',
 		'}',
-	'}',
-	].join('\n')),
+		].join('\n'),
+		[
+			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve} - 11rem - ${visualTheme.layout.localNavigationGap})) {`,
+			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note {`,
+				marginNoteDeclarations,
+			'}',
+		'}',
+		].join('\n'),
+	]),
 	'}',
 ].join('\n');
 const { buildInfo, copyrightMessage } = footer ?? {};
