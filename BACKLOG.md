@@ -8,46 +8,19 @@ value. Items under `External Gate` do not block autonomous work.
 Status definitions, ID rules, and the process for adding or completing items
 are in the [backlog process](docs/design/backlog/README.md).
 
+`★` marks a user-selected implementation candidate. The marker records product
+interest; queue order, dependencies, and unresolved decisions still determine
+when implementation can begin.
+
 ## Now
 
 `Now` contains at most three active items in exact technical order.
-
-- [`BL-043` Use margin notes when they fit](docs/design/backlog/BL-043-focus-reading-margin-notes.md):
-  **Implemented; awaiting consolidated browser review.** Use the margin when
-  the selected reading width and preset note lane fit without colliding with
-  page navigation or a wide content block; otherwise preserve a deterministic
-  no-overlap boundary.
-- [`BL-038` Selling homepage and product positioning](docs/design/backlog/BL-038-selling-homepage.md):
-  **Implemented; awaiting human review.** The proof-led front page now presents
-  implemented strengths before product boundaries and technical detail.
-- [`BL-008` Long navigation tree controls and filtering](docs/design/backlog/BL-008-long-tree-controls.md):
-  **Implemented; awaiting human review.** Long trees now gain progressively
-  enhanced filtering, expand/collapse commands, and a control that locates the
-  current page without weakening the no-JavaScript navigation fallback.
 
 ## Next
 
 `Next` is the exact implementation sequence after `Now`. Bounded deterministic
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
-
-- [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
-  **Implemented; awaiting human review and documentation.** GitHub-style alert
-  blockquotes now render as localized, accessible semantic callouts with a
-  closed meaning set and deterministic diagnostics.
-- [`BL-048` Code titles and line emphasis](docs/design/backlog/BL-048-rich-code-examples.md):
-  **Implemented; awaiting human review and documentation.** Ordinary code
-  fences now accept one closed title and line-emphasis grammar with shared
-  diagnostics, accessible static output, and copy-safe source text.
-- [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  Markdown tables now have an accessible wide-data layout, directional
-  overflow cues, additional room in Focus reading, sticky headings where
-  compatible, and a bounded horizontal-scrolling fallback.
-- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  Focus reading replaces persistent rails with an accessible overlay that
-  reuses the full site hierarchy without moving the reading layout.
 
 ## External Gate
 
@@ -64,8 +37,10 @@ action, or another user-owned prerequisite. They do not block `Now` or `Next`.
 These accepted maintenance and workflow outcomes follow the ordered product
 work above unless a concrete defect raises their urgency.
 
-- `BL-056` **Lighter Dark navigation markers.** Make the surfaces that mark the
-  current page and current heading slightly lighter in Dark appearance.
+- ★ [`BL-063` Sticky row labels in wide tables](docs/design/backlog/BL-063-sticky-table-row-labels.md):
+  **Needs one semantics decision.** Preserve row identity during horizontal
+  table scrolling only after Norna has an explicit, accessible way to identify
+  the row-header column.
 - `BL-012` **Needs a scoped reproducer.** Improve generated-image diagnostics
   and cache reuse reporting, then decide whether a repair or reset command is
   still necessary.
@@ -87,6 +62,43 @@ These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
+- [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
+  **Implemented; awaiting human review and documentation.** GitHub-style alert
+  blockquotes render as localized, accessible semantic callouts with a closed
+  meaning set and deterministic diagnostics.
+- [`BL-048` Code titles and line emphasis](docs/design/backlog/BL-048-rich-code-examples.md):
+  **Implemented; awaiting human review and documentation.** Ordinary code
+  fences accept one closed title and line-emphasis grammar with shared
+  diagnostics, accessible static output, and copy-safe source text.
+- [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
+  **Implemented and browser-tested; awaiting human review and documentation.**
+  Markdown tables use an accessible wide-data layout, directional overflow
+  cues, additional room in Focus reading, sticky headings where compatible,
+  and a bounded horizontal-scrolling fallback.
+- [`BL-060` Adaptive table width escalation](docs/design/backlog/BL-060-adaptive-table-width.md):
+  **Implemented and browser-tested; awaiting human review and documentation.**
+  Tables use the smallest sufficient layout lane, reclaim both side lanes only
+  when genuinely vacant, and retain internal scrolling as the final fallback.
+- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
+  **Implemented and browser-tested; awaiting human review and documentation.**
+  Focus reading replaces persistent rails with an accessible overlay that
+  reuses the full site hierarchy without moving the reading layout.
+- [`BL-062` Sticky context for long code examples](docs/design/backlog/BL-062-sticky-code-context.md):
+  **Implemented and browser-tested; awaiting human review and documentation.**
+  Existing code titles and copy controls remain available while long code
+  examples pass through the viewport.
+- [`BL-061` Image inspection for detailed media](docs/design/backlog/BL-061-image-inspection.md):
+  **Implemented and browser-tested; awaiting human review and documentation.**
+  Detailed managed images can be enlarged without changing the reading layout,
+  with a direct original-image link when JavaScript is unavailable.
+- [`BL-064` Persistent captions for tall explanatory images](docs/design/backlog/BL-064-persistent-image-captions.md):
+  **Implemented and browser-tested; awaiting human review and documentation.**
+  Tall image-stack captions use a vacant end-side lane and otherwise remain
+  below their image.
+- [`BL-056` Lighter Dark navigation markers](docs/design/backlog/BL-056-lighter-dark-navigation-markers.md):
+  **Implemented and browser-tested; awaiting human review and documentation.**
+  Current-page and current-heading markers share a clearer palette-derived
+  surface in Dark appearance.
 - [`BL-041` Beginner-first Getting Started audit](docs/design/backlog/BL-041-getting-started-audit.md):
   **Implemented; awaiting human review.** The audited beginner path and starter
   changes are complete; review the rendered progression with the revised

@@ -25,6 +25,10 @@ acceptance criteria before implementation.
   its permanent cost.
 - **Deferred:** Do not schedule without a separate product decision.
 
+The `★` marker records that the user has selected an item as particularly worth
+implementing. It does not make an unresolved item ready, override a dependency,
+or move work ahead of the ordered `Now` and `Next` queues.
+
 ## Item Rules
 
 Every item has a stable `BL-NNN` identifier. Never reuse an identifier after an
