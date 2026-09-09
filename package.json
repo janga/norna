@@ -142,6 +142,7 @@
     "test:cli-discovery": "node scripts/test-cli-discovery.mjs",
     "test:dev-local": "node scripts/test-dev-local.mjs",
     "test:review-environments": "node scripts/test-review-environments.mjs",
+    "test:review-environments:browser": "node scripts/test-review-environments-browser.mjs",
     "test:engine-commands": "node scripts/test-engine-commands.mjs",
     "test:editor-language": "node scripts/test-editor-language-service.mjs && npm --prefix editors/vscode run check",
     "test:editor-integration": "npm --prefix editors/vscode run test:integration",
