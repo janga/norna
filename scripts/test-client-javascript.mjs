@@ -200,10 +200,19 @@ Static image stacks remain static.
 
 	runBuild();
 	assertOnlyUniversalReadingWidth(await readPage(), 'A plain homepage in a multi-page site');
-	assertOnlyUniversalReadingWidth(
-		await readPage(path.join('details', 'index.html')),
-		'A page with managed image stacks and cards',
+	const imageStackHtml = await readPage(path.join('details', 'index.html'));
+	assertUniversalReadingWidth(imageStackHtml, 'A page with managed image stacks and cards');
+	assert.equal(
+		getFeatureScripts(imageStackHtml).length,
+		1,
+		'An image stack should load only its inspection enhancement in addition to reader preferences.',
 	);
+	assert.match(imageStackHtml, /data-image-inspection-trigger/);
+	assert.match(imageStackHtml, /href="\/images\/original\/pages\/010-details\/images\/first-[a-f0-9]+\.svg"/);
+	assert.match(imageStackHtml, /data-image-inspector/);
+	const imageStackScript = await readDeliveredScript(getFeatureScripts(imageStackHtml)[0]);
+	assert.match(imageStackScript, /showModal/);
+	assert.match(imageStackScript, /ResizeObserver/);
 
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:

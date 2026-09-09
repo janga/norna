@@ -499,11 +499,21 @@
 		gap: var(--space-image-item);
 	}
 
-	.image-details {
-		padding: 0 0.25rem;
-		font-size: 1rem;
+		.image-details {
+			padding: 0 0.25rem;
+			font-size: 1rem;
+		}
+
+		.image-inspector {
+			width: calc(100% - 1rem);
+			height: calc(100svh - 1rem);
+		}
+
+		.image-inspector-layout {
+			gap: 0.5rem;
+			padding: 0.5rem;
+		}
 	}
-}
 
 @media (forced-colors: active) {
 	:root,
@@ -559,10 +569,17 @@
 	.card-list-item,
 	.page-sequence-link,
 	.image-carousel-button,
-	.image-carousel-position {
-		border: 1px solid CanvasText;
-		box-shadow: none;
-	}
+		.image-carousel-position {
+			border: 1px solid CanvasText;
+			box-shadow: none;
+		}
+
+		.image-inspector,
+		.image-inspector-controls button,
+		.managed-image-inspection-affordance {
+			border: 1px solid CanvasText;
+			box-shadow: none;
+		}
 
 	:is(.display-settings button, .display-settings-segmented span, .mobile-nav-menu > summary, .site-banner-dismiss) {
 		border-color: ButtonText;

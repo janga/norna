@@ -1,0 +1,153 @@
+---
+import { Maximize2, Minimize2, X } from '@lucide/astro';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+
+const labels = projectConfig.locale.labels;
+---
+
+<dialog class="image-inspector" data-image-inspector aria-label={labels.imageInspection}>
+	<div class="image-inspector-layout">
+		<div class="image-inspector-controls">
+			<button
+				type="button"
+				data-image-inspector-size
+				aria-label={labels.imageInspectionActualSize}
+				title={labels.imageInspectionActualSize}
+				data-fit-label={labels.imageInspectionFit}
+				data-actual-label={labels.imageInspectionActualSize}
+			>
+				<Maximize2 aria-hidden="true" data-image-inspector-size-icon="actual" size={20} stroke-width={2} />
+				<Minimize2 aria-hidden="true" data-image-inspector-size-icon="fit" hidden size={20} stroke-width={2} />
+			</button>
+			<button
+				type="button"
+				data-image-inspector-close
+				aria-label={labels.imageInspectionClose}
+				title={labels.imageInspectionClose}
+			>
+				<X aria-hidden="true" size={20} stroke-width={2} />
+			</button>
+		</div>
+		<div class="image-inspector-media" data-image-inspector-media data-image-inspector-mode="fit">
+			<img data-image-inspector-image alt="" />
+		</div>
+		<p class="image-inspector-caption" id="image-inspector-caption" data-image-inspector-caption hidden></p>
+	</div>
+</dialog>
+
+<script>
+	const dialog = document.querySelector<HTMLDialogElement>('[data-image-inspector]');
+	const triggers = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-image-inspection-trigger]'));
+	const enlargementThreshold = 1.2;
+
+	if (dialog && typeof dialog.showModal === 'function' && triggers.length > 0) {
+		const inspectedImage = dialog.querySelector<HTMLImageElement>('[data-image-inspector-image]');
+		const media = dialog.querySelector<HTMLElement>('[data-image-inspector-media]');
+		const caption = dialog.querySelector<HTMLElement>('[data-image-inspector-caption]');
+		const sizeButton = dialog.querySelector<HTMLButtonElement>('[data-image-inspector-size]');
+		const closeButton = dialog.querySelector<HTMLButtonElement>('[data-image-inspector-close]');
+		let activeTrigger: HTMLAnchorElement | null = null;
+		let scheduledFrame: number | null = null;
+
+		const setInspectorMode = (mode: 'fit' | 'actual') => {
+			if (!media || !sizeButton) return;
+			media.dataset.imageInspectorMode = mode;
+			const nextLabel = mode === 'fit'
+				? sizeButton.dataset.actualLabel
+				: sizeButton.dataset.fitLabel;
+			if (nextLabel) {
+				sizeButton.setAttribute('aria-label', nextLabel);
+				sizeButton.title = nextLabel;
+			}
+			sizeButton.querySelectorAll<SVGElement>('[data-image-inspector-size-icon]').forEach((icon) => {
+				icon.hidden = icon.dataset.imageInspectorSizeIcon !== (mode === 'fit' ? 'actual' : 'fit');
+			});
+		};
+
+		const canInspect = (trigger: HTMLAnchorElement) => {
+			const image = trigger.querySelector('img');
+			const width = Number(trigger.dataset.imageIntrinsicWidth);
+			const height = Number(trigger.dataset.imageIntrinsicHeight);
+			if (!image || !Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+				return false;
+			}
+
+			const bounds = image.getBoundingClientRect();
+			if (bounds.width <= 0 || bounds.height <= 0) return false;
+			const captionReserve = trigger.getAttribute('aria-describedby') ? 176 : 112;
+			const availableWidth = Math.max(0, window.innerWidth - 48);
+			const availableHeight = Math.max(0, window.innerHeight - captionReserve);
+			const fitScale = Math.min(1, availableWidth / width, availableHeight / height);
+			const renderedScale = Math.min(bounds.width / width, bounds.height / height);
+			const fitGain = fitScale / renderedScale;
+			const actualSizeGain = 1 / renderedScale;
+
+			return Math.max(fitGain, actualSizeGain) >= enlargementThreshold;
+		};
+
+		const updateAvailability = () => {
+			scheduledFrame = null;
+			triggers.forEach((trigger) => {
+				trigger.dataset.imageInspectionAvailable = canInspect(trigger) ? 'true' : 'false';
+			});
+		};
+
+		const scheduleAvailabilityUpdate = () => {
+			if (scheduledFrame !== null) return;
+			scheduledFrame = requestAnimationFrame(updateAvailability);
+		};
+
+		const openInspector = (trigger: HTMLAnchorElement) => {
+			if (!inspectedImage || !caption || !closeButton) return;
+			const sourceImage = trigger.querySelector('img');
+			const captionId = trigger.getAttribute('aria-describedby');
+			const sourceCaption = captionId ? document.getElementById(captionId) : null;
+			activeTrigger = trigger;
+			inspectedImage.src = trigger.href;
+			inspectedImage.alt = sourceImage?.alt ?? '';
+			if (sourceCaption?.textContent?.trim()) {
+				caption.textContent = sourceCaption.textContent.trim();
+				caption.hidden = false;
+				inspectedImage.setAttribute('aria-describedby', caption.id);
+			} else {
+				caption.textContent = '';
+				caption.hidden = true;
+				inspectedImage.removeAttribute('aria-describedby');
+			}
+			setInspectorMode('fit');
+			document.documentElement.dataset.imageInspectorOpen = 'true';
+			dialog.showModal();
+			closeButton.focus();
+		};
+
+		triggers.forEach((trigger) => {
+			const image = trigger.querySelector('img');
+			if (image && !image.complete) image.addEventListener('load', scheduleAvailabilityUpdate, { once: true });
+			trigger.addEventListener('click', (event) => {
+				if (trigger.dataset.imageInspectionAvailable !== 'true') return;
+				event.preventDefault();
+				openInspector(trigger);
+			});
+		});
+
+		sizeButton?.addEventListener('click', () => {
+			setInspectorMode(media?.dataset.imageInspectorMode === 'actual' ? 'fit' : 'actual');
+		});
+		closeButton?.addEventListener('click', () => dialog.close());
+		dialog.addEventListener('close', () => {
+			delete document.documentElement.dataset.imageInspectorOpen;
+			activeTrigger?.focus();
+			activeTrigger = null;
+			if (inspectedImage) inspectedImage.removeAttribute('src');
+		});
+
+		if ('ResizeObserver' in window) {
+			const observer = new ResizeObserver(scheduleAvailabilityUpdate);
+			triggers.forEach((trigger) => observer.observe(trigger));
+		} else {
+			window.addEventListener('resize', scheduleAvailabilityUpdate, { passive: true });
+		}
+		document.fonts?.ready.then(scheduleAvailabilityUpdate).catch(() => {});
+		updateAvailability();
+	}
+</script>

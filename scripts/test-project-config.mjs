@@ -92,6 +92,11 @@ try {
 			built: 'Built',
 			images: 'Images',
 			imageCarousel: 'image carousel',
+			imageInspection: 'Image inspection',
+			imageInspectionActualSize: 'Show actual size',
+			imageInspectionClose: 'Close image inspection',
+			imageInspectionFit: 'Fit image to window',
+			inspectImage: 'Inspect image: {description}',
 			navigationCollapsedAll: 'All navigation items collapsed.',
 			navigationCollapseAll: 'Collapse all',
 			navigationControls: 'Navigation tree controls',
@@ -152,6 +157,11 @@ try {
 	assert.equal(localizedConfig.labels.calloutWarning, 'Varning');
 	assert.equal(localizedConfig.labels.copyCode, 'Kopiera kod');
 	assert.equal(localizedConfig.labels.editSource, 'Redigera den här sidan');
+	assert.equal(localizedConfig.labels.imageInspection, 'Bildgranskning');
+	assert.equal(localizedConfig.labels.imageInspectionActualSize, 'Visa faktisk storlek');
+	assert.equal(localizedConfig.labels.imageInspectionClose, 'Stäng bildgranskning');
+	assert.equal(localizedConfig.labels.imageInspectionFit, 'Anpassa bilden till fönstret');
+	assert.equal(localizedConfig.labels.inspectImage, 'Granska bild: {description}');
 	assert.equal(localizedConfig.labels.footnoteBackReference, 'Tillbaka till referens {reference}');
 	assert.equal(localizedConfig.labels.footnotes, 'Fotnoter');
 	assert.equal(localizedConfig.labels.openInVsCode, 'Öppna i VS Code');

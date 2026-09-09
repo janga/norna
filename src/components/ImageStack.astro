@@ -1,6 +1,7 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
-import { getImageAttributes } from '../lib/generatedImages';
+import { Maximize2 } from '@lucide/astro';
+import { getImageAttributes, getImageInspectionAttributes } from '../lib/generatedImages';
 import {
 	getCaptionId,
 	getManagedImageSizes,
@@ -30,17 +31,37 @@ const managedImageSizes = getManagedImageSizes(maxAvailableWidthPercent);
 	{images.map((image, itemIndex) => {
 		const isPriorityItem = priorityFirstImage && itemIndex === 0;
 		const captionId = image.caption ? getCaptionId(image, itemIndex) : undefined;
+		const inspection = getImageInspectionAttributes(image.src ?? image.image);
+		const inspectionDescription = image.alt || image.caption || `${title} ${itemIndex + 1}`;
+		const inspectionLabel = projectConfig.locale.labels.inspectImage.replace('{description}', inspectionDescription);
+		const inspectionStyle = inspection.width && inspection.height
+			? `--managed-image-intrinsic-width: ${inspection.width}px; --managed-image-aspect-ratio: ${inspection.width / inspection.height}`
+			: undefined;
 
 		return (
-			<figure class="managed-image-item">
+			<figure class="managed-image-item" data-image-stack-figure>
 				<div class="managed-image-frame">
-					<img
-						{...getImageAttributes(image.src ?? image.image, managedImageSizes)}
-						class:list={['managed-image', getImageClass(image)]}
-						alt={image.alt ?? ''}
+					<a
+						class="managed-image-inspection-link"
+						href={inspection.href}
+						aria-label={inspectionLabel}
 						aria-describedby={captionId}
-						{...getImageLoadingProps(isPriorityItem)}
-					/>
+						data-image-inspection-trigger
+						data-image-intrinsic-width={inspection.width}
+						data-image-intrinsic-height={inspection.height}
+						style={inspectionStyle}
+					>
+						<img
+							{...getImageAttributes(image.src ?? image.image, managedImageSizes)}
+							class:list={['managed-image', getImageClass(image)]}
+							alt={image.alt ?? ''}
+							aria-describedby={captionId}
+							{...getImageLoadingProps(isPriorityItem)}
+						/>
+						<span class="managed-image-inspection-affordance" aria-hidden="true">
+							<Maximize2 size={18} stroke-width={2} />
+						</span>
+					</a>
 				</div>
 				{image.caption && (
 					<figcaption class="image-meta" id={captionId}>

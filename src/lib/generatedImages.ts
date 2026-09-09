@@ -45,6 +45,23 @@ export const getGeneratedImage = (src: string) => readGeneratedImages()[src];
 
 const displaySrc = (src: string) => withBasePath(projectConfig.site.basePath, src);
 
+export const getImageInspectionAttributes = (src: string) => {
+	const image = getGeneratedImage(src);
+	const largestVariant = image?.variants
+		? [...image.variants].sort((left, right) => left.width - right.width).at(-1)
+		: undefined;
+	const publishedSource = image?.kind === 'static'
+		? image.src
+		: largestVariant?.src;
+
+	return {
+		href: displaySrc(publishedSource ?? src),
+		...(Number.isFinite(image?.width) && Number.isFinite(image?.height)
+			? { width: image?.width, height: image?.height }
+			: {}),
+	};
+};
+
 const getDisplayVariants = (variants: NonNullable<GeneratedImage['variants']>) => {
 	const sortedVariants = [...variants].sort((a, b) => a.width - b.width);
 	const displayVariants = sortedVariants.filter((variant) => variant.width <= maxDisplayImageWidth);

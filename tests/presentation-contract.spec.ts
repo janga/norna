@@ -426,6 +426,76 @@ test('a long titled code example keeps and releases its context bar at its own b
 	}).toBe(true);
 });
 
+test('detailed stack images retain a direct link and open an accessible inspector', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 900 });
+	await openComponents(page);
+	const trigger = page.locator('[data-image-inspection-trigger]').nth(1);
+	const inlineImage = trigger.locator('img');
+	const dialog = page.locator('[data-image-inspector]');
+	const inspectedImage = dialog.locator('[data-image-inspector-image]');
+	const sizeButton = dialog.getByRole('button', { name: 'Show actual size' });
+	const closeButton = dialog.getByRole('button', { name: 'Close image inspection' });
+
+	await expect(trigger).toHaveAttribute('href', /\/images\/original\/.*stack-one-[a-f0-9]+\.svg$/);
+	await expect(trigger).toHaveAttribute('data-image-inspection-available', 'true');
+	await trigger.focus();
+	await trigger.press('Enter');
+	await expect(dialog).toBeVisible();
+	await expect(closeButton).toBeFocused();
+	await expect(inspectedImage).toHaveAttribute('alt', await inlineImage.getAttribute('alt') ?? '');
+	await expect(inspectedImage).toHaveAttribute('aria-describedby', 'image-inspector-caption');
+	await expect(dialog.locator('[data-image-inspector-caption]')).toContainText('concise caption');
+	await expect(dialog.locator('[data-image-inspector-media]')).toHaveAttribute('data-image-inspector-mode', 'fit');
+
+	await sizeButton.click();
+	await expect(dialog.locator('[data-image-inspector-media]')).toHaveAttribute('data-image-inspector-mode', 'actual');
+	await expect(dialog.getByRole('button', { name: 'Fit image to window' })).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(dialog).not.toBeVisible();
+	await expect(trigger).toBeFocused();
+});
+
+test('the image inspector confines enlargement to a reflow-safe mobile dialog', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 640 });
+	await openComponents(page);
+	const trigger = page.locator('[data-image-inspection-trigger]').first();
+	await trigger.scrollIntoViewIfNeeded();
+	await expect(trigger.locator('img')).toHaveJSProperty('complete', true);
+	await expect(trigger).toHaveAttribute('data-image-inspection-available', 'true');
+	await trigger.click();
+	const dialog = page.locator('[data-image-inspector]');
+	await expect(dialog).toBeVisible();
+	await dialog.getByRole('button', { name: 'Show actual size' }).click();
+
+	const [bounds, overflow] = await Promise.all([
+		dialog.boundingBox(),
+		getHorizontalOverflow(page),
+	]);
+	expect(bounds).not.toBeNull();
+	expect(bounds?.x ?? -1).toBeGreaterThanOrEqual(0);
+	expect((bounds?.x ?? 0) + (bounds?.width ?? 0)).toBeLessThanOrEqual(320);
+	expect(bounds?.y ?? -1).toBeGreaterThanOrEqual(0);
+	expect((bounds?.y ?? 0) + (bounds?.height ?? 0)).toBeLessThanOrEqual(640);
+	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
+	await expect(dialog.getByRole('button', { name: 'Fit image to window' })).toBeVisible();
+	await expect(dialog.getByRole('button', { name: 'Close image inspection' })).toBeVisible();
+});
+
+test('image inspection remains a normal original-image link without JavaScript', async ({ browser }) => {
+	const context = await browser.newContext({ javaScriptEnabled: false });
+	const page = await context.newPage();
+	await page.goto(componentsPath, { waitUntil: 'domcontentloaded' });
+	const trigger = page.locator('[data-image-inspection-trigger]').first();
+	await expect(trigger).not.toHaveAttribute('data-image-inspection-available', 'true');
+	const target = await trigger.getAttribute('href');
+	expect(target).toMatch(/\/images\/original\/.*stack-portrait-[a-f0-9]+\.svg$/);
+	await Promise.all([
+		page.waitForURL((url) => url.pathname === target),
+		trigger.evaluate((node) => node.click()),
+	]);
+	await context.close();
+});
+
 test('reduced motion disables transitions and carousel animation', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.setViewportSize({ width: 1280, height: 900 });
