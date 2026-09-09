@@ -68,6 +68,20 @@ and increased line, paragraph, letter, and word spacing. Side notes use the
 margin only while their actual container has enough room; otherwise they return
 to the normal reading flow.
 
+Norna uses progressive responsive simplification when supporting information
+moves between page regions. This means that making the viewport narrower may
+move navigation into a more compact control, a side note into the reading flow,
+or a tall image's caption below its image. After an automatic fallback has
+moved information to the simpler placement, a still narrower layout does not
+move it back into a peripheral region merely because another rail disappeared.
+This avoids repeated movement while the reader resizes or magnifies the page.
+
+Increasing the available width can restore the richer placement. Focus reading
+may also recalculate placement because the reader explicitly asks Norna to
+remove persistent navigation. Ordinary fluid image sizing, card reflow, and a
+table's progressive use of vacant layout width are not restricted by this
+rule; those changes do not move explanatory information between page regions.
+
 ## Controls And User Preferences
 
 Norna-generated links and controls use at least a `24 x 24` CSS-pixel target.

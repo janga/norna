@@ -332,6 +332,12 @@ and visible caption retain the presentation method's horizontal axis. Neither
 method crops an image or changes its intrinsic proportions by default. Both
 return to the available content width on narrow screens.
 
+A tall `image-stack` caption may use a vacant space beside the reading column
+while its image passes through a wide viewport. This is an engine-owned
+enhancement rather than another image-presentation option. The caption remains
+below the image when the space is occupied or insufficient. See
+[Captions For Tall Images](images-and-metadata.md#captions-for-tall-images).
+
 A root or page theme can override the method for all standalone image stacks
 and carousels in its scope:
 

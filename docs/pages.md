@@ -468,9 +468,13 @@ the right rail is absent. The unused rail is not rendered, but moving between a
 short page and a page with a contents rail does not shift the left rail or
 document column.
 
-When there is not enough horizontal room for both rails, the contents links
-move into the document flow. On a small screen, the complete page hierarchy
-and its expandable page outlines remain available in one menu.
+When there is not enough horizontal room for both rails, Norna removes the
+right contents rail and shows page sections beneath their pages in the left
+tree. On a small screen, Norna replaces that persistent tree with one compact
+menu containing the same page hierarchy and expandable page outlines. The
+fallback therefore progresses from two rails, to one combined rail, to one
+compact menu without removing destinations or restoring an earlier layout at
+a narrower width.
 
 Norna remembers explicit outline and page-branch choices during the browser
 session. Without JavaScript, the same links and native disclosure controls

@@ -9,7 +9,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Feature | Adds JavaScript | Without JavaScript |
 | --- | --- | --- |
 | Markdown prose and headings | No | Fully rendered. |
-| Image stacks | No | Images, responsive sources, alt text, and captions remain available. |
+| Image stacks | Only on pages containing an image stack | Images, responsive sources, alt text, captions, and direct original-image links remain available. Modal inspection and persistent side captions are absent, so captions stay below their images. |
 | Card lists | No | Cards and links remain available. |
 | Side notes | No | CSS places notes in the margin when space permits and in the reading flow otherwise. |
 | Fenced code-block copy control | Only on pages containing rendered code blocks | Code remains readable and selectable; the copy button is absent. |
@@ -23,11 +23,12 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Configured Appearance | No | CSS applies the configured Light, Dark, or operating-system preference. |
 | Reader Display controls | Yes, on every page because reading width is a universal reader choice | The configured appearance and initial reading width still apply. Readers cannot change or persist a choice, and Focus reading remains off. |
 
-The navigation, search, banner, carousel, and reader-preference scripts are independent.
-The reader-preference script is site-wide because
+The navigation, search, banner, image-stack, carousel, and reader-preference
+scripts are independent. The reader-preference script is site-wide because
 reading width is always available. Other scripts are included only when their
-features are present: adding one code block or carousel affects only pages that
-contain that feature, while enabling search adds its script only to `/search/`.
+features are present: adding one code block, image stack, or carousel affects
+only pages that contain that feature, while enabling search adds its script
+only to `/search/`.
 See
 [Reader Display Controls](theme.md#reader-display-controls) and
 [Focus Reading With Desktop Rails](pages.md#focus-reading-with-desktop-rails)

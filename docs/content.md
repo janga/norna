@@ -440,10 +440,21 @@ The note may contain a longer explanation when the extra context is useful.
 }
 ```
 
-On wide screens Norna places the note in the reading margin. On narrower
-screens it remains in the normal reading flow. A paragraph may contain one
-note pair; both `{note-ref}` and `{note: ...}` are required. `content:check`
-reports missing, repeated, nested, or unpaired note syntax.
+On wide screens Norna places the note in the reading margin when the complete
+note fits without colliding with navigation or another wide content block. On
+narrower screens it remains in the normal reading flow.
+
+On a page that has separate page and contents rails at wide widths, a note that
+has returned to the reading flow stays there when the contents rail is folded
+into the page tree. Norna does not move the note out and back again while the
+viewport becomes narrower. A shallow page without that contents rail continues
+to use its margin when the complete layout leaves enough room. Focus reading
+may restore margin placement because the reader explicitly removes the
+persistent rails.
+
+A paragraph may contain one note pair; both `{note-ref}` and `{note: ...}` are
+required. `content:check` reports missing, repeated, nested, or unpaired note
+syntax.
 
 ### Reference Footnotes
 

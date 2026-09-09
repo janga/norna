@@ -205,7 +205,7 @@ Static image stacks remain static.
 	assert.equal(
 		getFeatureScripts(imageStackHtml).length,
 		1,
-		'An image stack should load only its inspection enhancement in addition to reader preferences.',
+		'An image stack should load only its inspection and persistent-caption enhancement in addition to reader preferences.',
 	);
 	assert.match(imageStackHtml, /data-image-inspection-trigger/);
 	assert.match(imageStackHtml, /href="\/images\/original\/pages\/010-details\/images\/first-[a-f0-9]+\.svg"/);

@@ -107,6 +107,25 @@ Presentation does not change source discovery, responsive variant generation,
 hashing, or sync. Those operations use the same managed source image regardless
 of where the rendered image is aligned.
 
+### Captions For Tall Images
+
+A tall image in an `image-stack` may remain visible for most of a desktop
+viewport before its ordinary caption below the image comes into view. When
+JavaScript is available, Norna can keep that same caption beside the image if
+the page has a vacant, sufficiently wide space beside the reading column. The
+caption stays below the sticky site header and stops at the image boundary.
+
+The caption remains below the image when the available space is too narrow or
+is occupied by Page contents, a side note, or a wide data block. On a deeply
+nested page, hiding Page contents automatically at an intermediate width does
+not move a below-image caption into the newly vacant space. This preserves a
+one-way fallback as the viewport narrows. Focus reading may use the space
+because the reader explicitly asks Norna to remove persistent navigation.
+
+The source always contains one semantic `figcaption` after its image. Without
+JavaScript, that caption remains below the image. Persistent placement is an
+engine-owned enhancement and has no Markdown or theme option.
+
 ## Markdown Images
 
 Use ordinary Markdown images for external images or static public assets:

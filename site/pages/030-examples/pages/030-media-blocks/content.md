@@ -32,6 +32,13 @@ The image list and captions belong to the block in `content.md`. Its alignment
 and maximum size come from the root preset or an allowed page-theme image
 override.
 
+For a tall explanatory image, Norna may keep its caption beside the image while
+a vacant desktop margin can hold it. The same semantic caption stays below the
+image when navigation or available width occupies that space. Making the page
+narrower does not move a caption below, then beside, then below again. Focus
+reading may recalculate the placement after the reader removes persistent
+navigation.
+
 ## Carousels {#carousels}
 
 Use a carousel for a related sequence that should occupy one visual position.

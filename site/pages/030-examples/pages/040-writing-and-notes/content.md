@@ -110,6 +110,11 @@ On a wide screen, the preceding notes use the available margin beside their
 paragraphs. On a narrow screen, they return to the ordinary document flow below
 the paragraph, so the text remains readable without horizontal scrolling.
 
+The automatic fallback moves in one direction as the viewport narrows. A note
+that has returned to the text does not jump back into the margin when Page
+contents moves into the page tree. Focus reading may restore the margin because
+the reader has explicitly removed the persistent navigation rails.
+
 The author does not choose left, right or inline placement. Norna and the active
 preset provide one responsive treatment for the same semantic content.
 

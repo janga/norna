@@ -83,13 +83,12 @@ This remains an engine layout rule rather than another theme setting. The
 refined visual result was approved after reviewing both the persistent side
 placement and the below-image fallback.
 
-## Remaining Work
+## Verification
 
-- Run the updated browser regression assertions for the side and below-image
-  gaps, including the rendered-image anchor.
-- Document the approved behavior in the canonical image reference and the
-  appropriate HTML documentation or example.
-- Remove this item from `BACKLOG.md` only after both tasks pass.
+The presentation browser suite covers side placement, the rendered-image
+anchor, sticky release, occupied and narrow-lane fallback, Focus reading,
+below-image spacing, document overflow, and JavaScript-free output. The
+canonical image reference and rendered media example describe the behavior.
 
 ## Complexity And Risk
 

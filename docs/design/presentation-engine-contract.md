@@ -88,6 +88,30 @@ Sidenotes use the margin only when their actual container has enough room. They
 return to normal document flow when text enlargement or available width makes
 the margin unsafe.
 
+### Progressive Responsive Simplification
+
+Automatic placement changes are one-way while available width decreases. A
+layout may keep its current state or move supporting information to a simpler
+state, but it must not restore a richer peripheral placement at a narrower
+width solely because another interface region disappeared.
+
+The current ordered states are:
+
+- navigation: separate page and contents rails, combined page tree, compact
+  navigation;
+- side notes: margin, reading flow;
+- persistent image captions: beside a tall image, below the image.
+
+An explicit Focus reading change or an increase in available width may
+recalculate these placements. Table lane escalation, fluid media sizing, and
+responsive card columns remain fit-based because they do not relocate
+supporting information between page regions.
+
+Regression tests must cover both sides of each layout boundary involved in a
+placement change. A newly introduced peripheral placement must identify its
+simpler fallback and its interaction with navigation rails before it becomes
+part of a preset or component contract.
+
 The corresponding WCAG references are
 [Reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html),
 [Resize Text](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html), and
