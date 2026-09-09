@@ -39,6 +39,7 @@ const noteLaneBoundaryComponents = await Promise.all([
 ].map((fileName) => readFile(path.join(repoRoot, 'src', 'components', fileName), 'utf8')));
 const tableRenderPlugin = await readFile(path.join(repoRoot, 'scripts', 'lib', 'table-render-plugin.mjs'), 'utf8');
 const tableOverflowScript = await readFile(path.join(repoRoot, 'src', 'components', 'TableOverflowScript.astro'), 'utf8');
+const imageStackEnhancement = await readFile(path.join(repoRoot, 'src', 'components', 'ImageStackEnhancement.astro'), 'utf8');
 const siteNavigationSource = await readFile(path.join(repoRoot, 'src', 'components', 'SiteNavigation.astro'), 'utf8');
 const sectionNavigationScript = await readFile(path.join(repoRoot, 'src', 'components', 'SectionNavigationScript.astro'), 'utf8');
 
@@ -245,6 +246,22 @@ assert.doesNotMatch(
 	/\.section-markdown table\s*\{[\s\S]*?display:\s*block/u,
 	'the native table must not double as its horizontal scrolling container',
 );
+assert.match(
+	stylesheet,
+	/\.managed-image-item\[data-image-caption-placement='persistent'\][\s\S]*?\.image-details\s*\{[\s\S]*?position:\s*sticky[\s\S]*?top:\s*calc\(var\(--site-top-anchor-offset\) \+ 1rem\)/u,
+	'persistent image captions must remain bounded by their figure and below the sticky header',
+);
+for (const requiredSource of [
+	"figure.dataset.imageCaptionPlacement = 'persistent'",
+	"layout.querySelectorAll<HTMLElement>('.page-contents-navigation-rail')",
+	"attributeFilter: ['data-focus-reading', 'data-reading-width']",
+]) {
+	assert.match(
+		imageStackEnhancement,
+		new RegExp(requiredSource.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'),
+		'tall-image caption placement must respond to lane ownership and reader preferences',
+	);
+}
 for (const requiredSource of [
 	"frame.dataset.tableOverflow = hasOverflow ? 'true' : 'false'",
 	"frame.dataset.tableAtStart = scrollOffset <= 1 ? 'true' : 'false'",

@@ -822,6 +822,94 @@ test('centered-fit images are centered and constrained by viewport height', asyn
 	expect(await carousel.getAttribute('style')).toContain('--image-carousel-width-from-height-desktop');
 });
 
+test('a tall image keeps its semantic caption visible in a vacant end lane', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await openComponents(page);
+	const figure = page.locator('[data-image-stack-figure]').first();
+	const frame = figure.locator('.managed-image-frame');
+	const caption = figure.locator('figcaption');
+	const captionDetails = caption.locator('.image-details');
+	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
+
+	const [figureBounds, frameBounds, captionBounds, layoutBounds] = await Promise.all([
+		figure.boundingBox(),
+		frame.boundingBox(),
+		caption.boundingBox(),
+		page.locator('.site-page-layout-tree').boundingBox(),
+	]);
+	expect(figureBounds).not.toBeNull();
+	expect(frameBounds).not.toBeNull();
+	expect(captionBounds).not.toBeNull();
+	expect(layoutBounds).not.toBeNull();
+	expect(captionBounds?.x ?? 0).toBeGreaterThan((frameBounds?.x ?? 0) + (frameBounds?.width ?? 0));
+	expect((captionBounds?.x ?? 0) + (captionBounds?.width ?? 0)).toBeLessThanOrEqual(
+		(layoutBounds?.x ?? 0) + (layoutBounds?.width ?? 0) + 1,
+	);
+	expect(await caption.evaluate((element) => element.tagName)).toBe('FIGCAPTION');
+	expect(await frame.locator('img').getAttribute('aria-describedby')).toBe(await caption.getAttribute('id'));
+
+	await figure.evaluate((element) => {
+		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 220);
+	});
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+	const [stickyCaptionBounds, anchorOffset] = await Promise.all([
+		captionDetails.boundingBox(),
+		page.evaluate(() => Number.parseFloat(
+			getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
+		)),
+	]);
+	expect(stickyCaptionBounds?.y).toBeCloseTo(anchorOffset + 16, 0);
+
+	await figure.evaluate((element) => {
+		const details = element.querySelector<HTMLElement>('.image-details');
+		if (!details) throw new Error('Missing persistent caption details.');
+		const figureBottom = window.scrollY + element.getBoundingClientRect().bottom;
+		const anchor = Number.parseFloat(
+			getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
+		) || 0;
+		window.scrollTo(0, figureBottom - anchor - details.getBoundingClientRect().height + 20);
+	});
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+	const releasedCaptionBounds = await captionDetails.boundingBox();
+	expect(releasedCaptionBounds?.y ?? Infinity).toBeLessThan(anchorOffset);
+
+	const overflow = await getHorizontalOverflow(page);
+	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
+});
+
+test('persistent image captions fall back when the end lane is occupied or narrow', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await openComponents(page);
+	const figure = page.locator('[data-image-stack-figure]').first();
+	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
+
+	await page.locator('.site-page-layout-tree').evaluate((layout) => {
+		const rail = document.createElement('aside');
+		rail.className = 'page-contents-navigation page-contents-navigation-rail';
+		rail.style.position = 'fixed';
+		rail.style.right = '0';
+		rail.style.top = '5rem';
+		rail.style.width = '11rem';
+		rail.style.height = '12rem';
+		rail.textContent = 'Occupied end lane';
+		layout.append(rail);
+		window.dispatchEvent(new Event('resize'));
+	});
+	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
+	const settings = page.locator('[data-display-settings]');
+	await settings.locator('summary').click();
+	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
+
+	await page.setViewportSize({ width: 900, height: 900 });
+	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
+	const [frameBounds, captionBounds] = await Promise.all([
+		figure.locator('.managed-image-frame').boundingBox(),
+		figure.locator('figcaption').boundingBox(),
+	]);
+	expect(captionBounds?.y ?? 0).toBeGreaterThanOrEqual((frameBounds?.y ?? 0) + (frameBounds?.height ?? 0));
+});
+
 test('centered-fit image stacks and carousels stay within a 320 pixel viewport', async ({ page }) => {
 	await page.setViewportSize({ width: 320, height: 800 });
 	await openCenteredFit(page);
@@ -1002,5 +1090,12 @@ test('configured presentation remains usable without JavaScript', async ({ brows
 	await expect(page.locator('.site-content h1').first()).toBeVisible();
 	await expect(page.locator('.tree-local-navigation')).toBeVisible();
 	await expect(page.locator('[data-display-settings]')).toBeHidden();
+	const figure = page.locator('[data-image-stack-figure]').first();
+	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
+	const [frameBounds, captionBounds] = await Promise.all([
+		figure.locator('.managed-image-frame').boundingBox(),
+		figure.locator('figcaption').boundingBox(),
+	]);
+	expect(captionBounds?.y ?? 0).toBeGreaterThanOrEqual((frameBounds?.y ?? 0) + (frameBounds?.height ?? 0));
 	await context.close();
 });

@@ -38,7 +38,136 @@ const labels = projectConfig.locale.labels;
 <script>
 	const dialog = document.querySelector<HTMLDialogElement>('[data-image-inspector]');
 	const triggers = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-image-inspection-trigger]'));
+	const figures = Array.from(document.querySelectorAll<HTMLElement>('[data-image-stack-figure]'));
 	const enlargementThreshold = 1.2;
+	const persistentCaptionViewportWidth = 1101;
+	const persistentCaptionMinimumWidth = 160;
+	const persistentCaptionHeightRatio = 0.9;
+	let captionScheduledFrame: number | null = null;
+
+	const isVisible = (element: Element) => {
+		const style = getComputedStyle(element);
+		const bounds = element.getBoundingClientRect();
+		return style.display !== 'none' && style.visibility !== 'hidden' && bounds.width > 0 && bounds.height > 0;
+	};
+
+	const rectanglesOverlap = (first: DOMRect, second: DOMRect) => (
+		first.left < second.right
+		&& first.right > second.left
+		&& first.top < second.bottom
+		&& first.bottom > second.top
+	);
+
+	const resolveCssLength = (value: string, fallback: number) => {
+		const probe = document.createElement('span');
+		probe.style.cssText = [
+			'position:fixed',
+			'visibility:hidden',
+			'pointer-events:none',
+			'box-sizing:content-box',
+			'height:0',
+			'padding:0',
+			'border:0',
+			`width:${value.trim() || `${fallback}px`}`,
+		].join(';');
+		document.body.append(probe);
+		const width = probe.getBoundingClientRect().width;
+		probe.remove();
+		return Number.isFinite(width) && width > 0 ? width : fallback;
+	};
+
+	const clearPersistentCaption = (figure: HTMLElement) => {
+		delete figure.dataset.imageCaptionPlacement;
+		figure.style.removeProperty('--image-persistent-caption-width');
+		figure.style.removeProperty('--image-persistent-caption-reserve');
+	};
+
+	const updatePersistentCaption = (figure: HTMLElement) => {
+		clearPersistentCaption(figure);
+		if (window.innerWidth < persistentCaptionViewportWidth) return;
+
+		const frame = figure.querySelector<HTMLElement>('.managed-image-frame');
+		const caption = figure.querySelector<HTMLElement>('.image-meta');
+		const image = frame?.querySelector<HTMLImageElement>('img');
+		const layout = figure.closest<HTMLElement>('.site-page-layout-tree')
+			?? figure.closest<HTMLElement>('.site-content');
+		if (!frame || !caption || !image || !layout || !isVisible(frame) || !isVisible(caption)) return;
+
+		const headerOffset = Number.parseFloat(
+			getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
+		) || 0;
+		const usableViewportHeight = Math.max(0, window.innerHeight - headerOffset);
+		const imageBounds = image.getBoundingClientRect();
+		if (imageBounds.height < usableViewportHeight * persistentCaptionHeightRatio) return;
+
+		const visibleContentsRail = Array.from(
+			layout.querySelectorAll<HTMLElement>('.page-contents-navigation-rail'),
+		).some(isVisible);
+		if (visibleContentsRail) return;
+
+		const frameBounds = frame.getBoundingClientRect();
+		const captionBounds = caption.getBoundingClientRect();
+		const layoutBounds = layout.getBoundingClientRect();
+		const rootStyle = getComputedStyle(document.documentElement);
+		const gap = resolveCssLength(rootStyle.getPropertyValue('--section-note-gap'), 20);
+		const preferredWidth = resolveCssLength(rootStyle.getPropertyValue('--section-note-width'), 192);
+		const isRightToLeft = getComputedStyle(figure).direction === 'rtl';
+		const availableWidth = isRightToLeft
+			? frameBounds.left - layoutBounds.left - gap
+			: layoutBounds.right - frameBounds.right - gap;
+		const captionWidth = Math.min(preferredWidth, availableWidth);
+		if (captionWidth < persistentCaptionMinimumWidth || captionBounds.height > frameBounds.height) return;
+
+		const proposedBounds = new DOMRect(
+			isRightToLeft ? frameBounds.left - gap - captionWidth : frameBounds.right + gap,
+			frameBounds.top,
+			captionWidth,
+			frameBounds.height,
+		);
+		const laneClaims = Array.from(figure.closest('.site-section')?.querySelectorAll<HTMLElement>([
+			'.section-note',
+			'[data-table-layout="end"]',
+			'[data-table-layout="canvas"]',
+		].join(', ')) ?? []).filter((element) => element !== figure && isVisible(element));
+		if (laneClaims.some((element) => rectanglesOverlap(proposedBounds, element.getBoundingClientRect()))) return;
+
+		const reserve = Math.max(0, captionBounds.bottom - frameBounds.bottom);
+		figure.style.setProperty('--image-persistent-caption-width', `${captionWidth}px`);
+		figure.style.setProperty('--image-persistent-caption-reserve', `${reserve}px`);
+		figure.dataset.imageCaptionPlacement = 'persistent';
+	};
+
+	const updatePersistentCaptions = () => {
+		captionScheduledFrame = null;
+		figures.forEach(updatePersistentCaption);
+	};
+
+	const schedulePersistentCaptionUpdate = () => {
+		if (captionScheduledFrame !== null) return;
+		captionScheduledFrame = requestAnimationFrame(updatePersistentCaptions);
+	};
+
+	if (figures.length > 0) {
+		figures.forEach((figure) => {
+			const image = figure.querySelector('img');
+			if (image && !image.complete) image.addEventListener('load', schedulePersistentCaptionUpdate, { once: true });
+		});
+		if ('ResizeObserver' in window) {
+			const observer = new ResizeObserver(schedulePersistentCaptionUpdate);
+			figures.forEach((figure) => {
+				const frame = figure.querySelector('.managed-image-frame');
+				if (frame) observer.observe(frame);
+			});
+		}
+		const preferenceObserver = new MutationObserver(schedulePersistentCaptionUpdate);
+		preferenceObserver.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-focus-reading', 'data-reading-width'],
+		});
+		window.addEventListener('resize', schedulePersistentCaptionUpdate, { passive: true });
+		document.fonts?.ready.then(schedulePersistentCaptionUpdate).catch(() => {});
+		updatePersistentCaptions();
+	}
 
 	if (dialog && typeof dialog.showModal === 'function' && triggers.length > 0) {
 		const inspectedImage = dialog.querySelector<HTMLImageElement>('[data-image-inspector-image]');
