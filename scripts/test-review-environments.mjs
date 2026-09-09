@@ -17,6 +17,7 @@ import {
 	prepareScratchSite,
 	readScratchSource,
 } from './review-scratch-site.mjs';
+import { reserveBrowserTestPort } from './browser-test-port.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const temporaryRoot = await mkdtemp(path.join(tmpdir(), 'norna-review-environments-'));
@@ -95,6 +96,15 @@ try {
 		() => runReviewEnvironment(['start', 'docs', '--kill'], { root: repoRoot, run, write }),
 		/Unexpected start option: --kill/,
 	);
+
+	const portLockRoot = path.join(temporaryRoot, 'port-locks');
+	const proposedPorts = [45001, 45001, 45002];
+	const getPort = async () => proposedPorts.shift();
+	const firstReservation = await reserveBrowserTestPort({ lockRoot: portLockRoot, getPort });
+	const secondReservation = await reserveBrowserTestPort({ lockRoot: portLockRoot, getPort });
+	assert.equal(firstReservation.port, 45001);
+	assert.equal(secondReservation.port, 45002);
+	await Promise.all([firstReservation.release(), secondReservation.release()]);
 
 	const workspaceRoot = path.join(temporaryRoot, 'workspace');
 	const sourceDirectory = path.join(workspaceRoot, 'source site');

@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
-import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { reserveBrowserTestPort } from './browser-test-port.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(root, 'bin', 'norna.mjs');
@@ -24,26 +24,31 @@ const sleep = (milliseconds) => new Promise((resolve) => {
 	setTimeout(resolve, milliseconds);
 });
 
-const getAvailablePort = () => new Promise((resolve, reject) => {
-	const server = net.createServer();
-	server.unref();
-	server.once('error', reject);
-	server.listen(0, host, () => {
-		const address = server.address();
-		const port = typeof address === 'object' && address ? address.port : null;
-		server.close((error) => {
-			if (error) {
-				reject(error);
-				return;
-			}
-			resolve(port);
-		});
-	});
-});
-
-const port = await getAvailablePort();
-if (!port) throw new Error('Could not reserve a port for the navigation test server.');
+const portReservation = await reserveBrowserTestPort({ host });
+const { port } = portReservation;
 const url = `http://${host}:${port}/`;
+const activeChildren = new Set();
+let interruptionSignal = null;
+
+const trackChild = (child) => {
+	activeChildren.add(child);
+	const remove = () => activeChildren.delete(child);
+	child.once('error', remove);
+	child.once('exit', remove);
+	return child;
+};
+
+const handleInterruption = (signal) => {
+	if (interruptionSignal) return;
+	interruptionSignal = signal;
+	for (const child of activeChildren) {
+		if (child.exitCode === null && !child.killed) child.kill(signal);
+	}
+};
+
+for (const signal of ['SIGINT', 'SIGTERM']) {
+	process.on(signal, handleInterruption);
+}
 
 const isReachable = async () => {
 	try {
@@ -75,11 +80,11 @@ const waitForServer = async (serverProcess) => {
 };
 
 const runInherit = (command, args, options = {}) => new Promise((resolve, reject) => {
-	const child = spawn(command, args, {
+	const child = trackChild(spawn(command, args, {
 		cwd: root,
 		stdio: 'inherit',
 		...options,
-	});
+	}));
 
 	child.once('error', reject);
 	child.once('exit', (code, signal) => {
@@ -103,7 +108,7 @@ const startServer = async () => {
 		cwd: navigationDemoSiteDir,
 	});
 
-	const serverProcess = spawn(process.execPath, [
+	const serverProcess = trackChild(spawn(process.execPath, [
 		cliPath,
 		'astro',
 		'dev',
@@ -119,11 +124,13 @@ const startServer = async () => {
 			...process.env,
 			ASTRO_DEV_BACKGROUND: '0',
 		},
-	});
-	serverProcess.once('error', (error) => {
-		throw error;
-	});
-	await waitForServer(serverProcess);
+	}));
+	await Promise.race([
+		waitForServer(serverProcess),
+		new Promise((_, reject) => {
+			serverProcess.once('error', reject);
+		}),
+	]);
 
 	return serverProcess;
 };
@@ -152,6 +159,16 @@ try {
 			PLAYWRIGHT_BASE_URL: url,
 		},
 	});
+} catch (error) {
+	if (!interruptionSignal) throw error;
 } finally {
 	await stopServer(serverProcess);
+	await portReservation.release();
+	for (const signal of ['SIGINT', 'SIGTERM']) {
+		process.removeListener(signal, handleInterruption);
+	}
+}
+
+if (interruptionSignal) {
+	process.exitCode = 128 + (interruptionSignal === 'SIGINT' ? 2 : 15);
 }
