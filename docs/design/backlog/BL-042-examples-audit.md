@@ -95,3 +95,12 @@ presets.
 
 If the inventory exposes a missing engine feature, record it separately rather
 than simulating it in an example.
+
+## Verification
+
+Completed and visually approved. The maintained example matrix and editorial
+decisions are recorded in
+[`Examples Content Audit`](../examples-content-audit.md). The documentation
+link test, content check, complete example build suite, preset checks, package
+check, and documentation-site build cover the retained examples and their
+published destinations.
