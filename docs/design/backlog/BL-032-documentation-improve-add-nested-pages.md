@@ -21,3 +21,11 @@ geometry.
 - The surrounding text explains how that hierarchy becomes navigation.
 - Essential relationships conveyed visually are also available to screen-reader
   users.
+
+## Verification
+
+Completed and visually approved. The **Add nested pages** section uses the
+actual Getting Started category and page hierarchy, identifies the current
+`content.md`, and explains the same file-to-navigation relationship in prose
+and alternative text. Content, documentation-link, image, and site-build checks
+cover the maintained source and illustration.
