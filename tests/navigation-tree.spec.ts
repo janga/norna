@@ -151,7 +151,7 @@ test.describe('desktop tree navigation', () => {
 			prose.boundingBox(),
 		]);
 		expect(tableAfterFocus?.x).toBeCloseTo(tableBefore?.x ?? 0, 0);
-		expect(tableAfterFocus?.width ?? 0).toBeGreaterThan((tableBefore?.width ?? 0) + 100);
+		expect(tableAfterFocus?.width).toBeCloseTo(tableBefore?.width ?? 0, 0);
 		expect(proseAfterFocus?.x).toBeCloseTo(proseBefore?.x ?? 0, 0);
 		expect(proseAfterFocus?.width).toBeCloseTo(proseBefore?.width ?? 0, 0);
 		const compactNavigation = page.locator('[data-compact-navigation]');
@@ -501,6 +501,32 @@ test.describe('desktop tree navigation', () => {
 		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThanOrEqual(
 			(pageLayoutBox?.x ?? 0) + (pageLayoutBox?.width ?? 0) + 1,
 		);
+	});
+
+	test('uses a shallow page margin as soon as the note and a safe edge reserve fit', async ({ page }) => {
+		await page.setViewportSize({ width: 1150, height: desktopViewport.height });
+		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
+
+		const note = page.locator('.section-note').first();
+		const paragraph = page.locator('.section-markdown p').first();
+		const pageLayout = page.locator('.site-page-layout');
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+
+		const [noteBox, paragraphBox, pageLayoutBox] = await Promise.all([
+			note.boundingBox(),
+			paragraph.boundingBox(),
+			pageLayout.boundingBox(),
+		]);
+		expect(noteBox).not.toBeNull();
+		expect(paragraphBox).not.toBeNull();
+		expect(pageLayoutBox).not.toBeNull();
+		expect(noteBox?.x ?? 0).toBeGreaterThanOrEqual((paragraphBox?.x ?? 0) + (paragraphBox?.width ?? 0) + 16);
+		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThanOrEqual(
+			(pageLayoutBox?.x ?? 0) + (pageLayoutBox?.width ?? 0) - 8,
+		);
+
+		await page.setViewportSize({ width: 1140, height: desktopViewport.height });
+		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
 	});
 });
 

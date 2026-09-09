@@ -145,7 +145,7 @@ const marginNoteReadingWidths = [
 	['standard', 'min(72ch, 680px)'],
 	['wide', `min(80ch, ${visualTheme.images.width})`],
 ] as const;
-const vacantContentsTrackWidth = `11rem + ${visualTheme.layout.localNavigationGap}`;
+const marginNoteOuterReserve = '0.5rem';
 const marginNoteDeclarations = [
 	'float: right;',
 	'clear: right;',
@@ -163,7 +163,7 @@ const marginNoteLayoutCss = [
 		'}',
 		].join('\n'),
 		[
-			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} - ${vacantContentsTrackWidth})) {`,
+			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve} - 11rem - ${visualTheme.layout.localNavigationGap})) {`,
 			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note,`,
 			`:root[data-reader-preferences-ready="true"][data-reading-width="${readingWidth}"][data-focus-reading="on"] .site-page-layout-tree .section-note {`,
 				marginNoteDeclarations,
