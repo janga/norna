@@ -444,6 +444,12 @@ is unavailable. The copy control is then absent or reports failure; it is not
 required to read or select the example. Inline code does not receive a copy
 control.
 
+When a titled code example is taller than the viewport, its title stays below
+the sticky site header while the reader moves through the code. The title
+releases at the lower edge of its own example. This behavior uses CSS and does
+not require JavaScript; without JavaScript, only the copy control is absent.
+Untitled code blocks do not receive an empty title bar.
+
 ### Side Notes
 
 Add one numbered side note to a paragraph by placing `{note-ref}` where its

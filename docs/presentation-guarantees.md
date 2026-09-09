@@ -63,6 +63,10 @@ Ordinary content reflows without document-level horizontal scrolling at a
 `320px` CSS viewport. Long links and inline code may break. Fenced code may
 scroll inside its own block because code is two-dimensional content.
 
+A titled code example keeps its context bar below the sticky site header while
+a long example passes through the viewport, then releases it at the example's
+lower boundary. Untitled and short examples retain the same document flow.
+
 Norna's layout is designed to tolerate browser zoom, text resized to `200%`,
 and increased line, paragraph, letter, and word spacing. Side notes use the
 margin only while their actual container has enough room; otherwise they return

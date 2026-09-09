@@ -55,3 +55,10 @@ Expected complexity is low to medium. The implementation primarily affects the
 existing code-example wrapper and content CSS. The main risks are nested sticky
 containers, a title bar that consumes too much of a short viewport, and an
 incorrect stacking order beside the site header.
+
+## Verification
+
+Implemented, visually approved, regression-tested, and documented. Browser
+coverage verifies the sticky start and release boundaries. The client-side
+contract confirms that the title and sticky behavior remain when JavaScript is
+unavailable and that only copying is removed.

@@ -65,6 +65,10 @@ or failure. Without JavaScript, the same code remains readable and selectable
 without the button. See the complete [code-block reference](https://github.com/janga/norna/blob/main/docs/content.md#code-blocks)
 for metadata order, accepted selectors, and validation errors.
 
+On an example longer than the viewport, the title remains below the sticky
+site header until the reader reaches the end of that code block. This preserves
+the filename and copy control without adding a toolbar to untitled examples.
+
 ## Sidenotes {#sidenotes}
 
 A note reference stays with the sentence it qualifies, while the explanation

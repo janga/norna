@@ -87,10 +87,6 @@ verified and approved for documentation.
   **Implemented and browser-tested; awaiting human review and documentation.**
   Focus reading replaces persistent rails with an accessible overlay that
   reuses the full site hierarchy without moving the reading layout.
-- [`BL-062` Sticky context for long code examples](docs/design/backlog/BL-062-sticky-code-context.md):
-  **Visually approved; regression tests and documentation remain.** Existing
-  code titles and copy controls remain available while long code examples pass
-  through the viewport.
 - [`BL-061` Image inspection for detailed media](docs/design/backlog/BL-061-image-inspection.md):
   **Visually approved; regression tests and documentation remain.** Detailed
   managed images can be enlarged without changing the reading layout, with a
