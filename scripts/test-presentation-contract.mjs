@@ -206,6 +206,11 @@ assert.match(
 );
 assert.match(
 	stylesheet,
+	/:root\[data-appearance='dark'\] :is\(\.tree-local-navigation, \.mobile-site-nav\)\s*\{[\s\S]*?var\(--color-surface-emphasis-background\) 64%[\s\S]*?var\(--color-surface-soft-background\)/u,
+	'Dark persistent and compact navigation must share a palette-derived current-item marker',
+);
+assert.match(
+	stylesheet,
 	/\.page-contents-navigation-rail\s*\{[\s\S]*?border-inline-start:\s*1px solid var\(--color-nav-separator\)/u,
 	'the contents rail must close the opposite edge of the content canvas',
 );

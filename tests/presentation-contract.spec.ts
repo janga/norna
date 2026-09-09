@@ -724,6 +724,67 @@ for (const appearance of ['light', 'dark']) {
 	});
 }
 
+test('Dark appearance uses one lighter marker for the current page and heading', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.goto(`${componentsPath}#image-stack`, { waitUntil: 'domcontentloaded' });
+	await page.locator('[data-carousel-ready="true"]').waitFor();
+	await page.locator('html').evaluate((root) => {
+		root.dataset.appearance = 'dark';
+	});
+	await page.waitForTimeout(250);
+	const currentPage = page.locator('.tree-local-navigation .navigation-page-link[aria-current="page"]');
+	const currentHeading = page.locator(
+		'.tree-local-navigation .navigation-page-sections a[aria-current="location"]',
+	);
+	await expect(currentPage).toBeVisible();
+	await expect(currentHeading).toBeVisible();
+
+	const colors = await page.evaluate(() => {
+		const pageMarker = document.querySelector<HTMLElement>(
+			'.tree-local-navigation .navigation-page-link[aria-current="page"]',
+		);
+		const headingMarker = document.querySelector<HTMLElement>(
+			'.tree-local-navigation .navigation-page-sections a[aria-current="location"]',
+		);
+		const navigation = document.querySelector<HTMLElement>('.tree-local-navigation');
+		if (!pageMarker || !headingMarker || !navigation) throw new Error('Missing current navigation markers.');
+		const parseRgb = (value: string) => {
+			const hex = value.trim().match(/^#([\da-f]{6})$/i)?.[1];
+			if (hex) return [0, 2, 4].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16));
+			const channels = value.match(/[\d.]+/g)?.slice(0, 3).map(Number);
+			if (!channels || channels.length !== 3) throw new Error(`Cannot parse color ${value}.`);
+			return value.trim().startsWith('color(srgb ')
+				? channels.map((channel) => channel * 255)
+				: channels;
+		};
+		const luminance = (value: string) => parseRgb(value)
+			.map((channel) => channel / 255)
+			.map((channel) => channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4)
+			.reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
+		const contrast = (first: string, second: string) => {
+			const values = [luminance(first), luminance(second)].sort((left, right) => right - left);
+			return (values[0] + 0.05) / (values[1] + 0.05);
+		};
+		const pageStyle = getComputedStyle(pageMarker);
+		const headingStyle = getComputedStyle(headingMarker);
+		const navigationStyle = getComputedStyle(navigation);
+		const rootStyle = getComputedStyle(document.documentElement);
+		return {
+			contrast: contrast(pageStyle.color, pageStyle.backgroundColor),
+			headingBackground: headingStyle.backgroundColor,
+			markerBackground: pageStyle.backgroundColor,
+			markerLuminance: luminance(pageStyle.backgroundColor),
+			navigationLuminance: luminance(navigationStyle.backgroundColor),
+			softLuminance: luminance(rootStyle.getPropertyValue('--color-surface-soft-background')),
+		};
+	});
+
+	expect(colors.headingBackground).toBe(colors.markerBackground);
+	expect(colors.markerLuminance).toBeGreaterThan(colors.navigationLuminance);
+	expect(colors.markerLuminance).toBeGreaterThan(colors.softLuminance);
+	expect(colors.contrast, JSON.stringify(colors)).toBeGreaterThanOrEqual(4.5);
+});
+
 test('prose-aligned stacks stay width-driven while carousels fit the viewport height', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await openComponents(page);

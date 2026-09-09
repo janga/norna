@@ -534,14 +534,6 @@
 	}
 
 	:root[data-reader-preferences-ready='true'][data-focus-reading='on'] .mobile-site-nav {
-		--tree-disclosure-icon-width: 0.9rem;
-		--tree-disclosure-gap: 0.6rem;
-		--tree-disclosure-offset: calc(var(--tree-disclosure-icon-width) + var(--tree-disclosure-gap));
-		--tree-current-item-background: color-mix(
-			in srgb,
-			var(--color-surface-soft-background) 58%,
-			var(--color-page)
-		);
 		width: min(100%, 32rem);
 		margin: 0 auto;
 	}
