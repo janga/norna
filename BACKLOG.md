@@ -26,6 +26,10 @@ when implementation can begin.
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
+- [`BL-067` Stable local review and regression environments](docs/design/backlog/BL-067-stable-local-test-environments.md):
+  **Ready.** Replace ad hoc test-site paths and preview ports with named review
+  targets, stable command entry points, and one isolated scratch-site workflow.
+
 ## External Gate
 
 These items have high product value but require an external account, publishing

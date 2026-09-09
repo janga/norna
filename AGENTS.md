@@ -102,6 +102,11 @@ maintainer, put it in `README.md` instead of duplicating it here.
   `examples/feature-demos/media-and-surfaces/site` for broad visual demo and
   navigation checks. Use `fixtures/basic/site` for minimal standalone engine
   regression checks.
+- Use `.local/test-sites/scratch/site/` for disposable local copies of sites
+  needed for temporary review or reproduction. Keep this workspace ignored by
+  Git. Copy the runnable site by default; do not run Norna through a direct
+  symlink to a maintained source site because generated `.norna` state and test
+  edits could then be written back to the source.
 - Keep site-specific static files in the selected site `public/`; the default
   path is `site/public/`. The selected site's `.norna/public/` directory
   is copied build preparation output plus generated image and sitemap output.
