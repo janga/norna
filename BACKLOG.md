@@ -67,9 +67,9 @@ of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
 - [`BL-069` Monotonic responsive sidenote placement](docs/design/backlog/BL-069-monotonic-responsive-sidenotes.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  A deep page keeps its sidenotes inline after they first leave the margin as
-  the automatic navigation layout becomes narrower.
+  **Visually approved; documentation remains.** A deep page keeps its sidenotes
+  inline after they first leave the margin as the automatic navigation layout
+  becomes narrower.
 - ★ [`BL-066` Sticky headings in horizontally scrolling tables](docs/design/backlog/BL-066-sticky-headings-in-scrolling-tables.md):
   **Implemented and browser-tested; documentation remains.** Overflowing
   tables keep a visual copy of their column headings synchronized with the
