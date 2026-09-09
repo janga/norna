@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const desktopViewport = { width: 1440, height: 1000 };
-const intermediateViewport = { width: 960, height: 900 };
+const intermediateViewport = { width: 1120, height: 900 };
 const mobileViewport = { width: 393, height: 852 };
 const homePagePath = '/';
 const deepPagePath = '/guides/installation/macos/';
@@ -243,7 +243,11 @@ test.describe('adaptive page contents on desktop', () => {
 			'data-page-contents-placement',
 			'contents-rail',
 		);
-		await expect(page.locator('.tree-local-navigation .navigation-page-sections')).toHaveCount(0);
+		const treeSections = page.locator(
+			'.tree-local-navigation .navigation-page-node-current .navigation-page-sections',
+		);
+		await expect(treeSections).toHaveCount(1);
+		await expect(treeSections).toBeHidden();
 		const contentsRail = page.locator('.page-contents-navigation-rail');
 		await expect(contentsRail).toBeVisible();
 		const currentSection = contentsRail.getByRole('link', { name: 'Install', exact: true });
@@ -281,6 +285,18 @@ test.describe('adaptive page contents at intermediate widths', () => {
 		await expect(page.getByRole('navigation', { name: 'Page contents: Reference', exact: true })).toBeVisible();
 		await expect(page.getByRole('navigation', { name: 'Page contents: Reference installation' })).toBeVisible();
 		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
+	});
+
+	test('moves a deep page outline from the right rail into the persistent tree', async ({ page }) => {
+		await page.goto(deepPagePath, { waitUntil: 'networkidle' });
+
+		await expect(page.locator('.tree-local-navigation')).toBeVisible();
+		await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
+		await expect(page.locator('.page-contents-navigation-inline')).toHaveCount(0);
+		const currentPage = page.locator('.tree-local-navigation .navigation-page-node-current');
+		const sections = currentPage.locator('.navigation-page-sections');
+		await expect(sections).toBeVisible();
+		await expect(sections.getByRole('link')).toHaveText(['Install', 'Prerequisites', 'Verify']);
 	});
 });
 

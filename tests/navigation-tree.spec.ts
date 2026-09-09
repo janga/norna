@@ -40,13 +40,17 @@ test.describe('desktop tree navigation', () => {
 		await expect(localNavigation.getByRole('link', { name: 'Installation', exact: true }))
 			.toBeVisible();
 		await expect(localNavigation.getByRole('link', { name: 'Workflows', exact: true })).toBeVisible();
-		await expect(localNavigation.locator('details[data-page-path="guides/workflows"]')).toHaveCount(0);
+		await expect(localNavigation.locator('details[data-page-path="guides/workflows"]')).toBeHidden();
 		const currentPageNode = localNavigation.locator('.navigation-page-node-current');
 		const currentPageLink = currentPageNode.getByRole('link', { name: 'macOS', exact: true });
 		await expect(currentPageLink).toHaveAttribute('aria-current', 'page');
-		await expect(currentPageNode.locator(':scope > details')).toHaveCount(0);
-		await expect(localNavigation.getByRole('link', { name: 'Install', exact: true })).toHaveCount(0);
-		await expect(localNavigation.getByRole('link', { name: 'Prerequisites', exact: true })).toHaveCount(0);
+		const responsivePageSections = currentPageNode.locator(
+			':scope > .navigation-page-sections-disclosure',
+		);
+		await expect(responsivePageSections).toHaveCount(1);
+		await expect(responsivePageSections).toBeHidden();
+		await expect(currentPageNode.getByRole('link', { name: 'Install', exact: true })).toBeHidden();
+		await expect(currentPageNode.getByRole('link', { name: 'Prerequisites', exact: true })).toBeHidden();
 		await expect(localNavigation.getByRole('link', { name: 'Reference', exact: true })).toHaveCount(0);
 
 		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Guides', 'Installation', 'macOS']);
@@ -57,7 +61,7 @@ test.describe('desktop tree navigation', () => {
 		await expect(pageContents.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
 		await expect(pageContents.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
 		await expect(pageContents.getByRole('link', { name: 'Verify', exact: true })).toBeVisible();
-		await expect(page.locator('.page-contents-navigation-inline')).toBeHidden();
+		await expect(page.locator('.page-contents-navigation-inline')).toHaveCount(0);
 		await expect(page.locator('.page-nav')).toHaveCount(0);
 		await expect(page.locator('[data-tree-navigation-toggle]')).toHaveCount(0);
 
@@ -557,12 +561,91 @@ test.describe('automatic navigation across site areas', () => {
 		]);
 	});
 
-	test('reflows page contents into the document at intermediate widths', async ({ page }) => {
-		await page.setViewportSize({ width: 960, height: 900 });
+	test('combines page and section navigation in the persistent tree at intermediate widths', async ({ page }) => {
+		await page.setViewportSize({ width: 1120, height: 900 });
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
 		await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
-		await expect(page.locator('.page-contents-navigation-inline')).toBeVisible();
+		await expect(page.locator('.page-contents-navigation-inline')).toHaveCount(0);
+		await expect(page.locator('.mobile-nav-menu')).toBeHidden();
+		const currentPage = page.locator('.tree-local-navigation .navigation-page-node-current');
+		await expect(currentPage.locator(':scope > .navigation-page-sections-disclosure')).toBeVisible();
+		await expect(currentPage.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
+		await expect(currentPage.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
+	});
+
+	test('moves the complete hierarchy into the compact menu before the content becomes cramped', async ({ page }) => {
+		await page.setViewportSize({ width: 960, height: 900 });
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		await expect(page.locator('.tree-local-navigation')).toBeHidden();
+		await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
+		const menu = page.locator('.mobile-nav-menu');
+		await expect(menu).toBeVisible();
+		await menu.locator(':scope > summary').click();
+		const currentPage = menu.locator('.navigation-page-node-current');
+		await expect(currentPage.getByRole('link', { name: 'macOS', exact: true })).toBeVisible();
+		await expect(currentPage.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
+		await expect(currentPage.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
+	});
+
+	test('uses distinct rail and compact-navigation boundaries', async ({ page }) => {
+		await page.setViewportSize({ width: 1281, height: 900 });
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const tree = page.locator('.tree-local-navigation');
+		const rail = page.locator('.page-contents-navigation-rail');
+		const menu = page.locator('.mobile-nav-menu');
+		const sections = tree.locator(
+			'.navigation-page-node-current .navigation-page-sections-disclosure',
+		);
+
+		await expect(tree).toBeVisible();
+		await expect(rail).toBeVisible();
+		await expect(sections).toBeHidden();
+		await expect(menu).toBeHidden();
+
+		await page.setViewportSize({ width: 1280, height: 900 });
+		await expect(tree).toBeVisible();
+		await expect(rail).toBeHidden();
+		await expect(sections).toBeVisible();
+		await expect(menu).toBeHidden();
+
+		await page.setViewportSize({ width: 961, height: 900 });
+		await expect(tree).toBeVisible();
+		await expect(sections).toBeVisible();
+		await expect(menu).toBeHidden();
+
+		await page.setViewportSize({ width: 960, height: 900 });
+		await expect(tree).toBeHidden();
+		await expect(rail).toBeHidden();
+		await expect(menu).toBeVisible();
+	});
+
+	test('shares expanded page outlines between persistent and compact trees', async ({ page }) => {
+		await page.setViewportSize({ width: 1120, height: 900 });
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const desktopTree = page.locator('.tree-local-navigation');
+		const desktopWorkflowsLink = desktopTree.getByRole('link', { name: 'Workflows', exact: true });
+		const desktopWorkflowsSections = desktopWorkflowsLink.locator('..').locator(
+			':scope > .navigation-page-sections-disclosure',
+		);
+		await desktopWorkflowsSections.locator(':scope > summary').click();
+		await expect(desktopTree.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
+
+		await page.setViewportSize({ width: 960, height: 900 });
+		const menu = page.locator('.mobile-nav-menu');
+		await menu.locator(':scope > summary').click();
+		const mobileWorkflowsLink = menu.getByRole('link', { name: 'Workflows', exact: true });
+		const mobileWorkflowsSections = mobileWorkflowsLink.locator('..').locator(
+			':scope > .navigation-page-sections-disclosure',
+		);
+		await expect(mobileWorkflowsSections).toHaveAttribute('open', '');
+		await expect(menu.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
+
+		await mobileWorkflowsSections.locator(':scope > summary').click();
+		await expect(mobileWorkflowsSections).not.toHaveAttribute('open', '');
+		await page.setViewportSize({ width: 1120, height: 900 });
+		await expect(desktopWorkflowsSections).not.toHaveAttribute('open', '');
+		await expect(desktopTree.getByRole('link', { name: 'Local work', exact: true })).toBeHidden();
 	});
 
 	test('keeps the page axis stable when a short page omits the contents rail', async ({ page }) => {
@@ -731,6 +814,22 @@ test.describe('desktop tree navigation without JavaScript', () => {
 		const sequence = page.getByRole('navigation', { name: 'Page sequence' });
 		await expect(sequence.getByRole('link', { name: /Previous page\s+Installation/ })).toBeVisible();
 		await expect(sequence.getByRole('link', { name: /Next page\s+Linux/ })).toBeVisible();
+	});
+
+	test('keeps responsive page and section links available through native disclosures', async ({ page }) => {
+		await page.setViewportSize({ width: 1120, height: 900 });
+		await page.goto(testPagePath, { waitUntil: 'domcontentloaded' });
+		const currentPage = page.locator('.tree-local-navigation .navigation-page-node-current');
+		await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
+		await expect(currentPage.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
+
+		await page.setViewportSize({ width: 900, height: 900 });
+		await expect(page.locator('.tree-local-navigation')).toBeHidden();
+		const menu = page.locator('.mobile-nav-menu');
+		await expect(menu).toBeVisible();
+		await menu.locator(':scope > summary').click();
+		await expect(menu.getByRole('link', { name: 'macOS', exact: true })).toBeVisible();
+		await expect(menu.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
 	});
 });
 

@@ -168,7 +168,7 @@ const pageContentsPlacement = resolvePageContentsPlacement({
 const hasContentsNavigation = pageContentsPlacement.placement !== 'none';
 const hasTrackedSectionNavigation = hasContentsNavigation
 	|| (hasTreeNavigation && currentPage.isHome && pageContentsHeadings.length >= 2);
-const integratePageContentsInTree = pageContentsPlacement.placement === 'page-tree';
+const integratePageContentsInTree = hasTreeNavigation;
 const showContentsRail = pageContentsPlacement.placement === 'contents-rail';
 const hasNavigationRailFrame = !currentPage.isHome && (
 	navigationModel.requestedMode === 'tree'
@@ -231,13 +231,6 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 			{showBreadcrumbs
 				? <SiteBreadcrumbs currentPage={currentPage} nodes={siteNodes} />
 				: reserveBreadcrumbSpace && <div class="site-breadcrumbs" aria-hidden="true"></div>}
-			{showContentsRail && (
-				<PageContentsNavigation
-					headings={pageContentsHeadings}
-					pageTitle={currentPage.title}
-					variant="inline"
-				/>
-			)}
 			{renderedSections.map(({ section, sectionIndex, prioritizeFirstImage }) => (
 				<SiteSection
 					section={section}
@@ -261,7 +254,6 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 			<PageContentsNavigation
 				headings={pageContentsHeadings}
 				pageTitle={currentPage.title}
-				variant="rail"
 			/>
 		)}
 	</div>

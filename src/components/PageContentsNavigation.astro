@@ -6,14 +6,13 @@ import PageContentsLinks from './PageContentsLinks.astro';
 interface Props {
 	headings: HeadingNavigation[];
 	pageTitle: string;
-	variant: 'inline' | 'rail';
 }
 
-const { headings, pageTitle, variant } = Astro.props;
+const { headings, pageTitle } = Astro.props;
 const label = `${projectConfig.locale.labels.pageNavigation}: ${pageTitle}`;
 ---
 
-<aside class={`page-contents-navigation page-contents-navigation-${variant}`}>
+<aside class="page-contents-navigation page-contents-navigation-rail">
 	<nav aria-label={label}>
 		<p class="page-contents-navigation-label">{projectConfig.locale.labels.pageNavigation}</p>
 		<PageContentsLinks headings={headings} variant="desktop" />

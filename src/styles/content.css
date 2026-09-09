@@ -517,7 +517,7 @@ ul {
 	background: var(--section-background-color, var(--color-page));
 }
 
-@media (min-width: 701px) {
+@media (min-width: 961px) {
 	.site-page-layout-tree .section-markdown > .norna-table-frame {
 		--table-end-width: 100cqi;
 		--table-canvas-width: var(--table-end-width);
@@ -571,7 +571,7 @@ ul {
 	display: none !important;
 }
 
-@media (min-width: 701px) {
+@media (min-width: 961px) {
 	:root[data-reader-preferences-ready='true'][data-focus-reading='on'] .site-page-layout-tree {
 		display: grid;
 		grid-template-columns: var(--tree-navigation-width) minmax(0, 1fr);

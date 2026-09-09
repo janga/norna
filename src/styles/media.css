@@ -215,7 +215,7 @@
 	min-width: 0;
 }
 
-@media (min-width: 701px) {
+@media (min-width: 961px) {
 	:root[data-image-presentation='prose-aligned'] .site-page-layout-tree .section-body {
 		grid-template-columns: minmax(0, var(--layout-reading-width)) minmax(0, 1fr);
 	}

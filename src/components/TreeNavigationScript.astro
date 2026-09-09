@@ -4,6 +4,7 @@
 		sectionOpenByPath: Record<string, boolean>;
 		scrollTop: number;
 	};
+	type SharedNavigationState = Pick<NavigationState, 'openPaths' | 'sectionOpenByPath'>;
 	type NavigationSnapshot = {
 		branchOpen: boolean[];
 		sectionOpen: boolean[];
@@ -12,7 +13,9 @@
 
 	const setupNavigationState = (container: HTMLElement, scope: 'desktop' | 'mobile') => {
 		const root = container.dataset.navigationRoot ?? '/';
+		const sharedRoot = container.dataset.navigationStateRoot ?? root;
 		const stateKey = `norna:tree-navigation:${scope}:${root}`;
+		const sharedStateKey = `norna:tree-navigation:shared:${sharedRoot}`;
 		const branches = Array.from(container.querySelectorAll<HTMLDetailsElement>(
 			'.navigation-page-disclosure[data-page-path]',
 		));
@@ -34,31 +37,69 @@
 		};
 		const scrollContainer = getScrollContainer();
 		let filterSnapshot: NavigationSnapshot | null = null;
-
-		try {
-			const parsedState = JSON.parse(sessionStorage.getItem(stateKey) ?? '{}');
-			const storedState: NavigationState = {
-				openPaths: Array.isArray(parsedState.openPaths) ? parsedState.openPaths : [],
-				sectionOpenByPath: parsedState.sectionOpenByPath
-					&& typeof parsedState.sectionOpenByPath === 'object'
-					? Object.fromEntries(Object.entries(parsedState.sectionOpenByPath)
-						.filter((entry): entry is [string, boolean] => typeof entry[1] === 'boolean'))
-					: {},
-				scrollTop: Number.isFinite(Number(parsedState.scrollTop)) ? Number(parsedState.scrollTop) : 0,
-			};
-
+		let lastSharedState = '';
+		const parseState = (value: string | null): NavigationState => {
+			try {
+				const parsedState = JSON.parse(value ?? '{}');
+				return {
+					openPaths: Array.isArray(parsedState.openPaths) ? parsedState.openPaths : [],
+					sectionOpenByPath: parsedState.sectionOpenByPath
+						&& typeof parsedState.sectionOpenByPath === 'object'
+						? Object.fromEntries(Object.entries(parsedState.sectionOpenByPath)
+							.filter((entry): entry is [string, boolean] => typeof entry[1] === 'boolean'))
+						: {},
+					scrollTop: Number.isFinite(Number(parsedState.scrollTop)) ? Number(parsedState.scrollTop) : 0,
+				};
+			} catch {
+				return { openPaths: [], sectionOpenByPath: {}, scrollTop: 0 };
+			}
+		};
+		const getDisclosureState = (): SharedNavigationState => ({
+			openPaths: branches.filter((branch) => branch.open)
+				.map((branch) => branch.dataset.pagePath ?? ''),
+			sectionOpenByPath: Object.fromEntries(sectionBranches.map((branch) => [
+				branch.dataset.pagePath ?? '',
+				branch.open,
+			])),
+		});
+		const applyDisclosureState = (state: SharedNavigationState) => {
 			branches.forEach((branch) => {
 				const pagePath = branch.dataset.pagePath ?? '';
 				branch.open = branch.dataset.currentBranch === 'true'
-					|| storedState.openPaths.includes(pagePath);
+					|| state.openPaths.includes(pagePath);
 			});
 			sectionBranches.forEach((branch) => {
 				const pagePath = branch.dataset.pagePath ?? '';
-				const storedOpen = storedState.sectionOpenByPath[pagePath];
+				const storedOpen = state.sectionOpenByPath[pagePath];
 				branch.open = typeof storedOpen === 'boolean'
 					? storedOpen
 					: branch.dataset.currentPage === 'true';
 			});
+		};
+		const mergeSharedState = (state: SharedNavigationState): SharedNavigationState => {
+			const existingState = parseState(sessionStorage.getItem(sharedStateKey));
+			const knownBranchPaths = new Set(branches.map((branch) => branch.dataset.pagePath ?? ''));
+			return {
+				openPaths: [
+					...existingState.openPaths.filter((pagePath) => !knownBranchPaths.has(pagePath)),
+					...state.openPaths,
+				],
+				sectionOpenByPath: {
+					...existingState.sectionOpenByPath,
+					...state.sectionOpenByPath,
+				},
+			};
+		};
+
+		try {
+			const storedState = parseState(sessionStorage.getItem(stateKey));
+			const storedSharedState = sessionStorage.getItem(sharedStateKey);
+			applyDisclosureState(storedSharedState === null
+				? storedState
+				: parseState(storedSharedState));
+			const initialSharedState = mergeSharedState(getDisclosureState());
+			lastSharedState = JSON.stringify(initialSharedState);
+			sessionStorage.setItem(sharedStateKey, lastSharedState);
 
 			if (storedState.scrollTop > 0) {
 				requestAnimationFrame(() => {
@@ -73,21 +114,36 @@
 			if (filterSnapshot) return;
 
 			try {
-				const openBranches = branches.filter((branch) => branch.open);
-				const sectionOpenByPath = Object.fromEntries(sectionBranches.map((branch) => [
-					branch.dataset.pagePath ?? '',
-					branch.open,
-				]));
+				const disclosureState = getDisclosureState();
 				const state: NavigationState = {
-					openPaths: openBranches.map((branch) => branch.dataset.pagePath ?? ''),
-					sectionOpenByPath,
+					...disclosureState,
 					scrollTop: scrollContainer.scrollTop,
 				};
 				sessionStorage.setItem(stateKey, JSON.stringify(state));
+				const sharedState = mergeSharedState(disclosureState);
+				const serializedSharedState = JSON.stringify(sharedState);
+				sessionStorage.setItem(sharedStateKey, serializedSharedState);
+				if (serializedSharedState !== lastSharedState) {
+					lastSharedState = serializedSharedState;
+					window.dispatchEvent(new CustomEvent('norna:tree-navigation-state', {
+						detail: { root: sharedRoot, state: sharedState },
+					}));
+				}
 			} catch {
 				// Navigation state persistence is an optional enhancement.
 			}
 		};
+		window.addEventListener('norna:tree-navigation-state', (event) => {
+			const detail = (event as CustomEvent<{
+				root?: string;
+				state?: SharedNavigationState;
+			}>).detail;
+			if (detail?.root !== sharedRoot || !detail.state) return;
+			const serializedSharedState = JSON.stringify(detail.state);
+			if (serializedSharedState === lastSharedState) return;
+			lastSharedState = serializedSharedState;
+			applyDisclosureState(detail.state);
+		});
 		const controls = container.querySelector<HTMLElement>('[data-tree-controls]');
 		const filterInput = controls?.querySelector<HTMLInputElement>('[data-tree-filter]') ?? null;
 		const expandButton = controls?.querySelector<HTMLButtonElement>('[data-tree-expand-all]') ?? null;

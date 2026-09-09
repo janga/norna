@@ -157,20 +157,38 @@ const marginNoteLayoutCss = [
 	...marginNoteReadingWidths.flatMap(([readingWidth, textWidth]) => [
 		[
 			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap})) {`,
-			`:root[data-reading-width="${readingWidth}"] .section-note {`,
+			`:root[data-reading-width="${readingWidth}"] .site-page-layout:not(.site-page-layout-tree) .section-note,`,
+			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree.site-page-layout-contents .section-note {`,
 				marginNoteDeclarations,
 			'}',
 		'}',
 		].join('\n'),
 		[
 			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve} - 11rem - ${visualTheme.layout.localNavigationGap})) {`,
-			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note,`,
 			`:root[data-reader-preferences-ready="true"][data-reading-width="${readingWidth}"][data-focus-reading="on"] .site-page-layout-tree .section-note {`,
 				marginNoteDeclarations,
 			'}',
 		'}',
 		].join('\n'),
 	]),
+	'}',
+	'@media (min-width: 1101px) and (max-width: 1280px) {',
+	...marginNoteReadingWidths.map(([readingWidth, textWidth]) => [
+		`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve})) {`,
+		`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note {`,
+			marginNoteDeclarations,
+		'}',
+	'}',
+	].join('\n')),
+	'}',
+	'@media (min-width: 1281px) {',
+	...marginNoteReadingWidths.map(([readingWidth, textWidth]) => [
+		`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve} - 11rem - ${visualTheme.layout.localNavigationGap})) {`,
+		`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note {`,
+			marginNoteDeclarations,
+		'}',
+	'}',
+	].join('\n')),
 	'}',
 ].join('\n');
 const { buildInfo, copyrightMessage } = footer ?? {};

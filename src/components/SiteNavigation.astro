@@ -201,7 +201,11 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 										<X aria-hidden="true" />
 									</button>
 								</div>
-								<div class="mobile-site-nav" data-navigation-root={pageHref(homePage)}>
+								<div
+									class="mobile-site-nav"
+									data-navigation-root={pageHref(homePage)}
+									data-navigation-state-root={pageHref(homePage)}
+								>
 									{showSiteNavigation && (
 										<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.siteNavigation}>
 											<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>

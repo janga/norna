@@ -16,10 +16,6 @@ when implementation can begin.
 
 `Now` contains at most three active items in exact technical order.
 
-- ★ [`BL-068` Responsive fallback for deep navigation](docs/design/backlog/BL-068-responsive-deep-navigation.md):
-  **In progress.** Preserve one page-and-section hierarchy while deep
-  navigation moves from separate rails to a combined tree and then to a
-  compact menu as available width decreases.
 - [`BL-065` Restore the Page contents reading marker](docs/design/backlog/BL-065-page-contents-reading-marker.md):
   **Ready.** Reproduce and restore the missing palette-derived current-heading
   marker in the right Page contents rail on a deeply nested page.
