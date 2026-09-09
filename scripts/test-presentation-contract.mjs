@@ -269,13 +269,17 @@ for (const requiredSource of [
 }
 for (const requiredSource of [
 	"frame.dataset.tableOverflow = hasOverflow ? 'true' : 'false'",
-	"frame.dataset.tableAtStart = scrollOffset <= 1 ? 'true' : 'false'",
-	"frame.dataset.tableAtEnd = scrollOffset >= maximumScroll - 1 ? 'true' : 'false'",
+	"frame.dataset.tableAtStart = isAtStart ? 'true' : 'false'",
+	"frame.dataset.tableAtEnd = isAtEnd ? 'true' : 'false'",
+	"frame.dataset.tableStickyHeading = hasOverflow && stickyHeading ? 'true' : 'false'",
 	"scrollRegion.setAttribute('tabindex', '0')",
 	'scrollRegion.removeAttribute(\'tabindex\')',
 	"const isTopLevel = frame.parentElement?.classList.contains('section-markdown') === true",
 	"const candidates: TableLayout[] = ['prose', 'end', 'canvas']",
 	'const selected = candidates.find(tableFitsLayout)',
+	"stickyHeading.setAttribute('aria-hidden', 'true')",
+	"stickyHeading.setAttribute('inert', '')",
+	'stickyHeadingTrack.style.transform',
 ]) {
 	assert.match(
 		tableOverflowScript,
@@ -283,6 +287,11 @@ for (const requiredSource of [
 		'table overflow enhancement must expose measured, keyboard-reachable overflow state',
 	);
 }
+assert.doesNotMatch(
+	tableOverflowScript,
+	/document\.createElement\(['"]table['"]\)/u,
+	'the sticky enhancement must not create a second table element',
+);
 assert.match(
 	stylesheet,
 	/:root\[data-reader-preferences-ready='true'\]\[data-focus-reading='on'\] \.mobile-nav-menu\s*\{[\s\S]*?display:\s*block/u,

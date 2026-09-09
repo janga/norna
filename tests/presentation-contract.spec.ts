@@ -230,6 +230,150 @@ test('a fitting long table keeps its headings below the sticky site header and r
 	expect(releasedHeading?.y ?? Infinity).toBeLessThan(stickyOffset);
 });
 
+test('an overflowing long table keeps a synchronized visual heading while the semantic table scrolls', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 720 });
+	await openComponents(page);
+	const section = page.locator('.site-section').filter({ has: page.locator('#data-table') });
+	const frame = section.locator('[data-table-frame]');
+	const scrollRegion = frame.locator('[data-table-scroll]');
+	const table = frame.locator('table');
+	const stickyHeading = frame.locator('[data-table-sticky-heading]');
+	const originalHeadings = table.locator('thead th');
+	const visualHeadings = stickyHeading.locator('.norna-table-sticky-heading-cell');
+
+	await table.evaluate((element) => {
+		const frame = element.closest<HTMLElement>('[data-table-frame]');
+		if (!frame) throw new Error('Missing table frame.');
+		element.style.width = `${frame.clientWidth + 640}px`;
+		element.style.minWidth = `${frame.clientWidth + 640}px`;
+		element.style.tableLayout = 'fixed';
+		const body = element.tBodies[0];
+		const sourceRows = Array.from(body.rows);
+		for (let index = 0; index < 18; index += 1) {
+			for (const row of sourceRows) body.append(row.cloneNode(true));
+		}
+	});
+	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
+	await expect(frame).toHaveAttribute('data-table-sticky-heading', 'true');
+	await expect(stickyHeading).toHaveAttribute('aria-hidden', 'true');
+	await expect(stickyHeading).toHaveAttribute('inert', '');
+	await expect(stickyHeading).toHaveCSS('pointer-events', 'none');
+	await expect(stickyHeading.locator('table')).toHaveCount(0);
+	await expect(visualHeadings).toHaveCount(await originalHeadings.count());
+	await expect(page.getByRole('columnheader')).toHaveCount(await originalHeadings.count());
+
+	await frame.evaluate((element) => {
+		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 120);
+	});
+	const stickyOffset = await page.evaluate(() => Number.parseFloat(
+		getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
+	));
+	await expect.poll(async () => (await stickyHeading.boundingBox())?.y).toBeCloseTo(stickyOffset, 0);
+
+	const expectHeadingsAligned = async () => {
+		const [originalBounds, visualBounds, stickyDebug] = await Promise.all([
+			originalHeadings.evaluateAll((headings) => headings.map((heading) => {
+				const bounds = heading.getBoundingClientRect();
+				return { width: bounds.width, x: bounds.x };
+			})),
+			visualHeadings.evaluateAll((headings) => headings.map((heading) => {
+				const bounds = heading.getBoundingClientRect();
+				return { width: bounds.width, x: bounds.x };
+			})),
+			stickyHeading.evaluate((heading) => ({
+				direction: getComputedStyle(heading).direction,
+				left: heading.getBoundingClientRect().left,
+				trackTransform: (heading.firstElementChild as HTMLElement | null)?.style.transform,
+				visualLeft: (heading.firstElementChild?.firstElementChild as HTMLElement | null)?.style.left,
+			})),
+		]);
+		expect(visualBounds).toHaveLength(originalBounds.length);
+		for (const [index, original] of originalBounds.entries()) {
+			expect(
+				visualBounds[index]?.x,
+				JSON.stringify({ originalBounds, stickyDebug, visualBounds }, null, 2),
+			).toBeCloseTo(original.x, 0);
+			expect(visualBounds[index]?.width).toBeCloseTo(original.width, 0);
+		}
+	};
+
+	await expectHeadingsAligned();
+	await scrollRegion.focus();
+	await page.keyboard.press('ArrowRight');
+	await expect.poll(() => scrollRegion.evaluate((element) => Math.abs(element.scrollLeft))).toBeGreaterThan(0);
+	await scrollRegion.evaluate((element) => {
+		element.scrollLeft = (element.scrollWidth - element.clientWidth) / 2;
+	});
+	await expect(frame).toHaveAttribute('data-table-at-start', 'false');
+	await expect(frame).toHaveAttribute('data-table-at-end', 'false');
+	await expectHeadingsAligned();
+	await scrollRegion.evaluate((element) => {
+		element.scrollLeft = element.scrollWidth;
+	});
+	await expect(frame).toHaveAttribute('data-table-at-end', 'true');
+	await expectHeadingsAligned();
+
+	await page.evaluate(() => document.documentElement.setAttribute('dir', 'rtl'));
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+	await scrollRegion.evaluate((element) => { element.scrollLeft = 0; });
+	await expect(frame).toHaveAttribute('data-table-at-start', 'true');
+	await expectHeadingsAligned();
+	await scrollRegion.evaluate((element) => {
+		element.scrollLeft = 0 - ((element.scrollWidth - element.clientWidth) / 2);
+	});
+	await expect(frame).toHaveAttribute('data-table-at-start', 'false');
+	await expect(frame).toHaveAttribute('data-table-at-end', 'false');
+	await expectHeadingsAligned();
+	await scrollRegion.evaluate((element) => {
+		element.scrollLeft = 0 - element.scrollWidth;
+	});
+	await expect(frame).toHaveAttribute('data-table-at-end', 'true');
+	await expectHeadingsAligned();
+
+	await page.evaluate(() => document.documentElement.setAttribute('dir', 'ltr'));
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+	await expect(frame).toHaveAttribute('data-table-sticky-heading', 'true');
+	await expectHeadingsAligned();
+
+	const settings = page.locator('[data-display-settings]');
+	await settings.locator('summary').click();
+	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+	await expect(frame).toHaveAttribute('data-table-sticky-heading', 'true');
+	await expectHeadingsAligned();
+	await settings.getByRole('radio', { name: 'Dark' }).check();
+	const [originalBackground, visualBackground] = await Promise.all([
+		originalHeadings.first().evaluate((heading) => getComputedStyle(heading).backgroundColor),
+		visualHeadings.first().evaluate((heading) => getComputedStyle(heading).backgroundColor),
+	]);
+	expect(visualBackground).toBe(originalBackground);
+	await page.emulateMedia({ forcedColors: 'active' });
+	const [forcedOriginalBackground, forcedVisualBackground] = await Promise.all([
+		originalHeadings.first().evaluate((heading) => getComputedStyle(heading).backgroundColor),
+		visualHeadings.first().evaluate((heading) => getComputedStyle(heading).backgroundColor),
+	]);
+	expect(forcedVisualBackground).toBe(forcedOriginalBackground);
+	expect(forcedVisualBackground).not.toBe('rgba(0, 0, 0, 0)');
+	await page.emulateMedia({ forcedColors: 'none' });
+
+	await frame.evaluate((element, offset) => {
+		const bounds = element.getBoundingClientRect();
+		const absoluteBottom = window.scrollY + bounds.bottom;
+		window.scrollTo(0, absoluteBottom - offset - 8);
+	}, stickyOffset);
+	const [releasedHeading, releasedFrame] = await Promise.all([
+		stickyHeading.boundingBox(),
+		frame.boundingBox(),
+	]);
+	expect(releasedHeading).not.toBeNull();
+	expect(releasedFrame).not.toBeNull();
+	expect(releasedHeading?.y ?? Infinity).toBeLessThan(stickyOffset);
+	expect((releasedHeading?.y ?? 0) + (releasedHeading?.height ?? 0)).toBeLessThanOrEqual(
+		(releasedFrame?.y ?? 0) + (releasedFrame?.height ?? 0) + 1,
+	);
+});
+
 test('WCAG text-spacing overrides do not clip key content', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await openComponents(page);
@@ -1161,6 +1305,8 @@ test('configured presentation remains usable without JavaScript', async ({ brows
 	await expect(page.locator('.site-content h1').first()).toBeVisible();
 	await expect(page.locator('.tree-local-navigation')).toBeVisible();
 	await expect(page.locator('[data-display-settings]')).toBeHidden();
+	await expect(page.locator('[data-table-sticky-heading]')).toHaveCount(0);
+	await expect(page.getByRole('table')).toHaveCount(1);
 	const figure = page.locator('[data-image-stack-figure]').first();
 	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
 	const [frameBounds, captionBounds] = await Promise.all([

@@ -603,14 +603,29 @@
 		background: none;
 	}
 
+	.norna-table-sticky-heading,
+	.norna-table-sticky-heading-cell {
+		border-color: CanvasText;
+		background: Canvas;
+		color: CanvasText;
+	}
+
 	.norna-table-frame::before {
-		left: 0.4rem;
+		inset-inline-start: 0.4rem;
 		transform: translateY(-50%) rotate(-135deg);
 	}
 
 	.norna-table-frame::after {
-		right: 0.4rem;
+		inset-inline-end: 0.4rem;
 		transform: translateY(-50%) rotate(45deg);
+	}
+
+	.norna-table-frame:dir(rtl)::before {
+		transform: translateY(-50%) rotate(45deg);
+	}
+
+	.norna-table-frame:dir(rtl)::after {
+		transform: translateY(-50%) rotate(-135deg);
 	}
 
 	:is(.display-settings-segmented input:checked + span, .image-carousel-button:hover:not(:disabled)) {

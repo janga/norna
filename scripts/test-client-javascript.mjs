@@ -257,7 +257,7 @@ page:
 	assert.equal(
 		getFeatureScripts(tableHtml).length,
 		1,
-		'A table page should load only its adaptive layout and overflow measurement in addition to reader preferences.',
+		'A table page should load only its layout, overflow, and sticky-heading enhancement in addition to reader preferences.',
 	);
 	assert.match(tableHtml, /data-table-frame/);
 	assert.match(tableHtml, /<div\b(?=[^>]*data-table-scroll)(?=[^>]*tabindex="0")[^>]*>/);
@@ -265,6 +265,8 @@ page:
 	assert.match(tableScript, /\.scrollWidth\s*-\s*[^;]+?\.clientWidth/);
 	assert.match(tableScript, /dataset\.tableOverflow/);
 	assert.match(tableScript, /dataset\.tableLayout/);
+	assert.match(tableScript, /dataset\.tableStickyHeading/);
+	assert.match(tableScript, /setAttribute\(`aria-hidden`,`true`\)/);
 	assert.match(tableScript, /\[`prose`,`end`,`canvas`\]\.find/);
 	assert.match(tableScript, /ResizeObserver/);
 

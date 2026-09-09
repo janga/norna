@@ -395,6 +395,45 @@ ul {
 	outline-offset: 2px;
 }
 
+.norna-table-sticky-heading {
+	display: none;
+	position: sticky;
+	z-index: 4;
+	top: var(--site-top-anchor-offset);
+	width: 100%;
+	height: var(--table-sticky-heading-height, 0px);
+	overflow: hidden;
+	background: var(--section-background-color, var(--color-page));
+	pointer-events: none;
+}
+
+.norna-table-frame[data-table-overflow='true'][data-table-sticky-heading='true']
+	> .norna-table-sticky-heading {
+	display: block;
+}
+
+.norna-table-frame[data-table-overflow='true'][data-table-sticky-heading='true']
+	> .norna-table-scroll {
+	margin-block-start: calc(0px - var(--table-sticky-heading-height, 0px));
+}
+
+.norna-table-sticky-heading-track {
+	position: absolute;
+	top: 0;
+	left: 0;
+	transform: translateX(0);
+	transform-origin: left top;
+	will-change: transform;
+}
+
+.norna-table-sticky-heading-cell {
+	position: absolute;
+	overflow: hidden;
+	border-bottom: 1px solid color-mix(in srgb, currentColor 48%, transparent);
+	background: var(--section-background-color, var(--color-page));
+	color: inherit;
+}
+
 .norna-table-frame::before,
 .norna-table-frame::after {
 	position: absolute;
@@ -409,7 +448,7 @@ ul {
 }
 
 .norna-table-frame::before {
-	left: 0;
+	inset-inline-start: 0;
 	background: linear-gradient(
 		to right,
 		color-mix(in srgb, var(--section-background-color, var(--color-page)) 94%, transparent),
@@ -418,9 +457,25 @@ ul {
 }
 
 .norna-table-frame::after {
-	right: 0;
+	inset-inline-end: 0;
 	background: linear-gradient(
 		to left,
+		color-mix(in srgb, var(--section-background-color, var(--color-page)) 94%, transparent),
+		transparent
+	);
+}
+
+.norna-table-frame:dir(rtl)::before {
+	background: linear-gradient(
+		to left,
+		color-mix(in srgb, var(--section-background-color, var(--color-page)) 94%, transparent),
+		transparent
+	);
+}
+
+.norna-table-frame:dir(rtl)::after {
+	background: linear-gradient(
+		to right,
 		color-mix(in srgb, var(--section-background-color, var(--color-page)) 94%, transparent),
 		transparent
 	);
@@ -498,11 +553,11 @@ ul {
 		overflow: visible;
 	}
 
-	.section-markdown > .norna-table-frame[data-table-overflow='false'] thead th {
-		position: sticky;
-		top: var(--site-top-anchor-offset);
-		z-index: 2;
-	}
+		.section-markdown > .norna-table-frame[data-table-overflow='false'] thead th {
+			position: sticky;
+			top: var(--site-top-anchor-offset);
+			z-index: 2;
+		}
 }
 
 :root[data-reader-preferences-ready='true'][data-focus-reading='on'] :is(

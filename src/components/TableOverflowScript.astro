@@ -1,24 +1,111 @@
 <script>
 	type TableLayout = 'contained' | 'prose' | 'end' | 'canvas';
 	const layoutUpdaters = new Set<() => void>();
+	const synchronizedAttributes = [
+		'data-appearance',
+		'data-focus-reading',
+		'data-reading-width',
+		'dir',
+	];
 
 	const initializeTableFrame = (frame: HTMLElement) => {
 		const scrollRegion = frame.querySelector<HTMLElement>('[data-table-scroll]');
-		const table = scrollRegion?.querySelector('table');
+		const table = scrollRegion?.querySelector<HTMLTableElement>('table');
 		if (!scrollRegion || frame.dataset.tableReady === 'true') return;
 		const isTopLevel = frame.parentElement?.classList.contains('section-markdown') === true;
+		const tableHead = table?.tHead;
+		const headingCells = Array.from(tableHead?.querySelectorAll<HTMLTableCellElement>('th') ?? []);
 		let scheduledFrame: number | null = null;
+		let stickyHeading: HTMLElement | null = null;
+		let stickyHeadingTrack: HTMLElement | null = null;
+
+		const removeDuplicateIdentity = (element: HTMLElement) => {
+			element.removeAttribute('id');
+			element.querySelectorAll<HTMLElement>('[id]').forEach((descendant) => descendant.removeAttribute('id'));
+		};
+
+		const createStickyHeading = () => {
+			if (!isTopLevel || !tableHead || headingCells.length === 0) return;
+
+			stickyHeading = document.createElement('div');
+			stickyHeading.className = 'norna-table-sticky-heading';
+			stickyHeading.dataset.tableStickyHeading = '';
+			stickyHeading.setAttribute('aria-hidden', 'true');
+			stickyHeading.setAttribute('inert', '');
+
+			stickyHeadingTrack = document.createElement('div');
+			stickyHeadingTrack.className = 'norna-table-sticky-heading-track';
+			stickyHeading.append(stickyHeadingTrack);
+			frame.insertBefore(stickyHeading, scrollRegion);
+		};
+
+		const synchronizeStickyHeadingPosition = () => {
+			if (!stickyHeading || !stickyHeadingTrack || !table) return;
+			const layerBounds = stickyHeading.getBoundingClientRect();
+			const tableBounds = table.getBoundingClientRect();
+			stickyHeadingTrack.style.transform = `translateX(${tableBounds.left - layerBounds.left}px)`;
+		};
+
+		const synchronizeStickyHeadingGeometry = () => {
+			if (!stickyHeading || !stickyHeadingTrack || !table || !tableHead) return;
+			const tableBounds = table.getBoundingClientRect();
+			const headingBounds = tableHead.getBoundingClientRect();
+			if (tableBounds.width <= 0 || headingBounds.height <= 0) {
+				frame.dataset.tableStickyHeading = 'false';
+				return;
+			}
+
+			frame.style.setProperty('--table-sticky-heading-height', `${headingBounds.height}px`);
+			stickyHeadingTrack.style.width = `${tableBounds.width}px`;
+			stickyHeadingTrack.style.height = `${headingBounds.height}px`;
+			stickyHeadingTrack.replaceChildren(...headingCells.map((headingCell) => {
+				const cellBounds = headingCell.getBoundingClientRect();
+				const computedStyle = getComputedStyle(headingCell);
+				const visualCell = document.createElement('div');
+				visualCell.className = 'norna-table-sticky-heading-cell';
+				visualCell.style.left = `${cellBounds.left - tableBounds.left}px`;
+				visualCell.style.top = `${cellBounds.top - headingBounds.top}px`;
+				visualCell.style.width = `${cellBounds.width}px`;
+				visualCell.style.height = `${cellBounds.height}px`;
+				visualCell.style.font = computedStyle.font;
+				visualCell.style.fontWeight = computedStyle.fontWeight;
+				visualCell.style.letterSpacing = computedStyle.letterSpacing;
+				visualCell.style.lineHeight = computedStyle.lineHeight;
+				visualCell.style.padding = computedStyle.padding;
+				visualCell.style.textAlign = computedStyle.textAlign;
+				visualCell.style.textTransform = computedStyle.textTransform;
+				visualCell.style.whiteSpace = computedStyle.whiteSpace;
+				visualCell.style.wordBreak = computedStyle.wordBreak;
+				visualCell.style.overflowWrap = computedStyle.overflowWrap;
+				visualCell.append(...Array.from(headingCell.childNodes, (node) => node.cloneNode(true)));
+				removeDuplicateIdentity(visualCell);
+				return visualCell;
+			}));
+			synchronizeStickyHeadingPosition();
+		};
+
+		createStickyHeading();
 
 		const updateOverflow = () => {
 			const maximumScroll = Math.max(0, scrollRegion.scrollWidth - scrollRegion.clientWidth);
 			const hasOverflow = maximumScroll > 1;
-			const scrollOffset = Math.max(0, scrollRegion.scrollLeft);
+			const scrollBounds = scrollRegion.getBoundingClientRect();
+			const tableBounds = table?.getBoundingClientRect();
+			const isRightToLeft = getComputedStyle(scrollRegion).direction === 'rtl';
+			const isAtStart = !hasOverflow || !tableBounds || (isRightToLeft
+				? tableBounds.right <= scrollBounds.right + 2
+				: tableBounds.left >= scrollBounds.left - 2);
+			const isAtEnd = !hasOverflow || !tableBounds || (isRightToLeft
+				? tableBounds.left >= scrollBounds.left - 2
+				: tableBounds.right <= scrollBounds.right + 2);
 
 			frame.dataset.tableOverflow = hasOverflow ? 'true' : 'false';
-			frame.dataset.tableAtStart = scrollOffset <= 1 ? 'true' : 'false';
-			frame.dataset.tableAtEnd = scrollOffset >= maximumScroll - 1 ? 'true' : 'false';
+			frame.dataset.tableAtStart = isAtStart ? 'true' : 'false';
+			frame.dataset.tableAtEnd = isAtEnd ? 'true' : 'false';
+			frame.dataset.tableStickyHeading = hasOverflow && stickyHeading ? 'true' : 'false';
 			if (hasOverflow) scrollRegion.setAttribute('tabindex', '0');
 			else scrollRegion.removeAttribute('tabindex');
+			if (hasOverflow) synchronizeStickyHeadingPosition();
 		};
 
 		const tableFitsLayout = (layout: TableLayout) => {
@@ -38,6 +125,7 @@
 			const selected = candidates.find(tableFitsLayout) ?? 'canvas';
 			frame.dataset.tableLayout = selected;
 			updateOverflow();
+			if (frame.dataset.tableOverflow === 'true') synchronizeStickyHeadingGeometry();
 		};
 
 		const scheduleLayoutUpdate = () => {
@@ -67,7 +155,7 @@
 	if (frames.length > 0) {
 		const preferenceObserver = new MutationObserver(() => layoutUpdaters.forEach((update) => update()));
 		preferenceObserver.observe(document.documentElement, {
-			attributeFilter: ['data-focus-reading', 'data-reading-width'],
+			attributeFilter: synchronizedAttributes,
 			attributes: true,
 		});
 	}
