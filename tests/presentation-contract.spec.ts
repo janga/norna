@@ -1125,6 +1125,47 @@ test('persistent image captions fall back when the end lane is occupied or narro
 	expect(captionGap).toBeLessThanOrEqual(8);
 });
 
+test('deep-page image captions stay below when Page contents moves into the page tree', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await openComponents(page);
+	const layout = page.locator('.site-page-layout-tree');
+	const figure = page.locator('[data-image-stack-figure]').first();
+
+	await layout.evaluate((element) => {
+		element.dataset.pageContentsPlacement = 'contents-rail';
+		const rail = document.createElement('aside');
+		rail.className = 'page-contents-navigation page-contents-navigation-rail';
+		rail.textContent = 'Page contents';
+		element.append(rail);
+		window.dispatchEvent(new Event('resize'));
+	});
+	const contentsRail = layout.locator('.page-contents-navigation-rail');
+
+	await expect(contentsRail).toBeVisible();
+	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
+
+	await page.setViewportSize({ width: 1281, height: 900 });
+	await expect(contentsRail).toBeVisible();
+	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
+
+	await page.setViewportSize({ width: 1280, height: 900 });
+	await expect(contentsRail).toBeHidden();
+	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
+
+	const settings = page.locator('[data-display-settings]');
+	await settings.locator('summary').click();
+	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
+
+	await settings.getByRole('checkbox', { name: 'Focus reading' }).uncheck();
+	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
+	await page.setViewportSize({ width: 1100, height: 900 });
+	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
+
+	const overflow = await getHorizontalOverflow(page);
+	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
+});
+
 test('centered-fit image stacks and carousels stay within a 320 pixel viewport', async ({ page }) => {
 	await page.setViewportSize({ width: 320, height: 800 });
 	await openCenteredFit(page);

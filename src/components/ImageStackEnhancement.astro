@@ -104,7 +104,9 @@ const labels = projectConfig.locale.labels;
 		const visibleContentsRail = Array.from(
 			layout.querySelectorAll<HTMLElement>('.page-contents-navigation-rail'),
 		).some(isVisible);
-		if (visibleContentsRail) return;
+		const reservesContentsLane = layout.dataset.pageContentsPlacement === 'contents-rail'
+			&& document.documentElement.dataset.focusReading !== 'on';
+		if (visibleContentsRail || reservesContentsLane) return;
 
 		const frameBounds = frame.getBoundingClientRect();
 		const figureBounds = figure.getBoundingClientRect();

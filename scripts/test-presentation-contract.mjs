@@ -259,6 +259,8 @@ assert.match(
 for (const requiredSource of [
 	"figure.dataset.imageCaptionPlacement = 'persistent'",
 	"layout.querySelectorAll<HTMLElement>('.page-contents-navigation-rail')",
+	"layout.dataset.pageContentsPlacement === 'contents-rail'",
+	"document.documentElement.dataset.focusReading !== 'on'",
 	"attributeFilter: ['data-focus-reading', 'data-reading-width']",
 ]) {
 	assert.match(
