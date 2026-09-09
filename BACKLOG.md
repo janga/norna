@@ -16,6 +16,9 @@ when implementation can begin.
 
 `Now` contains at most three active items in exact technical order.
 
+- [`BL-069` Monotonic responsive sidenote placement](docs/design/backlog/BL-069-monotonic-responsive-sidenotes.md):
+  **Ready.** Keep a sidenote inline after it first leaves the margin while a
+  deep-navigation layout becomes narrower.
 - [`BL-065` Restore the Page contents reading marker](docs/design/backlog/BL-065-page-contents-reading-marker.md):
   **Ready.** Reproduce and restore the missing palette-derived current-heading
   marker in the right Page contents rail on a deeply nested page.
