@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="44 95 872 290" role="img" aria-labelledby="title desc">
+  <title id="title">Three-column reference diagram</title>
+  <desc id="desc">Three labelled panels connected from left to right.</desc>
+  <g font-family="system-ui, sans-serif">
+    <rect x="54" y="105" width="230" height="270" rx="12" fill="#ffffff" stroke="#245f58" stroke-width="4"/>
+    <rect x="365" y="105" width="230" height="270" rx="12" fill="#ffffff" stroke="#365f7d" stroke-width="4"/>
+    <rect x="676" y="105" width="230" height="270" rx="12" fill="#ffffff" stroke="#745a2d" stroke-width="4"/>
+    <text x="169" y="170" text-anchor="middle" fill="#183d39" font-size="27" font-weight="700">Input</text>
+    <text x="480" y="170" text-anchor="middle" fill="#223e53" font-size="27" font-weight="700">Process</text>
+    <text x="791" y="170" text-anchor="middle" fill="#4f3c1e" font-size="27" font-weight="700">Result</text>
+    <g fill="#cbd7d3">
+      <rect x="96" y="215" width="146" height="16" rx="8"/>
+      <rect x="96" y="257" width="118" height="16" rx="8"/>
+      <rect x="407" y="215" width="146" height="16" rx="8"/>
+      <rect x="407" y="257" width="118" height="16" rx="8"/>
+      <rect x="718" y="215" width="146" height="16" rx="8"/>
+      <rect x="718" y="257" width="118" height="16" rx="8"/>
+    </g>
+    <path d="M300 240H345" stroke="#596168" stroke-width="6" stroke-linecap="round"/>
+    <path d="m335 225 16 15-16 15" fill="none" stroke="#596168" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M611 240H656" stroke="#596168" stroke-width="6" stroke-linecap="round"/>
+    <path d="m646 225 16 15-16 15" fill="none" stroke="#596168" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Generic systems map</title>
+  <desc id="desc">Four grouped areas with labelled nodes and directional connections.</desc>
+  <rect x="2" y="2" width="1796" height="1096" fill="#f5f3ee" stroke="#b8b4aa" stroke-width="4"/>
+  <g font-family="system-ui, sans-serif">
+    <text x="90" y="90" fill="#202428" font-size="44" font-weight="750">Generic systems map</text>
+    <text x="90" y="136" fill="#596168" font-size="24">Small labels make the inspection view useful</text>
+    <g fill="none" stroke="#8a918d" stroke-width="5" marker-end="url(#arrow)">
+      <path d="M430 330H620"/>
+      <path d="M820 330H1010"/>
+      <path d="M1210 330H1400"/>
+      <path d="M330 450V680"/>
+      <path d="M720 450V680"/>
+      <path d="M1110 450V680"/>
+      <path d="M1500 450V680"/>
+      <path d="M430 800H620"/>
+      <path d="M820 800H1010"/>
+      <path d="M1210 800H1400"/>
+    </g>
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M0 0 10 5 0 10z" fill="#8a918d"/>
+      </marker>
+    </defs>
+    <g>
+      <rect x="100" y="210" width="330" height="240" rx="16" fill="#e1ece8" stroke="#245f58" stroke-width="4"/>
+      <rect x="490" y="210" width="330" height="240" rx="16" fill="#e3ecf3" stroke="#365f7d" stroke-width="4"/>
+      <rect x="880" y="210" width="330" height="240" rx="16" fill="#f2ead8" stroke="#745a2d" stroke-width="4"/>
+      <rect x="1270" y="210" width="330" height="240" rx="16" fill="#f0e5ee" stroke="#76506f" stroke-width="4"/>
+      <rect x="100" y="680" width="330" height="240" rx="16" fill="#edf1e6" stroke="#485d32" stroke-width="4"/>
+      <rect x="490" y="680" width="330" height="240" rx="16" fill="#e7edf0" stroke="#4f6673" stroke-width="4"/>
+      <rect x="880" y="680" width="330" height="240" rx="16" fill="#f2e6e3" stroke="#7a5149" stroke-width="4"/>
+      <rect x="1270" y="680" width="330" height="240" rx="16" fill="#ece8f1" stroke="#655478" stroke-width="4"/>
+    </g>
+    <g fill="#202428" font-size="25" font-weight="700">
+      <text x="140" y="265">Source group</text>
+      <text x="530" y="265">Validation group</text>
+      <text x="920" y="265">Transform group</text>
+      <text x="1310" y="265">Output group</text>
+      <text x="140" y="735">Review group</text>
+      <text x="530" y="735">Evidence group</text>
+      <text x="920" y="735">Delivery group</text>
+      <text x="1310" y="735">Feedback group</text>
+    </g>
+    <g fill="#41484d" font-size="18">
+      <text x="140" y="315">S-01  Documents</text><text x="140" y="350">S-02  Images</text><text x="140" y="385">S-03  Configuration</text>
+      <text x="530" y="315">V-01  Structure</text><text x="530" y="350">V-02  References</text><text x="530" y="385">V-03  Accessibility</text>
+      <text x="920" y="315">T-01  Parse</text><text x="920" y="350">T-02  Compose</text><text x="920" y="385">T-03  Optimize</text>
+      <text x="1310" y="315">O-01  HTML</text><text x="1310" y="350">O-02  Assets</text><text x="1310" y="385">O-03  Metadata</text>
+      <text x="140" y="785">R-01  Desktop</text><text x="140" y="820">R-02  Mobile</text><text x="140" y="855">R-03  Keyboard</text>
+      <text x="530" y="785">E-01  Screenshots</text><text x="530" y="820">E-02  Logs</text><text x="530" y="855">E-03  Reports</text>
+      <text x="920" y="785">D-01  Preview</text><text x="920" y="820">D-02  Staging</text><text x="920" y="855">D-03  Production</text>
+      <text x="1310" y="785">F-01  Observe</text><text x="1310" y="820">F-02  Prioritize</text><text x="1310" y="855">F-03  Refine</text>
+    </g>
+    <rect x="100" y="990" width="1500" height="2" fill="#bcc2be"/>
+    <text x="100" y="1035" fill="#596168" font-size="18">Example identifiers and labels are deliberately generic.</text>
+  </g>
+</svg>
