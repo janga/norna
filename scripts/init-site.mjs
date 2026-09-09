@@ -18,6 +18,7 @@ dist/
 # generated site state
 **/.norna/public/
 **/.norna/.astro/
+**/.norna/dev/
 
 # legacy Astro cache location
 .astro/
@@ -40,6 +41,7 @@ pnpm-debug.log*
 `;
 const siteGitignore = `.norna/public/
 .norna/.astro/
+.norna/dev/
 `;
 
 const usage = `

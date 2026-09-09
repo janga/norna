@@ -150,6 +150,7 @@ Generated paths should be ignored:
 dist/
 .astro/
 site/.norna/.astro/
+site/.norna/dev/
 site/.norna/public/
 ```
 

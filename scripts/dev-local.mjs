@@ -5,7 +5,12 @@ import { networkInterfaces } from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { getAstroArgs, runAstroInherit } from './lib/astro-command.mjs';
-import { astroCacheDir, engineRoot, siteProjectRoot } from './lib/site-paths.mjs';
+import {
+	astroCacheDir,
+	engineRoot,
+	siteProjectRoot,
+	siteStateDir,
+} from './lib/site-paths.mjs';
 
 const execFileAsync = promisify(execFile);
 
@@ -27,7 +32,10 @@ const probeUrls = [
 	`http://localhost:${port}${projectConfig.site.basePath}`,
 ];
 const skipOpen = process.env.NORNA_NO_OPEN === '1';
-const statePath = path.join(astroCacheDir, 'dev-local.json');
+const stateDirectory = path.join(siteStateDir, 'dev');
+const statePath = path.join(stateDirectory, 'state.json');
+const legacyStatePath = path.join(astroCacheDir, 'dev-local.json');
+const astroStatePath = path.join(astroCacheDir, 'dev.json');
 const logPath = path.join(astroCacheDir, 'dev.log');
 const args = process.argv.slice(2);
 const knownCommands = new Set(['start', 'lan', 'status', 'logs', 'restart', 'stop']);
@@ -51,9 +59,9 @@ const generateImages = async () => execFileAsync(process.execPath, [path.join(en
 	maxBuffer: 1024 * 1024 * 10,
 });
 
-const readState = async () => {
+const readJsonFile = async (filePath) => {
 	try {
-		return JSON.parse(await readFile(statePath, 'utf8'));
+		return JSON.parse(await readFile(filePath, 'utf8'));
 	} catch (error) {
 		if (error.code === 'ENOENT') {
 			return null;
@@ -63,15 +71,34 @@ const readState = async () => {
 	}
 };
 
+const readState = async () => (
+	await readJsonFile(statePath)
+	?? await readJsonFile(legacyStatePath)
+);
+
 const getLanUrls = () => Object.values(networkInterfaces())
 	.flat()
 	.filter((network) => network?.family === 'IPv4' && !network.internal)
 	.map((network) => `http://${network.address}:${port}${projectConfig.site.basePath}`);
 
 const writeState = async (host) => {
-	await mkdir(path.dirname(statePath), { recursive: true });
+	const astroState = await readJsonFile(astroStatePath);
+	let pid = astroState?.port === port && isProcessAlive(astroState.pid)
+		? astroState.pid
+		: null;
+	if (!Number.isInteger(pid)) {
+		const listeningPids = await getPortPids({ required: false });
+		pid = listeningPids?.length === 1 ? listeningPids[0] : null;
+	}
+
+	if (!Number.isInteger(pid)) {
+		throw new Error(`The dev server started at ${localUrl}, but Norna could not record its process. Stop the process on port ${port} before starting it again.`);
+	}
+
+	await mkdir(stateDirectory, { recursive: true });
 	await writeFile(statePath, `${JSON.stringify({
 		port,
+		pid,
 		host,
 		mode: host === '0.0.0.0' ? 'lan' : 'local',
 		url: localUrl,
@@ -81,6 +108,8 @@ const writeState = async (host) => {
 
 const removeState = async () => {
 	await rm(statePath, { force: true });
+	await rm(legacyStatePath, { force: true });
+	await rm(stateDirectory, { recursive: true, force: true });
 };
 
 const readDevLog = async () => {
@@ -161,6 +190,16 @@ const sleep = (milliseconds) => new Promise((resolve) => {
 	setTimeout(resolve, milliseconds);
 });
 
+const isProcessAlive = (pid) => {
+	if (!Number.isInteger(pid)) return false;
+	try {
+		process.kill(pid, 0);
+		return true;
+	} catch (error) {
+		return error.code === 'EPERM';
+	}
+};
+
 const isServerReachable = async () => {
 	for (const probeUrl of probeUrls) {
 		try {
@@ -213,7 +252,7 @@ const parseWindowsPortPids = (stdout) => [...new Set(
 		.filter(Number.isInteger),
 )];
 
-const getPortPids = async () => {
+const getPortPids = async ({ required = true } = {}) => {
 	try {
 		if (process.platform === 'win32') {
 			const { stdout } = await execFileAsync('powershell.exe', [
@@ -234,6 +273,7 @@ const getPortPids = async () => {
 	} catch (error) {
 		if (error.code === 1) return [];
 		if (error.code === 'ENOENT') {
+			if (!required) return null;
 			const commandName = process.platform === 'win32' ? 'PowerShell' : 'lsof';
 			throw new Error(`Cannot use --kill because ${commandName} is not available. Stop the process on port ${port} manually, then rerun the command.`);
 		}
@@ -273,6 +313,31 @@ const terminatePortProcesses = async (host) => {
 	}
 };
 
+const terminateTrackedProcess = async (state, host) => {
+	if (state?.port !== port || !Number.isInteger(state.pid)) return false;
+	if (!isProcessAlive(state.pid)) return false;
+
+	const listeningPids = await getPortPids({ required: false });
+	if (listeningPids && !listeningPids.includes(state.pid)) return false;
+	if (!listeningPids && !(await isServerReachable())) return false;
+
+	try {
+		process.kill(state.pid, 'SIGTERM');
+	} catch (error) {
+		if (error.code !== 'ESRCH') throw error;
+	}
+
+	if (await waitForPortToBeFree(host)) return true;
+
+	try {
+		process.kill(state.pid, 'SIGKILL');
+	} catch (error) {
+		if (error.code !== 'ESRCH') throw error;
+	}
+
+	return waitForPortToBeFree(host);
+};
+
 const openBrowser = async () => {
 	if (skipOpen) {
 		console.log(`Browser open skipped. Open ${localUrl}`);
@@ -294,10 +359,27 @@ const openBrowser = async () => {
 
 const stopServer = async ({ quiet = false } = {}) => {
 	const state = await readState();
-	const { stdout = '', stderr = '' } = await runAstro(['dev', 'stop']);
-	const stopped = `${stdout}\n${stderr}`.includes('Stopped dev server');
-	if (stopped) await waitForPortToBeFree(state?.host ?? localHost);
-	await removeState();
+	let astroError;
+	let astroOutput = '';
+	try {
+		const { stdout = '', stderr = '' } = await runAstro(['dev', 'stop']);
+		astroOutput = `${stdout}\n${stderr}`;
+	} catch (error) {
+		astroError = error;
+	}
+
+	let stopped = astroOutput.includes('Stopped dev server');
+	if (stopped) {
+		await waitForPortToBeFree(state?.host ?? localHost);
+	} else {
+		stopped = await terminateTrackedProcess(state, state?.host ?? localHost);
+	}
+
+	if (stopped || !(await isServerReachable())) {
+		await removeState();
+	}
+
+	if (astroError && !stopped) throw astroError;
 
 	if (!quiet) {
 		console.log(stopped
@@ -370,7 +452,20 @@ const showStatus = async () => {
 	}
 
 	if (reachable) {
-		console.log(`A server is responding at ${localUrl}, but Astro does not track it for this site.`);
+		const listeningPids = await getPortPids({ required: false });
+		const stateOwnsPort = state?.port === port
+			&& Number.isInteger(state.pid)
+			&& (listeningPids ? listeningPids.includes(state.pid) : isProcessAlive(state.pid));
+		if (stateOwnsPort) {
+			console.log(`dev:${state.mode ?? 'local'} is running at ${localUrl}. Norna retained its process record after Astro cleared its cache.`);
+			if (state.host === '0.0.0.0') {
+				const lanUrls = getLanUrls();
+				if (lanUrls.length > 0) console.log(`On this local network: ${lanUrls.join(', ')}`);
+			}
+			return;
+		}
+
+		console.log(`A server is responding at ${localUrl}, but neither Astro nor Norna tracks it for this site.`);
 		return;
 	}
 

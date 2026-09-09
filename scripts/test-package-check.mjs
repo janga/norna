@@ -389,8 +389,16 @@ This page verifies that packaged norna sites can build additional pages.
 		'**/.norna/.astro/',
 	);
 	await assertFileIncludes(
+		path.join(initializedSiteRoot, '.gitignore'),
+		'**/.norna/dev/',
+	);
+	await assertFileIncludes(
 		path.join(initializedSiteRoot, 'site', '.gitignore'),
 		'.norna/.astro/',
+	);
+	await assertFileIncludes(
+		path.join(initializedSiteRoot, 'site', '.gitignore'),
+		'.norna/dev/',
 	);
 	const homeImagesDir = path.join(siteProjectRoot, 'site', 'pages', '000-home', 'images');
 	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: homeImagesDir, env: npmEnv });

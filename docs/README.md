@@ -74,7 +74,8 @@ site/
   sharing image, and other static source files copied without managed-image
   processing.
 - [Generated files](site-files.md#generated-files): `site/.norna/public/`,
-  `site/.norna/.astro/`, `dist/`, the sitemap, and the default 404 page.
+  `site/.norna/.astro/`, `site/.norna/dev/`, `dist/`, the sitemap, and the
+  default 404 page.
 
 The [complete Site Files reference](site-files.md) explains which paths are
 required, optional, convention-discovered, versioned, or generated.

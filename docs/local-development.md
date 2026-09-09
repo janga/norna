@@ -66,9 +66,10 @@ npm run norna:dev:restart
 npm run norna:dev:stop
 ```
 
-The local server state, logs, generated types, and Astro cache live under
-`site/.norna/.astro/`. Keeping this state inside the selected site directory
-prevents another Norna site in the same project from affecting the server.
+The local server process record lives under `site/.norna/dev/`. Logs, generated
+types, and Astro cache live under `site/.norna/.astro/`. Keeping this state
+inside the selected site directory prevents another Norna site in the same
+project from affecting the server.
 
 ## Rebuild Stale Preview
 

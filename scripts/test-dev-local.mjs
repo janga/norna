@@ -118,10 +118,10 @@ try {
 	assertSucceeded(start, 'dev start');
 	assert.match(start.stdout, new RegExp(`Astro dev server is running at http://127\\.0\\.0\\.1:${port}/`, 'u'));
 
-	const state = JSON.parse(await readFile(path.join(siteDir, '.norna', '.astro', 'dev-local.json'), 'utf8'));
+	const state = JSON.parse(await readFile(path.join(siteDir, '.norna', 'dev', 'state.json'), 'utf8'));
 	assert.equal(state.port, port);
 	assert.equal(state.host, '127.0.0.1');
-	assert.equal(Object.hasOwn(state, 'pid'), false);
+	assert.equal(Number.isInteger(state.pid), true);
 
 	const status = run('status');
 	assertSucceeded(status, 'dev status');
@@ -184,12 +184,18 @@ unknownPageSetting: true
 	assert.match(killedStart.stdout, new RegExp(`Astro dev server is running at http://127\\.0\\.0\\.1:${blocker.port}/`, 'u'));
 	await waitForChildExit(blocker.child);
 
-	const killedState = JSON.parse(await readFile(path.join(siteDir, '.norna', '.astro', 'dev-local.json'), 'utf8'));
+	const killedState = JSON.parse(await readFile(path.join(siteDir, '.norna', 'dev', 'state.json'), 'utf8'));
 	assert.equal(killedState.port, blocker.port);
+	assert.equal(Number.isInteger(killedState.pid), true);
 
 	const killedStatus = run('status', [], blockedEnvironment);
 	assertSucceeded(killedStatus, 'dev status after --kill');
 	assert.match(killedStatus.stdout, new RegExp(`dev:local is running at http://127\\.0\\.0\\.1:${blocker.port}/`, 'u'));
+
+	await rm(path.join(siteDir, '.norna', '.astro'), { recursive: true, force: true });
+	const recoveredStatus = run('status', [], blockedEnvironment);
+	assertSucceeded(recoveredStatus, 'dev status after Astro cache removal');
+	assert.match(recoveredStatus.stdout, /Norna retained its process record after Astro cleared its cache/u);
 
 	const killedStop = run('stop', [], blockedEnvironment);
 	assertSucceeded(killedStop, 'dev stop after --kill');

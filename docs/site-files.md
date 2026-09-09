@@ -143,8 +143,9 @@ Do not edit these by hand:
 - `site/.norna/public/`: build-preparation output copied from `site/public/`,
   plus generated or copied managed images, `sitemap.xml`, and the most recently
   built `pagefind/` search bundle when search is enabled;
-- `site/.norna/.astro/`: site-local Astro cache, generated types, and local
-  dev-server state;
+- `site/.norna/.astro/`: site-local Astro cache, generated types, and dev-server
+  logs;
+- `site/.norna/dev/`: Norna's local dev-server process record;
 - `dist/`: final static website output, including generated `404.html` and
   `sitemap.xml` files, plus `/search/` and `pagefind/` when search is enabled;
 - `.astro/`: legacy Astro cache location, which can be removed after upgrading.

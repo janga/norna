@@ -4,6 +4,7 @@ dist/
 # generated build-preparation output
 **/.norna/public/
 **/.norna/.astro/
+**/.norna/dev/
 /fixtures/**/site/.norna/
 /examples/**/site/.norna/
 /starters/**/site/.norna/
