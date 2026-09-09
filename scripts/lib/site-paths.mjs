@@ -5,6 +5,7 @@ import { homePageDirectory } from './site-conventions.mjs';
 
 const siteDirectoryEnvName = 'NORNA_SITE_DIR';
 const invocationRootEnvName = 'NORNA_INVOCATION_ROOT';
+const stateDirectoryEnvName = 'NORNA_INTERNAL_STATE_DIR';
 const defaultSiteDirectory = 'site';
 export { homePageDirectory };
 
@@ -16,11 +17,18 @@ export const siteDirectoryEnv = siteDirectoryEnvName;
 
 const normalizeSiteDirectory = (value) => String(value ?? '').trim();
 const normalizeInvocationRoot = (value) => String(value ?? '').trim();
+const normalizeStateDirectory = (value) => String(value ?? '').trim();
 
 const configuredInvocationRoot = normalizeInvocationRoot(process.env[invocationRootEnvName]);
 export const invocationRoot = configuredInvocationRoot
 	? path.resolve(configuredInvocationRoot)
 	: process.cwd();
+
+const hasStateDirectoryEnv = Object.hasOwn(process.env, stateDirectoryEnvName);
+const configuredStateDirectory = normalizeStateDirectory(process.env[stateDirectoryEnvName]);
+if (hasStateDirectoryEnv && !configuredStateDirectory) {
+	throw new Error(`${stateDirectoryEnvName} must not be empty.`);
+}
 
 const hasSiteFilesInDirectory = (siteDir) => {
 	return (
@@ -126,9 +134,13 @@ export const siteHomePageDir = path.join(sitePagesDir, homePageDirectory);
 export const siteContentPath = path.join(siteHomePageDir, 'content.md');
 export const siteImagesDir = path.join(siteHomePageDir, 'images');
 export const sitePublicDir = path.join(siteDir, 'public');
-export const siteStateDir = path.join(siteDir, '.norna');
+export const siteStateDir = configuredStateDirectory
+	? path.resolve(configuredStateDirectory)
+	: path.join(siteDir, '.norna');
 export const astroPublicDir = path.join(siteStateDir, 'public');
-export const astroDistDir = path.join(siteProjectRoot, 'dist');
+export const astroDistDir = configuredStateDirectory
+	? path.join(siteStateDir, 'dist')
+	: path.join(siteProjectRoot, 'dist');
 export const astroRootDir = siteStateDir;
 export const astroCacheDir = path.join(astroRootDir, '.astro');
 export const generatedImagesDir = path.join(astroPublicDir, 'images', 'generated');

@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process';
+import { mkdir, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reserveBrowserTestPort } from './browser-test-port.mjs';
@@ -19,6 +20,14 @@ if (siteDirOptionIndex !== -1) cliArguments.splice(siteDirOptionIndex, 2);
 const navigationDemoSiteDir = path.resolve(root, configuredSiteDir);
 const testTargets = cliArguments;
 const playwrightTargets = testTargets.length > 0 ? testTargets : ['tests/navigation.spec.ts'];
+const temporaryStateParent = path.join(root, '.local', 'browser-test-state');
+await mkdir(temporaryStateParent, { recursive: true });
+const temporaryStateRoot = await mkdtemp(path.join(temporaryStateParent, 'run-'));
+const temporaryStateDir = path.join(temporaryStateRoot, '.norna');
+const testEnvironment = {
+	...process.env,
+	NORNA_INTERNAL_STATE_DIR: temporaryStateDir,
+};
 
 const sleep = (milliseconds) => new Promise((resolve) => {
 	setTimeout(resolve, milliseconds);
@@ -103,9 +112,11 @@ const runInherit = (command, args, options = {}) => new Promise((resolve, reject
 const startServer = async () => {
 	await runInherit(process.execPath, [cliPath, 'site:public'], {
 		cwd: navigationDemoSiteDir,
+		env: testEnvironment,
 	});
 	await runInherit(process.execPath, [cliPath, 'images'], {
 		cwd: navigationDemoSiteDir,
+		env: testEnvironment,
 	});
 
 	const serverProcess = trackChild(spawn(process.execPath, [
@@ -121,7 +132,7 @@ const startServer = async () => {
 		cwd: navigationDemoSiteDir,
 		stdio: 'inherit',
 		env: {
-			...process.env,
+			...testEnvironment,
 			ASTRO_DEV_BACKGROUND: '0',
 		},
 	}));
@@ -164,6 +175,7 @@ try {
 } finally {
 	await stopServer(serverProcess);
 	await portReservation.release();
+	await rm(temporaryStateRoot, { recursive: true, force: true });
 	for (const signal of ['SIGINT', 'SIGTERM']) {
 		process.removeListener(signal, handleInterruption);
 	}

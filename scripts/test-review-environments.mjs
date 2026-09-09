@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { lstat, mkdir, mkdtemp, readFile, readdir, realpath, rename, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
 	getReviewEnvironment,
 	reviewEnvironmentNames,
@@ -58,6 +59,37 @@ try {
 	assert.equal(docsEnvironment.url, 'http://127.0.0.1:4321/norna/');
 	const navigationEnvironment = await resolveReviewEnvironment('navigation', { root: repoRoot });
 	assert.equal(navigationEnvironment.url, 'http://127.0.0.1:4323/');
+
+	const isolatedStateDirectory = path.join(temporaryRoot, 'isolated-state');
+	const sitePathsUrl = pathToFileURL(path.join(repoRoot, 'scripts', 'lib', 'site-paths.mjs')).href;
+	const isolatedPathsResult = spawnSync(process.execPath, [
+		'--input-type=module',
+		'--eval',
+		`const paths = await import(${JSON.stringify(sitePathsUrl)}); console.log(JSON.stringify({
+			astroCacheDir: paths.astroCacheDir,
+			astroDistDir: paths.astroDistDir,
+			astroPublicDir: paths.astroPublicDir,
+			siteDir: paths.siteDir,
+			siteStateDir: paths.siteStateDir,
+		}));`,
+	], {
+		cwd: repoRoot,
+		encoding: 'utf8',
+		env: {
+			...process.env,
+			NORNA_INTERNAL_STATE_DIR: isolatedStateDirectory,
+			NORNA_INVOCATION_ROOT: repoRoot,
+			NORNA_SITE_DIR: navigationEnvironment.siteDirectory,
+		},
+	});
+	assert.equal(isolatedPathsResult.status, 0, isolatedPathsResult.stderr);
+	assert.deepEqual(JSON.parse(isolatedPathsResult.stdout), {
+		astroCacheDir: path.join(isolatedStateDirectory, '.astro'),
+		astroDistDir: path.join(isolatedStateDirectory, 'dist'),
+		astroPublicDir: path.join(isolatedStateDirectory, 'public'),
+		siteDir: navigationEnvironment.siteDirectory,
+		siteStateDir: isolatedStateDirectory,
+	});
 
 	const calls = [];
 	const messages = [];
