@@ -23,8 +23,8 @@ when you need exact syntax, accepted values, defaults, or error behavior.
   image carousels, and card lists at a precise point in the text.
 - **Notes and code examples.** Numbered side notes use a margin when the active
   layout reserves one and remain in the reading flow otherwise. Fenced code
-  gets syntax highlighting and a copy control while remaining readable without
-  JavaScript.
+  can show a title and emphasize selected lines. Syntax highlighting remains
+  readable without JavaScript, while an enhanced page adds a copy control.
 - **Page metadata.** Optional frontmatter supplies a page description and old
   URL aliases without becoming visible prose.
 

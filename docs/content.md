@@ -407,9 +407,35 @@ npm run norna:check
 ```
 ````
 
+Add a short visible title after the fence language when the reader needs to
+know which file or context the example represents. Add a line selector after
+the optional title when particular lines need attention:
+
+````md
+```js title="src/config.js" {2,4-5}
+const siteUrl = 'https://example.com/';
+const search = true;
+const appearance = 'system';
+const build = 'static';
+const output = 'dist';
+```
+````
+
+The selector accepts positive line numbers and inclusive ranges separated by
+commas, without spaces. Write metadata in this order: language, optional
+`title="..."`, then optional `{...}` selector. A title may be used without a
+selector, and a selector may be used without a title. `content:check` rejects
+empty or unclosed titles, unknown metadata, reversed or repeated ranges, and
+lines outside the code block.
+
+The title is part of the figure presented before the code. Selected lines use
+both a surface and an edge marker, so color is not their only distinguishing
+feature. Line emphasis does not alter the source text or add line numbers.
+
 When JavaScript is available, Norna adds a button labelled **Copy code** to each
 rendered fenced code block. Activating it copies only the code text, without the
-fence or a displayed language name. The button works with pointer and keyboard
+fence, title, selector, or a displayed language name. The button works with
+pointer and keyboard
 input, changes icon after success or failure, and announces **Copied** or
 **Could not copy code** through a live status message for screen readers.
 

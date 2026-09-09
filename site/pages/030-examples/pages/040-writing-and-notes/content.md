@@ -47,15 +47,23 @@ also covers relative paths, navigation categories, aliases, and external URLs.
 
 ## Code examples {#code-examples}
 
-Use ordinary fenced Markdown for a command or source example:
+Use an ordinary fenced Markdown block. A quoted title identifies its context,
+and a line selector after the title emphasizes the lines that need attention:
 
-```sh
+```sh title="Terminal" {2}
 npm run norna:check
+npm run norna:build
 ```
 
-With JavaScript available, the rendered block receives an accessible copy
-button. It copies the code itself and announces success or failure. Without
-JavaScript, the same code remains readable and selectable without the button.
+The opening fence places `title="Terminal"` after the language and `{2}` after
+the title. A selector can contain individual lines and inclusive ranges, such
+as `{2,4-6}`. The title and line emphasis are rendered without JavaScript.
+
+With JavaScript available, the block also receives an accessible copy button.
+It copies only the code, not the title or line selector, and announces success
+or failure. Without JavaScript, the same code remains readable and selectable
+without the button. See the complete [code-block reference](https://github.com/janga/norna/blob/main/docs/content.md#code-blocks)
+for metadata order, accepted selectors, and validation errors.
 
 ## Sidenotes {#sidenotes}
 

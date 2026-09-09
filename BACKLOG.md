@@ -75,10 +75,6 @@ verified and approved for documentation.
   **Implemented; awaiting human review and documentation.** GitHub-style alert
   blockquotes render as localized, accessible semantic callouts with a closed
   meaning set and deterministic diagnostics.
-- [`BL-048` Code titles and line emphasis](docs/design/backlog/BL-048-rich-code-examples.md):
-  **Visually approved; regression tests and documentation remain.** Ordinary
-  code fences accept one closed title and line-emphasis grammar with shared
-  diagnostics, accessible static output, and copy-safe source text.
 - [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
   **Implemented and browser-tested; human review found a visible defect.** Fix
   the imperceptible horizontal-overflow cue before documentation. Sticky

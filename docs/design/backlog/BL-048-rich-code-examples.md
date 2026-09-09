@@ -40,10 +40,10 @@ forms. Norna does not combine their additional dialects or introduce a
 
 ## Implementation Status
 
-Implemented and visually approved; regression tests and public documentation
-remain. The shared page model validates metadata for `content:check` and editor
-diagnostics. Shiki renders titles and emphasized lines without additional
-client JavaScript, and the existing copy control copies only source code.
+Implemented, visually approved, regression-tested, and documented. The shared
+page model validates metadata for `content:check` and editor diagnostics. Shiki
+renders titles and emphasized lines without additional client JavaScript, and
+the existing copy control copies only source code.
 
 ## Dependency
 
