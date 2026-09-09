@@ -94,6 +94,7 @@ required, optional, convention-discovered, versioned, or generated.
 
 - [Write page sections](content.md#sections)
 - [Link pages, headings, cards, and public files](content.md#internal-links)
+- [Present readable Markdown tables](content.md#tables)
 - [Write titled, emphasized, copyable code blocks](content.md#code-blocks)
 - [Use image stacks, carousels, and cards](content.md#norna-blocks)
 - [Add notes to prose](content.md#markdown-text)

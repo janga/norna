@@ -396,6 +396,39 @@ Deprecated syntax such as `[highlighted text]{.yellow}` is rejected by
 `content:check`. Keep the page visually coherent through its `theme.yaml`
 instead of styling individual phrases.
 
+### Tables
+
+Use ordinary GFM table syntax for compact comparisons and structured data:
+
+```md
+| Feature | State | Detail |
+| --- | --- | --- |
+| Links | Checked | Internal destinations are validated. |
+| Images | Managed | Local source images stay with their page. |
+```
+
+Norna preserves the native table, column headings, and cell relationships. A
+top-level table then uses the smallest layout area in which its browser-rendered
+columns fit:
+
+1. the same width as the surrounding prose;
+2. the prose width plus vacant space toward the inline end of the page;
+3. the complete vacant page canvas; or
+4. the complete available canvas with horizontal scrolling inside the table
+   frame.
+
+The inline end is the right side for left-to-right text and the left side for
+right-to-left text. A visible navigation rail, Page contents, sidenote, or
+another wide block owns its space and is never overlapped. Focus reading may
+make hidden navigation lanes available to a table without changing the width
+or position of the surrounding prose.
+
+Only a table that still overflows receives a keyboard-focusable horizontal
+scroll region. Edge cues indicate whether more columns remain before or after
+the visible area, and the document itself does not become horizontally
+scrollable. A table nested in a callout or another bounded Markdown container
+stays within that container instead of claiming page-level space.
+
 ### Code Blocks
 
 Use an ordinary fenced Markdown code block for commands, configuration, and

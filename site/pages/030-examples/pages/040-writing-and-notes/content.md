@@ -69,6 +69,23 @@ On an example longer than the viewport, the title remains below the sticky
 site header until the reader reaches the end of that code block. This preserves
 the filename and copy control without adding a toolbar to untitled examples.
 
+## Tables {#tables}
+
+Use an ordinary Markdown table for structured comparisons:
+
+| Content | Source | Norna behavior |
+| --- | --- | --- |
+| Prose | Markdown | Reflows within the selected reading width. |
+| Detailed image | `image-stack` | Links to the original and may open in an inspector. |
+| Wide data | Markdown table | Uses vacant page space before adding internal scrolling. |
+
+A small table stays with the prose. A wider top-level table first uses vacant
+space beside the text, then the complete available page canvas. Only a table
+that still does not fit scrolls inside its own keyboard-reachable frame. It
+never widens the complete document or overlaps visible navigation and notes.
+See the [Markdown-table reference](https://github.com/janga/norna/blob/main/docs/content.md#tables)
+for the layout order, bounded-container rule, and no-JavaScript fallback.
+
 ## Sidenotes {#sidenotes}
 
 A note reference stays with the sentence it qualifies, while the explanation

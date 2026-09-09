@@ -12,6 +12,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Image stacks | Only on pages containing an image stack | Images, responsive sources, alt text, captions, and direct original-image links remain available. Modal inspection and persistent side captions are absent, so captions stay below their images. |
 | Card lists | No | Cards and links remain available. |
 | Side notes | No | CSS places notes in the margin when space permits and in the reading flow otherwise. |
+| Markdown tables | Only on pages containing a table, for measured lane selection, overflow cues, and synchronized headings during horizontal scrolling | The native table remains in one focusable horizontal-scrolling frame. Column headings and cell relationships remain intact. |
 | Fenced code blocks | Only on pages containing rendered code blocks, for the copy control | Code, syntax highlighting, titles, line emphasis, and sticky title bars remain available. The copy button is absent. |
 | Basic page links and anchors | No | Normal links, URLs, and browser history continue to work. |
 | Generated page and section navigation | When Norna needs to maintain sticky anchor offsets, close the mobile menu after a choice, or enhance tree interaction | Real page and anchor links remain usable. Native disclosure controls can still reveal their contents. |

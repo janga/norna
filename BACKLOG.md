@@ -79,10 +79,6 @@ verified and approved for documentation.
   **Implemented and browser-tested; human review found a visible defect.** Fix
   the imperceptible horizontal-overflow cue before documentation. Sticky
   headings in the scrolling fallback are tracked separately by `BL-066`.
-- [`BL-060` Adaptive table width escalation](docs/design/backlog/BL-060-adaptive-table-width.md):
-  **Visually approved; documentation remains.** Tables use the smallest
-  sufficient layout lane, reclaim both side lanes only when genuinely vacant,
-  and retain internal scrolling as the final fallback.
 - [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
   **Implemented and browser-tested; awaiting human review and documentation.**
   Focus reading replaces persistent rails with an accessible overlay that

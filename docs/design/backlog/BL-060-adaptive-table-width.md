@@ -74,8 +74,8 @@ their parent. They do not claim page layout lanes.
   boundaries.
 - Make only an overflowing table region keyboard focusable.
 - Preserve native table, caption, heading, and cell semantics.
-- Retain sticky headings only when the selected table layout does not require
-  internal horizontal scrolling.
+- Keep headings visible for long tables, including the synchronized progressive
+  enhancement defined by `BL-066` when horizontal scrolling is required.
 - A table that occupies an auxiliary lane retains the shared lane-collision
   contract from `BL-043`; it must not overlap a sidenote.
 
@@ -102,8 +102,8 @@ their parent. They do not claim page layout lanes.
 - [Carbon Design System: Data table usage](https://carbondesignsystem.com/components/data-table/usage/)
 - [U.S. Web Design System: Table](https://designsystem.digital.gov/components/table/)
 
-## Documentation Gate
+## Verification
 
-This changes visible table placement. Update the canonical Markdown-table
-reference and rendered examples only after human review confirms all four
-width levels on representative desktop, laptop, and narrow viewports.
+Implemented, visually approved, regression-tested, and documented. Browser
+coverage verifies every width level, Focus reading, persistent navigation,
+bounded tables, horizontal overflow, text resizing, and document containment.

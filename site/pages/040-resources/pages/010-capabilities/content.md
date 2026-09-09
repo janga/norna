@@ -27,6 +27,8 @@ when you need exact syntax, accepted values, defaults, or error behavior.
   readable without JavaScript, while an enhanced page adds a copy control.
 - **Page metadata.** Optional frontmatter supplies a page description and old
   URL aliases without becoming visible prose.
+- **Adaptive data tables.** Markdown tables retain native semantics, use vacant
+  page space only when needed, and fall back to a local horizontal scroller.
 
 Exact behavior: [Content](https://github.com/janga/norna/blob/main/docs/content.md).
 
