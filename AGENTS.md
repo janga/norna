@@ -89,6 +89,15 @@ maintainer, put it in `README.md` instead of duplicating it here.
   prompt in Markdown near the image block so future maintainers can regenerate
   or revise them. This is not required for disposable test fixtures where the
   prompt has no maintenance value.
+- For diagrams and technical illustrations, the SVG `viewBox` or bitmap canvas
+  must match the visible composition. Unnecessary transparent or
+  page-background-colored canvas is forbidden when it shifts the visible
+  composition away from the image element's edges or disrupts alignment with
+  captions and surrounding content. Crop every edge to the visible artwork,
+  retaining only the minimum room required for strokes or antialiasing, unless
+  the complete canvas has a deliberate visible surface or boundary. Never
+  simulate layout spacing inside an asset: Norna owns the space around the
+  image and its caption.
 - Use root `site/` for the documentation site. Use
   `examples/feature-demos/media-and-surfaces/site` for broad visual demo and
   navigation checks. Use `fixtures/basic/site` for minimal standalone engine

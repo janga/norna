@@ -78,6 +78,7 @@ const labels = projectConfig.locale.labels;
 
 	const clearPersistentCaption = (figure: HTMLElement) => {
 		delete figure.dataset.imageCaptionPlacement;
+		figure.style.removeProperty('--image-persistent-caption-inline-start');
 		figure.style.removeProperty('--image-persistent-caption-width');
 		figure.style.removeProperty('--image-persistent-caption-reserve');
 	};
@@ -106,20 +107,22 @@ const labels = projectConfig.locale.labels;
 		if (visibleContentsRail) return;
 
 		const frameBounds = frame.getBoundingClientRect();
+		const figureBounds = figure.getBoundingClientRect();
 		const captionBounds = caption.getBoundingClientRect();
 		const layoutBounds = layout.getBoundingClientRect();
 		const rootStyle = getComputedStyle(document.documentElement);
-		const gap = resolveCssLength(rootStyle.getPropertyValue('--section-note-gap'), 20);
+		const figureStyle = getComputedStyle(figure);
+		const gap = resolveCssLength(figureStyle.getPropertyValue('--image-caption-inline-gap'), 12);
 		const preferredWidth = resolveCssLength(rootStyle.getPropertyValue('--section-note-width'), 192);
 		const isRightToLeft = getComputedStyle(figure).direction === 'rtl';
 		const availableWidth = isRightToLeft
-			? frameBounds.left - layoutBounds.left - gap
-			: layoutBounds.right - frameBounds.right - gap;
+			? imageBounds.left - layoutBounds.left - gap
+			: layoutBounds.right - imageBounds.right - gap;
 		const captionWidth = Math.min(preferredWidth, availableWidth);
 		if (captionWidth < persistentCaptionMinimumWidth || captionBounds.height > frameBounds.height) return;
 
 		const proposedBounds = new DOMRect(
-			isRightToLeft ? frameBounds.left - gap - captionWidth : frameBounds.right + gap,
+			isRightToLeft ? imageBounds.left - gap - captionWidth : imageBounds.right + gap,
 			frameBounds.top,
 			captionWidth,
 			frameBounds.height,
@@ -132,6 +135,10 @@ const labels = projectConfig.locale.labels;
 		if (laneClaims.some((element) => rectanglesOverlap(proposedBounds, element.getBoundingClientRect()))) return;
 
 		const reserve = Math.max(0, captionBounds.bottom - frameBounds.bottom);
+		const inlineStart = isRightToLeft
+			? figureBounds.right - imageBounds.left + gap
+			: imageBounds.right - figureBounds.left + gap;
+		figure.style.setProperty('--image-persistent-caption-inline-start', `${inlineStart}px`);
 		figure.style.setProperty('--image-persistent-caption-width', `${captionWidth}px`);
 		figure.style.setProperty('--image-persistent-caption-reserve', `${reserve}px`);
 		figure.dataset.imageCaptionPlacement = 'persistent';

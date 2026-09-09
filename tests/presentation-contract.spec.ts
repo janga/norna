@@ -888,21 +888,26 @@ test('a tall image keeps its semantic caption visible in a vacant end lane', asy
 	await openComponents(page);
 	const figure = page.locator('[data-image-stack-figure]').first();
 	const frame = figure.locator('.managed-image-frame');
+	const image = frame.locator('img');
 	const caption = figure.locator('figcaption');
 	const captionDetails = caption.locator('.image-details');
 	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
 
-	const [figureBounds, frameBounds, captionBounds, layoutBounds] = await Promise.all([
+	const [figureBounds, frameBounds, imageBounds, captionBounds, layoutBounds] = await Promise.all([
 		figure.boundingBox(),
 		frame.boundingBox(),
+		image.boundingBox(),
 		caption.boundingBox(),
 		page.locator('.site-page-layout-tree').boundingBox(),
 	]);
 	expect(figureBounds).not.toBeNull();
 	expect(frameBounds).not.toBeNull();
+	expect(imageBounds).not.toBeNull();
 	expect(captionBounds).not.toBeNull();
 	expect(layoutBounds).not.toBeNull();
-	expect(captionBounds?.x ?? 0).toBeGreaterThan((frameBounds?.x ?? 0) + (frameBounds?.width ?? 0));
+	const captionGap = (captionBounds?.x ?? 0) - ((imageBounds?.x ?? 0) + (imageBounds?.width ?? 0));
+	expect(captionGap).toBeGreaterThanOrEqual(8);
+	expect(captionGap).toBeLessThanOrEqual(16);
 	expect((captionBounds?.x ?? 0) + (captionBounds?.width ?? 0)).toBeLessThanOrEqual(
 		(layoutBounds?.x ?? 0) + (layoutBounds?.width ?? 0) + 1,
 	);
@@ -968,7 +973,9 @@ test('persistent image captions fall back when the end lane is occupied or narro
 		figure.locator('.managed-image-frame').boundingBox(),
 		figure.locator('figcaption').boundingBox(),
 	]);
-	expect(captionBounds?.y ?? 0).toBeGreaterThanOrEqual((frameBounds?.y ?? 0) + (frameBounds?.height ?? 0));
+	const captionGap = (captionBounds?.y ?? 0) - ((frameBounds?.y ?? 0) + (frameBounds?.height ?? 0));
+	expect(captionGap).toBeGreaterThanOrEqual(0);
+	expect(captionGap).toBeLessThanOrEqual(8);
 });
 
 test('centered-fit image stacks and carousels stay within a 320 pixel viewport', async ({ page }) => {
@@ -1157,6 +1164,8 @@ test('configured presentation remains usable without JavaScript', async ({ brows
 		figure.locator('.managed-image-frame').boundingBox(),
 		figure.locator('figcaption').boundingBox(),
 	]);
-	expect(captionBounds?.y ?? 0).toBeGreaterThanOrEqual((frameBounds?.y ?? 0) + (frameBounds?.height ?? 0));
+	const captionGap = (captionBounds?.y ?? 0) - ((frameBounds?.y ?? 0) + (frameBounds?.height ?? 0));
+	expect(captionGap).toBeGreaterThanOrEqual(0);
+	expect(captionGap).toBeLessThanOrEqual(8);
 	await context.close();
 });

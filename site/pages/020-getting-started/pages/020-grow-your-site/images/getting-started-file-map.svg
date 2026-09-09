@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 1144" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="19 23 722 1104" role="img" aria-labelledby="title desc">
   <title id="title">Getting Started files mapped to the rendered documentation</title>
   <desc id="desc">The actual Norna documentation file tree is shown above the corresponding Getting Started navigation and Grow Your Site page. The 020-getting-started category directory maps to the Getting Started navigation group. Its numbered child directories map in order to Install Norna, Choose A Theme, Grow Your Site, Prepare Your Site, and Build And Publish. The highlighted 020-grow-your-site content file maps to the current Grow Your Site page and its section links.</desc>
   <defs>

@@ -52,6 +52,45 @@ context. An overlay would solve visibility by covering the image itself.
 - Desktop, intermediate, mobile, browser-zoom, keyboard, screen-reader,
   no-JavaScript, Dark appearance, and forced-colors checks pass.
 
+## Approved Refinement
+
+The first review exposed two different causes behind an apparently detached or
+misaligned caption:
+
+- A persistent caption beside a portrait image was anchored to the image's
+  broad layout field rather than to the edge of the image actually rendered
+  inside that field. The resulting empty space made the caption look unrelated
+  to the image.
+- The test SVG included broad outer margins filled with almost the same color
+  as the page. The image element and caption were geometrically aligned, but
+  the invisible canvas made the visible illustration appear indented.
+
+The implementation has been refined as follows:
+
+- A side caption is anchored to the rendered image edge rather than to its
+  layout field.
+- The side gap is an engine-owned `0.75rem` value, separate from the wider gap
+  used for sidenotes.
+- A caption below an image uses only `caption.spacingBefore`; the figure no
+  longer adds a second gap.
+- The test illustrations are cropped to their visible composition or have an
+  intentional visible canvas boundary.
+- `AGENTS.md` now requires technical illustrations to use an SVG `viewBox` or
+  bitmap canvas that represents the visible composition. Norna owns the outer
+  spacing between image, caption, and surrounding content.
+
+This remains an engine layout rule rather than another theme setting. The
+refined visual result was approved after reviewing both the persistent side
+placement and the below-image fallback.
+
+## Remaining Work
+
+- Run the updated browser regression assertions for the side and below-image
+  gaps, including the rendered-image anchor.
+- Document the approved behavior in the canonical image reference and the
+  appropriate HTML documentation or example.
+- Remove this item from `BACKLOG.md` only after both tasks pass.
+
 ## Complexity And Risk
 
 Expected complexity is medium. Norna already models note-lane ownership and
