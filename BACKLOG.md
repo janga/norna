@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most three active items in exact technical order.
 
+- [`BL-065` Restore the Page contents reading marker](docs/design/backlog/BL-065-page-contents-reading-marker.md):
+  **Ready.** Reproduce and restore the missing palette-derived current-heading
+  marker in the right Page contents rail on a deeply nested page.
+
 ## Next
 
 `Next` is the exact implementation sequence after `Now`. Bounded deterministic
@@ -37,6 +41,10 @@ action, or another user-owned prerequisite. They do not block `Now` or `Next`.
 These accepted maintenance and workflow outcomes follow the ordered product
 work above unless a concrete defect raises their urgency.
 
+- ★ [`BL-066` Sticky headings in horizontally scrolling tables](docs/design/backlog/BL-066-sticky-headings-in-scrolling-tables.md):
+  **Needs implementation design.** Keep column headings visible during page
+  scrolling while preserving their horizontal synchronization with a table's
+  native internal scroller.
 - ★ [`BL-063` Sticky row labels in wide tables](docs/design/backlog/BL-063-sticky-table-row-labels.md):
   **Needs one semantics decision.** Preserve row identity during horizontal
   table scrolling only after Norna has an explicit, accessible way to identify
@@ -67,49 +75,47 @@ verified and approved for documentation.
   blockquotes render as localized, accessible semantic callouts with a closed
   meaning set and deterministic diagnostics.
 - [`BL-048` Code titles and line emphasis](docs/design/backlog/BL-048-rich-code-examples.md):
-  **Implemented; awaiting human review and documentation.** Ordinary code
-  fences accept one closed title and line-emphasis grammar with shared
+  **Visually approved; regression tests and documentation remain.** Ordinary
+  code fences accept one closed title and line-emphasis grammar with shared
   diagnostics, accessible static output, and copy-safe source text.
 - [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  Markdown tables use an accessible wide-data layout, directional overflow
-  cues, additional room in Focus reading, sticky headings where compatible,
-  and a bounded horizontal-scrolling fallback.
+  **Implemented and browser-tested; human review found a visible defect.** Fix
+  the imperceptible horizontal-overflow cue before documentation. Sticky
+  headings in the scrolling fallback are tracked separately by `BL-066`.
 - [`BL-060` Adaptive table width escalation](docs/design/backlog/BL-060-adaptive-table-width.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  Tables use the smallest sufficient layout lane, reclaim both side lanes only
-  when genuinely vacant, and retain internal scrolling as the final fallback.
+  **Visually approved; documentation remains.** Tables use the smallest
+  sufficient layout lane, reclaim both side lanes only when genuinely vacant,
+  and retain internal scrolling as the final fallback.
 - [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
   **Implemented and browser-tested; awaiting human review and documentation.**
   Focus reading replaces persistent rails with an accessible overlay that
   reuses the full site hierarchy without moving the reading layout.
 - [`BL-062` Sticky context for long code examples](docs/design/backlog/BL-062-sticky-code-context.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  Existing code titles and copy controls remain available while long code
-  examples pass through the viewport.
+  **Visually approved; regression tests and documentation remain.** Existing
+  code titles and copy controls remain available while long code examples pass
+  through the viewport.
 - [`BL-061` Image inspection for detailed media](docs/design/backlog/BL-061-image-inspection.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  Detailed managed images can be enlarged without changing the reading layout,
-  with a direct original-image link when JavaScript is unavailable.
+  **Visually approved; regression tests and documentation remain.** Detailed
+  managed images can be enlarged without changing the reading layout, with a
+  direct original-image link when JavaScript is unavailable.
 - [`BL-064` Persistent captions for tall explanatory images](docs/design/backlog/BL-064-persistent-image-captions.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  Tall image-stack captions use a vacant end-side lane and otherwise remain
-  below their image.
+  **Visually approved; regression tests and documentation remain.** Tall
+  image-stack captions now anchor to the rendered image, use one intentional
+  caption gap, and otherwise remain below their image.
 - [`BL-056` Lighter Dark navigation markers](docs/design/backlog/BL-056-lighter-dark-navigation-markers.md):
   **Implemented and browser-tested; awaiting human review and documentation.**
   Current-page and current-heading markers share a clearer palette-derived
   surface in Dark appearance.
 - [`BL-041` Beginner-first Getting Started audit](docs/design/backlog/BL-041-getting-started-audit.md):
-  **Implemented; awaiting human review.** The audited beginner path and starter
-  changes are complete; review the rendered progression with the revised
-  homepage before closing it.
+  **Visually approved; regression tests and documentation remain.** The audited
+  beginner path and starter changes are complete.
 - [`BL-042` Examples audit and teaching structure](docs/design/backlog/BL-042-examples-audit.md):
-  **Implemented; awaiting human review.** The example roles, source map, and
-  documentation hierarchy are reconciled; review the rendered Examples pages
-  before closing it.
+  **Visually approved; regression tests and documentation remain.** The example
+  roles, source map, and documentation hierarchy are reconciled.
 - [`BL-032` Improved examples for Add nested pages](docs/design/backlog/BL-032-documentation-improve-add-nested-pages.md):
-  **Ready for final visual review.** The example now maps the real documentation
-  hierarchy to its navigation; close the item once that presentation is accepted.
+  **Visually approved; regression tests and documentation remain.** The example
+  maps the real documentation hierarchy to its navigation.
+
 ## Needs Decision Or Evidence
 
 These items have no implementation position yet. Move one into `Now`, `Next`,

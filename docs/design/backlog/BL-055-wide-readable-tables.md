@@ -106,6 +106,17 @@ maximum width but must not change the prose measure.
   table bounds, prose alignment, sticky top and bottom boundaries, horizontal
   overflow, and interaction with sidenotes.
 
+## Pending Correction
+
+Human review found that the test table's horizontal overflow had no perceptible
+visual indication, even though the frame's overflow state and gradient opacity
+passed the browser assertions. Strengthen the directional edge cue and test its
+rendered contrast rather than opacity alone before this item is approved.
+
+Keeping column headings sticky while this fallback scrolls horizontally is a
+separate extension under
+[`BL-066` Sticky Headings In Horizontally Scrolling Tables](BL-066-sticky-headings-in-scrolling-tables.md).
+
 ## References
 
 - [U.S. Web Design System: Table](https://designsystem.digital.gov/components/table/)
