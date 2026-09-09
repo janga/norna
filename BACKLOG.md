@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most three active items in exact technical order.
 
+- [`BL-070` Progressive responsive simplification](docs/design/backlog/BL-070-progressive-responsive-simplification.md):
+  **Ready.** Apply one-way automatic placement fallback consistently to
+  navigation, side notes, and persistent image captions, while preserving
+  explicit reader choices and fit-based width escalation for data blocks.
 - [`BL-065` Restore the Page contents reading marker](docs/design/backlog/BL-065-page-contents-reading-marker.md):
   **Ready.** Reproduce and restore the missing palette-derived current-heading
   marker in the right Page contents rail on a deeply nested page.
