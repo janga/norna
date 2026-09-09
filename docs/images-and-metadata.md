@@ -126,6 +126,25 @@ The source always contains one semantic `figcaption` after its image. Without
 JavaScript, that caption remains below the image. Persistent placement is an
 engine-owned enhancement and has no Markdown or theme option.
 
+### Inspecting Detailed Images
+
+Every image in an `image-stack` is a real link to its published original. This
+lets a reader open a diagram, screenshot, or other detailed image directly in
+another tab and remains the complete fallback when JavaScript is unavailable.
+
+When JavaScript is available, Norna adds a restrained inspection affordance
+only when the current viewport can show the image materially larger than its
+inline presentation. Activating the image opens a native modal dialog in
+fit-to-viewport mode. The reader can switch to actual size, move within the
+image when needed, close the dialog with its button or `Escape`, and return
+keyboard focus to the image link.
+
+The inspector reuses the image's alternative text and caption. Enlargement and
+any two-dimensional scrolling stay inside the dialog, so inspecting an image
+does not widen or reflow the document. The behavior is automatic and has no
+Markdown or theme option. It currently applies to `image-stack` images, not
+card images or carousel slides.
+
 ## Markdown Images
 
 Use ordinary Markdown images for external images or static public assets:

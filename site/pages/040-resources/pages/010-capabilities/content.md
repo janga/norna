@@ -64,6 +64,9 @@ and [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.
 - **Structured image compositions.** Stacks show one or more images in reading
   order, carousels present a sequence interactively, and cards combine images,
   text, badges, and links.
+- **Detailed-image inspection.** Stack images link to their published originals
+  and can open in a fitted or actual-size inspector when the viewport provides
+  useful additional space.
 - **Shared site elements.** Conventionally named logo, browser-icon, and social
   image files work with optional site-wide banners and footer content.
 

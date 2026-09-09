@@ -97,6 +97,13 @@ two-dimensional page scrolling. Keep the first scope automatic, visually
 restrained, and limited to `image-stack`; expand it only after representative
 sites demonstrate a need.
 
+## Verification
+
+Implemented, visually approved, regression-tested, and documented. Browser
+coverage verifies useful-size detection, keyboard and pointer opening, fitted
+and actual-size modes, focus restoration, mobile reflow, and the ordinary
+original-image link when JavaScript is disabled.
+
 ## References
 
 - [Material for MkDocs: Images](https://squidfunk.github.io/mkdocs-material/reference/images/)

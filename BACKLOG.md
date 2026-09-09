@@ -87,10 +87,6 @@ verified and approved for documentation.
   **Implemented and browser-tested; awaiting human review and documentation.**
   Focus reading replaces persistent rails with an accessible overlay that
   reuses the full site hierarchy without moving the reading layout.
-- [`BL-061` Image inspection for detailed media](docs/design/backlog/BL-061-image-inspection.md):
-  **Visually approved; regression tests and documentation remain.** Detailed
-  managed images can be enlarged without changing the reading layout, with a
-  direct original-image link when JavaScript is unavailable.
 - [`BL-056` Lighter Dark navigation markers](docs/design/backlog/BL-056-lighter-dark-navigation-markers.md):
   **Implemented and browser-tested; awaiting human review and documentation.**
   Current-page and current-heading markers share a clearer palette-derived

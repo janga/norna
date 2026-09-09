@@ -39,6 +39,13 @@ narrower does not move a caption below, then beside, then below again. Focus
 reading may recalculate the placement after the reader removes persistent
 navigation.
 
+Each stack image also links to its published original. When the viewport can
+show it materially larger, JavaScript turns that link into an accessible image
+inspector with fitted and actual-size views. Without JavaScript, the ordinary
+original-image link remains available. Inspection is automatic rather than a
+block or theme option; read the [image inspection reference](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md#inspecting-detailed-images)
+for its scope and fallback.
+
 ## Carousels {#carousels}
 
 Use a carousel for a related sequence that should occupy one visual position.

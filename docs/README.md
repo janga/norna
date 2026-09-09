@@ -106,6 +106,7 @@ required, optional, convention-discovered, versioned, or generated.
 ### Work With Images And Public Assets
 
 - [Add managed source images](images-and-metadata.md#managed-source-images)
+- [Let readers inspect detailed images](images-and-metadata.md#inspecting-detailed-images)
 - [Check and sync moved image references](content.md#validation-and-sync)
 - [Add a navigation logo](public-files.md#navigation-logo)
 - [Add browser icons](public-files.md#browser-icons)
