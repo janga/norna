@@ -66,11 +66,6 @@ These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
-- ★ [`BL-066` Sticky headings in horizontally scrolling tables](docs/design/backlog/BL-066-sticky-headings-in-scrolling-tables.md):
-  **Implemented and browser-tested; documentation remains.** Overflowing
-  tables keep a visual copy of their column headings synchronized with the
-  semantic table while the table passes beneath the sticky site header.
-
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Implemented; awaiting human review and documentation.** GitHub-style alert
   blockquotes render as localized, accessible semantic callouts with a closed

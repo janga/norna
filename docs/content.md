@@ -429,6 +429,15 @@ the visible area, and the document itself does not become horizontally
 scrollable. A table nested in a callout or another bounded Markdown container
 stays within that container instead of claiming page-level space.
 
+For a long top-level table, column headings stay below the sticky site header
+while the reader moves through the rows and release at the table's lower edge.
+When the table also scrolls horizontally, JavaScript keeps a visual heading
+layer aligned with the visible columns. That layer is hidden from assistive
+technology and cannot receive input; the original `table`, `thead`, headings,
+and cells remain the only semantic table. Without JavaScript, the same native
+table and horizontal scroller remain usable, but horizontally scrolling column
+headings do not remain visible during vertical page scrolling.
+
 ### Code Blocks
 
 Use an ordinary fenced Markdown code block for commands, configuration, and

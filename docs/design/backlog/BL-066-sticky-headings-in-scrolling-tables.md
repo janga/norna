@@ -69,3 +69,10 @@ visual coordinate system across two independent scroll directions without
 duplicating accessible content. Primary risks are column drift, stale geometry,
 duplicate screen-reader output, overlays that intercept interaction, and sticky
 content that fails to release at the table boundary.
+
+## Verification
+
+Implemented, visually approved, regression-tested, and documented. Browser
+coverage verifies vertical start and release boundaries, horizontal alignment
+at multiple scroll positions, one semantic heading set, pointer isolation,
+keyboard scrolling, and the no-JavaScript fallback.
