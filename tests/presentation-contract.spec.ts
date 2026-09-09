@@ -814,8 +814,11 @@ test('prose-aligned stacks stay width-driven while carousels fit the viewport he
 	expect(portraitBounds).not.toBeNull();
 	expect(carouselBounds).not.toBeNull();
 	expect(carouselCaptionBounds).not.toBeNull();
+	const stackCaptionGap = (stackCaptionBounds?.x ?? 0)
+		- ((portraitBounds?.x ?? 0) + (portraitBounds?.width ?? 0));
 	expect(frameBounds?.x).toBeCloseTo(proseBounds?.x ?? 0, 0);
-	expect(stackCaptionBounds?.x).toBeCloseTo(frameBounds?.x ?? 0, 0);
+	expect(stackCaptionGap).toBeGreaterThanOrEqual(8);
+	expect(stackCaptionGap).toBeLessThanOrEqual(16);
 	expect(portraitBounds?.x).toBeCloseTo(frameBounds?.x ?? 0, 0);
 	expect(carouselBounds?.x).toBeCloseTo(proseBounds?.x ?? 0, 0);
 	expect(carouselCaptionBounds?.x).toBeCloseTo(carouselBounds?.x ?? 0, 0);
