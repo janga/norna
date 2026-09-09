@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { parsePageMarkdown, parsePageMarkdownSource } from './lib/page-markdown.mjs';
+import { splitNornaRenderedBlocks } from './lib/norna-markdown-blocks.mjs';
 
 const source = `# Dog Shelter
 
@@ -48,6 +49,48 @@ assert.equal(model.blocks[0].images[0].image, 'rover.svg');
 assert.deepEqual(model.managedImages.map(({ image }) => image), ['rover.svg']);
 assert.deepEqual(model.markdownImages, [{ target: 'portrait.jpg', line: 25 }]);
 assert.deepEqual(model.diagnostics, []);
+
+const hotReloadBlocks = [
+	{ type: 'page-list', source: '' },
+	{ type: 'image-stack', source: '- image: rover.svg' },
+];
+const markerContent = splitNornaRenderedBlocks([
+	'<p>Before.</p>',
+	'<norna-block data-index="0"></norna-block>',
+	'<p>Between.</p>',
+	'<norna-block data-index="1"></norna-block>',
+].join('\n'), hotReloadBlocks);
+assert.deepEqual(markerContent.map(({ type }) => type), [
+	'html',
+	'page-list',
+	'html',
+	'image-stack',
+]);
+const hotReloadContent = splitNornaRenderedBlocks([
+	'<p>Before.</p>',
+	'<pre data-language="plaintext"><code><span class="line"><span>ordinary code</span></span></code></pre>',
+	'<pre data-language="plaintext"><code><span class="line"><span></span></span></code></pre>',
+	'<p>Between.</p>',
+	'<pre data-language="plaintext"><code><span class="line"><span>- image: rover.svg</span></span></code></pre>',
+].join('\n'), hotReloadBlocks);
+assert.deepEqual(hotReloadContent.map(({ type }) => type), [
+	'html',
+	'page-list',
+	'html',
+	'image-stack',
+]);
+assert.match(hotReloadContent[0].html, /ordinary code/);
+assert.throws(
+	() => splitNornaRenderedBlocks('<p>No rendered block.</p>', hotReloadBlocks),
+	/Rendered Markdown contains 0 Norna block markers, but 2 blocks were parsed/,
+);
+assert.throws(
+	() => splitNornaRenderedBlocks([
+		'<pre><code></code></pre>',
+		'<pre><code></code></pre>',
+	].join('\n'), [{ type: 'page-list', source: '' }]),
+	/ambiguous plain-code matches/,
+);
 
 const blockRegion = model.sections[0];
 assert.deepEqual(blockRegion.content.map(({ kind }) => kind), ['markdown', 'norna-block']);

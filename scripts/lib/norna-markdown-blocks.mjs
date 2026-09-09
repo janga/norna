@@ -607,6 +607,97 @@ export const extractNornaMarkdownBlockDiagnostics = (markdown, options = {}) => 
 	return { blocks, errors };
 };
 
+const stripRenderedTags = (value) => value.replace(/<[^>]*>/g, '');
+const decodeRenderedEntities = (value) => value
+	.replace(/&amp;/g, '&')
+	.replace(/&lt;/g, '<')
+	.replace(/&gt;/g, '>')
+	.replace(/&quot;/g, '"')
+	.replace(/&#39;/g, "'");
+const normalizeRenderedBlockSource = (value) => value.replace(/\r\n?/g, '\n').trim();
+
+/**
+ * Splits rendered HTML at Norna markers. During an Astro content hot reload,
+ * custom code nodes can occasionally arrive as highlighted code instead of
+ * their marker; match that output against the already validated source block.
+ *
+ * @template {{ type: string, source?: string }} Block
+ * @param {string} html
+ * @param {Block[]} blocks
+ * @returns {Array<{ type: 'html', html: string } | Block>}
+ */
+export const splitNornaRenderedBlocks = (html, blocks) => {
+	const markerRegex = /<norna-block\s+data-index="(\d+)"\s*><\/norna-block>/g;
+	const markerMatches = [...html.matchAll(markerRegex)];
+	let replacements;
+
+	if (markerMatches.length > 0) {
+		const seen = new Set();
+		replacements = markerMatches.map((match) => {
+			const blockIndex = Number.parseInt(match[1] ?? '', 10);
+			if (!blocks[blockIndex]) {
+				throw new Error(`Rendered Norna block ${blockIndex + 1} has no matching parsed block.`);
+			}
+			if (seen.has(blockIndex)) {
+				throw new Error(`Rendered Norna block ${blockIndex + 1} appears more than once.`);
+			}
+			seen.add(blockIndex);
+			return { match, blockIndex };
+		});
+
+		if (seen.size !== blocks.length) {
+			throw new Error(`Rendered Markdown contains ${seen.size} Norna block markers, but ${blocks.length} blocks were parsed.`);
+		}
+	} else {
+		const codeRegex = /<pre\b[^>]*>\s*<code\b[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/g;
+		const candidates = [...html.matchAll(codeRegex)].map((match) => ({
+			match,
+			source: normalizeRenderedBlockSource(decodeRenderedEntities(stripRenderedTags(match[1] ?? ''))),
+		}));
+		const solutions = [];
+		const findSolutions = (blockIndex, candidateIndex, selected) => {
+			if (solutions.length > 1) return;
+			if (blockIndex === blocks.length) {
+				solutions.push([...selected]);
+				return;
+			}
+
+			const source = normalizeRenderedBlockSource(blocks[blockIndex]?.source ?? '');
+			for (let index = candidateIndex; index < candidates.length; index += 1) {
+				if (candidates[index].source !== source) continue;
+				selected.push(index);
+				findSolutions(blockIndex + 1, index + 1, selected);
+				selected.pop();
+			}
+		};
+		findSolutions(0, 0, []);
+
+		if (solutions.length === 0) {
+			throw new Error(`Rendered Markdown contains 0 Norna block markers, but ${blocks.length} blocks were parsed.`);
+		}
+		if (solutions.length > 1) {
+			throw new Error('Rendered Markdown contains ambiguous plain-code matches for Norna blocks. Restart the local preview to rebuild the Markdown content cache.');
+		}
+
+		replacements = solutions[0].map((candidateIndex, blockIndex) => ({
+			match: candidates[candidateIndex].match,
+			blockIndex,
+		}));
+	}
+
+	const result = [];
+	let cursor = 0;
+	for (const { match, blockIndex } of replacements) {
+		const start = match.index ?? 0;
+		if (start > cursor) result.push({ type: 'html', html: html.slice(cursor, start) });
+		result.push(blocks[blockIndex]);
+		cursor = start + match[0].length;
+	}
+	if (cursor < html.length) result.push({ type: 'html', html: html.slice(cursor) });
+
+	return result.filter((block) => block.type !== 'html' || block.html.trim());
+};
+
 const maskFencedCodeBlocks = (markdown) => {
 	const lines = normalizeLines(markdown);
 	const maskedLines = [];

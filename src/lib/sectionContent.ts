@@ -3,6 +3,7 @@ import projectConfig from '../../scripts/lib/project-config.mjs';
 import {
 	formatHeadingIdentifierIssue,
 } from '../../scripts/lib/heading-ids.mjs';
+import { splitNornaRenderedBlocks } from '../../scripts/lib/norna-markdown-blocks.mjs';
 import { applyBasePathToHtml } from './basePath';
 import type { SitePage } from './sitePages';
 
@@ -202,32 +203,6 @@ const splitRenderedRegions = (html: string, regionCount: number) => {
 	});
 };
 
-const splitNornaBlockMarkers = (html: string, blocks: ParsedNornaBlock[]) => {
-	const result: Array<{ type: 'html'; html: string } | ParsedNornaBlock> = [];
-	const markerRegex = /<norna-block\s+data-index="(\d+)"\s*><\/norna-block>/g;
-	const seen = new Set<number>();
-	let cursor = 0;
-
-	for (const match of html.matchAll(markerRegex)) {
-		const start = match.index ?? 0;
-		if (start > cursor) result.push({ type: 'html', html: html.slice(cursor, start) });
-
-		const index = Number.parseInt(match[1] ?? '', 10);
-		const block = blocks[index];
-		if (!block) throw new Error(`Rendered Norna block ${index + 1} has no matching parsed block.`);
-		seen.add(index);
-		result.push(block);
-		cursor = start + match[0].length;
-	}
-
-	if (cursor < html.length) result.push({ type: 'html', html: html.slice(cursor) });
-	if (seen.size !== blocks.length) {
-		throw new Error(`Rendered Markdown contains ${seen.size} Norna block markers, but ${blocks.length} blocks were parsed.`);
-	}
-
-	return result.filter((block) => block.type !== 'html' || block.html.trim());
-};
-
 const resolveContentBlocks = async (
 	html: string,
 	blocks: ParsedNornaBlock[],
@@ -240,7 +215,9 @@ const resolveContentBlocks = async (
 		html: await renderInlineNoteMarkdown(note.markdown),
 	})));
 	const renderedHtml = applyInlineNoteMarkup(html, renderedNotes);
-	const splitBlocks = splitNornaBlockMarkers(renderedHtml, blocks);
+	const splitBlocks = splitNornaRenderedBlocks(renderedHtml, blocks) as Array<
+		{ type: 'html'; html: string } | ParsedNornaBlock
+	>;
 	const resolvedBlocks: SectionContentBlock[] = [];
 
 	for (const block of splitBlocks) {
