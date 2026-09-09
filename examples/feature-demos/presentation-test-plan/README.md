@@ -7,7 +7,13 @@ sticky code context, and navigation markers in Light and Dark appearances.
 Run it from the repository root:
 
 ```sh
-NORNA_DEV_PORT=4372 node bin/norna.mjs --site-dir examples/feature-demos/presentation-test-plan/site dev:local --kill
+npm run review:start -- presentation
 ```
 
-Then open `http://127.0.0.1:4372/`.
+Then open `http://127.0.0.1:4322/`. Manage the same server with:
+
+```sh
+npm run review:status -- presentation
+npm run review:logs -- presentation
+npm run review:stop -- presentation
+```

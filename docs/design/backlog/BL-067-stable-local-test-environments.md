@@ -1,5 +1,12 @@
 # BL-067: Stable Local Review And Regression Environments
 
+## Status
+
+Implemented on 2026-09-09. Maintained review sites now use the named commands
+and fixed manual-review URLs below. Registered browser suites reserve isolated
+ports internally, and the scratch workflow creates a disposable physical copy
+under `.local/`.
+
 ## Outcome
 
 Repeated visual reviews and browser regressions use named environments instead
@@ -20,7 +27,7 @@ CI less reliable. The solution must stabilize the approved command boundary
 without requiring every short-lived regression server to use a globally fixed
 port.
 
-## Proposed Environment Registry
+## Environment Registry
 
 Keep one version-controlled registry that maps a short target name to its site
 source, manual-review port, expected base path, and applicable browser suites.

@@ -119,12 +119,13 @@ maintainer, put it in `README.md` instead of duplicating it here.
 ## Command Choices
 
 
-- Start the documentation-site dev server with `npm run dev:local`, or
-  `npm run dev:lan` only when testing on another device on the same local
-  network. Start the broad feature demo from the repository root with
-  `node bin/norna.mjs --site-dir examples/feature-demos/media-and-surfaces/site dev:local`.
-  Manage it with the corresponding `dev:stop`, `dev:restart`, `dev:status`, and
-  `dev:logs` commands using the same `--site-dir`.
+- Start maintained local review sites from the repository root with
+  `npm run review:start -- <target>`, where the registered target is `docs`,
+  `presentation`, `navigation`, `presets`, or `scratch`. Use the matching
+  `review:status`, `review:logs`, and `review:stop` scripts; do not compose an
+  ad hoc port and `--site-dir` for a registered target. Use `npm run dev:lan`
+  only when testing the documentation site on another device on the same local
+  network.
 - Run `npm run config:check` after changing `site/config.yaml` or config
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or
@@ -151,8 +152,10 @@ maintainer, put it in `README.md` instead of duplicating it here.
   should be rebuilt and restarted.
 - Run `npm run test:content-check` after changing content validation or
   `content:sync` behavior.
-- Run `npm run test:navigation` after sticky navigation, anchor offset, or
-  scroll behavior changes.
+- Run `npm run review:test -- navigation` after tree navigation, page-contents
+  placement, anchor offset, or related scroll behavior changes. Run
+  `npm run review:test -- presets` after shared presentation behavior changes.
+- Run `npm run test:navigation` for the separate top-navigation browser suite.
 - Use `npm run test:navigation:stress` for intermittent anchor navigation
   races.
 - Use `npm run test:navigation:preview` for production-like sticky-navigation

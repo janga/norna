@@ -9,11 +9,12 @@ This restores the orientation contract established by
 
 ## Reproducer
 
-Start `examples/feature-demos/presentation-test-plan/site` and open its deepest
-Data and Code page at a desktop width that shows both navigation rails. Scroll
-through Adaptive Table, Sticky Code Context, and Navigation Markers. The right
-Page contents rail currently provides no differing background for the active
-heading, even though its links and section tracking are present.
+Run `npm run review:start -- presentation` and open the deepest Data and Code
+page from `http://127.0.0.1:4322/` at a desktop width that shows both navigation
+rails. Scroll through Adaptive Table, Sticky Code Context, and Navigation
+Markers. The right Page contents rail currently provides no differing
+background for the active heading, even though its links and section tracking
+are present.
 
 ## Scope
 

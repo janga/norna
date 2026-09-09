@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most three active items in exact technical order.
 
+- ★ [`BL-066` Sticky headings in horizontally scrolling tables](docs/design/backlog/BL-066-sticky-headings-in-scrolling-tables.md):
+  **In progress.** Keep column headings visible during page scrolling while
+  preserving their horizontal synchronization with a table's native internal
+  scroller.
 - [`BL-065` Restore the Page contents reading marker](docs/design/backlog/BL-065-page-contents-reading-marker.md):
   **Ready.** Reproduce and restore the missing palette-derived current-heading
   marker in the right Page contents rail on a deeply nested page.
@@ -25,10 +29,6 @@ when implementation can begin.
 `Next` is the exact implementation sequence after `Now`. Bounded deterministic
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
-
-- [`BL-067` Stable local review and regression environments](docs/design/backlog/BL-067-stable-local-test-environments.md):
-  **Ready.** Replace ad hoc test-site paths and preview ports with named review
-  targets, stable command entry points, and one isolated scratch-site workflow.
 
 ## External Gate
 
@@ -45,10 +45,6 @@ action, or another user-owned prerequisite. They do not block `Now` or `Next`.
 These accepted maintenance and workflow outcomes follow the ordered product
 work above unless a concrete defect raises their urgency.
 
-- ★ [`BL-066` Sticky headings in horizontally scrolling tables](docs/design/backlog/BL-066-sticky-headings-in-scrolling-tables.md):
-  **Needs implementation design.** Keep column headings visible during page
-  scrolling while preserving their horizontal synchronization with a table's
-  native internal scroller.
 - ★ [`BL-063` Sticky row labels in wide tables](docs/design/backlog/BL-063-sticky-table-row-labels.md):
   **Needs one semantics decision.** Preserve row identity during horizontal
   table scrolling only after Norna has an explicit, accessible way to identify

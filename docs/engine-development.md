@@ -77,13 +77,29 @@ been reviewed:
 npm run preset:baselines:capture
 ```
 
-The root `site/` directory is the documentation site. Use the ordinary local
-commands for it:
+Use the named review environments for maintained manual previews. Each target
+has one source directory and one fixed local URL:
+
+| Target | Purpose | URL |
+| --- | --- | --- |
+| `docs` | Documentation site | `http://127.0.0.1:4321/norna/` |
+| `presentation` | Presentation review path | `http://127.0.0.1:4322/` |
+| `navigation` | Nested-navigation fixture | `http://127.0.0.1:4323/` |
+| `presets` | Preset baseline fixture | `http://127.0.0.1:4324/` |
+| `scratch` | Disposable copied site | Port `4399`, using the copied site's base path |
+
+Start and manage a target through the same command family:
 
 ```sh
-npm run dev:local
-npm run build
+npm run review:start -- docs
+npm run review:status -- docs
+npm run review:logs -- docs
+npm run review:stop -- docs
 ```
+
+Manual review servers never choose a fallback port and never terminate an
+unrelated process occupying their port. Use the low-level development commands
+only for a site that is not in the registry.
 
 Inside the engine repository, use npm scripts or explicitly run
 `node bin/norna.mjs ...`. Do not rely on a bare `norna ...` command there: a
@@ -91,18 +107,38 @@ globally installed launcher deliberately does not delegate to another package
 whose own name is `@janga/norna`, so it may continue with the published global
 implementation instead of the working tree.
 
-The media-and-surfaces feature demo remains a broad structured-content and
-navigation diagnostic target:
+The presentation target combines the visual cases that regularly need manual
+review:
 
 ```sh
-node bin/norna.mjs --site-dir examples/feature-demos/media-and-surfaces/site dev:local
+npm run review:start -- presentation
+```
+
+The separate media-and-surfaces demo remains part of the example build:
+
+```sh
 npm run demo:build
 ```
 
 The demo build is written to `examples/feature-demos/media-and-surfaces/dist/`,
 not to the engine repository's root `dist/`.
 
-Navigation diagnostics are separate because they use Playwright:
+Registered browser regressions use an internally allocated temporary port, so
+they can run concurrently without changing the fixed manual-review URLs:
+
+```sh
+npm run review:test -- navigation
+npm run review:test -- presets
+```
+
+Run both registered suites concurrently when changing the review infrastructure
+itself:
+
+```sh
+npm run test:review-environments:browser
+```
+
+The remaining specialized navigation diagnostics keep their existing commands:
 
 ```sh
 npm run test:navigation
@@ -115,6 +151,35 @@ If Chromium is missing:
 ```sh
 npx playwright install chromium
 ```
+
+## Temporary Review Sites
+
+Prepare a disposable copy when a site is needed for one investigation but does
+not belong in the maintained registry:
+
+```sh
+npm run review:scratch -- prepare --from path/to/site
+npm run review:start -- scratch
+```
+
+The helper validates the source, excludes generated and dependency directories,
+and writes a physical copy to `.local/test-sites/scratch/site/`. It refuses to
+replace existing scratch work unless `--replace` is explicit:
+
+```sh
+npm run review:scratch -- prepare --from path/to/site --replace
+```
+
+Inspect or remove the local copy with:
+
+```sh
+npm run review:scratch -- status
+npm run review:scratch -- clean
+```
+
+The `.local/` directory is ignored by Git and excluded from packages. Do not
+make the runnable scratch site a direct symlink to maintained source: generated
+state and test edits could otherwise be written back through the link.
 
 ## Package Check
 
