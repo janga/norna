@@ -106,6 +106,18 @@ try {
 	assert.equal(secondReservation.port, 45002);
 	await Promise.all([firstReservation.release(), secondReservation.release()]);
 
+	await writeFile(path.join(portLockRoot, '45003.json'), `${JSON.stringify({
+		pid: 2_147_483_647,
+		token: 'stale-reservation',
+		createdAt: new Date(0).toISOString(),
+	})}\n`);
+	const recoveredReservation = await reserveBrowserTestPort({
+		lockRoot: portLockRoot,
+		getPort: async () => 45003,
+	});
+	assert.equal(recoveredReservation.port, 45003);
+	await recoveredReservation.release();
+
 	const workspaceRoot = path.join(temporaryRoot, 'workspace');
 	const sourceDirectory = path.join(workspaceRoot, 'source site');
 	const scratchRoot = path.join(workspaceRoot, '.local', 'test-sites', 'scratch');

@@ -242,6 +242,7 @@ const assertPackageContents = async (packageRoot) => {
 	assert.deepEqual(missingFiles, [], `Packed package is missing runtime files:\n${missingFiles.join('\n')}`);
 
 	const forbiddenPrefixes = [
+		'.local/',
 		'docs/',
 		'editors/',
 		'examples/',
