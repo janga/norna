@@ -84,3 +84,11 @@ Getting Started by default.
 
 If the audit reveals a missing product capability rather than a documentation
 gap, create a separate backlog item. Do not invent behavior in Getting Started.
+
+## Verification
+
+Completed and visually approved. The source inventory and editorial decisions
+are recorded in
+[`Getting Started Content Audit`](../getting-started-content-audit.md). The
+documentation link test, content check, starter and package checks, complete
+example suite, and documentation-site build cover the resulting beginner path.

@@ -82,9 +82,6 @@ verified and approved for documentation.
   **Implemented and browser-tested; awaiting human review and documentation.**
   Current-page and current-heading markers share a clearer palette-derived
   surface in Dark appearance.
-- [`BL-041` Beginner-first Getting Started audit](docs/design/backlog/BL-041-getting-started-audit.md):
-  **Visually approved; regression tests and documentation remain.** The audited
-  beginner path and starter changes are complete.
 - [`BL-042` Examples audit and teaching structure](docs/design/backlog/BL-042-examples-audit.md):
   **Visually approved; regression tests and documentation remain.** The example
   roles, source map, and documentation hierarchy are reconciled.
