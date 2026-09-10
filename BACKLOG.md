@@ -16,7 +16,9 @@ when implementation can begin.
 
 `Now` contains at most three active items in exact technical order.
 
-No item is currently active.
+- [`BL-076` Subtle table overflow controls](docs/design/backlog/BL-076-subtle-table-overflow-controls.md):
+  **Ready.** Reduce the visual weight of the sticky table controls without
+  weakening overflow discovery, keyboard access, or touch targets.
 
 ## Next
 
