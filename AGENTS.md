@@ -59,6 +59,24 @@ maintainer, put it in `README.md` instead of duplicating it here.
   separate logical change before starting the next item.
 - When referring to a backlog item, always show both its `BL-NNN` identifier and
   its title. Never present a backlog identifier without the title.
+- Run the smallest set of automated tests that reliably covers the changed
+  contract. Finishing a task or preparing a commit is not by itself a reason to
+  run a broad suite.
+- Do not run both an aggregate test command and one of its covered child
+  commands against the same unchanged implementation unless the aggregate has
+  a separate verification purpose. Run multiple focused commands only when the
+  change affects distinct contracts that one command cannot cover.
+- Run normal focused checks after the implementation is coherent rather than
+  after every edit. After a failure, change the implementation, fixture, or
+  test before rerunning the command unless evidence points to an intermittent
+  infrastructure failure.
+- Scale test breadth with blast radius. Reserve the complete `npm test` chain
+  for release verification, broad cross-cutting changes, an explicit user
+  request, or changes for which no narrower set provides dependable coverage.
+- During a series of backlog changes, use focused checks for each item and at
+  most one justified broader verification pass for the final combined state.
+  In the completion summary, state the exact checks run and any verification
+  intentionally deferred.
 - Commit before pushing.
 - Do not run `npm run deploy:watch` in this engine repository unless the user
   explicitly asks for it. Deploy monitoring is for site repositories.
