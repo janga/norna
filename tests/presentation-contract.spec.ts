@@ -260,6 +260,8 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
 	await expect(frame).toHaveAttribute('data-table-sticky-heading', 'true');
 	await expect(tableNavigation).toBeVisible();
+	await expect(tableNavigation.getByRole('group', { name: 'Table columns' })).toBeVisible();
+	await expect(tableNavigation.locator('.norna-table-navigation-label')).toHaveCount(0);
 	await expect(previousColumns).toBeDisabled();
 	await expect(nextColumns).toBeEnabled();
 	await expect(scrollRegion).toHaveAttribute('aria-describedby', /norna-table-overflow-/);
@@ -272,6 +274,22 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	await expect(stickyHeading.locator('table')).toHaveCount(0);
 	await expect(visualHeadings).toHaveCount(await originalHeadings.count());
 	await expect(page.getByRole('columnheader')).toHaveCount(await originalHeadings.count());
+	const [navigationBounds, controlsBounds, previousBounds, nextBounds] = await Promise.all([
+		tableNavigation.boundingBox(),
+		tableNavigation.locator('.norna-table-navigation-buttons').boundingBox(),
+		previousColumns.boundingBox(),
+		nextColumns.boundingBox(),
+	]);
+	expect(navigationBounds).not.toBeNull();
+	expect(controlsBounds).not.toBeNull();
+	expect(previousBounds?.width ?? 0).toBeGreaterThanOrEqual(44);
+	expect(previousBounds?.height ?? 0).toBeGreaterThanOrEqual(44);
+	expect(nextBounds?.width ?? 0).toBeGreaterThanOrEqual(44);
+	expect(nextBounds?.height ?? 0).toBeGreaterThanOrEqual(44);
+	expect((controlsBounds?.x ?? 0) + (controlsBounds?.width ?? 0)).toBeCloseTo(
+		(navigationBounds?.x ?? 0) + (navigationBounds?.width ?? 0),
+		0,
+	);
 
 	await frame.evaluate((element) => {
 		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 120);

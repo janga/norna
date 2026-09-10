@@ -425,8 +425,8 @@ or position of the surrounding prose.
 
 Only a table that still overflows receives a keyboard-focusable horizontal
 scroll region. Edge cues indicate whether more columns remain before or after
-the visible area. A control row above the column headings remains available
-while a long table passes through the viewport. Its previous and next buttons
+the visible area. A compact previous-and-next control group stays above the
+column headings while a long table passes through the viewport. The controls
 move by most of the visible table width, retain some overlap for orientation,
 and become unavailable at their respective boundaries. Touch, trackpad, mouse,
 and keyboard scrolling continue to operate on the same native scroll region.

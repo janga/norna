@@ -582,6 +582,11 @@
 			box-shadow: none;
 		}
 
+		.norna-table-navigation button::before {
+			border: 0;
+			background: transparent;
+		}
+
 	:is(.display-settings button, .display-settings-segmented span, .mobile-nav-menu > summary, .site-banner-dismiss) {
 		border-color: ButtonText;
 		background: ButtonFace;

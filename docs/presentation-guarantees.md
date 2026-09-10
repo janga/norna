@@ -72,9 +72,9 @@ columns. It may expand into genuinely vacant page space, including lanes hidden
 by Focus reading, but never overlaps visible navigation, notes, or another wide
 block. If the complete available canvas is insufficient, only the table frame
 scrolls horizontally. Perceptible edge cues identify hidden columns, and a
-sticky control row provides previous and next column groups while a long table
-passes through the viewport. The controls operate the native horizontal scroll
-region and are omitted when the table fits.
+compact sticky control group provides previous and next column groups while a
+long table passes through the viewport. The controls operate the native
+horizontal scroll region and are omitted when the table fits.
 
 Norna's layout is designed to tolerate browser zoom, text resized to `200%`,
 and increased line, paragraph, letter, and word spacing. Side notes use the

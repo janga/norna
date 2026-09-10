@@ -8,7 +8,6 @@ const labels = projectConfig.locale.labels;
 <template data-table-navigation-template>
 	<div class="norna-table-navigation" data-table-navigation hidden>
 		<span class="visually-hidden" data-table-overflow-description>{labels.tableOverflowDescription}</span>
-		<span class="norna-table-navigation-label" aria-hidden="true">{labels.tableColumns}</span>
 		<div class="norna-table-navigation-buttons" role="group" aria-label={labels.tableColumns}>
 			<button
 				type="button"
@@ -16,7 +15,7 @@ const labels = projectConfig.locale.labels;
 				aria-label={labels.tablePreviousColumns}
 				title={labels.tablePreviousColumns}
 			>
-				<ChevronLeft aria-hidden="true" size={18} stroke-width={2} />
+				<ChevronLeft aria-hidden="true" size={18} stroke-width={1.8} />
 			</button>
 			<button
 				type="button"
@@ -24,7 +23,7 @@ const labels = projectConfig.locale.labels;
 				aria-label={labels.tableNextColumns}
 				title={labels.tableNextColumns}
 			>
-				<ChevronRight aria-hidden="true" size={18} stroke-width={2} />
+				<ChevronRight aria-hidden="true" size={18} stroke-width={1.8} />
 			</button>
 		</div>
 	</div>
