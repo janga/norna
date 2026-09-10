@@ -62,6 +62,8 @@ try {
 
 	const docsEnvironment = await resolveReviewEnvironment('docs', { root: repoRoot });
 	assert.equal(docsEnvironment.url, 'http://127.0.0.1:4321/norna/');
+	const presentationEnvironment = await resolveReviewEnvironment('presentation', { root: repoRoot });
+	assert.equal(presentationEnvironment.url, 'http://127.0.0.1:4322/');
 	const navigationEnvironment = await resolveReviewEnvironment('navigation', { root: repoRoot });
 	assert.equal(navigationEnvironment.url, 'http://127.0.0.1:4323/');
 
@@ -197,9 +199,13 @@ try {
 	]);
 	assert.equal(Object.hasOwn(calls[0].options.env ?? {}, 'NORNA_DEV_PORT'), false);
 
+	calls.length = 0;
+	await runReviewEnvironment(['test', 'presentation'], { root: repoRoot, run, write });
+	assert.deepEqual(calls[0].args.slice(-1), ['tests/table-responsive-context.spec.ts']);
+
 	await expectFailure(
 		() => runReviewEnvironment(['test', 'docs'], { root: repoRoot, run, write }),
-		/has no registered browser suite[\s\S]*navigation, presets/,
+		/has no registered browser suite[\s\S]*presentation, navigation, presets/,
 	);
 	await expectFailure(
 		() => runReviewEnvironment(['start', 'docs', '--kill'], { root: repoRoot, run, write }),

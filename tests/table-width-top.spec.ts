@@ -100,3 +100,39 @@ test('re-evaluates the smallest sufficient lane after reading width changes', as
 	await settings.getByRole('radio', { name: 'Standard' }).check();
 	await expect(frame).toHaveAttribute('data-table-layout', 'prose');
 });
+
+test('keeps fitting table headings sticky in a compact top-navigation layout', async ({ page }) => {
+	await page.setViewportSize({ width: 900, height: 720 });
+	const frame = page.locator('[data-table-frame]');
+	const table = frame.locator('table');
+	const firstHeading = table.locator('thead th').first();
+	await table.evaluate((element) => {
+		element.style.width = '100%';
+		element.style.tableLayout = 'fixed';
+		element.querySelectorAll<HTMLElement>('th, td').forEach((cell) => {
+			cell.style.overflowWrap = 'anywhere';
+			cell.style.whiteSpace = 'normal';
+		});
+		const body = element.tBodies[0];
+		const sourceRows = Array.from(body.rows);
+		for (let index = 0; index < 28; index += 1) {
+			for (const row of sourceRows) body.append(row.cloneNode(true));
+		}
+	});
+	await expect(frame).toHaveAttribute('data-table-overflow', 'false');
+	await expect(frame.locator('[data-table-navigation]')).toBeHidden();
+
+	await frame.evaluate((element) => {
+		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 120);
+	});
+	const [headingBounds, siteTopBounds] = await Promise.all([
+		firstHeading.boundingBox(),
+		page.locator('.site-top').boundingBox(),
+	]);
+	expect(headingBounds).not.toBeNull();
+	expect(siteTopBounds).not.toBeNull();
+	expect(Math.abs(
+		(headingBounds?.y ?? 0)
+		- ((siteTopBounds?.y ?? 0) + (siteTopBounds?.height ?? 0)),
+	)).toBeLessThanOrEqual(1.5);
+});

@@ -204,15 +204,27 @@ test('a fitting long table keeps its headings below the sticky site header and r
 	await expect(frame.locator('[data-table-scroll]')).not.toHaveAttribute('tabindex', '0');
 	await expect(frame.locator('[data-table-navigation]')).toBeHidden();
 
-	await frame.evaluate((element) => {
-		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 120);
-	});
-	const [stickyHeading, stickyOffset] = await Promise.all([
-		firstHeading.boundingBox(),
-		page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'))),
-	]);
-	expect(stickyHeading).not.toBeNull();
-	expect(stickyHeading?.y).toBeCloseTo(stickyOffset, 0);
+	let stickyOffset = 0;
+	for (const width of [1440, 1100, 900]) {
+		await page.setViewportSize({ width, height: 720 });
+		await page.evaluate(() => {
+			window.scrollTo(0, 0);
+			return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+		});
+		await expect(frame).toHaveAttribute('data-table-overflow', 'false');
+		await frame.evaluate((element) => {
+			window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 120);
+		});
+		const [stickyHeading, currentStickyOffset] = await Promise.all([
+			firstHeading.boundingBox(),
+			page.evaluate(() => Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
+			)),
+		]);
+		expect(stickyHeading).not.toBeNull();
+		expect(stickyHeading?.y).toBeCloseTo(currentStickyOffset, 0);
+		stickyOffset = currentStickyOffset;
+	}
 
 	await frame.evaluate((element, offset) => {
 		const rectangle = element.getBoundingClientRect();
@@ -406,17 +418,21 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	await expect(frame).toHaveAttribute('data-table-sticky-heading', 'true');
 	await expectHeadingsAligned();
 	await settings.getByRole('radio', { name: 'Dark' }).check();
-	const [originalBackground, visualBackground] = await Promise.all([
+	const [originalBackground, visualBackground, navigationBackground] = await Promise.all([
 		originalHeadings.first().evaluate((heading) => getComputedStyle(heading).backgroundColor),
 		visualHeadings.first().evaluate((heading) => getComputedStyle(heading).backgroundColor),
+		tableNavigation.evaluate((navigation) => getComputedStyle(navigation).backgroundColor),
 	]);
 	expect(visualBackground).toBe(originalBackground);
+	expect(navigationBackground).toBe(originalBackground);
 	await page.emulateMedia({ forcedColors: 'active' });
-	const [forcedOriginalBackground, forcedVisualBackground] = await Promise.all([
+	const [forcedOriginalBackground, forcedVisualBackground, forcedNavigationBackground] = await Promise.all([
 		originalHeadings.first().evaluate((heading) => getComputedStyle(heading).backgroundColor),
 		visualHeadings.first().evaluate((heading) => getComputedStyle(heading).backgroundColor),
+		tableNavigation.evaluate((navigation) => getComputedStyle(navigation).backgroundColor),
 	]);
 	expect(forcedVisualBackground).toBe(forcedOriginalBackground);
+	expect(forcedNavigationBackground).toBe(forcedOriginalBackground);
 	expect(forcedVisualBackground).not.toBe('rgba(0, 0, 0, 0)');
 	await page.emulateMedia({ forcedColors: 'none' });
 

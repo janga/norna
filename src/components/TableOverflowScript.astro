@@ -118,12 +118,11 @@ const labels = projectConfig.locale.labels;
 		};
 
 		const synchronizeStickyHeadingGeometry = () => {
-			if (!stickyHeading || !stickyHeadingTrack || !table || !tableHead) return;
+			if (!stickyHeading || !stickyHeadingTrack || !table || !tableHead) return false;
 			const tableBounds = table.getBoundingClientRect();
 			const headingBounds = tableHead.getBoundingClientRect();
 			if (tableBounds.width <= 0 || headingBounds.height <= 0) {
-				frame.dataset.tableStickyHeading = 'false';
-				return;
+				return false;
 			}
 
 			frame.style.setProperty('--table-sticky-heading-height', `${headingBounds.height}px`);
@@ -153,6 +152,7 @@ const labels = projectConfig.locale.labels;
 				return visualCell;
 			}));
 			synchronizeStickyHeadingPosition();
+			return true;
 		};
 
 		createTableNavigation();
@@ -160,7 +160,7 @@ const labels = projectConfig.locale.labels;
 		previousButton?.addEventListener('click', () => scrollTable(-1));
 		nextButton?.addEventListener('click', () => scrollTable(1));
 
-		const updateOverflow = () => {
+		const updateOverflow = ({ refreshStickyHeading = false } = {}) => {
 			const maximumScroll = Math.max(0, scrollRegion.scrollWidth - scrollRegion.clientWidth);
 			const hasOverflow = maximumScroll > 1;
 			const scrollBounds = scrollRegion.getBoundingClientRect();
@@ -173,10 +173,6 @@ const labels = projectConfig.locale.labels;
 				? tableBounds.left >= scrollBounds.left - 2
 				: tableBounds.right <= scrollBounds.right + 2);
 
-			frame.dataset.tableOverflow = hasOverflow ? 'true' : 'false';
-			frame.dataset.tableAtStart = isAtStart ? 'true' : 'false';
-			frame.dataset.tableAtEnd = isAtEnd ? 'true' : 'false';
-			frame.dataset.tableStickyHeading = hasOverflow && stickyHeading ? 'true' : 'false';
 			if (tableNavigation) {
 				tableNavigation.hidden = !hasOverflow;
 				frame.style.setProperty(
@@ -184,12 +180,22 @@ const labels = projectConfig.locale.labels;
 					hasOverflow ? `${tableNavigation.getBoundingClientRect().height}px` : '0px',
 				);
 			}
+			const stickyHeadingReady = hasOverflow && stickyHeading
+				? (refreshStickyHeading
+					? synchronizeStickyHeadingGeometry()
+					: (stickyHeadingTrack?.childElementCount ?? 0) > 0)
+				: false;
+
+			frame.dataset.tableOverflow = hasOverflow ? 'true' : 'false';
+			frame.dataset.tableAtStart = isAtStart ? 'true' : 'false';
+			frame.dataset.tableAtEnd = isAtEnd ? 'true' : 'false';
+			frame.dataset.tableStickyHeading = stickyHeadingReady ? 'true' : 'false';
 			if (previousButton) previousButton.disabled = isAtStart;
 			if (nextButton) nextButton.disabled = isAtEnd;
 			setOverflowDescription(hasOverflow);
 			if (hasOverflow) scrollRegion.setAttribute('tabindex', '0');
 			else scrollRegion.removeAttribute('tabindex');
-			if (hasOverflow) synchronizeStickyHeadingPosition();
+			if (stickyHeadingReady && !refreshStickyHeading) synchronizeStickyHeadingPosition();
 		};
 
 		const tableFitsLayout = (layout: TableLayout) => {
@@ -208,8 +214,7 @@ const labels = projectConfig.locale.labels;
 			const candidates: TableLayout[] = ['prose', 'end', 'canvas'];
 			const selected = candidates.find(tableFitsLayout) ?? 'canvas';
 			frame.dataset.tableLayout = selected;
-			updateOverflow();
-			if (frame.dataset.tableOverflow === 'true') synchronizeStickyHeadingGeometry();
+			updateOverflow({ refreshStickyHeading: true });
 		};
 
 		const scheduleLayoutUpdate = () => {
@@ -218,7 +223,7 @@ const labels = projectConfig.locale.labels;
 		};
 
 		frame.dataset.tableReady = 'true';
-		scrollRegion.addEventListener('scroll', updateOverflow, { passive: true });
+		scrollRegion.addEventListener('scroll', () => updateOverflow(), { passive: true });
 		layoutUpdaters.add(scheduleLayoutUpdate);
 		if ('ResizeObserver' in window) {
 			const observer = new ResizeObserver(scheduleLayoutUpdate);

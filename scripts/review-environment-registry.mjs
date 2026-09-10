@@ -11,7 +11,7 @@ const definitions = {
 		siteDirectory: 'fixtures/presentation-review/site',
 		port: 4322,
 		basePath: '/',
-		browserSuites: [],
+		browserSuites: ['tests/table-responsive-context.spec.ts'],
 	},
 	navigation: {
 		label: 'Nested navigation fixture',

@@ -239,7 +239,12 @@ assert.match(
 assert.match(
 	stylesheet,
 	/\.section-markdown > \.norna-table-frame\[data-table-overflow='false'\] thead th\s*\{[\s\S]*?position:\s*sticky[\s\S]*?top:\s*var\(--site-top-anchor-offset\)/u,
-	'only a table without an internal horizontal scroller may use sticky column headings',
+	'a fitting page-level table must use native sticky column headings',
+);
+assert.match(
+	stylesheet,
+	/\.norna-table-navigation\s*\{[\s\S]*?background:\s*var\(--section-background-color, var\(--color-page\)\)/u,
+	'the sticky table-control carrier must mask rows with the owning section background',
 );
 assert.match(
 	stylesheet,
@@ -273,7 +278,7 @@ for (const requiredSource of [
 	"frame.dataset.tableOverflow = hasOverflow ? 'true' : 'false'",
 	"frame.dataset.tableAtStart = isAtStart ? 'true' : 'false'",
 	"frame.dataset.tableAtEnd = isAtEnd ? 'true' : 'false'",
-	"frame.dataset.tableStickyHeading = hasOverflow && stickyHeading ? 'true' : 'false'",
+	"frame.dataset.tableStickyHeading = stickyHeadingReady ? 'true' : 'false'",
 	"tableNavigation.hidden = !hasOverflow",
 	"previousButton.disabled = isAtStart",
 	"nextButton.disabled = isAtEnd",
@@ -288,6 +293,7 @@ for (const requiredSource of [
 	"stickyHeading.setAttribute('aria-hidden', 'true')",
 	"stickyHeading.setAttribute('inert', '')",
 	'stickyHeadingTrack.style.transform',
+	'updateOverflow({ refreshStickyHeading: true })',
 ]) {
 	assert.match(
 		tableOverflowScript,

@@ -67,9 +67,9 @@ verified and approved for documentation.
   blockquotes render as localized, accessible semantic callouts with a closed
   meaning set and deterministic diagnostics.
 - [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
-  **Implemented and browser-tested; human review found a visible defect.** Fix
-  the imperceptible horizontal-overflow cue before documentation. Sticky
-  headings in the scrolling fallback are tracked separately by `BL-066`.
+  **Implemented, browser-tested, and visually approved; awaiting
+  documentation.** Document the combined table-width, sticky-heading, and
+  horizontal-navigation behavior.
 - [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
   **Implemented and browser-tested; awaiting human review and documentation.**
   Focus reading replaces persistent rails with an accessible overlay that
