@@ -124,6 +124,23 @@ test.describe('desktop tree navigation', () => {
 		await prerequisitesLink.click();
 		await expect(page).toHaveURL(/#prerequisites$/);
 		await expect(prerequisitesLink).toHaveAttribute('aria-current', 'location');
+		await expect(contentsNavigation.locator('a[aria-current="location"]')).toHaveCount(1);
+
+		const markerAppearance = async () => prerequisitesLink.evaluate((link) => ({
+			background: getComputedStyle(link).backgroundColor,
+			bounds: link.getBoundingClientRect().toJSON(),
+			railBackground: getComputedStyle(link.closest('.page-contents-navigation-rail')!).backgroundColor,
+		}));
+		const lightMarker = await markerAppearance();
+		expect(lightMarker.background).not.toBe(lightMarker.railBackground);
+
+		await page.locator('html').evaluate((root) => {
+			root.dataset.appearance = 'dark';
+		});
+		const darkMarker = await markerAppearance();
+		expect(darkMarker.background).not.toBe(darkMarker.railBackground);
+		expect(darkMarker.background).not.toBe(lightMarker.background);
+		expect(darkMarker.bounds).toEqual(lightMarker.bounds);
 	});
 
 	test('uses focus reading as the only control for hiding the local tree', async ({ page, context }) => {

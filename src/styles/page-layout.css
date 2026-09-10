@@ -48,7 +48,7 @@
 	}
 }
 
-:is(.tree-local-navigation, .mobile-site-nav) {
+:is(.tree-local-navigation, .mobile-site-nav, .page-contents-navigation) {
 	--tree-disclosure-icon-width: 0.9rem;
 	--tree-disclosure-gap: 0.6rem;
 	--tree-disclosure-offset: calc(var(--tree-disclosure-icon-width) + var(--tree-disclosure-gap));
@@ -180,7 +180,8 @@
 	display: none;
 }
 
-:root[data-appearance='dark'] :is(.tree-local-navigation, .mobile-site-nav) {
+:root[data-appearance='dark']
+	:is(.tree-local-navigation, .mobile-site-nav, .page-contents-navigation) {
 	--tree-current-item-background: color-mix(
 		in srgb,
 		var(--color-surface-emphasis-background) 64%,
@@ -189,7 +190,8 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	:root[data-appearance='system'] :is(.tree-local-navigation, .mobile-site-nav) {
+	:root[data-appearance='system']
+		:is(.tree-local-navigation, .mobile-site-nav, .page-contents-navigation) {
 		--tree-current-item-background: color-mix(
 			in srgb,
 			var(--color-surface-emphasis-background) 64%,
@@ -615,6 +617,12 @@
 	color: var(--color-primary-text);
 	text-decoration: underline;
 	text-underline-offset: 0.25em;
+}
+
+.page-contents-navigation-rail .page-contents-links a[aria-current='location'] {
+	border-radius: var(--corner-radius-small, 2px);
+	background: var(--tree-current-item-background);
+	box-shadow: 0 0 0 0.2rem var(--tree-current-item-background);
 }
 
 .page-contents-links a[aria-current='location']::before {

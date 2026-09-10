@@ -16,9 +16,7 @@ when implementation can begin.
 
 `Now` contains at most three active items in exact technical order.
 
-- [`BL-065` Restore the Page contents reading marker](docs/design/backlog/BL-065-page-contents-reading-marker.md):
-  **Ready.** Reproduce and restore the missing palette-derived current-heading
-  marker in the right Page contents rail on a deeply nested page.
+No item is currently active.
 
 ## Next
 
