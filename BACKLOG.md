@@ -26,6 +26,14 @@ when implementation can begin.
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
+- [`BL-071` Reusable Playwright review captures](docs/design/backlog/BL-071-reusable-playwright-review-captures.md):
+  **Ready.** Extend the named review environments from `BL-067` with one
+  narrowly approvable command for repeatable local screenshots.
+- [`BL-072` First-row alignment for wrapped Page contents](docs/design/backlog/BL-072-page-contents-label-alignment.md):
+  **Ready after `BL-071` Reusable Playwright review captures.** Keep the visible
+  Page contents label aligned with the first row when the horizontal section
+  links wrap onto additional rows.
+
 ## External Gate
 
 These items have high product value but require an external account, publishing
