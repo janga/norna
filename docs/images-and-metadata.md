@@ -135,9 +135,12 @@ another tab and remains the complete fallback when JavaScript is unavailable.
 When JavaScript is available, Norna adds a restrained inspection affordance
 only when the current viewport can show the image materially larger than its
 inline presentation. Activating the image opens a native modal dialog in
-fit-to-viewport mode. The reader can switch to actual size, move within the
-image when needed, close the dialog with its button or `Escape`, and return
-keyboard focus to the image link.
+fit-to-viewport mode. For a raster image whose intrinsic pixel dimensions are
+materially larger than this fitted view, the dialog also provides `Show actual
+size`. The size control is absent for SVG and for a raster image that already
+fits, because switching modes would reveal no additional detail. The reader can
+move within an enlarged raster image, close the dialog with its button or
+`Escape`, and return keyboard focus to the image link.
 
 The inspector reuses the image's alternative text and caption. Enlargement and
 any two-dimensional scrolling stay inside the dialog, so inspecting an image
