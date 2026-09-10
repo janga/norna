@@ -590,13 +590,26 @@ test('detailed stack images retain a direct link and open an accessible inspecto
 	await expect(inspectedImage).toHaveAttribute('aria-describedby', 'image-inspector-caption');
 	await expect(dialog.locator('[data-image-inspector-caption]')).toContainText('concise caption');
 	await expect(dialog.locator('[data-image-inspector-media]')).toHaveAttribute('data-image-inspector-mode', 'fit');
-
-	await sizeButton.click();
-	await expect(dialog.locator('[data-image-inspector-media]')).toHaveAttribute('data-image-inspector-mode', 'actual');
-	await expect(dialog.getByRole('button', { name: 'Fit image to window' })).toBeVisible();
+	await expect(sizeButton).toBeHidden();
 	await page.keyboard.press('Escape');
 	await expect(dialog).not.toBeVisible();
 	await expect(trigger).toBeFocused();
+
+	await trigger.evaluate((element) => {
+		const canvas = document.createElement('canvas');
+		canvas.width = 1000;
+		canvas.height = 600;
+		element.href = canvas.toDataURL('image/png');
+		element.dataset.imageIntrinsicWidth = '1000';
+		element.dataset.imageIntrinsicHeight = '600';
+		delete element.dataset.imageInspectionScalable;
+		window.dispatchEvent(new Event('resize'));
+	});
+	await expect(trigger).toHaveAttribute('data-image-inspection-available', 'true');
+	await trigger.click();
+	await expect(dialog).toBeVisible();
+	await expect(sizeButton).toBeHidden();
+	await page.keyboard.press('Escape');
 });
 
 test('the image inspector confines enlargement to a reflow-safe mobile dialog', async ({ page }) => {
@@ -604,12 +617,24 @@ test('the image inspector confines enlargement to a reflow-safe mobile dialog', 
 	await openComponents(page);
 	const trigger = page.locator('[data-image-inspection-trigger]').first();
 	await trigger.scrollIntoViewIfNeeded();
+	await trigger.evaluate((element) => {
+		const canvas = document.createElement('canvas');
+		canvas.width = 2400;
+		canvas.height = 1440;
+		element.href = canvas.toDataURL('image/png');
+		element.dataset.imageIntrinsicWidth = '2400';
+		element.dataset.imageIntrinsicHeight = '1440';
+		delete element.dataset.imageInspectionScalable;
+		window.dispatchEvent(new Event('resize'));
+	});
 	await expect(trigger.locator('img')).toHaveJSProperty('complete', true);
 	await expect(trigger).toHaveAttribute('data-image-inspection-available', 'true');
 	await trigger.click();
 	const dialog = page.locator('[data-image-inspector]');
 	await expect(dialog).toBeVisible();
-	await dialog.getByRole('button', { name: 'Show actual size' }).click();
+	const sizeButton = dialog.getByRole('button', { name: 'Show actual size' });
+	await expect(sizeButton).toBeVisible();
+	await sizeButton.click();
 
 	const [bounds, overflow] = await Promise.all([
 		dialog.boundingBox(),

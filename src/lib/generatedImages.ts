@@ -56,6 +56,7 @@ export const getImageInspectionAttributes = (src: string) => {
 
 	return {
 		href: displaySrc(publishedSource ?? src),
+		scalable: image?.kind === 'static' || /\.svg(?:[?#]|$)/iu.test(publishedSource ?? src),
 		...(Number.isFinite(image?.width) && Number.isFinite(image?.height)
 			? { width: image?.width, height: image?.height }
 			: {}),

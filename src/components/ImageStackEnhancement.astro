@@ -11,6 +11,7 @@ const labels = projectConfig.locale.labels;
 			<button
 				type="button"
 				data-image-inspector-size
+				hidden
 				aria-label={labels.imageInspectionActualSize}
 				title={labels.imageInspectionActualSize}
 				data-fit-label={labels.imageInspectionFit}
@@ -192,6 +193,7 @@ const labels = projectConfig.locale.labels;
 		const closeButton = dialog.querySelector<HTMLButtonElement>('[data-image-inspector-close]');
 		let activeTrigger: HTMLAnchorElement | null = null;
 		let scheduledFrame: number | null = null;
+		let sizeControlScheduledFrame: number | null = null;
 
 		const setInspectorMode = (mode: 'fit' | 'actual') => {
 			if (!media || !sizeButton) return;
@@ -229,6 +231,30 @@ const labels = projectConfig.locale.labels;
 			return Math.max(fitGain, actualSizeGain) >= enlargementThreshold;
 		};
 
+		const updateSizeControlAvailability = () => {
+			sizeControlScheduledFrame = null;
+			if (!activeTrigger || !inspectedImage || !media || !sizeButton) return;
+
+			const isScalable = activeTrigger.dataset.imageInspectionScalable === 'true';
+			const intrinsicWidth = inspectedImage.naturalWidth;
+			const intrinsicHeight = inspectedImage.naturalHeight;
+			const fitScale = intrinsicWidth > 0 && intrinsicHeight > 0
+				? Math.min(1, media.clientWidth / intrinsicWidth, media.clientHeight / intrinsicHeight)
+				: 1;
+			const actualSizeGain = fitScale > 0 ? 1 / fitScale : 1;
+			const isUseful = !isScalable && actualSizeGain >= enlargementThreshold;
+
+			if (!isUseful && media.dataset.imageInspectorMode === 'actual') setInspectorMode('fit');
+			if (!isUseful && document.activeElement === sizeButton) closeButton?.focus();
+			sizeButton.hidden = !isUseful;
+			sizeButton.disabled = !isUseful;
+		};
+
+		const scheduleSizeControlUpdate = () => {
+			if (sizeControlScheduledFrame !== null) return;
+			sizeControlScheduledFrame = requestAnimationFrame(updateSizeControlAvailability);
+		};
+
 		const updateAvailability = () => {
 			scheduledFrame = null;
 			triggers.forEach((trigger) => {
@@ -247,6 +273,8 @@ const labels = projectConfig.locale.labels;
 			const captionId = trigger.getAttribute('aria-describedby');
 			const sourceCaption = captionId ? document.getElementById(captionId) : null;
 			activeTrigger = trigger;
+			sizeButton?.setAttribute('disabled', '');
+			if (sizeButton) sizeButton.hidden = true;
 			inspectedImage.src = trigger.href;
 			inspectedImage.alt = sourceImage?.alt ?? '';
 			if (sourceCaption?.textContent?.trim()) {
@@ -262,6 +290,7 @@ const labels = projectConfig.locale.labels;
 			document.documentElement.dataset.imageInspectorOpen = 'true';
 			dialog.showModal();
 			closeButton.focus();
+			if (inspectedImage.complete) scheduleSizeControlUpdate();
 		};
 
 		triggers.forEach((trigger) => {
@@ -288,9 +317,14 @@ const labels = projectConfig.locale.labels;
 		if ('ResizeObserver' in window) {
 			const observer = new ResizeObserver(scheduleAvailabilityUpdate);
 			triggers.forEach((trigger) => observer.observe(trigger));
+			if (media) new ResizeObserver(scheduleSizeControlUpdate).observe(media);
 		} else {
-			window.addEventListener('resize', scheduleAvailabilityUpdate, { passive: true });
+			window.addEventListener('resize', () => {
+				scheduleAvailabilityUpdate();
+				scheduleSizeControlUpdate();
+			}, { passive: true });
 		}
+		inspectedImage?.addEventListener('load', scheduleSizeControlUpdate);
 		document.fonts?.ready.then(scheduleAvailabilityUpdate).catch(() => {});
 		updateAvailability();
 	}

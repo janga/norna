@@ -49,6 +49,7 @@ const managedImageSizes = getManagedImageSizes(maxAvailableWidthPercent);
 						data-image-inspection-trigger
 						data-image-intrinsic-width={inspection.width}
 						data-image-intrinsic-height={inspection.height}
+						data-image-inspection-scalable={inspection.scalable ? 'true' : undefined}
 						style={inspectionStyle}
 					>
 						<img
