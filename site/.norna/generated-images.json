@@ -1,4 +1,28 @@
 {
+  "pages/010-features/images/navigation-hierarchy.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "0713b8d51287b192aa52c6af92ff0367f7a8a28b5d3121c4d1b4737c44c215ea",
+    "src": "/images/original/pages/010-features/images/navigation-hierarchy-0713b8d5.svg",
+    "width": 1200,
+    "height": 640
+  },
+  "pages/010-features/images/navigation-one-page.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "07dee85bc60c6188ee9710192c5c5e460907a1cfd9361f6a7df6fcc1a342da13",
+    "src": "/images/original/pages/010-features/images/navigation-one-page-07dee85b.svg",
+    "width": 1200,
+    "height": 640
+  },
+  "pages/010-features/images/navigation-top-level.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "ad2028be3a253185e68f96468e2b65e4b9bd4230149c9ca7be2a78569cd3001a",
+    "src": "/images/original/pages/010-features/images/navigation-top-level-ad2028be.svg",
+    "width": 1200,
+    "height": 640
+  },
   "pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-navigation.png": {
     "outputVersion": 2,
     "sourceHash": "24ef8bbb30f908c7f5c161ba5abd03c05b86b630e19ffac363fb25c124b68274",

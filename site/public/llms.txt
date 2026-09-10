@@ -9,6 +9,7 @@ only for the guided introduction and visual examples.
 
 ## Guided Introduction
 
+- [What Norna Does](https://janga.github.io/norna/features/)
 - [Install Norna](https://janga.github.io/norna/getting-started/install-norna/)
 - [Choose A Theme](https://janga.github.io/norna/getting-started/choose-a-theme/)
 - [Grow Your Site](https://janga.github.io/norna/getting-started/grow-your-site/)

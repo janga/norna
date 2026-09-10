@@ -260,11 +260,53 @@ const checkSitemapReference = async () => {
 	);
 };
 
+const checkProductTour = async () => {
+	const tourDirectory = path.join(repoRoot, 'site', 'pages', '010-features');
+	const source = await readFile(path.join(tourDirectory, 'content.md'), 'utf8');
+	const orderedSections = [
+		'# What Norna Does',
+		'## Write With Markdown',
+		'## Let Files Become A Site',
+		'## Change Structure Safely',
+		'## Extend Markdown Only Where It Helps',
+		'## Start With A Coherent Presentation',
+		'## Keep Difficult Content Readable',
+		'## Useful Before JavaScript',
+		'## Build Ordinary Static Output',
+	];
+	let previousIndex = -1;
+	for (const heading of orderedSections) {
+		const index = source.indexOf(heading);
+		assert.ok(index > previousIndex, `Product tour is missing or has misplaced heading: ${heading}`);
+		previousIndex = index;
+	}
+
+	for (const statement of [
+		'One listed page uses its H1 and H2 headings as section navigation',
+		'Several top-level pages use top navigation on wide screens',
+		'Adding a listed child page or category gives the complete site a page tree',
+		'There is no second sidebar file to keep synchronized',
+	]) {
+		assert.ok(source.includes(statement), `Product tour is missing its navigation explanation: ${statement}`);
+	}
+
+	for (const imageName of [
+		'navigation-one-page.svg',
+		'navigation-top-level.svg',
+		'navigation-hierarchy.svg',
+	]) {
+		const image = await readFile(path.join(tourDirectory, 'images', imageName), 'utf8');
+		assert.ok(source.includes(`image: ${imageName}`), `Product tour does not reference ${imageName}.`);
+		assert.ok(image.includes('viewBox="0 0 1200 640"'), `${imageName} has an unexpected diagram canvas.`);
+	}
+};
+
 await checkLocalMarkdownLinks();
 await checkObsoleteDocumentationReferences();
 await checkObsoleteSiteFiles();
 await checkThemePresetReference();
 await checkSitemapReference();
+await checkProductTour();
 checkThemeExplorer();
 
 const llms = await readFile(path.join(repoRoot, 'site', 'public', 'llms.txt'), 'utf8');

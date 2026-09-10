@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">Nested pages become hierarchical navigation</title>
+  <desc id="desc">A page tree with a Guides category and child pages passes through automatic navigation and becomes a persistent page tree on a wide screen and a compact hierarchical menu on a small screen.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1 L9 5 L1 9" fill="none" stroke="#8b4a52" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .sans { font-family: Arial, Helvetica, sans-serif; }
+      .mono { font-family: Menlo, Consolas, monospace; }
+      .ink { fill: #302a28; }
+      .muted { fill: #6b605c; }
+      .light { fill: #f8f4ef; }
+      .accent { fill: #8b4a52; }
+      .label { font-size: 15px; font-weight: 700; }
+      .body { font-size: 17px; }
+      .small { font-size: 13px; }
+      .tree { font-size: 17px; }
+      .panel { fill: #fffdf9; stroke: #cbbdb5; stroke-width: 2; }
+      .soft { fill: #efe4df; }
+      .rule { stroke: #d8ccc5; stroke-width: 1.5; }
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1198" height="638" rx="8" fill="#f4ede8" stroke="#cbbdb5" stroke-width="2"/>
+  <g class="sans">
+    <rect x="1" y="1" width="378" height="638" rx="8" fill="#242225"/>
+    <text class="label" x="30" y="43" fill="#d9b8b5">PAGE FILES</text>
+    <g class="mono tree" fill="#f7f0e9">
+      <text x="30" y="88">site/pages/</text>
+      <text x="30" y="120">├── 000-home/</text>
+      <text x="30" y="152">│   └── content.md</text>
+      <text x="30" y="184">├── 010-guides/</text>
+      <text x="30" y="216">│   ├── category.yaml</text>
+      <text x="30" y="248">│   └── pages/</text>
+      <text x="30" y="280">│       ├── 010-install/</text>
+      <text x="30" y="312">│       │   └── content.md</text>
+      <text x="30" y="344">│       └── 020-publish/</text>
+      <text x="30" y="376">│           └── content.md</text>
+      <text x="30" y="408">└── 020-reference/</text>
+      <text x="30" y="440">    └── content.md</text>
+    </g>
+    <text class="small" x="30" y="596" fill="#beb5b8">Folders define parent and child relationships.</text>
+
+    <text class="label accent" x="405" y="252">AUTOMATIC</text>
+    <text class="small muted" x="402" y="278">nested hierarchy</text>
+    <path d="M404 304 H516" fill="none" stroke="#8b4a52" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <rect class="panel" x="548" y="24" width="626" height="372" rx="8"/>
+    <rect class="soft" x="549" y="25" width="624" height="46" rx="7"/>
+    <circle cx="572" cy="48" r="5" fill="#a96b70"/>
+    <circle cx="590" cy="48" r="5" fill="#c49b94"/>
+    <rect x="618" y="36" width="530" height="24" rx="4" fill="#fffdf9" stroke="#cbbdb5"/>
+    <text class="mono small muted" x="632" y="53">example.test/guides/install/</text>
+    <text class="label muted" x="568" y="102">WIDE SCREEN</text>
+    <line class="rule" x1="820" y1="92" x2="820" y2="374"/>
+    <text class="body ink" x="568" y="137" font-weight="700">Home</text>
+    <text class="body ink" x="568" y="180" font-weight="700">Guides</text>
+    <line x1="576" y1="196" x2="576" y2="274" stroke="#c7aaa8" stroke-width="1.5"/>
+    <text class="body accent" x="594" y="222" font-weight="700">Install</text>
+    <text class="body muted" x="594" y="262">Publish</text>
+    <text class="body ink" x="568" y="315" font-weight="700">Reference</text>
+    <text class="ink" x="854" y="137" font-size="32" font-weight="700">Install</text>
+    <text class="body ink" x="854" y="181">Prepare the project and</text>
+    <text class="body ink" x="854" y="207">start a local preview.</text>
+    <text class="small muted" x="854" y="258">The page tree remains visible</text>
+    <text class="small muted" x="854" y="278">beside the current page.</text>
+
+    <text class="label muted" x="548" y="435">SMALL SCREEN</text>
+    <rect class="panel" x="548" y="454" width="626" height="160" rx="8"/>
+    <text class="body ink" x="570" y="490" font-weight="700">Example</text>
+    <rect x="1032" y="469" width="120" height="34" rx="4" fill="#302a28"/>
+    <text class="small light" x="1092" y="491" text-anchor="middle">MENU</text>
+    <line class="rule" x1="570" y1="516" x2="1152" y2="516"/>
+    <text class="body ink" x="590" y="553">Guides</text>
+    <text class="body accent" x="700" y="553" font-weight="700">› Install</text>
+    <text class="body muted" x="830" y="553">› Publish</text>
+    <text class="body ink" x="970" y="553">Reference</text>
+    <text class="small muted" x="590" y="586">The hierarchy is preserved inside the compact menu.</text>
+  </g>
+</svg>
