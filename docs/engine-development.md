@@ -21,6 +21,8 @@ This document is for work on the reusable `norna` package itself.
 - `fixtures/basic/site/`: minimal site used for engine checks.
 - `fixtures/preset-baseline/site/`: shared representative content used to
   compare every built-in preset.
+- `fixtures/presentation-review/site/`: broad, non-public visual review site
+  for presentation interactions that may later become browser regressions.
 - `tests/preset-baselines/`: resolved preset contracts and committed desktop
   and mobile reference images.
 - `starters/basic/`: copyable site starter.
@@ -42,6 +44,7 @@ npm run test:site-public
 npm run test:documentation
 npm run test:fixture:build
 npm run test:examples
+npm run test:presentation-review
 npm run test:preset-baselines
 npm run test:documentation-preset-review
 npm run demo:build
@@ -125,7 +128,7 @@ whose own name is `@janga/norna`, so it may continue with the published global
 implementation instead of the working tree.
 
 The presentation target combines the visual cases that regularly need manual
-review:
+review. It uses the non-public `fixtures/presentation-review/site/` fixture:
 
 ```sh
 npm run review:start -- presentation

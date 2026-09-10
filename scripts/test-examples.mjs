@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderThemePresetComparison } from './build-theme-preset-comparison.mjs';
-import { getExampleSites } from './lib/example-sites.mjs';
+import { getExampleSites, getUnlinkedExampleSites } from './lib/example-sites.mjs';
 import { runInherit } from './lib/run-command.mjs';
 import { themePresetNames } from './lib/theme-presets.mjs';
 
@@ -36,6 +36,21 @@ try {
 
 	const discovered = await getExampleSites(discoveryRoot);
 	assert.deepEqual(discovered.map(({ name }) => name), ['valid']);
+	assert.deepEqual(
+		getUnlinkedExampleSites({
+			documentationText: '',
+			documentationUrl: new URL('https://example.com/docs/'),
+			examples: discovered,
+			presetComparisonHtml: '',
+		}).map(({ name }) => name),
+		['valid'],
+	);
+	assert.deepEqual(getUnlinkedExampleSites({
+		documentationText: 'https://example.com/docs/examples/complete-sites/valid/',
+		documentationUrl: new URL('https://example.com/docs/'),
+		examples: discovered,
+		presetComparisonHtml: '',
+	}), []);
 } finally {
 	await rm(discoveryRoot, { recursive: true, force: true });
 }

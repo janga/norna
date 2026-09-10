@@ -39,7 +39,7 @@ Start with these assignments:
 | Target | Site source | Review port | Expected base path |
 | --- | --- | ---: | --- |
 | `docs` | `site/` | `4321` | `/norna/` |
-| `presentation` | `examples/feature-demos/presentation-test-plan/site/` | `4322` | `/` |
+| `presentation` | `fixtures/presentation-review/site/` | `4322` | `/` |
 | `navigation` | `fixtures/nested-pages/site/` | `4323` | `/` |
 | `presets` | `fixtures/preset-baseline/site/` | `4324` | `/` |
 | `scratch` | `.local/test-sites/scratch/site/` | `4399` | Read from the copied site's config |

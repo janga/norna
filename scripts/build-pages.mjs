@@ -2,10 +2,17 @@ import { cp, mkdir, mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getExampleSites } from './lib/example-sites.mjs';
+import {
+	getExampleRelativePublicPath,
+	getExampleSites,
+	getUnlinkedExampleSites,
+} from './lib/example-sites.mjs';
 import projectConfig from './lib/project-config.mjs';
 import { runInherit } from './lib/run-command.mjs';
-import { writeThemePresetComparison } from './build-theme-preset-comparison.mjs';
+import {
+	renderThemePresetComparison,
+	writeThemePresetComparison,
+} from './build-theme-preset-comparison.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(root, 'bin', 'norna.mjs');
@@ -15,6 +22,7 @@ const artifactDirectory = path.join(temporaryDirectory, 'artifact');
 const documentationUrl = new URL(projectConfig.site.url);
 const documentationBasePath = projectConfig.site.basePath;
 const examples = await getExampleSites(root);
+const presetComparisonHtml = renderThemePresetComparison();
 let artifactStarted = false;
 let documentationExamplesHtml = '';
 
@@ -40,11 +48,28 @@ try {
 	console.log('Building documentation site');
 	await buildSite();
 	documentationExamplesHtml = await readHtmlTree(path.join(distDirectory, 'examples'));
+	const presetComparisonUrl = new URL('examples/theme-presets/', documentationUrl).href;
+	if (!documentationExamplesHtml.includes(`href="${presetComparisonUrl}"`)) {
+		throw new Error(`Documentation is missing the theme preset comparison link ${presetComparisonUrl}.`);
+	}
+	const unlinkedExamples = getUnlinkedExampleSites({
+		documentationText: documentationExamplesHtml,
+		documentationUrl,
+		examples,
+		presetComparisonHtml,
+		requireHtmlHref: true,
+	});
+	if (unlinkedExamples.length > 0) {
+		const missingUrls = unlinkedExamples.map((example) => (
+			new URL(getExampleRelativePublicPath(example), documentationUrl).href
+		));
+		throw new Error(`Documentation is missing rendered example links:\n${missingUrls.join('\n')}`);
+	}
 	await cp(distDirectory, artifactDirectory, { recursive: true });
 	artifactStarted = true;
 
 	for (const example of examples) {
-		const relativePublicPath = `examples/${example.category}/${example.name}/`;
+		const relativePublicPath = getExampleRelativePublicPath(example);
 		const siteUrl = new URL(relativePublicPath, documentationUrl).href;
 		const exampleDistDirectory = path.join(path.dirname(example.siteDirectory), 'dist');
 
@@ -72,24 +97,11 @@ try {
 	await rm(temporaryDirectory, { recursive: true, force: true });
 }
 
-const presetComparisonHtml = await readFile(path.join(distDirectory, 'examples', 'theme-presets', 'index.html'), 'utf8');
-const presetComparisonUrl = new URL('examples/theme-presets/', documentationUrl).href;
-
-if (!documentationExamplesHtml.includes(`href="${presetComparisonUrl}"`)) {
-	throw new Error(`Documentation is missing the theme preset comparison link ${presetComparisonUrl}.`);
-}
-
 for (const example of examples) {
-	const relativePublicPath = `examples/${example.category}/${example.name}/`;
+	const relativePublicPath = getExampleRelativePublicPath(example);
 	const basePath = `${documentationBasePath.replace(/\/$/, '')}/${relativePublicPath}`;
-	const siteUrl = new URL(relativePublicPath, documentationUrl).href;
 	const exampleHtml = await readFile(path.join(distDirectory, relativePublicPath, 'index.html'), 'utf8');
 
-	const linkedFromPresetComparison = example.name.startsWith('theme-preset-')
-		&& presetComparisonHtml.includes(`../feature-demos/${example.name}/`);
-	if (!linkedFromPresetComparison && !documentationExamplesHtml.includes(`href="${siteUrl}"`)) {
-		throw new Error(`Documentation is missing the rendered example link ${siteUrl}.`);
-	}
 	if (!exampleHtml.includes(`href="${basePath}`) && !exampleHtml.includes(`src="${basePath}`)) {
 		throw new Error(`Rendered example ${relativePublicPath} does not use its deployment base path ${basePath}.`);
 	}

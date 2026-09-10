@@ -92,9 +92,10 @@ together in a realistic project:
 - `sitewide-content/`: convention-based logo handling, navigation, banner stacks,
   dismissal and footer content shared across pages.
 
-The repository Pages workflow builds all examples and publishes them
-under `/norna/examples/`. The HTML documentation links to those rendered sites
-from its Examples page.
+The repository Pages workflow builds every site under `examples/` and publishes
+it under `/norna/examples/`. Every example must therefore be suitable for
+users and linked from the HTML documentation's Examples pages. A fast
+documentation test enforces that contract before the Pages artifact is built.
 
 The repository-local `site/` directory is reserved for the documentation site.
 `docs/` should remain for reference documentation. It should link to the
@@ -103,8 +104,11 @@ documentation site when visual explanation is more useful than reference text.
 `starters/basic/` stays separate from examples because it is copied by
 `norna init`. It should stay small and conservative.
 
-Fixtures stay under `fixtures/`. They are intentionally smaller and more stable
-than examples and should not be confused with user-facing sites.
+Fixtures stay under `fixtures/` and are never included in the Pages artifact.
+Most are intentionally smaller and more stable than examples. A broader fixture
+is also appropriate when its primary purpose is repeatable visual review or
+future regression coverage rather than teaching users. The presentation review
+site follows that rule under `fixtures/presentation-review/`.
 
 ## Constraints
 
@@ -119,3 +123,8 @@ than examples and should not be confused with user-facing sites.
 
 The repository-local `site/` remains the product documentation site and is not
 an example or fixture.
+
+A local `marketing/` directory may hold private research, source material, and
+supporting Norna sites. It is ignored by the main repository and maintained in
+its own local Git repository. Material belongs in `fixtures/` instead when it
+must travel with the engine and participate in repeatable regression tests.

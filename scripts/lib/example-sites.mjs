@@ -5,6 +5,25 @@ import { homePageDirectory } from './site-conventions.mjs';
 
 export const exampleCategories = ['complete-sites', 'feature-demos'];
 
+export const getExampleRelativePublicPath = (example) => (
+	`examples/${example.category}/${example.name}/`
+);
+
+export const getUnlinkedExampleSites = ({
+	documentationText,
+	documentationUrl,
+	examples,
+	presetComparisonHtml,
+	requireHtmlHref = false,
+}) => examples.filter((example) => {
+	const siteUrl = new URL(getExampleRelativePublicPath(example), documentationUrl).href;
+	const documentationNeedle = requireHtmlHref ? `href="${siteUrl}"` : siteUrl;
+	const linkedFromPresetComparison = example.name.startsWith('theme-preset-')
+		&& presetComparisonHtml.includes(`../feature-demos/${example.name}/`);
+
+	return !linkedFromPresetComparison && !documentationText.includes(documentationNeedle);
+});
+
 const isGeneratedOnlyCacheDirectory = async (exampleDirectory, siteDirectory) => {
 	if (!existsSync(path.join(siteDirectory, '.norna'))) return false;
 

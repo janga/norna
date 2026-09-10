@@ -103,8 +103,14 @@ maintainer, put it in `README.md` instead of duplicating it here.
   on the page. Norna owns the space around the image and its caption.
 - Use root `site/` for the documentation site. Use
   `examples/feature-demos/media-and-surfaces/site` for broad visual demo and
-  navigation checks. Use `fixtures/basic/site` for minimal standalone engine
-  regression checks.
+  navigation checks. Every site under `examples/` is public and must be linked
+  from the documentation site's Examples pages. Use
+  `fixtures/presentation-review/site` for non-public visual review and
+  `fixtures/basic/site` for minimal standalone engine regression checks.
+- Keep private product research and non-public marketing sites in the ignored
+  `marketing/` directory and its separate local Git repository. Put maintained
+  engine inputs under `fixtures/` instead when they should participate in
+  repeatable regression tests.
 - Use `.local/test-sites/scratch/site/` for disposable local copies of sites
   needed for temporary review or reproduction. Keep this workspace ignored by
   Git. Copy the runnable site by default; do not run Norna through a direct

@@ -8,7 +8,7 @@ const definitions = {
 	},
 	presentation: {
 		label: 'Presentation review site',
-		siteDirectory: 'examples/feature-demos/presentation-test-plan/site',
+		siteDirectory: 'fixtures/presentation-review/site',
 		port: 4322,
 		basePath: '/',
 		browserSuites: [],

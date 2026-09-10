@@ -3,7 +3,13 @@ import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { renderThemePresetComparison } from './build-theme-preset-comparison.mjs';
+import {
+	getExampleRelativePublicPath,
+	getExampleSites,
+	getUnlinkedExampleSites,
+} from './lib/example-sites.mjs';
 import { presentationPaletteNames } from './lib/presentation-palette-metadata.mjs';
+import projectConfig from './lib/project-config.mjs';
 import { themePresetNames, themePresets } from './lib/theme-presets.mjs';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
@@ -301,12 +307,37 @@ const checkProductTour = async () => {
 	}
 };
 
+const checkPublishedExampleReferences = async () => {
+	const documentationUrl = new URL(projectConfig.site.url);
+	const exampleFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'pages', '030-examples'));
+	const documentationText = (await Promise.all(exampleFiles.map((filePath) => readFile(filePath, 'utf8')))).join('\n');
+	const presetComparisonUrl = new URL('examples/theme-presets/', documentationUrl).href;
+	assert.ok(
+		documentationText.includes(presetComparisonUrl),
+		`Examples documentation is missing the theme preset comparison link ${presetComparisonUrl}.`,
+	);
+
+	const examples = await getExampleSites(repoRoot);
+	const unlinkedExamples = getUnlinkedExampleSites({
+		documentationText,
+		documentationUrl,
+		examples,
+		presetComparisonHtml: renderThemePresetComparison(),
+	});
+	assert.deepEqual(
+		unlinkedExamples.map((example) => getExampleRelativePublicPath(example)),
+		[],
+		'Every public example must be linked from the Examples documentation or the theme comparison.',
+	);
+};
+
 await checkLocalMarkdownLinks();
 await checkObsoleteDocumentationReferences();
 await checkObsoleteSiteFiles();
 await checkThemePresetReference();
 await checkSitemapReference();
 await checkProductTour();
+await checkPublishedExampleReferences();
 checkThemeExplorer();
 
 const llms = await readFile(path.join(repoRoot, 'site', 'public', 'llms.txt'), 'utf8');

@@ -35,7 +35,7 @@ blob-report/
 todos/
 /.local/
 
-# private local product research (separate Git repository)
+# private product research and non-public marketing sites (separate local Git repository)
 /marketing/
 
 # environment variables
