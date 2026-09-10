@@ -94,10 +94,13 @@ maintainer, put it in `README.md` instead of duplicating it here.
   page-background-colored canvas is forbidden when it shifts the visible
   composition away from the image element's edges or disrupts alignment with
   captions and surrounding content. Crop every edge to the visible artwork,
-  retaining only the minimum room required for strokes or antialiasing, unless
-  the complete canvas has a deliberate visible surface or boundary. Never
-  simulate layout spacing inside an asset: Norna owns the space around the
-  image and its caption.
+  retaining only the minimum room required for strokes or antialiasing. When
+  the asset draws its own rectangular frame or full-canvas background, that
+  visible boundary must reach every canvas edge; transparent or
+  background-colored padding outside an asset-owned frame is forbidden. An
+  unframed composition may retain only intentional visual breathing room that
+  belongs to the artwork itself, never spacing intended to position the asset
+  on the page. Norna owns the space around the image and its caption.
 - Use root `site/` for the documentation site. Use
   `examples/feature-demos/media-and-surfaces/site` for broad visual demo and
   navigation checks. Use `fixtures/basic/site` for minimal standalone engine
