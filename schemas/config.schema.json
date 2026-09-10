@@ -6,7 +6,7 @@
       "type": "string",
       "format": "uri",
       "description": "Absolute public URL for the built site.",
-      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#url)",
+      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#url)",
       "examples": [
         "https://example.com/",
         "https://owner.github.io/repository-name/"
@@ -28,13 +28,13 @@
           "const": "en",
           "title": "English",
           "description": "Use Norna's built-in English interface text.",
-          "markdownDescription": "Use Norna's built-in English interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in English interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
         },
         {
           "const": "sv",
           "title": "Swedish",
           "description": "Use Norna's built-in Swedish interface text.",
-          "markdownDescription": "Use Norna's built-in Swedish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Swedish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
         },
         {
           "type": "string",
@@ -43,7 +43,7 @@
           "description": "Use an English or Swedish regional language tag such as en-GB or sv-SE."
         }
       ],
-      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#language)"
+      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the page language and selects Norna's built-in English or Swedish interface text. The default is `en`.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
     },
     "editLink": {
       "type": "object",
@@ -52,7 +52,7 @@
           "type": "string",
           "format": "uri",
           "description": "Absolute edit URL prefix containing the repository, branch, and any repository subdirectory.",
-          "markdownDescription": "```yaml\neditLink:\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nOptional absolute remote edit URL prefix. Include any repository subdirectory and branch. Norna adds the project-relative path to each page's `content.md` file. This destination is used by published output and LAN previews.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)",
+          "markdownDescription": "```yaml\neditLink:\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nOptional absolute remote edit URL prefix. Include any repository subdirectory and branch. Norna adds the project-relative path to each page's `content.md` file. This destination is used by published output and LAN previews.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)",
           "examples": [
             "https://github.com/owner/repository/edit/main/"
           ]
@@ -65,10 +65,10 @@
               "const": "vscode",
               "title": "Visual Studio Code",
               "description": "Open the current page source in the locally installed Visual Studio Code application.",
-              "markdownDescription": "Open the current page source in the locally installed Visual Studio Code application.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)"
+              "markdownDescription": "Open the current page source in the locally installed Visual Studio Code application.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)"
             }
           ],
-          "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n```\n\nOptional editor for a development preview opened through localhost or another loopback address. `vscode` opens the absolute page source path through VS Code's registered URL handler. The setting is never emitted as a local path in published output.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)",
+          "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n```\n\nOptional editor for a development preview opened through localhost or another loopback address. `vscode` opens the absolute page source path through VS Code's registered URL handler. The setting is never emitted as a local path in published output.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)",
           "examples": [
             "vscode"
           ]
@@ -76,7 +76,7 @@
       },
       "additionalProperties": false,
       "description": "Optional local and remote links from rendered pages to their Markdown source files.",
-      "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nLinks each rendered page to its `content.md` source. A loopback development preview uses the explicitly selected local editor; published output and LAN previews use the optional remote base URL. Specify either destination or both.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)",
+      "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nLinks each rendered page to its `content.md` source. A loopback development preview uses the explicitly selected local editor; published output and LAN previews use the optional remote base URL. Specify either destination or both.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)",
       "anyOf": [
         {
           "required": [
@@ -92,7 +92,7 @@
       "defaultSnippets": [
         {
           "label": "Local and remote source links",
-          "markdownDescription": "Open page source in VS Code during same-computer development and on the remote source host elsewhere.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#edit-link)",
+          "markdownDescription": "Open page source in VS Code during same-computer development and on the remote source host elsewhere.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)",
           "body": {
             "localEditor": "vscode",
             "baseUrl": "https://github.com/${1:owner}/${2:repository}/edit/${3:main}/"
@@ -111,28 +111,28 @@
               "const": "automatic",
               "title": "Automatic",
               "description": "Choose sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a site with listed child pages or categories.",
-              "markdownDescription": "Choose sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a site with listed child pages or categories.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.24/docs/pages.md#navigation)"
+              "markdownDescription": "Choose sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a site with listed child pages or categories.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/pages.md#navigation)"
             },
             {
               "const": "sections",
               "title": "Sections",
               "description": "Navigate the sections of the current page.",
-              "markdownDescription": "Navigate the sections of the current page.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.24/docs/pages.md#navigation)"
+              "markdownDescription": "Navigate the sections of the current page.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/pages.md#navigation)"
             },
             {
               "const": "top",
               "title": "Top",
               "description": "Use pages in the top navigation and sections below them.",
-              "markdownDescription": "Use pages in the top navigation and sections below them.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.24/docs/pages.md#navigation)"
+              "markdownDescription": "Use pages in the top navigation and sections below them.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/pages.md#navigation)"
             },
             {
               "const": "tree",
               "title": "Tree",
               "description": "Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.",
-              "markdownDescription": "Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.24/docs/pages.md#navigation)"
+              "markdownDescription": "Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/pages.md#navigation)"
             }
           ],
-          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to let Norna choose from the site structure.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.24/docs/pages.md#navigation)",
+          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nNavigation model. Omit this to let Norna choose from the site structure.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/pages.md#navigation)",
           "examples": [
             "automatic",
             "sections",
@@ -143,13 +143,13 @@
       },
       "additionalProperties": false,
       "description": "Site-wide navigation behavior.",
-      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation policy. `automatic` uses sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a hierarchical site.\n\n[Navigation reference](https://github.com/janga/norna/blob/v0.7.24/docs/pages.md#navigation)"
+      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nSets the site-wide navigation policy. `automatic` uses sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a hierarchical site.\n\n[Navigation reference](https://github.com/janga/norna/blob/v0.7.25/docs/pages.md#navigation)"
     },
     "search": {
       "default": false,
       "description": "Generate a static site search page and Pagefind index. The default is false.",
       "type": "boolean",
-      "markdownDescription": "```yaml\nsearch: true\n```\n\nGenerates a localized `/search/` page and a static Pagefind index during each build. Search is off by default, and only the search page loads the search JavaScript.\n\n[Search reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#search)",
+      "markdownDescription": "```yaml\nsearch: true\n```\n\nGenerates a localized `/search/` page and a static Pagefind index during each build. Search is off by default, and only the search page loads the search JavaScript.\n\n[Search reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#search)",
       "examples": [
         true,
         false
@@ -164,16 +164,16 @@
           "const": "instant",
           "title": "Instant",
           "description": "Jump directly to anchors without animated scrolling. This is the default.",
-          "markdownDescription": "Jump directly to anchors without animated scrolling. This is the default.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#scrollbehavior)"
+          "markdownDescription": "Jump directly to anchors without animated scrolling. This is the default.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#scrollbehavior)"
         },
         {
           "const": "smooth",
           "title": "Browser smooth",
           "description": "Use the browser's native smooth scrolling for anchor navigation.",
-          "markdownDescription": "Use the browser's native smooth scrolling for anchor navigation.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#scrollbehavior)"
+          "markdownDescription": "Use the browser's native smooth scrolling for anchor navigation.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#scrollbehavior)"
         }
       ],
-      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md#scrollbehavior)",
+      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#scrollbehavior)",
       "examples": [
         "instant",
         "smooth"
@@ -187,5 +187,5 @@
   "description": "Technical settings for one Norna site. Additional pages cannot provide technical configuration.",
   "$id": "https://janga.github.io/norna/schemas/config.schema.json",
   "title": "Norna site configuration",
-  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.24/docs/configuration.md)"
+  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md)"
 }
