@@ -26,6 +26,19 @@ when implementation can begin.
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
+- [`BL-075` Align persistent captions with the rendered image bottom](docs/design/backlog/BL-075-persistent-caption-bottom-alignment.md):
+  **Ready.** Preserve the caption's original flow space without extending its
+  sticky boundary below the rendered image. Release a persistent side caption
+  at the image bottom rather than at the padded figure bottom.
+- [`BL-073` Show image-inspector size controls only when useful](docs/design/backlog/BL-073-useful-image-inspector-size-control.md):
+  **Ready.** Keep image inspection available when it enlarges an inline image,
+  but show the actual-size toggle only when it produces a materially different
+  and useful view. Do not present an ineffective actual-size control for SVG.
+- [`BL-074` Discoverable horizontal navigation for long tables](docs/design/backlog/BL-074-discoverable-table-horizontal-navigation.md):
+  **Ready.** Make hidden columns evident without relying on an operating-system
+  scrollbar, and keep simple horizontal navigation controls available while a
+  tall table passes through the viewport.
+
 ## External Gate
 
 These items have high product value but require an external account, publishing
