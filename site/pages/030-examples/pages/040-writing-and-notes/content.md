@@ -73,7 +73,7 @@ the filename and copy control without adding a toolbar to untitled examples.
 
 Use an ordinary Markdown table for structured comparisons:
 
-| Content | Source | Norna behavior |
+| Content {row-header} | Source | Norna behavior |
 | --- | --- | --- |
 | Prose | Markdown | Reflows within the selected reading width. |
 | Detailed image | `image-stack` | Links to the original and may open in an inspector. |
@@ -87,6 +87,9 @@ Long tables keep their column headings below the sticky site header. When a
 table also scrolls horizontally, an enhanced page synchronizes a visual copy
 of those headings while preserving the original table as the only semantic
 representation.
+When the first column uniquely names the rows, add `{row-header}` after its
+heading. Norna emits accessible row headings and keeps that column visible
+when the table must scroll sideways.
 See the [Markdown-table reference](https://github.com/janga/norna/blob/main/docs/content.md#tables)
 for the layout order, bounded-container rule, and no-JavaScript fallback.
 

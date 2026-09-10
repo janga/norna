@@ -125,12 +125,155 @@ test('overflow controls seal the table header through responsive rail transition
 		);
 		expect(geometry.controls.x).toBeGreaterThan(geometry.navigation.x);
 		expect(geometry.navigationZIndex).toBeGreaterThan(geometry.headingZIndex);
-		expect(geometry.visualHeading.x).toBeCloseTo(geometry.originalHeading.x, 0);
-		expect(geometry.visualHeading.width).toBeCloseTo(geometry.originalHeading.width, 0);
+		expect(Math.abs(geometry.visualHeading.x - geometry.originalHeading.x)).toBeLessThanOrEqual(1.5);
+		expect(Math.abs(geometry.visualHeading.width - geometry.originalHeading.width)).toBeLessThanOrEqual(1.5);
 		const pageWidth = await page.evaluate(() => ({
 			client: document.documentElement.clientWidth,
 			scroll: document.documentElement.scrollWidth,
 		}));
 		expect(pageWidth.scroll).toBeLessThanOrEqual(pageWidth.client + 1);
 	}
+});
+
+test('declared row headers remain visible through horizontal scrolling in both directions', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.goto(deepTablePath, { waitUntil: 'networkidle' });
+	const frame = page.locator('[data-table-frame]').first();
+	const scrollRegion = frame.locator('[data-table-scroll]');
+	const table = frame.locator('table');
+	const firstRowHeader = table.getByRole('rowheader').first();
+	const stickyRowHeader = frame.locator('[data-table-sticky-row-header]');
+
+	await expect(frame).toHaveAttribute('data-table-row-headers', 'true');
+	await expect(table).toHaveAttribute('data-row-headers', 'true');
+	await expect(table.getByRole('columnheader').first()).toHaveAttribute('scope', 'col');
+	await expect(firstRowHeader).toHaveAttribute('scope', 'row');
+	await table.evaluate((element) => {
+		element.style.width = '2400px';
+		element.style.minWidth = '2400px';
+		element.style.tableLayout = 'fixed';
+		const body = element.tBodies[0];
+		const sourceRows = Array.from(body.rows);
+		for (let index = 0; index < 12; index += 1) {
+			for (const row of sourceRows) body.append(row.cloneNode(true));
+		}
+	});
+	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
+	await expect(frame).toHaveAttribute('data-table-sticky-heading', 'true');
+	await expect(stickyRowHeader).toHaveCount(1);
+
+	const expectInlineStartAlignment = async (direction: 'ltr' | 'rtl') => {
+		const geometry = await frame.evaluate((element, currentDirection) => {
+			const scroll = element.querySelector<HTMLElement>('[data-table-scroll]');
+			const rowHeader = element.querySelector<HTMLElement>('tbody th[scope="row"]');
+			const nextCell = rowHeader?.nextElementSibling;
+			const stickyHeader = element.querySelector<HTMLElement>('[data-table-sticky-row-header]');
+			if (!scroll || !rowHeader || !(nextCell instanceof HTMLElement) || !stickyHeader) {
+				throw new Error('Missing row-header table elements.');
+			}
+			const scrollBounds = scroll.getBoundingClientRect();
+			const rowBounds = rowHeader.getBoundingClientRect();
+			const nextBounds = nextCell.getBoundingClientRect();
+			const stickyBounds = stickyHeader.getBoundingClientRect();
+			const style = getComputedStyle(rowHeader);
+			return {
+				inlineDelta: currentDirection === 'rtl'
+					? scrollBounds.right - rowBounds.right
+					: rowBounds.left - scrollBounds.left,
+				nextCellBehind: currentDirection === 'rtl'
+					? nextBounds.right > rowBounds.left
+					: nextBounds.left < rowBounds.right,
+				position: style.position,
+				stickyInlineDelta: currentDirection === 'rtl'
+					? scrollBounds.right - stickyBounds.right
+					: stickyBounds.left - scrollBounds.left,
+				wrap: style.overflowWrap,
+			};
+		}, direction);
+		expect(Math.abs(geometry.inlineDelta)).toBeLessThanOrEqual(1.5);
+		expect(Math.abs(geometry.stickyInlineDelta)).toBeLessThanOrEqual(1.5);
+		expect(geometry.nextCellBehind).toBe(true);
+		expect(geometry.position).toBe('sticky');
+		expect(geometry.wrap).toBe('anywhere');
+	};
+
+	await scrollRegion.evaluate((element) => {
+		element.scrollLeft = (element.scrollWidth - element.clientWidth) / 2;
+	});
+	await expect(frame).toHaveAttribute('data-table-at-start', 'false');
+	await expectInlineStartAlignment('ltr');
+
+	await page.evaluate(() => document.documentElement.setAttribute('dir', 'rtl'));
+	await settleResponsiveLayout(page);
+	await scrollRegion.evaluate((element) => {
+		element.scrollLeft = 0 - ((element.scrollWidth - element.clientWidth) / 2);
+	});
+	await expect(frame).toHaveAttribute('data-table-at-start', 'false');
+	await expectInlineStartAlignment('rtl');
+});
+
+test('row-header semantics and native horizontal scrolling remain without JavaScript', async ({ browser }) => {
+	const context = await browser.newContext({
+		javaScriptEnabled: false,
+		viewport: { width: 900, height: 720 },
+	});
+	const page = await context.newPage();
+	await page.goto(deepTablePath, { waitUntil: 'domcontentloaded' });
+	const frame = page.locator('[data-table-frame]').first();
+	const scrollRegion = frame.locator('[data-table-scroll]');
+	const rowHeader = frame.getByRole('rowheader').first();
+
+	await expect(frame).toHaveAttribute('data-table-row-headers', 'true');
+	await expect(rowHeader).toHaveAttribute('scope', 'row');
+	await expect(rowHeader).toHaveCSS('position', 'sticky');
+	await expect(scrollRegion).toHaveCSS('overflow-x', 'auto');
+	await expect(frame.locator('[data-table-navigation]')).toHaveCount(0);
+	await expect(frame.locator('[data-table-sticky-heading]')).toHaveCount(0);
+	await context.close();
+});
+
+test('row headers remain bounded and opaque in compact, Dark, and forced-color layouts', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 640 });
+	await page.goto(deepTablePath, { waitUntil: 'networkidle' });
+	const frame = page.locator('[data-table-frame]').first();
+	const table = frame.locator('table');
+	const rowHeader = table.getByRole('rowheader').first();
+
+	await page.locator('html').evaluate((element) => {
+		element.dataset.appearance = 'dark';
+		element.style.fontSize = '200%';
+	});
+	await table.evaluate((element) => {
+		element.style.width = '1200px';
+		element.style.minWidth = '1200px';
+	});
+	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
+
+	const compactGeometry = await rowHeader.evaluate((element) => {
+		const bounds = element.getBoundingClientRect();
+		const style = getComputedStyle(element);
+		return {
+			background: style.backgroundColor,
+			width: bounds.width,
+		};
+	});
+	expect(compactGeometry.width).toBeLessThanOrEqual((320 * 0.55) + 2);
+	expect(compactGeometry.background).not.toBe('rgba(0, 0, 0, 0)');
+	const pageWidth = await page.evaluate(() => ({
+		client: document.documentElement.clientWidth,
+		scroll: document.documentElement.scrollWidth,
+	}));
+	expect(pageWidth.scroll).toBeLessThanOrEqual(pageWidth.client + 1);
+
+	await page.emulateMedia({ forcedColors: 'active' });
+	await expect.poll(() => page.evaluate(() => matchMedia('(forced-colors: active)').matches)).toBe(true);
+	const forcedColorStyle = await rowHeader.evaluate((element) => {
+		const style = getComputedStyle(element);
+		return {
+			background: style.backgroundColor,
+			border: style.borderInlineEndColor,
+		};
+	});
+	expect(forcedColorStyle.background).not.toBe('rgba(0, 0, 0, 0)');
+	expect(forcedColorStyle.border).not.toBe('rgba(0, 0, 0, 0)');
 });

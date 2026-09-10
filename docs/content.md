@@ -407,6 +407,29 @@ Use ordinary GFM table syntax for compact comparisons and structured data:
 | Images | Managed | Local source images stay with their page. |
 ```
 
+When the first column uniquely names each row, append `{row-header}` to that
+column's heading:
+
+```md
+| Feature {row-header} | State | Detail |
+| --- | --- | --- |
+| Links | Checked | Internal destinations are validated. |
+| Images | Managed | Local source images stay with their page. |
+```
+
+Norna then emits the first cell in every body row as `<th scope="row">`. If
+the table must scroll horizontally, that row-heading column remains visible so
+the reader can identify the row while inspecting later columns. The top-left
+heading stays visible where the sticky row and column headings meet. Tables
+that fit retain their natural presentation, and tables without `{row-header}`
+retain ordinary GFM table markup.
+
+Use `{row-header}` exactly once, as the final content in the first column
+heading. Every body row must have a non-empty, unique first cell. Norna reports
+violations through `content:check` and editor diagnostics instead of guessing
+which cells are row headings. A table inside a callout retains the row-heading
+semantics but does not claim page-level space for a sticky column.
+
 Norna preserves the native table, column headings, and cell relationships. A
 top-level table then uses the smallest layout area in which its browser-rendered
 columns fit:

@@ -517,6 +517,42 @@ ul {
 	color: inherit;
 }
 
+.norna-table-frame[data-table-row-headers='true'] table {
+	--table-row-header-min-width: min(7ch, 24vw);
+	--table-row-header-max-width: min(18rem, 55vw);
+}
+
+.norna-table-frame[data-table-row-headers='true'] :is(
+	thead th:first-child,
+	tbody th[scope='row'],
+	.norna-table-sticky-heading-cell-row-header
+) {
+	min-width: var(--table-row-header-min-width);
+	max-width: var(--table-row-header-max-width);
+	border-inline-end: 1px solid color-mix(in srgb, currentColor 38%, transparent);
+	background: var(--section-background-color, var(--color-page));
+	overflow-wrap: anywhere;
+	text-align: start;
+}
+
+.section-markdown > .norna-table-frame[data-table-row-headers='true'] :is(
+	thead th:first-child,
+	tbody th[scope='row']
+) {
+	position: sticky;
+	inset-inline-start: 0;
+	z-index: 2;
+}
+
+.section-markdown > .norna-table-frame[data-table-row-headers='true'] thead th:first-child,
+.norna-table-sticky-heading-cell-row-header {
+	z-index: 3;
+}
+
+.norna-table-frame[data-table-row-headers='true']::before {
+	opacity: 0 !important;
+}
+
 .norna-table-frame::before,
 .norna-table-frame::after {
 	position: absolute;

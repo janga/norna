@@ -2,6 +2,7 @@ import { defineMdastPlugin } from 'satteri';
 import { nornaBlockTypes } from './norna-markdown-blocks.mjs';
 import projectConfig from './project-config.mjs';
 import { getSemanticCalloutMarker } from './semantic-callouts.mjs';
+import { applyTableRowHeaderDeclaration } from './table-row-headers.mjs';
 
 const stateKey = 'nornaMarkdownRender';
 
@@ -96,5 +97,8 @@ export const nornaMarkdownRenderPlugin = defineMdastPlugin({
 			type: 'html',
 			value: `<norna-region data-index="${regionIndex}"></norna-region>`,
 		});
+	},
+	table(node, context) {
+		applyTableRowHeaderDeclaration(node, context);
 	},
 });

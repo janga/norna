@@ -76,6 +76,13 @@ compact sticky control group provides previous and next column groups while a
 long table passes through the viewport. The controls operate the native
 horizontal scroll region and are omitted when the table fits.
 
+An author can explicitly identify the first column as row headings. Norna then
+preserves those header relationships in the native table and keeps the row
+heading visible during horizontal scrolling. The sticky column remains bounded
+on narrow screens, uses an opaque palette-derived surface, and does not apply
+to an ordinary table whose author has not declared row headings. See
+[Tables](content.md#tables).
+
 Norna's layout is designed to tolerate browser zoom, text resized to `200%`,
 and increased line, paragraph, letter, and word spacing. Side notes use the
 margin only while their actual container has enough room; otherwise they return

@@ -15,6 +15,7 @@ import {
 	nornaBlockTypes,
 } from './norna-markdown-blocks.mjs';
 import { getSemanticCalloutDiagnostics } from './semantic-callouts.mjs';
+import { getTableRowHeaderDiagnostics } from './table-row-headers.mjs';
 
 const normalizeMarkdownWithOffsets = (source) => {
 	const input = String(source);
@@ -175,7 +176,17 @@ const getRegionContent = (regionMarkdown, blocks, regionOffset) => {
 	return content.filter((item) => item.kind !== 'markdown' || item.markdown.length > 0);
 };
 
-const createRegion = ({ calloutErrors, codeFenceErrors, heading, nextHeading, headings, source, label, lineOffset }) => {
+const createRegion = ({
+	calloutErrors,
+	codeFenceErrors,
+	heading,
+	nextHeading,
+	headings,
+	source,
+	label,
+	lineOffset,
+	tableErrors,
+}) => {
 	const endOffset = nextHeading?.index ?? source.length;
 	const markdown = source.slice(heading.index, endOffset).trimEnd();
 	const regionLineOffset = lineOffset + heading.line - 1;
@@ -216,6 +227,7 @@ const createRegion = ({ calloutErrors, codeFenceErrors, heading, nextHeading, he
 		notes: noteResult.notes,
 		noteErrors: noteResult.errors,
 		startOffset: heading.index,
+		tableErrors: tableErrors.filter((error) => error.offset >= heading.index && error.offset < endOffset),
 		title: heading.title,
 	};
 };
@@ -231,6 +243,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		label,
 		lineOffset,
 	});
+	const tableErrors = getTableRowHeaderDiagnostics(tree, { label, lineOffset, source });
 	const structuralHeadings = headings.filter((heading) => heading.depth <= 2);
 	const prelude = structuralHeadings.length > 0
 		? source.slice(0, structuralHeadings[0].index)
@@ -245,6 +258,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		label,
 		lineOffset,
 		source,
+		tableErrors,
 	}));
 	const headingIssues = getHeadingIdentifierIssues(headings);
 	const headingDiagnostics = getHeadingDiagnostics(headings, lineOffset);
@@ -272,6 +286,14 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		severity: 'error',
 	})));
 	const codeFenceDiagnostics = regions.flatMap((region) => region.codeFenceErrors.map((error) => ({
+		code: error.code,
+		fix: error.fix,
+		line: error.line,
+		message: error.message,
+		regionId: region.id,
+		severity: 'error',
+	})));
+	const tableDiagnostics = regions.flatMap((region) => region.tableErrors.map((error) => ({
 		code: error.code,
 		fix: error.fix,
 		line: error.line,
@@ -310,6 +332,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 			...noteDiagnostics,
 			...calloutDiagnostics,
 			...codeFenceDiagnostics,
+			...tableDiagnostics,
 		],
 		headings,
 		headingIssues,

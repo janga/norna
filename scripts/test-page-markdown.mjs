@@ -294,4 +294,65 @@ assert.equal(codeMetadataWithoutLanguage.diagnostics[0].code, 'invalid-code-fenc
 assert.match(codeMetadataWithoutLanguage.diagnostics[0].message, /requires a language/);
 assert.match(codeMetadataWithoutLanguage.diagnostics[0].fix, /```js title="src\/config\.js" \{2\}/);
 
+const validRowHeaders = await parsePageMarkdown(`# Row headers
+
+## Comparison {#comparison}
+
+| **Feature** {row-header} | State |
+| --- | --- |
+| Search | Ready |
+| Page moves | Planned |
+`, { label: 'row-headers.md' });
+assert.deepEqual(validRowHeaders.diagnostics, []);
+
+for (const [table, expectedCode, expectedMessage] of [
+	[
+		'| Feature | State {row-header} |\n| --- | --- |\n| Search | Ready |',
+		'invalid-table-row-header-column',
+		/must appear in the first column heading/,
+	],
+	[
+		'| Feature {row-header} {row-header} | State |\n| --- | --- |\n| Search | Ready |',
+		'repeated-table-row-header-marker',
+		/may contain \{row-header\} only once/,
+	],
+	[
+		'| Feature {row-header} detail | State |\n| --- | --- |\n| Search | Ready |',
+		'invalid-table-row-header-marker-position',
+		/must be the final content/,
+	],
+	[
+		'| {row-header} | State |\n| --- | --- |\n| Search | Ready |',
+		'empty-table-row-header-heading',
+		/needs a visible column heading/,
+	],
+	[
+		'| Feature {row-header} | State |\n| --- | --- |\n| | Ready |',
+		'empty-table-row-header',
+		/has an empty row header/,
+	],
+	[
+		'| Feature {row-header} | State |\n| --- | --- |\n| Search | Ready |\n| search | Planned |',
+		'duplicate-table-row-header',
+		/Row header "search" is repeated/,
+	],
+	[
+		'| Feature {row-header} | State |\n| --- | --- |',
+		'empty-table-row-header-body',
+		/needs at least one body row/,
+	],
+]) {
+	const invalidRowHeaders = await parsePageMarkdown(`# Invalid row headers
+
+## Comparison {#comparison}
+
+${table}
+`, { label: 'invalid-row-headers.md' });
+	assert.ok(invalidRowHeaders.diagnostics.some(({ code }) => code === expectedCode));
+	assert.match(
+		invalidRowHeaders.diagnostics.find(({ code }) => code === expectedCode)?.message ?? '',
+		expectedMessage,
+	);
+}
+
 console.log('Page Markdown model tests passed.');

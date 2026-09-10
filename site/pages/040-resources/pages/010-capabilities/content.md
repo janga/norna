@@ -28,8 +28,8 @@ when you need exact syntax, accepted values, defaults, or error behavior.
 - **Page metadata.** Optional frontmatter supplies a page description and old
   URL aliases without becoming visible prose.
 - **Adaptive data tables.** Markdown tables retain native semantics, use vacant
-  page space only when needed, keep headings visible through long data, and
-  fall back to a local horizontal scroller.
+  page space only when needed, keep column headings and declared row headings
+  visible through long data, and fall back to a local horizontal scroller.
 
 Exact behavior: [Content](https://github.com/janga/norna/blob/main/docs/content.md).
 

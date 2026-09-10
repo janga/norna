@@ -184,7 +184,7 @@ reading problems rather than isolated decorations. It preserves their semantic
 HTML first, then uses available page lanes and optional controls where those
 improve inspection.
 
-| Content | Normal space | When space narrows | Optional enhancement | Baseline that remains |
+| Content {row-header} | Normal space | When space narrows | Optional enhancement | Baseline that remains |
 | --- | --- | --- | --- | --- |
 | Wide table | Text measure, then free page lanes | Horizontal overflow is exposed | Sticky headings and scroll controls | Focusable native table frame |
 | Side note | Free margin beside its reference | Returns to the reading flow | None required | Linked note and reference |

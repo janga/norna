@@ -23,7 +23,7 @@ it must never disappear under navigation or create horizontal page overflow.
 When the complete table fits, scroll down its rows and verify that the column
 headings remain below the sticky site header until the table ends.
 
-| Check | Viewport | Reading width | Navigation state | Expected lane | Overflow cue | Keyboard scroll | Result |
+| Check {row-header} | Viewport | Reading width | Navigation state | Expected lane | Overflow cue | Keyboard scroll | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | A01 | 1440 x 900 | Standard | Both rails visible | Prose then right | Only if needed | Available when clipped | Review |
 | A02 | 1440 x 900 | Wide | Both rails visible | Prose then right | Only if needed | Available when clipped | Review |

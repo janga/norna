@@ -47,6 +47,7 @@ const labels = projectConfig.locale.labels;
 		const isTopLevel = frame.parentElement?.classList.contains('section-markdown') === true;
 		const tableHead = table?.tHead;
 		const headingCells = Array.from(tableHead?.querySelectorAll<HTMLTableCellElement>('th') ?? []);
+		const hasRowHeaders = frame.dataset.tableRowHeaders === 'true';
 		let scheduledFrame: number | null = null;
 		let stickyHeading: HTMLElement | null = null;
 		let stickyHeadingTrack: HTMLElement | null = null;
@@ -114,7 +115,19 @@ const labels = projectConfig.locale.labels;
 			if (!stickyHeading || !stickyHeadingTrack || !table) return;
 			const layerBounds = stickyHeading.getBoundingClientRect();
 			const tableBounds = table.getBoundingClientRect();
-			stickyHeadingTrack.style.transform = `translateX(${tableBounds.left - layerBounds.left}px)`;
+			const trackOffset = tableBounds.left - layerBounds.left;
+			stickyHeadingTrack.style.transform = `translateX(${trackOffset}px)`;
+
+			const rowHeader = stickyHeadingTrack.querySelector<HTMLElement>('[data-table-sticky-row-header]');
+			if (!rowHeader) return;
+			const rowHeaderLeft = Number.parseFloat(rowHeader.style.left) || 0;
+			const rowHeaderWidth = Number.parseFloat(rowHeader.style.width) || 0;
+			const isRightToLeft = getComputedStyle(table).direction === 'rtl';
+			const naturalLeft = tableBounds.left + rowHeaderLeft;
+			const desiredLeft = isRightToLeft
+				? layerBounds.right - rowHeaderWidth
+				: layerBounds.left;
+			rowHeader.style.transform = `translateX(${desiredLeft - naturalLeft}px)`;
 		};
 
 		const synchronizeStickyHeadingGeometry = () => {
@@ -128,7 +141,7 @@ const labels = projectConfig.locale.labels;
 			frame.style.setProperty('--table-sticky-heading-height', `${headingBounds.height}px`);
 			stickyHeadingTrack.style.width = `${tableBounds.width}px`;
 			stickyHeadingTrack.style.height = `${headingBounds.height}px`;
-			stickyHeadingTrack.replaceChildren(...headingCells.map((headingCell) => {
+			stickyHeadingTrack.replaceChildren(...headingCells.map((headingCell, columnIndex) => {
 				const cellBounds = headingCell.getBoundingClientRect();
 				const computedStyle = getComputedStyle(headingCell);
 				const visualCell = document.createElement('div');
@@ -147,6 +160,10 @@ const labels = projectConfig.locale.labels;
 				visualCell.style.whiteSpace = computedStyle.whiteSpace;
 				visualCell.style.wordBreak = computedStyle.wordBreak;
 				visualCell.style.overflowWrap = computedStyle.overflowWrap;
+				if (hasRowHeaders && columnIndex === 0) {
+					visualCell.classList.add('norna-table-sticky-heading-cell-row-header');
+					visualCell.dataset.tableStickyRowHeader = '';
+				}
 				visualCell.append(...Array.from(headingCell.childNodes, (node) => node.cloneNode(true)));
 				removeDuplicateIdentity(visualCell);
 				return visualCell;

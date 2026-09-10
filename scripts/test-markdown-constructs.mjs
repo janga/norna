@@ -252,7 +252,7 @@ test('Markdown tables retain native semantics inside one focusable overflow fram
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Data table
 
-| Feature | Status | Notes |
+| Feature {row-header} | Status | Notes |
 | --- | --- | --- |
 | Native table | Ready | Header and cell relationships stay intact. |
 | Wide layout | Ready | The wrapper owns horizontal overflow. |
@@ -269,16 +269,48 @@ test('Markdown tables retain native semantics inside one focusable overflow fram
 		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
 		assert.match(
 			html,
-			/<div\b(?=[^>]*class="norna-table-frame content-block-note-lane-boundary")(?=[^>]*data-table-frame)[^>]*><div\b(?=[^>]*class="norna-table-scroll")(?=[^>]*data-table-scroll)(?=[^>]*tabindex="0")[^>]*><table>/,
+			/<div\b(?=[^>]*class="norna-table-frame content-block-note-lane-boundary")(?=[^>]*data-table-frame)(?=[^>]*data-table-row-headers="true")[^>]*><div\b(?=[^>]*class="norna-table-scroll")(?=[^>]*data-table-scroll)(?=[^>]*tabindex="0")[^>]*><table data-row-headers="true">/,
 		);
-		assert.match(html, /<thead>[\s\S]*?<th>Feature<\/th>[\s\S]*?<th>Status<\/th>[\s\S]*?<th>Notes<\/th>[\s\S]*?<\/thead>/);
-		assert.match(html, /<tbody>[\s\S]*?<td>Native table<\/td>[\s\S]*?<td>Ready<\/td>[\s\S]*?<\/tbody>/);
+		assert.match(html, /<thead>[\s\S]*?<th scope="col">Feature<\/th>[\s\S]*?<th scope="col">Status<\/th>[\s\S]*?<th scope="col">Notes<\/th>[\s\S]*?<\/thead>/);
+		assert.match(html, /<tbody>[\s\S]*?<th scope="row">Native table<\/th>[\s\S]*?<td>Ready<\/td>[\s\S]*?<\/tbody>/);
+		assert.doesNotMatch(html, /\{row-header\}/);
 		assert.match(
 			html,
 			/<aside\b[^>]*class="norna-callout norna-callout-note"[^>]*>[\s\S]*?<div\b(?=[^>]*class="norna-table-frame content-block-note-lane-boundary")(?=[^>]*data-table-frame)[^>]*>[\s\S]*?<th>Scope<\/th>[\s\S]*?<\/aside>/,
 			'A table inside a callout must remain a nested native table.',
 		);
-		assert.equal((html.match(/<table>/gu) ?? []).length, 2, 'Each source table must render exactly once.');
+		assert.equal(
+			(html.match(/data-table-row-headers="true"/gu) ?? []).length,
+			1,
+			'Only the explicitly declared table may receive the row-header contract.',
+		);
+		assert.equal((html.match(/<table\b/gu) ?? []).length, 2, 'Each source table must render exactly once.');
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('content:check rejects ambiguous row-header tables', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Invalid table
+
+## Comparison {#comparison}
+
+| Feature {row-header} | State |
+| --- | --- |
+| Search | Ready |
+| search | Planned |
+`);
+
+		await assert.rejects(
+			runContentScript(siteDir, ['--check']),
+			(error) => {
+				assert.match(error.output, /Row header "search" is repeated/);
+				assert.match(error.output, /Give every row a unique label/);
+				return true;
+			},
+		);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}

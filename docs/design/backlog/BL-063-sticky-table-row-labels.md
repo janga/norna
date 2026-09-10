@@ -10,16 +10,23 @@ changes naturally fitting tables.
 This extends [`BL-055` Wide, readable tables with sticky headings](BL-055-wide-readable-tables.md)
 and [`BL-060` Adaptive table width escalation](BL-060-adaptive-table-width.md).
 
-## Decision Required
+## Authoring Contract
 
 GFM tables identify column headings but provide no standard Markdown syntax for
-body-row headers. Norna must not assume that every first column labels its row.
-Before implementation, select one explicit authoring rule that produces
-`<th scope="row">` cells and enables the sticky column.
+body-row headers. Norna therefore does not assume that every first column labels
+its row. Append `{row-header}` to the first column heading when every first
+body cell uniquely identifies its row:
 
-The decision should prefer a small extension adjacent to the table over page
-frontmatter, inferred wording, or a general table-configuration language. It
-must also define diagnostics for missing, repeated, or empty row labels.
+```md
+| Feature {row-header} | State |
+| --- | --- |
+| Search | Ready |
+```
+
+The marker must occur exactly once and be the final content in the first
+column heading. Each body row then requires a non-empty, unique first cell.
+This small declaration stays adjacent to the table and avoids page
+frontmatter, inferred wording, or a general table-configuration language.
 
 ## Presentation Contract
 
@@ -57,3 +64,11 @@ CSS is bounded, but the authoring model, Markdown transformation, diagnostics,
 and accessible table semantics all change. An automatic first-column rule would
 be simpler to build but is rejected because it can assign false relationships
 to arbitrary data.
+
+## Implementation Status
+
+Implemented, visually approved, documented, and regression-tested. The parser
+validates the explicit `{row-header}` declaration, rendering emits native
+column and row header scopes, and browser coverage exercises horizontal
+scrolling, LTR and RTL directions, compact layouts, Dark appearance, forced
+colors, and the no-JavaScript fallback.

@@ -37,10 +37,6 @@ action, or another user-owned prerequisite. They do not block `Now` or `Next`.
 These accepted maintenance and workflow outcomes follow the ordered product
 work above unless a concrete defect raises their urgency.
 
-- ★ [`BL-063` Sticky row labels in wide tables](docs/design/backlog/BL-063-sticky-table-row-labels.md):
-  **Needs one semantics decision.** Preserve row identity during horizontal
-  table scrolling only after Norna has an explicit, accessible way to identify
-  the row-header column.
 - `BL-012` **Needs a scoped reproducer.** Improve generated-image diagnostics
   and cache reuse reporting, then decide whether a repair or reset command is
   still necessary.

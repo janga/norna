@@ -610,7 +610,8 @@
 	}
 
 	.norna-table-sticky-heading,
-	.norna-table-sticky-heading-cell {
+	.norna-table-sticky-heading-cell,
+	.norna-table-frame[data-table-row-headers='true'] tbody th[scope='row'] {
 		border-color: CanvasText;
 		background: Canvas;
 		color: CanvasText;

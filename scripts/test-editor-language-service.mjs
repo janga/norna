@@ -349,6 +349,14 @@ try {
 		source: homeSource.replace('Text with a missing note {note-ref}.', '![Portrait](portrait.jpg)'),
 	});
 	assert.ok(markdownImageDiagnostics.some(({ code }) => code === 'local-markdown-image'));
+	const rowHeaderDiagnostics = await getMarkdownDiagnostics({
+		documentPath: homeContentPath,
+		source: `${homeSource}\n| Feature {row-header} | State |\n| --- | --- |\n| Search | Ready |\n| search | Planned |\n`,
+	});
+	assert.ok(rowHeaderDiagnostics.some(({ code, message }) => (
+		code === 'duplicate-table-row-header'
+		&& message.includes('Give every row a unique label')
+	)));
 
 	await writeFile(pageContentPath, pageSource.replace('Page content.', `\`\`\`image-stack
 - image: portrait.jpg
