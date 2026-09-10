@@ -26,10 +26,6 @@ when implementation can begin.
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-072` First-row alignment for wrapped Page contents](docs/design/backlog/BL-072-page-contents-label-alignment.md):
-  **Ready.** Keep the visible Page contents label aligned with the first row
-  when the horizontal section links wrap onto additional rows.
-
 ## External Gate
 
 These items have high product value but require an external account, publishing

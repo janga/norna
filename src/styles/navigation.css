@@ -605,7 +605,7 @@
 
 .page-nav-inner {
 	display: flex;
-	align-items: center;
+	align-items: baseline;
 	justify-content: center;
 	gap: clamp(1.1rem, 2.5vw, 2rem);
 	width: min(calc(100% - (var(--content-gutter) * 2)), var(--page-width));

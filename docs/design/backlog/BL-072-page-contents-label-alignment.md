@@ -1,5 +1,11 @@
 # BL-072: First-Row Alignment For Wrapped Page Contents
 
+## Status
+
+Implemented on 2026-09-10. Horizontal Page contents navigation now uses first
+baseline alignment, with browser coverage for one row, two rows, localization,
+and 200% text enlargement.
+
 ## Outcome
 
 The visible Page contents label remains aligned with the first row of section

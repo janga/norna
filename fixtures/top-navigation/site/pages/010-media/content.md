@@ -29,3 +29,12 @@ Captions remain associated with the media they explain.
 The final section provides a stable destination for rapid consecutive navigation and history tests.
 
 Additional fixture text keeps the page long enough for consistent measurements at desktop and mobile viewport heights.
+
+## Responsive notes and table
+
+This deliberately long section label makes the horizontal Page contents list
+wrap near the compact-navigation boundary. The visible list label should remain
+aligned with the first row instead of being centered between both rows.
+
+Additional fixture text leaves enough space for direct fragment navigation to
+place the final heading below the sticky navigation.

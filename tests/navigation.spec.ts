@@ -134,6 +134,34 @@ const measureNavTextHitTargets = async (page) => page.locator(pageNavSelector).e
 	}).filter((link) => link.pathname === window.location.pathname)
 ));
 
+const measurePageNavigationRows = async (page) => page.locator('.page-nav-inner').evaluate((navigation) => {
+	const label = navigation.querySelector('.page-nav-label');
+	const links = Array.from(navigation.querySelectorAll('a'));
+	if (!(label instanceof HTMLElement) || links.length === 0) {
+		throw new Error('Expected a visible Page contents label and section links.');
+	}
+
+	const getBaseline = (element: Element) => {
+		const marker = document.createElement('span');
+		marker.setAttribute('aria-hidden', 'true');
+		marker.style.cssText = 'display:inline-block;width:0;height:0;padding:0;border:0;';
+		element.append(marker);
+		const baseline = marker.getBoundingClientRect().top;
+		marker.remove();
+		return baseline;
+	};
+	const rowTops = links
+		.map((link) => link.getBoundingClientRect().top)
+		.filter((top, index, tops) => tops.findIndex((candidate) => Math.abs(candidate - top) < 1) === index)
+		.sort((left, right) => left - right);
+
+	return {
+		firstLinkBaseline: getBaseline(links[0]),
+		labelBaseline: getBaseline(label),
+		rowTops,
+	};
+});
+
 test.describe('site navigation menus', () => {
 	test.use({
 		hasTouch: false,
@@ -149,6 +177,47 @@ test.describe('site navigation menus', () => {
 		await expect(page.locator('.page-nav-label')).toHaveText('Page contents');
 		await expect(page.locator(pageNavSelector).first()).toBeVisible();
 		await expect(page.locator('.site-nav-submenu a[href*="#"]')).toHaveCount(0);
+	});
+
+	test('aligns the Page contents label with the first row when links wrap', async ({ page }) => {
+		const representativeLabels = [
+			'Image stack',
+			'Image carousel',
+			'Portrait carousel',
+			'Card list',
+			'Responsive notes and table',
+		];
+		for (const scenario of [
+			{ expectedRows: 1, label: 'Page contents', textSize: '100%', width: 1280 },
+			{ expectedRows: 2, label: 'Page contents', textSize: '100%', width: 1024 },
+			{ expectedRows: null, label: 'Seiteninhalte und Abschnitte', textSize: '200%', width: 1280 },
+		]) {
+			await page.setViewportSize({ width: scenario.width, height: 900 });
+			await openSite(page);
+			await page.locator('html').evaluate((root, textSize) => {
+				root.style.fontSize = textSize;
+			}, scenario.textSize);
+			await page.locator('.page-nav-label').evaluate((label, text) => {
+				label.textContent = text;
+			}, scenario.label);
+			await page.locator(pageNavSelector).evaluateAll((links, labels) => {
+				for (const [index, link] of links.entries()) link.textContent = labels[index];
+			}, representativeLabels);
+
+			const measurement = await measurePageNavigationRows(page);
+			if (scenario.expectedRows === null) {
+				expect(measurement.rowTops.length, `${scenario.width}px enlarged link rows`).toBeGreaterThan(1);
+			} else {
+				expect(measurement.rowTops, `${scenario.width}px link rows`).toHaveLength(scenario.expectedRows);
+			}
+			expect(
+				Math.abs(measurement.labelBaseline - measurement.firstLinkBaseline),
+				`${scenario.width}px first baseline`,
+			).toBeLessThan(1);
+			if (measurement.rowTops.length > 1) {
+				expect(measurement.rowTops[1] - measurement.rowTops[0]).toBeGreaterThan(20);
+			}
+		}
 	});
 
 	test('marks an activated current-page section', async ({ page }) => {
