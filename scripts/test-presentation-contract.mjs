@@ -206,8 +206,8 @@ assert.match(
 );
 assert.match(
 	stylesheet,
-	/:root\[data-appearance='dark'\] :is\(\.tree-local-navigation, \.mobile-site-nav\)\s*\{[\s\S]*?var\(--color-surface-emphasis-background\) 64%[\s\S]*?var\(--color-surface-soft-background\)/u,
-	'Dark persistent and compact navigation must share a palette-derived current-item marker',
+	/:root\[data-appearance='dark'\][\s\S]*?:is\(\.tree-local-navigation, \.mobile-site-nav, \.page-contents-navigation\)\s*\{[\s\S]*?var\(--color-surface-emphasis-background\) 64%[\s\S]*?var\(--color-surface-soft-background\)/u,
+	'Dark persistent, compact, and Page contents navigation must share a palette-derived current-item marker',
 );
 assert.match(
 	stylesheet,
