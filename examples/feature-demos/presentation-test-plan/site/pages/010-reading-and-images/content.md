@@ -31,6 +31,25 @@ number, note number, and paragraph position remain stable.{note-ref}
 
 {note: Focus reading may release a navigation lane for this note, but it must not alter the note's meaning or reading order.}
 
+## Adaptive Table With One Rail {#adaptive-table}
+
+This page has the ordinary left page rail without a separate Page contents
+rail. Resize the viewport gradually and switch between Narrow, Standard, and
+Wide. The table should use vacant space toward the right before it adds an
+internal horizontal scroller. It must never overlap the left navigation or
+widen the complete document.
+
+| Check | Viewport | Reading width | Navigation state | Note placement | Table lane | Overflow cue | Keyboard access | Expected result |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S01 | 1600 x 1000 | Narrow | Left rail visible | Margin when it fits | Smallest sufficient lane | Hidden if complete | No local scroll needed | Stable |
+| S02 | 1440 x 900 | Standard | Left rail visible | Margin when it fits | Prose then right | Shown only if clipped | Tab reaches overflow only | Stable |
+| S03 | 1280 x 800 | Wide | Left rail visible | Inline if needed | Available canvas | Directional when clipped | Arrow keys move columns | Stable |
+| S04 | 1100 x 800 | Standard | Left rail visible | Inline | Available canvas | Directional when clipped | Focus remains visible | Stable |
+| S05 | 960 x 800 | Standard | Compact navigation | Inline | Content width | Directional when clipped | Last column reachable | Stable |
+| S06 | 768 x 900 | Narrow | Compact navigation | Inline | Content width | Directional when clipped | Last column reachable | Stable |
+| S07 | 390 x 844 | Wide | Compact navigation | Inline | Mobile content width | Directional when clipped | Swipe or keyboard | Stable |
+| S08 | 320 x 800 | Narrow | Compact navigation | Inline | Mobile content width | Directional when clipped | No document overflow | Stable |
+
 ## Tall Explanatory Image {#tall-explanatory-image}
 
 At a wide desktop viewport, scroll slowly through the first image. Its caption
