@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most three active items in exact technical order.
 
+- [`BL-077` What Norna Does product tour](docs/design/backlog/BL-077-what-norna-does-product-tour.md):
+  **Ready.** Add an evidence-led product tour between the homepage and Getting
+  Started that demonstrates Norna's writing, structure, presentation,
+  maintenance, resilience, and publishing model.
 - [`BL-076` Subtle table overflow controls](docs/design/backlog/BL-076-subtle-table-overflow-controls.md):
   **Ready.** Reduce the visual weight of the sticky table controls without
   weakening overflow discovery, keyboard access, or touch targets.
