@@ -249,7 +249,8 @@
 
 	.image-stack .managed-image-item[data-image-caption-placement='persistent'] > .image-meta {
 		position: absolute;
-		inset-block: 0;
+		inset-block-start: var(--image-persistent-caption-block-start, 0);
+		inset-block-end: var(--image-persistent-caption-block-end, 0);
 		inset-inline-start: var(--image-persistent-caption-inline-start);
 		width: var(--image-persistent-caption-width, var(--section-note-width, 12rem));
 		margin: 0;

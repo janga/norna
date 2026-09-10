@@ -24,10 +24,6 @@ No item is currently active.
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-075` Align persistent captions with the rendered image bottom](docs/design/backlog/BL-075-persistent-caption-bottom-alignment.md):
-  **Ready.** Preserve the caption's original flow space without extending its
-  sticky boundary below the rendered image. Release a persistent side caption
-  at the image bottom rather than at the padded figure bottom.
 - [`BL-073` Show image-inspector size controls only when useful](docs/design/backlog/BL-073-useful-image-inspector-size-control.md):
   **Ready.** Keep image inspection available when it enlarges an inline image,
   but show the actual-size toggle only when it produces a materially different

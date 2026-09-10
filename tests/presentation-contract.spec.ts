@@ -1073,18 +1073,39 @@ test('a tall image keeps its semantic caption visible in a vacant end lane', asy
 	]);
 	expect(stickyCaptionBounds?.y).toBeCloseTo(anchorOffset + 16, 0);
 
-	await figure.evaluate((element) => {
-		const details = element.querySelector<HTMLElement>('.image-details');
-		if (!details) throw new Error('Missing persistent caption details.');
-		const figureBottom = window.scrollY + element.getBoundingClientRect().bottom;
-		const anchor = Number.parseFloat(
-			getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
-		) || 0;
-		window.scrollTo(0, figureBottom - anchor - details.getBoundingClientRect().height + 20);
-	});
-	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
-	const releasedCaptionBounds = await captionDetails.boundingBox();
+	const measureReleasedCaption = async () => {
+		await figure.evaluate((element) => {
+			const image = element.querySelector<HTMLImageElement>('img');
+			const details = element.querySelector<HTMLElement>('.image-details');
+			if (!image || !details) throw new Error('Missing persistent caption image or details.');
+			const imageBottom = window.scrollY + image.getBoundingClientRect().bottom;
+			const anchor = Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
+			) || 0;
+			window.scrollTo(0, imageBottom - anchor - details.getBoundingClientRect().height + 20);
+		});
+		await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+		return Promise.all([image.boundingBox(), captionDetails.boundingBox()]);
+	};
+
+	const [releasedImageBounds, releasedCaptionBounds] = await measureReleasedCaption();
 	expect(releasedCaptionBounds?.y ?? Infinity).toBeLessThan(anchorOffset);
+	expect(Math.abs(
+		((releasedCaptionBounds?.y ?? 0) + (releasedCaptionBounds?.height ?? 0))
+		- ((releasedImageBounds?.y ?? 0) + (releasedImageBounds?.height ?? 0)),
+	)).toBeLessThanOrEqual(1);
+
+	await page.evaluate(() => window.scrollTo(0, 0));
+	await frame.evaluate((element) => {
+		element.style.paddingBlock = '18px 31px';
+		window.dispatchEvent(new Event('resize'));
+	});
+	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
+	const [offsetImageBounds, offsetCaptionBounds] = await measureReleasedCaption();
+	expect(Math.abs(
+		((offsetCaptionBounds?.y ?? 0) + (offsetCaptionBounds?.height ?? 0))
+		- ((offsetImageBounds?.y ?? 0) + (offsetImageBounds?.height ?? 0)),
+	)).toBeLessThanOrEqual(1);
 
 	const overflow = await getHorizontalOverflow(page);
 	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);

@@ -81,6 +81,8 @@ const labels = projectConfig.locale.labels;
 		figure.style.removeProperty('--image-persistent-caption-inline-start');
 		figure.style.removeProperty('--image-persistent-caption-width');
 		figure.style.removeProperty('--image-persistent-caption-reserve');
+		figure.style.removeProperty('--image-persistent-caption-block-start');
+		figure.style.removeProperty('--image-persistent-caption-block-end');
 	};
 
 	const updatePersistentCaption = (figure: HTMLElement) => {
@@ -121,13 +123,13 @@ const labels = projectConfig.locale.labels;
 			? imageBounds.left - layoutBounds.left - gap
 			: layoutBounds.right - imageBounds.right - gap;
 		const captionWidth = Math.min(preferredWidth, availableWidth);
-		if (captionWidth < persistentCaptionMinimumWidth || captionBounds.height > frameBounds.height) return;
+		if (captionWidth < persistentCaptionMinimumWidth || captionBounds.height > imageBounds.height) return;
 
 		const proposedBounds = new DOMRect(
 			isRightToLeft ? imageBounds.left - gap - captionWidth : imageBounds.right + gap,
-			frameBounds.top,
+			imageBounds.top,
 			captionWidth,
-			frameBounds.height,
+			imageBounds.height,
 		);
 		const laneClaims = Array.from(figure.closest('.site-section')?.querySelectorAll<HTMLElement>([
 			'.section-note',
@@ -140,9 +142,13 @@ const labels = projectConfig.locale.labels;
 		const inlineStart = isRightToLeft
 			? figureBounds.right - imageBounds.left + gap
 			: imageBounds.right - figureBounds.left + gap;
+		const blockStart = imageBounds.top - figureBounds.top;
+		const blockEnd = figureBounds.bottom - imageBounds.bottom;
 		figure.style.setProperty('--image-persistent-caption-inline-start', `${inlineStart}px`);
 		figure.style.setProperty('--image-persistent-caption-width', `${captionWidth}px`);
 		figure.style.setProperty('--image-persistent-caption-reserve', `${reserve}px`);
+		figure.style.setProperty('--image-persistent-caption-block-start', `${blockStart}px`);
+		figure.style.setProperty('--image-persistent-caption-block-end', `${blockEnd}px`);
 		figure.dataset.imageCaptionPlacement = 'persistent';
 	};
 
