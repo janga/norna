@@ -77,6 +77,7 @@
     "review:logs": "node scripts/review-environments.mjs logs",
     "review:stop": "node scripts/review-environments.mjs stop",
     "review:test": "node scripts/review-environments.mjs test",
+    "review:capture": "node scripts/review-environments.mjs capture",
     "review:scratch": "node scripts/review-environments.mjs scratch",
     "config:check": "node bin/norna.mjs config:check",
     "content:check": "node bin/norna.mjs content:check",

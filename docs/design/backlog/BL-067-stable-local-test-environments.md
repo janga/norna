@@ -7,6 +7,9 @@ and fixed manual-review URLs below. Registered browser suites reserve isolated
 ports internally, and the scratch workflow creates a disposable physical copy
 under `.local/`.
 
+[`BL-071` Reusable Playwright Review Captures](BL-071-reusable-playwright-review-captures.md)
+extends the same registry and permission boundary to disposable screenshots.
+
 ## Outcome
 
 Repeated visual reviews and browser regressions use named environments instead

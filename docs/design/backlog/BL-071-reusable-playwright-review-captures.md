@@ -1,5 +1,10 @@
 # BL-071: Reusable Playwright Review Captures
 
+## Status
+
+Implemented on 2026-09-10. The `review:capture` command uses the BL-067 target
+registry and writes disposable screenshots beneath `.local/review-captures/`.
+
 ## Outcome
 
 Visual inspection uses one repository-owned command instead of composing a new
@@ -38,7 +43,7 @@ The capture helper must not accept an arbitrary remote URL or arbitrary output
 path. A caller selects a registered target and a relative page path. The helper
 constructs the local URL and a safe output filename.
 
-## Proposed Command Contract
+## Command Contract
 
 Use one stable command shape:
 
@@ -46,11 +51,11 @@ Use one stable command shape:
 npm run review:capture -- <target> <relative-page> [options]
 ```
 
-The first version should support named viewport profiles for routine desktop,
-compact-desktop, and mobile review, plus bounded custom dimensions for precise
-responsive reproductions. It should also support Light and Dark appearance.
-Generated filenames should identify the target, page, viewport, and appearance
-without requiring the caller to supply a filesystem path.
+The command supports `desktop`, `compact`, and `mobile` viewport profiles, plus
+bounded `WIDTHxHEIGHT` dimensions for precise responsive reproductions. It also
+supports System, Light, and Dark appearance and an optional full-page capture.
+Generated filenames identify the target, page, viewport, and appearance without
+requiring the caller to supply a filesystem path.
 
 The command checks that the registered review server is reachable. If it is not
 running, it exits with the exact `review:start` command and URL rather than

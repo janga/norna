@@ -12,6 +12,7 @@ import {
 	prepareScratchSite,
 	readScratchSource,
 } from './review-scratch-site.mjs';
+import { captureReviewPage } from './review-capture.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(repoRoot, 'bin', 'norna.mjs');
@@ -24,6 +25,7 @@ Usage:
   npm run review:logs -- <target> [--follow]
   npm run review:stop -- <target>
   npm run review:test -- <target>
+  npm run review:capture -- <target> <relative-page> [--viewport <profile|WIDTHxHEIGHT>] [--appearance <name>] [--full-page]
   npm run review:scratch -- prepare --from <site-dir> [--replace]
   npm run review:scratch -- clean
   npm run review:scratch -- status
@@ -211,6 +213,7 @@ export const runReviewEnvironment = async (
 		prepare = prepareScratchSite,
 		clean = cleanScratchSite,
 		readSource = readScratchSource,
+		capture = captureReviewPage,
 	} = {},
 ) => {
 	if (operation === 'scratch') {
@@ -224,12 +227,26 @@ export const runReviewEnvironment = async (
 		});
 	}
 
-	if (!operation || !Object.hasOwn(devCommandByOperation, operation) && operation !== 'test') {
+	if (
+		!operation
+		|| !Object.hasOwn(devCommandByOperation, operation)
+			&& operation !== 'test'
+			&& operation !== 'capture'
+	) {
 		throw new Error(`Unknown review operation "${operation ?? ''}".\n${usage}`);
 	}
 	if (!targetName) throw new Error(`Review target is required.\n${usage}`);
 
 	const environment = await resolveReviewEnvironment(targetName, { root });
+	if (operation === 'capture') {
+		await capture({
+			environment,
+			rawArguments: trailingArguments,
+			root,
+			write,
+		});
+		return environment;
+	}
 	const options = assertArguments(operation, trailingArguments);
 
 	if (operation === 'test') {

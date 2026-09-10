@@ -18,6 +18,11 @@ import {
 	prepareScratchSite,
 	readScratchSource,
 } from './review-scratch-site.mjs';
+import {
+	captureReviewPage,
+	parseReviewCaptureArguments,
+	resolveReviewCapture,
+} from './review-capture.mjs';
 import { reserveBrowserTestPort } from './browser-test-port.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -59,6 +64,78 @@ try {
 	assert.equal(docsEnvironment.url, 'http://127.0.0.1:4321/norna/');
 	const navigationEnvironment = await resolveReviewEnvironment('navigation', { root: repoRoot });
 	assert.equal(navigationEnvironment.url, 'http://127.0.0.1:4323/');
+
+	assert.deepEqual(parseReviewCaptureArguments(['.']), {
+		appearance: 'light',
+		fullPage: false,
+		relativePage: '.',
+		viewport: { name: 'desktop', width: 1440, height: 1000 },
+	});
+	assert.deepEqual(parseReviewCaptureArguments([
+		'guide/components/#images',
+		'--viewport',
+		'1024x900',
+		'--appearance',
+		'dark',
+		'--full-page',
+	]), {
+		appearance: 'dark',
+		fullPage: true,
+		relativePage: 'guide/components/#images',
+		viewport: { name: '1024x900', width: 1024, height: 900 },
+	});
+	assert.throws(
+		() => parseReviewCaptureArguments(['.', '--viewport', 'wide']),
+		/Choose desktop, compact, mobile, or use WIDTHxHEIGHT/,
+	);
+	assert.throws(
+		() => parseReviewCaptureArguments(['.', '--appearance', 'sepia']),
+		/Choose system, light, dark/,
+	);
+	assert.throws(
+		() => parseReviewCaptureArguments(['.', '--viewport', '200x900']),
+		/between 240 and 3840 pixels/,
+	);
+
+	const captureOptions = parseReviewCaptureArguments([
+		'getting-started/#install',
+		'--viewport',
+		'compact',
+		'--appearance',
+		'dark',
+	]);
+	const resolvedCapture = resolveReviewCapture({
+		environment: docsEnvironment,
+		options: captureOptions,
+		root: temporaryRoot,
+	});
+	assert.equal(resolvedCapture.url, 'http://127.0.0.1:4321/norna/getting-started/#install');
+	assert.equal(
+		resolvedCapture.outputPath,
+		path.join(
+			temporaryRoot,
+			'.local',
+			'review-captures',
+			'docs',
+			'getting-started-install-compact-dark.png',
+		),
+	);
+	assert.throws(
+		() => resolveReviewCapture({
+			environment: docsEnvironment,
+			options: { ...captureOptions, relativePage: '../outside/' },
+			root: temporaryRoot,
+		}),
+		/escapes the registered base path \/norna\//,
+	);
+	assert.throws(
+		() => resolveReviewCapture({
+			environment: docsEnvironment,
+			options: { ...captureOptions, relativePage: 'https:\/\/example.com\/' },
+			root: temporaryRoot,
+		}),
+		/accepts only a relative page/,
+	);
 
 	const isolatedStateDirectory = path.join(temporaryRoot, 'isolated-state');
 	const sitePathsUrl = pathToFileURL(path.join(repoRoot, 'scripts', 'lib', 'site-paths.mjs')).href;
@@ -128,6 +205,81 @@ try {
 		() => runReviewEnvironment(['start', 'docs', '--kill'], { root: repoRoot, run, write }),
 		/Unexpected start option: --kill/,
 	);
+
+	const captureCalls = [];
+	await runReviewEnvironment([
+		'capture',
+		'docs',
+		'getting-started/',
+		'--viewport',
+		'mobile',
+	], {
+		root: repoRoot,
+		write,
+		capture: async (request) => captureCalls.push(request),
+	});
+	assert.equal(captureCalls.length, 1);
+	assert.equal(captureCalls[0].environment.name, 'docs');
+	assert.deepEqual(captureCalls[0].rawArguments, [
+		'getting-started/',
+		'--viewport',
+		'mobile',
+	]);
+
+	await expectFailure(
+		() => captureReviewPage({
+			environment: docsEnvironment,
+			rawArguments: ['.'],
+			root: temporaryRoot,
+			fetchImplementation: async () => {
+				throw new Error('not running');
+			},
+			launchBrowser: async () => assert.fail('Browser must not launch for a stopped server.'),
+		}),
+		/Start it with: npm run review:start -- docs/,
+	);
+
+	const browserEvents = [];
+	const createFakeBrowser = async () => ({
+		newContext: async (options) => {
+			browserEvents.push({ name: 'context', options });
+			return {
+				newPage: async () => ({
+					goto: async (url, options) => browserEvents.push({ name: 'goto', options, url }),
+					waitForLoadState: async (state) => browserEvents.push({ name: 'load-state', state }),
+					waitForTimeout: async (duration) => browserEvents.push({ duration, name: 'wait' }),
+					evaluate: async (_callback, appearance) => browserEvents.push({ appearance, name: 'evaluate' }),
+					screenshot: async (options) => {
+						browserEvents.push({ name: 'screenshot', options });
+						await writeFile(options.path, 'fake png');
+					},
+				}),
+				close: async () => browserEvents.push({ name: 'context-close' }),
+			};
+		},
+		close: async () => browserEvents.push({ name: 'browser-close' }),
+	});
+	const captured = await captureReviewPage({
+		environment: docsEnvironment,
+		rawArguments: ['getting-started/', '--viewport', 'mobile', '--appearance', 'dark'],
+		root: temporaryRoot,
+		write,
+		fetchImplementation: async () => ({
+			ok: true,
+			arrayBuffer: async () => new ArrayBuffer(0),
+		}),
+		launchBrowser: createFakeBrowser,
+	});
+	assert.equal(await readFile(captured.outputPath, 'utf8'), 'fake png');
+	assert.deepEqual(browserEvents[0], {
+		name: 'context',
+		options: {
+			colorScheme: 'dark',
+			reducedMotion: 'reduce',
+			viewport: { width: 390, height: 844 },
+		},
+	});
+	assert.equal(browserEvents.at(-1).name, 'browser-close');
 
 	const portLockRoot = path.join(temporaryRoot, 'port-locks');
 	const proposedPorts = [45001, 45001, 45002];

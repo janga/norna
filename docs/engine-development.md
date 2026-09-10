@@ -101,6 +101,23 @@ Manual review servers never choose a fallback port and never terminate an
 unrelated process occupying their port. Use the low-level development commands
 only for a site that is not in the registry.
 
+After starting a target, capture a repeatable viewport image through the same
+registry:
+
+```sh
+npm run review:capture -- docs getting-started/ --viewport compact --appearance light
+```
+
+The available named viewports are `desktop`, `compact`, and `mobile`. A bounded
+custom value such as `1024x900` is also accepted. Add `--full-page` only when
+the complete document, rather than the visible viewport, is the subject of the
+review. Captures are written beneath `.local/review-captures/`; the command does
+not accept external URLs or caller-selected output paths.
+
+Keep server lifecycle and browser capture separate. If the target is stopped,
+`review:capture` prints the exact `review:start` command instead of starting a
+new server or selecting another port.
+
 Inside the engine repository, use npm scripts or explicitly run
 `node bin/norna.mjs ...`. Do not rely on a bare `norna ...` command there: a
 globally installed launcher deliberately does not delegate to another package

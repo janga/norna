@@ -126,6 +126,12 @@ maintainer, put it in `README.md` instead of duplicating it here.
   ad hoc port and `--site-dir` for a registered target. Use `npm run dev:lan`
   only when testing the documentation site on another device on the same local
   network.
+- Capture a registered local review page with
+  `npm run review:capture -- <target> <relative-page>`. Use `--viewport`
+  (`desktop`, `compact`, `mobile`, or `WIDTHxHEIGHT`), `--appearance`, and
+  `--full-page` when needed. Do not compose direct Playwright screenshot
+  commands for registered targets; the wrapper constrains URLs and writes to
+  the ignored `.local/review-captures/` directory.
 - Run `npm run config:check` after changing `site/config.yaml` or config
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or
@@ -177,4 +183,6 @@ maintainer, put it in `README.md` instead of duplicating it here.
   them.
 - If Playwright reports a missing Chromium browser, run
   `npx playwright install chromium` once. In sandboxed Codex sessions,
-  Playwright may need escalation to launch Chromium.
+  Playwright may need one escalation to launch Chromium. Prefer the stable
+  `npm run review:capture` and `npm run review:test` command prefixes so later
+  target, route, viewport, and appearance changes reuse that permission.
