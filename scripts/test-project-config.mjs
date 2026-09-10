@@ -136,6 +136,10 @@ try {
 			siteBanners: 'Site notices',
 			siteNavigation: 'Pages',
 			skipToContent: 'Skip to content',
+			tableColumns: 'Table columns',
+			tableNextColumns: 'Show next columns',
+			tableOverflowDescription: 'More table columns are available horizontally.',
+			tablePreviousColumns: 'Show previous columns',
 		},
 		navigationMode: 'automatic',
 		searchEnabled: false,
@@ -180,6 +184,10 @@ try {
 	assert.equal(localizedConfig.labels.search, 'Sök');
 	assert.equal(localizedConfig.labels.searchDescription, 'Sök i det publicerade innehållet på webbplatsen.');
 	assert.equal(localizedConfig.labels.skipToContent, 'Hoppa till innehållet');
+	assert.equal(localizedConfig.labels.tableColumns, 'Tabellkolumner');
+	assert.equal(localizedConfig.labels.tableNextColumns, 'Visa nästa kolumner');
+	assert.equal(localizedConfig.labels.tableOverflowDescription, 'Fler tabellkolumner är tillgängliga i sidled.');
+	assert.equal(localizedConfig.labels.tablePreviousColumns, 'Visa föregående kolumner');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 
 	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\nnavigation:\n  mode: tree\n');

@@ -1,6 +1,39 @@
+---
+import { ChevronLeft, ChevronRight } from '@lucide/astro';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+
+const labels = projectConfig.locale.labels;
+---
+
+<template data-table-navigation-template>
+	<div class="norna-table-navigation" data-table-navigation hidden>
+		<span class="visually-hidden" data-table-overflow-description>{labels.tableOverflowDescription}</span>
+		<span class="norna-table-navigation-label" aria-hidden="true">{labels.tableColumns}</span>
+		<div class="norna-table-navigation-buttons" role="group" aria-label={labels.tableColumns}>
+			<button
+				type="button"
+				data-table-scroll-previous
+				aria-label={labels.tablePreviousColumns}
+				title={labels.tablePreviousColumns}
+			>
+				<ChevronLeft aria-hidden="true" size={18} stroke-width={2} />
+			</button>
+			<button
+				type="button"
+				data-table-scroll-next
+				aria-label={labels.tableNextColumns}
+				title={labels.tableNextColumns}
+			>
+				<ChevronRight aria-hidden="true" size={18} stroke-width={2} />
+			</button>
+		</div>
+	</div>
+</template>
+
 <script>
 	type TableLayout = 'contained' | 'prose' | 'end' | 'canvas';
 	const layoutUpdaters = new Set<() => void>();
+	const navigationTemplate = document.querySelector<HTMLTemplateElement>('[data-table-navigation-template]');
 	const synchronizedAttributes = [
 		'data-appearance',
 		'data-focus-reading',
@@ -8,7 +41,7 @@
 		'dir',
 	];
 
-	const initializeTableFrame = (frame: HTMLElement) => {
+	const initializeTableFrame = (frame: HTMLElement, frameIndex: number) => {
 		const scrollRegion = frame.querySelector<HTMLElement>('[data-table-scroll]');
 		const table = scrollRegion?.querySelector<HTMLTableElement>('table');
 		if (!scrollRegion || frame.dataset.tableReady === 'true') return;
@@ -18,6 +51,10 @@
 		let scheduledFrame: number | null = null;
 		let stickyHeading: HTMLElement | null = null;
 		let stickyHeadingTrack: HTMLElement | null = null;
+		let tableNavigation: HTMLElement | null = null;
+		let previousButton: HTMLButtonElement | null = null;
+		let nextButton: HTMLButtonElement | null = null;
+		let overflowDescriptionId: string | null = null;
 
 		const removeDuplicateIdentity = (element: HTMLElement) => {
 			element.removeAttribute('id');
@@ -37,6 +74,41 @@
 			stickyHeadingTrack.className = 'norna-table-sticky-heading-track';
 			stickyHeading.append(stickyHeadingTrack);
 			frame.insertBefore(stickyHeading, scrollRegion);
+		};
+
+		const createTableNavigation = () => {
+			if (!navigationTemplate) return;
+			const fragment = navigationTemplate.content.cloneNode(true) as DocumentFragment;
+			tableNavigation = fragment.querySelector<HTMLElement>('[data-table-navigation]');
+			if (!tableNavigation) return;
+
+			const description = tableNavigation.querySelector<HTMLElement>('[data-table-overflow-description]');
+			previousButton = tableNavigation.querySelector<HTMLButtonElement>('[data-table-scroll-previous]');
+			nextButton = tableNavigation.querySelector<HTMLButtonElement>('[data-table-scroll-next]');
+			overflowDescriptionId = `norna-table-overflow-${frameIndex + 1}`;
+			if (description) description.id = overflowDescriptionId;
+			frame.insertBefore(fragment, scrollRegion);
+		};
+
+		const setOverflowDescription = (enabled: boolean) => {
+			if (!overflowDescriptionId) return;
+			const descriptionIds = new Set((scrollRegion.getAttribute('aria-describedby') ?? '')
+				.split(/\s+/u)
+				.filter(Boolean));
+			if (enabled) descriptionIds.add(overflowDescriptionId);
+			else descriptionIds.delete(overflowDescriptionId);
+			if (descriptionIds.size > 0) scrollRegion.setAttribute('aria-describedby', [...descriptionIds].join(' '));
+			else scrollRegion.removeAttribute('aria-describedby');
+		};
+
+		const scrollTable = (direction: -1 | 1) => {
+			const isRightToLeft = getComputedStyle(scrollRegion).direction === 'rtl';
+			const distance = Math.max(1, Math.round(scrollRegion.clientWidth * 0.8));
+			const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			scrollRegion.scrollBy({
+				behavior: reducedMotion ? 'auto' : 'smooth',
+				left: direction * distance * (isRightToLeft ? -1 : 1),
+			});
 		};
 
 		const synchronizeStickyHeadingPosition = () => {
@@ -84,7 +156,10 @@
 			synchronizeStickyHeadingPosition();
 		};
 
+		createTableNavigation();
 		createStickyHeading();
+		previousButton?.addEventListener('click', () => scrollTable(-1));
+		nextButton?.addEventListener('click', () => scrollTable(1));
 
 		const updateOverflow = () => {
 			const maximumScroll = Math.max(0, scrollRegion.scrollWidth - scrollRegion.clientWidth);
@@ -103,6 +178,16 @@
 			frame.dataset.tableAtStart = isAtStart ? 'true' : 'false';
 			frame.dataset.tableAtEnd = isAtEnd ? 'true' : 'false';
 			frame.dataset.tableStickyHeading = hasOverflow && stickyHeading ? 'true' : 'false';
+			if (tableNavigation) {
+				tableNavigation.hidden = !hasOverflow;
+				frame.style.setProperty(
+					'--table-navigation-height',
+					hasOverflow ? `${tableNavigation.getBoundingClientRect().height}px` : '0px',
+				);
+			}
+			if (previousButton) previousButton.disabled = isAtStart;
+			if (nextButton) nextButton.disabled = isAtEnd;
+			setOverflowDescription(hasOverflow);
 			if (hasOverflow) scrollRegion.setAttribute('tabindex', '0');
 			else scrollRegion.removeAttribute('tabindex');
 			if (hasOverflow) synchronizeStickyHeadingPosition();

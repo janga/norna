@@ -267,6 +267,10 @@ const localeLabels = Object.freeze({
 		siteBanners: 'Site notices',
 		siteNavigation: 'Pages',
 		skipToContent: 'Skip to content',
+		tableColumns: 'Table columns',
+		tableNextColumns: 'Show next columns',
+		tableOverflowDescription: 'More table columns are available horizontally.',
+		tablePreviousColumns: 'Show previous columns',
 	}),
 	sv: Object.freeze({
 		breadcrumb: 'Brödsmulor',
@@ -337,6 +341,10 @@ const localeLabels = Object.freeze({
 		siteBanners: 'Meddelanden',
 		siteNavigation: 'Sidor',
 		skipToContent: 'Hoppa till innehållet',
+		tableColumns: 'Tabellkolumner',
+		tableNextColumns: 'Visa nästa kolumner',
+		tableOverflowDescription: 'Fler tabellkolumner är tillgängliga i sidled.',
+		tablePreviousColumns: 'Visa föregående kolumner',
 	}),
 });
 

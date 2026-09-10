@@ -202,6 +202,7 @@ test('a fitting long table keeps its headings below the sticky site header and r
 	});
 	await expect(frame).toHaveAttribute('data-table-overflow', 'false');
 	await expect(frame.locator('[data-table-scroll]')).not.toHaveAttribute('tabindex', '0');
+	await expect(frame.locator('[data-table-navigation]')).toBeHidden();
 
 	await frame.evaluate((element) => {
 		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 120);
@@ -238,14 +239,17 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	const scrollRegion = frame.locator('[data-table-scroll]');
 	const table = frame.locator('table');
 	const stickyHeading = frame.locator('[data-table-sticky-heading]');
+	const tableNavigation = frame.locator('[data-table-navigation]');
+	const previousColumns = tableNavigation.getByRole('button', { name: 'Show previous columns' });
+	const nextColumns = tableNavigation.getByRole('button', { name: 'Show next columns' });
 	const originalHeadings = table.locator('thead th');
 	const visualHeadings = stickyHeading.locator('.norna-table-sticky-heading-cell');
 
 	await table.evaluate((element) => {
 		const frame = element.closest<HTMLElement>('[data-table-frame]');
 		if (!frame) throw new Error('Missing table frame.');
-		element.style.width = `${frame.clientWidth + 640}px`;
-		element.style.minWidth = `${frame.clientWidth + 640}px`;
+		element.style.width = `${frame.clientWidth + 1600}px`;
+		element.style.minWidth = `${frame.clientWidth + 1600}px`;
 		element.style.tableLayout = 'fixed';
 		const body = element.tBodies[0];
 		const sourceRows = Array.from(body.rows);
@@ -255,6 +259,13 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	});
 	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
 	await expect(frame).toHaveAttribute('data-table-sticky-heading', 'true');
+	await expect(tableNavigation).toBeVisible();
+	await expect(previousColumns).toBeDisabled();
+	await expect(nextColumns).toBeEnabled();
+	await expect(scrollRegion).toHaveAttribute('aria-describedby', /norna-table-overflow-/);
+	await expect(frame.locator('[data-table-overflow-description]')).toHaveText(
+		'More table columns are available horizontally.',
+	);
 	await expect(stickyHeading).toHaveAttribute('aria-hidden', 'true');
 	await expect(stickyHeading).toHaveAttribute('inert', '');
 	await expect(stickyHeading).toHaveCSS('pointer-events', 'none');
@@ -268,7 +279,15 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	const stickyOffset = await page.evaluate(() => Number.parseFloat(
 		getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
 	));
-	await expect.poll(async () => (await stickyHeading.boundingBox())?.y).toBeCloseTo(stickyOffset, 0);
+	await expect.poll(async () => (await tableNavigation.boundingBox())?.y).toBeCloseTo(stickyOffset, 0);
+	await expect.poll(async () => {
+		const [navigationBounds, headingBounds] = await Promise.all([
+			tableNavigation.boundingBox(),
+			stickyHeading.boundingBox(),
+		]);
+		if (!navigationBounds || !headingBounds) return null;
+		return headingBounds.y - (navigationBounds.y + navigationBounds.height);
+	}).toBeCloseTo(0, 0);
 
 	const expectHeadingsAligned = async () => {
 		const [originalBounds, visualBounds, stickyDebug] = await Promise.all([
@@ -298,6 +317,28 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	};
 
 	await expectHeadingsAligned();
+	const [initialScrollPosition, tableScrollDimensions] = await Promise.all([
+		page.evaluate(() => window.scrollY),
+		scrollRegion.evaluate((element) => ({
+			clientWidth: element.clientWidth,
+			maximumScroll: element.scrollWidth - element.clientWidth,
+		})),
+	]);
+	await nextColumns.click();
+	const expectedControlScroll = Math.min(
+		tableScrollDimensions.maximumScroll,
+		Math.round(tableScrollDimensions.clientWidth * 0.8),
+	);
+	await expect.poll(async () => Math.abs(
+		Math.abs(await scrollRegion.evaluate((element) => element.scrollLeft)) - expectedControlScroll,
+	)).toBeLessThanOrEqual(2);
+	expect(await page.evaluate(() => window.scrollY)).toBeCloseTo(initialScrollPosition, 0);
+	await expect(previousColumns).toBeEnabled();
+	await previousColumns.click();
+	await expect.poll(() => scrollRegion.evaluate((element) => Math.abs(element.scrollLeft))).toBeLessThanOrEqual(2);
+	await expect(previousColumns).toBeDisabled();
+	await expect(nextColumns).toBeEnabled();
+
 	await scrollRegion.focus();
 	await page.keyboard.press('ArrowRight');
 	await expect.poll(() => scrollRegion.evaluate((element) => Math.abs(element.scrollLeft))).toBeGreaterThan(0);
@@ -317,6 +358,8 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 	await scrollRegion.evaluate((element) => { element.scrollLeft = 0; });
 	await expect(frame).toHaveAttribute('data-table-at-start', 'true');
+	await expect(previousColumns).toBeDisabled();
+	await expect(nextColumns).toBeEnabled();
 	await expectHeadingsAligned();
 	await scrollRegion.evaluate((element) => {
 		element.scrollLeft = 0 - ((element.scrollWidth - element.clientWidth) / 2);
@@ -328,6 +371,8 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 		element.scrollLeft = 0 - element.scrollWidth;
 	});
 	await expect(frame).toHaveAttribute('data-table-at-end', 'true');
+	await expect(previousColumns).toBeEnabled();
+	await expect(nextColumns).toBeDisabled();
 	await expectHeadingsAligned();
 
 	await page.evaluate(() => document.documentElement.setAttribute('dir', 'ltr'));
@@ -362,12 +407,15 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 		const absoluteBottom = window.scrollY + bounds.bottom;
 		window.scrollTo(0, absoluteBottom - offset - 8);
 	}, stickyOffset);
-	const [releasedHeading, releasedFrame] = await Promise.all([
+	const [releasedNavigation, releasedHeading, releasedFrame] = await Promise.all([
+		tableNavigation.boundingBox(),
 		stickyHeading.boundingBox(),
 		frame.boundingBox(),
 	]);
+	expect(releasedNavigation).not.toBeNull();
 	expect(releasedHeading).not.toBeNull();
 	expect(releasedFrame).not.toBeNull();
+	expect(releasedNavigation?.y ?? Infinity).toBeLessThan(stickyOffset);
 	expect(releasedHeading?.y ?? Infinity).toBeLessThan(stickyOffset);
 	expect((releasedHeading?.y ?? 0) + (releasedHeading?.height ?? 0)).toBeLessThanOrEqual(
 		(releasedFrame?.y ?? 0) + (releasedFrame?.height ?? 0) + 1,
@@ -1393,6 +1441,7 @@ test('configured presentation remains usable without JavaScript', async ({ brows
 	await expect(page.locator('.tree-local-navigation')).toBeVisible();
 	await expect(page.locator('[data-display-settings]')).toBeHidden();
 	await expect(page.locator('[data-table-sticky-heading]')).toHaveCount(0);
+	await expect(page.locator('[data-table-navigation]')).toHaveCount(0);
 	await expect(page.getByRole('table')).toHaveCount(1);
 	const figure = page.locator('[data-image-stack-figure]').first();
 	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');

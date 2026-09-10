@@ -24,11 +24,6 @@ No item is currently active.
 work comes before changes that need visual review. Larger features follow the
 smaller page-graph additions they can reuse.
 
-- [`BL-074` Discoverable horizontal navigation for long tables](docs/design/backlog/BL-074-discoverable-table-horizontal-navigation.md):
-  **Ready.** Make hidden columns evident without relying on an operating-system
-  scrollbar, and keep simple horizontal navigation controls available while a
-  tall table passes through the viewport.
-
 ## External Gate
 
 These items have high product value but require an external account, publishing

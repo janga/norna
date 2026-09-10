@@ -395,11 +395,76 @@ ul {
 	outline-offset: 2px;
 }
 
+.norna-table-navigation {
+	position: sticky;
+	top: var(--site-top-anchor-offset);
+	z-index: 5;
+	display: flex;
+	min-height: 2.75rem;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	border-block: 1px solid var(--color-border);
+	padding: 0.25rem 0.35rem;
+	background: var(--section-background-color, var(--color-page));
+	color: inherit;
+}
+
+.norna-table-navigation[hidden] {
+	display: none;
+}
+
+.norna-table-navigation-label {
+	color: var(--section-secondary-text-color, var(--color-secondary-text));
+	font-size: 0.78rem;
+	font-weight: 650;
+	line-height: 1.3;
+}
+
+.norna-table-navigation-buttons {
+	display: flex;
+	gap: 0.35rem;
+}
+
+.norna-table-navigation button {
+	display: grid;
+	width: 2.5rem;
+	height: 2.5rem;
+	place-items: center;
+	border: 1px solid var(--color-border);
+	border-radius: var(--corner-radius-small, 2px);
+	padding: 0;
+	background: var(--color-surface-soft-background);
+	color: var(--color-surface-soft-text);
+	cursor: pointer;
+}
+
+.norna-table-navigation button:hover:not(:disabled),
+.norna-table-navigation button:active:not(:disabled) {
+	background: var(--color-surface-emphasis-background);
+	color: var(--color-surface-emphasis-text);
+}
+
+.norna-table-navigation button:focus-visible {
+	outline: var(--focus-indicator-width) solid var(--color-focus-ring);
+	outline-offset: 2px;
+	box-shadow: 0 0 0 calc(var(--focus-indicator-width) * 2) var(--color-focus-ring-contrast);
+}
+
+.norna-table-navigation button:disabled {
+	cursor: not-allowed;
+	opacity: 0.42;
+}
+
+.norna-table-frame:dir(rtl) .norna-table-navigation button svg {
+	transform: scaleX(-1);
+}
+
 .norna-table-sticky-heading {
 	display: none;
 	position: sticky;
 	z-index: 4;
-	top: var(--site-top-anchor-offset);
+	top: calc(var(--site-top-anchor-offset) + var(--table-navigation-height, 0px));
 	width: 100%;
 	height: var(--table-sticky-heading-height, 0px);
 	overflow: hidden;
@@ -438,9 +503,9 @@ ul {
 .norna-table-frame::after {
 	position: absolute;
 	z-index: 3;
-	top: 0;
+	top: var(--table-navigation-height, 0px);
 	bottom: 0.75rem;
-	width: 1.35rem;
+	width: 2rem;
 	content: "";
 	opacity: 0;
 	pointer-events: none;
@@ -451,34 +516,38 @@ ul {
 	inset-inline-start: 0;
 	background: linear-gradient(
 		to right,
-		color-mix(in srgb, var(--section-background-color, var(--color-page)) 94%, transparent),
+		color-mix(in srgb, var(--section-background-color, var(--color-page)) 98%, transparent),
 		transparent
 	);
+	box-shadow: inset 0.5rem 0 0.7rem -0.65rem color-mix(in srgb, currentColor 62%, transparent);
 }
 
 .norna-table-frame::after {
 	inset-inline-end: 0;
 	background: linear-gradient(
 		to left,
-		color-mix(in srgb, var(--section-background-color, var(--color-page)) 94%, transparent),
+		color-mix(in srgb, var(--section-background-color, var(--color-page)) 98%, transparent),
 		transparent
 	);
+	box-shadow: inset -0.5rem 0 0.7rem -0.65rem color-mix(in srgb, currentColor 62%, transparent);
 }
 
 .norna-table-frame:dir(rtl)::before {
 	background: linear-gradient(
 		to left,
-		color-mix(in srgb, var(--section-background-color, var(--color-page)) 94%, transparent),
+		color-mix(in srgb, var(--section-background-color, var(--color-page)) 98%, transparent),
 		transparent
 	);
+	box-shadow: inset -0.5rem 0 0.7rem -0.65rem color-mix(in srgb, currentColor 62%, transparent);
 }
 
 .norna-table-frame:dir(rtl)::after {
 	background: linear-gradient(
 		to right,
-		color-mix(in srgb, var(--section-background-color, var(--color-page)) 94%, transparent),
+		color-mix(in srgb, var(--section-background-color, var(--color-page)) 98%, transparent),
 		transparent
 	);
+	box-shadow: inset 0.5rem 0 0.7rem -0.65rem color-mix(in srgb, currentColor 62%, transparent);
 }
 
 .norna-table-frame[data-table-at-end='true']::after {

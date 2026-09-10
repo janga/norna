@@ -576,6 +576,7 @@
 
 		.image-inspector,
 		.image-inspector-controls button,
+		.norna-table-navigation button,
 		.managed-image-inspection-affordance {
 			border: 1px solid CanvasText;
 			box-shadow: none;
