@@ -14,7 +14,7 @@ const labels = {
 		<Copy aria-hidden="true" data-code-copy-icon="copy" size={18} stroke-width={2} />
 		<Check aria-hidden="true" data-code-copy-icon="copied" hidden size={18} stroke-width={2} />
 		<X aria-hidden="true" data-code-copy-icon="failed" hidden size={18} stroke-width={2} />
-		<span class="visually-hidden" aria-live="polite" data-code-copy-status></span>
+		<span class="code-block-copy-status" aria-live="polite" data-code-copy-status></span>
 	</button>
 </template>
 
@@ -45,7 +45,7 @@ const labels = {
 
 		const showState = (button, state) => {
 			button.querySelectorAll('[data-code-copy-icon]').forEach((icon) => {
-				icon.hidden = icon.getAttribute('data-code-copy-icon') !== state;
+				icon.toggleAttribute('hidden', icon.getAttribute('data-code-copy-icon') !== state);
 			});
 			const status = button.querySelector('[data-code-copy-status]');
 			if (status) status.textContent = state === 'copied' ? labels.copied : labels.failed;
@@ -54,7 +54,7 @@ const labels = {
 			clearTimeout(resetTimers.get(button));
 			resetTimers.set(button, setTimeout(() => {
 				button.querySelectorAll('[data-code-copy-icon]').forEach((icon) => {
-					icon.hidden = icon.getAttribute('data-code-copy-icon') !== 'copy';
+					icon.toggleAttribute('hidden', icon.getAttribute('data-code-copy-icon') !== 'copy');
 				});
 				if (status) status.textContent = '';
 				delete button.dataset.copyState;

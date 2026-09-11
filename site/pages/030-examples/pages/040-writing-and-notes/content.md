@@ -61,8 +61,9 @@ as `{2,4-6}`. The title and line emphasis are rendered without JavaScript.
 
 With JavaScript available, the block also receives an accessible copy button.
 It copies only the code, not the title or line selector, and announces success
-or failure. Without JavaScript, the same code remains readable and selectable
-without the button. See the complete [code-block reference](https://github.com/janga/norna/blob/main/docs/content.md#code-blocks)
+or failure with an icon and a short visible status. Without JavaScript, the
+same code remains readable and selectable without the button. See the complete
+[code-block reference](https://github.com/janga/norna/blob/main/docs/content.md#code-blocks)
 for metadata order, accepted selectors, and validation errors.
 
 On an example longer than the viewport, the title remains below the sticky

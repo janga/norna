@@ -592,7 +592,11 @@ test('code blocks expose an accessible copy control without changing copied text
 	await button.focus();
 	await expect(button).toBeFocused();
 	await button.press('Enter');
-	await expect(button.locator('[data-code-copy-status]')).toHaveText('Copied');
+	const status = button.locator('[data-code-copy-status]');
+	await expect(status).toHaveText('Copied');
+	await expect(status).toBeVisible();
+	await expect(button.locator('[data-code-copy-icon="copy"]')).toBeHidden();
+	await expect(button.locator('[data-code-copy-icon="copied"]')).toBeVisible();
 	await expect.poll(() => page.evaluate(() => (
 		(window as Window & { copiedCode?: string }).copiedCode
 	))).toContain('npm run norna:check');
@@ -613,6 +617,35 @@ test('code blocks expose an accessible copy control without changing copied text
 	expect(buttonBounds).not.toBeNull();
 	expect(titleBounds.y + titleBounds.height).toBeGreaterThanOrEqual(buttonBounds.y + buttonBounds.height);
 	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
+	const statusBounds = await status.boundingBox();
+	expect(statusBounds).not.toBeNull();
+	expect(statusBounds?.x ?? -1).toBeGreaterThanOrEqual(0);
+	expect((statusBounds?.x ?? 0) + (statusBounds?.width ?? 0)).toBeLessThanOrEqual(320);
+});
+
+test('code blocks expose visible feedback when copying fails', async ({ page }) => {
+	await page.addInitScript(() => {
+		Object.defineProperty(navigator, 'clipboard', {
+			configurable: true,
+			value: {
+				writeText: async () => {
+					throw new Error('Clipboard access denied.');
+				},
+			},
+		});
+		Object.defineProperty(document, 'execCommand', {
+			configurable: true,
+			value: () => false,
+		});
+	});
+	await openComponents(page);
+
+	const button = page.getByRole('button', { name: 'Copy code' }).first();
+	await button.click();
+	await expect(button.locator('[data-code-copy-status]')).toHaveText('Could not copy code');
+	await expect(button.locator('[data-code-copy-status]')).toBeVisible();
+	await expect(button.locator('[data-code-copy-icon="copy"]')).toBeHidden();
+	await expect(button.locator('[data-code-copy-icon="failed"]')).toBeVisible();
 });
 
 test('a long titled code example keeps and releases its context bar at its own boundaries', async ({ page }) => {
