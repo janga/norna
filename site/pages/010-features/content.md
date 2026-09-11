@@ -138,13 +138,13 @@ size: s
 
 - title: Image stack
   text: Keep every image visible in a deliberate reading order.
-  link: /examples/media-blocks/#image-stacks
+  link: /examples/#image-stacks
 - title: Image carousel
   text: Place a related sequence in one bounded, keyboard-operable position.
-  link: /examples/media-blocks/#carousels
+  link: /examples/#image-carousels
 - title: Card list
   text: Present a short set of comparable choices without building a component.
-  link: /examples/media-blocks/#card-lists
+  link: /examples/#card-lists
 ```
 
 This page itself uses a carousel, a callout, a side note and a card list. The
@@ -173,7 +173,7 @@ layout:
 
 The preset still owns the remaining relationships, so a wider reading measure
 does not require the author to redesign controls, captions or navigation. Use
-the [theme explorer](/examples/themes-and-overrides/) to compare identical
+the [theme explorer](/examples/#presets) to compare identical
 content, then consult the [theme reference](https://github.com/janga/norna/blob/main/docs/theme.md)
 for supported overrides.
 

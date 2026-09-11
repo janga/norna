@@ -4,6 +4,19 @@ This audit records the source comparison and teaching decisions behind
 [`BL-042` Examples Audit And Teaching Structure](backlog/BL-042-examples-audit.md).
 It is not a catalogue intended for end users.
 
+## Current Review Status
+
+The first implementation of
+[BL-083: Result-first single-page examples](backlog/BL-083-result-first-single-page-examples.md)
+needs corrections after human review on 2026-09-11. The findings below are
+earlier source and teaching decisions, not evidence that the revised gallery
+is accurate in its final form.
+
+The ordered correction work is recorded in that item's backlog file.
+[BL-091: Final examples audit against implemented behavior](backlog/BL-091-final-examples-implementation-audit.md)
+must run last, after the seven preceding corrections. Record its per-section
+evidence and any remaining issues here before closing the gallery work.
+
 ## Sources Reviewed
 
 The review covered the complete documentation-site Examples subtree, every
@@ -33,9 +46,12 @@ Published paths above are relative to `https://janga.github.io/norna/`.
 
 ## Teaching Decisions
 
-- Keep the documentation Examples page because it explains how to distinguish
-  complete sites from focused demonstrations. Remove its duplicate child-page
-  link cards; generated navigation is the index.
+- Keep one result-first documentation Examples page. Its H2 sections expose
+  focused demonstrations directly in the page outline instead of making the
+  reader choose an example area before seeing a result.
+- Put the rendered result before the smallest exact source, identify whether
+  the source is standard Markdown or a Norna extension, and link to canonical
+  reference instead of repeating complete option tables.
 - Keep both dog-shelter sites because their direct comparison teaches the
   boundary between sections and pages with one familiar subject.
 - Treat the documentation site as the maintained nested-page example instead
@@ -44,8 +60,9 @@ Published paths above are relative to `https://janga.github.io/norna/`.
   variable that makes the comparison meaningful.
 - Keep Theme explorer as generated comparison output, not a fifth configurable
   source site.
-- Keep media and site-wide demonstrations separate: one concerns page content
-  and presentation, while the other concerns the shared site frame.
+- Keep media and site-wide demonstrations as independently built source sites,
+  but introduce their useful results on the single Examples page. The external
+  builds remain available when a reader needs to inspect a complete site state.
 - Keep exact syntax and constraints in Markdown reference pages. Example pages
   explain intent, show a representative result, and link to those definitions.
 - Do not publish the feature-landscape analysis as a maintained product
@@ -57,18 +74,21 @@ Published paths above are relative to `https://janga.github.io/norna/`.
 - The root README repeated the complete example table already maintained in
   `examples/README.md`; it now offers two representative outcomes and one
   comparison tool before linking to the source index.
-- The Examples landing page repeated every child destination as cards. It now
-  explains how to choose and evaluate an example without duplicating generated
-  navigation.
-- Focused documentation pages now link both to their maintained source and to
-  canonical reference material.
-- Complete Sites now identifies the documentation site as the real
-  hierarchical counterpart to the two simple dog-shelter sites.
+- The former Examples landing page described how to choose examples before it
+  demonstrated anything. `BL-083` replaces that hierarchy with one direct
+  gallery of live results, exact source, short use boundaries, and canonical
+  reference links.
+- Complete sites remain separately built and published because their value is
+  the interaction between files, navigation, presentation, and publishing, not
+  one isolated block.
+- The gallery states the accessibility boundary beside managed images and at
+  the complete-site conclusion: Norna owns generated semantics and controls;
+  authors own meaningful editorial content and alternative text.
 
-## Gaps And Boundaries
+## Boundaries
 
-Safe page moves, link diagnostics, generated social metadata, sitemap output,
-and the default 404 page are operational or generated behaviors rather than
-visual example categories. They remain covered by command, package, and focused
-regression tests plus reference documentation. A new demonstration is warranted
-only when its rendered result answers a distinct reader question.
+The gallery may use a faithful fixture capture when a result depends on a page
+hierarchy or global site state that cannot coexist with the current page. It
+does not reproduce full reference tables, migration history, test plans, or
+internal implementation details. A new demonstration is warranted only when
+its rendered result answers a distinct reader question.

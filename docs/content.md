@@ -396,6 +396,26 @@ Deprecated syntax such as `[highlighted text]{.yellow}` is rejected by
 `content:check`. Keep the page visually coherent through its `theme.yaml`
 instead of styling individual phrases.
 
+### Semantic Callouts
+
+Use a semantic callout when a passage needs a defined role beyond ordinary
+prose or quotation:
+
+```md
+> [!WARNING]
+> Back up the current site before replacing its configuration.
+```
+
+The marker must be the first line of one blockquote. Accepted meanings are
+`NOTE`, `TIP`, `IMPORTANT`, `WARNING`, `CAUTION`, and `DANGER`. Norna supplies
+a localized visible label and preset-owned presentation for each meaning. The
+meaning is not communicated by color alone.
+
+Custom titles, arbitrary callout colors, unsupported meanings, and nested
+callouts are invalid. Use an ordinary blockquote when the text is a quotation
+rather than a labelled note or warning. The source remains recognizable as a
+blockquote in Markdown renderers that do not enhance the marker.
+
 ### Tables
 
 Use ordinary GFM table syntax for compact comparisons and structured data:

@@ -311,6 +311,59 @@ const checkPublishedExampleReferences = async () => {
 	const documentationUrl = new URL(projectConfig.site.url);
 	const exampleFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'pages', '030-examples'));
 	const documentationText = (await Promise.all(exampleFiles.map((filePath) => readFile(filePath, 'utf8')))).join('\n');
+	assert.equal(exampleFiles.length, 1, 'Focused Examples documentation must remain one result-first page.');
+
+	const orderedSections = [
+		'## Write with standard Markdown',
+		'## Add a single image',
+		'## Image stacks',
+		'## Image carousels',
+		'## Card lists',
+		'## Semantic callouts',
+		'## Sidenotes',
+		'## Code blocks',
+		'## Get readable tables from standard Markdown',
+		'## List child pages automatically',
+		'## Automatic responsive navigation',
+		'## Move pages without breaking links',
+		'## Add static search',
+		'## Set the site language',
+		'## Brand your site',
+		'## Add site-wide notices and a footer',
+		'## Get coherent defaults from a preset',
+		'## Choose a coordinated color palette',
+		'## Let readers adapt the display',
+		'## Complete sites',
+	];
+	let previousSectionIndex = -1;
+	for (const heading of orderedSections) {
+		const sectionIndex = documentationText.indexOf(heading);
+		assert.ok(sectionIndex > previousSectionIndex, `Examples is missing or has misplaced heading: ${heading}`);
+		previousSectionIndex = sectionIndex;
+	}
+
+	for (const requiredText of [
+		'**Source:** Standard Markdown.',
+		'**Source:** Norna Markdown extension.',
+		'author must review it in the context where the image appears',
+		'https://github.com/janga/norna/blob/main/docs/content.md#tables',
+		'https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls',
+	]) {
+		assert.ok(documentationText.includes(requiredText), `Examples is missing required result-first content: ${requiredText}`);
+	}
+
+	for (const imageName of [
+		'child-page-list.png',
+		'navigation-one-page.svg',
+		'navigation-top-level.svg',
+		'navigation-hierarchy.svg',
+	]) {
+		assert.ok(
+			existsSync(path.join(repoRoot, 'site', 'pages', '030-examples', 'images', imageName)),
+			`Examples is missing ${imageName}.`,
+		);
+	}
+
 	const presetComparisonUrl = new URL('examples/theme-presets/', documentationUrl).href;
 	assert.ok(
 		documentationText.includes(presetComparisonUrl),
