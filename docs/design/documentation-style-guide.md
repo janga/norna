@@ -178,6 +178,15 @@ tests cover them where practical.
 - Introduce an example with the question it answers.
 - Use current, valid syntax that can be copied without removing invented
   product behavior.
+- When showing source beside a rendered result, keep the data identical.
+  Label an excerpt and identify the surrounding file or settings it omits.
+  Keep table cells and sample data concise before considering smaller text.
+- Distinguish ordinary Markdown, specific extensions such as GFM tables,
+  GitHub-style alerts, and Norna-only syntax. A feature used on GitHub is not
+  necessarily part of the GFM specification.
+- Use actual captures from maintained sources when illustrating generated
+  interfaces. Keep hand-drawn diagrams for explanatory relationships, not
+  as evidence of the current rendered interface.
 - Show one concept at a time unless interaction between concepts is the point.
 - Explain the relevant result immediately after the example.
 - Avoid placeholder prose that obscures the feature being demonstrated.

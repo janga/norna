@@ -2,12 +2,16 @@
 
 ## Status
 
-Seventh in the correction sequence for
-[BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md).
-Run after the preceding presentation, navigation, child-list, and illustration
-corrections. This item makes the known editorial corrections; the final audit
-in [BL-091: Final examples audit against implemented behavior](BL-091-final-examples-implementation-audit.md)
-then checks the complete page for remaining omissions or discrepancies.
+Implemented. The six-column table retains ten representative rows with short
+cells, and the displayed source matches it. The page now distinguishes GFM
+tables, the Norna row-heading marker, GitHub-style alerts, and the additional
+DANGER type. Shared configuration matches the linked demonstration; code and
+caption explanations no longer assume a particular layout. Reusable source
+fidelity rules were added to the documentation style guide.
+
+Content and documentation checks passed. The final audit in
+[BL-091: Final examples audit against implemented behavior](BL-091-final-examples-implementation-audit.md)
+checks the complete combined result; human gallery review is still pending.
 
 ## Problem
 

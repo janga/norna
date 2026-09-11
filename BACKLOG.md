@@ -23,9 +23,6 @@ only after
 [`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md).
 
 
-- [`BL-090` Readable examples with exact source and clear syntax boundaries](docs/design/backlog/BL-090-exact-readable-examples.md):
-  **Ready after the preceding corrections.** Simplify example content, make
-  source and results agree, and identify Norna extensions precisely.
 - [`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md):
   **Run last in this sequence.** Verify every Examples section against current
   code, actual output, syntax, defaults, and reference links before completion.

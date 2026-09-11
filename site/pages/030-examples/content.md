@@ -5,10 +5,6 @@ page:
 
 # Examples
 
-See what Norna renders, then inspect the smallest source that produces it.
-Each example links to the canonical reference for complete syntax, defaults,
-and constraints.
-
 ## Write with standard Markdown {#standard-markdown}
 
 ### Before publishing {#before-publishing}
@@ -45,14 +41,14 @@ or ordinary code fences. Read the
 ```image-stack
 - image: stack-one.svg
   alt: A pale panel with one large circle and two horizontal lines.
-  caption: One managed image with visible context below it.
+  caption: One image with an attached caption.
 ```
 
 ````md
 ```image-stack
 - image: stack-one.svg
   alt: A pale panel with one large circle and two horizontal lines.
-  caption: One managed image with visible context below it.
+  caption: One image with an attached caption.
 ```
 ````
 
@@ -192,10 +188,11 @@ to inspect these blocks together across several pages, or
 > Commit source files before a structural change that you may want to undo.
 ```
 
-**Source:** The GitHub Flavored Markdown (GFM) alert convention, interpreted by
-Norna as semantic callouts. The closed set is `NOTE`, `TIP`, `IMPORTANT`,
+**Source:** GitHub-style alerts, supported by Norna as semantic callouts.
+Alerts are not part of the formal GFM specification. Norna supports `NOTE`, `TIP`, `IMPORTANT`,
 `WARNING`, `CAUTION`, and `DANGER`; the meaning is expressed by structure and a
-localized label rather than color alone. Read the
+localized label rather than color alone. `DANGER` is an additional Norna type.
+Read the
 [semantic-callout reference](https://github.com/janga/norna/blob/main/docs/content.md#semantic-callouts).
 
 ## Sidenotes {#sidenotes}
@@ -212,7 +209,7 @@ layout has a free margin.{note-ref}
 {note: This linked note returns to the normal reading flow when the available margin cannot hold it safely.}
 ```
 
-**Source:** Norna inline note extension. Use a standard Markdown reference
+**Source:** Norna inline note extension. Use a reference
 footnote instead when supporting material belongs at the end of the page. Read
 the [side-note reference](https://github.com/janga/norna/blob/main/docs/content.md#side-notes)
 and [reference-footnote alternative](https://github.com/janga/norna/blob/main/docs/content.md#reference-footnotes).
@@ -234,45 +231,48 @@ language: en
 ````
 
 **Source:** Standard fenced Markdown with optional Norna metadata. The title
-identifies the file, `{2}` emphasizes the relevant line, long titles remain in
-view while their code scrolls, and JavaScript adds a copy control without
+identifies the file, `{2}` emphasizes the relevant line, and the title stays in
+view while a long example scrolls. JavaScript adds a copy control without
 changing the readable fallback. Read the
 [code-block reference](https://github.com/janga/norna/blob/main/docs/content.md#code-blocks).
 
 ## Get readable tables from standard Markdown {#tables}
 
-| Capability {row-header} | Source | Generated structure | Wide-screen behavior | Narrow-screen behavior | JavaScript enhancement | Static fallback |
-| --- | --- | --- | --- | --- | --- | --- |
-| Internal links | Markdown links | Ordinary anchors | Checked against pages and headings | Wrap within prose | None required | Links remain links |
-| Managed images | `image-stack` | Responsive image markup | Uses the preset's image area | Fits the viewport | Optional inspector | Original image link |
-| Carousels | `image-carousel` | Figure and controls | Bounded by width and height | Touch-sized controls | Slide switching | Images remain available |
-| Card lists | `card-list` | Semantic list | Grid or stack | Reflows to fewer columns | None required | Complete list remains |
-| Callouts | GFM alert blockquote | Labelled aside | Preset-owned surface | Stays within content | None required | Meaningful blockquote source |
-| Sidenotes | Note pair | Linked reference and note | Uses a free margin when safe | Returns to reading flow | None required | Linked text remains |
-| Code blocks | Fenced Markdown | Figure and code | Sticky title for long examples | Scrolls when necessary | Copy control | Selectable code |
-| Tables | GFM table | Native table semantics | Claims free page lanes progressively | Uses bounded horizontal overflow | Cues and column controls | Focusable native scroller |
-| Search | Site setting | Generated search route and index | Header entry opens search | Same compact entry | Static Pagefind search | Page navigation remains |
-| Appearance | Theme and reader choice | Coordinated color tokens | System, Light, or Dark | Same choices | Persists the selection | Configured default remains |
+| Capability {row-header} | Source | Wide screen | Small screen | With JS | Without JS |
+| --- | --- | --- | --- | --- | --- |
+| Links | Markdown | Inline | Wrap | No change | Links |
+| Images | `image-stack` | Preset width | Fit | Inspector | Image link |
+| Carousels | `image-carousel` | Fit | Swipe | Slides | Image links |
+| Cards | `card-list` | Grid | Reflow | No change | Full list |
+| Callouts | Alert quote | In prose | Reflow | No change | Labels |
+| Sidenotes | Note pair | Free margin | Inline | No change | Linked notes |
+| Code | Code fence | Expand | Scroll | Copy | Select text |
+| Tables | Markdown | Expand | Scroll | Column controls | Scroll |
+| Search | `config.yaml` | Search page | Same page | Pagefind | Navigation |
+| Appearance | `theme.yaml` | Light or Dark | Same choice | Reader choice | Default |
 
 ````md
-| Capability {row-header} | Source | Generated structure | Wide-screen behavior | Narrow-screen behavior | JavaScript enhancement | Static fallback |
-| --- | --- | --- | --- | --- | --- | --- |
-| Internal links | Markdown links | Ordinary anchors | Checked against pages and headings | Wrap within prose | None required | Links remain links |
-| Managed images | `image-stack` | Responsive image markup | Uses the preset's image area | Fits the viewport | Optional inspector | Original image link |
-| Carousels | `image-carousel` | Figure and controls | Bounded by width and height | Touch-sized controls | Slide switching | Images remain available |
-| Card lists | `card-list` | Semantic list | Grid or stack | Reflows to fewer columns | None required | Complete list remains |
-| Callouts | GFM alert blockquote | Labelled aside | Preset-owned surface | Stays within content | None required | Meaningful blockquote source |
-| Sidenotes | Note pair | Linked reference and note | Uses a free margin when safe | Returns to reading flow | None required | Linked text remains |
-| Code blocks | Fenced Markdown | Figure and code | Sticky title for long examples | Scrolls when necessary | Copy control | Selectable code |
-| Tables | GFM table | Native table semantics | Claims free page lanes progressively | Uses bounded horizontal overflow | Cues and column controls | Focusable native scroller |
-| Search | Site setting | Generated search route and index | Header entry opens search | Same compact entry | Static Pagefind search | Page navigation remains |
-| Appearance | Theme and reader choice | Coordinated color tokens | System, Light, or Dark | Same choices | Persists the selection | Configured default remains |
+| Capability {row-header} | Source | Wide screen | Small screen | With JS | Without JS |
+| --- | --- | --- | --- | --- | --- |
+| Links | Markdown | Inline | Wrap | No change | Links |
+| Images | `image-stack` | Preset width | Fit | Inspector | Image link |
+| Carousels | `image-carousel` | Fit | Swipe | Slides | Image links |
+| Cards | `card-list` | Grid | Reflow | No change | Full list |
+| Callouts | Alert quote | In prose | Reflow | No change | Labels |
+| Sidenotes | Note pair | Free margin | Inline | No change | Linked notes |
+| Code | Code fence | Expand | Scroll | Copy | Select text |
+| Tables | Markdown | Expand | Scroll | Column controls | Scroll |
+| Search | `config.yaml` | Search page | Same page | Pagefind | Navigation |
+| Appearance | `theme.yaml` | Light or Dark | Same choice | Reader choice | Default |
 ````
 
-**Source:** Standard GitHub Flavored Markdown table syntax with one optional
-Norna row-heading marker. This live table is deliberately wide and long: resize
-the browser to see it use free page space before exposing horizontal overflow,
-and scroll its rows to see the column headings remain in context. Read the
+**Source:** GitHub Flavored Markdown table syntax. The `{row-header}` marker
+is a Norna extension: it makes the first column's cells row headings.
+Omit that marker for an ordinary table.
+
+The table uses available space before scrolling horizontally. Its column
+headings stay visible while you scroll its rows. The code block above contains
+every cell of this table, unchanged. Read the
 [table reference](https://github.com/janga/norna/blob/main/docs/content.md#tables).
 
 ## List child pages automatically {#page-list}
@@ -560,18 +560,24 @@ the [public-files reference](https://github.com/janga/norna/blob/main/docs/publi
 to see the same logo, dismissible notices, and footer across several pages.
 
 ```yaml title="site/sitewide-content.yaml"
+logo:
+  height: 2.8rem
 banners:
   - id: preview-environment
     tone: warning
     title: Preview environment
-    text: This notice appears on every page.
-
+    text: This sitewide notice appears on every page in the demo.
+  - id: content-review
+    tone: warning
+    title: Content review
+    text: Dismiss each notice independently with its close button.
 footer:
-  copyrightMessage: Shared Frame example.
+  copyrightMessage: Shared Frame sitewide-content example.
   buildInfo: true
 ```
 
-**Source:** Shared editorial configuration. Page prose stays in each
+**Source:** The linked demonstration's complete shared configuration. It also
+has a conventional `site/public/logo.svg` file. Page prose stays in each
 `content.md`; repeated banners, footer content, and an optional logo-height
 override belong here. Browse the
 [maintained demonstration source](https://github.com/janga/norna/tree/main/examples/feature-demos/sitewide-content)
@@ -625,6 +631,7 @@ to switch presets while keeping its comparison content unchanged. Read the
 This documentation site uses one palette across navigation, prose, controls,
 semantic states, Light appearance, and Dark appearance. A palette changes that
 coordinated color system without replacing the preset's typography or spacing.
+This example selects the same palette with the `documentation` preset:
 
 ```yaml title="site/theme.yaml"
 preset: documentation
