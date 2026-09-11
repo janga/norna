@@ -62,7 +62,10 @@
 				branch.open,
 			])),
 		});
-		const applyDisclosureState = (state: SharedNavigationState) => {
+		const applyDisclosureState = (
+			state: SharedNavigationState,
+			openCurrentPageOnArrival = false,
+		) => {
 			branches.forEach((branch) => {
 				const pagePath = branch.dataset.pagePath ?? '';
 				branch.open = branch.dataset.currentBranch === 'true'
@@ -71,6 +74,10 @@
 			sectionBranches.forEach((branch) => {
 				const pagePath = branch.dataset.pagePath ?? '';
 				const storedOpen = state.sectionOpenByPath[pagePath];
+				if (openCurrentPageOnArrival && branch.dataset.currentPage === 'true') {
+					branch.open = true;
+					return;
+				}
 				branch.open = typeof storedOpen === 'boolean'
 					? storedOpen
 					: branch.dataset.currentPage === 'true';
@@ -96,7 +103,7 @@
 			const storedSharedState = sessionStorage.getItem(sharedStateKey);
 			applyDisclosureState(storedSharedState === null
 				? storedState
-				: parseState(storedSharedState));
+				: parseState(storedSharedState), true);
 			const initialSharedState = mergeSharedState(getDisclosureState());
 			lastSharedState = JSON.stringify(initialSharedState);
 			sessionStorage.setItem(sharedStateKey, lastSharedState);

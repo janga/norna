@@ -2,7 +2,8 @@
 
 ## Status
 
-Ready and prioritized in `Now`.
+Implemented on 2026-09-11. Desktop and compact navigation reopen the current
+page outline on arrival while preserving the stored state of other outlines.
 
 ## Problem
 

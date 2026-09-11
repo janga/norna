@@ -16,10 +16,6 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-082` Open the current page outline on arrival](docs/design/backlog/BL-082-open-current-page-outline.md):
-  **Ready and prioritized.** Open the current page's section outline whenever
-  the reader enters that page, without discarding the remembered state of
-  other page branches.
 - [`BL-081` Clear configuration reference](docs/design/backlog/BL-081-clear-configuration-reference.md):
   **Ready and prioritized.** Rewrite unclear setting descriptions around user
   decisions and concrete outcomes, with particular attention to `language`

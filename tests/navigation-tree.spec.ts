@@ -260,6 +260,32 @@ test.describe('desktop tree navigation', () => {
 		expect(Math.abs((headingTopAfter ?? 0) - (headingTopBefore ?? 0))).toBeLessThan(2);
 	});
 
+	test('opens the current page outline on arrival without closing other outlines', async ({ page }) => {
+		await page.setViewportSize({ width: 1120, height: 900 });
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		const tree = page.locator('.tree-local-navigation');
+		const currentOutline = tree.locator(
+			'.navigation-page-node-current > .navigation-page-sections-disclosure',
+		);
+		const workflowsOutline = tree.getByRole('link', { name: 'Workflows', exact: true })
+			.locator('..')
+			.locator(':scope > .navigation-page-sections-disclosure');
+
+		await workflowsOutline.locator(':scope > summary').click();
+		await currentOutline.locator(':scope > summary').click();
+		await expect(currentOutline).not.toHaveAttribute('open', '');
+		await expect(workflowsOutline).toHaveAttribute('open', '');
+
+		await page.reload({ waitUntil: 'networkidle' });
+		const reloadedTree = page.locator('.tree-local-navigation');
+		await expect(reloadedTree.locator(
+			'.navigation-page-node-current > .navigation-page-sections-disclosure',
+		)).toHaveAttribute('open', '');
+		await expect(reloadedTree.getByRole('link', { name: 'Workflows', exact: true })
+			.locator('..')
+			.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
+	});
+
 	test('renders categories as unlinked labels while preserving descendant URLs', async ({ page }) => {
 		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 		const category = page.locator('.tree-local-navigation details[data-page-path="guides"]');
@@ -814,6 +840,25 @@ test.describe('mobile tree navigation', () => {
 		);
 		await expect(restoredWorkflowsSections).toHaveAttribute('open', '');
 		await expect(menu.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
+	});
+
+	test('reopens the current page outline on mobile arrival', async ({ page }) => {
+		await page.goto(testPagePath, { waitUntil: 'networkidle' });
+		let menu = page.locator('.mobile-nav-menu');
+		await menu.locator(':scope > summary').click();
+		const currentOutline = menu.locator(
+			'.navigation-page-node-current > .navigation-page-sections-disclosure',
+		);
+
+		await currentOutline.locator(':scope > summary').click();
+		await expect(currentOutline).not.toHaveAttribute('open', '');
+		await page.reload({ waitUntil: 'networkidle' });
+
+		menu = page.locator('.mobile-nav-menu');
+		await menu.locator(':scope > summary').click();
+		await expect(menu.locator(
+			'.navigation-page-node-current > .navigation-page-sections-disclosure',
+		)).toHaveAttribute('open', '');
 	});
 
 	test('filters a long mobile tree with touch-sized controls', async ({ page }) => {
