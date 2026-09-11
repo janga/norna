@@ -22,9 +22,6 @@ whose first implementation needs changes after human review. Close that item
 only after
 [`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md).
 
-- [`BL-088` Child-page lists that help readers choose](docs/design/backlog/BL-088-useful-child-page-list-example.md):
-  **Ready.** Demonstrate child-page descriptions that help readers choose a
-  destination instead of repeating the navigation tree.
 
 ## Next
 

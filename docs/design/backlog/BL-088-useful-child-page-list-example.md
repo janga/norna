@@ -2,9 +2,11 @@
 
 ## Status
 
-Ready; fifth in the correction sequence for
-[BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md).
-This is an example correction using existing `page-list` behavior.
+Implemented using the maintained `fixtures/child-page-list/site` source.
+The real capture compares macOS, Windows, and Linux prerequisites; parent
+source, directory order, child metadata, and the reference link accompany it.
+Both fixture and documentation content checks passed. The desktop capture
+was inspected; final human gallery review remains pending.
 
 ## Problem
 

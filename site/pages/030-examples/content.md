@@ -280,27 +280,59 @@ and scroll its rows to see the column headings remain in context. Read the
 <!-- norna-image-provenance:
 image: child-page-list.png
 source: local-browser-capture
-Captured from fixtures/nested-pages/site at /guides/installation/ using the
-registered navigation review environment at 1200 by 800 pixels.
+Captured from fixtures/child-page-list/site at /installation/ using the
+registered scratch review environment at 1200 by 800 pixels. Reproduction
+commands are in fixtures/child-page-list/README.md.
 -->
 
 ```image-stack
 - image: child-page-list.png
-  alt: A Norna Installation page with macOS, Linux, and Windows listed as linked child pages below its introduction.
-  caption: The parent page renders its direct children from the same page graph used by navigation.
+  alt: Installation guides for macOS, Windows, and Linux, with descriptions explaining their different prerequisites and tools.
+  caption: Descriptions help readers choose a guide; the navigation tree only names the destinations.
 ```
 
-Adding, moving, or removing a direct child updates the rendered list without
-maintaining those links separately in Markdown.
+The parent explains the choice. The empty block collects the direct child
+pages in directory order; their H1s and descriptions supply the list text.
 
-````md
+````md title="pages/010-installation/content.md"
+# Installation
+
+## Choose your operating system
+
+Norna needs Node.js; raster images also need ImageMagick. The required software
+is the same on each operating system, but the installation commands differ.
+Choose the guide for the computer on which you will edit your site.
+
 ```page-list
 ```
 ````
 
-**Source:** Norna Markdown extension with no options. It is useful on a real
-parent page whose introduction adds value; a navigation-only category should
-not create a duplicate page merely to show the list. Read the
+```text
+010-installation/
+|-- content.md
+`-- pages/
+    |-- 010-macos/content.md
+    |-- 020-windows/content.md
+    `-- 030-linux/content.md
+```
+
+```md title="pages/010-installation/pages/010-macos/content.md (opening)"
+---
+page:
+  description: Install the prerequisites with Homebrew, then create your site in Terminal.
+---
+
+# macOS
+```
+
+The other descriptions are "Use the Windows installers and run site commands
+in PowerShell" and "Use your distribution's packages, checking the Node.js
+version before continuing." Adding, moving, or removing a child updates the
+list; descriptions stay with their pages.
+
+**Source:** Norna Markdown extension with no options. Use a list when its
+context helps readers choose. If it only repeats navigation, use a category
+instead of creating a parent page. Read the
 [child-page-list reference](https://github.com/janga/norna/blob/main/docs/content.md#child-page-list).
 
 ## Automatic responsive navigation {#automatic-navigation}

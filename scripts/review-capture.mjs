@@ -199,6 +199,7 @@ export const captureReviewPage = async ({
 		await page.screenshot({
 			fullPage: capture.fullPage,
 			path: capture.outputPath,
+			style: 'astro-dev-toolbar { display: none !important; }',
 		});
 		await context.close();
 	} finally {
