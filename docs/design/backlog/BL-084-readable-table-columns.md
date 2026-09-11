@@ -2,7 +2,8 @@
 
 ## Status
 
-Ready; first in the correction sequence for
+Implemented and verified with five focused table browser tests on 2026-09-11.
+Visual review is included in the final Examples audit. First in the correction sequence for
 [BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md).
 
 ## Problem

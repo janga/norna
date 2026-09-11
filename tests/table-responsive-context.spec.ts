@@ -194,7 +194,7 @@ test('declared row headers remain visible through horizontal scrolling in both d
 		expect(Math.abs(geometry.stickyInlineDelta)).toBeLessThanOrEqual(1.5);
 		expect(geometry.nextCellBehind).toBe(true);
 		expect(geometry.position).toBe('sticky');
-		expect(geometry.wrap).toBe('anywhere');
+		expect(geometry.wrap).toBe('break-word');
 	};
 
 	await scrollRegion.evaluate((element) => {
@@ -230,6 +230,31 @@ test('row-header semantics and native horizontal scrolling remain without JavaSc
 	await expect(frame.locator('[data-table-navigation]')).toHaveCount(0);
 	await expect(frame.locator('[data-table-sticky-heading]')).toHaveCount(0);
 	await context.close();
+});
+
+test('row labels preserve ordinary words and bound exceptional tokens', async ({ page }) => {
+	await page.goto(deepTablePath, { waitUntil: 'networkidle' });
+	const frame = page.locator('[data-table-frame]').first();
+	await frame.locator('tbody th').first().evaluate((cell) => { cell.textContent = 'Managed images'; });
+	for (const width of [1440, 960, 390]) {
+		await page.setViewportSize({ width, height: 800 });
+		await settleResponsiveLayout(page);
+		const lines = await frame.locator('tbody th').first().evaluate((cell) => {
+			const range = document.createRange();
+			range.setStart(cell.firstChild!, 0);
+			range.setEnd(cell.firstChild!, 7);
+			return Array.from(range.getClientRects()).filter((rectangle) => rectangle.width > 0).length;
+		});
+		expect(lines).toBe(1);
+	}
+	await frame.locator('tbody th').first().evaluate((cell) => { cell.textContent = 'identifier'.repeat(40); });
+	await settleResponsiveLayout(page);
+	const geometry = await frame.locator('tbody th').first().evaluate((cell) => ({
+		width: cell.getBoundingClientRect().width,
+		overflow: cell.scrollWidth - cell.clientWidth,
+	}));
+	expect(geometry.width).toBeLessThanOrEqual(390 * 0.55 + 2);
+	expect(geometry.overflow).toBeLessThanOrEqual(1);
 });
 
 test('row headers remain bounded and opaque in compact, Dark, and forced-color layouts', async ({ page }) => {

@@ -518,7 +518,7 @@ ul {
 }
 
 .norna-table-frame[data-table-row-headers='true'] table {
-	--table-row-header-min-width: min(7ch, 24vw);
+	--table-row-header-min-width: min(12ch, 40vw);
 	--table-row-header-max-width: min(18rem, 55vw);
 }
 
@@ -531,7 +531,7 @@ ul {
 	max-width: var(--table-row-header-max-width);
 	border-inline-end: 1px solid color-mix(in srgb, currentColor 38%, transparent);
 	background: var(--section-background-color, var(--color-page));
-	overflow-wrap: anywhere;
+	overflow-wrap: break-word;
 	text-align: start;
 }
 

@@ -444,6 +444,10 @@ heading stays visible where the sticky row and column headings meet. Tables
 that fit retain their natural presentation, and tables without `{row-header}`
 retain ordinary GFM table markup.
 
+Row labels wrap at word boundaries. Norna gives the column room for ordinary
+words before using horizontal scrolling; unusually long unbroken identifiers
+can wrap within the bounded label column so other columns remain reachable.
+
 Use `{row-header}` exactly once, as the final content in the first column
 heading. Every body row must have a non-empty, unique first cell. Norna reports
 violations through `content:check` and editor diagnostics instead of guessing
