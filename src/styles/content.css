@@ -359,25 +359,28 @@ ul {
 	color: inherit;
 }
 
+.section-markdown > :is(.norna-table-frame, .code-block) {
+	--wide-block-prose-width: 100%;
+	--wide-block-end-width: calc((100cqi + var(--layout-reading-width)) / 2);
+	--wide-block-canvas-width: 100cqi;
+	--wide-block-canvas-inline-offset: calc((var(--layout-reading-width) - 100cqi) / 2);
+}
+
 .section-markdown > .norna-table-frame {
-	--table-prose-width: 100%;
-	--table-end-width: calc((100cqi + var(--layout-reading-width)) / 2);
-	--table-canvas-width: 100cqi;
-	--table-canvas-inline-offset: calc((var(--layout-reading-width) - 100cqi) / 2);
-	width: var(--table-end-width);
+	width: var(--wide-block-end-width);
 }
 
-.section-markdown > .norna-table-frame[data-table-layout='prose'] {
-	width: var(--table-prose-width);
+.section-markdown > :is([data-table-layout='prose'], [data-code-layout='prose']) {
+	width: var(--wide-block-prose-width);
 }
 
-.section-markdown > .norna-table-frame[data-table-layout='end'] {
-	width: var(--table-end-width);
+.section-markdown > :is([data-table-layout='end'], [data-code-layout='end']) {
+	width: var(--wide-block-end-width);
 }
 
-.section-markdown > .norna-table-frame[data-table-layout='canvas'] {
-	width: var(--table-canvas-width);
-	margin-inline-start: var(--table-canvas-inline-offset);
+.section-markdown > :is(.norna-table-frame[data-table-layout='canvas'], .code-block[data-code-layout='canvas']) {
+	width: var(--wide-block-canvas-width);
+	margin-inline-start: var(--wide-block-canvas-inline-offset);
 }
 
 .norna-table-scroll {
@@ -651,37 +654,37 @@ ul {
 }
 
 @media (min-width: 961px) {
-	.site-page-layout-tree .section-markdown > .norna-table-frame {
-		--table-end-width: 100cqi;
-		--table-canvas-width: var(--table-end-width);
-		--table-canvas-inline-offset: 0px;
+	.site-page-layout-tree .section-markdown > :is(.norna-table-frame, .code-block) {
+		--wide-block-end-width: 100cqi;
+		--wide-block-canvas-width: var(--wide-block-end-width);
+		--wide-block-canvas-inline-offset: 0px;
 	}
 
 	:root[data-reader-preferences-ready='true'][data-focus-reading='on']
-		.site-page-layout-tree .section-markdown > .norna-table-frame {
-		--table-canvas-width: calc(100cqi + var(--tree-navigation-width) + var(--tree-layout-gap));
-		--table-canvas-inline-offset: calc(0px - var(--tree-navigation-width) - var(--tree-layout-gap));
+		.site-page-layout-tree .section-markdown > :is(.norna-table-frame, .code-block) {
+		--wide-block-canvas-width: calc(100cqi + var(--tree-navigation-width) + var(--tree-layout-gap));
+		--wide-block-canvas-inline-offset: calc(0px - var(--tree-navigation-width) - var(--tree-layout-gap));
 	}
 }
 
 @media (min-width: 1101px) {
 	:root[data-reader-preferences-ready='true'][data-focus-reading='on']
-		.site-page-layout-tree .section-markdown > .norna-table-frame {
-		--table-end-width: calc(100cqi + var(--contents-navigation-width) + var(--tree-layout-gap));
-		--table-canvas-width: calc(
+		.site-page-layout-tree .section-markdown > :is(.norna-table-frame, .code-block) {
+		--wide-block-end-width: calc(100cqi + var(--contents-navigation-width) + var(--tree-layout-gap));
+		--wide-block-canvas-width: calc(
 			100cqi
 			+ var(--tree-navigation-width)
 			+ var(--contents-navigation-width)
 			+ (var(--tree-layout-gap) * 2)
 		);
-		--table-canvas-inline-offset: calc(0px - var(--tree-navigation-width) - var(--tree-layout-gap));
+		--wide-block-canvas-inline-offset: calc(0px - var(--tree-navigation-width) - var(--tree-layout-gap));
 	}
 }
 
 @media (min-width: 1281px) {
-	.site-page-layout-tree:not(.site-page-layout-contents) .section-markdown > .norna-table-frame {
-		--table-end-width: calc(100cqi + var(--contents-navigation-width) + var(--tree-layout-gap));
-		--table-canvas-width: var(--table-end-width);
+	.site-page-layout-tree:not(.site-page-layout-contents) .section-markdown > :is(.norna-table-frame, .code-block) {
+		--wide-block-end-width: calc(100cqi + var(--contents-navigation-width) + var(--tree-layout-gap));
+		--wide-block-canvas-width: var(--wide-block-end-width);
 	}
 }
 
@@ -809,7 +812,17 @@ ul {
 
 .section-markdown .code-block {
 	position: relative;
+	clear: both;
 	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+}
+
+.code-block[data-code-overflow='true'] > pre {
+	border-inline-end: 3px solid var(--color-code-text);
+}
+
+.code-block > pre:focus-visible {
+	outline: var(--focus-indicator-width) solid var(--color-focus-ring);
+	outline-offset: 2px;
 }
 
 .section-markdown .norna-code-example {

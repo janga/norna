@@ -492,6 +492,15 @@ horizontally synchronized sticky headings are absent.
 
 ### Code Blocks
 
+Short code examples follow the text width. With JavaScript available, long
+top-level examples can use free space beside the text before scrolling
+horizontally. They never cover visible navigation; examples inside callouts
+stay inside the callout. Focus reading can make additional width available.
+The font size and source indentation remain unchanged. A contrasting end edge
+marks remaining overflow, and the code area accepts keyboard scrolling.
+Without JavaScript, code remains readable and horizontally scrollable at the
+text width.
+
 Use an ordinary fenced Markdown code block for commands, configuration, and
 source examples:
 

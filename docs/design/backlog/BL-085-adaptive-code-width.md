@@ -2,7 +2,9 @@
 
 ## Status
 
-Ready; second in the correction sequence for
+Implemented on 2026-09-11. Six focused code and shared table-width browser
+checks passed, including narrow screens and no-JavaScript code access.
+Visual review is included in the final Examples audit. Second in the sequence for
 [BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md),
 after
 [BL-084: Readable table columns without broken words](BL-084-readable-table-columns.md).

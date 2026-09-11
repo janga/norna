@@ -24,6 +24,39 @@ const labels = {
 		if (!(template instanceof HTMLTemplateElement)) return;
 
 		const resetTimers = new WeakMap();
+		const layoutUpdaters = [];
+		const prepareLayout = (wrapper, pre) => {
+			const topLevel = wrapper.parentElement?.classList.contains('section-markdown');
+			let scheduled = false;
+			const update = () => {
+				scheduled = false;
+				if (topLevel) {
+					const layout = ['prose', 'end', 'canvas'].find((candidate) => {
+						wrapper.dataset.codeLayout = candidate;
+						return pre.scrollWidth <= pre.clientWidth + 1;
+					}) ?? 'canvas';
+					wrapper.dataset.codeLayout = layout;
+				}
+				const overflow = pre.scrollWidth > pre.clientWidth + 1;
+				wrapper.dataset.codeOverflow = String(overflow);
+				if (overflow) pre.setAttribute('tabindex', '0');
+				else pre.removeAttribute('tabindex');
+			};
+			const schedule = () => {
+				if (scheduled) return;
+				scheduled = true;
+				requestAnimationFrame(update);
+			};
+			layoutUpdaters.push(schedule);
+			if ('ResizeObserver' in window) {
+				const observer = new ResizeObserver(schedule);
+				observer.observe(wrapper.parentElement);
+				const body = wrapper.closest('.section-body');
+				if (body) observer.observe(body);
+			}
+			window.addEventListener('resize', schedule, { passive: true });
+			update();
+		};
 		const copyText = async (text) => {
 			if (navigator.clipboard?.writeText) {
 				try {
@@ -79,6 +112,7 @@ const labels = {
 			if (!(button instanceof HTMLButtonElement)) return;
 			const title = codeExample?.querySelector(':scope > .norna-code-title');
 			(title ?? wrapper).append(button);
+			prepareLayout(wrapper, pre);
 			button.addEventListener('click', async () => {
 				if (button.dataset.copyBusy === 'true') return;
 				button.dataset.copyBusy = 'true';
@@ -92,6 +126,12 @@ const labels = {
 				}
 			});
 		});
+		const preferences = new MutationObserver(() => layoutUpdaters.forEach((update) => update()));
+		preferences.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-reading-width', 'data-focus-reading', 'dir'],
+		});
+		document.fonts?.ready.then(() => layoutUpdaters.forEach((update) => update()));
 
 		template.remove();
 	})();

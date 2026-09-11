@@ -22,9 +22,6 @@ whose first implementation needs changes after human review. Close that item
 only after
 [`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md).
 
-- [`BL-085` Adaptive width for long code examples](docs/design/backlog/BL-085-adaptive-code-width.md):
-  **Ready; follows the table correction.** Give long code examples safe extra
-  width while preserving readable type, exact source, and overflow access.
 - [`BL-086` One consistent navigation contract in documentation](docs/design/backlog/BL-086-consistent-navigation-reference.md):
   **Ready.** Reconcile Home, heading-count, and responsive behavior across
   current code and navigation references before changing top navigation.
