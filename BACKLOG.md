@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
+  **In progress.** Replace the Examples index and focused child pages with one
+  direct gallery that keeps rendered results, exact source, use boundaries,
+  and canonical reference links together.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Implemented; prioritized for review and documentation.** Complete the
   human review and document the localized, accessible semantic callouts and
