@@ -165,7 +165,8 @@ size: m
 ````
 
 **Source:** Norna Markdown extension. Cards are for a short collection of
-comparable choices, resources, or steps. Read the
+comparable choices, resources, or steps. Each card can include an image and
+link to a page or an external resource. Read the
 [card-list reference](https://github.com/janga/norna/blob/main/docs/content.md#card-list).
 
 [Open the complete media and surfaces site](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/)
@@ -251,7 +252,7 @@ changing the readable fallback. Read the
 | Search | `config.yaml` | Search page | Same page | Pagefind | Navigation |
 | Appearance | `theme.yaml` | Light or Dark | Same choice | Reader choice | Default |
 
-````md
+````md title="Table source (Markdown)"
 | Capability {row-header} | Source | Wide screen | Small screen | With JS | Without JS |
 | --- | --- | --- | --- | --- | --- |
 | Links | Markdown | Inline | Wrap | No change | Links |
