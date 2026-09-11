@@ -1,5 +1,30 @@
 # BL-083: Result-First Single-Page Examples
 
+## Status
+
+First implementation present; human review identified table readability,
+source-to-result, and navigation-example problems on 2026-09-11. The item is
+not complete. The correction sequence below owns the remaining work; do not
+schedule the same corrections independently under this parent item.
+
+## Correction Sequence
+
+Follow this order, with general presentation and navigation changes before
+the examples that demonstrate them:
+
+1. [BL-084: Readable table columns without broken words](BL-084-readable-table-columns.md).
+2. [BL-085: Adaptive width for long code examples](BL-085-adaptive-code-width.md).
+3. [BL-086: One consistent navigation contract in documentation](BL-086-consistent-navigation-reference.md).
+4. [BL-087: Direct section access from top navigation](BL-087-top-navigation-section-access.md).
+5. [BL-088: Child-page lists that help readers choose](BL-088-useful-child-page-list-example.md).
+6. [BL-089: Navigation illustrations generated from runnable examples](BL-089-runnable-navigation-illustrations.md).
+7. [BL-090: Readable examples with exact source and clear syntax boundaries](BL-090-exact-readable-examples.md).
+8. [BL-091: Final examples audit against implemented behavior](BL-091-final-examples-implementation-audit.md).
+
+The final audit must run after all seven preceding items. Its corrections,
+verification, and applicable human review are required before closing this
+parent item. Keep completed work committed in separate logical changes.
+
 ## Problem
 
 The public Examples entry page explains how the example area is organized
@@ -110,7 +135,9 @@ editorial content accessible automatically.
 
 - Remove the focused Examples child pages after their useful demonstrations
   have been incorporated and compressed.
-- Preserve their published URLs as page aliases that lead to `/examples/`.
+- Do not preserve the removed focused-page URLs as aliases. Update maintained
+  internal links to `/examples/` section anchors; an obsolete direct URL may
+  return the normal 404 page.
 - Update internal documentation links to the new section anchors.
 - Keep complete sites under `examples/` as independent builds. Link to both
   their rendered output and maintained source from the final section.

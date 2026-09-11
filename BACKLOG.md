@@ -16,24 +16,50 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
-  **In progress.** Replace the Examples index and focused child pages with one
-  direct gallery that keeps rendered results, exact source, use boundaries,
-  and canonical reference links together.
-- [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
-  **Implemented; prioritized for review and documentation.** Complete the
-  human review and document the localized, accessible semantic callouts and
-  their closed meaning set.
-- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
-  **Implemented and browser-tested; prioritized for review and
-  documentation.** Complete the human review and document the accessible
-  overlay that replaces persistent navigation rails in Focus reading.
+The following correction sequence completes
+[`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md),
+whose first implementation needs changes after human review. Close that item
+only after
+[`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md).
+
+- [`BL-084` Readable table columns without broken words](docs/design/backlog/BL-084-readable-table-columns.md):
+  **Ready.** Preserve readable row labels and ordinary words before escalating
+  table width or using horizontal scrolling.
+- [`BL-085` Adaptive width for long code examples](docs/design/backlog/BL-085-adaptive-code-width.md):
+  **Ready; follows the table correction.** Give long code examples safe extra
+  width while preserving readable type, exact source, and overflow access.
+- [`BL-086` One consistent navigation contract in documentation](docs/design/backlog/BL-086-consistent-navigation-reference.md):
+  **Ready.** Reconcile Home, heading-count, and responsive behavior across
+  current code and navigation references before changing top navigation.
+- [`BL-087` Direct section access from top navigation](docs/design/backlog/BL-087-top-navigation-section-access.md):
+  **Ready after BL-086: One consistent navigation contract in documentation.**
+  Add a separate disclosure beside each eligible page link for direct access
+  to its H2 sections.
+- [`BL-088` Child-page lists that help readers choose](docs/design/backlog/BL-088-useful-child-page-list-example.md):
+  **Ready.** Demonstrate child-page descriptions that help readers choose a
+  destination instead of repeating the navigation tree.
 
 ## Next
 
-`Next` is the exact implementation sequence after `Now`. Bounded deterministic
-work comes before changes that need visual review. Larger features follow the
-smaller page-graph additions they can reuse.
+`Next` is the exact implementation sequence after `Now`. Finish the agreed
+Examples correction sequence before its final audit or unrelated work.
+
+- [`BL-089` Navigation illustrations generated from runnable examples](docs/design/backlog/BL-089-runnable-navigation-illustrations.md):
+  **Ready after BL-087: Direct section access from top navigation.** Capture
+  real navigation states from the exact source shown beside each illustration.
+- [`BL-090` Readable examples with exact source and clear syntax boundaries](docs/design/backlog/BL-090-exact-readable-examples.md):
+  **Ready after the preceding corrections.** Simplify example content, make
+  source and results agree, and identify Norna extensions precisely.
+- [`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md):
+  **Run last in this sequence.** Verify every Examples section against current
+  code, actual output, syntax, defaults, and reference links before completion.
+- [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
+  **Implemented and documented; awaiting review.** Complete the human review
+  of the localized, accessible semantic callouts and their closed meaning set.
+- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
+  **Implemented and browser-tested; awaiting review and documentation.**
+  Complete the human review and document the accessible overlay that replaces
+  persistent navigation rails in Focus reading.
 
 ## External Gate
 

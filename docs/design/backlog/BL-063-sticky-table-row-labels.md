@@ -72,3 +72,12 @@ validates the explicit `{row-header}` declaration, rendering emits native
 column and row header scopes, and browser coverage exercises horizontal
 scrolling, LTR and RTL directions, compact layouts, Dark appearance, forced
 colors, and the no-JavaScript fallback.
+
+## Readability Follow-Up
+
+Human review of the Examples page exposed ordinary words breaking inside an
+overly narrow row-label column. The general sizing and wrapping correction is
+tracked separately in
+[BL-084: Readable table columns without broken words](BL-084-readable-table-columns.md).
+Preserve this item's syntax and sticky-header semantics while correcting that
+presentation defect.

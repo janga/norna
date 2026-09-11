@@ -75,3 +75,9 @@ and tested in sequence rather than changing the parser contract concurrently.
 - Long titles and narrow screens do not overlap the copy control or code.
 - Migration examples cover the equivalent Docusaurus, VitePress, Material,
   and Starlight forms.
+
+## Width Follow-Up
+
+[BL-085: Adaptive width for long code examples](BL-085-adaptive-code-width.md)
+addresses long source confined to the prose width. It must retain this item's
+fence syntax, exact copying, titles, and line-emphasis behavior.

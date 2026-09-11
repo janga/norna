@@ -83,3 +83,11 @@ result. The reference remains precise enough to settle edge cases.
 - No configuration key, accepted value, default, or runtime behavior changes
   as part of this item.
 - Documentation link tests pass.
+
+## Navigation Follow-Up
+
+[BL-086: One consistent navigation contract in documentation](BL-086-consistent-navigation-reference.md)
+reconciles the remaining Home and heading-count discrepancies with current
+code. The separately scheduled
+[BL-087: Direct section access from top navigation](BL-087-top-navigation-section-access.md)
+then changes top-menu interaction and must update the aligned reference.

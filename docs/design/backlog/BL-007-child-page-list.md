@@ -24,3 +24,10 @@ rules.
 - The block cannot list unrelated branches or create a second page hierarchy.
 - Empty lists and unsupported placement receive clear diagnostics.
 - Output is useful without client-side JavaScript.
+
+## Example Follow-Up
+
+The existing list is demonstrated too redundantly beside the navigation tree.
+[BL-088: Child-page lists that help readers choose](BL-088-useful-child-page-list-example.md)
+will show a meaningful choice using child-page descriptions, without extending
+the implemented `page-list` syntax or inclusion rules.

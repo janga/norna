@@ -29,3 +29,11 @@ actual Getting Started category and page hierarchy, identifies the current
 `content.md`, and explains the same file-to-navigation relationship in prose
 and alternative text. Content, documentation-link, image, and site-build checks
 cover the maintained source and illustration.
+
+## Navigation Illustration Follow-Up
+
+[BL-089: Navigation illustrations generated from runnable examples](BL-089-runnable-navigation-illustrations.md)
+audits shared navigation illustrations and their consumers after the top-menu
+changes. Retain this item's concrete file-to-page connection, but derive
+depicted browser states from actual runnable source so the new Examples and
+Features illustrations cannot diverge from the engine.
