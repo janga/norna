@@ -451,10 +451,21 @@ Navigation, banners, the footer, page-sequence links, source edit links, the
 404 page, redirect aliases, and the search page itself are excluded. Matching
 sections can appear as links to their heading anchors.
 
-Search is static: no search server or hosted service is required. Ordinary
-pages still load no search JavaScript. The generated `/search/` page loads the
-Pagefind interface and index only after a visitor opens it. Without JavaScript,
-the site's normal page navigation remains available.
+Search is static: no search server or hosted service is required. Only the
+generated `/search/` page loads the Pagefind interface and index. When search
+is enabled, a small navigation script also remembers where readers opened it.
+
+Opening Search from a page adds a link above the search heading, such as
+**Back to Examples**. The link returns to that page's URL and reading position,
+including its query string and heading anchor. Reader Display choices remain
+unchanged, and keyboard focus returns to the Search button. The link remains
+available when there are no results or the search index fails to load.
+
+The return destination is kept in the browser tab's session storage and the
+search page's history entry, not in a cookie. Reloading that search page keeps
+the destination. Opening `/search/` directly, in a new tab, or without usable
+session storage instead shows **Go to the homepage**. Without JavaScript, the
+homepage link and the site's normal navigation remain available.
 
 During local work, run `norna build:local` after searchable content changes.
 It rebuilds the final HTML and index, then restarts local preview. A plain

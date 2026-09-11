@@ -209,6 +209,7 @@ const sectionStyle = [
 	style={sectionStyle}
 >
 	<div class="section-card">
+		<slot name="before-heading" />
 		<header class="section-header">
 			<HeadingTag id={headingId} set:html={section.titleHtml} />
 		</header>

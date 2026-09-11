@@ -198,7 +198,7 @@ const addConfigHelp = (jsonSchema) => {
 	]);
 	addHelp(jsonSchema, 'search', [
 		yamlExample('search: true'),
-		'Generates a localized `/search/` page and a static Pagefind index during each build. Search is off by default, and only the search page loads the search JavaScript.',
+		'Generates a localized `/search/` page and a static Pagefind index during each build. Search is off by default. Only the search page loads the search engine and index; a small navigation script remembers where readers opened it.',
 		documentationLink('Search reference', 'configuration.md', 'search'),
 	], [true, false]);
 	addFieldHelp(

@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Hình ảnh trước',
 	previousPage: 'Trang trước',
 	returnHome: 'Đi đến trang chủ',
+	searchReturn: 'Quay lại {page}',
 	search: 'Tìm kiếm',
 	searchDescription: 'Tìm kiếm nội dung đã xuất bản trên trang web này.',
 	searchLoading: 'Đang tải tìm kiếm…',

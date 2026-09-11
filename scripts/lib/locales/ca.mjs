@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Imatge anterior',
 	previousPage: 'Pàgina anterior',
 	returnHome: 'Ves a la pàgina d’inici',
+	searchReturn: 'Torna a {page}',
 	search: 'Cerca',
 	searchDescription: 'Cerca al contingut publicat d’aquest lloc.',
 	searchLoading: 'S’està carregant la cerca…',

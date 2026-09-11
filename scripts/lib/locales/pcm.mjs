@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Previous picture',
 	previousPage: 'Previous page',
 	returnHome: 'Go homepage',
+	searchReturn: 'Go back to {page}',
 	search: 'Search',
 	searchDescription: 'Search wetin dem publish for dis site.',
 	searchLoading: 'Search dey load…',

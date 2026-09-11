@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Edellinen kuva',
 	previousPage: 'Edellinen sivu',
 	returnHome: 'Siirry etusivulle',
+	searchReturn: 'Takaisin sivulle {page}',
 	search: 'Haku',
 	searchDescription: 'Hae tämän sivuston julkaistusta sisällöstä.',
 	searchLoading: 'Ladataan hakua…',

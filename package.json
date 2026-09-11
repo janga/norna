@@ -120,6 +120,7 @@
     "test:locales": "node scripts/test-locales.mjs",
     "test:edit-source-link": "node scripts/test-edit-source-link.mjs",
     "test:static-search": "node scripts/test-static-search.mjs",
+    "test:search:browser": "node scripts/test-navigation.mjs --site-dir site tests/search-navigation.spec.ts",
     "test:content-check": "node scripts/test-content-check.mjs",
     "test:content-sync-plan": "node scripts/test-content-sync-plan.mjs",
     "test:content-model": "npm run test:page-content && npm run test:managed-media && npm run test:content-sync && npm run test:markdown-constructs",

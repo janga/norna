@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Imazhi i mëparshëm',
 	previousPage: 'Faqja e mëparshme',
 	returnHome: 'Shko te faqja kryesore',
+	searchReturn: 'Kthehu te {page}',
 	search: 'Kërko',
 	searchDescription: 'Kërko në përmbajtjen e publikuar të kësaj faqeje.',
 	searchLoading: 'Po ngarkohet kërkimi…',

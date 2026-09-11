@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Hoton baya',
 	previousPage: 'Shafin baya',
 	returnHome: 'Je zuwa shafin farko',
+	searchReturn: 'Koma zuwa {page}',
 	search: 'Bincika',
 	searchDescription: 'Bincika abubuwan da aka wallafa a wannan rukunin yanar gizo.',
 	searchLoading: 'Ana loda bincike…',

@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Viregt Bild',
 	previousPage: 'Vireg Säit',
 	returnHome: 'Op d’Startsäit goen',
+	searchReturn: 'Zréck op {page}',
 	search: 'Sichen',
 	searchDescription: 'Am publizéierten Inhalt vun dësem Site sichen.',
 	searchLoading: 'Sich gëtt gelueden…',

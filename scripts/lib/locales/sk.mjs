@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Predchádzajúci obrázok',
 	previousPage: 'Predchádzajúca stránka',
 	returnHome: 'Prejsť na domovskú stránku',
+	searchReturn: 'Späť na {page}',
 	search: 'Hľadať',
 	searchDescription: 'Hľadať v publikovanom obsahu tejto lokality.',
 	searchLoading: 'Načítava sa vyhľadávanie…',

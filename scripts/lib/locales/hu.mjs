@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Előző kép',
 	previousPage: 'Előző oldal',
 	returnHome: 'Ugrás a kezdőlapra',
+	searchReturn: 'Vissza: {page}',
 	search: 'Keresés',
 	searchDescription: 'Keresés a webhely közzétett tartalmában.',
 	searchLoading: 'Keresés betöltése…',

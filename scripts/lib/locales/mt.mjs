@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Stampa ta’ qabel',
 	previousPage: 'Paġna ta’ qabel',
 	returnHome: 'Mur fil-paġna ewlenija',
+	searchReturn: 'Lura għal {page}',
 	search: 'Fittex',
 	searchDescription: 'Fittex fil-kontenut ippubblikat ta’ dan is-sit.',
 	searchLoading: 'Qed titgħabba t-tfittxija…',

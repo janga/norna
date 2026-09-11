@@ -595,9 +595,9 @@ content without a hosted search service.
 search: true
 ```
 
-**Source:** Site configuration. Ordinary content pages do not load the search
-JavaScript; the generated search route loads its static Pagefind index only
-when opened. Read the
+**Source:** Site configuration. The search engine and its index load only on the
+search page. Use **Back to Examples** above the search heading to return to
+your reading position. Read the
 [search reference](https://github.com/janga/norna/blob/main/docs/configuration.md#search).
 
 ## Set the site language {#language}

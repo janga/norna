@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Fyrri mynd',
 	previousPage: 'Fyrri síða',
 	returnHome: 'Fara á forsíðu',
+	searchReturn: 'Til baka á {page}',
 	search: 'Leita',
 	searchDescription: 'Leita í birtu efni þessa vefs.',
 	searchLoading: 'Hleð leit…',

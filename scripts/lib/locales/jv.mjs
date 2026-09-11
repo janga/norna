@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Gambar sadurunge',
 	previousPage: 'Kaca sadurunge',
 	returnHome: 'Menyang kaca ngarep',
+	searchReturn: 'Bali menyang {page}',
 	search: 'Golèki',
 	searchDescription: 'Golèki isi sing wis diterbitake ing situs iki.',
 	searchLoading: 'Ngemot panggolèkan…',

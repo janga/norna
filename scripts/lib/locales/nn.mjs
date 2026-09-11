@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Førre bilete',
 	previousPage: 'Førre side',
 	returnHome: 'Gå til startsida',
+	searchReturn: 'Tilbake til {page}',
 	search: 'Søk',
 	searchDescription: 'Søk i det publiserte innhaldet på denne nettstaden.',
 	searchLoading: 'Lastar søk…',

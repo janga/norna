@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Vorheriges Bild',
 	previousPage: 'Vorherige Seite',
 	returnHome: 'Zur Startseite',
+	searchReturn: 'Zurück zu {page}',
 	search: 'Suchen',
 	searchDescription: 'Veröffentlichte Inhalte dieser Website durchsuchen.',
 	searchLoading: 'Suche wird geladen…',

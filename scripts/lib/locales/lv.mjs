@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Iepriekšējais attēls',
 	previousPage: 'Iepriekšējā lapa',
 	returnHome: 'Doties uz sākumlapu',
+	searchReturn: 'Atpakaļ uz {page}',
 	search: 'Meklēt',
 	searchDescription: 'Meklēt šīs vietnes publicētajā saturā.',
 	searchLoading: 'Ielādē meklēšanu…',

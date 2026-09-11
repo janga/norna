@@ -128,6 +128,7 @@ try {
 			readingWidthWide: 'Wide',
 			resetDisplaySettings: 'Reset',
 			returnHome: 'Go to the homepage',
+			searchReturn: 'Back to {page}',
 			search: 'Search',
 			searchDescription: 'Search the published content on this site.',
 			searchLoading: 'Loading search…',

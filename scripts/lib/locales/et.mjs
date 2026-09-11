@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Eelmine pilt',
 	previousPage: 'Eelmine leht',
 	returnHome: 'Mine avalehele',
+	searchReturn: 'Tagasi lehele {page}',
 	search: 'Otsi',
 	searchDescription: 'Otsi selle saidi avaldatud sisust.',
 	searchLoading: 'Otsingu laadimine…',

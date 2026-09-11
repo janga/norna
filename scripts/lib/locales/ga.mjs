@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'An íomhá roimhe seo',
 	previousPage: 'An leathanach roimhe seo',
 	returnHome: 'Téigh chuig an leathanach baile',
+	searchReturn: 'Ar ais go {page}',
 	search: 'Cuardaigh',
 	searchDescription: 'Cuardaigh ábhar foilsithe an tsuímh seo.',
 	searchLoading: 'Cuardach á luchtú…',

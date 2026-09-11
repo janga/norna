@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Nakaraang larawan',
 	previousPage: 'Nakaraang pahina',
 	returnHome: 'Pumunta sa home page',
+	searchReturn: 'Bumalik sa {page}',
 	search: 'Maghanap',
 	searchDescription: 'Maghanap sa nailathalang nilalaman ng site na ito.',
 	searchLoading: 'Nilo-load ang paghahanap…',

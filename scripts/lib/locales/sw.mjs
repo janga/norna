@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Picha iliyotangulia',
 	previousPage: 'Ukurasa uliotangulia',
 	returnHome: 'Nenda kwenye ukurasa wa mwanzo',
+	searchReturn: 'Rudi kwenye {page}',
 	search: 'Tafuta',
 	searchDescription: 'Tafuta maudhui yaliyochapishwa kwenye tovuti hii.',
 	searchLoading: 'Inapakia utafutaji…',

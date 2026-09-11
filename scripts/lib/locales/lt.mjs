@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Ankstesnis vaizdas',
 	previousPage: 'Ankstesnis puslapis',
 	returnHome: 'Eiti į pradžios puslapį',
+	searchReturn: 'Grįžti į {page}',
 	search: 'Ieškoti',
 	searchDescription: 'Ieškoti paskelbtame šios svetainės turinyje.',
 	searchLoading: 'Įkeliama paieška…',

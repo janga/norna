@@ -18,7 +18,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Generated page and section navigation | When Norna needs to maintain sticky anchor offsets, close the mobile menu after a choice, or enhance tree interaction | Real page and anchor links remain usable. Native disclosure controls can still reveal their contents. |
 | Focus reading | Yes, when the Display panel offers it; always with `tree` navigation | The normal navigation, breadcrumbs, and footer remain visible. |
 | Current-section tracking and outline following | Yes, when a tree page has a heading outline | Page and contents links and manual outline scrolling remain usable, but the active-heading marker and outline do not follow reading. |
-| Static search | Only on the generated search page when `search: true` | Page and section navigation remain available. Ordinary content pages load no search JavaScript. |
+| Static search | When `search: true`: a small return-navigation script beside the Search link; the Pagefind interface and index only on the search page | The search page keeps a homepage link and the site's normal navigation. Remembered return destinations and search results require JavaScript. |
 | Image carousel | Yes, on pages containing a carousel | The image and caption source remains in the HTML, but carousel controls and slide switching require JavaScript. Use an image stack when sequential interaction is not needed. |
 | Dismissible banner | Yes, while a banner is present | The notice remains visible, but visitors cannot dismiss it or persist that choice. |
 | Configured Appearance | No | CSS applies the configured Light, Dark, or operating-system preference. |
@@ -28,8 +28,10 @@ The navigation, search, banner, image-stack, carousel, and reader-preference
 scripts are independent. The reader-preference script is site-wide because
 reading width is always available. Other scripts are included only when their
 features are present: adding one code block, image stack, or carousel affects
-only pages that contain that feature, while enabling search adds its script
-only to `/search/`.
+only pages that contain that feature. Enabling search adds its return-navigation
+helper beside the header's Search link, but only `/search/` loads the search
+engine and index. See [Search](configuration.md#search) for return-link behavior
+and temporary browser storage.
 See
 [Reader Display Controls](theme.md#reader-display-controls) and
 [Focus Reading With Desktop Rails](pages.md#focus-reading-with-desktop-rails)

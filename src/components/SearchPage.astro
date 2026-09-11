@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { ArrowLeft } from '@lucide/astro';
 import { resolveNavigationModel } from '../../scripts/lib/navigation-model.mjs';
 import { getTextWidthCssValue, resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
 import { projectConfig, resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
@@ -148,7 +149,44 @@ const searchScript = `(() => {
 			pagePresentation={pagePresentation}
 			visualTheme={visualTheme}
 			sectionIndex={0}
-		/>
+		>
+			<div slot="before-heading" class="search-return">
+				<a href={projectConfig.site.basePath} data-search-return data-search-return-label={labels.searchReturn}>
+					<ArrowLeft aria-hidden="true" />
+					<span>{labels.returnHome}</span>
+				</a>
+			</div>
+		</SiteSection>
 	</main>
 	<script is:inline set:html={searchScript} />
 </BaseLayout>
+
+<style>
+	.search-return {
+		width: var(--layout-heading-width);
+		margin-inline: var(--layout-inline-start-margin) var(--layout-inline-end-margin);
+		margin-bottom: 1rem;
+	}
+
+	.search-return a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: 2.75rem;
+		max-width: 100%;
+		color: var(--color-link-text);
+		font-size: 0.9375rem;
+		line-height: 1.5;
+		text-underline-offset: 0.2em;
+	}
+
+	.search-return svg {
+		width: 1.125rem;
+		height: 1.125rem;
+		flex-shrink: 0;
+	}
+
+	.search-return span {
+		overflow-wrap: anywhere;
+	}
+</style>

@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Претходна слика',
 	previousPage: 'Претходна страница',
 	returnHome: 'Оди на почетната страница',
+	searchReturn: 'Назад кон {page}',
 	search: 'Пребарај',
 	searchDescription: 'Пребарај во објавената содржина на оваа веб-локација.',
 	searchLoading: 'Се вчитува пребарувањето…',

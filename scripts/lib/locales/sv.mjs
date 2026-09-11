@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Föregående bild',
 	previousPage: 'Föregående sida',
 	returnHome: 'Gå till startsidan',
+	searchReturn: 'Tillbaka till {page}',
 	search: 'Sök',
 	searchDescription: 'Sök i det publicerade innehållet på webbplatsen.',
 	searchLoading: 'Laddar sökning…',

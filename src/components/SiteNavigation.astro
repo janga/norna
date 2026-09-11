@@ -15,6 +15,7 @@ import NavigationPageTree from './NavigationPageTree.astro';
 import NavigationTreeControls from './NavigationTreeControls.astro';
 import TopPageMenu from './TopPageMenu.astro';
 import SectionNavigationScript from './SectionNavigationScript.astro';
+import SearchNavigationScript from './SearchNavigationScript.astro';
 
 type FrameColors = {
 	backgroundColor: string;
@@ -171,6 +172,8 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 					<a
 						class="site-search-link"
 						href={searchHref}
+						data-search-base={projectConfig.site.basePath}
+						data-search-source-title={currentPage?.title}
 						aria-current={searchPage ? 'page' : undefined}
 						aria-label={projectConfig.locale.labels.search}
 						title={projectConfig.locale.labels.search}
@@ -291,3 +294,4 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 </header>
 
 {needsNavigationScript && <SectionNavigationScript />}
+{showSearch && <SearchNavigationScript />}

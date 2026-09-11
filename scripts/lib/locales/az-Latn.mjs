@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Əvvəlki şəkil',
 	previousPage: 'Əvvəlki səhifə',
 	returnHome: 'Ana səhifəyə keç',
+	searchReturn: '{page} səhifəsinə qayıt',
 	search: 'Axtarış',
 	searchDescription: 'Bu saytın dərc edilmiş məzmununda axtarış edin.',
 	searchLoading: 'Axtarış yüklənir…',

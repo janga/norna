@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Imaginea anterioară',
 	previousPage: 'Pagina anterioară',
 	returnHome: 'Mergi la pagina principală',
+	searchReturn: 'Înapoi la {page}',
 	search: 'Caută',
 	searchDescription: 'Caută în conținutul publicat al acestui site.',
 	searchLoading: 'Se încarcă căutarea…',

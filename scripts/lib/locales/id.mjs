@@ -59,6 +59,7 @@ export default Object.freeze({
 	previousImage: 'Gambar sebelumnya',
 	previousPage: 'Halaman sebelumnya',
 	returnHome: 'Buka halaman beranda',
+	searchReturn: 'Kembali ke {page}',
 	search: 'Cari',
 	searchDescription: 'Cari konten yang diterbitkan di situs ini.',
 	searchLoading: 'Memuat pencarian…',
