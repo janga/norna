@@ -4,6 +4,10 @@
 
 Implemented on 2026-09-11. Six focused code and shared table-width browser
 checks passed, including narrow screens and no-JavaScript code access.
+The final audit also exposed width-probe errors caused by the global
+reduced-motion transition duration. Measured code and table frames now disable
+transitions explicitly. The same six checks passed with reduced motion, as
+did the three focused gallery checks against the documentation site.
 Visual review is included in the final Examples audit. Second in the sequence for
 [BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md),
 after

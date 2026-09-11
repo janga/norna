@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+test.use({ reducedMotion: 'reduce' });
+
 test('code expands safely while short and nested examples stay contained', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto('/surfaces/', { waitUntil: 'networkidle' });

@@ -13,7 +13,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Card lists | No | Cards and links remain available. |
 | Side notes | No | CSS places notes in the margin when space permits and in the reading flow otherwise. |
 | Markdown tables | Only on pages containing a table, for measured lane selection, overflow cues, and synchronized column headings during horizontal scrolling | The native table remains in one focusable horizontal-scrolling frame. Declared row headings retain their semantics and sticky first-column fallback in CSS; column headings and cell relationships remain intact. |
-| Fenced code blocks | Only on pages containing rendered code blocks, for the copy control | Code, syntax highlighting, titles, line emphasis, and sticky title bars remain available. The copy button is absent. |
+| Fenced code blocks | Only on pages containing rendered code blocks, for the copy control and measured width expansion | Code, syntax highlighting, titles, line emphasis, and sticky title bars remain available. Long lines scroll within the text width; the copy button is absent. |
 | Basic page links and anchors | No | Normal links, URLs, and browser history continue to work. |
 | Generated page and section navigation | When Norna needs to maintain sticky anchor offsets, close the mobile menu after a choice, or enhance tree interaction | Real page and anchor links remain usable. Native disclosure controls can still reveal their contents. |
 | Focus reading | Yes, when the Display panel offers it; always with `tree` navigation | The normal navigation, breadcrumbs, and footer remain visible. |

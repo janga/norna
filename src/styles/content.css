@@ -360,6 +360,8 @@ ul {
 }
 
 .section-markdown > :is(.norna-table-frame, .code-block) {
+	/* Width probes need final geometry, including with reduced-motion overrides. */
+	transition-property: none;
 	--wide-block-prose-width: 100%;
 	--wide-block-end-width: calc((100cqi + var(--layout-reading-width)) / 2);
 	--wide-block-canvas-width: 100cqi;

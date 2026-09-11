@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+test.use({ reducedMotion: 'reduce' });
+
 const configureTableWidth = async (page, width) => {
 	const table = page.locator('[data-table-frame] table');
 	await table.evaluate((element, nextWidth) => {
