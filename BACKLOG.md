@@ -14,7 +14,28 @@ when implementation can begin.
 
 ## Now
 
-`Now` contains at most three active items in exact technical order.
+`Now` contains at most five active items in exact technical order.
+
+- [`BL-082` Open the current page outline on arrival](docs/design/backlog/BL-082-open-current-page-outline.md):
+  **Ready and prioritized.** Open the current page's section outline whenever
+  the reader enters that page, without discarding the remembered state of
+  other page branches.
+- [`BL-081` Clear configuration reference](docs/design/backlog/BL-081-clear-configuration-reference.md):
+  **Ready and prioritized.** Rewrite unclear setting descriptions around user
+  decisions and concrete outcomes, with particular attention to `language`
+  and `navigation.mode`, without changing configuration behavior.
+- [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
+  **Implemented, browser-tested, and visually approved; prioritized for
+  documentation.** Document the combined table-width, sticky-heading, and
+  horizontal-navigation behavior.
+- [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
+  **Implemented; prioritized for review and documentation.** Complete the
+  human review and document the localized, accessible semantic callouts and
+  their closed meaning set.
+- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
+  **Implemented and browser-tested; prioritized for review and
+  documentation.** Complete the human review and document the accessible
+  overlay that replaces persistent navigation rails in Focus reading.
 
 ## Next
 
@@ -63,18 +84,6 @@ These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
-- [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
-  **Implemented; awaiting human review and documentation.** GitHub-style alert
-  blockquotes render as localized, accessible semantic callouts with a closed
-  meaning set and deterministic diagnostics.
-- [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
-  **Implemented, browser-tested, and visually approved; awaiting
-  documentation.** Document the combined table-width, sticky-heading, and
-  horizontal-navigation behavior.
-- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  Focus reading replaces persistent rails with an accessible overlay that
-  reuses the full site hierarchy without moving the reading layout.
 - [`BL-056` Lighter Dark navigation markers](docs/design/backlog/BL-056-lighter-dark-navigation-markers.md):
   **Implemented and browser-tested; awaiting human review and documentation.**
   Current-page and current-heading markers share a clearer palette-derived
