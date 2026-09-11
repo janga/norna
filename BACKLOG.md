@@ -16,6 +16,9 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- [`BL-096` Keep the reading position visible in navigation](docs/design/backlog/BL-096-navigation-reading-position-following.md):
+  **Ready.** Follow the active heading within its visible navigation list,
+  without interfering with manual navigation or moving the document.
 - [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
   **Implemented and technically verified; awaiting human gallery review.**
   Top-navigation duplication, missing child descriptions, the child-page
