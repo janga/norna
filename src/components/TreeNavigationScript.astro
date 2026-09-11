@@ -68,7 +68,7 @@
 		) => {
 			branches.forEach((branch) => {
 				const pagePath = branch.dataset.pagePath ?? '';
-				branch.open = branch.dataset.currentBranch === 'true'
+				branch.open = (openCurrentPageOnArrival && branch.dataset.currentBranch === 'true')
 					|| state.openPaths.includes(pagePath);
 			});
 			sectionBranches.forEach((branch) => {

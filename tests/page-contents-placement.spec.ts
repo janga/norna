@@ -157,7 +157,7 @@ test.describe('adaptive page contents on desktop', () => {
 			.toHaveAttribute('href', '/reference/#reference-overview');
 		await expect(sections).toBeVisible();
 		await expect(sections.locator('.navigation-page-sections-label')).toHaveCount(0);
-		await expect(tree.locator('.navigation-page-sections')).toHaveCount(2);
+		await expect(tree.locator('.navigation-page-sections')).toHaveCount(3);
 		await expect(sections.getByRole('navigation')).toHaveCount(0);
 		await expect(sections).toHaveAttribute('aria-label', 'Page contents: Reference installation');
 		await expect(sections.getByRole('link')).toHaveText(['Install', 'Prerequisites', 'Verify']);
@@ -281,7 +281,7 @@ test.describe('adaptive page contents at intermediate widths', () => {
 		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
 
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
-		await expect(page.locator('.tree-local-navigation .navigation-page-sections')).toHaveCount(2);
+		await expect(page.locator('.tree-local-navigation .navigation-page-sections')).toHaveCount(3);
 		await expect(page.getByRole('navigation', { name: 'Page contents: Reference', exact: true })).toBeVisible();
 		await expect(page.getByRole('navigation', { name: 'Page contents: Reference installation' })).toBeVisible();
 		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);

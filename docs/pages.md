@@ -534,10 +534,25 @@ Norna marks the H2 or H3 at the effective reading position and moves the marker
 toward the end of the page as the reader scrolls. Every heading remains
 reachable by the marker, including headings near the document end.
 
-Tracking does not change the URL, browser history, keyboard focus, or scroll
-position. The current link uses `aria-current="location"` as well as a visible
-marker. Without JavaScript, the page and anchor links remain usable, but the
-marker does not follow scrolling.
+On a long page, Norna also scrolls the visible outline when necessary to keep
+the active entry in view. The list stays still while the entry fits. When it
+does not fit, Norna adjusts only that list, leaving space around the entry and
+below any sticky navigation controls. The right outline follows when visible;
+otherwise the integrated left outline follows.
+
+Using or scrolling the navigation pauses this automatic following. It resumes
+when the reader scrolls the document again, provided keyboard focus is not
+inside the list. Norna does not clear a navigation filter or reopen a collapsed
+branch. If the active heading is inside a closed branch, the nearest visible
+ancestor receives a visual marker instead. Opening the compact menu reveals
+the current position once; the Close control remains visible and focused.
+
+Tracking does not change the URL, browser history, keyboard focus, or the
+document's scroll position. The current heading link uses
+`aria-current="location"` as well as a visible marker. Outline adjustments are
+immediate, not animated, and need no configuration. Without JavaScript, the
+page and anchor links and manual navigation scrolling remain usable, but the
+marker and outline do not follow reading automatically.
 
 Navigation also sets the boundary for section backgrounds. Pages whose
 effective mode is `sections` or `top` may use full-viewport `alternating` or

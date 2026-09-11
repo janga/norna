@@ -21,6 +21,7 @@ const definitions = {
 		browserSuites: [
 			'tests/navigation-tree.spec.ts',
 			'tests/page-contents-placement.spec.ts',
+			'tests/navigation-following.spec.ts',
 		],
 	},
 	presets: {

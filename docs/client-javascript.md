@@ -17,7 +17,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Basic page links and anchors | No | Normal links, URLs, and browser history continue to work. |
 | Generated page and section navigation | When Norna needs to maintain sticky anchor offsets, close the mobile menu after a choice, or enhance tree interaction | Real page and anchor links remain usable. Native disclosure controls can still reveal their contents. |
 | Focus reading | Yes, when the Display panel offers it; always with `tree` navigation | The normal navigation, breadcrumbs, and footer remain visible. |
-| Current-section tracking | Yes, when a page has a right contents rail | Page and contents links remain usable, but the contents-rail marker does not follow scrolling. |
+| Current-section tracking and outline following | Yes, when a tree page has a heading outline | Page and contents links and manual outline scrolling remain usable, but the active-heading marker and outline do not follow reading. |
 | Static search | Only on the generated search page when `search: true` | Page and section navigation remain available. Ordinary content pages load no search JavaScript. |
 | Image carousel | Yes, on pages containing a carousel | The image and caption source remains in the HTML, but carousel controls and slide switching require JavaScript. Use an image stack when sequential interaction is not needed. |
 | Dismissible banner | Yes, while a banner is present | The notice remains visible, but visitors cannot dismiss it or persist that choice. |

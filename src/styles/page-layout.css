@@ -526,6 +526,13 @@
 	text-underline-offset: 0.28em;
 }
 
+:is(.tree-local-navigation, .mobile-site-nav) [data-reading-position-ancestor] {
+	background: var(--tree-current-item-background);
+	color: var(--color-primary-text);
+	text-decoration: underline;
+	text-underline-offset: 0.28em;
+}
+
 .navigation-page-chevron::before {
 	display: block;
 	content: "›";

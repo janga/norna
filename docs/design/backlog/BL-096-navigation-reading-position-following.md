@@ -2,7 +2,9 @@
 
 ## Status And Dependencies
 
-Ready. Extends the existing section tracking and responsive navigation;
+Completed. Implemented, technically verified, and approved by the user after
+local interaction review on 2026-09-11. Reference documentation is updated.
+Extends the existing section tracking and responsive navigation;
 no new configuration, page model, or dependency is needed.
 
 ## Problem And Outcome
@@ -54,3 +56,52 @@ The interaction rules below are Norna's contract, not claims about that product.
   `/norna/examples/#semantic-callouts`, then scroll the menu independently and
   return to the document. Also inspect a deep page at wide, intermediate, and
   compact widths.
+
+## Implementation And Verification Record
+
+Implemented 2026-09-11. The existing section tracker delegates minimal list
+scrolling to `src/lib/navigationFollowing.ts`. The active outline yields to
+reader interaction; a closed branch keeps its state and shows an ancestor
+marker. Compact navigation reveals the current entry once when opened and
+keeps its focused Close control visible. Returning focus to the menu trigger
+does not scroll the document.
+
+The regressions also exposed a shared disclosure-state bug: synchronization
+between desktop and compact trees reopened the current branch after a manual
+collapse. Current branches now open automatically on page arrival only.
+
+Verification:
+
+- `npm run review:test -- navigation`: 62 of 63 browser cases passed. The
+  remaining assertion compared a temporary fragment marker with the next
+  scroll-selected heading. Its setup now establishes a scroll-selected
+  heading before checking that a fitting entry stays still.
+- `node scripts/test-navigation.mjs --site-dir fixtures/nested-pages/site
+  tests/navigation-following.spec.ts --grep 'keeps a fitting entry'
+  --repeat-each=3`: all nine executions passed after that test correction.
+  Together with the aggregate run, all 63 distinct navigation cases passed;
+  the unchanged runtime was not subjected to another complete run.
+- `npm run test:review-environments`: passed, including registration of the
+  new suite and capture of compact navigation without Playwright's implicit
+  pre-click scrolling of the document.
+- `node bin/norna.mjs --site-dir fixtures/nested-pages/site content:check`:
+  passed with the existing warning about the Windows child-page description.
+- `npm run content:check`, `npm run build`, and
+  `npm run test:documentation`: passed.
+- Registered `review:capture` screenshots were inspected for the public
+  Examples page and the deep fixture in desktop and compact-menu layouts.
+  The full release suite was intentionally not run.
+
+Human review URLs:
+
+- Public long outline:
+  <http://127.0.0.1:4321/norna/examples/#semantic-callouts>.
+- Separate right outline on wide screens:
+  <http://127.0.0.1:4323/guides/reading-position/>.
+- Integrated left outline on wide screens:
+  <http://127.0.0.1:4323/reference/reading-position/>.
+
+On the deep fixture, compare widths above 1280px, 961-1280px, and 960px or
+less. Scroll the page forward and backward, browse the navigation separately,
+then return to document scrolling. Check closed branches, keyboard focus,
+and opening the compact menu near the end of the page.

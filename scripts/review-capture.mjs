@@ -212,7 +212,14 @@ export const captureReviewPage = async ({
 			await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 		});
 		if (capture.menu === 'compact') {
-			await page.locator('.mobile-nav-menu > summary').click();
+			const control = page.locator('.mobile-nav-menu > summary');
+			await control.waitFor({ state: 'visible' });
+			const box = await control.boundingBox();
+			if (!box) throw new Error('The compact navigation control has no visible bounds.');
+			// Locator.click can scroll ancestors of an already visible sticky control.
+			await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+			await page.locator('.mobile-nav-menu[open] [data-compact-navigation-close]').waitFor({ state: 'visible' });
+			await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 		} else if (capture.menu) {
 			await page.locator('.site-nav-item').filter({
 				has: page.getByRole('link', { name: capture.menu, exact: true }),

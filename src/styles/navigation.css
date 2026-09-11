@@ -432,10 +432,14 @@
 }
 
 .mobile-nav-panel-actions {
+	position: sticky;
+	top: 0;
+	z-index: 5;
 	display: flex;
 	justify-content: flex-end;
 	width: min(100%, 32rem);
 	margin: 0 auto 0.5rem;
+	background: var(--site-top-background-color, var(--color-page));
 }
 
 .mobile-nav-close {

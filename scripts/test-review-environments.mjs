@@ -196,9 +196,10 @@ try {
 	await runReviewEnvironment(['test', 'navigation'], { root: repoRoot, run, write });
 	assert.equal(calls.length, 1);
 	assert.ok(calls[0].args[0].endsWith(path.join('scripts', 'test-navigation.mjs')));
-	assert.deepEqual(calls[0].args.slice(-2), [
+	assert.deepEqual(calls[0].args.slice(-3), [
 		'tests/navigation-tree.spec.ts',
 		'tests/page-contents-placement.spec.ts',
+		'tests/navigation-following.spec.ts',
 	]);
 	assert.equal(Object.hasOwn(calls[0].options.env ?? {}, 'NORNA_DEV_PORT'), false);
 
@@ -255,6 +256,11 @@ try {
 			return {
 				newPage: async () => ({
 					goto: async (url, options) => browserEvents.push({ name: 'goto', options, url }),
+					locator: (selector) => ({
+						waitFor: async (options) => browserEvents.push({ name: 'visible-control', selector, options }),
+						boundingBox: async () => ({ x: 280, y: 20, width: 90, height: 44 }),
+					}),
+					mouse: { click: async (x, y) => browserEvents.push({ name: 'mouse-click', x, y }) },
 					waitForLoadState: async (state) => browserEvents.push({ name: 'load-state', state }),
 					waitForTimeout: async (duration) => browserEvents.push({ duration, name: 'wait' }),
 					evaluate: async (_callback, appearance) => browserEvents.push({ appearance, name: 'evaluate' }),
@@ -289,6 +295,18 @@ try {
 		},
 	});
 	assert.equal(browserEvents.at(-1).name, 'browser-close');
+	browserEvents.length = 0;
+	await captureReviewPage({
+		environment: docsEnvironment,
+		rawArguments: ['examples/#tables', '--viewport', 'mobile', '--menu', 'compact'],
+		root: temporaryRoot,
+		write,
+		fetchImplementation: async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(0) }),
+		launchBrowser: createFakeBrowser,
+	});
+	assert.deepEqual(browserEvents.find((event) => event.name === 'mouse-click'), { name: 'mouse-click', x: 325, y: 42 });
+	assert.ok(browserEvents.findIndex((event) => event.selector === '.mobile-nav-menu[open] [data-compact-navigation-close]')
+		< browserEvents.findIndex((event) => event.name === 'screenshot'));
 
 	const portLockRoot = path.join(temporaryRoot, 'port-locks');
 	const proposedPorts = [45001, 45001, 45002];
