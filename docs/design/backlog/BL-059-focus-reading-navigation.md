@@ -1,5 +1,10 @@
 # BL-059: Compact Navigation In Focus Reading
 
+## Status
+
+Implemented, browser-tested, and approved by the user after interaction review.
+Only documentation remains; the human-review gate is satisfied.
+
 ## Outcome
 
 Focus reading removes persistent navigation rails without removing access to
@@ -77,6 +82,7 @@ setting.
 
 ## Documentation Gate
 
-This changes visible and interactive navigation. Update Focus-reading and
-navigation documentation only after human review confirms the compact desktop
-and mobile presentations.
+Human review is approved. Complete the Focus-reading and navigation reference
+with the overlay, keyboard, dismissal, and focus-restoration behavior. Clarify
+the theme reference: Focus reading hides persistent navigation, not access to
+the site's compact Menu. Keep this item open until that documentation is done.

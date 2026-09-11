@@ -1,5 +1,11 @@
 # BL-056: Lighter Dark Navigation Markers
 
+## Status
+
+Implemented, browser-tested, and approved by the user after visual review.
+Only documentation remains: describe the shared palette-derived Dark marker
+for current pages and headings in the navigation reference and visual guide.
+
 ## Outcome
 
 Dark appearance gives the current page and current heading a shared marker

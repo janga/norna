@@ -30,10 +30,6 @@ when implementation can begin.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Implemented and documented; awaiting review.** Complete the human review
   of the localized, accessible semantic callouts and their closed meaning set.
-- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
-  **Implemented and browser-tested; awaiting review and documentation.**
-  Complete the human review and document the accessible overlay that replaces
-  persistent navigation rails in Focus reading.
 
 ## External Gate
 
@@ -77,9 +73,13 @@ of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
 - [`BL-056` Lighter Dark navigation markers](docs/design/backlog/BL-056-lighter-dark-navigation-markers.md):
-  **Implemented and browser-tested; awaiting human review and documentation.**
-  Current-page and current-heading markers share a clearer palette-derived
-  surface in Dark appearance.
+  **Implemented, browser-tested, and human-approved; documentation remains.**
+  Document the shared palette-derived surface for current-page and
+  current-heading markers in Dark appearance.
+- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
+  **Implemented, browser-tested, and human-approved; documentation remains.**
+  Complete the overlay interaction reference and clarify that Focus reading
+  hides persistent navigation but retains access through the compact Menu.
 
 ## Needs Decision Or Evidence
 
