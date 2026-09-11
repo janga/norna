@@ -7,8 +7,9 @@ zero/one/several sections, desktop and compact menus, native no-JavaScript
 disclosures, dismissal, keyboard focus, and anchor placement (23 tests).
 Human visual review remains part of the final Examples review.
 
-The current-page section row remains at two or more H2s as a visible reading
-position cue. Compact navigation instead groups H2s beneath each page without
+The original separate-row decision was superseded by
+[BL-092: Top navigation without a duplicate section row](BL-092-top-navigation-without-duplicate-sections.md).
+Top-mode H2 destinations now stay in the page disclosures. Compact navigation groups H2s beneath each page without
 a duplicate current-page group. Explicit top-mode child links remain separate
 from local section links. No new configuration was added.
 

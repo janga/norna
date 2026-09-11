@@ -370,9 +370,9 @@ pages/
 With `automatic`, this flat structure resolves to `top`. Home, Dogs, and Adopt
 appear in the global row. A separate chevron beside a page with H2 headings
 opens its section links, including when you are reading another page. Pages
-without H2 headings have no empty section disclosure. The current page also
-gets a section row when it has at least two H2 headings. On small screens, the
-compact menu groups section destinations beneath their page names.
+without H2 headings have no empty section disclosure. Section links stay in
+these menus; they are not repeated in a second sticky row. On small screens,
+the compact menu groups section destinations beneath their page names.
 
 ### Child Pages Or Categories: `tree`
 

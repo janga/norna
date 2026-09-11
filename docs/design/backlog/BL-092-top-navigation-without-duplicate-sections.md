@@ -2,7 +2,13 @@
 
 ## Status And Decision
 
-Ready. The user approved removing the separate current-page H2 row from
+Implemented and technically verified. `npm run test:navigation` passed all
+23 focused browser cases; `node scripts/test-top-navigation-contract.mjs`
+passed the explicit top-mode, nested-child, and base-path build checks.
+Screenshots and final human gallery review follow with
+[BL-095: Nested navigation for substantial documentation](BL-095-nested-documentation-demonstration.md).
+
+The user approved removing the separate current-page H2 row from
 multi-page top navigation after reviewing
 [BL-087: Direct section access from top navigation](BL-087-top-navigation-section-access.md).
 This supersedes that item's decision to retain the row at two or more H2s.

@@ -35,7 +35,8 @@ const hiddenHeadingTolerance = -4;
 const maximumAnchorGap = 2;
 const stableSampleCount = 5;
 const testPagePath = '/media/';
-const pageNavSelector = '.page-nav a';
+const currentDesktopMenuSelector = '.site-nav-item:has(> a[aria-current="page"]) .top-page-menu';
+const pageNavSelector = `${currentDesktopMenuSelector} .top-page-sections a`;
 const mobilePageNavSelector = '.navigation-page-node-current .page-contents-links a';
 
 const getPreviewRounds = () => {
@@ -45,7 +46,7 @@ const getPreviewRounds = () => {
 
 const getNavTargets = async (page: Page): Promise<NavTarget[]> => page.locator(pageNavSelector).evaluateAll((links) => (
 	links.map((link) => ({
-		hash: link.getAttribute('href') ?? '',
+		hash: new URL(link.href, window.location.href).hash,
 		label: link.textContent?.trim() ?? '',
 	})).filter((link) => link.hash.startsWith('#'))
 ));
@@ -57,8 +58,10 @@ const openSite = async (page: Page) => {
 };
 
 const clickSectionLink = async (page: Page, hash: string) => {
-	const desktopLink = page.locator(`${pageNavSelector}[href="${hash}"]`);
-	if (await desktopLink.isVisible()) {
+	const desktopLink = page.locator(`${pageNavSelector}[href$="${hash}"]`);
+	const menu = page.locator(currentDesktopMenuSelector);
+	if (await menu.locator('summary').isVisible()) {
+		if (!(await menu.evaluate((element: HTMLDetailsElement) => element.open))) await menu.locator('summary').click();
 		await desktopLink.click();
 		return;
 	}
@@ -67,7 +70,7 @@ const clickSectionLink = async (page: Page, hash: string) => {
 	if (!(await mobileMenu.getAttribute('open'))) {
 		await mobileMenu.locator(':scope > summary').click();
 	}
-	await page.locator(`${mobilePageNavSelector}[href="${hash}"]`).click();
+	await page.locator(`${mobilePageNavSelector}[href$="${hash}"]`).click();
 };
 
 const measureAnchor = async (

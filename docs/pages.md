@@ -455,8 +455,7 @@ The modes present the same source hierarchy differently:
   headings gets a separate disclosure beside its page link. Open it to choose
   a section without first loading the page. With an explicit `top` override,
   child pages remain available in the disclosure, separate from local sections.
-  The current page also retains a section row when it has at least two H2s,
-  providing immediate section links and a reading-position cue.
+  Section links are not repeated in a separate current-page row.
 - `tree` keeps top-level areas in the global row. A left page rail shows only
   the current top-level area, so it does not duplicate unrelated destinations
   from the global row. Independent top-level pages use that rail for their
@@ -470,8 +469,8 @@ The modes present the same source hierarchy differently:
 
 A one-page site without H2 headings still shows its H1 as a top link. With one
 or more H2 headings, those headings become section links. A multi-page site in
-`top` mode adds a separate section row only when the current page has
-at least two H2 headings. Tree outlines can include a single H2 and its H3
+`top` mode keeps H2 links in its page menus, including for the current page.
+Tree outlines can include a single H2 and its H3
 headings; H4 and deeper headings remain in the page content.
 
 In the compact menu, `top` places H2 links beneath each page rather than

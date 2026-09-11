@@ -14,7 +14,8 @@ type AnchorMeasurement = {
 	gap: number;
 };
 
-const pageNavSelector = '.page-nav a';
+const currentDesktopMenuSelector = '.site-nav-item:has(> a[aria-current="page"]) .top-page-menu';
+const pageNavSelector = `${currentDesktopMenuSelector} .top-page-sections a`;
 const currentDesktopPageSelector = '.site-nav > ul > .site-nav-item > a[aria-current="page"]';
 const mobilePageNavSelector = '.navigation-page-node-current .page-contents-links a';
 const currentMobilePageNavSelector = mobilePageNavSelector;
@@ -92,8 +93,10 @@ const waitForAnchorPosition = async (page, sectionId: string) => {
 
 const clickSectionLink = async (page, hash: string) => {
 	const desktopLink = page.locator(`${pageNavSelector}[href$="${hash}"]`).first();
+	const desktopMenu = page.locator(currentDesktopMenuSelector);
 
-	if (await desktopLink.isVisible()) {
+	if (await desktopMenu.locator('summary').isVisible()) {
+		if (!(await desktopMenu.evaluate((menu) => menu.open))) await desktopMenu.locator('summary').click();
 		await desktopLink.click();
 		return;
 	}
@@ -134,34 +137,6 @@ const measureNavTextHitTargets = async (page) => page.locator(pageNavSelector).e
 	}).filter((link) => link.pathname === window.location.pathname)
 ));
 
-const measurePageNavigationRows = async (page) => page.locator('.page-nav-inner').evaluate((navigation) => {
-	const label = navigation.querySelector('.page-nav-label');
-	const links = Array.from(navigation.querySelectorAll('a'));
-	if (!(label instanceof HTMLElement) || links.length === 0) {
-		throw new Error('Expected a visible Page contents label and section links.');
-	}
-
-	const getBaseline = (element: Element) => {
-		const marker = document.createElement('span');
-		marker.setAttribute('aria-hidden', 'true');
-		marker.style.cssText = 'display:inline-block;width:0;height:0;padding:0;border:0;';
-		element.append(marker);
-		const baseline = marker.getBoundingClientRect().top;
-		marker.remove();
-		return baseline;
-	};
-	const rowTops = links
-		.map((link) => link.getBoundingClientRect().top)
-		.filter((top, index, tops) => tops.findIndex((candidate) => Math.abs(candidate - top) < 1) === index)
-		.sort((left, right) => left - right);
-
-	return {
-		firstLinkBaseline: getBaseline(links[0]),
-		labelBaseline: getBaseline(label),
-		rowTops,
-	};
-});
-
 test.describe('site navigation menus', () => {
 	test.use({
 		hasTouch: false,
@@ -169,17 +144,18 @@ test.describe('site navigation menus', () => {
 		viewport: desktopViewport,
 	});
 
-	test('keeps page navigation and current-page sections separate', async ({ page }) => {
+	test('keeps current-page sections in their disclosure without a second row', async ({ page }) => {
 		await openSite(page);
 
 		const currentPageLink = page.locator(currentDesktopPageSelector);
 		await expect(currentPageLink).toHaveText('Media blocks');
-		await expect(page.locator('.page-nav-label')).toHaveText('Page contents');
+		await expect(page.locator('.page-nav')).toHaveCount(0);
+		await page.locator(`${currentDesktopMenuSelector} > summary`).click();
 		await expect(page.locator(pageNavSelector).first()).toBeVisible();
 		await expect(page.locator('.site-nav-item:has(> a[aria-current="page"]) .top-page-sections a')).toHaveCount(5);
 	});
 
-	test('aligns the Page contents label with the first row when links wrap', async ({ page }) => {
+	test('keeps wrapped section links readable within the page disclosure', async ({ page }) => {
 		const representativeLabels = [
 			'Image stack',
 			'Image carousel',
@@ -188,40 +164,36 @@ test.describe('site navigation menus', () => {
 			'Responsive notes and table',
 		];
 		for (const scenario of [
-			{ expectedRows: 1, label: 'Page contents', textSize: '100%', width: 1280 },
-			{ expectedRows: 2, label: 'Page contents', textSize: '100%', width: 1024 },
-			{ expectedRows: null, label: 'Seiteninhalte und Abschnitte', textSize: '200%', width: 1280 },
+			{ textSize: '100%', width: 1280 },
+			{ textSize: '100%', width: 1024 },
+			{ textSize: '200%', width: 1280 },
 		]) {
 			await page.setViewportSize({ width: scenario.width, height: 900 });
 			await openSite(page);
 			await page.locator('html').evaluate((root, textSize) => {
 				root.style.fontSize = textSize;
 			}, scenario.textSize);
-			await page.locator('.page-nav-label').evaluate((label, text) => {
-				label.textContent = text;
-			}, scenario.label);
 			await page.locator(pageNavSelector).evaluateAll((links, labels) => {
 				for (const [index, link] of links.entries()) link.textContent = labels[index];
 			}, representativeLabels);
 
-			const measurement = await measurePageNavigationRows(page);
-			if (scenario.expectedRows === null) {
-				expect(measurement.rowTops.length, `${scenario.width}px enlarged link rows`).toBeGreaterThan(1);
-			} else {
-				expect(measurement.rowTops, `${scenario.width}px link rows`).toHaveLength(scenario.expectedRows);
-			}
-			expect(
-				Math.abs(measurement.labelBaseline - measurement.firstLinkBaseline),
-				`${scenario.width}px first baseline`,
-			).toBeLessThan(1);
-			if (measurement.rowTops.length > 1) {
-				expect(measurement.rowTops[1] - measurement.rowTops[0]).toBeGreaterThan(20);
+			await page.locator(`${currentDesktopMenuSelector} > summary`).click();
+			const bounds = await page.locator(pageNavSelector).evaluateAll((links) => links.map((link) => {
+				const rect = link.getBoundingClientRect();
+				return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, fits: link.scrollWidth <= link.clientWidth + 1 };
+			}));
+			for (const [index, rectangle] of bounds.entries()) {
+				expect(rectangle.fits).toBe(true);
+				expect(rectangle.left).toBeGreaterThanOrEqual(0);
+				expect(rectangle.right).toBeLessThanOrEqual(scenario.width);
+				if (index > 0) expect(rectangle.top).toBeGreaterThanOrEqual(bounds[index - 1].bottom);
 			}
 		}
 	});
 
 	test('marks an activated current-page section', async ({ page }) => {
 		await openSite(page);
+		await page.locator(`${currentDesktopMenuSelector} > summary`).click();
 		const firstSectionLink = page.locator(pageNavSelector).first();
 		const targetHash = await firstSectionLink.getAttribute('href');
 		await firstSectionLink.click();
@@ -231,6 +203,7 @@ test.describe('site navigation menus', () => {
 
 	test('moves keyboard focus to the activated section heading', async ({ page }) => {
 		await openSite(page);
+		await page.locator(`${currentDesktopMenuSelector} > summary`).click();
 
 		const firstSectionLink = page.locator(pageNavSelector).first();
 		const targetHash = new URL(
@@ -421,6 +394,7 @@ test.describe('desktop navigation hit targets', () => {
 
 	test('keeps labels below the top fullscreen browser chrome risk area', async ({ page }) => {
 		await openSite(page);
+		await page.locator(`${currentDesktopMenuSelector} > summary`).click();
 
 		for (const target of await measureNavTextHitTargets(page)) {
 			expect(target.textTop, target.label).toBeGreaterThanOrEqual(minimumFullscreenSafeTextTop);

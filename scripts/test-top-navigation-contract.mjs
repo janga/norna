@@ -19,6 +19,7 @@ try {
 	});
 	const html = await readFile(path.join(temporary, 'dist/dogs/adult-dogs/index.html'), 'utf8');
 	assert.ok(html.includes('data-navigation-mode="top"'));
+	assert.ok(!html.includes('class="page-nav"'), 'Top navigation must not repeat sections in a second row.');
 	const menus = html.match(/<details class="top-page-menu">[\s\S]*?<\/details>/g) ?? [];
 	assert.equal(menus.length, 3);
 	const dogsMenu = menus.find((menu) => menu.includes('Menu: Dogs'));
@@ -29,6 +30,8 @@ try {
 	assert.ok(dogsMenu.includes('class="top-page-sections"'));
 	assert.ok(dogsMenu.includes('class="top-page-children"'));
 	assert.ok(!dogsMenu.includes('#daily-checklist'), 'H3 must not leak into top section navigation.');
+	const dogsHtml = await readFile(path.join(temporary, 'dist/dogs/index.html'), 'utf8');
+	assert.ok(!dogsHtml.includes('class="page-nav"'), 'Several H2s must remain in their page disclosure, not a duplicate row.');
 	console.log('Top navigation base-path and nested-child contract passed.');
 } finally {
 	await rm(temporary, { recursive: true, force: true });

@@ -143,8 +143,8 @@ documents overrides and conflict handling.
 
 Top-level pages normally use horizontal navigation on wide screens. On small
 screens, the same pages are collected in one expandable menu. Select a page
-name to open it, or its chevron to reveal its H2 sections. The current page
-also has a section row on wide screens when it contains at least two H2s.
+name to open it, or its chevron to reveal its H2 sections. These section links
+stay in the page menus instead of occupying a second sticky row.
 
 Images referenced through Norna blocks are managed images: Norna validates,
 processes, and keeps track of their files. Each one belongs in the `images/`

@@ -104,6 +104,7 @@ const hasTreePageContents = Boolean(
 );
 const showPageNavigation = Boolean(
 	navigationMode !== 'tree'
+	&& (navigationMode !== 'top' || showSinglePageTopLink)
 	&& currentPageNavigation
 	&& (showSinglePageTopLink || hasCurrentPageSectionMenu),
 );
