@@ -2,7 +2,9 @@
 
 ## Status
 
-Ready for editorial work. Implementation is deliberately deferred.
+Implemented on 2026-09-11. The canonical reference and generated editor help
+now introduce configuration through user decisions, defaults, concrete
+outcomes, and explicit boundaries without changing configuration behavior.
 
 ## Problem
 

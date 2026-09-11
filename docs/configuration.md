@@ -1,14 +1,24 @@
 # `config.yaml`
 
-Technical site configuration lives in the selected site's `config.yaml`; by
-default that is `site/config.yaml`. The file is required and contains plain
-YAML without Markdown frontmatter delimiters.
+Use the selected site's `config.yaml` for technical choices that apply to the
+complete site. The default location is `site/config.yaml`. The file is required
+and contains plain YAML without Markdown frontmatter delimiters.
 
 A normal configuration needs only the public URL:
 
 ```yaml
 url: https://example.com/
 ```
+
+The remaining settings are optional:
+
+| Setting | Decision | Default when omitted |
+| --- | --- | --- |
+| `language` | Which language identifies the site and supplies Norna's interface text | `en` |
+| `editLink` | Whether a rendered page links to its source | No source link |
+| `navigation.mode` | How Norna presents the discovered page and heading hierarchy | `automatic` |
+| `search` | Whether the build creates static site search | `false` |
+| `scrollBehavior` | Whether same-page anchor movement is immediate or browser-animated | `instant` |
 
 Norna deliberately keeps this file small. Visual choices belong in
 [`theme.yaml`](theme.md); shared banners, footer content, and logo display
@@ -17,10 +27,15 @@ belongs in [`pages/*/content.md`](content.md).
 
 ## `url`
 
+Set `url` to the final public address of the built site. Norna derives every
+public path from it; the setting does not select a local development host or
+port.
+
 - Purpose: canonical public URL and source of the site's deployment path.
 - Type: absolute `http` or `https` URL.
 - Required: yes.
 - Default: none.
+- Scope: site-wide.
 - Restrictions: no query string, fragment, or repeated slash in the URL path.
 
 Norna adds a trailing slash when omitted. The URL pathname becomes the base
@@ -47,21 +62,28 @@ generated sitemap.
 
 ## `language`
 
-- Purpose: language tag on the root `<html lang="...">` element and selection
-  of Norna's built-in interface text.
-- Type: one supported primary language or script tag, optionally followed by a
-  region such as `en-GB` or `pt-BR`.
-- Required: no.
-- Default: `en`.
-- Scope: site-wide.
+Set `language` to the language used by the site's editorial content. Norna
+uses that choice to identify the generated HTML and to select its own interface
+text. It does not translate content written by the author.
 
-Use the primary tag when regional formatting does not matter:
+For a site written in Swedish:
 
 ```yaml
-language: es
+url: https://example.com/
+language: sv
 ```
 
-The setting controls four kinds of generated output:
+- Purpose: identify the site language and select one complete built-in Norna
+  interface pack.
+- Type: one supported primary language or required language-and-script tag,
+  optionally followed by a region such as `en-GB` or `pt-BR`.
+- Required: no.
+- Default: `en`.
+- Scope: site-wide and single-language.
+
+### What The Setting Changes
+
+`language` controls:
 
 - the complete language tag on the root `<html>` element;
 - Norna-owned labels in navigation, controls, notes, callouts, error pages,
@@ -70,7 +92,37 @@ The setting controls four kinds of generated output:
 - the language and labels used by the optional Pagefind search interface.
 
 It does not translate page Markdown, captions, banners, footer text, or other
-editorial content. Write those in the language selected for the site.
+editorial content. Those remain exactly as the author writes them.
+
+### Choose A Language Tag
+
+Use a primary language tag for the normal case:
+
+```yaml
+language: es
+```
+
+Use a regional tag only when the full tag should appear in the HTML or regional
+formatting should differ:
+
+```yaml
+language: pt-BR
+```
+
+Norna preserves `pt-BR` as `<html lang="pt-BR">`, uses it for
+locale-sensitive formatting, and selects the Portuguese interface pack from
+`pt`. Two-letter and three-digit BCP 47 region subtags are accepted for every
+supported language and script form.
+
+Two languages require an explicit script in the current interface set:
+
+- use `sr-Cyrl` or `sr-Latn` for Serbian because `sr` alone does not select a
+  writing system;
+- use `az-Latn` for Azerbaijani because Norna currently supplies only the
+  Latin-script interface.
+
+An unsupported language or script stops configuration validation and lists
+the available alternatives.
 
 ### Supported Languages
 
@@ -128,22 +180,7 @@ use ordinary system-font fallback; no Norna-provided font file is required.
 | Ukrainian | `uk` |
 | Vietnamese | `vi` |
 
-Use a regional tag when the same language should use regional formatting:
-
-```yaml
-language: pt-BR
-```
-
-Norna preserves the complete tag as `<html lang="pt-BR">`, uses it for
-locale-sensitive formatting, and selects the Portuguese interface pack from
-the primary `pt` subtag. Two-letter and three-digit BCP 47 region subtags are
-accepted for every supported language and script form.
-
-Serbian has two supported writing systems, so `sr` alone is ambiguous. Select
-`sr-Cyrl` or `sr-Latn`. Azerbaijani currently supports only its Latin form and
-must be written as `az-Latn`; this prevents Norna from silently selecting a
-script. An unsupported language or script stops configuration validation and
-lists the available alternatives.
+### Search And Translation Boundaries
 
 Search remains available for every accepted language. Pagefind provides
 language-specific stemming for its own supported languages; other Norna
@@ -159,6 +196,10 @@ This is a single-language site setting. It does not create translated routes,
 a language selector, fallback content, or `hreflang` metadata.
 
 ## Edit Link
+
+Add `editLink` when a rendered page should give an author a direct route to its
+`content.md` source. The setting chooses link destinations; it does not grant
+repository access or configure publication.
 
 - Purpose: link each rendered page to its `content.md` source in a local editor,
   on a remote source host, or both.
@@ -249,23 +290,22 @@ linked from the published site.
 
 ## `navigation`
 
-`navigation` contains site-wide settings for generated navigation. These
-settings do not change the page hierarchy or heading structure. They control
-how Norna presents that discovered structure.
+Norna discovers two related structures from the site files:
+
+- page and category directories determine URLs and the hierarchy between
+  pages;
+- each page's H1 names that page, while its H2 and H3 headings form the page
+  outline.
+
+`navigation.mode` chooses how Norna presents those structures. It does not add,
+remove, or move pages and it does not change heading levels. H2 and H3 headings
+alone never make a site hierarchical.
 
 ### `navigation.mode`
 
-`navigation.mode` selects the site-wide navigation policy. The default policy
-uses one stable desktop navigation model for the complete site.
-
-| Value | Effect | Structural constraint |
-| --- | --- | --- |
-| `automatic` | Use `sections` for a one-page site, `top` for a flat multi-page site, and `tree` throughout a site with listed child pages or categories. | None beyond the effective mode's own requirements. |
-| `sections` | Keep the single page's H1 destination and H2 sections in sticky page navigation. | The listed site structure must fit the single-page model. |
-| `top` | Present Home and top-level pages in the global row, with page and section menus where needed. | A listed navigation category is invalid. |
-| `tree` | Combine global top-level areas with a left page/category rail and, on sufficiently structured pages, a separate right H2/H3 contents rail. | No additional hierarchy limit. |
-
-The field is optional. Its default is `automatic`.
+Use `automatic` unless the site has a deliberate reason to keep a particular
+navigation presentation as its structure changes. Omitting `navigation`
+entirely has the same effect.
 
 ```yaml
 url: https://example.com/
@@ -273,26 +313,113 @@ navigation:
   mode: automatic
 ```
 
-Navigation policy is technical and site-wide. It cannot be configured in
-`theme.yaml` or in an individual page. In `automatic`, any listed child page
-or category gives every ordinary desktop page the same left-rail frame. The
-rail shows only the active top-level area, so destinations already available
-in global navigation are not repeated. On Home and an independent top-level
-page, it provides local page and section context instead of moving that
-information below the sticky header. A listed navigation category requires
-`tree`, so explicit `sections` or `top` is invalid when a category exists. This
-prevents a category with no URL from being presented as an ordinary page link.
-See [Pages and Categories](pages.md#navigation) for the exact automatic
-selection rules and the relationship between Home, pages, categories, and
-headings, and
-[Client-Side JavaScript](client-javascript.md) for the no-JavaScript fallback.
+- Purpose: select one navigation presentation for the complete site.
+- Type: one of `automatic`, `sections`, `top`, or `tree`.
+- Required: no.
+- Default: `automatic`.
+- Scope: site-wide; page files and `theme.yaml` cannot override it.
+
+With `automatic`, the listed page hierarchy decides the effective mode:
+
+| Listed site structure | Effective mode | Result on a wide screen |
+| --- | --- | --- |
+| Home is the only page | `sections` | The page title and its H2 sections remain in sticky page navigation. |
+| Home plus additional top-level pages | `top` | The pages remain in the global top row; the current page receives section navigation when needed. |
+| Any listed child page or navigation category | `tree` | Top-level areas remain global and ordinary non-home pages receive a persistent left page tree. |
+
+The choice is stable across the complete site. For example, one nested branch
+makes ordinary non-home pages use the same tree-navigation frame. Pages with
+`navigation.listed: false` do not affect automatic selection.
+
+The four accepted values have these roles:
+
+| Value | Use it when | Result and constraint |
+| --- | --- | --- |
+| `automatic` | The navigation should follow the listed site structure. This is the normal choice. | Resolves to one of the other three modes using the rules above. |
+| `sections` | The site is intended to remain a one-page site. | Emphasizes the current page and its H2 sections. It is not a way to hide additional pages. |
+| `top` | Pages should stay in top navigation instead of using a persistent left tree. | Top-level pages use the global row. Explicit `top` can place child pages in submenus, but it cannot represent a navigation category. |
+| `tree` | The site needs a persistent page hierarchy, or should retain that frame before child pages are added. | Uses a left page rail. A sufficiently deep branch can add a separate right H2/H3 contents rail. |
+
+### One Page: `sections`
+
+```text
+pages/
+`-- 000-home/
+    `-- content.md  # One H1 and its H2 sections
+```
+
+With `automatic`, this structure resolves to `sections`. Wide screens keep the
+page title and H2 destinations in sticky navigation. Small screens collect the
+same destinations in the compact menu.
+
+### Top-Level Pages: `top`
+
+```text
+pages/
+|-- 000-home/
+|   `-- content.md
+|-- 010-dogs/
+|   `-- content.md
+`-- 020-adopt/
+    `-- content.md
+```
+
+With `automatic`, this flat structure resolves to `top`. Home, Dogs, and Adopt
+appear in the global row. The current page's H2 sections receive local
+navigation when there is more than one.
+
+### Child Pages Or Categories: `tree`
+
+```text
+pages/
+|-- 000-home/
+|   `-- content.md
+`-- 010-guides/
+    |-- content.md
+    `-- pages/
+        `-- 010-installation/
+            `-- content.md
+```
+
+With `automatic`, this structure resolves to `tree`. The global row keeps Home
+and Guides. A left rail shows pages in the current top-level area without
+repeating unrelated global destinations. On shallow branches, expandable page
+outlines place each page's H2 and H3 destinations below that page. A branch at
+least three visible page levels deep can instead use a right contents rail for
+the current page.
+
+When the viewport cannot hold both rails, Norna first moves the current page
+outline into the left tree. It then replaces the persistent tree with a compact
+menu when the page becomes narrower. The destinations remain the same through
+these fallbacks.
+
+The current page outline opens when the reader enters the page. Other expanded
+page and category branches remain remembered during the browser session when
+JavaScript is available. Ordinary links and native disclosure controls remain
+usable without JavaScript.
+
+A listed navigation category has no page URL and therefore requires `tree`.
+Norna rejects an explicit `sections` or `top` value when a listed category
+exists. Use `automatic`, use `tree`, or replace the category with a page that
+has meaningful content.
+
+See [Pages and Categories](pages.md#navigation) for page ordering, unlisted
+pages, breadcrumbs, page sequences, exact rail placement, and the complete
+responsive contract. See
+[Client-Side JavaScript](client-javascript.md) for enhancement and fallback
+behavior.
 
 ## Search
+
+Set `search` to `true` when readers need to find text across pages. The build
+creates a static index and a dedicated search page; the setting does not
+connect the site to a hosted search service.
 
 - Purpose: generate site-wide search from the completed static pages.
 - Type: boolean.
 - Required: no.
 - Default: `false`.
+- Scope: site-wide.
 
 Enable search with one site-wide setting:
 
@@ -329,8 +456,15 @@ Norna uses [Pagefind](https://pagefind.app/) as its post-build indexer.
 
 ## `scrollBehavior`
 
-`scrollBehavior` controls same-page anchor movement. It does not affect links
-that load another page.
+`scrollBehavior` controls movement to an anchor on the current page. Keep the
+default immediate movement unless the site deliberately prefers the browser's
+native animation. The setting does not affect links that load another page.
+
+- Purpose: choose immediate or browser-animated same-page anchor movement.
+- Type: one of `instant` or `smooth`.
+- Required: no.
+- Default: `instant`.
+- Scope: site-wide.
 
 | Value | Effect |
 | --- | --- |

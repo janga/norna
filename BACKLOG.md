@@ -16,10 +16,6 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-081` Clear configuration reference](docs/design/backlog/BL-081-clear-configuration-reference.md):
-  **Ready and prioritized.** Rewrite unclear setting descriptions around user
-  decisions and concrete outcomes, with particular attention to `language`
-  and `navigation.mode`, without changing configuration behavior.
 - [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
   **Implemented, browser-tested, and visually approved; prioritized for
   documentation.** Document the combined table-width, sticky-heading, and

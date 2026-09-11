@@ -197,7 +197,7 @@ const themeBlocks = z.object({
 	'Specify cardList.',
 ).describe('Optional site-wide defaults for structured Norna content blocks.');
 const configNavigation = z.object({
-	mode: navigationMode.optional().describe('Navigation model. Omit this to let Norna choose from the site structure.'),
+	mode: navigationMode.optional().describe('How Norna presents the discovered page and heading hierarchy. Omit this to select automatic.'),
 }).strict().describe('Site-wide navigation behavior.');
 const themeSections = z.object({
 	backgroundPattern: backgroundPattern.optional().describe('Section background pattern. Alternating and accented create full-width bands with sections or top navigation; tree navigation requires uniform.'),

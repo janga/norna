@@ -193,8 +193,8 @@ const addConfigHelp = (jsonSchema) => {
 	], ['vscode']);
 	addHelp(jsonSchema, 'navigation', [
 		yamlExample('navigation:\n  mode: automatic'),
-		'Sets the site-wide navigation policy. `automatic` uses sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a hierarchical site.',
-		documentationLink('Navigation reference', 'pages.md', 'navigation'),
+		'Chooses how Norna presents the discovered page and heading hierarchy. Keep `automatic` unless the site deliberately needs to retain one presentation as its structure changes.',
+		documentationLink('Navigation setting reference', 'configuration.md', 'navigation'),
 	]);
 	addHelp(jsonSchema, 'search', [
 		yamlExample('search: true'),
@@ -205,7 +205,7 @@ const addConfigHelp = (jsonSchema) => {
 		jsonSchema,
 		'navigation.mode',
 		'navigation:\n  mode: automatic',
-		'pages.md',
+		'configuration.md',
 		'navigation',
 		['automatic', 'sections', 'top', 'tree'],
 	);

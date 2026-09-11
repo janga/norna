@@ -23,10 +23,10 @@ export const schemaValueDefinitions = Object.freeze([
 		smooth: option('Browser smooth', 'Use the browser\'s native smooth scrolling for anchor navigation.'),
 	}),
 	definition(['automatic', 'sections', 'top', 'tree'], {
-		automatic: option('Automatic', 'Choose sections for one page, top navigation for a flat multi-page site, and a stable left rail throughout a site with listed child pages or categories.'),
-		sections: option('Sections', 'Navigate the sections of the current page.'),
-		top: option('Top', 'Use pages in the top navigation and sections below them.'),
-		tree: option('Tree', 'Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.'),
+		automatic: option('Automatic', 'Choose one site-wide navigation presentation from the listed page hierarchy. This is the default.'),
+		sections: option('Sections', 'Keep a one-page site title and its H2 sections in sticky page navigation.'),
+		top: option('Top', 'Keep top-level pages in the global row and give the current page section navigation when needed.'),
+		tree: option('Tree', 'Keep top-level areas global and add a persistent left page tree. Deep branches can add a right H2/H3 contents rail.'),
 	}),
 	definition(['vscode'], {
 		vscode: option('Visual Studio Code', 'Open the current page source in the locally installed Visual Studio Code application.'),
