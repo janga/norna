@@ -442,6 +442,9 @@ Talk to our volunteers about exercise, company, and veterinary care.
 
 ### Nested pages: a page tree
 
+As documentation grows, group related guides and reference pages into
+branches. Readers can explore one topic at a time.
+
 Put Adult dogs and Senior dogs beneath Dogs to keep related pages together.
 The left tree contains the Dogs branch; Adopt remains a global destination.
 
@@ -485,13 +488,77 @@ Adult dogs benefit from regular walks, company, and a quiet place to rest.
 Tell us about your household so we can help you find a suitable companion.
 ```
 
+The same structure can hold a larger handbook. Here, platform guides belong
+under Installation, and publishing guides form a separate branch. The left
+tree selects a page; the right outline follows headings within that page.
+This excerpt uses the `documentation` preset.
+
+```image-stack
+- image: navigation-documentation-desktop.png
+  alt: A handbook with Guides, Installation, and Linux selected in the left tree. Requirements, Check Node.js, and Local preview appear in the right outline beside the Linux page.
+  caption: A deeper documentation branch, with pages on the left and the current page's outline on the right.
+```
+
+```text title="Documentation example"
+pages/
+|-- 000-home/content.md
+|-- 010-guides/
+|   |-- category.yaml
+|   `-- pages/
+|       |-- 010-installation/
+|       |   |-- content.md
+|       |   `-- pages/
+|       |       |-- 010-macos/content.md
+|       |       |-- 020-windows/content.md
+|       |       `-- 030-linux/content.md
+|       `-- 020-publishing/
+|           |-- content.md
+|           `-- pages/
+|               `-- 010-github-pages/content.md
+`-- 020-reference/content.md
+```
+
+<!-- navigation-source: fixtures/navigation-examples/documentation/site/pages/010-guides/pages/010-installation/pages/030-linux/content.md -->
+
+````md title="pages/010-guides/pages/010-installation/pages/030-linux/content.md"
+# Linux
+
+## Requirements
+
+Install Node.js 22.12 or later. Install ImageMagick too if your site uses
+raster images.
+
+### Check Node.js
+
+```sh
+node --version
+```
+
+## Local preview
+
+From an installed site project's directory, start Norna:
+
+```sh
+npm run norna:dev
+```
+
+Open the address printed in the terminal. Keep the terminal running while
+you edit your site.
+````
+
+This is a small excerpt, not a reason to add levels unnecessarily. Large
+documentation sites such as
+[Kubernetes](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/setup-ha-etcd-with-kubeadm/)
+and [Grafana](https://grafana.com/docs/grafana/latest/alerting/configure-notifications/)
+use branches to organize installation methods and configuration topics.
+
 **Source:** The page directories and Markdown headings determine navigation.
 `navigation.mode` defaults to `automatic`. H2s appear in section and top
 navigation; tree outlines also include H3s. A deeper branch can use a separate
 right-hand outline. As space runs out, Norna moves that outline into the left
 tree, then uses the compact menu. Home stays an uncluttered entry page.
 
-<!-- Screenshots: scripts/capture-navigation-examples.mjs. All three runnable
+<!-- Screenshots: scripts/capture-navigation-examples.mjs. All four runnable
 sources are in fixtures/navigation-examples; no illustrated UI is hand-drawn. -->
 
 Read the

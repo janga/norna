@@ -49,24 +49,24 @@
   },
   "pages/010-features/images/navigation-top-desktop.png": {
     "outputVersion": 2,
-    "sourceHash": "fbdafea90b74f4fff4191543de00d70a64f6cc514c564f4031ffb796dacfcda3",
+    "sourceHash": "b5ca481e4876613e900fe716e5ab4dcc043f0642738e0a445010906bf697ab65",
     "width": 1200,
     "height": 650,
     "variants": [
       {
-        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-fbdafea9-480.webp",
+        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-b5ca481e-480.webp",
         "width": 480
       },
       {
-        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-fbdafea9-768.webp",
+        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-b5ca481e-768.webp",
         "width": 768
       },
       {
-        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-fbdafea9-1080.webp",
+        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-b5ca481e-1080.webp",
         "width": 1080
       },
       {
-        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-fbdafea9-1200.webp",
+        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-b5ca481e-1200.webp",
         "width": 1200
       }
     ]
@@ -161,24 +161,24 @@
   },
   "pages/030-examples/images/child-page-list.png": {
     "outputVersion": 2,
-    "sourceHash": "e4e5a34d2e60eb8b46af002b4b3f31b67b1158c63c9b3cd0a3b9be8e2706c417",
+    "sourceHash": "df9c037f50810d85b1b763d02da1bcb3f354c41d2f2a88b4c24078d41993a981",
     "width": 1200,
     "height": 800,
     "variants": [
       {
-        "src": "/images/generated/pages/030-examples/images/child-page-list-e4e5a34d-480.webp",
+        "src": "/images/generated/pages/030-examples/images/child-page-list-df9c037f-480.webp",
         "width": 480
       },
       {
-        "src": "/images/generated/pages/030-examples/images/child-page-list-e4e5a34d-768.webp",
+        "src": "/images/generated/pages/030-examples/images/child-page-list-df9c037f-768.webp",
         "width": 768
       },
       {
-        "src": "/images/generated/pages/030-examples/images/child-page-list-e4e5a34d-1080.webp",
+        "src": "/images/generated/pages/030-examples/images/child-page-list-df9c037f-1080.webp",
         "width": 1080
       },
       {
-        "src": "/images/generated/pages/030-examples/images/child-page-list-e4e5a34d-1200.webp",
+        "src": "/images/generated/pages/030-examples/images/child-page-list-df9c037f-1200.webp",
         "width": 1200
       }
     ]
@@ -204,6 +204,30 @@
       {
         "src": "/images/generated/pages/030-examples/images/multi-page-dog-shelter-7492c5d5-1200.webp",
         "width": 1200
+      }
+    ]
+  },
+  "pages/030-examples/images/navigation-documentation-desktop.png": {
+    "outputVersion": 2,
+    "sourceHash": "14051819932acb457c6edac2ff2c567058c08ff2938e6072126d52918fe9856c",
+    "width": 1440,
+    "height": 850,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-documentation-desktop-14051819-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-documentation-desktop-14051819-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-documentation-desktop-14051819-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-documentation-desktop-14051819-1440.webp",
+        "width": 1440
       }
     ]
   },
@@ -313,24 +337,24 @@
   },
   "pages/030-examples/images/navigation-top-desktop.png": {
     "outputVersion": 2,
-    "sourceHash": "fbdafea90b74f4fff4191543de00d70a64f6cc514c564f4031ffb796dacfcda3",
+    "sourceHash": "b5ca481e4876613e900fe716e5ab4dcc043f0642738e0a445010906bf697ab65",
     "width": 1200,
     "height": 650,
     "variants": [
       {
-        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-fbdafea9-480.webp",
+        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-b5ca481e-480.webp",
         "width": 480
       },
       {
-        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-fbdafea9-768.webp",
+        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-b5ca481e-768.webp",
         "width": 768
       },
       {
-        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-fbdafea9-1080.webp",
+        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-b5ca481e-1080.webp",
         "width": 1080
       },
       {
-        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-fbdafea9-1200.webp",
+        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-b5ca481e-1200.webp",
         "width": 1200
       }
     ]
@@ -361,24 +385,24 @@
   },
   "pages/030-examples/images/navigation-top-sections.png": {
     "outputVersion": 2,
-    "sourceHash": "8823da8f9d3215a5e197b2b6ed0498c06d8546a522d24bdfbccc716cde775772",
+    "sourceHash": "5304207185eafa374082ee0c48d5e138db9f5860b918c53e56943de98ba0bd37",
     "width": 1200,
     "height": 650,
     "variants": [
       {
-        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-8823da8f-480.webp",
+        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-53042071-480.webp",
         "width": 480
       },
       {
-        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-8823da8f-768.webp",
+        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-53042071-768.webp",
         "width": 768
       },
       {
-        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-8823da8f-1080.webp",
+        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-53042071-1080.webp",
         "width": 1080
       },
       {
-        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-8823da8f-1200.webp",
+        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-53042071-1200.webp",
         "width": 1200
       }
     ]

@@ -2,12 +2,13 @@
 
 ## Status And Dependencies
 
-Reopened for the user's review corrections: refresh the affected audit entries
-after BL-092: Top navigation without a duplicate section row,
+The affected audit entries were refreshed after the user's review corrections:
+BL-092: Top navigation without a duplicate section row,
 BL-093: Missing descriptions in child-page lists,
 BL-094: Child-page descriptions that explain a choice, and
-BL-095: Nested navigation for substantial documentation. Reuse previous
-verification for unchanged examples; do not repeat the entire gallery audit.
+BL-095: Nested navigation for substantial documentation. Focused checks and
+the documentation build passed; previous verification was reused for
+unchanged examples. Final human gallery review is still pending.
 
 Technical audit completed on 2026-09-11; awaiting human gallery review. All
 20 examples were checked against current implementation, exact source,

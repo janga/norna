@@ -16,15 +16,12 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-095` Nested navigation for substantial documentation](docs/design/backlog/BL-095-nested-documentation-demonstration.md):
-  **Ready; top-navigation prerequisite implemented.**
-  Complement the small site progression with a runnable deep documentation
-  branch and refresh navigation captures against the implemented behavior.
 - [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
-  **Review corrections in progress.** Complete the remaining ordered corrections
-  above, then refresh
+  **Implemented and technically verified; awaiting human gallery review.**
+  Top-navigation duplication, missing child descriptions, the child-page
+  choice example, and the deeper handbook illustration are corrected.
   [BL-091: Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md)
-  for the changed examples before requesting final human gallery review.
+  is refreshed; review the updated list and navigation examples before closing.
 
 ## Next
 

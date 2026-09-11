@@ -12,22 +12,24 @@ for (const [scenario, route, pageMenu] of [
 	['single', '.', null],
 	['top', 'dogs/', 'Dogs'],
 	['nested', 'dogs/adult-dogs/', null],
+	['documentation', 'guides/installation/linux/', null],
 ]) {
 	await runReviewEnvironment(['scratch', 'prepare', '--from', `fixtures/navigation-examples/${scenario}/site`, '--replace']);
 	const environment = await runReviewEnvironment(['start', 'scratch']);
-	for (const [state, viewport, menu] of [
+	const states = scenario === 'documentation' ? [['desktop', '1440x850', null]] : [
 		['desktop', '1200x650', null],
 		['mobile', '390x600', null],
 		['menu', '390x600', 'compact'],
 		...(pageMenu ? [['sections', '1200x650', pageMenu]] : []),
-	]) {
+	];
+	for (const [state, viewport, menu] of states) {
 		const capture = await captureReviewPage({
 			environment,
 			root,
 			rawArguments: [route, '--viewport', viewport, ...(menu ? ['--menu', menu] : [])],
 		});
 		for (const consumer of consumers) {
-			if (consumer.includes('010-features') && state !== 'desktop') continue;
+			if (consumer.includes('010-features') && (state !== 'desktop' || scenario === 'documentation')) continue;
 			await copyFile(capture.outputPath, path.join(root, consumer, `navigation-${scenario}-${state}.png`));
 		}
 	}

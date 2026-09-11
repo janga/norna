@@ -1,8 +1,14 @@
 # Navigation Illustration Sources
 
-These three sites show the same subject as one page, flat top-level pages, and
+Three sites show the same subject as one page, flat top-level pages, and
 nested pages. They use the `project` preset with automatic navigation and no
 logo or search configuration. Display controls are real preset defaults.
+
+A fourth site, `documentation/site`, uses the `documentation` preset and
+shows a handbook excerpt: Guides contains Installation and Publishing, with
+platform and hosting guides one level below. It demonstrates a page tree and
+a separate current-page outline at 1440x850. Its Linux page is reproduced
+verbatim in Examples. This fixture is not a complete installation tutorial.
 
 Regenerate the published Features and Examples captures together:
 
@@ -22,6 +28,24 @@ at 1200x800 as well.
 Open `http://127.0.0.1:4399/dogs/` after the run to try the H2 menus shown in
 the illustrations. The complete public multi-page shelter has no H2s and
 therefore intentionally has no section-disclosure buttons.
+
+To inspect the documentation branch interactively:
+
+```sh
+npm run review:scratch -- prepare --from fixtures/navigation-examples/documentation/site --replace
+npm run review:start -- scratch
+```
+
+Open `http://127.0.0.1:4399/guides/installation/linux/`. At desktop width,
+compare the left page tree and right outline; narrow the viewport to combine
+them into one tree, then into the compact menu.
+
+The focused automated check exercises the same transitions with and without
+JavaScript:
+
+```sh
+node scripts/test-navigation.mjs --site-dir fixtures/navigation-examples/documentation/site tests/navigation-documentation-example.spec.ts
+```
 
 For an individual state:
 

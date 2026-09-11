@@ -390,6 +390,7 @@ const checkPublishedExampleReferences = async () => {
 		'navigation-single-desktop.png',
 		'navigation-top-desktop.png',
 		'navigation-nested-desktop.png',
+		'navigation-documentation-desktop.png',
 	]) {
 		assert.ok(
 			existsSync(path.join(repoRoot, 'site', 'pages', '030-examples', 'images', imageName)),
@@ -397,9 +398,17 @@ const checkPublishedExampleReferences = async () => {
 		);
 	}
 
-	const navigationSources = [...documentationText.matchAll(/<!-- navigation-source: ([^\n]+) -->\s+```md[^\n]*\n([\s\S]*?)\n```/g)];
-	assert.equal(navigationSources.length, 3, 'Each navigation scenario must display its maintained source.');
-	for (const [, relativePath, shownSource] of navigationSources) {
+	const documentationTree = await markdownToMdast(documentationText);
+	const navigationSources = documentationTree.children.flatMap((node, index) => {
+		if (node.type !== 'html') return [];
+		const source = node.value.match(/^<!-- navigation-source: ([^\n]+) -->$/);
+		if (!source) return [];
+		const code = documentationTree.children[index + 1];
+		assert.ok(code?.type === 'code' && code.lang === 'md', 'Navigation source marker must precede its Markdown example.');
+		return [[source[1], code.value]];
+	});
+	assert.equal(navigationSources.length, 4, 'Each navigation scenario must display its maintained source.');
+	for (const [relativePath, shownSource] of navigationSources) {
 		assert.equal(shownSource.trim(), (await readFile(path.join(repoRoot, relativePath), 'utf8')).trim(),
 			`Navigation illustration source differs from ${relativePath}. Regenerate its capture after editing.`);
 	}

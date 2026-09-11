@@ -8,7 +8,11 @@ and the final implementation audit for
 
 ## Current Review Status
 
-Technical audit completed on 2026-09-11 after the seven ordered corrections.
+Technical audit completed on 2026-09-11 after the seven ordered corrections,
+then refreshed for the four follow-up items: BL-092: Top navigation without a
+duplicate section row, BL-093: Missing descriptions in child-page lists,
+BL-094: Child-page descriptions that explain a choice, and BL-095: Nested
+navigation for substantial documentation.
 Human approval of the revised gallery remains pending.
 Do not close
 [BL-083: Result-first single-page examples](backlog/BL-083-result-first-single-page-examples.md)
@@ -37,8 +41,8 @@ not merely that its syntax parses.
 | Sidenotes | The note pair matches its source. Margin placement is conditional on available space; reference footnotes are a different mechanism. | Exact source; shared Markdown model; `docs/content.md#side-notes`; responsive content styles |
 | Code blocks | Language, title, and line emphasis reproduce the live block. Copy and measured width need JavaScript; syntax rendering and title positioning do not. | Exact source; `src/components/CodeBlockCopyScript.astro`; `docs/content.md#code-blocks`; code-width browser checks |
 | Get readable tables from standard Markdown | Six columns and ten concise rows match the code. GFM table syntax and Norna's optional row-header annotation are distinguished. Labels do not require mid-word wrapping. The carousel fallback cell was corrected from "Image links" to "Static images". | Exact source; table-row-header and shared-width browser checks; `docs/content.md#tables` |
-| List child pages automatically | The Installation parent explains a real OS choice. H1s and descriptions come from its three children, rather than duplicating navigation labels without added context. | Exact parent source; `fixtures/child-page-list/site`; real capture; `src/components/PageList.astro` |
-| Automatic responsive navigation | One-page, top-level, and nested screenshots come from runnable fixtures using `project` and `automatic`. Each displayed page source matches its fixture. Desktop page links and H2 disclosures, compact Menu states, H3 tree outlines, Home, and depth-dependent right rails are distinguished. | Three exact-source checks; `fixtures/navigation-examples`; top-menu, nested-tree, and `/docs/` base-path tests; `docs/pages.md#navigation` |
+| List child pages automatically | Help a dog explains the different commitments of adoption, fostering, and sponsorship. Each child's description adds decision-making context to its H1. Missing descriptions trigger a non-blocking content warning. | Exact parent and three child excerpts; `fixtures/child-page-list/site`; real sidebar/list capture; warning selection and build tests |
+| Automatic responsive navigation | Three shelter scenarios use `project`; a fourth handbook excerpt uses `documentation`. All use automatic navigation. Top-mode H2s stay in page disclosures, not a duplicate row. The deeper handbook shows separate page and heading navigation and explains why related topics form branches. | Four exact-source checks, including nested code fences; `fixtures/navigation-examples`; top-menu and base-path tests; handbook responsive tests with and without JavaScript; `docs/pages.md#navigation` |
 | Move pages without breaking links | The two commands show preview followed by `--write`; they describe a hypothetical source and destination, not a move inside the documentation site. Subtree moves, link rewrites, aliases, and validation boundaries match the CLI contract. | `scripts/lib/page-move-plan.mjs`; existing `scripts/test-page-move.mjs` coverage inspected, not rerun; `docs/pages.md#move-or-reconcile-a-page` |
 | Add static search | `search: true` matches the documentation site's configuration. The generated route and static index are built; no hosted search or content translation is promised. | `site/config.yaml`; Pages build; `docs/configuration.md#search`; `docs/client-javascript.md` |
 | Set the site language | Swedish interface labels match the locale pack. Language does not translate page content; AI-generated packs still require fluent review. | `scripts/lib/locales/sv.mjs`; `scripts/lib/locale-registry.mjs`; `docs/configuration.md#language` |
@@ -51,9 +55,18 @@ not merely that its syntax parses.
 
 ## Corrections From The Final Audit
 
+- Review follow-ups replaced the OS list with a shelter commitment comparison,
+  removed duplicate top-navigation rows, and added a deep handbook capture.
+  Child descriptions and all four navigation sources are compared with real
+  files. Source matching now reads Markdown syntax trees, so a displayed page
+  can itself contain code fences without truncating the comparison.
+- Capture regeneration refreshed only changed image bytes: the top navigation
+  images changed after row removal, while the single-page and shallow-tree
+  images remained identical. The new handbook image shows a genuine right
+  outline, not a drawn approximation of one.
 - Displayed Markdown is now compared structurally with each of the nine live
   examples. Additional checks compare the child-page parent, shared YAML, and
-  three navigation snippets with their maintained files.
+  four navigation snippets with their maintained files.
 - The six-column table no longer promises origin links for carousels without
   JavaScript. Carousel images remain in the HTML, but they are not stack-style
   image links.
@@ -81,13 +94,17 @@ results were reused where the underlying contract was unchanged.
 | `tests/table-responsive-context.spec.ts` with the presentation fixture | 5 passed: row labels, responsive table context, and bounded layout |
 | `tests/code-width.spec.ts` and `tests/table-width-top.spec.ts` with the top-navigation fixture | 6 passed, including the final reduced-motion run |
 | `tests/top-page-menu.spec.ts` and `tests/navigation.spec.ts` with the top-navigation fixture | 23 passed: direct H2 links, native disclosures, keyboard dismissal, compact navigation, and no-JavaScript fallback |
+| `tests/navigation-documentation-example.spec.ts` with the handbook fixture | 2 passed: page and heading destinations persist across 1440/1120/390 widths, with and without JavaScript |
+| `npm run test:content-check` | Passed, including missing and whitespace-only descriptions, no-list pages, excluded nodes, repeated lists, Home, and preserved invalid-value errors |
+| `node --test --test-name-pattern=page-list scripts/test-markdown-constructs.mjs` | 2 passed: existing malformed/empty list errors and a static build that succeeds with a description warning |
 | Focused cases from `tests/navigation-tree.spec.ts` and `tests/page-contents-placement.spec.ts` | 6 passed: Home, outlines, current branch, nested destinations, and reading-position behavior |
 | `node scripts/test-top-navigation-contract.mjs` | Passed: explicit `top` with nested children, separate child and H2 groups, and `/docs/` base-prefixed links |
 | `npm run test:examples:browser` | 3 passed: 20 sections, complete image loading, 1440/1024/390 widths, Light/Dark, reduced motion, Focus reading with Wide, and no-JavaScript access |
 | `node scripts/test-review-environments.mjs` | Passed: capture arguments and registered environment contract |
 | `npm run content:check` | Passed |
 | `npm run test:documentation` | Passed: canonical links, public examples, displayed-source comparisons, preset descriptions, and generated discovery references |
-| `npm run build:pages` | Passed: final documentation build, static search index, Theme explorer, and all eight public example sites assembled into `dist/` |
+| `npm run build` | Passed after the review follow-ups: 17 generated routes, updated image variants, and a 15-page static search index |
+| `npm run build:pages` | Passed in the initial audit: documentation, Theme explorer, and all eight public example sites; not repeated for the follow-ups because published example sources and deployment paths are unchanged |
 
 Full `npm test`, package installation, release, and deployment verification
 were not run: this correction sequence does not change packaging or publishing
@@ -98,9 +115,9 @@ credentials, and focused tests cover the changed contracts.
 - At `/norna/examples/#tables`, compare the rendered table with its code at a
   wide viewport, then narrow the browser. Judge row-label readability, source
   size, overflow cues, and Focus reading without changing the page content.
-- At `/norna/examples/#page-list`, judge whether the Installation context and
-  descriptions justify a generated list beside navigation.
-- At `/norna/examples/#automatic-navigation`, compare the three source trees
+- At `/norna/examples/#page-list`, judge whether the shelter commitment context
+  and descriptions justify a generated list beside navigation.
+- At `/norna/examples/#automatic-navigation`, compare the four source trees
   with the captured wide and compact states. Read the shown source, not just
   the screenshots; all illustrated pages are runnable fixtures.
 - For live interaction, use the minimal top-navigation fixture left on
@@ -108,6 +125,9 @@ credentials, and focused tests cover the changed contracts.
   its chevron to reveal H2 links without visiting the page first. Try keyboard
   and a narrow viewport. The complete public multi-page shelter has no H2s,
   so it correctly has no section-disclosure buttons.
+- The deeper documentation fixture can replace the scratch copy using the
+  commands in `fixtures/navigation-examples/README.md`. Inspect
+  `/guides/installation/linux/` with two rails, one rail, and the compact menu.
 
 Desktop Light and mobile Dark captures were inspected by the agent. Automated
 bounds and source comparisons do not replace the user's judgment of the
@@ -152,7 +172,9 @@ Published paths above are relative to `https://janga.github.io/norna/`.
   boundary between sections and pages with one familiar subject.
 - Keep the documentation site as the complete nested-page example. Use the
   minimal, runnable shelter hierarchy to isolate the navigation rules without
-  introducing unrelated documentation content.
+  introducing unrelated documentation content. Add the compact handbook
+  excerpt when explaining why guides and reference topics form deeper branches;
+  do not claim nesting requires a particular page count.
 - Keep one source site per preset because identical content is the controlled
   variable that makes the comparison meaningful.
 - Keep Theme explorer as generated comparison output, not a fifth configurable

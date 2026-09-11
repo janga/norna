@@ -2,10 +2,20 @@
 
 ## Status And Dependencies
 
-Ready after
+Implemented after
 [BL-092: Top navigation without a duplicate section row](BL-092-top-navigation-without-duplicate-sections.md).
-Coordinate the final source/result audit with
+The source/result audit also includes
 [BL-094: Child-page descriptions that explain a choice](BL-094-child-page-choice-demonstration.md).
+
+The new maintained handbook fixture shows Guides / Installation / Linux and
+a separate Publishing branch. Its exact Linux source and real 1440x850 capture
+appear after the smaller shelter example. All navigation captures were
+regenerated; unchanged single-page and shallow-tree images remained identical.
+
+Fixture and documentation content checks, source/reference tests, two focused
+responsive browser tests with and without JavaScript, three gallery browser
+tests, and the documentation build passed. Final visual approval remains with
+the parent gallery review; it is not inferred from these results.
 
 ## Outcome
 
