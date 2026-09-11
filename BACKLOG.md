@@ -16,10 +16,6 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-055` Wide, readable tables with sticky headings](docs/design/backlog/BL-055-wide-readable-tables.md):
-  **Implemented, browser-tested, and visually approved; prioritized for
-  documentation.** Document the combined table-width, sticky-heading, and
-  horizontal-navigation behavior.
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Implemented; prioritized for review and documentation.** Complete the
   human review and document the localized, accessible semantic callouts and

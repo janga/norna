@@ -1,5 +1,12 @@
 # BL-055: Wide, Readable Tables With Sticky Headings
 
+## Status
+
+Implemented, visually approved, regression-tested, and documented on
+2026-09-11. Ordinary Markdown tables now combine progressive width escalation,
+bounded horizontal navigation, sticky column headings, and native semantic
+fallback without author-facing layout configuration.
+
 ## Outcome
 
 Markdown tables use a reading-oriented data layout instead of being confined
@@ -106,24 +113,25 @@ maximum width but must not change the prose measure.
   table bounds, prose alignment, sticky top and bottom boundaries, horizontal
   overflow, and interaction with sidenotes.
 
-## Pending Correction
+## Integrated Follow-Ups
 
-Human review found that the test table's horizontal overflow had no perceptible
-visual indication, even though the frame's overflow state and gradient opacity
-passed the browser assertions. Strengthen the directional edge cue and test its
-rendered contrast rather than opacity alone before this item is approved.
-
-Keeping column headings sticky while this fallback scrolls horizontally is a
-separate extension under
-[`BL-066` Sticky Headings In Horizontally Scrolling Tables](BL-066-sticky-headings-in-scrolling-tables.md).
+Later table work completed the parts that the first implementation deliberately
+left conservative. Sticky headings now remain synchronized during horizontal
+scrolling, overflow has persistent directional feedback and compact controls,
+and responsive rail changes preserve the table's heading context. Declared row
+headings can also remain visible while later columns scroll. These additions
+retain the original semantic table and require no extra author configuration.
 
 ## References
 
 - [U.S. Web Design System: Table](https://designsystem.digital.gov/components/table/)
 - [Carbon Design System: Data table usage](https://carbondesignsystem.com/components/data-table/usage/)
 
-## Documentation Gate
+## Documentation
 
-This changes visible table layout. Update the canonical Markdown-table
-reference and a representative rendered example after human review confirms
-the desktop, laptop, and narrow-screen behavior.
+The final behavior is described in the canonical
+[Markdown-table reference](../../content.md#tables), the
+[presentation guarantees](../../presentation-guarantees.md#reflow-and-text-adaptation),
+and the rendered **Writing and Notes** table example. The client-side
+enhancement and no-JavaScript fallback are recorded in the
+[JavaScript feature contract](../../client-javascript.md#feature-contract).

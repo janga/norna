@@ -81,13 +81,20 @@ Use an ordinary Markdown table for structured comparisons:
 | Wide data | Markdown table | Uses vacant page space before adding internal scrolling. |
 
 A small table stays with the prose. A wider top-level table first uses vacant
-space beside the text, then the complete available page canvas. Only a table
-that still does not fit scrolls inside its own keyboard-reachable frame. It
-never widens the complete document or overlaps visible navigation and notes.
+space beside the text, then the complete available page canvas. Focus reading
+may release more of that canvas without changing the prose width. Only a table
+that still does not fit scrolls inside its own keyboard-reachable frame. Edge
+cues and compact previous-and-next controls reveal that more columns remain,
+while touch, trackpad, mouse, and keyboard scrolling continue to work. The
+table never widens the complete document or overlaps visible navigation and
+notes.
+
 Long tables keep their column headings below the sticky site header. When a
 table also scrolls horizontally, an enhanced page synchronizes a visual copy
 of those headings while preserving the original table as the only semantic
-representation.
+representation. Without JavaScript, the semantic table and its native
+horizontal scroller remain available.
+
 When the first column uniquely names the rows, add `{row-header}` after its
 heading. Norna emits accessible row headings and keeps that column visible
 when the table must scroll sideways.
