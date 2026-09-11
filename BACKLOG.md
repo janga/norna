@@ -16,12 +16,25 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- [`BL-092` Top navigation without a duplicate section row](docs/design/backlog/BL-092-top-navigation-without-duplicate-sections.md):
+  **Ready.** Keep H2 destinations in page disclosures for multi-page top
+  navigation; retain the primary section row for single-page navigation.
+- [`BL-093` Missing descriptions in child-page lists](docs/design/backlog/BL-093-child-page-description-warnings.md):
+  **Ready.** Warn when a rendered child-page list includes a page without
+  `page.description`, without making descriptions mandatory elsewhere.
+- [`BL-094` Child-page descriptions that explain a choice](docs/design/backlog/BL-094-child-page-choice-demonstration.md):
+  **Ready after BL-093: Missing descriptions in child-page lists.** Replace
+  the operating-system example with meaningful adoption, fostering, and
+  sponsorship choices, including exact source and a real capture.
+- [`BL-095` Nested navigation for substantial documentation](docs/design/backlog/BL-095-nested-documentation-demonstration.md):
+  **Ready after BL-092: Top navigation without a duplicate section row.**
+  Complement the small site progression with a runnable deep documentation
+  branch and refresh navigation captures against the implemented behavior.
 - [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
-  **Implemented and technically verified; awaiting human gallery review.**
-  The ordered corrections and
+  **Review corrections in progress.** Complete the four ordered corrections
+  above, then refresh
   [BL-091: Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md)
-  are complete technically; review table/source readability, child-page
-  choices, and captured versus interactive navigation before closing both.
+  for the changed examples before requesting final human gallery review.
 
 ## Next
 
