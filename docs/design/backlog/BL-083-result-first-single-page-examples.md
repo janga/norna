@@ -6,6 +6,9 @@ Corrections implemented and technically verified on 2026-09-11; awaiting human
 review of the revised gallery. The ordered sequence below resolved table
 readability, source-to-result, and navigation-example problems, then audited
 all 20 sections against current behavior. The final Pages build passed.
+[BL-097: Visual-first examples with practical source checks](BL-097-visual-first-examples-and-checks.md)
+subsequently moves ordinary Markdown near the end and adds a dedicated source
+checking example, bringing the gallery to 21 sections.
 
 Review instructions and per-section evidence are in
 [Examples content audit](../examples-content-audit.md). Do not schedule the
@@ -76,42 +79,44 @@ content rather than placeholder prose.
 
 Present the examples in this order:
 
-1. **Write with standard Markdown**: headings, prose, emphasis, links, lists,
-   and quotations.
-2. **Add a single image**: one managed image showing all supported image-entry
+1. **Add a single image**: one managed image showing all supported image-entry
    fields: `image`, `alt`, and `caption`.
-3. **Image stacks**: several images kept visible in reading order.
-4. **Image carousels**: a sequence sharing one visual position.
-5. **Card lists**: a short set of comparable choices or resources.
-6. **Semantic callouts**: the closed semantic meanings supported by Norna.
-7. **Sidenotes**: margin placement and reading-flow fallback, with ordinary
+2. **Image stacks**: several images kept visible in reading order.
+3. **Image carousels**: a sequence sharing one visual position.
+4. **Card lists**: a short set of comparable choices or resources.
+5. **Semantic callouts**: the closed semantic meanings supported by Norna.
+6. **Sidenotes**: margin placement and reading-flow fallback, with ordinary
    reference footnotes identified as the end-of-page alternative.
-8. **Code blocks**: language, title, line emphasis, sticky context, and copy
+7. **Code blocks**: language, title, line emphasis, sticky context, and copy
    enhancement.
-9. **Get readable tables from standard Markdown**: a sufficiently long and
+8. **Get readable tables from standard Markdown**: a sufficiently long and
    wide table to expose progressive width, sticky headings, and overflow
    navigation without requiring layout syntax.
-10. **List child pages automatically**: the source and result of `page-list`.
-11. **Automatic responsive navigation**: one-page, top-level, and nested page
+9. **List child pages automatically**: the source and result of `page-list`.
+10. **Automatic responsive navigation**: one-page, top-level, and nested page
     structures mapped to their wide- and narrow-screen navigation.
-12. **Move pages without breaking links**: dry run, write step, internal-link
+11. **Move pages without breaking links**: dry run, write step, internal-link
     updates, and retained old URLs.
-13. **Add static search**: the generated search entry point, representative
+12. **Add static search**: the generated search entry point, representative
     result, and one site-wide setting.
-14. **Set the site language**: the site language and generated interface text,
+13. **Set the site language**: the site language and generated interface text,
     with the current human-review boundary stated prominently.
-15. **Brand your site**: convention-based logo, browser icon, and social image
+14. **Brand your site**: convention-based logo, browser icon, and social image
     files.
-16. **Add site-wide notices and a footer**: shared editorial content in
+15. **Add site-wide notices and a footer**: shared editorial content in
     `sitewide-content.yaml`.
-17. **Get coherent defaults from a preset**: purpose-specific defaults for the
+16. **Get coherent defaults from a preset**: purpose-specific defaults for the
     Documentation, Portfolio, Project, and Statement scenarios, followed by
     one small override.
-18. **Choose a coordinated color palette**: palette, Light and Dark variants,
+17. **Choose a coordinated color palette**: palette, Light and Dark variants,
     and the distinction between palette and Appearance.
-19. **Let readers adapt the display**: Reading width, Appearance including Dark,
+18. **Let readers adapt the display**: Reading width, Appearance including Dark,
     and Focus reading in the live Display panel.
-20. **Complete sites**: the single-page dog shelter, multi-page dog shelter,
+19. **Write with standard Markdown**: a short ordinary-content example with
+    matching heading, prose, emphasis, list, and quotation syntax.
+20. **Check before publishing**: configuration and content check commands,
+    concrete source mistakes, and their corrections.
+21. **Complete sites**: the single-page dog shelter, multi-page dog shelter,
     and this hierarchical documentation site.
 
 ## Managed Images And Author Responsibility

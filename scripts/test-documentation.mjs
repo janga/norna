@@ -347,7 +347,6 @@ const checkPublishedExampleReferences = async () => {
 	}
 
 	const orderedSections = [
-		'## Write with standard Markdown',
 		'## Add a single image',
 		'## Image stacks',
 		'## Image carousels',
@@ -366,6 +365,8 @@ const checkPublishedExampleReferences = async () => {
 		'## Get coherent defaults from a preset',
 		'## Choose a coordinated color palette',
 		'## Let readers adapt the display',
+		'## Write with standard Markdown',
+		'## Check before publishing',
 		'## Complete sites',
 	];
 	let previousSectionIndex = -1;
@@ -374,6 +375,17 @@ const checkPublishedExampleReferences = async () => {
 		assert.ok(sectionIndex > previousSectionIndex, `Examples is missing or has misplaced heading: ${heading}`);
 		previousSectionIndex = sectionIndex;
 	}
+	assert.equal(examplesModel.sections[0]?.id, 'single-image',
+		'Examples must open with a visual example rather than a publishing checklist.');
+	const checksSection = examplesModel.sections.find((section) => section.id === 'source-checks');
+	const checksTree = await markdownToMdast(checksSection.bodyMarkdown);
+	const checkCommands = checksTree.children.filter((node) => node.type === 'code' && node.lang === 'sh')
+		.flatMap((node) => node.value.split('\n').map((line) => line.trim()).filter((line) => line && !line.startsWith('#')));
+	assert.deepEqual(checkCommands, ['norna check', 'norna config:check', 'norna content:check']);
+	assert.ok(checksSection.bodyMarkdown.includes('npm run norna:check'), 'Checks must work without a global launcher.');
+	assert.equal(checksTree.children.find((node) => node.type === 'list')?.children.length, 4,
+		'Demonstrate four source mistakes beside their corrections.');
+	assert.ok(!documentationText.includes('### Before publishing'), 'Do not use generic publishing advice as a Markdown example.');
 
 	for (const requiredText of [
 		'**Source:** Standard Markdown.',

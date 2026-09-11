@@ -18,7 +18,10 @@ Do not close
 [BL-083: Result-first single-page examples](backlog/BL-083-result-first-single-page-examples.md)
 or its final audit on the strength of automated tests alone.
 
-All 20 H2 examples were compared with current sources and canonical reference.
+The original 20 H2 examples were compared with current sources and canonical
+reference. [BL-097: Visual-first examples with practical source checks](backlog/BL-097-visual-first-examples-and-checks.md)
+then moved ordinary Markdown near the end and added a source-checking example.
+The gallery now has 21 sections, opening with a single image.
 The checks below distinguish source fidelity and tested behavior from visual
 judgment. No planned feature is presented as shipped; the translation review
 and carousel JavaScript boundaries remain explicit.
@@ -32,7 +35,6 @@ not merely that its syntax parses.
 
 | Section | Result and boundaries checked | Implementation evidence |
 | --- | --- | --- |
-| Write with standard Markdown | Live H3, prose, emphasis, list, and quote match the displayed source. No Norna syntax is required. | Exact-source assertion; `scripts/lib/page-markdown.mjs`; `docs/content.md` |
 | Add a single image | The one-entry stack shows all three supported fields. Local managed images, public assets, external URLs, and author-owned alternative text are distinguished. | Exact source; `scripts/lib/norna-markdown-blocks.mjs`; `src/components/ImageStack.astro`; `docs/images-and-metadata.md` |
 | Image stacks | Both entries and their captions match the source. The optional AI suggestion retains human responsibility for alt text. | Exact source; `ImageStack.astro`; gallery image-loading check |
 | Image carousels | Three entries match the source; controls initialize. The text does not promise slide switching without JavaScript. | Exact source; `src/components/ImageCarousel.astro`; browser checks with and without JavaScript |
@@ -51,6 +53,8 @@ not merely that its syntax parses.
 | Get coherent defaults from a preset | The four purposes match preset metadata. Root `preset` and `layout.textWidth` illustrate defaults and one accepted override, not arbitrary per-page identity changes. | `scripts/lib/theme-presets.mjs`; `docs/theme.md#theme-presets`; existing preset-reference assertions and four example builds |
 | Choose a coordinated color palette | `clay-rose` matches this site's palette. The snippet explicitly combines that palette with `documentation`, without claiming that this entire page uses that preset. | `site/theme.yaml`; palette metadata; Theme explorer build; `docs/theme.md#palette-and-appearance` |
 | Let readers adapt the display | Reading width is universal; optional Appearance and Focus reading settings are valid. Focus reading removes persistent rails while keeping Menu. Browser storage is not presented as an account preference. | Reader preference components; gallery Focus reading and Wide checks; `docs/theme.md#reader-display-controls` |
+| Write with standard Markdown | The late visit-planning example matches its displayed source. It demonstrates ordinary H3, prose, emphasis, a list, and a quotation without a generic publishing checklist. | Exact-source assertion and gallery-order regression; `scripts/lib/page-markdown.mjs`; `docs/content.md` |
+| Check before publishing | Three commands distinguish combined, configuration-only, and content-only checks. Four source mistakes show invalid values, missing images, broken internal links, and duplicate heading ids, with corrections. The npm equivalent and limits of automated checks are explicit. | Command dispatch in `bin/norna-cli.mjs`; existing negative cases in project-config, content-check, site-link-graph, and heading-id tests; `docs/commands.md`; gallery command assertions |
 | Complete sites | Both public shelters remain independent projects. Fresh desktop captures show current navigation; links include rendered sites, maintained source, and the navigation reference. Their deliberately small scope is stated. | `scripts/capture-navigation-examples.mjs`; both complete-site builds; documentation link coverage |
 
 ## Corrections From The Final Audit

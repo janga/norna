@@ -16,10 +16,6 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-097` Visual-first examples with practical source checks](docs/design/backlog/BL-097-visual-first-examples-and-checks.md):
-  **Ready.** Open with image examples, move the standard Markdown example near
-  the end, and replace generic publishing advice with concrete check commands
-  and the problems they detect.
 - [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
   **Implemented and technically verified; awaiting human gallery review.**
   Top-navigation duplication, missing child descriptions, the child-page

@@ -43,7 +43,8 @@ test('the gallery keeps its table source readable and bounded at every width', a
 
 test('the visible examples render their exact source without broken image references', async ({ page }) => {
 	await page.goto('examples/');
-	await expect(page.locator('#main-content .section-header h2')).toHaveCount(20);
+	await expect(page.locator('#main-content .section-header h2')).toHaveCount(21);
+	await expect(page.locator('#main-content .section-header h2').first()).toHaveAttribute('id', 'single-image');
 	await expect(section(page, 'semantic-callouts').locator('.norna-callout')).toHaveCount(2);
 	await expect(section(page, 'image-carousels').locator('[data-carousel]')).toHaveAttribute('data-carousel-ready', 'true');
 	await page.evaluate(async () => {

@@ -5,37 +5,6 @@ page:
 
 # Examples
 
-## Write with standard Markdown {#standard-markdown}
-
-### Before publishing
-
-Run the **source checks**, then:
-
-1. preview the site;
-2. review the changed pages;
-3. publish when the result is ready.
-
-> A useful page keeps its source understandable before any presentation is
-> applied.
-
-````md
-### Before publishing
-
-Run the **source checks**, then:
-
-1. preview the site;
-2. review the changed pages;
-3. publish when the result is ready.
-
-> A useful page keeps its source understandable before any presentation is
-> applied.
-````
-
-**Source:** Standard Markdown. Norna supplies the typography and responsive
-layout without replacing headings, prose, emphasis, links, lists, quotations,
-or ordinary code fences. Read the
-[Markdown text reference](https://github.com/janga/norna/blob/main/docs/content.md#markdown-text).
-
 ## Add a single image {#single-image}
 
 ```image-stack
@@ -752,6 +721,75 @@ the initial presentation and which optional controls are offered; the reader's
 selection is stored only in that browser. Read the
 [reader Display reference](https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls)
 and [client-side JavaScript contract](https://github.com/janga/norna/blob/main/docs/client-javascript.md).
+
+## Write with standard Markdown {#standard-markdown}
+
+### Arrange a visit
+
+Tell us **who lives at home** and *when you can visit*.
+
+1. Read about the dogs.
+2. Send us your questions.
+
+> Visits are by appointment.
+
+````md
+### Arrange a visit
+
+Tell us **who lives at home** and *when you can visit*.
+
+1. Read about the dogs.
+2. Send us your questions.
+
+> Visits are by appointment.
+````
+
+**Source:** Standard Markdown. Headings, emphasis, lists, and quotations need
+no Norna-specific syntax. Read the
+[Markdown text reference](https://github.com/janga/norna/blob/main/docs/content.md#markdown-text).
+
+## Check before publishing {#source-checks}
+
+```sh title="Check the site's source files"
+# Check configuration, then content
+# Source files stay unchanged
+norna check
+```
+
+In a generated site project, `npm run norna:check` runs the same checks without
+the optional global launcher. To check only one part:
+
+```sh title="Run a focused check"
+# Check settings and themes
+norna config:check
+
+# Check Markdown, links, and images
+norna content:check
+```
+
+- **Invalid setting:** `search: yes` in `config.yaml` supplies text where
+  Norna requires a boolean. Use `search: true` or `search: false`.
+- **Missing image:** `image: portrait.svg` refers to a file that does not
+  exist. Put the image in the page's `images/` directory or correct the filename.
+- **Broken link:** `[Adopt](/adotp/)` points to a URL with no page. Correct it
+  to `/adopt/` if that is the page's address.
+- **Duplicate heading id:** two `## Contact` headings on one page both produce
+  `contact`. Give them distinct headings or an explicit id, such as
+  `## Contact {#press-contact}`.
+
+Fix the reported source and run the check again. These checks do not visit
+external websites or judge whether an image's alternative text is useful;
+review those separately.
+
+**Source:** Norna commands. Read the
+[command reference](https://github.com/janga/norna/blob/main/docs/commands.md#command-summary)
+for the complete check scope, the
+[configuration reference](https://github.com/janga/norna/blob/main/docs/configuration.md)
+for accepted settings, the
+[image reference](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md#managed-source-images)
+for file placement, and the
+[content reference](https://github.com/janga/norna/blob/main/docs/content.md#validation-and-sync)
+for content errors and image synchronization.
 
 ## Complete sites {#complete-sites}
 
