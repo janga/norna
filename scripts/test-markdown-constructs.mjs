@@ -112,6 +112,11 @@ test('reference footnotes render page-wide with localized accessible links', asy
 			label: 'Fotnoter',
 			backLabel: 'Tillbaka till referens',
 		},
+		{
+			language: 'el-GR',
+			label: 'Υποσημειώσεις',
+			backLabel: 'Επιστροφή στην παραπομπή',
+		},
 	]) {
 		const { root, siteDir } = await createTempSite({ underRepoCache: true });
 		try {
@@ -163,6 +168,10 @@ test('semantic callouts render every supported meaning with localized accessible
 		{
 			language: 'sv',
 			labels: ['Notera', 'Tips', 'Viktigt', 'Varning', 'Var försiktig', 'Fara'],
+		},
+		{
+			language: 'el',
+			labels: ['Σημείωση', 'Συμβουλή', 'Σημαντικό', 'Προειδοποίηση', 'Προσοχή', 'Κίνδυνος'],
 		},
 	]) {
 		const { root, siteDir } = await createTempSite({ underRepoCache: true });

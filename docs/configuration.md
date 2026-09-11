@@ -49,17 +49,114 @@ generated sitemap.
 
 - Purpose: language tag on the root `<html lang="...">` element and selection
   of Norna's built-in interface text.
-- Type: `en`, `sv`, or a regional tag such as `en-GB` or `sv-SE`.
+- Type: one supported primary language or script tag, optionally followed by a
+  region such as `en-GB` or `pt-BR`.
 - Required: no.
 - Default: `en`.
+- Scope: site-wide.
 
-Norna includes interface text for English and Swedish. Regional tags use the
-language identified by their primary subtag. An unsupported language is an
-error because silently rendering English controls on another-language page
-would be misleading.
+Use the primary tag when regional formatting does not matter:
+
+```yaml
+language: es
+```
+
+The setting controls four kinds of generated output:
+
+- the complete language tag on the root `<html>` element;
+- Norna-owned labels in navigation, controls, notes, callouts, error pages,
+  and other generated interface elements;
+- locale-sensitive values such as a generated build date;
+- the language and labels used by the optional Pagefind search interface.
+
+It does not translate page Markdown, captions, banners, footer text, or other
+editorial content. Write those in the language selected for the site.
+
+### Supported Languages
+
+The following primary values select complete built-in Norna interface packs.
+They cover left-to-right Latin, Greek, and Cyrillic writing systems that can
+use ordinary system-font fallback; no Norna-provided font file is required.
+
+| Language | Primary value |
+| --- | --- |
+| Albanian | `sq` |
+| Azerbaijani, Latin | `az-Latn` |
+| Belarusian | `be` |
+| Bosnian | `bs` |
+| Bulgarian | `bg` |
+| Catalan | `ca` |
+| Croatian | `hr` |
+| Czech | `cs` |
+| Danish | `da` |
+| Dutch | `nl` |
+| English | `en` |
+| Estonian | `et` |
+| Filipino | `fil` |
+| Finnish | `fi` |
+| French | `fr` |
+| German | `de` |
+| Greek | `el` |
+| Hausa | `ha` |
+| Hungarian | `hu` |
+| Icelandic | `is` |
+| Indonesian | `id` |
+| Irish | `ga` |
+| Italian | `it` |
+| Javanese | `jv` |
+| Latvian | `lv` |
+| Lithuanian | `lt` |
+| Luxembourgish | `lb` |
+| Macedonian | `mk` |
+| Maltese | `mt` |
+| Montenegrin | `cnr` |
+| Nigerian Pidgin | `pcm` |
+| Norwegian Bokmål | `nb` |
+| Norwegian Nynorsk | `nn` |
+| Polish | `pl` |
+| Portuguese | `pt` |
+| Romanian | `ro` |
+| Russian | `ru` |
+| Serbian, Cyrillic | `sr-Cyrl` |
+| Serbian, Latin | `sr-Latn` |
+| Slovak | `sk` |
+| Slovenian | `sl` |
+| Spanish | `es` |
+| Swahili | `sw` |
+| Swedish | `sv` |
+| Turkish | `tr` |
+| Ukrainian | `uk` |
+| Vietnamese | `vi` |
+
+Use a regional tag when the same language should use regional formatting:
+
+```yaml
+language: pt-BR
+```
+
+Norna preserves the complete tag as `<html lang="pt-BR">`, uses it for
+locale-sensitive formatting, and selects the Portuguese interface pack from
+the primary `pt` subtag. Two-letter and three-digit BCP 47 region subtags are
+accepted for every supported language and script form.
+
+Serbian has two supported writing systems, so `sr` alone is ambiguous. Select
+`sr-Cyrl` or `sr-Latn`. Azerbaijani currently supports only its Latin form and
+must be written as `az-Latn`; this prevents Norna from silently selecting a
+script. An unsupported language or script stops configuration validation and
+lists the available alternatives.
+
+Search remains available for every accepted language. Pagefind provides
+language-specific stemming for its own supported languages; other Norna
+language packs receive translated search controls but use Pagefind's generic
+indexing behavior. See
+[Pagefind multilingual search](https://pagefind.app/docs/multilingual/) for
+that search-engine boundary.
 
 Interface labels are part of the engine and are not configured individually.
 Editorial text remains in page content and `sitewide-content.yaml`.
+
+This is a single-language site setting. It does not create translated routes,
+a language selector, fallback content, or `hreflang` metadata.
 
 ## Edit Link
 

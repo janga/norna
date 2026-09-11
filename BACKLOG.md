@@ -31,6 +31,11 @@ action, or another user-owned prerequisite. They do not block `Now` or `Next`.
   **In progress.** The version-aligned package and real VS Code tests are ready;
   complete the first Visual Studio Marketplace publication before describing
   IntelliSense as a supported installable feature.
+- [`BL-080` System-font left-to-right site languages](docs/design/backlog/BL-080-system-font-ltr-site-languages.md):
+  **Technically implemented; qualified language review required before
+  release.** The shared registry, schemas, generated UI, search controls, and
+  representative script tests cover 47 site language configurations. Fluent
+  reviewers must approve every new interface pack before support is announced.
 
 ## Later
 

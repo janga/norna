@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { supportedLocaleTags } from './lib/locale-registry.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
@@ -144,7 +145,13 @@ for (const filename of filenames) {
 
 const config = JSON.parse(await readFile(path.join(root, 'schemas', 'config.schema.json'), 'utf8'));
 assert.equal(config.properties.language.default, 'en');
-assert.deepEqual(config.properties.language.examples, ['en', 'sv', 'en-GB', 'sv-SE']);
+assert.deepEqual(config.properties.language.examples, ['en', 'sv', 'es', 'el', 'uk', 'sr-Cyrl', 'en-GB', 'pt-BR']);
+assert.deepEqual(
+	config.properties.language.oneOf.slice(0, -1).map(({ const: value }) => value),
+	supportedLocaleTags,
+);
+assert.equal(config.properties.language.oneOf.at(-1).title, 'Regional or script-qualified tag');
+assert.match(config.properties.language.markdownDescription, /editorial Markdown is not translated/);
 assert.equal(config.properties.scrollBehavior.default, 'instant');
 assert.match(config.properties.editLink.markdownDescription, /Links each rendered page/);
 assert.match(config.properties.editLink.markdownDescription, /loopback development preview/);

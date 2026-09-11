@@ -1,4 +1,8 @@
 import { documentationLink } from './documentation-links.mjs';
+import {
+	localeDefinitions,
+	supportedQualifiedLocaleTagPatternSource,
+} from './locale-registry.mjs';
 import { presentationPaletteNames } from './presentation-palette-metadata.mjs';
 import { getSchemaValueDefinition } from './schema-value-definitions.mjs';
 
@@ -105,20 +109,21 @@ const addValueDescriptions = (schema) => {
 const addLanguageSuggestions = (jsonSchema) => {
 	const language = jsonSchema.properties?.language;
 	if (!language) throw new Error('Generated config schema has no language property.');
-	const definition = getSchemaValueDefinition(['en', 'sv']);
 	language.default = 'en';
-	language.examples = ['en', 'sv', 'en-GB', 'sv-SE'];
+	language.examples = ['en', 'sv', 'es', 'el', 'uk', 'sr-Cyrl', 'en-GB', 'pt-BR'];
 	language.oneOf = [
-		...definition.values.map((value) => ({
-			const: value,
-			title: definition.options[value].title,
-			description: definition.options[value].description,
+		...localeDefinitions.map(({ tag, name, nativeName, script, requiresScript }) => ({
+			const: tag,
+			title: nativeName === name ? name : `${nativeName} — ${name}`,
+			description: requiresScript
+				? `Use Norna's built-in ${name} interface text in the ${script} script.`
+				: `Use Norna's built-in ${name} interface text.`,
 		})),
 		{
 			type: 'string',
-			pattern: '^(?:en|sv)-[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$',
-			title: 'Regional language tag',
-			description: 'Use an English or Swedish regional language tag such as en-GB or sv-SE.',
+			pattern: supportedQualifiedLocaleTagPatternSource,
+			title: 'Regional or script-qualified tag',
+			description: 'Add a region to a supported language, such as en-GB, pt-BR, or sr-Cyrl-RS. Norna preserves the complete tag in generated HTML.',
 		},
 	];
 };
@@ -156,9 +161,9 @@ const addConfigHelp = (jsonSchema) => {
 	], ['https://example.com/', 'https://owner.github.io/repository-name/']);
 	addHelp(jsonSchema, 'language', [
 		yamlExample('language: en-GB'),
-		'Sets the page language and selects Norna\'s built-in English or Swedish interface text. The default is `en`.',
+		'Sets the language of the complete site and selects the matching built-in Norna interface text. Regional tags are preserved. The default is `en`; editorial Markdown is not translated.',
 		documentationLink('Language reference', 'configuration.md', 'language'),
-	], ['en', 'sv', 'en-GB', 'sv-SE']);
+	], ['en', 'sv', 'es', 'el', 'uk', 'sr-Cyrl', 'en-GB', 'pt-BR']);
 	addHelp(jsonSchema, 'editLink', [
 		yamlExample('editLink:\n  localEditor: vscode\n  baseUrl: https://github.com/owner/repository/edit/main/'),
 		'Links each rendered page to its `content.md` source. A loopback development preview uses the explicitly selected local editor; published output and LAN previews use the optional remote base URL. Specify either destination or both.',

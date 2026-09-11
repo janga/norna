@@ -28,10 +28,6 @@ export const schemaValueDefinitions = Object.freeze([
 		top: option('Top', 'Use pages in the top navigation and sections below them.'),
 		tree: option('Tree', 'Use a left page rail and a separate right H2/H3 contents rail where the page has enough headings.'),
 	}),
-	definition(['en', 'sv'], {
-		en: option('English', 'Use Norna\'s built-in English interface text.'),
-		sv: option('Swedish', 'Use Norna\'s built-in Swedish interface text.'),
-	}),
 	definition(['vscode'], {
 		vscode: option('Visual Studio Code', 'Open the current page source in the locally installed Visual Studio Code application.'),
 	}),

@@ -190,6 +190,13 @@ try {
 	assert.equal(localizedConfig.labels.tablePreviousColumns, 'Visa föregående kolumner');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 
+	const greekSite = await createSite('greek', 'url: https://example.com/\nlanguage: el-GR\n');
+	const greekResult = loadConfig(greekSite);
+	assert.equal(greekResult.status, 0, greekResult.stderr);
+	const greekConfig = JSON.parse(greekResult.stdout);
+	assert.equal(greekConfig.language, 'el-GR');
+	assert.equal(greekConfig.labels.notFound, 'Η σελίδα δεν βρέθηκε');
+
 	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\nnavigation:\n  mode: tree\n');
 	const treeNavigationResult = loadConfig(treeNavigationSite);
 	assert.equal(treeNavigationResult.status, 0, treeNavigationResult.stderr);
@@ -255,8 +262,12 @@ try {
 		/contains invalid YAML/,
 	);
 	assertFailure(
-		loadConfig(await createSite('unsupported-language', 'url: https://example.com/\nlanguage: de\n')),
+		loadConfig(await createSite('unsupported-language', 'url: https://example.com/\nlanguage: ar\n')),
 		/has no built-in Norna UI text/,
+	);
+	assertFailure(
+		loadConfig(await createSite('missing-script', 'url: https://example.com/\nlanguage: sr\n')),
+		/must identify a supported script[\s\S]*sr-Cyrl, sr-Latn/,
 	);
 	assertFailure(
 		loadConfig(await createSite('invalid-url', 'url: example.com\n')),

@@ -14,6 +14,7 @@ import {
 	siteThemeLabel,
 } from './site-paths.mjs';
 import { localEditorNames, normalizeEditLinkBaseUrl } from './edit-source-link.mjs';
+import { resolveLocale } from './locale-registry.mjs';
 import { readThemeConfig } from './theme-config.mjs';
 import { resolveThemeConfig } from './theme-presets.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
@@ -195,178 +196,6 @@ const readSiteUrl = (config) => {
 	}
 
 	return url;
-};
-
-const localeLabels = Object.freeze({
-	en: Object.freeze({
-		breadcrumb: 'Breadcrumb',
-		appearance: 'Appearance',
-		appearanceDark: 'Dark',
-		appearanceLight: 'Light',
-		appearanceSystem: 'System',
-		codeCopied: 'Copied',
-		codeCopyFailed: 'Could not copy code',
-		copyCode: 'Copy code',
-		calloutCaution: 'Caution',
-		calloutDanger: 'Danger',
-		calloutImportant: 'Important',
-		calloutNote: 'Note',
-		calloutTip: 'Tip',
-		calloutWarning: 'Warning',
-		closeNavigation: 'Close navigation',
-		editSource: 'Edit this page',
-		displaySettings: 'Display',
-		focusReading: 'Focus reading',
-		footnoteBackReference: 'Back to reference {reference}',
-		footnotes: 'Footnotes',
-		readingWidth: 'Reading width',
-		readingWidthNarrow: 'Narrow',
-		readingWidthStandard: 'Standard',
-		readingWidthWide: 'Wide',
-		resetDisplaySettings: 'Reset',
-		dismissBanner: 'Dismiss notice',
-		built: 'Built',
-		images: 'Images',
-		imageCarousel: 'image carousel',
-		imageInspection: 'Image inspection',
-		imageInspectionActualSize: 'Show actual size',
-		imageInspectionClose: 'Close image inspection',
-		imageInspectionFit: 'Fit image to window',
-		inspectImage: 'Inspect image: {description}',
-		navigationCollapsedAll: 'All navigation items collapsed.',
-		navigationCollapseAll: 'Collapse all',
-		navigationControls: 'Navigation tree controls',
-		navigationChildren: 'Child pages',
-		navigationExpandedAll: 'All navigation items expanded.',
-		navigationExpandAll: 'Expand all',
-		navigationFilter: 'Filter pages and groups',
-		navigationFilterEmpty: 'No matching pages or groups. The current page remains available.',
-		navigationFilterMatches: 'Matching navigation items: {count}',
-		navigationLocatedCurrent: 'Current page located.',
-		navigationLocateCurrent: 'Locate current page',
-		navigationMenu: 'Menu',
-		nextImage: 'Next image',
-		nextPage: 'Next page',
-		note: 'Note',
-		openInVsCode: 'Open in VS Code',
-		notFound: 'Page not found',
-		notFoundText: 'The requested page does not exist or may have moved.',
-		pageMoved: 'Page moved',
-		pageMovedText: 'This address now identifies',
-		pageNavigation: 'Page contents',
-		pageSequence: 'Page sequence',
-		pageSections: 'Sections',
-		previousImage: 'Previous image',
-		previousPage: 'Previous page',
-		returnHome: 'Go to the homepage',
-		search: 'Search',
-		searchDescription: 'Search the published content on this site.',
-		searchLoading: 'Loading search…',
-		searchNoScript: 'Search requires JavaScript. Use the page navigation when JavaScript is unavailable.',
-		searchUnavailable: 'Search is unavailable. During local work, run norna build:local to create or refresh the search index.',
-		siteBanners: 'Site notices',
-		siteNavigation: 'Pages',
-		skipToContent: 'Skip to content',
-		tableColumns: 'Table columns',
-		tableNextColumns: 'Show next columns',
-		tableOverflowDescription: 'More table columns are available horizontally.',
-		tablePreviousColumns: 'Show previous columns',
-	}),
-	sv: Object.freeze({
-		breadcrumb: 'Brödsmulor',
-		appearance: 'Utseende',
-		appearanceDark: 'Mörkt',
-		appearanceLight: 'Ljust',
-		appearanceSystem: 'System',
-		codeCopied: 'Kopierat',
-		codeCopyFailed: 'Kunde inte kopiera koden',
-		copyCode: 'Kopiera kod',
-		calloutCaution: 'Var försiktig',
-		calloutDanger: 'Fara',
-		calloutImportant: 'Viktigt',
-		calloutNote: 'Notera',
-		calloutTip: 'Tips',
-		calloutWarning: 'Varning',
-		closeNavigation: 'Stäng navigationen',
-		editSource: 'Redigera den här sidan',
-		displaySettings: 'Visning',
-		focusReading: 'Fokuserad läsning',
-		footnoteBackReference: 'Tillbaka till referens {reference}',
-		footnotes: 'Fotnoter',
-		readingWidth: 'Textbredd',
-		readingWidthNarrow: 'Smal',
-		readingWidthStandard: 'Standard',
-		readingWidthWide: 'Bred',
-		resetDisplaySettings: 'Återställ',
-		dismissBanner: 'Stäng meddelande',
-		built: 'Byggd',
-		images: 'Bilder',
-		imageCarousel: 'bildkarusell',
-		imageInspection: 'Bildgranskning',
-		imageInspectionActualSize: 'Visa faktisk storlek',
-		imageInspectionClose: 'Stäng bildgranskning',
-		imageInspectionFit: 'Anpassa bilden till fönstret',
-		inspectImage: 'Granska bild: {description}',
-		navigationCollapsedAll: 'Alla navigationsposter har fällts ihop.',
-		navigationCollapseAll: 'Fäll ihop alla',
-		navigationControls: 'Kontroller för navigationsträdet',
-		navigationChildren: 'Undersidor',
-		navigationExpandedAll: 'Alla navigationsposter har fällts ut.',
-		navigationExpandAll: 'Fäll ut alla',
-		navigationFilter: 'Filtrera sidor och grupper',
-		navigationFilterEmpty: 'Inga sidor eller grupper matchar. Den aktuella sidan är fortfarande tillgänglig.',
-		navigationFilterMatches: 'Matchande navigationsposter: {count}',
-		navigationLocatedCurrent: 'Den aktuella sidan har hittats.',
-		navigationLocateCurrent: 'Hitta aktuell sida',
-		navigationMenu: 'Meny',
-		nextImage: 'Nästa bild',
-		nextPage: 'Nästa sida',
-		note: 'Not',
-		openInVsCode: 'Öppna i VS Code',
-		notFound: 'Sidan hittades inte',
-		notFoundText: 'Den begärda sidan finns inte eller kan ha flyttats.',
-		pageMoved: 'Sidan har flyttats',
-		pageMovedText: 'Den här adressen identifierar nu',
-		pageNavigation: 'Sidinnehåll',
-		pageSequence: 'Sidföljd',
-		pageSections: 'Avsnitt',
-		previousImage: 'Föregående bild',
-		previousPage: 'Föregående sida',
-		returnHome: 'Gå till startsidan',
-		search: 'Sök',
-		searchDescription: 'Sök i det publicerade innehållet på webbplatsen.',
-		searchLoading: 'Laddar sökning…',
-		searchNoScript: 'Sökning kräver JavaScript. Använd sidnavigeringen när JavaScript inte är tillgängligt.',
-		searchUnavailable: 'Sökningen är inte tillgänglig. Kör norna build:local under lokalt arbete för att skapa eller uppdatera sökindexet.',
-		siteBanners: 'Meddelanden',
-		siteNavigation: 'Sidor',
-		skipToContent: 'Hoppa till innehållet',
-		tableColumns: 'Tabellkolumner',
-		tableNextColumns: 'Visa nästa kolumner',
-		tableOverflowDescription: 'Fler tabellkolumner är tillgängliga i sidled.',
-		tablePreviousColumns: 'Visa föregående kolumner',
-	}),
-});
-
-const readLocale = (config) => {
-	const lang = config.language ?? 'en';
-
-	if (typeof lang !== 'string' || !/^[a-zA-Z]{2,3}(?:-[a-zA-Z0-9]+)*$/.test(lang.trim())) {
-		throw new Error(`language must be a valid language tag such as "en" or "sv" in ${siteConfigLabel}.`);
-	}
-
-	const normalizedLang = lang.trim();
-	const languageKey = normalizedLang.toLowerCase().split('-')[0];
-	const labels = localeLabels[languageKey];
-
-	if (!labels) {
-		throw new Error(`language "${normalizedLang}" has no built-in Norna UI text. Supported languages: ${Object.keys(localeLabels).join(', ')}.`);
-	}
-
-	return Object.freeze({
-		lang: normalizedLang,
-		labels,
-	});
 };
 
 const rawConfig = assertObject(siteConfig, 'config YAML');
@@ -609,7 +438,7 @@ export const projectConfig = Object.freeze({
 			'instant',
 		),
 	}),
-	locale: readLocale(rawConfig),
+	locale: resolveLocale(rawConfig.language, siteConfigLabel),
 });
 
 export default projectConfig;

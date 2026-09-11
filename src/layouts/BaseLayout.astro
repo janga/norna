@@ -202,7 +202,7 @@ const marginNoteLayoutCss = [
 const { buildInfo, copyrightMessage } = footer ?? {};
 const showBuildInfo = buildInfo === true;
 const buildTime = showBuildInfo
-	? new Intl.DateTimeFormat(projectConfig.locale.lang, {
+	? new Intl.DateTimeFormat(projectConfig.locale.formattingLocale, {
 		dateStyle: 'short',
 		timeStyle: 'short',
 		timeZone: 'UTC',

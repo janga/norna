@@ -55,3 +55,21 @@ test('build emits a localized base-path 404 page with valid navigation and asset
 		await rm(root, { recursive: true, force: true });
 	}
 });
+
+test('build uses Greek interface text and preserves the regional language tag', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\nlanguage: el-GR\n');
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), '# Αρχική\n\nΚαλώς ήρθατε.\n');
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+
+		const html = await readFile(path.join(root, 'dist', '404.html'), 'utf8');
+		assert.match(html, /<html lang="el-GR"/);
+		assert.match(html, /<title>Η σελίδα δεν βρέθηκε<\/title>/);
+		assert.match(html, /Η ζητούμενη σελίδα δεν υπάρχει ή μπορεί να έχει μετακινηθεί\./);
+		assert.match(html, /<a href="\/">Μετάβαση στην αρχική σελίδα<\/a>/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});

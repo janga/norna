@@ -30,14 +30,14 @@ const distDir = path.join(root, 'dist');
 
 try {
 	await writeFile(path.join(siteDir, 'config.yaml'), `url: https://example.com/project/
-language: en
+language: bg
 search: true
 `);
 	await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Search fixture
 
 ## Overview {#overview}
 
-The home page contains the unique term cobaltbadger.
+Началната страница съдържа уникалната дума кобалтовязовец.
 `);
 	const nestedPageDir = path.join(siteDir, 'pages', '010-guides', 'pages', '010-installation');
 	await mkdir(nestedPageDir, { recursive: true });
@@ -66,12 +66,15 @@ This nested section contains the unique term amberotter.
 	assert.match(searchHtml, /href="\/project\/pagefind\/pagefind-ui\.css"/);
 	assert.match(searchHtml, /\/project\/pagefind\/pagefind-ui\.js/);
 	assert.match(searchHtml, /baseUrl: "\/project\/"/);
-	assert.match(searchHtml, /aria-current="page" aria-label="Search"/);
+	assert.match(searchHtml, /<html lang="bg"/);
+	assert.match(searchHtml, /translations: \{"placeholder":"Търсене"/);
+	assert.doesNotMatch(searchHtml, /translations: \{"language":/);
+	assert.match(searchHtml, /aria-current="page" aria-label="Търсене"/);
 	assert.deepEqual(searchDocuments.map(({ url }) => url).sort(), ['/', '/guides/installation/']);
-	assert.equal(searchDocuments.some(({ content }) => content.includes('cobaltbadger')), true);
+	assert.equal(searchDocuments.some(({ content }) => content.includes('кобалтовязовец')), true);
 	assert.equal(searchDocuments.some(({ content }) => content.includes('amberotter')), true);
-	assert.equal(searchDocuments.some(({ content }) => content.includes('Page not found')), false);
-	assert.equal(searchDocuments.some(({ content }) => content.includes('Loading search')), false);
+	assert.equal(searchDocuments.some(({ content }) => content.includes('Страницата не е намерена')), false);
+	assert.equal(searchDocuments.some(({ content }) => content.includes('Зареждане на търсенето')), false);
 	assert.equal(await fileExists(path.join(siteDir, '.norna', 'public', 'pagefind', 'pagefind.js')), true);
 
 	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/project/\nsearch: false\n');

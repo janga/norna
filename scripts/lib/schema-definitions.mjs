@@ -1,6 +1,7 @@
 import { z } from 'astro/zod';
 import { localEditorNames } from './edit-source-link.mjs';
 import { imagePresentationNames } from './image-presentation.mjs';
+import { supportedLocaleTagPattern } from './locale-registry.mjs';
 import { navigationModeNames } from './navigation-model.mjs';
 import { presentationPaletteNames } from './presentation-palette-metadata.mjs';
 import { themePresetNames } from './theme-presets.mjs';
@@ -244,7 +245,7 @@ const sitewideFooter = z.object({
 
 const configShape = {
 	url: z.string().url().describe('Absolute public URL for the built site.'),
-	language: z.string().regex(/^(?:en|sv)(?:-[a-zA-Z0-9]+)*$/).optional().describe('Site language tag using Norna\'s English or Swedish interface text; the default is en.'),
+	language: z.string().regex(supportedLocaleTagPattern).optional().describe('Site language tag selecting one complete built-in Norna interface language; the default is en.'),
 	editLink: editLink.optional(),
 	navigation: configNavigation.optional(),
 	search: z.boolean().optional().default(false).describe('Generate a static site search page and Pagefind index. The default is false.'),
