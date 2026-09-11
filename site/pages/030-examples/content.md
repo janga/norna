@@ -337,50 +337,147 @@ instead of creating a parent page. Read the
 
 ## Automatic responsive navigation {#automatic-navigation}
 
-<!-- norna-image-provenance:
-image: navigation-one-page.svg
-source: hand-authored
-Copied from the maintained What Norna Does navigation illustration so the
-result-first Examples page can show the same current engine contract.
--->
+### One page: sections
 
-<!-- norna-image-provenance:
-image: navigation-top-level.svg
-source: hand-authored
-Copied from the maintained What Norna Does navigation illustration so the
-result-first Examples page can show the same current engine contract.
--->
+A single page needs only its title and section links. These screenshots use
+the complete Markdown shown below, with the `project` preset.
 
-<!-- norna-image-provenance:
-image: navigation-hierarchy.svg
-source: hand-authored
-Copied from the maintained What Norna Does navigation illustration so the
-result-first Examples page can show the same current engine contract.
--->
+```image-stack
+- image: navigation-single-desktop.png
+  alt: Dog Shelter on a wide screen, with its title and two section links in sticky navigation.
+  caption: In a sufficiently large browser.
+```
 
 ```image-carousel
-- image: navigation-one-page.svg
-  alt: A one-page file tree mapped to section navigation on wide and small screens.
-  caption: One listed page uses its H1 and H2 headings as section navigation.
-- image: navigation-top-level.svg
-  alt: Three top-level pages mapped to horizontal wide-screen navigation and a compact small-screen menu.
-  caption: Several top-level pages use top navigation on wide screens and one compact menu on small screens.
-- image: navigation-hierarchy.svg
-  alt: Nested pages mapped to a wide-screen page tree and the same hierarchy in a compact small-screen menu.
-  caption: A listed child page or category gives the site a page tree on wide screens and a compact hierarchy on small screens.
+- image: navigation-single-mobile.png
+  alt: The same page on a small screen, showing What we do and its text below a closed Menu trigger.
+  caption: On a small screen, with Menu closed.
+- image: navigation-single-menu.png
+  alt: The open compact menu contains Dog Shelter, What we do, and You can help.
+  caption: Menu reveals the page title and its sections.
 ```
 
-```yaml title="site/config.yaml"
-navigation:
-  mode: automatic
+```text
+pages/
+`-- 000-home/
+    `-- content.md
 ```
 
-**Source:** Site configuration plus the page directory and Markdown heading
-hierarchy. `automatic` is also the default when `navigation` is omitted. Norna
-uses section navigation for one page, top navigation for flat top-level pages,
-and a page tree for nested pages or categories. The compact menu represents the
-same destinations on smaller screens. Read the
-[navigation-mode reference](https://github.com/janga/norna/blob/main/docs/configuration.md#navigationmode).
+<!-- navigation-source: fixtures/navigation-examples/single/site/pages/000-home/content.md -->
+
+```md title="pages/000-home/content.md"
+# Dog Shelter
+
+## What we do
+
+We rescue and rehome dogs.
+
+## You can help
+
+Adopt. Foster. Donate.
+```
+
+### Top-level pages: top navigation
+
+Adding Dogs and Adopt gives each page its own URL. Select a page name to open
+it, or its chevron to choose a section directly.
+
+```image-carousel
+- image: navigation-top-desktop.png
+  alt: Dogs on a wide screen, with Dog Shelter, Dogs, and Adopt in top navigation and the current page sections below.
+  caption: In a sufficiently large browser.
+- image: navigation-top-sections.png
+  alt: The Dogs disclosure shows Meet the dogs and Before you adopt as direct section links.
+  caption: Each page's chevron reveals its H2 destinations.
+```
+
+```image-carousel
+- image: navigation-top-mobile.png
+  alt: Dogs with Menu closed on a small screen.
+  caption: The page with Menu closed.
+- image: navigation-top-menu.png
+  alt: The compact menu groups the Dogs sections beneath Dogs, alongside the other pages.
+  caption: Menu groups sections under their pages.
+```
+
+```text
+pages/
+|-- 000-home/content.md
+|-- 010-dogs/content.md
+`-- 020-adopt/content.md
+```
+
+<!-- navigation-source: fixtures/navigation-examples/top/site/pages/010-dogs/content.md -->
+
+```md title="pages/010-dogs/content.md"
+# Dogs
+
+## Meet the dogs
+
+Each dog needs a home that suits its personality and daily routine.
+
+## Before you adopt
+
+Talk to our volunteers about exercise, company, and veterinary care.
+```
+
+### Nested pages: a page tree
+
+Put Adult dogs and Senior dogs beneath Dogs to keep related pages together.
+The left tree contains the Dogs branch; Adopt remains a global destination.
+
+```image-stack
+- image: navigation-nested-desktop.png
+  alt: Adult dogs with Dogs and its child pages in a left tree, plus the current page's sections.
+  caption: In a sufficiently large browser.
+```
+
+```image-carousel
+- image: navigation-nested-mobile.png
+  alt: Adult dogs on a small screen, without persistent navigation rails.
+  caption: The same page with Menu closed.
+- image: navigation-nested-menu.png
+  alt: The open compact menu preserves Dogs, its child pages, and their sections.
+  caption: Menu preserves the hierarchy.
+```
+
+```text
+pages/
+|-- 000-home/content.md
+|-- 010-dogs/
+|   |-- content.md
+|   `-- pages/
+|       |-- 010-adult-dogs/content.md
+|       `-- 020-senior-dogs/content.md
+`-- 020-adopt/content.md
+```
+
+<!-- navigation-source: fixtures/navigation-examples/nested/site/pages/010-dogs/pages/010-adult-dogs/content.md -->
+
+```md title="pages/010-dogs/pages/010-adult-dogs/content.md"
+# Adult dogs
+
+## Daily routines
+
+Adult dogs benefit from regular walks, company, and a quiet place to rest.
+
+## A good match
+
+Tell us about your household so we can help you find a suitable companion.
+```
+
+**Source:** The page directories and Markdown headings determine navigation.
+`navigation.mode` defaults to `automatic`. H2s appear in section and top
+navigation; tree outlines also include H3s. A deeper branch can use a separate
+right-hand outline. As space runs out, Norna moves that outline into the left
+tree, then uses the compact menu. Home stays an uncluttered entry page.
+
+<!-- Screenshots: scripts/capture-navigation-examples.mjs. All three runnable
+sources are in fixtures/navigation-examples; no illustrated UI is hand-drawn. -->
+
+Read the
+[navigation reference](https://github.com/janga/norna/blob/main/docs/pages.md#navigation)
+for mode selection, depth, exceptions, and responsive fallbacks.
 
 ## Move pages without breaking links {#page-move}
 

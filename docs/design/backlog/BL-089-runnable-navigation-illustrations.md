@@ -2,10 +2,16 @@
 
 ## Status
 
-Sixth in the correction sequence for
-[BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md).
-Requires the agreed, reviewed behavior from
-[BL-087: Direct section access from top navigation](BL-087-top-navigation-section-access.md).
+Implemented with three maintained sources in `fixtures/navigation-examples`.
+`scripts/capture-navigation-examples.mjs` refreshes Features, Examples, and
+Getting Started's affected mobile shelter captures using registered scratch
+port 4399. Source text is checked against the runnable files by the
+documentation suite; screenshots wait for fonts, images, and anchor layout.
+
+Desktop and compact captures have been inspected by the agent. Content,
+documentation, and review-wrapper checks passed. Human approval of the gallery
+and the new top-navigation disclosure remains pending; these captures are
+available for that review, not evidence of approval.
 
 ## Problem
 

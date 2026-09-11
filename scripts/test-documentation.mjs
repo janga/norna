@@ -288,22 +288,22 @@ const checkProductTour = async () => {
 	}
 
 	for (const statement of [
-		'One listed page uses its H1 and H2 headings as section navigation',
-		'Several top-level pages use top navigation on wide screens',
-		'Adding a listed child page or category gives the complete site a page tree',
+		'One page uses section navigation',
+		'Top-level pages use top navigation',
+		'Related child pages introduce a page tree',
 		'There is no second sidebar file to keep synchronized',
 	]) {
 		assert.ok(source.includes(statement), `Product tour is missing its navigation explanation: ${statement}`);
 	}
 
 	for (const imageName of [
-		'navigation-one-page.svg',
-		'navigation-top-level.svg',
-		'navigation-hierarchy.svg',
+		'navigation-single-desktop.png',
+		'navigation-top-desktop.png',
+		'navigation-nested-desktop.png',
 	]) {
-		const image = await readFile(path.join(tourDirectory, 'images', imageName), 'utf8');
+		const image = await readFile(path.join(tourDirectory, 'images', imageName));
 		assert.ok(source.includes(`image: ${imageName}`), `Product tour does not reference ${imageName}.`);
-		assert.ok(image.includes('viewBox="0 0 1200 640"'), `${imageName} has an unexpected diagram canvas.`);
+		assert.equal(image.subarray(1, 4).toString(), 'PNG', `${imageName} must be a real page capture.`);
 	}
 };
 
@@ -354,14 +354,21 @@ const checkPublishedExampleReferences = async () => {
 
 	for (const imageName of [
 		'child-page-list.png',
-		'navigation-one-page.svg',
-		'navigation-top-level.svg',
-		'navigation-hierarchy.svg',
+		'navigation-single-desktop.png',
+		'navigation-top-desktop.png',
+		'navigation-nested-desktop.png',
 	]) {
 		assert.ok(
 			existsSync(path.join(repoRoot, 'site', 'pages', '030-examples', 'images', imageName)),
 			`Examples is missing ${imageName}.`,
 		);
+	}
+
+	const navigationSources = [...documentationText.matchAll(/<!-- navigation-source: ([^\n]+) -->\s+```md[^\n]*\n([\s\S]*?)\n```/g)];
+	assert.equal(navigationSources.length, 3, 'Each navigation scenario must display its maintained source.');
+	for (const [, relativePath, shownSource] of navigationSources) {
+		assert.equal(shownSource.trim(), (await readFile(path.join(repoRoot, relativePath), 'utf8')).trim(),
+			`Navigation illustration source differs from ${relativePath}. Regenerate its capture after editing.`);
 	}
 
 	const presetComparisonUrl = new URL('examples/theme-presets/', documentationUrl).href;

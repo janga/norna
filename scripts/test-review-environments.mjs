@@ -90,6 +90,9 @@ try {
 		() => parseReviewCaptureArguments(['.', '--viewport', 'wide']),
 		/Choose desktop, compact, mobile, or use WIDTHxHEIGHT/,
 	);
+	assert.equal(parseReviewCaptureArguments(['.', '--menu', 'compact']).menu, 'compact');
+	assert.equal(parseReviewCaptureArguments(['.', '--menu', 'Dogs']).menu, 'Dogs');
+	assert.throws(() => parseReviewCaptureArguments(['.', '--menu']), /--menu requires/);
 	assert.throws(
 		() => parseReviewCaptureArguments(['.', '--appearance', 'sepia']),
 		/Choose system, light, dark/,

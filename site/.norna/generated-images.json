@@ -1,48 +1,96 @@
 {
-  "pages/010-features/images/navigation-hierarchy.svg": {
-    "kind": "static",
+  "pages/010-features/images/navigation-nested-desktop.png": {
     "outputVersion": 2,
-    "sourceHash": "0713b8d51287b192aa52c6af92ff0367f7a8a28b5d3121c4d1b4737c44c215ea",
-    "src": "/images/original/pages/010-features/images/navigation-hierarchy-0713b8d5.svg",
+    "sourceHash": "4617f23559f7df16a287e13a234a2b0e97c8854af23fa8194937a9cea7b4a06c",
     "width": 1200,
-    "height": 640
+    "height": 650,
+    "variants": [
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-nested-desktop-4617f235-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-nested-desktop-4617f235-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-nested-desktop-4617f235-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-nested-desktop-4617f235-1200.webp",
+        "width": 1200
+      }
+    ]
   },
-  "pages/010-features/images/navigation-one-page.svg": {
-    "kind": "static",
+  "pages/010-features/images/navigation-single-desktop.png": {
     "outputVersion": 2,
-    "sourceHash": "07dee85bc60c6188ee9710192c5c5e460907a1cfd9361f6a7df6fcc1a342da13",
-    "src": "/images/original/pages/010-features/images/navigation-one-page-07dee85b.svg",
+    "sourceHash": "c436d1032109ffb5d8143cd812916b215d9acef5457e08c7a9c883949eb42e5e",
     "width": 1200,
-    "height": 640
+    "height": 650,
+    "variants": [
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-single-desktop-c436d103-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-single-desktop-c436d103-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-single-desktop-c436d103-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-single-desktop-c436d103-1200.webp",
+        "width": 1200
+      }
+    ]
   },
-  "pages/010-features/images/navigation-top-level.svg": {
-    "kind": "static",
+  "pages/010-features/images/navigation-top-desktop.png": {
     "outputVersion": 2,
-    "sourceHash": "ad2028be3a253185e68f96468e2b65e4b9bd4230149c9ca7be2a78569cd3001a",
-    "src": "/images/original/pages/010-features/images/navigation-top-level-ad2028be.svg",
+    "sourceHash": "fbdafea90b74f4fff4191543de00d70a64f6cc514c564f4031ffb796dacfcda3",
     "width": 1200,
-    "height": 640
+    "height": 650,
+    "variants": [
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-fbdafea9-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-fbdafea9-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-fbdafea9-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/010-features/images/navigation-top-desktop-fbdafea9-1200.webp",
+        "width": 1200
+      }
+    ]
   },
   "pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-navigation.png": {
     "outputVersion": 2,
-    "sourceHash": "24ef8bbb30f908c7f5c161ba5abd03c05b86b630e19ffac363fb25c124b68274",
+    "sourceHash": "59391784917c44215afa72abd3fccba334b28996e0dc7451fe435513ee7cc3d5",
     "width": 390,
-    "height": 700,
+    "height": 600,
     "variants": [
       {
-        "src": "/images/generated/pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-navigation-24ef8bbb-390.webp",
+        "src": "/images/generated/pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-navigation-59391784-390.webp",
         "width": 390
       }
     ]
   },
   "pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-page.png": {
     "outputVersion": 2,
-    "sourceHash": "d6536d6b8ce5442a9637dd78553b8b46c361413f1fcb88735cd59f2d25e6a81c",
+    "sourceHash": "41c4912dda204ae031e01143f538b953da7b75a8eaedb486df78f87a8ea66234",
     "width": 390,
-    "height": 700,
+    "height": 600,
     "variants": [
       {
-        "src": "/images/generated/pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-page-d6536d6b-390.webp",
+        "src": "/images/generated/pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-page-41c4912d-390.webp",
         "width": 390
       }
     ]
@@ -113,24 +161,24 @@
   },
   "pages/030-examples/images/child-page-list.png": {
     "outputVersion": 2,
-    "sourceHash": "dbc222a51f05ddc01c6c6ef8f7220b13d4c8bd5e510fe0332b9e1c05aea4ae86",
+    "sourceHash": "e4e5a34d2e60eb8b46af002b4b3f31b67b1158c63c9b3cd0a3b9be8e2706c417",
     "width": 1200,
     "height": 800,
     "variants": [
       {
-        "src": "/images/generated/pages/030-examples/images/child-page-list-dbc222a5-480.webp",
+        "src": "/images/generated/pages/030-examples/images/child-page-list-e4e5a34d-480.webp",
         "width": 480
       },
       {
-        "src": "/images/generated/pages/030-examples/images/child-page-list-dbc222a5-768.webp",
+        "src": "/images/generated/pages/030-examples/images/child-page-list-e4e5a34d-768.webp",
         "width": 768
       },
       {
-        "src": "/images/generated/pages/030-examples/images/child-page-list-dbc222a5-1080.webp",
+        "src": "/images/generated/pages/030-examples/images/child-page-list-e4e5a34d-1080.webp",
         "width": 1080
       },
       {
-        "src": "/images/generated/pages/030-examples/images/child-page-list-dbc222a5-1200.webp",
+        "src": "/images/generated/pages/030-examples/images/child-page-list-e4e5a34d-1200.webp",
         "width": 1200
       }
     ]
@@ -159,14 +207,6 @@
       }
     ]
   },
-  "pages/030-examples/images/navigation-hierarchy.svg": {
-    "kind": "static",
-    "outputVersion": 2,
-    "sourceHash": "0713b8d51287b192aa52c6af92ff0367f7a8a28b5d3121c4d1b4737c44c215ea",
-    "src": "/images/original/pages/030-examples/images/navigation-hierarchy-0713b8d5.svg",
-    "width": 1200,
-    "height": 640
-  },
   "pages/030-examples/images/navigation-logo.svg": {
     "kind": "static",
     "outputVersion": 2,
@@ -175,21 +215,173 @@
     "width": 250,
     "height": 64
   },
-  "pages/030-examples/images/navigation-one-page.svg": {
-    "kind": "static",
+  "pages/030-examples/images/navigation-nested-desktop.png": {
     "outputVersion": 2,
-    "sourceHash": "07dee85bc60c6188ee9710192c5c5e460907a1cfd9361f6a7df6fcc1a342da13",
-    "src": "/images/original/pages/030-examples/images/navigation-one-page-07dee85b.svg",
+    "sourceHash": "4617f23559f7df16a287e13a234a2b0e97c8854af23fa8194937a9cea7b4a06c",
     "width": 1200,
-    "height": 640
+    "height": 650,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-nested-desktop-4617f235-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-nested-desktop-4617f235-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-nested-desktop-4617f235-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-nested-desktop-4617f235-1200.webp",
+        "width": 1200
+      }
+    ]
   },
-  "pages/030-examples/images/navigation-top-level.svg": {
-    "kind": "static",
+  "pages/030-examples/images/navigation-nested-menu.png": {
     "outputVersion": 2,
-    "sourceHash": "ad2028be3a253185e68f96468e2b65e4b9bd4230149c9ca7be2a78569cd3001a",
-    "src": "/images/original/pages/030-examples/images/navigation-top-level-ad2028be.svg",
+    "sourceHash": "f34a10bce66c870fc8c94f69db9c07e829c4b8cf07ae6e58939090ddff782fb9",
+    "width": 390,
+    "height": 600,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-nested-menu-f34a10bc-390.webp",
+        "width": 390
+      }
+    ]
+  },
+  "pages/030-examples/images/navigation-nested-mobile.png": {
+    "outputVersion": 2,
+    "sourceHash": "0a35bcd34927453f1c4dac8b8c773b988ac134c1171ec16f1496a7ec6a99ac76",
+    "width": 390,
+    "height": 600,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-nested-mobile-0a35bcd3-390.webp",
+        "width": 390
+      }
+    ]
+  },
+  "pages/030-examples/images/navigation-single-desktop.png": {
+    "outputVersion": 2,
+    "sourceHash": "c436d1032109ffb5d8143cd812916b215d9acef5457e08c7a9c883949eb42e5e",
     "width": 1200,
-    "height": 640
+    "height": 650,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-single-desktop-c436d103-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-single-desktop-c436d103-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-single-desktop-c436d103-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-single-desktop-c436d103-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "pages/030-examples/images/navigation-single-menu.png": {
+    "outputVersion": 2,
+    "sourceHash": "affde01756b26440d426cebc59393e8c44e4ce7d34d0eb502627f2d9b8416142",
+    "width": 390,
+    "height": 600,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-single-menu-affde017-390.webp",
+        "width": 390
+      }
+    ]
+  },
+  "pages/030-examples/images/navigation-single-mobile.png": {
+    "outputVersion": 2,
+    "sourceHash": "952492fccd9c0990eea771fd2659f06434e3cada088ea18396792f92b284a08e",
+    "width": 390,
+    "height": 600,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-single-mobile-952492fc-390.webp",
+        "width": 390
+      }
+    ]
+  },
+  "pages/030-examples/images/navigation-top-desktop.png": {
+    "outputVersion": 2,
+    "sourceHash": "fbdafea90b74f4fff4191543de00d70a64f6cc514c564f4031ffb796dacfcda3",
+    "width": 1200,
+    "height": 650,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-fbdafea9-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-fbdafea9-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-fbdafea9-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-desktop-fbdafea9-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "pages/030-examples/images/navigation-top-menu.png": {
+    "outputVersion": 2,
+    "sourceHash": "31dde2c1c02f824671a87727f10c3e33a648b72d0993a2e4f641a1157eaee617",
+    "width": 390,
+    "height": 600,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-menu-31dde2c1-390.webp",
+        "width": 390
+      }
+    ]
+  },
+  "pages/030-examples/images/navigation-top-mobile.png": {
+    "outputVersion": 2,
+    "sourceHash": "198942450eb5b2bae594eadfdf8e8b9115f07610fdea995db538afa22a623173",
+    "width": 390,
+    "height": 600,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-mobile-19894245-390.webp",
+        "width": 390
+      }
+    ]
+  },
+  "pages/030-examples/images/navigation-top-sections.png": {
+    "outputVersion": 2,
+    "sourceHash": "8823da8f9d3215a5e197b2b6ed0498c06d8546a522d24bdfbccc716cde775772",
+    "width": 1200,
+    "height": 650,
+    "variants": [
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-8823da8f-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-8823da8f-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-8823da8f-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/images/generated/pages/030-examples/images/navigation-top-sections-8823da8f-1200.webp",
+        "width": 1200
+      }
+    ]
   },
   "pages/030-examples/images/single-page-dog-shelter.png": {
     "outputVersion": 2,

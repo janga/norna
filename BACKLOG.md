@@ -23,20 +23,17 @@ only after
 [`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md).
 
 
-## Next
-
-`Next` is the exact implementation sequence after `Now`. Finish the agreed
-Examples correction sequence before its final audit or unrelated work.
-
-- [`BL-089` Navigation illustrations generated from runnable examples](docs/design/backlog/BL-089-runnable-navigation-illustrations.md):
-  **Ready after BL-087: Direct section access from top navigation.** Capture
-  real navigation states from the exact source shown beside each illustration.
 - [`BL-090` Readable examples with exact source and clear syntax boundaries](docs/design/backlog/BL-090-exact-readable-examples.md):
   **Ready after the preceding corrections.** Simplify example content, make
   source and results agree, and identify Norna extensions precisely.
 - [`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md):
   **Run last in this sequence.** Verify every Examples section against current
   code, actual output, syntax, defaults, and reference links before completion.
+
+## Next
+
+`Next` is the exact implementation sequence after `Now`.
+
 - [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
   **Implemented and documented; awaiting review.** Complete the human review
   of the localized, accessible semantic callouts and their closed meaning set.

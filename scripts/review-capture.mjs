@@ -50,9 +50,15 @@ export const parseReviewCaptureArguments = (rawArguments) => {
 	let appearance = 'light';
 	let viewport = parseViewport('desktop');
 	let fullPage = false;
+	let menu;
 
 	for (let index = 0; index < options.length; index += 1) {
 		const option = options[index];
+		if (option === '--menu') {
+			menu = options[++index];
+			if (!menu || menu.startsWith('--')) throw new Error('--menu requires compact or an exact top-level page title.');
+			continue;
+		}
 		if (option === '--full-page') {
 			fullPage = true;
 			continue;
@@ -84,7 +90,7 @@ export const parseReviewCaptureArguments = (rawArguments) => {
 		throw new Error(`Unknown review capture option "${option}".`);
 	}
 
-	return { appearance, fullPage, relativePage, viewport };
+	return { appearance, fullPage, relativePage, viewport, ...(menu ? { menu } : {}) };
 };
 
 const sanitizeFilenamePart = (value, fallback) => {
@@ -124,7 +130,7 @@ export const resolveReviewCapture = ({ environment, options, root }) => {
 		pageName,
 		options.viewport.name,
 		options.appearance,
-	].join('-') + `${fullPageSuffix}.png`;
+	].join('-') + `${options.menu ? `-menu-${sanitizeFilenamePart(options.menu, 'open')}` : ''}${fullPageSuffix}.png`;
 	const outputPath = path.join(root, '.local', 'review-captures', environment.name, filename);
 
 	return {
@@ -196,6 +202,21 @@ export const captureReviewPage = async ({
 		const page = await context.newPage();
 		await page.goto(capture.url, { waitUntil: 'domcontentloaded' });
 		await applyCaptureAppearance(page, capture.appearance);
+		await page.evaluate(async () => {
+			await Promise.all(Array.from(document.images, async (image) => {
+				image.loading = 'eager';
+				await image.decode().catch(() => {});
+			}));
+			if (location.hash) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+			await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+		});
+		if (capture.menu === 'compact') {
+			await page.locator('.mobile-nav-menu > summary').click();
+		} else if (capture.menu) {
+			await page.locator('.site-nav-item').filter({
+				has: page.getByRole('link', { name: capture.menu, exact: true }),
+			}).locator(':scope > .top-page-menu > summary').click();
+		}
 		await page.screenshot({
 			fullPage: capture.fullPage,
 			path: capture.outputPath,

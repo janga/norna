@@ -55,37 +55,19 @@ With `navigation.mode: automatic`, Norna chooses one navigation model for the
 complete site. Move through the three illustrations to see the same convention
 grow from one page into a hierarchy.
 
-<!-- norna-image-provenance:
-image: navigation-one-page.svg
-source: hand-authored
-Technical SVG created for the What Norna Does product tour. It maps a one-page
-file tree to section navigation on wide and small screens.
--->
-
-<!-- norna-image-provenance:
-image: navigation-top-level.svg
-source: hand-authored
-Technical SVG created for the What Norna Does product tour. It maps flat
-top-level page folders to wide-screen top navigation and a compact menu.
--->
-
-<!-- norna-image-provenance:
-image: navigation-hierarchy.svg
-source: hand-authored
-Technical SVG created for the What Norna Does product tour. It maps nested page
-folders and a category to a wide-screen page tree and a compact menu.
--->
+<!-- Captured by scripts/capture-navigation-examples.mjs from the maintained
+single, top, and nested sites in fixtures/navigation-examples. -->
 
 ```image-carousel
-- image: navigation-one-page.svg
-  alt: A one-page file tree mapped through automatic navigation to a wide-screen section menu and the same destinations in a small-screen menu.
-  caption: One listed page uses its H1 and H2 headings as section navigation.
-- image: navigation-top-level.svg
-  alt: Three top-level page directories mapped through automatic navigation to a horizontal wide-screen menu and a compact small-screen menu.
-  caption: Several top-level pages use top navigation on wide screens and one compact menu on small screens.
-- image: navigation-hierarchy.svg
-  alt: Nested page directories mapped through automatic navigation to a persistent page tree on a wide screen and the same hierarchy in a compact small-screen menu.
-  caption: Adding a listed child page or category gives the complete site a page tree on wide screens and a compact hierarchy on small screens.
+- image: navigation-single-desktop.png
+  alt: A rendered Dog Shelter page with its H1 and two H2 destinations in sticky navigation.
+  caption: One page uses section navigation.
+- image: navigation-top-desktop.png
+  alt: The rendered Dogs page with global page links and separate section disclosures.
+  caption: Top-level pages use top navigation, with direct access to their sections.
+- image: navigation-nested-desktop.png
+  alt: Adult dogs rendered with the Dogs branch in a persistent left tree.
+  caption: Related child pages introduce a page tree; small screens use Menu.
 ```
 
 There is no second sidebar file to keep synchronized. The documented

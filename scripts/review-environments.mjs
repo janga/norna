@@ -25,7 +25,7 @@ Usage:
   npm run review:logs -- <target> [--follow]
   npm run review:stop -- <target>
   npm run review:test -- <target>
-  npm run review:capture -- <target> <relative-page> [--viewport <profile|WIDTHxHEIGHT>] [--appearance <name>] [--full-page]
+  npm run review:capture -- <target> <relative-page> [--viewport <profile|WIDTHxHEIGHT>] [--appearance <name>] [--menu <compact|page-title>] [--full-page]
   npm run review:scratch -- prepare --from <site-dir> [--replace]
   npm run review:scratch -- clean
   npm run review:scratch -- status

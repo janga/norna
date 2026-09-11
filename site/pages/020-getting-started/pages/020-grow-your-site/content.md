@@ -142,7 +142,9 @@ ASCII ids automatically; the [page command reference](https://github.com/janga/n
 documents overrides and conflict handling.
 
 Top-level pages normally use horizontal navigation on wide screens. On small
-screens, the same pages are collected in one expandable menu.
+screens, the same pages are collected in one expandable menu. Select a page
+name to open it, or its chevron to reveal its H2 sections. The current page
+also has a section row on wide screens when it contains at least two H2s.
 
 Images referenced through Norna blocks are managed images: Norna validates,
 processes, and keeps track of their files. Each one belongs in the `images/`
@@ -166,14 +168,15 @@ navigation.
 <!-- norna-image-provenance:
 image: dog-shelter-mobile-page.png
 source: local screenshot
-Screenshot of the Dogs page in the dog-shelter-multi-page example at a mobile
-viewport with navigation closed.
+Captured from the dog-shelter-multi-page example at 390x600 with Menu closed.
+Regenerate with node scripts/capture-navigation-examples.mjs.
 -->
 
 <!-- norna-image-provenance:
 image: dog-shelter-mobile-navigation.png
 source: local screenshot
-Screenshot of the same Dogs page with its mobile navigation menu open.
+Captured from the same Dogs page at 390x600 with Menu open.
+Regenerate with node scripts/capture-navigation-examples.mjs.
 -->
 
 ```image-carousel
