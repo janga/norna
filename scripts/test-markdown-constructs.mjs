@@ -798,6 +798,22 @@ depth: all
 	}
 });
 
+test('page-list description warnings do not block a static build', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writePage(siteDir, '000-home', '# Home\n');
+		await writePage(siteDir, '010-help', '# Help\n\n```page-list\n```\n');
+		await writePage(siteDir, '010-help/pages/010-fostering', '# Fostering\n');
+		const result = await runNorna(['--site-dir', siteDir, 'build']);
+		assert.match(result.stdout, /without a non-empty page\.description/);
+		const html = await readFile(path.join(path.dirname(siteDir), 'dist/help/index.html'), 'utf8');
+		assert.match(html, /class="child-page-list"/);
+		assert.match(html, /<strong>Fostering<\/strong>/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
 test('content:check supports tilde fenced Norna blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {

@@ -2,8 +2,12 @@
 
 ## Status And Dependencies
 
-Ready. Uses the existing page tree, `page-list` block, and `page.description`;
-no new public syntax or configuration is needed.
+Implemented. Uses the existing page tree, `page-list` block, and
+`page.description`; no new public syntax or configuration was added.
+`npm run test:content-check` passed, including four focused description cases.
+`node --test --test-name-pattern=page-list scripts/test-markdown-constructs.mjs`
+passed both the empty-list error contract and a real build with a missing
+description. The canonical child-page-list reference documents the warning.
 
 ## Outcome
 
@@ -20,6 +24,8 @@ description that helps readers choose.
   not displayed by the list.
 - Keep the warning non-blocking: valid content still checks and builds. Do
   not require descriptions on pages that are not included in a `page-list`.
+  Preserve existing schema errors for invalid values, including an explicitly
+  empty string; whitespace-only strings receive the new warning.
 - Cover missing, blank, and present descriptions; a parent without a list;
   excluded children; categories; indirect descendants; and repeated list
   blocks without duplicate warnings for the same parent/child relationship.

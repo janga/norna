@@ -429,17 +429,32 @@ const listedNavigationTree = getListedSiteNavigationTree(siteStructure.nodes.map
 
 for (const context of contentFileContexts) {
 	const childPages = getDirectChildPages(listedNavigationTree, context.contentFile.pagePath);
-	if (childPages.length > 0) continue;
+	const warnedChildren = new Set();
 
 	for (const section of context.sections) {
 		if (!context.validSections.has(section)) continue;
 		for (const block of section.blocks) {
 			if (block.type !== 'page-list') continue;
-			addSectionIssue(context.contentFile, section, {
-				severity: 'error',
-				message: `page-list on line ${block.line} has no listed direct child pages to display. Navigation categories are not pages.`,
-				fix: 'Add a listed direct child page or remove the block.',
-			});
+			if (childPages.length === 0) {
+				addSectionIssue(context.contentFile, section, {
+					severity: 'error',
+					message: `page-list on line ${block.line} has no listed direct child pages to display. Navigation categories are not pages.`,
+					fix: 'Add a listed direct child page or remove the block.',
+				});
+				continue;
+			}
+			for (const child of childPages) {
+				const childContext = contentContextByPageDirectory.get(child.pageDirectory);
+				if (!childContext || warnedChildren.has(child.pageDirectory)) continue;
+				const description = childContext.frontmatterData.page?.description;
+				if (typeof description === 'string' && description.trim()) continue;
+				warnedChildren.add(child.pageDirectory);
+				addSectionIssue(context.contentFile, section, {
+					severity: 'warning',
+					message: `page-list on line ${block.line} includes ${childContext.contentFile.contentLabel} without a non-empty page.description.`,
+					fix: 'Add page.description to that child file\'s frontmatter. Explain what the reader will find or when to choose this page, rather than repeating its title.',
+				});
+			}
 		}
 	}
 }

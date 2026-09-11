@@ -16,11 +16,8 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-093` Missing descriptions in child-page lists](docs/design/backlog/BL-093-child-page-description-warnings.md):
-  **Ready.** Warn when a rendered child-page list includes a page without
-  `page.description`, without making descriptions mandatory elsewhere.
 - [`BL-094` Child-page descriptions that explain a choice](docs/design/backlog/BL-094-child-page-choice-demonstration.md):
-  **Ready after BL-093: Missing descriptions in child-page lists.** Replace
+  **Ready; description-warning prerequisite implemented.** Replace
   the operating-system example with meaningful adoption, fostering, and
   sponsorship choices, including exact source and a real capture.
 - [`BL-095` Nested navigation for substantial documentation](docs/design/backlog/BL-095-nested-documentation-demonstration.md):

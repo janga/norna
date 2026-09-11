@@ -195,7 +195,23 @@ The block takes no options or items. Norna derives its entries from the same
 page graph used by site navigation. It includes listed direct child pages in
 directory-prefix order and uses each child's H1 as the link title. When a child
 defines `page.description`, the description appears below its title; otherwise
-the entry remains title-only.
+the entry remains title-only and `content:check` warns. A missing description
+or one containing only whitespace produces a warning without stopping the
+build. The warning identifies the list and the child's `content.md`;
+descriptions remain optional for pages outside a list. Existing frontmatter
+validation still rejects an explicitly empty string (`description: ""`).
+
+Write descriptions that help readers choose, rather than repeat the page
+names already available in navigation. For example, a child titled
+"Fostering" could use:
+
+```yaml
+page:
+  description: Offer a temporary home while a dog waits for adoption. Find out what support is provided.
+```
+
+The author writes this guidance; Norna only assembles the list. Omit the list
+when it would duplicate navigation without helping a choice or a sequence.
 
 The list does not recurse, include unlisted pages, or pass through navigation
 categories. Categories have no page URL, so they are omitted rather than

@@ -604,6 +604,83 @@ Page text.
 	});
 });
 
+test('page-list warns once per listed child with a missing or blank description', async () => {
+	const parent = 'site/pages/010-help';
+	const files = [
+		{ path: `${parent}/content.md`, contents: '# Help\n\n```page-list\n```\n\n## More choices\n\n```page-list\n```\n' },
+		...[
+			['010-missing', ''],
+			['030-whitespace', '---\npage:\n  description: "   "\n---\n'],
+			['040-described', '---\npage:\n  description: Learn how to offer a temporary home.\n---\n'],
+		].map(([directory, frontmatter]) => ({
+			path: `${parent}/pages/${directory}/content.md`, contents: `${frontmatter}# ${directory}\n`,
+		})),
+		{ path: `${parent}/pages/050-unlisted/content.md`, contents: '---\nnavigation:\n  listed: false\n---\n# Unlisted\n' },
+		{ path: `${parent}/pages/040-described/pages/010-descendant/content.md`, contents: '# Descendant\n' },
+		{ path: `${parent}/pages/060-category/category.yaml`, contents: 'label: Category\n' },
+		{ path: `${parent}/pages/060-category/pages/010-page/content.md`, contents: '# Category child\n' },
+		{ path: 'site/pages/020-unrelated/content.md', contents: '# Unrelated\n' },
+	];
+	await withTempProject({ site: '# Home\n', files }, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+		assert.equal(result.status, 0, output);
+		assert.match(output, /^Content check completed with warnings\./m);
+		assert.ok(output.includes(`[${parent}/content.md [Help]]`), output);
+		assert.equal((output.match(/without a non-empty page\.description/g) ?? []).length, 2, output);
+		for (const name of ['010-missing', '030-whitespace']) {
+			assert.ok(output.includes(`page-list on line 3 includes ${parent}/pages/${name}/content.md`), output);
+		}
+		assert.match(output, /Add page\.description to that child file's frontmatter/);
+		for (const name of ['040-described', '050-unlisted', '010-descendant', '060-category', '020-unrelated']) {
+			assert.ok(!output.includes(name), output);
+		}
+	});
+});
+
+test('pages without a page-list do not warn about child descriptions', async () => {
+	await withTempProject({
+		site: '# Home\n',
+		files: [
+			{ path: 'site/pages/010-guides/content.md', contents: '# Guides\n\n## Syntax example\n\n````md\n```page-list\n```\n````\n' },
+			{ path: 'site/pages/010-guides/pages/010-child/content.md', contents: '# Child\n' },
+		],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		assert.equal(result.status, 0, getOutput(result));
+		assert.match(getOutput(result), /^Content check passed\./m);
+	});
+});
+
+test('page-list warnings do not relax existing description validation', async () => {
+	await withTempProject({
+		site: '# Home\n\n```page-list\n```\n',
+		files: [{ path: 'site/pages/010-child/content.md', contents: '---\npage:\n  description: ""\n---\n# Child\n' }],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		assert.equal(result.status, 1, getOutput(result));
+		assert.match(getOutput(result), /page\.description: Too small/);
+	});
+});
+
+test('a homepage page-list warns for listed top-level pages but not category descendants', async () => {
+	await withTempProject({
+		site: '# Home\n\n```page-list\n```\n',
+		files: [
+			{ path: 'site/pages/010-help/content.md', contents: '# Help\n' },
+			{ path: 'site/pages/020-guides/category.yaml', contents: 'label: Guides\n' },
+			{ path: 'site/pages/020-guides/pages/010-child/content.md', contents: '# Child\n' },
+		],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+		assert.equal(result.status, 0, output);
+		assert.equal((output.match(/without a non-empty page\.description/g) ?? []).length, 1, output);
+		assert.ok(output.includes('site/pages/010-help/content.md'), output);
+		assert.ok(!output.includes('020-guides'), output);
+	});
+});
+
 let failed = 0;
 
 for (const { name, run } of tests) {
