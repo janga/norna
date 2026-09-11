@@ -259,8 +259,9 @@ Each page keeps its Markdown content and images together.
 
 The top-level category stays in global navigation and opens its first child
 page. Once a site has listed child pages or categories, the same left-rail
-position is used on every ordinary desktop page. On Home and independent
-top-level pages, that rail shows the current page and its section links. Inside
+position is used on every ordinary desktop page. On independent top-level
+pages, that rail shows the current page and its section links. Home keeps just
+the global navigation, without a persistent local rail. Inside
 a hierarchy, it shows only the active top-level area, so the global destinations
 are not duplicated.
 

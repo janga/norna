@@ -352,6 +352,9 @@ With `automatic`, this structure resolves to `sections`. Wide screens keep the
 page title and H2 destinations in sticky navigation. Small screens collect the
 same destinations in the compact menu.
 
+With no H2 headings, the H1 remains a top link and no empty section menu is
+created. One H2 is enough to create section navigation on a one-page site.
+
 ### Top-Level Pages: `top`
 
 ```text
@@ -387,6 +390,11 @@ repeating unrelated global destinations. On shallow branches, expandable page
 outlines place each page's H2 and H3 destinations below that page. A branch at
 least three visible page levels deep can instead use a right contents rail for
 the current page.
+
+Home keeps the global top row without a persistent local rail. Its outline
+remains available in the compact menu. Other independent top-level pages use
+the left rail, just like pages inside a branch. A separate right contents rail
+requires at least two H2/H3 destinations on the current page.
 
 When the viewport cannot hold both rails, Norna first moves the current page
 outline into the left tree. It then replaces the persistent tree with a compact

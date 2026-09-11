@@ -1,5 +1,12 @@
 # BL-044: Adaptive Page-Contents Placement
 
+## Subsequent Home Exception
+
+Commit `6dd6e9f` deliberately removed persistent local rails from Home. The
+original Home-specific expectations below are historical; current rules are
+documented in `docs/pages.md` and were reconciled by
+[BL-086: One consistent navigation contract in documentation](BL-086-consistent-navigation-reference.md).
+
 ## Outcome
 
 Keep shallow documentation trees compact by making every page's H2/H3 outline

@@ -441,10 +441,11 @@ listed hierarchy and keeps that model stable across the site:
 
 H2 and H3 headings do not make the site hierarchy deeper and do not change the
 effective mode. Unlisted pages do not make a site require a page rail. Once the
-listed hierarchy requires `tree`, Home and independent top-level pages also
-use the left rail. This keeps local navigation in one position while readers
-move between simple pages and nested branches. The global top row retains one
-width and the same destinations throughout.
+listed hierarchy requires `tree`, ordinary non-home pages use the left rail,
+including independent top-level pages. Home is a deliberate exception: it
+keeps the global navigation without a persistent local rail or a second
+section-navigation row. Its sections remain available in the compact menu.
+The global top row retains the same destinations throughout.
 
 The modes present the same source hierarchy differently:
 
@@ -455,13 +456,20 @@ The modes present the same source hierarchy differently:
   use local navigation when there is more than one.
 - `tree` keeps top-level areas in the global row. A left page rail shows only
   the current top-level area, so it does not duplicate unrelated destinations
-  from the global row. Home and independent top-level pages use the same rail
-  for their page and section context. On a shallow branch, every page's H2/H3
+  from the global row. Independent top-level pages use that rail for their
+  page and section context; Home does not. On a shallow branch, every page's H2/H3
   outline is available beneath that page in the left rail. The current page's
   outline is open by default; other page outlines can be expanded without
   leaving the current page. A branch at least three visible levels deep keeps
   the page tree on the left and places the current H2/H3 outline in a separate
-  right contents rail. Page outlines omit the H1 and H4-or-deeper headings.
+  right contents rail when the current page has at least two H2/H3 destinations.
+  Page outlines omit the H1 and H4-or-deeper headings.
+
+A one-page site without H2 headings still shows its H1 as a top link. With one
+or more H2 headings, those headings become section links. A multi-page site in
+`top` mode currently adds a separate section row only when the current page has
+at least two H2 headings. Tree outlines can include a single H2 and its H3
+headings; H4 and deeper headings remain in the page content.
 
 On wide screens, pages in the same tree branch keep a common content axis when
 the right rail is absent. The unused rail is not rendered, but moving between a
@@ -504,14 +512,15 @@ changes. Prose, headings, images, cards, and section surfaces therefore do not
 reflow or jump sideways. The choice is stored in the `norna-focus-reading`
 cookie and follows the reader across pages until it is changed or reset.
 
-On small screens, the complete hierarchy remains available in the expandable
-menu. Without JavaScript, Focus reading cannot be selected and the ordinary
+The compact Menu remains available in Focus reading on desktop and small
+screens. Without JavaScript, Focus reading cannot be selected and the ordinary
 navigation stays visible; all page and anchor links remain usable.
 
 ### Current Reading Position
 
-Tree navigation identifies the current page in the left page rail. A site can
-right contents rail follow the reader automatically when that rail is present.
+Tree navigation identifies the current page in the left page rail. The current
+heading is marked in the combined left outline or, when present, the right
+contents rail as the reader scrolls.
 Norna marks the H2 or H3 at the effective reading position and moves the marker
 toward the end of the page as the reader scrolls. Every heading remains
 reachable by the marker, including headings near the document end.

@@ -2,7 +2,10 @@
 
 ## Status
 
-Ready; third in the correction sequence for
+Implemented on 2026-09-11. Home's exception is intentional, introduced by
+commit `6dd6e9f` and covered by the existing page-contents placement tests.
+Canonical and introductory references now agree on Home and heading counts.
+Third in the correction sequence for
 [BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md).
 Establish the current behavior before
 [BL-087: Direct section access from top navigation](BL-087-top-navigation-section-access.md).

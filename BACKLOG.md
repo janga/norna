@@ -22,9 +22,6 @@ whose first implementation needs changes after human review. Close that item
 only after
 [`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md).
 
-- [`BL-086` One consistent navigation contract in documentation](docs/design/backlog/BL-086-consistent-navigation-reference.md):
-  **Ready.** Reconcile Home, heading-count, and responsive behavior across
-  current code and navigation references before changing top navigation.
 - [`BL-087` Direct section access from top navigation](docs/design/backlog/BL-087-top-navigation-section-access.md):
   **Ready after BL-086: One consistent navigation contract in documentation.**
   Add a separate disclosure beside each eligible page link for direct access
