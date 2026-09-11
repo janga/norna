@@ -2,11 +2,15 @@
 
 ## Status
 
-Ready after
-[BL-086: One consistent navigation contract in documentation](BL-086-consistent-navigation-reference.md);
-fourth in the correction sequence for
-[BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md).
-This is a feature addition, not an illustration correction.
+Implemented. The focused top-navigation browser suite covers direct H2 access,
+zero/one/several sections, desktop and compact menus, native no-JavaScript
+disclosures, dismissal, keyboard focus, and anchor placement (23 tests).
+Human visual review remains part of the final Examples review.
+
+The current-page section row remains at two or more H2s as a visible reading
+position cue. Compact navigation instead groups H2s beneath each page without
+a duplicate current-page group. Explicit top-mode child links remain separate
+from local section links. No new configuration was added.
 
 ## Problem
 

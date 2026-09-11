@@ -368,8 +368,11 @@ pages/
 ```
 
 With `automatic`, this flat structure resolves to `top`. Home, Dogs, and Adopt
-appear in the global row. The current page's H2 sections receive local
-navigation when there is more than one.
+appear in the global row. A separate chevron beside a page with H2 headings
+opens its section links, including when you are reading another page. Pages
+without H2 headings have no empty section disclosure. The current page also
+gets a section row when it has at least two H2 headings. On small screens, the
+compact menu groups section destinations beneath their page names.
 
 ### Child Pages Or Categories: `tree`
 

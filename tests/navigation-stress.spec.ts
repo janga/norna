@@ -33,7 +33,7 @@ type AnchorMeasurement = {
 	viewportHeight: number;
 };
 
-const mobilePageNavSelector = '.mobile-nav-sections a';
+const mobilePageNavSelector = '.navigation-page-node-current .page-contents-links a';
 
 const getNavTargets = async (page: Page): Promise<NavTarget[]> => page.locator(mobilePageNavSelector).evaluateAll((links) => (
 	links.map((link) => {

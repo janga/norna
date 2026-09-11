@@ -1,0 +1,47 @@
+---
+import { ChevronDown } from '@lucide/astro';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { withBasePath } from '../lib/basePath';
+import type { SiteNavigationNode } from '../lib/siteNavigation';
+import type { SitePage } from '../lib/sitePages';
+import NavigationPageTree from './NavigationPageTree.astro';
+
+interface Props {
+	node: SiteNavigationNode;
+	currentPage?: SitePage;
+	showSections: boolean;
+	showChildren: boolean;
+}
+const { node, currentPage, showSections, showChildren } = Astro.props;
+const sections = showSections ? node.sections : [];
+const children = showChildren ? node.children : [];
+const pageHref = node.node.kind === 'page'
+	? withBasePath(projectConfig.site.basePath, node.node.pathname)
+	: '';
+const label = `${projectConfig.locale.labels.navigationMenu}: ${node.node.title}`;
+---
+
+{(sections.length > 0 || children.length > 0) && (
+	<details class="top-page-menu">
+		<summary aria-label={label} title={label}>
+			<ChevronDown aria-hidden="true" />
+		</summary>
+		<div class="top-page-panel">
+			{sections.length > 0 && (
+				<nav aria-label={`${projectConfig.locale.labels.pageSections}: ${node.node.title}`}>
+					<ul class="top-page-sections">
+						{sections.map((section) => (
+							<li><a href={`${pageHref}#${section.id}`}>{section.title}</a></li>
+						))}
+					</ul>
+				</nav>
+			)}
+			{children.length > 0 && (
+				<nav class="top-page-children" aria-label={`${projectConfig.locale.labels.navigationChildren}: ${node.node.title}`}>
+					{sections.length > 0 && <p>{projectConfig.locale.labels.navigationChildren}</p>}
+					<NavigationPageTree nodes={children} currentPage={currentPage} variant="submenu" />
+				</nav>
+			)}
+		</div>
+	</details>
+)}

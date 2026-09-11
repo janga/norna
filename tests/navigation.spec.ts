@@ -16,8 +16,8 @@ type AnchorMeasurement = {
 
 const pageNavSelector = '.page-nav a';
 const currentDesktopPageSelector = '.site-nav > ul > .site-nav-item > a[aria-current="page"]';
-const mobilePageNavSelector = '.mobile-nav-sections a';
-const currentMobilePageNavSelector = '.mobile-nav-sections a';
+const mobilePageNavSelector = '.navigation-page-node-current .page-contents-links a';
+const currentMobilePageNavSelector = mobilePageNavSelector;
 const sectionNavSelector = `${pageNavSelector}, ${mobilePageNavSelector}`;
 
 const getNavTargets = async (page) => page.locator(pageNavSelector).evaluateAll((links) => (
@@ -176,7 +176,7 @@ test.describe('site navigation menus', () => {
 		await expect(currentPageLink).toHaveText('Media blocks');
 		await expect(page.locator('.page-nav-label')).toHaveText('Page contents');
 		await expect(page.locator(pageNavSelector).first()).toBeVisible();
-		await expect(page.locator('.site-nav-submenu a[href*="#"]')).toHaveCount(0);
+		await expect(page.locator('.site-nav-item:has(> a[aria-current="page"]) .top-page-sections a')).toHaveCount(5);
 	});
 
 	test('aligns the Page contents label with the first row when links wrap', async ({ page }) => {
@@ -271,7 +271,7 @@ test.describe('mobile site navigation drawer', () => {
 		viewport: mobileViewport,
 	});
 
-	test('shows pages and current-page sections as separate groups', async ({ page }) => {
+	test('shows section destinations inside their page branches', async ({ page }) => {
 		await openSite(page);
 		const menu = page.locator('.mobile-nav-menu');
 		await menu.locator(':scope > summary').click();
@@ -279,9 +279,11 @@ test.describe('mobile site navigation drawer', () => {
 		await expect(menu.locator('nav[aria-label="Pages"] h2')).toHaveText('Pages');
 		await expect(menu.locator('.navigation-page-node-current > .navigation-page-link')).toHaveText('Media blocks');
 		await expect(menu.getByRole('link', { name: 'Surfaces', exact: true })).toHaveAttribute('href', '/surfaces/');
-		await expect(menu.locator('nav[aria-label="Page contents"] h2')).toHaveText('Page contents');
 		await expect(menu.locator(mobilePageNavSelector).first()).toBeVisible();
-		await expect(menu.locator('.navigation-page-tree-mobile a[href*="#"]')).toHaveCount(0);
+		await expect(menu.locator('.mobile-nav-sections')).toHaveCount(0);
+		const surfaces = menu.locator('[data-navigation-title="Surfaces"]');
+		await surfaces.locator('summary').click();
+		await expect(surfaces.getByRole('link', { name: 'Overview', exact: true })).toHaveAttribute('href', '/surfaces/#overview');
 	});
 
 	test('closes with Escape and returns focus to the menu button', async ({ page }) => {

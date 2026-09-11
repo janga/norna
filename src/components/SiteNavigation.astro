@@ -13,6 +13,7 @@ import type { SiteNode, SitePage } from '../lib/sitePages';
 import DisplaySettings from './DisplaySettings.astro';
 import NavigationPageTree from './NavigationPageTree.astro';
 import NavigationTreeControls from './NavigationTreeControls.astro';
+import TopPageMenu from './TopPageMenu.astro';
 import SectionNavigationScript from './SectionNavigationScript.astro';
 
 type FrameColors = {
@@ -67,6 +68,12 @@ const navigationStyle = [
 	...(logo?.height ? [`--site-brand-logo-height: ${logo.height}`] : []),
 ].join('; ');
 const siteNavigationTree = getListedSiteNavigationTree(navigationEntries);
+const mobileNavigationTree = navigationMode === 'top'
+	? getListedSiteNavigationTree(navigationEntries.map((entry) => ({
+		...entry,
+		headings: entry.headings.filter((heading) => heading.depth === 2),
+	})))
+	: siteNavigationTree;
 const topLevelNavigation = siteNavigationTree;
 const showSiteNavigation = topLevelNavigation.some(({ node }) => !node.isHome);
 const homeNode = navigationEntries.find(({ node }) => node.isHome)?.node;
@@ -107,7 +114,7 @@ const showSearch = projectConfig.search.enabled;
 const searchHref = withBasePath(projectConfig.site.basePath, '/search/');
 const showDesktopNavigationRow = showSiteNavigation || Boolean(logo) || showReaderControls || showSearch;
 const showNavigationRow = showMobileNavigation || showDesktopNavigationRow;
-const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents || navigationMode === 'tree';
+const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu || hasTreePageContents;
 ---
 
 <a class="skip-link" href="#main-content">{projectConfig.locale.labels.skipToContent}</a>
@@ -141,19 +148,17 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 						const nodeIsCurrentPage = navigationNode.node.kind === 'page' && isCurrentPage(navigationNode.node);
 						return (
 							<li class:list={['site-nav-item', {
-								'site-nav-item-has-submenu': showTopNavigationSubmenus && navigationNode.children.length > 0,
 								'site-nav-item-current-branch': !nodeIsCurrentPage && isCurrentBranch(navigationNode.node),
 							}]}>
 								<a href={pageHref(destination)} aria-current={nodeIsCurrentPage ? 'page' : undefined}>
 									{navigationNode.node.title}
 								</a>
-								{showTopNavigationSubmenus && navigationNode.children.length > 0 && (
-									<div class="site-nav-submenu">
-										<nav aria-label={`${navigationNode.node.title} ${projectConfig.locale.labels.siteNavigation}`}>
-											<NavigationPageTree nodes={[navigationNode]} currentPage={currentPage} variant="submenu" />
-										</nav>
-									</div>
-								)}
+								<TopPageMenu
+									node={navigationNode}
+									currentPage={currentPage}
+									showSections={navigationMode === 'top'}
+									showChildren={showTopNavigationSubmenus}
+								/>
 							</li>
 						);
 					})}
@@ -211,18 +216,18 @@ const needsNavigationScript = hasCurrentPageSectionMenu || hasTreePageContents |
 											<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>
 											<NavigationTreeControls
 												idPrefix="mobile-tree-navigation"
-												nodes={siteNavigationTree}
+												nodes={mobileNavigationTree}
 											/>
 											<NavigationPageTree
-												nodes={siteNavigationTree}
+												nodes={mobileNavigationTree}
 												currentPage={currentPage}
 												variant="mobile"
-												integratePageSections={navigationMode === 'tree'}
+												integratePageSections={navigationMode === 'tree' || navigationMode === 'top'}
 											/>
 										</nav>
 									)}
 
-									{navigationMode !== 'tree' && hasCurrentPageSectionMenu && currentPageNavigation && currentPage && (
+									{(navigationMode === 'sections' || !showSiteNavigation) && hasCurrentPageSectionMenu && currentPageNavigation && currentPage && (
 										<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.pageNavigation}>
 											{!showSinglePageTopLink && (
 												<h2 tabindex="-1">{projectConfig.locale.labels.pageNavigation}</h2>

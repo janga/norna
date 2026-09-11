@@ -36,7 +36,7 @@ const maximumAnchorGap = 2;
 const stableSampleCount = 5;
 const testPagePath = '/media/';
 const pageNavSelector = '.page-nav a';
-const mobilePageNavSelector = '.mobile-nav-sections a';
+const mobilePageNavSelector = '.navigation-page-node-current .page-contents-links a';
 
 const getPreviewRounds = () => {
 	const rounds = Number.parseInt(process.env.NAVIGATION_PREVIEW_ROUNDS ?? '3', 10);
