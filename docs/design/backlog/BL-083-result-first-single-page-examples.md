@@ -2,10 +2,15 @@
 
 ## Status
 
-First implementation present; human review identified table readability,
-source-to-result, and navigation-example problems on 2026-09-11. The item is
-not complete. The correction sequence below owns the remaining work; do not
-schedule the same corrections independently under this parent item.
+Corrections implemented and technically verified on 2026-09-11; awaiting human
+review of the revised gallery. The ordered sequence below resolved table
+readability, source-to-result, and navigation-example problems, then audited
+all 20 sections against current behavior. The final Pages build passed.
+
+Review instructions and per-section evidence are in
+[Examples content audit](../examples-content-audit.md). Do not schedule the
+completed corrections again or mark the gallery visually approved until the
+user has reviewed it.
 
 ## Correction Sequence
 

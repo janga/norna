@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { markdownToMdast } from 'satteri';
+import { parsePageMarkdownSource } from './lib/page-markdown.mjs';
 import { renderThemePresetComparison } from './build-theme-preset-comparison.mjs';
 import {
 	getExampleRelativePublicPath,
@@ -312,6 +314,28 @@ const checkPublishedExampleReferences = async () => {
 	const exampleFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'pages', '030-examples'));
 	const documentationText = (await Promise.all(exampleFiles.map((filePath) => readFile(filePath, 'utf8')))).join('\n');
 	assert.equal(exampleFiles.length, 1, 'Focused Examples documentation must remain one result-first page.');
+	const examplesModel = await parsePageMarkdownSource(documentationText);
+	for (const id of ['standard-markdown', 'single-image', 'image-stacks', 'image-carousels', 'card-lists', 'semantic-callouts', 'sidenotes', 'code-blocks', 'tables']) {
+		const section = examplesModel.sections.find((section) => section.id === id);
+		assert.ok(section, `Missing live/source example: ${id}`);
+		const tree = await markdownToMdast(section.bodyMarkdown);
+		const sourceBlock = tree.children.find((node) => node.type === 'code' && node.lang === 'md');
+		assert.ok(sourceBlock, `${id} must show its Markdown source.`);
+		const liveSource = section.bodyMarkdown.slice(0, sourceBlock.position.start.offset).trim();
+		assert.equal(sourceBlock.value.trim(), liveSource, `${id}: shown source must exactly match the live example.`);
+	}
+	for (const [id, language, relativePath] of [
+		['page-list', 'md', 'fixtures/child-page-list/site/pages/010-installation/content.md'],
+		['site-wide-elements', 'yaml', 'examples/feature-demos/sitewide-content/site/sitewide-content.yaml'],
+	]) {
+		const section = examplesModel.sections.find((section) => section.id === id);
+		assert.ok(section, `Missing source-backed example: ${id}`);
+		const tree = await markdownToMdast(section.bodyMarkdown);
+		const sourceBlock = tree.children.find((node) => node.type === 'code' && node.lang === language);
+		assert.ok(sourceBlock, `${id} must show its source.`);
+		assert.equal(sourceBlock.value.trim(), (await readFile(path.join(repoRoot, relativePath), 'utf8')).trim(),
+			`${id}: displayed source differs from the maintained example ${relativePath}.`);
+	}
 
 	const orderedSections = [
 		'## Write with standard Markdown',

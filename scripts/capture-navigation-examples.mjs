@@ -33,9 +33,22 @@ for (const [scenario, route, pageMenu] of [
 	}
 }
 
-// Getting Started uses the complete public shelter rather than the small diagrams.
+// Complete-site previews and Getting Started use the public shelters.
+await runReviewEnvironment(['scratch', 'prepare', '--from', 'examples/complete-sites/dog-shelter-single-page/site', '--replace']);
+const singleShelter = await runReviewEnvironment(['start', 'scratch']);
+const singlePreview = await captureReviewPage({
+	environment: singleShelter, root,
+	rawArguments: ['.', '--viewport', '1200x800'],
+});
+await copyFile(singlePreview.outputPath, path.join(root, 'site/pages/030-examples/images/single-page-dog-shelter.png'));
+
 await runReviewEnvironment(['scratch', 'prepare', '--from', 'examples/complete-sites/dog-shelter-multi-page/site', '--replace']);
 const shelter = await runReviewEnvironment(['start', 'scratch']);
+const multiPreview = await captureReviewPage({
+	environment: shelter, root,
+	rawArguments: ['.', '--viewport', '1200x800'],
+});
+await copyFile(multiPreview.outputPath, path.join(root, 'site/pages/030-examples/images/multi-page-dog-shelter.png'));
 for (const [name, options] of [['page', []], ['navigation', ['--menu', 'compact']]]) {
 	const capture = await captureReviewPage({
 		environment: shelter, root,
@@ -44,3 +57,7 @@ for (const [name, options] of [['page', []], ['navigation', ['--menu', 'compact'
 	await copyFile(capture.outputPath, path.join(root,
 		`site/pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-${name}.png`));
 }
+
+// Leave the illustrated H2 menus available for interactive review.
+await runReviewEnvironment(['scratch', 'prepare', '--from', 'fixtures/navigation-examples/top/site', '--replace']);
+await runReviewEnvironment(['start', 'scratch']);

@@ -7,7 +7,7 @@ page:
 
 ## Write with standard Markdown {#standard-markdown}
 
-### Before publishing {#before-publishing}
+### Before publishing
 
 Run the **source checks**, then:
 
@@ -242,7 +242,7 @@ changing the readable fallback. Read the
 | --- | --- | --- | --- | --- | --- |
 | Links | Markdown | Inline | Wrap | No change | Links |
 | Images | `image-stack` | Preset width | Fit | Inspector | Image link |
-| Carousels | `image-carousel` | Fit | Swipe | Slides | Image links |
+| Carousels | `image-carousel` | Fit | Swipe | Slides | Static images |
 | Cards | `card-list` | Grid | Reflow | No change | Full list |
 | Callouts | Alert quote | In prose | Reflow | No change | Labels |
 | Sidenotes | Note pair | Free margin | Inline | No change | Linked notes |
@@ -256,7 +256,7 @@ changing the readable fallback. Read the
 | --- | --- | --- | --- | --- | --- |
 | Links | Markdown | Inline | Wrap | No change | Links |
 | Images | `image-stack` | Preset width | Fit | Inspector | Image link |
-| Carousels | `image-carousel` | Fit | Swipe | Slides | Image links |
+| Carousels | `image-carousel` | Fit | Swipe | Slides | Static images |
 | Cards | `card-list` | Grid | Reflow | No change | Full list |
 | Callouts | Alert quote | In prose | Reflow | No change | Labels |
 | Sidenotes | Note pair | Free margin | Inline | No change | Linked notes |
@@ -688,6 +688,8 @@ or [browse its source](https://github.com/janga/norna/tree/main/examples/complet
 or [browse its source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-multi-page).
 The [documentation-site source](https://github.com/janga/norna/tree/main/site)
 shows the deeper hierarchy used by the page you are reading.
+Read the [page structure and navigation reference](https://github.com/janga/norna/blob/main/docs/pages.md#navigation)
+for the rules behind these layouts.
 
 Norna generates semantic HTML, responsive layout, keyboard behavior, focus
 handling, and accessible labels for its own controls. Authors remain

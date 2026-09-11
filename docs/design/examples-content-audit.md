@@ -1,23 +1,119 @@
 # Examples Content Audit
 
-This audit records the source comparison and teaching decisions behind
-[`BL-042` Examples Audit And Teaching Structure](backlog/BL-042-examples-audit.md).
-It is not a catalogue intended for end users.
+This maintainer audit records the source comparison and teaching decisions
+behind the public Examples page. It includes the original
+[BL-042: Examples audit and teaching structure](backlog/BL-042-examples-audit.md)
+and the final implementation audit for
+[BL-091: Final examples audit against implemented behavior](backlog/BL-091-final-examples-implementation-audit.md).
 
 ## Current Review Status
 
-The first implementation of
+Technical audit completed on 2026-09-11 after the seven ordered corrections.
+Human approval of the revised gallery remains pending.
+Do not close
 [BL-083: Result-first single-page examples](backlog/BL-083-result-first-single-page-examples.md)
-needs corrections after human review on 2026-09-11. The findings below are
-earlier source and teaching decisions, not evidence that the revised gallery
-is accurate in its final form.
+or its final audit on the strength of automated tests alone.
 
-The ordered correction work is recorded in that item's backlog file.
-[BL-091: Final examples audit against implemented behavior](backlog/BL-091-final-examples-implementation-audit.md)
-must run last, after the seven preceding corrections. Record its per-section
-evidence and any remaining issues here before closing the gallery work.
+All 20 H2 examples were compared with current sources and canonical reference.
+The checks below distinguish source fidelity and tested behavior from visual
+judgment. No planned feature is presented as shipped; the translation review
+and carousel JavaScript boundaries remain explicit.
 
-## Sources Reviewed
+## Final Section Audit
+
+The page source is `site/pages/030-examples/content.md`. Paths in the evidence
+column are repository-relative. "Exact source" means that the documentation
+test compares the displayed code with the live Markdown or maintained fixture,
+not merely that its syntax parses.
+
+| Section | Result and boundaries checked | Implementation evidence |
+| --- | --- | --- |
+| Write with standard Markdown | Live H3, prose, emphasis, list, and quote match the displayed source. No Norna syntax is required. | Exact-source assertion; `scripts/lib/page-markdown.mjs`; `docs/content.md` |
+| Add a single image | The one-entry stack shows all three supported fields. Local managed images, public assets, external URLs, and author-owned alternative text are distinguished. | Exact source; `scripts/lib/norna-markdown-blocks.mjs`; `src/components/ImageStack.astro`; `docs/images-and-metadata.md` |
+| Image stacks | Both entries and their captions match the source. The optional AI suggestion retains human responsibility for alt text. | Exact source; `ImageStack.astro`; gallery image-loading check |
+| Image carousels | Three entries match the source; controls initialize. The text does not promise slide switching without JavaScript. | Exact source; `src/components/ImageCarousel.astro`; browser checks with and without JavaScript |
+| Card lists | Three live cards match the displayed list and its grid settings. Block options are identified as an extension. | Exact source; `scripts/lib/norna-markdown-blocks.mjs`; `docs/content.md#card-list` |
+| Semantic callouts | TIP and WARNING match the source and the closed meaning set. GitHub-style alerts are not mislabelled as formal GFM; DANGER is identified as Norna's addition. | Exact source; `scripts/lib/semantic-callouts.mjs`; two rendered callouts |
+| Sidenotes | The note pair matches its source. Margin placement is conditional on available space; reference footnotes are a different mechanism. | Exact source; shared Markdown model; `docs/content.md#side-notes`; responsive content styles |
+| Code blocks | Language, title, and line emphasis reproduce the live block. Copy and measured width need JavaScript; syntax rendering and title positioning do not. | Exact source; `src/components/CodeBlockCopyScript.astro`; `docs/content.md#code-blocks`; code-width browser checks |
+| Get readable tables from standard Markdown | Six columns and ten concise rows match the code. GFM table syntax and Norna's optional row-header annotation are distinguished. Labels do not require mid-word wrapping. The carousel fallback cell was corrected from "Image links" to "Static images". | Exact source; table-row-header and shared-width browser checks; `docs/content.md#tables` |
+| List child pages automatically | The Installation parent explains a real OS choice. H1s and descriptions come from its three children, rather than duplicating navigation labels without added context. | Exact parent source; `fixtures/child-page-list/site`; real capture; `src/components/PageList.astro` |
+| Automatic responsive navigation | One-page, top-level, and nested screenshots come from runnable fixtures using `project` and `automatic`. Each displayed page source matches its fixture. Desktop page links and H2 disclosures, compact Menu states, H3 tree outlines, Home, and depth-dependent right rails are distinguished. | Three exact-source checks; `fixtures/navigation-examples`; top-menu, nested-tree, and `/docs/` base-path tests; `docs/pages.md#navigation` |
+| Move pages without breaking links | The two commands show preview followed by `--write`; they describe a hypothetical source and destination, not a move inside the documentation site. Subtree moves, link rewrites, aliases, and validation boundaries match the CLI contract. | `scripts/lib/page-move-plan.mjs`; existing `scripts/test-page-move.mjs` coverage inspected, not rerun; `docs/pages.md#move-or-reconcile-a-page` |
+| Add static search | `search: true` matches the documentation site's configuration. The generated route and static index are built; no hosted search or content translation is promised. | `site/config.yaml`; Pages build; `docs/configuration.md#search`; `docs/client-javascript.md` |
+| Set the site language | Swedish interface labels match the locale pack. Language does not translate page content; AI-generated packs still require fluent review. | `scripts/lib/locales/sv.mjs`; `scripts/lib/locale-registry.mjs`; `docs/configuration.md#language` |
+| Brand your site | The logo is a maintained asset from the shared-content demo. Logo, favicon, and social-image roles use accepted public filenames, not configurable image paths. | Demo `site/public/`; `docs/public-files.md`; gallery image-loading check |
+| Add site-wide notices and a footer | The complete YAML now matches the linked demo, including both notices, logo height, and footer. The required logo file is stated. | Exact-file comparison with `examples/feature-demos/sitewide-content/site/sitewide-content.yaml`; public example build |
+| Get coherent defaults from a preset | The four purposes match preset metadata. Root `preset` and `layout.textWidth` illustrate defaults and one accepted override, not arbitrary per-page identity changes. | `scripts/lib/theme-presets.mjs`; `docs/theme.md#theme-presets`; existing preset-reference assertions and four example builds |
+| Choose a coordinated color palette | `clay-rose` matches this site's palette. The snippet explicitly combines that palette with `documentation`, without claiming that this entire page uses that preset. | `site/theme.yaml`; palette metadata; Theme explorer build; `docs/theme.md#palette-and-appearance` |
+| Let readers adapt the display | Reading width is universal; optional Appearance and Focus reading settings are valid. Focus reading removes persistent rails while keeping Menu. Browser storage is not presented as an account preference. | Reader preference components; gallery Focus reading and Wide checks; `docs/theme.md#reader-display-controls` |
+| Complete sites | Both public shelters remain independent projects. Fresh desktop captures show current navigation; links include rendered sites, maintained source, and the navigation reference. Their deliberately small scope is stated. | `scripts/capture-navigation-examples.mjs`; both complete-site builds; documentation link coverage |
+
+## Corrections From The Final Audit
+
+- Displayed Markdown is now compared structurally with each of the nine live
+  examples. Additional checks compare the child-page parent, shared YAML, and
+  three navigation snippets with their maintained files.
+- The six-column table no longer promises origin links for carousels without
+  JavaScript. Carousel images remain in the HTML, but they are not stack-style
+  image links.
+- The JavaScript reference now includes measured code-width expansion; it no
+  longer says that copying is the only code enhancement.
+- Real captures were refreshed for the complete shelters as well as the three
+  minimal navigation scenarios. One script updates Features, Examples, and
+  the affected mobile captures in Getting Started.
+- The review wrapper waits for network settling, fonts, images, and anchor
+  layout before capture. The navigation test runner now uses the configured
+  base path instead of assuming `/`, and cleans up a server that fails during
+  readiness checks.
+- Reduced-motion CSS exposed a measurement bug: its short transition duration
+  could animate width probes between candidate layouts. Measured code and
+  table frames now disable transitions explicitly. This is covered with
+  reduced-motion browser contexts rather than a screenshot delay.
+
+## Verification Record
+
+These focused checks were run during the ordered correction work. Earlier
+results were reused where the underlying contract was unchanged.
+
+| Check | Result |
+| --- | --- |
+| `tests/table-responsive-context.spec.ts` with the presentation fixture | 5 passed: row labels, responsive table context, and bounded layout |
+| `tests/code-width.spec.ts` and `tests/table-width-top.spec.ts` with the top-navigation fixture | 6 passed, including the final reduced-motion run |
+| `tests/top-page-menu.spec.ts` and `tests/navigation.spec.ts` with the top-navigation fixture | 23 passed: direct H2 links, native disclosures, keyboard dismissal, compact navigation, and no-JavaScript fallback |
+| Focused cases from `tests/navigation-tree.spec.ts` and `tests/page-contents-placement.spec.ts` | 6 passed: Home, outlines, current branch, nested destinations, and reading-position behavior |
+| `node scripts/test-top-navigation-contract.mjs` | Passed: explicit `top` with nested children, separate child and H2 groups, and `/docs/` base-prefixed links |
+| `npm run test:examples:browser` | 3 passed: 20 sections, complete image loading, 1440/1024/390 widths, Light/Dark, reduced motion, Focus reading with Wide, and no-JavaScript access |
+| `node scripts/test-review-environments.mjs` | Passed: capture arguments and registered environment contract |
+| `npm run content:check` | Passed |
+| `npm run test:documentation` | Passed: canonical links, public examples, displayed-source comparisons, preset descriptions, and generated discovery references |
+| `npm run build:pages` | Passed: final documentation build, static search index, Theme explorer, and all eight public example sites assembled into `dist/` |
+
+Full `npm test`, package installation, release, and deployment verification
+were not run: this correction sequence does not change packaging or publishing
+credentials, and focused tests cover the changed contracts.
+
+## Human Review Still Required
+
+- At `/norna/examples/#tables`, compare the rendered table with its code at a
+  wide viewport, then narrow the browser. Judge row-label readability, source
+  size, overflow cues, and Focus reading without changing the page content.
+- At `/norna/examples/#page-list`, judge whether the Installation context and
+  descriptions justify a generated list beside navigation.
+- At `/norna/examples/#automatic-navigation`, compare the three source trees
+  with the captured wide and compact states. Read the shown source, not just
+  the screenshots; all illustrated pages are runnable fixtures.
+- For live interaction, use the minimal top-navigation fixture left on
+  registered scratch port 4399 at `/dogs/`. Click a page name to navigate; use
+  its chevron to reveal H2 links without visiting the page first. Try keyboard
+  and a narrow viewport. The complete public multi-page shelter has no H2s,
+  so it correctly has no section-disclosure buttons.
+
+Desktop Light and mobile Dark captures were inspected by the agent. Automated
+bounds and source comparisons do not replace the user's judgment of the
+gallery's pacing, visual hierarchy, and the added top-menu affordance.
+
+## Earlier Audit Sources
 
 The review covered the complete documentation-site Examples subtree, every
 tracked file below `examples/`, example material embedded elsewhere in the
@@ -54,8 +150,9 @@ Published paths above are relative to `https://janga.github.io/norna/`.
   reference instead of repeating complete option tables.
 - Keep both dog-shelter sites because their direct comparison teaches the
   boundary between sections and pages with one familiar subject.
-- Treat the documentation site as the maintained nested-page example instead
-  of creating another fictional hierarchy.
+- Keep the documentation site as the complete nested-page example. Use the
+  minimal, runnable shelter hierarchy to isolate the navigation rules without
+  introducing unrelated documentation content.
 - Keep one source site per preset because identical content is the controlled
   variable that makes the comparison meaningful.
 - Keep Theme explorer as generated comparison output, not a fifth configurable

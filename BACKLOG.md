@@ -16,16 +16,12 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-The following correction sequence completes
-[`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md),
-whose first implementation needs changes after human review. Close that item
-only after
-[`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md).
-
-
-- [`BL-091` Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md):
-  **Run last in this sequence.** Verify every Examples section against current
-  code, actual output, syntax, defaults, and reference links before completion.
+- [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
+  **Implemented and technically verified; awaiting human gallery review.**
+  The ordered corrections and
+  [BL-091: Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md)
+  are complete technically; review table/source readability, child-page
+  choices, and captured versus interactive navigation before closing both.
 
 ## Next
 

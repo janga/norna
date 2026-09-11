@@ -2,10 +2,18 @@
 
 ## Status And Dependencies
 
-Run last in the correction sequence for
+Technical audit completed on 2026-09-11; awaiting human gallery review. All
+20 examples were checked against current implementation, exact source,
+reference, and rendered output. Focused browser checks, content and
+documentation checks, and the complete Pages artifact build passed.
+
+See the per-section evidence, corrections, and remaining review instructions
+in [Examples content audit](../examples-content-audit.md). No human approval
+has been inferred from the automated results.
+
+This audit ran last in the correction sequence for
 [BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md).
-Do not perform the final audit against intermediate behavior. Complete these
-items first, including their relevant verification:
+The following implementation and verification prerequisites are complete:
 
 1. [BL-084: Readable table columns without broken words](BL-084-readable-table-columns.md).
 2. [BL-085: Adaptive width for long code examples](BL-085-adaptive-code-width.md).

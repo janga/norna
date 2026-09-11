@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reserveBrowserTestPort } from './browser-test-port.mjs';
+import { readConfiguredBasePath } from './review-environments.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cliPath = path.join(root, 'bin', 'norna.mjs');
@@ -18,8 +19,11 @@ if (!configuredSiteDir || configuredSiteDir.startsWith('--')) {
 }
 if (siteDirOptionIndex !== -1) cliArguments.splice(siteDirOptionIndex, 2);
 const navigationDemoSiteDir = path.resolve(root, configuredSiteDir);
+const configuredBasePath = process.env.NORNA_SITE_URL
+	? `${new URL(process.env.NORNA_SITE_URL).pathname.replace(/\/$/, '')}/`
+	: await readConfiguredBasePath(navigationDemoSiteDir);
 const testTargets = cliArguments;
-const playwrightTargets = testTargets.length > 0 ? testTargets : ['tests/navigation.spec.ts'];
+const playwrightTargets = testTargets.length > 0 ? testTargets : ['tests/navigation.spec.ts', 'tests/top-page-menu.spec.ts'];
 const temporaryStateParent = path.join(root, '.local', 'browser-test-state');
 await mkdir(temporaryStateParent, { recursive: true });
 const temporaryStateRoot = await mkdtemp(path.join(temporaryStateParent, 'run-'));
@@ -35,7 +39,7 @@ const sleep = (milliseconds) => new Promise((resolve) => {
 
 const portReservation = await reserveBrowserTestPort({ host });
 const { port } = portReservation;
-const url = `http://${host}:${port}/`;
+const url = `http://${host}:${port}${configuredBasePath}`;
 const activeChildren = new Set();
 let interruptionSignal = null;
 
@@ -119,7 +123,7 @@ const startServer = async () => {
 		env: testEnvironment,
 	});
 
-	const serverProcess = trackChild(spawn(process.execPath, [
+	serverProcess = trackChild(spawn(process.execPath, [
 		cliPath,
 		'astro',
 		'dev',

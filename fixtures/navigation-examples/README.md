@@ -11,11 +11,17 @@ node scripts/capture-navigation-examples.mjs
 ```
 
 The script replaces the disposable scratch copy, uses its registered port
-4399, and leaves the complete dog-shelter site running for inspection. It never edits
+4399, and leaves the minimal top-navigation site running for inspection. It never edits
 these sources. Images are captured at 1200x650 and 390x600; captions identify
 desktop, closed compact menu, and open compact menu. The top example also
 captures its desktop section disclosure. Getting Started's two mobile shelter
 captures are refreshed from the complete public example in the same run.
+The gallery's complete-site previews are refreshed from both public shelters
+at 1200x800 as well.
+
+Open `http://127.0.0.1:4399/dogs/` after the run to try the H2 menus shown in
+the illustrations. The complete public multi-page shelter has no H2s and
+therefore intentionally has no section-disclosure buttons.
 
 For an individual state:
 

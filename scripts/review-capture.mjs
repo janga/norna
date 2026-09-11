@@ -201,6 +201,7 @@ export const captureReviewPage = async ({
 		});
 		const page = await context.newPage();
 		await page.goto(capture.url, { waitUntil: 'domcontentloaded' });
+		await page.waitForLoadState('networkidle');
 		await applyCaptureAppearance(page, capture.appearance);
 		await page.evaluate(async () => {
 			await Promise.all(Array.from(document.images, async (image) => {
