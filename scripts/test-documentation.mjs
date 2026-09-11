@@ -325,7 +325,7 @@ const checkPublishedExampleReferences = async () => {
 		assert.equal(sourceBlock.value.trim(), liveSource, `${id}: shown source must exactly match the live example.`);
 	}
 	for (const [id, language, relativePath] of [
-		['page-list', 'md', 'fixtures/child-page-list/site/pages/010-installation/content.md'],
+		['page-list', 'md', 'fixtures/child-page-list/site/pages/010-help-a-dog/content.md'],
 		['site-wide-elements', 'yaml', 'examples/feature-demos/sitewide-content/site/sitewide-content.yaml'],
 	]) {
 		const section = examplesModel.sections.find((section) => section.id === id);
@@ -335,6 +335,15 @@ const checkPublishedExampleReferences = async () => {
 		assert.ok(sourceBlock, `${id} must show its source.`);
 		assert.equal(sourceBlock.value.trim(), (await readFile(path.join(repoRoot, relativePath), 'utf8')).trim(),
 			`${id}: displayed source differs from the maintained example ${relativePath}.`);
+		if (id === 'page-list') {
+			const excerpts = tree.children.filter((node) => node.type === 'code' && node.lang === 'md').slice(1);
+			assert.equal(excerpts.length, 3, 'Show the metadata behind all three child-page choices.');
+			for (const [index, directory] of ['010-adoption', '020-fostering', '030-sponsorship'].entries()) {
+				const childPath = path.join(repoRoot, path.dirname(relativePath), 'pages', directory, 'content.md');
+				const childSource = await readFile(childPath, 'utf8');
+				assert.ok(childSource.startsWith(excerpts[index].value.trim()), `Child source differs: ${directory}`);
+			}
+		}
 	}
 
 	const orderedSections = [

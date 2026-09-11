@@ -1,3 +1,4 @@
-# Field guide
+# Dog Shelter
 
-A collection of practical guides for working with Norna.
+We help dogs find safe homes. A permanent home, temporary care, and financial
+support all make a difference.

@@ -2,8 +2,13 @@
 
 ## Status And Dependencies
 
-Ready after
+Implemented after
 [BL-093: Missing descriptions in child-page lists](BL-093-child-page-description-warnings.md).
+The maintained shelter fixture passes content validation; the documentation
+check compares its parent source and all three child metadata excerpts with
+the published example. The 1200x800 scratch capture was inspected and replaces
+the OS-list screenshot. Final human gallery review remains pending under
+[BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md).
 Revises the example delivered by
 [BL-088: Child-page lists that help readers choose](BL-088-useful-child-page-list-example.md).
 

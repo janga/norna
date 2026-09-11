@@ -16,10 +16,6 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-094` Child-page descriptions that explain a choice](docs/design/backlog/BL-094-child-page-choice-demonstration.md):
-  **Ready; description-warning prerequisite implemented.** Replace
-  the operating-system example with meaningful adoption, fostering, and
-  sponsorship choices, including exact source and a real capture.
 - [`BL-095` Nested navigation for substantial documentation](docs/design/backlog/BL-095-nested-documentation-demonstration.md):
   **Ready; top-navigation prerequisite implemented.**
   Complement the small site progression with a runnable deep documentation

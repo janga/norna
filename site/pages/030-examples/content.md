@@ -280,55 +280,74 @@ every cell of this table, unchanged. Read the
 <!-- norna-image-provenance:
 image: child-page-list.png
 source: local-browser-capture
-Captured from fixtures/child-page-list/site at /installation/ using the
+Captured from fixtures/child-page-list/site at /help-a-dog/ using the
 registered scratch review environment at 1200 by 800 pixels. Reproduction
 commands are in fixtures/child-page-list/README.md.
 -->
 
 ```image-stack
 - image: child-page-list.png
-  alt: Installation guides for macOS, Windows, and Linux, with descriptions explaining their different prerequisites and tools.
-  caption: Descriptions help readers choose a guide; the navigation tree only names the destinations.
+  alt: Adoption, Fostering, and Sponsorship appear in both navigation and the page list. The list explains permanent care, temporary care, and financial support.
+  caption: The descriptions explain the commitment behind each choice.
 ```
 
-The parent explains the choice. The empty block collects the direct child
-pages in directory order; their H1s and descriptions supply the list text.
+The navigation names the options; the descriptions help a reader decide.
+The empty block collects direct child pages in directory order. You write the
+guidance in each child's `page.description`, not in the list.
 
-````md title="pages/010-installation/content.md"
-# Installation
+````md title="pages/010-help-a-dog/content.md"
+# Help a dog
 
-## Choose your operating system
+## Find the right commitment
 
-Norna needs Node.js; raster images also need ImageMagick. The required software
-is the same on each operating system, but the installation commands differ.
-Choose the guide for the computer on which you will edit your site.
+A permanent home is only one way to help. Consider how much time, space, and
+ongoing responsibility you can offer. If you cannot take a dog home, you can
+still support its care.
 
 ```page-list
 ```
 ````
 
 ```text
-010-installation/
+010-help-a-dog/
 |-- content.md
 `-- pages/
-    |-- 010-macos/content.md
-    |-- 020-windows/content.md
-    `-- 030-linux/content.md
+    |-- 010-adoption/content.md
+    |-- 020-fostering/content.md
+    `-- 030-sponsorship/content.md
 ```
 
-```md title="pages/010-installation/pages/010-macos/content.md (opening)"
+Each child's opening supplies its title and description:
+
+```md title="pages/010-help-a-dog/pages/010-adoption/content.md (opening)"
 ---
 page:
-  description: Install the prerequisites with Homebrew, then create your site in Terminal.
+  description: Give a dog a permanent home. Learn about matching, visits and the adoption process.
 ---
 
-# macOS
+# Adoption
 ```
 
-The other descriptions are "Use the Windows installers and run site commands
-in PowerShell" and "Use your distribution's packages, checking the Node.js
-version before continuing." Adding, moving, or removing a child updates the
-list; descriptions stay with their pages.
+```md title="pages/010-help-a-dog/pages/020-fostering/content.md (opening)"
+---
+page:
+  description: Offer a temporary home while a dog waits for adoption. We explain the support and equipment provided.
+---
+
+# Fostering
+```
+
+```md title="pages/010-help-a-dog/pages/030-sponsorship/content.md (opening)"
+---
+page:
+  description: Help cover food and veterinary care when you cannot take a dog home.
+---
+
+# Sponsorship
+```
+
+Adding, moving, or removing a child updates the list; descriptions stay with
+their pages. Norna warns if an included page has no description.
 
 **Source:** Norna Markdown extension with no options. Use a list when its
 context helps readers choose. If it only repeats navigation, use a category
@@ -354,7 +373,7 @@ the complete Markdown shown below, with the `project` preset.
   caption: On a small screen, with Menu closed.
 - image: navigation-single-menu.png
   alt: The open compact menu contains Dog Shelter, What we do, and You can help.
-  caption: Menu reveals the page title and its sections.
+  caption: On a small screen, with Menu open.
 ```
 
 ```text

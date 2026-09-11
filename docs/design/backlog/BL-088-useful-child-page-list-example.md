@@ -8,6 +8,11 @@ source, directory order, child metadata, and the reference link accompany it.
 Both fixture and documentation content checks passed. The desktop capture
 was inspected; final human gallery review remains pending.
 
+The operating-system example was subsequently replaced by
+[BL-094: Child-page descriptions that explain a choice](BL-094-child-page-choice-demonstration.md).
+The maintained fixture now compares adoption, fostering, and sponsorship;
+the descriptions explain different commitments rather than known OS names.
+
 ## Problem
 
 The current screenshot mostly repeats destinations already visible in the
