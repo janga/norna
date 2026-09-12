@@ -283,7 +283,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		line: error.line,
 		message: error.message,
 		regionId: region.id,
-		severity: 'error',
+		severity: error.severity ?? 'error',
 	})));
 	const codeFenceDiagnostics = regions.flatMap((region) => region.codeFenceErrors.map((error) => ({
 		code: error.code,

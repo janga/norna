@@ -98,6 +98,11 @@ specifies ordering, redirects, rollback and collision handling.
 Some website patterns carry behavior or meaning that ordinary Markdown cannot
 express precisely. Norna adds a small, named construction in those cases.
 
+You may know similar blocks as *custom containers* or *admonitions* from other
+documentation tools. Norna calls them semantic callouts and keeps their
+meanings fixed, so the label, accessibility behavior, and presentation remain
+consistent.
+
 > [!TIP]
 > A semantic callout states why text deserves attention; its meaning does not
 > depend on a particular color.

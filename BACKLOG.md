@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- [`BL-098` Representative documentation remigration](docs/design/backlog/BL-098-representative-documentation-remigration.md):
+  **Implemented and machine-verified; awaiting human comparison.** Review 15
+  adapted articles from four documentation systems, with original links and
+  explicit loss reports in the private research workspace.
 - [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
   **Implemented and technically verified; awaiting human gallery review.**
   Top-navigation duplication, missing child descriptions, the child-page
@@ -72,6 +76,12 @@ These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
+- **Quieter code-copy feedback:** implemented; awaiting visual review at
+  `/norna/examples/#code-blocks`. Success uses only a check icon for one second,
+  with a screen-reader announcement; failure still shows its message for two
+  seconds. After review, run the two focused code-copy browser cases in
+  `tests/presentation-contract.spec.ts` and update the copy-feedback paragraph
+  in `docs/content.md#code-blocks`. No new configuration is needed.
 - [`BL-056` Lighter Dark navigation markers](docs/design/backlog/BL-056-lighter-dark-navigation-markers.md):
   **Implemented, browser-tested, and human-approved; documentation remains.**
   Document the shared palette-derived surface for current-page and
@@ -86,6 +96,15 @@ verified and approved for documentation.
 These items have no implementation position yet. Move one into `Now`, `Next`,
 or `Later` only after the stated evidence or design decision exists.
 
+- [`BL-100` Future Versioning Foundation](docs/design/backlog/BL-100-future-versioning-foundation.md):
+  **Needs design.** Define the version model required by future lifecycle and
+  migration features; this is an intentionally incomplete design item, not an
+  implementation-ready specification.
+- [`BL-101` Deprecation Status](docs/design/backlog/BL-101-deprecation-status.md):
+  **Needs design after `BL-100` Future Versioning Foundation.** Define
+  page-level deprecation metadata with replacement and version context; this is
+  an intentionally incomplete design item, not an implementation-ready
+  specification.
 - [`BL-049` Content alternatives](docs/design/backlog/BL-049-content-alternatives.md):
   **Needs design.** Choose an authoring and no-JavaScript contract before tabs
   or code groups enter Norna's content model.

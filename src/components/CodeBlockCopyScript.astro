@@ -89,9 +89,9 @@ const labels = {
 				button.querySelectorAll('[data-code-copy-icon]').forEach((icon) => {
 					icon.toggleAttribute('hidden', icon.getAttribute('data-code-copy-icon') !== 'copy');
 				});
-				if (status) status.textContent = '';
+				// Keep the live announcement available after the visual feedback ends.
 				delete button.dataset.copyState;
-			}, 2000));
+			}, state === 'copied' ? 1000 : 2000));
 		};
 
 		document.querySelectorAll('#main-content .section-markdown pre > code').forEach((code) => {
@@ -116,6 +116,8 @@ const labels = {
 			button.addEventListener('click', async () => {
 				if (button.dataset.copyBusy === 'true') return;
 				button.dataset.copyBusy = 'true';
+				const status = button.querySelector('[data-code-copy-status]');
+				if (status) status.textContent = '';
 				try {
 					await copyText(code.textContent ?? '');
 					showState(button, 'copied');

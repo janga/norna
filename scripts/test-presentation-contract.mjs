@@ -67,6 +67,7 @@ for (const paletteName of presentationPaletteNames) {
 		const variables = getPresentationCssVariables({ paletteModes: { [modeName]: mode } });
 		assert.equal(variables[`--palette-${modeName}-primary-text`], mode.semantic.primaryText);
 		assert.equal(variables[`--palette-${modeName}-focus-ring`], mode.semantic.focusRing);
+		assert.equal(variables[`--palette-${modeName}-caution-accent`], mode.semantic.cautionAccent);
 		assert.equal(
 			variables[`--palette-${modeName}-surface-base-secondary-text`],
 			mode.surfaces.base.secondaryTextColor,
@@ -126,6 +127,36 @@ assert.deepEqual(
 	resolvePagePresentation({ preset: 'documentation' }, 'tree-theme.yaml', { navigationMode: 'tree' }).sectionSurfaces,
 	['base'],
 	'tree navigation must use one uniform reading surface',
+);
+assert.match(
+	stylesheet,
+	/\.section-markdown details\s*\{[\s\S]*?background:\s*var\(--color-surface-soft-background\)[\s\S]*?color:\s*var\(--color-surface-soft-text\)/u,
+	'Markdown details must use a visible palette-controlled surface.',
+);
+assert.match(
+	stylesheet,
+	/\.section-markdown details\s*>\s*summary\s*\{[\s\S]*?cursor:\s*pointer/u,
+	'Markdown details summary must be visibly interactive.',
+);
+assert.match(
+	stylesheet,
+	/\.section-markdown details\s*\{[\s\S]*?border-inline-start:\s*0\.3rem solid var\(--color-accent\)/u,
+	'Markdown details must share the callout-style accent edge.',
+);
+assert.match(
+	stylesheet,
+	/\.section-markdown details\s*>\s*summary::before\s*\{[\s\S]*?border-left:\s*0\.4rem solid var\(--color-accent\)/u,
+	'Markdown details summary must expose a visible disclosure caret.',
+);
+assert.doesNotMatch(
+	stylesheet,
+	/\.section-markdown details\[open\]\s*>\s*summary\s*\{[\s\S]*?border-bottom/u,
+	'Markdown details must keep one continuous box surface when open.',
+);
+assert.match(
+	stylesheet,
+	/\.section-markdown \.norna-callout-warning\s*\{[\s\S]*?--callout-accent:\s*var\(--color-warning-accent\)[\s\S]*?\.section-markdown \.norna-callout-caution\s*\{[\s\S]*?--callout-accent:\s*var\(--color-caution-accent\)/u,
+	'warning and caution callouts must use distinct semantic color roles',
 );
 assert.equal(
 	resolvePagePresentation({ preset: 'statement' }, 'tree-theme.yaml', { navigationMode: 'tree' })
@@ -248,7 +279,7 @@ assert.match(
 );
 assert.match(
 	stylesheet,
-	/\.norna-table-frame\s*\{[\s\S]*?width:\s*100%[\s\S]*?\.section-markdown > \.norna-table-frame\s*\{[\s\S]*?--table-prose-width:\s*100%[\s\S]*?--table-end-width:[\s\S]*?--table-canvas-width:/u,
+	/\.norna-table-frame\s*\{[\s\S]*?width:\s*100%[\s\S]*?\.section-markdown > :is\(\.norna-table-frame, \.code-block\)\s*\{[\s\S]*?--wide-block-prose-width:\s*100%[\s\S]*?--wide-block-end-width:[\s\S]*?--wide-block-canvas-width:/u,
 	'nested tables must stay within their parent while top-level tables expose adaptive data lanes',
 );
 assert.doesNotMatch(
@@ -329,8 +360,8 @@ assert.match(
 for (const requiredSource of [
 	"element.setAttribute('inert', '')",
 	"element.removeAttribute('inert')",
-	'mobileMenuClose?.focus()',
-	'mobileMenuSummary?.focus()',
+	'mobileMenuClose?.focus({ preventScroll: true })',
+	'mobileMenuSummary?.focus({ preventScroll: true })',
 ]) {
 	assert.match(
 		sectionNavigationScript,

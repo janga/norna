@@ -15,6 +15,13 @@ tabs, includes, and dialect-specific metadata need explicit translation.
 Manual discovery across a large tree is error-prone even when Norna should not
 adopt the source product's feature.
 
+[BL-098: Representative Documentation Remigration](BL-098-representative-documentation-remigration.md)
+adds 15 privately retained article adaptations using current content support.
+It demonstrates the need for exact Unicode source ranges, retained parent
+headings and anchors, pinned include expansion, explicit excerpt boundaries,
+and reports that distinguish presentation changes from semantic losses.
+Its fixed recipes do not replace the proposed read-only audit.
+
 ## Syntax Status: No New Content Syntax
 
 The assistant must emit only current, accepted Norna syntax or the documented

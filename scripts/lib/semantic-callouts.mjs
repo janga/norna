@@ -62,6 +62,7 @@ const formatDiagnostic = ({ code, fix, label, line, message, offset }) => ({
 	line,
 	message: `${label} line ${line}: ${message}`,
 	offset,
+	severity: 'error',
 });
 
 export const getSemanticCalloutDiagnostics = (tree, options = {}) => {
@@ -101,7 +102,8 @@ export const getSemanticCalloutDiagnostics = (tree, options = {}) => {
 				issue = {
 					code: 'unknown-semantic-callout-type',
 					message: `Unknown semantic callout type "${marker.rawType}".`,
-					fix: `Use one of: ${semanticCalloutTypes.join(', ')}.`,
+					fix: `Use one of: ${semanticCalloutTypes.join(', ')}. The block will remain a neutral blockquote until then.`,
+					severity: 'warning',
 				};
 			} else if (marker.title) {
 				issue = {
@@ -117,7 +119,7 @@ export const getSemanticCalloutDiagnostics = (tree, options = {}) => {
 				};
 			}
 
-			if (issue) diagnostics.push(formatDiagnostic({ ...issue, label, line, offset }));
+			if (issue) diagnostics.push({ ...formatDiagnostic({ ...issue, label, line, offset }), severity: issue.severity ?? 'error' });
 		}
 
 		for (const child of node.children ?? []) visit(child, nextBlockquoteDepth);

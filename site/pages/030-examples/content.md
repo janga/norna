@@ -161,7 +161,9 @@ to inspect these blocks together across several pages, or
 **Source:** GitHub-style alerts, supported by Norna as semantic callouts.
 Alerts are not part of the formal GFM specification. Norna supports `NOTE`, `TIP`, `IMPORTANT`,
 `WARNING`, `CAUTION`, and `DANGER`; the meaning is expressed by structure and a
-localized label rather than color alone. `DANGER` is an additional Norna type.
+localized label rather than color alone. Other tools may call similar blocks
+custom containers or admonitions. Norna's set is closed: authors cannot define
+arbitrary callout types. `DANGER` is an additional Norna type.
 Read the
 [semantic-callout reference](https://github.com/janga/norna/blob/main/docs/content.md#semantic-callouts).
 

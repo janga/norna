@@ -417,6 +417,11 @@ instead of styling individual phrases.
 Use a semantic callout when a passage needs a defined role beyond ordinary
 prose or quotation:
 
+Other documentation tools may call similar blocks *custom containers* or
+*admonitions*. Norna calls them semantic callouts because each supported type
+has a defined meaning and presentation; authors do not create arbitrary new
+types.
+
 ```md
 > [!WARNING]
 > Back up the current site before replacing its configuration.
@@ -427,10 +432,42 @@ The marker must be the first line of one blockquote. Accepted meanings are
 a localized visible label and preset-owned presentation for each meaning. The
 meaning is not communicated by color alone.
 
-Custom titles, arbitrary callout colors, unsupported meanings, and nested
-callouts are invalid. Use an ordinary blockquote when the text is a quotation
-rather than a labelled note or warning. The source remains recognizable as a
-blockquote in Markdown renderers that do not enhance the marker.
+The semantic roles are stable across palettes:
+
+| Type | Meaning | Visual family |
+| --- | --- | --- |
+| `NOTE` | Neutral context | Neutral |
+| `TIP` | Positive guidance | Green or green-adjacent |
+| `IMPORTANT` | Priority information | Emphasis |
+| `WARNING` | Possible harm or loss | Yellow or ochre |
+| `CAUTION` | Significant negative consequence | Orange |
+| `DANGER` | Severe or irreversible harm | Red |
+
+Custom titles, arbitrary callout colors, and nested callouts are invalid. An
+unsupported meaning produces a warning and remains a neutral blockquote; Norna
+does not guess whether it means a warning, error, or success. Use an ordinary
+blockquote when the text is a quotation rather than a labelled note or warning.
+The source remains recognizable as a blockquote in Markdown renderers that do
+not enhance the marker.
+
+### Details disclosures
+
+Use a native `details` element when optional content should remain available
+without taking space in the initial reading flow:
+
+```html
+<details>
+<summary>Show the extra context</summary>
+
+This content is available when the reader asks for it.
+
+</details>
+```
+
+Norna presents the disclosure as a neutral, palette-controlled surface with a
+visible summary row. It remains usable without client-side JavaScript. Use a
+semantic callout instead when the message is important enough to be visible
+immediately.
 
 ### Tables
 

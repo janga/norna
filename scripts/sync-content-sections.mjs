@@ -371,7 +371,7 @@ for (const contentFile of contentFiles) {
 
 		for (const error of section.calloutErrors) {
 			addSectionIssue(contentFile, section, {
-				severity: 'error',
+				severity: error.severity ?? 'error',
 				message: error.message,
 				fix: error.fix,
 			});

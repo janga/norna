@@ -745,6 +745,61 @@ ul {
 	margin-bottom: 0;
 }
 
+.section-markdown details {
+	margin: 0 0 var(--section-body-paragraph-spacing, 1em);
+	border: 1px solid color-mix(in srgb, var(--color-accent) 34%, transparent);
+	border-inline-start: 0.3rem solid var(--color-accent);
+	border-radius: var(--corner-radius-medium, 6px);
+	background: var(--color-surface-soft-background);
+	color: var(--color-surface-soft-text);
+	contain: paint;
+}
+
+.section-markdown details > summary {
+	position: relative;
+	padding: 0.7rem 1rem 0.65rem 1.45rem;
+	color: inherit;
+	font-family: var(--font-sans);
+	font-size: 0.82rem;
+	font-weight: 700;
+	line-height: 1.35;
+	cursor: pointer;
+	list-style: none;
+}
+
+.section-markdown details > summary::-webkit-details-marker {
+	display: none;
+}
+
+.section-markdown details > summary::before {
+	position: absolute;
+	left: 0.4rem;
+	top: 0.9rem;
+	width: 0;
+	height: 0;
+	border-top: 0.3rem solid transparent;
+	border-bottom: 0.3rem solid transparent;
+	border-left: 0.4rem solid var(--color-accent);
+	content: '';
+	transition: transform 0.15s ease;
+}
+
+.section-markdown details[open] > summary::before {
+	transform: rotate(90deg);
+}
+
+.section-markdown details > summary::marker {
+	color: var(--color-accent);
+}
+
+.section-markdown details > :not(summary) {
+	margin-inline: 1rem;
+}
+
+.section-markdown details > :last-child {
+	margin-bottom: 1rem;
+}
+
 .section-markdown .norna-callout {
 	--callout-accent: var(--color-accent);
 	--callout-background: var(--color-surface-soft-background);
@@ -770,10 +825,16 @@ ul {
 	--callout-text: var(--color-success-text);
 }
 
-.section-markdown :is(.norna-callout-warning, .norna-callout-caution) {
+.section-markdown .norna-callout-warning {
 	--callout-accent: var(--color-warning-accent);
 	--callout-background: var(--color-warning-surface);
 	--callout-text: var(--color-warning-text);
+}
+
+.section-markdown .norna-callout-caution {
+	--callout-accent: var(--color-caution-accent);
+	--callout-background: var(--color-caution-surface);
+	--callout-text: var(--color-caution-text);
 }
 
 .section-markdown .norna-callout-danger {
@@ -936,14 +997,14 @@ ul {
 	pointer-events: none;
 }
 
-.code-block-copy-status:empty {
-	display: none;
-}
-
-.code-block-copy[data-copy-state='copied'] .code-block-copy-status {
-	border-color: var(--color-success-accent);
-	background: var(--color-success-surface);
-	color: var(--color-success-text);
+.code-block-copy:not([data-copy-state='failed']) .code-block-copy-status {
+	inline-size: 1px;
+	block-size: 1px;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 }
 
 .code-block-copy[data-copy-state='failed'] .code-block-copy-status {

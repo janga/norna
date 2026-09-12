@@ -591,10 +591,13 @@ test('code blocks expose an accessible copy control without changing copied text
 	await expect(button.locator('[data-code-copy-icon="failed"]')).toBeHidden();
 	await button.focus();
 	await expect(button).toBeFocused();
+	await page.clock.install();
+	await page.clock.pauseAt(new Date());
 	await button.press('Enter');
 	const status = button.locator('[data-code-copy-status]');
 	await expect(status).toHaveText('Copied');
-	await expect(status).toBeVisible();
+	await expect(status).toHaveAttribute('aria-live', 'polite');
+	await expect(status).toHaveCSS('clip-path', 'inset(50%)');
 	await expect(button.locator('[data-code-copy-icon="copy"]')).toBeHidden();
 	await expect(button.locator('[data-code-copy-icon="copied"]')).toBeVisible();
 	await expect.poll(() => page.evaluate(() => (
@@ -603,6 +606,15 @@ test('code blocks expose an accessible copy control without changing copied text
 	await expect.poll(() => page.evaluate(() => (
 		(window as Window & { copiedCode?: string }).copiedCode
 	))).not.toContain('Terminal');
+	await page.clock.runFor(999);
+	await expect(button.locator('[data-code-copy-icon="copied"]')).toBeVisible();
+	await page.clock.runFor(1);
+	await expect(button.locator('[data-code-copy-icon="copy"]')).toBeVisible();
+	await expect(button.locator('[data-code-copy-icon="copied"]')).toBeHidden();
+	await expect(status).toHaveText('Copied');
+	await expect(button).toHaveAccessibleName('Copy code');
+	await expect(button).toBeFocused();
+	await page.clock.resume();
 
 	await page.setViewportSize({ width: 320, height: 800 });
 	await title.locator('.norna-code-title-text').evaluate((node) => {
@@ -641,11 +653,18 @@ test('code blocks expose visible feedback when copying fails', async ({ page }) 
 	await openComponents(page);
 
 	const button = page.getByRole('button', { name: 'Copy code' }).first();
+	await page.clock.install();
+	await page.clock.pauseAt(new Date());
 	await button.click();
 	await expect(button.locator('[data-code-copy-status]')).toHaveText('Could not copy code');
 	await expect(button.locator('[data-code-copy-status]')).toBeVisible();
 	await expect(button.locator('[data-code-copy-icon="copy"]')).toBeHidden();
 	await expect(button.locator('[data-code-copy-icon="failed"]')).toBeVisible();
+	await page.clock.runFor(1999);
+	await expect(button.locator('[data-code-copy-icon="failed"]')).toBeVisible();
+	await page.clock.runFor(1);
+	await expect(button.locator('[data-code-copy-icon="copy"]')).toBeVisible();
+	await expect(button.locator('[data-code-copy-status]')).toHaveCSS('clip-path', 'inset(50%)');
 });
 
 test('a long titled code example keeps and releases its context bar at its own boundaries', async ({ page }) => {

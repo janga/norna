@@ -232,8 +232,8 @@ Linked content.
 	}
 });
 
-test('content:check rejects unsupported semantic callout syntax', async () => {
-	const { root, siteDir } = await createTempSite();
+test('unsupported semantic callouts warn and retain a neutral blockquote fallback', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Invalid callout
 
@@ -243,14 +243,36 @@ test('content:check rejects unsupported semantic callout syntax', async () => {
 > This type is not supported.
 `);
 
-		await assert.rejects(
-			runContentScript(siteDir, ['--check']),
-			(error) => {
-				assert.match(error.output, /Unknown semantic callout type "INFO"/);
-				assert.match(error.output, /Use one of: NOTE, TIP, IMPORTANT, WARNING, CAUTION, DANGER/);
-				return true;
-			},
-		);
+		const { stdout } = await runContentScript(siteDir, ['--check']);
+		assert.match(stdout, /Unknown semantic callout type "INFO"/);
+		assert.match(stdout, /The block will remain a neutral blockquote until then/);
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+		assert.match(html, /<blockquote>\s*<p>\[!INFO\][\s\S]*?This type is not supported\.<\/p>\s*<\/blockquote>/);
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test('details blocks render as visible native disclosures', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Details
+
+## Optional context {#optional-context}
+
+<details>
+<summary>Show the extra context</summary>
+
+This content is available when the reader asks for it.
+
+</details>
+`);
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
+		assert.match(html, /<details>\s*<summary>Show the extra context<\/summary>/);
+		assert.match(html, /This content is available when the reader asks for it\./);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}

@@ -14,6 +14,12 @@ MkDocs files, 16 of 94 Docusaurus files, and 8 of 37 English Starlight files.
 The construct is common enough to require a migration rule, but frequency
 alone does not settle a suitable Norna syntax.
 
+[BL-098: Representative Documentation Remigration](BL-098-representative-documentation-remigration.md)
+provides a current comparison corpus: package-manager commands, aligned table
+examples, and MDX/Markdoc authoring alternatives are exposed consecutively.
+Use it to evaluate the reading cost of the fallback before introducing native
+tab selection or synchronized preferences.
+
 ## Syntax Status: Design Required
 
 The competing forms solve similar reader needs but do not provide one syntax

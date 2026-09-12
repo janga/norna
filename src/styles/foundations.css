@@ -23,6 +23,9 @@
 	--color-warning-accent: var(--palette-light-warning-accent, #7a5600);
 	--color-warning-surface: var(--palette-light-warning-surface, #fff4c2);
 	--color-warning-text: var(--palette-light-warning-text, #3b2b00);
+	--color-caution-accent: var(--palette-light-caution-accent, #a34b00);
+	--color-caution-surface: var(--palette-light-caution-surface, #ffead6);
+	--color-caution-text: var(--palette-light-caution-text, #542300);
 	--color-error-accent: var(--palette-light-error-accent, #a12d2d);
 	--color-error-surface: var(--palette-light-error-surface, #fce8e8);
 	--color-error-text: var(--palette-light-error-text, #5f1616);
@@ -113,6 +116,9 @@
 	--color-warning-accent: var(--palette-dark-warning-accent);
 	--color-warning-surface: var(--palette-dark-warning-surface);
 	--color-warning-text: var(--palette-dark-warning-text);
+	--color-caution-accent: var(--palette-dark-caution-accent);
+	--color-caution-surface: var(--palette-dark-caution-surface);
+	--color-caution-text: var(--palette-dark-caution-text);
 	--color-error-accent: var(--palette-dark-error-accent);
 	--color-error-surface: var(--palette-dark-error-surface);
 	--color-error-text: var(--palette-dark-error-text);
@@ -158,6 +164,9 @@
 		--color-warning-accent: var(--palette-dark-warning-accent);
 		--color-warning-surface: var(--palette-dark-warning-surface);
 		--color-warning-text: var(--palette-dark-warning-text);
+		--color-caution-accent: var(--palette-dark-caution-accent);
+		--color-caution-surface: var(--palette-dark-caution-surface);
+		--color-caution-text: var(--palette-dark-caution-text);
 		--color-error-accent: var(--palette-dark-error-accent);
 		--color-error-surface: var(--palette-dark-error-surface);
 		--color-error-text: var(--palette-dark-error-text);

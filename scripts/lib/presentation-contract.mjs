@@ -38,11 +38,13 @@ export const presentationEngineContract = Object.freeze({
 const statusColors = Object.freeze({
 	light: Object.freeze({
 		warning: Object.freeze({ accent: '#7a5600', surface: '#fff4c2', text: '#3b2b00' }),
+		caution: Object.freeze({ accent: '#a34b00', surface: '#ffead6', text: '#542300' }),
 		error: Object.freeze({ accent: '#a12d2d', surface: '#fce8e8', text: '#5f1616' }),
 		success: Object.freeze({ accent: '#17643c', surface: '#e4f4e9', text: '#12472e' }),
 	}),
 	dark: Object.freeze({
 		warning: Object.freeze({ accent: '#ffd84d', surface: '#332b12', text: '#fff2be' }),
+		caution: Object.freeze({ accent: '#ffad70', surface: '#3a2417', text: '#ffe6d2' }),
 		error: Object.freeze({ accent: '#ff9a9a', surface: '#3a1d1d', text: '#ffeaea' }),
 		success: Object.freeze({ accent: '#7ed5a5', surface: '#173024', text: '#e5f8ed' }),
 	}),
@@ -185,6 +187,9 @@ export const createSemanticColorRoles = ({ appearance, page, secondaryText, link
 		warningAccent: statuses.warning.accent,
 		warningSurface: statuses.warning.surface,
 		warningText: statuses.warning.text,
+		cautionAccent: statuses.caution.accent,
+		cautionSurface: statuses.caution.surface,
+		cautionText: statuses.caution.text,
 		errorAccent: statuses.error.accent,
 		errorSurface: statuses.error.surface,
 		errorText: statuses.error.text,
@@ -233,7 +238,7 @@ export const getPaletteContrastPairs = (mode) => {
 	addPair(pairs, 'focus ring two-color boundary', mode.semantic.focusRing, mode.semantic.focusRingContrast, nonText);
 	addPair(pairs, 'selection text', mode.semantic.selectionText, mode.semantic.selectionBackground, normalText);
 	addPair(pairs, 'code text', mode.semantic.codeText, mode.semantic.codeBackground, normalText);
-	for (const status of ['warning', 'error', 'success']) {
+	for (const status of ['warning', 'caution', 'error', 'success']) {
 		addPair(
 			pairs,
 			`${status} text`,
