@@ -26,10 +26,9 @@ when implementation can begin.
   nested-group fallbacks, in the private research workspace.
 - [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
   **Implemented and technically verified; awaiting human gallery review.**
-  Top-navigation duplication, missing child descriptions, the child-page
-  choice example, and the deeper handbook illustration are corrected.
-  [BL-091: Final examples audit against implemented behavior](docs/design/backlog/BL-091-final-examples-implementation-audit.md)
-  is refreshed; review the updated list and navigation examples before closing.
+  The 22-section gallery now includes native tabs with matching source. Review
+  tabs, the child-page choice example, tables, and navigation illustrations;
+  the final audit and public Pages artifact have been refreshed.
 
 ## Next
 

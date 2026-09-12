@@ -208,6 +208,66 @@ view while a long example scrolls. JavaScript adds a copy control without
 changing the readable fallback. Read the
 [code-block reference](https://github.com/janga/norna/blob/main/docs/content.md#code-blocks).
 
+## Tabs for alternatives {#tabs}
+
+:::: tabs
+
+::: tab "macOS"
+
+> [!TIP]
+> Use Homebrew if it is already installed on your computer.
+
+```sh title="Install ImageMagick with Homebrew"
+brew install imagemagick
+```
+
+:::
+
+::: tab "Windows"
+
+Open PowerShell and install ImageMagick with WinGet:
+
+```powershell title="Install ImageMagick with WinGet"
+winget install ImageMagick.ImageMagick
+```
+
+:::
+
+::::
+
+````md title="content.md: installation alternatives"
+:::: tabs
+
+::: tab "macOS"
+
+> [!TIP]
+> Use Homebrew if it is already installed on your computer.
+
+```sh title="Install ImageMagick with Homebrew"
+brew install imagemagick
+```
+
+:::
+
+::: tab "Windows"
+
+Open PowerShell and install ImageMagick with WinGet:
+
+```powershell title="Install ImageMagick with WinGet"
+winget install ImageMagick.ImageMagick
+```
+
+:::
+
+::::
+````
+
+**Source:** Norna Markdown extension. Tabs keep short alternatives together;
+headings stay outside them so the page outline does not change. Each group
+starts with its first option. Without JavaScript, or when printing, every
+alternative appears with its label. Read the
+[tabs reference](https://github.com/janga/norna/blob/main/docs/content.md#tabs).
+
 ## Get readable tables from standard Markdown {#tables}
 
 | Capability {row-header} | Source | Wide screen | Small screen | With JS | Without JS |
@@ -217,6 +277,7 @@ changing the readable fallback. Read the
 | Carousels | `image-carousel` | Fit | Swipe | Slides | Static images |
 | Cards | `card-list` | Grid | Reflow | No change | Full list |
 | Callouts | Alert quote | In prose | Reflow | No change | Labels |
+| Tabs | Tab fences | Alternatives | Wrap labels | Select | All options |
 | Sidenotes | Note pair | Free margin | Inline | No change | Linked notes |
 | Code | Code fence | Expand | Scroll | Copy | Select text |
 | Tables | Markdown | Expand | Scroll | Column controls | Scroll |
@@ -231,6 +292,7 @@ changing the readable fallback. Read the
 | Carousels | `image-carousel` | Fit | Swipe | Slides | Static images |
 | Cards | `card-list` | Grid | Reflow | No change | Full list |
 | Callouts | Alert quote | In prose | Reflow | No change | Labels |
+| Tabs | Tab fences | Alternatives | Wrap labels | Select | All options |
 | Sidenotes | Note pair | Free margin | Inline | No change | Linked notes |
 | Code | Code fence | Expand | Scroll | Copy | Select text |
 | Tables | Markdown | Expand | Scroll | Column controls | Scroll |
@@ -375,7 +437,7 @@ it, or its chevron to choose a section directly.
 
 ```image-carousel
 - image: navigation-top-desktop.png
-  alt: Dogs on a wide screen, with Dog Shelter, Dogs, and Adopt in top navigation and the current page sections below.
+  alt: Dogs on a wide screen, with Dog Shelter, Dogs, and Adopt in top navigation. Page chevrons open their section menus.
   caption: In a sufficiently large browser.
 - image: navigation-top-sections.png
   alt: The Dogs disclosure shows Meet the dogs and Before you adopt as direct section links.

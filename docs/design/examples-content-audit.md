@@ -21,7 +21,10 @@ or its final audit on the strength of automated tests alone.
 The original 20 H2 examples were compared with current sources and canonical
 reference. [BL-097: Visual-first examples with practical source checks](backlog/BL-097-visual-first-examples-and-checks.md)
 then moved ordinary Markdown near the end and added a source-checking example.
-The gallery now has 21 sections, opening with a single image.
+The 2026-09-12 refresh adds native tabs after code blocks, bringing the gallery
+to 22 sections, still opening with a single image. The live/source comparison
+now includes tabs, and the table includes their progressive-enhancement
+behavior. Previous evidence is reused for unchanged example contracts.
 The checks below distinguish source fidelity and tested behavior from visual
 judgment. No planned feature is presented as shipped; the translation review
 and carousel JavaScript boundaries remain explicit.
@@ -42,7 +45,8 @@ not merely that its syntax parses.
 | Semantic callouts | TIP and WARNING match the source and the closed meaning set. GitHub-style alerts are not mislabelled as formal GFM; DANGER is identified as Norna's addition. | Exact source; `scripts/lib/semantic-callouts.mjs`; two rendered callouts |
 | Sidenotes | The note pair matches its source. Margin placement is conditional on available space; reference footnotes are a different mechanism. | Exact source; shared Markdown model; `docs/content.md#side-notes`; responsive content styles |
 | Code blocks | Language, title, and line emphasis reproduce the live block. Copy and measured width need JavaScript; syntax rendering and title positioning do not. | Exact source; `src/components/CodeBlockCopyScript.astro`; `docs/content.md#code-blocks`; code-width browser checks |
-| Get readable tables from standard Markdown | Six columns and ten concise rows match the code. GFM table syntax and Norna's optional row-header annotation are distinguished. Labels do not require mid-word wrapping. The carousel fallback cell was corrected from "Image links" to "Static images". | Exact source; table-row-header and shared-width browser checks; `docs/content.md#tables` |
+| Tabs for alternatives | macOS and Windows alternatives contain commands, prose, and a semantic callout. The live group exactly matches its source. Shared headings remain outside; print and no-JavaScript reading expose all options. | Exact source; `scripts/test-content-tabs.mjs`; `tests/content-tabs.spec.ts`; gallery keyboard and narrow-screen checks; `docs/content.md#tabs` |
+| Get readable tables from standard Markdown | Six columns and eleven concise rows match the code, including native tabs. GFM table syntax and Norna's optional row-header annotation are distinguished. Labels do not require mid-word wrapping. The carousel fallback cell was corrected from "Image links" to "Static images". | Exact source; table-row-header and shared-width browser checks; `docs/content.md#tables` |
 | List child pages automatically | Help a dog explains the different commitments of adoption, fostering, and sponsorship. Each child's description adds decision-making context to its H1. Missing descriptions trigger a non-blocking content warning. | Exact parent and three child excerpts; `fixtures/child-page-list/site`; real sidebar/list capture; warning selection and build tests |
 | Automatic responsive navigation | Three shelter scenarios use `project`; a fourth handbook excerpt uses `documentation`. All use automatic navigation. Top-mode H2s stay in page disclosures, not a duplicate row. The deeper handbook shows separate page and heading navigation and explains why related topics form branches. | Four exact-source checks, including nested code fences; `fixtures/navigation-examples`; top-menu and base-path tests; handbook responsive tests with and without JavaScript; `docs/pages.md#navigation` |
 | Move pages without breaking links | The two commands show preview followed by `--write`; they describe a hypothetical source and destination, not a move inside the documentation site. Subtree moves, link rewrites, aliases, and validation boundaries match the CLI contract. | `scripts/lib/page-move-plan.mjs`; existing `scripts/test-page-move.mjs` coverage inspected, not rerun; `docs/pages.md#move-or-reconcile-a-page` |
@@ -103,12 +107,12 @@ results were reused where the underlying contract was unchanged.
 | `node --test --test-name-pattern=page-list scripts/test-markdown-constructs.mjs` | 2 passed: existing malformed/empty list errors and a static build that succeeds with a description warning |
 | Focused cases from `tests/navigation-tree.spec.ts` and `tests/page-contents-placement.spec.ts` | 6 passed: Home, outlines, current branch, nested destinations, and reading-position behavior |
 | `node scripts/test-top-navigation-contract.mjs` | Passed: explicit `top` with nested children, separate child and H2 groups, and `/docs/` base-prefixed links |
-| `npm run test:examples:browser` | 3 passed: 20 sections, complete image loading, 1440/1024/390 widths, Light/Dark, reduced motion, Focus reading with Wide, and no-JavaScript access |
+| `npm run test:examples:browser` | 4 passed on 2026-09-12: 22 sections, complete image loading, 1440/1024/390 widths, Light/Dark, reduced motion, Focus reading with Wide, no-JavaScript access, and tabs with a stable outline |
 | `node scripts/test-review-environments.mjs` | Passed: capture arguments and registered environment contract |
 | `npm run content:check` | Passed |
 | `npm run test:documentation` | Passed: canonical links, public examples, displayed-source comparisons, preset descriptions, and generated discovery references |
 | `npm run build` | Passed after the review follow-ups: 17 generated routes, updated image variants, and a 15-page static search index |
-| `npm run build:pages` | Passed in the initial audit: documentation, Theme explorer, and all eight public example sites; not repeated for the follow-ups because published example sources and deployment paths are unchanged |
+| `npm run build:pages` | Passed again on 2026-09-12 with native tabs: documentation, the 15-page search index, Theme explorer, and all eight public example sites |
 
 Full `npm test`, package installation, release, and deployment verification
 were not run: this correction sequence does not change packaging or publishing
@@ -116,6 +120,10 @@ credentials, and focused tests cover the changed contracts.
 
 ## Human Review Still Required
 
+- At `/norna/examples/#tabs`, compare the two installation alternatives with
+  their source. Try mouse and keyboard selection, then a narrow window and
+  print preview. Judge whether the distinction from ordinary page headings is
+  clear without requiring a reader tutorial.
 - At `/norna/examples/#tables`, compare the rendered table with its code at a
   wide viewport, then narrow the browser. Judge row-label readability, source
   size, overflow cues, and Focus reading without changing the page content.

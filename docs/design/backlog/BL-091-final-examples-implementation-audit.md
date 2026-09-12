@@ -1,5 +1,11 @@
 # BL-091: Final Examples Audit Against Implemented Behavior
 
+Refreshed on 2026-09-12 for BL-049: Content Alternatives. The gallery now
+contains 22 sections, including native tabs with an exact source comparison.
+The capability table has eleven rows. All four gallery browser cases,
+documentation and content checks, and the complete Pages build pass. Human
+review remains pending; unchanged contracts reuse their existing evidence.
+
 ## Status And Dependencies
 
 The affected audit entries were refreshed after the user's review corrections:

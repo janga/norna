@@ -315,7 +315,7 @@ const checkPublishedExampleReferences = async () => {
 	const documentationText = (await Promise.all(exampleFiles.map((filePath) => readFile(filePath, 'utf8')))).join('\n');
 	assert.equal(exampleFiles.length, 1, 'Focused Examples documentation must remain one result-first page.');
 	const examplesModel = await parsePageMarkdownSource(documentationText);
-	for (const id of ['standard-markdown', 'single-image', 'image-stacks', 'image-carousels', 'card-lists', 'semantic-callouts', 'sidenotes', 'code-blocks', 'tables']) {
+	for (const id of ['standard-markdown', 'single-image', 'image-stacks', 'image-carousels', 'card-lists', 'semantic-callouts', 'sidenotes', 'code-blocks', 'tabs', 'tables']) {
 		const section = examplesModel.sections.find((section) => section.id === id);
 		assert.ok(section, `Missing live/source example: ${id}`);
 		const tree = await markdownToMdast(section.bodyMarkdown);

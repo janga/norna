@@ -10,6 +10,14 @@ all 20 sections against current behavior. The final Pages build passed.
 subsequently moves ordinary Markdown near the end and adds a dedicated source
 checking example, bringing the gallery to 21 sections.
 
+Refreshed on 2026-09-12 after BL-049: Content Alternatives and BL-098:
+Representative Documentation Remigration. The gallery now has 22 sections:
+native installation tabs follow code blocks, with exact source, fallback
+boundaries, and a reference link. The capability table includes tabs. A stale
+top-navigation image description no longer claims a duplicate section row.
+Content, exact-source, browser, and complete Pages-build checks pass; human
+visual approval is still pending.
+
 Review instructions and per-section evidence are in
 [Examples content audit](../examples-content-audit.md). Do not schedule the
 completed corrections again or mark the gallery visually approved until the
@@ -89,34 +97,37 @@ Present the examples in this order:
    reference footnotes identified as the end-of-page alternative.
 7. **Code blocks**: language, title, line emphasis, sticky context, and copy
    enhancement.
-8. **Get readable tables from standard Markdown**: a sufficiently long and
+8. **Tabs for alternatives**: commands and prose for different operating
+   systems, with shared headings outside the group and every option preserved
+   for print and no-JavaScript reading.
+9. **Get readable tables from standard Markdown**: a sufficiently long and
    wide table to expose progressive width, sticky headings, and overflow
    navigation without requiring layout syntax.
-9. **List child pages automatically**: the source and result of `page-list`.
-10. **Automatic responsive navigation**: one-page, top-level, and nested page
+10. **List child pages automatically**: the source and result of `page-list`.
+11. **Automatic responsive navigation**: one-page, top-level, and nested page
     structures mapped to their wide- and narrow-screen navigation.
-11. **Move pages without breaking links**: dry run, write step, internal-link
+12. **Move pages without breaking links**: dry run, write step, internal-link
     updates, and retained old URLs.
-12. **Add static search**: the generated search entry point, representative
+13. **Add static search**: the generated search entry point, representative
     result, and one site-wide setting.
-13. **Set the site language**: the site language and generated interface text,
+14. **Set the site language**: the site language and generated interface text,
     with the current human-review boundary stated prominently.
-14. **Brand your site**: convention-based logo, browser icon, and social image
+15. **Brand your site**: convention-based logo, browser icon, and social image
     files.
-15. **Add site-wide notices and a footer**: shared editorial content in
+16. **Add site-wide notices and a footer**: shared editorial content in
     `sitewide-content.yaml`.
-16. **Get coherent defaults from a preset**: purpose-specific defaults for the
+17. **Get coherent defaults from a preset**: purpose-specific defaults for the
     Documentation, Portfolio, Project, and Statement scenarios, followed by
     one small override.
-17. **Choose a coordinated color palette**: palette, Light and Dark variants,
+18. **Choose a coordinated color palette**: palette, Light and Dark variants,
     and the distinction between palette and Appearance.
-18. **Let readers adapt the display**: Reading width, Appearance including Dark,
+19. **Let readers adapt the display**: Reading width, Appearance including Dark,
     and Focus reading in the live Display panel.
-19. **Write with standard Markdown**: a short ordinary-content example with
+20. **Write with standard Markdown**: a short ordinary-content example with
     matching heading, prose, emphasis, list, and quotation syntax.
-20. **Check before publishing**: configuration and content check commands,
+21. **Check before publishing**: configuration and content check commands,
     concrete source mistakes, and their corrections.
-21. **Complete sites**: the single-page dog shelter, multi-page dog shelter,
+22. **Complete sites**: the single-page dog shelter, multi-page dog shelter,
     and this hierarchical documentation site.
 
 ## Managed Images And Author Responsibility
