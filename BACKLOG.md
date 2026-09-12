@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- [`BL-049` Content alternatives](docs/design/backlog/BL-049-content-alternatives.md):
+  **Implemented and regression-tested; awaiting visual review.** Local tabs
+  retain every alternative for search, print, and no-JavaScript reading. Review
+  their presentation in the remigration corpus and public Examples gallery.
 - [`BL-098` Representative documentation remigration](docs/design/backlog/BL-098-representative-documentation-remigration.md):
   **Implemented and machine-verified; awaiting human comparison.** Review 15
   adapted articles from four documentation systems, with original links and
@@ -105,9 +109,6 @@ or `Later` only after the stated evidence or design decision exists.
   page-level deprecation metadata with replacement and version context; this is
   an intentionally incomplete design item, not an implementation-ready
   specification.
-- [`BL-049` Content alternatives](docs/design/backlog/BL-049-content-alternatives.md):
-  **Needs design.** Choose an authoring and no-JavaScript contract before tabs
-  or code groups enter Norna's content model.
 - [`BL-050` Source-backed code excerpts](docs/design/backlog/BL-050-source-backed-code.md):
   **Needs design.** Establish path, package, watch, and sensitive-file
   boundaries before source files can be included in documentation.

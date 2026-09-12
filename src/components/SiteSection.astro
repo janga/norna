@@ -6,11 +6,8 @@ import {
 	getHeadingTypographySizeValue,
 	getTypographySizeValue,
 } from '../../scripts/lib/typography.mjs';
-import CardList from './CardList.astro';
-import ImageCarousel from './ImageCarousel.astro';
-import ImageStack from './ImageStack.astro';
-import PageList from './PageList.astro';
-import type { ResolvedSection } from '../lib/sectionContent';
+import ContentBlocks from './ContentBlocks.astro';
+import { flattenContentBlocks, type ResolvedSection } from '../lib/sectionContent';
 
 type ResponsiveValue<T> = { desktop: T; mobile: T };
 type ResponsiveOverride<T> = { desktop?: T; mobile?: T };
@@ -110,41 +107,10 @@ const bodyWidth = {
 	desktop: bodyWidthValue,
 	mobile: bodyWidthValue,
 };
-const isStructuredBlock = (block: ResolvedSection['contentBlocks'][number]) => (
-	block.type === 'image-stack'
-	|| block.type === 'image-carousel'
-	|| block.type === 'card-list'
-	|| block.type === 'page-list'
-);
-const hasMedia = section.contentBlocks.some((block) => (
+const hasMedia = flattenContentBlocks(section.contentBlocks).some((block) => (
 	block.type === 'image-stack'
 	|| block.type === 'image-carousel'
 	|| (block.type === 'card-list' && block.cards.some((card) => card.image))
-));
-const contentGroups: Array<
-	| { type: 'reading'; blocks: ResolvedSection['contentBlocks'] }
-	| { type: 'structured'; block: Extract<ResolvedSection['contentBlocks'][number], { type: 'image-stack' | 'image-carousel' | 'card-list' | 'page-list' }> }
-> = [];
-let readingBlocks: ResolvedSection['contentBlocks'] = [];
-const flushReadingBlocks = () => {
-	if (readingBlocks.length === 0) return;
-	contentGroups.push({ type: 'reading', blocks: readingBlocks });
-	readingBlocks = [];
-};
-
-for (const block of section.contentBlocks) {
-	if (isStructuredBlock(block)) {
-		flushReadingBlocks();
-		contentGroups.push({ type: 'structured', block });
-	} else {
-		readingBlocks = [...readingBlocks, block];
-	}
-}
-
-flushReadingBlocks();
-const firstMediaGroupIndex = contentGroups.findIndex((group) => (
-	group.type === 'structured'
-	&& (group.block.type === 'image-stack' || group.block.type === 'image-carousel')
 ));
 const markdownHeadingStyle = (level: 'h3' | 'h4') => {
 	const headingConfig = markdownHeadings[level];
@@ -215,50 +181,7 @@ const sectionStyle = [
 		</header>
 
 		<div class:list={['section-body', { 'section-body-has-media': hasMedia, 'section-body-text-only': !hasMedia }]}>
-			{contentGroups.map((group, groupIndex) => {
-				if (group.type === 'reading') {
-					return group.blocks.map((block) => block.type === 'html'
-						&& block.html
-						&& <div class="section-markdown" set:html={block.html} />);
-				}
-
-				const block = group.block;
-				if (block.type === 'image-carousel') {
-					return (
-						<ImageCarousel
-							title={section.title}
-							images={block.images}
-							maxAvailableWidthPercent={visualTheme.images.maxAvailableWidthPercent}
-							maxAvailableHeightPercent={visualTheme.images.maxAvailableHeightPercent}
-							priorityFirstImage={prioritizeFirstImage && groupIndex === firstMediaGroupIndex}
-						/>
-					);
-				}
-
-				if (block.type === 'card-list') {
-					return (
-						<CardList
-							cards={block.cards}
-							layout={block.layout}
-							flow={block.flow}
-							size={block.size}
-							width={block.width ?? pagePresentation.blocks.cardList.width}
-						/>
-					);
-				}
-				if (block.type === 'page-list') {
-					return <PageList pages={block.pages} />;
-				}
-
-				return (
-					<ImageStack
-						title={section.title}
-						images={block.images}
-						maxAvailableWidthPercent={visualTheme.images.maxAvailableWidthPercent}
-						priorityFirstImage={prioritizeFirstImage && groupIndex === firstMediaGroupIndex}
-					/>
-				);
-			})}
+			<ContentBlocks blocks={section.contentBlocks} title={section.title} images={visualTheme.images} cardWidth={pagePresentation.blocks.cardList.width} prioritizeFirstImage={prioritizeFirstImage} />
 		</div>
 	</div>
 </section>

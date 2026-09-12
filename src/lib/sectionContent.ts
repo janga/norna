@@ -1,4 +1,5 @@
 import { markdownToHtml } from 'satteri';
+import { groupRenderedTabs } from '../../scripts/lib/content-tabs.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import {
 	formatHeadingIdentifierIssue,
@@ -54,8 +55,9 @@ type InlineNote = {
 	referenceId: string;
 	html?: string;
 };
-type SectionContentBlock =
+export type SectionContentBlock =
 	| { type: 'html'; html: string }
+	| { type: 'tabs'; index: number; panels: Array<{ label: string; contentBlocks: SectionContentBlock[] }> }
 	| { type: 'image-stack'; images: ManagedImage[] }
 	| { type: 'image-carousel'; images: ManagedImage[] }
 	| { type: 'card-list'; layout: CardListLayout; flow: CardListFlow; size: CardListSize; width?: CardListWidth; cards: CardListItem[] }
@@ -77,6 +79,11 @@ export type HeadingNavigation = SectionNavigation & {
 	depth: 2 | 3;
 	parentId: string | null;
 };
+
+export const flattenContentBlocks = (blocks: SectionContentBlock[]): SectionContentBlock[] =>
+	blocks.flatMap((block) => block.type === 'tabs'
+		? [block, ...block.panels.flatMap((panel) => flattenContentBlocks(panel.contentBlocks))]
+		: [block]);
 
 const explicitHeadingIdRegex = /\s*\{#([a-z0-9-]+)\}\s*$/;
 const imageProvenanceCommentRegex = /<!--\s*norna-image-provenance:[\s\S]*?-->/gi;
@@ -273,6 +280,8 @@ export const getSectionsContent = async (
 	childPages: SitePage[] = [],
 ) => {
 	const pageDocument = page.markdownDocument;
+	const tabError = pageDocument.diagnostics.find((issue) => issue.code === 'invalid-content-tabs');
+	if (tabError) throw new Error(tabError.message);
 	const sourceLabel = page.contentLabel;
 	const headingIdentifierIssues = pageDocument.headingIssues;
 	if (headingIdentifierIssues.length > 0) {
@@ -333,7 +342,10 @@ export const getSectionsContent = async (
 			title,
 			titleHtml: await renderHeadingTitleHtml(bodySection.heading.source),
 			headingLevel,
-			contentBlocks: await resolveContentBlocks(content, bodySection.blocks, page, childPages, inlineNotes),
+			contentBlocks: groupRenderedTabs(
+				await resolveContentBlocks(content, bodySection.blocks, page, childPages, inlineNotes),
+				bodySection.tabGroups,
+			),
 		});
 	}
 

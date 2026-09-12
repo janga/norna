@@ -1,69 +1,142 @@
 # BL-049: Content Alternatives
 
+## Status
+
+Implemented with shared Markdown validation, progressive enhancement, and
+reference documentation. Machine checks cover parsing, production output,
+asset and link handling, all-alternative search indexing, keyboard interaction,
+independent selection, print, no-JavaScript reading, and narrow-screen layout.
+The existing Markdown-construct and content-check suites also pass. Human
+review of the visual treatment remains separate from these contract checks.
+
 ## Outcome
 
-Norna has a deliberate answer for equivalent operating-system, package-manager,
-programming-language, and API variants currently represented by tabs in other
-documentation systems.
+Norna supports local tabs for equivalent alternatives, such as operating
+systems, package managers, programming languages, or API variants. Tabs are a
+compact presentation of alternative content within an existing section. They
+are not a second page-navigation system.
 
-## Evidence
+## Scope
 
-Tabs occur in all four primary documentation systems reviewed by the completed
-`BL-046` migration inventory. They occur in 38 of 96 reviewed Material for
-MkDocs files, 16 of 94 Docusaurus files, and 8 of 37 English Starlight files.
-The construct is common enough to require a migration rule, but frequency
-alone does not settle a suitable Norna syntax.
+Tab groups sit directly in page sections. Multiple independent groups may
+appear in the same section or page; they cannot be nested in other blocks.
+Each tab may contain ordinary block Markdown, including:
 
-[BL-098: Representative Documentation Remigration](BL-098-representative-documentation-remigration.md)
-provides a current comparison corpus: package-manager commands, aligned table
-examples, and MDX/Markdoc authoring alternatives are exposed consecutively.
-Use it to evaluate the reading cost of the fallback before introducing native
-tab selection or synchronized preferences.
+- paragraphs and lists
+- fenced code blocks
+- images and image components
+- tables
+- semantic callouts
+- sidenotes
 
-## Syntax Status: Design Required
+Each tab must not contain:
 
-The competing forms solve similar reader needs but do not provide one syntax
-that Norna can safely copy:
+- headings from H1 through H6
+- a new section
+- a nested tab group
+- frontmatter
+- navigation definitions
 
-- [Docusaurus tabs](https://docusaurus.io/docs/markdown-features/tabs) and
-  [Starlight tabs](https://starlight.astro.build/components/tabs/) use MDX
-  components. They are explicit but too verbose and implementation-oriented
-  for Norna's ordinary Markdown model.
+Ordinary links to other pages remain allowed. If an alternative does not apply,
+the author may state `Not applicable` in that tab. Norna does not infer which
+alternatives ought to exist and does not warn about omitted alternatives.
+
+## Authoring Syntax
+
+Use explicit, nested fences so tab content can contain fenced code and other
+ordinary Norna blocks without indentation-sensitive parsing:
+
+````markdown
+## Install ImageMagick
+
+Choose an operating system:
+
+:::: tabs
+
+::: tab "macOS"
+
+::: info
+Homebrew is the recommended installation method.
+:::
+
+```sh
+brew install imagemagick
+```
+
+:::
+
+::: tab "Windows"
+
+```powershell
+winget install ImageMagick.ImageMagick
+```
+
+:::
+
+::::
+````
+
+Rules:
+
+- The outer block is `:::: tabs`.
+- Each alternative is `::: tab "Label"`.
+- Labels are required and are visible reader text.
+- Labels are unique within their group.
+- No public tab IDs are authored.
+- The first alternative is selected by default when JavaScript is available.
+- The label is not a heading and does not enter page navigation.
+- A tab group has no separate title; surrounding prose provides its context.
+
+## Rendering Contract
+
+Without JavaScript, every alternative is rendered in document order with a
+clear block label. With JavaScript, the labels become an accessible tablist and
+the selected panel is shown. The implementation must provide keyboard
+operation, visible focus, and correct tab/panel relationships.
+
+Tab enters the selected button. Left and Right Arrow select automatically;
+Home and End select the first and last option. Tab continues into the selected
+panel. Norna generates the internal accessibility IDs. These are not an
+author-controlled link API.
+
+The choice is local to the current tab group. It is not stored, synchronized
+with other groups, or encoded in the URL. Search and print output must retain
+all alternatives.
+
+## Migration Rationale
+
+The scope covers the common need for equivalent instructions without copying a
+whole document structure into hidden panels. Docusaurus and Starlight use
+component-based tabs, while Material for MkDocs supports arbitrary nested tab
+content. Norna deliberately keeps a smaller Markdown-native contract so page
+navigation, search, print, and no-JavaScript reading remain predictable.
+
+- [Docusaurus tabs](https://docusaurus.io/docs/markdown-features/tabs)
+- [Starlight tabs](https://starlight.astro.build/components/tabs/)
 - [Material for MkDocs content tabs](https://squidfunk.github.io/mkdocs-material/reference/content-tabs/)
-  use `=== "Label"` followed by indented content. The source is compact, but
-  nested fences and long Markdown panels make indentation fragile.
 - [VitePress code groups](https://vitepress.dev/guide/markdown#code-groups)
-  use a closed container and attach labels to code fences. This is a useful
-  model for code-only alternatives, not a proven grammar for arbitrary prose,
-  images, or sections.
+- [BL-098: Representative Documentation Remigration](BL-098-representative-documentation-remigration.md)
 
-Use ordinary consecutive H3 headings as the migration fallback. Prototype a
-code-only group before considering arbitrary Markdown panels. No native syntax
-is approved by this backlog item.
+## Acceptance Criteria
 
-## Decisions Required
+- The parser accepts the syntax above and supports code fences, callouts,
+  lists, images, tables, and sidenotes inside a tab.
+- The parser rejects missing labels, duplicate labels, empty tabs, malformed
+  closures, nested tab groups, and headings inside tabs with page and section
+  context.
+- A tab group with fewer than two alternatives is rejected.
+- Without JavaScript, all alternatives remain readable in document order.
+- With JavaScript, the implementation exposes accessible tab and panel
+  semantics and supports pointer and keyboard interaction.
+- Tabs do not add headings to page navigation or page contents.
+- Search, print, and copied source preserve every alternative.
+- Representative examples cover operating-system installation and a
+  `Not applicable` alternative.
 
-- Decide whether the first native scope is code groups only or arbitrary
-  Markdown alternatives.
-- Choose syntax that remains understandable in plain source and can contain
-  fenced code without fragile nesting.
-- Define the no-JavaScript and print result. Every alternative must remain
-  available in document order.
-- Decide whether a choice can synchronize across groups or pages and, if so,
-  how persistence and privacy work.
-- Define deep links, browser history, search indexing, copy behavior, keyboard
-  operation, and screen-reader relationships.
-- Decide how tab labels relate to H2/H3 navigation. The first implementation
-  should not hide complete H2 page sections.
+## Documentation And Review
 
-## Acceptance Criteria For Design
-
-- A corpus includes representative Docusaurus, VitePress, Material, and
-  Starlight source with code-only and mixed-content tabs.
-- The proposed syntax has an explicit loss-minimizing heading fallback.
-- The design works in ordinary Markdown editing tools without requiring MDX.
-- A prototype demonstrates pointer, keyboard, screen-reader, print,
-  no-JavaScript, narrow-screen, and search behavior before implementation is
-  scheduled.
-- The design explains why content alternatives add enough value beyond visible
-  consecutive headings.
+Describe the syntax and keyboard behavior in `docs/content.md#tabs`, and record
+the JavaScript boundary in `docs/client-javascript.md`. Add a live, result-first
+example with matching Markdown under the public Examples page as part of
+BL-083: Result-First Single-Page Examples. No general reader-navigation manual
+or repeated keyboard help in each tab group is needed.

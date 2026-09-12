@@ -1,4 +1,5 @@
 import { getCodeFenceMetadataDiagnostics } from './code-fence-metadata.mjs';
+import { parseContentTabs } from './content-tabs.mjs';
 import {
 	getHeadingIdentifierIssues,
 	getMarkdownHeadings,
@@ -186,6 +187,7 @@ const createRegion = ({
 	label,
 	lineOffset,
 	tableErrors,
+	tabResult,
 }) => {
 	const endOffset = nextHeading?.index ?? source.length;
 	const markdown = source.slice(heading.index, endOffset).trimEnd();
@@ -194,10 +196,20 @@ const createRegion = ({
 		label,
 		lineOffset: regionLineOffset,
 	});
-	const noteResult = extractInlineNoteDiagnostics(markdown, {
-		label,
-		lineOffset: regionLineOffset,
-	});
+	// A note and its reference must stay in the same visible alternative.
+	const noteBoundaries = [...new Set([heading.index, endOffset, ...tabResult.groups.flatMap((group) =>
+		group.panels.flatMap((panel) => [panel.start, panel.end]).filter((offset) => offset > heading.index && offset < endOffset),
+	)])].sort((a, b) => a - b);
+	const noteResult = { notes: [], errors: [] };
+	for (let index = 0; index < noteBoundaries.length - 1; index += 1) {
+		const start = noteBoundaries[index];
+		const parsed = extractInlineNoteDiagnostics(tabResult.maskedSource.slice(start, noteBoundaries[index + 1]).trimEnd(), {
+			label,
+			lineOffset: lineOffset + source.slice(0, start).split('\n').length - 1,
+		});
+		noteResult.notes.push(...parsed.notes);
+		noteResult.errors.push(...parsed.errors);
+	}
 	const markdownImages = extractMarkdownImageReferences(markdown).map((reference) => ({
 		...reference,
 		line: regionLineOffset + reference.line,
@@ -213,6 +225,8 @@ const createRegion = ({
 		blockErrors: blockResult.errors,
 		calloutErrors: calloutErrors.filter((error) => error.offset >= heading.index && error.offset < endOffset),
 		codeFenceErrors: codeFenceErrors.filter((error) => error.offset >= heading.index && error.offset < endOffset),
+		tabErrors: tabResult.diagnostics.filter((error) => error.offset >= heading.index && error.offset < endOffset),
+		tabGroups: tabResult.groups.filter((group) => group.start >= heading.index && group.start < endOffset),
 		content: getRegionContent(markdown, blockResult.blocks, heading.index),
 		endOffset,
 		heading,
@@ -236,7 +250,8 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	const source = normalizeMarkdown(markdown);
 	const label = options.label ?? 'Markdown';
 	const lineOffset = options.lineOffset ?? 0;
-	const { headings, tree } = await getMarkdownHeadings(source);
+	const tabResult = parseContentTabs(source, { label, lineOffset });
+	const { headings, tree } = await getMarkdownHeadings(tabResult.maskedSource);
 	const calloutErrors = getSemanticCalloutDiagnostics(tree, { label, lineOffset });
 	const codeFenceErrors = getCodeFenceMetadataDiagnostics(tree, {
 		excludedLanguages: nornaBlockTypes,
@@ -259,6 +274,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		lineOffset,
 		source,
 		tableErrors,
+		tabResult,
 	}));
 	const headingIssues = getHeadingIdentifierIssues(headings);
 	const headingDiagnostics = getHeadingDiagnostics(headings, lineOffset);
@@ -333,6 +349,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 			...calloutDiagnostics,
 			...codeFenceDiagnostics,
 			...tableDiagnostics,
+			...tabResult.diagnostics,
 		],
 		headings,
 		headingIssues,
@@ -350,6 +367,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		regions,
 		sections: regions.filter((region) => region.kind === 'section'),
 		source,
+		tabGroups: tabResult.groups,
 	};
 };
 

@@ -1,0 +1,60 @@
+<script>
+	document.querySelectorAll<HTMLElement>('[data-content-tabs]').forEach((group, groupIndex) => {
+		const controls = group.querySelector<HTMLElement>('[data-tabs-controls]')!;
+		const panels = Array.from(group.querySelectorAll<HTMLElement>(':scope > [data-tab-panel]'));
+		const labels = panels.map((panel) => panel.querySelector<HTMLElement>('[data-tab-label]')!);
+		const buttons = panels.map((panel, index) => {
+			const button = document.createElement('button');
+			const id = `norna-tabs-${groupIndex}-${index}`;
+			button.type = 'button';
+			button.id = `${id}-tab`;
+			button.textContent = labels[index].textContent;
+			button.setAttribute('role', 'tab');
+			button.setAttribute('aria-controls', id);
+			panel.id = id;
+			panel.setAttribute('role', 'tabpanel');
+			panel.setAttribute('aria-labelledby', button.id);
+			panel.tabIndex = 0;
+			controls.append(button);
+			return button;
+		});
+		const heading = group.closest('section')?.querySelector<HTMLElement>('h1, h2');
+		controls.setAttribute('role', 'tablist');
+		if (heading?.id) controls.setAttribute('aria-labelledby', heading.id);
+		const select = (selected: number, focus = false) => {
+			buttons.forEach((button, index) => {
+				button.setAttribute('aria-selected', String(index === selected));
+				button.tabIndex = index === selected ? 0 : -1;
+				panels[index].hidden = index !== selected;
+			});
+			if (focus) buttons[selected].focus({ preventScroll: true });
+			group.dispatchEvent(new CustomEvent('norna:tab-change', { bubbles: true }));
+			window.dispatchEvent(new Event('resize'));
+		};
+		buttons.forEach((button, index) => {
+			button.addEventListener('click', () => select(index));
+			button.addEventListener('keydown', (event) => {
+				let selected = index;
+				if (event.key === 'ArrowRight') selected = (index + 1) % buttons.length;
+				else if (event.key === 'ArrowLeft') selected = (index - 1 + buttons.length) % buttons.length;
+				else if (event.key === 'Home') selected = 0;
+				else if (event.key === 'End') selected = buttons.length - 1;
+				else return;
+				event.preventDefault();
+				select(selected, true);
+			});
+		});
+		controls.hidden = false;
+		group.dataset.tabsReady = 'true';
+		select(0);
+		const revealTarget = () => {
+			let id: string;
+			try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+			const target = document.getElementById(id);
+			const index = panels.findIndex((panel) => target && panel.contains(target));
+			if (index >= 0) { select(index); target?.scrollIntoView(); }
+		};
+		window.addEventListener('hashchange', revealTarget);
+		revealTarget();
+	});
+</script>

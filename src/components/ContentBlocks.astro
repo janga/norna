@@ -1,0 +1,39 @@
+---
+import CardList from './CardList.astro';
+import ImageCarousel from './ImageCarousel.astro';
+import ImageStack from './ImageStack.astro';
+import PageList from './PageList.astro';
+import type { SectionContentBlock } from '../lib/sectionContent';
+
+interface Props {
+	blocks: SectionContentBlock[];
+	title: string;
+	images: {
+		maxAvailableWidthPercent: { desktop: number; mobile: number };
+		maxAvailableHeightPercent?: { desktop: number; mobile: number };
+	};
+	cardWidth: 'text' | 'narrow' | 'normal' | 'wide';
+	prioritizeFirstImage?: boolean;
+}
+const { blocks, title, images, cardWidth, prioritizeFirstImage = false } = Astro.props;
+const firstMediaIndex = blocks.findIndex((block) => block.type === 'image-stack' || block.type === 'image-carousel');
+---
+
+{blocks.map((block, index) => {
+	if (block.type === 'html') return <div class="section-markdown" set:html={block.html} />;
+	if (block.type === 'tabs') return (
+		<div class="content-tabs content-block-note-lane-boundary" data-content-tabs>
+			<div class="content-tabs-controls" data-tabs-controls hidden></div>
+			{block.panels.map((panel, panelIndex) => (
+				<div class="content-tab-panel" data-tab-panel role="group" aria-labelledby={`norna-tabs-label-${block.index}-${panelIndex}`}>
+					<div class="content-tab-label" data-tab-label id={`norna-tabs-label-${block.index}-${panelIndex}`}>{panel.label}</div>
+					<Astro.self blocks={panel.contentBlocks} title={title} images={images} cardWidth={cardWidth} />
+				</div>
+			))}
+		</div>
+	);
+	if (block.type === 'page-list') return <PageList pages={block.pages} />;
+	if (block.type === 'card-list') return <CardList cards={block.cards} layout={block.layout} flow={block.flow} size={block.size} width={block.width ?? cardWidth} />;
+	if (block.type === 'image-carousel') return <ImageCarousel title={title} images={block.images} maxAvailableWidthPercent={images.maxAvailableWidthPercent} maxAvailableHeightPercent={images.maxAvailableHeightPercent} priorityFirstImage={prioritizeFirstImage && index === firstMediaIndex} />;
+	return <ImageStack title={title} images={block.images} maxAvailableWidthPercent={images.maxAvailableWidthPercent} priorityFirstImage={prioritizeFirstImage && index === firstMediaIndex} />;
+})}

@@ -362,6 +362,10 @@ for (const contentFile of contentFiles) {
 		const blockResults = { blocks: section.blocks, errors: section.blockErrors };
 		blockResultsBySection.set(section, blockResults);
 
+		for (const error of section.tabErrors) {
+			addSectionIssue(contentFile, section, { severity: 'error', message: error.message });
+		}
+
 		for (const error of section.noteErrors) {
 			addSectionIssue(contentFile, section, {
 				severity: 'error',

@@ -450,6 +450,67 @@ blockquote when the text is a quotation rather than a labelled note or warning.
 The source remains recognizable as a blockquote in Markdown renderers that do
 not enhance the marker.
 
+### Tabs
+
+Use tabs for short alternatives within the same instruction, such as commands
+for different operating systems. Put shared step headings outside the group.
+Each alternative can contain paragraphs, lists, code, managed images, tables,
+semantic callouts, and sidenotes.
+
+````markdown
+:::: tabs
+
+::: tab "macOS"
+
+```sh
+brew install imagemagick
+```
+
+:::
+
+::: tab "Windows"
+
+```powershell
+winget install ImageMagick.ImageMagick
+```
+
+:::
+
+::::
+````
+
+Write at least two alternatives. Labels must be nonempty, double-quoted strings
+and unique within the group. Escape a literal quote as `\"`. Every alternative
+needs content. Close each `::: tab` with `:::` and the surrounding `:::: tabs`
+with `::::`. Code fences do not close these containers.
+
+Tabs belong directly in a page's content, outside lists, blockquotes, callouts,
+cards, and notes. They cannot contain headings, nested tab groups, frontmatter,
+or navigation definitions. Ordinary links remain allowed. Use separate pages
+when alternatives require substantially different heading structures.
+
+Inside a tab, the existing GitHub-style callout syntax remains valid. The short
+container form `::: info` followed by its body and a closing `:::` is also
+accepted there. `info` maps to `NOTE`; `note`, `tip`, `important`, `warning`,
+`caution`, and `danger` map to the corresponding semantic callout. Close the
+callout before closing its tab. This container form is scoped to tab content.
+
+Norna initially selects the first alternative. Each group works independently;
+there is no saved preference, shared group configuration, or public tab ID.
+Translated labels are ordinary author-written text. If a step does not apply,
+say so in its alternative when omission could be mistaken for missing
+instructions. Norna does not require the same alternatives in every group.
+
+With a keyboard, Tab enters the selected tab button. Left and Right Arrow move
+focus and select an alternative immediately. Home and End select the first and
+last. Tab then continues into the selected panel. Focus and selection have
+distinct visible markers.
+
+Without JavaScript, every alternative appears in order with its label, without
+adding navigation headings. Printing also displays every alternative. All
+content remains in the static HTML for indexing; an ordinary link to the
+section lets the reader choose the relevant alternative.
+
 ### Details disclosures
 
 Use a native `details` element when optional content should remain available

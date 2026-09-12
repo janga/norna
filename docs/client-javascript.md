@@ -8,6 +8,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 
 | Feature | Adds JavaScript | Without JavaScript |
 | --- | --- | --- |
+| Tabs | Only on pages containing tabs | Every alternative appears with its label, in document order. Print also shows all alternatives. |
 | Markdown prose and headings | No | Fully rendered. |
 | Image stacks | Only on pages containing an image stack | Images, responsive sources, alt text, captions, and direct original-image links remain available. Modal inspection and persistent side captions are absent, so captions stay below their images. |
 | Card lists | No | Cards and links remain available. |

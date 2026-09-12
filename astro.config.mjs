@@ -4,6 +4,7 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import { defineConfig } from 'astro/config';
 import { satteri } from '@astrojs/markdown-satteri';
+import { prepareContentTabs } from './scripts/lib/content-tabs.mjs';
 import { getBasePathRedirectLocation } from './scripts/lib/base-path-redirect.mjs';
 import { nornaCodeFenceTransformer } from './scripts/lib/code-fence-metadata.mjs';
 import { nornaMarkdownRenderPlugin } from './scripts/lib/norna-markdown-render-plugin.mjs';
@@ -133,6 +134,32 @@ const nornaGeneratedImagesWatcher = () => ({
 	},
 });
 
+const markdownProcessor = satteri({
+	features: {
+		gfm: { footnotes: {
+			label: projectConfig.locale.labels.footnotes,
+			backLabel: projectConfig.locale.labels.footnoteBackReference,
+		} },
+	},
+	mdastPlugins: [nornaMarkdownRenderPlugin],
+	hastPlugins: [nornaTableRenderPlugin],
+});
+const createMarkdownRenderer = markdownProcessor.createRenderer.bind(markdownProcessor);
+markdownProcessor.createRenderer = async (shared) => {
+	const renderer = await createMarkdownRenderer(shared);
+	return {
+		...renderer,
+		render(source, options) {
+			return renderer.render(prepareContentTabs(source, {
+				label: options?.fileURL?.pathname ?? 'Markdown',
+				labels: Object.fromEntries(['note', 'tip', 'important', 'warning', 'caution', 'danger'].map((type) => [
+					type, projectConfig.locale.labels[`callout${type[0].toUpperCase()}${type.slice(1)}`],
+				])),
+			}), options);
+		},
+	};
+};
+
 // https://astro.build/config
 export default defineConfig({
 	base: projectConfig.site.basePath,
@@ -141,18 +168,7 @@ export default defineConfig({
 		shikiConfig: {
 			transformers: [nornaCodeFenceTransformer],
 		},
-		processor: satteri({
-			features: {
-				gfm: {
-					footnotes: {
-						label: projectConfig.locale.labels.footnotes,
-						backLabel: projectConfig.locale.labels.footnoteBackReference,
-					},
-				},
-			},
-			mdastPlugins: [nornaMarkdownRenderPlugin],
-			hastPlugins: [nornaTableRenderPlugin],
-		}),
+		processor: markdownProcessor,
 	},
 	outDir: astroDistDir,
 	publicDir: astroPublicDir,
