@@ -35,7 +35,7 @@ engine and index. See [Search](configuration.md#search) for return-link behavior
 and temporary browser storage.
 See
 [Reader Display Controls](theme.md#reader-display-controls) and
-[Focus Reading With Desktop Rails](pages.md#focus-reading-with-desktop-rails)
+[Focus Reading](pages.md#focus-reading)
 for their storage, defaults, and interaction contracts. See
 [Current Reading Position](pages.md#current-reading-position) for the automatic
 contents-rail marker.

@@ -508,22 +508,43 @@ Categories require `tree` navigation because they need disclosure behavior
 without pretending to be page links. Explicit `sections` or `top` mode is
 therefore invalid when a listed category exists.
 
-### Focus Reading With Desktop Rails
+### Focus Reading
 
-`tree` navigation always adds Focus reading to the Display panel, even when the
-selected preset would otherwise omit that choice. Focus reading hides both
-local rails together with the other secondary navigation, breadcrumbs, and
-footer. The Display control stays visible so the reader can restore the normal
-view.
+Focus reading is a reader-controlled display mode for concentrating on the
+current page. It removes persistent navigation rails, breadcrumbs, and the
+footer while keeping the document available. The mode does not change the
+page's source, hierarchy, or URL.
 
-The document column keeps its width and horizontal position while Focus reading
-changes. Prose, headings, images, cards, and section surfaces therefore do not
-reflow or jump sideways. The choice is stored in the `norna-focus-reading`
-cookie and follows the reader across pages until it is changed or reset.
+The choice appears in the Display panel when `readerControls.focusReading` is
+enabled. Tree navigation always offers it because a persistent page tree would
+otherwise occupy the reading area. See
+[Reader Display Controls](theme.md#reader-display-controls) for the setting,
+defaults, and cookie.
 
-The compact Menu remains available in Focus reading on desktop and small
-screens. Without JavaScript, Focus reading cannot be selected and the ordinary
-navigation stays visible; all page and anchor links remain usable.
+When Focus reading is on:
+
+- the document keeps its selected reading width and reading axis;
+- the site identity, Display control, and a compact **Menu** remain available;
+- opening **Menu** reveals the same page and section destinations as the
+  ordinary navigation, without resizing the document;
+- selecting a destination closes the menu and follows the ordinary page or
+  anchor link; and
+- pressing `Escape` closes the menu and returns focus to its trigger.
+
+The menu is an overlay. Opening or closing it does not move the reader's
+scroll position or change the layout of text, images, tables, or notes. The
+reader's choice is stored in the `norna-focus-reading` cookie and follows the
+reader across pages until it is changed or reset.
+
+Focus reading is a progressive enhancement. Without JavaScript, the reader
+cannot select the mode or open its overlay; ordinary navigation, page links,
+and anchor links remain available instead. See
+[Client-Side JavaScript](client-javascript.md#feature-contract) for the full
+boundary.
+
+Focus reading is separate from [Current Reading Position](#current-reading-position).
+The former changes which navigation chrome is visible; the latter
+follows the reader's heading position in a visible outline.
 
 ### Current Reading Position
 

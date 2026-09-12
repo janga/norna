@@ -566,10 +566,12 @@ The Display panel then contains:
 
 Narrow, Standard, and Wide limit prose to approximately `60ch`, `72ch`, and
 `80ch` respectively. Media keeps its separately configured width. Focus reading
-hides navigation, breadcrumbs, and the footer while leaving the Display control
-available so the reader can return to the normal view. Norna preserves the
-visible reading position when reading width or focus reading changes, except
-when the reader is already at the top of the page.
+hides persistent navigation, breadcrumbs, and the footer while leaving the
+Display control and compact Menu available. The compact Menu provides the same
+page and section destinations without changing the document layout. See
+[Focus Reading](pages.md#focus-reading) for its interaction and no-JavaScript
+fallback. Norna preserves the visible reading position when reading width or
+focus reading changes, except when the reader is already at the top of the page.
 
 Built-in presets choose these starting widths and optional controls:
 

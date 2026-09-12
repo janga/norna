@@ -2,8 +2,8 @@
 
 ## Status
 
-Implemented, browser-tested, and approved by the user after interaction review.
-Only documentation remains; the human-review gate is satisfied.
+Implemented, browser-tested, documented, and approved by the user after
+interaction review on 2026-09-12.
 
 ## Outcome
 
@@ -80,9 +80,9 @@ setting.
   persistence, long navigation trees, and transitions while scrolled within a
   page.
 
-## Documentation Gate
+## Documentation Record
 
-Human review is approved. Complete the Focus-reading and navigation reference
-with the overlay, keyboard, dismissal, and focus-restoration behavior. Clarify
-the theme reference: Focus reading hides persistent navigation, not access to
-the site's compact Menu. Keep this item open until that documentation is done.
+The canonical reference documents the mode, its compact Menu, overlay
+behavior, keyboard dismissal, focus restoration, layout stability, and
+no-JavaScript fallback in [Pages: Focus Reading](../../pages.md#focus-reading)
+and [Theme: Reader Display Controls](../../theme.md#reader-display-controls).

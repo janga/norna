@@ -70,10 +70,6 @@ verified and approved for documentation.
   **Implemented, browser-tested, and human-approved; documentation remains.**
   Document the shared palette-derived surface for current-page and
   current-heading markers in Dark appearance.
-- [`BL-059` Compact navigation in Focus reading](docs/design/backlog/BL-059-focus-reading-navigation.md):
-  **Implemented, browser-tested, and human-approved; documentation remains.**
-  Complete the overlay interaction reference and clarify that Focus reading
-  hides persistent navigation but retains access through the compact Menu.
 
 ## Needs Decision Or Evidence
 
