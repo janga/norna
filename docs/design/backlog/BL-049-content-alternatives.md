@@ -7,7 +7,7 @@ reference documentation. Machine checks cover parsing, production output,
 asset and link handling, all-alternative search indexing, keyboard interaction,
 independent selection, print, no-JavaScript reading, and narrow-screen layout.
 The existing Markdown-construct and content-check suites also pass. Human
-review of the visual treatment remains separate from these contract checks.
+visual review was completed and approved on 2026-09-12.
 
 ## Outcome
 

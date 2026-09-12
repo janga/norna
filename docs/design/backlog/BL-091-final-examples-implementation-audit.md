@@ -4,7 +4,8 @@ Refreshed on 2026-09-12 for BL-049: Content Alternatives. The gallery now
 contains 22 sections, including native tabs with an exact source comparison.
 The capability table has eleven rows. All four gallery browser cases,
 documentation and content checks, and the complete Pages build pass. Human
-review remains pending; unchanged contracts reuse their existing evidence.
+review was completed and approved on 2026-09-12; unchanged contracts reuse
+their existing evidence.
 
 ## Status And Dependencies
 
@@ -14,16 +15,16 @@ BL-093: Missing descriptions in child-page lists,
 BL-094: Child-page descriptions that explain a choice, and
 BL-095: Nested navigation for substantial documentation. Focused checks and
 the documentation build passed; previous verification was reused for
-unchanged examples. Final human gallery review is still pending.
+unchanged examples. Final human gallery review was approved on 2026-09-12.
 
-Technical audit completed on 2026-09-11; awaiting human gallery review. All
-20 examples were checked against current implementation, exact source,
+Technical audit completed on 2026-09-11; human gallery review was approved on
+2026-09-12. All 22 examples were checked against current implementation, exact source,
 reference, and rendered output. Focused browser checks, content and
 documentation checks, and the complete Pages artifact build passed.
 
 See the per-section evidence, corrections, and remaining review instructions
-in [Examples content audit](../examples-content-audit.md). No human approval
-has been inferred from the automated results.
+in [Examples content audit](../examples-content-audit.md). Human approval is
+recorded there separately from the automated results.
 
 This audit ran last in the correction sequence for
 [BL-083: Result-first single-page examples](BL-083-result-first-single-page-examples.md).

@@ -16,19 +16,7 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-049` Content alternatives](docs/design/backlog/BL-049-content-alternatives.md):
-  **Implemented and regression-tested; awaiting visual review.** Local tabs
-  retain every alternative for search, print, and no-JavaScript reading. Review
-  their presentation in the remigration corpus and public Examples gallery.
-- [`BL-098` Representative documentation remigration](docs/design/backlog/BL-098-representative-documentation-remigration.md):
-  **Implemented and machine-verified; awaiting human comparison.** Review 16
-  adapted articles from four systems, now with native tabs and explicit
-  nested-group fallbacks, in the private research workspace.
-- [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
-  **Implemented and technically verified; awaiting human gallery review.**
-  The 22-section gallery now includes native tabs with matching source. Review
-  tabs, the child-page choice example, tables, and navigation illustrations;
-  the final audit and public Pages artifact have been refreshed.
+No implementation-ready items are currently queued.
 
 ## Next
 

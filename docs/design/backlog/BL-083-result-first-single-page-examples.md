@@ -2,10 +2,10 @@
 
 ## Status
 
-Corrections implemented and technically verified on 2026-09-11; awaiting human
-review of the revised gallery. The ordered sequence below resolved table
+Corrections implemented, technically verified, and human-approved on
+2026-09-12. The ordered sequence below resolved table
 readability, source-to-result, and navigation-example problems, then audited
-all 20 sections against current behavior. The final Pages build passed.
+the gallery sections against current behavior. The final Pages build passed.
 [BL-097: Visual-first examples with practical source checks](BL-097-visual-first-examples-and-checks.md)
 subsequently moves ordinary Markdown near the end and adds a dedicated source
 checking example, bringing the gallery to 21 sections.
@@ -15,13 +15,12 @@ Representative Documentation Remigration. The gallery now has 22 sections:
 native installation tabs follow code blocks, with exact source, fallback
 boundaries, and a reference link. The capability table includes tabs. A stale
 top-navigation image description no longer claims a duplicate section row.
-Content, exact-source, browser, and complete Pages-build checks pass; human
-visual approval is still pending.
+Content, exact-source, browser, and complete Pages-build checks pass; the
+revised gallery has been visually approved.
 
 Review instructions and per-section evidence are in
 [Examples content audit](../examples-content-audit.md). Do not schedule the
-completed corrections again or mark the gallery visually approved until the
-user has reviewed it.
+completed corrections again; the audit records the review evidence.
 
 ## Correction Sequence
 

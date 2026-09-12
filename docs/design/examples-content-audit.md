@@ -13,10 +13,9 @@ then refreshed for the four follow-up items: BL-092: Top navigation without a
 duplicate section row, BL-093: Missing descriptions in child-page lists,
 BL-094: Child-page descriptions that explain a choice, and BL-095: Nested
 navigation for substantial documentation.
-Human approval of the revised gallery remains pending.
-Do not close
+Human approval of the revised gallery was completed on 2026-09-12.
 [BL-083: Result-first single-page examples](backlog/BL-083-result-first-single-page-examples.md)
-or its final audit on the strength of automated tests alone.
+and its final audit are closed after the recorded human review.
 
 The original 20 H2 examples were compared with current sources and canonical
 reference. [BL-097: Visual-first examples with practical source checks](backlog/BL-097-visual-first-examples-and-checks.md)

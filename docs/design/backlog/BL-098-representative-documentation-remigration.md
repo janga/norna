@@ -2,7 +2,7 @@
 
 ## Status And Outcome
 
-Implemented and machine-verified; awaiting human comparison. The private trial
+Implemented, machine-verified, and human-reviewed on 2026-09-12. The private trial
 contains 16 source articles from Docusaurus, VitePress, Material for MkDocs, and
 Astro Starlight: eight complete articles and eight selected-section adaptations,
 plus a report homepage for each source system.
@@ -101,5 +101,5 @@ The trial's fixed recipes are not a general converter for arbitrary MDX.
   this task adds private evaluation material, not production engine behavior.
 - Five focused conversion tests cover code groups, indented alternatives,
   static component tabs, preserved source examples, and explicit fallbacks.
-- Live comparison and visual suitability remain a human review, not an
-  assertion that every upstream feature migrated without loss.
+- Live comparison and visual suitability were approved in the human review;
+  this does not assert that every upstream feature migrated without loss.
