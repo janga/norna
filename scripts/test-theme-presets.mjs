@@ -154,20 +154,21 @@ try {
 		assert.ok(resolved.typography?.profile);
 		assert.ok(resolved.palette);
 		assert.ok(resolved.appearance?.default);
-		assert.equal(resolved.readerControls?.appearance, true);
 		assert.ok(resolved.sections?.backgroundPattern);
+		const presentation = resolveThemePresentation({ preset: presetName }, `${presetName} presentation`);
+		assert.equal(presentation.readerPreferences.controls.appearance, true);
 		assert.equal(
-			resolveThemePresentation({ preset: presetName }, `${presetName} presentation`).readerPreferences.controls.readingWidth,
+			presentation.readerPreferences.controls.readingWidth,
 			true,
 			`${presetName} must always let readers choose a reading width`,
 		);
+		assert.equal(presentation.readerPreferences.controls.focusReading, false);
 		assert.deepEqual(themePresets[presetName], expectedPresetThemes[presetName]);
-		const { readerControls, ...expectedVisualProfiles } = expectedPresetThemes[presetName];
 		assert.deepEqual(
 			resolveThemeProfileRecipe(themePresetRecipes[presetName], `${presetName} test recipe`),
-			expectedVisualProfiles,
+			expectedPresetThemes[presetName],
 		);
-		assert.deepEqual(themePresetDefinitions[presetName].readerControls, readerControls);
+		assert.equal(themePresetDefinitions[presetName].readerControls, undefined);
 	}
 	const isolatedResolution = resolveThemeProfileRecipe(themePresetRecipes.project, 'isolated recipe');
 	isolatedResolution.layout.pageWidth = '1px';
@@ -320,8 +321,8 @@ sections:
 		['palette: cool-green\n', /Palette value "cool-green" was replaced by "arctic-blue"/],
 		['corners: soft\n', /Corner value "soft" was replaced by "rounded"/],
 		['colorMode:\n  default: system\n', /Theme setting "colorMode" was replaced by "appearance"/],
-		['readerControls:\n  colorMode: true\n', /Reader control "colorMode" was replaced by "appearance"/],
-		['readerControls:\n  readingWidth: true\n', /Reader control "readingWidth" was removed because reading width is now always available/],
+		['readerControls:\n  colorMode: true\n', /Theme setting "readerControls" was removed/],
+		['readerControls:\n  readingWidth: true\n', /Theme setting "readerControls" was removed/],
 		['sections:\n  backgroundPattern: cycling\n', /Section background pattern "cycling" was replaced by "accented"/],
 		['shape: soft\n', /"shape" was replaced by "corners"[\s\S]*replace the old "soft" value with "rounded"/],
 	]) {

@@ -123,7 +123,6 @@ Replace superseded root-theme terms when upgrading:
 | `shape: square` | `corners: square` |
 | `shape: soft` | `corners: rounded` |
 | `colorMode` | `appearance` |
-| `readerControls.colorMode` | `readerControls.appearance` |
 | `sections.backgroundPattern: cycling` | `sections.backgroundPattern: accented` |
 
 The corresponding reader cookie is now named `norna-appearance`. Existing
@@ -134,9 +133,10 @@ configured appearance once before making a new Display choice.
 `arctic-blue` as its closest supported replacement, then review the result in
 both Light and Dark appearances.
 
-Remove `readerControls.readingWidth` from `theme.yaml`. Reading width is now an
-engine-level reader choice that is always available; `layout.textWidth` still
-selects the initial Narrow, Standard, or Wide value.
+Remove `readerControls` from `theme.yaml`. Appearance and reading width are
+always available in the Display panel. Focus reading is offered automatically
+when navigation resolves to `tree`. Use `appearance.default` to select the
+initial Appearance and `layout.textWidth` to select the initial reading width.
 
 ### Update Project Scripts And Ignores
 

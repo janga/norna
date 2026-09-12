@@ -36,12 +36,8 @@ const getLegacyThemeHint = (issue, data) => {
 		return 'Theme setting "colorMode" was replaced by "appearance".';
 	}
 
-	if (location === 'readerControls' && issue.keys?.includes('colorMode')) {
-		return 'Reader control "colorMode" was replaced by "appearance".';
-	}
-
-	if (location === 'readerControls' && issue.keys?.includes('readingWidth')) {
-		return 'Reader control "readingWidth" was removed because reading width is now always available. Remove this field.';
+	if (location === 'readerControls') {
+		return 'Theme setting "readerControls" was removed. Appearance and reading width are always available; Focus reading follows tree navigation. Remove this block.';
 	}
 
 	return undefined;

@@ -283,7 +283,7 @@ const addThemeHelp = (jsonSchema) => {
 	], presentationPaletteNames);
 	addHelp(jsonSchema, 'appearance', [
 		yamlExample('appearance:\n  default: system'),
-		'Selects the initial Appearance. Omit this setting to follow the visitor\'s system preference. Enable the reader-facing choice under readerControls.',
+		'Selects the initial Appearance. The Appearance choice is always available in the site-wide Display panel. Omit this setting to follow the visitor\'s system preference.',
 		documentationLink('Appearance', 'theme.md', 'appearance'),
 	]);
 	addFieldHelp(jsonSchema, 'appearance.default', 'appearance:\n  default: system', 'theme.md', 'appearance', ['system', 'light', 'dark']);
@@ -293,32 +293,6 @@ const addThemeHelp = (jsonSchema) => {
 		description: 'Follow the system color preference or choose a fixed initial appearance.',
 		file: 'theme.md',
 		anchor: 'appearance',
-	})]);
-	addHelp(jsonSchema, 'readerControls', [
-		yamlExample('readerControls:\n  appearance: true\n  focusReading: true'),
-		'Choose which optional controls readers can use in the site-wide Display panel.',
-		'`appearance: true` lets readers choose System, Light, or Dark. `focusReading: true` lets them hide navigation, breadcrumbs, and the footer while reading.',
-		'Reading width is always included. Sites with tree navigation always include Focus reading, even when it is not enabled here.',
-		documentationLink('Reader Display controls', 'theme.md', 'reader-display-controls'),
-	]);
-	for (const [propertyPath, example] of [
-		['readerControls.appearance', 'readerControls:\n  appearance: true'],
-		['readerControls.focusReading', 'readerControls:\n  focusReading: true'],
-	]) {
-		addFieldHelp(
-			jsonSchema,
-			propertyPath,
-			example,
-			'theme.md',
-			'reader-display-controls',
-		);
-	}
-	addSnippets(jsonSchema, 'readerControls', [schemaSnippet({
-		label: 'Configure the Display panel',
-		body: 'readerControls:\n  appearance: ${1:true}\n  focusReading: ${2:true}',
-		description: 'Show optional Appearance and Focus reading controls. Reading width is already included, and tree navigation always includes Focus reading.',
-		file: 'theme.md',
-		anchor: 'reader-display-controls',
 	})]);
 	addHelp(jsonSchema, 'sections', [
 		yamlExample('sections:\n  backgroundPattern: alternating'),

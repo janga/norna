@@ -18,8 +18,6 @@ The root theme enables the selector with:
 ```yaml
 appearance:
   default: system
-readerControls:
-  appearance: true
 ```
 
 

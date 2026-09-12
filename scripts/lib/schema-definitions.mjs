@@ -26,13 +26,6 @@ const themeAppearance = z.object({
 	(value) => value.default !== undefined,
 	'Specify default.',
 ).describe('Site-wide initial appearance. The default is system.');
-const readerControls = z.object({
-	appearance: z.boolean().optional().describe('Show an Appearance control that lets readers choose System, Light, or Dark.'),
-	focusReading: z.boolean().optional().describe('Show a Focus reading control that lets readers hide navigation, breadcrumbs, and the footer. Sites with tree navigation always show this control.'),
-}).strict().refine(
-	(value) => value.appearance !== undefined || value.focusReading !== undefined,
-	'Specify appearance, focusReading, or both.',
-).describe('Optional controls for the site-wide Display panel.');
 const spacingDensity = z.enum(['compact', 'normal', 'airy']).describe('Coordinated spacing density. Omit this to use the selected preset.');
 const contentSpacing = z.enum(['compact', 'normal', 'spacious']).describe('Vertical spacing between page sections and structured content blocks.');
 const backgroundPattern = z.enum(['uniform', 'alternating', 'accented']).describe('How coordinated backgrounds are assigned to H2 sections. Non-uniform patterns are unavailable with tree navigation.');
@@ -260,7 +253,6 @@ const siteShape = {
 const themeVisualShape = {
 	preset: themePreset.optional().describe('Complete visual starting point. Add only the overrides the site actually needs.'),
 	appearance: themeAppearance.optional(),
-	readerControls: readerControls.optional(),
 	corners: cornerTreatment.optional().describe('Site-wide corner treatment. Omit this to use the selected preset.'),
 	layout: themeLayout.optional(),
 	images: themeImages.optional(),

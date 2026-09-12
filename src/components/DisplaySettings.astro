@@ -49,25 +49,23 @@ const widthOptions = [
 	<form class="display-settings-panel">
 		<p class="display-settings-title">{labels.displaySettings}</p>
 
-		{controls.appearance && (
-			<fieldset>
-				<legend>{labels.appearance}</legend>
-				<div class="display-settings-segmented">
-					{appearanceOptions.map((option) => (
-						<label>
-							<input
-								type="radio"
-								name="appearance"
-								value={option.value}
-								checked={defaults.appearance === option.value}
-								data-reader-appearance
-							/>
-							<span>{option.label}</span>
-						</label>
-					))}
-				</div>
-			</fieldset>
-		)}
+		<fieldset>
+			<legend>{labels.appearance}</legend>
+			<div class="display-settings-segmented">
+				{appearanceOptions.map((option) => (
+					<label>
+						<input
+							type="radio"
+							name="appearance"
+							value={option.value}
+							checked={defaults.appearance === option.value}
+							data-reader-appearance
+						/>
+						<span>{option.label}</span>
+					</label>
+				))}
+			</div>
+		</fieldset>
 
 		{controls.readingWidth && (
 			<fieldset>

@@ -12,7 +12,7 @@ different editorial material or page structure.
 ## Preset purpose {#preset-purpose}
 
 A theme preset coordinates typography, spacing, colors, corners, image sizing,
-section backgrounds, and reader controls. The source below uses no visual
+section backgrounds, and Display choices. The source below uses no visual
 overrides, so the preset remains responsible for the complete presentation.
 
 The comparison includes prose, hierarchy, notes, code, images, captions,

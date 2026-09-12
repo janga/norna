@@ -224,17 +224,15 @@ try {
 	});
 	assert.equal(typographySnippets[0].label, 'Norna: Typography overrides');
 	assert.match(typographySnippets[0].text, /headings:\n      h2:/);
-	const readerControlsSource = 'readerControls: ';
-	const readerControlSnippets = getYamlSchemaSnippetCompletions({
-		lineText: 'readerControls: ',
-		offset: readerControlsSource.length,
+	const appearanceSource = 'appearance: ';
+	const appearanceSnippets = getYamlSchemaSnippetCompletions({
+		lineText: 'appearance: ',
+		offset: appearanceSource.length,
 		schema: themeSchema,
-		source: readerControlsSource,
+		source: appearanceSource,
 	});
-	assert.equal(readerControlSnippets[0].label, 'Norna: Configure the Display panel');
-	assert.match(readerControlSnippets[0].text, /appearance: \$\{1:true\}/);
-	assert.match(readerControlSnippets[0].text, /focusReading: \$\{2:true\}/);
-	assert.doesNotMatch(readerControlSnippets[0].text, /readingWidth/);
+	assert.equal(appearanceSnippets[0].label, 'Norna: Set the initial appearance');
+	assert.match(appearanceSnippets[0].text, /default: \$\{1:system\}/);
 	const buildInfoSource = 'footer:\n  buildInfo: ';
 	const buildInfoSnippets = getYamlSchemaSnippetCompletions({
 		lineText: '  buildInfo: ',

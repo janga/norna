@@ -37,6 +37,9 @@ const readPage = (pathname = 'index.html') => readFile(path.join(tempRoot, 'dist
 const getScripts = (html) => html.match(/<script\b[^>]*>[\s\S]*?<\/script>/gi) ?? [];
 const getReaderPreferenceScripts = (html) => getScripts(html).filter((script) => script.includes('norna-reading-width'));
 const getFeatureScripts = (html) => getScripts(html).filter((script) => !script.includes('norna-reading-width'));
+const getPageFeatureScripts = (html) => getFeatureScripts(html).filter(
+	(script) => !script.includes('SectionNavigationScript.astro_'),
+);
 const readDeliveredScript = async (script) => {
 	const sourcePath = script.match(/\ssrc="([^"]+)"/)?.[1];
 	if (!sourcePath) return script;
@@ -50,7 +53,7 @@ const assertUniversalReadingWidth = (html, label) => {
 };
 const assertOnlyUniversalReadingWidth = (html, label) => {
 	assertUniversalReadingWidth(html, label);
-	assert.deepEqual(getFeatureScripts(html), [], `${label} should not load unrelated client-side features.`);
+	assert.deepEqual(getPageFeatureScripts(html), [], `${label} should not load unrelated client-side features.`);
 };
 const assertScrollBehavior = (html, behavior, label) => {
 	assert.match(
@@ -89,6 +92,8 @@ Ordinary page content does not need a level 2 section.
 	runBuild();
 	const titleOnlyHtml = await readPage();
 	assertOnlyUniversalReadingWidth(titleOnlyHtml, 'A single page with only its page-title navigation');
+	assert.match(titleOnlyHtml, /data-reader-appearance/);
+	assert.match(titleOnlyHtml, /data-display-settings/);
 	assert.match(titleOnlyHtml, /<nav class="page-nav page-nav-title-only" aria-label="Page contents">/);
 	assert.match(titleOnlyHtml, /class="page-nav-page-top" data-page-top href="\/">Minimal page<\/a>/);
 	assert.doesNotMatch(titleOnlyHtml, /class="mobile-nav-menu"/);
@@ -199,18 +204,19 @@ Static image stacks remain static.
 `);
 
 	runBuild();
-	assertOnlyUniversalReadingWidth(await readPage(), 'A plain homepage in a multi-page site');
+	const plainHomepageHtml = await readPage();
+	assertOnlyUniversalReadingWidth(plainHomepageHtml, 'A plain homepage in a multi-page site');
 	const imageStackHtml = await readPage(path.join('details', 'index.html'));
 	assertUniversalReadingWidth(imageStackHtml, 'A page with managed image stacks and cards');
 	assert.equal(
-		getFeatureScripts(imageStackHtml).length,
+		getPageFeatureScripts(imageStackHtml).length,
 		1,
 		'An image stack should load only its inspection and persistent-caption enhancement in addition to reader preferences.',
 	);
 	assert.match(imageStackHtml, /data-image-inspection-trigger/);
 	assert.match(imageStackHtml, /href="\/images\/original\/pages\/010-details\/images\/first-[a-f0-9]+\.svg"/);
 	assert.match(imageStackHtml, /data-image-inspector/);
-	const imageStackScript = await readDeliveredScript(getFeatureScripts(imageStackHtml)[0]);
+	const imageStackScript = await readDeliveredScript(getPageFeatureScripts(imageStackHtml)[0]);
 	assert.match(imageStackScript, /showModal/);
 	assert.match(imageStackScript, /ResizeObserver/);
 
@@ -230,13 +236,13 @@ npm run norna:check
 	const codeBlockHtml = await readPage();
 	assertUniversalReadingWidth(codeBlockHtml, 'A page with a copyable code block');
 	assert.equal(
-		getFeatureScripts(codeBlockHtml).length,
+		getPageFeatureScripts(codeBlockHtml).length,
 		1,
 		'A code block should load only its copy enhancement in addition to reader preferences.',
 	);
 	assert.match(codeBlockHtml, /data-code-copy-template/);
 	assert.match(codeBlockHtml, /aria-label="Copy code"/);
-	assert.match(await readDeliveredScript(getFeatureScripts(codeBlockHtml)[0]), /navigator\.clipboard/);
+	assert.match(await readDeliveredScript(getPageFeatureScripts(codeBlockHtml)[0]), /navigator\.clipboard/);
 
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
@@ -255,13 +261,13 @@ page:
 	const tableHtml = await readPage();
 	assertUniversalReadingWidth(tableHtml, 'A page with a Markdown table');
 	assert.equal(
-		getFeatureScripts(tableHtml).length,
+		getPageFeatureScripts(tableHtml).length,
 		1,
 		'A table page should load only its layout, overflow, and sticky-heading enhancement in addition to reader preferences.',
 	);
 	assert.match(tableHtml, /data-table-frame/);
 	assert.match(tableHtml, /<div\b(?=[^>]*data-table-scroll)(?=[^>]*tabindex="0")[^>]*>/);
-	const tableScript = await readDeliveredScript(getFeatureScripts(tableHtml)[0]);
+	const tableScript = await readDeliveredScript(getPageFeatureScripts(tableHtml)[0]);
 	assert.match(tableScript, /\.scrollWidth\s*-\s*[^;]+?\.clientWidth/);
 	assert.match(tableScript, /dataset\.tableOverflow/);
 	assert.match(tableScript, /dataset\.tableLayout/);
@@ -306,13 +312,13 @@ page:
 	assertOnlyUniversalReadingWidth(noteHtml, 'A page with CSS margin notes');
 	assert.match(noteHtml, /class="section-note section-note-margin"/);
 	assertUniversalReadingWidth(carouselHtml, 'A carousel page');
-	assert.equal(getFeatureScripts(carouselHtml).length, 1, 'A carousel page should load only the carousel implementation in addition to reader preferences.');
+	assert.equal(getPageFeatureScripts(carouselHtml).length, 1, 'A carousel page should load only the carousel implementation in addition to reader preferences.');
 	assert.match(carouselHtml, /<html\b[^>]*data-image-presentation="prose-aligned"/);
 	assert.match(carouselHtml, /data-carousel/);
 	assert.match(carouselHtml, /--image-carousel-width-from-height-desktop:/);
 	assert.match(carouselHtml, /aria-label="Previous image"/);
 	assert.match(carouselHtml, /aria-label="Next image"/);
-	assert.match(getFeatureScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');
+	assert.match(getPageFeatureScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');
 
 	await writeFile(path.join(pageDir, 'theme.yaml'), `images:
   presentation: centered-fit
@@ -322,7 +328,7 @@ page:
 	assert.match(centeredFitCarouselHtml, /<html\b[^>]*data-image-presentation="centered-fit"/);
 	assert.match(centeredFitCarouselHtml, /--image-carousel-width-from-height-desktop:/);
 	assert.equal(
-		getFeatureScripts(centeredFitCarouselHtml).length,
+		getPageFeatureScripts(centeredFitCarouselHtml).length,
 		1,
 		'Centered-fit presentation should not add client-side JavaScript to a carousel page.',
 	);
@@ -355,8 +361,8 @@ Plain page content.
 	runBuild();
 	const bannerHtml = await readPage();
 	assertUniversalReadingWidth(bannerHtml, 'A page with a dismissible banner');
-	assert.equal(getFeatureScripts(bannerHtml).length, 1, 'A dismissible banner should load only its dismissal script in addition to reader preferences.');
-	assert.match(await readDeliveredScript(getFeatureScripts(bannerHtml)[0]), /norna-banner:/);
+	assert.equal(getPageFeatureScripts(bannerHtml).length, 1, 'A dismissible banner should load only its dismissal script in addition to reader preferences.');
+	assert.match(await readDeliveredScript(getPageFeatureScripts(bannerHtml)[0]), /norna-banner:/);
 
 	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), '{}\n');
 	await writeFile(path.join(homeDir, 'content.md'), `---
@@ -373,17 +379,14 @@ Ordinary content with a reader-selectable appearance.
 palette: warm-paper
 appearance:
   default: system
-readerControls:
-  appearance: true
-  focusReading: true
 `);
 
 	runBuild();
 	const selectableAppearanceHtml = await readPage();
 	assert.equal(
-		getScripts(selectableAppearanceHtml).length,
-		1,
-		'A selectable appearance should load only its preference script on a plain page.',
+		getPageFeatureScripts(selectableAppearanceHtml).length,
+		0,
+		'A selectable appearance should load no page-specific feature script on a plain page.',
 	);
 	assert.match(selectableAppearanceHtml, /<html\b[^>]*data-appearance="system"/);
 	assert.match(selectableAppearanceHtml, /<details\b[^>]*data-display-settings/);
@@ -391,7 +394,7 @@ readerControls:
 	assert.match(selectableAppearanceHtml, /data-reader-width/);
 	assert.match(selectableAppearanceHtml, /data-reader-focus/);
 	assert.match(selectableAppearanceHtml, /data-reader-reset/);
-	const readerPreferenceScript = await readDeliveredScript(getScripts(selectableAppearanceHtml)[0]);
+	const readerPreferenceScript = await readDeliveredScript(getReaderPreferenceScripts(selectableAppearanceHtml)[0]);
 	assert.match(readerPreferenceScript, /norna-appearance/);
 	assert.match(readerPreferenceScript, /norna-reading-width/);
 	assert.match(readerPreferenceScript, /norna-focus-reading/);

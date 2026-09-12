@@ -2,8 +2,6 @@ typography:
   profile: reading
   rhythm: normal
 palette: arctic-blue
-readerControls:
-  appearance: true
 corners: rounded
 sections:
   backgroundPattern: accented

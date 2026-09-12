@@ -515,11 +515,10 @@ current page. It removes persistent navigation rails, breadcrumbs, and the
 footer while keeping the document available. The mode does not change the
 page's source, hierarchy, or URL.
 
-The choice appears in the Display panel when `readerControls.focusReading` is
-enabled. Tree navigation always offers it because a persistent page tree would
-otherwise occupy the reading area. See
-[Reader Display Controls](theme.md#reader-display-controls) for the setting,
-defaults, and cookie.
+The choice appears automatically when navigation resolves to `tree`, because a
+persistent page tree would otherwise occupy the reading area. It is not a
+theme setting. See [Reader Display Controls](theme.md#reader-display-controls)
+for availability, defaults, and the cookie.
 
 When Focus reading is on:
 

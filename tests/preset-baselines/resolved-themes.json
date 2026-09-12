@@ -41,9 +41,6 @@
     "corners": "square",
     "sections": {
       "backgroundPattern": "uniform"
-    },
-    "readerControls": {
-      "appearance": true
     }
   },
   "documentation": {
@@ -84,10 +81,6 @@
     "corners": "rounded",
     "sections": {
       "backgroundPattern": "alternating"
-    },
-    "readerControls": {
-      "appearance": true,
-      "focusReading": true
     }
   },
   "project": {
@@ -128,10 +121,6 @@
     "corners": "rounded",
     "sections": {
       "backgroundPattern": "alternating"
-    },
-    "readerControls": {
-      "appearance": true,
-      "focusReading": true
     }
   },
   "statement": {
@@ -176,9 +165,6 @@
     "corners": "square",
     "sections": {
       "backgroundPattern": "accented"
-    },
-    "readerControls": {
-      "appearance": true
     }
   }
 }

@@ -1,5 +1,3 @@
 preset: project
 appearance:
   default: system
-readerControls:
-  appearance: true

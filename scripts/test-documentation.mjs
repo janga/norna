@@ -133,26 +133,7 @@ const checkObsoleteSiteFiles = async () => {
 	assert.deepEqual(obsolete, [], `Obsolete Norna site files:\n${obsolete.join('\n')}`);
 };
 
-const formatList = (values) => {
-	if (values.length < 2) return values[0] ?? '';
-	if (values.length === 2) return values.join(' and ');
-	return `${values.slice(0, -1).join(', ')}, and ${values.at(-1)}`;
-};
-
-const formatReaderControls = (readerControls) => {
-	const labels = {
-		appearance: 'Appearance',
-		focusReading: 'Focus reading',
-	};
-	const enabled = Object.keys(labels).filter((name) => readerControls[name] === true).map((name) => labels[name]);
-	const disabled = Object.keys(labels).filter((name) => readerControls[name] !== true).map((name) => labels[name]);
-	const value = [
-		`${formatList(enabled)} enabled`,
-		disabled.length > 0 ? `${formatList(disabled)} disabled` : '',
-	].filter(Boolean).join('; ');
-
-	return `Reading width always available; ${value}`;
-};
+const formatReaderDisplay = () => 'Reading width and Appearance always available; Focus reading when navigation resolves to tree';
 
 const checkThemePresetReference = async () => {
 	const source = await readFile(path.join(repoRoot, 'docs', 'theme.md'), 'utf8');
@@ -193,7 +174,7 @@ const checkThemePresetReference = async () => {
 				: []),
 			['corners', `\`${preset.corners}\``],
 			['sections.backgroundPattern', surface],
-			['Reader Display', formatReaderControls(preset.readerControls)],
+			['Reader Display', formatReaderDisplay()],
 		];
 
 		for (const [setting, value] of rows) {

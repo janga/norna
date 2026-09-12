@@ -67,7 +67,6 @@ const knownNestedFrontmatterKeys = new Set([
 	'palette',
 	'preset',
 	'profile',
-	'readerControls',
 	'readingWidth',
 	'rhythm',
 	'sectionGap',
@@ -171,7 +170,10 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 			fix = fileKind === 'page theme'
 				? 'Remove "colorMode:" from this page theme. Set "appearance:" in the root theme.yaml when an override is needed.'
 				: 'Replace "colorMode:" with "appearance:".';
-		} else if (fileKind === 'page theme' && ['preset', 'appearance', 'readerControls', 'corners', 'palette', 'typography'].includes(key)) {
+		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'readerControls') {
+			message = `Frontmatter line ${lineNumber}: Theme setting "readerControls" was removed. Appearance and reading width are always available; Focus reading follows tree navigation.`;
+			fix = 'Remove "readerControls:". Use "appearance.default" for the initial Appearance; reading width is always available and tree navigation provides Focus reading.';
+		} else if (fileKind === 'page theme' && ['preset', 'appearance', 'corners', 'palette', 'typography'].includes(key)) {
 			message = `Frontmatter line ${lineNumber}: page themes may not define site-wide visual identity through "${key}".`;
 			fix = `Move "${key}:" to the root theme.yaml. Page themes may set only layout.textWidth, layout.contentSpacing, images, and sections.backgroundPattern.`;
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && ['logo', 'site'].includes(key)) {

@@ -19,7 +19,7 @@ const filenames = [
 const requiredRichHelp = {
 	'category.schema.json': ['label'],
 	'config.schema.json': ['url', 'language', 'editLink', 'navigation', 'search', 'scrollBehavior'],
-	'theme.schema.json': ['preset', 'appearance', 'readerControls', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
+	'theme.schema.json': ['preset', 'appearance', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
 	'page-theme.schema.json': ['layout', 'images', 'sections'],
 	'sitewide-content.schema.json': ['logo', 'banners', 'footer'],
 	'content-frontmatter.schema.json': ['page', 'navigation'],
@@ -203,6 +203,7 @@ assert.equal(buildInfo.default, false);
 assert.match(buildInfo.markdownDescription, /footer:\n  buildInfo: true/);
 
 const theme = JSON.parse(await readFile(path.join(root, 'schemas', 'theme.schema.json'), 'utf8'));
+assert.equal(theme.properties.readerControls, undefined);
 assert.equal(theme.properties.layout.properties.gutter.defaultSnippets[0].label, 'Responsive page gutter');
 assert.equal(theme.properties.appearance.defaultSnippets[0].label, 'Set the initial appearance');
 assert.match(theme.properties.appearance.description, /The default is system\./);
@@ -210,23 +211,13 @@ assert.match(
 	theme.properties.appearance.properties.default.description,
 	/Omit this setting to follow the visitor's operating-system preference\./,
 );
-assert.equal(theme.properties.readerControls.defaultSnippets[0].label, 'Configure the Display panel');
-assert.deepEqual(Object.keys(theme.properties.readerControls.properties), ['appearance', 'focusReading']);
 assert.match(
-	theme.properties.readerControls.markdownDescription,
-	/Choose which optional controls readers can use in the site-wide Display panel\./,
+	theme.properties.appearance.markdownDescription,
+	/The Appearance choice is always available in the site-wide Display panel\./,
 );
 assert.match(
-	theme.properties.readerControls.markdownDescription,
-	/Reading width is always included\. Sites with tree navigation always include Focus reading/,
-);
-assert.match(
-	theme.properties.readerControls.properties.appearance.markdownDescription,
-	/Show an Appearance control that lets readers choose System, Light, or Dark\./,
-);
-assert.match(
-	theme.properties.readerControls.properties.focusReading.markdownDescription,
-	/lets readers hide navigation, breadcrumbs, and the footer/,
+	theme.properties.appearance.defaultSnippets[0].markdownDescription,
+	/Follow the system color preference or choose a fixed initial appearance\./,
 );
 assert.match(theme.properties.palette.description, /without changing the initial appearance/);
 assert.deepEqual(
@@ -300,7 +291,6 @@ assert.deepEqual(Object.keys(pageTheme.properties.layout.properties), ['contentS
 assert.equal(pageTheme.properties.preset, undefined);
 assert.equal(pageTheme.properties.palette, undefined);
 assert.equal(pageTheme.properties.appearance, undefined);
-assert.equal(pageTheme.properties.readerControls, undefined);
 assert.equal(pageTheme.properties.typography, undefined);
 assert.equal(pageTheme.properties.blocks, undefined);
 assert.match(pageTheme.markdownDescription, /content-block defaults/);

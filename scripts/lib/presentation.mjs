@@ -467,7 +467,6 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 	const paletteName = normalizedTheme.palette ?? 'near-monochrome';
 	const palette = getPresentationPalette(paletteName);
 	const appearance = normalizedTheme.appearance ?? {};
-	const readerControls = normalizedTheme.readerControls ?? {};
 	const defaultAppearance = appearance.default ?? 'system';
 	if (!appearanceNames.includes(defaultAppearance)) {
 		throw new Error(`appearance.default must be one of ${appearanceNames.join(', ')} in ${sourceLabel}.`);
@@ -488,9 +487,9 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 		},
 		readerPreferences: {
 			controls: {
-				appearance: readerControls.appearance === true,
+				appearance: true,
 				readingWidth: true,
-				focusReading: readerControls.focusReading === true,
+				focusReading: false,
 			},
 			defaults: {
 				appearance: defaultAppearance,

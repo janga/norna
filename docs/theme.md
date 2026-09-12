@@ -90,7 +90,7 @@ preset: portfolio
 | `blocks.cardList.width` | `wide` |
 | `corners` | `square` |
 | `sections.backgroundPattern` | `uniform` |
-| Reader Display | Reading width always available; Appearance enabled; Focus reading disabled |
+| Reader Display | Reading width and Appearance always available; Focus reading when navigation resolves to tree |
 
 [Open the rendered `portfolio` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/).
 
@@ -123,7 +123,7 @@ preset: documentation
 | `blocks.cardList.width` | `text` |
 | `corners` | `rounded` |
 | `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
-| Reader Display | Reading width always available; Appearance and Focus reading enabled |
+| Reader Display | Reading width and Appearance always available; Focus reading when navigation resolves to tree |
 
 [Open the rendered `documentation` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/).
 
@@ -156,7 +156,7 @@ preset: project
 | `blocks.cardList.width` | `normal` |
 | `corners` | `rounded` |
 | `sections.backgroundPattern` | `alternating`; resolves to `uniform` with tree navigation |
-| Reader Display | Reading width always available; Appearance and Focus reading enabled |
+| Reader Display | Reading width and Appearance always available; Focus reading when navigation resolves to tree |
 
 [Open the rendered `project` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-project/).
 
@@ -189,7 +189,7 @@ preset: statement
 | `blocks.cardList.width` | `wide` |
 | `corners` | `square` |
 | `sections.backgroundPattern` | `accented`; resolves to `uniform` with tree navigation |
-| Reader Display | Reading width always available; Appearance enabled; Focus reading disabled |
+| Reader Display | Reading width and Appearance always available; Focus reading when navigation resolves to tree |
 
 [Open the rendered `statement` example](https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/).
 
@@ -519,12 +519,12 @@ changes the initial Appearance.
 
 Current preset defaults are:
 
-| Preset | Palette | Default appearance | Appearance choice in Display |
+| Preset | Palette | Default appearance | Appearance in Display |
 | --- | --- | --- | --- |
-| `portfolio` | `near-monochrome` | `system` | Enabled |
-| `documentation` | `warm-paper` | `system` | Enabled |
-| `project` | `near-monochrome` | `system` | Enabled |
-| `statement` | `warm-paper` | `system` | Enabled |
+| `portfolio` | `near-monochrome` | `system` | Always available |
+| `documentation` | `warm-paper` | `system` | Always available |
+| `project` | `near-monochrome` | `system` | Always available |
+| `statement` | `warm-paper` | `system` | Always available |
 
 All built-in presets explicitly use the universal `system` default. Set
 `appearance.default` to `light` or `dark` only when the site should start with
@@ -543,26 +543,18 @@ site-wide Display panel. This bounded reading-width choice is part of the
 engine and cannot be disabled by a theme. The preset or `layout.textWidth`
 selects the initial width; the reader may temporarily choose another one.
 
-`readerControls` adds the optional Appearance and Focus reading choices. Reader
-choices adapt the resolved theme; they do not edit `theme.yaml`, replace the
-preset, or change the content order.
-
-Configure the controls in the root `site/theme.yaml`:
-
-```yaml
-preset: documentation
-readerControls:
-  appearance: true
-  focusReading: true
-```
+Appearance and reading width are always available in the Display panel. Focus
+reading is added automatically when the effective navigation mode is `tree`.
+Reader choices adapt the resolved theme; they do not edit `theme.yaml`, replace
+the preset, or change the content order.
 
 The Display panel then contains:
 
 | Choice | Availability | Configured default |
 | --- | --- | --- |
 | Reading width | Always | Derived from `layout.textWidth`: `narrow`, `normal`, or `wide` |
-| Appearance | When `readerControls.appearance` is `true` | `appearance.default`, otherwise `system` |
-| Focus reading | When `readerControls.focusReading` is `true`, or navigation resolves to `tree` | Off |
+| Appearance | Always | `appearance.default`, otherwise `system` |
+| Focus reading | When navigation resolves to `tree` | Off |
 
 Narrow, Standard, and Wide limit prose to approximately `60ch`, `72ch`, and
 `80ch` respectively. Media keeps its separately configured width. Focus reading
@@ -573,23 +565,21 @@ page and section destinations without changing the document layout. See
 fallback. Norna preserves the visible reading position when reading width or
 focus reading changes, except when the reader is already at the top of the page.
 
-Built-in presets choose these starting widths and optional controls:
+Built-in presets choose these starting widths. Appearance is always available;
+Focus reading is available when navigation resolves to `tree`:
 
 | Preset | Initial reading width | Appearance | Focus reading |
 | --- | --- | --- | --- |
-| `portfolio` | Wide | Enabled | Disabled |
-| `documentation` | Narrow | Enabled | Enabled |
-| `project` | Standard | Enabled | Enabled |
-| `statement` | Standard | Enabled | Disabled |
+| `portfolio` | Wide | Always | When navigation is `tree` |
+| `documentation` | Narrow | Always | When navigation is `tree` |
+| `project` | Standard | Always | When navigation is `tree` |
+| `statement` | Standard | Always | When navigation is `tree` |
 
-Omit `readerControls` to use the selected preset's optional controls. Set
-`appearance` or `focusReading` to `false` to disable that preset control on sites
-without tree navigation. Tree navigation always offers Focus reading so readers
-can temporarily remove the persistent tree and other secondary page chrome. A
-root theme without a preset still provides reading width, but does not add an
-Appearance or Focus reading control unless explicitly enabled or required by
-tree navigation.
-Page-local themes cannot change `readerControls`.
+There is no theme switch for these choices. A root theme without a preset has
+the same universal Display choices, and tree navigation still provides Focus
+reading so readers can temporarily remove the persistent tree and other
+secondary page chrome. Page-local themes cannot change reader-choice
+availability.
 
 Reader choices are stored in first-party cookies:
 

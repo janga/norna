@@ -95,9 +95,6 @@ preset recipes.
 | Field | `portfolio` | `documentation` | `project` | `statement` |
 | --- | --- | --- | --- | --- |
 | `appearance.default` | `dark` | `system` | `system` | `system` |
-| `readerControls.appearance` | `true` | `true` | `true` | `true` |
-| `readerControls.readingWidth` | `false` | `true` | `true` | `false` |
-| `readerControls.focusReading` | `false` | `true` | `true` | `false` |
 | `shape` | `square` | `soft` | `soft` | `square` |
 | `layout.contentSpacing` | `normal` | `compact` | `compact` | `spacious` |
 | `layout.textWidth` | `wide` | `narrow` | `normal` | `normal` |
@@ -120,11 +117,9 @@ preset recipes.
 
 ### Repetition And Clustering
 
-The preset source contains 21 leaf fields. Repetition is concentrated as
+The preset source contains 18 leaf fields. Repetition is concentrated as
 follows:
 
-- all four presets set `readerControls.appearance: true`;
-- `documentation` and `project` also enable reading-width and focus-reading controls;
 - all four set managed-image maximum width to `100%` on desktop and mobile;
 - all four set the mobile gutter to `1rem`;
 - `portfolio`, `documentation`, and `project` share the same desktop gutter;
@@ -447,7 +442,7 @@ schema change.
 | --- | --- | --- |
 | `preset` | Retain | It is the intended one-line path. |
 | `appearance.default` | Retain as a named site-owner choice | It expresses a clear site default. |
-| `readerControls` | Retain as bounded reader choices | Appearance, reading width, and focus reading belong together rather than inside visual identity. |
+| Reader Display availability | Keep as an engine rule, not theme configuration | Appearance and reading width are universal; Focus reading follows tree navigation. |
 | `shape` | Retain as a named root choice | It is understandable and can remain accessibility-safe. |
 | `palette` | Retain concept; review names | Named color systems are useful, but `dark` and `light` each contain both modes. |
 | `layout.contentSpacing` | Retain concept as named rhythm | It is useful, but overlaps with typography rhythm and should resolve through one coordinated model. |

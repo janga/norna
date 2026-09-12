@@ -164,7 +164,7 @@ construct a new design system. Public choices should be grouped by intent:
 | Reading | Default prose width and content rhythm |
 | Media | Text-led, balanced, or image-led emphasis and a focused image-width override |
 | Sections | Uniform surfaces, or full-width alternating/accented surfaces on pages without tree navigation |
-| Reader controls | Optional Appearance and Focus reading choices; reading width remains engine-owned and universal |
+| Reader Display | Appearance and reading width are always available; Focus reading follows tree navigation |
 
 The exact YAML schema is a separate implementation decision. The conceptual
 grouping should remain stable even if field names change.
@@ -199,11 +199,10 @@ Do not call this an accessibility mode. Different visual, cognitive, and motor
 needs require different combinations. Core accessibility remains active
 regardless of reader choices.
 
-Reading width is always offered; the site owner chooses its initial value
-through the theme rather than whether readers may change it. The site owner may
-choose whether Appearance and Focus reading are offered, except that tree
-navigation always offers focus reading. Reader values must be named and
-constrained; readers should not enter CSS values.
+Reading width and Appearance are always offered; the site owner chooses their
+initial values through the theme rather than whether readers may change them.
+Tree navigation adds Focus reading automatically. Reader values must be named
+and constrained; readers should not enter CSS values.
 
 The Display panel should use one well-labeled control in the site navigation,
 native grouped form controls, full keyboard support, clear checked states, and

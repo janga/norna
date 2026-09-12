@@ -190,17 +190,10 @@ The implemented Display control provides:
 - focus reading: Off, On;
 - reset to defaults.
 
-The approved root-theme syntax for enabling the optional controls is:
-
-```yaml
-preset: documentation
-readerControls:
-  appearance: true
-  focusReading: true
-```
-
-Reading width is an engine-level reader choice and is always available. The
-theme chooses its initial value through `layout.textWidth`.
+Appearance and reading width are engine-level reader choices and are always
+available. The theme chooses their initial values through `appearance.default`
+and `layout.textWidth`. Focus reading is available automatically when the
+effective navigation mode is `tree`.
 
 Implementation requirements:
 
@@ -306,7 +299,7 @@ Confirm how documentation handles:
 The preset should favor reading while allowing technical material to use the
 space it genuinely needs.
 
-#### Decision 6: Reader Controls
+#### Decision 6: Reader Display Choices
 
 Review the final preset in all combinations of:
 
@@ -315,7 +308,8 @@ Review the final preset in all combinations of:
 - focus-reading mode on and off;
 - desktop and mobile navigation.
 
-Reader settings must adapt the preset without making it look like another
+Reader choices must adapt the preset without making it look like another
+preset. Their availability is determined by engine behavior, not by each
 preset.
 
 #### Documentation Preset Approval
