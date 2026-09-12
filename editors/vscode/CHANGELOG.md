@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Keep semantic callout markers and body text on adjacent quoted lines when a
+  content file is saved.
+
 ## 0.1.0
 
 - Establish the supported extension package, project compatibility checks, and

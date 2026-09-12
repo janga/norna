@@ -17,6 +17,7 @@ const projectContextByPath = new Map();
 const serviceByRoot = new Map();
 const diagnosticTimers = new Map();
 const publicAssetDiagnosticUrisByRoot = new Map();
+const normalizedSaveUris = new Set();
 let diagnostics;
 let extensionVersion;
 let output;
@@ -122,6 +123,119 @@ const displaySnippet = (snippet) => snippet
 	.replace(/\$\{\d+\|([^}]+)\|\}/g, (_match, choices) => choices.split(',')[0]);
 
 const markdownBlockExample = (snippet) => `\`\`\`\`md\n${displaySnippet(snippet)}\n\`\`\`\``;
+
+const semanticCalloutDefinitions = Object.freeze([
+	{ type: 'NOTE', description: 'Neutral context or background information.' },
+	{ type: 'TIP', description: 'Helpful guidance or a positive suggestion.' },
+	{ type: 'IMPORTANT', description: 'Information that deserves particular attention.' },
+	{ type: 'WARNING', description: 'A possible problem, harm, or loss.' },
+	{ type: 'CAUTION', description: 'A significant negative consequence.' },
+	{ type: 'DANGER', description: 'Severe or irreversible harm.' },
+]);
+
+const isInsideMarkdownFence = (document, lineIndex) => {
+	let fence = null;
+	for (let index = 0; index < lineIndex; index += 1) {
+		const match = document.lineAt(index).text.match(/^ {0,3}(`{3,}|~{3,})/);
+		if (!match) continue;
+		const marker = match[1];
+		if (!fence) {
+			fence = { character: marker[0], length: marker.length };
+			continue;
+		}
+		if (marker[0] === fence.character && marker.length >= fence.length) fence = null;
+	}
+	return Boolean(fence);
+};
+
+const getSemanticCalloutCompletionItems = (document, position) => {
+	if (isInsideMarkdownFence(document, position.line)) return [];
+	const lineText = document.lineAt(position.line).text;
+	const prefix = lineText.slice(0, position.character);
+	const match = prefix.match(/^(\s{0,3}>\s*)\[!([A-Za-z0-9-]*)$/);
+	if (!match) return [];
+
+	const quotePrefix = `${match[1].trimEnd()} `;
+	const range = new vscode.Range(position.line, 0, position.line, position.character);
+	const reference = documentationLinkFor(
+		document.uri.fsPath,
+		'Semantic callout reference',
+		'content.md',
+		'semantic-callouts',
+	);
+	return semanticCalloutDefinitions.map((definition, index) => {
+		const item = new vscode.CompletionItem(definition.type, vscode.CompletionItemKind.EnumMember);
+		item.detail = 'Norna semantic callout';
+		item.documentation = new vscode.MarkdownString([
+			definition.description,
+			'The marker stays on its own line; the next quoted line contains the callout text.',
+			reference,
+		].join('\n\n'));
+		item.insertText = new vscode.SnippetString(
+			`${quotePrefix}[!${definition.type}]\n${quotePrefix}\${1:Callout text}`,
+		);
+		item.range = range;
+		item.sortText = `0000-norna-callout-${String(index).padStart(2, '0')}`;
+		return item;
+	});
+};
+
+const semanticCalloutMarkerPattern = /^( {0,3}>\s*\[![A-Z][A-Z0-9-]*\])(?:[ \t]*)$/;
+const semanticCalloutBodyPattern = /^\s*>\s*\S/;
+const semanticCalloutBlankPattern = /^\s*>\s*$/;
+const semanticCalloutEmptyLinePattern = /^\s*$/;
+const semanticCalloutInlinePattern = /^( {0,3}>\s*\[![A-Z][A-Z0-9-]*\])[ \t]+(.+)$/;
+
+const getSemanticCalloutSaveEdits = (document) => {
+	const edits = [];
+	for (let line = 0; line < document.lineCount; line += 1) {
+		if (isInsideMarkdownFence(document, line)) continue;
+		const text = document.lineAt(line).text;
+		const inline = text.match(semanticCalloutInlinePattern);
+		if (inline) {
+			const quotePrefix = inline[1].slice(0, inline[1].indexOf('>') + 1) + ' ';
+			edits.push(vscode.TextEdit.replace(
+				document.lineAt(line).range,
+				`${inline[1]}\n${quotePrefix}${inline[2]}`,
+			));
+			continue;
+		}
+		const marker = text.match(semanticCalloutMarkerPattern);
+		if (!marker || line + 1 >= document.lineCount) continue;
+		if (marker[1] !== text) {
+			edits.push(vscode.TextEdit.replace(document.lineAt(line).range, marker[1]));
+		}
+		let nextLine = line + 1;
+		while (nextLine < document.lineCount) {
+			const nextText = document.lineAt(nextLine).text;
+			if (!semanticCalloutBlankPattern.test(nextText) && !semanticCalloutEmptyLinePattern.test(nextText)) break;
+			nextLine += 1;
+		}
+		if (nextLine === line + 1 || nextLine >= document.lineCount) continue;
+		if (!semanticCalloutBodyPattern.test(document.lineAt(nextLine).text)) continue;
+		for (let blankLine = line + 1; blankLine < nextLine; blankLine += 1) {
+			edits.push(vscode.TextEdit.delete(document.lineAt(blankLine).rangeIncludingLineBreak));
+		}
+	}
+	return edits;
+};
+
+const normalizeSavedCallouts = async (document) => {
+	if (normalizedSaveUris.has(document.uri.toString()) || !isNornaContentDocument(document)) return;
+	const edits = getSemanticCalloutSaveEdits(document);
+	if (edits.length === 0) return;
+	const workspaceEdit = new vscode.WorkspaceEdit();
+	workspaceEdit.set(document.uri, edits);
+	if (!await vscode.workspace.applyEdit(workspaceEdit)) return;
+	normalizedSaveUris.add(document.uri.toString());
+	try {
+		await document.save();
+	} catch (error) {
+		output?.appendLine(`Semantic callout save normalization failed for ${document.uri.fsPath}: ${error instanceof Error ? error.stack ?? error.message : String(error)}`);
+	} finally {
+		normalizedSaveUris.delete(document.uri.toString());
+	}
+};
 
 const getFrontmatterRange = (document) => {
 	if (document.lineCount < 2 || document.lineAt(0).text.trim() !== '---') return null;
@@ -773,6 +887,8 @@ async function activate(context) {
 				if (!isNornaContentDocument(document)) return undefined;
 				const emptyItems = getEmptyContentCompletionItems(document);
 				if (emptyItems.length > 0) return emptyItems;
+				const calloutItems = getSemanticCalloutCompletionItems(document, position);
+				if (calloutItems.length > 0) return calloutItems;
 				const schemaResult = getSchema(document.uri.fsPath, 'contentFrontmatter');
 				const frontmatterItems = schemaResult ? schemaCompletionItems(document, position, schemaResult.schema) : [];
 				if (frontmatterItems.length > 0) return frontmatterItems;
@@ -780,8 +896,13 @@ async function activate(context) {
 				return service ? getBlockCompletionItems(document, position, service) : undefined;
 			},
 		},
-		'`', '~', ':', '-', '/', '{',
+		'`', '~', ':', '-', '/', '{', '>', '[', '!',
 	));
+	context.subscriptions.push(vscode.workspace.onWillSaveTextDocument((event) => {
+		if (!isNornaContentDocument(event.document)) return;
+		const edits = getSemanticCalloutSaveEdits(event.document);
+		if (edits.length > 0) event.waitUntil(Promise.resolve(edits));
+	}));
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider(
 		{ language: 'markdown', scheme: 'file' },
@@ -887,6 +1008,7 @@ async function activate(context) {
 	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((document) => scheduleDiagnostics(document, 0)));
 	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((event) => scheduleDiagnostics(event.document)));
 	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((document) => {
+		void normalizeSavedCallouts(document);
 		scheduleDiagnostics(document, 0);
 		scheduleOpenThemeDiagnostics(document.uri.fsPath, 0);
 	}));

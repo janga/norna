@@ -109,6 +109,36 @@ async function run() {
 		assert.ok(blockItems.some((item) => labelOf(item) === block), `Missing block completion ${block}.`);
 	}
 
+	const calloutPage = await openDocument('site/pages/050-callouts/content.md');
+	const calloutLine = Array.from({ length: calloutPage.lineCount }, (_value, line) => line)
+		.find((line) => calloutPage.lineAt(line).text === '> [!');
+	const calloutItems = await waitFor(
+		() => getCompletions(calloutPage, calloutLine),
+		(items) => items.some((item) => labelOf(item) === 'TIP'),
+		'Semantic callout completion did not appear after > [!.',
+	);
+	for (const type of ['NOTE', 'TIP', 'IMPORTANT', 'WARNING', 'CAUTION', 'DANGER']) {
+		assert.ok(calloutItems.some((item) => labelOf(item) === type), `Missing ${type} callout completion.`);
+	}
+	const tip = calloutItems.find((item) => labelOf(item) === 'TIP');
+	assert.match(tip.insertText?.value ?? String(tip.insertText), /> \[!TIP\]\n> \$\{1:Callout text\}/);
+	assert.match(documentationOf(tip), /docs\/content\.md#semantic-callouts/);
+
+	const saveCalloutPage = await openDocument('site/pages/060-save-callout/content.md');
+	const saveEdit = new vscode.WorkspaceEdit();
+	saveEdit.insert(saveCalloutPage.uri, new vscode.Position(saveCalloutPage.lineCount - 1, 0), '\n');
+	await vscode.workspace.applyEdit(saveEdit);
+	assert.ok(await saveCalloutPage.save(), 'The callout save fixture could not be saved.');
+	assert.match(saveCalloutPage.getText(), /> \[!TIP\]\n> Use a tip for helpful guidance\./);
+	assert.doesNotMatch(saveCalloutPage.getText(), /> \[!TIP\]\n\n> /);
+	assert.match(saveCalloutPage.getText(), /> \[!INFO\]\n> An unknown type remains a neutral blockquote\./);
+	assert.doesNotMatch(saveCalloutPage.getText(), /> \[!INFO\]\n\n> /);
+	assert.match(saveCalloutPage.getText(), /> \[!WARNING\]\n> A warning keeps its body on the next quoted line\./);
+	assert.match(saveCalloutPage.getText(), /````md\n> \[!TIP\]\n> This example is inside a code fence\.\n````/);
+	const firstSavedCalloutText = saveCalloutPage.getText();
+	assert.ok(await saveCalloutPage.save(), 'The callout fixture could not be saved a second time.');
+	assert.equal(saveCalloutPage.getText(), firstSavedCalloutText, 'A second save changed normalized callouts.');
+
 	const home = await openDocument('site/pages/000-home/content.md');
 	const imageLine = Array.from({ length: home.lineCount }, (_value, line) => line)
 		.find((line) => home.lineAt(line).text === '- image: ');

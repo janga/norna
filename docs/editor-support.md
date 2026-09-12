@@ -122,6 +122,7 @@ In a recognized page `content.md`, Norna provides:
 
 - a complete starting snippet when the file is empty;
 - snippets and field suggestions for image stacks, carousels, and card lists;
+- semantic-callout snippets after `> [!`, using the six supported meanings;
 - inline-note syntax help;
 - managed-image filename suggestions from the current page and other pages;
 - Go to Definition from an image filename to matching source files;
@@ -133,6 +134,20 @@ Image suggestions can include files under another page because `content:sync`
 can relocate an unambiguous referenced image. If several page image directories
 contain the same filename, neither the editor nor the command guesses which
 source was intended.
+
+Semantic callouts use the GitHub-style alert marker on its own quoted line:
+
+```md
+> [!TIP]
+> Use a tip for helpful guidance.
+```
+
+Norna keeps the marker and body on adjacent quoted lines when a recognized
+`content.md` is saved. Custom callout titles remain invalid; the type supplies
+the built-in localized label. Completion lists only the six standard types. An
+unknown uppercase type can still be written manually and falls back to a
+neutral blockquote with a warning. See the
+[semantic-callout reference](content.md#semantic-callouts).
 
 ## Refresh After An Engine Change
 

@@ -103,6 +103,29 @@ Team members.
 \`\`\`image-stack
 - image: missing.jpg
 `);
+	await write('site/pages/050-callouts/content.md', `# Callouts
+
+## Completion {#completion}
+
+> [!
+`);
+await write('site/pages/060-save-callout/content.md', `# Save callout
+
+## Example {#example}
+
+> [!TIP] Use a tip for helpful guidance.
+
+> [!INFO] An unknown type remains a neutral blockquote.
+
+> [!WARNING]
+
+> A warning keeps its body on the next quoted line.
+
+\`\`\`\`md
+> [!TIP]
+> This example is inside a code fence.
+\`\`\`\`
+`);
 	await write('site/notes.md', '# Ordinary Markdown\n');
 	await write('other.yaml', 'preset: \n');
 };

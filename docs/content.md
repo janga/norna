@@ -432,6 +432,17 @@ The marker must be the first line of one blockquote. Accepted meanings are
 a localized visible label and preset-owned presentation for each meaning. The
 meaning is not communicated by color alone.
 
+An uppercase type outside this set, such as `INFO`, may use the same syntax:
+
+```md
+> [!INFO]
+> This remains readable when Norna does not know the meaning.
+```
+
+Norna warns about the unknown type and keeps the blockquote neutral. This
+fallback preserves content during migration from another tool; it does not
+invent a semantic label or color.
+
 The semantic roles are stable across palettes:
 
 | Type | Meaning | Visual family |

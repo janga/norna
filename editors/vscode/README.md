@@ -12,7 +12,9 @@ appears only in recognized Norna files.
 
 - Configuration fields, values, descriptions, and snippets through Red Hat
   YAML.
-- Markdown block and inline-note completion.
+- Markdown block, semantic-callout, and inline-note completion.
+- Save-time cleanup keeps semantic callout markers adjacent to their body when
+  a Markdown formatter inserts an empty line.
 - Managed-image filename completion across the site.
 - Go to Definition for managed-image references.
 - Hover help with version-matched reference links.
