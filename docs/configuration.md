@@ -130,6 +130,10 @@ The following primary values select complete built-in Norna interface packs.
 They cover left-to-right Latin, Greek, and Cyrillic writing systems that can
 use ordinary system-font fallback; no Norna-provided font file is required.
 
+> **Review warning:** The non-English interface packs were generated and
+> machine-checked, but have not been human language-reviewed. Have a fluent
+> speaker check the generated labels before publishing a site that uses one.
+
 | Language | Primary value |
 | --- | --- |
 | Albanian | `sq` |

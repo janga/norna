@@ -1,5 +1,10 @@
 # BL-009: Semantic Callouts
 
+## Status
+
+Implemented, documented, regression-tested, and approved by the user on
+2026-09-12.
+
 ## Outcome
 
 Procedures and reference pages can distinguish notes, tips, warnings, and

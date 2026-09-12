@@ -2,11 +2,12 @@
 
 ## Status
 
-Technical implementation is complete. Automated checks cover registry
-completeness, placeholders, locale resolution, schemas, generated output, and
-representative Latin, Greek, and Cyrillic paths. Qualified speakers must still
-review every new interface and search translation before the feature is
-announced or included in a release.
+Technical implementation is complete and was approved by the user on
+2026-09-12. Automated checks cover registry completeness, placeholders, locale
+resolution, schemas, generated output, and representative Latin, Greek, and
+Cyrillic paths. The non-English interface packs have not been human language-
+reviewed; the user-facing documentation keeps an explicit warning before
+publication.
 
 ## Outcome
 
@@ -81,20 +82,20 @@ The bounded product-oriented set is:
 | Language | Primary accepted tag | Writing system | Current state |
 | --- | --- | --- | --- |
 | English | `en` | Latin | Existing pack |
-| Spanish | `es` | Latin | Implemented; review pending |
-| French | `fr` | Latin | Implemented; review pending |
-| Portuguese | `pt` | Latin | Implemented; review pending |
-| Russian | `ru` | Cyrillic | Implemented; review pending |
-| Swahili | `sw` | Latin | Implemented; review pending |
-| Indonesian | `id` | Latin | Implemented; review pending |
-| German | `de` | Latin | Implemented; review pending |
-| Javanese | `jv` | Latin | Implemented; review pending |
-| Vietnamese | `vi` | Latin | Implemented; review pending |
-| Turkish | `tr` | Latin | Implemented; review pending |
-| Filipino | `fil` | Latin | Implemented; review pending |
-| Italian | `it` | Latin | Implemented; review pending |
-| Nigerian Pidgin | `pcm` | Latin | Implemented; review pending |
-| Hausa | `ha` | Latin | Implemented; review pending |
+| Spanish | `es` | Latin | Implemented; human review recommended |
+| French | `fr` | Latin | Implemented; human review recommended |
+| Portuguese | `pt` | Latin | Implemented; human review recommended |
+| Russian | `ru` | Cyrillic | Implemented; human review recommended |
+| Swahili | `sw` | Latin | Implemented; human review recommended |
+| Indonesian | `id` | Latin | Implemented; human review recommended |
+| German | `de` | Latin | Implemented; human review recommended |
+| Javanese | `jv` | Latin | Implemented; human review recommended |
+| Vietnamese | `vi` | Latin | Implemented; human review recommended |
+| Turkish | `tr` | Latin | Implemented; human review recommended |
+| Filipino | `fil` | Latin | Implemented; human review recommended |
+| Italian | `it` | Latin | Implemented; human review recommended |
+| Nigerian Pidgin | `pcm` | Latin | Implemented; human review recommended |
+| Hausa | `ha` | Latin | Implemented; human review recommended |
 
 This list is not a claim that language populations can be ranked with exact
 precision. CLDR populations overlap, second-language use changes the order,

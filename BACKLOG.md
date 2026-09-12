@@ -22,9 +22,7 @@ No implementation-ready items are currently queued.
 
 `Next` is the exact implementation sequence after `Now`.
 
-- [`BL-009` Semantic callouts](docs/design/backlog/BL-009-semantic-callouts.md):
-  **Implemented and documented; awaiting review.** Complete the human review
-  of the localized, accessible semantic callouts and their closed meaning set.
+No implementation-ready items are currently queued.
 
 ## External Gate
 
@@ -35,11 +33,6 @@ action, or another user-owned prerequisite. They do not block `Now` or `Next`.
   **In progress.** The version-aligned package and real VS Code tests are ready;
   complete the first Visual Studio Marketplace publication before describing
   IntelliSense as a supported installable feature.
-- [`BL-080` System-font left-to-right site languages](docs/design/backlog/BL-080-system-font-ltr-site-languages.md):
-  **Technically implemented; qualified language review required before
-  release.** The shared registry, schemas, generated UI, search controls, and
-  representative script tests cover 47 site language configurations. Fluent
-  reviewers must approve every new interface pack before support is announced.
 
 ## Later
 
