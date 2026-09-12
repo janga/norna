@@ -60,12 +60,10 @@ These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
-- **Quieter code-copy feedback:** implemented; awaiting visual review at
-  `/norna/examples/#code-blocks`. Success uses only a check icon for one second,
-  with a screen-reader announcement; failure still shows its message for two
-  seconds. After review, run the two focused code-copy browser cases in
-  `tests/presentation-contract.spec.ts` and update the copy-feedback paragraph
-  in `docs/content.md#code-blocks`. No new configuration is needed.
+- **Quieter code-copy feedback:** documentation updated; visual review remains
+  pending at `/norna/examples/#code-blocks`. Success uses only a check icon for
+  one second and a screen-reader announcement; failure shows its message for
+  two seconds. No new configuration is needed.
 - [`BL-056` Lighter Dark navigation markers](docs/design/backlog/BL-056-lighter-dark-navigation-markers.md):
   **Implemented, browser-tested, and human-approved; documentation remains.**
   Document the shared palette-derived surface for current-page and

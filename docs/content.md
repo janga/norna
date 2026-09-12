@@ -652,9 +652,11 @@ feature. Line emphasis does not alter the source text or add line numbers.
 When JavaScript is available, Norna adds a button labelled **Copy code** to each
 rendered fenced code block. Activating it copies only the code text, without the
 fence, title, selector, or a displayed language name. The button works with
-pointer and keyboard input. After activation, it changes icon and briefly shows
-**Copied** or **Could not copy code** beside the button. The same result is
-announced through a live status message for screen readers.
+pointer and keyboard input. After a successful copy, the button briefly changes
+to a check icon for one second. Norna does not add a separate visible success
+message; the result is announced through a live status message for screen
+readers. If copying fails, a short error message is shown beside the button for
+two seconds and is announced in the same way.
 
 The code remains ordinary selectable text when JavaScript or clipboard access
 is unavailable. The copy control is then absent or reports failure; it is not
