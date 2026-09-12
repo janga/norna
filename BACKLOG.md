@@ -21,9 +21,9 @@ when implementation can begin.
   retain every alternative for search, print, and no-JavaScript reading. Review
   their presentation in the remigration corpus and public Examples gallery.
 - [`BL-098` Representative documentation remigration](docs/design/backlog/BL-098-representative-documentation-remigration.md):
-  **Implemented and machine-verified; awaiting human comparison.** Review 15
-  adapted articles from four documentation systems, with original links and
-  explicit loss reports in the private research workspace.
+  **Implemented and machine-verified; awaiting human comparison.** Review 16
+  adapted articles from four systems, now with native tabs and explicit
+  nested-group fallbacks, in the private research workspace.
 - [`BL-083` Result-first single-page examples](docs/design/backlog/BL-083-result-first-single-page-examples.md):
   **Implemented and technically verified; awaiting human gallery review.**
   Top-navigation duplication, missing child descriptions, the child-page

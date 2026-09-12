@@ -3,8 +3,8 @@
 ## Status And Outcome
 
 Implemented and machine-verified; awaiting human comparison. The private trial
-contains 15 source articles from Docusaurus, VitePress, Material for MkDocs, and
-Astro Starlight: eight complete articles and seven selected-section adaptations,
+contains 16 source articles from Docusaurus, VitePress, Material for MkDocs, and
+Astro Starlight: eight complete articles and eight selected-section adaptations,
 plus a report homepage for each source system.
 
 This is a bounded evaluation, not implementation of
@@ -54,9 +54,14 @@ support for their configuration APIs, or a production-ready migration tool.
 - Current Norna callouts, footnotes, code titles and line emphasis, cards,
   details, tables, and managed images replace supported source constructs.
   Source configuration examples still describe their original products.
-- All tab alternatives remain visible, without selection or synchronized
-  preferences. Static cards keep their source destinations. File trees and
-  step decorations become ordinary lists.
+- Compatible tab groups now use BL-049: Content Alternatives, including
+  VitePress package-manager commands, Material table alignment, Docusaurus image
+  authoring, and Starlight's basic Tabs example. Source code examples still
+  demonstrate their original product's syntax.
+- Groups nested in other blocks remain labelled consecutive alternatives with
+  a loss report. Norna does not synchronize or persist tab choices. All options
+  remain visible without JavaScript and in print. Static cards keep their source
+  destinations; file trees and step decorations become ordinary lists.
 - Nested callouts retain inner text and hierarchy as labelled blockquotes.
   Custom callout titles become bold introductory text; source-specific icons,
   table sorting, and footnote tooltips are not reproduced.
@@ -68,9 +73,11 @@ support for their configuration APIs, or a production-ready migration tool.
 
 ## Follow-up Decisions
 
-Use this corpus for [BL-049: Content Alternatives](BL-049-content-alternatives.md)
-before choosing native tab syntax. Consecutive code and mixed-content
-alternatives provide a working comparison baseline without hidden content.
+Use this corpus to review [BL-049: Content Alternatives](BL-049-content-alternatives.md)
+against the original pages. Native code and mixed-content groups demonstrate
+the approved syntax; Starlight Steps demonstrates the deliberately retained
+nested-group fallback. This does not reopen the choice against hidden headings
+or synchronized reader preferences.
 
 [BL-052: Documentation Migration Assistant](BL-052-documentation-migration-assistant.md)
 must distinguish complete pages from explicit excerpts, preserve parent headings
@@ -84,12 +91,15 @@ The trial's fixed recipes are not a general converter for arbitrary MDX.
   production builds. The updated private research index also passed its build.
 - The source-range tests passed for supplementary Unicode characters and the
   pinned Docusaurus heading annotation that exposed the offset mismatch.
-- Playwright checked all 15 articles with JavaScript and all 15 without it.
+- Playwright checked all 16 articles with JavaScript and all 16 without it.
   Checks cover comparison links, local anchors, original image loading,
   representative content constructs, retained heading annotations, and desktop
-  document overflow. Mobile navigation and overflow were checked on one page
+  document overflow, switching every native alternative, and no-JavaScript tab
+  visibility. Mobile navigation and overflow were checked on one page
   per product, with desktop, mobile, and open-menu captures.
 - `npm run test:documentation` passed. No full engine or release suite was run;
   this task adds private evaluation material, not production engine behavior.
+- Five focused conversion tests cover code groups, indented alternatives,
+  static component tabs, preserved source examples, and explicit fallbacks.
 - Live comparison and visual suitability remain a human review, not an
   assertion that every upstream feature migrated without loss.
