@@ -141,7 +141,8 @@ documents their exact syntax and constraints.
 ## Start With A Coherent Presentation {#coherent-presentation}
 
 A preset coordinates typography, spacing, page width, image placement, color,
-corners and reader controls. A useful theme can therefore begin with one line:
+corners and the site's starting presentation. A useful theme can therefore
+begin with one line:
 
 ```yaml
 preset: documentation
@@ -168,7 +169,7 @@ for supported overrides.
 
 Norna treats wide data, long code, detailed images and marginal notes as
 reading problems rather than isolated decorations. It preserves their semantic
-HTML first, then uses available page lanes and optional controls where those
+HTML first, then uses available page lanes and reader choices where those
 improve inspection.
 
 | Content {row-header} | Normal space | When space narrows | Optional enhancement | Baseline that remains |
