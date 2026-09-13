@@ -85,9 +85,10 @@ or `Later` only after the stated evidence or design decision exists.
 - [`BL-051` Technical diagram sources](docs/design/backlog/BL-051-technical-diagram-sources.md):
   **Needs evidence.** Retain managed SVG as the migration path until maintained
   Norna sites demonstrate a recurring need for build-time diagram rendering.
-- [`BL-052` Documentation migration assistant](docs/design/backlog/BL-052-documentation-migration-assistant.md):
-  **Needs design.** Start with a read-only source audit that reports direct,
-  rewritable, and unresolved constructs before considering automatic writes.
+- [`BL-052` Docusaurus migration audit and Norna comparison report](docs/design/backlog/BL-052-documentation-migration-assistant.md):
+  **Implemented: initial read-only audit.** Generates a separate Norna report
+  site with aggregated problem types, deterministic samples, and source/version
+  provenance before any future automatic writes.
 - [`BL-053` Accessible mathematics](docs/design/backlog/BL-053-accessible-mathematics.md):
   **Needs evidence and syntax review.** Keep static conversion as the migration
   path until scientific or mathematical Norna sites justify native rendering.

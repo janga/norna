@@ -31,6 +31,7 @@ Commands:
   page:add               Add a page to the site page tree
   page:move              Move a page subtree and update internal links
   category:add           Add a non-routable category to the site page tree
+  migrate:check          Audit a Docusaurus project without modifying it
   build                  Build the selected site
   build:local            Build and restart local dev server
   deploy                 Build and deploy committed branch
@@ -97,6 +98,17 @@ const [subcommand, ...subcommandRest] = rest;
 
 if (command === '-h' || command === '--help' || command === 'help') {
 	console.log(usage);
+	process.exit(0);
+}
+
+if (command === 'migrate:check') {
+	try {
+		process.argv = [process.argv[0], process.argv[1], ...rest];
+		await import('../scripts/migrate-check.mjs');
+	} catch (error) {
+		console.error(error instanceof Error ? error.message : String(error));
+		process.exit(1);
+	}
 	process.exit(0);
 }
 
