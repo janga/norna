@@ -16,7 +16,9 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-No implementation-ready items are currently queued.
+- [`BL-108` Standard And Uniform Content Syntax](docs/design/backlog/BL-108-standard-uniform-content-syntax.md):
+  **Ready.** Implement the approved YAML, callout, and named-sidenote contract,
+  with shared schemas and explicit IntelliSense ownership boundaries.
 
 ## Next
 
