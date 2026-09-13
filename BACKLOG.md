@@ -113,9 +113,10 @@ Do not schedule these as opportunistic additions. Each requires a separate
 product brief, representative sites, migration rules, and an explicit decision
 that the expanded audience is worth the permanent complexity.
 
-- `BL-023` **Deferred.** Multilingual page trees, translation identity,
-  locale-aware URLs, language switching, fallbacks, `hreflang`, sitemap
-  entries, and search partitions.
+- [`BL-023` Multilingual Sites With A Shared Page Tree](docs/design/backlog/BL-023-multilingual-sites-shared-page-tree.md):
+  **Deferred; needs design before implementation.** Publish language variants
+  from one shared page tree, with predictable URLs, language switching, and
+  explicit fallback behavior.
 - `BL-024` **Deferred.** Collections, taxonomies, pagination, and feeds, which
   together require recurring-content identity and a generated-page model.
 - `BL-025` **Deferred.** Versioned documentation with coordinated page trees,
