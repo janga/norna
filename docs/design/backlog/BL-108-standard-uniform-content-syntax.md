@@ -6,7 +6,12 @@ Make Norna's content syntax easier for authors and AI tools to learn and easier
 for IntelliSense to describe, by using established formats and consistent
 rules instead of YAML-like text and context-specific alternatives.
 
-**Ready; not implemented.** The user approved the
+**Complete, 2026-09-14.** The user approved the multiple-note presentation
+fixture and public example on 2026-09-13. Canonical references, public examples,
+editor guidance, and client-JavaScript documentation now describe the approved
+syntax and note behavior.
+
+The user approved the
 [syntax handbook](../content-syntax-handbook-draft.md) and its remaining parser
 defaults, including YAML boundaries, string/null rules, note definitions, and
 footnote behavior in tabs. Simpler IntelliSense, especially its interaction
@@ -14,10 +19,71 @@ with other modules, is an explicit acceptance outcome. Implementation must
 verify library behavior and editor integration rather than treat those
 technical assumptions as already proven.
 
+## Implementation Checkpoint
+
+- Structured image/card blocks use YAML 1.2 Core and `items`. Engine validation,
+  generated JSON schemas, and embedded Markdown completions share one field
+  contract. The editor API is now version 2 so older engines do not receive
+  incompatible snippets.
+- YAML scalar source ranges preserve safe card-link updates in `page:move`,
+  including quoted/escaped values, flow mappings, folded scalars, and CRLF.
+- GitHub alerts are the only callout form, also in tabs. Code titles and tab
+  labels share JSON string decoding. Norna no longer repairs Markdown on save;
+  the scoped supported formatter setup is documented in the editor reference
+  and FAQ.
+- Named sidenotes resolve across the page, accept multiple notes per paragraph,
+  and use letters independently of numbered footnotes. Return links reveal and
+  focus footnote references inside tabs. Maintained content uses the new syntax.
+- Notes share a collision-safe paragraph layout. Long or multiple notes can
+  increase the space before the next paragraph; that approved tradeoff is
+  documented with the responsive and print behavior.
+- Sidenote reference hover and keyboard focus now highlight the matching note
+  without changing layout or navigating. Note enhancement loads independently
+  of tabs. The reference and public example explain this behavior.
+  Focused browser checks passed for hover/focus, a page without tabs, and
+  footnote return links after separating the scripts:
+  `node scripts/test-navigation.mjs --site-dir fixtures/preset-baseline/site tests/named-notes.spec.ts --grep 'hover|return links'`
+  (3 tests). No broad suite was repeated for this follow-up.
+
+Verification completed: YAML/schema tests; Markdown/tab/string tests;
+`test:content-check`, `test:content-sync-plan`, `test:content-sync`,
+`test:page-move`, `test:site-links`, `test:page-content`, `test:managed-media`,
+`test:markdown-constructs`, `test:presentation-review`, `test:examples`,
+`test:client-javascript`, `test:ci-lockfile`, `test:dead-code`, `package:check`,
+and the documentation build. Named-note unit tests and browser checks cover
+multiple/adjacent notes, 320-1920px, all reading widths, Focus reading, tab return
+focus, no JavaScript, and print. Existing navigation-note browser assertions
+were updated from float implementation details to actual two-column placement.
+Packaged editor integration passed on VS Code 1.137.0 and 1.96.0; the API 2
+VSIX is built at `editors/vscode/norna-vscode.vsix` for manual evaluation.
+Follow-up: block snippets previously returned by the completion provider were
+filtered out by the suggestion widget because their replacement range included
+the fence but their filter text did not. The corrected VSIX was verified by
+accepting suggestions in the editor after backtick and tilde fences, both bare
+and with a partial block name (`test:editor-integration`, VS Code 1.137.0).
+The full release suite was not run.
+
+Editor follow-up: the [workflow test plan](../editor-workflow-test-plan.md)
+defines real suggestion-widget acceptance, three dirty save/close/reopen cycles
+with exact LF/CRLF file checks, continued completion after reopening, and
+diagnostic repair. A separate run installs active Prettier with the documented
+Markdown save-formatting exception. These tests exposed and corrected missing
+callout filter text; provider-only checks had not caught the unusable suggestion.
+
+The approved review examples remain available at
+`http://127.0.0.1:4322/reading-and-images/#sidenotes` and the public example at
+`http://127.0.0.1:4321/norna/examples/#sidenotes`. Reference/source syntax is
+updated, including paragraph spacing, hover/focus highlighting, and the
+no-JavaScript behavior. Final verification used an isolated export of the
+Git index so unrelated table/migration work and the user's invalid local theme
+setting did not enter the tested implementation. See the editor workflow test
+plan for the final checks and remaining editor-constructor gaps, which do not
+change this syntax contract.
+
 This is one coordinated item with separate implementation commits. Do not
 introduce additional backlog items merely to divide its implementation steps.
 
-## Current Problems
+## Original Problems
 
 - Image/card data looks like YAML but uses a custom line parser. YAML multiline
   scalars do not work, quoted strings have different semantics, and duplicate

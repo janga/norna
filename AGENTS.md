@@ -73,6 +73,20 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Scale test breadth with blast radius. Reserve the complete `npm test` chain
   for release verification, broad cross-cutting changes, an explicit user
   request, or changes for which no narrower set provides dependable coverage.
+- For IntelliSense changes, follow `docs/design/editor-workflow-test-plan.md`.
+  Activation and raw completion-provider responses do not prove usability:
+  verify that every added or changed suggestion can actually be selected and
+  accepted through VS Code's suggestion widget, then assert the inserted text.
+  Exercise each supported entry context, including blank lines and partial
+  prefixes when applicable. A successful callout insertion does not prove that
+  image or list snippets are selectable; provider-result tests supplement, but
+  never replace, widget tests. State explicitly any suggestions or contexts not
+  tested through the widget instead of claiming complete coverage.
+  For save/formatting changes,
+  test dirty edit/save/close/reopen/edit/save cycles and compare file bytes.
+  Verify supported formatter coexistence without changing the user's profile.
+  Test forbidden as well as required completions; use exact candidate sets
+  where unambiguous and verify context changes do not retain stale suggestions.
 - During a series of backlog changes, use focused checks for each item and at
   most one justified broader verification pass for the final combined state.
   In the completion summary, state the exact checks run and any verification

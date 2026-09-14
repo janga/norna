@@ -43,7 +43,7 @@ features; this item does not add constructors for them.
 
 ## Status
 
-Implemented and verified on 2026-09-13. One helper applies priority to Norna's
+**Complete, 2026-09-14.** One helper applies priority to Norna's
 own items at the provider boundary, preserving their internal relevance order.
 Explicit preselection was removed from YAML snippets; VS Code owns selection.
 YAML snippet matching now includes the source prefix so a template can be
@@ -54,11 +54,12 @@ YAML 1.24.0 and Prettier 12.4.0; all 43 construction selection cases plus the 17
 priority cases on minimum VS Code 1.96.0 with Red Hat YAML. The Markdown
 contract check and scoped whitespace checks also pass.
 
-The reference and editor test guide describe the priority and its limitations.
-`test:documentation` still fails on an existing trailing-space difference
-between the public single-image example and its displayed source. That authored
-file was not changed here. No full release suite was run.
+The reference and editor test guide describe priority and its limitations,
+including the separate ownership of ordinary YAML field/value suggestions by
+Red Hat. The final documentation check passed against the staged implementation
+on 2026-09-14. No full release suite was run.
 
 The tested package is available at `editors/vscode/norna-vscode.vsix`.
-Implementation commits must be coordinated with the shared, uncommitted
-BL-108 and BL-109 editor changes rather than committing an incompatible subset.
+The implementation is committed together with BL-108: Standard And Uniform
+Content Syntax and BL-109: Context-Relevant IntelliSense Tests because they
+share the parser, schema, editor, and test contracts.

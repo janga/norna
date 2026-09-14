@@ -2,7 +2,7 @@
 
 ## Outcome
 
-**Implemented and verified, 2026-09-13.** Extend the editor workflow tests so Norna offers only
+**Complete, 2026-09-14.** Extend the editor workflow tests so Norna offers only
 context-appropriate completions, not merely a desired candidate somewhere in
 the result. This builds on the implemented editor contract in
 [BL-108: Standard And Uniform Content Syntax](BL-108-standard-uniform-content-syntax.md).
@@ -62,11 +62,11 @@ The blank-line discovery follow-up passed both VS Code versions, including
 widget insertion of all six callout types. Prettier coexistence was not rerun
 for this follow-up because save behavior was unchanged.
 
-The full release suite was intentionally not run. The repository documentation
-check currently fails on a trailing space in the user's live single-image
-example that differs from its displayed source; that edit was left unchanged.
-Implementation commits remain coordinated
-with the uncommitted BL-108 editor contract on which this work depends.
+The full release suite was intentionally not run. The documentation/source
+differences found during evaluation have been reconciled; the documentation
+check passed against the staged implementation on 2026-09-14. The implementation
+is committed together with the shared BL-108: Standard And Uniform Content
+Syntax and BL-110: Context-Scoped Completion Priority contracts.
 
 ## Construction Selection Follow-up
 

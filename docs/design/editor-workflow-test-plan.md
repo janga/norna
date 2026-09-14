@@ -182,20 +182,39 @@ Red Hat YAML 1.24.0 and the packaged Norna VSIX, including the completion
 relevance scenarios. Seven focused editor-block tests and the Markdown contract
 test also passed. The subsequent blank-line discovery tests passed on both
 VS Code versions, including actual insertion of every callout type. Prettier
-was not rerun for this completion-only follow-up. The latest repository-wide
-documentation check fails because the user's live single-image example has a
-trailing space absent from its displayed source; the authored file was left
-unchanged.
+was not rerun for this completion-only follow-up. At that checkpoint, the
+documentation check found a trailing-space difference between the live
+single-image example and its displayed source.
 
 The image-usage follow-up passed on VS Code 1.137.0 and 1.96.0 with Red Hat
 YAML 1.24.0: 86 widget/priority cases per version, including 12 selections
 checking usage labels and local/other-page ordering. The editor language-service
 aggregate passed, including nine focused parser/completion tests. This change
-does not alter formatting; Prettier coexistence was not rerun. The latest
-documentation check instead stops at the authored semantic-callout example:
-its quoted blank lines differ from the displayed source. No authored example
-was changed by this follow-up. Tabs, code titles, and code line emphasis still
+does not alter formatting; Prettier coexistence was not rerun. At that
+checkpoint, the documentation check found quoted-blank-line differences
+between the live semantic-callout example and its displayed source.
+Tabs, code titles, and code line emphasis still
 have no dedicated completion suggestions.
+
+Final closeout on 2026-09-14 reconciled the displayed examples with their live
+sources and documented the approved sidenote behavior. Checks passed against
+an isolated export of the Git index, excluding unrelated table/migration work
+and local theme edits:
+
+- `npm run test:page-markdown`: shared page model, structured YAML blocks,
+  named notes, and tabs/code metadata.
+- `node scripts/test-editor-language-service.mjs`: editor language-service
+  aggregate, including nine focused parser/completion tests.
+- `npm run schemas:check`: all nine generated schemas.
+- `npm run test:documentation`: canonical references and maintained examples.
+- `npm run test:client-javascript`: feature-script loading, including the
+  independent note enhancement script.
+- `npm run test:ci-lockfile`: CI lockfile normalization.
+
+The client-JavaScript assertion was corrected to expect the note enhancement
+script rather than CSS-only notes. The editor implementation did not change
+during closeout; the recorded widget tests on both VS Code versions and the
+earlier formatter coexistence tests were reused. No full release suite was run.
 
 These tests close and reopen editor tabs within an extension host. VS Code may
 retain a closed tab's document model in memory; this is not a cold-cache test.
