@@ -157,6 +157,34 @@ maintainer, put it in `README.md` instead of duplicating it here.
   navigation roots beside it and nested pages under the nearest meaningful
   non-home page.
 
+## Visual Design Workflow
+
+- Read `docs/design/preset-design-guide.md` before changing visual presentation.
+  Ground new or redesigned UI controls in established design systems and
+  concrete working examples that solve a comparable problem. Explain why the
+  reference fits Norna's reading-oriented pages; do not copy application UI
+  styling without considering that context.
+- Distinguish documented recommendations, observed design patterns, and your
+  own proposals. Do not call an unverified proposal "best practice" or turn
+  an untested dimension or placement into a general design rule.
+- Review the component in the whole page, not in isolation. Check visual
+  hierarchy, proportions, alignment, spacing, and interaction with existing
+  controls. Supporting controls must not compete unnecessarily with content.
+- When adding a control, reconsider existing controls with overlapping
+  functions. Do not retain them solely because they are already implemented;
+  preserve necessary input alternatives when simplifying the interface.
+- Solve accessibility and visual design together. Distinguish visible control
+  size from its hit area without allowing that hit area to obstruct adjacent
+  content or controls. Accessibility is not a justification for heavy styling.
+- Inspect relevant screenshots yourself before handing over a visual change,
+  including affected narrow-screen and light/dark states. Functional tests do
+  not replace visual inspection, and the user should not have to discover
+  obvious layout defects.
+- When the visual solution is uncertain, present a focused prototype before
+  broad regression testing, following the human-first review rules above.
+  Keep detailed reference examples and reusable design rationale in the design
+  guide rather than expanding this file with component-specific specifications.
+
 ## Command Choices
 
 
