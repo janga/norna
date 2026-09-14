@@ -1,7 +1,51 @@
 # BL-105: Locale-Aware Sortable Tables
 
-Status: Implemented, including sticky-heading sorting; focused browser tests
-pass. Human visual review and documentation remain.
+Status: Completed and human-approved on 2026-09-14, including sticky-heading
+sorting and 500 ms tooltips. The content and configuration references,
+client-side JavaScript contract, and HTML example document the behavior.
+
+## Next-Action Labels: 2026-09-14
+
+The original and sticky sort buttons now name the next action in the site's
+language: sort ascending, sort descending, or restore original order. Hover
+help uses a custom tooltip; the accessible name includes the column
+name followed by that action. Indicators and `aria-sort` still describe the
+current order, not the next action. Changing columns resets the former
+column's action to ascending.
+
+This changes help text, not the three-click cycle or heading styling. The
+maintainer approved the hover help on the long-table example.
+
+Focused verification passed: `npm run test:locales` and the two browser cases
+for source-header sorting and sticky-header sorting. These check next-action
+titles, accessible names, column switching, and synchronization through the
+three-state cycle. The sticky test checks stored labels on the hidden source
+buttons separately from the accessible names of exposed controls. No full
+browser suite or manual screen-reader test was run for this change.
+
+The follow-up replaces native `title` help with a controlled tooltip: 500 ms
+on pointer hover, immediate on keyboard focus, immediate text updates after
+sorting, and Escape dismissal without losing focus. The tooltip remains
+available when the pointer moves over it and is constrained to the viewport.
+Do not retain a native title that could display a second delayed popup.
+The visual result is approved and public documentation is updated.
+
+The focused tooltip browser test passed with a controlled clock at 499/500 ms,
+immediate updates after sorting, hover persistence, keyboard focus, Escape,
+and a 390px Dark viewport. It caught and corrected premature dismissal when
+keyboard focus scrolls a clipped column into view. Light desktop and Dark
+mobile screenshots were inspected and the maintainer approved the result.
+
+Final regression checks covered all 12 table-sorting cases across focused
+runs, including the nine remaining cases after visual approval. The five
+responsive table-context cases also passed. Locale-label and static
+presentation checks passed during implementation. Documentation checks passed
+after the reference and HTML updates. No full `npm test` run or manual
+screen-reader evaluation was performed.
+
+The two targeted presentation-baseline table cases also passed, covering page
+overflow and synchronized sticky headings. `npm run build` passed, including
+configuration/content validation and the documentation site's search index.
 
 ## Verification Checkpoint: 2026-09-14
 
@@ -104,7 +148,8 @@ partial or misleading sort model.
 - Focused browser tests cover locale, type detection, empty cells, stable
   sorting, reset, keyboard use, and the no-JavaScript fallback.
 
-## Documentation follow-up
+## Documentation
 
-After human review of the visible control, document sortable tables in the
-canonical content reference and the relevant HTML examples page.
+Completed in `docs/content.md` (Sorting and Width And Scrolling),
+`docs/configuration.md` (language), `docs/client-javascript.md`, and the
+documentation site's Examples table section.

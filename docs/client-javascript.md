@@ -14,7 +14,7 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Card lists | No | Cards and links remain available. |
 | Side notes | Only for highlighting the matching note on reference hover or keyboard focus; the note script loads on pages containing note references | CSS places notes in the margin when space permits and in the reading flow otherwise. Multiple notes remain grouped with their paragraph. Reference and return links remain available. |
 | Reference footnotes | The note script restores focus on return and reveals a hidden tab alternative when needed | Reference and return links remain available; every tab alternative is visible. |
-| Markdown tables | Only on pages containing a table, for measured lane selection, a persistent scrollbar, and synchronized column headings during horizontal scrolling | The native table remains in one focusable horizontal-scrolling frame. Declared row headings retain their semantics and sticky first-column fallback in CSS; column headings and cell relationships remain intact. |
+| Markdown tables | Only on pages containing a table, for measured width selection, matching top/bottom scrollbars, sorting with next-action tooltips, and synchronized column headings during horizontal scrolling | Rows remain in authored order inside a native horizontal-scrolling frame. The browser supplies its scrollbar; sorting controls and tooltips are absent. Declared row headings retain their semantics and sticky first-column fallback in CSS. |
 | Fenced code blocks | Only on pages containing rendered code blocks, for the copy control and measured width expansion | Code, syntax highlighting, titles, line emphasis, and sticky title bars remain available. Long lines scroll within the text width; the copy button is absent. |
 | Basic page links and anchors | No | Normal links, URLs, and browser history continue to work. |
 | Generated page and section navigation | When Norna needs to maintain sticky anchor offsets, close the mobile menu after a choice, or enhance tree interaction | Real page and anchor links remain usable. Native disclosure controls can still reveal their contents. |
@@ -40,6 +40,11 @@ See
 for their storage, defaults, and interaction contracts. See
 [Current Reading Position](pages.md#current-reading-position) for the automatic
 contents-rail marker.
+
+See [Tables](content.md#tables) for comparison types, the three-click sorting
+cycle, tooltip timing, and keyboard controls. Both custom scrollbars operate
+on the same native scroll region; Norna hides the browser's own scrollbar only
+after both controls have been created.
 
 ## Choosing Static Alternatives
 

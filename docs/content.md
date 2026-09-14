@@ -583,6 +583,8 @@ Use ordinary GFM table syntax for compact comparisons and structured data:
 | Images | Managed | Local source images stay with their page. |
 ```
 
+#### Row Headings
+
 When the first column uniquely names each row, append `{row-header}` to that
 column's heading:
 
@@ -610,6 +612,50 @@ violations through `content:check` and editor diagnostics instead of guessing
 which cells are row headings. A table inside a callout retains the row-heading
 semantics but does not claim page-level space for a sticky column.
 
+#### Sorting
+
+With JavaScript, a regular Markdown table can be sorted by activating a column
+heading. No additional Markdown or configuration is required. Repeated clicks
+on the same heading cycle through ascending order, descending order, and the
+original Markdown row order. Choosing a different column starts in ascending
+order. Empty cells stay last in either direction; equal values retain their
+original relative order.
+
+Norna determines the comparison from the non-empty cells in each column:
+
+| Column values | Comparison |
+| --- | --- |
+| Only numbers such as `10`, `-3`, or `1.5` | Numeric |
+| Only ISO dates such as `2026-09-14`, or supported ISO date-times | Chronological |
+| Text, mixed types, or ambiguous values | Text comparison using the site's `language` |
+
+Numbers must use digits and an optional decimal point, without units or
+grouping separators. Values such as `1,5`, `1,000`, `10 kg`, and `1e3` are text.
+ISO date-times use a date followed by `T` and hours and minutes, with optional
+seconds, fractional seconds, and a `Z` or numeric time-zone offset. Without an
+offset, date-times use the browser's local time zone. Other date formats, such
+as `01/02/2026`, are compared as text rather than guessed.
+
+The complete configured language tag supplies the text-comparison locale;
+for example, `sv` places Swedish letters after Z. It does not change the number
+or date formats accepted for type detection. See
+[`language`](configuration.md#language).
+
+The heading indicator describes the current order. Its tooltip describes the
+next action: **Sort ascending**, **Sort descending**, or **Restore original
+order**. Hover help appears after 500 ms and immediately at keyboard focus;
+while visible, it updates after each sort. Escape dismisses it without moving
+focus. The button's accessible name includes the column name and next action.
+Help text follows the site's language, and the sticky heading offers the same
+actions. Enter or Space activates a focused heading.
+
+Sorting requires a single header row, one body section, at least one body row,
+and the same number of cells in every row. Tables with spanning cells or
+interactive content in their headings retain their original order. Without
+JavaScript, all tables remain in their authored order without sorting controls.
+
+#### Width And Scrolling
+
 Norna preserves the native table, column headings, and cell relationships. A
 top-level table then uses the smallest layout area in which its browser-rendered
 columns fit:
@@ -627,15 +673,20 @@ make hidden navigation lanes available to a table without changing the width
 or position of the surrounding prose.
 
 Only a table that still overflows receives a keyboard-focusable horizontal
-scroll region. JavaScript adds a persistent horizontal scrollbar, directly
-below the sticky column headings on top-level tables. Its handle shows the
-visible fraction and position within the complete table width. Drag the handle
-or click the track to move horizontally. With the scrollbar focused, Left and
+scroll region. JavaScript adds matching horizontal scrollbars above and below
+the table body. On top-level tables, the upper control stays directly below
+the sticky column headings. Both handles show the visible fraction and
+position within the complete table width and stay synchronized. Drag either
+handle or click its track to move horizontally. With a scrollbar focused, Left and
 Right Arrow move a short distance, Page Up/Down move by most of the visible
-width, and Home/End move to the first or last columns. The control remains
-visible without hovering or reaching the table's bottom and disappears when
-the table fits. Touch, trackpad, mouse, and keyboard scrolling continue to
-operate on the same native scroll region.
+width, and Home/End move to the first or last columns. The upper control remains
+visible without hovering or reaching the table's bottom. Both controls
+disappear when the table fits; if one held keyboard focus, focus moves to the
+table's scroll region without moving the page. Touch, trackpad, mouse, and
+keyboard scrolling continue to operate on the same native scroll region.
+Norna hides the browser's scrollbar only after both custom controls exist;
+without JavaScript, the browser supplies the scrollbar and decides when it is
+visible.
 The document itself does not become horizontally scrollable. A table nested in
 a callout or another bounded Markdown container stays within that container
 instead of claiming page-level space.

@@ -331,11 +331,19 @@ alternative appears with its label. Read the
 a Norna extension: it makes the first column's cells row headings. Omit that
 marker for an ordinary table.
 
+Click a column heading to sort ascending, click again for descending, and a
+third time to restore the order above. Hover over a heading, or focus it with
+the keyboard, to see what the next activation does. Text comparison follows
+the site's language; numeric and ISO-date columns sort by value.
+
 The table uses available space before scrolling horizontally. Its column
 headings stay visible while you scroll its rows. When columns extend beyond
-the visible area, a scrollbar below the headings shows your horizontal
-position and lets you drag or click to reach them. The code block above contains
-every cell of this table, unchanged. Read the
+the visible area, matching scrollbars below the headings and at the table's
+bottom show the same horizontal position. Drag either handle or click its
+track to reach more columns. Without JavaScript, the rows keep their original
+order and the browser provides horizontal scrolling.
+
+The code block above contains every cell of this table, unchanged. Read the
 [table reference](https://github.com/janga/norna/blob/main/docs/content.md#tables).
 
 ## List child pages automatically {#page-list}

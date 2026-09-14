@@ -89,6 +89,8 @@ language: sv
 - Norna-owned labels in navigation, controls, notes, callouts, error pages,
   and other generated interface elements;
 - locale-sensitive values such as a generated build date;
+- text comparison and sorting-control labels in
+  [sortable tables](content.md#sorting);
 - the language and labels used by the optional Pagefind search interface.
 
 It does not translate page Markdown, captions, banners, footer text, or other

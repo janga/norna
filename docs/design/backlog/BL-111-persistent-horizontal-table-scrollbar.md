@@ -8,6 +8,29 @@ framing, or changing edge shadows. Reference documentation and the public
 table example have been updated. Regression testing also caught and corrected
 focus loss when the scrollbar disappears after the table becomes wide enough.
 
+## Follow-up: Matching Bottom Scrollbar
+
+Completed and human-approved on 2026-09-14. With JavaScript, the top and bottom
+controls now share one scrollbar implementation and palette-derived styling.
+Both represent the same native scroll region and synchronize after dragging,
+track clicks, keyboard input, and native scrolling. Hide both when the table
+fits and transfer focus to the table when a focused control disappears.
+
+The browser's own scrollbar is hidden only after both custom controls exist;
+without JavaScript it remains available. The content reference, client-side
+JavaScript contract, and public example now describe both controls.
+
+Focused checks passed for shared upper/lower styling, synchronized positions,
+bottom-control keyboard and track input, focus recovery when overflow ends,
+and the native no-JavaScript fallback. The static presentation contract also
+passed. A desktop screenshot showing both controls was inspected. After visual
+approval, the nine remaining table-sorting cases and all five responsive
+table-context cases passed. The three targeted cases from implementation
+complete coverage of the 12-case table-sorting suite without rerunning
+unchanged tests merely for a commit. Documentation checks also passed.
+The two targeted presentation-baseline table cases and the documentation-site
+build passed as well. No full `npm test` run was needed for this closeout.
+
 ## Problem
 
 The native scrollbar sits at the bottom of a long table and may be hidden by
