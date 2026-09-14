@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Sắp xếp tăng dần',
+	tableSortDescending: 'Sắp xếp giảm dần',
+	tableSortReset: 'Khôi phục thứ tự ban đầu',
 	breadcrumb: 'Đường dẫn điều hướng',
 	appearance: 'Giao diện',
 	appearanceDark: 'Tối',

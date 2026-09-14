@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Issortja f’ordni axxendenti',
+	tableSortDescending: 'Issortja f’ordni dixxendenti',
+	tableSortReset: 'Irrestawra l-ordni oriġinali',
 	breadcrumb: 'Mogħdija tan-navigazzjoni',
 	appearance: 'Dehra',
 	appearanceDark: 'Skur',

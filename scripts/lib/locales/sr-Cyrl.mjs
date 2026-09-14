@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Сортирај растуће',
+	tableSortDescending: 'Сортирај опадајуће',
+	tableSortReset: 'Врати изворни редослед',
 	breadcrumb: 'Путања навигације',
 	appearance: 'Изглед',
 	appearanceDark: 'Тамни',

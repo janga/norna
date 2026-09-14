@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Artan sırada sırala',
+	tableSortDescending: 'Azalan sırada sırala',
+	tableSortReset: 'Özgün sırayı geri yükle',
 	breadcrumb: 'Gezinti yolu',
 	appearance: 'Görünüm',
 	appearanceDark: 'Koyu',

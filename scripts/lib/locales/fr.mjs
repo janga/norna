@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Trier par ordre croissant',
+	tableSortDescending: 'Trier par ordre décroissant',
+	tableSortReset: 'Rétablir l’ordre initial',
 	breadcrumb: "Fil d'Ariane",
 	appearance: 'Apparence',
 	appearanceDark: 'Sombre',

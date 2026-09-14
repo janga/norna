@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Ayusin nang pataas',
+	tableSortDescending: 'Ayusin nang pababa',
+	tableSortReset: 'Ibalik ang orihinal na pagkakasunod-sunod',
 	breadcrumb: 'Daan ng nabigasyon',
 	appearance: 'Hitsura',
 	appearanceDark: 'Madilim',

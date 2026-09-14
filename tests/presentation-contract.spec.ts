@@ -76,7 +76,7 @@ test('wide Markdown tables scroll without widening the page', async ({ page }) =
 	expect(dimensions.overflowX).toBe('auto');
 	expect(dimensions.scrollWidth).toBeGreaterThan(dimensions.clientWidth);
 	expect(dimensions.tabIndex).toBe(0);
-	await expect(frame.getByRole('scrollbar')).toHaveAttribute('aria-valuenow', '0');
+	await expect(frame.locator('[data-table-navigation="top"]').getByRole('scrollbar')).toHaveAttribute('aria-valuenow', '0');
 	for (const edge of ['::before', '::after']) {
 		expect(await frame.evaluate((element, pseudo) => getComputedStyle(element, pseudo).content, edge)).toBe('none');
 	}
@@ -85,7 +85,7 @@ test('wide Markdown tables scroll without widening the page', async ({ page }) =
 	await scrollRegion.evaluate((element) => element.scrollTo({ left: element.scrollWidth }));
 	await expect(frame).toHaveAttribute('data-table-at-start', 'false');
 	await expect(frame).toHaveAttribute('data-table-at-end', 'true');
-	await expect(frame.getByRole('scrollbar')).toHaveAttribute('aria-valuenow', '100');
+	await expect(frame.locator('[data-table-navigation="top"]').getByRole('scrollbar')).toHaveAttribute('aria-valuenow', '100');
 	for (const edge of ['::before', '::after']) {
 		expect(await frame.evaluate((element, pseudo) => getComputedStyle(element, pseudo).content, edge)).toBe('none');
 	}
@@ -201,7 +201,7 @@ test('a fitting long table keeps its headings below the sticky site header and r
 	});
 	await expect(frame).toHaveAttribute('data-table-overflow', 'false');
 	await expect(frame.locator('[data-table-scroll]')).not.toHaveAttribute('tabindex', '0');
-	await expect(frame.locator('[data-table-navigation]')).toBeHidden();
+	await expect(frame.locator('[data-table-navigation="top"]')).toBeHidden();
 
 	let stickyOffset = 0;
 	for (const width of [1440, 1100, 900]) {
@@ -250,7 +250,7 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	const scrollRegion = frame.locator('[data-table-scroll]');
 	const table = frame.locator('table');
 	const stickyHeading = frame.locator('[data-table-sticky-heading]');
-	const tableNavigation = frame.locator('[data-table-navigation]');
+	const tableNavigation = frame.locator('[data-table-navigation="top"]');
 	const scrollbar = tableNavigation.getByRole('scrollbar', { name: 'Table columns' });
 	const originalHeadings = table.locator('thead th');
 	const visualHeadings = stickyHeading.locator('.norna-table-sticky-heading-cell');

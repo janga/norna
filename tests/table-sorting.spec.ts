@@ -9,6 +9,13 @@ const settleLayout = (page) => page.evaluate(() => new Promise((resolve) => (
 	requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(resolve)))
 )));
 
+const expectSortAction = async (button, column: string, action: string, exposed = true) => {
+	await expect(button).toHaveAttribute('data-table-sort-action', action);
+	await expect(button).not.toHaveAttribute('title');
+	await expect(button).toHaveAttribute('aria-label', `${column}: ${action}`);
+	if (exposed) await expect(button).toHaveAccessibleName(`${column}: ${action}`);
+};
+
 test.beforeEach(async ({ page }) => {
 	await page.setViewportSize({ width: 1200, height: 800 });
 	await page.goto('/', { waitUntil: 'networkidle' });
@@ -21,19 +28,30 @@ test('sorts text with the configured locale and restores source order', async ({
 	const nameHeading = table.locator('thead th').nth(0);
 	const nameButton = nameHeading.locator('[data-table-sort-button]');
 
+	await expectSortAction(nameButton, 'Name', 'Sortera stigande');
 	await nameButton.focus();
 	await page.keyboard.press('Enter');
 	await expect(nameHeading).toHaveAttribute('aria-sort', 'ascending');
+	await expectSortAction(nameButton, 'Name', 'Sortera fallande');
 	await expect(getColumnValues(table, 0)).resolves.toEqual(['Zebra', 'Åland', 'Älmhult', 'Örebro']);
 	await expect(nameButton).toBeFocused();
 
 	await nameButton.click();
 	await expect(nameHeading).toHaveAttribute('aria-sort', 'descending');
+	await expectSortAction(nameButton, 'Name', 'Återställ ursprunglig ordning');
 	await expect(getColumnValues(table, 0)).resolves.toEqual(['Örebro', 'Älmhult', 'Åland', 'Zebra']);
 
 	await nameButton.click();
 	await expect(nameHeading).not.toHaveAttribute('aria-sort');
+	await expectSortAction(nameButton, 'Name', 'Sortera stigande');
 	await expect(getColumnValues(table, 0)).resolves.toEqual(['Örebro', 'Zebra', 'Åland', 'Älmhult']);
+
+	await nameButton.click();
+	const countButton = table.locator('thead th').nth(1).locator('[data-table-sort-button]');
+	await expectSortAction(countButton, 'Count', 'Sortera stigande');
+	await countButton.click();
+	await expectSortAction(nameButton, 'Name', 'Sortera stigande');
+	await expectSortAction(countButton, 'Count', 'Sortera fallande');
 });
 
 test('detects numeric and ISO-date columns while keeping blanks last and ties stable', async ({ page }) => {
@@ -84,7 +102,7 @@ const openLongTable = async (page) => {
 
 test('persistent scrollbar stays visible, represents the viewport, and supports dragging and track clicks', async ({ page }) => {
 	const frame = await openLongTable(page);
-	const scrollbar = frame.getByRole('scrollbar');
+	const scrollbar = frame.locator('[data-table-navigation="top"]').getByRole('scrollbar');
 	const thumb = scrollbar.locator('[data-table-scrollbar-thumb]');
 	const region = frame.locator('[data-table-scroll]');
 	await expect(scrollbar).toBeVisible();
@@ -120,9 +138,80 @@ test('persistent scrollbar stays visible, represents the viewport, and supports 
 	await expect.poll(async () => Number(await scrollbar.getAttribute('aria-valuenow'))).toBeGreaterThan(50);
 });
 
+test('upper and lower scrollbars share styling and stay synchronized', async ({ page }, testInfo) => {
+	const frame = await openLongTable(page);
+	const top = frame.locator('[data-table-navigation="top"] [data-table-scrollbar]');
+	const bottom = frame.locator('[data-table-navigation="bottom"] [data-table-scrollbar]');
+	const region = frame.locator('[data-table-scroll]');
+	await expect(frame.getByRole('scrollbar')).toHaveCount(2);
+	const appearance = (element) => {
+		const track = getComputedStyle(element, '::before');
+		const thumb = getComputedStyle(element.querySelector('[data-table-scrollbar-thumb]'), '::before');
+		return { height: track.height, track: track.backgroundColor, thumb: thumb.backgroundColor };
+	};
+	expect(await top.evaluate(appearance)).toEqual(await bottom.evaluate(appearance));
+	expect(await region.evaluate((element) => getComputedStyle(element).scrollbarWidth)).toBe('none');
+	await bottom.scrollIntoViewIfNeeded();
+	await page.screenshot({ path: testInfo.outputPath('matching-scrollbars-light.png') });
+	await bottom.focus();
+	await bottom.press('End');
+	await expect(bottom).toHaveAttribute('aria-valuenow', '100');
+	await expect(top).toHaveAttribute('aria-valuenow', '100');
+	const bounds = (await bottom.boundingBox())!;
+	await bottom.click({ position: { x: 1, y: bounds.height / 2 } });
+	await expect(bottom).toHaveAttribute('aria-valuenow', '0');
+	await expect(top).toHaveAttribute('aria-valuenow', '0');
+	await bottom.press('ArrowRight');
+	await expect.poll(async () => Number(await top.getAttribute('aria-valuenow'))).toBeGreaterThan(0);
+	await frame.locator('table').evaluate((table) => { table.style.width = '300px'; table.style.minWidth = '0'; });
+	await expect(bottom).toBeHidden();
+	await expect(top).toBeHidden();
+	await expect(region).toBeFocused();
+});
+
+test('sort tooltip waits 500 ms, updates after clicking, and supports focus and Escape', async ({ page }, testInfo) => {
+	const frame = await openLongTable(page);
+	const button = frame.locator('[data-table-sticky-heading]').getByRole('button', { name: /^Count: / });
+	const tooltip = page.getByRole('tooltip');
+	await page.clock.install();
+	await page.clock.pauseAt(new Date());
+	await button.hover();
+	await page.clock.runFor(499);
+	await expect(tooltip).toBeHidden();
+	await page.clock.runFor(1);
+	await expect(tooltip).toHaveText('Sortera stigande');
+	await page.screenshot({ path: testInfo.outputPath('sort-tooltip-light.png') });
+	await button.click();
+	await expect(tooltip).toHaveText('Sortera fallande');
+	await tooltip.hover();
+	await page.clock.runFor(150);
+	await expect(tooltip).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(tooltip).toBeHidden();
+	await page.mouse.move(0, 0);
+	await page.keyboard.press('Tab');
+	await page.keyboard.press('Shift+Tab');
+	await expect(button).toBeFocused();
+	await expect(tooltip).toHaveText('Sortera fallande');
+	await page.keyboard.press('Escape');
+	await expect(tooltip).toBeHidden();
+	await expect(button).toBeFocused();
+	await page.clock.resume();
+	await page.setViewportSize({ width: 390, height: 800 });
+	await page.evaluate(() => { document.documentElement.dataset.appearance = 'dark'; });
+	await settleLayout(page);
+	await page.keyboard.press('Tab');
+	await page.keyboard.press('Shift+Tab');
+	await expect(tooltip).toBeVisible();
+	const tooltipBounds = (await tooltip.boundingBox())!;
+	expect(tooltipBounds.x).toBeGreaterThanOrEqual(0);
+	expect(tooltipBounds.x + tooltipBounds.width).toBeLessThanOrEqual(390);
+	await page.screenshot({ path: testInfo.outputPath('sort-tooltip-mobile-dark.png') });
+});
+
 test('persistent scrollbar supports keyboard movement and RTL positions without scrolling the document', async ({ page }) => {
 	const frame = await openLongTable(page);
-	const scrollbar = frame.getByRole('scrollbar');
+	const scrollbar = frame.locator('[data-table-navigation="top"]').getByRole('scrollbar');
 	const region = frame.locator('[data-table-scroll]');
 	await scrollbar.focus();
 	const oldScrollY = await page.evaluate(() => scrollY);
@@ -154,7 +243,7 @@ test('persistent scrollbar supports keyboard movement and RTL positions without 
 
 test('persistent scrollbar adapts to reading preferences, hides when unnecessary, and releases focus', async ({ page }) => {
 	const frame = await openLongTable(page);
-	const scrollbar = frame.getByRole('scrollbar');
+	const scrollbar = frame.locator('[data-table-navigation="top"]').getByRole('scrollbar');
 	const region = frame.locator('[data-table-scroll]');
 	for (const width of [1200, 600, 390]) {
 		await page.setViewportSize({ width, height: 800 });
@@ -182,7 +271,7 @@ test('persistent scrollbar adapts to reading preferences, hides when unnecessary
 		table.style.width = '400px';
 	});
 	await expect(frame).toHaveAttribute('data-table-overflow', 'false');
-	await expect(frame.locator('[data-table-scrollbar]')).toBeHidden();
+	for (const bar of await frame.locator('[data-table-scrollbar]').all()) await expect(bar).toBeHidden();
 	await expect(region).toBeFocused();
 	await expect(frame.getByRole('scrollbar')).toHaveCount(0);
 });
@@ -192,17 +281,20 @@ test('sorts from the visible sticky header and keeps source semantics and indica
 	const table = frame.locator('table');
 	const header = table.locator('thead th').nth(1);
 	const sticky = frame.locator('[data-table-sticky-heading]');
-	const button = sticky.getByRole('button', { name: 'Count', exact: true });
+	const button = sticky.getByRole('button', { name: /^Count: / });
 	const sourceOrder = await getColumnValues(table, 0);
+	await expectSortAction(button, 'Count', 'Sortera stigande');
 	await expect(sticky).not.toHaveAttribute('inert');
 	await expect(frame.getByRole('columnheader', { name: 'Count', exact: true })).toHaveCount(1);
-	await expect(frame.getByRole('button', { name: 'Count', exact: true })).toHaveCount(1);
+	await expect(frame.getByRole('button', { name: /^Count: / })).toHaveCount(1);
 	expect((await header.boundingBox())!.y).toBeLessThan(0);
 	const beforeScroll = await page.evaluate(() => window.scrollY);
 
 	await button.click();
 	await expect(header).toHaveAttribute('aria-sort', 'ascending');
 	await expect(button).toHaveAttribute('data-table-sort-state', 'ascending');
+	await expectSortAction(button, 'Count', 'Sortera fallande');
+	await expectSortAction(header.locator('[data-table-sort-button]'), 'Count', 'Sortera fallande', false);
 	await expect(header.locator('[data-table-sort-button]')).toHaveAttribute('data-table-sort-state', 'ascending');
 	await expect(getColumnValues(table, 1)).resolves.toEqual(Array.from({ length: 28 }, (_, i) => String(i + 1)));
 	await expect(button).toBeFocused();
@@ -212,15 +304,18 @@ test('sorts from the visible sticky header and keeps source semantics and indica
 	await page.keyboard.press('Space');
 	await expect(header).toHaveAttribute('aria-sort', 'descending');
 	await expect(button).toHaveAttribute('data-table-sort-state', 'descending');
+	await expectSortAction(button, 'Count', 'Återställ ursprunglig ordning');
+	await expectSortAction(header.locator('[data-table-sort-button]'), 'Count', 'Återställ ursprunglig ordning', false);
 	await page.keyboard.press('Enter');
 	await expect(header).not.toHaveAttribute('aria-sort');
 	await expect(button).toHaveAttribute('data-table-sort-state', 'unsorted');
+	await expectSortAction(button, 'Count', 'Sortera stigande');
 	await expect(getColumnValues(table, 0)).resolves.toEqual(sourceOrder);
 });
 
 test('retains focused sticky controls through resize and preference changes, with one tab stop per column', async ({ page }) => {
 	const frame = await openLongTable(page);
-	const button = frame.locator('[data-table-sticky-heading]').getByRole('button', { name: 'Count', exact: true });
+	const button = frame.locator('[data-table-sticky-heading]').getByRole('button', { name: /^Count: / });
 	await button.focus();
 	const identity = await button.elementHandle();
 	for (const width of [900, 600, 390, 1200]) {
@@ -241,12 +336,12 @@ test('retains focused sticky controls through resize and preference changes, wit
 		await expect(frame).toHaveAttribute('data-table-overflow', 'true');
 	}
 	await expect(frame.locator('thead [data-table-sort-button]:not([tabindex="-1"])')).toHaveCount(0);
-	await expect(frame.getByRole('button', { name: 'Count', exact: true })).toHaveCount(1);
+	await expect(frame.getByRole('button', { name: /^Count: / })).toHaveCount(1);
 
 	// Real keyboard navigation reveals later columns instead of focusing clipped controls.
 	for (const name of ['Inspected', 'Responsibility', 'Next action', 'Context']) {
 		await page.keyboard.press('Tab');
-		const next = frame.locator('[data-table-sticky-heading]').getByRole('button', { name, exact: true });
+		const next = frame.locator('[data-table-sticky-heading]').getByRole('button', { name: `${name}: Sortera stigande`, exact: true });
 		await expect(next).toBeFocused();
 		await expect.poll(() => next.evaluate((element) => {
 			const bounds = element.getBoundingClientRect();
@@ -258,23 +353,23 @@ test('retains focused sticky controls through resize and preference changes, wit
 test('transfers focus to the original header when overflow ends and back when it returns', async ({ page }) => {
 	const frame = await openLongTable(page);
 	const table = frame.locator('table');
-	const stickyButton = frame.locator('[data-table-sticky-heading]').getByRole('button', { name: 'Count', exact: true });
+	const stickyButton = frame.locator('[data-table-sticky-heading]').getByRole('button', { name: /^Count: / });
 	await stickyButton.focus();
 	await table.evaluate((table) => {
 		table.style.minWidth = '0';
 		table.style.width = '400px';
 	});
 	await expect(frame).toHaveAttribute('data-table-overflow', 'false');
-	const original = table.locator('thead').getByRole('button', { name: 'Count', exact: true });
+	const original = table.locator('thead').getByRole('button', { name: /^Count: / });
 	await expect(original).toBeFocused();
-	await expect(frame.getByRole('button', { name: 'Count', exact: true })).toHaveCount(1);
+	await expect(frame.getByRole('button', { name: /^Count: / })).toHaveCount(1);
 	await table.evaluate((table) => {
 		table.style.width = '1800px';
 		table.style.minWidth = '1800px';
 	});
 	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
 	await expect(stickyButton).toBeFocused();
-	await expect(frame.getByRole('button', { name: 'Count', exact: true })).toHaveCount(1);
+	await expect(frame.getByRole('button', { name: /^Count: / })).toHaveCount(1);
 });
 
 test('sorts after changing Focus reading and width through the Display panel', async ({ page }) => {
@@ -287,7 +382,7 @@ test('sorts after changing Focus reading and width through the Display panel', a
 	await settleLayout(page);
 	await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'on');
 	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
-	await frame.getByRole('button', { name: 'Count', exact: true }).click();
+	await frame.getByRole('button', { name: /^Count: / }).click();
 	await expect(frame.locator('thead th').nth(1)).toHaveAttribute('aria-sort', 'ascending');
 	await expect(getColumnValues(frame.locator('table'), 1)).resolves.toEqual(Array.from({ length: 28 }, (_, i) => String(i + 1)));
 });

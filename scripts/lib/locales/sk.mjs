@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Zoradiť vzostupne',
+	tableSortDescending: 'Zoradiť zostupne',
+	tableSortReset: 'Obnoviť pôvodné poradie',
 	breadcrumb: 'Navigačná cesta',
 	appearance: 'Vzhľad',
 	appearanceDark: 'Tmavý',

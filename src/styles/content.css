@@ -497,6 +497,34 @@ ul {
 	outline-offset: 2px;
 }
 
+.norna-table-frame[data-table-custom-scrollbars='true'] > .norna-table-scroll {
+	scrollbar-width: none;
+	scrollbar-gutter: auto;
+}
+
+.norna-table-frame[data-table-custom-scrollbars='true'] > .norna-table-scroll::-webkit-scrollbar {
+	display: none;
+}
+
+.norna-table-sort-tooltip {
+	position: fixed;
+	z-index: 100;
+	width: max-content;
+	max-width: calc(100vw - 1rem);
+	padding: 0.375rem 0.625rem;
+	border: 1px solid var(--color-border);
+	border-radius: var(--corner-radius-small, 2px);
+	background: var(--color-surface-emphasis-background);
+	color: var(--color-surface-emphasis-text);
+	font-size: 0.8125rem;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+
+.norna-table-sort-tooltip[hidden] {
+	display: none;
+}
+
 .norna-table-sticky-context {
 	position: sticky;
 	top: var(--site-top-anchor-offset);

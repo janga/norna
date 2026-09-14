@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Panga kwa kupanda',
+	tableSortDescending: 'Panga kwa kushuka',
+	tableSortReset: 'Rejesha mpangilio wa awali',
 	breadcrumb: 'Mfuatano wa urambazaji',
 	appearance: 'Mwonekano',
 	appearanceDark: 'Giza',

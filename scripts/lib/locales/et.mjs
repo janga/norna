@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Sordi kasvavalt',
+	tableSortDescending: 'Sordi kahanevalt',
+	tableSortReset: 'Taasta algne järjestus',
 	breadcrumb: 'Asukoharada',
 	appearance: 'Välimus',
 	appearanceDark: 'Tume',

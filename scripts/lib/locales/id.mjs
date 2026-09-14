@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Urutkan menaik',
+	tableSortDescending: 'Urutkan menurun',
+	tableSortReset: 'Pulihkan urutan asli',
 	breadcrumb: 'Jejak navigasi',
 	appearance: 'Tampilan',
 	appearanceDark: 'Gelap',

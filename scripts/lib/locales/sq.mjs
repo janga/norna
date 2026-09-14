@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Rendit në rritje',
+	tableSortDescending: 'Rendit në zbritje',
+	tableSortReset: 'Rikthe renditjen fillestare',
 	breadcrumb: 'Shtegu i navigimit',
 	appearance: 'Pamja',
 	appearanceDark: 'E errët',

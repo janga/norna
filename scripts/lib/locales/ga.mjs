@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Sórtáil in ord ardaitheach',
+	tableSortDescending: 'Sórtáil in ord íslitheach',
+	tableSortReset: 'Athchóirigh an t-ord bunaidh',
 	breadcrumb: 'Conair nascleanúna',
 	appearance: 'Cuma',
 	appearanceDark: 'Dorcha',

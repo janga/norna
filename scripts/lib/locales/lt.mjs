@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Rikiuoti didėjančiai',
+	tableSortDescending: 'Rikiuoti mažėjančiai',
+	tableSortReset: 'Atkurti pradinę tvarką',
 	breadcrumb: 'Naršymo kelias',
 	appearance: 'Išvaizda',
 	appearanceDark: 'Tamsi',

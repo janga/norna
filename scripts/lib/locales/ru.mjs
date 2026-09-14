@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Сортировать по возрастанию',
+	tableSortDescending: 'Сортировать по убыванию',
+	tableSortReset: 'Восстановить исходный порядок',
 	breadcrumb: 'Цепочка навигации',
 	appearance: 'Оформление',
 	appearanceDark: 'Тёмное',

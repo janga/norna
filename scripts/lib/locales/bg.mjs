@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Сортиране във възходящ ред',
+	tableSortDescending: 'Сортиране в низходящ ред',
+	tableSortReset: 'Възстановяване на първоначалния ред',
 	breadcrumb: 'Навигационна пътека',
 	appearance: 'Изглед',
 	appearanceDark: 'Тъмен',

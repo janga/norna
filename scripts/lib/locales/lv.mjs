@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Kārtot augošā secībā',
+	tableSortDescending: 'Kārtot dilstošā secībā',
+	tableSortReset: 'Atjaunot sākotnējo secību',
 	breadcrumb: 'Navigācijas ceļš',
 	appearance: 'Izskats',
 	appearanceDark: 'Tumšs',

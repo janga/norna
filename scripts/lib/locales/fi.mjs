@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Lajittele nousevasti',
+	tableSortDescending: 'Lajittele laskevasti',
+	tableSortReset: 'Palauta alkuperäinen järjestys',
 	breadcrumb: 'Murupolku',
 	appearance: 'Ulkoasu',
 	appearanceDark: 'Tumma',

@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Arrange from small to big',
+	tableSortDescending: 'Arrange from big to small',
+	tableSortReset: 'Bring back di original order',
 	breadcrumb: 'Navigation trail',
 	appearance: 'How e look',
 	appearanceDark: 'Dark',

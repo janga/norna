@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Raða í hækkandi röð',
+	tableSortDescending: 'Raða í lækkandi röð',
+	tableSortReset: 'Endurheimta upprunalega röð',
 	breadcrumb: 'Leiðarslóð',
 	appearance: 'Útlit',
 	appearanceDark: 'Dökkt',

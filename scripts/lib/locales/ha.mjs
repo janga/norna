@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Jera daga ƙarami zuwa babba',
+	tableSortDescending: 'Jera daga babba zuwa ƙarami',
+	tableSortReset: 'Mayar da tsarin asali',
 	breadcrumb: 'Hanyar kewayawa',
 	appearance: 'Bayyanar shafi',
 	appearanceDark: 'Duhu',

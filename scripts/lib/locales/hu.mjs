@@ -1,4 +1,7 @@
 export default Object.freeze({
+	tableSortAscending: 'Rendezés növekvő sorrendben',
+	tableSortDescending: 'Rendezés csökkenő sorrendben',
+	tableSortReset: 'Eredeti sorrend visszaállítása',
 	breadcrumb: 'Morzsamenü',
 	appearance: 'Megjelenés',
 	appearanceDark: 'Sötét',
