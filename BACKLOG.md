@@ -27,12 +27,13 @@ No implementation-ready items are currently queued.
 ## External Gate
 
 These items have high product value but require an external account, publishing
-action, or another user-owned prerequisite. They do not block `Now` or `Next`.
+action, practical user evaluation, or another user-owned prerequisite. They do
+not block `Now` or `Next`.
 
 - [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
-  **In progress.** The version-aligned package and real VS Code tests are ready;
-  complete the first Visual Studio Marketplace publication before describing
-  IntelliSense as a supported installable feature.
+  **In progress: experimental VSIX evaluation.** Continue everyday editing with
+  identifiable manual updates and regression tests for reported failures;
+  Marketplace publication requires a later explicit decision.
 
 ## Later
 

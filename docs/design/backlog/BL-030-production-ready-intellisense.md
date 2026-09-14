@@ -12,20 +12,58 @@ met.
 
 ## Current Status
 
-Implementation, packaging, compatibility handling, documentation, and
-packaged-extension tests are complete. The tests install both Norna and Red Hat
-YAML into isolated VS Code instances and run against the minimum supported and
-current VS Code releases.
+**In progress: experimental VSIX evaluation.** On 2026-09-14 the user chose
+continued everyday editing with manually installed VSIX builds before deciding
+whether to publish in the Visual Studio Marketplace. Publication is not the
+only remaining acceptance step and is not required for this evaluation phase.
 
-The remaining acceptance step is the first public Visual Studio Marketplace
-release. Until that external publisher setup is complete, the repository-built
-VSIX is suitable for final evaluation but is not the supported installation and
-automatic-update channel promised by this item.
+The current implementation has packaged-extension tests in minimum supported
+and current VS Code, including actual suggestion-widget selection, negative
+contexts, and documented Red Hat YAML/Prettier coexistence scenarios. These
+results do not prove that every everyday editing workflow is reliable or every
+Norna construction has completion support. Tabs and code metadata still lack
+dedicated suggestions.
+
+User documentation now describes experimental VSIX installation, manual
+updates, status verification, and known boundaries. Do not promise Marketplace
+availability, automatic updates, or complete IntelliSense coverage.
+
+Related implementation and tests remain under BL-108: Standard And Uniform
+Content Syntax, BL-109: Context-Relevant IntelliSense Tests, and BL-110:
+Context-Scoped Completion Priority. Those items are complete and committed
+together as a compatible engine/extension combination; practical VSIX
+evaluation remains open here.
+
+## Next Step: Practical VSIX Evaluation
+
+- Use the extension during ordinary authoring, not only in a dedicated test
+  profile. Record relevant enabled extensions when a problem occurs.
+- Give each distributed evaluation build a new extension version. Record the
+  tested Norna engine version so two different builds are not confused merely
+  because they share a VSIX filename.
+- Verify installation and replacement through **Norna: Show IntelliSense
+  Status** after **Developer: Reload Window**.
+- Exercise open, edit, select suggestions, save, close, reopen, edit, and save
+  again. Include configuration, Markdown blocks, callouts, notes, image
+  selection, and transitions to unrelated Markdown/YAML files.
+- Turn reproducible failures into focused regression tests at the failing
+  layer. Completion-provider output alone does not prove that a suggestion can
+  be selected and inserted in the widget.
+- Keep canonical documentation aligned with observed behavior and explicit
+  limitations. Do not wait for Marketplace publication to document the
+  evaluation workflow.
+- Keep the item open until the user considers the practical editing workflow
+  reliable. Marketplace publication requires a separate explicit decision;
+  elapsed time or passing automated tests alone does not authorize it.
+
+If external testers are invited, a versioned VSIX attached to a GitHub
+pre-release is a possible distribution path. No such published artifact is
+assumed to exist, and creating one is not part of the current authorization.
 
 ## First Scope
 
-- Publish and version the VS Code extension through a supported installation and
-  update path.
+- Version and distribute evaluation builds through manual VSIX installation;
+  decide the public installation and update path after practical evaluation.
 - Define compatibility between the extension, its editor-support manifest, and
   the Norna engine installed in the current project.
 - Activate Norna help only for recognized files inside a valid Norna project and
@@ -39,8 +77,8 @@ automatic-update channel promised by this item.
   projects.
 - Add automated coverage for installation artifacts, activation boundaries,
   upgrades, downgrades, embedded sites, and non-Norna YAML and Markdown files.
-- Update user documentation only after the supported installation and update
-  workflow exists.
+- Document the installation and update workflow that actually exists, clearly
+  distinguishing experimental evaluation from a supported public release.
 
 ## Boundaries
 
@@ -65,6 +103,12 @@ automatic-update channel promised by this item.
 
 ## Acceptance Criteria
 
+The evaluation phase requires reproducible installation and manual updates,
+identifiable builds, regression coverage for reported failures, accurate
+documentation, and the user's approval of everyday editing. The complete item
+also requires the following public-support criteria; they are not prerequisites
+for beginning VSIX evaluation:
+
 - A new user can install and update the extension without cloning the Norna
   repository or running repository-internal packaging commands.
 - The extension selects support data compatible with the Norna engine installed
@@ -75,7 +119,7 @@ automatic-update channel promised by this item.
   all supported Norna YAML files.
 - Completion descriptions use current terminology and link to documentation for
   the installed Norna version.
-- Markdown blocks, inline notes, and valid managed-image filenames have tested
+- Markdown blocks, named sidenotes, and valid managed-image filenames have tested
   completion behavior, including cross-page image discovery where supported.
 - Automated tests cover a packaged extension, clean installation, update and
   downgrade compatibility, project discovery, refresh behavior, and activation
