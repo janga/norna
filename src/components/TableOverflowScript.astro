@@ -1,12 +1,12 @@
 ---
-import { ChevronLeft, ChevronRight } from '@lucide/astro';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUpDown, ChevronUp } from '@lucide/astro';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 
 const labels = projectConfig.locale.labels;
 ---
 
 <template data-table-navigation-template>
-	<div class="norna-table-navigation" data-table-navigation hidden>
+	<div class="norna-table-navigation" data-table-navigation data-table-locale={projectConfig.locale.formattingLocale} hidden>
 		<span class="visually-hidden" data-table-overflow-description>{labels.tableOverflowDescription}</span>
 		<div class="norna-table-navigation-buttons" role="group" aria-label={labels.tableColumns}>
 			<button
@@ -29,10 +29,21 @@ const labels = projectConfig.locale.labels;
 	</div>
 </template>
 
+<template data-table-sort-indicator-template>
+	<span class="norna-table-sort-indicator" aria-hidden="true">
+		<span data-table-sort-icon="unsorted"><ChevronsUpDown size={15} stroke-width={1.8} /></span>
+		<span data-table-sort-icon="ascending"><ChevronUp size={15} stroke-width={1.8} /></span>
+		<span data-table-sort-icon="descending"><ChevronDown size={15} stroke-width={1.8} /></span>
+	</span>
+</template>
+
 <script>
 	type TableLayout = 'contained' | 'prose' | 'end' | 'canvas';
+	type SortDirection = 'ascending' | 'descending';
 	const layoutUpdaters = new Set<() => void>();
 	const navigationTemplate = document.querySelector<HTMLTemplateElement>('[data-table-navigation-template]');
+	const sortIndicatorTemplate = document.querySelector<HTMLTemplateElement>('[data-table-sort-indicator-template]');
+	const tableLocale = navigationTemplate?.content.querySelector<HTMLElement>('[data-table-locale]')?.dataset.tableLocale ?? 'en';
 	const synchronizedAttributes = [
 		'data-appearance',
 		'data-focus-reading',
@@ -55,6 +66,14 @@ const labels = projectConfig.locale.labels;
 		let previousButton: HTMLButtonElement | null = null;
 		let nextButton: HTMLButtonElement | null = null;
 		let overflowDescriptionId: string | null = null;
+		const tableBody = table?.tBodies.length === 1 ? table.tBodies[0] : null;
+		const bodyRows = Array.from(tableBody?.rows ?? []);
+		const originalRows = bodyRows.map((row, index) => ({ row, index }));
+		let sortedColumn: number | null = null;
+		let sortDirection: SortDirection | null = null;
+		const sortButtons: HTMLButtonElement[] = [];
+		const stickyCells: HTMLElement[] = [];
+		const stickySortButtons: HTMLButtonElement[] = [];
 
 		const removeDuplicateIdentity = (element: HTMLElement) => {
 			element.removeAttribute('id');
@@ -88,6 +107,157 @@ const labels = projectConfig.locale.labels;
 			overflowDescriptionId = `norna-table-overflow-${frameIndex + 1}`;
 			if (description) description.id = overflowDescriptionId;
 			frame.insertBefore(fragment, scrollRegion);
+		};
+
+		const cellText = (cell: HTMLTableCellElement) => (cell.textContent ?? '').replace(/\s+/gu, ' ').trim();
+
+		const parseNumber = (value: string) => {
+			if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/u.test(value)) return null;
+			const number = Number(value);
+			return Number.isFinite(number) ? number : null;
+		};
+
+		const parseIsoDate = (value: string) => {
+			const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/u.exec(value);
+			if (dateOnly) {
+				const year = Number(dateOnly[1]);
+				const month = Number(dateOnly[2]);
+				const day = Number(dateOnly[3]);
+				const timestamp = Date.UTC(year, month - 1, day);
+				const date = new Date(timestamp);
+				return date.getUTCFullYear() === year
+					&& date.getUTCMonth() === month - 1
+					&& date.getUTCDate() === day
+					? timestamp
+					: null;
+			}
+
+			if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?$/u.test(value)) {
+				return null;
+			}
+
+			const timestamp = Date.parse(value);
+			return Number.isNaN(timestamp) ? null : timestamp;
+		};
+
+		const getColumnType = (columnIndex: number) => {
+			const values = originalRows
+				.map(({ row }) => cellText(row.cells[columnIndex]))
+				.filter((value) => value !== '');
+			if (values.length === 0) return 'text';
+			if (values.every((value) => parseNumber(value) !== null)) return 'number';
+			if (values.every((value) => parseIsoDate(value) !== null)) return 'date';
+			return 'text';
+		};
+
+		const getCollator = () => {
+			try {
+				return new Intl.Collator(tableLocale, {
+					numeric: false,
+					sensitivity: 'variant',
+					usage: 'sort',
+				});
+			} catch {
+				return new Intl.Collator(undefined, {
+					numeric: false,
+					sensitivity: 'variant',
+					usage: 'sort',
+				});
+			}
+		};
+
+		const isSortableTable = () => {
+			if (!tableBody || bodyRows.length === 0 || headingCells.length === 0 || tableHead?.rows.length !== 1) return false;
+			const expectedColumns = headingCells.length;
+			return headingCells.every((cell) => cell.colSpan === 1 && cell.rowSpan === 1
+				&& !cell.querySelector('a, button, input, select, textarea, summary, [tabindex], [contenteditable]'))
+				&& bodyRows.every((row) => row.cells.length === expectedColumns
+					&& Array.from(row.cells).every((cell) => cell.colSpan === 1 && cell.rowSpan === 1));
+		};
+
+		const updateSortState = (activeColumn: number | null, direction: SortDirection | null) => {
+			headingCells.forEach((headingCell, columnIndex) => {
+				headingCell.removeAttribute('aria-sort');
+				const button = sortButtons[columnIndex];
+				if (!button) return;
+				const state = columnIndex === activeColumn && direction ? direction : 'unsorted';
+				button.dataset.tableSortState = state;
+				if (stickySortButtons[columnIndex]) stickySortButtons[columnIndex].dataset.tableSortState = state;
+				if (columnIndex === activeColumn && direction) headingCell.setAttribute('aria-sort', direction);
+			});
+			if (activeColumn === null || !direction) {
+				table?.removeAttribute('data-table-sort-column');
+				table?.removeAttribute('data-table-sort-direction');
+			} else {
+				table?.setAttribute('data-table-sort-column', String(activeColumn));
+				table?.setAttribute('data-table-sort-direction', direction);
+			}
+		};
+
+		const sortRows = (columnIndex: number, direction: SortDirection) => {
+			if (!tableBody) return;
+			const type = getColumnType(columnIndex);
+			const collator = type === 'text' ? getCollator() : null;
+			const sortedRows = [...originalRows].sort((left, right) => {
+				const leftValue = cellText(left.row.cells[columnIndex]);
+				const rightValue = cellText(right.row.cells[columnIndex]);
+				if (leftValue === '' || rightValue === '') {
+					if (leftValue === rightValue) return left.index - right.index;
+					return leftValue === '' ? 1 : -1;
+				}
+
+				let result = 0;
+				if (type === 'number') {
+					result = (parseNumber(leftValue) ?? 0) - (parseNumber(rightValue) ?? 0);
+				} else if (type === 'date') {
+					result = (parseIsoDate(leftValue) ?? 0) - (parseIsoDate(rightValue) ?? 0);
+				} else {
+					result = collator?.compare(leftValue, rightValue) ?? 0;
+				}
+
+				return result === 0
+					? left.index - right.index
+					: result * (direction === 'ascending' ? 1 : -1);
+			});
+			sortedRows.forEach(({ row }) => tableBody.append(row));
+		};
+
+		const resetRows = () => {
+			if (!tableBody) return;
+			originalRows.forEach(({ row }) => tableBody.append(row));
+		};
+
+		const createTableSorting = () => {
+			if (!table || !sortIndicatorTemplate || !isSortableTable()) return;
+			headingCells.forEach((headingCell, columnIndex) => {
+				const button = document.createElement('button');
+				button.type = 'button';
+				button.className = 'norna-table-sort-button';
+				button.dataset.tableSortButton = '';
+				button.dataset.tableSortState = 'unsorted';
+				// Keep the semantic column name when its original control is hidden.
+				if (!headingCell.hasAttribute('aria-label')) headingCell.setAttribute('aria-label', cellText(headingCell));
+				button.append(...Array.from(headingCell.childNodes));
+				button.append(sortIndicatorTemplate.content.cloneNode(true));
+				headingCell.replaceChildren(button);
+				sortButtons.push(button);
+				button.addEventListener('click', () => {
+					if (sortedColumn !== columnIndex) {
+						sortedColumn = columnIndex;
+						sortDirection = 'ascending';
+						sortRows(columnIndex, sortDirection);
+					} else if (sortDirection === 'ascending') {
+						sortDirection = 'descending';
+						sortRows(columnIndex, sortDirection);
+					} else {
+						resetRows();
+						sortedColumn = null;
+						sortDirection = null;
+					}
+					updateSortState(sortedColumn, sortDirection);
+				});
+			});
+			table.dataset.tableSortable = 'true';
 		};
 
 		const setOverflowDescription = (enabled: boolean) => {
@@ -130,6 +300,30 @@ const labels = projectConfig.locale.labels;
 			rowHeader.style.transform = `translateX(${desiredLeft - naturalLeft}px)`;
 		};
 
+		const synchronizeSortControls = (useSticky: boolean) => {
+			if (!stickyHeading || sortButtons.length === 0) return;
+			const active = document.activeElement;
+			const from = useSticky ? sortButtons : stickySortButtons;
+			const to = useSticky ? stickySortButtons : sortButtons;
+			const focusedColumn = from.findIndex((button) => button === active);
+			stickyHeading.toggleAttribute('inert', !useSticky);
+			if (useSticky) {
+				stickyHeading.removeAttribute('aria-hidden');
+				stickyHeading.setAttribute('role', 'group');
+				const groupLabel = tableNavigation?.querySelector('[role="group"]')?.getAttribute('aria-label');
+				if (groupLabel) stickyHeading.setAttribute('aria-label', groupLabel);
+			}
+			for (const [index, button] of sortButtons.entries()) {
+				button.tabIndex = useSticky ? -1 : 0;
+				if (!useSticky) button.removeAttribute('aria-hidden');
+				if (stickySortButtons[index]) stickySortButtons[index].tabIndex = useSticky ? 0 : -1;
+			}
+			// Transfer focus before hiding the control that previously owned it.
+			if (focusedColumn >= 0) to[focusedColumn]?.focus({ preventScroll: true });
+			if (useSticky) sortButtons.forEach((button) => button.setAttribute('aria-hidden', 'true'));
+			else stickyHeading.setAttribute('aria-hidden', 'true');
+		};
+
 		const synchronizeStickyHeadingGeometry = () => {
 			if (!stickyHeading || !stickyHeadingTrack || !table || !tableHead) return false;
 			const tableBounds = table.getBoundingClientRect();
@@ -141,10 +335,39 @@ const labels = projectConfig.locale.labels;
 			frame.style.setProperty('--table-sticky-heading-height', `${headingBounds.height}px`);
 			stickyHeadingTrack.style.width = `${tableBounds.width}px`;
 			stickyHeadingTrack.style.height = `${headingBounds.height}px`;
-			stickyHeadingTrack.replaceChildren(...headingCells.map((headingCell, columnIndex) => {
+			headingCells.forEach((headingCell, columnIndex) => {
 				const cellBounds = headingCell.getBoundingClientRect();
 				const computedStyle = getComputedStyle(headingCell);
-				const visualCell = document.createElement('div');
+				let visualCell = stickyCells[columnIndex];
+				if (!visualCell) {
+					visualCell = document.createElement('div');
+					visualCell.append(...Array.from(headingCell.childNodes, (node) => node.cloneNode(true)));
+					removeDuplicateIdentity(visualCell);
+					const button = visualCell.querySelector<HTMLButtonElement>('[data-table-sort-button]');
+					if (button) {
+						button.removeAttribute('aria-hidden');
+						button.tabIndex = -1;
+						button.addEventListener('click', () => sortButtons[columnIndex].click());
+						// Focus on a clipped column must reveal it in the real scroll region.
+						button.addEventListener('focus', () => {
+							if (!stickyHeading) return;
+							const bounds = visualCell.getBoundingClientRect();
+							const viewport = stickyHeading.getBoundingClientRect();
+							const pinnedWidth = hasRowHeaders && columnIndex > 0
+								? stickyCells[0].getBoundingClientRect().width : 0;
+							const rtl = getComputedStyle(scrollRegion).direction === 'rtl';
+							const start = viewport.left + (rtl ? 0 : pinnedWidth);
+							const end = viewport.right - (rtl ? pinnedWidth : 0);
+							const delta = bounds.left < start ? bounds.left - start
+								: bounds.right > end ? Math.min(bounds.right - end, bounds.left - start) : 0;
+							if (Math.abs(delta) > 1) scrollRegion.scrollLeft += delta;
+							synchronizeStickyHeadingPosition();
+						});
+						stickySortButtons[columnIndex] = button;
+					}
+					stickyCells[columnIndex] = visualCell;
+					stickyHeadingTrack.append(visualCell);
+				}
 				visualCell.className = 'norna-table-sticky-heading-cell';
 				visualCell.style.left = `${cellBounds.left - tableBounds.left}px`;
 				visualCell.style.top = `${cellBounds.top - headingBounds.top}px`;
@@ -164,14 +387,12 @@ const labels = projectConfig.locale.labels;
 					visualCell.classList.add('norna-table-sticky-heading-cell-row-header');
 					visualCell.dataset.tableStickyRowHeader = '';
 				}
-				visualCell.append(...Array.from(headingCell.childNodes, (node) => node.cloneNode(true)));
-				removeDuplicateIdentity(visualCell);
-				return visualCell;
-			}));
+			});
 			synchronizeStickyHeadingPosition();
 			return true;
 		};
 
+		createTableSorting();
 		createTableNavigation();
 		createStickyHeading();
 		previousButton?.addEventListener('click', () => scrollTable(-1));
@@ -207,6 +428,7 @@ const labels = projectConfig.locale.labels;
 			frame.dataset.tableAtStart = isAtStart ? 'true' : 'false';
 			frame.dataset.tableAtEnd = isAtEnd ? 'true' : 'false';
 			frame.dataset.tableStickyHeading = stickyHeadingReady ? 'true' : 'false';
+			synchronizeSortControls(Boolean(stickyHeadingReady));
 			if (previousButton) previousButton.disabled = isAtStart;
 			if (nextButton) nextButton.disabled = isAtEnd;
 			setOverflowDescription(hasOverflow);

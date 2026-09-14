@@ -1,26 +1,42 @@
 # BL-105: Locale-Aware Sortable Tables
 
-Status: Local prototype; sticky-heading integration must be corrected before
-the implementation is committed. Human visual review and documentation remain.
+Status: Implemented, including sticky-heading sorting; focused browser tests
+pass. Human visual review and documentation remain.
 
 ## Verification Checkpoint: 2026-09-14
 
-`npm run test:table-sorting` passed all three existing browser tests: Swedish
-text ordering, numeric/date/mixed columns, empty cells, ties, keyboard use,
-source-order reset, and no-JavaScript fallback. `npm run test:client-javascript`
-also passed against an isolated export containing the proposed table changes.
+The original three tests missed an interaction with horizontal overflow: the
+sticky heading was an inert visual copy, so its sort buttons did nothing.
 
-Code review found an uncovered interaction: horizontally overflowing tables
-use a cloned sticky heading marked `inert` and `aria-hidden`. Sorting controls
-are copied into that visual heading without their event listeners. They look
-interactive but cannot sort the table. The existing short-table fixture does
-not exercise this state.
+The corrected sticky heading has functional buttons that invoke the same
+sorting action as the original buttons. Both direction indicators stay in
+sync. Only the currently displayed set is exposed to keyboard and assistive
+technology. The original table retains named column headers and `aria-sort`;
+the sticky controls are a group, not a second accessible table header.
 
-Before committing the implementation, make the visible sticky sorting control
-usable without introducing duplicate keyboard stops or duplicate accessible
-headers. Add a long, horizontally overflowing table test that sorts while the
-sticky heading is visible and verifies the direction indicator and row order.
-Exercise resizing and keyboard operation as part of that regression.
+Sticky button elements survive geometry updates. When overflow starts or ends,
+focus transfers to the equivalent button without scrolling the page. Keyboard
+focus on a clipped column scrolls that column into view.
+
+Verification:
+
+- `npm run test:table-sorting`: seven browser tests passed, covering Swedish
+  ordering, numeric/date/mixed columns, empty cells, ties, keyboard use, reset,
+  and no-JavaScript fallback. Long-table cases cover sticky sorting, indicator
+  synchronization, unique accessible headers/buttons, focus retention at
+  390-1200px, overflow transitions, horizontal keyboard navigation, and real
+  Display-panel changes to Focus reading and reading width.
+- `npm run test:table-context:browser`: five existing responsive-table tests
+  passed, including rail transitions, pinned row headers, RTL geometry,
+  no-JavaScript output, Dark appearance, and forced colors.
+- Browser accessibility assertions verify the DOM contract, not actual
+  screen-reader announcements. No manual screen-reader test was performed.
+
+Review the maintained source at `fixtures/table-sorting/site`. Prepare it with
+`npm run review:scratch -- prepare --from fixtures/table-sorting/site --replace`
+and start `npm run review:start -- scratch`. The long table is then available at
+`http://127.0.0.1:4399/long-table/#comparison`. Scroll down, sort Count, change
+reading width or Focus reading, and narrow the browser to exercise overflow.
 
 ## Problem
 
@@ -66,8 +82,9 @@ current direction. Sorting is a client-side enhancement; the native table,
 header relationships, horizontal scrolling, and source order remain usable
 without JavaScript.
 
-Tables with irregular spans or no usable header row remain unchanged rather
-than receiving a partial or misleading sort model.
+Tables with irregular spans, multiple header rows, interactive content in the
+headings, or no usable header row remain unchanged rather than receiving a
+partial or misleading sort model.
 
 ## Acceptance criteria
 

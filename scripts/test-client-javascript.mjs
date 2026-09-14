@@ -274,7 +274,10 @@ page:
 	assert.match(tableScript, /dataset\.tableOverflow/);
 	assert.match(tableScript, /dataset\.tableLayout/);
 	assert.match(tableScript, /dataset\.tableStickyHeading/);
-	assert.match(tableScript, /setAttribute\(`aria-hidden`,`true`\)/);
+	assert.match(tableScript, /aria-hidden/);
+	assert.match(tableHtml, /data-table-sort-indicator-template/);
+	assert.match(tableScript, /Intl\.Collator/);
+	assert.match(tableScript, /data-table-sort-button/);
 	assert.match(tableScript, /\[`prose`,`end`,`canvas`\]\.find/);
 	assert.match(tableScript, /ResizeObserver/);
 

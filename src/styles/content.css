@@ -742,6 +742,57 @@ ul {
 	background: var(--section-background-color, var(--color-page));
 }
 
+.norna-table-sort-button {
+	display: flex;
+	width: 100%;
+	min-height: 1.5rem;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.6rem;
+	margin: -0.55rem -0.65rem;
+	border: 0;
+	padding: 0.55rem 0.65rem;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-weight: inherit;
+	text-align: inherit;
+	cursor: pointer;
+}
+
+.norna-table-sort-button:hover {
+	background: color-mix(in srgb, var(--color-surface-soft-background) 64%, transparent);
+}
+
+.norna-table-sort-button:focus-visible {
+	outline: var(--focus-indicator-width) solid var(--color-focus-ring);
+	outline-offset: -2px;
+}
+
+.norna-table-sticky-heading:not([inert]) .norna-table-sort-button {
+	pointer-events: auto;
+}
+
+.norna-table-sort-indicator {
+	display: inline-grid;
+	flex: 0 0 auto;
+	width: 0.95rem;
+	height: 0.95rem;
+	place-items: center;
+	color: var(--section-secondary-text-color, var(--color-secondary-text));
+}
+
+.norna-table-sort-indicator > span {
+	display: none;
+	grid-area: 1 / 1;
+}
+
+.norna-table-sort-button[data-table-sort-state='unsorted'] .norna-table-sort-indicator > [data-table-sort-icon='unsorted'],
+.norna-table-sort-button[data-table-sort-state='ascending'] .norna-table-sort-indicator > [data-table-sort-icon='ascending'],
+.norna-table-sort-button[data-table-sort-state='descending'] .norna-table-sort-indicator > [data-table-sort-icon='descending'] {
+	display: inline-flex;
+}
+
 .section-markdown > .norna-table-frame[data-table-overflow='false'] .norna-table-scroll {
 	overflow: visible;
 }
