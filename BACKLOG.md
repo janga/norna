@@ -61,10 +61,7 @@ These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
-- [`BL-056` Lighter Dark navigation markers](docs/design/backlog/BL-056-lighter-dark-navigation-markers.md):
-  **Implemented, browser-tested, and human-approved; documentation remains.**
-  Document the shared palette-derived surface for current-page and
-  current-heading markers in Dark appearance.
+No documentation follow-ups are currently queued.
 
 ## Needs Decision Or Evidence
 

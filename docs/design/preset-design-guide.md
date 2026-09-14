@@ -234,6 +234,27 @@ foreground/background pair. Light and Dark appearances are coordinated variants,
 a blind inversion. Muted content is still content and must retain sufficient
 contrast.
 
+#### Navigation Position Markers
+
+Current-page and current-heading highlights help the reader locate their
+position without making navigation more prominent than the document. Use one
+shared background for both in the persistent tree, the separate contents rail,
+and the compact menu.
+
+In Dark appearance, derive that background from the active palette's existing
+surface roles: `soft` is the subtle secondary surface, and `emphasis` is the
+stronger surface. The engine mixes 64% `emphasis` with 36% `soft` in sRGB. The
+result must be lighter than `soft` without reaching the prominence of the full
+`emphasis` surface. Apply this rule both to explicit Dark and to System when
+the operating system selects dark colors. Light keeps its separate, subtler
+mix of 58% `soft` and 42% page background.
+
+Do not add a preset-specific navigation color or a reader setting for this
+highlight. Preserve font weight, underlining, keyboard focus, and forced-colors
+behavior. Verify at least 4.5:1 text contrast against the highlight. The reader
+behavior is defined in
+[Current Reading Position](../pages.md#current-reading-position).
+
 ### Typography
 
 A typography profile should define a coherent scale from a small set of

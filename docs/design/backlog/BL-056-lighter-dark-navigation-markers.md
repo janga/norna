@@ -2,9 +2,15 @@
 
 ## Status
 
-Implemented, browser-tested, and approved by the user after visual review.
-Only documentation remains: describe the shared palette-derived Dark marker
-for current pages and headings in the navigation reference and visual guide.
+Completed. Implemented, browser-tested, and approved by the user after visual
+review. Reference and design documentation completed on 2026-09-14.
+
+## Documentation
+
+- [Current Reading Position](../../pages.md#current-reading-position) describes
+  the shared Dark highlight, its scope, and its relationship to the palette.
+- [Navigation Position Markers](../preset-design-guide.md#navigation-position-markers)
+  records the engine-derived color mixes and visual verification requirements.
 
 ## Outcome
 

@@ -554,6 +554,14 @@ Norna marks the H2 or H3 at the effective reading position and moves the marker
 toward the end of the page as the reader scrolls. Every heading remains
 reachable by the marker, including headings near the document end.
 
+In Dark appearance, the current page and current heading share a background
+highlight that is lighter than the navigation background. Its color follows
+the site's palette in the left tree, the right contents rail, and the compact
+menu. Underlining and font weight provide additional cues; color is not the
+only indication of the current position. Norna chooses the highlight
+automatically, with no separate theme setting. See
+[Palette And Appearance](theme.md#palette-and-appearance).
+
 On a long page, Norna also scrolls the visible outline when necessary to keep
 the active entry in view. The list stays still while the entry fits. When it
 does not fit, Norna adjusts only that list, leaving space around the entry and
