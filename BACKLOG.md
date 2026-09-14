@@ -90,10 +90,6 @@ or `Later` only after the stated evidence or design decision exists.
 - [`BL-051` Technical diagram sources](docs/design/backlog/BL-051-technical-diagram-sources.md):
   **Needs evidence.** Retain managed SVG as the migration path until maintained
   Norna sites demonstrate a recurring need for build-time diagram rendering.
-- [`BL-052` Docusaurus migration audit and Norna comparison report](docs/design/backlog/BL-052-documentation-migration-assistant.md):
-  **Implemented: initial read-only audit.** Generates a separate Norna report
-  site with aggregated problem types, deterministic samples, and source/version
-  provenance before any future automatic writes.
 - [`BL-053` Accessible mathematics](docs/design/backlog/BL-053-accessible-mathematics.md):
   **Needs evidence and syntax review.** Keep static conversion as the migration
   path until scientific or mathematical Norna sites justify native rendering.
@@ -118,6 +114,10 @@ Do not schedule these as opportunistic additions. Each requires a separate
 product brief, representative sites, migration rules, and an explicit decision
 that the expanded audience is worth the permanent complexity.
 
+- [`BL-052` Docusaurus Migration Obstacle Inventory](docs/design/backlog/BL-052-documentation-migration-assistant.md):
+  **Deferred; decision workflow archived.** Resume only for a real site's
+  bounded migration trial, using representative pages and focused conversions
+  instead of a general decision-management system.
 - [`BL-023` Multilingual Sites With A Shared Page Tree](docs/design/backlog/BL-023-multilingual-sites-shared-page-tree.md):
   **Deferred; needs design before implementation.** Publish language variants
   from one shared page tree, with predictable URLs, language switching, and

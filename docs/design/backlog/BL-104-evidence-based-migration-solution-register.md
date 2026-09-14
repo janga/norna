@@ -2,7 +2,12 @@
 
 ## Status And Boundary
 
-**Implemented on 2026-09-12 after `BL-052` initial read-only audit.** Replaced the current
+**Archived as historical research on 2026-09-14.** The decision workflow is no
+longer active. The sections below preserve its original brief; they are not
+current implementation requirements. Resume only under the conditions in
+[BL-052: Docusaurus Migration Obstacle Inventory](BL-052-documentation-migration-assistant.md).
+
+**Initially implemented on 2026-09-12 after the BL-052 read-only audit.** Replaced the
 executive-style migration summary with a compact decision site built from
 concrete migration solutions. This item interprets the audit; it does not
 change the audit parser, add write mode, or add a general Docusaurus runtime to
