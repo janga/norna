@@ -84,6 +84,24 @@ for supported locations and
 [editor troubleshooting](https://github.com/janga/norna/blob/main/docs/editor-support.md#troubleshooting)
 for workspace trust, language mode, and extension checks.
 
+## Why does the editor suggest settings Norna does not accept? {#unrelated-editor-suggestions}
+
+AI-generated suggestions do not necessarily follow Norna's schema. For
+example, `palette:` takes a palette name such as `warm-paper`, not RGB values
+for `primary`, `secondary`, and `accent`. A correct schema directive does not
+prevent another extension from suggesting unsupported settings.
+
+Inline suggestions appear directly in the document. They are separate from
+the schema-based list opened with **Trigger Suggest** (`Ctrl+Space`). Some VS
+Code releases include Copilot as a built-in extension, so checking only the
+ordinary installed-extension list can miss it.
+
+You can turn off inline suggestions and Copilot's next-edit suggestions for
+YAML and Markdown while keeping Norna and Red Hat YAML help. Follow
+[Turn off AI suggestions while keeping IntelliSense](https://github.com/janga/norna/blob/main/docs/editor-support.md#turn-off-ai-suggestions-while-keeping-intellisense)
+for the user settings, a project-only alternative, and a check that palette
+suggestions still work.
+
 ## Why does Prettier change semantic callout line breaks? {#prettier-callouts}
 
 Norna semantic callouts keep the marker and its content on separate quoted
