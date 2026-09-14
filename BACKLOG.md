@@ -65,6 +65,10 @@ verified and approved for documentation.
   **Implemented, browser-tested, and human-approved; documentation remains.**
   Document the shared palette-derived surface for current-page and
   current-heading markers in Dark appearance.
+- [`BL-105` Locale-Aware Sortable Tables](docs/design/backlog/BL-105-locale-aware-sortable-tables.md):
+  **Local prototype; sticky-heading integration remains.** Correct sorting in
+  the cloned sticky heading and add regression coverage before committing the
+  implementation. Human visual review and documentation follow afterward.
 
 ## Needs Decision Or Evidence
 
