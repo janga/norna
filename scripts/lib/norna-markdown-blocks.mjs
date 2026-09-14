@@ -1,4 +1,5 @@
 import { documentationLink } from './documentation-links.mjs';
+import { createStructuredBlockSchema, parseStructuredBlock } from './structured-blocks.mjs';
 
 const field = (description, options = {}) => Object.freeze({ description, ...options });
 const value = (title, description) => Object.freeze({ title, description });
@@ -16,6 +17,7 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 		}),
 	}),
 	'image-carousel': Object.freeze({
+		minItems: 2,
 		description: 'Display two or more managed images in an interactive carousel.',
 		documentation: documentationLink('Image carousel reference', 'content.md', 'image-carousel'),
 		item: Object.freeze({
@@ -27,7 +29,7 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 		}),
 	}),
 	'card-list': Object.freeze({
-		description: 'Display a structured list of cards.',
+		description: 'Show related choices as cards with optional images and links. Set link to make the whole card clickable.',
 		documentation: documentationLink('Card list reference', 'content.md', 'card-list'),
 		options: Object.freeze({
 			layout: field('Place each card image above, left, or right of its text. Defaults to image-top.', {
@@ -98,16 +100,17 @@ const blockTypeLabels = {
 };
 
 const knownBlockTypeList = Array.from(nornaBlockTypes).join(', ');
-const imageNameRegex = /^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$/i;
 const imageStackExample = [
 	'```image-stack',
-	'- image: filename.jpg',
+	'items:',
+	'  - image: filename.jpg',
 	'```',
 ].join('\n');
 const carouselExample = [
 	'```image-carousel',
-	'- image: first.jpg',
-	'- image: second.jpg',
+	'items:',
+	'  - image: first.jpg',
+	'  - image: second.jpg',
 	'```',
 ].join('\n');
 const cardListExample = [
@@ -115,12 +118,12 @@ const cardListExample = [
 	'layout: image-top',
 	'flow: grid',
 	'size: m',
-	'',
-	'- title: Adopt',
-	'  text: Give a dog a new home.',
-	'  image: adopt.jpg',
-	'  link: /adopt/',
-	'  badge-text: Recommended',
+	'items:',
+	'  - title: Adopt',
+	'    text: Give a dog a new home.',
+	'    image: adopt.jpg',
+	'    link: /adopt/',
+	'    badge-text: Recommended',
 	'```',
 ].join('\n');
 const pageListExample = [
@@ -134,10 +137,6 @@ const blockExamples = Object.freeze({
 	'page-list': pageListExample,
 });
 const cardListDefinition = nornaMarkdownBlockDefinitions['card-list'];
-const cardListLayouts = new Set(Object.keys(cardListDefinition.options.layout.values));
-const cardListFlows = new Set(Object.keys(cardListDefinition.options.flow.values));
-const cardListSizes = new Set(Object.keys(cardListDefinition.options.size.values));
-const cardListWidths = new Set(Object.keys(cardListDefinition.options.width.values));
 
 const formatLocation = ({ label, line } = {}) => [
 	label,
@@ -165,44 +164,6 @@ const getUnknownNornaBlockMessage = (type) => [
 	'Example:',
 	blockExamples[renamedNornaBlockTypes[type] ?? type] ?? imageStackExample,
 ].filter(Boolean).join(' ');
-
-const decodeScalar = (value) => {
-	const trimmed = value.trim();
-	const quoted = trimmed.match(/^(['"])([\s\S]*)\1$/);
-	return quoted ? quoted[2] : trimmed;
-};
-
-const parseKeyValue = (line, options) => {
-	const match = line.match(/^(\s*)([a-z][a-z0-9-]*):\s*(.*?)\s*$/);
-	if (!match) {
-		fail(`Invalid ${options.type} entry "${line.trim()}". Use "key: value" lines.`, options);
-	}
-
-	return {
-		indent: match[1].length,
-		key: match[2],
-		value: decodeScalar(match[3]),
-	};
-};
-
-const validateImage = (image, options) => {
-	if (!image.image) {
-		fail(`${options.type} image is missing "image".`, options);
-	}
-
-	if (!imageNameRegex.test(image.image)) {
-		if (/\.(?:jpe?g|png|svg)\s+[a-z][a-z0-9-]*:/i.test(image.image)) {
-			fail(`Image entry "${image.image}" looks like multiple fields on one line. Put image, alt and caption on separate lines. Example:\n${imageStackExample}`, options);
-		}
-
-		fail(`Image reference "${image.image}" must be a filename ending in jpg, jpeg, png, or svg.`, options);
-	}
-};
-
-const validateOptionalImage = (image, options) => {
-	if (!image) return;
-	validateImage({ image }, options);
-};
 
 const normalizeLines = (source) => source.replace(/\r\n?/g, '\n').split('\n');
 
@@ -407,152 +368,27 @@ const failMessage = (message, options) => {
 	return location ? `${location}: ${message}` : message;
 };
 
+const blockSchemas = new Map(Object.entries(nornaMarkdownBlockDefinitions)
+	.map(([type, definition]) => [type, createStructuredBlockSchema(definition)]));
+
+export const getNornaBlockSchema = (type) => blockSchemas.get(type) ?? null;
+
 const parseImageListBlock = (source, options = {}) => {
-	const images = [];
-	const allowedKeys = new Set(['alt', 'caption']);
-	let current = null;
-
-	for (const [index, line] of normalizeLines(source).entries()) {
-		if (!line.trim()) continue;
-
-		const lineNumber = (options.line ?? 1) + index;
-		const itemMatch = line.match(/^(\s*)-\s+image:\s*(.*?)\s*$/);
-		if (itemMatch) {
-			current = { image: decodeScalar(itemMatch[2]), line: lineNumber };
-			images.push(current);
-			continue;
-		}
-
-		if (!current) {
-			fail(`Invalid ${options.type} entry "${line.trim()}". Start each image with "- image: filename.jpg". Example:\n${imageStackExample}`, { ...options, line: lineNumber });
-		}
-
-		const entry = parseKeyValue(line, { ...options, line: lineNumber });
-		if (entry.indent !== 2) {
-			fail(`Invalid indentation in ${options.type}. Use two spaces before optional image fields such as alt and caption. Example:\n${imageStackExample}`, { ...options, line: lineNumber });
-		}
-
-		if (!allowedKeys.has(entry.key)) {
-			fail(`Unknown ${options.type} field "${entry.key}".`, { ...options, line: lineNumber });
-		}
-
-		current[entry.key] = entry.value;
-	}
-
-	for (const image of images) {
-		validateImage(image, options);
-	}
-
-	if (images.length === 0) {
-		fail(`${options.type} must contain at least one image. Example:\n${blockExamples[options.type]}`, options);
-	}
-
-	return { type: options.type === 'image-carousel' ? 'image-carousel' : 'image-stack', images };
+	const { items } = parseStructuredBlock(source, getNornaBlockSchema(options.type), options);
+	return { type: options.type, images: items };
 };
 
 const parseCardListBlock = (source, options = {}) => {
-	const cards = [];
-	const allowedKeys = new Set(['text', 'image', 'link', 'badge-text']);
-	let layout = cardListDefinition.options.layout.default;
-	let flow = cardListDefinition.options.flow.default;
-	let size = cardListDefinition.options.size.default;
-	let width;
-	let current = null;
-
-	for (const [index, line] of normalizeLines(source).entries()) {
-		if (!line.trim()) continue;
-
-		const lineNumber = (options.line ?? 1) + index;
-		const itemMatch = line.match(/^(\s*)-\s+title:\s*(.*?)\s*$/);
-		if (itemMatch) {
-			current = { title: decodeScalar(itemMatch[2]), line: lineNumber };
-			cards.push(current);
-			continue;
-		}
-
-		if (!current) {
-			if (/^\s*-\s+/.test(line)) {
-				fail(`Invalid ${options.type} entry "${line.trim()}". Start each card with "- title: Card title". Example:\n${cardListExample}`, { ...options, line: lineNumber });
-			}
-
-			const optionEntry = parseKeyValue(line, { ...options, line: lineNumber });
-			if (optionEntry.indent !== 0) {
-				fail(`Invalid ${options.type} entry "${line.trim()}". Start each card with "- title: Card title". Example:\n${cardListExample}`, { ...options, line: lineNumber });
-			}
-
-			if (optionEntry.key === 'layout') {
-				if (!cardListLayouts.has(optionEntry.value)) {
-					fail(`Invalid ${options.type} layout "${optionEntry.value}". Use one of: ${Array.from(cardListLayouts).join(', ')}.`, { ...options, line: lineNumber });
-				}
-
-				layout = optionEntry.value;
-				continue;
-			}
-
-			if (optionEntry.key === 'flow') {
-				if (!cardListFlows.has(optionEntry.value)) {
-					fail(`Invalid ${options.type} flow "${optionEntry.value}". Use one of: ${Array.from(cardListFlows).join(', ')}.`, { ...options, line: lineNumber });
-				}
-
-				flow = optionEntry.value;
-				continue;
-			}
-
-			if (optionEntry.key === 'size') {
-				if (!cardListSizes.has(optionEntry.value)) {
-					fail(`Invalid ${options.type} size "${optionEntry.value}". Use one of: ${Array.from(cardListSizes).join(', ')}.`, { ...options, line: lineNumber });
-				}
-
-				size = optionEntry.value;
-				continue;
-			}
-
-			if (optionEntry.key === 'width') {
-				if (!cardListWidths.has(optionEntry.value)) {
-					fail(`Invalid ${options.type} width "${optionEntry.value}". Use one of: ${Array.from(cardListWidths).join(', ')}.`, { ...options, line: lineNumber });
-				}
-
-				width = optionEntry.value;
-				continue;
-			}
-
-			fail(`Unknown ${options.type} option "${optionEntry.key}". Use layout, flow, size, width, or start the first card with "- title: Card title".`, { ...options, line: lineNumber });
-		}
-
-		const entry = parseKeyValue(line, { ...options, line: lineNumber });
-		if (entry.indent === 0 && (entry.key === 'layout' || entry.key === 'flow' || entry.key === 'size' || entry.key === 'width')) {
-			fail(`${options.type} option "${entry.key}" must appear before the first card.`, { ...options, line: lineNumber });
-		}
-
-		if (entry.indent !== 2) {
-			fail(`Invalid indentation in ${options.type}. Use two spaces before card fields such as text, image, link and badge-text. Example:\n${cardListExample}`, { ...options, line: lineNumber });
-		}
-
-		if (!allowedKeys.has(entry.key)) {
-			fail(`Unknown ${options.type} field "${entry.key}". Use title, text, image, link, or badge-text.`, { ...options, line: lineNumber });
-		}
-
-		current[entry.key] = entry.value;
-		if (entry.key === 'link') current.linkLine = lineNumber;
-	}
-
-	for (const card of cards) {
-		if (!card.title) {
-			fail(`${options.type} card is missing "title".`, options);
-		}
-
-		if (!card.text && !card.image && !card.link) {
-			fail(`${options.type} card "${card.title}" must specify at least one of text, image, or link.`, options);
-		}
-
-		validateOptionalImage(card.image, options);
-	}
-
-	if (cards.length === 0) {
-		fail(`${options.type} must contain at least one card. Example:\n${cardListExample}`, options);
-	}
-
-	return { type: 'card-list', layout, flow, size, width, cards };
+	const { items, ...data } = parseStructuredBlock(source, getNornaBlockSchema('card-list'), options);
+	return {
+		type: 'card-list',
+		layout: cardListDefinition.options.layout.default,
+		flow: cardListDefinition.options.flow.default,
+		size: cardListDefinition.options.size.default,
+		width: undefined,
+		...data,
+		cards: items,
+	};
 };
 
 const parsePageListBlock = (source, options = {}) => {
@@ -597,7 +433,7 @@ export const extractNornaMarkdownBlockDiagnostics = (markdown, options = {}) => 
 			errors.push({
 				blockType: block.blockType,
 				code: 'invalid-norna-block',
-				line: block.line,
+				line: error?.line ?? block.line,
 				source: block.source,
 				message: error instanceof Error ? error.message : String(error),
 			});
@@ -778,255 +614,4 @@ export const getNornaBlockImageReferences = (blocks) =>
 		}));
 	});
 
-const inlineNoteReferenceRegex = /\{note-ref\}/g;
-const inlineNoteDeclarationOpeningRegex = /^\s*\{note:\s*(.*)$/;
-const inlineNoteDeclarationClosingRegex = /^(.*?)\}\s*$/;
-const inlineNoteDeclarationStartRegex = /\{note(?:\s*:|\s*\})/;
-
-const maskInlineCodeAndComments = (source) => source.replace(
-	/<!--[\s\S]*?-->|(`+)([\s\S]*?)\1/g,
-	(match) => match.replace(/[^\r\n]/g, ' '),
-);
-
-const countInlineNoteReferences = (line) => Array.from(line.matchAll(inlineNoteReferenceRegex)).length;
-
-const formatInlineNoteError = (message, options, line) => ({
-	blockType: 'inline-note',
-	line,
-	message: failMessage(message, { ...options, line }),
-});
-
-const getInlineNoteErrorMessage = () => 'Write the note on its own line as "{note: Short text.}", or end a multiline note with "}".';
-
-const findUnescapedInlineNoteConstruct = (source) => {
-	const constructRegex = /\{note(?:-ref\}|\s*:|\s*\})/g;
-
-	for (const match of source.matchAll(constructRegex)) {
-		const index = match.index ?? 0;
-		let precedingBackslashes = 0;
-		for (let cursor = index - 1; cursor >= 0 && source[cursor] === '\\'; cursor -= 1) {
-			precedingBackslashes += 1;
-		}
-
-		if (precedingBackslashes % 2 === 0) {
-			return match[0].startsWith('{note-ref') ? 'reference' : 'note';
-		}
-	}
-
-	return null;
-};
-
-const collectInlineNoteDeclaration = (lines, maskedLines, startIndex) => {
-	const openingMatch = (lines[startIndex] ?? '').match(inlineNoteDeclarationOpeningRegex);
-	if (!openingMatch) return null;
-	const maskedOpeningMatch = (maskedLines[startIndex] ?? '').match(inlineNoteDeclarationOpeningRegex);
-
-	const textLines = [];
-	let currentLine = openingMatch[1] ?? '';
-	let currentMaskedLine = maskedOpeningMatch?.[1] ?? '';
-
-	for (let index = startIndex; index < lines.length; index += 1) {
-		const conflictType = findUnescapedInlineNoteConstruct(currentMaskedLine);
-		if (conflictType) {
-			return {
-				closed: false,
-				conflictIndex: index,
-				conflictType,
-				endIndex: index,
-				text: textLines.map((line) => line.trim()).filter(Boolean).join(' '),
-			};
-		}
-
-		const closingMatch = currentLine.match(inlineNoteDeclarationClosingRegex);
-		if (closingMatch) {
-			textLines.push(closingMatch[1]);
-			return {
-				closed: true,
-				endIndex: index,
-				text: textLines.map((line) => line.trim()).filter(Boolean).join(' '),
-			};
-		}
-
-		textLines.push(currentLine);
-		currentLine = lines[index + 1] ?? '';
-		currentMaskedLine = maskedLines[index + 1] ?? '';
-	}
-
-	return {
-		closed: false,
-		endIndex: lines.length - 1,
-		text: textLines.map((line) => line.trim()).filter(Boolean).join(' '),
-	};
-};
-
-const getUnclosedInlineNoteMessage = (noteDeclaration, startLine, lineOffset = 0) => {
-	if (noteDeclaration.conflictType === 'note') {
-		const conflictLine = lineOffset + noteDeclaration.conflictIndex + 1;
-		return `The note starting on line ${startLine} is not closed before another note starts on line ${conflictLine}. Close the first note with "}".`;
-	}
-
-	if (noteDeclaration.conflictType === 'reference') {
-		const conflictLine = lineOffset + noteDeclaration.conflictIndex + 1;
-		return `The note starting on line ${startLine} contains "{note-ref}" on line ${conflictLine}. Close the note before adding a note reference.`;
-	}
-
-	return `The note starting on line ${startLine} is not closed. End it with "}" on its own line or at the end of the note text.`;
-};
-
-/**
- * Finds the deliberately small inline-note syntax while ignoring fenced and
- * inline code. Notes are paired by position, so no user-authored IDs are
- * needed. The caller decides whether diagnostics should be fatal.
- */
-export const extractInlineNoteDiagnostics = (markdown, options = {}) => {
-	const lines = normalizeLines(markdown);
-	const maskedLines = maskInlineCodeAndComments(maskFencedCodeBlocks(markdown)).split('\n');
-	const notes = [];
-	const errors = [];
-	let paragraph = null;
-	let pendingParagraph = null;
-	let noteJustSeen = false;
-
-	const addError = (message, line) => errors.push(formatInlineNoteError(message, options, line));
-
-	const finishParagraph = () => {
-		if (!paragraph) return;
-		if (paragraph.referenceCount > 0) {
-			pendingParagraph = paragraph;
-		}
-		paragraph = null;
-	};
-
-	const reportMissingNote = () => {
-		if (!pendingParagraph) return;
-		addError(
-			`Paragraph on line ${pendingParagraph.referenceLine} contains "{note-ref}" but has no following "{note: ...}".`,
-			pendingParagraph.referenceLine,
-		);
-		pendingParagraph = null;
-	};
-
-	const attachNote = (text, lineNumber) => {
-		if (!text) {
-			addError(`The note on line ${lineNumber} is empty. ${getInlineNoteErrorMessage()}`, lineNumber);
-			pendingParagraph = null;
-			return;
-		}
-
-		if (/!\[[^\]]*\]\([^)]*\)|<img\b/i.test(text)) {
-			addError('Inline notes cannot contain images. Use a Norna image block with a caption instead.', lineNumber);
-			pendingParagraph = null;
-			return;
-		}
-
-		notes.push({
-			markdown: text,
-			referenceLine: pendingParagraph.referenceLine,
-			noteLine: lineNumber,
-		});
-		pendingParagraph = null;
-		noteJustSeen = true;
-	};
-
-	for (let index = 0; index < lines.length; index += 1) {
-		const line = lines[index] ?? '';
-		const maskedLine = maskedLines[index] ?? line;
-		const lineNumber = (options.lineOffset ?? 0) + index + 1;
-		const fence = getFenceInfo(line);
-
-		if (fence && fence.length >= 3) {
-			finishParagraph();
-			reportMissingNote();
-			let closingIndex = -1;
-			for (let candidateIndex = index + 1; candidateIndex < lines.length; candidateIndex += 1) {
-				if (getFenceCloseInfo(lines[candidateIndex], fence)) {
-					closingIndex = candidateIndex;
-					break;
-				}
-			}
-			index = closingIndex === -1 ? lines.length : closingIndex;
-			noteJustSeen = false;
-			continue;
-		}
-
-		const trimmed = line.trim();
-		const maskedTrimmed = maskedLine.trim();
-		const startsNoteDeclaration = inlineNoteDeclarationOpeningRegex.test(maskedLine);
-		const noteDeclaration = startsNoteDeclaration
-			? collectInlineNoteDeclaration(lines, maskedLines, index)
-			: null;
-		const looksLikeNoteDeclaration = inlineNoteDeclarationStartRegex.test(maskedTrimmed);
-		const referenceCount = countInlineNoteReferences(maskedLine);
-		const isHeading = /^#{1,6}(?:\s|$)/.test(trimmed);
-
-		if (!trimmed) {
-			finishParagraph();
-			noteJustSeen = false;
-			continue;
-		}
-
-		if (pendingParagraph) {
-			if (noteDeclaration) {
-				if (!noteDeclaration.closed) {
-					addError(getUnclosedInlineNoteMessage(noteDeclaration, lineNumber, options.lineOffset), lineNumber);
-					pendingParagraph = null;
-				} else {
-					attachNote(noteDeclaration.text, lineNumber);
-				}
-				index = noteDeclaration.endIndex;
-				continue;
-			}
-
-			if (looksLikeNoteDeclaration) {
-				addError(`Invalid note syntax on line ${lineNumber}. ${getInlineNoteErrorMessage()}`, lineNumber);
-				pendingParagraph = null;
-			} else {
-				reportMissingNote();
-			}
-		}
-
-		if (noteJustSeen) {
-			addError(`Add a blank line after the note on the previous line before starting more text.`, lineNumber);
-			noteJustSeen = false;
-		}
-
-		if (noteDeclaration || looksLikeNoteDeclaration) {
-			addError(
-				noteDeclaration
-					? noteDeclaration.closed
-						? `A "{note: ...}" requires a preceding paragraph containing "{note-ref}".`
-						: getUnclosedInlineNoteMessage(noteDeclaration, lineNumber, options.lineOffset)
-					: `Invalid note syntax on line ${lineNumber}. ${getInlineNoteErrorMessage()}`,
-				lineNumber,
-			);
-			if (noteDeclaration) index = noteDeclaration.endIndex;
-			continue;
-		}
-
-		if (isHeading) {
-			if (referenceCount > 0) {
-				addError('Place "{note-ref}" in a paragraph, not in a heading.', lineNumber);
-			}
-			finishParagraph();
-			reportMissingNote();
-			continue;
-		}
-
-		if (!paragraph) {
-			paragraph = {
-				referenceCount: 0,
-				referenceLine: lineNumber,
-			};
-		}
-
-		paragraph.referenceCount += referenceCount;
-		if (referenceCount > 0 && paragraph.referenceCount > 1) {
-			addError('A paragraph may contain only one "{note-ref}".', lineNumber);
-		}
-	}
-
-	finishParagraph();
-	reportMissingNote();
-
-	return { notes, errors };
-};
+export { extractInlineNoteDiagnostics } from './markdown-notes.mjs';

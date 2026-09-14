@@ -25,8 +25,9 @@ page:
 ## Work {#work}
 
 \`\`\`image-stack
-- image: moved.jpg
-  alt: Moved image
+items:
+  - image: moved.jpg
+    alt: Moved image
 \`\`\`
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images', 'old'), { recursive: true });
@@ -54,8 +55,9 @@ page:
 ## Work {#work}
 
 \`\`\`image-stack
-- image: moved.svg
-  alt: Moved diagram
+items:
+  - image: moved.svg
+    alt: Moved diagram
 \`\`\`
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images', 'old'), { recursive: true });
@@ -109,7 +111,8 @@ page:
 ## Work {#work}
 
 \`\`\`image-stack
-- image: moved.jpg
+items:
+  - image: moved.jpg
 \`\`\`
 `);
 		await writeFile(path.join(sourcePageDir, 'images', 'moved.jpg'), 'page image');
@@ -164,7 +167,8 @@ page:
 ## Work {#work}
 
 \`\`\`image-stack
-- image: moved.jpg
+items:
+  - image: moved.jpg
 \`\`\`
 `);
 		await writeFile(path.join(sourcePageDir, 'images', 'moved.jpg'), 'page image');
@@ -220,7 +224,8 @@ page:
 ## Work {#work}
 
 \`\`\`image-stack
-- image: moved.jpg
+items:
+  - image: moved.jpg
 \`\`\`
 `);
 		await writeFile(path.join(sourcePageDir, 'images', 'moved.jpg'), 'page image');
@@ -268,7 +273,8 @@ page:
 ## Old {#old}
 
 \`\`\`image-stack
-- image: shared.jpg
+items:
+  - image: shared.jpg
 \`\`\`
 `);
 		await writeFile(path.join(targetPageDir, 'content.md'), `---
@@ -281,7 +287,8 @@ page:
 ## Work {#work}
 
 \`\`\`image-stack
-- image: shared.jpg
+items:
+  - image: shared.jpg
 \`\`\`
 `);
 		await writeFile(path.join(sourcePageDir, 'images', 'shared.jpg'), 'page image');
@@ -313,10 +320,11 @@ page:
 ## Work {#work}
 
 \`\`\`image-carousel
-- image: slide-one.jpg
-  alt: Slide one
-- image: slide-two.jpg
-  alt: Slide two
+items:
+  - image: slide-one.jpg
+    alt: Slide one
+  - image: slide-two.jpg
+    alt: Slide two
 \`\`\`
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images', 'old'), { recursive: true });
@@ -347,8 +355,9 @@ page:
 ## Work {#work}
 
 \`\`\`image-stack
-- image: shared.jpg
-  alt: Shared
+items:
+  - image: shared.jpg
+    alt: Shared
 \`\`\`
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images', 'old-a'), { recursive: true });
@@ -387,15 +396,17 @@ page:
 ## Intro {#intro}
 
 \`\`\`image-stack
-- image: shared.jpg
-  alt: Shared original
+items:
+  - image: shared.jpg
+    alt: Shared original
 \`\`\`
 
 ## Plain {#plain}
 
 \`\`\`image-stack
-- image: shared.jpg
-  alt: Shared copy
+items:
+  - image: shared.jpg
+    alt: Shared copy
 \`\`\`
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images', 'intro'), { recursive: true });

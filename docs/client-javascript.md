@@ -12,7 +12,8 @@ responsive layout, and responsive image markup are generated ahead of time.
 | Markdown prose and headings | No | Fully rendered. |
 | Image stacks | Only on pages containing an image stack | Images, responsive sources, alt text, captions, and direct original-image links remain available. Modal inspection and persistent side captions are absent, so captions stay below their images. |
 | Card lists | No | Cards and links remain available. |
-| Side notes | No | CSS places notes in the margin when space permits and in the reading flow otherwise. |
+| Side notes | Only for highlighting the matching note on reference hover or keyboard focus; the note script loads on pages containing note references | CSS places notes in the margin when space permits and in the reading flow otherwise. Multiple notes remain grouped with their paragraph. Reference and return links remain available. |
+| Reference footnotes | The note script restores focus on return and reveals a hidden tab alternative when needed | Reference and return links remain available; every tab alternative is visible. |
 | Markdown tables | Only on pages containing a table, for measured lane selection, overflow cues, and synchronized column headings during horizontal scrolling | The native table remains in one focusable horizontal-scrolling frame. Declared row headings retain their semantics and sticky first-column fallback in CSS; column headings and cell relationships remain intact. |
 | Fenced code blocks | Only on pages containing rendered code blocks, for the copy control and measured width expansion | Code, syntax highlighting, titles, line emphasis, and sticky title bars remain available. Long lines scroll within the text width; the copy button is absent. |
 | Basic page links and anchors | No | Normal links, URLs, and browser history continue to work. |

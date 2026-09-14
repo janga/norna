@@ -121,8 +121,9 @@ Short maintenance note explaining why the diagram exists.
 -->
 
 ```image-stack
-- image: diagram-name.svg
-  alt: Concise explanation of what the diagram shows.
+items:
+  - image: diagram-name.svg
+    alt: Concise explanation of what the diagram shows.
 ```
 ````
 

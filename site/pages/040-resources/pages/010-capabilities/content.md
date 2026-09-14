@@ -21,7 +21,7 @@ when you need exact syntax, accepted values, defaults, or error behavior.
   its navigable sections, while H3 and H4 headings structure longer sections.
 - **Purpose-built content blocks.** Fenced Markdown blocks place image stacks,
   image carousels, and card lists at a precise point in the text.
-- **Notes and code examples.** Numbered side notes use a margin when the active
+- **Notes and code examples.** Lettered side notes use a margin when the active
   layout reserves one and remain in the reading flow otherwise. Fenced code
   can show a title and emphasize selected lines. Syntax highlighting remains
   readable without JavaScript, while an enhanced page adds a copy control.

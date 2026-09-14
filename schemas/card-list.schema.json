@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Show related choices as cards with optional images and links. Set link to make the whole card clickable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "layout": {
+      "type": "string",
+      "description": "Place each card image above, left, or right of its text. Defaults to image-top.",
+      "default": "image-top",
+      "enum": [
+        "image-top",
+        "image-left",
+        "image-right"
+      ],
+      "minLength": 1,
+      "pattern": "^(?=.*\\S)[^\\x00-\\x1F\\x7F-\\x9F\\u2028\\u2029]+$(?![\\s\\S])"
+    },
+    "flow": {
+      "type": "string",
+      "description": "Arrange cards as a responsive grid or a vertical stack. Defaults to grid.",
+      "default": "grid",
+      "enum": [
+        "grid",
+        "stack"
+      ],
+      "minLength": 1,
+      "pattern": "^(?=.*\\S)[^\\x00-\\x1F\\x7F-\\x9F\\u2028\\u2029]+$(?![\\s\\S])"
+    },
+    "size": {
+      "type": "string",
+      "description": "Set the coordinated card and image size. Defaults to m.",
+      "default": "m",
+      "enum": [
+        "s",
+        "m",
+        "l",
+        "xl"
+      ],
+      "minLength": 1,
+      "pattern": "^(?=.*\\S)[^\\x00-\\x1F\\x7F-\\x9F\\u2028\\u2029]+$(?![\\s\\S])"
+    },
+    "width": {
+      "type": "string",
+      "description": "Override the root theme's maximum width for this card list.",
+      "enum": [
+        "text",
+        "narrow",
+        "normal",
+        "wide"
+      ],
+      "minLength": 1,
+      "pattern": "^(?=.*\\S)[^\\x00-\\x1F\\x7F-\\x9F\\u2028\\u2029]+$(?![\\s\\S])"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Start another card. Every card requires a title.",
+            "minLength": 1,
+            "pattern": "^(?=.*\\S)[^\\x00-\\x1F\\x7F-\\x9F\\u2028\\u2029]+$(?![\\s\\S])"
+          },
+          "text": {
+            "type": "string",
+            "description": "Optional card text.",
+            "minLength": 1,
+            "pattern": "^(?=[\\s\\S]*\\S)[^\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F-\\x9F]*$(?![\\s\\S])"
+          },
+          "image": {
+            "type": "string",
+            "description": "Optional managed image filename.",
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9.-]*\\.(?:[jJ][pP][eE]?[gG]|[pP][nN][gG]|[sS][vV][gG])$(?![\\s\\S])"
+          },
+          "link": {
+            "type": "string",
+            "description": "Optional URL opened when the card is activated.",
+            "minLength": 1,
+            "pattern": "^(?=.*\\S)[^\\x00-\\x1F\\x7F-\\x9F\\u2028\\u2029]+$(?![\\s\\S])"
+          },
+          "badge-text": {
+            "type": "string",
+            "description": "Optional short badge displayed on the card.",
+            "minLength": 1,
+            "pattern": "^(?=.*\\S)[^\\x00-\\x1F\\x7F-\\x9F\\u2028\\u2029]+$(?![\\s\\S])"
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "text"
+            ]
+          },
+          {
+            "required": [
+              "image"
+            ]
+          },
+          {
+            "required": [
+              "link"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "$id": "https://janga.github.io/norna/schemas/card-list.schema.json",
+  "title": "Norna card-list"
+}

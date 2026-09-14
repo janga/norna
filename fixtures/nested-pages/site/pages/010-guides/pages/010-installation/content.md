@@ -19,7 +19,8 @@ theme.
 The managed image belongs to this nested page and section.
 
 ```image-stack
-- image: diagram.svg
-  alt: Three nested page levels connected in sequence.
-  caption: A managed SVG resolved from the nested page image directory.
+items:
+  - image: diagram.svg
+    alt: Three nested page levels connected in sequence.
+    caption: A managed SVG resolved from the nested page image directory.
 ```

@@ -238,7 +238,7 @@ output suitable for comparison.
   settings.
 - `check`: runs `config:check` followed by `content:check`.
 - `content:check`: validates the page hierarchy, required H1 titles, heading
-  ids, frontmatter, Norna blocks, managed-image references, inline notes,
+  ids, frontmatter, Norna blocks, managed-image references, named notes,
   internal Markdown and card links, and common content mistakes. Link targets
   may be pages, H2 or H3 anchors, page aliases, or files under `site/public/`;
   navigation categories are not link destinations. The command reports all

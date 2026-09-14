@@ -9,40 +9,17 @@ const invalidMetadata = (message, fix) => ({
 	},
 });
 
-const parseTitle = (source) => {
-	let title = '';
-	let index = titlePrefix.length;
-
-	while (index < source.length) {
-		const character = source[index];
-		if (character === '"') {
-			return {
-				rest: source.slice(index + 1),
-				title,
-			};
-		}
-
-		if (character === '\\') {
-			const escaped = source[index + 1];
-			if (escaped !== '"' && escaped !== '\\') {
-				return invalidMetadata(
-					`Code title contains unsupported escape "\\${escaped ?? ''}".`,
-					'Only escape a double quote (\\") or backslash (\\\\) inside the title.',
-				);
-			}
-			title += escaped;
-			index += 2;
-			continue;
-		}
-
-		title += character;
-		index += 1;
+export const parseQuotedContentString = (source) => {
+	const quoted = source.match(/^"(?:[^"\\]|\\[\s\S])*"/)?.[0];
+	if (!quoted) return { error: 'Use a JSON double-quoted string with a closing double quote.' };
+	let value;
+	try { value = JSON.parse(quoted); } catch {
+		return { error: 'Use valid JSON escapes inside the double-quoted string.' };
 	}
-
-	return invalidMetadata(
-		'Code title is missing its closing double quote.',
-		'Close the title, for example title="src/config.js".',
-	);
+	if (/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/u.test(value)) {
+		return { error: 'Quoted labels and titles cannot contain control characters, including line breaks and tabs.' };
+	}
+	return { value, rest: source.slice(quoted.length) };
 };
 
 const parseHighlightedLines = (selector, lineCount) => {
@@ -94,15 +71,15 @@ export const parseCodeFenceMetadata = (rawMetadata, options = {}) => {
 	let rest = source;
 	let title = null;
 	if (rest.startsWith(titlePrefix)) {
-		const titleResult = parseTitle(rest);
-		if (titleResult.error) return titleResult;
-		if (!titleResult.title.trim()) {
+		const titleResult = parseQuotedContentString(rest.slice('title='.length));
+		if (titleResult.error) return invalidMetadata(`Invalid code title. ${titleResult.error}`, 'Write a single-line title, for example title="src/config.js".');
+		if (!titleResult.value.trim()) {
 			return invalidMetadata(
 				'Code title cannot be empty.',
 				'Remove title="" or provide a short filename or label.',
 			);
 		}
-		title = titleResult.title;
+		title = titleResult.value;
 		rest = titleResult.rest;
 		if (rest && !rest.startsWith(' ')) {
 			return invalidMetadata(

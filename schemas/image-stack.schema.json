@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Display one or more managed images in a vertical stack.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "image"
+        ],
+        "properties": {
+          "image": {
+            "type": "string",
+            "description": "Start another managed image.",
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9.-]*\\.(?:[jJ][pP][eE]?[gG]|[pP][nN][gG]|[sS][vV][gG])$(?![\\s\\S])"
+          },
+          "alt": {
+            "type": "string",
+            "description": "Optional alternative text for the image.",
+            "pattern": "^(?:|(?=.*\\S)[^\\x00-\\x1F\\x7F-\\x9F\\u2028\\u2029]+)$(?![\\s\\S])"
+          },
+          "caption": {
+            "type": "string",
+            "description": "Optional visible caption below the image.",
+            "minLength": 1,
+            "pattern": "^(?=[\\s\\S]*\\S)[^\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F-\\x9F]*$(?![\\s\\S])"
+          }
+        }
+      }
+    }
+  },
+  "$id": "https://janga.github.io/norna/schemas/image-stack.schema.json",
+  "title": "Norna image-stack"
+}

@@ -15,9 +15,9 @@ layout: image-right
 flow: stack
 size: s
 width: narrow
-
-- title: Rescue, recovery and new homes
-  text: Meet the dogs currently in our care and learn what kind of home each one needs.
-  image: shelter-dog.jpg
-  link: /dogs/
+items:
+  - title: Rescue, recovery and new homes
+    text: Meet the dogs currently in our care and learn what kind of home each one needs.
+    image: shelter-dog.jpg
+    link: /dogs/
 ```

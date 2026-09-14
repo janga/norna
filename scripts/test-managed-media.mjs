@@ -53,8 +53,9 @@ page:
 ## Intro {#intro}
 
 \`\`\`image-stack
-- image: diagram.svg
-  alt: Diagram
+items:
+  - image: diagram.svg
+    alt: Diagram
 \`\`\`
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images'), { recursive: true });
@@ -89,8 +90,9 @@ page:
 ## Intro {#intro}
 
 \`\`\`image-stack
-- image: diagram.svg
-  alt: Diagram
+items:
+  - image: diagram.svg
+    alt: Diagram
 \`\`\`
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images'), { recursive: true });
@@ -133,10 +135,11 @@ page:
 ## Intro {#intro}
 
 \`\`\`image-carousel
-- image: first.svg
-  alt: First
-- image: second.svg
-  alt: Second
+items:
+  - image: first.svg
+    alt: First
+  - image: second.svg
+    alt: Second
 \`\`\`
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images'), { recursive: true });
@@ -166,7 +169,8 @@ page:
 ## Intro {#intro}
 
 \`\`\`image-stack
-- image: hero.jpg
+items:
+  - image: hero.jpg
 \`\`\`
 `);
 
@@ -177,7 +181,7 @@ page:
 	}
 });
 
-test('content:check reports single-image carousel and missing file together', async () => {
+test('content:check rejects a single-image carousel before resolving its assets', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
@@ -190,15 +194,15 @@ page:
 ## Plain {#plain}
 
 \`\`\`image-carousel
- - image: foo.jpg
+items:
+  - image: foo.jpg
 \`\`\`
 `);
 
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /image-carousel on line \d+ contains 1 image\. An image carousel needs at least two images\./);
-				assert.match(error.output, /Image "foo\.jpg" does not exist at .*site\/pages\/000-home\/images\/foo\.jpg or anywhere under any page image root\./);
+				assert.match(error.output, /image-carousel: Block.items must contain at least 2 item/);
 				return true;
 			},
 		);
@@ -220,8 +224,9 @@ page:
 ## Intro {#intro}
 
 \`\`\`image-stack
-- image: missing.jpg
-  alt: Missing
+items:
+  - image: missing.jpg
+    alt: Missing
 \`\`\`
 `);
 

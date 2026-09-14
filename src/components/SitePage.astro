@@ -3,6 +3,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CodeBlockCopyScript from './CodeBlockCopyScript.astro';
 import ContentTabsScript from './ContentTabsScript.astro';
+import NoteNavigationScript from './NoteNavigationScript.astro';
 import EditSourceLink from './EditSourceLink.astro';
 import ImageStackEnhancement from './ImageStackEnhancement.astro';
 import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
@@ -98,6 +99,9 @@ const siteHtml = entry.rendered?.html ?? '';
 const resolvedSections = await getSectionsContent(siteHtml, currentPage, childPages);
 const allContentBlocks = resolvedSections.flatMap((section) => flattenContentBlocks(section.contentBlocks));
 const hasTabs = allContentBlocks.some((block) => block.type === 'tabs');
+const hasNotes = allContentBlocks.some((block) => (
+	block.type === 'html' && /class="[^"]*\bsection-note-ref\b|\bdata-footnote-ref(?:="")?/.test(block.html)
+));
 const hasCodeBlocks = allContentBlocks.some((block) => (
 	block.type === 'html' && /<pre\b[^>]*>[\s\S]*?<code\b/i.test(block.html)
 ));
@@ -263,6 +267,7 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 	{hasTreeNavigation && <TreeNavigationScript />}
 	{hasCodeBlocks && <CodeBlockCopyScript />}
 	{hasTabs && <ContentTabsScript />}
+	{hasNotes && <NoteNavigationScript />}
 	{hasTables && <TableOverflowScript />}
 	{hasImageStack && <ImageStackEnhancement />}
 </BaseLayout>

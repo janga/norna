@@ -39,9 +39,10 @@ Managed image block references use only the filename:
 
 ````md
 ```image-stack
-- image: portrait.jpg
-  alt: Optional alt text.
-  caption: Optional caption.
+items:
+  - image: portrait.jpg
+    alt: Optional alt text.
+    caption: Optional caption.
 ```
 ````
 
@@ -252,9 +253,10 @@ prompt: A clean editorial illustration of ordinary project files becoming a
 -->
 
 ```image-stack
-- image: workflow.png
-  alt: Abstract illustration of project files becoming a website.
-  caption: Generated illustration.
+items:
+  - image: workflow.png
+    alt: Abstract illustration of project files becoming a website.
+    caption: Generated illustration.
 ```
 ````
 

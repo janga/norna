@@ -59,8 +59,9 @@ creates a subsection within the current section:
 We rescue and rehome dogs.
 
 ```image-stack
-- image: dog-house.svg
-  caption: Ready for adoption.
+items:
+  - image: dog-house.svg
+    caption: Ready for adoption.
 ```
 
 ## You can help
@@ -68,8 +69,9 @@ We rescue and rehome dogs.
 Adopt. Foster. Donate.
 
 ```image-stack
-- image: heart.svg
-  caption: Foster care creates space.
+items:
+  - image: heart.svg
+    caption: Foster care creates space.
 ```
 ````
 
@@ -87,8 +89,9 @@ simple single-page website.
 -->
 
 ```image-stack
-- image: single-page-site.svg
-  alt: A three-column diagram showing a single-page Norna file tree, Markdown page content, and the resulting browser page with navigation derived from its headings.
+items:
+  - image: single-page-site.svg
+    alt: A three-column diagram showing a single-page Norna file tree, Markdown page content, and the resulting browser page with navigation derived from its headings.
 ```
 
 The example places both images in the page's `images/` directory and inserts
@@ -180,12 +183,13 @@ Regenerate with node scripts/capture-navigation-examples.mjs.
 -->
 
 ```image-carousel
-- image: dog-shelter-mobile-page.png
-  alt: The Dog Shelter Dogs page on a small screen with the navigation menu closed and a Menu button in the top-right corner.
-  caption: The page on a small screen. Select Menu to open navigation.
-- image: dog-shelter-mobile-navigation.png
-  alt: The Dog Shelter Dogs page on a narrow screen, with an open menu listing Dog Shelter, Dogs, and Adopt.
-  caption: The same page with navigation open and the current page marked.
+items:
+  - image: dog-shelter-mobile-page.png
+    alt: The Dog Shelter Dogs page on a small screen with the navigation menu closed and a Menu button in the top-right corner.
+    caption: The page on a small screen. Select Menu to open navigation.
+  - image: dog-shelter-mobile-navigation.png
+    alt: The Dog Shelter Dogs page on a narrow screen, with an open menu listing Dog Shelter, Dogs, and Adopt.
+    caption: The same page with navigation open and the current page marked.
 ```
 
 ## Add nested pages {#child-pages}
@@ -212,9 +216,10 @@ and navigation in the Norna documentation site.
 -->
 
 ```image-stack
-- image: getting-started-file-map.svg
-  alt: The actual documentation file tree mapped to the rendered Getting Started navigation. The 020-getting-started category contains Install Norna, Choose A Theme, Grow Your Site, Prepare Your Site, and Build And Publish in numeric order. The highlighted 020-grow-your-site content file maps to the current page and its H2 section links.
-  caption: The page directories and their content become the navigation and page you are using now.
+items:
+  - image: getting-started-file-map.svg
+    alt: The actual documentation file tree mapped to the rendered Getting Started navigation. The 020-getting-started category contains Install Norna, Choose A Theme, Grow Your Site, Prepare Your Site, and Build And Publish in numeric order. The highlighted 020-grow-your-site content file maps to the current page and its H2 section links.
+    caption: The page directories and their content become the navigation and page you are using now.
 ```
 
 The category file contains only its navigation label:

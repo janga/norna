@@ -18,19 +18,19 @@ Norna includes four presets:
 ```card-list
 flow: grid
 size: m
-
-- title: Portfolio
-  text: Choose Portfolio for image-led work, portfolios, and visual collections.
-  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/
-- title: Documentation
-  text: Choose Documentation for guides, reference material, and sustained reading.
-  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/
-- title: Project
-  text: Choose Project for project or product sites that combine prose, code, cards, and images.
-  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-project/
-- title: Statement
-  text: Choose Statement for concise sites that need spacious rhythm and a stronger editorial voice.
-  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/
+items:
+  - title: Portfolio
+    text: Choose Portfolio for image-led work, portfolios, and visual collections.
+    link: https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/
+  - title: Documentation
+    text: Choose Documentation for guides, reference material, and sustained reading.
+    link: https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/
+  - title: Project
+    text: Choose Project for project or product sites that combine prose, code, cards, and images.
+    link: https://janga.github.io/norna/examples/feature-demos/theme-preset-project/
+  - title: Statement
+    text: Choose Statement for concise sites that need spacious rhythm and a stronger editorial voice.
+    link: https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/
 ```
 
 The generated starter uses `project`. Keep it when the site combines several

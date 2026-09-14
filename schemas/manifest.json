@@ -1,6 +1,11 @@
 {
-  "editorApiVersion": 1,
+  "editorApiVersion": 2,
   "schemaVersion": 3,
+  "blockSchemas": {
+    "image-stack": "image-stack.schema.json",
+    "image-carousel": "image-carousel.schema.json",
+    "card-list": "card-list.schema.json"
+  },
   "files": {
     "category": "category.schema.json",
     "config": "config.schema.json",

@@ -1,7 +1,5 @@
 import { markdownToMdast } from 'satteri';
-
-const calloutTypes = { info: 'note', note: 'note', tip: 'tip', important: 'important', warning: 'warning', caution: 'caution', danger: 'danger' };
-const escapeHtml = (text) => text.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+import { parseQuotedContentString } from './code-fence-metadata.mjs';
 
 // Only delimiters belong to this scanner. Markdown parsing and source positions
 // stay with Satteri, including code examples that happen to contain delimiters.
@@ -20,7 +18,6 @@ export const parseContentTabs = (source, { label = 'Markdown', lineOffset = 0 } 
 	const replacements = [];
 	let group = null;
 	let panel = null;
-	let callout = null;
 	const outerContainers = [];
 	let offset = 0;
 	let section = 'page introduction';
@@ -50,8 +47,8 @@ export const parseContentTabs = (source, { label = 'Markdown', lineOffset = 0 } 
 			continue;
 		}
 		const replace = (kind, data = {}) => replacements.push({ start, end: start + line.length, kind, ...data });
-		if (indent || nodes.some(({ node, parent }) => node.type === 'paragraph' && parent?.type !== 'root'
-			&& start >= node.position.start.offset && start < node.position.end.offset)) {
+		if (indent || (!group && nodes.some(({ node, parent }) => node.type === 'paragraph' && parent?.type !== 'root'
+			&& start >= node.position.start.offset && start < node.position.end.offset))) {
 			error('Place tabs directly in the section, outside other blocks.', start);
 		}
 		if (name === 'tabs') {
@@ -64,10 +61,10 @@ export const parseContentTabs = (source, { label = 'Markdown', lineOffset = 0 } 
 		} else if (name === 'tab') {
 			if (!group) { error('A tab must be inside a ":::: tabs" block.', start); continue; }
 			if (panel) error('Close the preceding tab with ":::" before starting another tab.', start);
-			let title = '';
-			try { title = JSON.parse(declaration.slice(3).trim()); } catch {}
-			if (fence !== ':::' || typeof title !== 'string' || !title.trim() || /[\r\n\t]/.test(title)) {
-				error('Write a nonempty quoted label, for example ::: tab "Windows".', start);
+			const decoded = parseQuotedContentString(declaration.slice(3).trim());
+			let title = decoded.value ?? '';
+			if (fence !== ':::' || decoded.error || decoded.rest || !title.trim()) {
+				error(`Write a nonempty quoted label, for example ::: tab "Windows".${decoded.error ? ` ${decoded.error}` : ''}`, start);
 				title = '';
 			}
 			if (group.panels.some((item) => item.label.normalize('NFC') === title.trim().normalize('NFC'))) error(`Duplicate tab label "${title}". Use unique labels within this group.`, start);
@@ -76,28 +73,20 @@ export const parseContentTabs = (source, { label = 'Markdown', lineOffset = 0 } 
 			replace('panel-start', { index: panel.index });
 		} else if (!declaration) {
 			if (fence === '::::') {
-				if (panel || callout) error('Close the tab and its callout with ":::" before closing the group.', start);
+				if (panel) error('Close the tab with ":::" before closing the group.', start);
 				if (group.panels.length < 2) error('A tab group needs at least two alternatives.', group.start);
 				group.end = offset;
 				replace('group-end');
-				group = panel = callout = null;
+				group = panel = null;
 			} else if (fence !== ':::') {
 				error('Close tabs with ":::" and the group with "::::".', start);
-			} else if (callout) {
-				if (!source.slice(callout.start, start).trim()) error('The callout needs content.', start);
-				replace('callout-end');
-				callout = null;
 			} else if (panel) {
 				panel.end = start;
 				if (!source.slice(panel.start, start).replace(/<!--[\s\S]*?-->/g, '').trim()) error('A tab cannot be empty. Explain when the step does not apply.', panel.declarationStart);
 				replace('panel-end');
 				panel = null;
 			} else error('This closing marker has no open tab.', start);
-		} else if (panel && fence === ':::' && calloutTypes[declaration]) {
-			if (callout) error('Callouts cannot be nested.', start);
-			callout = { start: offset };
-			replace('callout-start', { calloutType: calloutTypes[declaration] });
-		} else error(`Unknown or misplaced tab marker "${declaration}".`, start);
+		} else error(`Unknown or misplaced tab marker "${declaration}". Write callouts as GitHub-style alerts, for example > [!TIP] followed by quoted body text.`, start);
 	}
 	if (group) error('The tab group is unclosed. Close each tab with ":::" and the group with "::::".', group.start);
 	let maskedSource = source;
@@ -124,10 +113,7 @@ export const prepareContentTabs = (source, options = {}) => {
 	if (parsed.diagnostics.length) throw new Error(parsed.diagnostics[0].message);
 	let result = source;
 	for (const marker of [...parsed.replacements].reverse()) {
-		const html = marker.kind === 'callout-start'
-			? `<aside class="norna-callout norna-callout-${marker.calloutType}" role="note"><p class="norna-callout-label">${escapeHtml(options.labels?.[marker.calloutType] ?? marker.calloutType)}</p>`
-			: marker.kind === 'callout-end' ? '</aside>'
-				: `<div data-norna-tabs-marker="${marker.kind}"${marker.index === undefined ? '' : ` data-index="${marker.index}"`}></div>`;
+		const html = `<div data-norna-tabs-marker="${marker.kind}"${marker.index === undefined ? '' : ` data-index="${marker.index}"`}></div>`;
 		result = result.slice(0, marker.start) + '\n' + html + '\n' + result.slice(marker.end);
 	}
 	return result;

@@ -14,9 +14,9 @@ token:
 
 Clear hierarchy helps readers scan before they settle into a longer passage.
 The body text should remain comfortable at wide and narrow viewports, while
-headings should preserve an obvious order.{note-ref}
+headings should preserve an obvious order.[^margin:layout-1]
 
-{note: This margin note checks note width, alignment, contrast, and the narrow-screen fallback.}
+[^margin:layout-1]: This margin note checks note width, alignment, contrast, and the narrow-screen fallback.
 
 ### A level-three heading
 
@@ -57,15 +57,16 @@ An image stack exercises media width, spacing, intrinsic aspect ratio, captions,
 and section-surface contrast.
 
 ```image-stack
-- image: stack-portrait.svg
-  alt: A tall diagram with three connected panels.
-  caption: A portrait diagram checks the reading edge and width-driven sizing.
-- image: stack-one.svg
-  alt: A pale panel with a circle and two horizontal lines.
-  caption: A concise caption below the first image.
-- image: stack-two.svg
-  alt: A dark panel with three aligned blocks.
-  caption: A second caption tests rhythm between consecutive images.
+items:
+  - image: stack-portrait.svg
+    alt: A tall diagram with three connected panels.
+    caption: A portrait diagram checks the reading edge and width-driven sizing.
+  - image: stack-one.svg
+    alt: A pale panel with a circle and two horizontal lines.
+    caption: A concise caption below the first image.
+  - image: stack-two.svg
+    alt: A dark panel with three aligned blocks.
+    caption: A second caption tests rhythm between consecutive images.
 ```
 
 ## Image carousel {#image-carousel}
@@ -74,15 +75,16 @@ The carousel checks the relationship between image constraints, controls,
 position status, and captions.
 
 ```image-carousel
-- image: carousel-one.svg
-  alt: A green panel with a diagonal line.
-  caption: First frame with a broad diagonal.
-- image: carousel-two.svg
-  alt: A blue panel with overlapping circles.
-  caption: Second frame with overlapping forms.
-- image: carousel-three.svg
-  alt: A red panel with a compact grid.
-  caption: Third frame with denser detail.
+items:
+  - image: carousel-one.svg
+    alt: A green panel with a diagonal line.
+    caption: First frame with a broad diagonal.
+  - image: carousel-two.svg
+    alt: A blue panel with overlapping circles.
+    caption: Second frame with overlapping forms.
+  - image: carousel-three.svg
+    alt: A red panel with a compact grid.
+    caption: Third frame with denser detail.
 ```
 
 ## Card list {#card-list}
@@ -94,15 +96,15 @@ images.
 layout: image-left
 flow: grid
 size: m
-
-- title: Prepare the source
-  text: Keep ordinary content and related images together.
-  image: card-stack.svg
-  link: https://example.com/source
-  badge-text: First
-- title: Review the result
-  text: Compare hierarchy, spacing, and media at several widths.
-  image: card-carousel.svg
-- title: Publish deliberately
-  text: A card without an image checks alignment within the same list.
+items:
+  - title: Prepare the source
+    text: Keep ordinary content and related images together.
+    image: card-stack.svg
+    link: https://example.com/source
+    badge-text: First
+  - title: Review the result
+    text: Compare hierarchy, spacing, and media at several widths.
+    image: card-carousel.svg
+  - title: Publish deliberately
+    text: A card without an image checks alignment within the same list.
 ```

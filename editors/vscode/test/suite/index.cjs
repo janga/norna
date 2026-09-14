@@ -52,6 +52,11 @@ async function run() {
 	assert.equal(extension.packageJSON.version, extensionVersion);
 	assert.ok(vscode.extensions.getExtension('redhat.vscode-yaml'), 'Red Hat YAML was not installed.');
 	await extension.activate();
+	if (['constructions', 'priority'].includes(process.env.NORNA_EDITOR_TEST_SUITE)) {
+		await require('./widget-constructions.cjs').runWidgetConstructions({ openDocument, waitFor, getCompletions });
+		console.log('Packaged construction widget tests passed.');
+		return;
+	}
 
 	const theme = await openDocument('site/theme.yaml');
 	assert.equal(theme.languageId, 'yaml');
@@ -108,6 +113,26 @@ async function run() {
 	for (const block of ['image-stack', 'image-carousel', 'card-list']) {
 		assert.ok(blockItems.some((item) => labelOf(item) === block), `Missing block completion ${block}.`);
 	}
+	const blockEditor = vscode.window.activeTextEditor;
+	const blockSource = blockPage.getText();
+	for (const prefix of ['```', '```image-st', '~~~', '~~~card-l']) {
+		await blockEditor.edit((edit) => edit.replace(blockPage.lineAt(4).range, prefix));
+		blockEditor.selection = new vscode.Selection(4, prefix.length, 4, prefix.length);
+		await vscode.commands.executeCommand('editor.action.triggerSuggest');
+		await waitFor(async () => {
+			await vscode.commands.executeCommand('acceptSelectedSuggestion');
+			return blockPage.lineAt(4).text;
+		}, (text) => text !== prefix, `The suggestion widget did not insert a block after ${prefix}.`);
+		assert.match(blockPage.lineAt(4).text, /^```(?:image-stack|image-carousel|card-list|page-list)$/,
+			`Unexpected widget insertion after ${prefix}: ${JSON.stringify(blockPage.lineAt(4).text)}`);
+		if (prefix.includes('image-st')) assert.equal(blockPage.lineAt(4).text, '```image-stack');
+		if (prefix.includes('card-l')) assert.equal(blockPage.lineAt(4).text, '```card-list');
+		await vscode.commands.executeCommand('hideSuggestWidget');
+		await vscode.commands.executeCommand('leaveSnippet');
+		await blockEditor.edit((edit) => edit.replace(new vscode.Range(
+			blockPage.positionAt(0), blockPage.positionAt(blockPage.getText().length),
+		), blockSource));
+	}
 
 	const calloutPage = await openDocument('site/pages/050-callouts/content.md');
 	const calloutLine = Array.from({ length: calloutPage.lineCount }, (_value, line) => line)
@@ -128,7 +153,9 @@ async function run() {
 	const saveEdit = new vscode.WorkspaceEdit();
 	saveEdit.insert(saveCalloutPage.uri, new vscode.Position(saveCalloutPage.lineCount - 1, 0), '\n');
 	await vscode.workspace.applyEdit(saveEdit);
+	const beforeSave = saveCalloutPage.getText();
 	assert.ok(await saveCalloutPage.save(), 'The callout save fixture could not be saved.');
+	assert.equal(saveCalloutPage.getText(), beforeSave, 'Saving must not repair or rewrite Markdown.');
 	assert.match(saveCalloutPage.getText(), /> \[!TIP\]\n> Use a tip for helpful guidance\./);
 	assert.doesNotMatch(saveCalloutPage.getText(), /> \[!TIP\]\n\n> /);
 	assert.match(saveCalloutPage.getText(), /> \[!INFO\]\n> An unknown type remains a neutral blockquote\./);
@@ -137,11 +164,36 @@ async function run() {
 	assert.match(saveCalloutPage.getText(), /````md\n> \[!TIP\]\n> This example is inside a code fence\.\n````/);
 	const firstSavedCalloutText = saveCalloutPage.getText();
 	assert.ok(await saveCalloutPage.save(), 'The callout fixture could not be saved a second time.');
-	assert.equal(saveCalloutPage.getText(), firstSavedCalloutText, 'A second save changed normalized callouts.');
+	assert.equal(saveCalloutPage.getText(), firstSavedCalloutText, 'A second save changed Markdown.');
+	assert.equal(vscode.workspace.getConfiguration('editor', saveCalloutPage).get('formatOnSave'), false);
+	assert.equal(saveCalloutPage.getText(), firstSavedCalloutText);
+
+	const embedded = await openDocument('site/pages/070-embedded/content.md');
+	const fieldItems = await getCompletions(embedded, 8);
+	for (const field of ['image', 'link', 'badge-text']) {
+		const properties = fieldItems.filter((item) => labelOf(item) === field && item.kind === vscode.CompletionItemKind.Property);
+		assert.equal(properties.length, 1, `Expected one embedded ${field} property completion: ${JSON.stringify(fieldItems.filter((item) => labelOf(item) === field))}`);
+	}
+	assert.ok(!fieldItems.some((item) => item.kind === vscode.CompletionItemKind.Property && ['text', 'title'].includes(labelOf(item))), 'Already supplied fields must not be repeated.');
+	const layoutItems = await getCompletions(embedded, 9);
+	for (const value of ['image-top', 'image-left', 'image-right']) {
+		assert.equal(layoutItems.filter((item) => labelOf(item) === value && item.kind === vscode.CompletionItemKind.EnumMember).length, 1, `Expected one embedded ${value} enum completion.`);
+	}
+	const duplicate = new vscode.WorkspaceEdit();
+	duplicate.replace(embedded.uri, embedded.lineAt(8).range, '    title: Duplicate');
+	await vscode.workspace.applyEdit(duplicate);
+	const embeddedIssues = await waitFor(
+		() => vscode.languages.getDiagnostics(embedded.uri).filter((issue) => /unique|duplicate/i.test(issue.message)),
+		(items) => items.length > 0,
+		'Embedded YAML duplicate-key diagnostics did not appear.',
+	);
+	assert.equal(embeddedIssues.length, 1, 'Red Hat and Norna must not duplicate embedded YAML diagnostics.');
+	assert.equal(embeddedIssues[0].source, 'Norna');
+	assert.equal(embeddedIssues[0].range.start.line, 8, 'Highlight the duplicate key, not the code fence.');
 
 	const home = await openDocument('site/pages/000-home/content.md');
 	const imageLine = Array.from({ length: home.lineCount }, (_value, line) => line)
-		.find((line) => home.lineAt(line).text === '- image: ');
+		.find((line) => home.lineAt(line).text === '  - image: ');
 	const imageItems = await getCompletions(home, imageLine);
 	assert.ok(imageItems.some((item) => labelOf(item) === 'local.svg'));
 	assert.ok(imageItems.some((item) => labelOf(item) === 'portrait.jpg'));
@@ -170,7 +222,7 @@ async function run() {
 
 	const diagnostics = await waitFor(
 		() => vscode.languages.getDiagnostics(home.uri).filter((diagnostic) => diagnostic.source === 'Norna'),
-		(items) => items.some((item) => item.code === 'invalid-inline-note'),
+		(items) => items.some((item) => /margin:missing/.test(item.message)),
 		'Norna Markdown diagnostics did not reach the Problems model.',
 	);
 	assert.ok(diagnostics.every((diagnostic) => diagnostic.source === 'Norna'));
@@ -199,10 +251,13 @@ async function run() {
 
 	const manifestPath = path.join(engineRoot, 'schemas', 'manifest.json');
 	const compatibleManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-	writeManifest({ ...compatibleManifest, editorApiVersion: compatibleManifest.editorApiVersion + 1 });
-	await vscode.commands.executeCommand('nornaEditor.refresh');
-	const incompatibleBlockItems = await getCompletions(blockPage, 4);
-	assert.ok(!incompatibleBlockItems.some((item) => labelOf(item) === 'image-stack'));
+	assert.equal(compatibleManifest.editorApiVersion, 2);
+	for (const editorApiVersion of [1, compatibleManifest.editorApiVersion + 1]) {
+		writeManifest({ ...compatibleManifest, editorApiVersion });
+		await vscode.commands.executeCommand('nornaEditor.refresh');
+		const incompatibleBlockItems = await getCompletions(blockPage, 4);
+		assert.ok(!incompatibleBlockItems.some((item) => labelOf(item) === 'image-stack'));
+	}
 
 	writeManifest(compatibleManifest);
 	await vscode.commands.executeCommand('nornaEditor.refresh');
@@ -223,6 +278,9 @@ async function run() {
 	const recoveredEmptyItems = await getCompletions(emptyPage, 0, 0);
 	assert.ok(recoveredEmptyItems.some((item) => labelOf(item) === 'Norna content page'));
 
+	await require('./completion-relevance.cjs').runCompletionRelevance({ openDocument, getCompletions });
+	await require('./editing-workflows.cjs').runEditingWorkflows({ workspaceRoot, openDocument, waitFor, getCompletions });
+	await require('./widget-constructions.cjs').runWidgetConstructions({ openDocument, waitFor, getCompletions });
 	console.log('Packaged VS Code integration tests passed.');
 }
 

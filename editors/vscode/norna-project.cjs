@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const supportedSchemaVersion = 3;
-const supportedEditorApiVersion = 1;
+const supportedEditorApiVersion = 2;
 const homePageDirectory = '000-home';
 const pageDirectoryPattern = /^(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const rootFiles = new Map([

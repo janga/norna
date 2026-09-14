@@ -272,6 +272,11 @@ for (const contentFile of contentFiles) {
 		prelude,
 		regions: sections,
 	} = page;
+	for (const issue of page.noteDiagnostics) {
+		const section = sections.find((candidate) => issue.offset >= candidate.startOffset && issue.offset < candidate.endOffset);
+		if (section) addSectionIssue(contentFile, section, issue);
+		else addContentIssue(contentFile, issue);
+	}
 	const invalidHeadingLines = new Set();
 	for (const issue of headingIdentifierIssues) {
 		invalidHeadingLines.add(issue.heading.line);
@@ -364,13 +369,6 @@ for (const contentFile of contentFiles) {
 
 		for (const error of section.tabErrors) {
 			addSectionIssue(contentFile, section, { severity: 'error', message: error.message });
-		}
-
-		for (const error of section.noteErrors) {
-			addSectionIssue(contentFile, section, {
-				severity: 'error',
-				message: error.message,
-			});
 		}
 
 		for (const error of section.calloutErrors) {

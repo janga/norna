@@ -59,15 +59,16 @@ grow from one page into a hierarchy.
 single, top, and nested sites in fixtures/navigation-examples. -->
 
 ```image-carousel
-- image: navigation-single-desktop.png
-  alt: A rendered Dog Shelter page with its H1 and two H2 destinations in sticky navigation.
-  caption: One page uses section navigation.
-- image: navigation-top-desktop.png
-  alt: The rendered Dogs page with global page links and separate section disclosures.
-  caption: Top-level pages use top navigation, with direct access to their sections.
-- image: navigation-nested-desktop.png
-  alt: Adult dogs rendered with the Dogs branch in a persistent left tree.
-  caption: Related child pages introduce a page tree; small screens use Menu.
+items:
+  - image: navigation-single-desktop.png
+    alt: A rendered Dog Shelter page with its H1 and two H2 destinations in sticky navigation.
+    caption: One page uses section navigation.
+  - image: navigation-top-desktop.png
+    alt: The rendered Dogs page with global page links and separate section disclosures.
+    caption: Top-level pages use top navigation, with direct access to their sections.
+  - image: navigation-nested-desktop.png
+    alt: Adult dogs rendered with the Dogs branch in a persistent left tree.
+    caption: Related child pages introduce a page tree; small screens use Menu.
 ```
 
 There is no second sidebar file to keep synchronized. The documented
@@ -115,23 +116,23 @@ The source remains understandable outside Norna:
 ```
 
 A side note keeps supporting detail next to its reference when the layout has
-room, then returns it to the reading flow when space is constrained.{note-ref}
+room, then returns it to the reading flow when space is constrained.[^margin:layout-1]
 
-{note: The note remains adjacent in source and reading order, so the information is not lost when no margin lane is available.}
+[^margin:layout-1]: The note stays with its referenced paragraph in reading order, so the information is not lost when no margin lane is available.
 
 ```card-list
 flow: grid
 size: s
-
-- title: Image stack
-  text: Keep every image visible in a deliberate reading order.
-  link: /examples/#image-stacks
-- title: Image carousel
-  text: Place a related sequence in one bounded, keyboard-operable position.
-  link: /examples/#image-carousels
-- title: Card list
-  text: Present a short set of comparable choices without building a component.
-  link: /examples/#card-lists
+items:
+  - title: Image stack
+    text: Keep every image visible in a deliberate reading order.
+    link: /examples/#image-stacks
+  - title: Image carousel
+    text: Place a related sequence in one bounded, keyboard-operable position.
+    link: /examples/#image-carousels
+  - title: Card list
+    text: Present a short set of comparable choices without building a component.
+    link: /examples/#card-lists
 ```
 
 This page itself uses a carousel, a callout, a side note and a card list. The

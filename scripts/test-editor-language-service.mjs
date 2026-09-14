@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import './test-editor-block-completions.mjs';
+import './test-editor-image-usage.mjs';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -44,11 +46,12 @@ page:
 
 ## Intro {#intro}
 
-Text with a missing note {note-ref}.
+Text with a missing note [^margin:missing].
 
 \`\`\`image-stack
-- image: local.jpg
-- image: portrait.jpg
+items:
+  - image: local.jpg
+  - image: portrait.jpg
 \`\`\`
 `;
 const pageSource = `---
@@ -73,6 +76,7 @@ try {
 	await writeFile(path.join(installedNornaRoot, 'package.json'), JSON.stringify({ name: '@janga/norna', version: '9.8.7' }));
 	await writeFile(packageManifestPath, JSON.stringify({
 		editorApiVersion: supportedEditorApiVersion,
+		blockSchemas: { 'image-stack': 'image-stack.schema.json', 'image-carousel': 'image-carousel.schema.json', 'card-list': 'card-list.schema.json' },
 		files: {
 			category: 'category.schema.json',
 			config: 'config.schema.json',
@@ -163,12 +167,11 @@ try {
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', '010-about', 'nested', 'content.md')), null);
 
 	const compatibleManifest = await readFile(packageManifestPath, 'utf8');
-	await writeFile(packageManifestPath, JSON.stringify({
-		...JSON.parse(compatibleManifest),
-		editorApiVersion: supportedEditorApiVersion + 1,
-	}));
-	assert.equal(getNornaDocumentContext(homeContentPath).schemaCompatible, true);
-	assert.equal(getNornaDocumentContext(homeContentPath).editorCompatible, false);
+	for (const editorApiVersion of [1, supportedEditorApiVersion + 1]) {
+		await writeFile(packageManifestPath, JSON.stringify({ ...JSON.parse(compatibleManifest), editorApiVersion }));
+		assert.equal(getNornaDocumentContext(homeContentPath).schemaCompatible, true);
+		assert.equal(getNornaDocumentContext(homeContentPath).editorCompatible, false);
+	}
 	await writeFile(packageManifestPath, JSON.stringify({
 		...JSON.parse(compatibleManifest),
 		schemaVersion: supportedSchemaVersion + 1,
@@ -270,10 +273,10 @@ try {
 	assert.match(nornaBlockDefinitions['card-list'].options.width.description, /root theme/);
 	assert.doesNotMatch(nornaBlockDefinitions['card-list'].snippet, /^width:/m);
 
-	const stackFieldSource = homeSource.replace('- image: portrait.jpg', '- image: portrait.jpg\n  ');
-	const stackFieldLine = stackFieldSource.split('\n').findIndex((line) => line === '  ');
+	const stackFieldSource = homeSource.replace('- image: portrait.jpg', '- image: portrait.jpg\n    ');
+	const stackFieldLine = stackFieldSource.split('\n').findIndex((line) => line === '    ');
 	const stackFieldCompletion = getNornaBlockCompletionContext({ source: stackFieldSource, line: stackFieldLine });
-	assert.deepEqual(stackFieldCompletion.candidates.map(({ key }) => key), ['alt', 'caption']);
+	assert.deepEqual(stackFieldCompletion.candidates.map(({ key }) => key), ['alt', 'caption', 'Add image']);
 
 	const cardValueSource = `${homeSource}\n\`\`\`card-list\nlayout: \n\`\`\`\n`;
 	const cardValueLine = cardValueSource.split('\n').findIndex((line) => line === 'layout: ');
@@ -286,7 +289,7 @@ try {
 	);
 
 	const completionSource = homeSource.replace('- image: portrait.jpg', '- image: ');
-	const completionLine = completionSource.split('\n').findIndex((line) => line === '- image: ');
+	const completionLine = completionSource.split('\n').findIndex((line) => line === '  - image: ');
 	const completion = await getImageCompletionContext({
 		documentPath: homeContentPath,
 		line: completionLine,
@@ -297,7 +300,7 @@ try {
 		completion.candidates.map(({ filename, isExpected }) => [filename, isExpected]),
 		[['local.jpg', true], ['portrait.jpg', false]],
 	);
-	const localDefinitionLine = homeSource.split('\n').findIndex((line) => line === '- image: local.jpg');
+	const localDefinitionLine = homeSource.split('\n').findIndex((line) => line === '  - image: local.jpg');
 	const localDefinition = await getImageDefinitionContext({
 		documentPath: homeContentPath,
 		line: localDefinitionLine,
@@ -307,7 +310,7 @@ try {
 
 	const diagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(diagnostics.some(({ code, message }) => code === 'image-needs-sync' && message.includes('Run "norna content:sync"')));
-	assert.ok(diagnostics.some(({ message }) => message.includes('has no following "{note: ...}"')));
+	assert.ok(diagnostics.some(({ message }) => /missing|definition/i.test(message) && /margin:missing/.test(message)));
 	const missingIdDiagnostics = await getMarkdownDiagnostics({
 		documentPath: homeContentPath,
 		source: homeSource.replace('## Intro {#intro}', '## Intro'),
@@ -344,7 +347,7 @@ try {
 	assert.ok(unclosedBlockDiagnostics.some(({ code }) => code === 'unclosed-norna-block'));
 	const markdownImageDiagnostics = await getMarkdownDiagnostics({
 		documentPath: homeContentPath,
-		source: homeSource.replace('Text with a missing note {note-ref}.', '![Portrait](portrait.jpg)'),
+		source: homeSource.replace('Text with a missing note [^margin:missing].', '![Portrait](portrait.jpg)'),
 	});
 	assert.ok(markdownImageDiagnostics.some(({ code }) => code === 'local-markdown-image'));
 	const rowHeaderDiagnostics = await getMarkdownDiagnostics({
@@ -357,7 +360,8 @@ try {
 	)));
 
 	await writeFile(pageContentPath, pageSource.replace('Page content.', `\`\`\`image-stack
-- image: portrait.jpg
+items:
+  - image: portrait.jpg
 \`\`\``));
 	const sharedDiagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(sharedDiagnostics.some(({ message }) => message.includes('is still referenced by')));

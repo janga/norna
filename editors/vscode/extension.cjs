@@ -9,7 +9,7 @@ const {
 	supportedEditorApiVersion,
 	supportedSchemaVersion,
 } = require('./norna-project.cjs');
-const { getYamlSchemaSnippetCompletions } = require('./yaml-schema-completions.cjs');
+const { getYamlSchemaSnippetCompletions, getYamlPropertyCompletionContext } = require('./yaml-schema-completions.cjs');
 
 const schemaContentByUri = new Map();
 const documentContextByPath = new Map();
@@ -17,7 +17,6 @@ const projectContextByPath = new Map();
 const serviceByRoot = new Map();
 const diagnosticTimers = new Map();
 const publicAssetDiagnosticUrisByRoot = new Map();
-const normalizedSaveUris = new Set();
 let diagnostics;
 let extensionVersion;
 let output;
@@ -136,26 +135,34 @@ const semanticCalloutDefinitions = Object.freeze([
 const isInsideMarkdownFence = (document, lineIndex) => {
 	let fence = null;
 	for (let index = 0; index < lineIndex; index += 1) {
-		const match = document.lineAt(index).text.match(/^ {0,3}(`{3,}|~{3,})/);
+		const match = document.lineAt(index).text.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
 		if (!match) continue;
 		const marker = match[1];
 		if (!fence) {
 			fence = { character: marker[0], length: marker.length };
 			continue;
 		}
-		if (marker[0] === fence.character && marker.length >= fence.length) fence = null;
+		if (marker[0] === fence.character && marker.length >= fence.length && !match[2].trim()) fence = null;
 	}
 	return Boolean(fence);
 };
 
-const getSemanticCalloutCompletionItems = (document, position) => {
+// Call only after file/context checks, and only with items owned by Norna.
+// Keep local relevance ordering; VS Code still owns matching and snippet placement.
+const prioritizeNornaCompletions = (items) => items?.map((item, index) => {
+	item.sortText = `0000-norna-${item.sortText ?? String(index).padStart(4, '0')}`;
+	return item;
+});
+
+const getSemanticCalloutCompletionItems = (document, position, { allowBlank = false } = {}) => {
 	if (isInsideMarkdownFence(document, position.line)) return [];
 	const lineText = document.lineAt(position.line).text;
 	const prefix = lineText.slice(0, position.character);
 	const match = prefix.match(/^(\s{0,3}>\s*)\[!([A-Za-z0-9-]*)$/);
-	if (!match) return [];
+	const blank = allowBlank && /^ {0,3}$/.test(lineText);
+	if (!match && !blank) return [];
 
-	const quotePrefix = `${match[1].trimEnd()} `;
+	const quotePrefix = blank ? '> ' : `${match[1].trimEnd()} `;
 	const range = new vscode.Range(position.line, 0, position.line, position.character);
 	const reference = documentationLinkFor(
 		document.uri.fsPath,
@@ -175,66 +182,10 @@ const getSemanticCalloutCompletionItems = (document, position) => {
 			`${quotePrefix}[!${definition.type}]\n${quotePrefix}\${1:Callout text}`,
 		);
 		item.range = range;
-		item.sortText = `0000-norna-callout-${String(index).padStart(2, '0')}`;
+		item.filterText = blank ? definition.type : `${quotePrefix}[!${definition.type}]`;
+		item.sortText = `callout-${String(index).padStart(2, '0')}`;
 		return item;
 	});
-};
-
-const semanticCalloutMarkerPattern = /^( {0,3}>\s*\[![A-Z][A-Z0-9-]*\])(?:[ \t]*)$/;
-const semanticCalloutBodyPattern = /^\s*>\s*\S/;
-const semanticCalloutBlankPattern = /^\s*>\s*$/;
-const semanticCalloutEmptyLinePattern = /^\s*$/;
-const semanticCalloutInlinePattern = /^( {0,3}>\s*\[![A-Z][A-Z0-9-]*\])[ \t]+(.+)$/;
-
-const getSemanticCalloutSaveEdits = (document) => {
-	const edits = [];
-	for (let line = 0; line < document.lineCount; line += 1) {
-		if (isInsideMarkdownFence(document, line)) continue;
-		const text = document.lineAt(line).text;
-		const inline = text.match(semanticCalloutInlinePattern);
-		if (inline) {
-			const quotePrefix = inline[1].slice(0, inline[1].indexOf('>') + 1) + ' ';
-			edits.push(vscode.TextEdit.replace(
-				document.lineAt(line).range,
-				`${inline[1]}\n${quotePrefix}${inline[2]}`,
-			));
-			continue;
-		}
-		const marker = text.match(semanticCalloutMarkerPattern);
-		if (!marker || line + 1 >= document.lineCount) continue;
-		if (marker[1] !== text) {
-			edits.push(vscode.TextEdit.replace(document.lineAt(line).range, marker[1]));
-		}
-		let nextLine = line + 1;
-		while (nextLine < document.lineCount) {
-			const nextText = document.lineAt(nextLine).text;
-			if (!semanticCalloutBlankPattern.test(nextText) && !semanticCalloutEmptyLinePattern.test(nextText)) break;
-			nextLine += 1;
-		}
-		if (nextLine === line + 1 || nextLine >= document.lineCount) continue;
-		if (!semanticCalloutBodyPattern.test(document.lineAt(nextLine).text)) continue;
-		for (let blankLine = line + 1; blankLine < nextLine; blankLine += 1) {
-			edits.push(vscode.TextEdit.delete(document.lineAt(blankLine).rangeIncludingLineBreak));
-		}
-	}
-	return edits;
-};
-
-const normalizeSavedCallouts = async (document) => {
-	if (normalizedSaveUris.has(document.uri.toString()) || !isNornaContentDocument(document)) return;
-	const edits = getSemanticCalloutSaveEdits(document);
-	if (edits.length === 0) return;
-	const workspaceEdit = new vscode.WorkspaceEdit();
-	workspaceEdit.set(document.uri, edits);
-	if (!await vscode.workspace.applyEdit(workspaceEdit)) return;
-	normalizedSaveUris.add(document.uri.toString());
-	try {
-		await document.save();
-	} catch (error) {
-		output?.appendLine(`Semantic callout save normalization failed for ${document.uri.fsPath}: ${error instanceof Error ? error.stack ?? error.message : String(error)}`);
-	} finally {
-		normalizedSaveUris.delete(document.uri.toString());
-	}
 };
 
 const getFrontmatterRange = (document) => {
@@ -273,20 +224,19 @@ const getSchemaAtIndent = (document, position, schema) => {
 };
 
 const schemaCompletionItems = (document, position, schema) => {
-	const context = getSchemaAtIndent(document, position, schema);
-	if (!context?.currentSchema?.properties) return [];
-	const existingKeys = new Set();
-	for (let line = context.frontmatter.start; line <= context.frontmatter.end; line += 1) {
-		const text = document.lineAt(line).text;
-		const match = text.match(/^( *)([A-Za-z][A-Za-z0-9-]*):/);
-		if (match && match[1].length === context.currentIndent) existingKeys.add(match[2]);
-	}
+	const frontmatter = getFrontmatterRange(document);
+	if (!frontmatter || position.line < frontmatter.start || position.line > frontmatter.end) return [];
+	const source = Array.from({ length: frontmatter.end - frontmatter.start + 1 },
+		(_value, index) => document.lineAt(frontmatter.start + index).text).join('\n');
+	const context = getYamlPropertyCompletionContext({ source, line: position.line - frontmatter.start, schema });
+	if (!context) return [];
 
 	return Object.entries(context.currentSchema.properties)
-		.filter(([key]) => !existingKeys.has(key) || document.lineAt(position.line).text.includes(`${key}:`))
+		.filter(([key]) => !context.existingKeys.has(key))
 		.map(([key, property]) => {
 			const choices = getSchemaChoices(property);
 			const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Property);
+			item.range = new vscode.Range(position.line, context.currentIndent, position.line, document.lineAt(position.line).text.length);
 			item.detail = property.description ?? 'Norna frontmatter field';
 			item.documentation = new vscode.MarkdownString(schemaDocumentation(property, choices));
 			if (choices.length > 0) {
@@ -303,7 +253,7 @@ const schemaCompletionItems = (document, position, schema) => {
 };
 
 const makeWholeDocumentSnippet = (document, label, detail, source, documentation) => {
-	const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Snippet);
+	const item = new vscode.CompletionItem({ label, description: 'Complete file' }, vscode.CompletionItemKind.Snippet);
 	item.detail = detail;
 	item.documentation = new vscode.MarkdownString([detail, documentation].filter(Boolean).join('\n\n'));
 	item.insertText = new vscode.SnippetString(source);
@@ -333,7 +283,7 @@ const getEmptyYamlCompletionItems = (document) => {
 	if (!resolved) return [];
 	let schemaPath = path.relative(path.dirname(document.uri.fsPath), resolved.schemaPath).split(path.sep).join('/');
 	if (!schemaPath.startsWith('.')) schemaPath = `./${schemaPath}`;
-	const directive = `# yaml-language-server: $schema=${schemaPath}`;
+	const directive = new vscode.SnippetString().appendText(`# yaml-language-server: $schema=${schemaPath}`).value;
 	const presetChoices = getSchemaChoices(resolved.schema.properties?.preset).map(({ value }) => value);
 	const snippets = {
 		category: `${directive}\n\nlabel: \${1:Category label}\n`,
@@ -380,15 +330,14 @@ const getYamlSchemaSnippetItems = (document, position) => {
 		item.documentation = new vscode.MarkdownString(snippet.documentation);
 		item.insertText = new vscode.SnippetString(snippet.text);
 		item.range = document.lineAt(position.line).range;
-		item.filterText = snippet.label;
-		item.sortText = `0000-norna-${String(index).padStart(3, '0')}`;
-		item.preselect = index === 0;
+		item.filterText = `${document.lineAt(position.line).text}${snippet.label}`;
+		item.sortText = String(index).padStart(3, '0');
 		return item;
 	});
 };
 
 const makeBlockCandidateItem = (candidate, replacementRange, documentation) => {
-	const item = new vscode.CompletionItem(candidate.key, candidate.kind === 'item'
+	const item = new vscode.CompletionItem(candidate.key, ['item', 'new-item'].includes(candidate.kind)
 		? vscode.CompletionItemKind.Snippet
 		: vscode.CompletionItemKind.Property);
 	const values = candidate.values ? Object.keys(candidate.values) : [];
@@ -406,8 +355,12 @@ const makeBlockCandidateItem = (candidate, replacementRange, documentation) => {
 	const placeholder = values.length > 0
 		? `\${1|${values.join(',')}|}`
 		: `\${1:${candidate.key === 'image' ? 'filename.jpg' : candidate.key === 'title' ? 'Card title' : 'value'}}`;
-	item.insertText = new vscode.SnippetString(`${candidate.prefix}${candidate.key}: ${placeholder}`);
+	item.insertText = new vscode.SnippetString(candidate.snippet ?? `${candidate.prefix}${candidate.key}: ${placeholder}`);
 	item.range = replacementRange;
+	if (candidate.kind === 'new-item') {
+		item.range = new vscode.Range(replacementRange.start.line, 0, replacementRange.end.line, replacementRange.end.character);
+		item.keepWhitespace = true;
+	}
 	return item;
 };
 
@@ -424,45 +377,46 @@ const makeBlockValueItem = (candidate, replacementRange, documentation) => {
 };
 
 const getNoteCompletionItems = (document, position) => {
+	if (isInsideMarkdownFence(document, position.line)) return [];
 	const prefix = document.lineAt(position.line).text.slice(0, position.character);
-	const match = prefix.match(/\{note(?:-[a-z]*)?[^}]*$/);
+	const match = prefix.match(/\[\^(?:margin(?::[^\]\s]*)?)?$/);
 	if (!match) return [];
 	const range = new vscode.Range(position.line, position.character - match[0].length, position.line, position.character);
-	const notesDocumentation = documentationLinkFor(document.uri.fsPath, 'Side-note syntax', 'content.md', 'side-notes');
+	const notesDocumentation = documentationLinkFor(document.uri.fsPath, 'Sidenote reference', 'content.md', 'side-notes');
 	return [
-		Object.assign(new vscode.CompletionItem('{note-ref}', vscode.CompletionItemKind.Snippet), {
-			detail: 'Place the numbered reference in a paragraph.',
+		Object.assign(new vscode.CompletionItem('[^margin:name]', vscode.CompletionItemKind.Snippet), {
+			detail: 'Attach a lettered sidenote to ordinary body text.',
 			documentation: new vscode.MarkdownString([
-				'Each paragraph may contain one `{note-ref}` followed by one `{note: ...}`.',
+				'Use one reference per named sidenote, outside containers. Several different sidenotes may share a paragraph.',
 				notesDocumentation,
 			].join('\n\n')),
-			insertText: new vscode.SnippetString('{note-ref}'),
+			insertText: new vscode.SnippetString('[^margin:${1:name}]'),
 			range,
 		}),
-		Object.assign(new vscode.CompletionItem('{note: ...}', vscode.CompletionItemKind.Snippet), {
-			detail: 'Write the side note paired with this paragraph.',
+		Object.assign(new vscode.CompletionItem('[^margin:name]: ...', vscode.CompletionItemKind.Snippet), {
+			detail: 'Define a named sidenote at page top level.',
 			documentation: new vscode.MarkdownString([
-				'Place this after the paragraph containing `{note-ref}`.',
+				'Write one paragraph outside containers, anywhere before or after the matching reference.',
 				notesDocumentation,
 			].join('\n\n')),
-			insertText: new vscode.SnippetString('{note: ${1:Explanatory text}}'),
+			insertText: new vscode.SnippetString('[^margin:${1:name}]: ${2:Explanatory text}'),
 			range,
 		}),
-	];
+	].filter((_item, index) => index === 0 || prefix === match[0]);
 };
 
-const getBlockCompletionItems = async (document, position, service) => {
+const getBlockCompletionItems = async (document, position, service, scope) => {
 	const lineText = document.lineAt(position.line).text;
 	const trimmed = lineText.trim();
-	const blockPrefix = trimmed.match(/^(?:```|~~~)([a-z-]*)$/)?.[1];
-	const matchingBlocks = blockPrefix === undefined
+	const blockPrefix = scope.insertBlocks ? '' : trimmed.match(/^(?:```|~~~)([a-z-]*)$/)?.[1];
+	const matchingBlocks = (!scope.blocks && !scope.insertBlocks) || blockPrefix === undefined
 		? []
 		: Object.entries(service.nornaBlockDefinitions)
 			.filter(([name]) => name.startsWith(blockPrefix));
 	if (matchingBlocks.length > 0) {
 		return matchingBlocks.map(([name, definition]) => {
 			const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Snippet);
-			item.detail = definition.description;
+			item.detail = `Norna ${name} block`;
 			item.documentation = new vscode.MarkdownString([
 				markdownBlockExample(definition.snippet),
 				definition.description,
@@ -470,9 +424,11 @@ const getBlockCompletionItems = async (document, position, service) => {
 			].filter(Boolean).join('\n\n'));
 			item.insertText = new vscode.SnippetString(definition.snippet);
 			item.range = document.lineAt(position.line).range;
+			item.filterText = scope.insertBlocks ? name : `${trimmed.slice(0, 3)}${name}`;
 			return item;
 		});
 	}
+	if (!scope.embedded) return scope.notes ? getNoteCompletionItems(document, position) : [];
 
 	const imageContext = await service.getImageCompletionContext({
 		documentPath: document.uri.fsPath,
@@ -487,20 +443,26 @@ const getBlockCompletionItems = async (document, position, service) => {
 			'image-files',
 		);
 		const valueMatch = lineText.match(/image:\s*([^\s]*)$/);
-		const valueStart = valueMatch ? lineText.length - valueMatch[1].length : position.character;
-		const replacementRange = new vscode.Range(position.line, valueStart, position.line, lineText.length);
+		const valueStart = imageContext.valueRange?.start ?? (valueMatch ? lineText.length - valueMatch[1].length : position.character);
+		const replacementRange = new vscode.Range(position.line, valueStart, position.line, imageContext.valueRange?.end ?? lineText.length);
 		return imageContext.candidates.map((candidate) => {
-			const label = candidate.duplicateCount > 1
-				? { label: candidate.filename, description: candidate.siteRelativePath }
-				: candidate.filename;
+			const usageLabel = { unused: 'Unused on this page', used: 'Already used on this page', ambiguous: 'Ambiguous on this page' }[candidate.usage];
+			const label = {
+				label: candidate.filename,
+				description: usageLabel,
+				...(candidate.duplicateCount > 1 ? { detail: ` (${candidate.siteRelativePath})` } : {}),
+			};
 			const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.File);
 			item.insertText = candidate.filename;
 			item.range = replacementRange;
-			item.sortText = `${candidate.isExpected ? '0' : candidate.duplicateCount > 1 ? '2' : '1'}-${candidate.filename}-${candidate.siteRelativePath}`;
-			item.detail = candidate.isExpected ? 'Image in this section' : `Image elsewhere: ${candidate.siteRelativePath}`;
+			item.sortText = candidate.sortText;
+			item.detail = candidate.isExpected ? 'Image on this page' : `Image on another page: ${candidate.siteRelativePath}`;
 			const documentation = [
+				candidate.usage === 'used' ? 'Referenced in an image or card block in this page, including unsaved edits.'
+					: candidate.usage === 'ambiguous' ? 'This page references the filename, but it cannot be resolved to one source image.'
+						: 'Not referenced in an image or card block in this page. This does not indicate whether the file has been published.',
 				candidate.isExpected
-					? 'This image is already stored in the current section folder.'
+					? 'Stored in this page\'s images directory.'
 					: `Stored at \`${candidate.siteRelativePath}\`. Run \`norna content:sync\` after moving the reference.`,
 				candidate.duplicateCount > 1 ? `The filename is ambiguous across ${candidate.duplicateCount} files.` : null,
 				candidate.referencedBy.length > 0 ? `Referenced by: ${candidate.referencedBy.map((value) => `\`${value}\``).join(', ')}.` : null,
@@ -515,11 +477,11 @@ const getBlockCompletionItems = async (document, position, service) => {
 		line: position.line,
 		source: document.getText(),
 	});
-	if (!blockContext) return getNoteCompletionItems(document, position);
+	if (!blockContext) return [];
 	if (blockContext.mode === 'value') {
 		const valueMatch = lineText.match(/:\s*(.*?)\s*$/);
-		const valueStart = valueMatch ? lineText.lastIndexOf(valueMatch[1]) : position.character;
-		const range = new vscode.Range(position.line, valueStart, position.line, lineText.length);
+		const valueStart = blockContext.valueRange?.start ?? (valueMatch ? lineText.lastIndexOf(valueMatch[1]) : position.character);
+		const range = new vscode.Range(position.line, valueStart, position.line, blockContext.valueRange?.end ?? lineText.length);
 		return blockContext.candidates.map((candidate) => makeBlockValueItem(
 			candidate,
 			range,
@@ -813,8 +775,8 @@ const makeManagedImageAction = (document, diagnostic) => {
 	const line = document.lineAt(diagnostic.range.start.line);
 	const match = line.text.match(/^\s*!\[([^\]\n]*)\]\(([a-z0-9][a-z0-9.-]*\.(?:jpe?g|png|svg))\)\s*$/i);
 	if (!match) return null;
-	const alt = match[1] ? `\n  alt: ${match[1]}` : '';
-	const replacement = `\`\`\`image-stack\n- image: ${match[2]}${alt}\n\`\`\``;
+	const alt = `\n    alt: ${JSON.stringify(match[1])}`;
+	const replacement = `\`\`\`image-stack\nitems:\n  - image: ${match[2]}${alt}\n\`\`\``;
 	const edit = new vscode.WorkspaceEdit();
 	edit.replace(document.uri, line.range, replacement);
 	const action = new vscode.CodeAction('Convert to a managed Norna image stack', vscode.CodeActionKind.QuickFix);
@@ -873,9 +835,9 @@ async function activate(context) {
 		{
 			provideCompletionItems: (document, position) => {
 				const emptyItems = getEmptyYamlCompletionItems(document);
-				if (emptyItems.length > 0) return emptyItems;
+				if (emptyItems.length > 0) return prioritizeNornaCompletions(emptyItems);
 				const snippetItems = getYamlSchemaSnippetItems(document, position);
-				return snippetItems.length > 0 ? snippetItems : undefined;
+				return snippetItems.length > 0 ? prioritizeNornaCompletions(snippetItems) : undefined;
 			},
 		},
 		'-', ':',
@@ -886,23 +848,25 @@ async function activate(context) {
 			provideCompletionItems: async (document, position) => {
 				if (!isNornaContentDocument(document)) return undefined;
 				const emptyItems = getEmptyContentCompletionItems(document);
-				if (emptyItems.length > 0) return emptyItems;
-				const calloutItems = getSemanticCalloutCompletionItems(document, position);
-				if (calloutItems.length > 0) return calloutItems;
+				if (emptyItems.length > 0) return prioritizeNornaCompletions(emptyItems);
+				const service = await getLanguageService(document.uri.fsPath);
+				const scope = service?.getMarkdownCompletionScope({
+					source: document.getText(), line: position.line, character: position.character,
+				});
+				if (scope?.insertBlocks) return prioritizeNornaCompletions([
+					...getSemanticCalloutCompletionItems(document, position, { allowBlank: true }),
+					...await getBlockCompletionItems(document, position, service, scope),
+				]);
+				const calloutItems = scope?.callouts ? getSemanticCalloutCompletionItems(document, position) : [];
+				if (calloutItems.length > 0) return prioritizeNornaCompletions(calloutItems);
 				const schemaResult = getSchema(document.uri.fsPath, 'contentFrontmatter');
 				const frontmatterItems = schemaResult ? schemaCompletionItems(document, position, schemaResult.schema) : [];
-				if (frontmatterItems.length > 0) return frontmatterItems;
-				const service = await getLanguageService(document.uri.fsPath);
-				return service ? getBlockCompletionItems(document, position, service) : undefined;
+				if (frontmatterItems.length > 0) return prioritizeNornaCompletions(frontmatterItems);
+				return service ? prioritizeNornaCompletions(await getBlockCompletionItems(document, position, service, scope)) : undefined;
 			},
 		},
 		'`', '~', ':', '-', '/', '{', '>', '[', '!',
 	));
-	context.subscriptions.push(vscode.workspace.onWillSaveTextDocument((event) => {
-		if (!isNornaContentDocument(event.document)) return;
-		const edits = getSemanticCalloutSaveEdits(event.document);
-		if (edits.length > 0) event.waitUntil(Promise.resolve(edits));
-	}));
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider(
 		{ language: 'markdown', scheme: 'file' },
@@ -923,19 +887,16 @@ async function activate(context) {
 						return new vscode.Hover(new vscode.MarkdownString(details));
 					}
 				}
-				const noteRange = document.getWordRangeAtPosition(position, /\{note-ref\}|\{note:[^}]*\}/);
-				if (noteRange) {
-					const noteText = document.getText(noteRange);
+				const noteRange = document.getWordRangeAtPosition(position, /\[\^margin:[^\]\s]+\]/);
+				if (noteRange && getProjectContext(document.uri.fsPath)?.editorCompatible && !isInsideMarkdownFence(document, position.line)) {
 					const notesDocumentation = documentationLinkFor(
 						document.uri.fsPath,
-						'Side-note syntax',
+						'Sidenote reference',
 						'content.md',
 						'side-notes',
 					);
 					return new vscode.Hover(new vscode.MarkdownString([
-						noteText === '{note-ref}'
-							? '**{note-ref}**\n\nPlace the numbered reference in a paragraph. Pair it with one `{note: ...}` after that paragraph.'
-							: '**{note: ...}**\n\nThe side note paired with `{note-ref}` in the preceding paragraph.',
+						'**Named sidenote**\n\nUse one `[^margin:name]` reference in ordinary body text and one `[^margin:name]: ...` definition at page top level. The body is one paragraph; Norna assigns letters in reference order.',
 						notesDocumentation,
 					].join('\n\n')), noteRange);
 				}
@@ -1008,7 +969,6 @@ async function activate(context) {
 	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((document) => scheduleDiagnostics(document, 0)));
 	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((event) => scheduleDiagnostics(event.document)));
 	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((document) => {
-		void normalizeSavedCallouts(document);
 		scheduleDiagnostics(document, 0);
 		scheduleOpenThemeDiagnostics(document.uri.fsPath, 0);
 	}));

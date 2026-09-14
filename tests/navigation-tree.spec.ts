@@ -478,7 +478,7 @@ test.describe('desktop tree navigation', () => {
 			contentsNavigation.boundingBox(),
 		]);
 
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
 		expect(noteBox).not.toBeNull();
 		expect(paragraphBox).not.toBeNull();
 		expect(sectionBodyBox).not.toBeNull();
@@ -494,13 +494,13 @@ test.describe('desktop tree navigation', () => {
 		const settings = page.locator('[data-display-settings]');
 		await settings.locator('summary').click();
 		await settings.getByRole('radio', { name: 'Wide' }).check();
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
 		expect(await page.evaluate(() => document.documentElement.scrollWidth))
 			.toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth + 1));
 
 		await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
 		await expect(contentsNavigation).toBeHidden();
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
 		const [focusNoteBox, pageLayoutBox] = await Promise.all([
 			note.boundingBox(),
 			page.locator('.site-page-layout').boundingBox(),
@@ -512,15 +512,15 @@ test.describe('desktop tree navigation', () => {
 		);
 
 		await settings.getByRole('checkbox', { name: 'Focus reading' }).uncheck();
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
 
 		await settings.getByRole('radio', { name: 'Standard' }).check();
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
 		await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
 
 		await page.setViewportSize({ width: 1100, height: desktopViewport.height });
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
 	});
 
 	test('keeps a sidenote inline when Page contents moves into the page tree', async ({ page }) => {
@@ -528,21 +528,21 @@ test.describe('desktop tree navigation', () => {
 		const note = page.locator('.section-note').first();
 		const contentsNavigation = page.locator('.page-contents-navigation-rail');
 
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
 		await expect(contentsNavigation).toBeVisible();
 
 		await page.setViewportSize({ width: 1281, height: desktopViewport.height });
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
 		await expect(contentsNavigation).toBeVisible();
 
 		await page.setViewportSize({ width: 1280, height: desktopViewport.height });
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
 		await expect(contentsNavigation).toBeHidden();
 
 		const settings = page.locator('[data-display-settings]');
 		await settings.locator('summary').click();
 		await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
 		expect(await page.evaluate(() => document.documentElement.scrollWidth))
 			.toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth + 1));
 	});
@@ -557,7 +557,7 @@ test.describe('desktop tree navigation', () => {
 
 		const note = page.locator('.section-note').first();
 		const paragraph = page.locator('.section-markdown p').first();
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
 		const [noteBox, paragraphBox, pageLayoutBox] = await Promise.all([
 			note.boundingBox(),
 			paragraph.boundingBox(),
@@ -581,7 +581,7 @@ test.describe('desktop tree navigation', () => {
 		const note = page.locator('.section-note').first();
 		const paragraph = page.locator('.section-markdown p').first();
 		const pageLayout = page.locator('.site-page-layout');
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('right');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
 
 		const [noteBox, paragraphBox, pageLayoutBox] = await Promise.all([
 			note.boundingBox(),
@@ -597,7 +597,7 @@ test.describe('desktop tree navigation', () => {
 		);
 
 		await page.setViewportSize({ width: 1140, height: desktopViewport.height });
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
 	});
 });
 
@@ -922,11 +922,11 @@ test.describe('desktop tree navigation without JavaScript', () => {
 		await page.setViewportSize({ width: 1281, height: 900 });
 		await page.goto(testPagePath, { waitUntil: 'domcontentloaded' });
 		const note = page.locator('.section-note').first();
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
 		await expect(page.locator('.page-contents-navigation-rail')).toBeVisible();
 
 		await page.setViewportSize({ width: 1280, height: 900 });
-		expect(await note.evaluate((element) => getComputedStyle(element).float)).toBe('none');
+		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
 		await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
 	});
 });

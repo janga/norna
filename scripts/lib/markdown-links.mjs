@@ -129,28 +129,6 @@ const getLineOffsets = (source) => {
 	return offsets;
 };
 
-const getCardLinkTargetRange = (source, lineStart) => {
-	const lineEnd = source.indexOf('\n', lineStart);
-	const end = lineEnd < 0 ? source.length : lineEnd;
-	const line = source.slice(lineStart, end);
-	const match = line.match(/^\s*link:\s*(.*?)\s*$/);
-	if (!match) return null;
-
-	const value = match[1] ?? '';
-	let valueStart = lineStart + (match.index ?? 0) + match[0].indexOf(value);
-	let valueEnd = valueStart + value.length;
-	if (
-		value.length >= 2
-		&& (value[0] === '"' || value[0] === "'")
-		&& value.at(-1) === value[0]
-	) {
-		valueStart += 1;
-		valueEnd -= 1;
-	}
-
-	return { start: valueStart, end: valueEnd };
-};
-
 export const extractNornaBlockLinks = ({ source, blocks, lineOffset = 0 }) => {
 	const lineOffsets = getLineOffsets(source);
 	const links = [];
@@ -161,8 +139,8 @@ export const extractNornaBlockLinks = ({ source, blocks, lineOffset = 0 }) => {
 			if (!card.link || !card.linkLine) continue;
 			const localLine = card.linkLine - lineOffset;
 			const lineStart = lineOffsets[localLine - 1];
-			const targetRange = Number.isInteger(lineStart)
-				? getCardLinkTargetRange(source, lineStart)
+			const targetRange = card.linkRange && Number.isInteger(block.sourceStartOffset)
+				? { start: block.sourceStartOffset + card.linkRange.start, end: block.sourceStartOffset + card.linkRange.end }
 				: null;
 			links.push({
 				kind: 'card-link',
@@ -173,7 +151,8 @@ export const extractNornaBlockLinks = ({ source, blocks, lineOffset = 0 }) => {
 				range: targetRange,
 				target: card.link,
 				targetRange,
-				targetSource: getSourceTarget(source, targetRange, card.link),
+				targetSource: card.link,
+				yamlScalar: true,
 			});
 		}
 	}

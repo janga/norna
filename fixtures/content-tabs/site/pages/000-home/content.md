@@ -8,17 +8,14 @@ Choose an installation method.
 
 ::: tab "macOS"
 
-::: info
-Use the package manager already installed on this computer.
-:::
+> [!NOTE]
+> Use the package manager already installed on this computer.
 
 ```sh title="Install with Homebrew"
 brew install imagemagick
 ```
 
-Check the version after installation.{note-ref}
-
-{note: Restart the terminal if the new command cannot be found.}
+Check the version after installation.[^terminal]
 
 :::
 
@@ -34,16 +31,18 @@ winget install ImageMagick.ImageMagick
 | Verify | Version is displayed |
 
 ```image-stack
-- image: example.svg
-  alt: An adoption illustration.
-  caption: Managed images remain inside their selected alternative.
+items:
+  - image: example.svg
+    alt: An adoption illustration.
+    caption: Managed images remain inside their selected alternative.
 ```
 
 ```image-carousel
-- image: example.svg
-  alt: First comparison image.
-- image: example.svg
-  alt: Second comparison image.
+items:
+  - image: example.svg
+    alt: First comparison image.
+  - image: example.svg
+    alt: Second comparison image.
 ```
 
 :::
@@ -77,3 +76,5 @@ magick --version
 :::
 
 ::::
+
+[^terminal]: Restart the terminal if the new command cannot be found.

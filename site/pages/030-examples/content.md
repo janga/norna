@@ -10,20 +10,23 @@ page:
 ## Add a single image {#single-image}
 
 ```image-stack
-- image: stack-one.svg
-  alt: A pale panel with one large circle and two horizontal lines.
-  caption: One image with an attached caption.
+items:
+  - image: stack-one.svg
+    alt: A pale panel with one large circle and two horizontal lines.
+    caption: One image with an attached caption.
 ```
 
 ````md
 ```image-stack
-- image: stack-one.svg
-  alt: A pale panel with one large circle and two horizontal lines.
-  caption: One image with an attached caption.
+items:
+  - image: stack-one.svg
+    alt: A pale panel with one large circle and two horizontal lines.
+    caption: One image with an attached caption.
 ```
 ````
 
-**Source:** Norna Markdown extension. `image` names a file in the current page's
+**Source:** Norna fenced block containing YAML. Entries go under `items`.
+`image` names a file in the current page's
 `images/` directory, `alt` describes its purpose for readers who cannot see it,
 and `caption` adds visible context. All three supported fields are shown above;
 only `image` is required.
@@ -43,22 +46,24 @@ and [W3C image decision guidance](https://www.w3.org/WAI/tutorials/images/).
 ## Image stacks {#image-stacks}
 
 ```image-stack
-- image: stack-one.svg
-  alt: A pale panel with one large circle and two horizontal lines.
-  caption: The first image introduces one visual idea.
-- image: stack-two.svg
-  alt: A dark panel with three aligned rectangular forms.
-  caption: The related image remains visible next in reading order.
+items:
+  - image: stack-one.svg
+    alt: A pale panel with one large circle and two horizontal lines.
+    caption: The first image introduces one visual idea.
+  - image: stack-two.svg
+    alt: A dark panel with three aligned rectangular forms.
+    caption: The related image remains visible next in reading order.
 ```
 
 ````md
 ```image-stack
-- image: stack-one.svg
-  alt: A pale panel with one large circle and two horizontal lines.
-  caption: The first image introduces one visual idea.
-- image: stack-two.svg
-  alt: A dark panel with three aligned rectangular forms.
-  caption: The related image remains visible next in reading order.
+items:
+  - image: stack-one.svg
+    alt: A pale panel with one large circle and two horizontal lines.
+    caption: The first image introduces one visual idea.
+  - image: stack-two.svg
+    alt: A dark panel with three aligned rectangular forms.
+    caption: The related image remains visible next in reading order.
 ```
 ````
 
@@ -69,28 +74,30 @@ visible in sequence. See the
 ## Image carousels {#image-carousels}
 
 ```image-carousel
-- image: carousel-one.svg
-  alt: A green panel with a broad diagonal line.
-  caption: First frame: a broad direction.
-- image: carousel-two.svg
-  alt: A blue panel with two overlapping circles.
-  caption: Second frame: a closer relationship.
-- image: carousel-three.svg
-  alt: A red panel with a compact grid.
-  caption: Third frame: a denser detail.
+items:
+  - image: carousel-one.svg
+    alt: A green panel with a broad diagonal line.
+    caption: 'First frame: a broad direction.'
+  - image: carousel-two.svg
+    alt: A blue panel with two overlapping circles.
+    caption: 'Second frame: a closer relationship.'
+  - image: carousel-three.svg
+    alt: A red panel with a compact grid.
+    caption: 'Third frame: a denser detail.'
 ```
 
 ````md
 ```image-carousel
-- image: carousel-one.svg
-  alt: A green panel with a broad diagonal line.
-  caption: First frame: a broad direction.
-- image: carousel-two.svg
-  alt: A blue panel with two overlapping circles.
-  caption: Second frame: a closer relationship.
-- image: carousel-three.svg
-  alt: A red panel with a compact grid.
-  caption: Third frame: a denser detail.
+items:
+  - image: carousel-one.svg
+    alt: A green panel with a broad diagonal line.
+    caption: 'First frame: a broad direction.'
+  - image: carousel-two.svg
+    alt: A blue panel with two overlapping circles.
+    caption: 'Second frame: a closer relationship.'
+  - image: carousel-three.svg
+    alt: A red panel with a compact grid.
+    caption: 'Third frame: a denser detail.'
 ```
 ````
 
@@ -105,16 +112,16 @@ dragging, slide status, and a readable no-JavaScript fallback. See the
 layout: image-top
 flow: grid
 size: m
-
-- title: Prepare source files
-  text: Keep related content and images together before building the site.
-  image: card-stack.svg
-- title: Review presentation
-  text: Check the result at wide and narrow browser widths.
-  image: card-carousel.svg
-- title: Publish the result
-  text: Build validated static output when the site is ready.
-  image: card-surfaces.svg
+items:
+  - title: Prepare source files
+    text: Keep related content and images together before building the site.
+    image: card-stack.svg
+  - title: Review presentation
+    text: Check the result at wide and narrow browser widths.
+    image: card-carousel.svg
+  - title: Publish the result
+    text: Build validated static output when the site is ready.
+    image: card-surfaces.svg
 ```
 
 ````md
@@ -122,16 +129,16 @@ size: m
 layout: image-top
 flow: grid
 size: m
-
-- title: Prepare source files
-  text: Keep related content and images together before building the site.
-  image: card-stack.svg
-- title: Review presentation
-  text: Check the result at wide and narrow browser widths.
-  image: card-carousel.svg
-- title: Publish the result
-  text: Build validated static output when the site is ready.
-  image: card-surfaces.svg
+items:
+  - title: Prepare source files
+    text: Keep related content and images together before building the site.
+    image: card-stack.svg
+  - title: Review presentation
+    text: Check the result at wide and narrow browser widths.
+    image: card-carousel.svg
+  - title: Publish the result
+    text: Build validated static output when the site is ready.
+    image: card-surfaces.svg
 ```
 ````
 
@@ -147,16 +154,21 @@ to inspect these blocks together across several pages, or
 ## Semantic callouts {#semantic-callouts}
 
 > [!TIP]
+>
 > Preview the site before publishing it.
 
 > [!WARNING]
+>
 > Commit source files before a structural change that you may want to undo.
 
 ```md
-> [!TIP] Preview the site before publishing it.
+> [!TIP]
+>
+> Preview the site before publishing it.
 
-> [!WARNING] Commit source files before a structural change that you may want to
-> undo.
+> [!WARNING]
+>
+> Commit source files before a structural change that you may want to undo.
 ```
 
 **Source:** GitHub-style alerts, supported by Norna as semantic callouts. Alerts
@@ -172,21 +184,29 @@ the
 ## Sidenotes {#sidenotes}
 
 A short qualification can remain next to the sentence that needs it when the
-layout has a free margin.{note-ref}
+layout has a free margin.[^margin:available-space]
 
-{note: This linked note returns to the normal reading flow when the available
-margin cannot hold it safely.}
+[^margin:available-space]:
+    This linked note returns to the normal reading flow when the available
+    margin cannot hold it safely.
 
 ```md
 A short qualification can remain next to the sentence that needs it when the
-layout has a free margin.{note-ref}
+layout has a free margin.[^margin:available-space]
 
-{note: This linked note returns to the normal reading flow when the available
-margin cannot hold it safely.}
+[^margin:available-space]:
+    This linked note returns to the normal reading flow when the available
+    margin cannot hold it safely.
 ```
 
-**Source:** Norna inline note extension. Use a reference footnote instead when
-supporting material belongs at the end of the page. Read the
+**Source:** Named reference-footnote syntax with Norna's `margin:` convention.
+Each sidenote is referenced once in an ordinary body paragraph; its matching
+definition belongs at the page's top level. Hover over the letter or reach it
+with keyboard focus to highlight the note. Several sidenotes can belong to the
+same paragraph; they stack in reference order and may increase the space before
+the next paragraph. Use a normal reference footnote
+inside a tab or callout, for a reusable note, or when supporting material
+belongs at the end of the page. Read the
 [side-note reference](https://github.com/janga/norna/blob/main/docs/content.md#side-notes)
 and
 [reference-footnote alternative](https://github.com/janga/norna/blob/main/docs/content.md#reference-footnotes).
@@ -220,6 +240,7 @@ changing the readable fallback. Read the
 ::: tab "macOS"
 
 > [!TIP]
+>
 > Use Homebrew if it is already installed on your computer.
 
 ```sh title="Install ImageMagick with Homebrew"
@@ -245,7 +266,9 @@ winget install ImageMagick.ImageMagick
 
 ::: tab "macOS"
 
-> [!TIP] Use Homebrew if it is already installed on your computer.
+> [!TIP]
+>
+> Use Homebrew if it is already installed on your computer.
 
 ```sh title="Install ImageMagick with Homebrew"
 brew install imagemagick
@@ -282,7 +305,7 @@ alternative appears with its label. Read the
 | Cards                   | `card-list`      | Grid          | Reflow       | No change       | Full list     |
 | Callouts                | Alert quote      | In prose      | Reflow       | No change       | Labels        |
 | Tabs                    | Tab fences       | Alternatives  | Wrap labels  | Select          | All options   |
-| Sidenotes               | Note pair        | Free margin   | Inline       | No change       | Linked notes  |
+| Sidenotes               | Named note       | Free margin   | Inline       | No change       | Linked notes  |
 | Code                    | Code fence       | Expand        | Scroll       | Copy            | Select text   |
 | Tables                  | Markdown         | Expand        | Scroll       | Column controls | Scroll        |
 | Search                  | `config.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
@@ -297,7 +320,7 @@ alternative appears with its label. Read the
 | Cards                   | `card-list`      | Grid          | Reflow       | No change       | Full list     |
 | Callouts                | Alert quote      | In prose      | Reflow       | No change       | Labels        |
 | Tabs                    | Tab fences       | Alternatives  | Wrap labels  | Select          | All options   |
-| Sidenotes               | Note pair        | Free margin   | Inline       | No change       | Linked notes  |
+| Sidenotes               | Named note       | Free margin   | Inline       | No change       | Linked notes  |
 | Code                    | Code fence       | Expand        | Scroll       | Copy            | Select text   |
 | Tables                  | Markdown         | Expand        | Scroll       | Column controls | Scroll        |
 | Search                  | `config.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
@@ -324,9 +347,10 @@ commands are in fixtures/child-page-list/README.md.
 -->
 
 ```image-stack
-- image: child-page-list.png
-  alt: Adoption, Fostering, and Sponsorship appear in both navigation and the page list. The list explains permanent care, temporary care, and financial support.
-  caption: The descriptions explain the commitment behind each choice.
+items:
+  - image: child-page-list.png
+    alt: Adoption, Fostering, and Sponsorship appear in both navigation and the page list. The list explains permanent care, temporary care, and financial support.
+    caption: The descriptions explain the commitment behind each choice.
 ```
 
 The navigation names the options; the descriptions help a reader decide. The
@@ -343,7 +367,6 @@ ongoing responsibility you can offer. If you cannot take a dog home, you can
 still support its care.
 
 ```page-list
-
 ```
 ````
 
@@ -361,9 +384,7 @@ Each child's opening supplies its title and description:
 ```md title="pages/010-help-a-dog/pages/010-adoption/content.md (opening)"
 ---
 page:
-  description:
-    Give a dog a permanent home. Learn about matching, visits and the adoption
-    process.
+  description: Give a dog a permanent home. Learn about matching, visits and the adoption process.
 ---
 
 # Adoption
@@ -372,9 +393,7 @@ page:
 ```md title="pages/010-help-a-dog/pages/020-fostering/content.md (opening)"
 ---
 page:
-  description:
-    Offer a temporary home while a dog waits for adoption. We explain the
-    support and equipment provided.
+  description: Offer a temporary home while a dog waits for adoption. We explain the support and equipment provided.
 ---
 
 # Fostering
@@ -405,18 +424,20 @@ A single page needs only its title and section links. These screenshots use the
 complete Markdown shown below, with the `project` preset.
 
 ```image-stack
-- image: navigation-single-desktop.png
-  alt: Dog Shelter on a wide screen, with its title and two section links in sticky navigation.
-  caption: In a sufficiently large browser.
+items:
+  - image: navigation-single-desktop.png
+    alt: Dog Shelter on a wide screen, with its title and two section links in sticky navigation.
+    caption: In a sufficiently large browser.
 ```
 
 ```image-carousel
-- image: navigation-single-mobile.png
-  alt: The same page on a small screen, showing What we do and its text below a closed Menu trigger.
-  caption: On a small screen, with Menu closed.
-- image: navigation-single-menu.png
-  alt: The open compact menu contains Dog Shelter, What we do, and You can help.
-  caption: On a small screen, with Menu open.
+items:
+  - image: navigation-single-mobile.png
+    alt: The same page on a small screen, showing What we do and its text below a closed Menu trigger.
+    caption: On a small screen, with Menu closed.
+  - image: navigation-single-menu.png
+    alt: The open compact menu contains Dog Shelter, What we do, and You can help.
+    caption: On a small screen, with Menu open.
 ```
 
 ```text
@@ -445,21 +466,23 @@ Adding Dogs and Adopt gives each page its own URL. Select a page name to open
 it, or its chevron to choose a section directly.
 
 ```image-carousel
-- image: navigation-top-desktop.png
-  alt: Dogs on a wide screen, with Dog Shelter, Dogs, and Adopt in top navigation. Page chevrons open their section menus.
-  caption: In a sufficiently large browser.
-- image: navigation-top-sections.png
-  alt: The Dogs disclosure shows Meet the dogs and Before you adopt as direct section links.
-  caption: Each page's chevron reveals its H2 destinations.
+items:
+  - image: navigation-top-desktop.png
+    alt: Dogs on a wide screen, with Dog Shelter, Dogs, and Adopt in top navigation. Page chevrons open their section menus.
+    caption: In a sufficiently large browser.
+  - image: navigation-top-sections.png
+    alt: The Dogs disclosure shows Meet the dogs and Before you adopt as direct section links.
+    caption: Each page's chevron reveals its H2 destinations.
 ```
 
 ```image-carousel
-- image: navigation-top-mobile.png
-  alt: Dogs with Menu closed on a small screen.
-  caption: The page with Menu closed.
-- image: navigation-top-menu.png
-  alt: The compact menu groups the Dogs sections beneath Dogs, alongside the other pages.
-  caption: Menu groups sections under their pages.
+items:
+  - image: navigation-top-mobile.png
+    alt: Dogs with Menu closed on a small screen.
+    caption: The page with Menu closed.
+  - image: navigation-top-menu.png
+    alt: The compact menu groups the Dogs sections beneath Dogs, alongside the other pages.
+    caption: Menu groups sections under their pages.
 ```
 
 ```text
@@ -492,18 +515,20 @@ Put Adult dogs and Senior dogs beneath Dogs to keep related pages together. The
 left tree contains the Dogs branch; Adopt remains a global destination.
 
 ```image-stack
-- image: navigation-nested-desktop.png
-  alt: Adult dogs with Dogs and its child pages in a left tree, plus the current page's sections.
-  caption: In a sufficiently large browser.
+items:
+  - image: navigation-nested-desktop.png
+    alt: Adult dogs with Dogs and its child pages in a left tree, plus the current page's sections.
+    caption: In a sufficiently large browser.
 ```
 
 ```image-carousel
-- image: navigation-nested-mobile.png
-  alt: Adult dogs on a small screen, without persistent navigation rails.
-  caption: The same page with Menu closed.
-- image: navigation-nested-menu.png
-  alt: The open compact menu preserves Dogs, its child pages, and their sections.
-  caption: Menu preserves the hierarchy.
+items:
+  - image: navigation-nested-mobile.png
+    alt: Adult dogs on a small screen, without persistent navigation rails.
+    caption: The same page with Menu closed.
+  - image: navigation-nested-menu.png
+    alt: The open compact menu preserves Dogs, its child pages, and their sections.
+    caption: Menu preserves the hierarchy.
 ```
 
 ```text
@@ -537,9 +562,10 @@ selects a page; the right outline follows headings within that page. This
 excerpt uses the `documentation` preset.
 
 ```image-stack
-- image: navigation-documentation-desktop.png
-  alt: A handbook with Guides, Installation, and Linux selected in the left tree. Requirements, Check Node.js, and Local preview appear in the right outline beside the Linux page.
-  caption: A deeper documentation branch, with pages on the left and the current page's outline on the right.
+items:
+  - image: navigation-documentation-desktop.png
+    alt: A handbook with Guides, Installation, and Linux selected in the left tree. Requirements, Check Node.js, and Local preview appear in the right outline beside the Linux page.
+    caption: A deeper documentation branch, with pages on the left and the current page's outline on the right.
 ```
 
 ```text title="Documentation example"
@@ -568,8 +594,8 @@ pages/
 
 ## Requirements
 
-Install Node.js 22.12 or later. Install ImageMagick too if your site uses raster
-images.
+Install Node.js 22.12 or later. Install ImageMagick too if your site uses
+raster images.
 
 ### Check Node.js
 
@@ -585,8 +611,8 @@ From an installed site project's directory, start Norna:
 npm run norna:dev
 ```
 
-Open the address printed in the terminal. Keep the terminal running while you
-edit your site.
+Open the address printed in the terminal. Keep the terminal running while
+you edit your site.
 ````
 
 This is a small excerpt, not a reason to add levels unnecessarily. Large
@@ -668,9 +694,10 @@ Copied from the public files of the site-wide content demonstration.
 -->
 
 ```image-stack
-- image: navigation-logo.svg
-  alt: The Shared Frame example logo, made from overlapping outlined squares and a wordmark.
-  caption: A conventionally named logo is discovered without a path setting.
+items:
+  - image: navigation-logo.svg
+    alt: The Shared Frame example logo, made from overlapping outlined squares and a wordmark.
+    caption: A conventionally named logo is discovered without a path setting.
 ```
 
 ```text
@@ -719,19 +746,19 @@ or read the
 ```card-list
 flow: grid
 size: s
-
-- title: Portfolio
-  text: Image-led work and visual collections.
-  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/
-- title: Documentation
-  text: Guides, reference material, and sustained reading.
-  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/
-- title: Project
-  text: Product or project sites combining prose, code, cards, and images.
-  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-project/
-- title: Statement
-  text: Concise editorial sites with spacious rhythm and prominent media.
-  link: https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/
+items:
+  - title: Portfolio
+    text: Image-led work and visual collections.
+    link: https://janga.github.io/norna/examples/feature-demos/theme-preset-portfolio/
+  - title: Documentation
+    text: Guides, reference material, and sustained reading.
+    link: https://janga.github.io/norna/examples/feature-demos/theme-preset-documentation/
+  - title: Project
+    text: Product or project sites combining prose, code, cards, and images.
+    link: https://janga.github.io/norna/examples/feature-demos/theme-preset-project/
+  - title: Statement
+    text: Concise editorial sites with spacious rhythm and prominent media.
+    link: https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/
 ```
 
 ```yaml title="site/theme.yaml"
@@ -872,12 +899,13 @@ needs more than a top row. This documentation site demonstrates the contrasting
 hierarchical case with page and contents rails.
 
 ```image-stack
-- image: single-page-dog-shelter.png
-  alt: The complete single-page dog shelter example shown in a desktop browser.
-  caption: One page whose H2 sections become its navigation destinations.
-- image: multi-page-dog-shelter.png
-  alt: The complete multi-page dog shelter example shown in a desktop browser.
-  caption: Several top-level pages sharing one responsive top navigation.
+items:
+  - image: single-page-dog-shelter.png
+    alt: The complete single-page dog shelter example shown in a desktop browser.
+    caption: One page whose H2 sections become its navigation destinations.
+  - image: multi-page-dog-shelter.png
+    alt: The complete multi-page dog shelter example shown in a desktop browser.
+    caption: Several top-level pages sharing one responsive top navigation.
 ```
 
 [Open the single-page site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/)

@@ -1,7 +1,7 @@
 ---
 page:
   description:
-    Answers about YAML, Markdown frontmatter, and Norna image reports.
+    Answers about YAML, Markdown, IntelliSense, and Norna image reports.
 ---
 
 # Content and images
@@ -49,6 +49,41 @@ plan and refuses to guess between duplicate filenames. It does not delete an
 unreferenced image. See [Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md)
 for placement and processing rules.
 
+## Why is Norna IntelliSense missing? {#missing-intellisense}
+
+Norna help depends on the file's location and the project's Norna installation,
+not just its filename or the text you type. An unrelated file named
+`theme.yaml` does not automatically become a Norna configuration file.
+
+The editor extension is experimental and is not published in the Visual
+Studio Marketplace. To evaluate it, obtain a VSIX build and follow
+[Install the extension](https://github.com/janga/norna/blob/main/docs/editor-support.md#install-the-extension).
+You do not need the extension to write or build a Norna site.
+
+After installing the VSIX, open your site's `pages/000-home/content.md`.
+Run **Norna: Show IntelliSense
+Status** from the Command Palette. The report identifies a missing project
+dependency or incompatible editor support.
+
+If the file is not recognized, check that the site has both `config.yaml` and
+`pages/000-home/content.md` saved on disk. If the project dependency is missing,
+run this in the folder containing the site's `package.json`:
+
+```sh
+npm install
+```
+
+Run **Norna: Refresh IntelliSense**, then place the cursor on an unindented
+blank body line in `content.md`, outside frontmatter and code examples. Press
+`Ctrl+Space` or run **Trigger Suggest**. You should see entries such as
+`image-stack`, `image-carousel`, and `card-list`. The page does not need to be
+error-free for suggestions to work.
+
+See [Recognized files](https://github.com/janga/norna/blob/main/docs/editor-support.md#recognized-files)
+for supported locations and
+[editor troubleshooting](https://github.com/janga/norna/blob/main/docs/editor-support.md#troubleshooting)
+for workspace trust, language mode, and extension checks.
+
 ## Why does Prettier change semantic callout line breaks? {#prettier-callouts}
 
 Norna semantic callouts keep the marker and its content on separate quoted
@@ -59,33 +94,32 @@ lines:
 > Preview the site before publishing it.
 ```
 
-If VS Code formats Markdown with Prettier on save, the default
-`prettier.proseWrap: always` can treat those lines as one paragraph. A long
-callout may then be rewritten on one line, or a later save may insert an empty
-quoted line. The content still looks like Markdown, but Norna can no longer
-read the marker as a semantic callout.
+Markdown formatters can join these lines or insert a blank line between the
+marker and its body. That changes the callout syntax. Norna does not repair
+Markdown during saves or register a Markdown formatter.
 
-For a Norna site, set Prettier to preserve existing Markdown wrapping in the
-workspace settings. Create or open `.vscode/settings.json` in the site's
-project root and add this block. The important part is to replace any existing
-global `prettier.proseWrap: "always"` setting; do not leave both values in
-effect:
+The supported setup uses VS Code and Red Hat YAML without a Markdown formatter.
+If Prettier or another extension formats Markdown automatically, disable
+formatting on save for Markdown in the site's `.vscode/settings.json`:
 
 ```json
 {
-  "prettier.proseWrap": "preserve",
   "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": false
   }
 }
 ```
 
-If the file already has a `[markdown]` block, add only the missing setting
-inside that block. Do not create a second block with the same key. The global
-setting is intentional here because it also covers formatters that do not
-apply language-specific overrides consistently. It does not disable Prettier;
-it tells it to keep the line wrapping that the author has written. Norna's VS
-Code extension also normalizes a recognized `content.md` when it is saved. The
-six standard callout types and unknown uppercase fallback types use the same
-two-line syntax.
+If the file already has a `[markdown]` block, set `editor.formatOnSave` to
+`false` inside that block rather than adding a duplicate. This is a
+Markdown-only setting; standalone YAML formatting and other languages keep
+their existing settings.
+
+Explicit Markdown formatting with Prettier or another extension is outside
+the verified setup. Norna does not guarantee compatibility with arbitrary
+formatter settings. It reports invalid content but does not undo another
+formatter's changes. Restore changed callouts to the two-line form above and
+run `npm run norna:content:check`.
+
+See [Markdown and image help](https://github.com/janga/norna/blob/main/docs/editor-support.md#markdown-and-image-help)
+for the editor's responsibilities and supported setup.

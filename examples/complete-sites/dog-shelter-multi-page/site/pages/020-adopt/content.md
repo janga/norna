@@ -15,8 +15,8 @@ layout: image-left
 flow: stack
 size: s
 width: narrow
-
-- title: Start with a conversation
-  text: Tell us about your home and routines, then meet dogs whose needs may be a good match.
-  image: adoption-dog.jpg
+items:
+  - title: Start with a conversation
+    text: Tell us about your home and routines, then meet dogs whose needs may be a good match.
+    image: adoption-dog.jpg
 ```

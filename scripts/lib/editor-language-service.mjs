@@ -1,7 +1,12 @@
 import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
 import { load } from 'js-yaml';
+import { isMap, isScalar, isSeq, parseDocument } from 'yaml';
+import { markdownToMdast } from 'satteri';
+import { parseContentTabs } from './content-tabs.mjs';
 import {
+	getNornaBlockSchema,
 	getOpenMarkdownFenceAtLine,
 	nornaMarkdownBlockDefinitions,
 } from './norna-markdown-blocks.mjs';
@@ -269,25 +274,72 @@ const getPageContext = (siteRoot, documentPath) => {
 	};
 };
 
-const getBlockField = (definition, key, itemField = false) => (
-	itemField ? definition.item?.fields?.[key] : definition.options?.[key]
-);
-
-const getExistingKeys = (lines, startLine, endLine, indent) => {
-	const keys = new Set();
-	for (let index = startLine; index < endLine; index += 1) {
-		const match = lines[index]?.match(/^(\s*)(?:-\s+)?([a-z][a-z0-9-]*):/);
-		if (match && match[1].length === indent) keys.add(match[2]);
-	}
-	return keys;
+const getBlockField = (definition, schema, key, itemField = false) => {
+	const property = (itemField ? schema?.properties?.items?.items?.properties : schema?.properties)?.[key];
+	if (!property) return null;
+	const metadata = itemField
+		? key === definition.item?.start.key ? definition.item.start : definition.item?.fields?.[key]
+		: definition.options?.[key];
+	return { ...property, ...metadata };
 };
 
-const findCurrentItemLine = (lines, fence, lineIndex, itemKey) => {
-	for (let index = lineIndex; index > fence.line; index -= 1) {
-		if (new RegExp(`^\\s*-\\s+${itemKey}:`).test(lines[index] ?? '')) return index;
-	}
-	return null;
+const getEmbeddedYaml = (source, line) => {
+	const lines = source.replace(/\r\n?/g, '\n').split('\n');
+	const fence = getOpenMarkdownFenceAtLine(source, line);
+	const definition = fence ? nornaMarkdownBlockDefinitions[fence.type] : null;
+	if (!definition || line <= fence.line) return null;
+	const close = new RegExp(`^ {0,3}${fence.character}{${fence.length},}\\s*$`);
+	let end = fence.line + 1;
+	while (end < lines.length && !close.test(lines[end])) end += 1;
+	const bodyLines = lines.slice(fence.line + 1, end);
+	const bodyLine = line - fence.line - 1;
+	return { bodyLines, bodyLine, definition, fence, schema: getNornaBlockSchema(fence.type) };
 };
+
+export const getMarkdownCompletionScope = ({ source, line, character }) => {
+	const normalized = source.replace(/\r\n?/g, '\n');
+	const lines = normalized.split('\n');
+	const current = lines[line] ?? '';
+	const offset = lines.slice(0, line).reduce((sum, text) => sum + text.length + 1, 0)
+		+ Math.min(character ?? current.length, current.length);
+	const nodes = [];
+	const visit = (node) => {
+		if (node.position && (offset < node.position.start.offset || offset > node.position.end.offset)) return;
+		nodes.push(node);
+		for (const child of node.children ?? []) visit(child);
+	};
+	visit(markdownToMdast(normalized, { features: { gfm: true, frontmatter: true } }));
+	const frontmatterEnd = lines.findIndex((text, index) => index > 0 && /^(?:---|\.\.\.)\s*$/.test(text));
+	const frontmatter = lines[0]?.trim() === '---' && line > 0 && (frontmatterEnd === -1 || line < frontmatterEnd);
+	const code = nodes.find((node) => node.type === 'code');
+	const literal = frontmatter || nodes.some((node) => ['html', 'inlineCode', 'yaml', 'toml'].includes(node.type));
+	const nested = nodes.some((node) => ['blockquote', 'list', 'listItem', 'table', 'heading'].includes(node.type));
+	const opening = !literal && !nested && code?.position.start.line === line + 1
+		&& /^ {0,3}(?:`{3}|~{3})[a-z-]*$/.test(current);
+	const embedded = !literal && !nested && code && code.position.start.line < line + 1
+		&& Object.hasOwn(nornaMarkdownBlockDefinitions, code.lang ?? '')
+		&& !/^ {0,3}(?:`{3,}|~{3,})\s*$/.test(current);
+	const tabs = /:{3,}\s*tabs\b/.test(normalized) ? parseContentTabs(normalized).groups : [];
+	const inTabs = tabs.some((group) => offset >= group.start && offset < (group.end ?? normalized.length + 1));
+	return {
+		frontmatter,
+		insertBlocks: /^ {0,3}$/.test(current) && !literal && !code && !nested && !inTabs,
+		blocks: Boolean(opening),
+		embedded: Boolean(embedded),
+		callouts: !literal && !code,
+		notes: !literal && !code && !nested && !inTabs,
+	};
+};
+
+const getBlockMaps = (document) => {
+	if (!isMap(document.contents)) return [];
+	const maps = [{ map: document.contents, itemField: false }];
+	const items = document.contents.get('items', true);
+	if (isSeq(items)) maps.push(...items.items.filter(isMap).map((map) => ({ map, itemField: true })));
+	return maps;
+};
+
+const parseEmbeddedYaml = (source) => parseDocument(source, { schema: 'core', prettyErrors: false });
 
 const fieldCandidate = (key, fieldDefinition, options = {}) => ({
 	default: fieldDefinition.default,
@@ -296,86 +348,114 @@ const fieldCandidate = (key, fieldDefinition, options = {}) => ({
 	kind: options.kind ?? 'field',
 	prefix: options.prefix ?? '',
 	values: fieldDefinition.values,
+	snippet: options.snippet,
 });
 
-export const getNornaBlockCompletionContext = ({ source, line }) => {
-	const lines = source.replace(/\r\n?/g, '\n').split('\n');
-	const fence = getOpenMarkdownFenceAtLine(source, line);
-	const definition = fence ? nornaMarkdownBlockDefinitions[fence.type] : null;
-	if (!fence || !definition) return null;
-
-	const currentLine = lines[line] ?? '';
-	const keyMatch = currentLine.match(/^(\s*)(?:-\s+)?([a-z][a-z0-9-]*):\s*(.*)$/);
-	if (keyMatch) {
-		const indent = keyMatch[1].length;
-		const isItemField = indent === 2 || currentLine.trimStart().startsWith('- ');
-		const selectedField = currentLine.trimStart().startsWith('- ')
-			? keyMatch[2] === definition.item?.start.key ? definition.item.start : null
-			: getBlockField(definition, keyMatch[2], isItemField);
-		if (selectedField?.values) {
-			return {
-				candidates: Object.entries(selectedField.values).map(([valueName, valueDefinition]) => ({
-					description: valueDefinition.description,
-					kind: 'value',
-					label: valueName,
-					title: valueDefinition.title,
-				})),
-				definition,
-				fence,
-				mode: 'value',
-				value: keyMatch[3],
-			};
-		}
-	}
-
-	const indent = currentLine.match(/^\s*/)?.[0].length ?? 0;
-	const itemKey = definition.item?.start.key;
-	const currentItemLine = itemKey ? findCurrentItemLine(lines, fence, line, itemKey) : null;
-	let candidates = [];
-
-	if (indent >= 2 && currentItemLine !== null) {
-		const existing = getExistingKeys(lines, currentItemLine + 1, line, 2);
-		candidates = Object.entries(definition.item.fields)
-			.filter(([key]) => !existing.has(key))
-			.map(([key, fieldDefinition]) => fieldCandidate(key, fieldDefinition));
-	} else if (indent === 0) {
-		const hasItem = currentItemLine !== null;
-		if (!hasItem && definition.options) {
-			const existing = getExistingKeys(lines, fence.line + 1, line, 0);
-			candidates.push(...Object.entries(definition.options)
-				.filter(([key]) => !existing.has(key))
-				.map(([key, fieldDefinition]) => fieldCandidate(key, fieldDefinition)));
-		}
-		if (definition.item?.start) {
-			candidates.push(fieldCandidate(itemKey, definition.item.start, {
-				kind: 'item',
-				prefix: definition.item.start.prefix,
-			}));
-		}
-	}
-
+const newBlockItemCandidate = ({ bodyLines, bodyLine, definition, schema }) => {
+	const current = bodyLines[bodyLine] ?? '';
+	if (!definition.item || !/^ *$/.test(current)) return null;
+	const source = bodyLines.join('\n');
+	const marker = '__norna_editor_new_item__';
+	if (source.includes(marker)) return null;
+	const original = parseEmbeddedYaml(source);
+	if (original.errors.length || !isMap(original.contents)) return null;
+	const itemsPair = original.contents.items.find((pair) => pair.key?.value === 'items');
+	if (!itemsPair) return null;
+	const sequence = itemsPair.value;
+	if (!(isSeq(sequence) && !sequence.flow) && !(isScalar(sequence) && sequence.value === null)) return null;
+	const probeLines = [...bodyLines];
+	probeLines[bodyLine] = `${current}${marker}: null`;
+	const probe = parseEmbeddedYaml(probeLines.join('\n'));
+	if (getBlockMaps(probe).some(({ map }) => map.items.some(({ value }) =>
+		isScalar(value) && typeof value.value === 'string' && value.value.includes(marker)))) return null;
+	const offset = bodyLines.slice(0, bodyLine).reduce((sum, line) => sum + line.length + 1, 0);
+	if (offset <= itemsPair.key.range[0]) return null;
+	const position = isSeq(sequence) && sequence.items.length ? sequence.range[0] : itemsPair.key.range[0];
+	const column = position - (source.lastIndexOf('\n', position - 1) + 1);
+	const indent = ' '.repeat(column + (isSeq(sequence) && sequence.items.length ? 0 : 2));
+	const insertion = [...bodyLines];
+	insertion[bodyLine] = `${indent}- ${marker}: null`;
+	const proposed = parseEmbeddedYaml(insertion.join('\n'));
+	if (proposed.errors.length || !isMap(proposed.contents)) return null;
+	const updated = proposed.contents.get('items', true);
+	if (!isSeq(updated)) return null;
+	const addedIndex = updated.items.findIndex((item) => isMap(item) && item.has(marker));
+	if (addedIndex < 0 || updated.items[addedIndex].items.length !== 1) return null;
+	// Removing the proposed item must recover the original data exactly. This
+	// prevents splitting a card or attaching later fields to the new image.
+	const before = original.toJS();
+	const after = proposed.toJS();
+	after.items.splice(addedIndex, 1);
+	if (before.items === null) after.items = null;
+	if (!isDeepStrictEqual(before, after)) return null;
+	const image = definition.item.start.key === 'image';
 	return {
-		candidates,
-		definition,
-		fence,
-		mode: 'field',
+		key: image ? 'Add image' : 'Add card',
+		kind: 'new-item',
+		description: image ? 'Insert another image with alternative text and a caption.' : 'Insert another card with text, an image, and a link.',
+		snippet: blockItemSnippetLines(schema, indent).join('\n'),
 	};
 };
 
-export const getNornaBlockFieldContext = ({ source, line }) => {
-	const lines = source.replace(/\r\n?/g, '\n').split('\n');
-	const fence = getOpenMarkdownFenceAtLine(source, line);
-	const definition = fence ? nornaMarkdownBlockDefinitions[fence.type] : null;
-	if (!fence || !definition) return null;
-	const currentLine = lines[line] ?? '';
-	const match = currentLine.match(/^(\s*)(-\s+)?([a-z][a-z0-9-]*):/);
-	if (!match) return null;
+export const getNornaBlockCompletionContext = ({ source, line }) => {
+	const embedded = getEmbeddedYaml(source, line);
+	if (!embedded) return null;
+	const { bodyLines, bodyLine, definition, fence, schema } = embedded;
+	const fieldContext = getNornaBlockFieldContext({ source, line });
+	if (fieldContext?.field.values) return {
+		candidates: Object.entries(fieldContext.field.values).map(([label, value]) => ({ ...value, kind: 'value', label })),
+		definition, fence, mode: 'value', value: fieldContext.value, valueRange: fieldContext.valueRange,
+	};
+	const result = { candidates: [], definition, fence, mode: 'field' };
+	const newItem = newBlockItemCandidate(embedded);
+	if (newItem) result.candidates.push(newItem);
+	const currentLine = bodyLines[bodyLine] ?? '';
+	const prefix = currentLine.match(/^( *)(-\s*)?(?:[a-z][a-z0-9-]*)?$/);
+	if (!prefix) return result;
+	// A temporary key lets YAML, not indentation guesses, identify the owning map.
+	const sentinel = '__norna_editor_completion__';
+	bodyLines[bodyLine] = `${prefix[1]}${prefix[2] ? '- ' : ''}${sentinel}: null`;
+	let document = parseEmbeddedYaml(bodyLines.join('\n'));
+	let owner = getBlockMaps(document).find(({ map }) => map.has(sentinel));
+	let itemPrefix = Boolean(prefix[2]);
+	if ((!owner || document.errors.length) && !itemPrefix && prefix[1]) {
+		bodyLines[bodyLine] = `${prefix[1]}- ${sentinel}: null`;
+		document = parseEmbeddedYaml(bodyLines.join('\n'));
+		owner = getBlockMaps(document).find(({ map, itemField }) => itemField && map.has(sentinel));
+		itemPrefix = true;
+	}
+	if (document.errors.length) return result;
+	if (!owner) return result;
+	const properties = owner.itemField ? schema?.properties?.items?.items?.properties : schema?.properties;
+	result.candidates.unshift(...Object.keys(properties ?? {})
+		.filter((key) => !owner.map.has(key))
+		.map((key) => fieldCandidate(key, getBlockField(definition, schema, key, owner.itemField), {
+			prefix: itemPrefix ? '- ' : '',
+			kind: itemPrefix ? 'item' : 'field',
+			snippet: key === 'items' ? `items:\n  - ${definition.item.start.key}: \${1:${definition.item.start.key === 'image' ? 'filename.jpg' : 'Card title'}}` : undefined,
+		})));
+	return result;
+};
 
-	const key = match[3];
-	const fieldDefinition = match[2]
-		? key === definition.item?.start.key ? definition.item.start : null
-		: getBlockField(definition, key, match[1].length === 2);
-	return fieldDefinition ? { definition, field: fieldDefinition, fence, key } : null;
+export const getNornaBlockFieldContext = ({ source, line }) => {
+	const embedded = getEmbeddedYaml(source, line);
+	if (!embedded) return null;
+	const { bodyLines, bodyLine, definition, fence, schema } = embedded;
+	const start = bodyLines.slice(0, bodyLine).reduce((sum, text) => sum + text.length + 1, 0);
+	const end = start + (bodyLines[bodyLine]?.length ?? 0);
+	for (const { map, itemField } of getBlockMaps(parseEmbeddedYaml(bodyLines.join('\n')))) {
+		for (const pair of map.items) {
+			if (!isScalar(pair.key) || pair.key.range[0] < start || pair.key.range[0] > end) continue;
+			const key = pair.key.value;
+			const field = getBlockField(definition, schema, key, itemField);
+			if (field) return {
+				definition, field, fence, key, value: isScalar(pair.value) ? pair.value.value : null,
+				valueRange: isScalar(pair.value) && pair.value.range?.[1] <= end
+					? { start: pair.value.range[0] - start, end: pair.value.range[1] - start } : null,
+			};
+		}
+	}
+	return null;
 };
 
 const collectImageFiles = async (directory, imageRoot, pageLabel, files) => {
@@ -474,6 +554,22 @@ export const createSiteImageIndex = async (siteRoot) => {
 	return { files, filesByName, referencesByFilename };
 };
 
+const getEditorImageReferences = (source) => {
+	const names = new Set();
+	const visit = (node) => {
+		if (node.type === 'code' && ['image-stack', 'image-carousel', 'card-list'].includes(node.lang)) {
+			// Read partial YAML too: an unfinished image field must not hide earlier items.
+			for (const { map, itemField } of getBlockMaps(parseEmbeddedYaml(node.value))) {
+				const image = itemField ? map.get('image', true) : null;
+				if (isScalar(image) && typeof image.value === 'string') names.add(image.value);
+			}
+		}
+		for (const child of node.children ?? []) visit(child);
+	};
+	visit(markdownToMdast(source, { features: { gfm: true, frontmatter: true } }));
+	return names;
+};
+
 export const getImageCompletionContext = async ({ documentPath, source, line }) => {
 	const siteRoot = await findNornaSiteRoot(documentPath);
 	if (!siteRoot) return null;
@@ -482,29 +578,40 @@ export const getImageCompletionContext = async ({ documentPath, source, line }) 
 	const fence = getOpenMarkdownFenceAtLine(source, line);
 	if (!fence || !['image-stack', 'image-carousel', 'card-list'].includes(fence.type)) return null;
 
-	const currentLine = source.replace(/\r\n?/g, '\n').split('\n')[line] ?? '';
-	if (!/^\s*(?:-\s+)?image:\s*[^\s]*$/.test(currentLine)) return null;
+	const fieldContext = getNornaBlockFieldContext({ source, line });
+	if (fieldContext?.key !== 'image' || !fieldContext.valueRange) return null;
 
 	const expectedDirectory = page.imagesRoot;
 	const index = await createSiteImageIndex(siteRoot);
+	const currentReferences = getEditorImageReferences(source);
+	const currentDocument = toPosixPath(path.relative(siteRoot, documentPath));
 	const candidates = index.files.map((file) => {
 		const isExpected = path.dirname(file.absolutePath) === expectedDirectory;
 		const duplicateCount = index.filesByName.get(file.filename)?.length ?? 0;
-		const referencedBy = index.referencesByFilename.get(file.filename) ?? [];
+		const localMatch = index.filesByName.get(file.filename)?.some((match) => path.dirname(match.absolutePath) === expectedDirectory);
+		const referenced = currentReferences.has(file.filename);
+		const usage = referenced && !localMatch && duplicateCount > 1 ? 'ambiguous'
+			: referenced && (isExpected || !localMatch && duplicateCount === 1) ? 'used' : 'unused';
+		const referencedBy = [...new Set(index.referencesByFilename.get(file.filename) ?? [])]
+			.filter((reference) => reference !== currentDocument);
+		if (usage === 'used') referencedBy.push(currentDocument);
+		const sortText = `${isExpected ? '0' : '1'}-${{ unused: '0', used: '1', ambiguous: '2' }[usage]}-${file.filename}-${toPosixPath(file.absolutePath)}`;
 		return {
 			...file,
 			duplicateCount,
 			isExpected,
 			referencedBy,
+			usage,
+			sortText,
 			siteRelativePath: toPosixPath(path.relative(siteRoot, file.absolutePath)),
 		};
 	}).sort((left, right) => {
-		if (left.isExpected !== right.isExpected) return left.isExpected ? -1 : 1;
-		return left.filename.localeCompare(right.filename, 'en');
+		return left.sortText.localeCompare(right.sortText, 'en');
 	});
 
 	return {
 		candidates,
+		valueRange: fieldContext.valueRange,
 		expectedDirectory,
 		page,
 		siteRoot,
@@ -512,11 +619,10 @@ export const getImageCompletionContext = async ({ documentPath, source, line }) 
 };
 
 export const getImageDefinitionContext = async ({ documentPath, source, line }) => {
-	const currentLine = source.replace(/\r\n?/g, '\n').split('\n')[line] ?? '';
-	const match = currentLine.match(/^\s*(?:-\s+)?image:\s*([^\s#]+)\s*(?:#.*)?$/);
-	if (!match) return null;
-
-	const filename = match[1].replace(/^['"]|['"]$/g, '');
+	const context = getNornaBlockFieldContext({ source, line });
+	if (context?.key !== 'image' || typeof context.value !== 'string') return null;
+	const filename = context.value;
+	if (!/^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$/i.test(filename)) return null;
 	const siteRoot = await findNornaSiteRoot(documentPath);
 	const page = siteRoot ? getPageContext(siteRoot, documentPath) : null;
 	if (!siteRoot || !page) return null;
@@ -634,21 +740,37 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 	return diagnostics;
 };
 
-export const nornaBlockDefinitions = Object.freeze({
-	'image-stack': Object.freeze({
-		...nornaMarkdownBlockDefinitions['image-stack'],
-		snippet: '```image-stack\n- image: ${1:filename.jpg}\n  alt: ${2:Alternative text}\n  caption: ${3:Caption}\n```',
-	}),
-	'image-carousel': Object.freeze({
-		...nornaMarkdownBlockDefinitions['image-carousel'],
-		snippet: '```image-carousel\n- image: ${1:first.jpg}\n  alt: ${2:Alternative text}\n- image: ${3:second.jpg}\n  alt: ${4:Alternative text}\n```',
-	}),
-	'card-list': Object.freeze({
-		...nornaMarkdownBlockDefinitions['card-list'],
-		snippet: '```card-list\nlayout: ${1|image-top,image-left,image-right|}\nflow: ${2|grid,stack|}\nsize: ${3|s,m,l,xl|}\n\n- title: ${4:Card title}\n  text: ${5:Card text}\n  image: ${6:filename.jpg}\n```',
-	}),
-	'page-list': Object.freeze({
-		...nornaMarkdownBlockDefinitions['page-list'],
-		snippet: '```page-list\n```',
-	}),
-});
+const blockItemSnippetLines = (schema, indent = '  ', startIndex = 0, item = 0) => {
+	const examples = { title: 'Card title', text: 'Card text', image: 'filename.jpg', alt: 'Alternative text', caption: 'Caption', link: '/destination/' };
+	const properties = schema.properties.items.items.properties;
+	return Object.keys(properties).filter((key) => Object.hasOwn(examples, key)).map((key, index) => {
+		const example = key === 'image' && item > 0 ? `image-${item + 1}.jpg` : examples[key];
+		return `${indent}${index === 0 ? '- ' : '  '}${key}: \${${startIndex + index + 1}:${example}}`;
+	});
+};
+
+const blockSnippet = (type, definition) => {
+	const schema = getNornaBlockSchema(type);
+	const lines = [`\`\`\`${type}`];
+	let index = 0;
+	for (const [key, option] of Object.entries(definition.options ?? {})) {
+		if (option.default === undefined) continue;
+		lines.push(`${key}: \${${++index}|${Object.keys(option.values).join(',')}|}`);
+	}
+	if (definition.item) {
+		lines.push('items:');
+		for (let item = 0; item < (schema.properties.items.minItems ?? 1); item += 1) {
+			const itemLines = blockItemSnippetLines(schema, '  ', index, item);
+			lines.push(...itemLines);
+			index += itemLines.length;
+		}
+	}
+	return [...lines, '```'].join('\n');
+};
+
+export const nornaBlockDefinitions = Object.freeze(Object.fromEntries(
+	Object.entries(nornaMarkdownBlockDefinitions).map(([type, definition]) => [type, Object.freeze({
+		...definition,
+		snippet: blockSnippet(type, definition),
+	})]),
+));

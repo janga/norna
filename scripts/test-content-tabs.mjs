@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import './test-code-fence-metadata.mjs';
 import { test } from 'node:test';
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -11,17 +12,16 @@ import { createTempSite, runNorna, runContentScript } from './test-support/conte
 const tabs = (first = 'First option.', second = 'Second option.') => `:::: tabs\n\n::: tab "macOS"\n${first}\n:::\n\n::: tab "Windows"\n${second}\n:::\n\n::::`;
 const page = (body) => `# Installation\n\n## Install\n\n${body}\n\n## Verify\n\nDone.\n`;
 
-test('tabs retain links, images, notes, code and navigation in the shared page model', async () => {
-	const source = page(tabs('::: info\nUseful context.\n:::\n\n~~~sh\necho ":::\\n# Literal heading"\n~~~\n\nSee [verification](#verify).{note-ref}\n\n{note: This explains the first option.}', '~~~image-stack\n- image: example.svg\n~~~'));
+test('tabs retain links, images, footnotes, code and navigation in the shared page model', async () => {
+	const source = page(`${tabs('> [!NOTE]\n> Useful context.\n\n~~~sh\necho ":::\\n# Literal heading"\n~~~\n\nSee [verification](#verify).[^option]', '~~~image-stack\nitems:\n  - image: example.svg\n~~~')}\n\n[^option]: This explains the first option.`);
 	const model = await parsePageMarkdown(source);
 	assert.deepEqual(model.diagnostics, []);
 	assert.deepEqual(model.navigationHeadings.map((h) => h.title), ['Install', 'Verify']);
-	assert.equal(model.notes.length, 1);
 	assert.equal(model.managedImages[0].image, 'example.svg');
 	assert.ok(model.links.some((link) => source.slice(link.targetRange.start, link.targetRange.end) === '#verify'));
 	assert.equal(model.sections[0].tabGroups.length, 1);
 	const rendered = await markdownToHtml(prepareContentTabs(source, { labels: { note: 'Note' } }));
-	assert.match(rendered.html, /norna-callout-note/);
+	assert.match(rendered.html, /Useful context/);
 	assert.match(rendered.html, /language-sh/);
 	assert.doesNotMatch(rendered.html, /hidden/);
 	const blocks = groupRenderedTabs([{ type: 'html', html: rendered.html }], model.tabGroups);
@@ -42,9 +42,19 @@ test('multiple independent groups accept translated and escaped labels', () => {
 	assert.equal(parsed.groups[1].panels[0].label, 'F"or macOS');
 });
 
-test('a sidenote and its reference cannot cross alternative boundaries', async () => {
-	const model = await parsePageMarkdown(page(tabs('Read this.{note-ref}', '{note: This belongs in another tab.}')));
-	assert.ok(model.diagnostics.some((issue) => issue.code === 'invalid-inline-note'));
+test('sidenotes are not allowed in alternatives even with a top-level definition', async () => {
+	const model = await parsePageMarkdown(page(`${tabs('Read this.[^margin:option]')}\n\n[^margin:option]: This belongs outside tabs.`));
+	assert.ok(model.diagnostics.some((issue) => issue.severity === 'error' && /sidenote|margin:/i.test(issue.message)));
+});
+
+test('GitHub alerts use the same validation inside and outside tabs', async () => {
+	for (const type of ['NOTE', 'TIP', 'IMPORTANT', 'WARNING', 'CAUTION', 'DANGER', 'CUSTOM']) {
+		const alert = `> [!${type}]\n> Useful context.`;
+		const outside = await parsePageMarkdown(page(alert));
+		const inside = await parsePageMarkdown(page(tabs(alert)));
+		assert.deepEqual(inside.diagnostics.map(({ code, severity }) => ({ code, severity })), outside.diagnostics.map(({ code, severity }) => ({ code, severity })));
+		if (type === 'CUSTOM') assert.ok(inside.diagnostics.some((issue) => issue.code === 'unknown-semantic-callout-type' && issue.severity === 'warning'));
+	}
 });
 
 for (const [name, body, message] of [
@@ -65,6 +75,7 @@ for (const [name, body, message] of [
 	['wrong group fence', tabs().replace(':::: tabs', '::: tabs'), /Open a tab group/],
 	['nested in blockquote', '> :::: tabs\n> ::: tab "A"\n> Text\n> :::', /outside lists and blockquotes/],
 	['unknown marker', tabs('::: unsupported\nText\n:::'), /Unknown or misplaced/],
+	...['info', 'note', 'tip', 'important', 'warning', 'caution', 'danger'].map((type) => [`removed ${type} callout`, tabs(`::: ${type}\nText\n:::`), /GitHub-style alerts/]),
 	['nested in container', `::: warning\n\n${tabs()}\n\n:::`, /outside other containers/],
 	['extra closing marker', `${tabs()}\n::::`, /no open tab group/],
 ]) test(`tabs reject ${name} with source context`, () => {

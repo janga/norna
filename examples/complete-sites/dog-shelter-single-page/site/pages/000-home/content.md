@@ -15,10 +15,10 @@ layout: image-right
 flow: stack
 size: s
 width: narrow
-
-- title: A safe place to start again
-  text: Each dog gets care, calm routines and an individual plan before adoption.
-  image: rescue-dog.jpg
+items:
+  - title: A safe place to start again
+    text: Each dog gets care, calm routines and an individual plan before adoption.
+    image: rescue-dog.jpg
 ```
 
 ## You can help {#you-can-help}
@@ -30,8 +30,8 @@ layout: image-left
 flow: stack
 size: s
 width: narrow
-
-- title: Make room for one more dog
-  text: A foster home gives a dog stability and gives the shelter space for another rescue.
-  image: foster-dog.jpg
+items:
+  - title: Make room for one more dog
+    text: A foster home gives a dog stability and gives the shelter space for another rescue.
+    image: foster-dog.jpg
 ```

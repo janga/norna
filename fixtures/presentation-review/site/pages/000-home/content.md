@@ -7,9 +7,9 @@ page:
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. This deliberately
 plain opening establishes the normal reading rhythm before the test cases add
-wider and more interactive material.{note-ref}
+wider and more interactive material.[^margin:layout-1]
 
-{note: At a wide desktop size, this note should use a margin when that space is not occupied by page navigation.}
+[^margin:layout-1]: At a wide desktop size, this note should use a margin when that space is not occupied by page navigation.
 
 ## Run the plan
 

@@ -11,6 +11,7 @@ import {
 	themeVisualSchema,
 } from './lib/schema-definitions.mjs';
 import { applySchemaEditorMetadata } from './lib/schema-editor-metadata.mjs';
+import { getNornaBlockSchema } from './lib/norna-markdown-blocks.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const schemaDirectory = path.join(root, 'schemas');
@@ -32,9 +33,20 @@ for (const [filename, title, schema] of definitions) {
 	schemaFiles.set(filename, `${JSON.stringify(jsonSchema, null, 2)}\n`);
 }
 
+const blockTypes = ['image-stack', 'image-carousel', 'card-list'];
+for (const type of blockTypes) {
+	const filename = `${type}.schema.json`;
+	schemaFiles.set(filename, `${JSON.stringify({
+		...getNornaBlockSchema(type),
+		$id: `https://janga.github.io/norna/schemas/${filename}`,
+		title: `Norna ${type}`,
+	}, null, 2)}\n`);
+}
+
 schemaFiles.set('manifest.json', `${JSON.stringify({
-	editorApiVersion: 1,
+	editorApiVersion: 2,
 	schemaVersion: 3,
+	blockSchemas: Object.fromEntries(blockTypes.map((type) => [type, `${type}.schema.json`])),
 	files: {
 		category: 'category.schema.json',
 		config: 'config.schema.json',
@@ -64,12 +76,12 @@ if (checkOnly) {
 		throw new Error(`Generated Norna schemas are stale: ${stale.join(', ')}. Run "npm run schemas:generate".`);
 	}
 
-	console.log(`Norna schemas are up to date (${definitions.length} schemas).`);
+	console.log(`Norna schemas are up to date (${definitions.length + blockTypes.length} schemas).`);
 } else {
 	await mkdir(schemaDirectory, { recursive: true });
 	for (const [filename, source] of schemaFiles) {
 		await writeFile(path.join(schemaDirectory, filename), source);
 	}
 
-	console.log(`Generated ${definitions.length} Norna schemas in ${path.relative(root, schemaDirectory)}.`);
+	console.log(`Generated ${definitions.length + blockTypes.length} Norna schemas in ${path.relative(root, schemaDirectory)}.`);
 }

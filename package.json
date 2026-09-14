@@ -105,7 +105,7 @@
     "test:examples": "node scripts/test-examples.mjs",
     "test:examples:browser": "node scripts/test-navigation.mjs --site-dir site tests/examples-gallery.spec.ts",
     "test:page-model": "node scripts/test-page-model.mjs",
-    "test:page-markdown": "node scripts/test-page-markdown.mjs && node scripts/test-content-tabs.mjs",
+    "test:page-markdown": "node scripts/test-page-markdown.mjs && node scripts/test-structured-blocks.mjs && node scripts/test-named-notes.mjs && node scripts/test-content-tabs.mjs",
     "test:tabs:browser": "node scripts/test-navigation.mjs --site-dir fixtures/content-tabs/site tests/content-tabs.spec.ts",
     "test:site-links": "node scripts/test-site-link-graph.mjs",
     "test:page-aliases": "node scripts/test-page-aliases.mjs",
@@ -181,7 +181,8 @@
     "embla-carousel": "^8.6.0",
     "js-yaml": "^4.3.1",
     "pagefind": "1.5.2",
-    "satteri": "^0.9.1"
+    "satteri": "^0.9.1",
+    "yaml": "2.9.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

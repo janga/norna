@@ -7,29 +7,31 @@ page:
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a
 ante venenatis dapibus posuere velit aliquet. This paragraph provides a quiet
-baseline before the visual checks begin.{note-ref}
+baseline before the visual checks begin.[^margin:layout-1]
 
-{note: The reference and note should remain linked, numbered, and readable at every width.}
+[^margin:layout-1]: The reference and note should remain linked, lettered, and readable at every width.
 
 ## Sidenotes {#sidenotes}
 
 Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed
 odio dui. On a wide desktop, this explanatory note should sit beside the prose
-when its lane is free.{note-ref}
+when its lane is free.[^margin:layout-2] A second explanation belongs to the
+same paragraph.[^margin:shared-paragraph]
 
-{note: Switch between Narrow, Standard, and Wide to check that placement follows available space rather than a fixed page width.}
+[^margin:layout-2]: Switch between Narrow, Standard, and Wide to check that placement follows available space rather than a fixed page width.
+[^margin:shared-paragraph]: Both notes follow their paragraph in reading order and remain separate at every width.
 
 Maecenas faucibus mollis interdum. Nullam quis risus eget urna mollis ornare vel
 eu leo. On a narrow viewport, the same semantic note should return to the normal
-reading flow without covering adjacent content.{note-ref}
+reading flow without covering adjacent content.[^margin:layout-3]
 
-{note: At mobile widths, this text belongs directly after its source paragraph.}
+[^margin:layout-3]: At mobile widths, this text belongs directly after its source paragraph.
 
 Vestibulum id ligula porta felis euismod semper. Cras mattis consectetur purus
 sit amet fermentum. Turn Focus reading on and off and verify that the reference
-number, note number, and paragraph position remain stable.{note-ref}
+letter, note letter, and paragraph position remain stable.[^margin:layout-4]
 
-{note: Focus reading may release a navigation lane for this note, but it must not alter the note's meaning or reading order.}
+[^margin:layout-4]: Focus reading may release a navigation lane for this note, but it must not alter the note's meaning or reading order.
 
 ## Adaptive Table With One Rail {#adaptive-table}
 
@@ -58,12 +60,13 @@ then release when the image ends. On a narrow screen, the caption should remain
 below the image.
 
 ```image-stack
-- image: tall-process.svg
-  alt: A tall generic process diagram with five numbered stages connected vertically.
-  caption: Five-stage process. The caption should stay associated with this tall figure while the reader scrolls through it.
-- image: compact-reference.svg
-  alt: A compact generic diagram with three columns connected by arrows.
-  caption: Compact reference image. Its caption should remain below the image because persistent placement is unnecessary.
+items:
+  - image: tall-process.svg
+    alt: A tall generic process diagram with five numbered stages connected vertically.
+    caption: Five-stage process. The caption should stay associated with this tall figure while the reader scrolls through it.
+  - image: compact-reference.svg
+    alt: A compact generic diagram with three columns connected by arrows.
+    caption: Compact reference image. Its caption should remain below the image because persistent placement is unnecessary.
 ```
 
 ## Detailed Image Inspection {#detailed-image-inspection}
@@ -74,7 +77,8 @@ switch between fit and actual size, then close it with both the close button and
 Escape. Focus should return to the image link.
 
 ```image-stack
-- image: detail-grid.svg
-  alt: A generic systems map with four grouped areas and many labelled connections.
-  caption: Generic systems map. Open the inspection view to read the smaller labels without changing the page layout.
+items:
+  - image: detail-grid.svg
+    alt: A generic systems map with four grouped areas and many labelled connections.
+    caption: Generic systems map. Open the inspection view to read the smaller labels without changing the page layout.
 ```

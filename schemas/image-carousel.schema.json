@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Display two or more managed images in an interactive carousel.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "image"
+        ],
+        "properties": {
+          "image": {
+            "type": "string",
+            "description": "Start another managed carousel image.",
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9.-]*\\.(?:[jJ][pP][eE]?[gG]|[pP][nN][gG]|[sS][vV][gG])$(?![\\s\\S])"
+          },
+          "alt": {
+            "type": "string",
+            "description": "Optional alternative text for the image.",
+            "pattern": "^(?:|(?=.*\\S)[^\\x00-\\x1F\\x7F-\\x9F\\u2028\\u2029]+)$(?![\\s\\S])"
+          },
+          "caption": {
+            "type": "string",
+            "description": "Optional visible caption for the image.",
+            "minLength": 1,
+            "pattern": "^(?=[\\s\\S]*\\S)[^\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F-\\x9F]*$(?![\\s\\S])"
+          }
+        }
+      }
+    }
+  },
+  "$id": "https://janga.github.io/norna/schemas/image-carousel.schema.json",
+  "title": "Norna image-carousel"
+}

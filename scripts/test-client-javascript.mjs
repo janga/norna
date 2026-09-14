@@ -191,15 +191,17 @@ page:
 Static image stacks remain static.
 
 \`\`\`image-stack
-- image: first.svg
-  caption: First image.
-- image: second.svg
-  caption: Second image.
+items:
+  - image: first.svg
+    caption: First image.
+  - image: second.svg
+    caption: Second image.
 \`\`\`
 
 \`\`\`card-list
-- title: Static card
-  text: Cards do not require client-side behaviour.
+items:
+  - title: Static card
+    text: Cards do not require client-side behaviour.
 \`\`\`
 `);
 
@@ -285,9 +287,9 @@ page:
 
 ## Intro {#intro}
 
-This sentence has additional context.{note-ref}
+This sentence has additional context.[^margin:context]
 
-{note: The note remains readable and uses the page margin without JavaScript.}
+[^margin:context]: The note remains readable and uses the page margin without JavaScript.
 `);
 	await writeFile(path.join(pageDir, 'content.md'), `---
 page:
@@ -299,17 +301,24 @@ page:
 ## Details {#details}
 
 \`\`\`image-carousel
-- image: first.svg
-  caption: First slide.
-- image: second.svg
-  caption: Second slide.
+items:
+  - image: first.svg
+    caption: First slide.
+  - image: second.svg
+    caption: Second slide.
 \`\`\`
 `);
 
 	runBuild();
 	const noteHtml = await readPage();
 	const carouselHtml = await readPage(path.join('details', 'index.html'));
-	assertOnlyUniversalReadingWidth(noteHtml, 'A page with CSS margin notes');
+	assertUniversalReadingWidth(noteHtml, 'A page with margin notes');
+	const noteScripts = getPageFeatureScripts(noteHtml);
+	assert.equal(noteScripts.length, 1, 'A note page should load only note enhancement in addition to reader preferences.');
+	assert.match(noteScripts[0], /is-reference-highlighted/);
+	assert.match(noteScripts[0], /pointerenter/);
+	assert.match(noteScripts[0], /:focus-visible/);
+	assert.match(noteScripts[0], /data-footnote-backref/);
 	assert.match(noteHtml, /class="section-note section-note-margin"/);
 	assertUniversalReadingWidth(carouselHtml, 'A carousel page');
 	assert.equal(getPageFeatureScripts(carouselHtml).length, 1, 'A carousel page should load only the carousel implementation in addition to reader preferences.');

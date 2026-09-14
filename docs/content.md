@@ -169,6 +169,27 @@ Markdown fenced blocks at the point where they should appear. Markdown
 determines placement: move the fenced block in the page file to move the
 rendered block.
 
+`image-stack`, `image-carousel`, and `card-list` contain YAML 1.2 Core data.
+Each block is one mapping with an `items` sequence; list settings sit beside
+`items`, not within an entry. Image blocks require at least one item, carousels
+require at least two, and card lists require at least one card.
+
+Use spaces for indentation and ordinary YAML string rules. Quote text when
+YAML would interpret it as another type or syntax, such as `title: "2026"`,
+`link: "#contact"`, or `caption: "Opening hours: 10:00 to 16:00"`. Norna does
+not convert numbers or booleans to text. Omit unused optional fields: an empty
+`caption:` is null, not an empty string. Only `alt: ""` accepts an explicitly
+empty string; other supplied values must not be empty or whitespace-only.
+
+Captions and card `text` may use folded (`>-`) or literal (`|-`) YAML scalars.
+Folded text wraps as a paragraph; literal text preserves source line breaks.
+Parsed line breaks remain visible. Captions and card fields are plain text,
+not Markdown. Other fields, including titles, filenames, URLs, badges, and
+list settings, must decode to single-line strings.
+
+Duplicate keys, unknown fields, wrong types, missing required fields, extra
+YAML documents, anchors, aliases, explicit tags, and merge keys are errors.
+
 Use three or more matching backticks or tildes for fenced blocks. If you need
 to document a Norna block inside another Markdown code sample, make the outer
 fence longer than the inner fence:
@@ -176,7 +197,8 @@ fence longer than the inner fence:
 ````md
 ````
 ```image-stack
-- image: filename.jpg
+items:
+  - image: filename.jpg
 ```
 ````
 ````
@@ -233,14 +255,15 @@ Image stacks and carousels use the same image-entry fields:
 | `alt` | No | Alternative text. When omitted, Norna renders an empty alt attribute. |
 | `caption` | No | Visible text below the image. |
 
-Start each entry with `- image: filename.jpg`. Indent optional fields with two
-spaces:
+Put each entry under `items` and give it an `image` filename. Fields can appear
+in any order. This example indents optional fields with four spaces:
 
 ````md
 ```image-stack
-- image: filename.jpg
-  alt: Optional alt text.
-  caption: Optional caption.
+items:
+  - image: filename.jpg
+    alt: Optional alt text.
+    caption: Optional caption.
 ```
 ````
 
@@ -258,9 +281,10 @@ Use `image-stack` for one or more stacked images:
 
 ````md
 ```image-stack
-- image: work.jpg
-  alt: A woven artwork on a white wall.
-  caption: Work in progress.
+items:
+  - image: work.jpg
+    alt: A woven artwork on a white wall.
+    caption: Work in progress.
 ```
 ````
 
@@ -270,12 +294,13 @@ Use `image-carousel` to present two or more images as a carousel:
 
 ````md
 ```image-carousel
-- image: first.jpg
-  alt: First image.
-  caption: First caption.
-- image: second.jpg
-  alt: Second image.
-  caption: Second caption.
+items:
+  - image: first.jpg
+    alt: First image.
+    caption: First caption.
+  - image: second.jpg
+    alt: Second image.
+    caption: Second caption.
 ```
 ````
 
@@ -301,19 +326,19 @@ managed images, links, and optional badge text:
 layout: image-top
 flow: grid
 size: m
-
-- title: Adopt
-  text: Give a dog a new home.
-  image: adopt.svg
-  link: /adopt/
-  badge-text: Recommended
-- title: Foster
-  text: Help for a shorter period.
-  image: foster.svg
+items:
+  - title: Adopt
+    text: Give a dog a new home.
+    image: adopt.svg
+    link: /adopt/
+    badge-text: Recommended
+  - title: Foster
+    text: Help for a shorter period.
+    image: foster.svg
 ```
 ````
 
-List-level options must appear before the first card:
+List-level options sit beside `items`; their order does not matter:
 
 | Option | Accepted values | When omitted |
 | --- | --- | --- |
@@ -329,9 +354,9 @@ explicit value:
 ````md
 ```card-list
 width: wide
-
-- title: Featured project
-  text: Let this list use more of the available page width.
+items:
+  - title: Featured project
+    text: Let this list use more of the available page width.
 ```
 ````
 
@@ -339,9 +364,13 @@ An explicit block `width` takes priority over the theme for that list only.
 The root default and preset values are defined under [Content Block
 Defaults](theme.md#content-block-defaults).
 
-Each card starts with `- title: Card title`. Card fields use two spaces of
-indentation. Supported fields are `text`, `image`, `link`, and `badge-text`.
+Each card under `items` requires a `title`. Its fields can appear in any order;
+the examples use four spaces before additional fields. Supported optional
+fields are `text`, `image`, `link`, and `badge-text`.
 Each card must include at least one of `text`, `image`, or `link`.
+
+`link` makes the whole card clickable. Card `text` is plain text, not Markdown;
+use the `link` field instead of writing a Markdown link inside `text`.
 
 `content:check` warns when carousel images have different aspect ratios. Exact
 matching proportions are recommended because mixed proportions can make the
@@ -371,7 +400,8 @@ Image references in Norna managed image blocks use only the filename:
 
 ````md
 ```image-stack
-- image: portrait.jpg
+items:
+  - image: portrait.jpg
 ```
 ````
 
@@ -427,8 +457,8 @@ types.
 > Back up the current site before replacing its configuration.
 ```
 
-The marker must be the first line of one blockquote. Accepted meanings are
-`NOTE`, `TIP`, `IMPORTANT`, `WARNING`, `CAUTION`, and `DANGER`. Norna supplies
+The marker must stand alone on the first line of one blockquote. Accepted
+meanings are `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, `CAUTION`, and `DANGER`. Norna supplies
 a localized visible label and preset-owned presentation for each meaning. The
 meaning is not communicated by color alone.
 
@@ -466,7 +496,7 @@ not enhance the marker.
 Use tabs for short alternatives within the same instruction, such as commands
 for different operating systems. Put shared step headings outside the group.
 Each alternative can contain paragraphs, lists, code, managed images, tables,
-semantic callouts, and sidenotes.
+semantic callouts, and reference footnotes. Sidenotes are not allowed in tabs.
 
 ````markdown
 :::: tabs
@@ -490,9 +520,11 @@ winget install ImageMagick.ImageMagick
 ::::
 ````
 
-Write at least two alternatives. Labels must be nonempty, double-quoted strings
-and unique within the group. Escape a literal quote as `\"`. Every alternative
-needs content. Close each `::: tab` with `:::` and the surrounding `:::: tabs`
+Write at least two alternatives. Labels must be nonempty JSON double-quoted
+strings and unique within the group. Escape a literal quote as `\"` and a
+backslash as `\\`. Decoded control characters, including line breaks and tabs,
+are invalid. Every alternative needs content. Close each `::: tab` with `:::`
+and the surrounding `:::: tabs`
 with `::::`. Code fences do not close these containers.
 
 Tabs belong directly in a page's content, outside lists, blockquotes, callouts,
@@ -500,11 +532,10 @@ cards, and notes. They cannot contain headings, nested tab groups, frontmatter,
 or navigation definitions. Ordinary links remain allowed. Use separate pages
 when alternatives require substantially different heading structures.
 
-Inside a tab, the existing GitHub-style callout syntax remains valid. The short
-container form `::: info` followed by its body and a closing `:::` is also
-accepted there. `info` maps to `NOTE`; `note`, `tip`, `important`, `warning`,
-`caution`, and `danger` map to the corresponding semantic callout. Close the
-callout before closing its tab. This container form is scoped to tab content.
+Inside a tab, use the same GitHub-style alert syntax as elsewhere. Colon
+containers are reserved for tabs; callout container forms such as `::: tip`
+and `::: info` are not accepted. Use an inline explanation or a reference
+footnote for supplementary material, with the definition outside the tabs.
 
 Norna initially selects the first alternative. Each group works independently;
 there is no saved preference, shared group configuration, or public tab ID.
@@ -656,6 +687,10 @@ selector, and a selector may be used without a title. `content:check` rejects
 empty or unclosed titles, unknown metadata, reversed or repeated ranges, and
 lines outside the code block.
 
+Titles use the same JSON double-quoted string rules as tab labels. Escape a
+literal quote as `\"` and a backslash as `\\`; decoded control characters such
+as line breaks and tabs are invalid.
+
 The title is part of the figure presented before the code. Selected lines use
 both a surface and an edge marker, so color is not their only distinguishing
 feature. Line emphasis does not alter the source text or add line numbers.
@@ -682,29 +717,47 @@ Untitled code blocks do not receive an empty title bar.
 
 ### Side Notes
 
-Add one numbered side note to a paragraph by placing `{note-ref}` where its
-reference number should appear, then write the matching note on its own line
-immediately after the paragraph:
+Add a named side note to an ordinary body paragraph with a `[^margin:name]`
+reference and a matching top-level definition:
 
 ```md
-Norna keeps the page source readable.{note-ref}
+Norna keeps the page source readable.[^margin:source]
 
-{note: The note appears in the margin when enough horizontal space is available.}
+[^margin:source]: The note appears in the margin when enough horizontal space is available.
 ```
 
-Longer notes may wrap across lines and end with `}` on its own line:
+The name connects the reference to its definition. Norna generates visible
+letters in first-reference order across the page: `a` through `z`, then `aa`,
+`ab`, and so on, without a limit at 26. Definition order, viewport size, and
+Focus reading do not change these letters. Side notes have a separate series
+from numbered reference footnotes.
+
+A note body contains one paragraph with optional emphasis, strong emphasis,
+links, and inline code. It may wrap using indented continuation lines:
 
 ```md
-Norna keeps the page source readable.{note-ref}
+Norna keeps the page source readable.[^margin:source]
 
-{note:
-The note may contain a longer explanation when the extra context is useful.
-}
+[^margin:source]: The note may contain a longer explanation
+    when the extra context is useful.
 ```
 
 On wide screens Norna places the note in the reading margin when the complete
 note fits without colliding with navigation or another wide content block. On
 narrower screens it remains in the normal reading flow.
+
+Several notes attached to the same paragraph form a vertical stack in reference
+order. The next paragraph begins below both the text and its notes, so long or
+numerous notes can increase the space between paragraphs. When margin placement
+does not fit, the notes appear after their paragraph in the reading flow. Keep
+notes short; use reference footnotes for longer supporting material.
+
+With JavaScript enabled, hovering over a sidenote reference or reaching it with
+keyboard focus highlights the matching note without moving the page or changing
+its layout. Activating the reference follows a normal link to the note; the
+note's letter links back to its reference. These links and the note content
+remain available without JavaScript. Printed pages show notes in the reading
+flow.
 
 On a page that has separate page and contents rails at wide widths, a note that
 has returned to the reading flow stays there when the contents rail is folded
@@ -714,9 +767,27 @@ to use its margin when the complete layout leaves enough room. Focus reading
 may restore margin placement because the reader explicitly removes the
 persistent rails.
 
-A paragraph may contain one note pair; both `{note-ref}` and `{note: ...}` are
-required. `content:check` reports missing, repeated, nested, or unpaired note
-syntax.
+Each side note must be referenced exactly once; one paragraph can reference
+several different side notes. References are allowed only in ordinary body
+paragraphs, not headings, lists, tables, tabs, callouts, disclosures, other
+containers, image captions, or card fields. Note bodies cannot contain another
+note reference, a second paragraph, headings, lists, images, tables, fenced
+code, or containers.
+
+Definitions belong at the page's top level, anywhere before or after their
+references, including at the end of the source. Their position does not control
+rendered placement. Missing or duplicate definitions and repeated sidenote
+references are errors; unused definitions produce warnings. Use the lowercase
+`margin:` prefix with a nonempty name for side notes. Reference and definition
+names follow the Markdown parser's case folding, including Unicode case
+equivalents, but are not Unicode-normalized: composed and decomposed spellings
+remain distinct. Names cannot contain whitespace. Use the exact same spelling
+in a reference and its definition; the reserved `margin:` prefix itself must
+always be lowercase.
+
+The `margin:` prefix is a Norna convention within reference-footnote syntax.
+Another renderer that accepts these identifiers can display the note as an
+ordinary footnote. The positional brace syntax is not supported.
 
 ### Reference Footnotes
 
@@ -731,7 +802,7 @@ The setting applies to every page.[^scope]
 
 The same definition may be referenced more than once. Definitions may contain
 links and continuation lines, and may be declared in a later section of the
-same page:
+same page. Definitions must stay at the page's top level, outside containers:
 
 ```md
 The source explains the constraint.[^source] The same source also describes
@@ -742,6 +813,13 @@ the fallback.[^source]
 ```
 
 Norna renders reference footnotes as a numbered list at the end of the page.
+Numbers follow complete source-reference order, including hidden tab
+alternatives, without gaps from side notes. References may appear in tables,
+tabs, and callouts. Each occurrence has its own return destination. Returning
+to a reference in a tab reveals that alternative before focus returns;
+without JavaScript, all alternatives are already visible. Missing or duplicate
+definitions are errors and unused definitions produce warnings.
+
 Reference and return links remain usable without client-side JavaScript, and
 their generated labels follow the site's configured language. Use a
 [side note](#side-notes) when a short explanation should stay beside its

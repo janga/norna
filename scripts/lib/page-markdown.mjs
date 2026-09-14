@@ -17,6 +17,7 @@ import {
 } from './norna-markdown-blocks.mjs';
 import { getSemanticCalloutDiagnostics } from './semantic-callouts.mjs';
 import { getTableRowHeaderDiagnostics } from './table-row-headers.mjs';
+import { getStructuredSidenoteDiagnostics } from './markdown-notes.mjs';
 
 const normalizeMarkdownWithOffsets = (source) => {
 	const input = String(source);
@@ -188,6 +189,7 @@ const createRegion = ({
 	lineOffset,
 	tableErrors,
 	tabResult,
+	pageNotes,
 }) => {
 	const endOffset = nextHeading?.index ?? source.length;
 	const markdown = source.slice(heading.index, endOffset).trimEnd();
@@ -196,20 +198,8 @@ const createRegion = ({
 		label,
 		lineOffset: regionLineOffset,
 	});
-	// A note and its reference must stay in the same visible alternative.
-	const noteBoundaries = [...new Set([heading.index, endOffset, ...tabResult.groups.flatMap((group) =>
-		group.panels.flatMap((panel) => [panel.start, panel.end]).filter((offset) => offset > heading.index && offset < endOffset),
-	)])].sort((a, b) => a - b);
-	const noteResult = { notes: [], errors: [] };
-	for (let index = 0; index < noteBoundaries.length - 1; index += 1) {
-		const start = noteBoundaries[index];
-		const parsed = extractInlineNoteDiagnostics(tabResult.maskedSource.slice(start, noteBoundaries[index + 1]).trimEnd(), {
-			label,
-			lineOffset: lineOffset + source.slice(0, start).split('\n').length - 1,
-		});
-		noteResult.notes.push(...parsed.notes);
-		noteResult.errors.push(...parsed.errors);
-	}
+	const inRegion = (offset) => offset >= heading.index && offset < endOffset;
+	const fieldNoteErrors = getStructuredSidenoteDiagnostics(blockResult.blocks, { label, regionOffset: heading.index });
 	const markdownImages = extractMarkdownImageReferences(markdown).map((reference) => ({
 		...reference,
 		line: regionLineOffset + reference.line,
@@ -238,8 +228,10 @@ const createRegion = ({
 		managedImages: getNornaBlockImageReferences(blockResult.blocks),
 		markdown,
 		markdownImages,
-		notes: noteResult.notes,
-		noteErrors: noteResult.errors,
+		notes: pageNotes.notes.filter((note) => inRegion(note.referenceOffset)),
+		noteErrors: [...pageNotes.errors.filter((error) => inRegion(error.offset)), ...fieldNoteErrors],
+		fieldNoteErrors,
+		noteWarnings: pageNotes.warnings.filter((warning) => inRegion(warning.offset)),
 		startOffset: heading.index,
 		tableErrors: tableErrors.filter((error) => error.offset >= heading.index && error.offset < endOffset),
 		title: heading.title,
@@ -251,6 +243,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	const label = options.label ?? 'Markdown';
 	const lineOffset = options.lineOffset ?? 0;
 	const tabResult = parseContentTabs(source, { label, lineOffset });
+	const pageNotes = extractInlineNoteDiagnostics(source, { label, lineOffset, tabResult });
 	const { headings, tree } = await getMarkdownHeadings(tabResult.maskedSource);
 	const calloutErrors = getSemanticCalloutDiagnostics(tree, { label, lineOffset });
 	const codeFenceErrors = getCodeFenceMetadataDiagnostics(tree, {
@@ -273,12 +266,17 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		label,
 		lineOffset,
 		source,
+		pageNotes,
 		tableErrors,
 		tabResult,
 	}));
 	const headingIssues = getHeadingIdentifierIssues(headings);
 	const headingDiagnostics = getHeadingDiagnostics(headings, lineOffset);
-	const structureDiagnostics = getPageStructureDiagnostics({ headings, pageHeadings, prelude }, lineOffset);
+	let contentPrelude = prelude;
+	for (const definition of [...pageNotes.definitions].reverse()) {
+		if (definition.position.end.offset <= prelude.length) contentPrelude = contentPrelude.slice(0, definition.position.start.offset) + contentPrelude.slice(definition.position.end.offset);
+	}
+	const structureDiagnostics = getPageStructureDiagnostics({ headings, pageHeadings, prelude: contentPrelude }, lineOffset);
 	const blockDiagnostics = regions.flatMap((region) => region.blockErrors.map((error) => ({
 		code: error.code ?? 'invalid-norna-block',
 		line: error.line,
@@ -286,13 +284,10 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		regionId: region.id,
 		severity: 'error',
 	})));
-	const noteDiagnostics = regions.flatMap((region) => region.noteErrors.map((error) => ({
-		code: 'invalid-inline-note',
-		line: error.line,
-		message: error.message,
-		regionId: region.id,
-		severity: 'error',
-	})));
+	const noteDiagnostics = [...pageNotes.diagnostics, ...regions.flatMap((region) => region.fieldNoteErrors)].map((issue) => ({
+		...issue,
+		regionId: regions.find((region) => issue.offset >= region.startOffset && issue.offset < region.endOffset)?.id ?? null,
+	}));
 	const calloutDiagnostics = regions.flatMap((region) => region.calloutErrors.map((error) => ({
 		code: error.code,
 		fix: error.fix,
@@ -320,7 +315,14 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	const blocks = regions.flatMap((region) => region.blocks);
 	const links = [
 		...extractMarkdownLinks({ source, tree, lineOffset }),
-		...extractNornaBlockLinks({ source, blocks, lineOffset }),
+		...extractNornaBlockLinks({
+			source,
+			blocks: regions.flatMap((region) => region.blocks.map((block) => ({
+				...block,
+				sourceStartOffset: region.startOffset + block.sourceStartOffset,
+			}))),
+			lineOffset,
+		}),
 	].sort((left, right) => (
 		left.line - right.line
 		|| (left.range?.start ?? 0) - (right.range?.start ?? 0)
@@ -361,9 +363,10 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		markdownImages: regions.flatMap((region) => region.markdownImages),
 		navigationHeadings,
 		notes: regions.flatMap((region) => region.notes),
+		noteDiagnostics,
 		pageTitle: pageHeadings[0] ?? null,
 		pageHeadings,
-		prelude,
+		prelude: contentPrelude,
 		regions,
 		sections: regions.filter((region) => region.kind === 'section'),
 		source,

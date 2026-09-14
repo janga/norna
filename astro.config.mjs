@@ -8,6 +8,7 @@ import { prepareContentTabs } from './scripts/lib/content-tabs.mjs';
 import { getBasePathRedirectLocation } from './scripts/lib/base-path-redirect.mjs';
 import { nornaCodeFenceTransformer } from './scripts/lib/code-fence-metadata.mjs';
 import { nornaMarkdownRenderPlugin } from './scripts/lib/norna-markdown-render-plugin.mjs';
+import { nornaNotesRenderPlugin } from './scripts/lib/markdown-notes-render-plugin.mjs';
 import { nornaTableRenderPlugin } from './scripts/lib/table-render-plugin.mjs';
 import {
 	astroCacheDir,
@@ -141,7 +142,7 @@ const markdownProcessor = satteri({
 			backLabel: projectConfig.locale.labels.footnoteBackReference,
 		} },
 	},
-	mdastPlugins: [nornaMarkdownRenderPlugin],
+	mdastPlugins: [nornaNotesRenderPlugin, nornaMarkdownRenderPlugin],
 	hastPlugins: [nornaTableRenderPlugin],
 });
 const createMarkdownRenderer = markdownProcessor.createRenderer.bind(markdownProcessor);
@@ -152,9 +153,6 @@ markdownProcessor.createRenderer = async (shared) => {
 		render(source, options) {
 			return renderer.render(prepareContentTabs(source, {
 				label: options?.fileURL?.pathname ?? 'Markdown',
-				labels: Object.fromEntries(['note', 'tip', 'important', 'warning', 'caution', 'danger'].map((type) => [
-					type, projectConfig.locale.labels[`callout${type[0].toUpperCase()}${type.slice(1)}`],
-				])),
 			}), options);
 		},
 	};

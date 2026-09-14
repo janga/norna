@@ -82,14 +82,16 @@
         <text class="key" x="46" y="108">## What we do</text>
         <text class="code" x="46" y="130">We rescue and rehome dogs.</text>
         <text class="code" x="46" y="162">```image-stack</text>
-        <text class="code" x="46" y="184">- image: dog-house.svg</text>
-        <text class="code" x="46" y="206">  caption: Ready for adoption.</text>
+        <text class="code" x="46" y="178">items:</text>
+        <text class="code" x="58" y="194">- image: dog-house.svg</text>
+        <text class="code" x="69" y="210">caption: Ready for adoption.</text>
         <text class="code" x="46" y="228">```</text>
         <text class="key" x="46" y="276">## You can help</text>
         <text class="code" x="46" y="298">Adopt. Foster. Donate.</text>
         <text class="code" x="46" y="330">```image-stack</text>
-        <text class="code" x="46" y="352">- image: heart.svg</text>
-        <text class="code" x="46" y="374">  caption: Foster care creates space.</text>
+        <text class="code" x="46" y="346">items:</text>
+        <text class="code" x="58" y="362">- image: heart.svg</text>
+        <text class="code" x="69" y="378">caption: Foster care creates space.</text>
         <text class="code" x="46" y="396">```</text>
         <text class="tree" x="150" y="518" text-anchor="middle">content.md</text>
       </g>

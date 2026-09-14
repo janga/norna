@@ -16,9 +16,9 @@ section backgrounds, and Display choices. The source below uses no visual
 overrides, so the preset remains responsible for the complete presentation.
 
 The comparison includes prose, hierarchy, notes, code, images, captions,
-carousel controls, and cards.{note-ref}
+carousel controls, and cards.[^margin:preset-notes]
 
-{note: Presets also coordinate margin-note width, alignment, and the narrow-screen fallback.}
+[^margin:preset-notes]: Presets also coordinate margin-note width, alignment, and the narrow-screen fallback.
 
 ## Reading rhythm {#reading-rhythm}
 
@@ -52,15 +52,16 @@ The selected preset supplies either `prose-aligned`, which starts media at the
 body-text edge, or `centered-fit`, which centers and height-limits the media.
 
 ```image-stack
-- image: grass-puppy.jpg
-  alt: A puppy standing in green grass.
-  caption: Puppy in grass. Photo by Bicanski, CC0, via Pixnio.
-- image: grey-street-dog.jpg
-  alt: A grey dog standing on a paved street.
-  caption: Grey dog on pavement. Photo by Bicanski, CC0, via Pixnio.
-- image: boxer-portrait.jpg
-  alt: A brown boxer-type dog looking at the camera.
-  caption: Brown dog portrait. Photo by Bicanski, CC0, via Pixnio.
+items:
+  - image: grass-puppy.jpg
+    alt: A puppy standing in green grass.
+    caption: Puppy in grass. Photo by Bicanski, CC0, via Pixnio.
+  - image: grey-street-dog.jpg
+    alt: A grey dog standing on a paved street.
+    caption: Grey dog on pavement. Photo by Bicanski, CC0, via Pixnio.
+  - image: boxer-portrait.jpg
+    alt: A brown boxer-type dog looking at the camera.
+    caption: Brown dog portrait. Photo by Bicanski, CC0, via Pixnio.
 ```
 
 ## Carousel controls {#carousel-controls}
@@ -69,15 +70,16 @@ These simple diagrams keep the source constant while exposing the preset's
 media constraints, caption styling, and carousel chrome.
 
 ```image-carousel
-- image: carousel-one.svg
-  alt: A green panel with a diagonal line.
-  caption: First frame with a broad diagonal.
-- image: carousel-two.svg
-  alt: A blue panel with overlapping circles.
-  caption: Second frame with overlapping forms.
-- image: carousel-three.svg
-  alt: A red panel with a compact grid.
-  caption: Third frame with denser detail.
+items:
+  - image: carousel-one.svg
+    alt: A green panel with a diagonal line.
+    caption: First frame with a broad diagonal.
+  - image: carousel-two.svg
+    alt: A blue panel with overlapping circles.
+    caption: Second frame with overlapping forms.
+  - image: carousel-three.svg
+    alt: A red panel with a compact grid.
+    caption: Third frame with denser detail.
 ```
 
 ## Cards and surfaces {#cards-and-surfaces}
@@ -91,15 +93,15 @@ layout: image-left
 flow: grid
 size: m
 width: normal
-
-- title: Prepare the source
-  text: Keep ordinary content and related images together.
-  image: card-stack.svg
-  link: https://example.com/source
-  badge-text: First
-- title: Review the result
-  text: Compare hierarchy, spacing, and media at several widths.
-  image: card-carousel.svg
-- title: Publish deliberately
-  text: A card without an image checks alignment within the same list.
+items:
+  - title: Prepare the source
+    text: Keep ordinary content and related images together.
+    image: card-stack.svg
+    link: https://example.com/source
+    badge-text: First
+  - title: Review the result
+    text: Compare hierarchy, spacing, and media at several widths.
+    image: card-carousel.svg
+  - title: Publish deliberately
+    text: A card without an image checks alignment within the same list.
 ```

@@ -4,9 +4,9 @@ import { splitNornaRenderedBlocks } from './lib/norna-markdown-blocks.mjs';
 
 const source = `# Dog Shelter
 
-Welcome to the shelter. {note-ref}
+Welcome to the shelter.[^margin:intro]
 
-{note: This is the page introduction.}
+[^margin:intro]: This is the page introduction.
 
 ## Our dogs {#dogs}
 
@@ -15,8 +15,9 @@ Meet the dogs.
 ### Rover
 
 \`\`\`image-stack
-- image: rover.svg
-  caption: Rover
+items:
+  - image: rover.svg
+    caption: Rover
 \`\`\`
 
 ## Contact
@@ -40,14 +41,14 @@ assert.deepEqual(model.sections.map(({ id, title }) => ({ id, title })), [
 assert.deepEqual(model.navigationHeadings, [
 	{ depth: 2, id: 'dogs', line: 10, parentId: null, title: 'Our dogs' },
 	{ depth: 3, id: 'rover', line: 14, parentId: 'dogs', title: 'Rover' },
-	{ depth: 2, id: 'contact', line: 21, parentId: null, title: 'Contact' },
+	{ depth: 2, id: 'contact', line: 22, parentId: null, title: 'Contact' },
 ]);
 assert.equal(model.notes.length, 1);
 assert.equal(model.blocks.length, 1);
 assert.equal(model.blocks[0].type, 'image-stack');
 assert.equal(model.blocks[0].images[0].image, 'rover.svg');
 assert.deepEqual(model.managedImages.map(({ image }) => image), ['rover.svg']);
-assert.deepEqual(model.markdownImages, [{ target: 'portrait.jpg', line: 25 }]);
+assert.deepEqual(model.markdownImages, [{ target: 'portrait.jpg', line: 26 }]);
 assert.deepEqual(model.diagnostics, []);
 
 const hotReloadBlocks = [
@@ -260,7 +261,7 @@ for (const [metadata, expectedMessage] of [
 	['highlight=2', /Unknown code fence metadata/],
 	['{2} title="late.js"', /line selector must come after/],
 	['title=""', /title cannot be empty/],
-	['title="open.js', /missing its closing double quote/],
+	['title="open.js', /JSON double-quoted string with a closing double quote/],
 	['{0}', /Invalid code line range/],
 	['{3-2}', /Invalid code line range/],
 	['{2,2}', /selected more than once/],

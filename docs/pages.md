@@ -602,8 +602,9 @@ The Markdown block still uses only the filename:
 
 ````md
 ```image-stack
-- image: diagram.svg
-  alt: The local workflow.
+items:
+  - image: diagram.svg
+    alt: The local workflow.
 ```
 ````
 

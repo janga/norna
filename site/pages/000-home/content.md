@@ -28,16 +28,16 @@ These examples use the same file-based model at very different scales.
 flow: grid
 size: m
 width: wide
-
-- title: Documentation that scales
-  text: This documentation is a Norna site. Its nested pages produce a persistent page tree and a separate outline for the current page where the hierarchy needs them.
-  link: /getting-started/install-norna/
-- title: A deliberately small complete site
-  text: The dog-shelter site is so small that its desktop navigation barely has work to do. It shows the simpler top navigation that Norna uses when a hierarchy would add little value.
-  link: https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/
-- title: One source, several visual directions
-  text: The Theme explorer keeps the content fixed while presets change typography, spacing, width, media, and color. The differences have their greatest effect and are easiest to compare on a desktop screen.
-  link: https://janga.github.io/norna/examples/theme-presets/
+items:
+  - title: Documentation that scales
+    text: This documentation is a Norna site. Its nested pages produce a persistent page tree and a separate outline for the current page where the hierarchy needs them.
+    link: /getting-started/install-norna/
+  - title: A deliberately small complete site
+    text: The dog-shelter site is so small that its desktop navigation barely has work to do. It shows the simpler top navigation that Norna uses when a hierarchy would add little value.
+    link: https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/
+  - title: One source, several visual directions
+    text: The Theme explorer keeps the content fixed while presets change typography, spacing, width, media, and color. The differences have their greatest effect and are easiest to compare on a desktop screen.
+    link: https://janga.github.io/norna/examples/theme-presets/
 ```
 
 ## One model as the site grows {#growth}

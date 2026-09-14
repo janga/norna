@@ -43,9 +43,11 @@ const createFixture = async (name) => {
 [install]: /guides/install/#steps
 
 \`\`\`card-list
-- title: Installation reference
-  text: Open the detailed reference.
-  link: /guides/install/reference/#details
+items:
+  - title: Installation reference
+    text: Open the detailed reference.
+    link: /guides/install/reference/#details
+  - {link: "/guides/install/\\u0023steps", title: "Escaped YAML link"} # Preserve comment
 \`\`\`
 `);
 	await writeFixtureFile(siteDir, 'pages/010-guides/category.yaml', 'label: Guides\n');
@@ -63,8 +65,9 @@ page:
 [Manual](../../manual.pdf)
 
 \`\`\`image-stack
-- image: example.svg
-  alt: Example diagram.
+items:
+  - image: example.svg
+    alt: Example diagram.
 \`\`\`
 `);
 	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/images/example.svg', '<svg viewBox="0 0 10 10"></svg>\n');
@@ -143,7 +146,8 @@ const assertSuccessfulResult = async (siteDir) => {
 	assert.match(homeSource, /\/reference\/overview\/install\/\?mode=fast#steps/);
 	assert.equal((homeSource.match(/^\[install\]:/gm) ?? []).length, 1);
 	assert.match(homeSource, /^\[install\]: \/reference\/overview\/install\/#steps$/m);
-	assert.match(homeSource, /link: \/reference\/overview\/install\/reference\/#details/);
+	assert.match(homeSource, /link: "\/reference\/overview\/install\/reference\/#details"/);
+	assert.match(homeSource, /\{link: "\/reference\/overview\/install\/#steps", title: "Escaped YAML link"\} # Preserve comment/);
 	assert.match(workflowSource, /\[Install\]\(\/reference\/overview\/install\/\)/);
 
 	const check = await runNorna(siteDir, ['content:check']);

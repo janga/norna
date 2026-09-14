@@ -80,22 +80,24 @@ page:
 Text.
 
 \`\`\`image-stack
-- image: karin.jpg
-  alt: Karin
+items:
+  - image: karin.jpg
+    alt: Karin
 \`\`\`
 
 ## Min konst {#min-konst}
 Text.
 
 \`\`\`image-stack
-- image: vav.jpeg
-  alt: Vav
-- image: missing.jpeg
-  alt: Missing
-- image: duplicate.jpg
-  alt: Duplicate one
-- image: duplicate.jpg
-  alt: Duplicate two
+items:
+  - image: vav.jpeg
+    alt: Vav
+  - image: missing.jpeg
+    alt: Missing
+  - image: duplicate.jpg
+    alt: Duplicate one
+  - image: duplicate.jpg
+    alt: Duplicate two
 \`\`\`
 
 ## Extra {#extra}
@@ -104,8 +106,9 @@ Text.
 Text.
 
 \`\`\`image-stack
-- image: home.jpg
-  alt: Home
+items:
+  - image: home.jpg
+    alt: Home
 \`\`\`
 `;
 
@@ -139,10 +142,11 @@ const carouselAspectRatioSite = `# Carousel Aspect Ratio
 Text.
 
 \`\`\`image-carousel
-- image: wide.png
-  alt: Wide
-- image: wider.png
-  alt: Wider
+items:
+  - image: wide.png
+    alt: Wide
+  - image: wider.png
+    alt: Wider
 \`\`\`
 `;
 
@@ -217,9 +221,9 @@ page:
 # Inline notes
 
 ## Intro {#intro}
-This paragraph has a note reference.{note-ref}
+This paragraph has a note reference.[^margin:context]
 
-{note: Additional context.}
+[^margin:context]: Additional context.
 
 \`\`\`text
 {note-ref}
@@ -227,7 +231,7 @@ This paragraph has a note reference.{note-ref}
 \`\`\`
 `;
 
-test('content:check accepts valid inline notes and ignores note syntax in code fences', async () => {
+test('content:check accepts named sidenotes and ignores note syntax in code fences', async () => {
 	await withTempProject({ site: inlineNoteSite, files: [] }, async (root) => {
 		const result = runContentScript(root, ['--check']);
 		const output = getOutput(result);
@@ -237,7 +241,7 @@ test('content:check accepts valid inline notes and ignores note syntax in code f
 	});
 });
 
-test('content:check accepts wrapped and explicit multiline inline notes', async () => {
+test('content:check accepts wrapped named sidenotes and definitions in later sections', async () => {
 	await withTempProject({
 		site: `---
 page:
@@ -247,18 +251,19 @@ page:
 # Multiline inline notes
 
 ## Wrapped {#wrapped}
-This paragraph has a formatter-wrapped note.{note-ref}
+This paragraph has a formatter-wrapped note.[^margin:wrapped]
 
-{note: This note was wrapped by
-an editor before its closing brace.}
+[^margin:wrapped]: This note was wrapped by
+    an editor using ordinary footnote continuation indentation.
 
 ## Explicit {#explicit}
-This paragraph has an explicit multiline note.{note-ref}
+This paragraph has an explicit multiline note.[^margin:explicit]
 
-{note:
-  This note uses the explicit
-  multiline form.
-}
+## Definitions
+
+[^margin:explicit]:
+    This note uses an indented
+    paragraph continuation.
 `,
 		files: [],
 	}, async (root) => {
@@ -270,7 +275,7 @@ This paragraph has an explicit multiline note.{note-ref}
 	});
 });
 
-test('content:check reports an unclosed multiline inline note', async () => {
+test('content:check rejects removed positional note syntax', async () => {
 	await withTempProject({
 		site: `---
 page:
@@ -291,12 +296,12 @@ and continues to the end of the file.
 		const output = getOutput(result);
 
 		assert.equal(result.status, 1, output);
-		assert.match(output, /The note starting on line \d+ is not closed\./);
-		assert.match(output, /End it with "\}" on its own line or at the end of the note text\./);
+		assert.match(output, /Positional notes are no longer supported/);
+		assert.match(output, /matching top-level definition/);
 	});
 });
 
-test('content:check rejects nested note syntax before a multiline note is closed', async () => {
+test('content:check rejects nested references and multiple paragraphs in sidenotes', async () => {
 	await withTempProject({
 		site: `---
 page:
@@ -306,16 +311,17 @@ page:
 # Nested inline note syntax
 
 ## Nested note {#nested-note}
-This paragraph has a note reference.{note-ref}
+This paragraph has a note reference.[^margin:paragraphs]
 
-{note: The first note is still open
-{note: A second note starts here.}
+[^margin:paragraphs]: First paragraph.
+
+    Second paragraph.
 
 ## Nested reference {#nested-reference}
-This paragraph has another note reference.{note-ref}
+This paragraph has another note reference.[^margin:nested]
 
-{note: This note is still open
-and contains {note-ref} before closing.}
+[^margin:nested]: A note cannot cite another note.[^nested]
+[^nested]: This ordinary note is nested inside the sidenote.
 `,
 		files: [],
 	}, async (root) => {
@@ -323,8 +329,8 @@ and contains {note-ref} before closing.}
 		const output = getOutput(result);
 
 		assert.equal(result.status, 1, output);
-		assert.match(output, /is not closed before another note starts on line \d+\./);
-		assert.match(output, /contains "\{note-ref\}" on line \d+\./);
+		assert.match(output, /A sidenote contains one paragraph/);
+		assert.match(output, /Move blocks, images, and note references into the page content/);
 	});
 });
 
@@ -338,9 +344,9 @@ page:
 # Literal inline note syntax
 
 ## Intro {#intro}
-This paragraph has a note reference.{note-ref}
+This paragraph has a note reference.[^margin:literal]
 
-{note: Write \\{note: ... to show escaped text, or use \`{note-ref}\` as inline code.}
+[^margin:literal]: Write \\{note: ... to show escaped text, or use \`[^margin:example]\` as inline code.
 `,
 		files: [],
 	}, async (root) => {
@@ -352,7 +358,7 @@ This paragraph has a note reference.{note-ref}
 	});
 });
 
-test('content:check rejects unpaired and repeated inline notes', async () => {
+test('content:check rejects missing and duplicate definitions and repeated sidenotes', async () => {
 	await withTempProject({
 		site: `---
 page:
@@ -362,13 +368,16 @@ page:
 # Invalid inline notes
 
 ## Orphan {#orphan}
-{note: This note has no reference.}
+[^margin:duplicate]: First definition.
+[^margin:duplicate]: Duplicate definition.
 
 ## Missing {#missing}
-This reference has no note.{note-ref}
+This reference has no note.[^margin:missing]
 
 ## Repeated {#repeated}
-This paragraph has {note-ref} two references {note-ref}.
+This paragraph has [^margin:repeated] two references [^margin:repeated].
+
+[^margin:repeated]: Reusing this sidenote is invalid.
 `,
 		files: [],
 	}, async (root) => {
@@ -376,9 +385,23 @@ This paragraph has {note-ref} two references {note-ref}.
 		const output = getOutput(result);
 
 		assert.equal(result.status, 1, output);
-		assert.match(output, /A "\{note: \.\.\.\}" requires a preceding paragraph containing "\{note-ref\}"\./);
-		assert.match(output, /contains "\{note-ref\}" but has no following "\{note: \.\.\.\}"/);
-		assert.match(output, /A paragraph may contain only one "\{note-ref\}"\./);
+		assert.match(output, /Duplicate definition for/);
+		assert.match(output, /Missing definition for/);
+		assert.match(output, /may be referenced only once/);
+	});
+});
+
+test('content:check warns for unused definitions, including definitions before the page title', async () => {
+	await withTempProject({
+		site: '[^unused]: An unused footnote.\n\n# Notes\n\nText[^margin:used].\n\n[^margin:used]: A used sidenote.\n[^margin:unused]: An unused sidenote.\n',
+		files: [],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+		assert.equal(result.status, 0, output);
+		assert.match(output, /Content check completed with warnings/);
+		assert.equal([...output.matchAll(/is unused/g)].length, 2, output);
+		assert.doesNotMatch(output, /content before/);
 	});
 });
 
@@ -490,16 +513,18 @@ page:
 Text.
 
 \`\`\`image-stack
-- image: move-me.jpg
-  alt: Move me
+items:
+  - image: move-me.jpg
+    alt: Move me
 \`\`\`
 
 ## Mitt hem {#mitt-hem}
 Text.
 
 \`\`\`image-stack
-- image: home.jpg
-  alt: Home
+items:
+  - image: home.jpg
+    alt: Home
 \`\`\`
 `;
 

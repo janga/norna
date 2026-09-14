@@ -24,7 +24,7 @@ const writePublicRoute = async (siteDir, route) => {
 	await writeFile(path.join(routeDir, 'index.html'), '<!doctype html><title>Fixture target</title>\n');
 };
 
-test('inline notes render as linked numbered CSS margin notes', async () => {
+test('named sidenotes render as linked lettered CSS margin notes', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/docs/\n');
@@ -37,29 +37,31 @@ page:
 
 ## Intro {#intro}
 
-The first paragraph points to an explanation.{note-ref}
+The first paragraph points to an explanation.[^margin:first]
 
-{note: This explanation names \`sitewide-content.yaml\`, links to the
-[site files](/faq/#site-files), and stays beside the paragraph on wide screens.}
+[^margin:first]: This explanation names \`sitewide-content.yaml\`, links to the
+    [site files](/faq/#site-files), and stays beside the paragraph on wide screens.
 
-The second paragraph has its own explanation.{note-ref}
+The second paragraph has its own explanation.[^margin:second]
 
-{note: This is the second explanation and links to the [FAQ](/faq/#second-note).}
+[^margin:second]: This is the second explanation and links to the [FAQ](/faq/#second-note).
 
-The third paragraph points to a link-only note.{note-ref}
+The third paragraph points to a link-only note.[^margin:third]
 
-{note: [Install ImageMagick.](/faq/#link-only-note)}
+[^margin:third]: [Install ImageMagick.](/faq/#link-only-note)
 `);
 		await writePublicRoute(siteDir, 'faq');
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
-		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-1" href="#note-home-intro-1" aria-label="Note 1" aria-describedby="note-home-intro-1">1<\/a><\/sup><span class="section-note section-note-margin" id="note-home-intro-1" aria-label="Note 1" role="note">/);
-		assert.match(html, /<a class="section-note-number" href="#note-ref-home-intro-1" aria-label="Note 1">\s*1\s*<\/a>/);
+		assert.match(html, /<sup class="section-note-ref"><a href="#norna-note:margin:6d617267696e3a6669727374" id="norna-note:ref:6d617267696e3a6669727374" aria-describedby="norna-note:margin:6d617267696e3a6669727374">a<\/a><\/sup>/);
+		assert.match(html, /<aside class="section-note section-note-margin" id="norna-note:margin:6d617267696e3a6669727374" role="note" aria-label="Note a">/);
+		assert.match(html, /aria-label="Back to reference a">a<\/a>/);
 		assert.match(html, /This explanation names <code>sitewide-content\.yaml<\/code>, links to the/);
 		assert.match(html, /<a href="\/docs\/faq\/#site-files">site files<\/a>/);
 		assert.doesNotMatch(html, /href="\/docs\/docs\/faq\/|href="docs\/faq\//);
-		assert.match(html, /<sup class="section-note-ref"><a id="note-ref-home-intro-2" href="#note-home-intro-2" aria-label="Note 2" aria-describedby="note-home-intro-2">2<\/a><\/sup><span class="section-note section-note-margin" id="note-home-intro-2" aria-label="Note 2" role="note">/);
+		assert.match(html, /aria-label="Note b"/);
+		assert.equal([...html.matchAll(/class="section-note-stack"/g)].length, 3);
 		assert.match(html, /This is the second explanation and links/);
 		assert.match(html, /<a href="\/docs\/faq\/#second-note">FAQ<\/a>/);
 		assert.match(html, /<a href="\/docs\/faq\/#link-only-note">Install ImageMagick\.<\/a>/);
@@ -81,9 +83,9 @@ page:
 
 # Page-title note
 
-The introduction points to an installation note.{note-ref}
+The introduction points to an installation note.[^margin:install]
 
-{note: [Install ImageMagick.](/faq/#install-imagemagick)}
+[^margin:install]: [Install ImageMagick.](/faq/#install-imagemagick)
 
 ## Intro {#intro}
 
@@ -147,8 +149,8 @@ About this fixture.
 			const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
 			assert.match(html, /<section data-footnotes class="footnotes">/);
 			assert.match(html, new RegExp(`<h2 class="sr-only" id="footnote-label">${locale.label}<\\/h2>`));
-			assert.match(html, /id="user-content-fnref-scope" data-footnote-ref aria-describedby="footnote-label">1<\/a>/);
-			assert.match(html, /id="user-content-fnref-scope-2" data-footnote-ref aria-describedby="footnote-label">1<\/a>/);
+			assert.match(html, /id="user-content-fnref-norna:73636f7065" data-footnote-ref aria-describedby="footnote-label">1<\/a>/);
+			assert.match(html, /id="user-content-fnref-norna:73636f7065-2" data-footnote-ref aria-describedby="footnote-label">1<\/a>/);
 			assert.match(html, new RegExp(`aria-label="${locale.backLabel} 1"`));
 			assert.match(html, new RegExp(`aria-label="${locale.backLabel} 1-2"`));
 			assert.match(html, /href="\/docs\/about\/">About page<\/a>/);
@@ -429,13 +431,14 @@ flow: stack
 size: l
 width: narrow
 
-- title: Adopt
-  text: Give a dog a new home.
-  image: adopt.svg
-  link: /adopt/
-  badge-text: Recommended
-- title: Donate
-  text: Support the shelter.
+items:
+  - title: Adopt
+    text: Give a dog a new home.
+    image: adopt.svg
+    link: /adopt/
+    badge-text: Recommended
+  - title: Donate
+    text: Support the shelter.
 \`\`\`
 `);
 		await mkdir(path.join(siteDir, 'pages', '000-home', 'images'), { recursive: true });
@@ -483,8 +486,9 @@ page:
 ## Help {#help}
 
 \`\`\`card-list
-- title: Adopt
-  image: missing.svg
+items:
+  - title: Adopt
+    image: missing.svg
 \`\`\`
 `);
 
@@ -520,7 +524,7 @@ page:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid card-list entry "- text: Missing title"\. Start each card with "- title: Card title"\./);
+				assert.match(error.output, /Block must be a YAML mapping with an items list\./);
 				return true;
 			},
 		);
@@ -547,15 +551,16 @@ flow: list
 size: huge
 width: full
 
-- title: Adopt
-  text: Give a dog a new home.
+items:
+  - title: Adopt
+    text: Give a dog a new home.
 \`\`\`
 `);
 
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid card-list layout "floating"\. Use one of: image-top, image-left, image-right\./);
+				assert.match(error.output, /Invalid Block\.layout "floating"\. Use one of: image-top, image-left, image-right\./);
 				return true;
 			},
 		);
@@ -579,15 +584,16 @@ page:
 \`\`\`card-list
 width: full
 
-- title: Adopt
-  text: Give a dog a new home.
+items:
+  - title: Adopt
+    text: Give a dog a new home.
 \`\`\`
 `);
 
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid card-list width "full"\. Use one of: text, narrow, normal, wide\./);
+				assert.match(error.output, /Invalid Block\.width "full"\. Use one of: text, narrow, normal, wide\./);
 				return true;
 			},
 		);
@@ -611,15 +617,16 @@ page:
 \`\`\`card-list
 size: huge
 
-- title: Adopt
-  text: Give a dog a new home.
+items:
+  - title: Adopt
+    text: Give a dog a new home.
 \`\`\`
 `);
 
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid card-list size "huge"\. Use one of: s, m, l, xl\./);
+				assert.match(error.output, /Invalid Block\.size "huge"\. Use one of: s, m, l, xl\./);
 				return true;
 			},
 		);
@@ -649,7 +656,7 @@ image hero.jpg
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid image-stack entry "image hero\.jpg"\. Start each image with "- image: filename\.jpg"\./);
+				assert.match(error.output, /image-stack: Invalid YAML:/);
 				return true;
 			},
 		);
@@ -682,7 +689,7 @@ page:
 			(error) => {
 				assert.match(error.output, /Unknown Norna block "norna-gallery-stack"\. Use one of: image-stack, image-carousel, card-list, page-list\./);
 				assert.match(error.output, /Use image-stack for one or more stacked images\./);
-				assert.match(error.output, /Example: ```image-stack\n- image: filename\.jpg\n```/);
+				assert.match(error.output, /Example: ```image-stack\nitems:\n  - image: filename\.jpg\n```/);
 				return true;
 			},
 		);
@@ -730,11 +737,11 @@ test('content:check explains renamed content block names', async () => {
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
 				assert.match(error.output, /Norna block "norna-image-stack" was renamed to "image-stack"/);
-				assert.match(error.output, /Example: ```image-stack\n- image: filename\.jpg\n```/);
+				assert.match(error.output, /Example: ```image-stack\nitems:\n  - image: filename\.jpg\n```/);
 				assert.match(error.output, /Norna block "norna-image-carousel" was renamed to "image-carousel"/);
 				assert.match(error.output, /Norna block "norna-carousel" was renamed to "image-carousel"/);
 				assert.match(error.output, /Norna block "carousel" was renamed to "image-carousel"/);
-				assert.match(error.output, /Example: ```image-carousel\n- image: first\.jpg\n- image: second\.jpg\n```/);
+				assert.match(error.output, /Example: ```image-carousel\nitems:\n  - image: first\.jpg\n  - image: second\.jpg\n```/);
 				assert.match(error.output, /Norna block "norna-card-list" was renamed to "card-list"/);
 				assert.match(error.output, /Example: ```card-list\nlayout: image-top/);
 				assert.match(error.output, /Norna block "norna-page-list" was renamed to "page-list"/);
@@ -851,7 +858,8 @@ page:
 ## Intro {#intro}
 
 ~~~image-stack
-- image: hero.jpg
+items:
+  - image: hero.jpg
 ~~~
 `);
 
@@ -876,7 +884,8 @@ page:
 
 \`\`\`\`md
 \`\`\`image-stack
-- image: missing-example.jpg
+items:
+  - image: missing-example.jpg
 \`\`\`
 \`\`\`\`
 `);
@@ -908,7 +917,7 @@ image-stack
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
 				assert.match(error.output, /Found "image-stack" outside a code block\./);
-				assert.match(error.output, /Start the block like this:\n```image-stack\n- image: filename\.jpg\n```/);
+				assert.match(error.output, /Start the block like this:\n```image-stack\nitems:\n  - image: filename\.jpg\n```/);
 				return true;
 			},
 		);
@@ -960,7 +969,8 @@ page:
 ## Intro {#intro}
 
 \`\`\`image-stack
-- image: hero.jpg
+items:
+  - image: hero.jpg
 ~~~
 `);
 
@@ -995,22 +1005,24 @@ image broken.jpg
 \`\`\`
 
 \`\`\`image-stack
-- image: missing-intro.jpg
-  alt: Missing intro
+items:
+  - image: missing-intro.jpg
+    alt: Missing intro
 \`\`\`
 
 ## More {#more}
 
 \`\`\`image-stack
-- image: missing-more.jpg
-  alt: Missing more
+items:
+  - image: missing-more.jpg
+    alt: Missing more
 \`\`\`
 `);
 
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Invalid image-stack entry "image broken\.jpg"\. Start each image with "- image: filename\.jpg"\./);
+				assert.match(error.output, /image-stack: Invalid YAML:/);
 				assert.match(error.output, /Image "missing-intro\.jpg" does not exist at .*site\/pages\/000-home\/images\/missing-intro\.jpg or anywhere under any page image root\./);
 				assert.match(error.output, /Image "missing-more\.jpg" does not exist at .*site\/pages\/000-home\/images\/missing-more\.jpg or anywhere under any page image root\./);
 				return true;

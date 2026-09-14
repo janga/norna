@@ -7,9 +7,9 @@ page:
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed posuere consectetur
 est at lobortis. This deepest page should show the page hierarchy on the left
-and its H2 and H3 outline on the right at a wide desktop size.{note-ref}
+and its H2 and H3 outline on the right at a wide desktop size.[^margin:layout-1]
 
-{note: With the right contents rail visible, this note stays in the reading flow. Focus reading may move it into newly available margin space.}
+[^margin:layout-1]: With the right contents rail visible, this note stays in the reading flow. Focus reading may move it into newly available margin space.
 
 ## Adaptive Table {#adaptive-table}
 

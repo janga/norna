@@ -25,7 +25,7 @@ const requiredRichHelp = {
 	'content-frontmatter.schema.json': ['page', 'navigation'],
 };
 const manifest = JSON.parse(await readFile(path.join(root, 'schemas', 'manifest.json'), 'utf8'));
-assert.equal(manifest.editorApiVersion, 1);
+assert.equal(manifest.editorApiVersion, 2);
 assert.equal(manifest.schemaVersion, 3);
 assert.equal(manifest.files.category, 'category.schema.json');
 assert.equal(manifest.files.pageTheme, 'page-theme.schema.json');

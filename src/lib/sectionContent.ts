@@ -48,13 +48,6 @@ type PageListItem = {
 	pathname: string;
 	description?: string;
 };
-type InlineNote = {
-	markdown: string;
-	number: number;
-	id: string;
-	referenceId: string;
-	html?: string;
-};
 export type SectionContentBlock =
 	| { type: 'html'; html: string }
 	| { type: 'tabs'; index: number; panels: Array<{ label: string; contentBlocks: SectionContentBlock[] }> }
@@ -96,43 +89,6 @@ const prepareContentHtml = (html: string) =>
 		stripImageProvenanceComments(html),
 	);
 
-const noteDeclarationParagraphRegex = /<p>\s*\{note:\s*[\s\S]*?\}\s*<\/p>/gi;
-const htmlCodeRegionRegex = /<pre\b[\s\S]*?<\/pre>|<code\b[\s\S]*?<\/code>/gi;
-
-const replaceHtmlOutsideCode = (html: string, transform: (value: string) => string) => {
-	let result = '';
-	let cursor = 0;
-
-	for (const match of html.matchAll(htmlCodeRegionRegex)) {
-		const start = match.index ?? 0;
-		result += transform(html.slice(cursor, start));
-		result += match[0];
-		cursor = start + match[0].length;
-	}
-
-	return result + transform(html.slice(cursor));
-};
-
-const applyInlineNoteMarkup = (html: string, notes: InlineNote[]) => {
-	let referenceIndex = 0;
-	const withReferences = replaceHtmlOutsideCode(html, (value) => value.replace(/\{note-ref\}/g, () => {
-		const note = notes[referenceIndex];
-		if (!note) return '{note-ref}';
-
-		referenceIndex += 1;
-		return [
-			'\u2060',
-			`<sup class="section-note-ref"><a id="${note.referenceId}" href="#${note.id}" aria-label="Note ${note.number}" aria-describedby="${note.id}">${note.number}</a></sup>`,
-			`<span class="section-note section-note-margin" id="${note.id}" aria-label="Note ${note.number}" role="note">`,
-			`<a class="section-note-number" href="#${note.referenceId}" aria-label="Note ${note.number}">${note.number}</a>`,
-			`<span class="section-note-content">${note.html ?? ''}</span>`,
-			'</span>',
-		].join('');
-	}));
-
-	return withReferences.replace(noteDeclarationParagraphRegex, '');
-};
-
 const applyH3HeadingIds = (
 	html: string,
 	headings: Array<{ id: string | null }>,
@@ -156,27 +112,6 @@ const applyH3HeadingIds = (
 };
 
 const getImageSourceKey = (page: SitePage, image: string) => `pages/${page.pageDirectory}/images/${image}`;
-
-const renderInlineNoteMarkdown = async (markdown: string) => {
-	const result = await markdownToHtml(markdown, {
-		features: {
-			gfm: true,
-			smartPunctuation: true,
-		},
-	});
-
-	if (/<img\b/i.test(result.html)) {
-		throw new Error('Inline notes cannot contain images. Use a Norna image block with a caption instead.');
-	}
-
-	const inlineHtml = result.html.trim();
-	const paragraph = inlineHtml.match(/^<p>([\s\S]*)<\/p>$/i);
-	if (!paragraph) {
-		throw new Error('Inline notes support inline Markdown only. Move headings, lists, and separate paragraphs into the page content.');
-	}
-
-	return paragraph[1] ?? '';
-};
 
 const renderHeadingTitleHtml = async (headingSource: string) => {
 	const headingMarkdown = headingSource
@@ -215,14 +150,8 @@ const resolveContentBlocks = async (
 	blocks: ParsedNornaBlock[],
 	page: SitePage,
 	childPages: SitePage[],
-	inlineNotes: InlineNote[] = [],
 ) => {
-	const renderedNotes = await Promise.all(inlineNotes.map(async (note) => ({
-		...note,
-		html: await renderInlineNoteMarkdown(note.markdown),
-	})));
-	const renderedHtml = applyInlineNoteMarkup(html, renderedNotes);
-	const splitBlocks = splitNornaRenderedBlocks(renderedHtml, blocks) as Array<
+	const splitBlocks = splitNornaRenderedBlocks(html, blocks) as Array<
 		{ type: 'html'; html: string } | ParsedNornaBlock
 	>;
 	const resolvedBlocks: SectionContentBlock[] = [];
@@ -280,6 +209,8 @@ export const getSectionsContent = async (
 	childPages: SitePage[] = [],
 ) => {
 	const pageDocument = page.markdownDocument;
+	const noteError = pageDocument.noteDiagnostics.find((issue) => issue.severity === 'error');
+	if (noteError) throw new Error(noteError.message);
 	const tabError = pageDocument.diagnostics.find((issue) => issue.code === 'invalid-content-tabs');
 	if (tabError) throw new Error(tabError.message);
 	const sourceLabel = page.contentLabel;
@@ -289,7 +220,6 @@ export const getSectionsContent = async (
 	}
 	const sections: ResolvedSection[] = [];
 	const sectionIds = new Set<string>();
-	let nextNoteNumber = 1;
 	const pageHeadingCount = pageDocument.pageHeadings.length;
 
 	if (pageHeadingCount !== 1 || pageDocument.regions[0]?.kind !== 'page-intro') {
@@ -324,26 +254,13 @@ export const getSectionsContent = async (
 			throw new Error(calloutErrors[0].message);
 		}
 
-		const inlineNotes = bodySection.notes.map((note) => {
-			const number = nextNoteNumber;
-			nextNoteNumber += 1;
-			const pageKey = page.pageId || 'home';
-			const noteKey = `${pageKey}-${id ?? 'page-title'}-${number}`;
-			return {
-				...note,
-				number,
-				id: `note-${noteKey}`,
-				referenceId: `note-ref-${noteKey}`,
-			};
-		});
-
 		sections.push({
 			id,
 			title,
 			titleHtml: await renderHeadingTitleHtml(bodySection.heading.source),
 			headingLevel,
 			contentBlocks: groupRenderedTabs(
-				await resolveContentBlocks(content, bodySection.blocks, page, childPages, inlineNotes),
+				await resolveContentBlocks(content, bodySection.blocks, page, childPages),
 				bodySection.tabGroups,
 			),
 		});

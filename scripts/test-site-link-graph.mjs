@@ -96,8 +96,9 @@ const workflowsSource = `# Workflows
 ## Local work {#local}
 
 \`\`\`card-list
-- title: Installation
-  link: /guides/installation/#details
+items:
+  - title: Installation
+    link: /guides/installation/#details
 \`\`\`
 `;
 

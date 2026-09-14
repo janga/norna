@@ -191,6 +191,7 @@
 
 .card-list-content p:not(.card-list-badge) {
 	margin: 0;
+	white-space: pre-line;
 	font-size: calc(var(--section-body-font-size-desktop, 1rem) * var(--card-list-text-scale));
 	line-height: var(--section-body-line-height, 1.5);
 }
@@ -672,6 +673,10 @@
 	margin-inline: var(--layout-inline-start-margin) var(--layout-inline-end-margin);
 	font-size: var(--section-caption-font-size-desktop, 0.95rem);
 	text-align: var(--section-caption-align-desktop, center);
+}
+
+.image-meta .image-details > span {
+	white-space: pre-line;
 }
 
 :root[data-image-presentation='prose-aligned'] .image-stack .image-meta {

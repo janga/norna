@@ -3,7 +3,14 @@ import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { markdownToMdast } from 'satteri';
+import { parseContentTabs } from './lib/content-tabs.mjs';
+import { readImageDimensions } from './lib/image-dimensions.mjs';
+import {
+	extractInlineNoteDiagnostics,
+	extractNornaMarkdownBlockDiagnostics,
+} from './lib/norna-markdown-blocks.mjs';
 import { parsePageMarkdownSource } from './lib/page-markdown.mjs';
+import { getSemanticCalloutDiagnostics } from './lib/semantic-callouts.mjs';
 import { renderThemePresetComparison } from './build-theme-preset-comparison.mjs';
 import {
 	getExampleRelativePublicPath,
@@ -131,6 +138,97 @@ const checkObsoleteSiteFiles = async () => {
 		.map((filePath) => path.relative(repoRoot, filePath));
 
 	assert.deepEqual(obsolete, [], `Obsolete Norna site files:\n${obsolete.join('\n')}`);
+};
+
+const checkDocumentedContentSyntax = async () => {
+	const documentationFiles = (await readdir(path.join(repoRoot, 'docs')))
+		.filter((name) => name.endsWith('.md'))
+		.map((name) => path.join(repoRoot, 'docs', name));
+	documentationFiles.push(path.join(repoRoot, 'docs', 'design', 'norna-diagram-design.md'));
+	const siteFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'pages'));
+	let blockCount = 0;
+
+	const checkMarkdown = (source, label) => {
+		const blocks = extractNornaMarkdownBlockDiagnostics(source, { label });
+		const tabs = parseContentTabs(source, { label });
+		const notes = extractInlineNoteDiagnostics(source, { label, tabResult: tabs });
+		const tree = markdownToMdast(source);
+		const errors = [
+			...blocks.errors,
+			...tabs.diagnostics,
+			...notes.errors,
+			...getSemanticCalloutDiagnostics(tree, { label }),
+		].filter((issue) => issue.severity !== 'warning');
+		assert.deepEqual(errors, [], `${label}: invalid documented content syntax.`);
+		blockCount += blocks.blocks.length;
+
+		const visit = (node) => {
+			if (node.type === 'code' && ['md', 'markdown', null].includes(node.lang)) {
+				checkMarkdown(node.value, `${label}, sample at line ${node.position.start.line}`);
+			}
+			for (const child of node.children ?? []) visit(child);
+		};
+		visit(tree);
+	};
+
+	for (const filePath of [...documentationFiles, ...siteFiles]) {
+		checkMarkdown(await readFile(filePath, 'utf8'), path.relative(repoRoot, filePath));
+	}
+	assert.ok(blockCount > 0, 'Documentation must exercise structured content blocks.');
+
+	for (const filePath of siteFiles.filter((filePath) => path.basename(filePath) === 'content.md')) {
+		const model = await parsePageMarkdownSource(await readFile(filePath, 'utf8'));
+		assert.deepEqual(model.diagnostics.filter((issue) => issue.severity === 'error'), [],
+			`${path.relative(repoRoot, filePath)} must remain a valid maintained page.`);
+		for (const image of model.regions.flatMap((region) => region.managedImages)) {
+			const imagePath = path.join(path.dirname(filePath), 'images', image.image);
+			assert.ok(existsSync(imagePath), `Missing documentation image: ${path.relative(repoRoot, imagePath)}`);
+			const dimensions = await readImageDimensions(imagePath);
+			assert.ok(dimensions?.width > 0 && dimensions?.height > 0,
+				`Documentation image must have intrinsic dimensions: ${path.relative(repoRoot, imagePath)}`);
+		}
+	}
+};
+
+const checkSinglePageDiagramSource = async () => {
+	const directory = path.join(repoRoot, 'site', 'pages', '020-getting-started', 'pages', '020-grow-your-site');
+	const model = await parsePageMarkdownSource(await readFile(path.join(directory, 'content.md'), 'utf8'));
+	const section = model.sections.find((section) => section.id === 'single-page-site');
+	const tree = markdownToMdast(section.bodyMarkdown);
+	const sample = tree.children.find((node) => node.type === 'code' && node.lang === 'md');
+	assert.ok(sample, 'The single-page diagram needs its corresponding Markdown sample.');
+	const blocks = markdownToMdast(sample.value).children.filter((node) => node.type === 'code' && node.lang === 'image-stack');
+	assert.equal(blocks.length, 2, 'The single-page diagram demonstrates two image stacks.');
+	const diagram = await readFile(path.join(directory, 'images', 'single-page-site.svg'), 'utf8');
+	for (const block of blocks) {
+		const lines = ['```image-stack', ...block.value.split('\n').map((line) => line.trim()), '```'];
+		const pattern = lines.map((line) => (
+			`<text class="code" [^>]*>${line.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</text>`
+		)).join('\\s*');
+		assert.match(diagram, new RegExp(pattern), 'SVG image-block text must match the guide\'s YAML example in order.');
+	}
+};
+
+const checkEditorFormattingGuidance = async () => {
+	for (const relativePath of [
+		'docs/editor-support.md',
+		'site/pages/035-faq/pages/030-content-and-images/content.md',
+	]) {
+		const source = await readFile(path.join(repoRoot, relativePath), 'utf8');
+		const tree = markdownToMdast(source);
+		const settings = tree.children.filter((node) => (
+			node.type === 'code' && node.lang === 'json' && node.value.includes('editor.formatOnSave')
+		));
+		assert.equal(settings.length, 1, `${relativePath}: show one scoped Markdown formatting setting.`);
+		assert.deepEqual(JSON.parse(settings[0].value), { '[markdown]': { 'editor.formatOnSave': false } },
+			`${relativePath}: disable only Markdown format-on-save, without prescribing a formatter.`);
+		const prose = source.replace(/\s+/g, ' ');
+		assert.ok(prose.includes('Norna does not repair Markdown during saves'),
+			`${relativePath}: do not promise save-time syntax repair.`);
+		assert.match(prose, /supported setup uses VS Code and Red Hat YAML without a Markdown formatter/);
+		assert.match(prose, /does not guarantee compatibility with arbitrary formatter settings/);
+		assert.doesNotMatch(prose, /normalizes a recognized `content\.md` when it is saved/);
+	}
 };
 
 const formatReaderDisplay = () => 'Reading width and Appearance always available; Focus reading when navigation resolves to tree';
@@ -304,6 +402,18 @@ const checkPublishedExampleReferences = async () => {
 		assert.ok(sourceBlock, `${id} must show its Markdown source.`);
 		const liveSource = section.bodyMarkdown.slice(0, sourceBlock.position.start.offset).trim();
 		assert.equal(sourceBlock.value.trim(), liveSource, `${id}: shown source must exactly match the live example.`);
+		if (id === 'image-carousels') {
+			assert.deepEqual(section.blocks[0].images.map((image) => image.caption), [
+				'First frame: a broad direction.',
+				'Second frame: a closer relationship.',
+				'Third frame: a denser detail.',
+			], 'Quoted YAML captions must preserve the displayed text, including colons.');
+		}
+		if (id === 'sidenotes') {
+			assert.deepEqual(section.notes.map(({ identifier, marker }) => ({ identifier, marker })), [
+				{ identifier: 'margin:available-space', marker: 'a' },
+			], 'The live named sidenote must use a letter without counting its source sample.');
+		}
 	}
 	for (const [id, language, relativePath] of [
 		['page-list', 'md', 'fixtures/child-page-list/site/pages/010-help-a-dog/content.md'],
@@ -429,6 +539,9 @@ const checkPublishedExampleReferences = async () => {
 await checkLocalMarkdownLinks();
 await checkObsoleteDocumentationReferences();
 await checkObsoleteSiteFiles();
+await checkDocumentedContentSyntax();
+await checkSinglePageDiagramSource();
+await checkEditorFormattingGuidance();
 await checkThemePresetReference();
 await checkSitemapReference();
 await checkProductTour();
@@ -440,4 +553,4 @@ for (const match of llms.matchAll(/https:\/\/raw\.githubusercontent\.com\/janga\
 	assert.ok(existsSync(path.join(repoRoot, decodeURIComponent(match[1]))), `llms.txt target is missing: ${match[1]}`);
 }
 
-console.log('ok - documentation links, source references, preset defaults, and llms.txt targets resolve');
+console.log('ok - documentation links, content syntax, source snippets, images, preset defaults, and llms.txt targets resolve');

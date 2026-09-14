@@ -64,4 +64,28 @@ const getYamlSchemaSnippetCompletions = ({ schema, source, offset, lineText }) =
 		}));
 };
 
-module.exports = { getYamlSchemaSnippetCompletions };
+const getYamlPropertyCompletionContext = ({ source, line, schema }) => {
+	const lines = source.split(/\r?\n/);
+	const prefix = lines[line]?.match(/^( *)(?:[a-zA-Z][a-zA-Z0-9-]*)?$/);
+	if (!prefix) return null;
+	const sentinel = '__norna_editor_property__';
+	lines[line] = `${prefix[1]}${sentinel}: null`;
+	const document = parseDocument(lines.join('\n'));
+	if (document.errors.length) return null;
+	const findOwner = (node, currentSchema) => {
+		if (!isMap(node) || !currentSchema?.properties) return null;
+		if (node.has(sentinel)) return {
+			currentSchema,
+			currentIndent: prefix[1].length,
+			existingKeys: new Set(node.items.map((pair) => pair.key?.value)),
+		};
+		for (const pair of node.items) {
+			const found = findOwner(pair.value, currentSchema.properties[pair.key?.value]);
+			if (found) return found;
+		}
+		return null;
+	};
+	return findOwner(document.contents, schema);
+};
+
+module.exports = { getYamlSchemaSnippetCompletions, getYamlPropertyCompletionContext };

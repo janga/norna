@@ -361,7 +361,7 @@ const createReferenceChanges = ({ graph, mappings }) => {
 		const value = `${intent.lookupPathname}${getTargetSuffix(reference.targetSource)}`;
 		const key = `${reference.sourceContentFile.contentPath}:${reference.targetRange.start}:${reference.targetRange.end}`;
 		const existing = changeKeys.get(key);
-		if (existing && existing.value !== value) {
+		if (existing && existing.to !== value) {
 			throw new Error(`One link target in ${reference.sourceContentFile.contentLabel} produced conflicting page-move edits.`);
 		}
 		if (existing) continue;
@@ -372,7 +372,7 @@ const createReferenceChanges = ({ graph, mappings }) => {
 			line: reference.definitionLine ?? reference.line,
 			start: reference.targetRange.start,
 			to: value,
-			value,
+			value: reference.yamlScalar ? JSON.stringify(value) : value,
 		};
 		changeKeys.set(key, change);
 		if (!changesByPath.has(reference.sourceContentFile.contentPath)) {

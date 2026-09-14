@@ -16,9 +16,9 @@ You need:
 - ImageMagick before adding JPEG or PNG images through Norna image blocks.
 
 Norna needs ImageMagick to prepare raster images for responsive layouts. Install
-it separately for your operating system when the site uses those formats.{note-ref} SVG images do not require it.
+it separately for your operating system when the site uses those formats.[^margin:imagemagick] SVG images do not require it.
 
-{note: [How to install ImageMagick.](/faq/installation/#install-imagemagick)}
+[^margin:imagemagick]: [How to install ImageMagick.](/faq/installation/#install-imagemagick)
 
 ```sh
 # Create a new site project in my-site/
