@@ -12,7 +12,6 @@ test('overflow controls seal the table header through responsive rail transition
 	const section = page.locator('.site-section').filter({ has: page.locator('#adaptive-table') });
 	const frame = section.locator('[data-table-frame]');
 	const table = frame.locator('table');
-	const tableNavigation = frame.locator('[data-table-navigation]');
 
 	await expect(frame).toHaveAttribute('data-table-ready', 'true');
 	await table.evaluate((element) => {
@@ -46,10 +45,10 @@ test('overflow controls seal the table header through responsive rail transition
 		const stickyOffset = await page.evaluate(() => Number.parseFloat(
 			getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
 		));
-		await expect.poll(async () => (await tableNavigation.boundingBox())?.y).toBeCloseTo(stickyOffset, 0);
+		await expect.poll(async () => (await frame.locator('.norna-table-sticky-context').boundingBox())?.y).toBeCloseTo(stickyOffset, 0);
 		const geometry = await frame.evaluate((element) => {
 			const navigation = element.querySelector<HTMLElement>('[data-table-navigation]');
-			const controls = element.querySelector<HTMLElement>('.norna-table-navigation-buttons');
+			const controls = element.querySelector<HTMLElement>('[data-table-scrollbar]');
 			const heading = element.querySelector<HTMLElement>('[data-table-sticky-heading]');
 			const originalHeading = element.querySelector<HTMLElement>('thead th');
 			const visualHeading = element.querySelector<HTMLElement>('.norna-table-sticky-heading-cell');
@@ -79,10 +78,9 @@ test('overflow controls seal the table header through responsive rail transition
 			};
 
 			const navigationBounds = navigation.getBoundingClientRect();
-			const controlsBounds = controls.getBoundingClientRect();
-			const sampleX = navigationBounds.left + Math.max(1, (controlsBounds.left - navigationBounds.left) / 2);
+			const sampleX = navigationBounds.left + navigationBounds.width / 2;
 			const sampleY = navigationBounds.top + (navigationBounds.height / 2);
-			const cellBehindCarrier = Array.from(element.querySelectorAll('tbody td')).some((cell) => {
+			const cellBehindCarrier = Array.from(element.querySelectorAll('tbody td, tbody th')).some((cell) => {
 				const rectangle = cell.getBoundingClientRect();
 				return rectangle.left <= sampleX
 					&& rectangle.right >= sampleX
@@ -98,11 +96,9 @@ test('overflow controls seal the table header through responsive rail transition
 				frame: bounds(element),
 				heading: bounds(heading),
 				headingBackground: headingStyle.backgroundColor,
-				headingZIndex: Number.parseInt(headingStyle.zIndex, 10),
 				navigation: bounds(navigation),
 				navigationAlpha: backgroundAlpha(navigationStyle.backgroundColor),
 				navigationBackground: navigationStyle.backgroundColor,
-				navigationZIndex: Number.parseInt(navigationStyle.zIndex, 10),
 				originalHeading: bounds(originalHeading),
 				visualHeading: bounds(visualHeading),
 			};
@@ -115,16 +111,15 @@ test('overflow controls seal the table header through responsive rail transition
 		expect(geometry.navigation.width).toBeCloseTo(geometry.frame.width, 0);
 		expect(geometry.heading.x).toBeCloseTo(geometry.frame.x, 0);
 		expect(geometry.heading.width).toBeCloseTo(geometry.frame.width, 0);
-		expect(geometry.heading.y).toBeCloseTo(
-			geometry.navigation.y + geometry.navigation.height,
+		expect(geometry.navigation.y).toBeCloseTo(
+			geometry.heading.y + geometry.heading.height,
 			0,
 		);
 		expect(geometry.controls.x + geometry.controls.width).toBeCloseTo(
 			geometry.navigation.x + geometry.navigation.width,
 			0,
 		);
-		expect(geometry.controls.x).toBeGreaterThan(geometry.navigation.x);
-		expect(geometry.navigationZIndex).toBeGreaterThan(geometry.headingZIndex);
+		expect(geometry.controls.x).toBeCloseTo(geometry.navigation.x, 0);
 		expect(Math.abs(geometry.visualHeading.x - geometry.originalHeading.x)).toBeLessThanOrEqual(1.5);
 		expect(Math.abs(geometry.visualHeading.width - geometry.originalHeading.width)).toBeLessThanOrEqual(1.5);
 		const pageWidth = await page.evaluate(() => ({

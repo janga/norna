@@ -576,15 +576,9 @@
 
 		.image-inspector,
 		.image-inspector-controls button,
-		.norna-table-navigation button,
 		.managed-image-inspection-affordance {
 			border: 1px solid CanvasText;
 			box-shadow: none;
-		}
-
-		.norna-table-navigation button::before {
-			border: 0;
-			background: transparent;
 		}
 
 	:is(.display-settings button, .display-settings-segmented span, .mobile-nav-menu > summary, .site-banner-dismiss) {

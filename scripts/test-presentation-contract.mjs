@@ -264,8 +264,8 @@ assert.match(
 );
 assert.match(
 	stylesheet,
-	/\.norna-table-frame\[data-table-overflow='true'\]\[data-table-at-end='false'\]::after[\s\S]*?opacity:\s*1/u,
-	'a horizontally clipped table must expose a visible cue toward hidden columns',
+	/\.norna-table-scrollbar-thumb::before\s*\{[\s\S]*?background:/u,
+	'a horizontally clipped table must expose a persistent scrollbar thumb',
 );
 assert.match(
 	stylesheet,
@@ -311,10 +311,10 @@ for (const requiredSource of [
 	"frame.dataset.tableAtEnd = isAtEnd ? 'true' : 'false'",
 	"frame.dataset.tableStickyHeading = stickyHeadingReady ? 'true' : 'false'",
 	"tableNavigation.hidden = !hasOverflow",
-	"previousButton.disabled = isAtStart",
-	"nextButton.disabled = isAtEnd",
-	"Math.round(scrollRegion.clientWidth * 0.8)",
-	"scrollRegion.scrollBy({",
+	"scrollbar?.setAttribute('aria-controls', scrollRegion.id)",
+	"scrollRegion.clientWidth * 0.8",
+	"scrollRegion.scrollTo({",
+	"scrollbar.setAttribute('aria-valuenow', String(Math.round(progress * 100)))",
 	"setOverflowDescription(hasOverflow)",
 	"scrollRegion.setAttribute('tabindex', '0')",
 	'scrollRegion.removeAttribute(\'tabindex\')',

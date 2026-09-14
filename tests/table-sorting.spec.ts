@@ -63,6 +63,7 @@ test('keeps the native source table without JavaScript', async ({ browser }) => 
 	const table = page.locator('[data-table-frame] table');
 
 	await expect(table.locator('[data-table-sort-button]')).toHaveCount(0);
+	await expect(page.getByRole('scrollbar')).toHaveCount(0);
 	await expect(getColumnValues(table, 0)).resolves.toEqual(['Örebro', 'Zebra', 'Åland', 'Älmhult']);
 	await context.close();
 });
@@ -80,6 +81,111 @@ const openLongTable = async (page) => {
 	await frame.evaluate((element) => window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 350));
 	return frame;
 };
+
+test('persistent scrollbar stays visible, represents the viewport, and supports dragging and track clicks', async ({ page }) => {
+	const frame = await openLongTable(page);
+	const scrollbar = frame.getByRole('scrollbar');
+	const thumb = scrollbar.locator('[data-table-scrollbar-thumb]');
+	const region = frame.locator('[data-table-scroll]');
+	await expect(scrollbar).toBeVisible();
+	await expect(scrollbar).toHaveAttribute('aria-orientation', 'horizontal');
+	await expect(scrollbar).toHaveAttribute('aria-controls', await region.getAttribute('id') as string);
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '0');
+	const barBounds = (await scrollbar.boundingBox())!;
+	const headingBounds = (await frame.locator('[data-table-sticky-heading]').boundingBox())!;
+	expect(barBounds.y).toBeCloseTo(headingBounds.y + headingBounds.height, 0);
+	expect(barBounds.height).toBeGreaterThanOrEqual(24);
+	await expect(frame.locator('[data-table-scroll-next], [data-table-scroll-previous]')).toHaveCount(0);
+	const thumbBounds = (await thumb.boundingBox())!;
+	const fraction = await region.evaluate((element) => element.clientWidth / element.scrollWidth);
+	expect(thumbBounds.width / barBounds.width).toBeCloseTo(fraction, 2);
+	expect(barBounds.y).toBeGreaterThanOrEqual(0);
+	expect(barBounds.y + barBounds.height).toBeLessThan(800);
+	expect((await region.boundingBox())!.y + (await region.boundingBox())!.height).toBeGreaterThan(800);
+
+	const oldScrollY = await page.evaluate(() => scrollY);
+	await page.mouse.move(thumbBounds.x + thumbBounds.width / 2, thumbBounds.y + thumbBounds.height / 2);
+	await page.mouse.down();
+	await page.mouse.move(barBounds.x + barBounds.width, barBounds.y + barBounds.height / 2, { steps: 8 });
+	await page.mouse.up();
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '100');
+	await expect(scrollbar).toBeFocused();
+	expect(await page.evaluate(() => scrollY)).toBeCloseTo(oldScrollY, 0);
+	await scrollbar.click({ position: { x: 1, y: barBounds.height / 2 } });
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '0');
+
+	await region.evaluate((element) => { element.scrollLeft = (element.scrollWidth - element.clientWidth) / 2; });
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '50');
+	await scrollbar.press('ArrowRight');
+	await expect.poll(async () => Number(await scrollbar.getAttribute('aria-valuenow'))).toBeGreaterThan(50);
+});
+
+test('persistent scrollbar supports keyboard movement and RTL positions without scrolling the document', async ({ page }) => {
+	const frame = await openLongTable(page);
+	const scrollbar = frame.getByRole('scrollbar');
+	const region = frame.locator('[data-table-scroll]');
+	await scrollbar.focus();
+	const oldScrollY = await page.evaluate(() => scrollY);
+	for (const key of ['ArrowRight', 'PageDown', 'End']) {
+		await page.keyboard.press(key);
+		await expect.poll(async () => Number(await scrollbar.getAttribute('aria-valuenow'))).toBeGreaterThan(0);
+	}
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '100');
+	await page.keyboard.press('PageUp');
+	await expect.poll(async () => Number(await scrollbar.getAttribute('aria-valuenow'))).toBeLessThan(100);
+	await page.keyboard.press('Home');
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '0');
+	expect(await page.evaluate(() => scrollY)).toBeCloseTo(oldScrollY, 0);
+
+	await page.evaluate(() => { document.documentElement.dir = 'rtl'; });
+	await settleLayout(page);
+	await page.keyboard.press('Home');
+	const atStart = await scrollbar.locator('[data-table-scrollbar-thumb]').boundingBox();
+	const track = (await scrollbar.boundingBox())!;
+	expect(atStart!.x + atStart!.width).toBeCloseTo(track.x + track.width, 0);
+	await page.keyboard.press('ArrowLeft');
+	await expect.poll(() => region.evaluate((element) => element.scrollLeft)).toBeLessThan(0);
+	await page.keyboard.press('End');
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '100');
+	expect((await scrollbar.locator('[data-table-scrollbar-thumb]').boundingBox())!.x).toBeCloseTo(track.x, 0);
+	await page.keyboard.press('ArrowRight');
+	await expect.poll(async () => Number(await scrollbar.getAttribute('aria-valuenow'))).toBeLessThan(100);
+});
+
+test('persistent scrollbar adapts to reading preferences, hides when unnecessary, and releases focus', async ({ page }) => {
+	const frame = await openLongTable(page);
+	const scrollbar = frame.getByRole('scrollbar');
+	const region = frame.locator('[data-table-scroll]');
+	for (const width of [1200, 600, 390]) {
+		await page.setViewportSize({ width, height: 800 });
+		for (const focusReading of ['on', 'off']) {
+			await page.evaluate((value) => {
+				document.documentElement.dataset.focusReading = value;
+				document.documentElement.dataset.readingWidth = 'wide';
+			}, focusReading);
+			await settleLayout(page);
+			await expect(scrollbar).toBeVisible();
+			await scrollbar.focus();
+			await page.keyboard.press('End');
+			await expect(scrollbar).toHaveAttribute('aria-valuenow', '100');
+			const track = (await scrollbar.boundingBox())!;
+			expect(track.width).toBeGreaterThanOrEqual(44);
+			expect(track.x).toBeGreaterThanOrEqual(0);
+			expect(track.x + track.width).toBeLessThanOrEqual(width);
+		}
+	}
+	await page.setViewportSize({ width: 1200, height: 800 });
+	await settleLayout(page);
+	await scrollbar.focus();
+	await frame.locator('table').evaluate((table) => {
+		table.style.minWidth = '0';
+		table.style.width = '400px';
+	});
+	await expect(frame).toHaveAttribute('data-table-overflow', 'false');
+	await expect(frame.locator('[data-table-scrollbar]')).toBeHidden();
+	await expect(region).toBeFocused();
+	await expect(frame.getByRole('scrollbar')).toHaveCount(0);
+});
 
 test('sorts from the visible sticky header and keeps source semantics and indicators synchronized', async ({ page }, testInfo) => {
 	const frame = await openLongTable(page);

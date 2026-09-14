@@ -1,5 +1,5 @@
 ---
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUpDown, ChevronUp } from '@lucide/astro';
+import { ChevronDown, ChevronsUpDown, ChevronUp } from '@lucide/astro';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 
 const labels = projectConfig.locale.labels;
@@ -8,23 +8,10 @@ const labels = projectConfig.locale.labels;
 <template data-table-navigation-template>
 	<div class="norna-table-navigation" data-table-navigation data-table-locale={projectConfig.locale.formattingLocale} hidden>
 		<span class="visually-hidden" data-table-overflow-description>{labels.tableOverflowDescription}</span>
-		<div class="norna-table-navigation-buttons" role="group" aria-label={labels.tableColumns}>
-			<button
-				type="button"
-				data-table-scroll-previous
-				aria-label={labels.tablePreviousColumns}
-				title={labels.tablePreviousColumns}
-			>
-				<ChevronLeft aria-hidden="true" size={18} stroke-width={1.8} />
-			</button>
-			<button
-				type="button"
-				data-table-scroll-next
-				aria-label={labels.tableNextColumns}
-				title={labels.tableNextColumns}
-			>
-				<ChevronRight aria-hidden="true" size={18} stroke-width={1.8} />
-			</button>
+		<div class="norna-table-scrollbar" data-table-scrollbar role="scrollbar"
+			aria-label={labels.tableColumns} aria-orientation="horizontal"
+			aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+			<span class="norna-table-scrollbar-thumb" data-table-scrollbar-thumb aria-hidden="true"></span>
 		</div>
 	</div>
 </template>
@@ -63,8 +50,9 @@ const labels = projectConfig.locale.labels;
 		let stickyHeading: HTMLElement | null = null;
 		let stickyHeadingTrack: HTMLElement | null = null;
 		let tableNavigation: HTMLElement | null = null;
-		let previousButton: HTMLButtonElement | null = null;
-		let nextButton: HTMLButtonElement | null = null;
+		let scrollbar: HTMLElement | null = null;
+		let scrollbarThumb: HTMLElement | null = null;
+		let scrollbarDrag: { pointerId: number; grabOffset: number } | null = null;
 		let overflowDescriptionId: string | null = null;
 		const tableBody = table?.tBodies.length === 1 ? table.tBodies[0] : null;
 		const bodyRows = Array.from(tableBody?.rows ?? []);
@@ -74,6 +62,10 @@ const labels = projectConfig.locale.labels;
 		const sortButtons: HTMLButtonElement[] = [];
 		const stickyCells: HTMLElement[] = [];
 		const stickySortButtons: HTMLButtonElement[] = [];
+		// One sticky surface keeps the heading and scrollbar together at both table edges.
+		const stickyContext = document.createElement('div');
+		stickyContext.className = 'norna-table-sticky-context';
+		frame.insertBefore(stickyContext, scrollRegion);
 
 		const removeDuplicateIdentity = (element: HTMLElement) => {
 			element.removeAttribute('id');
@@ -92,7 +84,7 @@ const labels = projectConfig.locale.labels;
 			stickyHeadingTrack = document.createElement('div');
 			stickyHeadingTrack.className = 'norna-table-sticky-heading-track';
 			stickyHeading.append(stickyHeadingTrack);
-			frame.insertBefore(stickyHeading, scrollRegion);
+			stickyContext.prepend(stickyHeading);
 		};
 
 		const createTableNavigation = () => {
@@ -102,11 +94,13 @@ const labels = projectConfig.locale.labels;
 			if (!tableNavigation) return;
 
 			const description = tableNavigation.querySelector<HTMLElement>('[data-table-overflow-description]');
-			previousButton = tableNavigation.querySelector<HTMLButtonElement>('[data-table-scroll-previous]');
-			nextButton = tableNavigation.querySelector<HTMLButtonElement>('[data-table-scroll-next]');
+			scrollbar = tableNavigation.querySelector<HTMLElement>('[data-table-scrollbar]');
+			scrollbarThumb = tableNavigation.querySelector<HTMLElement>('[data-table-scrollbar-thumb]');
+			if (!scrollRegion.id) scrollRegion.id = `norna-table-scroll-${frameIndex + 1}`;
+			scrollbar?.setAttribute('aria-controls', scrollRegion.id);
 			overflowDescriptionId = `norna-table-overflow-${frameIndex + 1}`;
 			if (description) description.id = overflowDescriptionId;
-			frame.insertBefore(fragment, scrollRegion);
+			stickyContext.append(fragment);
 		};
 
 		const cellText = (cell: HTMLTableCellElement) => (cell.textContent ?? '').replace(/\s+/gu, ' ').trim();
@@ -271,14 +265,38 @@ const labels = projectConfig.locale.labels;
 			else scrollRegion.removeAttribute('aria-describedby');
 		};
 
-		const scrollTable = (direction: -1 | 1) => {
-			const isRightToLeft = getComputedStyle(scrollRegion).direction === 'rtl';
-			const distance = Math.max(1, Math.round(scrollRegion.clientWidth * 0.8));
-			const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-			scrollRegion.scrollBy({
-				behavior: reducedMotion ? 'auto' : 'smooth',
-				left: direction * distance * (isRightToLeft ? -1 : 1),
-			});
+		const getScrollbarGeometry = () => {
+			const maximum = Math.max(0, scrollRegion.scrollWidth - scrollRegion.clientWidth);
+			const rtl = getComputedStyle(scrollRegion).direction === 'rtl';
+			const position = Math.min(maximum, Math.max(0, scrollRegion.scrollLeft * (rtl ? -1 : 1)));
+			const width = scrollbar?.getBoundingClientRect().width ?? 0;
+			const fraction = scrollRegion.clientWidth / Math.max(1, scrollRegion.scrollWidth);
+			const thumbWidth = Math.min(width, Math.max(24, width * fraction));
+			return { maximum, rtl, position, width, thumbWidth, travel: width - thumbWidth };
+		};
+
+		const setScrollbarPosition = (position: number) => {
+			const { maximum, rtl } = getScrollbarGeometry();
+			scrollRegion.scrollTo({ left: Math.min(maximum, Math.max(0, position)) * (rtl ? -1 : 1), behavior: 'instant' });
+			updateOverflow();
+		};
+
+		const synchronizeScrollbar = () => {
+			if (!scrollbar || !scrollbarThumb) return;
+			const { maximum, rtl, position, thumbWidth, travel } = getScrollbarGeometry();
+			const progress = maximum > 0 ? position / maximum : 0;
+			scrollbarThumb.style.width = `${thumbWidth}px`;
+			scrollbarThumb.style.left = `${travel * (rtl ? 1 - progress : progress)}px`;
+			scrollbar.setAttribute('aria-valuenow', String(Math.round(progress * 100)));
+		};
+
+		const dragScrollbar = (clientX: number) => {
+			if (!scrollbar || !scrollbarDrag) return;
+			const { maximum, rtl, travel } = getScrollbarGeometry();
+			if (travel <= 0) return;
+			const offset = clientX - scrollbar.getBoundingClientRect().left - scrollbarDrag.grabOffset;
+			const fraction = Math.min(1, Math.max(0, offset / travel));
+			setScrollbarPosition(maximum * (rtl ? 1 - fraction : fraction));
 		};
 
 		const synchronizeStickyHeadingPosition = () => {
@@ -310,7 +328,7 @@ const labels = projectConfig.locale.labels;
 			if (useSticky) {
 				stickyHeading.removeAttribute('aria-hidden');
 				stickyHeading.setAttribute('role', 'group');
-				const groupLabel = tableNavigation?.querySelector('[role="group"]')?.getAttribute('aria-label');
+				const groupLabel = scrollbar?.getAttribute('aria-label');
 				if (groupLabel) stickyHeading.setAttribute('aria-label', groupLabel);
 			}
 			for (const [index, button] of sortButtons.entries()) {
@@ -395,8 +413,46 @@ const labels = projectConfig.locale.labels;
 		createTableSorting();
 		createTableNavigation();
 		createStickyHeading();
-		previousButton?.addEventListener('click', () => scrollTable(-1));
-		nextButton?.addEventListener('click', () => scrollTable(1));
+		scrollbar?.addEventListener('keydown', (event) => {
+			const { maximum, rtl, position } = getScrollbarGeometry();
+			const step = Math.max(1, scrollRegion.clientWidth * 0.1);
+			const page = scrollRegion.clientWidth * 0.8;
+			let next: number;
+			switch (event.key) {
+				case 'ArrowLeft': next = position + step * (rtl ? 1 : -1); break;
+				case 'ArrowRight': next = position + step * (rtl ? -1 : 1); break;
+				case 'PageUp': next = position - page; break;
+				case 'PageDown': next = position + page; break;
+				case 'Home': next = 0; break;
+				case 'End': next = maximum; break;
+				default: return;
+			}
+			event.preventDefault();
+			setScrollbarPosition(next);
+		});
+		scrollbar?.addEventListener('pointerdown', (event) => {
+			if (!scrollbar || !scrollbarThumb || !event.isPrimary || event.button !== 0) return;
+			event.preventDefault();
+			scrollbar.focus({ preventScroll: true });
+			const bounds = scrollbarThumb.getBoundingClientRect();
+			const onThumb = event.clientX >= bounds.left && event.clientX <= bounds.right;
+			scrollbarDrag = { pointerId: event.pointerId, grabOffset: onThumb ? event.clientX - bounds.left : bounds.width / 2 };
+			scrollbar.setPointerCapture(event.pointerId);
+			scrollbar.dataset.dragging = 'true';
+			dragScrollbar(event.clientX);
+		});
+		scrollbar?.addEventListener('pointermove', (event) => {
+			if (scrollbarDrag?.pointerId === event.pointerId) dragScrollbar(event.clientX);
+		});
+		const stopScrollbarDrag = () => {
+			const pointerId = scrollbarDrag?.pointerId;
+			scrollbarDrag = null;
+			if (pointerId !== undefined && scrollbar?.hasPointerCapture(pointerId)) scrollbar.releasePointerCapture(pointerId);
+			if (scrollbar) delete scrollbar.dataset.dragging;
+		};
+		scrollbar?.addEventListener('pointerup', stopScrollbarDrag);
+		scrollbar?.addEventListener('pointercancel', stopScrollbarDrag);
+		scrollbar?.addEventListener('lostpointercapture', stopScrollbarDrag);
 
 		const updateOverflow = ({ refreshStickyHeading = false } = {}) => {
 			const maximumScroll = Math.max(0, scrollRegion.scrollWidth - scrollRegion.clientWidth);
@@ -412,11 +468,12 @@ const labels = projectConfig.locale.labels;
 				: tableBounds.right <= scrollBounds.right + 2);
 
 			if (tableNavigation) {
+				if (!hasOverflow && tableNavigation.contains(document.activeElement)) {
+					scrollRegion.tabIndex = -1;
+					scrollRegion.focus({ preventScroll: true });
+				}
+				if (!hasOverflow) stopScrollbarDrag();
 				tableNavigation.hidden = !hasOverflow;
-				frame.style.setProperty(
-					'--table-navigation-height',
-					hasOverflow ? `${tableNavigation.getBoundingClientRect().height}px` : '0px',
-				);
 			}
 			const stickyHeadingReady = hasOverflow && stickyHeading
 				? (refreshStickyHeading
@@ -429,11 +486,10 @@ const labels = projectConfig.locale.labels;
 			frame.dataset.tableAtEnd = isAtEnd ? 'true' : 'false';
 			frame.dataset.tableStickyHeading = stickyHeadingReady ? 'true' : 'false';
 			synchronizeSortControls(Boolean(stickyHeadingReady));
-			if (previousButton) previousButton.disabled = isAtStart;
-			if (nextButton) nextButton.disabled = isAtEnd;
+			if (hasOverflow) synchronizeScrollbar();
 			setOverflowDescription(hasOverflow);
 			if (hasOverflow) scrollRegion.setAttribute('tabindex', '0');
-			else scrollRegion.removeAttribute('tabindex');
+			else if (document.activeElement !== scrollRegion) scrollRegion.removeAttribute('tabindex');
 			if (stickyHeadingReady && !refreshStickyHeading) synchronizeStickyHeadingPosition();
 		};
 

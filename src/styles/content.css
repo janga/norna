@@ -497,14 +497,17 @@ ul {
 	outline-offset: 2px;
 }
 
-.norna-table-navigation {
+.norna-table-sticky-context {
 	position: sticky;
 	top: var(--site-top-anchor-offset);
 	z-index: 5;
+	background: var(--section-background-color, var(--color-page));
+}
+
+.norna-table-navigation {
+	position: relative;
 	display: flex;
-	min-height: 2.75rem;
 	align-items: center;
-	justify-content: flex-end;
 	padding: 0;
 	background: var(--section-background-color, var(--color-page));
 	color: inherit;
@@ -515,76 +518,74 @@ ul {
 	display: none;
 }
 
-.norna-table-navigation-buttons {
-	display: flex;
-	gap: 0.125rem;
-	background: transparent;
-	pointer-events: auto;
-}
-
-.norna-table-navigation button {
+.norna-table-scrollbar {
 	position: relative;
-	display: grid;
-	width: 2.75rem;
-	height: 2.75rem;
-	place-items: center;
-	border: 0;
-	border-radius: var(--corner-radius-small, 2px);
-	padding: 0;
-	background: transparent;
-	color: var(--section-secondary-text-color, var(--color-secondary-text));
+	flex: 1;
+	min-width: 2.75rem;
+	height: 1.5rem;
+	pointer-events: auto;
+	touch-action: none;
+	user-select: none;
 	cursor: pointer;
+	border-radius: var(--corner-radius-small, 2px);
 }
 
-.norna-table-navigation button::before {
+.norna-table-scrollbar::before,
+.norna-table-scrollbar-thumb::before {
 	position: absolute;
-	inset: 0.3rem;
-	border: 1px solid color-mix(in srgb, var(--color-border) 72%, transparent);
-	border-radius: var(--corner-radius-small, 2px);
-	background: color-mix(
-		in srgb,
-		var(--color-surface-soft-background) 52%,
-		var(--section-background-color, var(--color-page))
-	);
+	left: 0;
+	right: 0;
+	top: calc(50% - 2px);
+	height: 4px;
+	border-radius: 2px;
 	content: '';
 }
 
-.norna-table-navigation button svg {
-	position: relative;
-	z-index: 1;
-}
-
-.norna-table-navigation button:hover:not(:disabled),
-.norna-table-navigation button:active:not(:disabled) {
-	color: var(--color-surface-emphasis-text);
-}
-
-.norna-table-navigation button:hover:not(:disabled)::before,
-.norna-table-navigation button:active:not(:disabled)::before {
-	border-color: var(--color-border);
+.norna-table-scrollbar::before {
 	background: var(--color-surface-emphasis-background);
 }
 
-.norna-table-navigation button:focus-visible {
+.norna-table-scrollbar-thumb {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	cursor: grab;
+}
+
+.norna-table-scrollbar-thumb::before {
+	background: var(--section-secondary-text-color, var(--color-secondary-text));
+}
+
+.norna-table-scrollbar:hover .norna-table-scrollbar-thumb::before,
+.norna-table-scrollbar:focus-visible .norna-table-scrollbar-thumb::before {
+	background: var(--section-text-color, var(--color-text));
+}
+
+.norna-table-scrollbar[data-dragging='true'],
+.norna-table-scrollbar[data-dragging='true'] .norna-table-scrollbar-thumb {
+	cursor: grabbing;
+}
+
+.norna-table-scrollbar:focus-visible {
 	outline: var(--focus-indicator-width) solid var(--color-focus-ring);
 	outline-offset: 2px;
-	box-shadow: 0 0 0 calc(var(--focus-indicator-width) * 2) var(--color-focus-ring-contrast);
 }
 
-.norna-table-navigation button:disabled {
-	cursor: not-allowed;
-	opacity: 0.42;
-}
-
-.norna-table-frame:dir(rtl) .norna-table-navigation button svg {
-	transform: scaleX(-1);
+@media (forced-colors: active) {
+	.norna-table-scrollbar::before {
+		background: Canvas;
+		border: 1px solid CanvasText;
+	}
+	.norna-table-scrollbar .norna-table-scrollbar-thumb::before {
+		background: ButtonText !important;
+		forced-color-adjust: none;
+	}
 }
 
 .norna-table-sticky-heading {
 	display: none;
-	position: sticky;
+	position: relative;
 	z-index: 4;
-	top: calc(var(--site-top-anchor-offset) + var(--table-navigation-height, 0px));
 	width: 100%;
 	height: var(--table-sticky-heading-height, 0px);
 	overflow: hidden;
@@ -593,7 +594,7 @@ ul {
 }
 
 .norna-table-frame[data-table-overflow='true'][data-table-sticky-heading='true']
-	> .norna-table-sticky-heading {
+	> .norna-table-sticky-context > .norna-table-sticky-heading {
 	display: block;
 }
 
@@ -649,70 +650,6 @@ ul {
 .section-markdown > .norna-table-frame[data-table-row-headers='true'] thead th:first-child,
 .norna-table-sticky-heading-cell-row-header {
 	z-index: 3;
-}
-
-.norna-table-frame[data-table-row-headers='true']::before {
-	opacity: 0 !important;
-}
-
-.norna-table-frame::before,
-.norna-table-frame::after {
-	position: absolute;
-	z-index: 3;
-	top: var(--table-navigation-height, 0px);
-	bottom: 0.75rem;
-	width: 2rem;
-	content: "";
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity 120ms ease;
-}
-
-.norna-table-frame::before {
-	inset-inline-start: 0;
-	background: linear-gradient(
-		to right,
-		color-mix(in srgb, var(--section-background-color, var(--color-page)) 98%, transparent),
-		transparent
-	);
-	box-shadow: inset 0.5rem 0 0.7rem -0.65rem color-mix(in srgb, currentColor 62%, transparent);
-}
-
-.norna-table-frame::after {
-	inset-inline-end: 0;
-	background: linear-gradient(
-		to left,
-		color-mix(in srgb, var(--section-background-color, var(--color-page)) 98%, transparent),
-		transparent
-	);
-	box-shadow: inset -0.5rem 0 0.7rem -0.65rem color-mix(in srgb, currentColor 62%, transparent);
-}
-
-.norna-table-frame:dir(rtl)::before {
-	background: linear-gradient(
-		to left,
-		color-mix(in srgb, var(--section-background-color, var(--color-page)) 98%, transparent),
-		transparent
-	);
-	box-shadow: inset -0.5rem 0 0.7rem -0.65rem color-mix(in srgb, currentColor 62%, transparent);
-}
-
-.norna-table-frame:dir(rtl)::after {
-	background: linear-gradient(
-		to right,
-		color-mix(in srgb, var(--section-background-color, var(--color-page)) 98%, transparent),
-		transparent
-	);
-	box-shadow: inset 0.5rem 0 0.7rem -0.65rem color-mix(in srgb, currentColor 62%, transparent);
-}
-
-.norna-table-frame[data-table-at-end='true']::after {
-	opacity: 0;
-}
-
-.norna-table-frame[data-table-overflow='true'][data-table-at-end='false']::after,
-.norna-table-frame[data-table-overflow='true'][data-table-at-start='false']::before {
-	opacity: 1;
 }
 
 .norna-table-frame table {

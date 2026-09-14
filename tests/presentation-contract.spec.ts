@@ -76,20 +76,19 @@ test('wide Markdown tables scroll without widening the page', async ({ page }) =
 	expect(dimensions.overflowX).toBe('auto');
 	expect(dimensions.scrollWidth).toBeGreaterThan(dimensions.clientWidth);
 	expect(dimensions.tabIndex).toBe(0);
-	await expect.poll(() => frame.evaluate((element) => (
-		Number.parseFloat(getComputedStyle(element, '::after').opacity)
-	))).toBeGreaterThan(0.9);
+	await expect(frame.getByRole('scrollbar')).toHaveAttribute('aria-valuenow', '0');
+	for (const edge of ['::before', '::after']) {
+		expect(await frame.evaluate((element, pseudo) => getComputedStyle(element, pseudo).content, edge)).toBe('none');
+	}
 	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
 
 	await scrollRegion.evaluate((element) => element.scrollTo({ left: element.scrollWidth }));
 	await expect(frame).toHaveAttribute('data-table-at-start', 'false');
 	await expect(frame).toHaveAttribute('data-table-at-end', 'true');
-	await expect.poll(() => frame.evaluate((element) => (
-		Number.parseFloat(getComputedStyle(element, '::before').opacity)
-	))).toBeGreaterThan(0.9);
-	await expect.poll(() => frame.evaluate((element) => (
-		Number.parseFloat(getComputedStyle(element, '::after').opacity)
-	))).toBeLessThan(0.1);
+	await expect(frame.getByRole('scrollbar')).toHaveAttribute('aria-valuenow', '100');
+	for (const edge of ['::before', '::after']) {
+		expect(await frame.evaluate((element, pseudo) => getComputedStyle(element, pseudo).content, edge)).toBe('none');
+	}
 });
 
 test('Focus reading preserves a table already using the vacant auxiliary lane', async ({ page }) => {
@@ -252,8 +251,7 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	const table = frame.locator('table');
 	const stickyHeading = frame.locator('[data-table-sticky-heading]');
 	const tableNavigation = frame.locator('[data-table-navigation]');
-	const previousColumns = tableNavigation.getByRole('button', { name: 'Show previous columns' });
-	const nextColumns = tableNavigation.getByRole('button', { name: 'Show next columns' });
+	const scrollbar = tableNavigation.getByRole('scrollbar', { name: 'Table columns' });
 	const originalHeadings = table.locator('thead th');
 	const visualHeadings = stickyHeading.locator('.norna-table-sticky-heading-cell');
 
@@ -272,32 +270,29 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	await expect(frame).toHaveAttribute('data-table-overflow', 'true');
 	await expect(frame).toHaveAttribute('data-table-sticky-heading', 'true');
 	await expect(tableNavigation).toBeVisible();
-	await expect(tableNavigation.getByRole('group', { name: 'Table columns' })).toBeVisible();
+	await expect(scrollbar).toBeVisible();
 	await expect(tableNavigation.locator('.norna-table-navigation-label')).toHaveCount(0);
-	await expect(previousColumns).toBeDisabled();
-	await expect(nextColumns).toBeEnabled();
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '0');
 	await expect(scrollRegion).toHaveAttribute('aria-describedby', /norna-table-overflow-/);
 	await expect(frame.locator('[data-table-overflow-description]')).toHaveText(
 		'More table columns are available horizontally.',
 	);
-	await expect(stickyHeading).toHaveAttribute('aria-hidden', 'true');
-	await expect(stickyHeading).toHaveAttribute('inert', '');
+	await expect(stickyHeading).not.toHaveAttribute('aria-hidden');
+	await expect(stickyHeading).not.toHaveAttribute('inert');
+	await expect(stickyHeading).toHaveAttribute('role', 'group');
+	await expect(stickyHeading.getByRole('button')).toHaveCount(await originalHeadings.count());
 	await expect(stickyHeading).toHaveCSS('pointer-events', 'none');
 	await expect(stickyHeading.locator('table')).toHaveCount(0);
 	await expect(visualHeadings).toHaveCount(await originalHeadings.count());
 	await expect(page.getByRole('columnheader')).toHaveCount(await originalHeadings.count());
-	const [navigationBounds, controlsBounds, previousBounds, nextBounds] = await Promise.all([
+	const [navigationBounds, controlsBounds] = await Promise.all([
 		tableNavigation.boundingBox(),
-		tableNavigation.locator('.norna-table-navigation-buttons').boundingBox(),
-		previousColumns.boundingBox(),
-		nextColumns.boundingBox(),
+		scrollbar.boundingBox(),
 	]);
 	expect(navigationBounds).not.toBeNull();
 	expect(controlsBounds).not.toBeNull();
-	expect(previousBounds?.width ?? 0).toBeGreaterThanOrEqual(44);
-	expect(previousBounds?.height ?? 0).toBeGreaterThanOrEqual(44);
-	expect(nextBounds?.width ?? 0).toBeGreaterThanOrEqual(44);
-	expect(nextBounds?.height ?? 0).toBeGreaterThanOrEqual(44);
+	expect(controlsBounds?.width ?? 0).toBeGreaterThanOrEqual(24);
+	expect(controlsBounds?.height ?? 0).toBeGreaterThanOrEqual(24);
 	expect((controlsBounds?.x ?? 0) + (controlsBounds?.width ?? 0)).toBeCloseTo(
 		(navigationBounds?.x ?? 0) + (navigationBounds?.width ?? 0),
 		0,
@@ -309,14 +304,14 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	const stickyOffset = await page.evaluate(() => Number.parseFloat(
 		getComputedStyle(document.documentElement).getPropertyValue('--site-top-anchor-offset'),
 	));
-	await expect.poll(async () => (await tableNavigation.boundingBox())?.y).toBeCloseTo(stickyOffset, 0);
+	await expect.poll(async () => (await stickyHeading.boundingBox())?.y).toBeCloseTo(stickyOffset, 0);
 	await expect.poll(async () => {
 		const [navigationBounds, headingBounds] = await Promise.all([
 			tableNavigation.boundingBox(),
 			stickyHeading.boundingBox(),
 		]);
 		if (!navigationBounds || !headingBounds) return null;
-		return headingBounds.y - (navigationBounds.y + navigationBounds.height);
+		return navigationBounds.y - (headingBounds.y + headingBounds.height);
 	}).toBeCloseTo(0, 0);
 
 	const expectHeadingsAligned = async () => {
@@ -354,7 +349,7 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 			maximumScroll: element.scrollWidth - element.clientWidth,
 		})),
 	]);
-	await nextColumns.click();
+	await scrollbar.press('PageDown');
 	const expectedControlScroll = Math.min(
 		tableScrollDimensions.maximumScroll,
 		Math.round(tableScrollDimensions.clientWidth * 0.8),
@@ -363,11 +358,9 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 		Math.abs(await scrollRegion.evaluate((element) => element.scrollLeft)) - expectedControlScroll,
 	)).toBeLessThanOrEqual(2);
 	expect(await page.evaluate(() => window.scrollY)).toBeCloseTo(initialScrollPosition, 0);
-	await expect(previousColumns).toBeEnabled();
-	await previousColumns.click();
+	await scrollbar.press('PageUp');
 	await expect.poll(() => scrollRegion.evaluate((element) => Math.abs(element.scrollLeft))).toBeLessThanOrEqual(2);
-	await expect(previousColumns).toBeDisabled();
-	await expect(nextColumns).toBeEnabled();
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '0');
 
 	await scrollRegion.focus();
 	await page.keyboard.press('ArrowRight');
@@ -388,8 +381,7 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 	await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 	await scrollRegion.evaluate((element) => { element.scrollLeft = 0; });
 	await expect(frame).toHaveAttribute('data-table-at-start', 'true');
-	await expect(previousColumns).toBeDisabled();
-	await expect(nextColumns).toBeEnabled();
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '0');
 	await expectHeadingsAligned();
 	await scrollRegion.evaluate((element) => {
 		element.scrollLeft = 0 - ((element.scrollWidth - element.clientWidth) / 2);
@@ -401,8 +393,7 @@ test('an overflowing long table keeps a synchronized visual heading while the se
 		element.scrollLeft = 0 - element.scrollWidth;
 	});
 	await expect(frame).toHaveAttribute('data-table-at-end', 'true');
-	await expect(previousColumns).toBeEnabled();
-	await expect(nextColumns).toBeDisabled();
+	await expect(scrollbar).toHaveAttribute('aria-valuenow', '100');
 	await expectHeadingsAligned();
 
 	await page.evaluate(() => document.documentElement.setAttribute('dir', 'ltr'));

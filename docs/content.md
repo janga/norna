@@ -627,12 +627,15 @@ make hidden navigation lanes available to a table without changing the width
 or position of the surrounding prose.
 
 Only a table that still overflows receives a keyboard-focusable horizontal
-scroll region. Edge cues indicate whether more columns remain before or after
-the visible area. A compact previous-and-next control group stays above the
-column headings while a long table passes through the viewport. The controls
-move by most of the visible table width, retain some overlap for orientation,
-and become unavailable at their respective boundaries. Touch, trackpad, mouse,
-and keyboard scrolling continue to operate on the same native scroll region.
+scroll region. JavaScript adds a persistent horizontal scrollbar, directly
+below the sticky column headings on top-level tables. Its handle shows the
+visible fraction and position within the complete table width. Drag the handle
+or click the track to move horizontally. With the scrollbar focused, Left and
+Right Arrow move a short distance, Page Up/Down move by most of the visible
+width, and Home/End move to the first or last columns. The control remains
+visible without hovering or reaching the table's bottom and disappears when
+the table fits. Touch, trackpad, mouse, and keyboard scrolling continue to
+operate on the same native scroll region.
 The document itself does not become horizontally scrollable. A table nested in
 a callout or another bounded Markdown container stays within that container
 instead of claiming page-level space.
@@ -640,8 +643,9 @@ instead of claiming page-level space.
 For a long top-level table, column headings stay below the sticky site header
 while the reader moves through the rows and release at the table's lower edge.
 When the table also scrolls horizontally, JavaScript keeps a visual heading
-layer aligned with the visible columns. That layer is hidden from assistive
-technology and cannot receive input; the original `table`, `thead`, headings,
+layer aligned with the visible columns. On sortable tables, its sort buttons
+replace the original buttons in the keyboard focus order; otherwise the layer
+is hidden from assistive technology. The original `table`, `thead`, headings,
 and cells remain the only semantic table. Without JavaScript, the same native
 table and horizontal scroller remain usable, but the additional controls and
 horizontally synchronized sticky headings are absent.
