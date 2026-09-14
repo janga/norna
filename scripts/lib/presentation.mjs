@@ -87,16 +87,16 @@ const presentationPalettes = Object.freeze({
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#f3f6f8', textColor: '#202932' },
+				page: { backgroundColor: '#e8f1f8', textColor: '#202932' },
 				surfaces: {
-					base: { backgroundColor: '#f3f6f8', textColor: '#202932' },
+					base: { backgroundColor: '#e8f1f8', textColor: '#202932' },
 					soft: { backgroundColor: '#e4eaf0', textColor: '#202932' },
 					emphasis: { backgroundColor: '#d3dee8', textColor: '#202932' },
 				},
-				frame: { backgroundColor: '#f3f6f8', textColor: '#202932' },
+				frame: { backgroundColor: '#e8f1f8', textColor: '#202932' },
 				css: {
 					surface: '#e9eef2',
-					muted: '#5d6a76',
+					muted: '#56636f',
 					soft: '#d5dfe7',
 					accent: '#2a5877',
 					border: 'rgb(32 41 50 / 16%)',
@@ -127,13 +127,13 @@ const presentationPalettes = Object.freeze({
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#eef4f1', textColor: '#203631' },
+				page: { backgroundColor: '#e3f1eb', textColor: '#203631' },
 				surfaces: {
-					base: { backgroundColor: '#eef4f1', textColor: '#203631' },
+					base: { backgroundColor: '#e3f1eb', textColor: '#203631' },
 					soft: { backgroundColor: '#dce9e4', textColor: '#203631' },
 					emphasis: { backgroundColor: '#c8ddd5', textColor: '#203631' },
 				},
-				frame: { backgroundColor: '#eef4f1', textColor: '#203631' },
+				frame: { backgroundColor: '#e3f1eb', textColor: '#203631' },
 				css: {
 					surface: '#e3ece8',
 					muted: '#536560',
@@ -167,16 +167,16 @@ const presentationPalettes = Object.freeze({
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#f7f3fa', textColor: '#2e2736' },
+				page: { backgroundColor: '#f0e8f8', textColor: '#2e2736' },
 				surfaces: {
-					base: { backgroundColor: '#f7f3fa', textColor: '#2e2736' },
+					base: { backgroundColor: '#f0e8f8', textColor: '#2e2736' },
 					soft: { backgroundColor: '#ebe4f1', textColor: '#2e2736' },
 					emphasis: { backgroundColor: '#ddd3e8', textColor: '#2e2736' },
 				},
-				frame: { backgroundColor: '#f7f3fa', textColor: '#2e2736' },
+				frame: { backgroundColor: '#f0e8f8', textColor: '#2e2736' },
 				css: {
 					surface: '#eee8f3',
-					muted: '#6c6273',
+					muted: '#655b6c',
 					soft: '#ded5e7',
 					accent: '#604678',
 					border: 'rgb(46 39 54 / 16%)',
@@ -207,13 +207,13 @@ const presentationPalettes = Object.freeze({
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#f8f5ee', textColor: '#272522' },
+				page: { backgroundColor: '#fdf6e3', textColor: '#272522' },
 				surfaces: {
-					base: { backgroundColor: '#f8f5ee', textColor: '#272522' },
+					base: { backgroundColor: '#fdf6e3', textColor: '#272522' },
 					soft: { backgroundColor: '#ebe5d9', textColor: '#272522' },
 					emphasis: { backgroundColor: '#ded4c5', textColor: '#272522' },
 				},
-				frame: { backgroundColor: '#f8f5ee', textColor: '#272522' },
+				frame: { backgroundColor: '#fdf6e3', textColor: '#272522' },
 				css: {
 					surface: '#f0ebe1',
 					muted: '#6b655b',
@@ -247,13 +247,13 @@ const presentationPalettes = Object.freeze({
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#f7efd9', textColor: '#34291c' },
+				page: { backgroundColor: '#fbf1c7', textColor: '#34291c' },
 				surfaces: {
-					base: { backgroundColor: '#f7efd9', textColor: '#34291c' },
+					base: { backgroundColor: '#fbf1c7', textColor: '#34291c' },
 					soft: { backgroundColor: '#eadbb8', textColor: '#34291c' },
 					emphasis: { backgroundColor: '#d8c18c', textColor: '#34291c' },
 				},
-				frame: { backgroundColor: '#f7efd9', textColor: '#34291c' },
+				frame: { backgroundColor: '#fbf1c7', textColor: '#34291c' },
 				css: {
 					surface: '#efe2c4',
 					muted: '#6c5e4c',
@@ -287,13 +287,13 @@ const presentationPalettes = Object.freeze({
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#f7efed', textColor: '#3c2929' },
+				page: { backgroundColor: '#f8e9e7', textColor: '#3c2929' },
 				surfaces: {
-					base: { backgroundColor: '#f7efed', textColor: '#3c2929' },
+					base: { backgroundColor: '#f8e9e7', textColor: '#3c2929' },
 					soft: { backgroundColor: '#ecdeda', textColor: '#3c2929' },
 					emphasis: { backgroundColor: '#ddc7c1', textColor: '#3c2929' },
 				},
-				frame: { backgroundColor: '#f7efed', textColor: '#3c2929' },
+				frame: { backgroundColor: '#f8e9e7', textColor: '#3c2929' },
 				css: {
 					surface: '#f0e3e0',
 					muted: '#6d5558',
@@ -327,13 +327,13 @@ const presentationPalettes = Object.freeze({
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#f1f3e8', textColor: '#263225' },
+				page: { backgroundColor: '#eaf0da', textColor: '#263225' },
 				surfaces: {
-					base: { backgroundColor: '#f1f3e8', textColor: '#263225' },
+					base: { backgroundColor: '#eaf0da', textColor: '#263225' },
 					soft: { backgroundColor: '#e1e6d2', textColor: '#263225' },
 					emphasis: { backgroundColor: '#cbd5b7', textColor: '#263225' },
 				},
-				frame: { backgroundColor: '#f1f3e8', textColor: '#263225' },
+				frame: { backgroundColor: '#eaf0da', textColor: '#263225' },
 				css: {
 					surface: '#e7eadb',
 					muted: '#52604c',
@@ -367,16 +367,16 @@ const presentationPalettes = Object.freeze({
 		modes: Object.freeze({
 			light: createPaletteMode({
 				appearance: 'light',
-				page: { backgroundColor: '#f2f4fb', textColor: '#25243a' },
+				page: { backgroundColor: '#e8ebfa', textColor: '#25243a' },
 				surfaces: {
-					base: { backgroundColor: '#f2f4fb', textColor: '#25243a' },
+					base: { backgroundColor: '#e8ebfa', textColor: '#25243a' },
 					soft: { backgroundColor: '#e2e6f3', textColor: '#25243a' },
 					emphasis: { backgroundColor: '#d0d7eb', textColor: '#25243a' },
 				},
-				frame: { backgroundColor: '#f2f4fb', textColor: '#25243a' },
+				frame: { backgroundColor: '#e8ebfa', textColor: '#25243a' },
 				css: {
 					surface: '#e8eaf5',
-					muted: '#62647a',
+					muted: '#5b5d73',
 					soft: '#d5daec',
 					accent: '#3b568f',
 					border: 'rgb(37 36 58 / 16%)',
