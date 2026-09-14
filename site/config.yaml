@@ -6,4 +6,4 @@ editLink:
   localEditor: vscode
   baseUrl: https://github.com/janga/norna/edit/main/
 search: true
-scrollBehavior: smooth
+scrollBehavior: instant
