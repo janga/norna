@@ -141,6 +141,9 @@ try {
 			tableNextColumns: 'Show next columns',
 			tableOverflowDescription: 'More table columns are available horizontally.',
 			tablePreviousColumns: 'Show previous columns',
+			tableSortAscending: 'Sort ascending',
+			tableSortDescending: 'Sort descending',
+			tableSortReset: 'Restore original order',
 		},
 		navigationMode: 'automatic',
 		searchEnabled: false,
@@ -189,6 +192,9 @@ try {
 	assert.equal(localizedConfig.labels.tableNextColumns, 'Visa nästa kolumner');
 	assert.equal(localizedConfig.labels.tableOverflowDescription, 'Fler tabellkolumner är tillgängliga i sidled.');
 	assert.equal(localizedConfig.labels.tablePreviousColumns, 'Visa föregående kolumner');
+	assert.equal(localizedConfig.labels.tableSortAscending, 'Sortera stigande');
+	assert.equal(localizedConfig.labels.tableSortDescending, 'Sortera fallande');
+	assert.equal(localizedConfig.labels.tableSortReset, 'Återställ ursprunglig ordning');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 
 	const greekSite = await createSite('greek', 'url: https://example.com/\nlanguage: el-GR\n');
