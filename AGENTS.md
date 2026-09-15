@@ -14,6 +14,10 @@ maintainer, put it in `README.md` instead of duplicating it here.
   `docs/design/documentation-style-guide.md`. Treat public configuration keys,
   values, commands, and Norna content-block names as product terminology, not
   as self-explanatory English words.
+- Apply the style guide's reader-understanding plan before drafting reference:
+  identify the reader's question, assumed knowledge, missing concepts and the
+  order needed to understand the answer. A coverage checklist is not a page
+  outline. Review for hidden prerequisites as well as factual completeness.
 - When structuring documentation, give each page one independent reader need
   that can be stated as: `This page helps <audience> to <understand or
   accomplish one thing>.` Use a section for another part of the same reading
@@ -201,6 +205,14 @@ maintainer, put it in `README.md` instead of duplicating it here.
   `--full-page` when needed. Do not compose direct Playwright screenshot
   commands for registered targets; the wrapper constrains URLs and writes to
   the ignored `.local/review-captures/` directory.
+- If an already approved review command requests approval again, investigate
+  why the existing permission is not matching before repeating route- or
+  filename-specific approval requests. Inspect the active rules and actual
+  invocation, including shell wrappers; do not assume the cause. Preserve
+  approval boundaries: do not bypass them or request unrestricted shell access.
+  Verify permission reuse with at least two different local page addresses
+  before declaring the problem solved. If the environment still requires
+  approval, report that limitation rather than promising prompt-free checks.
 - Run `npm run config:check` after changing `site/config.yaml` or config
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or

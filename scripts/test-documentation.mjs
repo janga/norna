@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import yaml from 'js-yaml';
 import { markdownToMdast } from 'satteri';
+import { siteSchema, themeVisualSchema } from './lib/schema-definitions.mjs';
 import { parseContentTabs } from './lib/content-tabs.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
@@ -536,6 +538,51 @@ const checkPublishedExampleReferences = async () => {
 	);
 };
 
+const checkReferencePilots = async () => {
+	const pilotRoot = path.join(repoRoot, 'fixtures/reference-documentation/site/pages');
+	const files = await collectMarkdownFiles(pilotRoot);
+	let samples = 0;
+	let demonstratedNotes = 0;
+	for (const file of files) {
+		const source = await readFile(file, 'utf8');
+		const label = path.relative(repoRoot, file);
+		const model = await parsePageMarkdownSource(source, { label });
+		assert.deepEqual(model.diagnostics.filter((issue) => issue.severity !== 'warning'), [], label);
+		assert.equal(model.pageHeadings.length, 1, `${label}: one page title`);
+		const tree = await markdownToMdast(source);
+		const renderedNotes = extractInlineNoteDiagnostics(source, { label }).notes;
+		for (const node of tree.children) {
+			if (node.type !== 'code') continue;
+			if (node.lang === 'yaml') {
+				const value = yaml.load(node.value);
+				const schema = node.meta?.startsWith('title="site/theme.yaml"') ? themeVisualSchema : siteSchema;
+				assert.ok(schema.safeParse(value).success, `${label}: YAML sample at line ${node.position.start.line}`);
+				samples += 1;
+			}
+			if (node.lang !== 'md') continue;
+			const sample = extractInlineNoteDiagnostics(node.value, { label });
+			assert.deepEqual(sample.diagnostics, [], `${label}: invalid note example`);
+			for (const note of sample.notes) {
+				const actual = renderedNotes.find((entry) => entry.identifier === note.identifier);
+				assert.equal(actual?.markdown, note.markdown, `${label}: note example differs from rendered source`);
+				demonstratedNotes += 1;
+			}
+			const exampleTree = await markdownToMdast(node.value);
+			for (const paragraph of exampleTree.children.filter((entry) => entry.type === 'paragraph')) {
+				const text = node.value.slice(paragraph.position.start.offset, paragraph.position.end.offset);
+				assert.ok(tree.children.some((entry) => entry.type === 'paragraph'
+					&& source.slice(entry.position.start.offset, entry.position.end.offset) === text),
+				`${label}: displayed paragraph must match the rendered example`);
+			}
+			samples += 1;
+		}
+	}
+	assert.equal(files.length, 4, 'The review contains three pilots and one review homepage.');
+	assert.equal(samples, 4, 'Verify both YAML and both Markdown examples.');
+	assert.equal(demonstratedNotes, 3, 'Verify one-note and two-note source/result pairs.');
+};
+
+await checkReferencePilots();
 await checkLocalMarkdownLinks();
 await checkObsoleteDocumentationReferences();
 await checkObsoleteSiteFiles();

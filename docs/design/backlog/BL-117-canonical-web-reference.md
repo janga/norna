@@ -6,8 +6,15 @@ Publish one reliable, searchable user reference on Norna's own documentation
 site, authored in Norna Markdown. Make its quality demonstrate Norna's ability
 to handle substantial information without turning reference into marketing.
 
-Status: first delivery in progress. The information structure and three pilot
-pages require one combined human review before the full rewrite proceeds.
+Status: first delivery ready for combined human review. The full reference
+rewrite has not started.
+
+Review material:
+
+- [Coverage inventory](../reference-inventory.md)
+- [Information structure and lookup tasks](../reference-information-structure.md)
+- [Pilot site and local review commands](../../../fixtures/reference-documentation/README.md)
+- [Verification record](../reference-pilot-verification.md)
 
 ## Agreed boundaries
 

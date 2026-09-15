@@ -17,8 +17,8 @@ when implementation can begin.
 `Now` contains at most five active items in exact technical order.
 
 - [`BL-117` Canonical web reference](docs/design/backlog/BL-117-canonical-web-reference.md):
-  **In progress.** Inventory the implemented public contract, propose the
-  information structure, and prepare three pilot pages; review that combined
+  **Awaiting combined review.** The coverage inventory, proposed information
+  structure and three rendered pilot pages are ready. Review this first
   delivery before replacing the reference across the documentation site.
 
 ## Next
@@ -64,7 +64,10 @@ These items document behavior that already exists. Complete them independently
 of the product sequence when the corresponding implementation has been
 verified and approved for documentation.
 
-No documentation follow-ups are currently queued.
+- **Code-block typography trial:** after visual approval, record the shared
+  code-font choice and size/line-height rationale in the preset design guide,
+  and run focused code-block regression checks. The trial uses `0.875rem`,
+  line-height `1.43`, and the code-title monospace family; no new theme option.
 
 ## Needs Decision Or Evidence
 

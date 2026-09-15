@@ -26,6 +26,45 @@ Read from the audience's position:
 - prefer a familiar term when it expresses the exact concept;
 - keep examples realistic, minimal, and consistent with current behavior.
 
+## Plan What The Reader Must Understand
+
+Before drafting or substantially revising a reference page, make a short
+working note answering these questions. Keep it outside the published prose;
+for a small edit, a few lines are enough.
+
+1. **Question:** What exact answer is the reader looking up?
+2. **Starting knowledge:** What can this audience reasonably already know?
+   Familiarity with Markdown does not imply familiarity with Norna's file tree.
+3. **Missing understanding:** Which concepts must the reader understand to
+   interpret this answer correctly?
+4. **Order:** In what order must those concepts appear? For each unfamiliar
+   term, identify what must be established before using it.
+5. **Boundary:** Which details answer this question, and which belong on a
+   linked page? State the principal answer in one or two sentences.
+
+Use this plan to choose the order of the published text, not merely its topics.
+Put the principal answer first when it is understandable on its own. Otherwise
+precede it with only the essential definition or context. Put the concrete
+file location and smallest useful example early when they make the rule clear.
+Introduce qualifications beside the rule they qualify, after establishing the
+concepts needed to interpret them.
+
+Reference remains a lookup resource, not a compulsory learning sequence.
+Use predictable headings within related reference pages. Give enough local
+context to answer a direct arrival; link to a focused explanation when the
+underlying model needs more than a brief definition. A bare link does not
+justify an otherwise incomprehensible sentence.
+
+For example, do not open an Appearance entry with restrictions on "page-local
+themes". First identify the site-wide `site/theme.yaml` file, show the
+`appearance.default` setting, and state how a reader's choice affects it. A
+description of configuration at several file-tree levels belongs in the
+configuration model, introduced before its detailed restrictions are used.
+
+Keep a separate completeness check against code, schemas and tests. That check
+may enumerate every constraint; the published page must not mechanically
+enumerate those checks as sections or troubleshooting rows.
+
 ## Documentation Types
 
 Use the Diataxis distinction to keep each document focused.
@@ -44,11 +83,13 @@ procedure into a general product tour.
 
 ### Reference
 
-Describe the current product precisely and in a structure that mirrors the
-product. Reference material should make allowed values, defaults, scope,
-inheritance, interactions, constraints, and errors easy to scan. Brief factual
-context is appropriate when it prevents misuse; extended rationale belongs in
-an explanation or design guide.
+Describe the current product precisely, using its public concepts and their
+relationships to organize lookup. Do not mirror internal modules or validation
+branches. Allowed values, defaults, scope and relevant constraints must be
+findable, but they do not each require a heading or table. Brief factual
+context makes a rule interpretable; extended rationale belongs in an
+explanation or design guide. Completeness and clarity are both required:
+brevity must not hide a condition that changes the result.
 
 ### Explanation And Design Guidance
 
@@ -120,31 +161,41 @@ them.
 
 ## Configuration Reference Pattern
 
-Before listing values for a public setting, state what the setting controls and
-what it does not control. For related settings, explain the independent axes
-before describing their values.
+Use the reader-understanding plan, not a fixed eight-section template.
+A simple setting may need only its purpose, file location, minimal example,
+accepted values and default, followed by a short interaction rule. Highlight
+the line that carries the example's main point. Omit unrelated settings such
+as a preset when they are not needed for a valid example or its interpretation.
 
-A substantial configuration entry should answer, in this order:
+For completeness, verify purpose, syntax, accepted values, default, scope,
+inheritance, reader overrides, constraints and failure behavior. Publish the
+applicable facts in the shortest form that preserves their meaning. Combine
+them where natural. Explain what a setting does not control only when the
+distinction resolves a likely misunderstanding.
 
-1. **Purpose:** What visible or behavioral result does the setting control?
-2. **Syntax:** Where is it written, and what type or shape does it accept?
-3. **Values:** What does each accepted value do in concrete terms?
-4. **Default:** What happens when it is omitted, including preset-derived or
-   automatically resolved behavior?
-5. **Scope:** Is it site-wide, page-local, inherited, or reader-controlled?
-6. **Interactions:** Which other settings or site structures change, limit, or
-   invalidate it?
-7. **Example:** What is the smallest valid example that reveals its effect?
-8. **Related material:** Where can the reader find a task-oriented guide or
-   deeper rationale?
-
-Use a table when comparing a closed set of values. Prefer columns such as
-`Value`, `Effect`, and `Availability` over prose that forces readers to compare
-separate paragraphs. Format literal keys and values as code.
+Use tables for genuine comparisons or repeated fields, not to give a simple
+rule the appearance of rigor. A partial set of scenarios must be labelled as
+examples, not presented as a complete decision matrix. Prefer a short rule
+over enumerating its obvious consequences. Format literal keys and values as
+code.
 
 Do not describe an enum only by paraphrasing its name. For example, a value
 named `accented` still needs the exact surface sequence, where that sequence
 appears, when it repeats, and where the value is unavailable.
+
+## Constraints And Error Guidance
+
+State constraints positively beside the relevant syntax: for example,
+"Accepted values: `system`, `light`, `dark`." Do not repeat this as a generic
+error-table row saying that all other values are invalid.
+
+Add error guidance when it helps with an evidenced or non-obvious failure,
+explains a misleading symptom, or prevents a consequential mistake. Describe
+the situation in the reader's vocabulary, identify the cause, and give a
+concrete correction. Establish any prerequisite concepts first. Do not copy
+parser terminology or list hypothetical mistakes merely because validation
+can detect them. Preserve important refusal and recovery limits for commands
+that change files, even when those cases are uncommon.
 
 ## Source Of Truth And Duplication
 
@@ -176,6 +227,10 @@ tests cover them where practical.
 ## Examples And Explanations
 
 - Introduce an example with the question it answers.
+- Use a diagram only when a relationship is easier to understand visually than
+  in a short rule or example. Do not repeat the same simple rule in prose, a
+  diagram and a table. Inspect whether removing the illustration improves the
+  answer before retaining it.
 - Use current, valid syntax that can be copied without removing invented
   product behavior.
 - When showing source beside a rendered result, keep the data identical.
@@ -209,6 +264,17 @@ tests cover them where practical.
 
 Before completing a documentation change, check:
 
+- Can the intended reader answer the page's main question from its opening,
+  without reconstructing the rule from scattered details?
+- Does each sentence rely only on assumed knowledge or concepts already
+  introduced? Read the draft without the implementation open to find hidden
+  prerequisites.
+- Does the order help understanding, rather than follow the coverage checklist?
+- Can each section, table and illustration justify its place by helping the
+  reader interpret or look up the answer? Remove repetitions and unrelated
+  qualifications, not necessary constraints.
+- Can a reader arriving at a subsection understand it with its local context
+  and a clearly named link to any necessary model?
 - Are all Norna-specific terms introduced before they are relied upon?
 - Does every public term have one unambiguous meaning?
 - Could a more familiar and equally precise term replace a new one?
@@ -227,11 +293,49 @@ Before completing a documentation change, check:
 - Does the wording remain understandable without relying on color or layout
   alone?
 
+## Reusable Reference Prompt
+
+This is a Norna working prompt adapted from the sources below, not an official
+Diataxis or Google prompt. Replace the bracketed inputs. It complements the
+full guide; it does not certify quality or replace review.
+
+```text
+Write reference documentation for [public feature] for [audience].
+Use [implementation, schemas and tests] as evidence for [version].
+Follow docs/design/documentation-style-guide.md.
+
+Before drafting, record the reader's exact question, reasonable prior
+knowledge, missing concepts, and the order needed to understand the answer.
+State the main rule briefly. Separate this understanding plan from the
+implementation-coverage checklist; neither is published boilerplate.
+
+Write for direct lookup. Establish essential context, give the answer and
+show a minimal valid example early when useful. Name its file and highlight
+the relevant line. Define unfamiliar concepts before relying on them.
+Keep necessary conditions next to their rules. Use consistent headings, but
+do not invent sections to fill a template. Link to longer explanations.
+
+Verify all applicable values, defaults, scope and restrictions. Do not turn
+every validation branch into an error table. Do not add unrelated settings,
+exceptions or illustrations. Distinguish verified behavior from open gaps;
+report gaps separately rather than invent behavior or silently omit a rule.
+
+Review twice: first as the intended reader, for hidden prerequisites,
+ordering and unnecessary material; then against the evidence for correctness
+and completeness. Deliver the page and a short separate verification note.
+```
+
 ## Sources
 
 This guide adapts established guidance rather than defining a separate theory
 of technical writing:
 
+- [Google Technical Writing: Audience](https://developers.google.com/tech-writing/one/audience)
+  connects needed knowledge to existing knowledge and identifies the risk of
+  assuming that readers share the writer's expertise.
+- [Google Technical Writing: Documents](https://developers.google.com/tech-writing/one/documents)
+  covers scope, key points near the beginning, and organization based on the
+  audience's goals and prior knowledge.
 - [Google Technical Writing: Words](https://developers.google.com/tech-writing/one/words)
   recommends defining unfamiliar terms and using terminology consistently.
 - [Microsoft Writing Style Guide: Don't use common words in new ways](https://learn.microsoft.com/en-us/style-guide/word-choice/dont-use-common-words-in-new-ways)
