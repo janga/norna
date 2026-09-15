@@ -66,10 +66,21 @@ npm run norna:dev:restart
 npm run norna:dev:stop
 ```
 
-The local server process record lives under `site/.norna/dev/`. Logs, generated
+The local server process record lives under `site/.norna/dev/`. Astro logs, generated
 types, and Astro cache live under `site/.norna/.astro/`. Keeping this state
 inside the selected site directory prevents another Norna site in the same
 project from affecting the server.
+
+## When Startup Fails
+
+If public-file synchronization or image preparation fails, Norna stops before
+starting Astro. The terminal shows the error and a path to the full preparation
+log, normally `site/.norna/dev/preparation.log`. For invalid page frontmatter,
+correct the reported field in `content.md`, then run the start command again.
+
+If Astro itself fails to start, Norna instead reports an excerpt from Astro's
+startup log and its full path. Preparation errors are not Astro startup errors;
+an older Astro log may describe a different attempt.
 
 ## Rebuild Stale Preview
 

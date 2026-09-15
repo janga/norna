@@ -163,9 +163,14 @@ unknownPageSetting: true
 	assert.notEqual(invalidContentStart.status, 0, 'dev start unexpectedly accepted invalid page frontmatter');
 	assert.match(
 		`${invalidContentStart.stdout}\n${invalidContentStart.stderr}`,
-		/Could not start the dev server.*Astro reported:.*site-page-000-home data does not match collection schema.*unknownPageSetting.*content\.md.*Full log:/su,
+		/Could not prepare the site for the dev server.*site\/pages\/000-home\/content\.md frontmatter has invalid YAML structure.*unknownPageSetting.*Full log:.*preparation\.log/su,
 	);
-	assert.doesNotMatch(invalidContentStart.stderr, /dev-local\.mjs:\d+/u);
+	assert.doesNotMatch(invalidContentStart.stderr, /(?:dev-local|yaml-config|site-link-graph)\.mjs:\d+|Astro reported:|Command failed:/u);
+	const preparationLog = await readFile(path.join(siteDir, '.norna', 'dev', 'preparation.log'), 'utf8');
+	assert.match(preparationLog, /unknownPageSetting.*yaml-config\.mjs:\d+/su);
+	const failedStartStatus = run('status');
+	assertSucceeded(failedStartStatus, 'dev status after invalid content');
+	assert.match(failedStartStatus.stdout, /No dev server is running/u);
 	await writeFile(contentPath, validContent);
 
 	blocker = await startPortBlocker();

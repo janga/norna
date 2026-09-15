@@ -37,6 +37,7 @@ const statePath = path.join(stateDirectory, 'state.json');
 const legacyStatePath = path.join(astroCacheDir, 'dev-local.json');
 const astroStatePath = path.join(astroCacheDir, 'dev.json');
 const logPath = path.join(astroCacheDir, 'dev.log');
+const preparationLogPath = path.join(stateDirectory, 'preparation.log');
 const args = process.argv.slice(2);
 const knownCommands = new Set(['start', 'lan', 'status', 'logs', 'restart', 'stop']);
 const command = args.find((arg) => knownCommands.has(arg)) ?? args.find((arg) => !arg.startsWith('-')) ?? 'start';
@@ -399,8 +400,29 @@ const startServer = async ({ host = localHost, open = true, killBlockingPort = f
 		await terminatePortProcesses(host);
 	}
 
-	await syncSitePublic();
-	await generateImages();
+	try {
+		await syncSitePublic();
+		await generateImages();
+	} catch (error) {
+		const output = [error.stdout, error.stderr].filter(Boolean).join('\n') || String(error);
+		const excerpt = getLogExcerpt(output)
+			.replace(/\n\s+at [\s\S]*$/u, '')
+			.replace(/\nNode\.js v[^\n]*$/u, '')
+			.trim();
+		let logHint;
+		try {
+			await mkdir(stateDirectory, { recursive: true });
+			await writeFile(preparationLogPath, output);
+			logHint = `Full log: ${preparationLogPath}`;
+		} catch (logError) {
+			logHint = `Could not save the preparation log: ${logError.message}`;
+		}
+		throw new Error([
+			`Could not prepare the site for the dev server at ${localUrl}.`,
+			excerpt,
+			logHint,
+		].join('\n\n'), { cause: error });
+	}
 	const previousLog = await readDevLog();
 	try {
 		await runAstroInherit(['dev', '--background', '--host', host, '--port', String(port)]);
