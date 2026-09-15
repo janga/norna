@@ -100,6 +100,37 @@ const openLongTable = async (page) => {
 	return frame;
 };
 
+test('aligns sort indicators with the first line of wrapped source and sticky headings', async ({ page }) => {
+	const frame = await openLongTable(page);
+	await frame.locator('table').evaluate((table) => {
+		table.style.width = '1200px';
+		table.style.minWidth = '1200px';
+	});
+	await settleLayout(page);
+	const sticky = frame.locator('[data-table-sticky-heading]');
+	await expect(sticky).toBeVisible();
+	for (const headings of [frame.locator('thead'), sticky]) {
+		const measurements = await headings.locator('[data-table-sort-button]').evaluateAll((buttons) => buttons.map((button) => {
+			const style = getComputedStyle(button);
+			const bounds = button.getBoundingClientRect();
+			const indicator = button.querySelector('.norna-table-sort-indicator')!.getBoundingClientRect();
+			const paddingTop = Number.parseFloat(style.paddingTop);
+			return {
+				center: indicator.top + indicator.height / 2,
+				firstLineCenter: bounds.top + paddingTop + Number.parseFloat(style.lineHeight) / 2,
+				textHeight: bounds.height - paddingTop - Number.parseFloat(style.paddingBottom),
+			};
+		}));
+		expect(measurements.length).toBe(10);
+		expect(Math.max(...measurements.map((item) => item.textHeight)))
+			.toBeGreaterThan(Math.min(...measurements.map((item) => item.textHeight)) + 10);
+		for (const item of measurements) {
+			expect(Math.abs(item.center - item.firstLineCenter)).toBeLessThan(1);
+			expect(Math.abs(item.center - measurements[0].center)).toBeLessThan(1);
+		}
+	}
+});
+
 test('persistent scrollbar stays visible, represents the viewport, and supports dragging and track clicks', async ({ page }) => {
 	const frame = await openLongTable(page);
 	const scrollbar = frame.locator('[data-table-navigation="top"]').getByRole('scrollbar');

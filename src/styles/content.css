@@ -711,7 +711,7 @@ ul {
 	display: flex;
 	width: 100%;
 	min-height: 1.5rem;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
 	gap: 0.6rem;
 	margin: -0.55rem -0.65rem;
@@ -743,6 +743,8 @@ ul {
 	flex: 0 0 auto;
 	width: 0.95rem;
 	height: 0.95rem;
+	/* Center on the first text line, not the full wrapped heading. */
+	margin-block-start: calc((1lh - 0.95rem) / 2);
 	place-items: center;
 	color: var(--section-secondary-text-color, var(--color-secondary-text));
 }
