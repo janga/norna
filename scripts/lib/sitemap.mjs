@@ -11,9 +11,11 @@ const escapeXml = (value) => String(value)
 
 const compareStrings = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
-export const getSitemapUrls = ({ siteStructure, siteUrl }) => (
-	siteStructure.contentFiles
-		.map((page) => getSiteNodePathname(page))
+export const getSitemapUrls = ({ siteStructure, siteUrl, categoryDestinations = [] }) => (
+	[
+		...siteStructure.contentFiles.map((page) => getSiteNodePathname(page)),
+		...categoryDestinations.filter(({ kind }) => kind === 'listing').map(({ pathname }) => pathname),
+	]
 		.sort(compareStrings)
 		.map((pathname) => getAbsolutePageUrl(siteUrl, pathname))
 );

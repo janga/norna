@@ -39,6 +39,7 @@ const createFixture = async (name) => {
 [Install](/guides/install/?mode=fast#steps)
 [Install once][install]
 [Install twice][install]
+[Setup](/guides/install/setup/)
 
 [install]: /guides/install/#steps
 
@@ -63,6 +64,7 @@ page:
 [Workflow](../workflows/#local)
 [Child](reference/#details)
 [Manual](../../manual.pdf)
+[Guides](/guides/)
 
 \`\`\`image-stack
 items:
@@ -71,6 +73,8 @@ items:
 \`\`\`
 `);
 	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/images/example.svg', '<svg viewBox="0 0 10 10"></svg>\n');
+	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/pages/020-setup/category.yaml', 'label: Setup\n');
+	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/pages/020-setup/pages/010-first/content.md', '# First setup\n');
 	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/pages/010-reference/content.md', `# Install reference
 
 ## Details {#details}
@@ -141,6 +145,8 @@ const assertSuccessfulResult = async (siteDir) => {
 	assert.match(movedSource, /\[Workflow\]\(\/guides\/workflows\/#local\)/);
 	assert.match(movedSource, /\[Child\]\(reference\/#details\)/);
 	assert.match(movedSource, /\[Manual\]\(\/manual\.pdf\)/);
+	assert.match(movedSource, /\[Guides\]\(\/guides\/\)/);
+	assert.match(homeSource, /\[Setup\]\(\/reference\/overview\/install\/setup\/\)/);
 	assert.match(childSource, /aliases:\n    - \/guides\/install\/reference\//);
 	assert.match(childSource, /\[Parent\]\(\.\.\/#steps\)/);
 	assert.match(homeSource, /\/reference\/overview\/install\/\?mode=fast#steps/);

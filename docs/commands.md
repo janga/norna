@@ -119,7 +119,8 @@ should normally mean the repository's complete publishable artifact, while
 
 `page:add` creates a routable page with `content.md` and `images/`.
 `category:add` creates a navigation-only category with `category.yaml` and
-`pages/`; the category has no URL of its own.
+`pages/`. Add a listed child page before building. The category URL then
+follows the [category destination rule](pages.md#opening-a-category-url).
 
 Use the project-local binary without a global installation:
 
@@ -240,8 +241,9 @@ output suitable for comparison.
 - `content:check`: validates the page hierarchy, required H1 titles, heading
   ids, frontmatter, Norna blocks, managed-image references, named notes,
   internal Markdown and card links, and common content mistakes. Link targets
-  may be pages, H2 or H3 anchors, page aliases, or files under `site/public/`;
-  navigation categories are not link destinations. The command reports all
+  may be pages, heading anchors, category destinations, page aliases, or files
+  under `site/public/`. Categories without listed reachable content are
+  errors. The command reports all
   discovered issues before exiting and never moves files. See
   [Content: Internal Links](content.md#internal-links).
 - `content:sync`: moves misplaced referenced image files when the intended move
@@ -291,7 +293,7 @@ output suitable for comparison.
 - `page:move <old-url> <new-url>`: previews a safe page-subtree move, including
   exact internal-link edits and old-URL aliases. `--write` applies the validated
   plan; the same command reconciles a directory already moved by hand.
-- `category:add <label>`: creates one non-routable navigation category at the
+- `category:add <label>`: creates one navigation category at the
   selected parent. It writes `category.yaml` and creates `pages/`.
 - `build`: runs config check, content check, public sync, image generation,
   Astro build, and the optional final-HTML search index.

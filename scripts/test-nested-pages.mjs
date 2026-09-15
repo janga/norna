@@ -36,6 +36,15 @@ const fileExists = (filePath) => access(filePath).then(() => true, () => false);
 try {
 	await cp(fixtureRoot, fixtureCopyRoot, { recursive: true });
 	const siteDir = path.join(fixtureCopyRoot, 'site');
+	const addFile = async (relativePath, source) => {
+		const filePath = path.join(siteDir, relativePath);
+		await mkdir(path.dirname(filePath), { recursive: true });
+		await writeFile(filePath, source);
+	};
+	await addFile('pages/050-choices/category.yaml', 'label: Choose & learn\n');
+	await addFile('pages/050-choices/pages/010-setup/category.yaml', 'label: Setup\n');
+	await addFile('pages/050-choices/pages/010-setup/pages/010-install/content.md', '# Install\n');
+	await addFile('pages/050-choices/pages/020-work/content.md', '---\npage:\n  description: Compare & choose a workflow.\n---\n# Work\n');
 	await runNorna(siteDir, 'content:check');
 	await runNorna(siteDir, 'build');
 
@@ -52,7 +61,17 @@ try {
 	for (const pagePath of expectedPages) {
 		assert.match(await readFile(path.join(distDir, pagePath), 'utf8'), /<main\b[^>]*id="main-content"/);
 	}
-	assert.equal(await fileExists(path.join(distDir, 'guides', 'index.html')), false);
+	const categoryRedirect = await readFile(path.join(distDir, 'guides', 'index.html'), 'utf8');
+	assert.match(categoryRedirect, /http-equiv="refresh" content="0; url=\/guides\/installation\/"/);
+	assert.match(categoryRedirect, /data-pagefind-ignore="all"/);
+	const categoryListing = await readFile(path.join(distDir, 'choices', 'index.html'), 'utf8');
+	assert.match(categoryListing, /id="page-title">Choose &amp; learn<\/h1>/);
+	assert.match(categoryListing, /href="\/choices\/setup\/"[\s\S]*?<strong>Setup<\/strong>/);
+	assert.match(categoryListing, /Compare &amp; choose a workflow/);
+	assert.doesNotMatch(categoryListing, /<strong>Install<\/strong>|http-equiv="refresh"|class="edit-source-link"/);
+	const sitemap = await readFile(path.join(distDir, 'sitemap.xml'), 'utf8');
+	assert.match(sitemap, /\/choices\/<\/loc>/);
+	assert.doesNotMatch(sitemap, /\/choices\/setup\/<\/loc>|\/guides\/<\/loc>/);
 
 	const rootHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
 	const installationHtml = await readFile(path.join(distDir, 'guides', 'installation', 'index.html'), 'utf8');
@@ -62,7 +81,7 @@ try {
 		'utf8',
 	);
 	for (const html of [rootHtml, installationHtml, macosHtml]) {
-		assert.match(html, /--palette-light-page-background: #f8f5ee/);
+		assert.match(html, /--palette-light-page-background: #fdf6e3/);
 		assert.match(html, /--font-sans: Georgia, 'Times New Roman', serif/);
 	}
 	assert.match(rootHtml, /--image-width: 920px/);
@@ -100,7 +119,7 @@ try {
 	assert.match(macosHtml, /data-section-tracking="enabled"/);
 	assert.match(rootHtml, /data-section-tracking="enabled"/);
 	assert.match(macosHtml, /class="site-nav-item site-nav-item-current-branch"/);
-	assert.match(macosHtml, /<a href="\/guides\/installation\/">Guides<\/a>/);
+	assert.match(macosHtml, /<a href="\/guides\/">Guides<\/a>/);
 	assert.doesNotMatch(macosHtml, /class="site-nav-submenu"/);
 	assert.match(macosHtml, /href="\/guides\/installation\/macos\/" aria-current="page"/);
 	assert.match(macosHtml, /<nav class="page-sequence-navigation" aria-label="Page sequence">/);
@@ -143,7 +162,7 @@ try {
 	assert.match(referenceTreeHtml, /href="#verify">Verify<\/a>/);
 	assert.doesNotMatch(referenceTreeHtml, /href="\/guides\/installation\/macos\/"/);
 	assert.match(referenceInstallationHtml, /href="\/reference\/" rel="prev"/);
-	assert.doesNotMatch(referenceInstallationHtml, /rel="next"/);
+	assert.match(referenceInstallationHtml, /href="\/reference\/reading-position\/" rel="next"/);
 
 	await runGit(['init']);
 	await runGit(['add', '.']);

@@ -17,6 +17,7 @@ import {
 } from './site-paths.mjs';
 import { getSiteNodePathname } from './site-page-urls.mjs';
 import { getSiteStructure } from './site-structure.mjs';
+import { createCategoryDestinationModel } from './category-destinations.mjs';
 
 const internalUrlOrigin = 'https://norna.invalid';
 const externalSchemePattern = /^[a-z][a-z0-9+.-]*:/i;
@@ -161,6 +162,13 @@ export const createSiteLinkGraph = ({
 		return createPageRecord(pageDocument);
 	});
 	const pagesByPathname = new Map(pages.map((page) => [page.pathname, page]));
+	const pagesByDirectory = new Map(pages.map((page) => [page.contentFile.pageDirectory, page]));
+	const categoryModel = createCategoryDestinationModel(siteStructure.nodes.map((node) => ({
+		...node,
+		navigation: node.kind === 'page'
+			? pagesByDirectory.get(node.pageDirectory).navigation
+			: { listed: true },
+	})));
 	const categoriesByPathname = new Map(siteStructure.categories.map((category) => [
 		getSiteNodePathname(category),
 		{ ...category, pathname: getSiteNodePathname(category) },
@@ -185,7 +193,7 @@ export const createSiteLinkGraph = ({
 
 	const references = [];
 	const referencesByTarget = new Map();
-	const diagnostics = [...aliasModel.diagnostics];
+	const diagnostics = [...aliasModel.diagnostics, ...categoryModel.diagnostics];
 
 	for (const page of pages) {
 		for (const sourceReference of page.document.links) {
@@ -278,13 +286,14 @@ export const createSiteLinkGraph = ({
 			const targetCategory = target.pageLookupPathname
 				? categoriesByPathname.get(target.pageLookupPathname)
 				: null;
-			if (targetCategory) {
+			if (targetCategory && categoryModel.byPathname.has(targetCategory.pathname)) {
 				reference.resolution = { category: targetCategory, kind: 'category', pathname: targetCategory.pathname };
-				diagnostics.push(createIssue(
+				const destination = categoryModel.byPathname.get(targetCategory.pathname);
+				if (target.fragment && !(destination.kind === 'listing' && target.fragment === 'page-title')) diagnostics.push(createIssue(
 					reference,
-					'category-has-no-url',
-					`Internal link "${sourceReference.target}" on line ${sourceReference.line} points to navigation category ${targetCategory.pathname}, which does not have its own page.`,
-					'Link to one of the category pages, or replace category.yaml with content.md when the collection needs its own page.',
+					'missing-internal-anchor',
+					`Internal link "${sourceReference.target}" on line ${sourceReference.line} points to an unavailable category anchor.`,
+					'Link to the category without a fragment, or use the content page URL for a heading link.',
 				));
 				continue;
 			}
@@ -318,6 +327,7 @@ export const createSiteLinkGraph = ({
 	}
 
 	return {
+		categoryModel,
 		aliasModel,
 		aliases: aliasModel.aliases,
 		aliasesByPathname: aliasModel.aliasesByPathname,

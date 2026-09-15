@@ -37,17 +37,6 @@ export const getListedSiteNavigationTree = (entries) => {
 	return filterListed(getSiteNavigationTree(entries));
 };
 
-export const getFirstPageInNavigationNode = (node) => {
-	if (node.node.kind === 'page') return node.node;
-
-	for (const child of node.children) {
-		const page = getFirstPageInNavigationNode(child);
-		if (page) return page;
-	}
-
-	return null;
-};
-
 export const flattenSiteNavigationTree = (nodes) => nodes.flatMap((node) => [
 	node,
 	...flattenSiteNavigationTree(node.children),

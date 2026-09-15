@@ -169,8 +169,9 @@ assert.equal(config.properties.editLink.properties.localEditor.oneOf[0].title, '
 const category = JSON.parse(await readFile(path.join(root, 'schemas', 'category.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(category.properties), ['label']);
 assert.deepEqual(category.required, ['label']);
-assert.match(category.markdownDescription, /creates a navigation-only group/);
-assert.match(category.markdownDescription, /produces no URL of its own/);
+assert.match(category.markdownDescription, /groups child pages without editorial content/);
+assert.match(category.markdownDescription, /first listed direct page/);
+assert.match(category.markdownDescription, /generated child list when the first child is a category/);
 
 const sitewide = JSON.parse(await readFile(path.join(root, 'schemas', 'sitewide-content.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(sitewide.properties.logo.properties), ['height']);

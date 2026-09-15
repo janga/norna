@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parsePageMarkdownSource } from './lib/page-markdown.mjs';
+import { createCategoryDestinationModel } from './lib/category-destinations.mjs';
 import {
 	createSiteLinkGraph,
 	getSiteLinkGraph,
@@ -21,6 +22,7 @@ const pageNode = ({ directory, pagePath, label, home = false }) => ({
 	pageDirectory: directory,
 	pageId: home ? 'home' : pagePath.split('/').at(-1),
 	pagePath,
+	parentPagePath: pagePath.includes('/') ? pagePath.slice(0, pagePath.lastIndexOf('/')) : null,
 });
 
 const categoryNode = ({ directory, pagePath, label }) => ({
@@ -30,6 +32,7 @@ const categoryNode = ({ directory, pagePath, label }) => ({
 	pageDirectory: directory,
 	pageId: pagePath.split('/').at(-1),
 	pagePath,
+	parentPagePath: pagePath.includes('/') ? pagePath.slice(0, pagePath.lastIndexOf('/')) : null,
 });
 
 const home = pageNode({
@@ -123,6 +126,7 @@ const validGraph = createSiteLinkGraph({
 		pathname: '/downloads/guide one.pdf',
 	}],
 	siteStructure: {
+		nodes: [home, guides, installation, workflows],
 		categories: [guides],
 		contentFiles: [home, installation, workflows],
 	},
@@ -151,6 +155,7 @@ const searchGraph = createSiteLinkGraph({
 		pathname: '/search/',
 	}],
 	siteStructure: {
+		nodes: [home],
 		categories: [],
 		contentFiles: [home],
 	},
@@ -164,6 +169,7 @@ const searchDisabledGraph = createSiteLinkGraph({
 		document: await parsePageMarkdownSource(searchSource, { label: home.contentLabel }),
 	}],
 	siteStructure: {
+		nodes: [home],
 		categories: [],
 		contentFiles: [home],
 	},
@@ -215,6 +221,7 @@ const brokenGraph = createSiteLinkGraph({
 	],
 	publicFiles: [],
 	siteStructure: {
+		nodes: [home, guides, installation, workflows],
 		categories: [guides],
 		contentFiles: [home, installation, workflows],
 	},
@@ -223,11 +230,56 @@ const brokenGraph = createSiteLinkGraph({
 assert.deepEqual(brokenGraph.diagnostics.map(({ code }) => code), [
 	'missing-internal-page',
 	'missing-internal-anchor',
-	'category-has-no-url',
 	'missing-public-file',
 	'invalid-internal-url',
 ]);
 assert.equal(brokenGraph.referencesByTarget.get('/missing/')?.length, 1);
+assert.equal(brokenGraph.referencesByTarget.get('/guides/')[0].resolution.kind, 'category');
+
+const subcategory = categoryNode({ directory: '010-guides/pages/010-setup', pagePath: 'guides/setup', label: 'setup/category.yaml' });
+const nestedPage = pageNode({ directory: '010-guides/pages/010-setup/pages/010-install', pagePath: 'guides/setup/install', label: 'install/content.md' });
+const categoryModel = createCategoryDestinationModel([home, guides, subcategory, nestedPage, workflows]);
+assert.deepEqual(categoryModel.diagnostics, []);
+assert.equal(categoryModel.byPathname.get('/guides/').kind, 'listing');
+assert.deepEqual(categoryModel.byPathname.get('/guides/').children.map(({ pagePath }) => pagePath), ['guides/setup', 'guides/workflows']);
+assert.equal(categoryModel.byPathname.get('/guides/setup/').target.pagePath, 'guides/setup/install');
+assert.equal(createCategoryDestinationModel([home, guides, workflows, subcategory, nestedPage]).byPathname.get('/guides/').target, workflows);
+assert.equal(createCategoryDestinationModel([guides]).diagnostics[0].code, 'category-without-listed-content');
+assert.equal(createCategoryDestinationModel([guides, { ...installation, navigation: { listed: false } }]).diagnostics.length, 1);
+const excluded = createCategoryDestinationModel([
+	{ ...installation, parentPagePath: null, navigation: { listed: false } },
+	{ ...subcategory, parentPagePath: installation.pagePath },
+]);
+assert.equal(excluded.destinations.length, 0);
+assert.deepEqual(excluded.diagnostics, []);
+
+const categoryGraphOptions = {
+	pageDocuments: [
+		{ contentFile: home, document: await parsePageMarkdownSource(`# Home
+
+[Category](/guides/)
+[Category title](/guides/#page-title)
+[Unknown category anchor](/guides/#missing)
+[Redirect anchor](/guides/setup/#page-title)
+[Encoded category](/%67uides/)
+`) },
+		{ contentFile: nestedPage, document: await parsePageMarkdownSource('# Install\n') },
+		{ contentFile: workflows, document: await parsePageMarkdownSource('# Workflows\n') },
+	],
+	siteStructure: {
+		nodes: [home, guides, subcategory, nestedPage, workflows],
+		categories: [guides, subcategory],
+		contentFiles: [home, nestedPage, workflows],
+	},
+};
+const categoryGraph = createSiteLinkGraph(categoryGraphOptions);
+assert.deepEqual(categoryGraph.diagnostics.map(({ code }) => code), ['missing-internal-anchor', 'missing-internal-anchor']);
+assert.equal(categoryGraph.references.at(-1).resolution.pathname, '/guides/');
+const conflictingCategoryGraph = createSiteLinkGraph({
+	...categoryGraphOptions,
+	publicFiles: [{ pathname: '/guides/index.html', label: 'site/public/guides/index.html' }],
+});
+assert.ok(conflictingCategoryGraph.diagnostics.some(({ code }) => code === 'category-route-collision'));
 
 const writeFixtureFile = async (root, relativePath, contents) => {
 	const filePath = path.join(root, relativePath);
@@ -254,7 +306,7 @@ try {
 	assert.match(output, /\[site\/pages\/000-home\/content\.md\]/);
 	assert.match(output, /Internal link "\/missing\/" on line 3 points to page "\/missing\/"/);
 	assert.match(output, /missing heading anchor "#absent" on \/guides\/installation\//);
-	assert.match(output, /navigation category \/guides\/, which does not have its own page/);
+	assert.doesNotMatch(output, /category-has-no-url/);
 	assert.match(output, /no matching file exists under site\/public\//);
 	assert.match(output, /Internal link "\/broken%ZZ\/" on line 7 is invalid/);
 } finally {

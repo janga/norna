@@ -9,6 +9,8 @@ import {
 	sitePublicLabel,
 } from './lib/site-paths.mjs';
 import { getSiteStructure } from './lib/site-structure.mjs';
+import { getSiteLinkGraph } from './lib/site-link-graph.mjs';
+import { assertCategoryDestinationModel } from './lib/category-destinations.mjs';
 
 const keepAstroPublicEntries = new Set([
 	'images',
@@ -53,9 +55,12 @@ for (const generatedFile of generatedPublicFiles) {
 }
 
 const siteStructure = await getSiteStructure();
+const { categoryModel } = await getSiteLinkGraph({ siteStructure });
+const { destinations: categoryDestinations } = assertCategoryDestinationModel(categoryModel);
 const sitemapXml = createSitemapXml({
 	siteStructure,
 	siteUrl: projectConfig.site.url,
+	categoryDestinations,
 });
 
 await mkdir(astroPublicDir, { recursive: true });
@@ -79,4 +84,5 @@ for (const entry of sourceEntries) {
 await writeFile(path.join(astroPublicDir, sitemapFilename), sitemapXml);
 
 console.log(`Synced ${sitePublicLabel}/ to ${astroPublicLabel}/.`);
-console.log(`Generated ${astroPublicLabel}/${sitemapFilename} for ${siteStructure.contentFiles.length} public page${siteStructure.contentFiles.length === 1 ? '' : 's'}.`);
+const pageCount = siteStructure.contentFiles.length + categoryDestinations.filter(({ kind }) => kind === 'listing').length;
+console.log(`Generated ${astroPublicLabel}/${sitemapFilename} for ${pageCount} public page${pageCount === 1 ? '' : 's'}.`);

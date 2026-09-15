@@ -38,15 +38,18 @@ import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
 type SiteEntry = CollectionEntry<'site'>;
 
 interface Props {
-	entry: SiteEntry;
+	entry?: SiteEntry;
+	categoryPath?: string;
 }
 
-const { entry } = Astro.props;
+const { entry, categoryPath } = Astro.props;
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const siteModel = await getSiteModel(await getCollection('site'));
 const { nodes: siteNodes, pages: sitePages } = siteModel;
-const currentPage = sitePages.find((page) => page.entry.id === entry.id);
-if (!currentPage) throw new Error(`Page entry "${entry.id}" is missing from the site page model.`);
+const categoryDestination = categoryPath ? siteModel.categoryDestinations.byPathname.get(categoryPath) : null;
+const currentPage = categoryDestination?.category
+	?? sitePages.find((page) => page.entry.id === entry?.id);
+if (!currentPage) throw new Error(`Page entry "${entry?.id ?? categoryPath}" is missing from the site page model.`);
 const [siteTheme] = await getCollection('theme');
 if (!siteTheme) {
 	throw new Error('site/theme.yaml is required. Add a root theme before building the site.');
@@ -95,8 +98,21 @@ const listedNavigationTree = getListedSiteNavigationTree(siteNavigation);
 const renderedNavigationEntries = flattenSiteNavigationTree(listedNavigationTree);
 const pageSequence = getSequentialPageNavigation(listedNavigationTree, currentPage.pagePath);
 const childPages = getDirectChildPages(listedNavigationTree, currentPage.pagePath);
-const siteHtml = entry.rendered?.html ?? '';
-const resolvedSections = await getSectionsContent(siteHtml, currentPage, childPages);
+const siteHtml = entry?.rendered?.html ?? '';
+const resolvedSections: ResolvedSection[] = categoryDestination ? [{
+	id: null,
+	title: currentPage.title,
+	titleHtml: currentPage.title.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+	headingLevel: 1,
+	contentBlocks: [{
+		type: 'page-list',
+		pages: categoryDestination.children.map((node) => ({
+			title: node.title,
+			pathname: node.pathname,
+			description: node.kind === 'page' ? node.entry.data.page?.description : undefined,
+		})),
+	}],
+}] : await getSectionsContent(siteHtml, currentPage, childPages);
 const allContentBlocks = resolvedSections.flatMap((section) => flattenContentBlocks(section.contentBlocks));
 const hasTabs = allContentBlocks.some((block) => block.type === 'tabs');
 const hasNotes = allContentBlocks.some((block) => (
@@ -123,7 +139,7 @@ const renderedSections = resolvedSections.map((section, index) => ({
 	prioritizeFirstImage: index === firstImageSectionIndex,
 }));
 const hasPageSequence = Boolean(pageSequence.previous || pageSequence.next);
-const editSourceTarget = projectConfig.editLink
+const editSourceTarget = projectConfig.editLink && currentPage.kind === 'page'
 	? resolveEditSourceTarget({
 		...projectConfig.editLink,
 		development: import.meta.env.DEV,
@@ -191,7 +207,7 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 
 <BaseLayout
 	title={currentPage.title}
-	description={entry.data.page?.description}
+	description={entry?.data.page?.description}
 	presentation={pagePresentation}
 	visualTheme={visualTheme}
 	frameColors={frameColors}

@@ -6,7 +6,7 @@ hierarchy must represent exactly one of two things:
 | Marker file | Meaning | Own URL | Editorial content and images |
 | --- | --- | --- | --- |
 | `content.md` | A page that readers can open. | Yes | The Markdown and an optional adjacent `images/` directory belong to the page. |
-| `category.yaml` | A navigation-only label that groups child pages. | No | A category has no Markdown content and cannot contain `images/`. |
+| `category.yaml` | A label that groups child pages. | Yes: a redirect or generated list | A category has no Markdown content and cannot contain `images/`. |
 
 Do not put both marker files in one directory. A directory with neither marker
 is also invalid. This distinction lets a collection use a real introductory
@@ -30,8 +30,8 @@ site/pages/
 ```
 
 `Home`, `Installation`, and `Reference` are pages. `Guides` is a category. The
-example builds `/`, `/guides/installation/`, and `/reference/`, but it does not
-build `/guides/`.
+example builds `/`, `/guides/installation/`, and `/reference/`.
+Opening `/guides/` redirects to `/guides/installation/`.
 
 Pages use the Markdown H1, optional metadata, sections, Norna blocks, and
 managed-image model described in [Content](content.md). Categories use the
@@ -51,8 +51,8 @@ parent of every page.
 
 Other directories directly under `site/pages/` are top-level navigation
 entries. A top-level page is both a navigation destination and a page. A
-top-level category is a label for its descendants; its global-navigation link
-opens the first listed descendant page instead of creating a category page.
+top-level category groups descendants; its global-navigation link opens the
+[category URL](#opening-a-category-url).
 
 ## Choose A Section, Page, Or Category
 
@@ -120,7 +120,7 @@ the exact terms, thresholds, exit behavior, and JSON format.
 
 ## Navigation Categories
 
-A category is a non-routable grouping in the page hierarchy. Its directory
+A category groups related pages without requiring introductory content. Its directory
 contains `category.yaml` instead of `content.md`:
 
 ```text
@@ -146,25 +146,76 @@ The directory id still contributes the `guides` segment to descendant URLs:
 /guides/workflows/
 ```
 
-Norna does not generate `/guides/`. The category appears as:
+The category appears as:
 
-- a link to its first listed descendant in global top navigation;
+- a link to its category URL in global top navigation;
 - a disclosure-only label in the desktop tree and mobile menu;
 - non-linked text in breadcrumbs.
 
-Because a category has no generated page, `/guides/` is not a valid internal
-link target. Link to a descendant page, or replace `category.yaml` with
-`content.md` when the collection needs its own destination. See
-[Content: Internal Links](content.md#internal-links).
+The category URL is a valid internal-link target. Its destination follows the
+first-child rule below. Use `content.md` instead when the collection needs
+editorial content, rather than adding text solely to make its URL work.
 
-A category may contain an optional limited `theme.yaml`; descendant pages
-inherit it. A category cannot contain `images/`, because it has no page content
+A category may contain an optional limited `theme.yaml`; its generated list
+and descendant pages use it. A category cannot contain `images/`, because it has no page content
 that can reference them. Put an image on a child page, or replace
 `category.yaml` with `content.md` when the collection needs editorial content.
 
-An empty category is allowed temporarily while editing, but `content:check`
-reports a warning. A category with no listed descendant is omitted from
-generated navigation.
+### Opening A Category URL
+
+Norna evaluates listed direct children in navigation order:
+
+| First listed direct child | Result at the category URL |
+| --- | --- |
+| A page | Redirect to that page. |
+| A category | Show the category label as H1 and links to all listed direct children in order. |
+
+In the example above, `/guides/` opens `/guides/installation/`. Norna does not
+copy the Installation content into a second document.
+
+When the first child is itself a category, the visitor chooses a branch:
+
+```text
+010-guides/
+|-- category.yaml                 # label: Guides
+`-- pages/
+    |-- 010-installation/
+    |   |-- category.yaml         # label: Installation
+    |   `-- pages/
+    |       `-- 010-requirements/
+    |           `-- content.md
+    `-- 020-workflows/
+        `-- content.md
+```
+
+Here `/guides/` shows Guides, Installation, and Workflows. It does not descend
+automatically to Requirements or skip Installation to open Workflows.
+Choosing Installation opens `/guides/installation/`, which redirects to
+`/guides/installation/requirements/`.
+
+Generated lists show existing page descriptions when available. They do not
+require descriptions, invent introductory text, or flatten the subtree.
+No extra source file or setting is needed. Expanding a category in the tree
+or compact menu still only reveals its children; it does not navigate.
+
+### Reachable Content And Stable Links
+
+An empty category is allowed temporarily while editing. Before preview or
+publication, each listed category must lead to at least one listed content
+page. `content:check` and the build fail with the category's source path if it
+is empty or contains only excluded content. Add a listed page or remove the
+category. A valid category-first structure produces no warning. An unlisted
+ancestor excludes its whole subtree from category destinations and navigation.
+
+Reordering children can change the redirect target or replace it with a list.
+Link to a page's own URL when you mean a specific document. For heading links,
+use that page's URL and anchor, not an anchor on a redirecting category URL.
+A generated category list exposes only its H1 anchor, `#page-title`.
+
+Category redirects are not permanent [page aliases](#preserve-old-page-urls).
+Norna emits an HTML redirect with an ordinary destination link; it works
+without JavaScript. On GitHub Pages this is an HTML response, not an HTTP
+`301` or `302`. Server-side redirect configuration depends on the host.
 
 ## Nested Pages
 
@@ -191,8 +242,9 @@ This produces:
 ```
 
 Replace a parent's `content.md` with `category.yaml` only when that parent is a
-navigation label rather than a page. Descendant URL segments stay the same,
-but the parent URL is then absent.
+navigation label rather than a page. Descendant URL segments stay the same;
+the parent URL follows the category destination rule instead of rendering
+the removed editorial content.
 
 ## Directory Names, Order, And URLs
 
@@ -328,9 +380,14 @@ parent uses the nearest higher multiple of ten after its new siblings. Pass
 `--order NNN` to select another unused order. Reconciliation keeps the existing
 directory name and does not accept `--order`.
 
-Every routable page in the moved subtree receives its previous URL as an alias
+Every content page in the moved subtree receives its previous URL as an alias
 unless `--no-aliases` is present. That option intentionally retires the old
 URLs; it does not disable internal-link updates.
+
+Links to categories inside the moved subtree are also updated. Category URLs
+do not receive aliases: their destinations are derived from their new place
+in the hierarchy. A move that leaves a listed category without reachable
+content is rejected; restructure or remove that category first.
 
 The command stops without changing files when both URLs exist, neither URL
 exists, the destination parent is missing, the destination collides with a
@@ -411,8 +468,8 @@ provide page-local navigation according to the selected navigation model.
 
 Home and listed top-level entries appear in global navigation. Child pages and
 categories appear in the local hierarchy for their top-level area. Breadcrumbs
-show actual page and category ancestors; category labels are text because they
-have no URL. Home is not added as an artificial ancestor.
+show actual page and category ancestors; category labels remain plain text.
+Home is not added as an artificial ancestor.
 
 The numeric prefix controls order among siblings. Set `navigation.listed` to
 `false` in a non-home page's frontmatter when the page should remain public but
@@ -427,8 +484,9 @@ An unlisted page still has a public URL and remains in the generated sitemap.
 This setting is not access control. See
 [Public Files: Generated Sitemap](public-files.md#generated-sitemap).
 
-Home is always listed. Categories do not have page frontmatter; a category is
-shown only when it has a listed descendant.
+Home is always listed. Categories do not have page frontmatter. Listed
+categories require reachable content; an unlisted page excludes its whole
+subtree from navigation, including categories below it.
 
 With `navigation.mode: automatic`, Norna chooses one navigation model from the
 listed hierarchy and keeps that model stable across the site:
@@ -641,8 +699,8 @@ directory. It may adjust only:
 - `sections.backgroundPattern` when navigation does not resolve to `tree`
 
 These values are inherited by descendant pages and merged with more local
-settings. A category theme affects descendants even though the category itself
-does not render a page. Site colors, typography, corners, page width, gutters,
+settings. A category theme also affects its generated child listing when one
+is needed. Site colors, typography, corners, page width, gutters,
 structured content-block defaults, and navigation remain global.
 
 Page and category directories cannot contain `config.yaml` or

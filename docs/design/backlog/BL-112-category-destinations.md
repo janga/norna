@@ -2,15 +2,15 @@
 
 ## Status
 
-Ready. Behavior agreed on 2026-09-15. Not implemented. The
-[user documentation draft](../category-destinations-draft.md) records the
-intended behavior, not the current release.
+Complete. Implemented, visually approved, and documented on 2026-09-15.
+The canonical contract is now
+[Opening A Category URL](../../pages.md#opening-a-category-url).
 
 ## Problem
 
-A category groups pages without editorial content. Its URL prefix currently
-has no destination, so visiting `/getting-started/` fails even though its
-children are published. Automatically descending through categories could
+A category groups pages without editorial content. Its URL prefix previously
+had no destination, so visiting `/getting-started/` failed even though its
+children were published. Automatically descending through categories could
 instead send the visitor deep into the tree without letting them choose.
 
 ## Decision
@@ -72,11 +72,30 @@ working ordinary destination link without JavaScript.
 
 ## Documentation Completion
 
-Replace the obsolete non-routable-category rules in `docs/pages.md`, then
-reconcile configuration, internal-link, alias, move, sitemap, search, and
-JavaScript references with the implementation. Add one concise HTML example
-only where it demonstrates the new destination behavior. Avoid duplicating
-the complete contract across reference pages.
+Replaced the obsolete non-routable-category rules in `docs/pages.md` and
+reconciled configuration, internal links, page moves and aliases, sitemap,
+search, JavaScript, theme inheritance, CLI reference, and schema help.
+Getting Started demonstrates its own category URL and links to the reference.
+Removed the superseded documentation draft to keep one canonical definition.
+
+## Review And Test Record
+
+- Documentation preview: `http://127.0.0.1:4321/norna/getting-started/`
+  opens Install Norna instead of a 404.
+- Generated listing: `http://127.0.0.1:4399/category-review/guides/`.
+  Check the category label, direct-child list, descriptions, and surrounding
+  navigation on desktop and mobile. Choosing Installation opens Requirements;
+  visiting Guides itself must not jump there.
+- Maintained source: `fixtures/category-destinations/site`; prepare the
+  registered scratch target using the fixture README when the scratch site
+  has been replaced by another test.
+- Passed: root build, site-link graph, page aliases, sitemap, site-node
+  commands, nested-page/static top-navigation contract, page moves,
+  static-public sync, dead-code, schema-help, and documentation checks.
+- Four focused browser cases passed: both category destinations and tree
+  disclosure with JavaScript enabled and disabled, using a deployment prefix.
+- Desktop/light and mobile/dark listing screenshots inspected. The user
+  approved the result after LAN review. The complete release suite was not run.
 
 ## Reference
 

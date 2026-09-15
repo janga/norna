@@ -415,7 +415,7 @@ page and category branches remain remembered during the browser session when
 JavaScript is available. Ordinary links and native disclosure controls remain
 usable without JavaScript.
 
-A listed navigation category has no page URL and therefore requires `tree`.
+A listed navigation category requires `tree` for its expandable branches.
 Norna rejects an explicit `sections` or `top` value when a listed category
 exists. Use `automatic`, use `tree`, or replace the category with a page that
 has meaningful content.
@@ -454,8 +454,12 @@ Norna indexes the rendered editorial content rather than the Markdown source.
 Page titles, H2 sections, H3 subsections, prose, captions, notes, and structured
 content therefore become searchable as they appear in the finished site.
 Navigation, banners, the footer, page-sequence links, source edit links, the
-404 page, redirect aliases, and the search page itself are excluded. Matching
+404 page, redirect aliases, category redirects, and the search page itself are excluded. Matching
 sections can appear as links to their heading anchors.
+
+A generated category list contributes its own label and direct-child labels
+and descriptions, not copies of descendant body text. See
+[Opening A Category URL](pages.md#opening-a-category-url).
 
 Search is static: no search server or hosted service is required. Only the
 generated `/search/` page loads the Pagefind interface and index. When search

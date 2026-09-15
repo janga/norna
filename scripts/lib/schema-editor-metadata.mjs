@@ -607,7 +607,7 @@ const addContentHelp = (jsonSchema) => {
 const addCategoryHelp = (jsonSchema) => {
 	jsonSchema.markdownDescription = [
 		yamlExample('label: Guides'),
-		'`category.yaml` creates a navigation-only group for child pages. It has no page content and produces no URL of its own.',
+		'`category.yaml` groups child pages without editorial content. Its URL opens the first listed direct page, or a generated child list when the first child is a category.',
 		documentationLink('Navigation category reference', 'pages.md', 'navigation-categories'),
 	].join('\n\n');
 	addHelp(jsonSchema, 'label', [

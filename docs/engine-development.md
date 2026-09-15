@@ -418,12 +418,15 @@ The renderer discovers a required homepage at
 `site/pages/000-home/content.md`, top-level navigation roots beside Home, and
 nested entries under each non-home page or category's `pages/` directory. An
 entry with `content.md` is a routable page. An entry with `category.yaml` is a
-navigation-only category whose path remains part of descendant URLs.
+category whose path remains part of descendant URLs. The shared
+`scripts/lib/category-destinations.mjs` model resolves listed categories to
+first-direct-page redirects or generated direct-child lists. These routes
+stay separate from the editorial page collection.
 
 Navigation has three related levels:
 
 - Global navigation moves between Home and top-level page/category areas. A
-  category label targets its first listed descendant page.
+  category label targets its category URL, resolved by that shared model.
 - On a hierarchical site, a stable left rail shows the active top-level area.
   Home and independent top-level pages use the same rail for their local page
   and section context.

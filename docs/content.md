@@ -150,9 +150,11 @@ identifies the H1. H2 and H3 anchors use the derived or explicit ids described
 under [Sections](#sections). Prefer the current page URL even though a declared
 [page alias](pages.md#preserve-old-page-urls) also resolves to its destination.
 
-A navigation category has no page of its own. A link to a category path is
-therefore an error: link to one of its pages, or replace `category.yaml` with
-`content.md` when the collection needs a destination. A public-file link must
+A navigation category URL opens its first listed direct page or a generated
+list of direct children. See [Opening A Category URL](pages.md#opening-a-category-url).
+For a heading link, use the content page URL rather than a category redirect.
+A generated category list supports `#page-title`, but no child-heading anchors.
+A public-file link must
 match the exact relative path of a file under `site/public/`, including its
 filename and letter case.
 
@@ -236,8 +238,9 @@ The author writes this guidance; Norna only assembles the list. Omit the list
 when it would duplicate navigation without helping a choice or a sequence.
 
 The list does not recurse, include unlisted pages, or pass through navigation
-categories. Categories have no page URL, so they are omitted rather than
-rendered as links. Use a page with `content.md` instead of `category.yaml` when
+categories. This block lists content pages, not category destinations. Unlike
+the [automatic category list](pages.md#opening-a-category-url), it omits
+category links. Use a page with `content.md` instead of `category.yaml` when
 a collection needs introductory content and a generated child-page list. See
 [Pages and Categories](pages.md).
 

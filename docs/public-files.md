@@ -124,7 +124,8 @@ The generated sitemap follows these rules:
 
 - every page that produces a URL is included, including a page with
   `navigation.listed: false`;
-- a navigation category is excluded because it has no page or URL of its own;
+- a generated category child-list page is included; a category redirect is
+  excluded, since its target page is already included;
 - every entry is an absolute URL derived from `url` in `site/config.yaml`,
   including any configured base path;
 - entries use a deterministic URL order, independent of numeric presentation

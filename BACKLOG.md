@@ -16,10 +16,7 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-112` Category Destinations](docs/design/backlog/BL-112-category-destinations.md):
-  **Ready.** Resolve category URLs to the first listed direct page or a
-  generated direct-child listing; reject categories without listed reachable
-  content at build time.
+No active implementation items are currently queued.
 
 ## Next
 

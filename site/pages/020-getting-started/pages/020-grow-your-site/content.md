@@ -235,9 +235,11 @@ norna category:add "Getting Started" --parent /
 norna page:add "Install Norna" --parent /getting-started/
 ```
 
-`Getting Started` has no page or URL of its own. Its category id remains in the
-child URLs, so the second command creates `/getting-started/install-norna/`.
-The other child pages follow the same pattern.
+The second command creates `/getting-started/install-norna/`. Opening
+`/getting-started/` takes the reader to Install Norna, its first listed child.
+If the first child is another category instead, Norna shows a list of direct
+children so the reader can choose a branch. No introductory page is required.
+See [Opening a category URL](https://github.com/janga/norna/blob/main/docs/pages.md#opening-a-category-url).
 
 If `Getting Started` needs an introduction or overview, use `content.md`
 instead of `category.yaml`. It then becomes a real page at

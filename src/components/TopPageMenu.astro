@@ -3,12 +3,12 @@ import { ChevronDown } from '@lucide/astro';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SiteNavigationNode } from '../lib/siteNavigation';
-import type { SitePage } from '../lib/sitePages';
+import type { SiteNode } from '../lib/sitePages';
 import NavigationPageTree from './NavigationPageTree.astro';
 
 interface Props {
 	node: SiteNavigationNode;
-	currentPage?: SitePage;
+	currentPage?: SiteNode;
 	showSections: boolean;
 	showChildren: boolean;
 }

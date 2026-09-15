@@ -45,18 +45,28 @@ export async function getStaticPaths() {
 		? [{ params: { slug: 'search' }, props: { searchPage: true } }]
 		: [];
 
-	return [...pagePaths, ...aliasPaths, ...searchPath];
+	const categoryPaths = siteModel.categoryDestinations.destinations.map((destination) => ({
+		params: { slug: destination.category.pathSegment },
+		props: destination.kind === 'redirect' ? {
+			alias: {
+				targetPathname: destination.target.pathname,
+				targetTitle: destination.target.title,
+				categoryTitle: destination.category.title,
+			},
+		} : { categoryPath: destination.pathname },
+	}));
+	return [...pagePaths, ...aliasPaths, ...searchPath, ...categoryPaths];
 }
 
-const { alias, entry, searchPage } = Astro.props;
+const { alias, entry, searchPage, categoryPath } = Astro.props;
 
-if (!searchPage && !alias && (!entry || isHomePageEntry(entry))) {
+if (!searchPage && !alias && !categoryPath && (!entry || isHomePageEntry(entry))) {
 	throw new Error('Page entry is missing.');
 }
 
 const currentPage = entry ? await getSitePage(entry) : null;
 
-if (!searchPage && !alias && !currentPage?.pathSegment) {
+if (!searchPage && !alias && !categoryPath && !currentPage?.pathSegment) {
 	throw new Error(`Page "${entry.id}" needs a page id.`);
 }
 ---
@@ -64,5 +74,5 @@ if (!searchPage && !alias && !currentPage?.pathSegment) {
 {searchPage
 	? <SearchPage />
 	: alias
-	? <PageAliasRedirect targetPathname={alias.targetPathname} targetTitle={alias.targetTitle} />
-	: <SitePage entry={entry} />}
+	? <PageAliasRedirect targetPathname={alias.targetPathname} targetTitle={alias.targetTitle} categoryTitle={alias.categoryTitle} />
+	: <SitePage entry={entry} categoryPath={categoryPath} />}

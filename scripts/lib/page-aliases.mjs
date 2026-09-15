@@ -103,7 +103,18 @@ export const createPageAliasModel = ({
 		}));
 	}
 	for (const file of publicFiles) {
-		for (const identity of getPublicFileIdentities(file)) addIdentity(identity);
+		for (const identity of getPublicFileIdentities(file)) {
+			const conflict = identitiesByPathname.get(identity.pathname);
+			if (conflict?.kind === 'category') {
+				diagnostics.push({
+					code: 'category-route-collision',
+					severity: 'error',
+					message: `Public file ${file.label} conflicts with category URL ${identity.pathname}.`,
+					fix: 'Remove or move the public file. Norna generates category destinations.',
+				});
+			}
+			addIdentity(identity);
+		}
 	}
 	for (const route of generatedRoutes) {
 		const conflict = identitiesByPathname.get(route.pathname);

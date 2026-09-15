@@ -6,9 +6,10 @@ import { withBasePath } from '../lib/basePath';
 interface Props {
 	targetPathname: string;
 	targetTitle: string;
+	categoryTitle?: string;
 }
 
-const { targetPathname, targetTitle } = Astro.props;
+const { targetPathname, targetTitle, categoryTitle } = Astro.props;
 const { labels, lang } = projectConfig.locale;
 const targetHref = withBasePath(projectConfig.site.basePath, targetPathname);
 const canonicalUrl = getAbsolutePageUrl(projectConfig.site.url, targetPathname);
@@ -22,7 +23,7 @@ const canonicalUrl = getAbsolutePageUrl(projectConfig.site.url, targetPathname);
 		<meta name="robots" content="noindex, follow" />
 		<meta http-equiv="refresh" content={`0; url=${targetHref}`} />
 		<link rel="canonical" href={canonicalUrl} />
-		<title>{labels.pageMoved}: {targetTitle}</title>
+		<title>{categoryTitle ?? labels.pageMoved}: {targetTitle}</title>
 		<style is:inline>
 			:root {
 				color-scheme: light dark;
@@ -42,8 +43,8 @@ const canonicalUrl = getAbsolutePageUrl(projectConfig.site.url, targetPathname);
 	</head>
 	<body>
 		<main>
-			<h1>{labels.pageMoved}</h1>
-			<p>{labels.pageMovedText} <a href={targetHref}>{targetTitle}</a>.</p>
+			<h1>{categoryTitle ?? labels.pageMoved}</h1>
+			<p>{!categoryTitle && labels.pageMovedText} <a href={targetHref}>{targetTitle}</a>.</p>
 		</main>
 	</body>
 </html>

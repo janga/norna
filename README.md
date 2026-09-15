@@ -71,8 +71,9 @@ site/
   a routable page or `category.yaml` for a navigation-only group.
 - A page may contain local images. A page or category may contain limited
   presentation settings and nested entries under its own `pages/` directory.
-- Category ids remain in child URLs, but categories do not generate pages of
-  their own.
+- Category ids remain in child URLs. Opening a category URL leads to its first
+  listed direct page or a generated child list; see
+  [Category destinations](docs/pages.md#opening-a-category-url).
 - `theme.yaml` normally selects one complete visual preset.
 - `sitewide-content.yaml` holds shared logo display settings, banners, and
   footer content.

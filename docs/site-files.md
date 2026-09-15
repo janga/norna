@@ -65,7 +65,7 @@ Every ordered directory under `site/pages/` contains exactly one marker file:
 | Marker | Meaning |
 | --- | --- |
 | `content.md` | A page with its own H1, content, optional images, and URL. |
-| `category.yaml` | A navigation-only category for child pages, with no content or URL of its own. |
+| `category.yaml` | A group of child pages without editorial content. Its URL opens a page or a generated child list. |
 
 The homepage is the one reserved page:
 
@@ -96,8 +96,9 @@ directory and is inherited by descendant pages. Site colors, typography,
 corners, structured content-block defaults, and navigation remain global.
 
 The three-digit prefix controls sibling navigation order and is not part of the
-URL. Category ids remain in descendant URLs even though no category page is
-generated. See [Pages and Categories](pages.md) for exact marker files,
+URL. Category ids remain in descendant URLs. See
+[Opening A Category URL](pages.md#opening-a-category-url) for the destination
+rule, and [Pages and Categories](pages.md) for exact marker files,
 hierarchy, URL, navigation, commands, and theme inheritance. See
 [Images and Metadata](images-and-metadata.md) for managed files.
 

@@ -674,8 +674,8 @@ that part of the hierarchy needs a narrower presentation adjustment:
 site/pages/010-guide/theme.yaml
 ```
 
-For a category, the same file applies to its descendant pages even though the
-category has no rendered page of its own:
+For a category, the same file applies to its generated child listing, when
+needed, and its descendant pages:
 
 ```text
 site/pages/010-guides/category.yaml

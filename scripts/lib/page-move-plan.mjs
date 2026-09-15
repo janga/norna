@@ -210,6 +210,9 @@ const getResolvedReferenceIntent = ({
 	reference,
 }) => {
 	const { resolution, target } = reference;
+	if (resolution?.kind === 'category') {
+		return { kind: 'category', lookupPathname: movedCurrentToNew.get(resolution.pathname) ?? resolution.pathname };
+	}
 	if (resolution?.kind === 'page') {
 		const currentPathname = resolution.page.pathname;
 		const pathname = movedCurrentToNew.get(currentPathname) ?? currentPathname;
@@ -244,7 +247,7 @@ const getResolvedReferenceIntent = ({
 		const movedPathname = movedOldToNew.get(target.pageLookupPathname);
 		if (movedPathname) {
 			return {
-				kind: 'page',
+				kind: pagesByNewPathname.get(movedPathname)?.kind === 'category' ? 'category' : 'page',
 				lookupPathname: movedPathname,
 				page: pagesByNewPathname.get(movedPathname),
 			};
@@ -259,7 +262,8 @@ const getTargetIntent = ({ graph, movedCurrentToNew, movedOldToNew, pagesByNewPa
 	if (target.pageLookupPathname) {
 		const pathname = movedOldToNew.get(target.pageLookupPathname) ?? target.pageLookupPathname;
 		const page = pagesByNewPathname.get(pathname) ?? graph.pagesByPathname.get(pathname);
-		if (page) return { kind: 'page', lookupPathname: pathname, page };
+		if (page) return { kind: page.kind === 'category' ? 'category' : 'page', lookupPathname: pathname, page };
+		if (graph.categoryModel.byPathname.has(pathname)) return { kind: 'category', lookupPathname: pathname };
 		const alias = graph.aliasesByPathname.get(target.pageLookupPathname);
 		if (alias) {
 			const aliasTarget = movedCurrentToNew.get(alias.targetPathname) ?? alias.targetPathname;
@@ -525,7 +529,20 @@ export const createPageMovePlan = async ({
 		};
 	});
 
-	const referenceChangesByPath = createReferenceChanges({ graph, mappings });
+	const categoryMappings = nodeMappings.filter(({ originalNode }) => originalNode.kind === 'category'
+		&& isPathInSubtree(originalNode.pagePath, mode === 'move' ? source.pagePath : destination.pagePath))
+		.map(({ originalNode, virtualNode }) => {
+			const currentPathname = getSiteNodePathname(originalNode);
+			const newPathname = getSiteNodePathname(virtualNode);
+			return {
+				currentPathname,
+				newPathname,
+				oldPathname: mode === 'move' ? currentPathname
+					: `/${replacePagePathPrefix(originalNode.pagePath, destination.pagePath, source.pagePath)}/`,
+				page: { kind: 'category' },
+			};
+		});
+	const referenceChangesByPath = createReferenceChanges({ graph, mappings: [...mappings, ...categoryMappings] });
 	const mappingByContentPath = new Map(mappings.map((mapping) => [mapping.node.contentPath, mapping]));
 	const fileChanges = [];
 	const updatedSources = new Map();

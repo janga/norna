@@ -233,6 +233,7 @@ try {
 const siteStructure = await getSiteStructure();
 const contentFiles = siteStructure.contentFiles;
 for (const warning of siteStructure.warnings) {
+	if (warning.code === 'empty-category') continue;
 	addIssue({
 		severity: 'warning',
 		message: warning.message,

@@ -4,6 +4,7 @@ import { decodePageDirectoryPath, parsePageDirectoryPath } from '../../scripts/l
 import { parsePageMarkdown } from '../../scripts/lib/page-markdown.mjs';
 import { readSiteFile } from '../../scripts/lib/site-content.mjs';
 import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
+import { assertCategoryDestinationModel, createCategoryDestinationModel } from '../../scripts/lib/category-destinations.mjs';
 import { getSiteStructure } from '../../scripts/lib/site-structure.mjs';
 import { sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
 
@@ -20,6 +21,7 @@ type SiteNodeBase = {
 	depth: number;
 	pageDirectories: string[];
 	pathSegment: string;
+	pathname: string;
 	pageDirectory: string;
 	pageId: string;
 	pageIds: string[];
@@ -41,6 +43,7 @@ export type SitePage = SiteNodeBase & {
 
 export type SiteCategory = SiteNodeBase & {
 	kind: 'category';
+	categorySourceLabel: string;
 };
 
 export type SiteNode = SitePage | SiteCategory;
@@ -145,6 +148,8 @@ const createSiteCategory = (category: Awaited<ReturnType<typeof getSiteStructure
 		order: category.pageOrder,
 	},
 	pathSegment: category.pagePath,
+	pathname: getPagePathname(category.pagePath),
+	categorySourceLabel: category.categorySourceLabel,
 	pageDirectory: category.pageDirectory,
 	pageDirectories: category.pageDirectories,
 	pageId: category.pageId,
@@ -226,6 +231,7 @@ export const getSiteModel = async (entries: SiteEntry[]) => {
 	}
 
 	return {
+		categoryDestinations: assertCategoryDestinationModel(createCategoryDestinationModel(nodes)),
 		categories: nodes.filter((node): node is SiteCategory => node.kind === 'category'),
 		nodes,
 		pages,

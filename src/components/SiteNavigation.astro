@@ -4,12 +4,11 @@ import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
 import {
-	getFirstPageInNavigationNode,
 	getListedSiteNavigationTree,
 	type SiteNavigationEntry,
 	type SiteNavigationNode,
 } from '../lib/siteNavigation';
-import type { SiteNode, SitePage } from '../lib/sitePages';
+import type { SiteNode } from '../lib/sitePages';
 import DisplaySettings from './DisplaySettings.astro';
 import NavigationPageTree from './NavigationPageTree.astro';
 import NavigationTreeControls from './NavigationTreeControls.astro';
@@ -28,7 +27,7 @@ interface Props {
 		alt: string;
 		height?: string;
 	};
-	currentPage?: SitePage;
+	currentPage?: SiteNode;
 	navigationEntries: SiteNavigationEntry[];
 	navigationMode: 'sections' | 'top' | 'tree';
 	showTopNavigationSubmenus: boolean;
@@ -83,13 +82,13 @@ if (!homePage) throw new Error('Site navigation requires a homepage.');
 const currentPageNavigation = currentPage
 	? navigationEntries.find(({ node }) => node.kind === 'page' && node.pathname === currentPage.pathname)
 	: undefined;
-const isCurrentPage = (page: SitePage) => currentPage?.pathname === page.pathname;
+const isCurrentPage = (page: SiteNode) => currentPage?.pathname === page.pathname;
 const isCurrentBranch = (node: SiteNode) => Boolean(currentPage && (
 	currentPage.pageDirectory === node.pageDirectory
 	|| currentPage.pageDirectory.startsWith(`${node.pageDirectory}/pages/`)
 ));
-const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
-const getNavigationPage = (node: SiteNavigationNode) => getFirstPageInNavigationNode(node);
+const pageHref = (page: SiteNode) => withBasePath(projectConfig.site.basePath, page.pathname);
+const getNavigationPage = (node: SiteNavigationNode) => node.node;
 const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
 const showSinglePageTopLink = !showSiteNavigation;
 const currentPageSectionCount = currentPageNavigation?.sections.length ?? 0;
@@ -147,7 +146,7 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 					{topLevelNavigation.map((navigationNode) => {
 						const destination = getNavigationPage(navigationNode);
 						if (!destination) return null;
-						const nodeIsCurrentPage = navigationNode.node.kind === 'page' && isCurrentPage(navigationNode.node);
+						const nodeIsCurrentPage = isCurrentPage(navigationNode.node);
 						return (
 							<li class:list={['site-nav-item', {
 								'site-nav-item-current-branch': !nodeIsCurrentPage && isCurrentBranch(navigationNode.node),
