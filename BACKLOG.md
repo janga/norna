@@ -68,6 +68,20 @@ No documentation follow-ups are currently queued.
 These items have no implementation position yet. Move one into `Now`, `Next`,
 or `Later` only after the stated evidence or design decision exists.
 
+- `BL-113` **Page References: Needs evidence; unprioritized wishlist idea.**
+  Consider an expandable reference to one page with selected heading links and
+  automatically retrieved titles, but first try ordinary Markdown links in
+  `details` and establish whether recurring maintenance work justifies a new
+  construct; no syntax or implementation is approved.
+- `BL-116` **Authoring Guidelines: Needs scope; unprioritized documentation idea.**
+  Write practical guidance for Norna site authors, distinct from engine rules
+  and internal documentation style instructions. Include when to version
+  documentation: significant differences in instructions or behavior, not
+  every patch release or wording correction; let one documentation version
+  cover several compatible releases and keep maintained versions few.
+  Use [Docusaurus versioning guidance](https://docusaurus.io/docs/versioning#recommended-practices)
+  as a source and coordinate feature-specific advice with `BL-025` Versioned
+  Documentation; do not imply that future versioning support already exists.
 - [`BL-100` Future Versioning Foundation](docs/design/backlog/BL-100-future-versioning-foundation.md):
   **Needs design.** Define the version model required by future lifecycle and
   migration features; this is an intentionally incomplete design item, not an
@@ -107,6 +121,15 @@ Do not schedule these as opportunistic additions. Each requires a separate
 product brief, representative sites, migration rules, and an explicit decision
 that the expanded audience is worth the permanent complexity.
 
+- `BL-115` **Page-owned Attachments: Deferred wishlist idea.** After
+  `BL-023` Multilingual Sites With A Shared Page Tree and `BL-025` Versioned
+  Documentation, coordinated with `BL-100` Future Versioning Foundation,
+  consider page-owned downloadable files with shared defaults and optional
+  language variants. Reuse ordinary Markdown links; update internal links
+  during `page:move` without changing historical versions. Allow fallback to
+  an explicitly shared file, not silently to another language. Folder names,
+  URL stability, and syntax remain undecided; this is not an implementation
+  specification or a prioritized item.
 - [`BL-052` Docusaurus Migration Obstacle Inventory](docs/design/backlog/BL-052-documentation-migration-assistant.md):
   **Deferred; decision workflow archived.** Resume only for a real site's
   bounded migration trial, using representative pages and focused conversions
