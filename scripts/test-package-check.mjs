@@ -478,7 +478,10 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'guides', 'setup', 'index.html'));
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'));
-	await assertFileMissing(path.join(siteProjectRoot, 'dist', 'guides', 'index.html'));
+	await assertFileIncludes(
+		path.join(siteProjectRoot, 'dist', 'guides', 'index.html'),
+		'http-equiv="refresh" content="0; url=/site/guides/setup/"',
+	);
 	await assertFileMissing(path.join(siteProjectRoot, 'public', 'robots.txt'));
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
