@@ -6,7 +6,7 @@
       "type": "string",
       "format": "uri",
       "description": "Absolute public URL for the built site.",
-      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#url)",
+      "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\nThe absolute public URL. Its path also determines the base path for generated links and assets.\n\n[Public URL reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#url)",
       "examples": [
         "https://example.com/",
         "https://owner.github.io/repository-name/"
@@ -32,283 +32,283 @@
           "const": "en",
           "title": "English",
           "description": "Use Norna's built-in English interface text.",
-          "markdownDescription": "Use Norna's built-in English interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in English interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "es",
           "title": "Español — Spanish",
           "description": "Use Norna's built-in Spanish interface text.",
-          "markdownDescription": "Use Norna's built-in Spanish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Spanish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "fr",
           "title": "Français — French",
           "description": "Use Norna's built-in French interface text.",
-          "markdownDescription": "Use Norna's built-in French interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in French interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "pt",
           "title": "Português — Portuguese",
           "description": "Use Norna's built-in Portuguese interface text.",
-          "markdownDescription": "Use Norna's built-in Portuguese interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Portuguese interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "ru",
           "title": "Русский — Russian",
           "description": "Use Norna's built-in Russian interface text.",
-          "markdownDescription": "Use Norna's built-in Russian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Russian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "sw",
           "title": "Kiswahili — Swahili",
           "description": "Use Norna's built-in Swahili interface text.",
-          "markdownDescription": "Use Norna's built-in Swahili interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Swahili interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "jv",
           "title": "Basa Jawa — Javanese",
           "description": "Use Norna's built-in Javanese interface text.",
-          "markdownDescription": "Use Norna's built-in Javanese interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Javanese interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "id",
           "title": "Bahasa Indonesia — Indonesian",
           "description": "Use Norna's built-in Indonesian interface text.",
-          "markdownDescription": "Use Norna's built-in Indonesian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Indonesian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "de",
           "title": "Deutsch — German",
           "description": "Use Norna's built-in German interface text.",
-          "markdownDescription": "Use Norna's built-in German interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in German interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "it",
           "title": "Italiano — Italian",
           "description": "Use Norna's built-in Italian interface text.",
-          "markdownDescription": "Use Norna's built-in Italian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Italian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "vi",
           "title": "Tiếng Việt — Vietnamese",
           "description": "Use Norna's built-in Vietnamese interface text.",
-          "markdownDescription": "Use Norna's built-in Vietnamese interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Vietnamese interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "tr",
           "title": "Türkçe — Turkish",
           "description": "Use Norna's built-in Turkish interface text.",
-          "markdownDescription": "Use Norna's built-in Turkish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Turkish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "fil",
           "title": "Filipino",
           "description": "Use Norna's built-in Filipino interface text.",
-          "markdownDescription": "Use Norna's built-in Filipino interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Filipino interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "pcm",
           "title": "Naijá — Nigerian Pidgin",
           "description": "Use Norna's built-in Nigerian Pidgin interface text.",
-          "markdownDescription": "Use Norna's built-in Nigerian Pidgin interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Nigerian Pidgin interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "ha",
           "title": "Hausa",
           "description": "Use Norna's built-in Hausa interface text.",
-          "markdownDescription": "Use Norna's built-in Hausa interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Hausa interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "sv",
           "title": "Svenska — Swedish",
           "description": "Use Norna's built-in Swedish interface text.",
-          "markdownDescription": "Use Norna's built-in Swedish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Swedish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "bg",
           "title": "Български — Bulgarian",
           "description": "Use Norna's built-in Bulgarian interface text.",
-          "markdownDescription": "Use Norna's built-in Bulgarian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Bulgarian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "hr",
           "title": "Hrvatski — Croatian",
           "description": "Use Norna's built-in Croatian interface text.",
-          "markdownDescription": "Use Norna's built-in Croatian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Croatian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "cs",
           "title": "Čeština — Czech",
           "description": "Use Norna's built-in Czech interface text.",
-          "markdownDescription": "Use Norna's built-in Czech interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Czech interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "da",
           "title": "Dansk — Danish",
           "description": "Use Norna's built-in Danish interface text.",
-          "markdownDescription": "Use Norna's built-in Danish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Danish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "nl",
           "title": "Nederlands — Dutch",
           "description": "Use Norna's built-in Dutch interface text.",
-          "markdownDescription": "Use Norna's built-in Dutch interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Dutch interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "et",
           "title": "Eesti — Estonian",
           "description": "Use Norna's built-in Estonian interface text.",
-          "markdownDescription": "Use Norna's built-in Estonian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Estonian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "fi",
           "title": "Suomi — Finnish",
           "description": "Use Norna's built-in Finnish interface text.",
-          "markdownDescription": "Use Norna's built-in Finnish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Finnish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "el",
           "title": "Ελληνικά — Greek",
           "description": "Use Norna's built-in Greek interface text.",
-          "markdownDescription": "Use Norna's built-in Greek interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Greek interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "hu",
           "title": "Magyar — Hungarian",
           "description": "Use Norna's built-in Hungarian interface text.",
-          "markdownDescription": "Use Norna's built-in Hungarian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Hungarian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "ga",
           "title": "Gaeilge — Irish",
           "description": "Use Norna's built-in Irish interface text.",
-          "markdownDescription": "Use Norna's built-in Irish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Irish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "lv",
           "title": "Latviešu — Latvian",
           "description": "Use Norna's built-in Latvian interface text.",
-          "markdownDescription": "Use Norna's built-in Latvian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Latvian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "lt",
           "title": "Lietuvių — Lithuanian",
           "description": "Use Norna's built-in Lithuanian interface text.",
-          "markdownDescription": "Use Norna's built-in Lithuanian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Lithuanian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "mt",
           "title": "Malti — Maltese",
           "description": "Use Norna's built-in Maltese interface text.",
-          "markdownDescription": "Use Norna's built-in Maltese interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Maltese interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "pl",
           "title": "Polski — Polish",
           "description": "Use Norna's built-in Polish interface text.",
-          "markdownDescription": "Use Norna's built-in Polish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Polish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "ro",
           "title": "Română — Romanian",
           "description": "Use Norna's built-in Romanian interface text.",
-          "markdownDescription": "Use Norna's built-in Romanian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Romanian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "sk",
           "title": "Slovenčina — Slovak",
           "description": "Use Norna's built-in Slovak interface text.",
-          "markdownDescription": "Use Norna's built-in Slovak interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Slovak interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "sl",
           "title": "Slovenščina — Slovenian",
           "description": "Use Norna's built-in Slovenian interface text.",
-          "markdownDescription": "Use Norna's built-in Slovenian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Slovenian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "sq",
           "title": "Shqip — Albanian",
           "description": "Use Norna's built-in Albanian interface text.",
-          "markdownDescription": "Use Norna's built-in Albanian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Albanian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "az-Latn",
           "title": "Azərbaycanca — Azerbaijani (Latin)",
           "description": "Use Norna's built-in Azerbaijani (Latin) interface text in the Latn script.",
-          "markdownDescription": "Use Norna's built-in Azerbaijani (Latin) interface text in the Latn script.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Azerbaijani (Latin) interface text in the Latn script.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "be",
           "title": "Беларуская — Belarusian",
           "description": "Use Norna's built-in Belarusian interface text.",
-          "markdownDescription": "Use Norna's built-in Belarusian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Belarusian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "bs",
           "title": "Bosanski — Bosnian",
           "description": "Use Norna's built-in Bosnian interface text.",
-          "markdownDescription": "Use Norna's built-in Bosnian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Bosnian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "ca",
           "title": "Català — Catalan",
           "description": "Use Norna's built-in Catalan interface text.",
-          "markdownDescription": "Use Norna's built-in Catalan interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Catalan interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "is",
           "title": "Íslenska — Icelandic",
           "description": "Use Norna's built-in Icelandic interface text.",
-          "markdownDescription": "Use Norna's built-in Icelandic interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Icelandic interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "lb",
           "title": "Lëtzebuergesch — Luxembourgish",
           "description": "Use Norna's built-in Luxembourgish interface text.",
-          "markdownDescription": "Use Norna's built-in Luxembourgish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Luxembourgish interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "mk",
           "title": "Македонски — Macedonian",
           "description": "Use Norna's built-in Macedonian interface text.",
-          "markdownDescription": "Use Norna's built-in Macedonian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Macedonian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "cnr",
           "title": "Crnogorski — Montenegrin",
           "description": "Use Norna's built-in Montenegrin interface text.",
-          "markdownDescription": "Use Norna's built-in Montenegrin interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Montenegrin interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "nb",
           "title": "Norsk bokmål — Norwegian Bokmål",
           "description": "Use Norna's built-in Norwegian Bokmål interface text.",
-          "markdownDescription": "Use Norna's built-in Norwegian Bokmål interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Norwegian Bokmål interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "nn",
           "title": "Norsk nynorsk — Norwegian Nynorsk",
           "description": "Use Norna's built-in Norwegian Nynorsk interface text.",
-          "markdownDescription": "Use Norna's built-in Norwegian Nynorsk interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Norwegian Nynorsk interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "sr-Cyrl",
           "title": "Српски — Serbian (Cyrillic)",
           "description": "Use Norna's built-in Serbian (Cyrillic) interface text in the Cyrl script.",
-          "markdownDescription": "Use Norna's built-in Serbian (Cyrillic) interface text in the Cyrl script.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Serbian (Cyrillic) interface text in the Cyrl script.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "sr-Latn",
           "title": "Srpski — Serbian (Latin)",
           "description": "Use Norna's built-in Serbian (Latin) interface text in the Latn script.",
-          "markdownDescription": "Use Norna's built-in Serbian (Latin) interface text in the Latn script.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Serbian (Latin) interface text in the Latn script.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "const": "uk",
           "title": "Українська — Ukrainian",
           "description": "Use Norna's built-in Ukrainian interface text.",
-          "markdownDescription": "Use Norna's built-in Ukrainian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+          "markdownDescription": "Use Norna's built-in Ukrainian interface text.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
         },
         {
           "type": "string",
@@ -317,7 +317,7 @@
           "description": "Add a region to a supported language, such as en-GB, pt-BR, or sr-Cyrl-RS. Norna preserves the complete tag in generated HTML."
         }
       ],
-      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the language of the complete site and selects the matching built-in Norna interface text. Regional tags are preserved. The default is `en`; editorial Markdown is not translated.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#language)"
+      "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the language of the complete site and selects the matching built-in Norna interface text. Regional tags are preserved. The default is `en`; editorial Markdown is not translated.\n\n[Language reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#language)"
     },
     "editLink": {
       "type": "object",
@@ -326,7 +326,7 @@
           "type": "string",
           "format": "uri",
           "description": "Absolute edit URL prefix containing the repository, branch, and any repository subdirectory.",
-          "markdownDescription": "```yaml\neditLink:\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nOptional absolute remote edit URL prefix. Include any repository subdirectory and branch. Norna adds the project-relative path to each page's `content.md` file. This destination is used by published output and LAN previews.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)",
+          "markdownDescription": "```yaml\neditLink:\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nOptional absolute remote edit URL prefix. Include any repository subdirectory and branch. Norna adds the project-relative path to each page's `content.md` file. This destination is used by published output and LAN previews.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#edit-link)",
           "examples": [
             "https://github.com/owner/repository/edit/main/"
           ]
@@ -339,10 +339,10 @@
               "const": "vscode",
               "title": "Visual Studio Code",
               "description": "Open the current page source in the locally installed Visual Studio Code application.",
-              "markdownDescription": "Open the current page source in the locally installed Visual Studio Code application.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)"
+              "markdownDescription": "Open the current page source in the locally installed Visual Studio Code application.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#edit-link)"
             }
           ],
-          "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n```\n\nOptional editor for a development preview opened through localhost or another loopback address. `vscode` opens the absolute page source path through VS Code's registered URL handler. The setting is never emitted as a local path in published output.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)",
+          "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n```\n\nOptional editor for a development preview opened through localhost or another loopback address. `vscode` opens the absolute page source path through VS Code's registered URL handler. The setting is never emitted as a local path in published output.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#edit-link)",
           "examples": [
             "vscode"
           ]
@@ -350,7 +350,7 @@
       },
       "additionalProperties": false,
       "description": "Optional local and remote links from rendered pages to their Markdown source files.",
-      "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nLinks each rendered page to its `content.md` source. A loopback development preview uses the explicitly selected local editor; published output and LAN previews use the optional remote base URL. Specify either destination or both.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)",
+      "markdownDescription": "```yaml\neditLink:\n  localEditor: vscode\n  baseUrl: https://github.com/owner/repository/edit/main/\n```\n\nLinks each rendered page to its `content.md` source. A loopback development preview uses the explicitly selected local editor; published output and LAN previews use the optional remote base URL. Specify either destination or both.\n\n[Edit-link reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#edit-link)",
       "anyOf": [
         {
           "required": [
@@ -366,7 +366,7 @@
       "defaultSnippets": [
         {
           "label": "Local and remote source links",
-          "markdownDescription": "Open page source in VS Code during same-computer development and on the remote source host elsewhere.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#edit-link)",
+          "markdownDescription": "Open page source in VS Code during same-computer development and on the remote source host elsewhere.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#edit-link)",
           "body": {
             "localEditor": "vscode",
             "baseUrl": "https://github.com/${1:owner}/${2:repository}/edit/${3:main}/"
@@ -385,28 +385,28 @@
               "const": "automatic",
               "title": "Automatic",
               "description": "Choose one site-wide navigation presentation from the listed page hierarchy. This is the default.",
-              "markdownDescription": "Choose one site-wide navigation presentation from the listed page hierarchy. This is the default.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#navigation)"
+              "markdownDescription": "Choose one site-wide navigation presentation from the listed page hierarchy. This is the default.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#navigation)"
             },
             {
               "const": "sections",
               "title": "Sections",
               "description": "Keep a one-page site title and its H2 sections in sticky page navigation.",
-              "markdownDescription": "Keep a one-page site title and its H2 sections in sticky page navigation.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#navigation)"
+              "markdownDescription": "Keep a one-page site title and its H2 sections in sticky page navigation.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#navigation)"
             },
             {
               "const": "top",
               "title": "Top",
               "description": "Keep top-level pages in the global row and give the current page section navigation when needed.",
-              "markdownDescription": "Keep top-level pages in the global row and give the current page section navigation when needed.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#navigation)"
+              "markdownDescription": "Keep top-level pages in the global row and give the current page section navigation when needed.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#navigation)"
             },
             {
               "const": "tree",
               "title": "Tree",
               "description": "Keep top-level areas global and add a persistent left page tree. Deep branches can add a right H2/H3 contents rail.",
-              "markdownDescription": "Keep top-level areas global and add a persistent left page tree. Deep branches can add a right H2/H3 contents rail.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#navigation)"
+              "markdownDescription": "Keep top-level areas global and add a persistent left page tree. Deep branches can add a right H2/H3 contents rail.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#navigation)"
             }
           ],
-          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nHow Norna presents the discovered page and heading hierarchy. Omit this to select automatic.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#navigation)",
+          "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nHow Norna presents the discovered page and heading hierarchy. Omit this to select automatic.\n\n[Read the relevant reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#navigation)",
           "examples": [
             "automatic",
             "sections",
@@ -417,13 +417,13 @@
       },
       "additionalProperties": false,
       "description": "Site-wide navigation behavior.",
-      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nChooses how Norna presents the discovered page and heading hierarchy. Keep `automatic` unless the site deliberately needs to retain one presentation as its structure changes.\n\n[Navigation setting reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#navigation)"
+      "markdownDescription": "```yaml\nnavigation:\n  mode: automatic\n```\n\nChooses how Norna presents the discovered page and heading hierarchy. Keep `automatic` unless the site deliberately needs to retain one presentation as its structure changes.\n\n[Navigation setting reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#navigation)"
     },
     "search": {
       "default": false,
       "description": "Generate a static site search page and Pagefind index. The default is false.",
       "type": "boolean",
-      "markdownDescription": "```yaml\nsearch: true\n```\n\nGenerates a localized `/search/` page and a static Pagefind index during each build. Search is off by default. Only the search page loads the search engine and index; a small navigation script remembers where readers opened it.\n\n[Search reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#search)",
+      "markdownDescription": "```yaml\nsearch: true\n```\n\nGenerates a localized `/search/` page and a static Pagefind index during each build. Search is off by default. Only the search page loads the search engine and index; a small navigation script remembers where readers opened it.\n\n[Search reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#search)",
       "examples": [
         true,
         false
@@ -438,16 +438,16 @@
           "const": "instant",
           "title": "Instant",
           "description": "Jump directly to anchors without animated scrolling. This is the default.",
-          "markdownDescription": "Jump directly to anchors without animated scrolling. This is the default.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#scrollbehavior)"
+          "markdownDescription": "Jump directly to anchors without animated scrolling. This is the default.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#scrollbehavior)"
         },
         {
           "const": "smooth",
           "title": "Browser smooth",
           "description": "Use the browser's native smooth scrolling for anchor navigation.",
-          "markdownDescription": "Use the browser's native smooth scrolling for anchor navigation.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#scrollbehavior)"
+          "markdownDescription": "Use the browser's native smooth scrolling for anchor navigation.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#scrollbehavior)"
         }
       ],
-      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md#scrollbehavior)",
+      "markdownDescription": "```yaml\nscrollBehavior: smooth\n```\n\nControls same-page anchor movement. `instant` is the default; `smooth` uses the browser's native smooth scrolling.\n\n[Scroll behavior reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md#scrollbehavior)",
       "examples": [
         "instant",
         "smooth"
@@ -461,5 +461,5 @@
   "description": "Technical settings for one Norna site. Additional pages cannot provide technical configuration.",
   "$id": "https://janga.github.io/norna/schemas/config.schema.json",
   "title": "Norna site configuration",
-  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.25/docs/configuration.md)"
+  "markdownDescription": "```yaml\nurl: https://example.com/\n```\n\n`config.yaml` contains the few technical settings shared by the complete site.\n\n[Configuration reference](https://github.com/janga/norna/blob/v0.7.26/docs/configuration.md)"
 }
