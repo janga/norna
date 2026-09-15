@@ -275,6 +275,29 @@ This content is available when the reader asks for it.
 		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
 		assert.match(html, /<details>\s*<summary>Show the extra context<\/summary>/);
 		assert.match(html, /This content is available when the reader asks for it\./);
+
+		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
+page:
+  description: Details validation
+---
+# Details
+
+<details>
+<summary>More</summary>
+
+# Hidden title
+
+</details>
+`);
+		const isDetailsError = (error) => {
+			assert.match(error.output, /content\.md line 10: Headings H1-H6 are not allowed inside <details>/);
+			assert.match(error.output, /Move the heading outside <details>/);
+			assert.doesNotMatch(error.output, /Rendered Markdown contains|splitNornaBlockMarkers|splitRenderedRegions/);
+			return true;
+		};
+		await assert.rejects(runNorna(['--site-dir', siteDir, 'build']), isDetailsError);
+		// Bypass Norna's pre-build check to exercise the same page loader as preview.
+		await assert.rejects(runNorna(['--site-dir', siteDir, 'astro', 'build']), isDetailsError);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}

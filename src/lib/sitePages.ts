@@ -91,8 +91,13 @@ const readPageMarkdownDocument = async (entry: SiteEntry) => {
 	const pageDirectory = getPageDirectory(entry);
 	const contentLabel = `${sitePagesLabel}/${pageDirectory}/content.md`;
 	const contentPath = path.join(sitePagesDir, pageDirectory, 'content.md');
-	const { body } = await readSiteFile(contentPath, contentLabel);
-	const markdownDocument = await parsePageMarkdown(body, { label: contentLabel });
+	const { body, frontmatter } = await readSiteFile(contentPath, contentLabel);
+	const markdownDocument = await parsePageMarkdown(body, {
+		label: contentLabel,
+		lineOffset: frontmatter.split('\n').length - 1,
+	});
+	const detailsError = markdownDocument.diagnostics.find((issue) => issue.code === 'heading-inside-details');
+	if (detailsError) throw new Error(`${detailsError.message} ${detailsError.fix}`);
 
 	if (markdownDocument.pageHeadings.length !== 1 || markdownDocument.regions[0]?.kind !== 'page-intro') {
 		throw new Error(`Page entry "${entry.id}" must contain exactly one Markdown H1 page title.`);

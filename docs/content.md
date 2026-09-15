@@ -575,6 +575,17 @@ visible summary row. It remains usable without client-side JavaScript. Use a
 semantic callout instead when the message is important enough to be visible
 immediately.
 
+Keep all headings outside `details`, including its `summary` and any nested
+elements. Norna rejects Markdown and HTML headings at every level (H1-H6)
+inside a disclosure: page structure and navigation must not depend on hidden
+content. Use a plain-text summary and **bold text** for labels inside the
+content instead. Literal heading examples in code blocks or inline code are
+allowed.
+
+`norna content:check`, builds, and local preview report the source file and
+line of a prohibited heading. Move that heading outside the disclosure or
+replace it with ordinary text.
+
 ### Tables
 
 Use ordinary GFM table syntax for compact comparisons and structured data:

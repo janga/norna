@@ -321,6 +321,17 @@ try {
 		source: homeSource.replace('## Intro {#intro}', '## Intro\n\n### Intro'),
 	});
 	assert.ok(duplicateIdDiagnostics.some(({ code }) => code === 'duplicate-heading-id'));
+	const disclosureDiagnostics = await getMarkdownDiagnostics({
+		documentPath: homeContentPath,
+		source: '# Page\n\n<details>\n<summary>More</summary>\n\n## Hidden\n\n</details>\n',
+	});
+	assert.ok(disclosureDiagnostics.some(({ code, line, message }) => code === 'heading-inside-details'
+		&& line === 6 && /content\.md line 6/.test(message)));
+	const literalDisclosureDiagnostics = await getMarkdownDiagnostics({
+		documentPath: homeContentPath,
+		source: '# Page\n\n<details>\n<summary>More</summary>\n\n```md\n## Example\n```\n\n</details>\n',
+	});
+	assert.equal(literalDisclosureDiagnostics.some(({ code }) => code === 'heading-inside-details'), false);
 	const missingTitleDiagnostics = await getMarkdownDiagnostics({
 		documentPath: homeContentPath,
 		source: homeSource.replace('# Editor fixture', '## Editor fixture {#editor-fixture}'),

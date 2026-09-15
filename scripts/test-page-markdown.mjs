@@ -2,6 +2,59 @@ import assert from 'node:assert/strict';
 import { parsePageMarkdown, parsePageMarkdownSource } from './lib/page-markdown.mjs';
 import { splitNornaRenderedBlocks } from './lib/norna-markdown-blocks.mjs';
 
+const details = (body) => `<details>\n<summary>More</summary>\n\n${body}\n\n</details>`;
+const detailsIssues = async (body) => (await parsePageMarkdownSource(`# Page\n\n${body}`, {
+	label: 'site/pages/010-guide/content.md',
+})).diagnostics.filter((issue) => issue.code === 'heading-inside-details');
+
+for (const heading of [
+	...Array.from({ length: 6 }, (_, i) => `${'#'.repeat(i + 1)} Hidden`),
+	'Hidden\n======', 'Hidden\n------',
+	...Array.from({ length: 6 }, (_, i) => `<H${i + 1} class="title">Hidden</H${i + 1}>`),
+	'<div>\n\n### Hidden\n\n</div>',
+	'<div>\n<h4>Hidden</h4>\n</div>',
+	'> ### Hidden', '- ### Hidden',
+]) {
+	const issues = await detailsIssues(details(heading));
+	assert.equal(issues.length, 1, heading);
+	assert.equal(issues[0].severity, 'error');
+	assert.match(issues[0].message, /site\/pages\/010-guide\/content\.md line \d+: Headings H1-H6/);
+	assert.match(issues[0].fix, /outside <details>.*bold text/);
+}
+
+for (const [body, count] of [
+	['<details><summary><h2>Summary heading</h2></summary></details>', 1],
+	[details(details('## Nested')), 1],
+	[`${details('## First')}\n\n${details('### Second')}`, 2],
+	['<details>\n\n## Unclosed disclosure', 1],
+	['<DeTaIlS data-label=">">\n\n## Hidden\n\n</DeTaIlS>\n\n## Outside', 1],
+	['<details>\n<!-- </details> -->\n\n## Hidden\n\n</details>', 1],
+	[details('~~~html\n</details>\n~~~\n\n## Still hidden'), 1],
+	[details('`</details>`\n\n## Still hidden'), 1],
+	[details('<span title="</details>">Label</span>\n\n## Still hidden'), 1],
+	[details('Text.\n\n> <details>\n> <summary>More</summary>\n>\n> <h2>Hidden</h2>\n> </details>'), 1],
+	[details('<summary>\n\nSummary heading\n---\n\n</summary>'), 1],
+	[details('<p title="<h2>Not a heading</h2>">Text</p>'), 0],
+	[details('<!-- <h2>Example</h2> -->\n\n<!--\n## Example\n-->'), 0],
+	[details('~~~markdown\n## Example\n<h2>Example</h2>\n~~~'), 0],
+	[details('    ## Example\n    <h2>Example</h2>'), 0],
+	[details('`## Example` and `<h2>Example</h2>`.'), 0],
+	[details('\\## Example\n\n\\<h2>Example\\</h2>\n\n&lt;h3&gt;Example&lt;/h3&gt;'), 0],
+	[details('<pre>\n## Example\n&lt;h2&gt;Example&lt;/h2&gt;\n</pre>'), 0],
+	[details('<script>const example = "<h2>Example</h2>";</script>'), 0],
+	[details('<textarea><h2>Example</h2></textarea>'), 0],
+	[details('Text with **emphasis**.\n\n- Item\n- Another item'), 0],
+	['```html\n<details>\n```\n\n## Visible', 0],
+	['<!-- <details> -->\n\n## Visible', 0],
+	[`${details('Text.')}\n\n## Visible\n\n<h3>Also visible</h3>`, 0],
+]) assert.equal((await detailsIssues(body)).length, count, body);
+
+const detailsWithFrontmatter = ['---', 'page:', '  description: Example', '---', '# Page', '', ...details('## Hidden').split('\n')].join('\r\n');
+const detailsDocument = await parsePageMarkdownSource(detailsWithFrontmatter, { label: 'guide/content.md' });
+assert.equal(detailsDocument.diagnostics[0].code, 'heading-inside-details');
+assert.equal(detailsDocument.diagnostics[0].line, 10);
+assert.match(detailsDocument.diagnostics[0].message, /guide\/content\.md line 10:/);
+
 const source = `# Dog Shelter
 
 Welcome to the shelter.[^margin:intro]

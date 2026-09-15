@@ -1,5 +1,6 @@
 import { getCodeFenceMetadataDiagnostics } from './code-fence-metadata.mjs';
 import { parseContentTabs } from './content-tabs.mjs';
+import { getDetailsHeadingDiagnostics } from './details-headings.mjs';
 import {
 	getHeadingIdentifierIssues,
 	getMarkdownHeadings,
@@ -245,6 +246,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	const tabResult = parseContentTabs(source, { label, lineOffset });
 	const pageNotes = extractInlineNoteDiagnostics(source, { label, lineOffset, tabResult });
 	const { headings, tree } = await getMarkdownHeadings(tabResult.maskedSource);
+	const detailsDiagnostics = getDetailsHeadingDiagnostics(tree, { source: tabResult.maskedSource, label, lineOffset });
 	const calloutErrors = getSemanticCalloutDiagnostics(tree, { label, lineOffset });
 	const codeFenceErrors = getCodeFenceMetadataDiagnostics(tree, {
 		excludedLanguages: nornaBlockTypes,
@@ -344,6 +346,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	return {
 		blocks,
 		diagnostics: [
+			...detailsDiagnostics,
 			...structureDiagnostics,
 			...headingDiagnostics,
 			...blockDiagnostics,

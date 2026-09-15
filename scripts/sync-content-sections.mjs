@@ -273,6 +273,9 @@ for (const contentFile of contentFiles) {
 		prelude,
 		regions: sections,
 	} = page;
+	for (const issue of page.diagnostics.filter((candidate) => candidate.code === 'heading-inside-details')) {
+		addContentIssue(contentFile, issue);
+	}
 	for (const issue of page.noteDiagnostics) {
 		const section = sections.find((candidate) => issue.offset >= candidate.startOffset && issue.offset < candidate.endOffset);
 		if (section) addSectionIssue(contentFile, section, issue);

@@ -706,6 +706,21 @@ test('a homepage page-list warns for listed top-level pages but not category des
 	});
 });
 
+test('details headings fail content checks with file, frontmatter-adjusted line and repair guidance', async () => {
+	await withTempProject({
+		site: '# Home\n',
+		files: [{
+			path: 'site/pages/010-guide/content.md',
+			contents: '---\npage:\n  description: Guide\n---\n# Guide\n\n<details>\n<summary>More</summary>\n\n### Hidden\n\n</details>\n',
+		}],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		assert.equal(result.status, 1, getOutput(result));
+		assert.match(getOutput(result), /site\/pages\/010-guide\/content\.md line 10: Headings H1-H6/);
+		assert.match(getOutput(result), /Move the heading outside <details>, or use bold text/);
+	});
+});
+
 let failed = 0;
 
 for (const { name, run } of tests) {
