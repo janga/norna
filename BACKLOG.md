@@ -16,7 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-No active implementation items are currently queued.
+- [`BL-117` Canonical web reference](docs/design/backlog/BL-117-canonical-web-reference.md):
+  **In progress.** Inventory the implemented public contract, propose the
+  information structure, and prepare three pilot pages; review that combined
+  delivery before replacing the reference across the documentation site.
 
 ## Next
 
