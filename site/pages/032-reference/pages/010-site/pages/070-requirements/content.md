@@ -39,10 +39,16 @@ branches are not implemented. Separate site folders remain possible. See
 
 ## Experimental releases
 
-This reference describes the repository's current Norna 0.7.26 implementation.
-On 2026-09-16, npm latest was still 0.7.25; do not assume that release supports
-every feature described here. Check the installed version with
-`npm exec -- norna engine:version` when comparing behavior.
+This reference follows current development, which can be newer than the
+latest published npm release. Compare your installed engine with npm's latest
+version before relying on a newly documented feature:
+
+```sh
+npm exec -- norna engine:version --latest
+```
+
+This command reports versions without installing an update. See
+[Engine maintenance](/reference/commands/engine/) for installation details.
 
 Norna is pre-1.0: syntax can change between releases and no general automatic
 migration is provided. Keep sources and lockfiles in Git and follow

@@ -308,31 +308,65 @@ version, lockfile, and generated schemas automatically. Correct the reported
 problem, confirm that `git status --short` is clean, and run the chosen release
 command again.
 
-**Release commit and tag remain locally, but npm publication failed:** inspect
-the retained commit and tag. After correcting authentication, permissions, or
-the reported registry problem, publish that prepared version and push it:
+**Release commit and tag remain locally, but npm publication failed:** publish
+the source at that tag. The current branch may already contain later changes;
+publishing its directory would give the retained version different contents
+from its tag. First inspect the tag and query that exact npm version.
+
+For example, to recover a prepared `v0.7.26` release:
 
 ```sh
-npm run release:publish
-git push --follow-tags
+git show --stat v0.7.26
+npm view @janga/norna@0.7.26 version --registry=https://registry.npmjs.org/
 ```
+
+An npm `E404` confirms that this version is absent. An authentication or network
+error does not. If the version already exists, verify it and continue with the
+Git push; npm versions cannot be overwritten.
+
+After correcting the reported authentication, permission or registry problem,
+clone the retained tag from this repository into a separate directory. Git
+checks out the tag without creating a branch. The current checkout and its
+uncommitted files stay in place:
+
+```sh
+git clone --branch v0.7.26 --single-branch . ../norna-release-0.7.26
+cd ../norna-release-0.7.26
+git status --short
+npm whoami --registry=https://registry.npmjs.org/ --cache /private/tmp/norna-npm-cache
+npm run release:publish
+npm view @janga/norna@0.7.26 version dist.integrity gitHead --registry=https://registry.npmjs.org/
+cd -
+git push origin refs/tags/v0.7.26
+```
+
+Use the version being recovered in place of `0.7.26`. Publish only when the
+release copy is clean and its HEAD is the inspected release commit. Check
+that npm reports the intended version and commit before pushing. This explicit
+tag push transfers the release commit and tag without advancing the remote
+main branch. Push main separately when its pending commits are ready.
+
+If `npm whoami` reports an authentication error, renew the login with
+`npm login --registry=https://registry.npmjs.org/ --auth-type=web --cache /private/tmp/norna-npm-cache`
+and retry publication from the same release copy. Authentication confirms
+the account; the publish command can still require its own authentication step.
 
 Do not run `release:patch`, `release:minor`, or `release:major` again merely to
 retry these two steps; that would prepare a different version.
 
 **Release commit exists but tag creation failed:** read the version from
-`package.json`, create the matching annotated tag, then continue with
-publication and push:
+the release commit's `package.json`, create the matching annotated tag at that
+commit, then use the separate-copy recovery above:
 
 ```sh
-git tag -a v<version> -m "Release v<version>"
-npm run release:publish
-git push --follow-tags
+git tag -a v<version> <release-commit> -m "Release v<version>"
 ```
 
 **npm publication succeeded but Git push failed:** do not publish again. Verify
-the published version with `npm view @janga/norna@<version> version`, then retry
-`git push --follow-tags`.
+the published version with `npm view @janga/norna@<version> version gitHead`,
+then push the retained tag from the original repository with
+`git push origin refs/tags/v<version>`. Push main separately when its pending
+commits are ready.
 
 If it is unclear whether npm accepted a publish request, check the exact version
 with `npm view` before choosing between publication and push recovery.
