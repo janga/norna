@@ -40,6 +40,10 @@ not block `Now` or `Next`.
 These accepted maintenance and workflow outcomes follow the ordered product
 work above unless a concrete defect raises their urgency.
 
+- [`BL-119` Direct-hash positioning in static previews](docs/design/backlog/BL-119-static-preview-hash-positioning.md):
+  **Needs diagnosis.** Resolve the reproducible initial hash-positioning failure
+  in the built top-navigation fixture without relaxing the heading visibility
+  checks.
 - `BL-012` **Needs a scoped reproducer.** Improve generated-image diagnostics
   and cache reuse reporting, then decide whether a repair or reset command is
   still necessary.
