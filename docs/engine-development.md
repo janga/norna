@@ -317,6 +317,16 @@ The command performs these steps in order:
 6. Publishes the public package to npm.
 7. Pushes the release commit and tag.
 
+If npm reports that the package is being processed, it has accepted the publish
+request but the version may take a few minutes to become available. The final
+`Released` message confirms that the publish command and Git push completed;
+it does not check npm availability. Query the exact version before installing
+it in a site:
+
+```sh
+npm view @janga/norna@<version> version gitHead --registry=https://registry.npmjs.org/
+```
+
 GitHub Pages deployment monitoring is deliberately separate from the npm
 release.
 
@@ -339,9 +349,12 @@ git show --stat v0.7.26
 npm view @janga/norna@0.7.26 version --registry=https://registry.npmjs.org/
 ```
 
-An npm `E404` confirms that this version is absent. An authentication or network
-error does not. If the version already exists, verify it and continue with the
-Git push; npm versions cannot be overwritten.
+An npm `E404` means that this version is not available from the registry at the
+time of the query. If npm already accepted the publish request for processing,
+wait and query the same version again; do not publish again or prepare another
+release to bypass that wait. An authentication or network error does not tell
+you whether the version exists. If the version is available, verify it and
+continue with the Git push; npm versions cannot be overwritten.
 
 After correcting the reported authentication, permission or registry problem,
 clone the retained tag from this repository into a separate directory. Git
