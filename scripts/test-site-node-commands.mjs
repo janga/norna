@@ -63,8 +63,10 @@ try {
 	const guidesDir = path.join(pagesDir, '020-guides');
 	assert.equal(await readFile(path.join(guidesDir, 'category.yaml'), 'utf8'), 'label: Guides\n');
 	assert.equal(await exists(path.join(guidesDir, 'pages')), true);
+	assert.equal(await exists(path.join(guidesDir, 'content.md')), false);
 	assert.equal(await exists(path.join(guidesDir, 'images')), false);
-	assert.match(category.stdout, /has no page or URL of its own/);
+	assert.match(category.stdout, /no authored content page/);
+	assert.match(category.stdout, /generates its destination from the child pages/);
 	assert.match(category.stdout, /Child URL prefix: \/guides\//);
 
 	await runNorna(['page:add', 'Installation', '--parent', '/guides/']);
