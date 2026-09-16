@@ -22,7 +22,7 @@ npm run norna:build:local
 
 This checks and builds the site, then restarts its development server. Use
 `npm run norna:dev:logs` when the restart reports an error. The
-[local-development reference](https://github.com/janga/norna/blob/main/docs/local-development.md)
+[local-development reference](/reference/commands/development/)
 documents server status, logs, LAN testing, and cleanup.
 
 ## How do I move a page without breaking links? {#preserve-old-page-urls}
@@ -60,7 +60,7 @@ normal link to the current page. Other hosting services may support native
 permanent redirects, but Norna does not provide those publishing integrations
 today.
 
-See [Move or reconcile a page](https://github.com/janga/norna/blob/main/docs/pages.md#move-or-reconcile-a-page)
+See [Move or reconcile a page](/reference/commands/move/)
 for ordering, link formats, subtree rules, and failure handling. See
-[Preserve old page URLs](https://github.com/janga/norna/blob/main/docs/pages.md#preserve-old-page-urls)
+[Preserve old page URLs](/reference/site/urls/#keep-an-old-url)
 for alias paths, collisions, base paths, and the exact hosting boundary.

@@ -193,7 +193,7 @@ export const renderThemePresetComparison = () => {
 		<nav class="comparison-links" aria-label="Selected preset links">
 			<a data-preset-open href="${escapeHtml(initial.href)}">Open preset site</a>
 			<a data-preset-source href="${escapeHtml(initial.source)}">View source</a>
-			<a href="https://github.com/janga/norna/blob/main/docs/theme.md#palette-and-appearance">Theme reference</a>
+			<a href="https://janga.github.io/norna/reference/configuration/palettes/">Theme reference</a>
 		</nav>
 		<p class="comparison-description" data-theme-description aria-live="polite"></p>
 		<div class="comparison-config">

@@ -1,11 +1,12 @@
 # Reference coverage inventory
 
-First delivery for [BL-117: Canonical web reference](backlog/BL-117-canonical-web-reference.md).
-This is a maintainer assessment, not user reference or a claim that every field
-has been audited. The scope is the complete public surface at area level, with
-deeper checks for the four pilots.
+Coverage and maintenance map for [BL-117: Canonical web reference](backlog/BL-117-canonical-web-reference.md).
+This records the original area-level assessment and the completed reference
+cutover. The matrix preserves the findings that guided the work; the
+implementation audit below records their disposition and maintenance paths.
+It is not a claim that every public field has an individual documentation test.
 
-## Baseline and publication
+## Original baseline and publication
 
 Inspected on 2026-09-15 against engine commit `828f70f` (Release v0.7.26).
 The working tree was clean before this documentation work. `package.json`
@@ -18,7 +19,7 @@ syntax, navigation, reader controls and tables. Do not assume the old npm
 release supports the pilots. Recheck publication before public cutover; a local
 release commit or Git tag is not evidence of registry availability.
 
-## Method and status
+## Original assessment method and status
 
 Start from CLI dispatch, schema roots, file conventions, Markdown parsers and
 rendered reader controls. Match those areas to existing Markdown and HTML
@@ -32,12 +33,12 @@ means competing descriptions need correction; **missing** means no user
 reference entry was found; **pending** means detailed verification is deferred.
 No feature is certified complete merely because a heading exists.
 
-## Coverage matrix
+## Coverage and maintenance matrix
 
 Paths below are repository-relative. Each proposed destination is developed in
 the [information structure](reference-information-structure.md).
 
-| Public area | Implementation and test evidence | Existing reference / website | Finding and reader consequence | Proposed home |
+| Public area | Implementation and test evidence | Existing reference / website | Finding and reader consequence | Current reference area |
 | --- | --- | --- | --- | --- |
 | Installation and requirements | `package.json`, `scripts/init-site.mjs`, `scripts/test-cli-discovery.mjs` | `requirements.md`, `upgrading.md`; Getting Started / Install Norna | Pending detailed platform verification. Separate prerequisites from historical migration advice. | Requirements; installation stays in Getting Started |
 | Project and site discovery | `bin/norna.mjs`, `scripts/lib/site-paths.mjs`, `scripts/test-engine-commands.mjs` | `site-files.md`, `commands.md`, `configuration.md`; FAQ / Norna project setup | Partial: users must reconcile project-local executable selection, cwd discovery and explicit site selection across files. | Site files; CLI invocation |
@@ -81,8 +82,9 @@ the [information structure](reference-information-structure.md).
 4. **Move failures:** explain block-style alias metadata, unchanged relative
    links, refusal cases and the limits of rollback. Never claim a multi-file
    update is one atomic transaction.
-5. **Exposed migration command:** owner decision required. The existence of CLI
-   dispatch alone does not make an archived experimental workflow recommended.
+5. **Exposed migration command:** describe the existing scanner as experimental,
+   with report side effects and heuristic limits. Do not revive the archived
+   initiative or present its report as an automated migration plan.
 
 No demonstrated unsupported-feature claim was identified in the sampled
 reference passages beyond misleading ownership/visibility wording. This is
@@ -105,10 +107,12 @@ substring. No engine fix is included in this documentation stage.
 
 ## Existing documents and disposition
 
-No files are removed during the pilot stage. This maps every current top-level
-Markdown file in `docs/` to its intended destination or retention policy.
+The table below records disposition at the approved cutover. Legacy section
+destinations are mapped individually in `scripts/lib/documentation-routes.json`.
+The matrix above retains the original findings and their evidence locations;
+these were the audit inputs, not unresolved claims about the finished pages.
 
-| File | Disposition after approval |
+| Former file | Final disposition |
 | --- | --- |
 | `README.md` | Replace the user reference index with web links; retain contributor entry |
 | `requirements.md` | Requirements page; link from Getting Started |
@@ -136,19 +140,59 @@ the VSIX belongs in user docs; publishing that extension does not.
 
 ## Cutover and maintenance
 
-Update `scripts/lib/documentation-links.mjs` and schema/editor metadata sources,
-then regenerate schemas. Do not hand-edit generated schema links. Update root
-README, `docs/README.md`, `site/public/llms.txt`, website links and relevant
-starter/editor links in the same cutover. Existing tag-specific links cannot
-become unversioned web links silently: describe which installed release the
-new target applies to. No redirect/alias project is required.
+`scripts/lib/documentation-links.mjs` uses the route registry for current web
+links and release-specific source links. Generated schemas take their links
+from this helper; do not edit them by hand. Root README, `docs/README.md`,
+`site/public/llms.txt`, website text and starter/editor links were updated in
+the same cutover. The approved pages now live in the canonical reference tree;
+the duplicate pilot fixture was removed.
 
-Adjust `scripts/test-documentation.mjs`, which currently checks specific prose
-and GitHub reference URLs, to validate the new contracts and canonical paths.
-Do not preserve awkward prose just to satisfy old string assertions. Keep
-syntax/result checks. The coverage matrix's evidence columns become the
-maintenance map: changing an area requires reviewing its documentation home.
+`scripts/test-documentation.mjs` checks the registry, page tree, legacy anchor
+destinations, configuration examples and source/result agreement. The coverage
+matrix's evidence columns remain the maintenance map: changing an area
+requires reviewing its documentation home.
 
-The pilots are temporary fixtures. Move approved content into `site/pages/`
-and retire the duplicate fixture prose at cutover, retaining only test inputs
-that remain useful without becoming a second maintained reference.
+## Implementation audit: 2026-09-16
+
+Resumed from commit `f19a48a`, package 0.7.26. A fresh
+`npm view @janga/norna version --registry=https://registry.npmjs.org/`
+returned 0.7.25 on 2026-09-16. The new requirements entry explicitly records
+this difference. No package release or website publication is part of this
+work.
+
+The new tree has 53 pages in six categories. The route registry maps every
+page to its one source and records legacy section destinations. It is the
+machine-checked disposition map used by schema/editor links; the information
+structure is the human-facing reader-task map. Changing a contract in the
+matrix's evidence column requires reviewing the associated page.
+
+Audited configuration fields against schema-definitions, project-config,
+theme profiles/presets, locale registry, navigation model and source-link
+construction. Corrected source-width image variant handling: every source width
+is represented, not only images wider than the normal variant set. Added the
+non-preset image width/percentage/height defaults from project-config.
+Content pages retain shared YAML constraints and separate each construction's
+syntax from processing and reader behavior. Commands were checked against
+CLI dispatch and their argument parsers, including the experimental audit.
+Reader cookies were checked against readerPreferencesScript, preserving the
+base-path overlap limitation.
+
+Resolved the misleading non-routable category schema and hidden-description
+help. Semantic colors remain engine-owned. No public terminology or product
+behavior was renamed to accommodate prose. Public Markdown links now lead to
+the website; generated schema/editor help also retains the installed release's
+source reference. Tags through 0.7.26 keep their old docs/ paths.
+
+Unique internal content from Site Files is already covered by Engine
+Development's Main Areas. Client-side script test instructions remain in the
+contributor verification workflow. Historical conversion advice is explicitly
+labelled under Legacy source conversion; its obsolete frontmatter claim was
+corrected to include aliases. The redundant Resources reference index and the
+temporary pilot fixture are retired after moving approved content into the
+canonical tree. Example sites and contributor/design material remain.
+
+The page-ID decoding defect recorded above is tracked separately as
+[BL-118: Page ID decoding for valid slugs](backlog/BL-118-page-id-decoding.md).
+It is not described as a public slug restriction. Automated check
+results and visual/search evidence are recorded separately in
+[the verification record](reference-pilot-verification.md).

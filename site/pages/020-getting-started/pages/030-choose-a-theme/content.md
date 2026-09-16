@@ -75,6 +75,6 @@ Unmentioned values still come from `documentation`. Prefer the preset alone
 until real content reveals a concrete reason for an override; this preserves a
 coordinated result and keeps `theme.yaml` short.
 
-See the [Theme reference](https://github.com/janga/norna/blob/main/docs/theme.md)
+See the [Theme reference](/reference/configuration/theme/)
 for every preset, accepted override, page-theme boundary, palette, and reader
 Display control.

@@ -253,7 +253,7 @@ Do not add a preset-specific navigation color or a reader setting for this
 highlight. Preserve font weight, underlining, keyboard focus, and forced-colors
 behavior. Verify at least 4.5:1 text contrast against the highlight. The reader
 behavior is defined in
-[Current Reading Position](../pages.md#current-reading-position).
+[Current Reading Position](https://janga.github.io/norna/reference/configuration/navigation/#orientation-and-long-trees).
 
 ### Typography
 

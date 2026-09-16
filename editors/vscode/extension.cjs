@@ -44,9 +44,19 @@ const documentationRootFor = (documentPath) => {
 	return `https://github.com/janga/norna/blob/${reference}/docs`;
 };
 
-const documentationLinkFor = (documentPath, label, file, anchor) => (
-	`[${label}](${documentationRootFor(documentPath)}/${file}${anchor ? `#${anchor}` : ''})`
-);
+const documentationLinkFor = async (documentPath, label, file, anchor) => {
+	const nornaPackage = getProjectContext(documentPath)?.nornaPackage;
+	const helper = nornaPackage && path.join(nornaPackage.root, 'scripts', 'lib', 'documentation-links.mjs');
+	if (vscode.workspace.isTrusted && helper && fs.existsSync(helper)) {
+		const revision = `${nornaPackage.packageJson.version}-${fs.statSync(helper).mtimeMs}`;
+		const links = await import(`${pathToFileURL(helper).href}?revision=${encodeURIComponent(revision)}`);
+		if (links.documentationLinkForVersion) {
+			return links.documentationLinkForVersion(nornaPackage.packageJson.version, label, file, anchor);
+		}
+	}
+	// Older project installations have their reference only in their own tags.
+	return `[${label}](${documentationRootFor(documentPath)}/${file}${anchor ? `#${anchor}` : ''})`;
+};
 
 const getSchema = (documentPath, kind) => {
 	const context = getDocumentContext(documentPath);
@@ -154,7 +164,7 @@ const prioritizeNornaCompletions = (items) => items?.map((item, index) => {
 	return item;
 });
 
-const getSemanticCalloutCompletionItems = (document, position, { allowBlank = false } = {}) => {
+const getSemanticCalloutCompletionItems = async (document, position, { allowBlank = false } = {}) => {
 	if (isInsideMarkdownFence(document, position.line)) return [];
 	const lineText = document.lineAt(position.line).text;
 	const prefix = lineText.slice(0, position.character);
@@ -164,7 +174,7 @@ const getSemanticCalloutCompletionItems = (document, position, { allowBlank = fa
 
 	const quotePrefix = blank ? '> ' : `${match[1].trimEnd()} `;
 	const range = new vscode.Range(position.line, 0, position.line, position.character);
-	const reference = documentationLinkFor(
+	const reference = await documentationLinkFor(
 		document.uri.fsPath,
 		'Semantic callout reference',
 		'content.md',
@@ -264,7 +274,7 @@ const makeWholeDocumentSnippet = (document, label, detail, source, documentation
 	return item;
 };
 
-const getEmptyContentCompletionItems = (document) => {
+const getEmptyContentCompletionItems = async (document) => {
 	const context = getDocumentContext(document.uri.fsPath);
 	if (document.getText().trim() || !context?.schemaCompatible || !context.editorCompatible) return [];
 	return [makeWholeDocumentSnippet(
@@ -272,11 +282,11 @@ const getEmptyContentCompletionItems = (document) => {
 		'Norna content page',
 		'Create a Norna page with optional metadata, one page title, and its first section.',
 		'---\npage:\n  description: ${1:Short page description.}\n---\n\n# ${2:Page title}\n\n## ${3:Introduction} {#${4:introduction}}\n\n${0}',
-		documentationLinkFor(document.uri.fsPath, 'Content reference', 'content.md'),
+		await documentationLinkFor(document.uri.fsPath, 'Content reference', 'content.md'),
 	)];
 };
 
-const getEmptyYamlCompletionItems = (document) => {
+const getEmptyYamlCompletionItems = async (document) => {
 	if (!isNornaYamlDocument(document) || document.getText().trim()) return [];
 	const kind = getYamlSchemaKind(document);
 	const resolved = getSchema(document.uri.fsPath, kind);
@@ -298,17 +308,17 @@ const getEmptyYamlCompletionItems = (document) => {
 		sitewideContent: 'Norna site-wide content',
 	};
 	const documentation = {
-		category: documentationLinkFor(document.uri.fsPath, 'Nested pages reference', 'pages.md', 'nested-pages'),
-		config: documentationLinkFor(document.uri.fsPath, 'Configuration reference', 'configuration.md'),
-		theme: documentationLinkFor(document.uri.fsPath, 'Theme reference', 'theme.md'),
-		sitewideContent: documentationLinkFor(document.uri.fsPath, 'Site-wide content reference', 'sitewide-content.md'),
+		category: ['Nested pages reference', 'pages.md', 'nested-pages'],
+		config: ['Configuration reference', 'configuration.md'],
+		theme: ['Theme reference', 'theme.md'],
+		sitewideContent: ['Site-wide content reference', 'sitewide-content.md'],
 	};
 	return [makeWholeDocumentSnippet(
 		document,
 		labels[kind],
 		`Create a minimal ${path.basename(document.uri.fsPath)}.`,
 		snippets[kind],
-		documentation[kind],
+		await documentationLinkFor(document.uri.fsPath, ...documentation[kind]),
 	)];
 };
 
@@ -376,13 +386,13 @@ const makeBlockValueItem = (candidate, replacementRange, documentation) => {
 	return item;
 };
 
-const getNoteCompletionItems = (document, position) => {
+const getNoteCompletionItems = async (document, position) => {
 	if (isInsideMarkdownFence(document, position.line)) return [];
 	const prefix = document.lineAt(position.line).text.slice(0, position.character);
 	const match = prefix.match(/\[\^(?:margin(?::[^\]\s]*)?)?$/);
 	if (!match) return [];
 	const range = new vscode.Range(position.line, position.character - match[0].length, position.line, position.character);
-	const notesDocumentation = documentationLinkFor(document.uri.fsPath, 'Sidenote reference', 'content.md', 'side-notes');
+	const notesDocumentation = await documentationLinkFor(document.uri.fsPath, 'Sidenote reference', 'content.md', 'side-notes');
 	return [
 		Object.assign(new vscode.CompletionItem('[^margin:name]', vscode.CompletionItemKind.Snippet), {
 			detail: 'Attach a lettered sidenote to ordinary body text.',
@@ -436,7 +446,7 @@ const getBlockCompletionItems = async (document, position, service, scope) => {
 		source: document.getText(),
 	});
 	if (imageContext) {
-		const imageFilesDocumentation = documentationLinkFor(
+		const imageFilesDocumentation = await documentationLinkFor(
 			document.uri.fsPath,
 			'Managed image files',
 			'content.md',
@@ -833,8 +843,8 @@ async function activate(context) {
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
 		{ language: 'yaml', scheme: 'file' },
 		{
-			provideCompletionItems: (document, position) => {
-				const emptyItems = getEmptyYamlCompletionItems(document);
+			provideCompletionItems: async (document, position) => {
+				const emptyItems = await getEmptyYamlCompletionItems(document);
 				if (emptyItems.length > 0) return prioritizeNornaCompletions(emptyItems);
 				const snippetItems = getYamlSchemaSnippetItems(document, position);
 				return snippetItems.length > 0 ? prioritizeNornaCompletions(snippetItems) : undefined;
@@ -847,17 +857,17 @@ async function activate(context) {
 		{
 			provideCompletionItems: async (document, position) => {
 				if (!isNornaContentDocument(document)) return undefined;
-				const emptyItems = getEmptyContentCompletionItems(document);
+				const emptyItems = await getEmptyContentCompletionItems(document);
 				if (emptyItems.length > 0) return prioritizeNornaCompletions(emptyItems);
 				const service = await getLanguageService(document.uri.fsPath);
 				const scope = service?.getMarkdownCompletionScope({
 					source: document.getText(), line: position.line, character: position.character,
 				});
 				if (scope?.insertBlocks) return prioritizeNornaCompletions([
-					...getSemanticCalloutCompletionItems(document, position, { allowBlank: true }),
+					...await getSemanticCalloutCompletionItems(document, position, { allowBlank: true }),
 					...await getBlockCompletionItems(document, position, service, scope),
 				]);
-				const calloutItems = scope?.callouts ? getSemanticCalloutCompletionItems(document, position) : [];
+				const calloutItems = scope?.callouts ? await getSemanticCalloutCompletionItems(document, position) : [];
 				if (calloutItems.length > 0) return prioritizeNornaCompletions(calloutItems);
 				const schemaResult = getSchema(document.uri.fsPath, 'contentFrontmatter');
 				const frontmatterItems = schemaResult ? schemaCompletionItems(document, position, schemaResult.schema) : [];
@@ -889,7 +899,7 @@ async function activate(context) {
 				}
 				const noteRange = document.getWordRangeAtPosition(position, /\[\^margin:[^\]\s]+\]/);
 				if (noteRange && getProjectContext(document.uri.fsPath)?.editorCompatible && !isInsideMarkdownFence(document, position.line)) {
-					const notesDocumentation = documentationLinkFor(
+					const notesDocumentation = await documentationLinkFor(
 						document.uri.fsPath,
 						'Sidenote reference',
 						'content.md',

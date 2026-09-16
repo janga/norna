@@ -4,7 +4,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'js-yaml';
 import { markdownToMdast } from 'satteri';
-import { siteSchema, themeVisualSchema } from './lib/schema-definitions.mjs';
+import { configSchema, siteSchema, sitewideSchema, themeVisualSchema } from './lib/schema-definitions.mjs';
 import { parseContentTabs } from './lib/content-tabs.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
@@ -22,6 +22,9 @@ import {
 import { presentationPaletteNames } from './lib/presentation-palette-metadata.mjs';
 import projectConfig from './lib/project-config.mjs';
 import { themePresetNames, themePresets } from './lib/theme-presets.mjs';
+import { localeDefinitions } from './lib/locale-registry.mjs';
+import documentationRoutes from './lib/documentation-routes.json' with { type: 'json' };
+import * as documentationLinks from './lib/documentation-links.mjs';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
 const obsoleteSourceReferences = [
@@ -43,7 +46,7 @@ const obsoleteSiteFilenames = new Set([
 ]);
 const ignoredSiteDirectories = new Set(['.astro', '.norna', 'dist', 'node_modules']);
 const obsoleteReferenceDocumentation = new Set([
-	path.join(repoRoot, 'docs', 'upgrading.md'),
+	path.join(repoRoot, 'site/pages/032-reference/pages/060-workflows/pages/050-legacy-source/content.md'),
 ]);
 
 const collectMarkdownFiles = async (directory) => {
@@ -115,7 +118,8 @@ const checkObsoleteDocumentationReferences = async () => {
 		if (obsoleteReferenceDocumentation.has(markdownPath)) continue;
 		const source = await readFile(markdownPath, 'utf8');
 		for (const reference of obsoleteSourceReferences) {
-			if (source.includes(reference)) {
+			const escaped = reference.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			if (new RegExp(`(?<![\\w/.-])${escaped}`).test(source)) {
 				obsolete.push(`${path.relative(repoRoot, markdownPath)} -> ${reference}`);
 			}
 		}
@@ -213,7 +217,7 @@ const checkSinglePageDiagramSource = async () => {
 
 const checkEditorFormattingGuidance = async () => {
 	for (const relativePath of [
-		'docs/editor-support.md',
+		'site/pages/032-reference/pages/060-workflows/pages/010-editor/content.md',
 		'site/pages/035-faq/pages/030-content-and-images/content.md',
 	]) {
 		const source = await readFile(path.join(repoRoot, relativePath), 'utf8');
@@ -225,10 +229,10 @@ const checkEditorFormattingGuidance = async () => {
 		assert.deepEqual(JSON.parse(settings[0].value), { '[markdown]': { 'editor.formatOnSave': false } },
 			`${relativePath}: disable only Markdown format-on-save, without prescribing a formatter.`);
 		const prose = source.replace(/\s+/g, ' ');
-		assert.ok(prose.includes('Norna does not repair Markdown during saves'),
+		assert.match(prose, /Norna does not (?:repair Markdown during saves|register a Markdown formatter or rewrite Markdown on save)/,
 			`${relativePath}: do not promise save-time syntax repair.`);
-		assert.match(prose, /supported setup uses VS Code and Red Hat YAML without a Markdown formatter/);
-		assert.match(prose, /does not guarantee compatibility with arbitrary formatter settings/);
+		assert.match(prose, /(?:supported setup uses VS Code and Red Hat YAML without a Markdown formatter|verified setup uses VS Code and Red Hat YAML without automatic Markdown formatting)/);
+		assert.match(prose, /(?:does not guarantee compatibility with arbitrary formatter settings|arbitrary Markdown formatters is outside the verified setup)/);
 		assert.doesNotMatch(prose, /normalizes a recognized `content\.md` when it is saved/);
 	}
 };
@@ -236,16 +240,17 @@ const checkEditorFormattingGuidance = async () => {
 const formatReaderDisplay = () => 'Reading width and Appearance always available; Focus reading when navigation resolves to tree';
 
 const checkThemePresetReference = async () => {
-	const source = await readFile(path.join(repoRoot, 'docs', 'theme.md'), 'utf8');
+	const source = await readFile(path.join(repoRoot, documentationRoutes.sources['configuration/presets/']), 'utf8');
+	const palettes = await readFile(path.join(repoRoot, documentationRoutes.sources['configuration/palettes/']), 'utf8');
 	assert.ok(
-		source.includes('https://janga.github.io/norna/examples/theme-presets/'),
-		'docs/theme.md is missing the shared theme preset comparison.',
+		palettes.includes('https://janga.github.io/norna/examples/theme-presets/'),
+		'The palette reference is missing the shared theme preset comparison.',
 	);
 
 	for (const presetName of themePresetNames) {
-		const heading = `### \`${presetName}\``;
+		const heading = `## ${presetName}`;
 		const start = source.indexOf(heading);
-		assert.notEqual(start, -1, `docs/theme.md is missing ${heading}.`);
+		assert.notEqual(start, -1, `The preset reference is missing ${heading}.`);
 		const remainder = source.slice(start + heading.length);
 		const boundary = remainder.search(/\n#{2,3} /);
 		const section = source.slice(start, boundary === -1 ? undefined : start + heading.length + boundary);
@@ -280,27 +285,27 @@ const checkThemePresetReference = async () => {
 		for (const [setting, value] of rows) {
 			const settingLabel = setting === 'Reader Display' ? setting : `\`${setting}\``;
 			const row = `| ${settingLabel} | ${value} |`;
-			assert.ok(section.includes(row), `docs/theme.md ${presetName} reference is missing: ${row}`);
+			assert.ok(section.includes(row), `The preset reference ${presetName} reference is missing: ${row}`);
 		}
 		if (!preset.images.maxAvailableHeightPercent) {
 			assert.doesNotMatch(
 				section,
 				/\| `images\.maxAvailableHeightPercent` \|/,
-				`docs/theme.md ${presetName} should not document an inactive viewport-height limit.`,
+				`The preset reference ${presetName} should not document an inactive viewport-height limit.`,
 			);
 		}
 
 		const exampleUrl = `https://janga.github.io/norna/examples/feature-demos/theme-preset-${presetName}/`;
-		assert.ok(section.includes(exampleUrl), `docs/theme.md ${presetName} reference is missing its rendered example.`);
+		assert.ok(section.includes(exampleUrl), `The preset reference ${presetName} reference is missing its rendered example.`);
 	}
 
 	for (const paletteName of presentationPaletteNames) {
 		assert.ok(
-			source.includes(`| \`${paletteName}\` |`),
-			`docs/theme.md is missing the ${paletteName} palette reference.`,
+			palettes.includes(`| \`${paletteName}\` |`),
+			`The palette reference is missing the ${paletteName} palette reference.`,
 		);
 	}
-	assert.ok(!source.includes('`cool-green`'), 'docs/theme.md still documents the removed cool-green palette.');
+	assert.ok(!palettes.includes('`cool-green`'), 'The palette reference still documents the removed cool-green palette.');
 };
 
 const checkThemeExplorer = () => {
@@ -331,12 +336,12 @@ const checkThemeExplorer = () => {
 };
 
 const checkSitemapReference = async () => {
-	const publicFiles = await readFile(path.join(repoRoot, 'docs', 'public-files.md'), 'utf8');
-	const publishing = await readFile(path.join(repoRoot, 'docs', 'publishing.md'), 'utf8');
+	const publicFiles = await readFile(path.join(repoRoot, documentationRoutes.sources['site/public-files/']), 'utf8');
+	const publishing = await readFile(path.join(repoRoot, documentationRoutes.sources['workflows/publishing/']), 'utf8');
 
 	for (const expectedText of [
-		'## Generated Sitemap',
-		'`navigation.listed: false`',
+		'## Generated sitemap',
+		'even unlisted ones',
 		'`site/.norna/public/sitemap.xml`',
 		'`dist/sitemap.xml`',
 	]) {
@@ -484,8 +489,8 @@ const checkPublishedExampleReferences = async () => {
 		'**Source:** Standard Markdown.',
 		'**Source:** Norna Markdown extension.',
 		'author must review it in the context where the image appears',
-		'https://github.com/janga/norna/blob/main/docs/content.md#tables',
-		'https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls',
+		'/reference/content/tables/',
+		'/reference/reader/display/',
 	]) {
 		assert.ok(documentationText.includes(requiredText), `Examples is missing required result-first content: ${requiredText}`);
 	}
@@ -538,51 +543,77 @@ const checkPublishedExampleReferences = async () => {
 	);
 };
 
-const checkReferencePilots = async () => {
-	const pilotRoot = path.join(repoRoot, 'fixtures/reference-documentation/site/pages');
-	const files = await collectMarkdownFiles(pilotRoot);
-	let samples = 0;
-	let demonstratedNotes = 0;
-	for (const file of files) {
-		const source = await readFile(file, 'utf8');
-		const label = path.relative(repoRoot, file);
-		const model = await parsePageMarkdownSource(source, { label });
-		assert.deepEqual(model.diagnostics.filter((issue) => issue.severity !== 'warning'), [], label);
-		assert.equal(model.pageHeadings.length, 1, `${label}: one page title`);
-		const tree = await markdownToMdast(source);
-		const renderedNotes = extractInlineNoteDiagnostics(source, { label }).notes;
+const checkReferenceTree = async () => {
+	const referenceRoot = path.join(repoRoot, 'site/pages/032-reference');
+	const files = await collectMarkdownFiles(referenceRoot);
+	assert.deepEqual(files.map((file) => path.relative(repoRoot, file)).sort(),
+		Object.values(documentationRoutes.sources).sort(), 'Every reference page needs a source route.');
+	const models = new Map();
+	let checkedYaml = 0;
+	for (const [route, relativePath] of Object.entries(documentationRoutes.sources)) {
+		const source = await readFile(path.join(repoRoot, relativePath), 'utf8');
+		const model = await parsePageMarkdownSource(source, { label: relativePath });
+		assert.equal(model.pageHeadings.length, 1, `${route}: one H1`);
+		assert.deepEqual(model.diagnostics.filter((issue) => issue.severity === 'error'), [], route);
+		models.set(route, model);
+		const tree = markdownToMdast(source);
 		for (const node of tree.children) {
-			if (node.type !== 'code') continue;
-			if (node.lang === 'yaml') {
-				const value = yaml.load(node.value);
-				const schema = node.meta?.startsWith('title="site/theme.yaml"') ? themeVisualSchema : siteSchema;
-				assert.ok(schema.safeParse(value).success, `${label}: YAML sample at line ${node.position.start.line}`);
-				samples += 1;
-			}
-			if (node.lang !== 'md') continue;
-			const sample = extractInlineNoteDiagnostics(node.value, { label });
-			assert.deepEqual(sample.diagnostics, [], `${label}: invalid note example`);
-			for (const note of sample.notes) {
-				const actual = renderedNotes.find((entry) => entry.identifier === note.identifier);
-				assert.equal(actual?.markdown, note.markdown, `${label}: note example differs from rendered source`);
-				demonstratedNotes += 1;
-			}
-			const exampleTree = await markdownToMdast(node.value);
-			for (const paragraph of exampleTree.children.filter((entry) => entry.type === 'paragraph')) {
-				const text = node.value.slice(paragraph.position.start.offset, paragraph.position.end.offset);
-				assert.ok(tree.children.some((entry) => entry.type === 'paragraph'
-					&& source.slice(entry.position.start.offset, entry.position.end.offset) === text),
-				`${label}: displayed paragraph must match the rendered example`);
-			}
-			samples += 1;
+			if (node.type !== 'code' || node.lang !== 'yaml') continue;
+			const title = node.meta?.match(/^title="([^"\n]+)"/)?.[1] ?? '';
+			const schema = /^site\/config\.yaml/.test(title) ? configSchema
+				: /^(?:site\/)?theme\.yaml/.test(title) ? themeVisualSchema
+					: /^site\/sitewide-content\.yaml/.test(title) ? sitewideSchema : null;
+			if (!schema) continue;
+			const result = schema.safeParse(yaml.load(node.value));
+			assert.ok(result.success, `${route}: invalid YAML example at ${node.position.start.line}: ${JSON.stringify(result.error?.issues)}`);
+			checkedYaml += 1;
 		}
 	}
-	assert.equal(files.length, 5, 'The review contains four pilots and one review homepage.');
-	assert.equal(samples, 7, 'Verify both YAML and five Markdown examples.');
-	assert.equal(demonstratedNotes, 3, 'Verify one-note and two-note source/result pairs.');
+	assert.ok(checkedYaml >= 15, 'Validate complete configuration examples across the reference.');
+	for (const [legacy, target] of Object.entries(documentationRoutes.legacy)) {
+		const [route, anchor] = target.split('#');
+		const model = models.get(route);
+		assert.ok(model, `${legacy}: missing reference page ${route}`);
+		if (anchor) assert.ok(model.sections.some((section) => section.id === anchor), `${legacy}: missing anchor ${target}`);
+	}
+	const language = await readFile(path.join(repoRoot, documentationRoutes.sources['configuration/language/']), 'utf8');
+	for (const { tag } of localeDefinitions) assert.ok(language.includes(`| \`${tag}\` |`), `Missing language ${tag}`);
+	const llms = await readFile(path.join(repoRoot, 'site/public/llms.txt'), 'utf8');
+	for (const source of Object.values(documentationRoutes.sources)) assert.ok(llms.includes(`/main/${source}`), `llms.txt omits ${source}`);
+	for (const version of ['0.7.25', '0.7.26']) {
+		const link = documentationLinks.documentationLinkForVersion(version, 'Images', 'content.md', 'image-stack');
+		assert.ok(link.includes(`/blob/v${version}/docs/content.md#image-stack`), 'Older installations must keep existing tag paths.');
+		assert.ok(link.includes('/reference/content/images/#image-stack'), 'Current reference stays separately identified.');
+	}
+	for (const version of ['0.7.27', '0.8.0', '1.0.0']) {
+		const link = documentationLinks.documentationLinkForVersion(version, 'Images', 'content.md', 'image-stack');
+		assert.ok(link.includes(`/blob/v${version}/${documentationRoutes.sources['content/images/']}#image-stack`));
+		assert.ok(!link.includes('/docs/'), 'Future releases must use the sole authored reference source.');
+	}
+	const source = await readFile(path.join(repoRoot, documentationRoutes.sources['content/sidenotes/']), 'utf8');
+	const renderedNotes = extractInlineNoteDiagnostics(source).notes;
+	const sidenoteTree = markdownToMdast(source);
+	let demonstratedNotes = 0;
+	for (const node of sidenoteTree.children) {
+		if (node.type !== 'code' || node.lang !== 'md') continue;
+		const sample = extractInlineNoteDiagnostics(node.value);
+		assert.deepEqual(sample.diagnostics, []);
+		for (const note of sample.notes) {
+			assert.equal(renderedNotes.find((actual) => actual.identifier === note.identifier)?.markdown, note.markdown,
+				'The approved sidenote example must match its live note.');
+			demonstratedNotes += 1;
+		}
+		for (const paragraph of markdownToMdast(node.value).children.filter((entry) => entry.type === 'paragraph')) {
+			const text = node.value.slice(paragraph.position.start.offset, paragraph.position.end.offset);
+			assert.ok(sidenoteTree.children.some((entry) => entry.type === 'paragraph'
+				&& source.slice(entry.position.start.offset, entry.position.end.offset) === text),
+			'The displayed sidenote paragraph must match the rendered example.');
+		}
+	}
+	assert.equal(demonstratedNotes, 3, 'Preserve the approved one-note and two-note examples.');
 };
 
-await checkReferencePilots();
+await checkReferenceTree();
 await checkLocalMarkdownLinks();
 await checkObsoleteDocumentationReferences();
 await checkObsoleteSiteFiles();

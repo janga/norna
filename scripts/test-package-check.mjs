@@ -436,8 +436,9 @@ This page verifies that packaged norna sites can build additional pages.
 		const status = await run(npxBin, ['norna', 'dev:status'], { cwd: siteProjectRoot, env: previewEnv });
 		assert.match(status.stdout, new RegExp(`dev:local is running at http://127\\.0\\.0\\.1:${previewPort}/site/`));
 		const response = await fetch(`http://127.0.0.1:${previewPort}/site/`);
-		assert.equal(response.status, 200);
-		assert.match(await response.text(), /<h1 id="page-title">Package Check Site<\/h1>/);
+		const responseBody = await response.text();
+		assert.equal(response.status, 200, `Development page returned ${response.status}: ${responseBody.slice(0, 4000)}`);
+		assert.match(responseBody, /<h1 id="page-title">Package Check Site<\/h1>/);
 	} finally {
 		await runInherit(npxBin, ['norna', 'dev:stop'], { cwd: siteProjectRoot, env: previewEnv });
 	}

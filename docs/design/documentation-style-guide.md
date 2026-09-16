@@ -213,12 +213,21 @@ Keep one canonical reference definition for each public concept:
   specification;
 - design guides explain rationale without redefining behavior.
 
-Link direction normally runs from the introductory HTML site to the canonical
-Markdown reference. Do not add a reciprocal link from reference material to an
-HTML documentation page merely because both exist. Link back to HTML only when
-the rendered page supplies distinct reader value, such as an interactive
-demonstration, a visual comparison, or a guided beginner workflow that the
-reference does not provide.
+The canonical user reference is authored once as Norna Markdown under
+`site/pages/032-reference/` and read on the documentation website. Contributor
+and design material stays under `docs/`. Documentation type, not file format,
+distinguishes reference from tutorials and explanations.
+
+Introductory pages, schemas and editor help link to the exact reference page
+or section. Reference may link to a demonstration, visual comparison or guided
+workflow when it supplies distinct reader value. Do not add reciprocal links
+merely because two pages discuss the same subject.
+
+The website describes current development. Package/editor help also identifies
+the source reference for the installed release. Release tags through 0.7.26
+retain `docs/` references; subsequent releases use the reference page tree.
+Keep these destinations in `scripts/lib/documentation-routes.json` and validate
+its paths/anchors when moving reference pages.
 
 Duplication is justified only when the reader needs enough local context to
 continue. Keep duplicated statements short and ensure automated link or schema

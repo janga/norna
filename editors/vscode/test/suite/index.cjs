@@ -37,6 +37,23 @@ const waitFor = async (read, accept, message, timeout = 10_000) => {
 		if (accept(value)) return value;
 		await pause(100);
 	}
+	const { chromium } = require('@playwright/test');
+	const browser = await chromium.connectOverCDP(process.env.NORNA_EDITOR_TEST_INSPECTOR);
+	try {
+		for (const page of browser.contexts().flatMap((context) => context.pages())) {
+			if (!await page.locator('.monaco-workbench').count()) continue;
+			const widgetState = await page.locator('.suggest-widget').evaluateAll((widgets) => widgets.map((widget) => ({
+				className: widget.className,
+				labels: [...widget.querySelectorAll('.label-name')].map((label) => label.textContent),
+				focused: widget.querySelector('.monaco-list-row.focused')?.textContent,
+			})));
+			console.error('Suggestion widget state:', JSON.stringify(widgetState));
+			console.error('Workbench focus:', await page.evaluate(() => document.activeElement?.outerHTML));
+			await page.screenshot({ path: path.join(sourceExtensionRoot, '.vscode-test', 'widget-failure.png') });
+		}
+	} finally {
+		await browser.close();
+	}
 	throw new Error(message);
 };
 
@@ -70,7 +87,8 @@ async function run() {
 	}
 	const documentationPreset = themeItems.find((item) => labelOf(item) === 'documentation');
 	assert.ok(
-		documentationOf(documentationPreset).includes(`/blob/v${engineVersion}/docs/theme.md`),
+		documentationOf(documentationPreset).includes('https://janga.github.io/norna/reference/configuration/presets/')
+		&& documentationOf(documentationPreset).includes(`/blob/v${engineVersion}/`),
 		`Preset completion did not link to versioned theme documentation: ${JSON.stringify({
 			detail: documentationPreset?.detail,
 			documentation: documentationOf(documentationPreset),
@@ -115,23 +133,36 @@ async function run() {
 	}
 	const blockEditor = vscode.window.activeTextEditor;
 	const blockSource = blockPage.getText();
-	for (const prefix of ['```', '```image-st', '~~~', '~~~card-l']) {
-		await blockEditor.edit((edit) => edit.replace(blockPage.lineAt(4).range, prefix));
-		blockEditor.selection = new vscode.Selection(4, prefix.length, 4, prefix.length);
-		await vscode.commands.executeCommand('editor.action.triggerSuggest');
-		await waitFor(async () => {
-			await vscode.commands.executeCommand('acceptSelectedSuggestion');
-			return blockPage.lineAt(4).text;
-		}, (text) => text !== prefix, `The suggestion widget did not insert a block after ${prefix}.`);
-		assert.match(blockPage.lineAt(4).text, /^```(?:image-stack|image-carousel|card-list|page-list)$/,
-			`Unexpected widget insertion after ${prefix}: ${JSON.stringify(blockPage.lineAt(4).text)}`);
-		if (prefix.includes('image-st')) assert.equal(blockPage.lineAt(4).text, '```image-stack');
-		if (prefix.includes('card-l')) assert.equal(blockPage.lineAt(4).text, '```card-list');
-		await vscode.commands.executeCommand('hideSuggestWidget');
-		await vscode.commands.executeCommand('leaveSnippet');
-		await blockEditor.edit((edit) => edit.replace(new vscode.Range(
-			blockPage.positionAt(0), blockPage.positionAt(blockPage.getText().length),
-		), blockSource));
+	const { chromium } = require('@playwright/test');
+	const widgetBrowser = await chromium.connectOverCDP(process.env.NORNA_EDITOR_TEST_INSPECTOR);
+	const widgetWindow = widgetBrowser.contexts().flatMap((context) => context.pages())
+		.find((page) => page.url().includes('workbench'));
+	assert.ok(widgetWindow, 'The isolated VS Code workbench must be available.');
+	try {
+		for (const prefix of ['```', '```image-st', '~~~', '~~~card-l']) {
+			await blockEditor.edit((edit) => edit.replace(blockPage.lineAt(4).range, prefix));
+			blockEditor.selection = new vscode.Selection(4, prefix.length, 4, prefix.length);
+			await vscode.commands.executeCommand('editor.action.triggerSuggest');
+			// Accepting while the widget is still loading can cancel it in VS Code.
+			await widgetWindow.locator('.suggest-widget.visible .monaco-list-row').first().waitFor({ state: 'visible' });
+			await vscode.commands.executeCommand('selectFirstSuggestion');
+			await widgetWindow.locator('.suggest-widget.visible .monaco-list-row.focused .label-name').first().waitFor({ state: 'visible' });
+			await waitFor(async () => {
+				await vscode.commands.executeCommand('acceptSelectedSuggestion');
+				return blockPage.lineAt(4).text;
+			}, (text) => text !== prefix, `The suggestion widget did not insert a block after ${prefix}.`);
+			assert.match(blockPage.lineAt(4).text, /^```(?:image-stack|image-carousel|card-list|page-list)$/,
+				`Unexpected widget insertion after ${prefix}: ${JSON.stringify(blockPage.lineAt(4).text)}`);
+			if (prefix.includes('image-st')) assert.equal(blockPage.lineAt(4).text, '```image-stack');
+			if (prefix.includes('card-l')) assert.equal(blockPage.lineAt(4).text, '```card-list');
+			await vscode.commands.executeCommand('hideSuggestWidget');
+			await vscode.commands.executeCommand('leaveSnippet');
+			await blockEditor.edit((edit) => edit.replace(new vscode.Range(
+				blockPage.positionAt(0), blockPage.positionAt(blockPage.getText().length),
+			), blockSource));
+		}
+	} finally {
+		await widgetBrowser.close();
 	}
 
 	const calloutPage = await openDocument('site/pages/050-callouts/content.md');
@@ -147,7 +178,7 @@ async function run() {
 	}
 	const tip = calloutItems.find((item) => labelOf(item) === 'TIP');
 	assert.match(tip.insertText?.value ?? String(tip.insertText), /> \[!TIP\]\n> \$\{1:Callout text\}/);
-	assert.match(documentationOf(tip), /docs\/content\.md#semantic-callouts/);
+	assert.match(documentationOf(tip), /reference\/content\/callouts\//);
 
 	const saveCalloutPage = await openDocument('site/pages/060-save-callout/content.md');
 	const saveEdit = new vscode.WorkspaceEdit();
@@ -218,7 +249,7 @@ async function run() {
 		.map((content) => typeof content === 'string' ? content : content.value ?? '')
 		.join('\n');
 	assert.match(hoverText, /managed images in a vertical stack/);
-	assert.match(hoverText, /docs\/content\.md#image-stack/);
+	assert.match(hoverText, /reference\/content\/images\/#image-stack/);
 
 	const diagnostics = await waitFor(
 		() => vscode.languages.getDiagnostics(home.uri).filter((diagnostic) => diagnostic.source === 'Norna'),

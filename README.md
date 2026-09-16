@@ -73,7 +73,7 @@ site/
   presentation settings and nested entries under its own `pages/` directory.
 - Category ids remain in child URLs. Opening a category URL leads to its first
   listed direct page or a generated child list; see
-  [Category destinations](docs/pages.md#opening-a-category-url).
+  [Category destinations](https://janga.github.io/norna/reference/site/pages/#opening-a-category-url).
 - `theme.yaml` normally selects one complete visual preset.
 - `sitewide-content.yaml` holds shared logo display settings, banners, and
   footer content.
@@ -134,23 +134,30 @@ components, and rendering logic.
 
 GitHub CLI and Playwright are needed only for specific deploy helpers and
 engine diagnostics, not for ordinary editing and local preview. See
-[Requirements and limitations](docs/requirements.md) for the exact boundaries.
+[Requirements and limitations](https://janga.github.io/norna/reference/site/requirements/) for the exact boundaries.
 
 ## Documentation
 
 - [Getting Started](https://janga.github.io/norna/getting-started/install-norna/)
-- [Site files](docs/site-files.md)
-- [Upgrading an existing site](docs/upgrading.md)
-- [Task-oriented documentation map](docs/README.md)
-- [Common workflows](docs/README.md#common-workflows)
-- [Explanation and JavaScript boundaries](docs/README.md#explanation)
-- [Command and platform reference](docs/README.md#command-and-platform-reference)
-- [Troubleshooting](docs/README.md#troubleshooting)
+- [Site files](https://janga.github.io/norna/reference/site/files/)
+- [Upgrading an existing site](https://janga.github.io/norna/reference/workflows/upgrading/)
+- [Complete reference](https://janga.github.io/norna/reference/)
+- [Working on a site](https://janga.github.io/norna/reference/workflows/)
+- [JavaScript and accessibility](https://janga.github.io/norna/reference/reader/accessibility/)
+- [Commands](https://janga.github.io/norna/reference/commands/invocation/)
+- [Troubleshooting](https://janga.github.io/norna/faq/installation/)
 - [AI-readable documentation index](https://janga.github.io/norna/llms.txt)
 
 Engine contributors should start with
 [Engine Development](docs/engine-development.md). Planning and future work are
 tracked in [BACKLOG.md](BACKLOG.md).
+
+The user reference is authored once under `site/pages/032-reference/` and
+rendered on the documentation site. It describes current development; use the
+installed release's Git tag when checking older behavior. Tags through 0.7.26
+keep their reference under `docs/`; later tags use the documentation page tree.
+The [contributor documentation](docs/README.md) explains maintenance and version
+selection.
 
 ## Support And License
 

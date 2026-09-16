@@ -51,7 +51,7 @@ The build includes responsive image output, canonical and social metadata, a
 sitemap, and a default `404.html`. When static search is enabled, the same
 build also refreshes its page index. A conventionally named optional image
 under `site/public/` supplies the site's social preview. See
-[Public files](https://github.com/janga/norna/blob/main/docs/public-files.md)
+[Public files](/reference/site/public-files/)
 for its filename and for the exact generated-output rules.
 
 ## Publish with GitHub Pages {#publish}
@@ -73,7 +73,7 @@ checks the source, builds the site, and publishes `dist/` if the checks pass.
 git push
 ```
 
-See [Publishing](https://github.com/janga/norna/blob/main/docs/publishing.md)
+See [Publishing](/reference/workflows/publishing/)
 for repository setup, custom domains, deploy commands, and troubleshooting.
 
 ## Watch a deployment {#watch}
@@ -89,5 +89,5 @@ The command reports the workflow status, public URL, and available failure
 details. It does not publish or change the site. This optional helper requires
 an installed and authenticated GitHub CLI; pushing the commit is sufficient to
 start publication. See
-[Watch a deploy](https://github.com/janga/norna/blob/main/docs/publishing.md#watch-a-deploy)
+[Watch a deploy](/reference/commands/publishing/#monitor-a-workflow)
 for options and troubleshooting.

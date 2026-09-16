@@ -130,8 +130,8 @@ retain the original semantic table and require no extra author configuration.
 ## Documentation
 
 The final behavior is described in the canonical
-[Markdown-table reference](../../content.md#tables), the
-[presentation guarantees](../../presentation-guarantees.md#reflow-and-text-adaptation),
+[Markdown-table reference](https://janga.github.io/norna/reference/content/tables/), the
+[presentation guarantees](https://janga.github.io/norna/reference/reader/accessibility/#reading-and-reflow),
 and the rendered **Writing and Notes** table example. The client-side
 enhancement and no-JavaScript fallback are recorded in the
-[JavaScript feature contract](../../client-javascript.md#feature-contract).
+[JavaScript feature contract](https://janga.github.io/norna/reference/reader/accessibility/#without-javascript).

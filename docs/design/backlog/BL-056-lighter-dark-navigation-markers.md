@@ -7,7 +7,7 @@ review. Reference and design documentation completed on 2026-09-14.
 
 ## Documentation
 
-- [Current Reading Position](../../pages.md#current-reading-position) describes
+- [Current Reading Position](https://janga.github.io/norna/reference/configuration/navigation/#orientation-and-long-trees) describes
   the shared Dark highlight, its scope, and its relationship to the palette.
 - [Navigation Position Markers](../preset-design-guide.md#navigation-position-markers)
   records the engine-derived color mixes and visual verification requirements.

@@ -4,7 +4,7 @@
 the authoring model proposed by
 [BL-108: Standard And Uniform Content Syntax](backlog/BL-108-standard-uniform-content-syntax.md).
 Do not copy the proposed YAML or sidenote examples into a released Norna site
-yet. [Content](../content.md) remains the reference for implemented behavior.
+yet. [Content](https://janga.github.io/norna/reference/content/markdown/) remains the reference for implemented behavior.
 
 The user has approved this handbook's authoring model and the parser defaults
 listed below. No syntax implementation is implied by approval of this document.

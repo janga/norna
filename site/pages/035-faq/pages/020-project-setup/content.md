@@ -122,8 +122,8 @@ npm run norna:build
 ```
 
 See the full references for
-[commands](https://github.com/janga/norna/blob/main/docs/commands.md) and
-[site files](https://github.com/janga/norna/blob/main/docs/site-files.md).
+[commands](/reference/commands/invocation/) and
+[site files](/reference/site/files/).
 
 ## How do I publish an embedded Norna site beside a project homepage? {#publish-embedded-site}
 
@@ -135,7 +135,7 @@ matching subdirectory of the final artifact.
 The surrounding project owns the combined workflow and root-level hosting
 files. Embedded initialization therefore preserves its existing `build` and
 deployment commands instead of adding Norna's standalone workflow. See
-[Publish an embedded site beside another static build](https://github.com/janga/norna/blob/main/docs/publishing.md#publish-an-embedded-site-beside-another-static-build)
+[Publish an embedded site beside another static build](/reference/workflows/embedded-publishing/)
 for the complete build order, GitHub Actions steps, base-path rule, image cache,
 and root-file limitations.
 

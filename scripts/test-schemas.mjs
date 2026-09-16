@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
+import documentationRoutes from './lib/documentation-routes.json' with { type: 'json' };
+import { usesLegacyReference } from './lib/documentation-links.mjs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,24 +40,44 @@ const githubHeadingAnchor = (heading) => heading
 	.trim()
 	.replace(/\s+/g, '-');
 
+const documentationSourceCache = new Map();
 const assertDocumentationLinks = async (markdownDescription, location) => {
-	const links = [...markdownDescription.matchAll(
-		/https:\/\/github\.com\/janga\/norna\/blob\/([^/\s]+)\/docs\/([^\s)#]+)(?:#([^\s)]+))?/g,
+	const current = [...markdownDescription.matchAll(
+		/https:\/\/janga\.github\.io\/norna\/reference\/([^\s)#]+)(?:#([^\s)]+))?/g,
 	)];
-	assert.ok(links.length > 0, `${location} has no documentation link.`);
-
-	for (const [, reference, filename, anchor] of links) {
-		assert.equal(reference, expectedDocumentationRef, `${location} uses documentation ref ${reference}.`);
-		const documentationPath = path.join(root, 'docs', decodeURIComponent(filename));
-		assert.ok(existsSync(documentationPath), `${location} links to missing docs/${filename}.`);
+	assert.ok(current.length > 0, `${location} has no current web reference.`);
+	for (const [, route, anchor] of current) {
+		const sourcePath = documentationRoutes.sources[route];
+		assert.ok(sourcePath, `${location}: unknown reference route ${route}`);
+		assert.ok(existsSync(path.join(root, sourcePath)), `${location}: missing source ${sourcePath}`);
 		if (!anchor) continue;
-
-		const source = await readFile(documentationPath, 'utf8');
-		const anchors = source
-			.split('\n')
+		const source = await readFile(path.join(root, sourcePath), 'utf8');
+		const anchors = source.split('\n').filter((line) => /^#{1,6}\s/.test(line))
+			.map((line) => githubHeadingAnchor(line.replace(/^#{1,6}\s+/, '')));
+		assert.ok(anchors.includes(anchor), `${location}: missing current anchor ${route}#${anchor}`);
+	}
+	const versioned = [...markdownDescription.matchAll(
+		/https:\/\/github\.com\/janga\/norna\/blob\/([^/\s]+)\/((?:docs|site)\/[^\s)#]+)(?:#([^\s)]+))?/g,
+	)];
+	assert.ok(versioned.length > 0, `${location} has no release-specific source reference.`);
+	for (const [, reference, sourcePath, anchor] of versioned) {
+		assert.equal(reference, expectedDocumentationRef, `${location} uses documentation ref ${reference}.`);
+		if (sourcePath.startsWith('docs/')) {
+			assert.ok(usesLegacyReference(packageJson.version), `${location}: newer releases must use the reference tree.`);
+			const legacy = sourcePath.slice('docs/'.length) + (anchor ? `#${anchor}` : '');
+			assert.ok(Object.hasOwn(documentationRoutes.legacy, legacy), `${location}: unknown archived destination ${legacy}`);
+			continue;
+		}
+		const key = `${reference}:${sourcePath}`;
+		if (!documentationSourceCache.has(key)) {
+			const source = await readFile(path.join(root, sourcePath), 'utf8');
+			documentationSourceCache.set(key, source);
+		}
+		if (!anchor) continue;
+		const anchors = documentationSourceCache.get(key).split('\n')
 			.filter((line) => /^#{1,6}\s/.test(line))
 			.map((line) => githubHeadingAnchor(line.replace(/^#{1,6}\s+/, '')));
-		assert.ok(anchors.includes(anchor), `${location} links to missing anchor docs/${filename}#${anchor}.`);
+		assert.ok(anchors.includes(anchor), `${location}: missing versioned anchor ${key}#${anchor}`);
 	}
 };
 
@@ -160,9 +182,9 @@ assert.deepEqual(config.properties.editLink.anyOf, [
 	{ required: ['baseUrl'] },
 ]);
 assert.match(config.properties.editLink.properties.baseUrl.markdownDescription, /content\.md/);
-assert.match(config.properties.editLink.properties.baseUrl.markdownDescription, /docs\/configuration\.md#edit-link/);
+assert.match(config.properties.editLink.properties.baseUrl.markdownDescription, /reference\/configuration\/source-links\//);
 assert.match(config.properties.editLink.properties.localEditor.markdownDescription, /localhost or another loopback address/);
-assert.match(config.properties.editLink.properties.localEditor.markdownDescription, /docs\/configuration\.md#edit-link/);
+assert.match(config.properties.editLink.properties.localEditor.markdownDescription, /reference\/configuration\/source-links\//);
 assert.equal(config.properties.editLink.properties.localEditor.oneOf[0].const, 'vscode');
 assert.equal(config.properties.editLink.properties.localEditor.oneOf[0].title, 'Visual Studio Code');
 
@@ -180,7 +202,7 @@ assert.match(sitewide.properties.logo.markdownDescription, /does not enable or s
 assert.match(sitewide.properties.logo.markdownDescription, /homepage Markdown H1/);
 assert.match(sitewide.properties.logo.markdownDescription, /2\.6rem/);
 assert.match(sitewide.properties.logo.markdownDescription, /2\.15rem/);
-assert.match(sitewide.properties.logo.markdownDescription, /docs\/public-files\.md#navigation-logo/);
+assert.match(sitewide.properties.logo.markdownDescription, /reference\/site\/public-files\/#recognized-files/);
 assert.equal(sitewide.properties.logo.description.length < 100, true);
 const bannerItem = sitewide.properties.banners.items;
 assert.equal(bannerItem.title, 'Warning banner');
@@ -262,10 +284,10 @@ assert.deepEqual(
 	['text', 'narrow', 'normal', 'wide'],
 );
 assert.equal(theme.properties.blocks.defaultSnippets[0].label, 'Override content-block defaults');
-assert.match(theme.properties.blocks.markdownDescription, /docs\/theme\.md#content-block-defaults/);
+assert.match(theme.properties.blocks.markdownDescription, /reference\/content\/cards\/#width/);
 assert.match(
 	theme.properties.blocks.properties.cardList.properties.width.markdownDescription,
-	/docs\/theme\.md#content-block-defaults/,
+	/reference\/content\/cards\/#width/,
 );
 assert.equal(theme.properties.navigation, undefined);
 assert.equal(theme.properties.layout.properties.density, undefined);
@@ -300,7 +322,7 @@ const content = JSON.parse(await readFile(path.join(root, 'schemas', 'content-fr
 assert.deepEqual(Object.keys(content.properties), ['page', 'navigation']);
 assert.deepEqual(Object.keys(content.properties.page.properties), ['description', 'aliases']);
 assert.match(content.properties.page.properties.aliases.markdownDescription, /permanently identify this page/);
-assert.match(content.properties.page.properties.aliases.markdownDescription, /docs\/pages\.md#preserve-old-page-urls/);
+assert.match(content.properties.page.properties.aliases.markdownDescription, /reference\/site\/urls\/#keep-an-old-url/);
 assert.match(content.properties.page.properties.aliases.items.markdownDescription, /configured base path/);
 assert.deepEqual(content.properties.page.properties.aliases.examples, [['/old-about/']]);
 assert.deepEqual(content.properties.page.properties.aliases.items.examples, ['/old-about/']);

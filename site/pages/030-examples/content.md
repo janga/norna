@@ -40,7 +40,7 @@ Norna supplies semantic image markup and responsive presentation. The author
 still owns the image's meaning. An AI tool may draft alternative text, but the
 author must review it in the context where the image appears and decide whether
 the image needs descriptive or empty alternative text. Read the
-[managed-image reference](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md#managed-source-images)
+[managed-image reference](/reference/site/images/#source-files)
 and [W3C image decision guidance](https://www.w3.org/WAI/tutorials/images/).
 
 ## Image stacks {#image-stacks}
@@ -69,7 +69,7 @@ items:
 
 **Source:** Norna Markdown extension. Use a stack when every image should stay
 visible in sequence. See the
-[image-stack reference](https://github.com/janga/norna/blob/main/docs/content.md#image-stack).
+[image-stack reference](/reference/content/images/#image-stack).
 
 ## Image carousels {#image-carousels}
 
@@ -104,7 +104,7 @@ items:
 **Source:** Norna Markdown extension. Use a carousel when related images should
 share one visual position. Norna adds fitted controls, keyboard operation, touch
 dragging, slide status, and a readable no-JavaScript fallback. See the
-[image-carousel reference](https://github.com/janga/norna/blob/main/docs/content.md#image-carousel).
+[image-carousel reference](/reference/content/images/#image-carousel).
 
 ## Card lists {#card-lists}
 
@@ -145,7 +145,7 @@ items:
 **Source:** Norna Markdown extension. Cards are for a short collection of
 comparable choices, resources, or steps. Each card can include an image and link
 to a page or an external resource. Read the
-[card-list reference](https://github.com/janga/norna/blob/main/docs/content.md#card-list).
+[card-list reference](/reference/content/cards/).
 
 [Open the complete media and surfaces site](https://janga.github.io/norna/examples/feature-demos/media-and-surfaces/)
 to inspect these blocks together across several pages, or
@@ -179,7 +179,7 @@ similar blocks custom containers or admonitions. Norna's set of styled semantic
 meanings is closed: an unknown uppercase type remains readable as a neutral
 blockquote and produces a warning. `DANGER` is an additional Norna type. Read
 the
-[semantic-callout reference](https://github.com/janga/norna/blob/main/docs/content.md#semantic-callouts).
+[semantic-callout reference](/reference/content/callouts/).
 
 ## Sidenotes {#sidenotes}
 
@@ -207,9 +207,9 @@ same paragraph; they stack in reference order and may increase the space before
 the next paragraph. Use a normal reference footnote
 inside a tab or callout, for a reusable note, or when supporting material
 belongs at the end of the page. Read the
-[side-note reference](https://github.com/janga/norna/blob/main/docs/content.md#side-notes)
+[side-note reference](/reference/content/sidenotes/)
 and
-[reference-footnote alternative](https://github.com/janga/norna/blob/main/docs/content.md#reference-footnotes).
+[reference-footnote alternative](/reference/content/footnotes/).
 
 ## Code blocks {#code-blocks}
 
@@ -231,7 +231,7 @@ language: en
 identifies the file, `{2}` emphasizes the relevant line, and the title stays in
 view while a long example scrolls. JavaScript adds a copy control without
 changing the readable fallback. Read the
-[code-block reference](https://github.com/janga/norna/blob/main/docs/content.md#code-blocks).
+[code-block reference](/reference/content/code/).
 
 ## Tabs for alternatives {#tabs}
 
@@ -293,7 +293,7 @@ winget install ImageMagick.ImageMagick
 headings stay outside them so the page outline does not change. Each group
 starts with its first option. Without JavaScript, or when printing, every
 alternative appears with its label. Read the
-[tabs reference](https://github.com/janga/norna/blob/main/docs/content.md#tabs).
+[tabs reference](/reference/content/tabs/).
 
 ## Get readable tables from standard Markdown {#tables}
 
@@ -344,7 +344,7 @@ track to reach more columns. Without JavaScript, the rows keep their original
 order and the browser provides horizontal scrolling.
 
 The code block above contains every cell of this table, unchanged. Read the
-[table reference](https://github.com/janga/norna/blob/main/docs/content.md#tables).
+[table reference](/reference/content/tables/).
 
 ## List child pages automatically {#page-list}
 
@@ -424,7 +424,7 @@ their pages. Norna warns if an included page has no description.
 **Source:** Norna Markdown extension with no options. Use a list when its
 context helps readers choose. If it only repeats navigation, use a category
 instead of creating a parent page. Read the
-[child-page-list reference](https://github.com/janga/norna/blob/main/docs/content.md#child-page-list).
+[child-page-list reference](/reference/content/child-lists/).
 
 ## Automatic responsive navigation {#automatic-navigation}
 
@@ -642,7 +642,7 @@ tree, then uses the compact menu. Home stays an uncluttered entry page.
 sources are in fixtures/navigation-examples; no illustrated UI is hand-drawn. -->
 
 Read the
-[navigation reference](https://github.com/janga/norna/blob/main/docs/pages.md#navigation)
+[navigation reference](/reference/configuration/navigation/)
 for mode selection, depth, exceptions, and responsive fallbacks.
 
 ## Move pages without breaking links {#page-move}
@@ -662,7 +662,7 @@ norna page:move /guides/install/ /reference/install/ --write
 **Source:** Norna command. Conflicts, ambiguous links, invalid destinations, and
 failed post-write validation stop the operation rather than leaving a partially
 accepted structure. Read the
-[page-move reference](https://github.com/janga/norna/blob/main/docs/pages.md#move-or-reconcile-a-page).
+[page-move reference](/reference/commands/move/).
 
 ## Add static search {#search}
 
@@ -676,7 +676,7 @@ search: true
 **Source:** Site configuration. The search engine and its index load only on the
 search page. Use **Back to Examples** above the search heading to return to your
 reading position. Read the
-[search reference](https://github.com/janga/norna/blob/main/docs/configuration.md#search).
+[search reference](/reference/configuration/search/).
 
 ## Set the site language {#language}
 
@@ -693,7 +693,7 @@ selects one complete built-in interface pack. It does not translate Markdown,
 captions, banners, or other editorial content. Most non-English interface packs
 were AI-generated and must be reviewed by a fluent speaker before publication.
 Read the
-[language reference](https://github.com/janga/norna/blob/main/docs/configuration.md#language).
+[language reference](/reference/configuration/language/).
 
 ## Brand your site {#branding}
 
@@ -719,7 +719,7 @@ site/public/
 
 **Source:** Convention-based public files. Each role has an exact set of
 accepted filenames and uniqueness rules; no image path belongs in YAML. Read the
-[public-files reference](https://github.com/janga/norna/blob/main/docs/public-files.md).
+[public-files reference](/reference/site/public-files/).
 
 ## Add site-wide notices and a footer {#site-wide-elements}
 
@@ -749,7 +749,7 @@ has a conventional `site/public/logo.svg` file. Page prose stays in each
 override belong here. Browse the
 [maintained demonstration source](https://github.com/janga/norna/tree/main/examples/feature-demos/sitewide-content)
 or read the
-[site-wide content reference](https://github.com/janga/norna/blob/main/docs/sitewide-content.md).
+[site-wide content reference](/reference/configuration/shared-content/).
 
 ## Get coherent defaults from a preset {#presets}
 
@@ -791,7 +791,7 @@ layout:
 
 [Open the Theme explorer](https://janga.github.io/norna/examples/theme-presets/)
 to switch presets while keeping its comparison content unchanged. Read the
-[preset reference](https://github.com/janga/norna/blob/main/docs/theme.md#theme-presets).
+[preset reference](/reference/configuration/presets/).
 
 ## Choose a coordinated color palette {#palettes}
 
@@ -809,7 +809,7 @@ palette: clay-rose
 [Theme explorer](https://janga.github.io/norna/examples/theme-presets/) to
 combine the built-in presets and palettes, then inspect the generated
 `theme.yaml`. Read the
-[palette and Appearance reference](https://github.com/janga/norna/blob/main/docs/theme.md#palette-and-appearance).
+[palette and Appearance reference](/reference/configuration/palettes/).
 
 ## Let readers adapt the display {#reader-display}
 
@@ -828,9 +828,9 @@ appearance:
 the initial presentation. Appearance and reading width are always available;
 tree navigation also provides Focus reading. The reader's selection is stored
 only in that browser. Read the
-[reader Display reference](https://github.com/janga/norna/blob/main/docs/theme.md#reader-display-controls)
+[reader Display reference](/reference/reader/display/)
 and
-[client-side JavaScript contract](https://github.com/janga/norna/blob/main/docs/client-javascript.md).
+[client-side JavaScript contract](/reference/reader/accessibility/).
 
 ## Write with standard Markdown {#standard-markdown}
 
@@ -856,7 +856,7 @@ Tell us **who lives at home** and _when you can visit_.
 
 **Source:** Standard Markdown. Headings, emphasis, lists, and quotations need no
 Norna-specific syntax. Read the
-[Markdown text reference](https://github.com/janga/norna/blob/main/docs/content.md#markdown-text).
+[Markdown text reference](/reference/content/markdown/#standard-syntax-and-extensions).
 
 ## Check before publishing {#source-checks}
 
@@ -892,13 +892,13 @@ external websites or judge whether an image's alternative text is useful; review
 those separately.
 
 **Source:** Norna commands. Read the
-[command reference](https://github.com/janga/norna/blob/main/docs/commands.md#command-summary)
+[command reference](/reference/commands/invocation/#command-map)
 for the complete check scope, the
-[configuration reference](https://github.com/janga/norna/blob/main/docs/configuration.md)
+[configuration reference](/reference/configuration/site/)
 for accepted settings, the
-[image reference](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md#managed-source-images)
+[image reference](/reference/site/images/#source-files)
 for file placement, and the
-[content reference](https://github.com/janga/norna/blob/main/docs/content.md#validation-and-sync)
+[content reference](/reference/commands/validate/)
 for content errors and image synchronization.
 
 ## Complete sites {#complete-sites}
@@ -926,7 +926,7 @@ or
 [browse its source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-multi-page).
 The [documentation-site source](https://github.com/janga/norna/tree/main/site)
 shows the deeper hierarchy used by the page you are reading. Read the
-[page structure and navigation reference](https://github.com/janga/norna/blob/main/docs/pages.md#navigation)
+[page structure and navigation reference](/reference/configuration/navigation/)
 for the rules behind these layouts.
 
 Norna generates semantic HTML, responsive layout, keyboard behavior, focus

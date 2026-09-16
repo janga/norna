@@ -68,5 +68,6 @@ policy can prevent persistence; overlapping paths do not provide isolation.
 Semantic callout color ownership belongs with callouts/palettes, not Appearance.
 These facts are deferred to their named destinations, not withdrawn contracts.
 
-The existing canonical reference is unchanged until the full rewrite is
-approved. Technical example tests do not establish editorial usability.
+The owner subsequently approved the full rewrite. These notes preserve the
+reasoning behind the moved pilots; their prose now belongs to the canonical
+reference tree. Technical example tests do not establish editorial usability.

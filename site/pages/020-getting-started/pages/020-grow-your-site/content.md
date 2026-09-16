@@ -21,7 +21,7 @@ distinct task or topic that remains useful when opened directly. If that page is
 a clear part of a broader topic, make it a child of the broader page.
 
 See
-[Choose a section, page, or category](https://github.com/janga/norna/blob/main/docs/pages.md#choose-a-section-page-or-category)
+[Choose a section, page, or category](/reference/site/pages/#page-or-category)
 for the complete editorial test and examples.
 
 ## Start with one page {#single-page-site}
@@ -99,7 +99,7 @@ them with `image-stack` blocks. A stack may contain one or several images;
 alt text and captions can be added to each entry.
 
 External images can use ordinary Markdown image syntax. See
-[Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md)
+[Images and metadata](/reference/site/images/)
 for image placement, processing, and captions.
 
 ## Add top-level pages {#top-level-pages}
@@ -135,13 +135,13 @@ Link to the new pages with ordinary Markdown in any page's `content.md`:
 
 Norna adapts site-relative links to the configured publishing path.
 `norna content:check` reports links to missing pages or headings. See
-[Internal Links](https://github.com/janga/norna/blob/main/docs/content.md#internal-links)
+[Internal Links](/reference/site/urls/)
 for page, section, relative, and public-file links.
 
 The numeric prefix orders pages among their siblings, while the remaining page
 id becomes the URL segment: `010-dogs/` appears before `020-adopt/` and produces
 a URL ending in `/dogs/`. The command chooses those ten-step order values and
-ASCII ids automatically; the [page command reference](https://github.com/janga/norna/blob/main/docs/pages.md#create-pages-and-categories)
+ASCII ids automatically; the [page command reference](/reference/commands/create/)
 documents overrides and conflict handling.
 
 Top-level pages normally use horizontal navigation on wide screens. On small
@@ -162,7 +162,7 @@ norna content:sync
 Norna moves the uniquely identified file into the receiving page's `images/`
 directory. `norna content:check` reports a missing, misplaced, or ambiguous
 image instead of guessing. See
-[Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md)
+[Images and metadata](/reference/site/images/)
 for the complete placement and synchronization rules.
 
 The following views show the Dogs page before and after opening its mobile
@@ -239,7 +239,7 @@ The second command creates `/getting-started/install-norna/`. Opening
 `/getting-started/` takes the reader to Install Norna, its first listed child.
 If the first child is another category instead, Norna shows a list of direct
 children so the reader can choose a branch. No introductory page is required.
-See [Opening a category URL](https://github.com/janga/norna/blob/main/docs/pages.md#opening-a-category-url).
+See [Opening a category URL](/reference/site/pages/#opening-a-category-url).
 
 If `Getting Started` needs an introduction or overview, use `content.md`
 instead of `category.yaml`. It then becomes a real page at
@@ -291,7 +291,7 @@ Home is the exception: `000-home` is the site's front door and cannot have child
 pages or categories. Start each navigable hierarchy with another top-level
 entry beside it.
 
-See [Pages and categories](https://github.com/janga/norna/blob/main/docs/pages.md)
+See [Pages and categories](/reference/site/pages/)
 for exact marker files, creation options, ordering, URLs, inherited page themes,
 navigation behavior, and safe page moves.
 
@@ -310,6 +310,6 @@ separately from advisory prompts, such as reviewing a category that contains
 only one listed child. Those prompts are starting points for editorial judgment,
 not validation failures or automatic rewrites.
 
-The [command reference](https://github.com/janga/norna/blob/main/docs/commands.md#review-navigation-structure)
+The [command reference](/reference/commands/navigation/)
 defines every reported term, the conservative review thresholds, exit behavior,
 and the stable JSON format for tools.

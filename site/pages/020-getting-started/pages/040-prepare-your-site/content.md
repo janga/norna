@@ -24,7 +24,7 @@ Norna uses this value for the document language and its own interface labels.
 The content remains in the language you write. Keep the generated example URL
 while working locally; the publishing step replaces it with the real address.
 
-See [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md#language)
+See [Configuration](/reference/configuration/language/)
 for supported language tags and fallback rules.
 
 ## Describe each page {#descriptions}
@@ -44,7 +44,7 @@ page:
 
 The description is metadata and is not repeated in the visible page. Write it
 for the individual page rather than the whole site. The
-[Content reference](https://github.com/janga/norna/blob/main/docs/content.md#page-title-and-frontmatter)
+[Content reference](/reference/site/metadata/)
 defines page metadata and its generated output.
 
 ## Add shared identity files {#identity}
@@ -63,7 +63,7 @@ These are three independent examples, not three required files. The logo's
 alternative text comes from the homepage H1. Norna can also discover other
 supported file extensions and browser-icon variants.
 
-See [Public Files](https://github.com/janga/norna/blob/main/docs/public-files.md)
+See [Public Files](/reference/site/public-files/)
 for the exact filenames, uniqueness rules, generated metadata, and other files
 that may be copied unchanged.
 
@@ -89,7 +89,7 @@ above page content; it is not a page section. Banners can also be limited to a
 date interval.
 
 Use the
-[site-wide content reference](https://github.com/janga/norna/blob/main/docs/sitewide-content.md)
+[site-wide content reference](/reference/configuration/shared-content/)
 for the complete fields, defaults, date behavior, and logo-height override.
 The [site-wide elements demonstration](https://janga.github.io/norna/examples/feature-demos/sitewide-content/)
 is useful when you need to inspect the rendered result before choosing an
@@ -109,6 +109,6 @@ The index needs no search service and follows the site's configured language
 and public base path. Search itself uses JavaScript, but ordinary pages do not
 load it.
 
-See [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md#search)
+See [Configuration](/reference/configuration/search/)
 for indexed content, generated paths, URL constraints, and local refresh
 behavior.

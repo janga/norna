@@ -246,6 +246,6 @@ console.log(`${action} ${kind} "${title}" at ${toDisplayPath(destination)}.`);
 if (kind === 'page') {
 	console.log(`URL: /${pagePath}/`);
 } else {
-	console.log('This navigation category has no page or URL of its own.');
+	console.log('This navigation category has no authored content page. Norna generates its destination from the child pages.');
 	console.log(`Child URL prefix: /${pagePath}/`);
 }

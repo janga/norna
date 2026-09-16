@@ -16,16 +16,15 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-117` Canonical web reference](docs/design/backlog/BL-117-canonical-web-reference.md):
-  **Awaiting combined review.** The coverage inventory, proposed information
-  structure and three rendered pilot pages are ready. Review this first
-  delivery before replacing the reference across the documentation site.
+No active implementation items.
 
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
 
-No implementation-ready items are currently queued.
+- [`BL-118` Page ID decoding for valid slugs](docs/design/backlog/BL-118-page-id-decoding.md):
+  **Ready.** Build valid page and ancestor slugs such as `page-move` without
+  confusing their text with the generated Astro content-ID prefix.
 
 ## External Gate
 

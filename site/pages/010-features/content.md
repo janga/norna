@@ -41,7 +41,7 @@ Run the **source checks**, then:
 
 If you know Markdown, you already know the main writing interface. Norna uses
 its heading hierarchy to structure each page instead of introducing a separate
-document format. The [content reference](https://github.com/janga/norna/blob/main/docs/content.md#markdown-text)
+document format. The [content reference](/reference/content/markdown/#standard-syntax-and-extensions)
 defines the supported Markdown details.
 
 ## Let Files Become A Site {#files-become-a-site}
@@ -72,7 +72,7 @@ items:
 ```
 
 There is no second sidebar file to keep synchronized. The documented
-[navigation rules](https://github.com/janga/norna/blob/main/docs/pages.md#navigation)
+[navigation rules](/reference/configuration/navigation/)
 also explain explicit modes and unlisted pages.
 
 ## Change Structure Safely {#change-structure-safely}
@@ -91,7 +91,7 @@ step moves the page subtree, updates internal links and records aliases for the
 previous URLs. Validation stops ambiguous or conflicting operations instead of
 guessing. Norna can also reconcile an equivalent directory move made by hand.
 
-The [page command reference](https://github.com/janga/norna/blob/main/docs/pages.md#move-or-reconcile-a-page)
+The [page command reference](/reference/commands/move/)
 specifies ordering, redirects, rollback and collision handling.
 
 ## Extend Markdown Only Where It Helps {#purpose-built-patterns}
@@ -136,7 +136,7 @@ items:
 ```
 
 This page itself uses a carousel, a callout, a side note and a card list. The
-[Norna block reference](https://github.com/janga/norna/blob/main/docs/content.md#norna-blocks)
+[Norna block reference](/reference/content/structured-blocks/)
 documents their exact syntax and constraints.
 
 ## Start With A Coherent Presentation {#coherent-presentation}
@@ -163,7 +163,7 @@ layout:
 The preset still owns the remaining relationships, so a wider reading measure
 does not require the author to redesign controls, captions or navigation. Use
 the [theme explorer](/examples/#presets) to compare identical
-content, then consult the [theme reference](https://github.com/janga/norna/blob/main/docs/theme.md)
+content, then consult the [theme reference](/reference/configuration/theme/)
 for supported overrides.
 
 ## Keep Difficult Content Readable {#readable-content}
@@ -182,7 +182,7 @@ improve inspection.
 
 The table above is live Norna output, not a screenshot. Narrow the window or
 change Reading width in the Display panel to inspect its fallback. The
-[presentation guarantees](https://github.com/janga/norna/blob/main/docs/presentation-guarantees.md)
+[presentation guarantees](/reference/reader/accessibility/)
 separate engine rules from preset choices.
 
 ## Useful Before JavaScript {#static-first}
@@ -197,7 +197,7 @@ the Display panel persists reader choices. Remove JavaScript and the underlying
 content and real links remain available wherever the feature has a meaningful
 static form.
 
-The [client-side JavaScript contract](https://github.com/janga/norna/blob/main/docs/client-javascript.md)
+The [client-side JavaScript contract](/reference/reader/accessibility/)
 lists the baseline and enhancement for each feature.
 
 ## Build Ordinary Static Output {#static-output}
@@ -216,7 +216,7 @@ git push
 
 The result can be served without a Norna process or application server. The
 included GitHub Pages workflow builds again from the committed source, while
-the [publishing reference](https://github.com/janga/norna/blob/main/docs/publishing.md)
+the [publishing reference](/reference/workflows/publishing/)
 defines the complete deployment contract.
 
 **[Install Norna and create the first site](/getting-started/install-norna/).**

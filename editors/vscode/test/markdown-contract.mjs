@@ -16,6 +16,7 @@ class Text {
 	constructor(value) { this.value = value; }
 }
 const vscode = {
+	workspace: { isTrusted: false },
 	Range, MarkdownString: Text, SnippetString: Text,
 	CompletionItem: class { constructor(label, kind) { this.label = label; this.kind = kind; } },
 	CompletionItemKind: { Snippet: 1, Property: 2, EnumMember: 3 },
@@ -49,16 +50,16 @@ const document = (text) => {
 
 assert.doesNotMatch(source, /onWillSaveTextDocument|normalizeSavedCallouts|getSemanticCalloutSaveEdits|register\w*FormattingEditProvider/);
 const noteDocument = document('A paragraph.[^margin:');
-const notes = api.getNoteCompletionItems(noteDocument, { line: 0, character: noteDocument.lineAt(0).text.length });
+const notes = await api.getNoteCompletionItems(noteDocument, { line: 0, character: noteDocument.lineAt(0).text.length });
 assert.ok(notes.some((item) => item.insertText.value === '[^margin:${1:name}]'));
 assert.equal(notes.length, 1, 'A definition must not be inserted inline.');
-assert.equal(api.getNoteCompletionItems(document('[^margin:'), { line: 0, character: 9 }).length, 2);
+assert.equal((await api.getNoteCompletionItems(document('[^margin:'), { line: 0, character: 9 })).length, 2);
 assert.ok(notes.every((item) => !item.insertText.value.includes('{note')));
-assert.equal(api.getNoteCompletionItems(document('```md\n[^margin:'), { line: 1, character: 9 }).length, 0);
+assert.equal((await api.getNoteCompletionItems(document('```md\n[^margin:'), { line: 1, character: 9 })).length, 0);
 
 for (const prefix of ['', ':::: tabs\n\n::: tab "One"\n\n', '```md\n```example\n```\n\n']) {
 	const doc = document(`${prefix}> [!`);
-	const items = api.getSemanticCalloutCompletionItems(doc, { line: doc.lineCount - 1, character: 4 });
+	const items = await api.getSemanticCalloutCompletionItems(doc, { line: doc.lineCount - 1, character: 4 });
 	assert.equal(items.length, 6);
 	assert.equal(items.find((item) => item.label === 'TIP').insertText.value, '> [!TIP]\n> ${1:Callout text}');
 	assert.equal(items.find((item) => item.label === 'TIP').filterText, '> [!TIP]');
@@ -67,7 +68,7 @@ for (const prefix of ['', ':::: tabs\n\n::: tab "One"\n\n', '```md\n```example\n
 
 const image = document('![Opening hours: "Saturday"](workshop.jpg)');
 
-const blankCallouts = api.getSemanticCalloutCompletionItems(document(''), { line: 0, character: 0 }, { allowBlank: true });
+const blankCallouts = await api.getSemanticCalloutCompletionItems(document(''), { line: 0, character: 0 }, { allowBlank: true });
 assert.equal(blankCallouts.length, 6);
 for (const item of blankCallouts) {
 	assert.equal(item.filterText, item.label);

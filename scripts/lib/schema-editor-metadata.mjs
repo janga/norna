@@ -583,7 +583,7 @@ const addContentHelp = (jsonSchema) => {
 	]);
 	addHelp(jsonSchema, 'page.description', [
 		yamlExample('page:\n  description: About this project.'),
-		'An optional page-specific description rendered as `<meta name="description">`. It is not visible in page content.',
+		'A page-specific description used in metadata and social previews. Generated child-page and category lists can show it beside the page title; it is not inserted into the page body.',
 		documentationLink('Page title and frontmatter reference', 'content.md', 'page-title-and-frontmatter'),
 	], ['About this project.']);
 	addHelp(jsonSchema, 'page.aliases', [

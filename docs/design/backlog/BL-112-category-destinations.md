@@ -4,7 +4,7 @@
 
 Complete. Implemented, visually approved, and documented on 2026-09-15.
 The canonical contract is now
-[Opening A Category URL](../../pages.md#opening-a-category-url).
+[Opening A Category URL](https://janga.github.io/norna/reference/site/pages/#opening-a-category-url).
 
 ## Problem
 

@@ -260,13 +260,15 @@ try {
 	const missingLogoStatus = await getSitePublicAssetStatus(homeContentPath);
 	assert.ok(missingLogoStatus.issues.some(({ code, line }) => code === 'missing-logo-file' && line === 1));
 	assert.equal(nornaBlockDefinitions['image-stack'].description.includes('vertical stack'), true);
-	assert.match(
-		nornaBlockDefinitions['image-stack'].documentation,
-		new RegExp(`/blob/${documentationRef.replaceAll('.', '\\.')}\/docs/content\\.md#image-stack`),
-	);
-	assert.match(nornaBlockDefinitions['image-carousel'].documentation, /docs\/content\.md#image-carousel/);
-	assert.match(nornaBlockDefinitions['card-list'].documentation, /docs\/content\.md#card-list/);
-	assert.match(nornaBlockDefinitions['page-list'].documentation, /docs\/content\.md#child-page-list/);
+	for (const [name, destination] of [
+		['image-stack', 'content/images/#image-stack'],
+		['image-carousel', 'content/images/#image-carousel'],
+		['card-list', 'content/cards/'],
+		['page-list', 'content/child-lists/'],
+	]) {
+		assert.ok(nornaBlockDefinitions[name].documentation.includes(`https://janga.github.io/norna/reference/${destination}`));
+		assert.ok(nornaBlockDefinitions[name].documentation.includes(`/blob/${documentationRef}/`));
+	}
 	assert.equal(nornaBlockDefinitions['page-list'].snippet, '```page-list\n```');
 	assert.equal(nornaBlockDefinitions['card-list'].options.layout.default, 'image-top');
 	assert.equal(nornaBlockDefinitions['card-list'].options.width.default, undefined);

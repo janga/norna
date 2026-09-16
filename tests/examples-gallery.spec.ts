@@ -86,7 +86,7 @@ test('gallery alternatives retain exact code and a stable page outline', async (
 	await expect(group.getByRole('tabpanel').locator('pre code')).toHaveText('brew install imagemagick');
 	await expect(group.getByRole('tabpanel').locator('.norna-callout-tip')).toBeVisible();
 	expect(await page.locator('#main-content :is(h1,h2,h3)').allTextContents()).toEqual(headings);
-	await expect(example.locator('a[href$="docs/content.md#tabs"]')).toHaveCount(1);
+	await expect(example.locator('a[href$="/reference/content/tabs/"]')).toHaveCount(1);
 	for (const width of [1440, 1024, 390]) {
 		await page.setViewportSize({ width, height: 900 });
 		await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);

@@ -14,7 +14,7 @@ functional change is proposed by recording them.
 > This is a historical design record. Its `dark`, `light`, `paper`, `shape`,
 > `soft`, `appearance`, and `cycling` terms describe the implementation at the
 > recorded commit and are not current configuration. See
-> [Theme](../theme.md) for the current public contract.
+> [Theme](https://janga.github.io/norna/reference/configuration/theme/) for the current public contract.
 
 ## Summary
 

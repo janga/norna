@@ -38,11 +38,29 @@ async function runEditingWorkflows({ openDocument, waitFor, getCompletions }) {
 			(typeof item.label === 'string' ? item.label : item.label.label) === expectedLabel
 		)), `Provider did not offer ${expectedLabel}.`);
 		await vscode.commands.executeCommand('editor.action.triggerSuggest');
-		// The provider API is not evidence that the suggestion widget displays it.
-		await waitFor(async () => {
+		const { chromium } = require('@playwright/test');
+		const browser = await chromium.connectOverCDP(process.env.NORNA_EDITOR_TEST_INSPECTOR);
+		try {
+			const window = browser.contexts().flatMap((context) => context.pages())
+				.find((page) => page.url().includes('workbench'));
+			assert.ok(window, 'The isolated VS Code workbench must be available.');
+			const widget = window.locator('.suggest-widget.visible');
+			await widget.locator('.monaco-list-row').first().waitFor({ state: 'visible' });
+			// VS Code may remember the previous selection; choose the requested
+			// item through the widget before accepting it with the keyboard.
+			await vscode.commands.executeCommand('selectFirstSuggestion');
+			for (let attempt = 0; attempt < 100; attempt++) {
+				const selected = widget.locator('.monaco-list-row.focused .label-name').first();
+				if (await selected.innerText() === expectedLabel) break;
+				assert.ok(attempt < 99, `${expectedLabel} was not selectable in the widget.`);
+				await vscode.commands.executeCommand('selectNextSuggestion');
+			}
 			await vscode.commands.executeCommand('acceptSelectedSuggestion');
-			return document.lineAt(line).text;
-		}, (text) => text !== prefix, `The widget did not insert ${expectedLabel} after ${prefix}.`);
+			await waitFor(() => document.lineAt(line).text, (text) => text !== prefix,
+				`The widget did not insert ${expectedLabel} after ${prefix}.`);
+		} finally {
+			await browser.close();
+		}
 	};
 	const nornaIssues = (document) => vscode.languages.getDiagnostics(document.uri).filter((issue) => issue.source === 'Norna');
 

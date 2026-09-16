@@ -25,7 +25,7 @@ npm run norna:check
 
 Norna reports the file and line, explains the detected indentation pattern,
 and usually describes the expected sibling or parent level. Correct the source
-instead of changing generated files. See [Content validation](https://github.com/janga/norna/blob/main/docs/content.md#validation-and-sync)
+instead of changing generated files. See [Content validation](/reference/commands/validate/)
 for allowed frontmatter and the focused content check.
 
 ## What do missing, misplaced, and unreferenced image reports mean? {#image-reports}
@@ -46,7 +46,7 @@ npm run norna:content:check
 After confirming that a Markdown reference intentionally moved between pages,
 apply an unambiguous relocation with `npm run norna:sync`. Sync reports its
 plan and refuses to guess between duplicate filenames. It does not delete an
-unreferenced image. See [Images and metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md)
+unreferenced image. See [Images and metadata](/reference/site/images/)
 for placement and processing rules.
 
 ## Why is Norna IntelliSense missing? {#missing-intellisense}
@@ -57,7 +57,7 @@ not just its filename or the text you type. An unrelated file named
 
 The editor extension is experimental and is not published in the Visual
 Studio Marketplace. To evaluate it, obtain a VSIX build and follow
-[Install the extension](https://github.com/janga/norna/blob/main/docs/editor-support.md#install-the-extension).
+[Install the extension](/reference/workflows/editor/#install-and-verify).
 You do not need the extension to write or build a Norna site.
 
 After installing the VSIX, open your site's `pages/000-home/content.md`.
@@ -79,9 +79,9 @@ blank body line in `content.md`, outside frontmatter and code examples. Press
 `image-stack`, `image-carousel`, and `card-list`. The page does not need to be
 error-free for suggestions to work.
 
-See [Recognized files](https://github.com/janga/norna/blob/main/docs/editor-support.md#recognized-files)
+See [Recognized files](/reference/workflows/editor/#recognized-files)
 for supported locations and
-[editor troubleshooting](https://github.com/janga/norna/blob/main/docs/editor-support.md#troubleshooting)
+[editor troubleshooting](/reference/workflows/editor/#refresh-and-troubleshoot)
 for workspace trust, language mode, and extension checks.
 
 ## Why does the editor suggest settings Norna does not accept? {#unrelated-editor-suggestions}
@@ -98,7 +98,7 @@ ordinary installed-extension list can miss it.
 
 You can turn off inline suggestions and Copilot's next-edit suggestions for
 YAML and Markdown while keeping Norna and Red Hat YAML help. Follow
-[Turn off AI suggestions while keeping IntelliSense](https://github.com/janga/norna/blob/main/docs/editor-support.md#turn-off-ai-suggestions-while-keeping-intellisense)
+[Turn off AI suggestions while keeping IntelliSense](/reference/workflows/editor-ai-suggestions/)
 for the user settings, a project-only alternative, and a check that palette
 suggestions still work.
 
@@ -139,5 +139,5 @@ formatter settings. It reports invalid content but does not undo another
 formatter's changes. Restore changed callouts to the two-line form above and
 run `npm run norna:content:check`.
 
-See [Markdown and image help](https://github.com/janga/norna/blob/main/docs/editor-support.md#markdown-and-image-help)
+See [Markdown and image help](/reference/workflows/editor/#managed-images-and-quick-fixes)
 for the editor's responsibilities and supported setup.

@@ -23,14 +23,14 @@ Commands:
   theme:export           Export a commented theme preset reference
   typography profiles    Show built-in typography profile values
   typography show        Show resolved typography for the selected site
-  site:public            Sync site/public/ to public/
+  site:public            Sync static files to the selected site's .norna/public/
   images                 Generate optimized image variants
   engine:update          Update @janga/norna in a site repository
   engine:version         Show installed engine and Astro versions
   init                   Create a new site project from the starter
   page:add               Add a page to the site page tree
   page:move              Move a page subtree and update internal links
-  category:add           Add a non-routable category to the site page tree
+  category:add           Add a navigation group without an authored page body
   migrate:check          Audit a Docusaurus project without modifying it
   build                  Build the selected site
   build:local            Build and restart local dev server

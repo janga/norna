@@ -31,7 +31,7 @@ when you need exact syntax, accepted values, defaults, or error behavior.
   page space only when needed, keep column headings and declared row headings
   visible through long data, and fall back to a local horizontal scroller.
 
-Exact behavior: [Content](https://github.com/janga/norna/blob/main/docs/content.md).
+Exact behavior: [Content](/reference/content/markdown/).
 
 ## Organize pages and navigation {#pages}
 
@@ -52,8 +52,8 @@ Exact behavior: [Content](https://github.com/janga/norna/blob/main/docs/content.
   collision checks, and static aliases keep links predictable.
 
 Exact behavior:
-[Pages And Categories](https://github.com/janga/norna/blob/main/docs/pages.md)
-and [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.md#navigation).
+[Pages And Categories](/reference/site/pages/)
+and [Configuration](/reference/configuration/navigation/).
 
 ## Present images and shared elements {#media}
 
@@ -74,9 +74,9 @@ and [Configuration](https://github.com/janga/norna/blob/main/docs/configuration.
   image files work with optional site-wide banners and footer content.
 
 Exact behavior:
-[Images And Metadata](https://github.com/janga/norna/blob/main/docs/images-and-metadata.md),
-[Public Files](https://github.com/janga/norna/blob/main/docs/public-files.md),
-and [Site-Wide Content](https://github.com/janga/norna/blob/main/docs/sitewide-content.md).
+[Images And Metadata](/reference/site/images/),
+[Public Files](/reference/site/public-files/),
+and [Site-Wide Content](/reference/configuration/shared-content/).
 
 ## Start from a coordinated visual system {#presentation}
 
@@ -94,9 +94,9 @@ and [Site-Wide Content](https://github.com/janga/norna/blob/main/docs/sitewide-c
   contrast, focus, heading hierarchy, text-width, reflow, and control-size
   guarantees.
 
-Exact behavior: [Theme](https://github.com/janga/norna/blob/main/docs/theme.md),
-[Typography](https://github.com/janga/norna/blob/main/docs/typography.md), and
-[Presentation Guarantees](https://github.com/janga/norna/blob/main/docs/presentation-guarantees.md).
+Exact behavior: [Theme](/reference/configuration/theme/),
+[Typography](/reference/configuration/typography/), and
+[Presentation Guarantees](/reference/reader/accessibility/).
 
 ## Check and reorganize the source {#maintenance}
 
@@ -122,8 +122,8 @@ Markdown, image-name, and diagnostic help. It is not yet available from the
 Visual Studio Marketplace and is therefore an evaluation feature rather than a
 normal installation step.
 
-Exact behavior: [Commands](https://github.com/janga/norna/blob/main/docs/commands.md)
-and [VS Code Editor Support](https://github.com/janga/norna/blob/main/docs/editor-support.md).
+Exact behavior: [Commands](/reference/commands/invocation/)
+and [VS Code Editor Support](/reference/workflows/editor/).
 
 ## Build and publish static output {#publishing}
 
@@ -141,9 +141,9 @@ and [VS Code Editor Support](https://github.com/janga/norna/blob/main/docs/edito
   GitHub Pages is currently the only provider with a Norna-owned integration.
 
 Exact behavior:
-[Publishing](https://github.com/janga/norna/blob/main/docs/publishing.md),
-[Public Files](https://github.com/janga/norna/blob/main/docs/public-files.md),
-and [Client-Side JavaScript](https://github.com/janga/norna/blob/main/docs/client-javascript.md).
+[Publishing](/reference/workflows/publishing/),
+[Public Files](/reference/site/public-files/),
+and [Client-Side JavaScript](/reference/reader/accessibility/).
 
 ## Know the current boundaries {#boundaries}
 
@@ -158,5 +158,5 @@ are considered separately rather than being added as isolated settings.
 
 Norna is pre-1.0, and its file and command contracts can still change between
 releases. See
-[Requirements And Limitations](https://github.com/janga/norna/blob/main/docs/requirements.md)
+[Requirements And Limitations](/reference/site/requirements/)
 for the supported environment and current product boundary.

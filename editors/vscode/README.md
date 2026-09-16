@@ -94,7 +94,7 @@ IntelliSense** after changing the project's Norna version.
 After replacing a VSIX, run **Norna: Show IntelliSense Status** and verify that
 its reported extension version matches the intended evaluation build.
 
-See the complete [VS Code Editor Support](https://github.com/janga/norna/blob/main/docs/editor-support.md)
+See the complete [VS Code Editor Support](https://janga.github.io/norna/reference/workflows/editor/)
 guide for recognized files, feature examples, and troubleshooting.
 
 ## Extension Development

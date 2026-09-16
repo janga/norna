@@ -84,5 +84,5 @@ setting.
 
 The canonical reference documents the mode, its compact Menu, overlay
 behavior, keyboard dismissal, focus restoration, layout stability, and
-no-JavaScript fallback in [Pages: Focus Reading](../../pages.md#focus-reading)
-and [Theme: Reader Display Controls](../../theme.md#reader-display-controls).
+no-JavaScript fallback in [Pages: Focus Reading](https://janga.github.io/norna/reference/reader/display/#focus-reading)
+and [Theme: Reader Display Controls](https://janga.github.io/norna/reference/reader/display/).

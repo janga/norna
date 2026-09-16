@@ -61,5 +61,5 @@ Use `npm run norna:engine:version` to inspect the installed engine and
 `npm run norna:engine:update` to update it.
 
 Start with the [illustrated Getting Started guide](https://janga.github.io/norna/getting-started/install-norna/).
-Use the [Markdown reference index](https://github.com/janga/norna/blob/main/docs/README.md)
+Use the [Norna reference](https://janga.github.io/norna/reference/)
 for exact file contracts, syntax, commands, and publishing behavior.

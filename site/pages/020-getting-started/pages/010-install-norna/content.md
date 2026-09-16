@@ -36,7 +36,7 @@ dependency versions; keep it in Git so contributors and automated builds use
 the same installation.
 
 See
-[Requirements and limitations](https://github.com/janga/norna/blob/main/docs/requirements.md)
+[Requirements and limitations](/reference/site/requirements/)
 for exact runtime and external-tool requirements.
 
 ## Preview and make the first edit {#preview}
@@ -69,7 +69,7 @@ Rover enjoys long walks and quiet afternoons.
 a one-page site, Norna builds local navigation from the page title and its `##`
 sections. The preview updates as you edit the source files.
 
-See [Content](https://github.com/janga/norna/blob/main/docs/content.md#page-title-and-frontmatter)
+See [Content](/reference/site/metadata/)
 for the complete heading, generated-id, note, and Norna-block syntax.
 
 ## Check the first result {#check}
@@ -109,5 +109,5 @@ norna check
 
 Inside a project, the launcher delegates to that project's locally installed
 and recorded Norna version. The rest of Getting Started uses this shorter form.
-See [Commands](https://github.com/janga/norna/blob/main/docs/commands.md) for
+See [Commands](/reference/commands/invocation/) for
 the equivalent npm scripts, direct CLI forms, options, and side effects.
