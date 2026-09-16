@@ -47,6 +47,7 @@ npm run test:examples
 npm run test:presentation-review
 npm run test:preset-baselines
 npm run test:documentation-preset-review
+npm run test:browser-test-server
 npm run demo:build
 npm run package:check
 ```
@@ -62,6 +63,12 @@ job.
 The **Deploy to GitHub Pages** workflow builds the documentation and examples
 separately. Check the Engine tests result for the commit being released; the
 release command runs the complete chain again with the chosen release version.
+
+Browser-test servers run without keyboard input in their own process groups.
+The test runner stops the entire server group before returning to the terminal,
+including when a test fails or is interrupted. `npm run test:browser-test-server`
+checks cleanup of nested processes, an already exited launcher, and a server
+that ignores termination on macOS and Linux. These checks are part of `npm test`.
 
 `npm run test:examples` builds every complete site and feature demo under
 `examples/`. `npm run test` includes those builds in the standard check

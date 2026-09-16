@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reserveBrowserTestPort } from './browser-test-port.mjs';
+import { spawnBrowserTestServer, stopBrowserTestServer } from './browser-test-server.mjs';
 import { readConfiguredBasePath } from './review-environments.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -54,8 +55,10 @@ const trackChild = (child) => {
 const handleInterruption = (signal) => {
 	if (interruptionSignal) return;
 	interruptionSignal = signal;
+	// finally awaits this same cleanup promise and reports any cleanup failure.
+	stopBrowserTestServer(serverProcess).catch(() => {});
 	for (const child of activeChildren) {
-		if (child.exitCode === null && !child.killed) child.kill(signal);
+		if (child !== serverProcess && child.exitCode === null && !child.killed) child.kill(signal);
 	}
 };
 
@@ -78,7 +81,8 @@ const waitForServer = async (serverProcess) => {
 	const timeoutMs = 30_000;
 
 	while (Date.now() - startedAt < timeoutMs) {
-		if (serverProcess.exitCode !== null) {
+		if (interruptionSignal) throw new Error('Navigation tests interrupted.');
+		if (serverProcess.exitCode !== null || serverProcess.signalCode !== null) {
 			throw new Error(`Navigation test server exited before ${url} became reachable.`);
 		}
 
@@ -123,7 +127,7 @@ const startServer = async () => {
 		env: testEnvironment,
 	});
 
-	serverProcess = trackChild(spawn(process.execPath, [
+	serverProcess = trackChild(spawnBrowserTestServer(process.execPath, [
 		cliPath,
 		'astro',
 		'dev',
@@ -134,7 +138,6 @@ const startServer = async () => {
 		String(port),
 	], {
 		cwd: navigationDemoSiteDir,
-		stdio: 'inherit',
 		env: {
 			...testEnvironment,
 			ASTRO_DEV_BACKGROUND: '0',
@@ -150,20 +153,6 @@ const startServer = async () => {
 	return serverProcess;
 };
 
-const stopServer = async (serverProcess) => {
-	if (!serverProcess || serverProcess.exitCode !== null) return;
-
-	serverProcess.kill('SIGTERM');
-	const stopped = await Promise.race([
-		new Promise((resolve) => serverProcess.once('exit', () => resolve(true))),
-		sleep(5_000).then(() => false),
-	]);
-
-	if (!stopped && serverProcess.exitCode === null) {
-		serverProcess.kill('SIGKILL');
-	}
-};
-
 let serverProcess;
 
 try {
@@ -177,7 +166,7 @@ try {
 } catch (error) {
 	if (!interruptionSignal) throw error;
 } finally {
-	await stopServer(serverProcess);
+	await stopBrowserTestServer(serverProcess);
 	await portReservation.release();
 	await rm(temporaryStateRoot, { recursive: true, force: true });
 	for (const signal of ['SIGINT', 'SIGTERM']) {
