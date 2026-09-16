@@ -86,9 +86,8 @@ or `Later` only after the stated evidence or design decision exists.
   as a source and coordinate feature-specific advice with `BL-025` Versioned
   Documentation; do not imply that future versioning support already exists.
 - [`BL-100` Future Versioning Foundation](docs/design/backlog/BL-100-future-versioning-foundation.md):
-  **Needs design.** Define the version model required by future lifecycle and
-  migration features; this is an intentionally incomplete design item, not an
-  implementation-ready specification.
+  **Needs design.** Establish version identity, lifecycle boundaries and the
+  language interaction before versioned documentation can become ready.
 - [`BL-101` Deprecation Status](docs/design/backlog/BL-101-deprecation-status.md):
   **Needs design after `BL-100` Future Versioning Foundation.** Define
   page-level deprecation metadata with replacement and version context; this is
@@ -143,8 +142,10 @@ that the expanded audience is worth the permanent complexity.
   explicit fallback behavior.
 - `BL-024` **Deferred.** Collections, taxonomies, pagination, and feeds, which
   together require recurring-content identity and a generated-page model.
-- `BL-025` **Deferred.** Versioned documentation with coordinated page trees,
-  URL and search partitions, selectors, canonical metadata, and asset policy.
+- [`BL-025` Versioned Documentation](docs/design/backlog/BL-025-versioned-documentation.md):
+  **Deferred; needs design after `BL-100` Future Versioning Foundation.**
+  Publish a small set of materially different documentation trees with
+  version-local navigation, search, and explicit version-switch fallback.
 - `BL-026` **Deferred.** A general template, component, or plugin API; prefer
   narrow engine-owned constructs and a general-purpose generator when a
   project requires implementation freedom.

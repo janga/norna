@@ -1,16 +1,27 @@
 # BL-023: Multilingual Sites With A Shared Page Tree
 
-## Outcome And Status
+## Purpose And Status
 
 Let a site owner maintain one page tree and publish it in several languages.
 Keep translations beside the page they belong to instead of maintaining a
 separate directory tree for each language.
 
-**Deferred; not ready for implementation.** This brief records the agreed
-direction, not current Norna behavior or a complete syntax specification.
-Resolve the open decisions before scheduling development.
+**Deferred; not ready for implementation.** This is a design record, not
+current Norna behavior or a complete syntax specification. It describes the
+future authoring model needed before multilingual publishing can be scheduled.
 
-## Agreed Direction
+## Scope And Boundaries
+
+This item covers one site with one page hierarchy and several translations of
+that hierarchy. It does not cover regional sites with different page trees:
+those are separate Norna sites, even when they share a domain or are published
+under separate base paths.
+
+It also excludes RTL layout, author-provided fonts, cross-site market
+selection, and coordinated publication of independent sites. Existing
+interface-language packs are not translated editorial content.
+
+## Decisions Made
 
 ### One Structure, Several Languages
 
@@ -24,22 +35,16 @@ Resolve the open decisions before scheduling development.
   requirement that every translation originate in that language.
 - Translate each page's H1, description, headings, and body. Also support
   translated category labels and site-wide content without duplicating the
-  page tree. Their storage syntax remains to be decided.
+  page tree.
 
 ### URLs And Reader Navigation
 
-- Give every language version its own static URL. The proposed convention is
-  a language prefix for every language, including the default, such as
-  `/sv/installation/` and `/en/installation/` beneath the site's base path.
 - Continue deriving page slugs from directory names. Translated slugs and
   automatic URL changes when H1 changes are outside the initial scope.
 - Language switching opens the corresponding page. Preserving an exact
   section or scroll position across translations is not an initial requirement.
 - Navigation, internal page links, interface text, and search follow the chosen
   language. Resolve internal destinations through the shared page model.
-- Generate the correct HTML language, reciprocal `hreflang` links for actual
-  translations, canonical URLs, and language-aware sitemap output. Do not
-  canonicalize all translations to the default-language page.
 
 ### Images And Missing Translations
 
@@ -48,8 +53,7 @@ Resolve the open decisions before scheduling development.
 - Alt text and captions belong to the translated content, not to the shared
   image file. Exact replacement lookup and naming conventions remain open.
 - Do not silently present fallback text as though it were translated. Decide
-  explicitly what a reader sees when the requested page translation is missing,
-  including navigation, search, language metadata, and language-switch feedback.
+  explicitly what a reader sees when the requested page translation is missing.
 
 ### Author Workflow
 
@@ -59,37 +63,66 @@ Resolve the open decisions before scheduling development.
   matching heading ids across languages; a changed heading can change its
   automatic anchor without changing the page URL.
 - Validate language identifiers and internal links for each published language.
-  Define reporting for incomplete translations without assuming that every
-  missing translation must be a build error.
 
-## Boundaries And Related Work
+## Preliminary Proposals
+
+These proposals are compatible with the decisions above, but are not approved
+author contracts yet.
+
+- Publish every language at a distinct URL, possibly with a language prefix
+  for every language including the default, for example
+  `/sv/installation/` and `/en/installation/` beneath the site's base path.
+- Store translated category labels, site-wide content, and image replacements
+  beside their shared counterparts. The exact filenames and lookup order are
+  not decided.
+- Let a missing language-specific image use an explicitly shared image. Keep
+  alt text and captions in the translated Markdown rather than on the shared
+  file.
+- Generate `hreflang`, canonical metadata, and language-aware sitemap output
+  only for published translations. Do not canonicalize every translation to
+  the default-language page.
+- Report incomplete translations without making every missing page a build
+  error. The report format and whether any absence must fail a build are open.
+
+## Open Questions
+
+1. What site-level configuration declares the published languages and default
+   language?
+2. How are translated category labels, site-wide content, and image variants
+   named and located?
+3. What exact URL model applies to the default language, and how does an
+   existing monolingual site adopt it without accidental URL changes?
+4. What does a language switcher offer when the corresponding translation is
+   absent, and what language metadata, navigation, and search behavior follows?
+5. How do page creation, link resolution, `page:move`, recovery, and aliases
+   identify a language variant without changing another variant by mistake?
+6. How must language and documentation-version selection compose when both
+   future capabilities exist?
+
+## Dependencies
 
 - Coordinate the architecture with
   [BL-100: Future Versioning Foundation](BL-100-future-versioning-foundation.md)
-  and the deferred BL-025: Versioned Documentation. Neither must be implemented
-  first or in the same change. A future move within one version should not
-  silently restructure historical versions.
-- Existing interface translations are not multilingual page publishing. Reuse
-  those language packs where appropriate, but do not confuse their availability
-  with translated author content or reviewed translation quality.
-- RTL layout and supplying fonts are separate capabilities, not implied by this
-  brief. Do not promise arbitrary language support without defining those limits.
-- Cross-site market selectors and coordinated publishing of independent sites
-  are outside the initial multilingual page model.
+  and [BL-025: Versioned Documentation](BL-025-versioned-documentation.md).
+  This is a coordination dependency, not a delivery order: neither feature
+  needs implementation first, but the models must agree before either feature
+  introduces persistent paths or source layout. A move in one documentation
+  version must not silently rewrite historical versions.
+- Reuse relevant engine interface-language packs, but do not confuse their
+  existence with reviewed editorial translations.
 
-## Decisions Before Implementation
+## Ready For Implementation When
 
-1. Site-level language configuration, supported languages, and the default.
-2. Root URL behavior and compatibility for existing `content.md` files and
-   published URLs when a monolingual site gains translations.
-3. Storage for translated category labels, site-wide content, and image variants.
-4. Missing-translation behavior, including partially translated branches and
-   which destinations language switching offers.
-5. Language-aware link resolution, creation commands, move recovery, and aliases.
-6. Interaction boundaries with future versioning, including identifying the
-   corresponding page after historical moves.
+- Every open question above has an approved answer or an explicit first-scope
+  exclusion.
+- The chosen source layout has a migration policy for an existing monolingual
+  `content.md` site.
+- The language/version interaction has a documented boundary, even if one of
+  the features is delivered later.
+- A small representative site can serve as a fixture for shared content,
+  absent translations, language switching, links, search, and `page:move`.
 
-## Future Acceptance Scenarios
+## Eventual Feature Acceptance
 
 Before declaring the eventual implementation complete, demonstrate that:
 

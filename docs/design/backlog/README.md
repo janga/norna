@@ -45,3 +45,26 @@ maintainer documentation.
 When an item is complete, remove it from `BACKLOG.md` in the implementation
 commit. Preserve the identifier in the commit message or pull request. Git
 history is the completion log; do not maintain a growing `Done` section.
+
+## Design-Item Record
+
+Use the following headings for an item whose purpose is to reach an
+architecture or product decision before implementation:
+
+- **Purpose:** the reader or product outcome being decided.
+- **Scope and boundaries:** what the decision covers and explicitly does not
+  cover.
+- **Decisions made:** choices the owner has approved. Do not present them as
+  proposals.
+- **Preliminary proposals:** useful direction that has not been approved and
+  must not constrain an implementation.
+- **Open questions:** the smallest unanswered questions that block a ready
+  implementation brief.
+- **Dependencies:** earlier work or decisions that must be available first.
+- **Ready for implementation when:** observable conditions for moving the item
+  into the ordered queue.
+
+Omit a heading only when it would add no information. Do not fill a missing
+decision with a plausible default. A design item may be complete when its
+implementation brief is ready even though the product feature remains
+unimplemented.
