@@ -1,2 +1,4 @@
 preset: documentation
 palette: near-monochrome
+appearance:
+  default: dark

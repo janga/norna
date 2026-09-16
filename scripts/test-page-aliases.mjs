@@ -94,6 +94,7 @@ test('build emits a base-path-aware static redirect document outside the sitemap
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/project/\n');
+		await writeFile(path.join(siteDir, 'theme.yaml'), 'palette: arctic-blue\nappearance:\n  default: dark\n');
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Home
 
 ## Start
@@ -130,7 +131,14 @@ Check the local preview.
 		assert.match(aliasHtml, /<meta http-equiv="refresh" content="0; url=\/project\/guides\/install\/">/);
 		assert.match(aliasHtml, /<link rel="canonical" href="https:\/\/example\.com\/project\/guides\/install\/">/);
 		assert.match(aliasHtml, /<a href="\/project\/guides\/install\/"[^>]*>Install Norna<\/a>/);
-		assert.doesNotMatch(aliasHtml, /<script\b/);
+		assert.match(aliasHtml, /<html\b[^>]*data-appearance="dark"/);
+		assert.match(aliasHtml, /--palette-light-page-background: #e8f1f8/);
+		assert.match(aliasHtml, /--palette-dark-page-background: #17202a/);
+		assert.match(aliasHtml, /<meta name="theme-color" content="#17202a">/);
+		const redirectStart = aliasHtml.indexOf('<meta http-equiv="refresh"');
+		const beforeRedirect = aliasHtml.slice(0, redirectStart);
+		assert.match(beforeRedirect, /<style>[\s\S]*?background: var\(--color-page\)/);
+		assert.match(beforeRedirect, /<script>[\s\S]*?norna-appearance[\s\S]*?<\/script>/);
 		assert.match(await readFile(path.join(distDir, 'guides', 'install', 'index.html'), 'utf8'), /Install Norna/);
 		assert.doesNotMatch(sitemap, /installation/);
 		assert.match(sitemap, /https:\/\/example\.com\/project\/guides\/install\//);

@@ -1,7 +1,11 @@
 ---
+import { getCollection } from 'astro:content';
+import { getPresentationCssVariables, resolveThemePresentation } from '../../scripts/lib/presentation.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { getAbsolutePageUrl } from '../../scripts/lib/site-page-urls.mjs';
+import { siteThemeLabel } from '../../scripts/lib/site-paths.mjs';
 import { withBasePath } from '../lib/basePath';
+import { getReaderPreferencesScript } from '../lib/readerPreferencesScript.mjs';
 
 interface Props {
 	targetPathname: string;
@@ -13,21 +17,52 @@ const { targetPathname, targetTitle, categoryTitle } = Astro.props;
 const { labels, lang } = projectConfig.locale;
 const targetHref = withBasePath(projectConfig.site.basePath, targetPathname);
 const canonicalUrl = getAbsolutePageUrl(projectConfig.site.url, targetPathname);
+const [siteTheme] = await getCollection('theme');
+if (!siteTheme) throw new Error(`${siteThemeLabel} is required. Add a root theme before building the site.`);
+const presentation = resolveThemePresentation(siteTheme.data, siteThemeLabel);
+const documentStyle = Object.entries(getPresentationCssVariables(presentation))
+	.map(([name, value]) => `${name}: ${value}`).join('; ');
+const readerPreferencesScript = getReaderPreferencesScript({
+	...presentation.readerPreferences,
+	cookiePath: projectConfig.site.basePath,
+});
 ---
 
 <!doctype html>
-<html lang={lang} data-pagefind-ignore="all">
+<html lang={lang} data-pagefind-ignore="all" data-appearance={presentation.appearance.default} style={documentStyle}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="robots" content="noindex, follow" />
-		<meta http-equiv="refresh" content={`0; url=${targetHref}`} />
 		<link rel="canonical" href={canonicalUrl} />
 		<title>{categoryTitle ?? labels.pageMoved}: {targetTitle}</title>
+		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
 		<style is:inline>
 			:root {
-				color-scheme: light dark;
+				--color-page: var(--palette-light-page-background);
+				--color-primary-text: var(--palette-light-primary-text);
+				--color-link-text: var(--palette-light-link-text);
+				color-scheme: light;
+				min-height: 100%;
+				background: var(--color-page);
+				color: var(--color-primary-text);
 				font-family: system-ui, sans-serif;
+			}
+
+			:root[data-appearance='dark'] {
+				--color-page: var(--palette-dark-page-background);
+				--color-primary-text: var(--palette-dark-primary-text);
+				--color-link-text: var(--palette-dark-link-text);
+				color-scheme: dark;
+			}
+
+			@media (prefers-color-scheme: dark) {
+				:root[data-appearance='system'] {
+					--color-page: var(--palette-dark-page-background);
+					--color-primary-text: var(--palette-dark-primary-text);
+					--color-link-text: var(--palette-dark-link-text);
+					color-scheme: dark;
+				}
 			}
 
 			body {
@@ -39,7 +74,13 @@ const canonicalUrl = getAbsolutePageUrl(projectConfig.site.url, targetPathname);
 				max-width: 42rem;
 				margin-inline: auto;
 			}
+
+			a {
+				color: var(--color-link-text);
+			}
 		</style>
+		<script is:inline set:html={readerPreferencesScript} />
+		<meta http-equiv="refresh" content={`0; url=${targetHref}`} />
 	</head>
 	<body>
 		<main>

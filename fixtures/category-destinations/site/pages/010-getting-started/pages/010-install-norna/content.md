@@ -1,5 +1,7 @@
 ---
 page:
+  aliases:
+    - /installation/
   description: Install the tools and create your first site.
 ---
 
