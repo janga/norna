@@ -1,0 +1,55 @@
+name: Engine tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: engine-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.18.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            editors/vscode/package-lock.json
+
+      - name: Install image tools
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
+
+      - name: Install engine dependencies
+        run: npm ci
+
+      - name: Install extension dependencies
+        run: npm ci --prefix editors/vscode
+
+      - name: Install browser test dependencies
+        run: npx playwright install --with-deps chromium
+
+      - name: Prepare release version and schemas
+        run: |
+          npm version patch --no-git-tag-version
+          npm run schemas:generate
+
+      - name: Run the complete engine release checks
+        run: npm test
+
+      - name: Check category and alias navigation
+        run: node scripts/test-navigation.mjs --site-dir fixtures/category-destinations/site tests/category-destinations.spec.ts

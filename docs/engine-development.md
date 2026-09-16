@@ -51,6 +51,18 @@ npm run demo:build
 npm run package:check
 ```
 
+The **Engine tests** GitHub Actions workflow prepares a patch version and
+regenerates schemas inside its temporary checkout, then runs the complete
+`npm test` chain and the browser tests for category destinations and URL
+aliases. It runs on pull requests and pushes to `main`, and can also be
+started manually. Preparing the version catches checks that depend on the
+new release's documentation links. The prepared package stays inside the CI
+job.
+
+The **Deploy to GitHub Pages** workflow builds the documentation and examples
+separately. Check the Engine tests result for the commit being released; the
+release command runs the complete chain again with the chosen release version.
+
 `npm run test:examples` builds every complete site and feature demo under
 `examples/`. `npm run test` includes those builds in the standard check
 sequence. Each build uses that example's own temporary output and site-local
