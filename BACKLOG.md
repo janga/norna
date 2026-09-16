@@ -22,9 +22,7 @@ No active implementation items.
 
 `Next` is the exact implementation sequence after `Now`.
 
-- [`BL-118` Page ID decoding for valid slugs](docs/design/backlog/BL-118-page-id-decoding.md):
-  **Ready.** Build valid page and ancestor slugs such as `page-move` without
-  confusing their text with the generated Astro content-ID prefix.
+No queued implementation items.
 
 ## External Gate
 

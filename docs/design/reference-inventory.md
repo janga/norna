@@ -93,17 +93,18 @@ the structure review.
 
 ## Reproduced engine defect, not a documentation rule
 
-Building a valid page directory named `010-page-move` fails with "Page entry
-... has no valid page directory", although source validation accepts it.
-`src/lib/sitePages.ts` locates the last `-page-` in an entry ID; the same
-substring inside the encoded directory name is then mistaken for the prefix
-boundary. This reproduces with both relative and absolute site selection.
+During the reference work, building a valid page directory named
+`010-page-move` failed with "Page entry ... has no valid page directory",
+although source validation accepted it. `src/lib/sitePages.ts` located the
+last `-page-` in an entry ID; the same substring inside the encoded directory
+name was mistaken for the prefix boundary. This reproduced with both relative
+and absolute site selection.
 
-The pilot uses `010-move` instead, keeping the title `page:move`. Do not add a
-public rule forbidding valid slugs containing `-page-`. A separate engine fix
-needs to distinguish the generated prefix from the encoded directory, with
-regression cases for `page-move` and ancestor directories containing that
-substring. No engine fix is included in this documentation stage.
+The pilot used `010-move` instead, keeping the title `page:move`. The defect
+was subsequently fixed in [BL-118: Page ID decoding for valid slugs](backlog/BL-118-page-id-decoding.md).
+Generation and decoding now share the exact site prefix, with regression cases
+for `page-move`, affected ancestor directories and site names. The public page
+naming rules remain unchanged.
 
 ## Existing documents and disposition
 

@@ -9,17 +9,14 @@ import {
 	siteThemePath,
 	sitewideContentPath,
 } from '../scripts/lib/site-paths.mjs';
-import { encodePageDirectoryPath, parsePageDirectoryPath } from '../scripts/lib/page-model.mjs';
+import { encodePageEntryId, getSiteEntryPrefix, parsePageDirectoryPath } from '../scripts/lib/page-model.mjs';
 import {
 	siteSchema,
 	sitewideSchema,
 	themeVisualSchema,
 } from '../scripts/lib/schema-definitions.mjs';
 
-const siteEntryId = `${siteDirLabel
-	.replace(/^[./\\]+/, '')
-	.replace(/[^a-zA-Z0-9-]+/g, '-')
-	.replace(/^-+|-+$/g, '') || 'site'}-content`;
+const siteEntryPrefix = getSiteEntryPrefix(siteDirLabel);
 const emptyYamlMapping = (value: unknown) => value ?? {};
 const siteThemeSchema = z.preprocess(emptyYamlMapping, themeVisualSchema);
 const sitewideContentSchema = z.preprocess(emptyYamlMapping, sitewideSchema);
@@ -34,7 +31,7 @@ const site = defineCollection({
 				.split('/')
 				.filter((segment) => segment !== 'pages')
 				.join('/pages/');
-			return `${siteEntryId.replace(/-content$/, '')}-page-${encodePageDirectoryPath(parsePageDirectoryPath(pageDirectory, `page directory pages/${pageEntryDirectory}`).pageDirectory)}`;
+			return encodePageEntryId(siteDirLabel, parsePageDirectoryPath(pageDirectory, `page directory pages/${pageEntryDirectory}`).pageDirectory);
 		},
 	}),
 	schema: siteSchema,
@@ -44,7 +41,7 @@ const theme = defineCollection({
 	loader: glob({
 		pattern: basename(siteThemePath),
 		base: pathToFileURL(siteDir),
-		generateId: () => `${siteEntryId.replace(/-content$/, '')}-theme`,
+		generateId: () => `${siteEntryPrefix}-theme`,
 	}),
 	schema: siteThemeSchema,
 });
@@ -53,7 +50,7 @@ const sitewide = defineCollection({
 	loader: glob({
 		pattern: basename(sitewideContentPath),
 		base: pathToFileURL(siteDir),
-		generateId: () => `${siteEntryId.replace(/-content$/, '')}-sitewide`,
+		generateId: () => `${siteEntryPrefix}-sitewide`,
 	}),
 	schema: sitewideContentSchema,
 });

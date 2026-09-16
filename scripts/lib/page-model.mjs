@@ -94,6 +94,28 @@ export const decodePageDirectoryPath = (pageEntryPath, label = 'page entry path'
 	return pageDirectories.join('/pages/');
 };
 
+export const getSiteEntryPrefix = (siteDirLabel) => siteDirLabel
+	.replace(/^[./\\]+/, '')
+	.replace(/[^a-zA-Z0-9-]+/g, '-')
+	.replace(/^-+|-+$/g, '') || 'site';
+
+const getPageEntryPrefix = (siteDirLabel) => `${getSiteEntryPrefix(siteDirLabel)}-page-`;
+
+export const encodePageEntryId = (siteDirLabel, pageDirectoryPath) => (
+	`${getPageEntryPrefix(siteDirLabel)}${encodePageDirectoryPath(pageDirectoryPath)}`
+);
+
+export const decodePageEntryId = (siteDirLabel, entryId) => {
+	const prefix = getPageEntryPrefix(siteDirLabel);
+	if (!entryId.startsWith(prefix)) return null;
+
+	try {
+		return parsePageDirectoryPath(decodePageDirectoryPath(entryId.slice(prefix.length))).pageDirectory;
+	} catch {
+		return null;
+	}
+};
+
 export const getPageDirectoryAncestors = (pageDirectoryPath) => {
 	const { pageDirectories } = parsePageDirectoryPath(pageDirectoryPath);
 	return pageDirectories.map((_, index) => (

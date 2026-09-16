@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
 import {
 	decodePageDirectoryPath,
+	decodePageEntryId,
 	encodePageDirectoryPath,
+	encodePageEntryId,
 	getPageDirectoryAncestors,
+	getSiteEntryPrefix,
 	parsePageDirectory,
 	parsePageDirectoryPath,
 } from './lib/page-model.mjs';
@@ -62,6 +65,58 @@ assert.equal(
 	decodePageDirectoryPath('010-guides--020-installation'),
 	'010-guides/pages/020-installation',
 );
+
+assert.equal(getSiteEntryPrefix('./examples/docs/site'), 'examples-docs-site');
+assert.equal(getSiteEntryPrefix('C:\\docs\\page-site'), 'C-docs-page-site');
+assert.equal(getSiteEntryPrefix('/'), 'site');
+assert.equal(encodePageEntryId('site', '000-home'), 'site-page-000-home');
+assert.equal(
+	encodePageEntryId('./examples/docs/site', '010-guides/pages/020-installation'),
+	'examples-docs-site-page-010-guides--020-installation',
+);
+assert.equal(
+	encodePageEntryId('docs-page-010-site', '010-page-move'),
+	'docs-page-010-site-page-010-page-move',
+);
+
+for (const siteDirLabel of ['site', './examples/docs/site', 'docs-page-010-site', '/tmp/page-sites/site', 'C:\\docs\\page-site', '/']) {
+	for (const pageDirectory of [
+		'000-home',
+		'010-about',
+		'010-guides/pages/020-installation',
+		'010-page-move',
+		'010-page-move/pages/020-installation',
+		'010-guides/pages/020-page-move',
+		'010-page-move/pages/020-page-copy',
+		'010-page-020-home',
+		'010-page-000-home',
+		'010-one-page-020-two-page-030-three/pages/040-child',
+	]) {
+		assert.equal(
+			decodePageEntryId(siteDirLabel, encodePageEntryId(siteDirLabel, pageDirectory)),
+			pageDirectory,
+			`${siteDirLabel}: the entire page path must survive entry ID decoding`,
+		);
+	}
+}
+
+for (const entryId of [
+	'site-theme',
+	'site-sitewide',
+	'site-page-',
+	'other-site-page-010-about',
+	'site-extra-page-010-about',
+	'site-page-about',
+	'site-page-000-about',
+	'site-page-010-About',
+	'site-page-010-page-move--',
+	'site-page-010-about---020-child',
+	'site-page-010-about--000-home',
+	'site-page-000-home--010-child',
+]) {
+	assert.equal(decodePageEntryId('site', entryId), null, `${entryId} is not a valid page entry for site`);
+}
+
 assert.deepEqual(
 	getPageDirectoryAncestors('010-guides/pages/020-installation/pages/030-macos'),
 	[

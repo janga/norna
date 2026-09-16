@@ -1,12 +1,12 @@
 import type { CollectionEntry } from 'astro:content';
 import path from 'node:path';
-import { decodePageDirectoryPath, parsePageDirectoryPath } from '../../scripts/lib/page-model.mjs';
+import { decodePageEntryId, parsePageDirectoryPath } from '../../scripts/lib/page-model.mjs';
 import { parsePageMarkdown } from '../../scripts/lib/page-markdown.mjs';
 import { readSiteFile } from '../../scripts/lib/site-content.mjs';
 import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
 import { assertCategoryDestinationModel, createCategoryDestinationModel } from '../../scripts/lib/category-destinations.mjs';
 import { getSiteStructure } from '../../scripts/lib/site-structure.mjs';
-import { sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
+import { siteDirLabel, sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
 
@@ -48,24 +48,10 @@ export type SiteCategory = SiteNodeBase & {
 
 export type SiteNode = SitePage | SiteCategory;
 
-const pageIdMarker = '-page-';
-
-const stripPageIdPrefix = (id: string) => {
-	const markerIndex = id.lastIndexOf(pageIdMarker);
-	if (markerIndex === -1) return null;
-
-	const candidate = id.slice(markerIndex + pageIdMarker.length);
-	try {
-		return parsePageDirectoryPath(decodePageDirectoryPath(candidate)).pageDirectory;
-	} catch {
-		return null;
-	}
-};
-
-export const isHomePageEntry = (entry: SiteEntry) => stripPageIdPrefix(entry.id) === homePageDirectory;
+export const isHomePageEntry = (entry: SiteEntry) => decodePageEntryId(siteDirLabel, entry.id) === homePageDirectory;
 
 export const getPageDirectory = (entry: SiteEntry) => {
-	const pageDirectory = stripPageIdPrefix(entry.id);
+	const pageDirectory = decodePageEntryId(siteDirLabel, entry.id);
 	if (!pageDirectory) throw new Error(`Page entry "${entry.id}" has no valid page directory.`);
 	return pageDirectory;
 };
