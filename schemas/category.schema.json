@@ -6,7 +6,7 @@
       "type": "string",
       "minLength": 1,
       "description": "Navigation label for a group of child pages without an authored page body.",
-      "markdownDescription": "```yaml\nlabel: Guides\n```\n\nThe category label shown in global navigation, tree navigation, mobile navigation, and breadcrumbs.\n\n[Navigation category reference (current)](https://janga.github.io/norna/reference/site/pages/#page-or-category)\n\n[Norna 0.7.26 source reference](https://github.com/janga/norna/blob/v0.7.26/docs/pages.md#navigation-categories)"
+      "markdownDescription": "```yaml\nlabel: Guides\n```\n\nThe category label shown in global navigation, tree navigation, mobile navigation, and breadcrumbs.\n\n[Navigation category reference (current)](https://janga.github.io/norna/reference/site/pages/#page-or-category)\n\n[Norna 0.7.27 source reference](https://github.com/janga/norna/blob/v0.7.27/site/pages/032-reference/pages/010-site/pages/020-pages/content.md#page-or-category)"
     }
   },
   "required": [
@@ -16,5 +16,5 @@
   "description": "A navigation group without an authored page body. Opening its URL redirects when its first listed direct child is a page; otherwise it shows a generated child list.",
   "$id": "https://janga.github.io/norna/schemas/category.schema.json",
   "title": "Norna page category",
-  "markdownDescription": "```yaml\nlabel: Guides\n```\n\n`category.yaml` groups child pages without editorial content. Its URL opens the first listed direct page, or a generated child list when the first child is a category.\n\n[Navigation category reference (current)](https://janga.github.io/norna/reference/site/pages/#page-or-category)\n\n[Norna 0.7.26 source reference](https://github.com/janga/norna/blob/v0.7.26/docs/pages.md#navigation-categories)"
+  "markdownDescription": "```yaml\nlabel: Guides\n```\n\n`category.yaml` groups child pages without editorial content. Its URL opens the first listed direct page, or a generated child list when the first child is a category.\n\n[Navigation category reference (current)](https://janga.github.io/norna/reference/site/pages/#page-or-category)\n\n[Norna 0.7.27 source reference](https://github.com/janga/norna/blob/v0.7.27/site/pages/032-reference/pages/010-site/pages/020-pages/content.md#page-or-category)"
 }
