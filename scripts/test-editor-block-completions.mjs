@@ -112,7 +112,7 @@ test('generated block snippets parse and share schema enums and minimum item cou
 		if (type === 'card-list') {
 			assert.match(source, /\n    link: \/destination\//);
 			assert.match(definition.description, /whole card clickable/);
-			assert.match(definition.documentation, /docs\/content\.md#card-list/);
+			assert.match(definition.documentation, /https:\/\/janga\.github\.io\/norna\/reference\/content\/cards\//);
 		}
 		for (const [key, field] of Object.entries(definition.options ?? {})) {
 			if (field.default !== undefined) assert.ok(definition.snippet.includes(`|${Object.keys(field.values).join(',')}|`), key);
