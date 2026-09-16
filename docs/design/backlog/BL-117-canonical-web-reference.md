@@ -6,8 +6,9 @@ Publish one reliable, searchable user reference on Norna's own documentation
 site, authored in Norna Markdown. Make its quality demonstrate Norna's ability
 to handle substantial information without turning reference into marketing.
 
-Status: first delivery ready for combined human review. The full reference
-rewrite has not started.
+Status: implementation in progress. The owner approved the pilot writing and
+authorized the full reference on 2026-09-16. Use the pilots' concise rules,
+concrete examples and helpful cross-references throughout the rewrite.
 
 Review material:
 
@@ -71,7 +72,7 @@ from those sources.
 - A proposed page tree and page contracts, including necessary conceptual
   relationships and destinations for how-to and explanation material.
 - An explicit inventory of internal information kept outside user reference.
-- Three rendered pilots with minimal valid examples, complete field/option
+- Four rendered pilots with minimal valid examples, complete field/option
   boundaries for their scope, and justified illustrations where useful.
 - A verification record and a short, concrete review request. Do not present
   an area-level inventory as exhaustive field-by-field certification.

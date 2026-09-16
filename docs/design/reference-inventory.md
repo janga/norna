@@ -3,7 +3,7 @@
 First delivery for [BL-117: Canonical web reference](backlog/BL-117-canonical-web-reference.md).
 This is a maintainer assessment, not user reference or a claim that every field
 has been audited. The scope is the complete public surface at area level, with
-deeper checks for the three pilots.
+deeper checks for the four pilots.
 
 ## Baseline and publication
 

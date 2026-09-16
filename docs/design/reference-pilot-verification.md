@@ -9,7 +9,7 @@ This record covers the draft pilots, not the eventual complete reference.
 | Check | Result and scope |
 | --- | --- |
 | `node bin/norna.mjs --site-dir fixtures/reference-documentation/site check` | Passed configuration and content validation. |
-| `npm run test:documentation` | Passed, including new pilot checks: four pages, single H1s, valid positive YAML and Markdown examples, and agreement between displayed sources and three rendered note definitions. |
+| `npm run test:documentation` | Passed, including new pilot checks: five pages, single H1s, valid positive YAML and Markdown examples, and agreement between displayed sources and three rendered note definitions. |
 | `node scripts/test-page-move.mjs` | Passed the existing move regression suite. This supports the command pilot, not a claim that every sentence has an individual test. |
 | `node bin/norna.mjs --site-dir /Users/jangarefelt/Projects/webbhack/norna/.local/test-sites/scratch/site build` | Passed after the pilot-directory correction described below. Generated ten routes and a search index covering five pages. |
 
@@ -19,7 +19,7 @@ findability of a larger reference.
 
 ## Visual inspection of the earlier draft
 
-All three texts were subsequently rewritten using the
+The original three texts were subsequently rewritten using the
 [reader-understanding plan](reference-pilot-editorial-plan.md). The captures
 below describe the earlier draft, not the rewritten pages.
 
@@ -58,11 +58,16 @@ The rewritten page:move visual check remains outstanding.
   allowed the final build to pass. The engine defect remains recorded in the
   [inventory](reference-inventory.md); it was not fixed as a documentation edit.
 - Existing user reference files remain canonical. The proposed 42-page
-  structure and these three drafts have not replaced them.
+  structure and these drafts have not replaced them.
 
 ## Human review gate
 
-Review the proposed grouping and the three lookup tasks in the
+The owner approved the sample writing and authorized BL-117 implementation on
+2026-09-16. The fourth pilot, URLs and links, adds the requested connection
+between manual aliases and page moves. Content and documentation checks passed
+after that addition. The full reference still needs its own verification.
+
+Review the proposed grouping and lookup tasks in the
 [information structure](reference-information-structure.md#review-and-finding-information).
 Decide whether these pilots provide the right balance of exact reference,
 brief explanation and examples before expanding the rest of the reference.

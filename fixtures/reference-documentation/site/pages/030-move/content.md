@@ -143,3 +143,9 @@ If `page.aliases` already exists, its addresses also need separate list lines
 beginning with `-`, not a list inside square brackets. Alternatively, use
 `--no-aliases` if you do not need to add old addresses. The command still
 checks and updates internal links.
+
+## Related tasks {#related-tasks}
+
+- [URLs and links](/urls-and-links/#keep-an-old-url) explains the
+  `page.aliases` syntax and when to add an alias by hand instead of moving a
+  page.

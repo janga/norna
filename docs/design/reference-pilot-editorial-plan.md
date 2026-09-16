@@ -40,6 +40,20 @@ These notes are not part of the public reference.
   metadata layout with a concrete example before describing alias-insertion
   constraints. Do not offer a general YAML lesson or duplicate creation help.
 
+## URLs and links
+
+- Question: How do I link to a page and keep an old URL working without moving
+  its page directory?
+- Assumed knowledge: ordinary Markdown links, not Norna's site-relative paths,
+  base path, or page metadata.
+- Missing concepts, in order: page directory URL; site-relative link; section
+  fragment; base-path omission; alias target; alias limits; host behavior;
+  when a page move is the better operation.
+- Main rule: an alias is an old site-relative URL attached to the current page;
+  use `page:move` when the page directory itself must change.
+- Boundary: this page does not repeat move preview, recovery, or structural
+  validation rules. It links to `page:move` for those details.
+
 ## Completeness and destinations
 
 Checked against `scripts/lib/schema-definitions.mjs`,

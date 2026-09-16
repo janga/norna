@@ -577,8 +577,8 @@ const checkReferencePilots = async () => {
 			samples += 1;
 		}
 	}
-	assert.equal(files.length, 4, 'The review contains three pilots and one review homepage.');
-	assert.equal(samples, 4, 'Verify both YAML and both Markdown examples.');
+	assert.equal(files.length, 5, 'The review contains four pilots and one review homepage.');
+	assert.equal(samples, 7, 'Verify both YAML and five Markdown examples.');
 	assert.equal(demonstratedNotes, 3, 'Verify one-note and two-note source/result pairs.');
 };
 

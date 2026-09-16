@@ -8,7 +8,7 @@ These are not deployed with public examples and are not yet canonical docs.
 - [Verification record](../../docs/design/reference-pilot-verification.md)
 - [Reader-understanding plan](../../docs/design/reference-pilot-editorial-plan.md)
 
-The three pilot pages describe local engine commit `828f70f`, package 0.7.26.
+The four pilot pages describe local engine commit `828f70f`, package 0.7.26.
 The npm latest version was 0.7.25 when checked on 2026-09-15. Do not claim that
 the current npm release implements this entire syntax.
 
@@ -25,9 +25,10 @@ edits before explicitly using `--replace`. The fixed review address is
 
 Open the individual pilots at:
 
-- [Appearance](http://127.0.0.1:4399/reference-review/reference/configuration/appearance/)
-- [Sidenotes](http://127.0.0.1:4399/reference-review/reference/content/sidenotes/)
-- [page:move](http://127.0.0.1:4399/reference-review/reference/commands/move/)
+- [Appearance](http://127.0.0.1:4399/reference-review/appearance/)
+- [Sidenotes](http://127.0.0.1:4399/reference-review/sidenotes/)
+- [page:move](http://127.0.0.1:4399/reference-review/move/)
+- [URLs and links](http://127.0.0.1:4399/reference-review/urls-and-links/)
 
 The site uses only Norna's existing components and the documentation preset.
 Appearance uses a short rule and a highlighted configuration line instead of
