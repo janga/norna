@@ -84,6 +84,20 @@ navigation and content while changing documents. Test the movement in the
 whole page, especially with long trees and on mobile; the 120–180ms values are
 starting points for local evaluation.
 
+Direct inspection of [Linear Docs](https://linear.app/docs) in Chrome at
+1470×923 on 2026-09-17 found that Getting started kept its heading position
+when opened and closed. After scrolling the expanded Importers group to the
+menu's end, closing it moved its heading down by 251 CSS pixels. The menu's
+maximum scroll position fell from 273 to 22 pixels. Reopening it in that state
+also moved the heading. These are observations of that session, not a claim
+that Linear guarantees a fixed heading position in every case.
+
+For Norna's reading-oriented menu, the selected collapse trial preserves
+position while the remaining content permits it and allows the necessary
+adjustment at the scroll limit. Its motion still needs human evaluation;
+native scroll limits explain a movement without establishing its usability.
+The expansion requirement remains explicit in the prototype brief below.
+
 [Browser-native cross-document transitions](https://developer.chrome.com/docs/web-platform/view-transitions/cross-document)
 allow ordinary page navigation to retain visual continuity without adopting a
 client router. [Astro prefetching](https://docs.astro.build/en/guides/prefetch/)

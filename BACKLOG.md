@@ -16,10 +16,22 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- `BL-121` **Font-size increase and layout jump after page navigation:**
+  **High priority; correction awaiting visual review.** The user reports that clicking the
+  link from <http://127.0.0.1:4321/norna/reference/site/files/> to
+  <http://127.0.0.1:4321/norna/reference/site/public-files/> increases the font
+  size, causing text to wrap and the layout to jump; this also affects the
+  ongoing review of [BL-120 Smooth documentation navigation prototype](docs/design/backlog/BL-120-smooth-documentation-navigation-prototype.md#user-review-feedback).
+  Reproduced delayed table narrowing and corrected its initial width; measured
+  text sizes stayed constant. Confirm the reported reading experience before
+  closing the item.
+- `BL-122` **Reconsider the right-hand menu:**
+  **High priority; ingen analys gjord.** Question the right-hand menu in
+  general, since the user finds that it competes with sidenotes.
 - [`BL-120` Smooth documentation navigation prototype](docs/design/backlog/BL-120-smooth-documentation-navigation-prototype.md):
-  **Ready; user requested implementation.** Build a local comparison with
-  stable page transitions, animated navigation disclosures, intentional
-  prefetching and predictable anchor/history behavior for visual evaluation.
+  **In progress:** a diagnostic plan and result-record format are documented
+  for navigation flashes and initial menu jumps; execution, prototype
+  approval, regression checks and the implementation commit remain pending.
 
 ## Next
 
