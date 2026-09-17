@@ -67,6 +67,34 @@ to `uniform` when a page uses tree navigation. A site-owner override that
 explicitly requests a non-uniform pattern for such a page is invalid and must
 produce a clear diagnostic rather than being silently ignored.
 
+## Navigation Continuity Prototype
+
+[Linear's documentation](https://linear.app/docs/update-cycles) provides a
+relevant comparison for moving among related, long-form reading pages. Its
+public [menu stylesheet](https://static.linear.app/web/_next/static/css/Item.Cx9IGCq5.css)
+uses 180ms height/opacity transitions for groups and 120ms rotations for
+chevrons. Its [outline stylesheet](https://static.linear.app/web/_next/static/css/TableOfContents.Ku_IshVn.css)
+animates the active indicator's position and height while leaving labels in
+place. These are observations of the styles served on 2026-09-17, not measured
+page-load performance or a requirement to copy Linear's visual identity.
+
+The Norna proposal is a stable reading frame with small, coordinated changes
+inside it. That fits documentation because a reader can retain the location of
+navigation and content while changing documents. Test the movement in the
+whole page, especially with long trees and on mobile; the 120–180ms values are
+starting points for local evaluation.
+
+[Browser-native cross-document transitions](https://developer.chrome.com/docs/web-platform/view-transitions/cross-document)
+allow ordinary page navigation to retain visual continuity without adopting a
+client router. [Astro prefetching](https://docs.astro.build/en/guides/prefetch/)
+can prepare a likely destination after hover or keyboard focus. Evaluate
+these mechanisms before taking on the script lifecycle and persistent-state
+work of client-side routing. Reduced motion, direct anchors, history and
+no-script navigation remain part of the reading experience.
+
+The scope and decision boundary are in
+[BL-120 Smooth documentation navigation prototype](backlog/BL-120-smooth-documentation-navigation-prototype.md).
+
 ## Configuration Layers
 
 Resolve presentation in this order.

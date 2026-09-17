@@ -16,7 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-No active implementation items.
+- [`BL-120` Smooth documentation navigation prototype](docs/design/backlog/BL-120-smooth-documentation-navigation-prototype.md):
+  **Ready; user requested implementation.** Build a local comparison with
+  stable page transitions, animated navigation disclosures, intentional
+  prefetching and predictable anchor/history behavior for visual evaluation.
 
 ## Next
 
@@ -164,3 +167,5 @@ that the expanded audience is worth the permanent complexity.
   normal static-page navigation harms real Norna sites. Preserve ordinary
   links and full-page fallback, fetch only likely or selected destinations,
   and never preload the complete navigation tree.
+  Evidence from `BL-120` Smooth documentation navigation prototype will inform
+  whether client-side routing is needed at all.
