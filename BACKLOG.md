@@ -37,7 +37,10 @@ when implementation can begin.
 
 `Next` is the exact implementation sequence after `Now`.
 
-No queued implementation items.
+- [`BL-123` Navigation JavaScript refactoring assessment](docs/design/backlog/BL-123-navigation-javascript-refactoring-assessment.md):
+  **High priority; ready for analysis after `BL-120` Smooth documentation
+  navigation prototype.** Identify justified refactoring needs and their
+  risks from the completed prototype; implementation is a separate follow-up.
 
 ## External Gate
 

@@ -104,6 +104,9 @@ recorded in the [preset design guide](../preset-design-guide.md#navigation-conti
 - The prototype does not establish a public configuration contract, so public
   reference documentation follows a later decision to ship it. Its local
   review procedure belongs in this brief.
+- [BL-123 Navigation JavaScript refactoring assessment](BL-123-navigation-javascript-refactoring-assessment.md)
+  is the high-priority follow-up after this prototype, using its recorded
+  behavior and findings to assess whether focused restructuring is warranted.
 
 ## Review and acceptance
 
