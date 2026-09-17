@@ -122,7 +122,7 @@ test('keeps fitting table headings sticky in a compact top-navigation layout', a
 		}
 	});
 	await expect(frame).toHaveAttribute('data-table-overflow', 'false');
-	await expect(frame.locator('[data-table-navigation]')).toBeHidden();
+	await expect(frame.locator('[data-table-navigation]:visible')).toHaveCount(0);
 
 	await frame.evaluate((element) => {
 		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 120);

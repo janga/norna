@@ -247,8 +247,21 @@ sizes remained constant throughout these arrivals.
 
 Tables now start in the prose lane, which is also the enhancement's first
 candidate. Wider lanes and horizontal scrolling remain available when needed.
-This shared correction also applies to the baseline site. Visual confirmation
-of the user's original font-size report remains pending.
+This shared correction also applies to the baseline site. The user approved
+the table correction for its own implementation commit on 2026-09-17. That
+approval covers the table's initial width; the navigation prototype retains
+its separate review and verification requirements.
+
+After approval, `npm run review:test -- presets` passed all 38 checks and
+`npm run test:table-layout:top` passed all four checks in Chromium, with the
+navigation prototype disabled. `npm run build` also passed, using
+`NORNA_INTERNAL_STATE_DIR=.local/table-layout-commit/build-state` to keep
+generated output separate from the running review sites.
+
+The top-navigation suite initially failed because its hidden-control assertion
+expected one element while the existing table has top and bottom controls.
+The assertion now checks that no table navigation control is visible when the
+table fits. The table runtime required no additional change for that test.
 
 ### 2. Intermittent flash when changing pages
 

@@ -466,7 +466,8 @@ ul {
 }
 
 .section-markdown > .norna-table-frame {
-	width: var(--wide-block-end-width);
+	/* Start in the same lane that the layout enhancement tries first. */
+	width: var(--wide-block-prose-width);
 }
 
 .section-markdown > :is([data-table-layout='prose'], [data-code-layout='prose']) {
