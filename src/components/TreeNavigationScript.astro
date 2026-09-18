@@ -1,4 +1,6 @@
 <script>
+	import { createNavigationStateHelpers } from '../lib/navigationState.mjs';
+
 	type NavigationState = {
 		openPaths: string[];
 		sectionOpenByPath: Record<string, boolean>;
@@ -10,13 +12,13 @@
 		sectionOpen: boolean[];
 		scrollTop: number;
 	};
+	const { storageKeys, parseState, initialState, pageIsOpen, sectionsAreOpen } = createNavigationStateHelpers();
 
 	const setupNavigationState = (container: HTMLElement, scope: 'desktop' | 'mobile') => {
 		const navigationPrototype = document.documentElement.hasAttribute('data-navigation-prototype');
 		const root = container.dataset.navigationRoot ?? '/';
 		const sharedRoot = container.dataset.navigationStateRoot ?? root;
-		const stateKey = `norna:tree-navigation:${scope}:${root}`;
-		const sharedStateKey = `norna:tree-navigation:shared:${sharedRoot}`;
+		const { stateKey, sharedStateKey } = storageKeys(scope, root, sharedRoot);
 		const branches = Array.from(container.querySelectorAll<HTMLDetailsElement>(
 			'.navigation-page-disclosure[data-page-path]',
 		));
@@ -39,22 +41,6 @@
 		const scrollContainer = getScrollContainer();
 		let filterSnapshot: NavigationSnapshot | null = null;
 		let lastSharedState = '';
-		const parseState = (value: string | null): NavigationState => {
-			try {
-				const parsedState = JSON.parse(value ?? '{}');
-				return {
-					openPaths: Array.isArray(parsedState.openPaths) ? parsedState.openPaths : [],
-					sectionOpenByPath: parsedState.sectionOpenByPath
-						&& typeof parsedState.sectionOpenByPath === 'object'
-						? Object.fromEntries(Object.entries(parsedState.sectionOpenByPath)
-							.filter((entry): entry is [string, boolean] => typeof entry[1] === 'boolean'))
-						: {},
-					scrollTop: Number.isFinite(Number(parsedState.scrollTop)) ? Number(parsedState.scrollTop) : 0,
-				};
-			} catch {
-				return { openPaths: [], sectionOpenByPath: {}, scrollTop: 0 };
-			}
-		};
 		const getDisclosureState = (): SharedNavigationState => ({
 			openPaths: branches.filter((branch) => branch.open)
 				.map((branch) => branch.dataset.pagePath ?? ''),
@@ -68,23 +54,16 @@
 			openCurrentPageOnArrival = false,
 			preserveCurrentPageDisclosure = false,
 		) => {
+			const policy = {
+				onArrival: openCurrentPageOnArrival,
+				preserveCurrentPage: preserveCurrentPageDisclosure,
+				preserveCurrentOutline: navigationPrototype,
+			};
 			branches.forEach((branch) => {
-				const pagePath = branch.dataset.pagePath ?? '';
-				branch.open = (openCurrentPageOnArrival && branch.dataset.currentBranch === 'true'
-					&& (!preserveCurrentPageDisclosure || branch.dataset.currentPage !== 'true'))
-					|| state.openPaths.includes(pagePath);
+				branch.open = pageIsOpen(state, branch.dataset, policy);
 			});
 			sectionBranches.forEach((branch) => {
-				const pagePath = branch.dataset.pagePath ?? '';
-				const storedOpen = state.sectionOpenByPath[pagePath];
-				if (openCurrentPageOnArrival && branch.dataset.currentPage === 'true'
-					&& !(navigationPrototype && typeof storedOpen === 'boolean')) {
-					branch.open = true;
-					return;
-				}
-				branch.open = typeof storedOpen === 'boolean'
-					? storedOpen
-					: branch.dataset.currentPage === 'true';
+				branch.open = sectionsAreOpen(state, branch.dataset, policy);
 			});
 		};
 		const mergeSharedState = (state: SharedNavigationState): SharedNavigationState => {
@@ -103,20 +82,15 @@
 		};
 
 		try {
-			const storedSource = sessionStorage.getItem(stateKey);
-			const storedState = parseState(storedSource);
-			const storedSharedState = sessionStorage.getItem(sharedStateKey);
-			applyDisclosureState(storedSharedState === null
-				? storedState
-				: parseState(storedSharedState), true,
-				navigationPrototype && (storedSource !== null || storedSharedState !== null));
+			const state = initialState(sessionStorage.getItem(stateKey), sessionStorage.getItem(sharedStateKey));
+			applyDisclosureState(state.disclosure, true, navigationPrototype && state.hasSavedState);
 			const initialSharedState = mergeSharedState(getDisclosureState());
 			lastSharedState = JSON.stringify(initialSharedState);
 			sessionStorage.setItem(sharedStateKey, lastSharedState);
 
-			if (storedState.scrollTop > 0) {
+			if (state.local.scrollTop > 0) {
 				requestAnimationFrame(() => {
-					scrollContainer.scrollTop = storedState.scrollTop;
+					scrollContainer.scrollTop = state.local.scrollTop;
 				});
 			}
 		} catch {

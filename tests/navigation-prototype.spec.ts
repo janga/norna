@@ -65,6 +65,51 @@ const assertStableArrival = async (page: Page, before: MenuFrame) => {
 	}
 };
 
+for (const stored of [
+	{ name: 'malformed local JSON', local: '{', shared: 'valid', configurationOpen: true, scrollTop: 0 },
+	{ name: 'existing null shared JSON', local: 'valid', shared: 'null', configurationOpen: false, scrollTop: 40 },
+	{ name: 'numeric string scroll position', local: 'string-scroll', shared: null, configurationOpen: true, scrollTop: 240 },
+]) {
+	test(`restores ${stored.name} before deferred scripts and keeps it stable afterwards`, async ({ page }) => {
+		// Keep section-following in the right rail: this isolates restoration
+		// from its deliberate reveal of an off-screen current row in the tree.
+		await page.setViewportSize({ width: 1440, height: 700 });
+		await page.addInitScript((input) => {
+			const value = (scrollTop: number | string) => JSON.stringify({
+				openPaths: ['reference', 'reference/site', 'reference/configuration', 'reference/content', 'reference/workflows'],
+				sectionOpenByPath: { 'reference/site/pages': false }, scrollTop,
+			});
+			sessionStorage.setItem('norna:tree-navigation:desktop:/reference/',
+				input.local === 'valid' ? value(input.scrollTop) : input.local === 'string-scroll' ? value(String(input.scrollTop)) : input.local);
+			if (input.shared !== null) sessionStorage.setItem('norna:tree-navigation:shared:/norna/',
+				input.shared === 'valid' ? value(999) : input.shared);
+		}, stored);
+		let release!: () => void;
+		const deferredScripts = new Promise<void>((resolve) => { release = resolve; });
+		await page.route('**/*', async (route) => {
+			if (route.request().resourceType() === 'script') await deferredScripts;
+			await route.continue();
+		});
+		const snapshot = () => menu(page).evaluate((tree) => ({
+			configurationOpen: tree.querySelector<HTMLDetailsElement>('.navigation-page-disclosure[data-page-path="reference/configuration"]')!.open,
+			currentOutlineOpen: tree.querySelector<HTMLDetailsElement>('.navigation-page-sections-disclosure[data-page-path="reference/site/pages"]')!.open,
+			scrollTop: tree.scrollTop,
+		}));
+		try {
+			await page.goto('reference/site/pages/', { waitUntil: 'commit' });
+			// Wait for the last tree node, not deferred initialization. The inline
+			// source must have restored all parser additions before this point.
+			await menu(page).locator('[data-page-path="reference/workflows/legacy-source"]').first().waitFor({ state: 'attached' });
+			await expect(menu(page).locator('[data-tree-controls]')).toHaveAttribute('hidden', '');
+			expect(await snapshot()).toEqual({ configurationOpen: stored.configurationOpen, currentOutlineOpen: stored.shared === 'null', scrollTop: stored.scrollTop });
+		} finally {
+			release();
+		}
+		await ready(page);
+		expect(await snapshot()).toEqual({ configurationOpen: stored.configurationOpen, currentOutlineOpen: stored.shared === 'null', scrollTop: stored.scrollTop });
+	});
+}
+
 for (const width of [1200, 1440]) {
 	test(`keeps the first five menu clicks stable after header navigation at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: 1000 });
@@ -171,6 +216,36 @@ test('reverses disclosure motion and respects reduced motion and keyboard activa
 	await expect(branch).toHaveAttribute('open', '');
 	await expect(branch).not.toHaveAttribute('data-navigation-motion-open');
 	expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe('auto');
+});
+
+test('restores the filter snapshot and shares disclosure choices between desktop and mobile', async ({ page }) => {
+	await page.goto('reference/site/pages/');
+	await ready(page);
+	const selector = '.navigation-category-disclosure[data-page-path="reference/configuration"]';
+	const desktopBranch = menu(page).locator(selector);
+	await desktopBranch.locator(':scope > summary').focus();
+	await page.keyboard.press('Enter');
+	await expect(desktopBranch).toHaveAttribute('open', '');
+	await expect(desktopBranch).not.toHaveAttribute('data-navigation-motion-open');
+	const snapshot = () => menu(page).evaluate((tree) => [...tree.querySelectorAll<HTMLDetailsElement>('details[data-page-path]')]
+		.map((branch) => ({ path: branch.dataset.pagePath, open: branch.open })));
+	const before = await snapshot();
+	const filter = menu(page).locator('[data-tree-filter]');
+	await filter.fill('metadata');
+	await expect(menu(page).getByRole('link', { name: 'Page metadata', exact: true })).toBeVisible();
+	await filter.press('Escape');
+	expect(await snapshot()).toEqual(before);
+	await page.setViewportSize({ width: 390, height: 844 });
+	const compact = page.locator('.mobile-nav-menu');
+	await compact.locator(':scope > summary').click();
+	const mobileBranch = compact.locator(selector);
+	await expect(mobileBranch).toHaveAttribute('open', '');
+	await mobileBranch.locator(':scope > summary').focus();
+	await page.keyboard.press('Enter');
+	await expect(mobileBranch).not.toHaveAttribute('open', '');
+	await expect(desktopBranch).not.toHaveAttribute('open', '');
+	await page.setViewportSize({ width: 1200, height: 1000 });
+	await expect(desktopBranch).not.toHaveAttribute('open', '');
 });
 
 test('prefetches only an eligible page after intent', async ({ page, baseURL }) => {

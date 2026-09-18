@@ -16,9 +16,7 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-127` Align early and deferred navigation state interpretation](docs/design/backlog/BL-127-align-navigation-state-interpretation.md):
-  **Ready.** Share stored-state interpretation while preserving parser-time
-  restoration and the runtime's final-state behavior.
+No items are active here.
 
 ## Next
 
