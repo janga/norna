@@ -16,17 +16,14 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-124` Share navigation visibility semantics](docs/design/backlog/BL-124-share-navigation-visibility-semantics.md):
-  **Ready.** Share the identical displayed-element predicate used by menu
-  following and prototype motion without changing its behavior or timing.
+- [`BL-125` Reuse category destinations in navigation rendering](docs/design/backlog/BL-125-reuse-category-navigation-destinations.md):
+  **Ready.** Use the existing category destination model consistently in
+  prototype header, tree and generated-list links while preserving baseline URLs.
 
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
 
-- [`BL-125` Reuse category destinations in navigation rendering](docs/design/backlog/BL-125-reuse-category-navigation-destinations.md):
-  **Ready.** Use the existing category destination model consistently in
-  prototype header, tree and generated-list links while preserving baseline URLs.
 - [`BL-126` Resolve prototype history restoration discrepancy](docs/design/backlog/BL-126-prototype-history-restoration.md):
   **High priority; ready for diagnosis before arrival refactoring or promotion.**
   Resolve the maintained WebKit Back-to-hash failure without weakening its

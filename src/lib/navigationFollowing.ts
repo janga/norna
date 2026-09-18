@@ -1,15 +1,7 @@
-const isDisplayed = (element: HTMLElement) => {
-	if (!element.getClientRects().length || getComputedStyle(element).visibility === 'hidden') return false;
-	// Closed native details can retain layout rectangles for their hidden links.
-	for (let parent = element.parentElement; parent; parent = parent.parentElement) {
-		if (parent instanceof HTMLDetailsElement && !parent.open
-			&& !parent.querySelector(':scope > summary')?.contains(element)) return false;
-	}
-	return true;
-};
+import { isNavigationElementDisplayed } from './navigationVisibility';
 
 const visibleEntry = (link: HTMLElement, container: HTMLElement): HTMLElement | undefined => {
-	if (isDisplayed(link)) return link;
+	if (isNavigationElementDisplayed(link)) return link;
 
 	let node = link.closest<HTMLElement>('.navigation-page-node');
 	while (node && container.contains(node)) {
@@ -18,7 +10,7 @@ const visibleEntry = (link: HTMLElement, container: HTMLElement): HTMLElement | 
 			':scope > .navigation-page-open-link',
 			':scope > .navigation-category-disclosure > summary',
 		].join(', '));
-		if (entry && isDisplayed(entry)) return entry;
+		if (entry && isNavigationElementDisplayed(entry)) return entry;
 		node = node.parentElement?.closest<HTMLElement>('.navigation-page-node') ?? null;
 	}
 	return undefined;
@@ -33,7 +25,7 @@ const revealEntry = (container: HTMLElement, entry: HTMLElement) => {
 	for (const control of container.querySelectorAll<HTMLElement>(
 		'.navigation-tree-controls, .mobile-nav-panel-actions',
 	)) {
-		if (isDisplayed(control) && getComputedStyle(control).position === 'sticky') {
+		if (isNavigationElementDisplayed(control) && getComputedStyle(control).position === 'sticky') {
 			top = Math.max(top, control.getBoundingClientRect().bottom);
 		}
 	}
@@ -67,7 +59,7 @@ export const setupNavigationFollowing = () => {
 		const { container } = state;
 		state.ancestor?.removeAttribute('data-reading-position-ancestor');
 		state.ancestor = undefined;
-		if (!isDisplayed(container)) return;
+		if (!isNavigationElementDisplayed(container)) return;
 		if (container.matches('[data-tree-filter-active="true"]')
 			|| container.querySelector('[data-tree-filter-active="true"]')) return;
 
@@ -86,7 +78,7 @@ export const setupNavigationFollowing = () => {
 
 	const update = () => {
 		frame = undefined;
-		const selected = right && isDisplayed(right) ? right : left;
+		const selected = right && isNavigationElementDisplayed(right) ? right : left;
 		for (const state of states) {
 			const ownsFocus = state.container.contains(document.activeElement);
 			updateContainer(state, state.container === selected

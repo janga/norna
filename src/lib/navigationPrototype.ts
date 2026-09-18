@@ -1,13 +1,6 @@
-type Prefetch = (url: string) => void;
+import { isNavigationElementDisplayed } from './navigationVisibility';
 
-const visible = (element: HTMLElement) => {
-	if (!element.getClientRects().length || getComputedStyle(element).visibility === 'hidden') return false;
-	for (let parent = element.parentElement; parent; parent = parent.parentElement) {
-		if (parent instanceof HTMLDetailsElement && !parent.open
-			&& !parent.querySelector(':scope > summary')?.contains(element)) return false;
-	}
-	return true;
-};
+type Prefetch = (url: string) => void;
 
 const setupTreeScrollport = () => {
 	const tree = document.querySelector<HTMLElement>('.tree-local-navigation');
@@ -56,7 +49,7 @@ const setupDisclosures = (reducedMotion: MediaQueryList) => {
 			if (event.defaultPrevented || reducedMotion.matches || typeof content.animate !== 'function') return;
 			if (event.target instanceof Element && event.target.closest('a')) return;
 			event.preventDefault();
-			const height = visible(content) ? content.getBoundingClientRect().height : 0;
+			const height = isNavigationElementDisplayed(content) ? content.getBoundingClientRect().height : 0;
 			const opacity = height ? getComputedStyle(content).opacity : '0';
 			destination = animation ? !destination : !details.open;
 			animation?.cancel();
@@ -101,7 +94,7 @@ const setupOutlineMarkers = () => {
 		frame = undefined;
 		for (const outline of outlines) {
 			const current = outline.querySelector<HTMLElement>('a[aria-current="location"]');
-			if (!current || !visible(current)) {
+			if (!current || !isNavigationElementDisplayed(current)) {
 				outline.style.setProperty('--navigation-marker-opacity', '0');
 				continue;
 			}
