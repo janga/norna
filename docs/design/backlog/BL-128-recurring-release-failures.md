@@ -1,5 +1,13 @@
 # BL-128 Investigate recurring release failures
 
+Completed on 2026-09-19. The
+[release-failure analysis](../release-failure-analysis.md) records the incident
+ledger, supported patterns, existing safeguards and ranked follow-ups. No
+runtime, release-script or CI change is included in this analysis. The user's
+subsequent instruction to execute three items with commits between them
+authorizes its completion commit; the investigation itself uses local evidence
+and ordinary-permission documentation checks only.
+
 ## Purpose
 
 Determine whether recent `npm run release:patch` failures share preventable
