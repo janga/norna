@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1400" viewBox="0 0 1600 1400" role="img" aria-labelledby="title desc">
+<title id="title">Norna — områden, sidor och H2 i en gemensam navigation</title>
+<desc id="desc">Reviderad prototypbild i mörkt läge, baserad på dagens integrerade vänstermeny. Sticky-raden innehåller sidlänkar och en separat pil för Reference-menyn. Vänstermenyn är avgränsad till Site model. Site files är aktuell sida; dess H2-rubriker är utfällda. Även Pages and categories är utfälld och visar sina H2-länkar utan att sidan har öppnats. Rubrikerna markeras med indrag och en tunn vertikal linje. Artikeln har små marginalnoter intill berörda stycken. En detalj visar sex likvärdiga referensområden i tre kolumner. Installation från navigationsdemot visar sidans H2-rubriker följda av undersidor under samma utfällning, utan extra grupprubriker. Sidtext följer länken och pilen fäller ut.</desc>
+<defs><clipPath id="reading"><rect x="32" y="104" width="1536" height="798" rx="10"/></clipPath></defs>
+<rect x="0" y="0" width="1600" height="1400" rx="0" fill="#f3f5f7"/>
+<text x="32" y="42" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#20252d" font-weight="700">Dagens träd, med områdesval och bara H2.</text>
+<text x="32" y="73" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#586271" font-weight="400">Rubriker före undersidor · indrag och tunna linjer visar tillhörighet · marginalen fri för sidenotes</text>
+<rect x="1424" y="24" width="144" height="30" rx="15" fill="#e2e7ed"/>
+<text x="1440" y="44" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#576171" font-weight="700">REVIDERAD PROTOTYP</text>
+<g clip-path="url(#reading)">
+<rect x="32" y="104" width="1536" height="798" rx="0" fill="#1b1d21"/>
+<rect x="32" y="104" width="1536" height="65" rx="0" fill="#202329"/>
+<rect x="32" y="169" width="284" height="733" rx="0" fill="#191b1f"/>
+<path d="M32 169H1568 M316 169V902" fill="none" stroke="#343a44" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="58" y="146" font-family="Arial, Helvetica, sans-serif" font-size="25" fill="#f0f2f6" font-weight="600">Norna</text>
+<text x="188" y="145" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">Getting Started</text>
+<text x="352" y="145" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">Reference</text>
+<path d="M436 126V150" fill="none" stroke="#434b56" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M449 134l4 4 4 -4" fill="none" stroke="#becfe3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M352 168H421" fill="none" stroke="#becfe3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="501" y="145" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">Examples</text>
+<text x="613" y="145" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">FAQ</text>
+<circle cx="1476" cy="136" r="6" fill="none" stroke="#bdc6d2" stroke-width="1.5"/>
+<path d="M1481 141l5 5" fill="none" stroke="#bdc6d2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1525 128V145 M1532 128V145 M1539 128V145" fill="none" stroke="#bdc6d2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1522 132H1528 M1529 141H1535 M1536 133H1542" fill="none" stroke="#bdc6d2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="57" y="215" font-family="Arial, Helvetica, sans-serif" font-size="19" fill="#e9ecf1" font-weight="600">Site model</text>
+<rect x="57" y="236" width="234" height="35" rx="4" fill="#1e2126" stroke="#3b424c"/>
+<path d="M70 247h11 M72 251h7 M74 255h3" fill="none" stroke="#a5aebc" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="91" y="259" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#a5aebc" font-weight="400">Filter pages</text>
+<rect x="48" y="294" width="252" height="36" rx="4" fill="#2b323c"/>
+<rect x="48" y="301" width="2" height="22" rx="1" fill="#becfe3"/>
+<path d="M60 309l4 4 4 -4" fill="none" stroke="#becfe3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="82" y="317" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#e9ecf1" font-weight="400">Site files</text>
+<path d="M83 340V458" fill="none" stroke="#3b4552" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="93" y="334" width="206" height="31" rx="3" fill="#252c35"/>
+<text x="105" y="355" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#e9ecf1" font-weight="400">Source layout</text>
+<path d="M105 359H187" fill="none" stroke="#bbc8d9" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="105" y="387" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#b6c0cd" font-weight="400">Page folders</text>
+<text x="105" y="419" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#b6c0cd" font-weight="400">Generated files</text>
+<text x="105" y="451" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#b6c0cd" font-weight="400">Select another source folder</text>
+<path d="M60 488l4 4 4 -4" fill="none" stroke="#a5aebc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="82" y="496" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">Pages and categories</text>
+<path d="M83 518V632" fill="none" stroke="#3b4552" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="105" y="533" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#b6c0cd" font-weight="400">Page or category</text>
+<text x="105" y="563" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#b6c0cd" font-weight="400">Names and order</text>
+<text x="105" y="593" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#b6c0cd" font-weight="400">Opening a category URL</text>
+<text x="105" y="623" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#b6c0cd" font-weight="400">Listed and unlisted pages</text>
+<path d="M62 663l4 4 -4 4" fill="none" stroke="#a5aebc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="82" y="673" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">URLs and links</text>
+<path d="M62 701l4 4 -4 4" fill="none" stroke="#a5aebc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="82" y="711" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">Page metadata</text>
+<path d="M62 739l4 4 -4 4" fill="none" stroke="#a5aebc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="82" y="749" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">Managed images</text>
+<path d="M62 777l4 4 -4 4" fill="none" stroke="#a5aebc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="82" y="787" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">Public files and output</text>
+<path d="M62 815l4 4 -4 4" fill="none" stroke="#a5aebc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="82" y="825" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#cbd0d8" font-weight="400">Requirements and limits</text>
+<text x="374" y="214" font-family="Arial, Helvetica, sans-serif" font-size="12.5" fill="#a5aebc" font-weight="400">Reference</text>
+<text x="447" y="214" font-family="Arial, Helvetica, sans-serif" font-size="12.5" fill="#717b88" font-weight="400">/</text>
+<text x="464" y="214" font-family="Arial, Helvetica, sans-serif" font-size="12.5" fill="#a5aebc" font-weight="400">Site model</text>
+<text x="541" y="214" font-family="Arial, Helvetica, sans-serif" font-size="12.5" fill="#717b88" font-weight="400">/</text>
+<text x="558" y="214" font-family="Arial, Helvetica, sans-serif" font-size="12.5" fill="#d4dae2" font-weight="400">Site files</text>
+<text x="374" y="283" font-family="Arial, Helvetica, sans-serif" font-size="42" fill="#f1f3f6" font-weight="500">Site files</text>
+<text x="374" y="328" font-family="Arial, Helvetica, sans-serif" font-size="19" fill="#cbd0d8" font-weight="400">A Norna site is a folder of Markdown, YAML settings</text>
+<text x="374" y="357" font-family="Arial, Helvetica, sans-serif" font-size="19" fill="#cbd0d8" font-weight="400">and images. Norna builds these sources into static HTML.ᵃ</text>
+<path d="M1108 315V377" fill="none" stroke="#697482" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1117" y="325" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#a5aebc" font-weight="400">a</text>
+<text x="1133" y="328" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#a5aebc" font-weight="400">Edit the source files.</text>
+<text x="1133" y="350" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#a5aebc" font-weight="400">Norna can rebuild the</text>
+<text x="1133" y="372" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#a5aebc" font-weight="400">generated HTML.</text>
+<text x="374" y="415" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#eff1f5" font-weight="500">Source layout</text>
+<text x="374" y="451" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#cbd0d8" font-weight="400">The default source folder is site/. An asterisk marks</text>
+<text x="374" y="479" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#cbd0d8" font-weight="400">a required file or directory.</text>
+<rect x="374" y="505" width="654" height="209" rx="6" fill="#15181d" stroke="#363d47"/>
+<text x="394" y="532" font-family="Menlo, Monaco, monospace" font-size="12.5" fill="#bcc5d2" font-weight="400">Source files · excerpt</text>
+<path d="M374 548H1028" fill="none" stroke="#363d47" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="394" y="577" font-family="Menlo, Monaco, monospace" font-size="15" fill="#cbd5e3" font-weight="400">site/</text>
+<text x="394" y="600" font-family="Menlo, Monaco, monospace" font-size="15" fill="#cbd5e3" font-weight="400">├── config.yaml *</text>
+<text x="394" y="623" font-family="Menlo, Monaco, monospace" font-size="15" fill="#cbd5e3" font-weight="400">├── theme.yaml *</text>
+<text x="394" y="646" font-family="Menlo, Monaco, monospace" font-size="15" fill="#cbd5e3" font-weight="400">├── pages/ *</text>
+<text x="394" y="669" font-family="Menlo, Monaco, monospace" font-size="15" fill="#cbd5e3" font-weight="400">│   └── 000-home/content.md *</text>
+<text x="394" y="692" font-family="Menlo, Monaco, monospace" font-size="15" fill="#cbd5e3" font-weight="400">└── public/</text>
+<text x="374" y="767" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#eff1f5" font-weight="500">Page folders</text>
+<text x="374" y="804" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#cbd0d8" font-weight="400">Additional pages sit beside Home. Put a page’s children</text>
+<text x="374" y="832" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#cbd0d8" font-weight="400">inside its own pages/ directory.ᵇ</text>
+<path d="M1108 791V853" fill="none" stroke="#697482" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1117" y="801" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#a5aebc" font-weight="400">b</text>
+<text x="1133" y="804" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#a5aebc" font-weight="400">A category groups pages</text>
+<text x="1133" y="826" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#a5aebc" font-weight="400">without requiring an</text>
+<text x="1133" y="848" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#a5aebc" font-weight="400">authored overview page.</text>
+</g>
+<rect x="32" y="104" width="1536" height="798" rx="10" fill="none" stroke="#424952"/>
+<text x="32" y="946" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#20252d" font-weight="700">Områdesmenyn under Reference</text>
+<text x="1056" y="946" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#20252d" font-weight="700">Sidans rubriker följs av undersidor</text>
+<rect x="32" y="965" width="1000" height="354" rx="10" fill="#1b1d21"/>
+<rect x="52" y="981" width="960" height="38" rx="5" fill="#202329"/>
+<text x="74" y="1006" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#e9ecf1" font-weight="400">Reference</text>
+<path d="M158 989V1010" fill="none" stroke="#49515d" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M173 1001l4 -4 4 4" fill="none" stroke="#becfe3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="237" y="1006" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#a5aebc" font-weight="400">Examples</text>
+<text x="345" y="1006" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#a5aebc" font-weight="400">FAQ</text>
+<rect x="52" y="1030" width="960" height="269" rx="10" fill="#17191d" stroke="#333943"/>
+<rect x="59" y="1037" width="946" height="255" rx="5" fill="#1d2025" stroke="#323942"/>
+<path d="M374 1055V1275 M689 1055V1275" fill="none" stroke="#373e48" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="80" y="1072" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#e9ecf1" font-weight="400">Site model</text>
+<text x="80" y="1100" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">Files, pages and URLs.</text>
+<text x="80" y="1122" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">How a site is organised.</text>
+<text x="80" y="1190" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#e9ecf1" font-weight="400">Configuration</text>
+<text x="80" y="1218" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">Site settings and</text>
+<text x="80" y="1240" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">visual appearance.</text>
+<text x="397" y="1072" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#e9ecf1" font-weight="400">Content</text>
+<text x="397" y="1100" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">Markdown, content blocks</text>
+<text x="397" y="1122" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">and media.</text>
+<text x="397" y="1190" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#e9ecf1" font-weight="400">Commands</text>
+<text x="397" y="1218" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">Create, check and</text>
+<text x="397" y="1240" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">build a site.</text>
+<text x="713" y="1072" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#e9ecf1" font-weight="400">Reader controls</text>
+<text x="713" y="1100" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">Display, search and</text>
+<text x="713" y="1122" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">navigation while reading.</text>
+<text x="713" y="1190" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#e9ecf1" font-weight="400">Working on a site</text>
+<text x="713" y="1218" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">Edit, preview and</text>
+<text x="713" y="1240" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">publish your site.</text>
+<path d="M181 1066l4 4 8-9" fill="none" stroke="#becfe3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1056" y="965" width="512" height="354" rx="10" fill="#1b1d21"/>
+<rect x="1075" y="986" width="253" height="312" rx="6" fill="#191b1f" stroke="#343c46"/>
+<rect x="1086" y="998" width="230" height="32" rx="4" fill="#2b323c"/>
+<path d="M1098 1010l4 4 4 -4" fill="none" stroke="#becfe3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1120" y="1020" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#e9ecf1" font-weight="400">Installation</text>
+<path d="M1109 1040V1236" fill="none" stroke="#3b4552" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1125 1040V1104" fill="none" stroke="#53606f" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1138" y="1062" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#bdc7d4" font-weight="400">Installation details</text>
+<text x="1138" y="1093" font-family="Arial, Helvetica, sans-serif" font-size="13.5" fill="#bdc7d4" font-weight="400">Examples</text>
+<path d="M1122 1136l3 3 -3 3" fill="none" stroke="#a5aebc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1141" y="1144" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#cbd0d8" font-weight="400">macOS</text>
+<path d="M1122 1175l3 3 -3 3" fill="none" stroke="#a5aebc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1141" y="1183" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#cbd0d8" font-weight="400">Linux</text>
+<path d="M1122 1214l3 3 -3 3" fill="none" stroke="#a5aebc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1141" y="1222" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#cbd0d8" font-weight="400">Windows</text>
+<text x="1350" y="1062" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#cbd0d8" font-weight="400">Sidans H2</text>
+<text x="1350" y="1084" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#cbd0d8" font-weight="400">kommer först.</text>
+<text x="1350" y="1150" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#cbd0d8" font-weight="400">Undersidor</text>
+<text x="1350" y="1172" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#cbd0d8" font-weight="400">kommer därefter.</text>
+<text x="1350" y="1240" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">Texten öppnar sidan.</text>
+<text x="1350" y="1262" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#a5aebc" font-weight="400">Pilen fäller ut.</text>
+<text x="32" y="1344" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#586271" font-weight="400">Sex likvärdiga val. Texten öppnar ingångssidan; pilen öppnar områdesmenyn.</text>
+<text x="1056" y="1344" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#586271" font-weight="400">Installation från dagens navigationsdemo.</text>
+<path d="M32 1363H1568" fill="none" stroke="#d5dce4" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="32" y="1386" font-family="Arial, Helvetica, sans-serif" font-size="12.5" fill="#586271" font-weight="400">Statisk SVG-prototyp · även andra sidors H2 kan fällas ut · oförändrad fetgrad vid val · sidenotes intill sina stycken</text>
+</svg>

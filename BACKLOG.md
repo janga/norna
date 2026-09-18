@@ -28,7 +28,10 @@ when implementation can begin.
 
 `Next` is the exact implementation sequence after `Now`.
 
-No items are queued here.
+- [`BL-122` Area navigation and integrated H2 prototype](docs/design/backlog/BL-122-area-navigation-prototype.md):
+  **High priority; ready after BL-129 Regression tests for the navigation
+  latency correction.** Prototype automatic area selection and integrated H2
+  navigation to free room for sidenotes, following the approved sketch.
 
 ## External Gate
 
@@ -80,10 +83,6 @@ verified and approved for documentation.
 
 These items have no implementation position yet. Move one into `Now`, `Next`,
 or `Later` only after the stated evidence or design decision exists.
-
-- `BL-122` **Reconsider the right-hand menu:**
-  **High priority; ingen analys gjord.** Question the right-hand menu in
-  general, since the user finds that it competes with sidenotes.
 
 - `BL-113` **Page References: Needs evidence; unprioritized wishlist idea.**
   Consider an expandable reference to one page with selected heading links and
