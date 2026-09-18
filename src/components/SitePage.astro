@@ -108,7 +108,9 @@ const resolvedSections: ResolvedSection[] = categoryDestination ? [{
 		type: 'page-list',
 		pages: categoryDestination.children.map((node) => ({
 			title: node.title,
-			pathname: node.pathname,
+			pathname: process.env.NORNA_NAVIGATION_PROTOTYPE === '1'
+				? siteModel.categoryDestinations.byPathname.get(node.pathname)?.target?.pathname ?? node.pathname
+				: node.pathname,
 			description: node.kind === 'page' ? node.entry.data.page?.description : undefined,
 		})),
 	}],

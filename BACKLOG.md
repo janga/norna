@@ -16,22 +16,16 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- `BL-122` **Reconsider the right-hand menu:**
-  **High priority; ingen analys gjord.** Question the right-hand menu in
-  general, since the user finds that it competes with sidenotes.
-- [`BL-120` Smooth documentation navigation prototype](docs/design/backlog/BL-120-smooth-documentation-navigation-prototype.md):
-  **In progress:** a diagnostic plan and result-record format are documented
-  for navigation flashes and initial menu jumps; execution, prototype
-  approval, regression checks and the implementation commit remain pending.
+- [`BL-123` Navigation JavaScript refactoring assessment](docs/design/backlog/BL-123-navigation-javascript-refactoring-assessment.md):
+  **High priority; ready for analysis.** Assess the completed
+  `BL-120` Smooth documentation navigation prototype and propose only bounded,
+  evidence-backed improvements; implementation is a separate follow-up.
 
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
 
-- [`BL-123` Navigation JavaScript refactoring assessment](docs/design/backlog/BL-123-navigation-javascript-refactoring-assessment.md):
-  **High priority; ready for analysis after `BL-120` Smooth documentation
-  navigation prototype.** Identify justified refactoring needs and their
-  risks from the completed prototype; implementation is a separate follow-up.
+No items currently queued.
 
 ## External Gate
 
@@ -83,6 +77,10 @@ verified and approved for documentation.
 
 These items have no implementation position yet. Move one into `Now`, `Next`,
 or `Later` only after the stated evidence or design decision exists.
+
+- `BL-122` **Reconsider the right-hand menu:**
+  **High priority; ingen analys gjord.** Question the right-hand menu in
+  general, since the user finds that it competes with sidenotes.
 
 - `BL-113` **Page References: Needs evidence; unprioritized wishlist idea.**
   Consider an expandable reference to one page with selected heading links and

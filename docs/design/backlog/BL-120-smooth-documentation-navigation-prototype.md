@@ -1,5 +1,11 @@
 # BL-120 Smooth documentation navigation prototype
 
+Completed as an opt-in prototype on 2026-09-18. The user approved the visual
+result, and the focused checks below are complete. This is not approval to
+enable the experiment by default or promote it to supported behavior. The
+[final verification record](#final-approval-and-verification) supersedes the
+earlier pending-review notes in this investigation history.
+
 ## Purpose
 
 Evaluate whether Norna can make moving between documentation pages feel
@@ -142,12 +148,12 @@ public setting or a client-side router.
 
 ## Local prototype
 
-The implementation is available for local visual review. The brief was
+The implementation remains available for local comparison. The brief was
 committed separately as `fbc3561`. The current trial combines constant menu
 font weights, stable headings during expansion, the selected collapse
 behavior based on Linear, and the Safari snapshot correction described below.
-Visual approval, maintained regression checks and the implementation commit
-remain pending.
+The final trial was visually approved on 2026-09-18; verification and remaining
+limits are recorded at the end of this brief.
 
 Prepare a disposable copy and start the two registered review environments
 from the repository root:
@@ -437,8 +443,10 @@ uninvestigated backlog note.
 
 ## Blink investigation plan and results
 
-**Status: plan recorded before execution.** The six comparisons below have
-not been run. This record distinguishes reported symptoms, verified evidence,
+**Status: further adjustment required after visual review.** The user did not
+approve the candidate on 2026-09-18. The route, state and placement
+corrections have been checked in four installed browsers. This record
+distinguishes reported symptoms, verified evidence,
 hypotheses, results and implementation decisions. Update it after each
 comparison; keep `BACKLOG.md` as the short status index.
 
@@ -511,8 +519,9 @@ that reproduces the fault; expand coverage when evidence justifies it.
 
 ### Hypotheses and planned comparisons
 
-All rows are **planned, not run**. Begin with the route and cache/state
-comparisons. Change one condition at a time on a reproducible sequence.
+The rows define the planned comparisons; execution and limits are recorded
+below. Begin with the route and cache/state comparisons. Change one condition
+at a time on a reproducible sequence.
 
 | Check | Unverified hypothesis | Comparison and evidence sought |
 | --- | --- | --- |
@@ -539,24 +548,37 @@ defines a fixed sidebar, and its
 [menu stylesheet](https://static.linear.app/web/_next/static/css/Item.Cx9IGCq5.css)
 keeps the label weight unchanged when the current page changes.
 
-**Behavior observed:** in Chrome, opening Getting started and following Start
-Guide kept that group expanded. The active and adjacent menu links both had
-computed weight 510. This observation does not establish whether the same
-menu DOM nodes survived the navigation.
+**Behavior measured on 2026-09-17:** in installed Chrome 153.0.8010.48 at
+1200×1000, five alternating link clicks between
+[Update cycles](https://linear.app/docs/update-cycles) and
+[Cycle graph](https://linear.app/docs/cycle-graph) retained the same window,
+navigation element, watched link and scroll container. The article element
+was replaced on each arrival. The menu's scroll position stayed at 64px, the
+watched link stayed at viewport y=455px, and its font weight stayed at 510.
+There was still only one document-navigation timing entry after all five
+clicks. These DOM identity checks establish persistence in this flow, beyond
+the earlier observation that the group merely looked unchanged.
 
-**Proposed comparison:** determine whether menu elements persist or are
-recreated, how their scroll position is preserved, and when the destination
-content replaces the current content. Inspect prefetch and readiness alongside
-visible behavior. Record each conclusion as observed behavior, inspected code
-or an inference, with its source and limits. Norna currently navigates between
-HTML documents; any proposal to adopt client routing remains a separate
-architecture decision. Existing motion observations are in the
+The network record showed React Server Component requests and image requests,
+rather than new HTML document navigations. A request for Cycle graph started
+before the explicit hover, so this run does not establish hover as the prefetch
+trigger. Destination articles were inspected after arrival; the exact readiness
+threshold for replacing them was not isolated with delayed resources.
+Evidence is in `.local/navigation-prototype/linear-comparison/results.json`;
+the adjacent capture was inspected. This is one flow in Chrome, not a claim
+about every Linear page or browser.
+
+**Consequence for this trial:** Linear preserves the menu by retaining it in
+the document. Norna currently creates a new HTML document, so it must establish
+matching menu state before the new frame is displayed. Keeping disclosure
+state, label weight and outline placement stable addresses the measured
+differences without changing the trial's architecture. Client routing remains
+a separate product decision. Existing motion observations are in the
 [preset design guide](../preset-design-guide.md#navigation-continuity-prototype).
 
 ### Result and decision record
 
-No results from the six new comparisons are recorded yet. For each completed
-comparison, append a dated entry with:
+For each completed comparison, append a dated entry with:
 
 - **Run and conditions:** check name, browser/version and OS, source revision
   including local changes, URL, viewport, Appearance, motion preference,
@@ -577,3 +599,383 @@ comparison, append a dated entry with:
 An unexecuted check stays planned; absence of a flash in a limited run is
 reported with its conditions and repetition count. Promote a hypothesis to a
 verified finding only when the recorded comparison supplies evidence for it.
+
+### 2026-09-17: Header routes and the first five page clicks
+
+The starting revision is `b8855a1` plus the uncommitted opt-in prototype.
+Installed Safari 26.6.2 was measured at 1200×1000 with dark Appearance. A
+loopback proxy injected frame and lifecycle measurements into the streamed
+HTML; the ordinary 160ms article duration was retained. Evidence and the
+disposable runner are under `.local/navigation-prototype/header-investigation/`
+and `.local/navigation-prototype/header-investigation.mjs`.
+
+Following Getting Started and FAQ from the sticky header loaded their category
+redirect document before the destination page. Each redirect produced two
+animation-frame samples with its fallback heading and without the site header
+or left menu. Neither that document nor the final arrival had a View
+Transition. An A/B variant changed the links to their already-known final
+destinations; both final arrivals then had a View Transition and no intermediate
+document. This identifies a concrete interruption in the page frame. Frame
+geometry does not by itself establish the appearance of every painted pixel.
+
+The first five page links in Getting Started also exposed automatic disclosure
+changes. Visiting Grow Your Site, Choose A Theme and Prepare Your Site opened
+their heading outlines, moving subsequent page labels by approximately 162,
+97 and 145 CSS pixels. Revisiting pages whose outlines were already open did
+not add this movement. The shift follows disclosure state, even when the menu
+scroll position stays zero; it is not a font-size change.
+
+The original runner's reset cleared storage before leaving a page, allowing
+the departure handler to write it again. Its later cases are therefore not
+claimed as fresh-state comparisons. The A/B runner was corrected to reset at
+the next document's start, after the departure. Cache state has not yet been
+isolated by these route comparisons, and remains a separate controlled check.
+
+The candidate now uses the existing category-destination model for prototype
+header links and retains explicitly saved outline/disclosure states on page
+clicks. Direct arrivals still reveal the path to the current page, and
+disclosure controls remain available. Both changes stay behind the prototype
+switch and require visual review.
+
+### 2026-09-17: Controlled cache and saved-state comparison
+
+Installed Safari 26.6.2, 1200×1000, dark Appearance and the normal 160ms article
+transition were retained. Each condition used a new automation session and
+proxy origin. Storage was cleared at the next document's start, after the old
+page's departure handlers. The saved-state variant then explicitly opened
+Getting Started and Grow Your Site's outline. Prefetch event handling was
+suppressed by the diagnostic script in all four conditions.
+
+The cold variant served resources with `Cache-Control: no-store`. The warm
+variant first visited the destination, then served non-HTML resources with
+`max-age=3600`; HTML remained uncached. Each condition followed Getting Started
+in the header and the same five page links listed above.
+
+| Resource cache | Menu state | Cached resources on header arrival | Largest label movement across five clicks |
+| --- | --- | --- | --- |
+| Disabled | Fresh | 0 of 33 | 0px |
+| Disabled | Saved | 0 of 33 | 0px |
+| Warm | Fresh | 33 of 33 | 0px |
+| Warm | Saved | 33 of 33 | 0px |
+
+Cache status was checked through resource transfer sizes and proxy requests;
+no HTML prefetch requests occurred. Menu scroll position stayed zero and no
+script errors were recorded. Results are under
+`.local/navigation-prototype/header-investigation/candidate-matrix-*/`.
+This comparison supports the state correction under both loading conditions;
+it does not prove the absence of every possible painted flash.
+
+### 2026-09-17: Wide-layout placement and final browser comparisons
+
+At 1440px, the first Reference page click still moved later labels upward by
+about 143px in Chrome, Firefox and Brave despite unchanged disclosure state.
+The cause was the existing responsive rule: a page with a right-hand contents
+rail hid every left-tree outline, while the Reference category destination
+had no contents rail and displayed those outlines. At 1200px the left-tree
+outlines remained available on both pages and this difference did not occur.
+
+The prototype now consistently hides left-tree outlines above 1280px, including
+category destinations. At narrower widths they remain in the tree. This keeps
+the established wide-page placement constant; it does not decide the separate
+`BL-122` Reconsider the right-hand menu.
+
+With this correction, all five Reference page clicks at 1440×1000 showed 0px
+label displacement in installed Chrome 153.0.8010.48, Brave's Chromium
+153.0.8010.48 and Firefox 156.0. Earlier candidate checks covered Getting
+Started, FAQ and Reference at both 1200px and 1440px; only the wide Reference
+case failed before the placement correction. Installed Safari 26.6.2 then
+passed all three header destinations and five subsequent clicks per area at
+1440×1000, with 0px label displacement and no recorded script errors.
+
+A final focused menu comparison ran at 1200×1000 in all four installed
+browsers: same-page click, different-page click, opening and closing, each near
+the top and near the bottom, once per combination (32 cases). Page clicks and
+opening retained scroll position from the first measured frame. Closing near
+the top was stationary; closing near the bottom followed the shrinking native
+scroll limit with no extra repositioning. Geometry and lifecycle measurements
+remain distinct from proof about individual painted pixels.
+
+Evidence and runners are under `.local/navigation-prototype/`:
+`header-other-browsers/`, `header-final-browsers/`,
+`header-investigation/candidate-final-1440/` and `blink-final-matrix/`.
+Chrome/Brave used isolated Playwright sessions with the documented
+`RenderDocument` launch correction; Firefox used its native BiDi endpoint and
+a disposable profile; Safari used WebDriver and the streaming loopback probe.
+No delayed resources or extended animation durations were used in these final
+comparisons. Prototype runtime changes remain opt-in.
+
+### 2026-09-17: History limit and verification boundary
+
+The previously recorded Playwright WebKit 26.5 Back-to-hash discrepancy still
+reproduces. Instrumentation found restoration to the saved reading position
+at `pagereveal`, followed by native movement to the hash target by `load`, with
+no intervening JavaScript `scrollTo` or `scrollIntoView` call. Suppressing the
+late header-offset update did not resolve it. This narrows the observation but
+does not establish a browser defect or justify a history workaround.
+
+The equivalent programmatic-scroll sequence in installed Safari 26.6.2 at
+1440×1000 restored exactly 1159px after Back, using its cached history entry.
+The additional wheel/keyboard probes did not move the document before leaving
+and therefore supply no evidence about restoring a changed reading position.
+Safari passing does not close the distinct WebKit failure. The maintained
+prototype suite includes its reproducer with an explicit expected failure at
+the final position assertion; setup or navigation errors are not expected.
+Resolve this discrepancy before promoting the prototype to supported behavior.
+
+The controlled route/state comparisons and the wide-layout reproduction
+identified concrete causes, so a full matrix of artificial CSS/font/script
+delays, earliest-click timings and prefetch timings was not run. It remains
+available if human review identifies residual flashing. The earlier Safari
+snapshot A/B comparison remains the evidence for keeping the left menu in the
+root snapshot. Linear's exact article-readiness threshold also remains
+unmeasured; persistent menu DOM was established independently.
+
+The candidate's desktop light/dark, mobile dark and open mobile-menu light
+captures were inspected using `npm run review:capture -- scratch`. User review
+has been requested at the normal prototype URL. Maintained checks and the
+implementation commit remain pending that review; diagnostic success is not
+substituted for the user's assessment of motion.
+
+The focused suite is `tests/navigation-prototype.spec.ts`, run against a fresh
+documentation-site server with:
+
+```sh
+NORNA_NAVIGATION_PROTOTYPE=1 node scripts/test-navigation.mjs --site-dir site tests/navigation-prototype.spec.ts
+```
+
+It uses Playwright WebKit for repeatable frame/state assertions and explicitly
+records the history limit above. The installed-browser comparisons provide
+separate evidence; this suite is not a claim that Safari and WebKit are
+interchangeable. Normal navigation/presentation checks verify the unchanged
+released behavior after approval. The complete release test chain is not
+needed for this opt-in prototype.
+
+Before visual approval, the candidate also passed `npm run test:documentation`
+and `git diff --check`. A production build with `NORNA_NAVIGATION_PROTOTYPE=1`
+and an isolated `NORNA_INTERNAL_STATE_DIR` passed `npm run build`, including
+its content/configuration checks, and generated 78 pages. This checks the new
+server-rendered category destination integration and conditional bundle, not
+the user's assessment of motion. Playwright successfully listed the nine new
+prototype cases; executing them and the normal navigation/presentation suites
+remains pending. No release, push or implementation commit has been made.
+
+### 2026-09-18: Fullscreen scroll and link review
+
+The user rejected the candidate and supplied these Safari fullscreen cases:
+
+| Reported interaction | Reported result | Control case |
+| --- | --- | --- |
+| Two-finger article scroll on Site files | Sluggish | VS Code editor support scrolls normally |
+| Scroll the left menu on Legacy source integration | Cannot scroll downward | Page metadata scrolls normally |
+| Click Site model or Configuration text in the left menu | Expands instead of opening the destination | Page-title links should open the page top |
+| Scroll the menu upward on Site files at `#page-folders` | Rows appear above the sticky filter | The filter area should mask passing rows |
+| Follow a generated child link on Reference | Strong flash | Direct page links preserve the navigation frame |
+
+The user requested renewed checks in Safari, Chrome, Firefox and Brave,
+including internal links in prose and relevant external links. The scroll
+reports remain observations from the user; geometry-only page-click tests
+from the previous round do not cover physical trackpad behavior.
+
+#### Reproduction and corrections
+
+The generated Reference overview linked to `/reference/site/` and
+`/reference/configuration/`. All four browsers visited a category redirect
+without the navigation frame before reaching the content page. Safari's
+measured intermediate document lasted about 125ms. The prototype now resolves
+these overview links through the existing category-destination model and
+links directly to the final page. This is the same concrete interruption
+previously corrected in header links; it does not establish that every painted
+flash has been eliminated.
+
+Site model and Configuration were category disclosure summaries, so clicking
+their text deliberately toggled them in the baseline. The trial now makes
+category text an ordinary link to the category destination; the adjacent
+chevron still opens and closes the branch. This is a prototype behavior
+change in response to the user's expectation, not a correction to a misplaced
+page-link hit area. It also applies to the compact menu and remains gated by
+`NORNA_NAVIGATION_PROTOTYPE=1`.
+
+The left scrollport has 20px of top padding. Its sticky controls did not cover
+that band when rows scrolled behind them. Hit tests in all four browsers found
+a page link in the exposed band, and native Safari inspection showed the text
+above the filter. A prototype-only background extension now covers that band.
+Corrected hit tests in Chrome, Brave and Firefox reach the controls, not an
+underlying menu link.
+
+#### Renewed browser evidence
+
+Chrome and Brave (Chromium 153.0.8010.48) and Firefox 156.0 passed the corrected
+category checks: both category titles open the intended page at its top;
+chevrons open and close without navigating. Both generated overview links
+now reach the final content document directly. Chrome and Brave record a
+native View Transition on arrival. Firefox uses ordinary document navigation.
+The measurements establish destinations, lifecycle and geometry, not a
+complete visual judgment of the transition.
+
+Actual prose links from Site files were followed to Pages and categories,
+and to the Page themes fragment on Theme configuration. All three browsers
+reached the correct destination; the fragment settled within 1px of the
+sticky-header offset. The real external contributor link from VS Code editor
+support opened its GitHub README and retained the fragment in all three.
+An initial runner attempted a same-page link that was only text inside a code
+example; that attempt is excluded. Corrected click probes verify the visible
+hit area before activation, including wrapped inline links.
+
+The scroll comparison used five 160px wheel inputs for the article on Site
+files and VS Code editor support, plus the menu on those pages, Legacy source
+integration and Page metadata. Chrome and Brave scrolled each article 800px
+and each menu to its expected limit without moving the document. Firefox
+also reached those limits but moved the document by 160px in the menu cases;
+that separate overscroll observation remains to be isolated. No script scroll
+writes or cancelled wheel events were recorded in these cases.
+
+Safari's initial wheel attempt delivered one event without moving the page;
+later inputs did not arrive. A focused retry reported the automation document
+as hidden and unfocused even after the user brought Safari forward. A native
+UI attempt worked in a normal window earlier, but fullscreen input and later
+window lookup failed in the automation tool. These are invalid scroll
+measurements, not evidence that the user's scroll fault is fixed or caused by
+Safari itself. The failed session also left Safari reporting an existing
+WebDriver pairing after its driver had exited. Do not repeat the same input
+loop or mark Safari gesture coverage complete. No runtime wheel interception
+or speculative scroll workaround was added.
+
+Diagnostic artifacts are under `.local/navigation-prototype/scroll-review/`,
+with separate logs for `link-external-*` and `safari-wheel-*`. Earlier link
+attempts that missed their target are superseded by `corrected-hit` results.
+The follow-up below supersedes the initial Safari input limitation. Physical
+trackpad inertia and the user's subjective scroll assessment remain distinct
+from injected wheel input.
+
+#### Follow-up: Safari input, reachable menu end and regression checks
+
+After the user made Safari available again, a fresh session reported a visible,
+focused document. A fullscreen sanity check at 1470×923 delivered a trusted
+160px wheel event and moved the article 160px. Reusing the original wheel
+sequence still delivered only the first event. A runner using a separate
+wheel source for each action and zero-duration inputs delivered all five
+inputs on every reported page. Both articles moved 800px; all four menu cases
+moved the remaining 600px to their scroll limit without moving the article,
+cancelling an event, or recording a JavaScript scroll write. This verifies
+those injected inputs, not physical two-finger inertia or a diagnosis of the
+original sluggishness.
+
+Safari also passed the category, generated-overview, prose-link, fragment and
+real external-link checks. Chevron checks use an actual pointer position:
+WebDriver's element-click operation on a whole summary can click its nested
+text link instead of the arrow. The pointer test verifies opening and closing
+both Site model and Configuration without navigation. Both category text
+links open the correct destination at its top. Generated overview and prose
+page arrivals participate in native transitions; the fragment aligns within
+1px of the header. The filter's top band now masks rows in Safari as well.
+
+The bottom-of-menu check found an additional concrete layout defect. At a
+920px viewport height with the notice visible, the tree started at about
+146.6px but extended to 955.6px. At maximum scroll, the last row ended at
+929.5px and remained partly below the window. Reaching `scrollTop`'s limit
+was therefore insufficient to prove that all menu content was accessible.
+This could contribute to the reported stuck-menu impression, but is not
+established as the cause of every reported scroll symptom.
+
+The prototype now reserves the space above the tree when calculating its
+maximum height. It establishes that limit before restoring a saved position,
+and updates it when the header, notices or viewport change. Article scrolling
+does not resize the tree. After correction, Chrome, Brave and Firefox place
+the tree's bottom at about 899.6px and the final row at about 874px in a 920px
+viewport. Safari's final scroll run also leaves the final row fully visible,
+with all five wheel inputs delivered in each case. A regression case checks
+the end of the menu before and after article scrolling and banner dismissal.
+
+Firefox's extra document movement at a menu scroll boundary also occurs in
+a minimal static HTML fixture without Norna scripts: `contain`, `none` and
+`auto` all moved the document by 160px through the tested BiDi input path.
+This isolates the observation from Norna's navigation JavaScript; it does not
+establish whether native Firefox trackpad input behaves the same way. No
+wheel-cancellation workaround was added to the site. Evidence is in
+`firefox-containment.log` and its disposable runner.
+
+The focused prototype suite now has 15 cases: 14 passed normally and the
+known Playwright WebKit Back-to-hash case failed as expected at its final
+assertion. The final full-file run completed successfully in 38.7 seconds.
+Initial failures exposed test clicks in link padding occupied by the separate
+arrow, and clicks while native transition snapshots still owned hit testing.
+The runner now targets the actual text and waits for it to receive pointer
+input. This run therefore does not claim coverage of input during an active
+transition snapshot.
+
+Registered captures were inspected for desktop light/dark and the open compact
+menu in light/dark. Final desktop captures cover Legacy source integration
+after the scrollport-height correction. Public reference changes remain
+deferred because this is still an opt-in prototype, not supported behavior.
+
+The final opt-in `npm run build` passed content and configuration checks and
+built 78 pages, with 68 pages in the static search index, using isolated
+`.local/navigation-prototype/final-review-build/.norna` state. The normal
+`review:test -- navigation` and `review:test -- presets` suites are deliberately
+reserved for the approved visual result. No full release test chain, commit,
+push or release was performed in this review round.
+
+Visual approval and the implementation commit remain pending. Do not begin
+[BL-123 Navigation JavaScript refactoring assessment](BL-123-navigation-javascript-refactoring-assessment.md)
+before this prototype is completed and committed.
+
+#### Follow-up: a visible ending to the navigation tree
+
+The next review of VS Code editor support found that all menu content was
+visible, but the space below Convert legacy site sources was too small to
+make the end of the tree clear. The prototype now uses `3rem` of bottom
+padding instead of `1.25rem`. This is a spacing trial for visual review;
+it does not add temporary filler to preserve a collapsing heading's position.
+
+Chrome inspection at maximum menu scroll shows about 54px below the final
+page link at 1470×923. At 1200×800, where expanded page sections also appear
+in the tree, about 61px remains below the final section link. Screenshots
+were inspected for both layouts and for desktop light/dark appearance.
+The existing browser and build results above precede this spacing change.
+Navigation regression checks and a new build remain deferred until visual
+approval, following the project's human-first review rule.
+
+## Final approval and verification
+
+On 2026-09-18 the user reported "Ser bra ut nu" and approved the visual result,
+including the added space below the navigation tree. The user then authorized
+completion of this item followed by
+[BL-123 Navigation JavaScript refactoring assessment](BL-123-navigation-javascript-refactoring-assessment.md).
+That assessment starts from this implementation's commit, with no runtime
+refactoring included in the assessment itself.
+
+Checks after approval:
+
+- `npm run review:test -- navigation`: 62 cases passed; one exposed an obsolete
+  header-link assertion from before
+  [BL-112 Category destinations](BL-112-category-destinations.md).
+  Commit `1d99572` deliberately changed global category links to the category
+  URL, as that item's Navigation And Integration contract specifies. The test
+  now checks `/guides/` and follows the link to `/guides/installation/`, checking
+  the destination heading as well. The corrected case passed via
+  `node scripts/test-navigation.mjs --site-dir fixtures/nested-pages/site tests/navigation-tree.spec.ts --grep 'keeps local category labels unlinked'`.
+  The other 62 cases were not repeated after this test-only correction.
+- `npm run review:test -- presets`: all 38 cases passed.
+- `NORNA_NAVIGATION_PROTOTYPE=1 node scripts/test-navigation.mjs --site-dir site tests/navigation-prototype.spec.ts --grep 'last menu row|activated heading|deeply scrolled tree'`:
+  all three cases passed after the bottom-spacing change. This covers reachable
+  menu content, stable expansion/collapse and retained deep menu position.
+- `NORNA_NAVIGATION_PROTOTYPE=1 NORNA_INTERNAL_STATE_DIR="$PWD/.local/navigation-prototype/approved-build/.norna" npm run build`:
+  passed, including content/configuration checks; 78 pages and 68 indexed pages.
+- `npm run test:documentation` and `git diff --check`: passed for the final
+  completion record.
+
+The earlier full prototype suite passed 14 cases normally and recorded the
+known WebKit Back-to-hash case as an expected failure. It was not repeated in
+full for the final spacing-only change. The WebKit discrepancy still needs
+resolution before promotion. The user's approval concerns the reviewed reading
+and navigation experience. Automated scroll evidence remains the injected-input
+measurements described above, not a measurement of physical gesture inertia.
+
+Both WebKit suite logs contain an initial Vite development-server message,
+`Importing a module script failed`, followed by a second request for the same
+first page and successful ready-state checks. Its cause was not isolated; the
+results do not establish an error-free development startup. The production
+build passed. The complete release test chain and a new four-browser matrix
+were deliberately not run for the spacing-only change. No push or release was
+performed. Public reference remains unchanged because the experiment is not a
+supported feature.

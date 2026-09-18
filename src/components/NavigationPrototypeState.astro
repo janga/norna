@@ -1,0 +1,74 @@
+---
+interface Props {
+	scope: 'desktop' | 'mobile';
+}
+
+const { scope } = Astro.props;
+const enabled = process.env.NORNA_NAVIGATION_PROTOTYPE === '1';
+---
+
+{enabled && (
+	<script is:inline data-navigation-state-scope={scope}>
+		(() => {
+			// Restore branches as the parser adds them, before they can be painted.
+			// pagereveal may precede this tree and is unavailable in some browsers.
+			const script = document.currentScript;
+			const container = script?.parentElement;
+			if (!container?.hasAttribute('data-navigation-root')) return;
+			const scope = script.dataset.navigationStateScope;
+			const initialized = new WeakSet();
+			const restore = (refresh = false) => {
+				try {
+					// Establish the scroll limit before restoring a position near its end.
+					if (scope === 'desktop' && container.parentElement) {
+						const flowTop = container.parentElement.getBoundingClientRect().top + window.scrollY;
+						const stickyTop = parseFloat(getComputedStyle(container).top) || 0;
+						container.style.setProperty('--navigation-scrollport-top', `${Math.ceil(Math.max(flowTop, stickyTop))}px`);
+					}
+					const root = container.dataset.navigationRoot ?? '/';
+					const sharedRoot = container.dataset.navigationStateRoot ?? root;
+					const storedSource = sessionStorage.getItem(`norna:tree-navigation:${scope}:${root}`);
+					const sharedSource = sessionStorage.getItem(`norna:tree-navigation:shared:${sharedRoot}`);
+					const stored = JSON.parse(storedSource ?? '{}');
+					const shared = JSON.parse(sharedSource ?? 'null') ?? stored;
+					const hasSavedState = storedSource !== null || sharedSource !== null;
+					const openPaths = Array.isArray(shared.openPaths) ? shared.openPaths : [];
+					for (const branch of container.querySelectorAll('.navigation-page-disclosure[data-page-path]')) {
+						if (!refresh && initialized.has(branch)) continue;
+						const revealAncestor = branch.dataset.currentBranch === 'true'
+							&& (!hasSavedState || branch.dataset.currentPage !== 'true');
+						branch.open = revealAncestor || openPaths.includes(branch.dataset.pagePath);
+						initialized.add(branch);
+					}
+					for (const branch of container.querySelectorAll('.navigation-page-sections-disclosure[data-page-path]')) {
+						if (!refresh && initialized.has(branch)) continue;
+						const storedOpen = shared.sectionOpenByPath?.[branch.dataset.pagePath];
+						branch.open = typeof storedOpen === 'boolean'
+							? storedOpen
+							: branch.dataset.currentPage === 'true';
+						initialized.add(branch);
+					}
+					let scrollContainer = container;
+					for (let candidate = container; candidate; candidate = candidate.parentElement) {
+						if (/auto|scroll/.test(getComputedStyle(candidate).overflowY)) {
+							scrollContainer = candidate;
+							break;
+						}
+					}
+					if (Number.isFinite(stored.scrollTop) && stored.scrollTop > 0) scrollContainer.scrollTop = stored.scrollTop;
+				} catch {
+					// Ordinary links and native details remain usable without storage.
+				}
+			};
+			restore();
+			const observer = new MutationObserver(() => restore());
+			observer.observe(container, { childList: true, subtree: true });
+			document.addEventListener('DOMContentLoaded', () => {
+				restore();
+				observer.disconnect();
+			}, { once: true });
+			// Reapply before a transition snapshot, including a cached history entry.
+			window.addEventListener('pagereveal', () => restore(true));
+		})();
+	</script>
+)}

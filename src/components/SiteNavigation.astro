@@ -1,6 +1,8 @@
 ---
+import NavigationPrototypeState from './NavigationPrototypeState.astro';
 import { Menu, Search, X } from '@lucide/astro';
 import projectConfig from '../../scripts/lib/project-config.mjs';
+import { createCategoryDestinationModel } from '../../scripts/lib/category-destinations.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
 import {
@@ -88,7 +90,12 @@ const isCurrentBranch = (node: SiteNode) => Boolean(currentPage && (
 	|| currentPage.pageDirectory.startsWith(`${node.pageDirectory}/pages/`)
 ));
 const pageHref = (page: SiteNode) => withBasePath(projectConfig.site.basePath, page.pathname);
-const getNavigationPage = (node: SiteNavigationNode) => node.node;
+const prototypeDestinations = process.env.NORNA_NAVIGATION_PROTOTYPE === '1'
+	? createCategoryDestinationModel(navigationEntries.map(({ node }) => node)).byPathname
+	: undefined;
+const getNavigationPage = (node: SiteNavigationNode) => (
+	prototypeDestinations?.get(node.node.pathname)?.target ?? node.node
+);
 const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
 const showSinglePageTopLink = !showSiteNavigation;
 const currentPageSectionCount = currentPageNavigation?.sections.length ?? 0;
@@ -214,6 +221,7 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 									data-navigation-root={pageHref(homePage)}
 									data-navigation-state-root={pageHref(homePage)}
 								>
+									<NavigationPrototypeState scope="mobile" />
 									{showSiteNavigation && (
 										<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.siteNavigation}>
 											<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>

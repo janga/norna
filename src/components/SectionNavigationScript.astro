@@ -68,6 +68,8 @@
 
 	const alignInitialHashTarget = () => {
 		if (!window.location.hash) return;
+		// The review prototype aligns after fonts settle and leaves history restoration alone.
+		if (document.documentElement.hasAttribute('data-navigation-prototype')) return;
 
 		try {
 			const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));

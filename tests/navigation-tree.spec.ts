@@ -286,15 +286,18 @@ test.describe('desktop tree navigation', () => {
 			.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
 	});
 
-	test('renders categories as unlinked labels while preserving descendant URLs', async ({ page }) => {
+	test('keeps local category labels unlinked and follows global category destinations', async ({ page }) => {
 		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 		const category = page.locator('.tree-local-navigation details[data-page-path="guides"]');
 		await expect(category.locator(':scope > summary')).toHaveText('Guides');
 		await expect(category.getByRole('link', { name: 'Guides', exact: true })).toHaveCount(0);
 		await expect(page.locator('.site-breadcrumbs li').first()).toHaveText('Guides');
 		await expect(page.locator('.site-breadcrumbs li').first().locator('a')).toHaveCount(0);
-		await expect(page.locator('.site-nav').getByRole('link', { name: 'Guides', exact: true }))
-			.toHaveAttribute('href', '/guides/installation/');
+		const globalCategory = page.locator('.site-nav').getByRole('link', { name: 'Guides', exact: true });
+		await expect(globalCategory).toHaveAttribute('href', '/guides/');
+		await globalCategory.click();
+		await expect(page).toHaveURL(/\/guides\/installation\/$/);
+		await expect(page.getByRole('heading', { level: 1, name: 'Installation', exact: true })).toBeVisible();
 	});
 
 	test('renders a direct child page list on the reading axis', async ({ page }) => {

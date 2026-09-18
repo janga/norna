@@ -5,6 +5,7 @@ import { getPresentationCssVariables } from '../../scripts/lib/presentation.mjs'
 import { getIconLinks, getSocialImageAsset } from '../lib/sitePublicAssets';
 import { withBasePath } from '../lib/basePath';
 import { getReaderPreferencesScript } from '../lib/readerPreferencesScript.mjs';
+import NavigationPrototype from '../components/NavigationPrototype.astro';
 import '../styles/global.css';
 
 type FrameColors = {
@@ -103,6 +104,7 @@ const socialImageUrl = socialImageAsset
 	? new URL(withBasePath(projectConfig.site.basePath, socialImageAsset.href), projectConfig.site.url).href
 	: null;
 const scrollBehavior = projectConfig.navigation.scrollBehavior === 'smooth' ? 'smooth' : 'auto';
+const navigationPrototype = process.env.NORNA_NAVIGATION_PROTOTYPE === '1';
 const formatPercent = (value: number) => `${value}%`;
 const formatViewportHeightPercent = (value: number) => `${value}svh`;
 const layoutSpacing = visualTheme.layout.spacing;
@@ -227,6 +229,7 @@ const readerPreferencesScript = readerPreferencesEnabled
 	data-reading-width={presentation.readerPreferences.defaults.readingWidth}
 	data-focus-reading={presentation.readerPreferences.defaults.focusReading}
 	data-section-tracking={contentsNavigation ? 'enabled' : undefined}
+	data-navigation-prototype={navigationPrototype ? projectConfig.site.basePath : undefined}
 	data-pagefind-ignore={searchable ? undefined : 'all'}
 	style={documentStyle}
 >
@@ -248,6 +251,7 @@ const readerPreferencesScript = readerPreferencesEnabled
 		{indexable && socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
 		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
 		{readerPreferencesScript && <script is:inline set:html={readerPreferencesScript} />}
+		{navigationPrototype && <NavigationPrototype />}
 		<style is:inline set:html={marginNoteLayoutCss} />
 		{indexable && <link rel="canonical" href={canonicalUrl} />}
 		<meta name="generator" content={Astro.generator} />
@@ -272,5 +276,6 @@ const readerPreferencesScript = readerPreferencesEnabled
 				</p>
 			</footer>
 		)}
+		{navigationPrototype && <span id="norna-prototype-ready" hidden></span>}
 	</body>
 </html>

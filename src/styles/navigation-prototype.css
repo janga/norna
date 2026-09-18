@@ -1,0 +1,202 @@
+/* BL-120 Smooth documentation navigation prototype: opt-in local review only. */
+@view-transition {
+	navigation: auto;
+}
+
+:root[data-navigation-prototype]:not([data-navigation-motion-ready]) {
+	scroll-behavior: auto !important;
+}
+
+/* Keep label widths stable when a page or its parent branch becomes current. */
+:root[data-navigation-prototype] .navigation-page-tree
+	:is(.navigation-page-link, .navigation-page-open-link, .navigation-page-summary) {
+	font-weight: 400;
+}
+
+:root[data-navigation-prototype]
+	:is(.navigation-page-tree-mobile, .navigation-page-tree-submenu)
+	:is(.navigation-page-link, .navigation-page-open-link) {
+	font-weight: 500;
+}
+
+:root[data-navigation-prototype] .site-top {
+	view-transition-name: norna-header;
+}
+
+:root[data-navigation-prototype] .tree-local-navigation {
+	/* Keep this in the static root snapshot: Safari can blank a separately
+	   captured scroll container after restoring a deep scroll position. */
+	view-transition-name: none;
+	max-height: calc(100svh - var(--navigation-scrollport-top,
+		calc(var(--site-top-anchor-offset) + 1.25rem)) - 1.25rem);
+	/* Leave a clear ending below the final visible row when the tree is scrolled. */
+	padding-block-end: 3rem;
+}
+
+/* Mask the scrollport's top padding as rows pass behind the sticky controls. */
+:root[data-navigation-prototype] .tree-local-navigation .navigation-tree-controls::before {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 100%;
+	height: 1.25rem;
+	background: inherit;
+	content: '';
+}
+
+:root[data-navigation-prototype] .navigation-category-link {
+	color: inherit;
+	font: inherit;
+	text-decoration: none;
+}
+
+:root[data-navigation-prototype] .navigation-category-link:hover,
+:root[data-navigation-prototype] .navigation-category-link:focus-visible {
+	text-decoration: underline;
+	text-underline-offset: 0.28em;
+}
+
+@media (min-width: 1281px) {
+	/* The wide layout keeps outlines in the right rail. Keep the left tree
+	   unchanged on category destinations that have no outline of their own. */
+	:root[data-navigation-prototype] .site-page-layout-tree .tree-local-navigation
+		:is(.navigation-page-sections, .navigation-page-sections-disclosure) {
+		display: none;
+	}
+}
+
+:root[data-navigation-prototype] .page-contents-navigation {
+	view-transition-name: norna-outline;
+}
+
+:root[data-navigation-prototype] #main-content {
+	view-transition-name: norna-article;
+}
+
+::view-transition-group(*) {
+	animation: none;
+}
+
+::view-transition-old(root),
+::view-transition-old(norna-header),
+::view-transition-old(norna-outline) {
+	display: none;
+}
+
+::view-transition-new(root),
+::view-transition-new(norna-header),
+::view-transition-new(norna-outline) {
+	animation: none;
+	mix-blend-mode: normal;
+}
+
+::view-transition-old(norna-article) {
+	animation: norna-prototype-out 160ms ease-out both;
+	mix-blend-mode: plus-lighter;
+}
+
+::view-transition-new(norna-article) {
+	animation: norna-prototype-in 160ms ease-out both;
+	mix-blend-mode: plus-lighter;
+}
+
+::view-transition-image-pair(norna-article) {
+	isolation: isolate;
+}
+
+@keyframes norna-prototype-out {
+	to { opacity: 0; }
+}
+
+@keyframes norna-prototype-in {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+:root[data-navigation-prototype] .navigation-page-chevron::before {
+	transition: transform 120ms ease-out;
+}
+
+:root[data-navigation-prototype]:not([data-navigation-motion-ready])
+	.navigation-page-chevron::before {
+	/* Restoring an open branch is not a new disclosure interaction. */
+	transition: none;
+}
+
+:root[data-navigation-prototype] [data-navigation-motion-open='true']
+	> summary .navigation-page-chevron::before {
+	transform: rotate(90deg);
+}
+
+:root[data-navigation-prototype] [data-navigation-motion-open='false']
+	> summary .navigation-page-chevron::before {
+	transform: rotate(0deg);
+}
+
+:root[data-navigation-prototype] .navigation-page-tree-sidebar
+	[data-navigation-motion-open='true'] > summary .navigation-page-chevron::before {
+	transform: rotate(45deg);
+}
+
+:root[data-navigation-prototype] .navigation-page-tree-sidebar
+	[data-navigation-motion-open='false'] > summary .navigation-page-chevron::before {
+	transform: rotate(-45deg);
+}
+
+:root[data-navigation-prototype] [data-navigation-motion-active] {
+	overflow: clip;
+}
+
+:root[data-navigation-prototype] .page-contents-links[data-navigation-marker] {
+	position: relative;
+}
+
+:root[data-navigation-prototype] [data-navigation-marker] a[aria-current='location'] {
+	background: transparent;
+	box-shadow: none;
+}
+
+:root[data-navigation-prototype] [data-navigation-marker]
+	a[aria-current='location']:not(:hover):not(:focus-visible) {
+	text-decoration: none;
+}
+
+:root[data-navigation-prototype] [data-navigation-marker] a[aria-current='location']::before {
+	content: none;
+}
+
+:root[data-navigation-prototype] [data-navigation-marker]::after {
+	position: absolute;
+	top: 0;
+	left: -0.85rem;
+	width: 2px;
+	height: var(--navigation-marker-height, 0px);
+	border-radius: 2px;
+	background: var(--color-primary-text);
+	content: '';
+	opacity: var(--navigation-marker-opacity, 0);
+	pointer-events: none;
+	transform: translateY(var(--navigation-marker-top, 0px));
+	transition: transform 160ms ease-out, height 160ms ease-out, opacity 120ms ease-out;
+}
+
+:root[data-navigation-prototype] [data-navigation-marker-initial]::after {
+	transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	@view-transition { navigation: none; }
+
+	:root[data-navigation-prototype][data-navigation-motion-ready] {
+		scroll-behavior: auto !important;
+	}
+
+	:root[data-navigation-prototype] .navigation-page-chevron::before,
+	:root[data-navigation-prototype] [data-navigation-marker]::after {
+		transition: none;
+	}
+
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
+	}
+}

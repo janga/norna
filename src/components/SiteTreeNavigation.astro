@@ -5,6 +5,7 @@ import { getListedSiteNavigationTree, type SiteNavigationEntry } from '../lib/si
 import type { SiteNode } from '../lib/sitePages';
 import NavigationPageTree from './NavigationPageTree.astro';
 import NavigationTreeControls from './NavigationTreeControls.astro';
+import NavigationPrototypeState from './NavigationPrototypeState.astro';
 
 interface Props {
 	currentPage: SiteNode;
@@ -29,6 +30,7 @@ const navigationStateRoot = withBasePath(projectConfig.site.basePath, '/');
 		data-navigation-root={navigationRoot}
 		data-navigation-state-root={navigationStateRoot}
 	>
+		<NavigationPrototypeState scope="desktop" />
 		<NavigationTreeControls
 			idPrefix="desktop-tree-navigation"
 			nodes={[activeRoot]}

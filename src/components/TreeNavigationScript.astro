@@ -12,6 +12,7 @@
 	};
 
 	const setupNavigationState = (container: HTMLElement, scope: 'desktop' | 'mobile') => {
+		const navigationPrototype = document.documentElement.hasAttribute('data-navigation-prototype');
 		const root = container.dataset.navigationRoot ?? '/';
 		const sharedRoot = container.dataset.navigationStateRoot ?? root;
 		const stateKey = `norna:tree-navigation:${scope}:${root}`;
@@ -65,16 +66,19 @@
 		const applyDisclosureState = (
 			state: SharedNavigationState,
 			openCurrentPageOnArrival = false,
+			preserveCurrentPageDisclosure = false,
 		) => {
 			branches.forEach((branch) => {
 				const pagePath = branch.dataset.pagePath ?? '';
-				branch.open = (openCurrentPageOnArrival && branch.dataset.currentBranch === 'true')
+				branch.open = (openCurrentPageOnArrival && branch.dataset.currentBranch === 'true'
+					&& (!preserveCurrentPageDisclosure || branch.dataset.currentPage !== 'true'))
 					|| state.openPaths.includes(pagePath);
 			});
 			sectionBranches.forEach((branch) => {
 				const pagePath = branch.dataset.pagePath ?? '';
 				const storedOpen = state.sectionOpenByPath[pagePath];
-				if (openCurrentPageOnArrival && branch.dataset.currentPage === 'true') {
+				if (openCurrentPageOnArrival && branch.dataset.currentPage === 'true'
+					&& !(navigationPrototype && typeof storedOpen === 'boolean')) {
 					branch.open = true;
 					return;
 				}
@@ -99,11 +103,13 @@
 		};
 
 		try {
-			const storedState = parseState(sessionStorage.getItem(stateKey));
+			const storedSource = sessionStorage.getItem(stateKey);
+			const storedState = parseState(storedSource);
 			const storedSharedState = sessionStorage.getItem(sharedStateKey);
 			applyDisclosureState(storedSharedState === null
 				? storedState
-				: parseState(storedSharedState), true);
+				: parseState(storedSharedState), true,
+				navigationPrototype && (storedSource !== null || storedSharedState !== null));
 			const initialSharedState = mergeSharedState(getDisclosureState());
 			lastSharedState = JSON.stringify(initialSharedState);
 			sessionStorage.setItem(sharedStateKey, lastSharedState);
@@ -291,8 +297,10 @@
 				':scope > .navigation-page-sections-disclosure[data-page-path]',
 			);
 
-			if (pageDisclosure) pageDisclosure.open = true;
-			if (sectionDisclosure) sectionDisclosure.open = true;
+			if (!navigationPrototype) {
+				if (pageDisclosure) pageDisclosure.open = true;
+				if (sectionDisclosure) sectionDisclosure.open = true;
+			}
 			saveState();
 		};
 
@@ -314,7 +322,7 @@
 		collapseButton?.addEventListener('click', () => setAllOpen(false));
 		locateButton?.addEventListener('click', locateCurrentPage);
 		scrollContainer.addEventListener('scroll', saveState, { passive: true });
-		container.querySelectorAll<HTMLAnchorElement>('.navigation-page-link, .navigation-page-open-link')
+		container.querySelectorAll<HTMLAnchorElement>('.navigation-page-link, .navigation-page-open-link, .navigation-category-link')
 			.forEach((link) => link.addEventListener('click', () => openLinkedPage(link)));
 		window.addEventListener('pagehide', saveState);
 	};

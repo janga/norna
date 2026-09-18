@@ -13,7 +13,13 @@ interface Props {
 }
 
 const { nodes, currentPage, variant, integratePageSections = false } = Astro.props;
+const navigationPrototype = process.env.NORNA_NAVIGATION_PROTOTYPE === '1';
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
+const categoryHref = (node: SiteNavigationNode) => {
+	const firstChild = node.children.find((child) => child.node.navigation?.listed !== false)?.node;
+	return withBasePath(projectConfig.site.basePath,
+		firstChild?.kind === 'page' ? firstChild.pathname : node.node.pathname);
+};
 const hasBranch = (node: SiteNavigationNode) => node.children.length > 0;
 const isCurrentPage = (page: SitePage) => currentPage?.pathname === page.pathname;
 const isCurrentBranch = (node: SiteNode) => Boolean(currentPage && (
@@ -71,7 +77,14 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 						class="navigation-page-summary"
 						aria-controls={getBranchId(node.node)}
 					>
-						<span class="navigation-page-summary-title">{node.node.title}</span>
+						{navigationPrototype ? (
+							<a class:list={['navigation-page-summary-title', 'navigation-category-link', {
+								'mobile-nav-destination': variant === 'mobile',
+							}]}
+								href={categoryHref(node)}>{node.node.title}</a>
+						) : (
+							<span class="navigation-page-summary-title">{node.node.title}</span>
+						)}
 						<span class="navigation-page-chevron" aria-hidden="true"></span>
 					</summary>
 					<div id={getBranchId(node.node)} class="navigation-page-branch-content">

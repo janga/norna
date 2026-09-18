@@ -1,0 +1,7 @@
+---
+import styles from '../styles/navigation-prototype.css?inline';
+---
+
+<style is:inline set:html={styles} />
+<!-- A streamed response must finish the page before its transition snapshot. -->
+<link rel="expect" blocking="render" href="#norna-prototype-ready" />
