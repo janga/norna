@@ -6,6 +6,7 @@
 				"bin/*.mjs",
 				"scripts/*.mjs",
 				"src/pages/**/*.astro",
+				"src/lib/navigationPrototype.ts",
 				"tests/**/*.spec.ts"
 			],
 			"project": [
