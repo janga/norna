@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- [`BL-128` Investigate recurring release failures](docs/design/backlog/BL-128-recurring-release-failures.md):
+  **Ready.** Identify recurring causes and earlier prevention from local
+  evidence; complete the analysis without permission escalations or follow-up
+  questions.
 - [`BL-129` Regression tests for the navigation latency correction](docs/design/backlog/BL-129-navigation-latency-regression-tests.md):
   **Ready.** Run the deferred focused regression suite for the visually
   approved navigation correction and record the result.
