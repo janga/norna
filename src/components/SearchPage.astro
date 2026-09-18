@@ -17,6 +17,9 @@ import { withBasePath } from '../lib/basePath';
 
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const siteModel = await getSiteModel(await getCollection('site'));
+const categoryDestinations = process.env.NORNA_NAVIGATION_PROTOTYPE === '1'
+	? siteModel.categoryDestinations.byPathname
+	: undefined;
 const { nodes: siteNodes, pages: sitePages } = siteModel;
 const homePage = sitePages.find((page) => page.isHome);
 if (!homePage) throw new Error('The required homepage is missing from the site page model.');
@@ -135,6 +138,7 @@ const searchScript = `(() => {
 	<SiteNavigation
 		logo={logo}
 		navigationEntries={siteNavigation}
+		categoryDestinations={categoryDestinations}
 		navigationMode={navigationModel.mode}
 		showTopNavigationSubmenus={navigationModel.requestedMode !== 'automatic' && navigationModel.mode !== 'tree'}
 		hasNavigationRailFrame={hasNavigationRailFrame}

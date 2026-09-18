@@ -22,6 +22,7 @@ import {
 	flattenSiteNavigationTree,
 	getDirectChildPages,
 	getListedSiteNavigationTree,
+	getNavigationDestination,
 	getSequentialPageNavigation,
 } from '../lib/siteNavigation';
 import { getToday, isVisibleToday } from '../lib/visibility';
@@ -45,6 +46,9 @@ interface Props {
 const { entry, categoryPath } = Astro.props;
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const siteModel = await getSiteModel(await getCollection('site'));
+const categoryDestinations = process.env.NORNA_NAVIGATION_PROTOTYPE === '1'
+	? siteModel.categoryDestinations.byPathname
+	: undefined;
 const { nodes: siteNodes, pages: sitePages } = siteModel;
 const categoryDestination = categoryPath ? siteModel.categoryDestinations.byPathname.get(categoryPath) : null;
 const currentPage = categoryDestination?.category
@@ -108,9 +112,7 @@ const resolvedSections: ResolvedSection[] = categoryDestination ? [{
 		type: 'page-list',
 		pages: categoryDestination.children.map((node) => ({
 			title: node.title,
-			pathname: process.env.NORNA_NAVIGATION_PROTOTYPE === '1'
-				? siteModel.categoryDestinations.byPathname.get(node.pathname)?.target?.pathname ?? node.pathname
-				: node.pathname,
+			pathname: getNavigationDestination(node, categoryDestinations).pathname,
 			description: node.kind === 'page' ? node.entry.data.page?.description : undefined,
 		})),
 	}],
@@ -222,6 +224,7 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 		logo={logo}
 		currentPage={currentPage}
 		navigationEntries={siteNavigation}
+		categoryDestinations={categoryDestinations}
 		navigationMode={navigationModel.mode}
 		showTopNavigationSubmenus={navigationModel.requestedMode !== 'automatic' && navigationModel.mode !== 'tree'}
 		hasNavigationRailFrame={hasNavigationRailFrame}
@@ -240,6 +243,7 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 			<SiteTreeNavigation
 				currentPage={currentPage}
 				navigationEntries={siteNavigation}
+				categoryDestinations={categoryDestinations}
 				integratePageSections={integratePageContentsInTree}
 			/>
 		)}

@@ -7,6 +7,12 @@ import {
 	getSequentialPageNavigation as getSequentialPageNavigationShared,
 } from '../../scripts/lib/site-navigation-tree.mjs';
 
+export type CategoryDestinationMap = ReadonlyMap<string, { target: SitePage | null }>;
+
+export const getNavigationDestination = (node: SiteNode, categoryDestinations?: CategoryDestinationMap): SiteNode => (
+	categoryDestinations?.get(node.pathname)?.target ?? node
+);
+
 export type SiteNavigationEntry = {
 	node: SiteNode;
 	headings: HeadingNavigation[];

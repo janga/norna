@@ -16,18 +16,15 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-125` Reuse category destinations in navigation rendering](docs/design/backlog/BL-125-reuse-category-navigation-destinations.md):
-  **Ready.** Use the existing category destination model consistently in
-  prototype header, tree and generated-list links while preserving baseline URLs.
+- [`BL-126` Resolve prototype history restoration discrepancy](docs/design/backlog/BL-126-prototype-history-restoration.md):
+  **High priority; ready for diagnosis before arrival refactoring or promotion.**
+  Resolve the maintained WebKit Back-to-hash failure without weakening its
+  reading-position assertion.
 
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
 
-- [`BL-126` Resolve prototype history restoration discrepancy](docs/design/backlog/BL-126-prototype-history-restoration.md):
-  **High priority; ready for diagnosis before arrival refactoring or promotion.**
-  Resolve the maintained WebKit Back-to-hash failure without weakening its
-  reading-position assertion.
 - [`BL-127` Align early and deferred navigation state interpretation](docs/design/backlog/BL-127-align-navigation-state-interpretation.md):
   **Ready after `BL-126` Resolve prototype history restoration discrepancy.**
   Share stored-state interpretation while preserving parser-time restoration

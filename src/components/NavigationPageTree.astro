@@ -1,25 +1,24 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
-import type { SiteNavigationNode } from '../lib/siteNavigation';
+import { getNavigationDestination, type CategoryDestinationMap, type SiteNavigationNode } from '../lib/siteNavigation';
 import type { SiteNode, SitePage } from '../lib/sitePages';
 import PageContentsLinks from './PageContentsLinks.astro';
 
 interface Props {
 	nodes: SiteNavigationNode[];
 	currentPage?: SiteNode;
+	categoryDestinations?: CategoryDestinationMap;
 	variant: 'mobile' | 'sidebar' | 'submenu';
 	integratePageSections?: boolean;
 }
 
-const { nodes, currentPage, variant, integratePageSections = false } = Astro.props;
+const { nodes, currentPage, categoryDestinations, variant, integratePageSections = false } = Astro.props;
 const navigationPrototype = process.env.NORNA_NAVIGATION_PROTOTYPE === '1';
 const pageHref = (page: SitePage) => withBasePath(projectConfig.site.basePath, page.pathname);
-const categoryHref = (node: SiteNavigationNode) => {
-	const firstChild = node.children.find((child) => child.node.navigation?.listed !== false)?.node;
-	return withBasePath(projectConfig.site.basePath,
-		firstChild?.kind === 'page' ? firstChild.pathname : node.node.pathname);
-};
+const categoryHref = (node: SiteNavigationNode) => withBasePath(
+	projectConfig.site.basePath, getNavigationDestination(node.node, categoryDestinations).pathname,
+);
 const hasBranch = (node: SiteNavigationNode) => node.children.length > 0;
 const isCurrentPage = (page: SitePage) => currentPage?.pathname === page.pathname;
 const isCurrentBranch = (node: SiteNode) => Boolean(currentPage && (
@@ -91,6 +90,7 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 						<Astro.self
 							nodes={node.children}
 							currentPage={currentPage}
+							categoryDestinations={categoryDestinations}
 							variant={variant}
 							integratePageSections={integratePageSections}
 						/>
@@ -136,6 +136,7 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 						<Astro.self
 							nodes={node.children}
 							currentPage={currentPage}
+							categoryDestinations={categoryDestinations}
 							variant={variant}
 							integratePageSections={integratePageSections}
 						/>
@@ -187,7 +188,7 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 						{node.node.title}
 					</a>
 					{node.children.length > 0 && (
-						<Astro.self nodes={node.children} currentPage={currentPage} variant={variant} />
+						<Astro.self nodes={node.children} currentPage={currentPage} categoryDestinations={categoryDestinations} variant={variant} />
 					)}
 				</>
 			)}

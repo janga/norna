@@ -1,8 +1,43 @@
 import { expect, test } from '@playwright/test';
 
+const prototype = process.env.NORNA_NAVIGATION_PROTOTYPE === '1';
+test.use({ browserName: prototype ? 'webkit' : 'chromium' });
+
 for (const javaScriptEnabled of [true, false]) {
 	test.describe(`category destinations with JavaScript ${javaScriptEnabled ? 'enabled' : 'disabled'}`, () => {
 		test.use({ javaScriptEnabled, viewport: { width: 1440, height: 1000 } });
+
+		test('renders consistent destinations in header, desktop tree, mobile tree and search', async ({ page }) => {
+			const gettingStarted = `/category-review/getting-started/${prototype ? 'install-norna/' : ''}`;
+			await page.goto('guides/');
+			for (const width of [1440, 390]) {
+				await page.setViewportSize({ width, height: 1000 });
+				await expect(page.locator('.site-nav').getByRole('link', { name: 'Getting Started', exact: true, includeHidden: true }))
+					.toHaveAttribute('href', gettingStarted);
+				await expect(page.locator('.site-nav').getByRole('link', { name: 'Guides', exact: true, includeHidden: true }))
+					.toHaveAttribute('href', '/category-review/guides/');
+				for (const selector of ['.tree-local-navigation', '.mobile-site-nav']) {
+					const tree = page.locator(selector);
+					await expect(tree.locator('[data-navigation-title="Hidden draft"]')).toHaveCount(0);
+					if (prototype) {
+						await expect(tree.locator('.navigation-category-link').filter({ hasText: /^Guides$/ }))
+							.toHaveAttribute('href', '/category-review/guides/');
+						await expect(tree.locator('.navigation-category-link').filter({ hasText: /^Installation$/ }))
+							.toHaveAttribute('href', '/category-review/guides/installation/requirements/');
+					} else {
+						await expect(tree.locator('.navigation-category-link')).toHaveCount(0);
+					}
+				}
+				if (prototype) {
+					await expect(page.locator('.mobile-site-nav .navigation-category-link').filter({ hasText: /^Getting Started$/ }))
+						.toHaveAttribute('href', gettingStarted);
+				}
+			}
+			await expect(page.locator('main .child-page-list a').last()).toHaveAttribute('href', '/category-review/guides/workflows/');
+			expect((await page.goto('search/'))?.ok()).toBe(true);
+			await expect(page.locator('main h1')).toHaveText('Search');
+			await expect(page.locator('.site-nav a').filter({ hasText: /^Getting Started$/ })).toHaveAttribute('href', gettingStarted);
+		});
 
 		for (const redirectPath of ['getting-started/', 'installation/']) {
 			test(`opens ${redirectPath} with the deployment base path`, async ({ page }) => {
@@ -18,13 +53,14 @@ for (const javaScriptEnabled of [true, false]) {
 			const list = page.locator('main .child-page-list');
 			await expect(list.locator('strong')).toHaveText(['Installation', 'Workflows']);
 			await expect(list).toContainText('Choose how to preview, check, and publish your site.');
-			await expect(list.getByRole('link').first()).toHaveAttribute('href', '/category-review/guides/installation/');
+			await expect(list.getByRole('link').first()).toHaveAttribute('href',
+				`/category-review/guides/installation/${prototype ? 'requirements/' : ''}`);
 
 			const branch = page.locator('.navigation-page-disclosure-sidebar[data-page-path="guides/installation"]');
-			await branch.locator(':scope > summary').click();
+			await branch.locator(':scope > summary .navigation-page-chevron').click();
 			await expect(branch).toHaveAttribute('open', '');
 			await expect(page).toHaveURL(/\/category-review\/guides\/$/);
-			await branch.locator(':scope > summary').click();
+			await branch.locator(':scope > summary .navigation-page-chevron').click();
 			await expect(branch).not.toHaveAttribute('open');
 			await expect(page).toHaveURL(/\/category-review\/guides\/$/);
 

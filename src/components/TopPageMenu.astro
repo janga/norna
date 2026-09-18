@@ -2,17 +2,18 @@
 import { ChevronDown } from '@lucide/astro';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
-import type { SiteNavigationNode } from '../lib/siteNavigation';
+import type { CategoryDestinationMap, SiteNavigationNode } from '../lib/siteNavigation';
 import type { SiteNode } from '../lib/sitePages';
 import NavigationPageTree from './NavigationPageTree.astro';
 
 interface Props {
 	node: SiteNavigationNode;
 	currentPage?: SiteNode;
+	categoryDestinations?: CategoryDestinationMap;
 	showSections: boolean;
 	showChildren: boolean;
 }
-const { node, currentPage, showSections, showChildren } = Astro.props;
+const { node, currentPage, categoryDestinations, showSections, showChildren } = Astro.props;
 const sections = showSections ? node.sections : [];
 const children = showChildren ? node.children : [];
 const pageHref = node.node.kind === 'page'
@@ -39,7 +40,7 @@ const label = `${projectConfig.locale.labels.navigationMenu}: ${node.node.title}
 			{children.length > 0 && (
 				<nav class="top-page-children" aria-label={`${projectConfig.locale.labels.navigationChildren}: ${node.node.title}`}>
 					{sections.length > 0 && <p>{projectConfig.locale.labels.navigationChildren}</p>}
-					<NavigationPageTree nodes={children} currentPage={currentPage} variant="submenu" />
+					<NavigationPageTree nodes={children} currentPage={currentPage} categoryDestinations={categoryDestinations} variant="submenu" />
 				</nav>
 			)}
 		</div>

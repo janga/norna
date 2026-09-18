@@ -1,5 +1,7 @@
 # BL-125 Reuse category destinations in navigation rendering
 
+Completed on 2026-09-18. All prototype link renderers reuse the site model.
+
 ## Purpose and evidence
 
 Make prototype header links, tree category links and generated child lists use
@@ -43,3 +45,34 @@ Risk is low to medium: changing which category child is selected can change both
 URLs and whether a page transition passes through a redirect. Compare against
 `ff1701f` and the canonical category destination model. No new architecture or
 visual design decision is required. Commit this item separately.
+
+## Completion and verification
+
+`SitePage.astro` and `SearchPage.astro` now pass the existing category map to
+their navigation components when the prototype is enabled. Header, recursive
+desktop/mobile trees, submenus and generated child lists use
+`getNavigationDestination` from `siteNavigation.ts`. The tree no longer infers
+destinations independently, and the header no longer builds a second model.
+Labels, disclosure controls, base paths and the prototype gate are preserved.
+
+The category fixture includes an unlisted first page and enables the generated
+search page. Its browser checks assert actual hrefs for page-first and
+category-first collections, nested categories, ordinary pages and generated
+lists, with JavaScript enabled and disabled. Search navigation must load a
+successful response with the Search heading, preventing a fallback page from
+accidentally satisfying its menu assertions.
+
+- `npm run test:site-links`: passed, including the category destination model.
+- `node scripts/test-navigation.mjs --site-dir fixtures/category-destinations/site tests/category-destinations.spec.ts --grep 'category destinations with'`:
+  8 cases passed in Chromium with the prototype disabled.
+- The same command with `NORNA_NAVIGATION_PROTOTYPE=1`: 8 cases passed in WebKit.
+- `NORNA_NAVIGATION_PROTOTYPE=1 node scripts/test-navigation.mjs --site-dir site tests/navigation-prototype.spec.ts --grep 'category destinations|separates category|category-overview'`:
+  4 cases passed, including native no-JavaScript links, separate category text
+  and arrow activation at desktop/mobile widths, and single-document arrivals.
+- `npm run review:test -- navigation`: all 63 cases passed.
+- `NORNA_NAVIGATION_PROTOTYPE=1 NORNA_INTERNAL_STATE_DIR="$PWD/.local/navigation-prototype/refactor-category-build/.norna" npm run build`:
+  passed; 78 pages and 68 indexed pages.
+- `npm run test:documentation` and `git diff --check`: passed.
+
+The full release suite and unchanged redirect-appearance cases were not rerun.
+No CSS or interaction design changed; the existing visual approval applies.

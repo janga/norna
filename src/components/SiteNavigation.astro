@@ -2,13 +2,13 @@
 import NavigationPrototypeState from './NavigationPrototypeState.astro';
 import { Menu, Search, X } from '@lucide/astro';
 import projectConfig from '../../scripts/lib/project-config.mjs';
-import { createCategoryDestinationModel } from '../../scripts/lib/category-destinations.mjs';
 import { withBasePath } from '../lib/basePath';
 import type { SectionNavigation } from '../lib/sectionContent';
 import {
 	getListedSiteNavigationTree,
+	getNavigationDestination,
+	type CategoryDestinationMap,
 	type SiteNavigationEntry,
-	type SiteNavigationNode,
 } from '../lib/siteNavigation';
 import type { SiteNode } from '../lib/sitePages';
 import DisplaySettings from './DisplaySettings.astro';
@@ -31,6 +31,7 @@ interface Props {
 	};
 	currentPage?: SiteNode;
 	navigationEntries: SiteNavigationEntry[];
+	categoryDestinations?: CategoryDestinationMap;
 	navigationMode: 'sections' | 'top' | 'tree';
 	showTopNavigationSubmenus: boolean;
 	hasNavigationRailFrame: boolean;
@@ -54,6 +55,7 @@ const {
 	logo,
 	currentPage,
 	navigationEntries,
+	categoryDestinations,
 	navigationMode,
 	showTopNavigationSubmenus,
 	hasNavigationRailFrame,
@@ -90,12 +92,6 @@ const isCurrentBranch = (node: SiteNode) => Boolean(currentPage && (
 	|| currentPage.pageDirectory.startsWith(`${node.pageDirectory}/pages/`)
 ));
 const pageHref = (page: SiteNode) => withBasePath(projectConfig.site.basePath, page.pathname);
-const prototypeDestinations = process.env.NORNA_NAVIGATION_PROTOTYPE === '1'
-	? createCategoryDestinationModel(navigationEntries.map(({ node }) => node)).byPathname
-	: undefined;
-const getNavigationPage = (node: SiteNavigationNode) => (
-	prototypeDestinations?.get(node.node.pathname)?.target ?? node.node
-);
 const hasSectionMenu = (pageSections: SectionNavigation[]) => pageSections.length > 1;
 const showSinglePageTopLink = !showSiteNavigation;
 const currentPageSectionCount = currentPageNavigation?.sections.length ?? 0;
@@ -151,7 +147,7 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 					<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 					<ul>
 					{topLevelNavigation.map((navigationNode) => {
-						const destination = getNavigationPage(navigationNode);
+						const destination = getNavigationDestination(navigationNode.node, categoryDestinations);
 						if (!destination) return null;
 						const nodeIsCurrentPage = isCurrentPage(navigationNode.node);
 						return (
@@ -164,6 +160,7 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 								<TopPageMenu
 									node={navigationNode}
 									currentPage={currentPage}
+									categoryDestinations={categoryDestinations}
 									showSections={navigationMode === 'top'}
 									showChildren={showTopNavigationSubmenus}
 								/>
@@ -232,6 +229,7 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 											<NavigationPageTree
 												nodes={mobileNavigationTree}
 												currentPage={currentPage}
+												categoryDestinations={categoryDestinations}
 												variant="mobile"
 												integratePageSections={navigationMode === 'tree' || navigationMode === 'top'}
 											/>

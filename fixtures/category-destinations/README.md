@@ -2,7 +2,7 @@
 
 Non-public review and regression source for BL-112: Category Destinations.
 
-- `/getting-started/` redirects to its first direct content page.
+- `/getting-started/` skips the unlisted draft and redirects to its first listed direct content page.
 - `/guides/` lists direct children without jumping through Installation.
 - `/guides/installation/` redirects to Requirements after that branch is chosen.
 
@@ -18,5 +18,7 @@ node scripts/test-navigation.mjs --site-dir fixtures/category-destinations/site 
 ```
 
 These verify redirects, direct-child links, and tree disclosure with and
-without JavaScript. Unit and static-build coverage lives in
+without JavaScript. Add `NORNA_NAVIGATION_PROTOTYPE=1` before the command to
+verify prototype destinations in the header, desktop/mobile trees, search page
+and generated lists. Unit and static-build coverage lives in
 `scripts/test-site-link-graph.mjs` and `scripts/test-nested-pages.mjs`.
