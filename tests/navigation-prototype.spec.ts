@@ -335,19 +335,64 @@ test('keeps prose links, cross-page fragments and external new-tab navigation us
 	await popup.close();
 });
 
-test('restores a reading position past the original fragment on Back', async ({ page }) => {
-	// Known limitation recorded in BL-120 Smooth documentation navigation prototype.
-	// Installed Safari restores this case; Playwright WebKit currently realigns at load.
+test('preserves a reader interruption while initial arrival waits for fonts', async ({ page }) => {
+	await page.addInitScript(() => {
+		const fonts = document.fonts.ready;
+		const gate = new Promise<void>((resolve) => {
+			(window as Window & { releaseNavigationFonts?: () => void }).releaseNavigationFonts = resolve;
+		});
+		Object.defineProperty(document.fonts, 'ready', { get: () => Promise.all([fonts, gate]) });
+	});
+	await page.goto('reference/site/pages/#names-and-order');
+	await page.mouse.click(650, 450);
+	await page.evaluate(() => scrollBy({ top: 180, behavior: 'instant' }));
+	const position = await page.evaluate(() => scrollY);
+	await page.evaluate(() => (window as Window & { releaseNavigationFonts?: () => void }).releaseNavigationFonts!());
+	await ready(page);
+	expect(Math.abs(await page.evaluate(() => scrollY) - position)).toBeLessThanOrEqual(1);
+	expect(await page.evaluate(() => history.scrollRestoration)).toBe('auto');
+});
+
+test('restores the reading position when returning from search', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto('reference/site/pages/#names-and-order');
 	await ready(page);
 	await page.evaluate(() => scrollBy({ top: 220, behavior: 'instant' }));
-	const before = await page.evaluate(() => scrollY);
-	await clickWithoutScrolling(page, '.tree-local-navigation a[href$="/reference/site/urls/"]');
-	await page.waitForURL('**/reference/site/urls/');
+	const position = await page.evaluate(() => scrollY);
+	const search = await page.locator('.site-search-link').boundingBox();
+	expect(search).not.toBeNull();
+	await page.mouse.click(search!.x + search!.width / 2, search!.y + search!.height / 2);
+	const returnLink = page.locator('[data-search-return]');
+	await expect(returnLink).toContainText('Pages and categories');
+	await returnLink.click();
 	await ready(page);
-	await page.goBack();
-	await ready(page);
-	test.fail(true, 'Unresolved WebKit Back-to-hash discrepancy; required before promotion.');
-	expect(Math.abs(await page.evaluate(() => scrollY) - before)).toBeLessThanOrEqual(1);
+	await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - position)).toBeLessThanOrEqual(1);
+	expect(await page.evaluate(() => history.scrollRestoration)).toBe('auto');
 });
+
+for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+	test(`restores a reading position past the original fragment on Back and Forward with ${reducedMotion}`, async ({ page }) => {
+		await page.emulateMedia({ reducedMotion });
+		await page.setViewportSize({ width: 1440, height: 1000 });
+		await page.goto('reference/site/pages/#names-and-order');
+		await ready(page);
+		await page.evaluate(() => scrollBy({ top: 220, behavior: 'instant' }));
+		const before = await page.evaluate(() => scrollY);
+		await clickWithoutScrolling(page, '.tree-local-navigation a[href$="/reference/site/urls/"]');
+		await page.waitForURL('**/reference/site/urls/');
+		await ready(page);
+		await page.evaluate(() => scrollBy({ top: 180, behavior: 'instant' }));
+		const forwardPosition = await page.evaluate(() => scrollY);
+		expect(forwardPosition).toBeGreaterThan(0);
+		for (let visit = 0; visit < 2; visit++) {
+			await page.goBack();
+			await ready(page);
+			expect(Math.abs(await page.evaluate(() => scrollY) - before)).toBeLessThanOrEqual(1);
+			expect(await page.evaluate(() => history.scrollRestoration)).toBe('auto');
+			await page.goForward();
+			await ready(page);
+			expect(Math.abs(await page.evaluate(() => scrollY) - forwardPosition)).toBeLessThanOrEqual(1);
+			expect(await page.evaluate(() => history.scrollRestoration)).toBe('auto');
+		}
+	});
+}

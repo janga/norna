@@ -3,5 +3,24 @@ import styles from '../styles/navigation-prototype.css?inline';
 ---
 
 <style is:inline set:html={styles} />
+<script is:inline>
+	// A cold history arrival can restore its position at pagereveal, then lose
+	// it to native fragment scrolling when deferred modules finish parsing.
+	// Keep the browser's restored position until that initial load completes.
+	window.addEventListener('pagereveal', () => {
+		if (!location.hash || document.readyState === 'complete'
+			|| performance.getEntriesByType('navigation')[0]?.type !== 'back_forward'
+			|| history.scrollRestoration !== 'auto') return;
+
+		history.scrollRestoration = 'manual';
+		const release = () => {
+			history.scrollRestoration = 'auto';
+			window.removeEventListener('load', release);
+			window.removeEventListener('pagehide', release);
+		};
+		window.addEventListener('load', release);
+		window.addEventListener('pagehide', release);
+	}, { once: true });
+</script>
 <!-- A streamed response must finish the page before its transition snapshot. -->
 <link rel="expect" blocking="render" href="#norna-prototype-ready" />
