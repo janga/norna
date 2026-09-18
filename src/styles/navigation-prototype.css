@@ -68,9 +68,8 @@
 	view-transition-name: norna-outline;
 }
 
-:root[data-navigation-prototype] #main-content {
-	view-transition-name: norna-article;
-}
+/* Keep the article in the viewport's root snapshot. Capturing a long article
+   separately delays Safari's first paint even with a zero-duration fade. */
 
 ::view-transition-group(*) {
 	animation: none;
@@ -87,29 +86,6 @@
 ::view-transition-new(norna-outline) {
 	animation: none;
 	mix-blend-mode: normal;
-}
-
-::view-transition-old(norna-article) {
-	animation: norna-prototype-out 160ms ease-out both;
-	mix-blend-mode: plus-lighter;
-}
-
-::view-transition-new(norna-article) {
-	animation: norna-prototype-in 160ms ease-out both;
-	mix-blend-mode: plus-lighter;
-}
-
-::view-transition-image-pair(norna-article) {
-	isolation: isolate;
-}
-
-@keyframes norna-prototype-out {
-	to { opacity: 0; }
-}
-
-@keyframes norna-prototype-in {
-	from { opacity: 0; }
-	to { opacity: 1; }
 }
 
 :root[data-navigation-prototype] .navigation-page-chevron::before {

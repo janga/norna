@@ -6,6 +6,13 @@ enable the experiment by default or promote it to supported behavior. The
 [final verification record](#final-approval-and-verification) supersedes the
 earlier pending-review notes in this investigation history.
 
+A subsequent [Safari navigation latency investigation](../navigation-latency-investigation.md)
+records a correction visually approved on 2026-09-18. At the user's request,
+its remaining maintained regression tests are scheduled separately in
+[BL-129 Regression tests for the navigation latency correction](BL-129-navigation-latency-regression-tests.md).
+That follow-up does not reopen the completed refactoring assessment or enable
+the prototype by default.
+
 ## Purpose
 
 Evaluate whether Norna can make moving between documentation pages feel
