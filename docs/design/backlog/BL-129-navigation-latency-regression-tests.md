@@ -2,7 +2,12 @@
 
 ## Purpose and status
 
-**Ready; prioritized under `Now`.** Complete the maintained regression checks
+**Completed on 2026-09-19.** The maintained WebKit suite passed all 22 tests
+in 45.0 seconds on `a81a8cb`, with no failures, skips or implementation
+changes. The [investigation record](../navigation-latency-investigation.md#maintained-regression-result-2026-09-19)
+records the exact command, coverage and limits.
+
+The original task was to complete the maintained regression checks
 for the navigation latency correction described in the
 [investigation record](../navigation-latency-investigation.md). The user
 approved the visual result on 2026-09-18, then explicitly requested a separate

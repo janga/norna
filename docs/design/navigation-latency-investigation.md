@@ -5,9 +5,9 @@ snapshot instead of capturing it as a separate View Transition image. In
 installed Safari 26.6.2, this reduced the measured time from clicking Examples
 to the first contentful paint of Reference from 221–226ms to 51–57ms in a local
 production build. **The user approved the visual result on 2026-09-18.**
-At the user's request, the remaining maintained regression run is scheduled
-separately as
-[BL-129 Regression tests for the navigation latency correction](backlog/BL-129-navigation-latency-regression-tests.md).
+The maintained regression run passed on 2026-09-19 under
+[BL-129 Regression tests for the navigation latency correction](backlog/BL-129-navigation-latency-regression-tests.md):
+22 passed, no failures or skips.
 
 The trade-off is explicit: the article changes without its previous 160ms
 crossfade. The header and outline remain separate, unanimated snapshots. The
@@ -123,12 +123,46 @@ These checks establish navigation behavior and settled layout; they do not
 replace human inspection for a fleeting visual flash. The user completed that
 visual review on 2026-09-18 and approved the result. The user then requested
 that the remaining maintained regression tests become a separate prioritized
-backlog item. They have not been run for this correction and are tracked in
-[BL-129 Regression tests for the navigation latency correction](backlog/BL-129-navigation-latency-regression-tests.md).
-The full release test chain has not been run.
+backlog item. The result of that run is recorded below. The full release test
+chain has not been run.
 
 Disposable timing probes and JSON results are in
 `.local/navigation-prototype/`, with names starting `safari-route-timing-` and
 `route-timing-`. Interaction records use `latency-interactions/`. These
 artifacts include rejected diagnostic variants and must not be treated as
 the approved implementation.
+
+## Maintained regression result, 2026-09-19
+
+Tested clean commit `a81a8cb`, including the approved correction from
+`7fb98da`, with this exact command:
+
+```sh
+NORNA_NAVIGATION_PROTOTYPE=1 node scripts/test-navigation.mjs --site-dir site tests/navigation-prototype.spec.ts
+```
+
+Playwright WebKit ran all 22 tests with one worker: **22 passed, 0 failed,
+0 skipped in 45.0 seconds**, approximately one minute including isolated
+server startup and cleanup. The opt-in flag was enabled; the prototype's
+readiness assertions and the suite's nonzero executed count confirm that the
+tests were not bypassed. No application or test repair was needed.
+
+Coverage includes early state restoration, the first five menu clicks after
+header navigation at two widths, deep menu position, disclosure motion and
+keyboard behavior, filtering and compact-menu state, intent prefetch,
+navigation without JavaScript, category destinations, fragment alignment,
+menu clipping and end reachability, prose/external links, search return, and
+Back/Forward reading position with and without reduced motion.
+
+The first launch was blocked before server startup by sandbox `listen EPERM`
+on localhost. The same command then ran with local-server permission; this
+was an infrastructure retry, not a failed behavior assertion. The development
+server also reported absent built Pagefind assets on the search page. The
+search-return check passed; it does not test the generated search index.
+
+This result adds maintained functional coverage to the earlier installed
+browser and human visual evidence. It supplies neither a new Safari latency
+measurement nor proof that every transient flash is absent. The unchanged
+implementation did not warrant repeating the fixture/preset suites, build,
+installed-browser measurements or full release chain. Documentation and
+whitespace checks accompany this result's commit.

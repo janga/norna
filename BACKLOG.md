@@ -16,17 +16,12 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-129` Regression tests for the navigation latency correction](docs/design/backlog/BL-129-navigation-latency-regression-tests.md):
-  **Ready.** Run the deferred focused regression suite for the visually
-  approved navigation correction and record the result.
-
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
 
 - [`BL-122` Area navigation and integrated H2 prototype](docs/design/backlog/BL-122-area-navigation-prototype.md):
-  **High priority; ready after BL-129 Regression tests for the navigation
-  latency correction.** Prototype automatic area selection and integrated H2
+  **High priority; ready.** Prototype automatic area selection and integrated H2
   navigation to free room for sidenotes, following the approved sketch.
 
 ## External Gate
