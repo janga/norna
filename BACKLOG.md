@@ -16,16 +16,25 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-123` Navigation JavaScript refactoring assessment](docs/design/backlog/BL-123-navigation-javascript-refactoring-assessment.md):
-  **High priority; ready for analysis.** Assess the completed
-  `BL-120` Smooth documentation navigation prototype and propose only bounded,
-  evidence-backed improvements; implementation is a separate follow-up.
+- [`BL-124` Share navigation visibility semantics](docs/design/backlog/BL-124-share-navigation-visibility-semantics.md):
+  **Ready.** Share the identical displayed-element predicate used by menu
+  following and prototype motion without changing its behavior or timing.
 
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
 
-No items currently queued.
+- [`BL-125` Reuse category destinations in navigation rendering](docs/design/backlog/BL-125-reuse-category-navigation-destinations.md):
+  **Ready.** Use the existing category destination model consistently in
+  prototype header, tree and generated-list links while preserving baseline URLs.
+- [`BL-126` Resolve prototype history restoration discrepancy](docs/design/backlog/BL-126-prototype-history-restoration.md):
+  **High priority; ready for diagnosis before arrival refactoring or promotion.**
+  Resolve the maintained WebKit Back-to-hash failure without weakening its
+  reading-position assertion.
+- [`BL-127` Align early and deferred navigation state interpretation](docs/design/backlog/BL-127-align-navigation-state-interpretation.md):
+  **Ready after `BL-126` Resolve prototype history restoration discrepancy.**
+  Share stored-state interpretation while preserving parser-time restoration
+  and the runtime's final-state behavior.
 
 ## External Gate
 
