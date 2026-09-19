@@ -615,6 +615,11 @@ const addCategoryHelp = (jsonSchema) => {
 		'The category label shown in global navigation, tree navigation, mobile navigation, and breadcrumbs.',
 		documentationLink('Navigation category reference', 'pages.md', 'navigation-categories'),
 	]);
+	addHelp(jsonSchema, 'description', [
+		yamlExample('label: Guides\ndescription: Install, configure and publish your site.'),
+		'Optional authored text shown beside this group in area menus and generated child lists. It does not create a content page or change which pages belong to the group.',
+		documentationLink('Navigation category reference', 'pages.md', 'navigation-categories'),
+	]);
 };
 
 export const applySchemaEditorMetadata = (filename, jsonSchema) => {

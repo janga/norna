@@ -4,7 +4,6 @@ import {
 	getAutomaticNavigationMode,
 	navigationModeNames,
 	resolveNavigationModel,
-	resolvePageContentsPlacement,
 } from './lib/navigation-model.mjs';
 import {
 	getDirectChildPages,
@@ -108,89 +107,6 @@ for (const mode of ['sections', 'top']) {
 const categoryTree = resolveNavigationModel({ mode: 'tree', nodes: [home(), category()] });
 assert.equal(categoryTree.mode, 'tree');
 assert.equal(categoryTree.hasCategories, true);
-
-const shallowBranch = [
-	home([h2]),
-	category({ pagePath: 'reference' }),
-	page([h2, h3], { pagePath: 'reference/install', depth: 2 }),
-];
-const deepBranch = [
-	home([h2]),
-	category(),
-	page([h2, h3], { pagePath: 'guides/install', depth: 2 }),
-	page([h2, h3], { pagePath: 'guides/install/macos', depth: 3 }),
-];
-
-assert.deepEqual(
-	resolvePageContentsPlacement({
-		navigationMode: 'tree',
-		nodes: shallowBranch,
-		currentPage: { isHome: false, pagePath: 'reference/install' },
-		headingCount: 3,
-	}),
-	{
-		activeBranchDepth: 2,
-		hasPageContents: true,
-		placement: 'page-tree',
-	},
-);
-assert.deepEqual(
-	resolvePageContentsPlacement({
-		navigationMode: 'tree',
-		nodes: shallowBranch,
-		currentPage: { isHome: true, pagePath: '' },
-		headingCount: 3,
-	}),
-	{
-		activeBranchDepth: 1,
-		hasPageContents: true,
-		placement: 'none',
-	},
-);
-assert.equal(resolvePageContentsPlacement({
-	navigationMode: 'tree',
-	nodes: deepBranch,
-	currentPage: { isHome: false, pagePath: 'guides' },
-	headingCount: 3,
-}).placement, 'contents-rail');
-assert.deepEqual(
-	resolvePageContentsPlacement({
-		navigationMode: 'tree',
-		nodes: deepBranch,
-		currentPage: { isHome: false, pagePath: 'guides/install' },
-		headingCount: 3,
-	}),
-	{
-		activeBranchDepth: 3,
-		hasPageContents: true,
-		placement: 'contents-rail',
-	},
-);
-assert.equal(resolvePageContentsPlacement({
-	navigationMode: 'tree',
-	nodes: [
-		...shallowBranch,
-		page([h2], {
-			pagePath: 'reference/install/hidden',
-			depth: 3,
-			listed: false,
-		}),
-	],
-	currentPage: { isHome: false, pagePath: 'reference/install' },
-	headingCount: 3,
-}).placement, 'page-tree');
-assert.equal(resolvePageContentsPlacement({
-	navigationMode: 'tree',
-	nodes: shallowBranch,
-	currentPage: { isHome: false, pagePath: 'reference/install' },
-	headingCount: 1,
-}).placement, 'none');
-assert.equal(resolvePageContentsPlacement({
-	navigationMode: 'top',
-	nodes: deepBranch,
-	currentPage: { isHome: false, pagePath: 'guides/install' },
-	headingCount: 3,
-}).placement, 'none');
 
 const sequenceEntry = ({
 	pagePath,
@@ -343,4 +259,4 @@ assert.deepEqual(outlinedAreas[1].children[1].headings.map(({ id }) => id), ['in
 assert.equal(areaRoots[1].headings.length, 2, 'Filtering the trial outline must not mutate the baseline tree.');
 assert.deepEqual(outlinedAreas[1].children.map(({ node }) => node.pagePath), areaRoots[1].children.map(({ node }) => node.pagePath));
 
-console.log('Navigation model and area prototype tests passed.');
+console.log('Navigation model and area navigation tests passed.');

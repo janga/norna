@@ -162,7 +162,15 @@ npm --prefix editors/vscode run test:integration -- --with-prettier
 
 # Only the construction selection matrix, for focused regression work.
 npm --prefix editors/vscode run test:integration -- --suite constructions
+
+# Category description and tree mode, from blank values/keys and partial prefixes.
+npm --prefix editors/vscode run test:integration -- --suite metadata
 ```
+
+The metadata suite accepts category `description` from a blank YAML line and
+from `desc`, and `navigation.mode: tree` from a blank value and from `tr`.
+Each case uses the real suggestion widget and checks the inserted bytes. It
+is a focused metadata check, not the full construction or save matrix.
 
 Use the current baseline for changes to authoring or persistence. Add the
 formatter scenario when changing save behavior or formatter guidance. Run the

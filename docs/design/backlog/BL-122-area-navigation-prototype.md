@@ -12,7 +12,11 @@ the user's interactive review, with updated browser coverage, installed-browser
 measurements and an isolated build. Final verification also corrected a WebKit
 history-entry race. The recommendation is to adopt the reviewed design in the
 separate adoption step below, settling category descriptions and the supported
-reference contract together. The prototype remains off by default.
+reference contract together. It was off by default at that checkpoint.
+
+**Adopted subsequently in [BL-130 Make area navigation the default](BL-130-default-area-navigation.md).**
+The original prototype scope and evidence below remain a historical record;
+the default implementation no longer uses its opt-in switches.
 
 [BL-129 Regression tests for the navigation latency correction](BL-129-navigation-latency-regression-tests.md)
 completed in `11e63c7` before this implementation. The

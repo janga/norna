@@ -6,7 +6,7 @@ const containsPage = (root: SiteNavigationNode, page: SiteNode) => (
 	|| (root.node.pagePath !== '' && page.pagePath.startsWith(`${root.node.pagePath}/`))
 );
 
-// A bounded prototype choice, not a public setting or a general design rule.
+// Beyond twelve choices, use a destination with a local tree instead of a panel.
 export const hasLargeAreaMenu = (root: SiteNavigationNode) => (
 	root.children.length + (root.node.kind === 'page' ? 1 : 0) > 12
 );

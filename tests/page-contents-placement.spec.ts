@@ -78,7 +78,7 @@ test.describe('adaptive page contents on desktop', () => {
 		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 
 		const tree = page.locator('.tree-local-navigation');
-		const rootSummary = tree.locator('details[data-page-path="guides"] > summary');
+		const rootSummary = tree.locator('details[data-page-path="guides/installation"] > summary');
 		const currentPage = tree.locator('.navigation-page-node-current');
 		const currentPageSummary = currentPage.locator(
 			':scope > details[data-page-path="guides/installation"] > summary',
@@ -102,8 +102,8 @@ test.describe('adaptive page contents on desktop', () => {
 			})),
 		]);
 
-		expect(rootStyle.fontSize).toBeGreaterThan(siblingStyle.fontSize);
-		expect(currentStyle.fontWeight).toBeGreaterThan(siblingStyle.fontWeight);
+		expect(rootStyle.fontSize).toBe(siblingStyle.fontSize);
+		expect(currentStyle.fontWeight).toBe(siblingStyle.fontWeight);
 		expect(currentStyle.textDecorationLine).toContain('underline');
 		expect(currentSummaryStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
 
@@ -160,31 +160,10 @@ test.describe('adaptive page contents on desktop', () => {
 		await expect(tree.locator('.navigation-page-sections')).toHaveCount(3);
 		await expect(sections.getByRole('navigation')).toHaveCount(0);
 		await expect(sections).toHaveAttribute('aria-label', 'Page contents: Reference installation');
-		await expect(sections.getByRole('link')).toHaveText(['Install', 'Prerequisites', 'Verify']);
+		await expect(sections.getByRole('link')).toHaveText(['Install', 'Verify']);
 		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
 
-		const [pageTitleTextX, sectionLineX, installTextX, subsectionLineX] = await Promise.all([
-			currentPage.locator(':scope > .navigation-page-link').evaluate((link) => {
-				const textNode = link.firstChild;
-				if (!textNode) throw new Error('Expected the current page link to contain text.');
-				const range = document.createRange();
-				range.selectNodeContents(textNode);
-				return range.getBoundingClientRect().x;
-			}),
-			sections.evaluate((navigation) => navigation.getBoundingClientRect().x),
-			sections.getByRole('link', { name: 'Install', exact: true }).evaluate((link) => {
-				const textNode = link.firstChild;
-				if (!textNode) throw new Error('Expected the section link to contain text.');
-				const range = document.createRange();
-				range.selectNodeContents(textNode);
-				return range.getBoundingClientRect().x;
-			}),
-			sections.locator('.page-contents-links > li:first-child > ol').evaluate((list) => (
-				list.getBoundingClientRect().x
-			)),
-		]);
-		expect(Math.abs(sectionLineX - pageTitleTextX)).toBeLessThan(1);
-		expect(Math.abs(subsectionLineX - installTextX)).toBeLessThan(1);
+		await expect(sections.locator('.page-contents-links ol')).toHaveCount(0);
 
 		await currentPageDisclosure.locator('.navigation-page-chevron').click();
 		await expect(currentPageDisclosure).not.toHaveAttribute('open', '');
@@ -236,23 +215,13 @@ test.describe('adaptive page contents on desktop', () => {
 		)).toHaveAttribute('open', '');
 	});
 
-	test('keeps the outline in a separate rail for every page in a deep branch', async ({ page }) => {
+	test('keeps deep page H2 in the persistent tree with no separate rail', async ({ page }) => {
 		await page.goto(deepPagePath, { waitUntil: 'networkidle' });
-
-		await expect(page.locator('.site-page-layout')).toHaveAttribute(
-			'data-page-contents-placement',
-			'contents-rail',
-		);
-		const treeSections = page.locator(
-			'.tree-local-navigation .navigation-page-node-current .navigation-page-sections',
-		);
-		await expect(treeSections).toHaveCount(1);
-		await expect(treeSections).toBeHidden();
-		const contentsRail = page.locator('.page-contents-navigation-rail');
-		await expect(contentsRail).toBeVisible();
-		const currentSection = contentsRail.getByRole('link', { name: 'Install', exact: true });
-		await expect(currentSection).toHaveAttribute('aria-current', 'location');
-		expect(await currentSection.evaluate((link) => getComputedStyle(link, '::before').width)).toBe('2px');
+		await expect(page.locator('.site-page-layout')).toHaveAttribute('data-page-contents-placement', 'page-tree');
+		const outline = page.locator('.tree-local-navigation .navigation-page-node-current .page-contents-links');
+		await expect(outline).toBeVisible();
+		await expect(outline.getByRole('link')).toHaveText(['Install', 'Verify']);
+		await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
 	});
 
 	test('keeps Home free of local rails and adds them inside a nested branch', async ({ page }) => {
@@ -287,7 +256,7 @@ test.describe('adaptive page contents at intermediate widths', () => {
 		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
 	});
 
-	test('moves a deep page outline from the right rail into the persistent tree', async ({ page }) => {
+	test('retains the deep page outline in the persistent tree at intermediate widths', async ({ page }) => {
 		await page.goto(deepPagePath, { waitUntil: 'networkidle' });
 
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
@@ -296,7 +265,7 @@ test.describe('adaptive page contents at intermediate widths', () => {
 		const currentPage = page.locator('.tree-local-navigation .navigation-page-node-current');
 		const sections = currentPage.locator('.navigation-page-sections');
 		await expect(sections).toBeVisible();
-		await expect(sections.getByRole('link')).toHaveText(['Install', 'Prerequisites', 'Verify']);
+		await expect(sections.getByRole('link')).toHaveText(['Install', 'Verify']);
 	});
 });
 
@@ -310,7 +279,7 @@ test.describe('adaptive page contents on mobile', () => {
 		await menu.locator(':scope > summary').click();
 		const currentPage = menu.locator('.navigation-page-node-current');
 		await expect(currentPage.locator('.navigation-page-sections')).toBeVisible();
-		await expect(currentPage.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
+		await expect(currentPage.getByRole('link', { name: 'Prerequisites', exact: true })).toHaveCount(0);
 		await expect(menu.getByRole('link', { name: 'Reference overview', exact: true }))
 			.toHaveAttribute('href', '/reference/#reference-overview');
 	});

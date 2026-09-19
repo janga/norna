@@ -6,7 +6,7 @@ const settleResponsiveLayout = (page) => page.evaluate(() => new Promise((resolv
 	requestAnimationFrame(() => requestAnimationFrame(resolve))
 )));
 
-test('overflow controls seal the table header through responsive rail transitions', async ({ page }) => {
+test('overflow controls seal the table header through responsive navigation transitions', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 720 });
 	await page.goto(deepTablePath, { waitUntil: 'networkidle' });
 	const section = page.locator('.site-section').filter({ has: page.locator('#adaptive-table') });
@@ -26,16 +26,15 @@ test('overflow controls seal the table header through responsive rail transition
 	});
 
 	for (const state of [
-		{ contentsRail: true, treeRail: true, width: 1440 },
-		{ contentsRail: false, treeRail: true, width: 1280 },
-		{ contentsRail: false, treeRail: false, width: 900 },
+		{ treeRail: true, width: 1440 },
+		{ treeRail: true, width: 1280 },
+		{ treeRail: false, width: 900 },
 	]) {
 		await page.setViewportSize({ width: state.width, height: 720 });
 		await settleResponsiveLayout(page);
 		if (state.treeRail) await expect(page.locator('.tree-local-navigation')).toBeVisible();
 		else await expect(page.locator('.tree-local-navigation')).toBeHidden();
-		if (state.contentsRail) await expect(page.locator('.page-contents-navigation-rail')).toBeVisible();
-		else await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
+		await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
 		await expect(frame).toHaveAttribute('data-table-overflow', 'true');
 		await expect(frame).toHaveAttribute('data-table-sticky-heading', 'true');
 		await frame.evaluate((element) => {

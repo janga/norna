@@ -1,5 +1,4 @@
 ---
-import { navigationPrototype, areaNavigationPrototype } from '../lib/navigationPrototypeConfig.mjs';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CodeBlockCopyScript from './CodeBlockCopyScript.astro';
@@ -10,7 +9,6 @@ import ImageStackEnhancement from './ImageStackEnhancement.astro';
 import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
 import SiteNavigation from './SiteNavigation.astro';
 import SiteBanners from './SiteBanners.astro';
-import PageContentsNavigation from './PageContentsNavigation.astro';
 import PageSequenceNavigation from './PageSequenceNavigation.astro';
 import SiteSection from './SiteSection.astro';
 import SiteTreeNavigation from './SiteTreeNavigation.astro';
@@ -30,7 +28,6 @@ import { getToday, isVisibleToday } from '../lib/visibility';
 import { getLogoAsset } from '../lib/sitePublicAssets';
 import {
 	resolveNavigationModel,
-	resolvePageContentsPlacement,
 } from '../../scripts/lib/navigation-model.mjs';
 import { projectConfig, resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
 import { resolveEditSourceTarget } from '../../scripts/lib/edit-source-link.mjs';
@@ -47,9 +44,7 @@ interface Props {
 const { entry, categoryPath } = Astro.props;
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const siteModel = await getSiteModel(await getCollection('site'));
-const categoryDestinations = navigationPrototype
-	? siteModel.categoryDestinations.byPathname
-	: undefined;
+const categoryDestinations = siteModel.categoryDestinations.byPathname;
 const { nodes: siteNodes, pages: sitePages } = siteModel;
 const categoryDestination = categoryPath ? siteModel.categoryDestinations.byPathname.get(categoryPath) : null;
 const currentPage = categoryDestination?.category
@@ -114,7 +109,7 @@ const resolvedSections: ResolvedSection[] = categoryDestination ? [{
 		pages: categoryDestination.children.map((node) => ({
 			title: node.title,
 			pathname: getNavigationDestination(node, categoryDestinations).pathname,
-			description: node.kind === 'page' ? node.entry.data.page?.description : undefined,
+			description: node.kind === 'page' ? node.entry.data.page?.description : node.description,
 		})),
 	}],
 }] : await getSectionsContent(siteHtml, currentPage, childPages);
@@ -176,35 +171,17 @@ const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: `${s
 const hasTreeNavigation = navigationModel.mode === 'tree';
 // Keep one reading frame across tree-mode pages, including pages with no H2.
 // Home remains the site's entry point with the global navigation row.
-const areaReadingFrame = areaNavigationPrototype && hasTreeNavigation && !currentPage.isHome;
+const areaReadingFrame = hasTreeNavigation && !currentPage.isHome;
 const currentPageNavigation = siteNavigation.find(({ node }) => (
 	node.kind === 'page' && node.pathname === currentPage.pathname
 ));
 const pageContentsHeadings = currentPageNavigation?.headings.filter(({ depth }) => depth === 2 || depth === 3) ?? [];
 const showTreeNavigation = hasTreeNavigation && !currentPage.isHome;
-const pageContentsPlacement = resolvePageContentsPlacement({
-	navigationMode: navigationModel.mode,
-	nodes: renderedNavigationEntries.map(({ node }) => ({
-		depth: Math.max(1, node.depth),
-		isHome: node.isHome,
-		listed: node.navigation.listed,
-		pagePath: node.pagePath,
-	})),
-	currentPage: {
-		isHome: currentPage.isHome,
-		pagePath: currentPage.pagePath,
-	},
-	headingCount: pageContentsHeadings.length,
-});
-const hasContentsNavigation = areaNavigationPrototype && hasTreeNavigation && !currentPage.isHome
-	? pageContentsHeadings.some(({ depth }) => depth === 2)
-	: pageContentsPlacement.placement !== 'none';
-const hasTrackedSectionNavigation = hasContentsNavigation
-	|| (hasTreeNavigation && currentPage.isHome && pageContentsHeadings.length >= 2);
+const hasContentsNavigation = showTreeNavigation && pageContentsHeadings.some(({ depth }) => depth === 2);
+const hasTrackedSectionNavigation = hasTreeNavigation && pageContentsHeadings.some(({ depth }) => depth === 2);
 const integratePageContentsInTree = hasTreeNavigation;
-const showContentsRail = !(areaNavigationPrototype && hasTreeNavigation) && pageContentsPlacement.placement === 'contents-rail';
 // Home's global row and the reading layout share the site's wide coordinates.
-const hasNavigationRailFrame = (areaNavigationPrototype || !currentPage.isHome) && (
+const hasNavigationRailFrame = (
 	navigationModel.requestedMode === 'tree'
 	|| (
 		navigationModel.requestedMode === 'automatic'
@@ -226,6 +203,7 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 	footer={sitewideData.footer}
 	contentsNavigation={hasTrackedSectionNavigation}
 	searchable
+	areaNavigation={hasTreeNavigation}
 	areaReadingFrame={areaReadingFrame}
 >
 	<SiteNavigation
@@ -244,9 +222,8 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 
 	<div class:list={['site-page-layout', {
 		'site-page-layout-tree': showTreeNavigation,
-		'site-page-layout-contents': showContentsRail,
 	}]}
-		data-page-contents-placement={hasContentsNavigation ? (areaNavigationPrototype ? 'page-tree' : pageContentsPlacement.placement) : undefined}
+		data-page-contents-placement={hasContentsNavigation ? 'page-tree' : undefined}
 	>
 		{showTreeNavigation && (
 			<SiteTreeNavigation
@@ -289,12 +266,6 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 			)}
 			<PageSequenceNavigation previous={pageSequence.previous} next={pageSequence.next} />
 		</main>
-		{showContentsRail && (
-			<PageContentsNavigation
-				headings={pageContentsHeadings}
-				pageTitle={currentPage.title}
-			/>
-		)}
 	</div>
 	{hasTreeNavigation && <TreeNavigationScript />}
 	{hasCodeBlocks && <CodeBlockCopyScript />}

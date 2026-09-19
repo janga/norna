@@ -27,9 +27,13 @@ site/pages/
 
 ```yaml title="site/pages/010-getting-started/category.yaml"
 label: Getting started
+description: Install Norna and prepare your first site.
 ```
 
-The category label appears in navigation. A page label comes from its one H1.
+The required category label appears in navigation. The optional `description`
+is a non-empty summary used in area menus and generated category lists; it
+does not create an editorial page or determine navigation scope. A page label
+comes from its one H1.
 Both pages and categories can have children in `pages/`, with no fixed depth
 limit. Home is the exception: `pages/000-home/content.md` cannot have children.
 It is a welcome page, not an ancestor of every other page.
@@ -61,7 +65,7 @@ categories with no reachable listed page:
 | No children | Generated page with the category heading and an empty list |
 
 Norna does not search through subcategories for an arbitrary first page. The
-generated list shows labels and available page descriptions. A valid
+generated list shows labels and available page or category descriptions. A valid
 category-first structure causes no warning.
 
 The redirect has a normal link fallback. It is not a permanent

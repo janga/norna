@@ -64,10 +64,9 @@ On narrow screens all media remains within available content space.
 
 A tall stack image may place its caption beside it when a sufficiently wide,
 vacant margin exists. The caption stays below the sticky header and stops at
-the image boundary. Occupied margins, narrower layouts, print and no-JavaScript
-rendering keep it below the image. Automatically removing a right rail while
-narrowing does not move a caption back out; Focus reading may free space
-because it is an explicit reader choice.
+the image boundary. Narrower layouts, print and no-JavaScript rendering keep
+it below the image. Tree navigation leaves the right margin available for
+side captions; a caption uses it only when the full caption lane fits.
 
 Stack images link to their published originals. With JavaScript, images that
 can be shown materially larger get an inspection dialog. **Show actual size**

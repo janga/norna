@@ -5,7 +5,6 @@ import { withBasePath } from '../lib/basePath';
 import { getNavigationDestination, type CategoryDestinationMap, type SiteNavigationNode } from '../lib/siteNavigation';
 import { getAreaMenuGroups, resolveAreaNavigation } from '../lib/areaNavigation';
 import type { SiteNode } from '../lib/sitePages';
-import { areaPreviewDescriptions } from '../lib/areaNavigationPreview';
 
 interface Props {
 	id: string;
@@ -36,7 +35,7 @@ const groups = [
 			const selected = localRoot === child || currentPage?.pagePath === child.node.pagePath;
 			const description = child.node.kind === 'page'
 				? child.node.entry.data.page?.description
-				: areaPreviewDescriptions[child.node.pagePath];
+				: child.node.description;
 			return <li>
 				<a href={withBasePath(projectConfig.site.basePath, destination.pathname)}
 					aria-current={selected ? 'true' : undefined} data-area-choice={child.node.pagePath}>

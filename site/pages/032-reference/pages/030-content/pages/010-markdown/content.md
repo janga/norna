@@ -31,8 +31,9 @@ give it an explicit ID; its anchor is always `page-title`.
 
 Text between H1 and the first H2 is the introduction. Each H2 (`##`) starts
 a section extending to the next H2. H3 and deeper headings subdivide that
-section. H2/H3 participate in tree outlines; top navigation uses H2. Headings
-inside literal code examples do not become navigation entries.
+section. Navigation uses H2 links; H3 retains its anchor without adding
+another outline level. Headings inside literal code examples do not become
+navigation entries.
 
 H2/H3 IDs are derived by lowercasing, removing accents, transliterating common
 letters, removing apostrophes and replacing other character runs with hyphens.

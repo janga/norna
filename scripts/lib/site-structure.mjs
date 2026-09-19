@@ -131,6 +131,7 @@ export const getSiteStructure = async () => {
 					categorySourceLabel: `${nodeLabel}/category.yaml`,
 					categoryPath,
 					label: category.label,
+					description: category.description,
 				});
 			} else {
 				Object.assign(node, {

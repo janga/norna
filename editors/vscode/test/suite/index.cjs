@@ -69,7 +69,7 @@ async function run() {
 	assert.equal(extension.packageJSON.version, extensionVersion);
 	assert.ok(vscode.extensions.getExtension('redhat.vscode-yaml'), 'Red Hat YAML was not installed.');
 	await extension.activate();
-	if (['constructions', 'priority'].includes(process.env.NORNA_EDITOR_TEST_SUITE)) {
+	if (['constructions', 'priority', 'metadata'].includes(process.env.NORNA_EDITOR_TEST_SUITE)) {
 		await require('./widget-constructions.cjs').runWidgetConstructions({ openDocument, waitFor, getCompletions });
 		console.log('Packaged construction widget tests passed.');
 		return;

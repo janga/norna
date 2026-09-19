@@ -127,7 +127,7 @@ try {
 			readingWidthStandard: 'Standard',
 			readingWidthWide: 'Wide',
 			resetDisplaySettings: 'Reset',
-			returnHome: 'Go to the homepage',
+			returnHome: 'Home',
 			searchReturn: 'Back to {page}',
 			search: 'Search',
 			searchDescription: 'Search the published content on this site.',
@@ -306,7 +306,7 @@ try {
 	);
 	assertFailure(
 		loadConfig(await createSite('removed-section-tracking', 'url: https://example.com/\nnavigation:\n  sectionTracking: true\n')),
-		/navigation\.sectionTracking is no longer supported[\s\S]*Section tracking is automatic on pages with a contents rail[\s\S]*Remove navigation\.sectionTracking/,
+		/navigation\.sectionTracking is no longer supported[\s\S]*Section tracking is automatic on tree-navigation pages with H2 headings[\s\S]*Remove navigation\.sectionTracking/,
 	);
 	assertFailure(
 		loadConfig(await createSite('obsolete-smooth-scroll', 'url: https://example.com/\nsmoothScroll: true\n')),

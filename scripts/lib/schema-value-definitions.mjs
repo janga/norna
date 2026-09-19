@@ -26,7 +26,7 @@ export const schemaValueDefinitions = Object.freeze([
 		automatic: option('Automatic', 'Choose one site-wide navigation presentation from the listed page hierarchy. This is the default.'),
 		sections: option('Sections', 'Keep a one-page site title and its H2 sections in sticky page navigation.'),
 		top: option('Top', 'Keep top-level pages in the global row and give the current page section navigation when needed.'),
-		tree: option('Tree', 'Keep top-level areas global and add a persistent left page tree. Deep branches can add a right H2/H3 contents rail.'),
+		tree: option('Tree', 'Group destinations in menus and show the selected group’s pages and H2 links in a left tree.'),
 	}),
 	definition(['vscode'], {
 		vscode: option('Visual Studio Code', 'Open the current page source in the locally installed Visual Studio Code application.'),

@@ -1,13 +1,13 @@
 ---
 page:
-  description: Understand which navigation Norna builds from the page tree and how it adapts on narrower screens.
+  description: Understand how Norna turns the page hierarchy into menus, local page trees and heading links.
 ---
 
 # Automatic navigation
 
-Norna builds navigation from page folders and Markdown headings. Normally
-leave `navigation.mode` at `automatic`: adding listed pages and categories
-then changes the navigation without maintaining a separate menu file.
+Norna builds navigation from [pages and categories](/reference/site/pages/)
+and Markdown headings. Leave `navigation.mode` at `automatic` to let the
+listed hierarchy choose the presentation. No separate menu file is needed.
 
 ```yaml title="site/config.yaml" {3}
 url: https://example.com/
@@ -21,67 +21,100 @@ navigation:
 | --- | --- | --- |
 | Only Home | `sections` | H1 and H2 links in sticky navigation |
 | Home plus top-level pages, without children or categories | `top` | Page links with disclosures for their H2 sections |
-| Any child page or navigation category | `tree` | Global top-level links and a local left page tree |
+| Any child page or navigation category | `tree` | Area menus and a local page tree with H2 links |
 
-The selected mode is site-wide. H2/H3 headings do not add page-tree depth.
-Unlisted pages do not affect the choice. Home is a deliberate exception in
-tree mode: it has global links without a persistent local rail. Its outline
-remains available in the compact menu.
+The selected mode is site-wide. Headings do not add page-tree depth, and
+unlisted pages do not affect the choice. In `sections` mode, one H2 is enough
+for section navigation; with no H2, the H1 remains a top link.
+
+In `top` mode, clicking a page title follows its link. A separate chevron
+opens that page's H2 destinations without loading it first. Sections are not
+duplicated in a second sticky row.
+
+## Areas in tree navigation
+
+An **area** is the part of the listed page hierarchy shown in the left menu.
+Norna derives areas from existing pages and categories; there is no area
+setting to maintain.
+
+Home shows the global destinations in its sticky navigation. A destination
+without children is a direct link. A destination with children opens a menu
+on hover, or through click, touch or keyboard activation. The menu groups
+parents with descendants separately from direct page links. Descriptions come
+from page metadata or the optional `description` in `category.yaml`.
+
+The selected destination determines the left menu:
+
+- A collection containing only direct pages keeps those pages together. For
+  example, Getting Started with Install and Prepare pages shows both pages
+  and their H2 links in one tree.
+- In a collection with subgroups, a child with descendants supplies the local
+  area. For example, Reference → Site model shows Site model's pages. A direct
+  page beside such groups shows only its own H2 links, when present.
+- An authored parent's own page remains a menu choice and opens with its full
+  tree. Its H2 links appear before its child pages.
+
+A menu with more than twelve choices becomes a direct link to its destination,
+where the full collection tree is available. The count includes an authored
+root's own page, but not descendants below the direct choices. This limit is
+built in, not configurable.
+
+On reading pages, sticky breadcrumbs replace the global sticky row. The menu
+button beside the breadcrumbs opens the same area choices, with Home and
+other global destinations below. The site identity links to Home; Search and
+Display remain available above the left menu. Home itself has no persistent
+left tree. No separate right outline competes with the article's margin.
 
 ## Page links and outlines
 
-In `sections` mode, one H2 is enough to create section navigation. With no H2,
-the H1 remains a top link rather than leaving an empty menu.
+The tree includes H2 links beneath each page, including a page with only one
+H2. H1, H3 and deeper headings remain in the document but are not extra outline
+levels. Their anchors still work as ordinary links.
 
-In `top` mode, a separate chevron opens each page's H2 destinations without
-loading that page first. Clicking the title follows the page link. Sections
-are not duplicated in a second sticky row. Small screens group these links
-under their page names in Menu.
+Clicking page or category text follows its destination. The separate chevron
+opens or closes that branch. Choosing a page opens its branch and H2 outline;
+clicking the current page name returns to its beginning and opens its outline.
+Other branches retain their choices. Expanding keeps the clicked row in place;
+collapsing does too, unless the shorter tree requires clamping its scroll
+position. Selection does not change the label's font weight.
 
-In `tree` mode, the left rail shows the current top-level area, not every
-unrelated global destination. On shallow branches, each page can disclose its
-H2/H3 outline. A branch at least three visible page levels deep can instead
-place the current outline in a right rail, provided the current page has at
-least two H2/H3 destinations. H1 and H4-or-deeper headings are not in outlines.
-
-Current-page branches open on entry; other explicit branch choices are
-remembered during the browser session with JavaScript. A chevron toggles a
-branch independently of its link. Native disclosures and real links work
-without JavaScript, but expansion state is then not carried across loads.
+With JavaScript, Back, Forward and reload restore the entry's saved branch
+choices and menu position, including a deliberately closed current branch.
+History traversal also restores the article's reading position. Native links
+and disclosures work without JavaScript, but saved state is not carried
+across page loads.
 
 ## Narrow screens and Focus reading
 
-Navigation simplifies in order as horizontal space decreases:
-
-1. Separate left page tree and right contents rail.
-2. One left tree with integrated page outlines.
-3. Compact Menu with the same page and heading destinations.
-
-Shallow trees begin at the second step. Top/section navigation moves directly
-to a compact menu. No destination disappears because a rail no longer fits.
+When the left tree no longer fits, a compact **Menu** offers the same page and
+H2 destinations. Top and section navigation also use Menu on small screens.
+The area panel fits within the viewport; a long panel can scroll.
 
 [Focus reading](/reference/reader/display/#focus-reading) lets readers hide
-persistent rails themselves while retaining Menu. This does not change the
-site hierarchy or the selected navigation mode.
+the persistent tree themselves while retaining compact navigation. This does
+not change the hierarchy or navigation mode. Search still searches site
+content; the tree's filter only matches navigation labels.
 
 ## Orientation and long trees
 
 Breadcrumbs show actual ancestors, not Home as an invented parent. Category
 labels in breadcrumbs are plain text. Previous/Next page links traverse listed
-pages depth-first within the current top-level area, skipping categories and
-stopping before another global area. These are ordinary links.
+pages depth-first within the current top-level collection, skipping categories
+and stopping before another global collection. They do not stop at a smaller
+local area's boundary.
 
-Tree controls filter navigation labels, expand/collapse branches and locate
-the current page; filtering is not full-text site search. The current page
-and heading are marked without relying only on color. During scrolling,
-Norna keeps the active outline entry visible, but pauses following while the
-reader operates that list. It does not reopen closed branches, remove a filter,
-change keyboard focus or write scroll positions into the URL.
+Tree controls filter navigation labels, expand or collapse branches, and
+locate the current page. The current page and heading are marked without
+relying only on color. During article scrolling, Norna keeps the active H2
+entry visible, but pauses following while the reader operates the tree. After
+arrival or history restoration, it leaves the restored menu position alone
+until the reader resumes interaction with the article.
 
-The right outline follows when present; otherwise the left outline follows.
-A closed branch receives a marker on its nearest visible ancestor. At the end
-of a document the marker can still reach its last headings. Automatic tracking
-and following require JavaScript; manual navigation remains available without it.
+Following does not reopen closed branches, remove a filter, change keyboard
+focus or write scroll positions into the URL. A closed branch receives a
+marker on its nearest visible ancestor. At the end of the document the marker
+can reach its last heading. Automatic tracking and following require
+JavaScript; manual navigation remains available without it.
 
 ## Explicit modes
 

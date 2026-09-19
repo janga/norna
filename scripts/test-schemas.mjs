@@ -19,7 +19,7 @@ const filenames = [
 	'content-frontmatter.schema.json',
 ];
 const requiredRichHelp = {
-	'category.schema.json': ['label'],
+	'category.schema.json': ['label', 'description'],
 	'config.schema.json': ['url', 'language', 'editLink', 'navigation', 'search', 'scrollBehavior'],
 	'theme.schema.json': ['preset', 'appearance', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
 	'page-theme.schema.json': ['layout', 'images', 'sections'],
@@ -189,7 +189,7 @@ assert.equal(config.properties.editLink.properties.localEditor.oneOf[0].const, '
 assert.equal(config.properties.editLink.properties.localEditor.oneOf[0].title, 'Visual Studio Code');
 
 const category = JSON.parse(await readFile(path.join(root, 'schemas', 'category.schema.json'), 'utf8'));
-assert.deepEqual(Object.keys(category.properties), ['label']);
+assert.deepEqual(Object.keys(category.properties), ['label', 'description']);
 assert.deepEqual(category.required, ['label']);
 assert.match(category.markdownDescription, /groups child pages without editorial content/);
 assert.match(category.markdownDescription, /first listed direct page/);
@@ -331,3 +331,7 @@ assert.equal(content.required, undefined);
 assert.deepEqual(Object.keys(content.properties.navigation.properties), ['listed']);
 
 console.log('Schema metadata tests passed.');
+
+assert.equal(category.properties.description.type, 'string');
+assert.equal(category.properties.description.minLength, 1);
+assert.match(category.properties.description.markdownDescription, /Optional authored text/);

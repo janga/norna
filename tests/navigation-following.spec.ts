@@ -3,7 +3,6 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 const deepPage = '/guides/reading-position/';
 const shallowPage = '/reference/reading-position/';
 const leftSelector = '.tree-local-navigation';
-const rightSelector = '.page-contents-navigation-rail';
 
 const waitForFrames = (page: Page) => page.evaluate(() => new Promise<void>((resolve) => {
 	requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
@@ -35,7 +34,7 @@ const expectCurrentVisible = async (container: Locator) => {
 };
 
 for (const scenario of [
-	{ name: 'right outline', path: deepPage, width: 1440, selector: rightSelector },
+	{ name: 'deep left outline', path: deepPage, width: 1440, selector: leftSelector },
 	{ name: 'responsive left outline', path: deepPage, width: 1120, selector: leftSelector },
 	{ name: 'shallow left outline', path: shallowPage, width: 1440, selector: leftSelector },
 ]) {
@@ -44,13 +43,13 @@ for (const scenario of [
 
 		test('follows forward and backward without moving the document, focus, or URL', async ({ page }) => {
 			await page.goto(scenario.path, { waitUntil: 'networkidle' });
+			await page.keyboard.press('Escape');
 			const rail = page.locator(scenario.selector);
 			await expect(rail).toBeVisible();
 			await expect.poll(() => rail.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
 			const focus = page.locator('[data-display-settings] > summary');
 			await focus.focus();
 			const initialUrl = page.url();
-			const otherRailPosition = await page.locator(leftSelector).evaluate((element) => element.scrollTop);
 			const seen = new Set<string>();
 			const maximum = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
 			const positions = Array.from({ length: 31 }, (_, index) => Math.round(maximum * index / 30));
@@ -65,13 +64,12 @@ for (const scenario of [
 			await expect(focus).toBeFocused();
 			expect(page.url()).toBe(initialUrl);
 			expect(await page.evaluate(() => window.scrollX)).toBe(0);
-			if (scenario.selector === rightSelector) {
-				expect(await page.locator(leftSelector).evaluate((element) => element.scrollTop)).toBe(otherRailPosition);
-			}
+
 		});
 
 		test('keeps a fitting entry stationary and yields to manual navigation until document scrolling resumes', async ({ page }) => {
 			await page.goto(scenario.path, { waitUntil: 'networkidle' });
+			await page.keyboard.press('Escape');
 			const rail = page.locator(scenario.selector);
 			// Establish a scroll-selected heading, not a temporary fragment-arrival marker.
 			await page.evaluate(() => {
@@ -101,6 +99,7 @@ for (const scenario of [
 
 		test('does not scroll a focused navigation link out of view', async ({ page }) => {
 			await page.goto(scenario.path, { waitUntil: 'networkidle' });
+			await page.keyboard.press('Escape');
 			const rail = page.locator(scenario.selector);
 			const link = rail.locator('.page-contents-links a').filter({ hasText: /^Define the scope$/ }).last();
 			await link.focus();
@@ -116,9 +115,11 @@ for (const scenario of [
 	});
 }
 
-test('keeps collapsed page and category branches closed and marks the visible ancestor', async ({ page }) => {
+test('keeps collapsed page branches closed and marks the visible ancestor', async ({ page }) => {
 	await page.setViewportSize({ width: 1120, height: 700 });
 	await page.goto(`${deepPage}#review-the-sequence`, { waitUntil: 'networkidle' });
+	await page.keyboard.press('Escape');
+	await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
 	const rail = page.locator(leftSelector);
 	const pageBranch = rail.locator('details[data-page-path="guides/reading-position"]');
 	await pageBranch.locator('summary').click();
@@ -129,29 +130,25 @@ test('keeps collapsed page and category branches closed and marks the visible an
 	await page.evaluate(() => window.scrollBy(0, 30));
 	await waitForFrames(page);
 	await expect(pageBranch).not.toHaveAttribute('open', '');
-	const category = rail.locator('details[data-page-path="guides"]');
-	await category.locator(':scope > summary').click();
-	await expect(category.locator(':scope > summary')).toHaveAttribute('data-reading-position-ancestor', 'true');
-	await expect(pageLink).not.toHaveAttribute('data-reading-position-ancestor', 'true');
-	await page.evaluate(() => window.scrollBy(0, 30));
-	await waitForFrames(page);
-	await expect(category).not.toHaveAttribute('open', '');
+
 });
 
 test('follows the active rail across responsive and Focus reading changes', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 600 });
 	await page.goto(`${deepPage}#review-the-sequence`, { waitUntil: 'networkidle' });
-	await expectCurrentVisible(page.locator(rightSelector));
+	await page.keyboard.press('Escape');
+	await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
+	await expectCurrentVisible(page.locator(leftSelector));
 	await page.setViewportSize({ width: 1120, height: 600 });
-	await expect(page.locator(rightSelector)).toBeHidden();
+	await expect(page.locator(leftSelector)).toBeVisible();
 	await expectCurrentVisible(page.locator(leftSelector));
 	await page.setViewportSize({ width: 1440, height: 600 });
-	await expectCurrentVisible(page.locator(rightSelector));
+	await expectCurrentVisible(page.locator(leftSelector));
 	const settings = page.locator('[data-display-settings]');
 	await settings.locator('summary').click();
 	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
 	await expect(page.locator(leftSelector)).toBeHidden();
-	await expect(page.locator(rightSelector)).toBeHidden();
+	await expect(page.locator(leftSelector)).toBeHidden();
 	await page.keyboard.press('Escape');
 	const menu = page.locator('.mobile-nav-menu');
 	await menu.locator(':scope > summary').click();
@@ -162,6 +159,8 @@ test('follows the active rail across responsive and Focus reading changes', asyn
 test('does not clear a navigation filter or move it while the reader returns to the document', async ({ page }) => {
 	await page.setViewportSize({ width: 1120, height: 600 });
 	await page.goto(`${deepPage}#review-the-sequence`, { waitUntil: 'networkidle' });
+	await page.keyboard.press('Escape');
+	await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
 	const rail = page.locator(leftSelector);
 	const filter = rail.locator('[data-tree-filter]');
 	await filter.fill('Publishing');
@@ -179,19 +178,24 @@ test('does not clear a navigation filter or move it while the reader returns to 
 	await expectCurrentVisible(rail);
 });
 
-test('a stored tree scroll position does not hide the active fragment on arrival', async ({ page }) => {
+test('preserves the selected page on arrival and follows the active fragment after reader input', async ({ page }) => {
 	await page.setViewportSize({ width: 1120, height: 600 });
 	await page.goto(deepPage, { waitUntil: 'networkidle' });
 	const rail = page.locator(leftSelector);
-	await rail.evaluate((element) => { element.scrollTop = 0; });
+	await rail.evaluate(element => { element.scrollTop = 0; });
 	await page.goto(`${deepPage}?return=1#maintain-the-guide`, { waitUntil: 'networkidle' });
-	await expectCurrentVisible(rail);
 	await expect(rail.locator('a[aria-current="location"]')).toHaveAttribute('href', '#maintain-the-guide');
+	await expect(rail.locator('.navigation-page-node-current > .navigation-page-link')).toBeInViewport();
+	await page.mouse.move(800, 350);
+	await page.mouse.wheel(0, 10);
+	await expectCurrentVisible(rail);
 });
 
 test('reveals the current heading once on compact arrival and keeps Close visible and focused', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 700 });
 	await page.goto(`${deepPage}#review-the-sequence`, { waitUntil: 'networkidle' });
+	await page.keyboard.press('Escape');
+	await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
 	const initialUrl = page.url();
 	const documentTop = await page.evaluate(() => scrollY);
 	const menu = page.locator('.mobile-nav-menu');

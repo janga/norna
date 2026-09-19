@@ -84,8 +84,7 @@ const setupDisclosures = (reducedMotion: MediaQueryList) => {
 		document.addEventListener(event, (event) => {
 			if (!(event.target instanceof Element)) return;
 			if (event.target.closest('[data-tree-controls]') || (
-				document.documentElement.hasAttribute('data-area-navigation-prototype')
-				&& event.type === 'click' && event.target.closest('a[href]')
+				event.type === 'click' && event.target.closest('a[href]')
 			)) finishAll();
 		}, { capture: true });
 	}
@@ -131,6 +130,7 @@ const setupOutlineMarkers = () => {
 const setupScrollArrival = () => {
 	const root = document.documentElement;
 	const originalHash = location.hash;
+	const scrollBehavior = root.style.scrollBehavior;
 	let interrupted = false;
 	const interrupt = () => { interrupted = true; };
 	for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) {
@@ -151,7 +151,7 @@ const setupScrollArrival = () => {
 					// Leave malformed URL fragments to the browser's native handling.
 				}
 			}
-			root.style.scrollBehavior = 'smooth';
+			root.style.scrollBehavior = scrollBehavior;
 			root.setAttribute('data-navigation-motion-ready', '');
 		}));
 	};
@@ -168,7 +168,7 @@ const setupScrollArrival = () => {
 };
 
 const setupIntentPrefetch = (prefetch: Prefetch) => {
-	const basePath = document.documentElement.dataset.navigationPrototype ?? '/';
+	const basePath = document.documentElement.dataset.navigationContinuity ?? '/';
 	let timer: number | undefined;
 	let pending: HTMLAnchorElement | null = null;
 	const eligible = (target: EventTarget | null) => {
@@ -202,7 +202,7 @@ const setupIntentPrefetch = (prefetch: Prefetch) => {
 	window.addEventListener('pagehide', cancel);
 };
 
-export const setupNavigationPrototype = (prefetch: Prefetch) => {
+export const setupNavigationContinuity = (prefetch: Prefetch) => {
 	const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 	setupTreeScrollport();
 	setupDisclosures(reducedMotion);

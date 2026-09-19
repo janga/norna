@@ -15,8 +15,6 @@
 	const { storageKeys, parseState, initialState, arrivalPolicy, readEntryState, saveEntryState, pageIsOpen, sectionsAreOpen } = createNavigationStateHelpers();
 
 	const setupNavigationState = (container: HTMLElement, scope: 'desktop' | 'mobile') => {
-		const navigationPrototype = document.documentElement.hasAttribute('data-navigation-prototype');
-		const areaNavigation = document.documentElement.hasAttribute('data-area-navigation-prototype');
 		const root = container.dataset.navigationRoot ?? '/';
 		const sharedRoot = container.dataset.navigationStateRoot ?? root;
 		const { stateKey, sharedStateKey } = storageKeys(scope, root, sharedRoot);
@@ -79,8 +77,8 @@
 
 		try {
 			const state = initialState(sessionStorage.getItem(stateKey), sessionStorage.getItem(sharedStateKey),
-				areaNavigation ? readEntryState(stateKey) : null);
-			applyDisclosureState(state.disclosure, arrivalPolicy(state, navigationPrototype, areaNavigation));
+				readEntryState(stateKey));
+			applyDisclosureState(state.disclosure, arrivalPolicy(state));
 			const initialSharedState = mergeSharedState(getDisclosureState());
 			lastSharedState = JSON.stringify(initialSharedState);
 			sessionStorage.setItem(sharedStateKey, lastSharedState);
@@ -104,7 +102,7 @@
 					scrollTop: scrollContainer.scrollTop,
 				};
 				sessionStorage.setItem(stateKey, JSON.stringify(state));
-				if (areaNavigation && !preserveOutgoingEntry) saveEntryState(stateKey, state);
+				if (!preserveOutgoingEntry) saveEntryState(stateKey, state);
 				const sharedState = mergeSharedState(disclosureState);
 				const serializedSharedState = JSON.stringify(sharedState);
 				sessionStorage.setItem(sharedStateKey, serializedSharedState);
@@ -256,25 +254,6 @@
 				- Math.max(0, (scrollContainer.clientHeight - linkBox.height) / 2);
 			setStatus(labels.located);
 		};
-		const openLinkedPage = (link: HTMLAnchorElement) => {
-			if (filterInput?.value) {
-				filterInput.value = '';
-				clearFilter();
-			}
-			const pageNode = link.closest<HTMLElement>('.navigation-page-node');
-			const pageDisclosure = pageNode?.querySelector<HTMLDetailsElement>(
-				':scope > .navigation-page-disclosure:not(.navigation-category-disclosure)',
-			);
-			const sectionDisclosure = pageNode?.querySelector<HTMLDetailsElement>(
-				':scope > .navigation-page-sections-disclosure[data-page-path]',
-			);
-
-			if (!navigationPrototype) {
-				if (pageDisclosure) pageDisclosure.open = true;
-				if (sectionDisclosure) sectionDisclosure.open = true;
-			}
-			saveState();
-		};
 
 		requestAnimationFrame(() => {
 			branches.forEach((branch) => branch.addEventListener('toggle', saveState));
@@ -294,46 +273,42 @@
 		collapseButton?.addEventListener('click', () => setAllOpen(false));
 		locateButton?.addEventListener('click', locateCurrentPage);
 		scrollContainer.addEventListener('scroll', saveState, { passive: true });
-		if (areaNavigation) {
-			// Cross-document arrivals open their current branch in the early
-			// restore. Do not expand the departing tree and paint an extra frame.
-			document.addEventListener('click', (event) => {
-				if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-				const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
-				if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
-				const url = new URL(link.href, location.href);
-				if (url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search || !currentPageNode) return;
-				// A same-document fragment creates a new history entry after this
-				// click. Keep the old entry's disclosure snapshot until then.
-				preserveOutgoingEntry = url.href !== location.href;
-				if (filterInput?.value) { filterInput.value = ''; clearFilter(); }
-				const scrollTop = scrollContainer.scrollTop;
-				revealNodeAndAncestors(currentPageNode);
-				currentPageNode.querySelectorAll<HTMLDetailsElement>(
-					':scope > .navigation-page-disclosure, :scope > .navigation-page-sections-disclosure',
-				).forEach((branch) => { branch.open = true; });
-				scrollContainer.scrollTop = scrollTop;
+		// Cross-document arrivals open their current branch in the early
+		// restore. Do not expand the departing tree and paint an extra frame.
+		document.addEventListener('click', (event) => {
+			if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+			const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
+			if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
+			const url = new URL(link.href, location.href);
+			if (url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search || !currentPageNode) return;
+			// A same-document fragment creates a new history entry after this
+			// click. Keep the old entry's disclosure snapshot until then.
+			preserveOutgoingEntry = url.href !== location.href;
+			if (filterInput?.value) { filterInput.value = ''; clearFilter(); }
+			const scrollTop = scrollContainer.scrollTop;
+			revealNodeAndAncestors(currentPageNode);
+			currentPageNode.querySelectorAll<HTMLDetailsElement>(
+				':scope > .navigation-page-disclosure, :scope > .navigation-page-sections-disclosure',
+			).forEach((branch) => { branch.open = true; });
+			scrollContainer.scrollTop = scrollTop;
+			saveState();
+		});
+		const restoreEntry = () => {
+			preserveOutgoingEntry = false;
+			try {
+				const source = readEntryState(stateKey);
+				if (source === null) return;
+				const state = parseState(source);
+				applyDisclosureState(state);
+				scrollContainer.scrollTop = Math.max(0, state.scrollTop);
 				saveState();
-			});
-			const restoreEntry = () => {
-				preserveOutgoingEntry = false;
-				try {
-					const source = readEntryState(stateKey);
-					if (source === null) return;
-					const state = parseState(source);
-					applyDisclosureState(state);
-					scrollContainer.scrollTop = Math.max(0, state.scrollTop);
-					saveState();
-				} catch { /* Native links work when storage is unavailable. */ }
-			};
-			window.addEventListener('pageshow', (event) => { if (event.persisted) restoreEntry(); });
-			window.addEventListener('popstate', restoreEntry);
-			window.addEventListener('hashchange', () => { preserveOutgoingEntry = false; saveState(); });
-			requestAnimationFrame(saveState);
-		} else {
-			container.querySelectorAll<HTMLAnchorElement>('.navigation-page-link, .navigation-page-open-link, .navigation-category-link')
-				.forEach((link) => link.addEventListener('click', () => openLinkedPage(link)));
-		}
+			} catch { /* Native links work when storage is unavailable. */ }
+		};
+		window.addEventListener('pageshow', (event) => { if (event.persisted) restoreEntry(); });
+		window.addEventListener('popstate', restoreEntry);
+		window.addEventListener('hashchange', () => { preserveOutgoingEntry = false; saveState(); });
+		requestAnimationFrame(saveState);
+
 		window.addEventListener('pagehide', saveState);
 	};
 

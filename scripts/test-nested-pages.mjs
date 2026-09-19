@@ -42,7 +42,7 @@ try {
 		await writeFile(filePath, source);
 	};
 	await addFile('pages/050-choices/category.yaml', 'label: Choose & learn\n');
-	await addFile('pages/050-choices/pages/010-setup/category.yaml', 'label: Setup\n');
+	await addFile('pages/050-choices/pages/010-setup/category.yaml', 'label: Setup\ndescription: Install & configure your project.\n');
 	await addFile('pages/050-choices/pages/010-setup/pages/010-install/content.md', '# Install\n');
 	await addFile('pages/050-choices/pages/020-work/content.md', '---\npage:\n  description: Compare & choose a workflow.\n---\n# Work\n');
 	await addFile('pages/050-choices/pages/005-empty/category.yaml', 'label: Empty choice\n');
@@ -71,8 +71,9 @@ try {
 	assert.match(categoryRedirect, /http-equiv="refresh" content="0; url=\/guides\/installation\/"/);
 	assert.match(categoryRedirect, /data-pagefind-ignore="all"/);
 	const categoryListing = await readFile(path.join(distDir, 'choices', 'index.html'), 'utf8');
+	assert.match(categoryListing, /Install &amp; configure your project\./);
 	assert.match(categoryListing, /id="page-title">Choose &amp; learn<\/h1>/);
-	assert.match(categoryListing, /href="\/choices\/setup\/"[\s\S]*?<strong>Setup<\/strong>/);
+	assert.match(categoryListing, /href="\/choices\/setup\/install\/"[\s\S]*?<strong>Setup<\/strong>/);
 	assert.match(categoryListing, /Compare &amp; choose a workflow/);
 	assert.doesNotMatch(categoryListing, /<strong>Install<\/strong>|http-equiv="refresh"|class="edit-source-link"/);
 	assert.doesNotMatch(categoryListing, /href="\/choices\/empty\/"/);
@@ -129,11 +130,11 @@ try {
 	assert.doesNotMatch(rootHtml, /class="page-sequence-navigation"/);
 	assert.match(macosHtml, /data-navigation-mode="tree"/);
 	assert.match(macosHtml, /href="https:\/\/github\.com\/example\/docs\/edit\/release-2\/packages\/docs\/site\/pages\/010-guides\/pages\/010-installation\/pages\/010-macos\/content\.md"/);
-	assert.match(macosHtml, /data-page-contents-placement="contents-rail"/);
+	assert.match(macosHtml, /data-page-contents-placement="page-tree"/);
 	assert.match(macosHtml, /data-section-tracking="enabled"/);
 	assert.match(rootHtml, /data-section-tracking="enabled"/);
-	assert.match(macosHtml, /class="site-nav-item site-nav-item-current-branch"/);
-	assert.match(macosHtml, /<a href="\/guides\/">Guides<\/a>/);
+	assert.match(macosHtml, /data-area-reading-frame/);
+	assert.match(macosHtml, /data-navigation-area="guides"/);
 	assert.doesNotMatch(macosHtml, /class="site-nav-submenu"/);
 	assert.match(macosHtml, /href="\/guides\/installation\/macos\/" aria-current="page"/);
 	assert.match(macosHtml, /<nav class="page-sequence-navigation" aria-label="Page sequence">/);
@@ -143,21 +144,23 @@ try {
 	assert.match(macosHtml, /<details\b[^>]*data-display-settings/);
 	assert.match(macosHtml, /<input\b[^>]*data-reader-focus/);
 	assert.match(macosHtml, /"focusReading":true/);
-	assert.match(macosHtml, /<aside id="tree-local-navigation" class="tree-local-navigation" data-navigation-root="\/guides\/" data-navigation-state-root="\/">/);
+	assert.match(macosHtml, /<aside id="tree-local-navigation" class="tree-local-navigation" data-navigation-root="area:\/guides\/" data-navigation-state-root="area:\/" data-navigation-area="guides">/);
 	const treeNavigationStart = macosHtml.indexOf('<aside id="tree-local-navigation"');
 	const treeNavigationEnd = macosHtml.indexOf('</aside>', treeNavigationStart);
 	const treeNavigationHtml = macosHtml.slice(treeNavigationStart, treeNavigationEnd);
 	assert.match(treeNavigationHtml, /class="navigation-page-sections"/);
 	assert.match(treeNavigationHtml, /class="page-contents-links/);
-	assert.match(treeNavigationHtml, /href="#install">Install<\/a><ol><li><a href="#prerequisites">Prerequisites<\/a>/);
+	assert.match(treeNavigationHtml, /href="#install">Install<\/a>/);
 	assert.match(macosHtml, /<ul class="navigation-page-tree navigation-page-tree-sidebar">/);
-	assert.match(macosHtml, /<details class="navigation-page-branch navigation-page-disclosure navigation-category-disclosure navigation-page-disclosure-sidebar" data-page-path="guides" data-current-branch="true"/);
-	assert.match(macosHtml, /<summary class="navigation-page-summary"[^>]*><span class="navigation-page-summary-title">Guides<\/span>/);
+	assert.doesNotMatch(treeNavigationHtml, /navigation-category-disclosure/);
+	assert.match(macosHtml, /class="navigation-page-summary-title navigation-category-link mobile-nav-destination" href="\/guides\/installation\/">Guides<\/a>/);
 	assert.doesNotMatch(macosHtml, /class="navigation-category-disclosure"[^>]*>[\s\S]*?class="navigation-page-open-link"[^>]*>Guides<\/a>/);
 	assert.match(macosHtml, /<nav class="site-breadcrumbs" aria-label="Breadcrumb"><ol><li><span>Guides<\/span><\/li><li><a href="\/guides\/installation\/">Installation<\/a><\/li><li><span aria-current="page">macOS<\/span>/);
 	assert.doesNotMatch(macosHtml, /page-contents-navigation-inline/);
-	assert.match(macosHtml, /<aside class="page-contents-navigation page-contents-navigation-rail"><nav aria-label="Page contents: macOS">/);
-	assert.match(macosHtml, /href="#install">Install<\/a><ol><li><a href="#prerequisites">Prerequisites<\/a>/);
+	assert.doesNotMatch(macosHtml, /<aside class="page-contents-navigation/);
+	assert.doesNotMatch(treeNavigationHtml, /href="#prerequisites"/);
+	assert.match(macosHtml, /id="prerequisites"/);
+	assert.match(macosHtml, /href="#install">Install<\/a>/);
 	assert.doesNotMatch(macosHtml, /<nav class="page-nav"/);
 	assert.ok(
 		macosHtml.indexOf('href="/guides/installation/"') < macosHtml.indexOf('href="/guides/workflows/"'),
@@ -172,7 +175,7 @@ try {
 	assert.match(referenceTreeHtml, /class="navigation-page-sections"/);
 	assert.doesNotMatch(referenceTreeHtml, /navigation-page-sections-label/);
 	assert.match(referenceTreeHtml, /aria-label="Page contents: Reference installation"/);
-	assert.match(referenceTreeHtml, /href="#install">Install<\/a><ol><li><a href="#prerequisites">Prerequisites<\/a>/);
+	assert.match(referenceTreeHtml, /href="#install">Install<\/a>/);
 	assert.match(referenceTreeHtml, /href="#verify">Verify<\/a>/);
 	assert.doesNotMatch(referenceTreeHtml, /href="\/guides\/installation\/macos\/"/);
 	assert.match(referenceInstallationHtml, /href="\/reference\/" rel="prev"/);

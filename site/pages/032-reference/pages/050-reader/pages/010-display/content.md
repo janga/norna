@@ -8,7 +8,9 @@ page:
 The site's **Display** panel always offers Appearance and reading width. It
 also offers **Focus reading** when navigation resolves to `tree`. These
 choices adapt the site's presentation without editing its theme or changing
-content order.
+content order. On wide tree-navigation pages, Display sits beside the Home
+link and Search above the left menu. It remains available in the compact
+header on small screens.
 
 ## Defaults and overrides
 
@@ -35,7 +37,7 @@ or hide the Display control needed to undo a choice.
 
 ## Focus reading
 
-Focus reading hides persistent navigation rails, breadcrumbs and the footer.
+Focus reading hides the persistent page tree, breadcrumbs and the footer.
 The document keeps its selected prose width and reading axis. Site identity,
 Display and a compact **Menu** remain available.
 

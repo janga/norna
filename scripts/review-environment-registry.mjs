@@ -4,7 +4,7 @@ const definitions = {
 		siteDirectory: 'site',
 		port: 4321,
 		basePath: '/norna/',
-		browserSuites: [],
+		browserSuites: ['tests/area-navigation.spec.ts', 'tests/navigation-continuity.spec.ts', 'tests/navigation-state.spec.ts', 'tests/navigation-history-lifecycle.spec.ts'],
 	},
 	presentation: {
 		label: 'Presentation review site',
@@ -20,6 +20,7 @@ const definitions = {
 		basePath: '/',
 		browserSuites: [
 			'tests/navigation-tree.spec.ts',
+			'tests/area-navigation-parent.spec.ts',
 			'tests/page-contents-placement.spec.ts',
 			'tests/navigation-following.spec.ts',
 		],

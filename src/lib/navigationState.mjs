@@ -46,12 +46,8 @@ export function createNavigationStateHelpers() {
 			fromEntry: false,
 		};
 	};
-	const arrivalPolicy = (state, prototype = true, area = false) => ({
-		onArrival: !state.fromEntry,
-		preserveCurrentPage: prototype && !area && state.hasSavedState,
-		preserveCurrentOutline: prototype && !area,
-	});
-	// The area trial keeps snapshots per history entry. Only the identity goes
+	const arrivalPolicy = (state) => ({ onArrival: !state.fromEntry });
+	// Keep snapshots per history entry. Only the identity goes
 	// into history.state: scrolling must not repeatedly call replaceState.
 	let activeEntry = null;
 	const currentEntry = () => {

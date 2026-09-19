@@ -66,19 +66,6 @@
 		document.documentElement.style.setProperty('--site-top-anchor-offset', `${offset}px`);
 	};
 
-	const alignInitialHashTarget = () => {
-		if (!window.location.hash) return;
-		// The review prototype aligns after fonts settle and leaves history restoration alone.
-		if (document.documentElement.hasAttribute('data-navigation-prototype')) return;
-
-		try {
-			const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
-			target?.scrollIntoView({ block: 'start' });
-		} catch {
-			// Invalid URL encoding is left to the browser's native hash handling.
-		}
-	};
-
 	const getSamePageTarget = (link: HTMLAnchorElement) => {
 		const linkUrl = new URL(link.href, window.location.href);
 		if (linkUrl.pathname !== window.location.pathname || !linkUrl.hash) return undefined;
@@ -394,7 +381,6 @@
 	}
 
 	setAnchorOffset();
-	if (window.location.hash) window.requestAnimationFrame(alignInitialHashTarget);
 
 	if (siteTop && 'ResizeObserver' in window) {
 		const navigationResizeObserver = new ResizeObserver(() => {

@@ -198,8 +198,9 @@ try {
 	await runReviewEnvironment(['test', 'navigation'], { root: repoRoot, run, write });
 	assert.equal(calls.length, 1);
 	assert.ok(calls[0].args[0].endsWith(path.join('scripts', 'test-navigation.mjs')));
-	assert.deepEqual(calls[0].args.slice(-3), [
+	assert.deepEqual(calls[0].args.slice(-4), [
 		'tests/navigation-tree.spec.ts',
+		'tests/area-navigation-parent.spec.ts',
 		'tests/page-contents-placement.spec.ts',
 		'tests/navigation-following.spec.ts',
 	]);
@@ -209,10 +210,12 @@ try {
 	await runReviewEnvironment(['test', 'presentation'], { root: repoRoot, run, write });
 	assert.deepEqual(calls[0].args.slice(-1), ['tests/table-responsive-context.spec.ts']);
 
-	await expectFailure(
-		() => runReviewEnvironment(['test', 'docs'], { root: repoRoot, run, write }),
-		/has no registered browser suite[\s\S]*presentation, navigation, presets/,
-	);
+	calls.length = 0;
+	await runReviewEnvironment(['test', 'docs'], { root: repoRoot, run, write });
+	assert.deepEqual(calls[0].args.slice(-4), [
+		'tests/area-navigation.spec.ts', 'tests/navigation-continuity.spec.ts',
+		'tests/navigation-state.spec.ts', 'tests/navigation-history-lifecycle.spec.ts',
+	]);
 	await expectFailure(
 		() => runReviewEnvironment(['start', 'docs', '--kill'], { root: repoRoot, run, write }),
 		/Unexpected start option: --kill/,

@@ -1,5 +1,4 @@
 // @ts-check
-import { navigationPrototype } from './src/lib/navigationPrototypeConfig.mjs';
 import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -163,23 +162,21 @@ markdownProcessor.createRenderer = async (shared) => {
 export default defineConfig({
 	base: projectConfig.site.basePath,
 	cacheDir: astroCacheDir,
-	prefetch: navigationPrototype
-		? { prefetchAll: false, defaultStrategy: 'hover' }
-		: false,
-	integrations: navigationPrototype ? [{
-		name: 'norna-navigation-prototype',
+	prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
+	integrations: [{
+		name: 'norna-navigation-continuity',
 		hooks: {
 			'astro:config:setup': ({ injectScript }) => {
 				injectScript('page', `
 					import { prefetch } from 'astro:prefetch';
-					import { setupNavigationPrototype } from ${JSON.stringify(path.join(engineRoot, 'src/lib/navigationPrototype.ts'))};
-					if (document.documentElement.hasAttribute('data-navigation-prototype')) {
-						setupNavigationPrototype(prefetch);
+					import { setupNavigationContinuity } from ${JSON.stringify(path.join(engineRoot, 'src/lib/navigationContinuity.ts'))};
+					if (document.documentElement.hasAttribute('data-navigation-continuity')) {
+						setupNavigationContinuity(prefetch);
 					}
 				`);
 			},
 		},
-	}] : [],
+	}],
 	markdown: {
 		shikiConfig: {
 			transformers: [nornaCodeFenceTransformer],

@@ -567,15 +567,15 @@ Tell us about your household so we can help you find a suitable companion.
 ```
 
 The same structure can hold a larger handbook. Here, platform guides belong
-under Installation, and publishing guides form a separate branch. The left tree
-selects a page; the right outline follows headings within that page. This
-excerpt uses the `documentation` preset.
+under Installation, and publishing guides form a separate branch. Choosing
+Installation gives the left tree that branch and its H2 links. This excerpt
+uses the `documentation` preset.
 
 ```image-stack
 items:
   - image: navigation-documentation-desktop.png
-    alt: A handbook with Guides, Installation, and Linux selected in the left tree. Requirements, Check Node.js, and Local preview appear in the right outline beside the Linux page.
-    caption: A deeper documentation branch, with pages on the left and the current page's outline on the right.
+    alt: A handbook with Installation and its platform pages in the left tree. Linux is selected, with Requirements and Local preview beneath it.
+    caption: Pages and H2 links share one left tree, leaving room beside the article.
 ```
 
 ```text title="Documentation example"
@@ -633,10 +633,10 @@ and
 use branches to organize installation methods and configuration topics.
 
 **Source:** The page directories and Markdown headings determine navigation.
-`navigation.mode` defaults to `automatic`. H2s appear in section and top
-navigation; tree outlines also include H3s. A deeper branch can use a separate
-right-hand outline. As space runs out, Norna moves that outline into the left
-tree, then uses the compact menu. Home stays an uncluttered entry page.
+`navigation.mode` defaults to `automatic`. H2 links appear in section and top
+navigation, or beneath pages in a local tree. H3 remains in the article with
+its anchor. As space runs out, the same navigation moves into Menu. Home
+stays an uncluttered entry page.
 
 <!-- Screenshots: scripts/capture-navigation-examples.mjs. All four runnable
 sources are in fixtures/navigation-examples; no illustrated UI is hand-drawn. -->
@@ -906,7 +906,7 @@ for content errors and image synchronization.
 The dog-shelter sites are complete Norna projects rather than isolated feature
 fragments. They are intentionally small enough that desktop navigation barely
 needs more than a top row. This documentation site demonstrates the contrasting
-hierarchical case with page and contents rails.
+hierarchical case with area menus and H2 links in the page tree.
 
 ```image-stack
 items:

@@ -21,14 +21,14 @@ const engineRoot = path.join(workspaceRoot, 'node_modules', '@janga', 'norna');
 const commandArguments = process.argv.slice(2);
 const suiteIndex = commandArguments.indexOf('--suite');
 const suite = suiteIndex === -1 ? 'all' : commandArguments[suiteIndex + 1];
-if (!['all', 'constructions', 'priority'].includes(suite)) throw new Error('Use --suite all, --suite constructions, or --suite priority.');
+if (!['all', 'constructions', 'priority', 'metadata'].includes(suite)) throw new Error('Use --suite all, --suite constructions, --suite priority, or --suite metadata.');
 if (suiteIndex !== -1) commandArguments.splice(suiteIndex, 2);
 const prettierIndex = commandArguments.indexOf('--with-prettier');
 const withPrettier = prettierIndex !== -1;
 if (withPrettier) commandArguments.splice(prettierIndex, 1);
 const versionArgument = commandArguments[0] === '--version' ? commandArguments[1] : undefined;
 if (commandArguments.length > 0 && (!versionArgument || commandArguments.length !== 2)) {
-	throw new Error('Usage: node test/run-integration.mjs [--version <VS Code version>] [--with-prettier] [--suite all|constructions|priority]');
+	throw new Error('Usage: node test/run-integration.mjs [--version <VS Code version>] [--with-prettier] [--suite all|constructions|priority|category]');
 }
 const version = versionArgument ?? process.env.NORNA_VSCODE_TEST_VERSION ?? 'stable';
 let engineVersion;

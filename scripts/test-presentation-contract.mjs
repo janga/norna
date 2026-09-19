@@ -237,14 +237,10 @@ assert.match(
 );
 assert.match(
 	stylesheet,
-	/:root\[data-appearance='dark'\][\s\S]*?:is\(\.tree-local-navigation, \.mobile-site-nav, \.page-contents-navigation\)\s*\{[\s\S]*?var\(--color-surface-emphasis-background\) 64%[\s\S]*?var\(--color-surface-soft-background\)/u,
-	'Dark persistent, compact, and Page contents navigation must share a palette-derived current-item marker',
+	/:root\[data-appearance='dark'\][\s\S]*?:is\(\.tree-local-navigation, \.mobile-site-nav\)\s*\{[\s\S]*?var\(--color-surface-emphasis-background\) 64%[\s\S]*?var\(--color-surface-soft-background\)/u,
+	'Dark persistent and compact navigation must share a palette-derived current-item marker',
 );
-assert.match(
-	stylesheet,
-	/\.page-contents-navigation-rail\s*\{[\s\S]*?border-inline-start:\s*1px solid var\(--color-nav-separator\)/u,
-	'the contents rail must close the opposite edge of the content canvas',
-);
+
 assert.match(
 	stylesheet,
 	/\.content-block-note-lane-boundary\s*\{[\s\S]*?clear:\s*both/u,
@@ -294,9 +290,6 @@ assert.match(
 );
 for (const requiredSource of [
 	"figure.dataset.imageCaptionPlacement = 'persistent'",
-	"layout.querySelectorAll<HTMLElement>('.page-contents-navigation-rail')",
-	"layout.dataset.pageContentsPlacement === 'contents-rail'",
-	"document.documentElement.dataset.focusReading !== 'on'",
 	"attributeFilter: ['data-focus-reading', 'data-reading-width']",
 ]) {
 	assert.match(
@@ -344,7 +337,7 @@ assert.match(
 );
 assert.match(
 	stylesheet,
-	/:root\[data-reader-preferences-ready='true'\]\[data-focus-reading='on'\] :is\([\s\S]*?\.site-nav,[\s\S]*?\.tree-local-navigation,[\s\S]*?\.page-contents-navigation/u,
+	/:root\[data-reader-preferences-ready='true'\]\[data-focus-reading='on'\] :is\([\s\S]*?\.site-nav,[\s\S]*?\.tree-local-navigation,/u,
 	'Focus reading must replace persistent navigation with the compact trigger',
 );
 assert.match(

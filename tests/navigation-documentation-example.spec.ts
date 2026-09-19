@@ -7,21 +7,19 @@ for (const javaScriptEnabled of [true, false]) {
 		test('keeps the same page and heading destinations through responsive fallbacks', async ({ page }) => {
 			await page.goto('/guides/installation/linux/');
 			const tree = page.locator('.tree-local-navigation');
-			const rail = page.locator('.page-contents-navigation-rail');
-			const headings = ['Requirements', 'Check Node.js', 'Local preview'];
+			const headings = ['Requirements', 'Local preview'];
 			await expect(page.locator('#page-title')).toHaveText('Linux');
-			await expect(page.locator('.site-page-layout')).toHaveAttribute('data-page-contents-placement', 'contents-rail');
+			await expect(page.locator('html')).toHaveAttribute('data-area-navigation', '');
 			await expect(tree).toBeVisible();
-			await expect(rail).toBeVisible();
-			await expect(rail.getByRole('link')).toHaveText(headings);
+			await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
 			for (const title of ['macOS', 'Windows', 'Linux']) {
 				await expect(tree.getByRole('link', { name: title, exact: true })).toBeVisible();
 			}
 			const localSections = tree.locator('.navigation-page-node-current .navigation-page-sections');
-			await expect(localSections).toBeHidden();
+			await expect(localSections).toBeVisible();
+			await expect(localSections.getByRole('link')).toHaveText(headings);
 
 			await page.setViewportSize({ width: 1120, height: 850 });
-			await expect(rail).toBeHidden();
 			await expect(tree).toBeVisible();
 			await expect(localSections).toBeVisible();
 			await expect(localSections.getByRole('link')).toHaveText(headings);

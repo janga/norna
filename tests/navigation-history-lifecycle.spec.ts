@@ -3,8 +3,8 @@ import vm from 'node:vm';
 import { expect, test } from '@playwright/test';
 
 // Exercise the delivered inline guard. Browser history/geometry is covered by
-// navigation-prototype.spec.ts; these cases cover its temporary ownership.
-const component = await readFile(new URL('../src/components/NavigationPrototype.astro', import.meta.url), 'utf8');
+// navigation-continuity.spec.ts; these cases cover its temporary ownership.
+const component = await readFile(new URL('../src/components/NavigationContinuity.astro', import.meta.url), 'utf8');
 const script = component.match(/<script is:inline>([\s\S]*?)<\/script>/)![1];
 const setup = (overrides: {
 	hash?: string;

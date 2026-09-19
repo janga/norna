@@ -1,13 +1,12 @@
 ---
-import { navigationPrototype, areaNavigationPrototype } from '../lib/navigationPrototypeConfig.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { marginNoteLayoutDeclarations } from '../../scripts/lib/markdown-notes-render-plugin.mjs';
 import { getPresentationCssVariables } from '../../scripts/lib/presentation.mjs';
 import { getIconLinks, getSocialImageAsset } from '../lib/sitePublicAssets';
 import { withBasePath } from '../lib/basePath';
 import { getReaderPreferencesScript } from '../lib/readerPreferencesScript.mjs';
-import NavigationPrototype from '../components/NavigationPrototype.astro';
-import areaNavigationStyles from '../styles/area-navigation-prototype.css?inline';
+import NavigationContinuity from '../components/NavigationContinuity.astro';
+import areaNavigationStyles from '../styles/area-navigation.css?inline';
 import '../styles/global.css';
 
 type FrameColors = {
@@ -83,6 +82,7 @@ interface Props {
 	contentsNavigation?: boolean;
 	indexable?: boolean;
 	searchable?: boolean;
+	areaNavigation?: boolean;
 	areaReadingFrame?: boolean;
 }
 
@@ -97,6 +97,7 @@ const {
 	contentsNavigation = false,
 	indexable = true,
 	searchable = false,
+	areaNavigation = false,
 	areaReadingFrame = false,
 } = Astro.props;
 
@@ -153,7 +154,7 @@ const marginNoteReadingWidths = [
 ] as const;
 const marginNoteOuterReserve = '0.5rem';
 const marginNoteDeclarations = marginNoteLayoutDeclarations;
-const marginNoteLayoutCss = areaNavigationPrototype ? [
+const marginNoteLayoutCss = [
 	'@media (min-width: 1101px) {',
 	...marginNoteReadingWidths.map(([readingWidth, textWidth]) => [
 		`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve})) {`,
@@ -162,52 +163,6 @@ const marginNoteLayoutCss = areaNavigationPrototype ? [
 		'}',
 		'}',
 	].join('\n')),
-	'}',
-].join('\n') : [
-	'@media (min-width: 1101px) {',
-	...marginNoteReadingWidths.flatMap(([readingWidth, textWidth]) => [
-		[
-			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap})) {`,
-			`:root[data-reading-width="${readingWidth}"] .site-page-layout:not(.site-page-layout-tree) .section-note-paragraph {`,
-				marginNoteDeclarations,
-			'}',
-		'}',
-		].join('\n'),
-		[
-			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve} - 11rem - ${visualTheme.layout.localNavigationGap})) {`,
-			`:root[data-reader-preferences-ready="true"][data-reading-width="${readingWidth}"][data-focus-reading="on"] .site-page-layout-tree .section-note-paragraph {`,
-				marginNoteDeclarations,
-			'}',
-		'}',
-		].join('\n'),
-	]),
-	'}',
-	'@media (min-width: 1101px) and (max-width: 1280px) {',
-	...marginNoteReadingWidths.map(([readingWidth, textWidth]) => [
-		`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve})) {`,
-		`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note-paragraph {`,
-			marginNoteDeclarations,
-		'}',
-	'}',
-	].join('\n')),
-	'}',
-	'@media (min-width: 1281px) {',
-	...marginNoteReadingWidths.flatMap(([readingWidth, textWidth]) => [
-		[
-			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap})) {`,
-			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree.site-page-layout-contents .section-note-paragraph {`,
-				marginNoteDeclarations,
-			'}',
-		'}',
-		].join('\n'),
-		[
-			`@container (min-width: calc(${textWidth} + ${visualTheme.layout.noteWidth} + ${visualTheme.layout.noteGap} + ${marginNoteOuterReserve} - 11rem - ${visualTheme.layout.localNavigationGap})) {`,
-			`:root[data-reading-width="${readingWidth}"] .site-page-layout-tree:not(.site-page-layout-contents) .section-note-paragraph {`,
-				marginNoteDeclarations,
-			'}',
-		'}',
-		].join('\n'),
-	]),
 	'}',
 ].join('\n');
 const { buildInfo, copyrightMessage } = footer ?? {};
@@ -242,8 +197,8 @@ const readerPreferencesScript = readerPreferencesEnabled
 	data-reading-width={presentation.readerPreferences.defaults.readingWidth}
 	data-focus-reading={presentation.readerPreferences.defaults.focusReading}
 	data-section-tracking={contentsNavigation ? 'enabled' : undefined}
-	data-navigation-prototype={navigationPrototype ? projectConfig.site.basePath : undefined}
-	data-area-navigation-prototype={areaNavigationPrototype ? '' : undefined}
+	data-navigation-continuity={projectConfig.site.basePath}
+	data-area-navigation={areaNavigation ? '' : undefined}
 	data-area-reading-frame={areaReadingFrame ? '' : undefined}
 	data-pagefind-ignore={searchable ? undefined : 'all'}
 	style={documentStyle}
@@ -266,8 +221,8 @@ const readerPreferencesScript = readerPreferencesEnabled
 		{indexable && socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
 		<meta name="theme-color" content={presentation.palette.page.backgroundColor} />
 		{readerPreferencesScript && <script is:inline set:html={readerPreferencesScript} />}
-		{navigationPrototype && <NavigationPrototype />}
-		{areaNavigationPrototype && <style is:inline set:html={areaNavigationStyles} />}
+		<NavigationContinuity />
+		{areaNavigation && <style is:inline set:html={areaNavigationStyles} />}
 		<style is:inline set:html={marginNoteLayoutCss} />
 		{indexable && <link rel="canonical" href={canonicalUrl} />}
 		<meta name="generator" content={Astro.generator} />
@@ -292,6 +247,6 @@ const readerPreferencesScript = readerPreferencesEnabled
 				</p>
 			</footer>
 		)}
-		{navigationPrototype && <span id="norna-prototype-ready" hidden></span>}
+		<span id="norna-navigation-ready" hidden></span>
 	</body>
 </html>

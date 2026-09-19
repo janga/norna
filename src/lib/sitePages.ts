@@ -44,6 +44,7 @@ export type SitePage = SiteNodeBase & {
 export type SiteCategory = SiteNodeBase & {
 	kind: 'category';
 	categorySourceLabel: string;
+	description?: string;
 };
 
 export type SiteNode = SitePage | SiteCategory;
@@ -141,6 +142,7 @@ const createSiteCategory = (category: Awaited<ReturnType<typeof getSiteStructure
 	pathSegment: category.pagePath,
 	pathname: getPagePathname(category.pagePath),
 	categorySourceLabel: category.categorySourceLabel,
+	description: category.description,
 	pageDirectory: category.pageDirectory,
 	pageDirectories: category.pageDirectories,
 	pageId: category.pageId,

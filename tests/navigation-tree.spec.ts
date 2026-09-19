@@ -19,135 +19,49 @@ test.describe('desktop tree navigation', () => {
 		);
 	});
 
-	test('separates the active page branch from the current page contents', async ({ page }) => {
+	test('integrates H2 in the active area and keeps global navigation in the reading menu', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
-		expect(await page.locator('body').evaluate((body) => getComputedStyle(body).paddingTop)).toBe('0px');
-
-		await expect(page.locator('.site-nav > ul > li > a')).toHaveText([
-			'Nested pages',
-			'Guides',
-			'Reference',
-		]);
-		await expect(page.locator('.site-nav-submenu')).toHaveCount(0);
-		await expect(page.locator('.site-nav-item-current-branch > a')).toHaveText('Guides');
-
-		const localNavigation = page.locator('.tree-local-navigation');
-		await expect(localNavigation).toBeVisible();
-		await expect(localNavigation.locator('.navigation-page-tree-sidebar').first()).toContainText('Guides');
-		await expect(localNavigation.locator('details[data-page-path="guides"] > .navigation-page-open-link')).toHaveCount(0);
-		await expect(localNavigation.locator('details[data-page-path="guides/installation"] > summary'))
-			.toHaveAttribute('aria-label', 'Child pages: Installation');
-		await expect(localNavigation.getByRole('link', { name: 'Installation', exact: true }))
-			.toBeVisible();
-		await expect(localNavigation.getByRole('link', { name: 'Workflows', exact: true })).toBeVisible();
-		await expect(localNavigation.locator('details[data-page-path="guides/workflows"]')).toBeHidden();
-		const currentPageNode = localNavigation.locator('.navigation-page-node-current');
-		const currentPageLink = currentPageNode.getByRole('link', { name: 'macOS', exact: true });
-		await expect(currentPageLink).toHaveAttribute('aria-current', 'page');
-		const responsivePageSections = currentPageNode.locator(
-			':scope > .navigation-page-sections-disclosure',
-		);
-		await expect(responsivePageSections).toHaveCount(1);
-		await expect(responsivePageSections).toBeHidden();
-		await expect(currentPageNode.getByRole('link', { name: 'Install', exact: true })).toBeHidden();
-		await expect(currentPageNode.getByRole('link', { name: 'Prerequisites', exact: true })).toBeHidden();
-		await expect(localNavigation.getByRole('link', { name: 'Reference', exact: true })).toHaveCount(0);
-
-		await expect(page.locator('.site-breadcrumbs li')).toHaveText(['Guides', 'Installation', 'macOS']);
-		const pageContents = page.locator('.page-contents-navigation-rail');
-		await expect(pageContents).toBeVisible();
-		await expect(pageContents).toHaveAttribute('class', /page-contents-navigation-rail/);
-		await expect(pageContents.getByRole('navigation')).toHaveAttribute('aria-label', 'Page contents: macOS');
-		await expect(pageContents.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
-		await expect(pageContents.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
-		await expect(pageContents.getByRole('link', { name: 'Verify', exact: true })).toBeVisible();
-		await expect(page.locator('.page-contents-navigation-inline')).toHaveCount(0);
+		await expect(page.locator('.site-nav')).toHaveCount(0);
+		await expect(page.locator('.site-reading-location .site-breadcrumbs li')).toHaveText(['Guides', 'Installation', 'macOS']);
+		const tree = page.locator('.tree-local-navigation');
+		await expect(tree).toHaveAttribute('data-navigation-area', 'guides');
+		await expect(tree.locator('.navigation-area-title')).toHaveCount(0);
+		await expect(tree.getByRole('link', { name: 'Installation', exact: true })).toBeVisible();
+		const current = tree.locator('.navigation-page-node-current');
+		await expect(current.getByRole('link', { name: 'macOS', exact: true })).toHaveAttribute('aria-current', 'page');
+		await expect(current.locator('.page-contents-links a')).toHaveText(['Install', 'Verify']);
+		await expect(current.locator('.navigation-page-sections-disclosure')).toHaveAttribute('open', '');
+		await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
 		await expect(page.locator('.page-nav')).toHaveCount(0);
-		await expect(page.locator('[data-tree-navigation-toggle]')).toHaveCount(0);
-
-		const settings = page.locator('[data-display-settings]');
-		await settings.locator('summary').click();
-		await expect(settings.getByRole('checkbox', { name: 'Focus reading' })).toBeVisible();
+		await page.locator('[data-area-switcher] > summary').click();
+		await expect(page.locator('[data-area-switcher]').getByRole('link', { name: 'Reference', exact: true })).toBeVisible();
 	});
 
-	test('marks every H2 or H3 through the end of a short page without changing URL or focus', async ({ page }) => {
-		await page.setViewportSize({ width: desktopViewport.width, height: 420 });
+	test('tracks H2 through a short document without changing URL, focus or label size', async ({ page }) => {
+		await page.setViewportSize({ width: 1440, height: 420 });
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
-
-		const contentsNavigation = page.locator('.page-contents-navigation-rail');
-		const displaySettingsSummary = page.locator('[data-display-settings] > summary');
-		const initialUrl = page.url();
-
-		await displaySettingsSummary.focus();
-		const transitions = await page.evaluate(async () => {
-			const rail = document.querySelector('.page-contents-navigation-rail');
-			const maximumScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-			const step = Math.max(1, Math.floor(maximumScroll / 72));
-			const waitForTracking = () => new Promise<void>((resolve) => {
-				window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
-			});
-			const getActiveId = () => {
-				const active = rail?.querySelector<HTMLAnchorElement>('a[aria-current="location"]');
-				return active ? new URL(active.href).hash.slice(1) : undefined;
-			};
-			const collect = async (positions: number[]) => {
-				const observed: string[] = [];
-				for (const position of positions) {
-					window.scrollTo({ behavior: 'auto', top: position });
-					await waitForTracking();
-					const activeId = getActiveId();
-					if (activeId && observed.at(-1) !== activeId) observed.push(activeId);
-				}
-				return observed;
-			};
-			const downPositions = [];
-			for (let position = 0; position < maximumScroll; position += step) {
-				downPositions.push(position);
-			}
-			downPositions.push(maximumScroll);
-			const upPositions = [...downPositions].reverse();
-
-			return {
-				down: await collect(downPositions),
-				up: await collect(upPositions),
-			};
-		});
-
-		expect(transitions.down).toEqual(['install', 'prerequisites', 'verify']);
-		expect(transitions.up).toEqual(['verify', 'prerequisites', 'install']);
-		await expect(displaySettingsSummary).toBeFocused();
-		expect(page.url()).toBe(initialUrl);
-		expect(await contentsNavigation.getByRole('link', { name: 'Install', exact: true })
-			.evaluate((link) => getComputedStyle(link, '::before').width)).toBe('2px');
-
-		const prerequisitesLink = contentsNavigation.getByRole('link', { name: 'Prerequisites', exact: true });
-		await prerequisitesLink.click();
-		await expect(page).toHaveURL(/#prerequisites$/);
-		await expect(prerequisitesLink).toHaveAttribute('aria-current', 'location');
-		await expect(contentsNavigation.locator('a[aria-current="location"]')).toHaveCount(1);
-
-		const markerAppearance = async () => prerequisitesLink.evaluate((link) => ({
-			background: getComputedStyle(link).backgroundColor,
-			bounds: link.getBoundingClientRect().toJSON(),
-			railBackground: getComputedStyle(link.closest('.page-contents-navigation-rail')!).backgroundColor,
-		}));
-		const lightMarker = await markerAppearance();
-		expect(lightMarker.background).not.toBe(lightMarker.railBackground);
-
-		await page.locator('html').evaluate((root) => {
-			root.dataset.appearance = 'dark';
-		});
-		const darkMarker = await markerAppearance();
-		expect(darkMarker.background).not.toBe(darkMarker.railBackground);
-		expect(darkMarker.background).not.toBe(lightMarker.background);
-		expect(darkMarker.bounds).toEqual(lightMarker.bounds);
+		const outline = page.locator('.tree-local-navigation .navigation-page-node-current .page-contents-links');
+		const focus = page.locator('[data-display-settings] > summary');
+		await focus.focus();
+		const url = page.url();
+		await page.keyboard.press('Escape');
+		const first = outline.getByRole('link', { name: 'Install', exact: true });
+		const weight = await first.evaluate(el => getComputedStyle(el).fontWeight);
+		await page.evaluate(() => scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+		await expect(outline.locator('[aria-current="location"]')).toHaveText('Verify');
+		await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+		await expect(first).toHaveAttribute('aria-current', 'location');
+		expect(await first.evaluate(el => getComputedStyle(el).fontWeight)).toBe(weight);
+		await expect(focus).toBeFocused();
+		expect(page.url()).toBe(url);
+		await expect(outline.locator('a[href="#prerequisites"]')).toHaveCount(0);
 	});
 
 	test('uses focus reading as the only control for hiding the local tree', async ({ page, context }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		const root = page.locator('html');
 		const localNavigation = page.locator('.tree-local-navigation');
-		const breadcrumbs = page.locator('.site-breadcrumbs');
+		const breadcrumbs = page.locator('.site-reading-location .site-breadcrumbs');
 		const settings = page.locator('[data-display-settings]');
 		const tableFrame = page.locator('[data-table-frame]');
 		const prose = tableFrame.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " section-markdown ")]');
@@ -248,7 +162,7 @@ test.describe('desktop tree navigation', () => {
 			.toHaveText('Installation');
 		const nextMacosLink = nextLocalNavigation.getByRole('link', { name: 'macOS', exact: true });
 		await expect(nextMacosLink).toHaveAttribute('aria-current', 'page');
-		await expect(nextLocalNavigation.getByRole('link', { name: 'Install', exact: true })).toHaveCount(0);
+		await expect(nextLocalNavigation.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
 
 		const macosTopAfter = (await nextMacosLink.boundingBox())?.y;
 		const headingTopAfter = (await page.getByRole('heading', { level: 1, name: 'macOS' }).boundingBox())?.y;
@@ -276,7 +190,8 @@ test.describe('desktop tree navigation', () => {
 		await expect(currentOutline).not.toHaveAttribute('open', '');
 		await expect(workflowsOutline).toHaveAttribute('open', '');
 
-		await page.reload({ waitUntil: 'networkidle' });
+		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
+		await page.locator('.tree-local-navigation').getByRole('link', { name: 'macOS', exact: true }).click();
 		const reloadedTree = page.locator('.tree-local-navigation');
 		await expect(reloadedTree.locator(
 			'.navigation-page-node-current > .navigation-page-sections-disclosure',
@@ -286,18 +201,13 @@ test.describe('desktop tree navigation', () => {
 			.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
 	});
 
-	test('keeps local category labels unlinked and follows global category destinations', async ({ page }) => {
+	test('keeps the area title static and category links usable in the compact tree', async ({ page }) => {
 		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
-		const category = page.locator('.tree-local-navigation details[data-page-path="guides"]');
-		await expect(category.locator(':scope > summary')).toHaveText('Guides');
-		await expect(category.getByRole('link', { name: 'Guides', exact: true })).toHaveCount(0);
-		await expect(page.locator('.site-breadcrumbs li').first()).toHaveText('Guides');
-		await expect(page.locator('.site-breadcrumbs li').first().locator('a')).toHaveCount(0);
-		const globalCategory = page.locator('.site-nav').getByRole('link', { name: 'Guides', exact: true });
-		await expect(globalCategory).toHaveAttribute('href', '/guides/');
-		await globalCategory.click();
-		await expect(page).toHaveURL(/\/guides\/installation\/$/);
-		await expect(page.getByRole('heading', { level: 1, name: 'Installation', exact: true })).toBeVisible();
+		await expect(page.locator('.tree-local-navigation .navigation-area-title')).toHaveCount(0);
+		await expect(page.locator('.tree-local-navigation details[data-page-path="guides"]')).toHaveCount(0);
+		await expect(page.locator('.site-reading-location .site-breadcrumbs li').first().locator('a')).toHaveCount(0);
+		await expect(page.locator('.mobile-site-nav .navigation-category-link').filter({ hasText: /^Guides$/ }))
+			.toHaveAttribute('href', '/guides/installation/');
 	});
 
 	test('renders a direct child page list on the reading axis', async ({ page }) => {
@@ -317,14 +227,13 @@ test.describe('desktop tree navigation', () => {
 		expect(Math.abs((listBox?.width ?? 0) - (headingBox?.width ?? 0))).toBeLessThan(2);
 	});
 
-	test('aligns breadcrumbs with the current page text width', async ({ page }) => {
+	test('keeps breadcrumbs beside the reading menu and above the article', async ({ page }) => {
 		await page.goto('/guides/workflows/#local-work', { waitUntil: 'networkidle' });
-		const breadcrumbBox = await page.locator('.site-breadcrumbs').boundingBox();
-		const paragraphBox = await page.locator('.site-section:has(#local-work) .section-markdown p').first().boundingBox();
-
-		expect(breadcrumbBox).not.toBeNull();
-		expect(paragraphBox).not.toBeNull();
-		expect(Math.abs((breadcrumbBox?.x ?? 0) - (paragraphBox?.x ?? 0))).toBeLessThan(2);
+		const breadcrumb = (await page.locator('.site-reading-location .site-breadcrumbs').boundingBox())!;
+		const menu = (await page.locator('[data-area-switcher] > summary').boundingBox())!;
+		expect(breadcrumb.x).toBeGreaterThan(menu.x + menu.width);
+		expect(Math.abs(breadcrumb.y + breadcrumb.height / 2 - menu.y - menu.height / 2)).toBeLessThan(1);
+		await expect(page.locator('main > .site-breadcrumbs')).toBeHidden();
 	});
 
 	test('keeps section surfaces clear of the local navigation', async ({ page }) => {
@@ -391,7 +300,7 @@ test.describe('desktop tree navigation', () => {
 		expect(await page.evaluate(() => window.scrollY)).toBe(0);
 	});
 
-	test('adds controls only when the active navigation tree is long', async ({ page }) => {
+	test('keeps controls in short and long local trees', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		const controls = page.locator('.tree-local-navigation [data-tree-controls]');
 		await expect(controls).toBeVisible();
@@ -401,7 +310,7 @@ test.describe('desktop tree navigation', () => {
 		await expect(controls.getByRole('button', { name: 'Locate current page' })).toBeVisible();
 
 		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
-		await expect(page.locator('.tree-local-navigation [data-tree-controls]')).toHaveCount(0);
+		await expect(page.locator('.tree-local-navigation [data-tree-controls]')).toBeVisible();
 	});
 
 	test('expands, collapses, and locates the current page predictably', async ({ page }) => {
@@ -425,7 +334,7 @@ test.describe('desktop tree navigation', () => {
 		await expect(currentPageLink).toBeFocused();
 		await expect(currentPageLink).toBeVisible();
 		await expect(status).toHaveText('Current page located.');
-		await expect(tree.locator('details[data-page-path="guides"]')).toHaveAttribute('open', '');
+		await expect(tree).toHaveAttribute('data-navigation-area', 'guides');
 		await expect(tree.locator('details[data-page-path="guides/installation"]')).toHaveAttribute('open', '');
 	});
 
@@ -441,7 +350,7 @@ test.describe('desktop tree navigation', () => {
 		await filter.fill('localization');
 		await expect(tree.getByRole('link', { name: 'Localization', exact: true })).toBeVisible();
 		await expect(tree.getByRole('link', { name: 'Installation', exact: true })).not.toBeVisible();
-		await expect(tree.locator('details[data-page-path="guides"]')).toHaveAttribute('open', '');
+		await expect(tree).toHaveAttribute('data-navigation-area', 'guides');
 		await expect(controls.locator('[data-tree-status]')).toHaveText('Matching navigation items: 1');
 		await expect(controls.getByRole('button', { name: 'Expand all' })).toBeDisabled();
 
@@ -468,167 +377,43 @@ test.describe('desktop tree navigation', () => {
 		await expect(tree.getByRole('link', { name: 'macOS', exact: true })).toBeFocused();
 	});
 
-	test('uses the margin only when a sidenote fits beside the selected reading width', async ({ page }) => {
-		await page.goto(testPagePath, { waitUntil: 'networkidle' });
-		const note = page.locator('.section-note').first();
-		const paragraph = page.locator('.section-markdown p').first();
-		const sectionBody = page.locator('.section-body').first();
-		const contentsNavigation = page.locator('.page-contents-navigation-rail');
-		const [noteBox, paragraphBox, sectionBodyBox, contentsBox] = await Promise.all([
-			note.boundingBox(),
-			paragraph.boundingBox(),
-			sectionBody.boundingBox(),
-			contentsNavigation.boundingBox(),
-		]);
 
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
-		expect(noteBox).not.toBeNull();
-		expect(paragraphBox).not.toBeNull();
-		expect(sectionBodyBox).not.toBeNull();
-		expect(contentsBox).not.toBeNull();
-		expect(noteBox?.x ?? 0).toBeGreaterThanOrEqual(
-			(paragraphBox?.x ?? 0) + (paragraphBox?.width ?? 0) + 8,
-		);
-		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThanOrEqual(
-			(sectionBodyBox?.x ?? 0) + (sectionBodyBox?.width ?? 0) + 1,
-		);
-		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThan((contentsBox?.x ?? 0) - 8);
 
-		const settings = page.locator('[data-display-settings]');
-		await settings.locator('summary').click();
-		await settings.getByRole('radio', { name: 'Wide' }).check();
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
-		expect(await page.evaluate(() => document.documentElement.scrollWidth))
-			.toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth + 1));
 
-		await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
-		await expect(contentsNavigation).toBeHidden();
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
-		const [focusNoteBox, pageLayoutBox] = await Promise.all([
-			note.boundingBox(),
-			page.locator('.site-page-layout').boundingBox(),
-		]);
-		expect(focusNoteBox).not.toBeNull();
-		expect(pageLayoutBox).not.toBeNull();
-		expect((focusNoteBox?.x ?? 0) + (focusNoteBox?.width ?? 0)).toBeLessThanOrEqual(
-			(pageLayoutBox?.x ?? 0) + (pageLayoutBox?.width ?? 0) + 1,
-		);
 
-		await settings.getByRole('checkbox', { name: 'Focus reading' }).uncheck();
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
 
-		await settings.getByRole('radio', { name: 'Standard' }).check();
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
-		await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
 
-		await page.setViewportSize({ width: 1100, height: desktopViewport.height });
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
-	});
 
-	test('keeps a sidenote inline when Page contents moves into the page tree', async ({ page }) => {
-		await page.goto(testPagePath, { waitUntil: 'networkidle' });
-		const note = page.locator('.section-note').first();
-		const contentsNavigation = page.locator('.page-contents-navigation-rail');
-
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
-		await expect(contentsNavigation).toBeVisible();
-
-		await page.setViewportSize({ width: 1281, height: desktopViewport.height });
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
-		await expect(contentsNavigation).toBeVisible();
-
-		await page.setViewportSize({ width: 1280, height: desktopViewport.height });
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
-		await expect(contentsNavigation).toBeHidden();
-
-		const settings = page.locator('[data-display-settings]');
-		await settings.locator('summary').click();
-		await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
-		expect(await page.evaluate(() => document.documentElement.scrollWidth))
-			.toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth + 1));
-	});
-
-	test('uses the empty right track for a wide sidenote on a shallow page', async ({ page }) => {
-		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
-		await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
-
-		const settings = page.locator('[data-display-settings]');
-		await settings.locator('summary').click();
-		await settings.getByRole('radio', { name: 'Wide' }).check();
-
-		const note = page.locator('.section-note').first();
-		const paragraph = page.locator('.section-markdown p').first();
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
-		const [noteBox, paragraphBox, pageLayoutBox] = await Promise.all([
-			note.boundingBox(),
-			paragraph.boundingBox(),
-			page.locator('.site-page-layout').boundingBox(),
-		]);
-		expect(noteBox).not.toBeNull();
-		expect(paragraphBox).not.toBeNull();
-		expect(pageLayoutBox).not.toBeNull();
-		expect(noteBox?.x ?? 0).toBeGreaterThanOrEqual(
-			(paragraphBox?.x ?? 0) + (paragraphBox?.width ?? 0) + 8,
-		);
-		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThanOrEqual(
-			(pageLayoutBox?.x ?? 0) + (pageLayoutBox?.width ?? 0) + 1,
-		);
-	});
-
-	test('uses a shallow page margin as soon as the note and a safe edge reserve fit', async ({ page }) => {
-		await page.setViewportSize({ width: 1150, height: desktopViewport.height });
-		await page.goto(shallowPagePath, { waitUntil: 'networkidle' });
-
-		const note = page.locator('.section-note').first();
-		const paragraph = page.locator('.section-markdown p').first();
-		const pageLayout = page.locator('.site-page-layout');
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(2);
-
-		const [noteBox, paragraphBox, pageLayoutBox] = await Promise.all([
-			note.boundingBox(),
-			paragraph.boundingBox(),
-			pageLayout.boundingBox(),
-		]);
-		expect(noteBox).not.toBeNull();
-		expect(paragraphBox).not.toBeNull();
-		expect(pageLayoutBox).not.toBeNull();
-		expect(noteBox?.x ?? 0).toBeGreaterThanOrEqual((paragraphBox?.x ?? 0) + (paragraphBox?.width ?? 0) + 16);
-		expect((noteBox?.x ?? 0) + (noteBox?.width ?? 0)).toBeLessThanOrEqual(
-			(pageLayoutBox?.x ?? 0) + (pageLayoutBox?.width ?? 0) - 8,
-		);
-
-		await page.setViewportSize({ width: 1140, height: desktopViewport.height });
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
-	});
+	for (const path of [testPagePath, shallowPagePath]) {
+		test(`keeps sidenotes within the reading canvas on ${path}`, async ({ page }) => {
+			await page.goto(path, { waitUntil: 'networkidle' });
+			await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
+			const note = page.locator('.section-note').first();
+			for (const width of [1440, 1281, 1280, 1150, 1100, 960]) {
+				await page.setViewportSize({ width, height: 1000 });
+				const noteBox = (await note.boundingBox())!;
+				const contentBox = (await page.locator('.site-content').boundingBox())!;
+				expect(noteBox.x + noteBox.width).toBeLessThanOrEqual(contentBox.x + contentBox.width + 1);
+				expect(noteBox.x).toBeGreaterThanOrEqual(contentBox.x - 1);
+				expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+				if (width <= 1100) expect(await note.evaluate(el => getComputedStyle(el.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
+			}
+		});
+	}
 });
 
 test.describe('automatic navigation across site areas', () => {
 	test.use({ hasTouch: false, isMobile: false, viewport: desktopViewport });
 
-	test('keeps global destinations while reserving the local tree for hierarchical pages', async ({ page }) => {
+	test('offers global areas on Home and a local tree on reading pages', async ({ page }) => {
 		await page.goto('/', { waitUntil: 'networkidle' });
-		await expect(page.locator('.site-top')).toHaveAttribute('data-navigation-mode', 'tree');
+		await expect(page.locator('.site-nav > ul > li > a')).toHaveText(['Nested pages', 'Guides']);
+		await expect(page.locator('[data-area-menu="reference"] > summary')).toHaveText('Reference');
 		await expect(page.locator('.tree-local-navigation')).toHaveCount(0);
-		await expect(page.locator('.site-page-layout-tree')).toHaveCount(0);
-		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
-		await expect(page.locator('.site-nav-submenu')).toHaveCount(0);
-		await expect(page.locator('.site-nav > ul > li > a')).toHaveText([
-			'Nested pages',
-			'Guides',
-			'Reference',
-		]);
-
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
-		await expect(page.locator('.site-top')).toHaveAttribute('data-navigation-mode', 'tree');
 		await expect(page.locator('.tree-local-navigation')).toBeVisible();
-		await expect(page.locator('.page-contents-navigation-rail')).toBeVisible();
-		await expect(page.locator('.site-nav > ul > li > a')).toHaveText([
-			'Nested pages',
-			'Guides',
-			'Reference',
-		]);
+		await expect(page.locator('.site-nav')).toHaveCount(0);
+		await expect(page.locator('[data-area-switcher] > summary')).toBeVisible();
 	});
 
 	test('combines page and section navigation in the persistent tree at intermediate widths', async ({ page }) => {
@@ -641,7 +426,7 @@ test.describe('automatic navigation across site areas', () => {
 		const currentPage = page.locator('.tree-local-navigation .navigation-page-node-current');
 		await expect(currentPage.locator(':scope > .navigation-page-sections-disclosure')).toBeVisible();
 		await expect(currentPage.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
-		await expect(currentPage.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
+		await expect(currentPage.getByRole('link', { name: 'Prerequisites', exact: true })).toHaveCount(0);
 	});
 
 	test('moves the complete hierarchy into the compact menu before the content becomes cramped', async ({ page }) => {
@@ -655,10 +440,10 @@ test.describe('automatic navigation across site areas', () => {
 		const currentPage = menu.locator('.navigation-page-node-current');
 		await expect(currentPage.getByRole('link', { name: 'macOS', exact: true })).toBeVisible();
 		await expect(currentPage.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
-		await expect(currentPage.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
+		await expect(currentPage.getByRole('link', { name: 'Prerequisites', exact: true })).toHaveCount(0);
 	});
 
-	test('uses distinct rail and compact-navigation boundaries', async ({ page }) => {
+	test('keeps integrated outlines across former rail boundaries and uses compact navigation below 961px', async ({ page }) => {
 		await page.setViewportSize({ width: 1281, height: 900 });
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		const tree = page.locator('.tree-local-navigation');
@@ -669,8 +454,8 @@ test.describe('automatic navigation across site areas', () => {
 		);
 
 		await expect(tree).toBeVisible();
-		await expect(rail).toBeVisible();
-		await expect(sections).toBeHidden();
+		await expect(rail).toHaveCount(0);
+		await expect(sections).toBeVisible();
 		await expect(menu).toBeHidden();
 
 		await page.setViewportSize({ width: 1280, height: 900 });
@@ -776,7 +561,7 @@ test.describe('mobile tree navigation', () => {
 		await expect(currentPageNode.getByRole('link', { name: 'macOS', exact: true })).toHaveAttribute('aria-current', 'page');
 		const currentPageSections = currentPageDisclosure.locator('.navigation-page-sections');
 		await expect(currentPageSections).toBeVisible();
-		await expect(currentPageSections.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
+		await expect(currentPageSections.getByRole('link', { name: 'Prerequisites', exact: true })).toHaveCount(0);
 		await expect(menu.getByText('Sections', { exact: true })).toHaveCount(0);
 
 		const releaseNotesLink = menu.getByRole('link', { name: 'Release notes', exact: true });
@@ -818,7 +603,7 @@ test.describe('mobile tree navigation', () => {
 		await expect(currentWorkflowsNode.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
 		await expect(currentWorkflowsNode.getByRole('link', { name: 'Workflows', exact: true })).toHaveAttribute('aria-current', 'page');
 		await expect(currentWorkflowsNode.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
-		await expect(menu.getByRole('link', { name: 'Prerequisites', exact: true })).toBeVisible();
+		await expect(menu.getByRole('link', { name: 'Prerequisites', exact: true })).toHaveCount(0);
 		await expect(menu.locator('details[data-page-path="reference"]')).toHaveAttribute('open', '');
 	});
 
@@ -845,7 +630,7 @@ test.describe('mobile tree navigation', () => {
 		await expect(menu.getByRole('link', { name: 'Local work', exact: true })).toBeVisible();
 	});
 
-	test('reopens the current page outline on mobile arrival', async ({ page }) => {
+	test('preserves the current outline on mobile reload', async ({ page }) => {
 		await page.goto(testPagePath, { waitUntil: 'networkidle' });
 		let menu = page.locator('.mobile-nav-menu');
 		await menu.locator(':scope > summary').click();
@@ -861,7 +646,7 @@ test.describe('mobile tree navigation', () => {
 		await menu.locator(':scope > summary').click();
 		await expect(menu.locator(
 			'.navigation-page-node-current > .navigation-page-sections-disclosure',
-		)).toHaveAttribute('open', '');
+		)).not.toHaveAttribute('open', '');
 	});
 
 	test('filters a long mobile tree with touch-sized controls', async ({ page }) => {
@@ -899,7 +684,7 @@ test.describe('desktop tree navigation without JavaScript', () => {
 		await expect(page.locator('[data-tree-navigation-toggle]')).not.toBeVisible();
 		const controls = page.locator('[data-tree-controls]');
 		expect(await controls.evaluateAll((items) => items.every((item) => item.hasAttribute('hidden')))).toBe(true);
-		await expect(page.locator('.site-breadcrumbs')).toBeVisible();
+		await expect(page.locator('.site-reading-location .site-breadcrumbs')).toBeVisible();
 		const sequence = page.getByRole('navigation', { name: 'Page sequence' });
 		await expect(sequence.getByRole('link', { name: /Previous page\s+Installation/ })).toBeVisible();
 		await expect(sequence.getByRole('link', { name: /Next page\s+Linux/ })).toBeVisible();
@@ -921,15 +706,15 @@ test.describe('desktop tree navigation without JavaScript', () => {
 		await expect(menu.getByRole('link', { name: 'Install', exact: true })).toBeVisible();
 	});
 
-	test('keeps a sidenote inline across the Page contents breakpoint', async ({ page }) => {
+	test('keeps a sidenote within the canvas without JavaScript across 1280px', async ({ page }) => {
 		await page.setViewportSize({ width: 1281, height: 900 });
 		await page.goto(testPagePath, { waitUntil: 'domcontentloaded' });
 		const note = page.locator('.section-note').first();
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
-		await expect(page.locator('.page-contents-navigation-rail')).toBeVisible();
+		expect((await note.boundingBox())!.x + (await note.boundingBox())!.width).toBeLessThanOrEqual((await page.locator('.site-content').boundingBox())!.x + (await page.locator('.site-content').boundingBox())!.width + 1);
+		await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
 
 		await page.setViewportSize({ width: 1280, height: 900 });
-		expect(await note.evaluate((element) => getComputedStyle(element.closest('.section-note-paragraph')!).gridTemplateColumns.split(' ').length)).toBe(1);
+		expect((await note.boundingBox())!.x + (await note.boundingBox())!.width).toBeLessThanOrEqual((await page.locator('.site-content').boundingBox())!.x + (await page.locator('.site-content').boundingBox())!.width + 1);
 		await expect(page.locator('.page-contents-navigation-rail')).toBeHidden();
 	});
 });

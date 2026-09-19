@@ -7,7 +7,7 @@ logo or search configuration. Display controls are real preset defaults.
 A fourth site, `documentation/site`, uses the `documentation` preset and
 shows a handbook excerpt: Guides contains Installation and Publishing, with
 platform and hosting guides one level below. It demonstrates a page tree and
-a separate current-page outline at 1440x850. Its Linux page is reproduced
+H2 links integrated beneath the current page at 1440x850. Its Linux page is reproduced
 verbatim in Examples. This fixture is not a complete installation tutorial.
 
 Regenerate the published Features and Examples captures together:
@@ -37,8 +37,9 @@ npm run review:start -- scratch
 ```
 
 Open `http://127.0.0.1:4399/guides/installation/linux/`. At desktop width,
-compare the left page tree and right outline; narrow the viewport to combine
-them into one tree, then into the compact menu.
+inspect H2 links beneath Linux in the left page tree; narrow the viewport to
+move that same navigation into the compact menu. H3 remains in the article
+and retains its anchor, without adding another outline level.
 
 The focused automated check exercises the same transitions with and without
 JavaScript:

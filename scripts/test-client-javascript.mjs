@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -36,7 +37,12 @@ const runBuild = () => {
 const readPage = (pathname = 'index.html') => readFile(path.join(tempRoot, 'dist', pathname), 'utf8');
 const getScripts = (html) => html.match(/<script\b[^>]*>[\s\S]*?<\/script>/gi) ?? [];
 const getReaderPreferenceScripts = (html) => getScripts(html).filter((script) => script.includes('norna-reading-width'));
-const getFeatureScripts = (html) => getScripts(html).filter((script) => !script.includes('norna-reading-width'));
+const isNavigationScript = (script) => {
+	if (/data-navigation-state-scope/.test(script) || (script.includes('pagereveal') && script.includes('scrollRestoration'))) return true;
+	const src = script.match(/\ssrc="([^"]+)"/)?.[1];
+	return Boolean(src && readFileSync(path.join(tempRoot, 'dist', src.replace(/^\/+/, '')), 'utf8').includes('data-navigation-motion-ready'));
+};
+const getFeatureScripts = (html) => getScripts(html).filter((script) => !script.includes('norna-reading-width') && !isNavigationScript(script));
 const getPageFeatureScripts = (html) => getFeatureScripts(html).filter(
 	(script) => !script.includes('SectionNavigationScript.astro_'),
 );
@@ -53,6 +59,8 @@ const assertUniversalReadingWidth = (html, label) => {
 };
 const assertOnlyUniversalReadingWidth = (html, label) => {
 	assertUniversalReadingWidth(html, label);
+	assert.match(html, /data-navigation-continuity/);
+	assert.equal(getScripts(html).filter(isNavigationScript).length, html.includes('data-navigation-state-scope') ? 3 : 2);
 	assert.deepEqual(getPageFeatureScripts(html), [], `${label} should not load unrelated client-side features.`);
 };
 const assertScrollBehavior = (html, behavior, label) => {

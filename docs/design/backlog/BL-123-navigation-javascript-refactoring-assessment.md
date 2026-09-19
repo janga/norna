@@ -181,7 +181,7 @@ preserving a reading position after a layout change have different contracts.
 #### 1. Share the existing visibility predicate
 
 **Evidence:** `visible` in
-[`navigationPrototype.ts`](../../../src/lib/navigationPrototype.ts) lines 3–10
+[`navigationPrototype.ts` at the prototype checkpoint](https://github.com/janga/norna/blob/48cea9e/src/lib/navigationPrototype.ts) lines 3–10
 and `isDisplayed` in
 [`navigationFollowing.ts`](../../../src/lib/navigationFollowing.ts) lines 1–9
 have identical implementations. Both check layout rectangles, CSS visibility

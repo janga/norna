@@ -276,6 +276,7 @@ const sitewideShape = {
 
 const categoryShape = {
 	label: z.string().trim().min(1).describe('Navigation label for a group of child pages without an authored page body.'),
+	description: z.string().trim().min(1).optional().describe('Short introduction shown beside the category in area menus and generated child lists.'),
 };
 
 export const schemaTopLevelKeys = Object.freeze({

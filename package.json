@@ -188,7 +188,7 @@
     "yaml": "2.9.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.61.1",
+    "@playwright/test": "^1.63.0",
     "knip": "6.33.0"
   }
 }

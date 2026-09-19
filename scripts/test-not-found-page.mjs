@@ -16,7 +16,7 @@ test('build emits an English root-hosted 404 page with a static Home link', asyn
 		assert.match(html, /<title>Page not found<\/title>/);
 		assert.match(html, /<h1 id="page-title">Page not found<\/h1>/);
 		assert.match(html, /The requested page does not exist or may have moved\./);
-		assert.match(html, /<a href="\/">Go to the homepage<\/a>/);
+		assert.match(html, /<a href="\/">Home<\/a>/);
 		assert.doesNotMatch(html, /rel="canonical"/);
 		assert.doesNotMatch(html, /property="og:/);
 		assert.doesNotMatch(html, /name="twitter:/);
@@ -45,7 +45,7 @@ test('build emits a localized base-path 404 page with valid navigation and asset
 		assert.match(html, /<title>Sidan hittades inte<\/title>/);
 		assert.match(html, /Den begärda sidan finns inte eller kan ha flyttats\./);
 		assert.match(html, /<a href="\/project\/">Gå till startsidan<\/a>/);
-		assert.match(html, /<a class="site-brand" href="\/project\/">/);
+		assert.match(html, /<a class="site-brand" href="\/project\/"[^>]*>/);
 		assert.match(html, /src="\/project\/logo\.svg" alt="Hem"/);
 		assert.match(html, /href="\/project\/om\/">\s*Om\s*<\/a>/);
 		assert.doesNotMatch(html, /aria-current="page"/);

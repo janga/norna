@@ -38,13 +38,14 @@ Exact behavior: [Content](/reference/content/markdown/).
 - **One page or a deep hierarchy.** The same ordered directory model supports
   a one-page site, independent top-level pages, and nested page trees.
 - **Pages and navigation categories.** A directory can produce a real page or
-  group descendants under a label that has no page of its own.
+  group descendants under a category label with a generated destination.
 - **Navigation derived from structure.** Norna selects section, top, or tree
   navigation from the page hierarchy and presents the same destinations in a
   consolidated mobile menu.
-- **Reading context on larger sites.** Tree navigation supplies breadcrumbs, a
-  persistent page rail, and an H2/H3 contents rail with the current reading
-  position marked as the reader scrolls.
+- **Reading context on larger sites.** Area menus select a local page tree with
+  integrated H2 links. Sticky breadcrumbs preserve context, and the current
+  heading is marked as the reader scrolls. The right margin remains available
+  for sidenotes.
 - **Optional static search.** A single setting adds a localized search page
   backed by the finished rendered content, with section-level results and no
   search server.

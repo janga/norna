@@ -9,7 +9,6 @@ function restoreEarlyNavigationState(createHelpers) {
 	const container = script?.parentElement;
 	if (!container?.hasAttribute('data-navigation-root')) return;
 	const scope = script.dataset.navigationStateScope;
-	const area = document.documentElement.hasAttribute('data-area-navigation-prototype');
 	const { storageKeys, initialState, arrivalPolicy, readEntryState, pageIsOpen, sectionsAreOpen } = createHelpers();
 	const initialized = new WeakSet();
 	const restore = (refresh = false) => {
@@ -23,8 +22,8 @@ function restoreEarlyNavigationState(createHelpers) {
 			const { stateKey, sharedStateKey } = storageKeys(scope,
 				container.dataset.navigationRoot, container.dataset.navigationStateRoot);
 			const state = initialState(sessionStorage.getItem(stateKey), sessionStorage.getItem(sharedStateKey),
-				area ? readEntryState(stateKey) : null);
-			const policy = arrivalPolicy(state, true, area);
+				readEntryState(stateKey));
+			const policy = arrivalPolicy(state);
 			for (const branch of container.querySelectorAll('.navigation-page-disclosure[data-page-path]')) {
 				if (!refresh && initialized.has(branch)) continue;
 				branch.open = pageIsOpen(state.disclosure, branch.dataset, policy);
@@ -43,7 +42,7 @@ function restoreEarlyNavigationState(createHelpers) {
 				}
 			}
 			if (state.local.scrollTop > 0 || state.fromEntry) scrollContainer.scrollTop = Math.max(0, state.local.scrollTop);
-			if (area && scope === 'desktop' && !state.fromEntry && state.local.scrollTop <= 0) {
+			if (scope === 'desktop' && !state.fromEntry && state.local.scrollTop <= 0) {
 				// A direct arrival in a short viewport can put the selected page
 				// below the fold. Reveal its title now, before heading following is
 				// paused. An already visible title or restored position stays put.

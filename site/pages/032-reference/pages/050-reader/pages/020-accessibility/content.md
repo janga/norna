@@ -15,9 +15,9 @@ accessibility of an authored site.
 | Feature | Available without scripts | Added by scripts |
 | --- | --- | --- |
 | Prose, headings, cards and page lists | Rendered content and links | None required |
-| Page links and anchors | Native links and browser history | Sticky-offset coordination and compact-menu closing |
+| Page links and anchors | Native links and browser history | Sticky-offset coordination, reading-position restoration and compact-menu closing |
 | Categories and aliases | HTML redirects or generated destination lists | Ordinary site enhancements are independent |
-| Navigation | Page/heading links and native disclosures | Active-section tracking, automatic outline following and enhanced tree controls |
+| Navigation | Page/heading links and native disclosures | Area-menu hover, saved branch choices, active-section tracking, outline following and tree controls |
 | Image stacks | Responsive images, alt text, captions and original-image links | Modal inspection and persistent side captions |
 | Image carousels | Source images and captions remain in HTML | Slide switching, controls and touch dragging |
 | Sidenotes | CSS margin/inline placement and reference/return links | Matching-note highlight |
@@ -30,7 +30,8 @@ accessibility of an authored site.
 | Banners | Visible notice | Dismissal and its persistence |
 | Display | Configured appearance and initial prose width | Reader overrides and Focus reading |
 
-Feature scripts are included when needed. Display is universal; the search
+Feature scripts are included when needed. Display and navigation continuity
+are universal; the search
 return helper is present when search is enabled, while the search engine and
 index load on the search page. Tables, code, tabs, notes and managed-media
 enhancements load on pages containing those features. All tab alternatives

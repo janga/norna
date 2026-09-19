@@ -471,7 +471,7 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', '404.html'),
-		'<a href="/site/">Go to the homepage</a>',
+		'<a href="/site/">Home</a>',
 	);
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', '404.html'),
@@ -547,7 +547,7 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<a class="site-brand" href="/site/"><img class="site-brand-logo" src="/site/logo.svg" alt="Package Check Site">',
+		'<a class="site-brand" href="/site/" aria-label="Home" title="Home"><img class="site-brand-logo" src="/site/logo.svg" alt="Package Check Site">',
 	);
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -569,6 +569,9 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'data-navigation-mode="tree"',
 	);
+	await assertFileIncludes(path.join(siteProjectRoot, 'dist', 'index.html'), 'data-navigation-continuity="/site/"');
+	await assertFileIncludes(path.join(siteProjectRoot, 'dist', 'guides', 'setup', 'index.html'), 'data-area-navigation');
+	await assertFileExcludes(path.join(siteProjectRoot, 'dist', 'guides', 'setup', 'index.html'), 'page-contents-navigation-rail');
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'guides', 'setup', 'index.html'),
 		'<aside id="tree-local-navigation"',

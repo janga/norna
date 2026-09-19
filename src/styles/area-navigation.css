@@ -1,19 +1,35 @@
-/* BL-122 Area navigation and integrated H2 prototype. Local opt-in only. */
+/* Area menus, integrated H2 navigation and the tree-mode reading frame. */
 .site-reading-location,
 .area-navigation-switcher {
 	display: none;
 }
 
-:root[data-area-navigation-prototype] .site-nav-row {
+/* An elevated dark panel needs a distinct surface and edge: a black shadow
+   cannot separate it from the page. Keep its link feedback distinct as well. */
+:root[data-area-navigation][data-appearance='dark'] {
+	--area-menu-background: var(--color-surface-soft-background);
+	--area-menu-border: color-mix(in srgb, var(--color-primary-text) 40%, var(--color-surface-soft-background));
+	--area-menu-hover-background: var(--color-surface-emphasis-background);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root[data-area-navigation][data-appearance='system'] {
+		--area-menu-background: var(--color-surface-soft-background);
+		--area-menu-border: color-mix(in srgb, var(--color-primary-text) 40%, var(--color-surface-soft-background));
+		--area-menu-hover-background: var(--color-surface-emphasis-background);
+	}
+}
+
+:root[data-area-navigation] .site-nav-row {
 	position: relative;
 }
 
-:root[data-area-navigation-prototype] .site-nav-item:has(.area-navigation-menu) {
+:root[data-area-navigation] .site-nav-item:has(.area-navigation-menu) {
 	position: static;
 }
 
-:root[data-area-navigation-prototype] .site-nav > ul > .site-nav-item > a,
-:root[data-area-navigation-prototype] .area-navigation-menu > summary {
+:root[data-area-navigation] .site-nav > ul > .site-nav-item > a,
+:root[data-area-navigation] .area-navigation-menu > summary {
 	display: flex;
 	align-items: center;
 	min-height: var(--target-size-minimum);
@@ -27,14 +43,14 @@
 	text-transform: uppercase;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-menu > summary {
+:root[data-area-navigation] .area-navigation-menu > summary {
 	position: relative;
 	isolation: isolate;
 	text-decoration: none;
 }
 
 /* Paint around the trigger without moving its label or neighboring links. */
-:root[data-area-navigation-prototype] .area-navigation-menu > summary::before {
+:root[data-area-navigation] .area-navigation-menu > summary::before {
 	position: absolute;
 	inset: -0.25rem -0.6rem;
 	z-index: -1;
@@ -44,19 +60,19 @@
 	pointer-events: none;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-menu > summary:is(:hover, :focus-visible),
-:root[data-area-navigation-prototype] .area-navigation-menu[open] > summary,
-:root[data-area-navigation-prototype] .site-nav-item-current-branch .area-navigation-menu > summary {
+:root[data-area-navigation] .area-navigation-menu > summary:is(:hover, :focus-visible),
+:root[data-area-navigation] .area-navigation-menu[open] > summary,
+:root[data-area-navigation] .site-nav-item-current-branch .area-navigation-menu > summary {
 	color: var(--site-top-text-color, var(--color-primary-text));
 }
 
-:root[data-area-navigation-prototype] .area-navigation-menu > summary:is(:hover, :focus-visible)::before,
-:root[data-area-navigation-prototype] .area-navigation-menu[open] > summary::before {
+:root[data-area-navigation] .area-navigation-menu > summary:is(:hover, :focus-visible)::before,
+:root[data-area-navigation] .area-navigation-menu[open] > summary::before {
 	border-color: color-mix(in srgb, currentColor 22%, transparent);
 	background: color-mix(in srgb, currentColor 8%, transparent);
 }
 
-:root[data-area-navigation-prototype] .area-navigation-panel {
+:root[data-area-navigation] .area-navigation-panel {
 	--area-menu-width: min(calc(var(--area-menu-columns) * 16rem), calc(100vw - 2rem));
 	/* Anchor to the entire sticky row, including wrapped global links. This
 	   also fits without the optional JavaScript panel-position adjustment. */
@@ -64,13 +80,15 @@
 	width: var(--area-menu-width);
 	max-width: calc(100vw - 2rem);
 	border-radius: var(--corner-radius-medium);
+	border-color: var(--area-menu-border, var(--color-border));
+	background: var(--area-menu-background, var(--site-top-background-color, var(--color-page)));
 	padding: 1rem;
 	display: grid;
 	grid-template-columns: repeat(var(--area-menu-columns), minmax(0, 1fr));
 	gap: 1rem;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-choices {
+:root[data-area-navigation] .area-navigation-choices {
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -84,20 +102,20 @@
 	align-content: start;
 }
 
-:root[data-area-navigation-prototype] [data-area-choice-group='branches'] + [data-area-choice-group='pages'] {
+:root[data-area-navigation] [data-area-choice-group='branches'] + [data-area-choice-group='pages'] {
 	border-inline-start: 1px solid var(--color-border);
 	padding-inline-start: 1rem;
 }
 
-:root[data-area-navigation-prototype] [data-area-choice-group='pages'] {
+:root[data-area-navigation] [data-area-choice-group='pages'] {
 	row-gap: 0.15rem;
 }
 
-:root[data-area-navigation-prototype] [data-area-choice-group='pages'] .area-navigation-title {
+:root[data-area-navigation] [data-area-choice-group='pages'] .area-navigation-title {
 	font-weight: 400;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-choices a {
+:root[data-area-navigation] .area-navigation-choices a {
 	display: flex;
 	flex-direction: column;
 	gap: 0.45rem;
@@ -114,11 +132,11 @@
 	overflow-wrap: break-word;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-choices a:is(:hover, :focus-visible) {
-	background: var(--color-surface-soft-background);
+:root[data-area-navigation] .area-navigation-choices a:is(:hover, :focus-visible) {
+	background: var(--area-menu-hover-background, var(--color-surface-soft-background));
 }
 
-:root[data-area-navigation-prototype] .area-navigation-title {
+:root[data-area-navigation] .area-navigation-title {
 	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
@@ -126,19 +144,19 @@
 	font-weight: 500;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-title svg {
+:root[data-area-navigation] .area-navigation-title svg {
 	flex: 0 0 auto;
 	width: 0.85rem;
 	height: 0.85rem;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-description {
+:root[data-area-navigation] .area-navigation-description {
 	color: var(--color-secondary-text);
 	font-size: 0.8rem;
 	line-height: 1.55;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-other-roots {
+:root[data-area-navigation] .area-navigation-other-roots {
 	grid-column: 1 / -1;
 	display: flex;
 	flex-wrap: wrap;
@@ -149,7 +167,7 @@
 	list-style: none;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-other-roots a {
+:root[data-area-navigation] .area-navigation-other-roots a {
 	display: block;
 	padding: 0.45rem 0.75rem;
 	border-radius: var(--corner-radius-small);
@@ -160,12 +178,12 @@
 	text-decoration: none;
 }
 
-:root[data-area-navigation-prototype] .area-navigation-other-roots a:is(:hover, :focus-visible) {
-	background: var(--color-surface-soft-background);
+:root[data-area-navigation] .area-navigation-other-roots a:is(:hover, :focus-visible) {
+	background: var(--area-menu-hover-background, var(--color-surface-soft-background));
 	color: var(--color-primary-text);
 }
 
-:root[data-area-navigation-prototype] .navigation-area-title {
+:root[data-area-navigation] .navigation-area-title {
 	display: block;
 	margin: 0 0 1rem;
 	color: var(--color-primary-text);
@@ -174,20 +192,20 @@
 	text-decoration: none;
 }
 
-:root[data-area-navigation-prototype] a.navigation-area-title:is(:hover, :focus-visible) {
+:root[data-area-navigation] a.navigation-area-title:is(:hover, :focus-visible) {
 	text-decoration: underline;
 	text-underline-offset: 0.25em;
 }
 
 /* The sticky controls mask 1.25rem above their box. Keep that background
    below the area's linked title, including its underline. */
-:root[data-area-navigation-prototype] .navigation-area-title:has(+ .navigation-tree-controls) {
+:root[data-area-navigation] .navigation-area-title:has(+ .navigation-tree-controls) {
 	margin-block-end: 1.5rem;
 }
 
 /* Scoped pages are now at the tree's first level. Override the ordinary
    first-level emphasis as well as current-page emphasis at every depth. */
-:root[data-navigation-prototype][data-area-navigation-prototype]
+:root[data-navigation-continuity][data-area-navigation]
 	.tree-local-navigation .navigation-page-tree
 	:is(.navigation-page-link, .navigation-page-open-link, .navigation-page-summary) {
 	font-size: 0.84rem;
@@ -214,13 +232,17 @@
 		color: var(--color-primary-text);
 	}
 
+	/* Keep header geometry stable when Focus reading switches to compact controls. */
+	:root[data-area-reading-frame] .site-nav-row {
+		min-height: var(--area-reading-header-height);
+		padding: 0.625rem 0;
+	}
+
 	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-nav-row {
 		display: grid;
 		grid-template-columns: var(--area-reading-rail-width) minmax(0, 1fr);
 		column-gap: var(--local-navigation-gap, clamp(1.5rem, 3vw, 3rem));
 		width: min(calc(100% - (var(--content-gutter) * 2)), max(var(--page-width), 86rem));
-		min-height: var(--area-reading-header-height);
-		padding: 0.65rem 0;
 	}
 
 	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-nav-leading {
@@ -239,7 +261,7 @@
 		text-decoration: none;
 	}
 
-	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-brand-logo {
+	:root[data-area-reading-frame] .site-brand-logo {
 		max-width: 100%;
 		max-height: 2.25rem;
 		object-fit: contain;
@@ -348,28 +370,28 @@
 		inset-inline-end: auto;
 		inset-block-start: 100%;
 		max-height: calc(100svh - var(--site-top-anchor-offset) - 1rem);
-		background: var(--color-page);
+		background: var(--area-menu-background, var(--color-page));
 		color: var(--color-primary-text);
 		overscroll-behavior: contain;
 	}
 
-	:root[data-area-navigation-prototype] .site-page-layout-tree {
+	:root[data-area-navigation] .site-page-layout-tree {
 		--tree-navigation-width: 16rem;
 		grid-template-columns: var(--tree-navigation-width) minmax(0, 1fr);
 	}
 
 	/* The recovered right column belongs to the content canvas. Do not count
 	   the old outline allowance a second time for notes or wide blocks. */
-	:root[data-area-navigation-prototype] .site-page-layout-tree .section-markdown > :is(.norna-table-frame, .code-block) {
+	:root[data-area-navigation] .site-page-layout-tree .section-markdown > :is(.norna-table-frame, .code-block) {
 		--wide-block-end-width: 100cqi;
 		--wide-block-canvas-width: var(--wide-block-end-width);
 	}
 
-	:root[data-area-navigation-prototype][data-reader-preferences-ready='true'][data-focus-reading='on'] .site-page-layout-tree {
+	:root[data-area-navigation][data-reader-preferences-ready='true'][data-focus-reading='on'] .site-page-layout-tree {
 		grid-template-columns: var(--tree-navigation-width) minmax(0, 1fr);
 	}
 
-	:root[data-area-navigation-prototype][data-reader-preferences-ready='true'][data-focus-reading='on']
+	:root[data-area-navigation][data-reader-preferences-ready='true'][data-focus-reading='on']
 		.site-page-layout-tree .section-markdown > :is(.norna-table-frame, .code-block) {
 		--wide-block-end-width: 100cqi;
 		--wide-block-canvas-width: calc(100cqi + var(--tree-navigation-width) + var(--tree-layout-gap));

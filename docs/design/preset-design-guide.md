@@ -109,10 +109,12 @@ no-script navigation remain part of the reading experience.
 The scope and decision boundary are in
 [BL-120 Smooth documentation navigation prototype](backlog/BL-120-smooth-documentation-navigation-prototype.md).
 
-## Area Navigation Prototype
+## Area Navigation
 
-[BL-122 Area navigation and integrated H2 prototype](backlog/BL-122-area-navigation-prototype.md)
-tests a smaller local tree to leave room for paragraph-aligned sidenotes.
+[BL-130 Make area navigation the default](backlog/BL-130-default-area-navigation.md)
+adopts the reviewed result of
+[BL-122 Area navigation and integrated H2 prototype](backlog/BL-122-area-navigation-prototype.md):
+a smaller local tree leaves room for paragraph-aligned sidenotes.
 [Linear's Product and Resources menus](https://linear.app/) supply the observed
 pattern for choosing a destination group: a title without a disclosure arrow
 opens a panel, while standalone destinations remain links. The Resources
@@ -121,24 +123,24 @@ list. This suits reading pages because a reader can inspect destinations
 without leaving the current article. Norna derives the grouping from parent
 and leaf nodes; Linear's layout alone does not establish its routing model.
 
-Norna's proposed adaptation derives groups from the listed page hierarchy.
+Norna's adopted adaptation derives groups from the listed page hierarchy.
 A collection whose direct children have no children keeps those pages together
 in one left tree, with H2 beneath each page. A collection with subgroups scopes
 the tree to the chosen branch; a direct leaf beside those subgroups has only
 its own H2. The flat rule preserves sibling context for short sequences such
 as Getting Started without guessing a minimum page or heading count. Sticky
 choices remain direct links to the pages. This conditional layout and removal
-of the right outline are Norna proposals, not claims about Linear's
+of the right outline are Norna design decisions, not claims about Linear's
 documentation layout. Keep a useful authored root page reachable as the first
 parent choice, with its own tree.
 
-For the desktop reading frame, the current trial follows the compact, fixed
+For the desktop reading frame, the adopted layout follows the compact, fixed
 breadcrumb row observed in [Linear's documentation](https://linear.app/docs)
 on 2026-09-19. Place Norna's area-menu button beside the breadcrumb, with Home,
 Search and Display aligned above the left tree. This keeps navigation available
 while removing the extra collection-selector row that crowded the earlier
 left header. The shared area panel and its footer of global destinations are
-Norna's proposal. Keep breadcrumb links separate from the disclosure control;
+Norna's design. Keep breadcrumb links separate from the disclosure control;
 keep the existing compact controls on narrow screens and in Focus reading.
 
 A deliberate page choice opens that page's branch and H2; a chevron remains
@@ -149,7 +151,7 @@ following must leave that restored position alone until the reader resumes
 interaction with the article. Evaluate these rules together with row stability
 and visible flashes, especially for low menu entries.
 
-For this trial, hover opens after 120ms. Treat the navigation row and panel as
+Hover opens after 120ms. Treat the navigation row and panel as
 one continuous pointer region: crossing or pausing below the title must keep
 the panel open without covering neighboring controls with an invisible hit
 area. Leaving that region closes after 180ms. Keep it open while keyboard
@@ -164,16 +166,16 @@ the panel beneath its title where space permits, constrain it to the navigation
 row and viewport, and recompute its placement when the available width changes.
 
 More than twelve visible menu choices use a direct sticky destination and the
-full collection tree. The threshold is a Norna prototype proposal under the
-user's delegated decision, not an observed Linear rule. Count listed choices,
+full collection tree. The threshold is a Norna decision reviewed with the user, not an observed
+Linear rule. Count listed choices,
 including a useful authored root page, rather than every descendant. Below
 the limit, viewport-bounded panel height still handles long labels and copy.
 
 Retain ordinary links and native disclosures, stable label weight and the
-existing compact navigation. The prototype's bounded columns and spacing are
-review dimensions, not prescribed values for all sites. The
-[working-prototype record](area-navigation-prototype.md) documents the opt-in
-boundary, captures and pending behavioral verification.
+existing compact navigation. Bounded columns and spacing should be reviewed
+in the whole page, not treated as prescribed dimensions for unrelated sites.
+The [design and prototype record](area-navigation-prototype.md) preserves
+the reviewed behavior and its verification history.
 
 ## Configuration Layers
 

@@ -79,8 +79,8 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 			}
 			// Resolve the label again at click time: a slower YAML provider may have
 			// updated the list since keyboard navigation selected this row.
-			const kind = callouts.includes(label) ? 'enum-member' : 'snippet';
-			const rows = label.endsWith('.svg') ? widget.locator('.monaco-list-row') : widget.locator('.monaco-list-row').filter({
+			const kind = label === 'description' ? 'property' : callouts.includes(label) ? 'enum-member' : 'snippet';
+			const rows = (label.endsWith('.svg') || label === 'tree') ? widget.locator('.monaco-list-row') : widget.locator('.monaco-list-row').filter({
 				has: window.locator(`.codicon-symbol-${kind}`),
 			});
 			const row = rows.filter({ has: window.locator('.label-name').getByText(label, { exact: true }) });
@@ -104,6 +104,18 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 			console.log(`PASS widget: ${name}`);
 			return document;
 		};
+
+		for (const prefix of ['', 'desc']) {
+			await accept(`category description: ${prefix ? 'partial key' : 'blank line'}`,
+				`label: Guides\n${prefix}|CURSOR|\n`, 'label: Guides\ndescription: \n',
+				'description', 'widget-site/pages/010-category/category.yaml');
+		}
+		for (const prefix of ['', 'tr']) {
+			await accept(`tree navigation: ${prefix ? 'partial value' : 'blank value'}`,
+				`url: https://example.com/\nnavigation:\n  mode: ${prefix}|CURSOR|\n`,
+				'url: https://example.com/\nnavigation:\n  mode: tree\n', 'tree', 'widget-site/config.yaml');
+		}
+		if (process.env.NORNA_EDITOR_TEST_SUITE === 'metadata') return;
 
 		const usagePath = 'usage-site/pages/000-home/content.md';
 		for (const type of ['image-stack', 'image-carousel', 'card-list']) {

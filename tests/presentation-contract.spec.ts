@@ -611,6 +611,8 @@ test('code blocks expose an accessible copy control without changing copied text
 	await title.locator('.norna-code-title-text').evaluate((node) => {
 		node.textContent = 'site/pages/010-guide/pages/010-components/a-deliberately-long-code-example-filename.js';
 	});
+	// Responsive table/code measurements settle on the next animation frames.
+	await expect.poll(async () => (await getHorizontalOverflow(page)).scrollWidth).toBeLessThanOrEqual(321);
 	const [titleBounds, buttonBounds, overflow] = await Promise.all([
 		title.boundingBox(),
 		button.boundingBox(),
@@ -1261,28 +1263,18 @@ test('a tall image keeps its semantic caption visible in a vacant end lane', asy
 	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
 });
 
-test('persistent image captions fall back when the end lane is occupied or narrow', async ({ page }) => {
+test('persistent image captions use the free margin and fall back on narrow screens', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await openComponents(page);
 	const figure = page.locator('[data-image-stack-figure]').first();
+	await expect(page.locator('.page-contents-navigation-rail')).toHaveCount(0);
 	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
 
-	await page.locator('.site-page-layout-tree').evaluate((layout) => {
-		const rail = document.createElement('aside');
-		rail.className = 'page-contents-navigation page-contents-navigation-rail';
-		rail.style.position = 'fixed';
-		rail.style.right = '0';
-		rail.style.top = '5rem';
-		rail.style.width = '11rem';
-		rail.style.height = '12rem';
-		rail.textContent = 'Occupied end lane';
-		layout.append(rail);
-		window.dispatchEvent(new Event('resize'));
-	});
-	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
 	const settings = page.locator('[data-display-settings]');
 	await settings.locator('summary').click();
 	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
+	await settings.getByRole('checkbox', { name: 'Focus reading' }).uncheck();
 	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
 
 	await page.setViewportSize({ width: 900, height: 900 });
@@ -1294,45 +1286,6 @@ test('persistent image captions fall back when the end lane is occupied or narro
 	const captionGap = (captionBounds?.y ?? 0) - ((frameBounds?.y ?? 0) + (frameBounds?.height ?? 0));
 	expect(captionGap).toBeGreaterThanOrEqual(0);
 	expect(captionGap).toBeLessThanOrEqual(8);
-});
-
-test('deep-page image captions stay below when Page contents moves into the page tree', async ({ page }) => {
-	await page.setViewportSize({ width: 1440, height: 900 });
-	await openComponents(page);
-	const layout = page.locator('.site-page-layout-tree');
-	const figure = page.locator('[data-image-stack-figure]').first();
-
-	await layout.evaluate((element) => {
-		element.dataset.pageContentsPlacement = 'contents-rail';
-		const rail = document.createElement('aside');
-		rail.className = 'page-contents-navigation page-contents-navigation-rail';
-		rail.textContent = 'Page contents';
-		element.append(rail);
-		window.dispatchEvent(new Event('resize'));
-	});
-	const contentsRail = layout.locator('.page-contents-navigation-rail');
-
-	await expect(contentsRail).toBeVisible();
-	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
-
-	await page.setViewportSize({ width: 1281, height: 900 });
-	await expect(contentsRail).toBeVisible();
-	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
-
-	await page.setViewportSize({ width: 1280, height: 900 });
-	await expect(contentsRail).toBeHidden();
-	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
-
-	const settings = page.locator('[data-display-settings]');
-	await settings.locator('summary').click();
-	await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
-	await expect(figure).toHaveAttribute('data-image-caption-placement', 'persistent');
-
-	await settings.getByRole('checkbox', { name: 'Focus reading' }).uncheck();
-	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
-	await page.setViewportSize({ width: 1100, height: 900 });
-	await expect(figure).not.toHaveAttribute('data-image-caption-placement', 'persistent');
-
 	const overflow = await getHorizontalOverflow(page);
 	expect(overflow.scrollWidth, JSON.stringify(overflow.offenders, null, 2)).toBeLessThanOrEqual(overflow.clientWidth + 1);
 });

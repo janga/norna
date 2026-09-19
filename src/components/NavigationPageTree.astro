@@ -1,5 +1,4 @@
 ---
-import { navigationPrototype } from '../lib/navigationPrototypeConfig.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
 import { getNavigationDestination, type CategoryDestinationMap, type SiteNavigationNode } from '../lib/siteNavigation';
@@ -76,14 +75,10 @@ const usesPageDisclosure = (node: SiteNavigationNode) => variant !== 'submenu' &
 						class="navigation-page-summary"
 						aria-controls={getBranchId(node.node)}
 					>
-						{navigationPrototype ? (
 							<a class:list={['navigation-page-summary-title', 'navigation-category-link', {
 								'mobile-nav-destination': variant === 'mobile',
 							}]}
 								href={categoryHref(node)}>{node.node.title}</a>
-						) : (
-							<span class="navigation-page-summary-title">{node.node.title}</span>
-						)}
 						<span class="navigation-page-chevron" aria-hidden="true"></span>
 					</summary>
 					<div id={getBranchId(node.node)} class="navigation-page-branch-content">

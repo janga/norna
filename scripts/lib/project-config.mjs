@@ -371,7 +371,7 @@ export const resolveNavigationConfig = (config, sourceLabel = siteConfigLabel) =
 	if (Object.hasOwn(rawNavigation, 'sectionTracking')) {
 		throw new Error([
 			`navigation.sectionTracking is no longer supported in ${sourceLabel}.`,
-			'Section tracking is automatic on pages with a contents rail.',
+			'Section tracking is automatic on tree-navigation pages with H2 headings.',
 			'Remove navigation.sectionTracking.',
 		].join('\n'));
 	}

@@ -17,19 +17,6 @@ const getListedNodes = (nodes) => nodes.filter((node) => node.isHome || node.lis
 
 const getNodeDepth = (node) => node.depth ?? 1;
 
-const getTopLevelPagePath = (pagePath) => pagePath?.split('/')[0] ?? '';
-
-const getActiveBranchNodes = (nodes, currentPage) => {
-	if (!currentPage) return [];
-	if (currentPage.isHome) return nodes.filter((node) => node.isHome);
-
-	const rootPath = getTopLevelPagePath(currentPage.pagePath);
-	return nodes.filter((node) => (
-		node.pagePath === rootPath
-		|| node.pagePath?.startsWith(`${rootPath}/`)
-	));
-};
-
 export const getAutomaticNavigationMode = (nodes) => {
 	const listedNodes = getListedNodes(nodes);
 	if (listedNodes.length <= 1) return 'sections';
@@ -60,30 +47,5 @@ export const resolveNavigationModel = ({ mode = 'automatic', nodes }) => {
 		hasCategories,
 		hasNestedPages,
 		maximumDepth,
-	});
-};
-
-export const resolvePageContentsPlacement = ({
-	navigationMode,
-	nodes,
-	currentPage,
-	headingCount,
-}) => {
-	const listedNodes = getListedNodes(nodes);
-	const activeBranchNodes = getActiveBranchNodes(listedNodes, currentPage);
-	const activeBranchDepth = activeBranchNodes.reduce((maximum, node) => (
-		Math.max(maximum, getNodeDepth(node))
-	), 0);
-	const hasPageContents = headingCount >= 2;
-	const placement = currentPage?.isHome || navigationMode !== 'tree' || !hasPageContents
-		? 'none'
-		: activeBranchDepth <= 2
-			? 'page-tree'
-			: 'contents-rail';
-
-	return Object.freeze({
-		activeBranchDepth,
-		hasPageContents,
-		placement,
 	});
 };

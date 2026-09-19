@@ -1,13 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-// Run against fixtures/nested-pages/site with the area prototype enabled.
+// Run against fixtures/nested-pages/site with default navigation.
 test.use({ browserName: 'webkit', viewport: { width: 1440, height: 1000 } });
-test.skip(process.env.NORNA_AREA_NAVIGATION_PROTOTYPE !== '1', 'The area prototype is opt-in.');
 
 test('keeps a parent outline before its children and scopes direct deeper arrivals identically', async ({ page }) => {
 	for (const path of ['guides/installation/', 'guides/installation/macos/']) {
 		await page.goto(path);
-		await expect(page.locator('html')).toHaveAttribute('data-area-navigation-prototype', '');
+		await expect(page.locator('html')).toHaveAttribute('data-area-navigation', '');
 		const tree = page.locator('.tree-local-navigation');
 		await expect(tree).toHaveAttribute('data-navigation-area', 'guides');
 		const links = tree.locator('#navigation-sidebar-guides-installation-children');

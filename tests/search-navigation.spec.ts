@@ -92,7 +92,7 @@ test('direct visits do not reuse an earlier search origin', async ({ page }) => 
 	await openSearch(page);
 	await page.goto('examples/');
 	await page.goto('search/');
-	await expect(returnLink(page)).toHaveText('Go to the homepage');
+	await expect(returnLink(page)).toHaveText('Home');
 	await expect(returnLink(page)).toHaveAttribute('href', new URL(relativeUrl(page, '')).pathname);
 	await returnLink(page).click();
 	await expect(page).toHaveURL(relativeUrl(page, ''));
@@ -100,7 +100,14 @@ test('direct visits do not reuse an earlier search origin', async ({ page }) => 
 
 test('search links in page content also offer a return to their source', async ({ page }) => {
 	await page.goto('examples/#search');
-	await page.locator('#main-content a[href="/norna/search/"]').click();
+	// Keep this link fixture independent of changes to the authored examples.
+	await page.locator('#search').evaluate((heading, href) => {
+		const link = document.createElement('a');
+		link.href = href;
+		link.textContent = 'Search this site';
+		heading.after(link);
+	}, relativeUrl(page, 'search/'));
+	await page.getByRole('link', { name: 'Search this site', exact: true }).click();
 	await expect(returnLink(page)).toHaveText('Back to Examples');
 	await returnLink(page).click();
 	await expect(page).toHaveURL(relativeUrl(page, 'examples/#search'));
@@ -121,7 +128,7 @@ test('modified clicks keep a plain search destination in a new tab', async ({ pa
 	await searchLink(page).click({ modifiers: ['ControlOrMeta'] });
 	const popup = await popupPromise;
 	await popup.waitForLoadState();
-	await expect(returnLink(popup)).toHaveText('Go to the homepage');
+	await expect(returnLink(popup)).toHaveText('Home');
 	await expect(popup).toHaveURL(relativeUrl(page, 'search/'));
 	await popup.close();
 });
@@ -133,7 +140,7 @@ test('blocked storage leaves normal search and homepage links usable', async ({ 
 	await prepareOrigin(page);
 	await searchLink(page).click();
 	await expect(page).toHaveURL(relativeUrl(page, 'search/'));
-	await expect(returnLink(page)).toHaveText('Go to the homepage');
+	await expect(returnLink(page)).toHaveText('Home');
 	await returnLink(page).click();
 	await expect(page).toHaveURL(relativeUrl(page, ''));
 });
@@ -143,7 +150,7 @@ test('without JavaScript the search page has a visible homepage exit', async ({ 
 	try {
 		const page = await context.newPage();
 		await page.goto('search/');
-		await expect(returnLink(page)).toHaveText('Go to the homepage');
+		await expect(returnLink(page)).toHaveText('Home');
 		await expect(returnLink(page)).toBeInViewport();
 		await returnLink(page).click();
 		await expect(page).toHaveURL(baseURL!);
@@ -168,7 +175,7 @@ for (const [name, value] of [
 		}, value);
 		await page.goto('search/?norna-return=test-visit');
 		await expect(page).toHaveURL(relativeUrl(page, 'search/'));
-		await expect(returnLink(page)).toHaveText('Go to the homepage');
+		await expect(returnLink(page)).toHaveText('Home');
 	});
 }
 

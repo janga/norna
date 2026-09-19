@@ -1,54 +1,32 @@
 # Area navigation prototype
 
 [BL-122 Area navigation and integrated H2 prototype](backlog/BL-122-area-navigation-prototype.md)
-is complete as an opt-in implementation on 2026-09-19. It combines an area's
-pages and H2 links in the left menu, returns the right outline column to the
-reading canvas, and uses a shared area menu on Home and beside the sticky
-breadcrumb. The user reviewed the working design before this final regression
-pass. Native tooltip timing and Locate current page retain their existing behavior.
+was completed as an opt-in implementation on 2026-09-19. The user then approved
+adoption in [BL-130 Make area navigation the default](backlog/BL-130-default-area-navigation.md).
+The area menus, reading frame and integrated H2 tree are now the default for
+`tree` navigation. Native tooltip timing and Locate current page retain their
+existing behavior. The [navigation reference](https://janga.github.io/norna/reference/configuration/navigation/)
+is the supported user contract.
 
-The recommendation is to adopt this navigation direction. Default activation,
-the permanent source of category descriptions and the supported reference
-contract still require the separate adoption step specified in the brief.
-The prototype remains off by default and has not been released. The public
-reference continues to describe the supported model.
-
-## Reproduce the implementation
+## Inspect the adopted implementation
 
 From the engine repository root:
 
 ```sh
-npm run review:stop -- scratch
-npm run review:scratch -- prepare --from site --replace
-NORNA_AREA_NAVIGATION_PROTOTYPE=1 npm run review:start -- scratch
+npm run review:start -- docs
+npm run review:start -- navigation
 ```
 
-Preparing with `--replace` replaces the disposable physical copy, not the
-documentation source. Open
-[Site files](http://127.0.0.1:4399/norna/reference/site/files/), then the menu
-button beside its breadcrumb. Home retains the global hover menus. Inspect
-[Sidenotes](http://127.0.0.1:4399/norna/reference/content/sidenotes/) for the
-recovered margin and narrow-screen fallback.
+Open [Site files](http://127.0.0.1:4321/norna/reference/site/files/) and the
+menu beside its breadcrumb. Home retains global hover menus. Inspect
+[Sidenotes](http://127.0.0.1:4321/norna/reference/content/sidenotes/) for the
+recovered margin and narrow-screen fallback. No environment flag is needed.
 
-The internal switch also enables the existing navigation-continuity trial.
-It adds no supported site configuration or category field. To compare with
-that earlier trial, stop scratch and start it with
-`NORNA_AREA_NAVIGATION_PROTOTYPE=0 NORNA_NAVIGATION_PROTOTYPE=1`.
-Ordinary docs remain available through `npm run review:start -- docs` with
-both flags unset. Restart the server when changing flags.
-
-For authored parents and deeper descendants:
-
-```sh
-npm run review:stop -- navigation
-NORNA_AREA_NAVIGATION_PROTOTYPE=1 npm run review:start -- navigation
-```
-
-[Installation](http://127.0.0.1:4323/guides/installation/) keeps its own H2
-before macOS, Linux and Windows. Guides has 22 immediate choices, so its global
-title links directly to its destination and its pages retain the full tree.
-The macOS H3 Prerequisites anchor remains usable without another outline level.
-Restart this target without the flag to restore its ordinary view.
+The separate [Installation fixture](http://127.0.0.1:4323/guides/installation/)
+keeps its own H2 before macOS, Linux and Windows. Guides has 22 immediate
+choices, so its global title links directly to its destination and retains the
+full tree. The macOS H3 Prerequisites anchor remains usable without another
+outline level.
 
 ## Navigation contract
 
@@ -67,11 +45,11 @@ can open the first child directly without an intermediate category page.
   under the same disclosure. H3 remains in the document with its existing anchors.
 - More than twelve visible menu choices, counting an authored root's own
   choice, changes the global title to a direct link and retains the full
-  collection tree. Twelve is the delegated trial choice, not a public setting.
+  collection tree. Twelve is the reviewed Norna limit, not a public setting.
 - Page names navigate; separate chevrons disclose. A new page choice opens the
   arriving branch and outline before display. Clicking the current page name
   returns to its beginning and opens its outline. Other branches stay independent.
-- Back/Forward restores that entry's disclosures, menu position and article
+- Back/Forward and reload restore that entry's disclosures, menu position and article
   reading position, including deliberately closed current branches. Arrival
   tracking does not shift the selected row. Direct arrival in a short window
   reveals an off-screen current title when no saved position takes precedence.
@@ -113,12 +91,16 @@ paragraph and fall into the text flow when a complete note lane will not fit.
 Typography stays constant when selection changes. The implementation retains
 the prior intent prefetch and does not reintroduce an article snapshot.
 
-The six English category descriptions remain explicitly temporary copy in
-`src/lib/areaNavigationPreview.ts`. Page descriptions use existing metadata;
-missing descriptions leave title links intact. Adoption should replace the
-temporary mapping with author-owned, localizable content before general use.
+Category descriptions now live in each category's optional `description`
+field, alongside `label` in `category.yaml`. Page descriptions use existing
+metadata; missing descriptions leave title links intact. The temporary
+English mapping has been removed.
 
-## Final verification, 2026-09-19
+## Historical prototype verification, 2026-09-19
+
+The following evidence belongs to the completed prototype before adoption.
+Commands with prototype flags and old filenames describe that revision, not
+the current checkout. See the adoption item for current checks and results.
 
 The maintained browser tests now exercise the reviewed breadcrumb/menu frame.
 They cover global hover alignment and crossing, keyboard, touch and no-script
@@ -207,15 +189,15 @@ panel fits, the sticky breadcrumb clears anchors, mobile controls remain
 reachable, and notes occupy the recovered margin. Captures are ignored local
 review artifacts; the approved SVG remains a concept, not implementation evidence.
 
-## Adoption boundary
+## Adoption
 
-Adopt the reviewed navigation structure after settling the category-description
-source and updating the supported reference in the same implementation step.
-Do not add author-selected area metadata merely to reproduce this trial:
-existing hierarchy already determines scope. Keep the baseline available until
-that change deliberately replaces the internal flags.
+[BL-130 Make area navigation the default](backlog/BL-130-default-area-navigation.md)
+removes the internal switches and superseded right-rail implementation, moves
+category descriptions into authored content and updates the supported
+reference. Existing hierarchy still determines scope; no author-selected area
+metadata is introduced.
 
 [BL-119 Direct-hash positioning in static previews](backlog/BL-119-static-preview-hash-positioning.md)
-remains a separate baseline issue. These development-server fragment tests and
-the build do not claim to resolve its production-preview failure. No release,
-default promotion or publication is implied by this completed prototype.
+remains a separate baseline issue. Development-server fragment tests and a
+successful build do not claim to resolve its production-preview failure.
+Adoption in the repository does not publish a release.

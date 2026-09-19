@@ -267,21 +267,17 @@ Use a section for another part of the same reading task.
 Each page keeps its Markdown content and images together.
 ```
 
-The top-level category stays in global navigation and opens its first child
-page. Once a site has listed child pages or categories, the same left-rail
-position is used on every ordinary desktop page. On independent top-level
-pages, that rail shows the current page and its section links. Home keeps just
-the global navigation, without a persistent local rail. Inside
-a hierarchy, it shows only the active top-level area, so the global destinations
-are not duplicated.
+The top-level category gives Getting Started a menu in global navigation.
+Its two pages stay together in one left tree, with H2 links beneath each page.
+Click a page name to open it; use the separate chevron to expand or collapse
+its outline. A category link opens its generated destination, while category
+labels in breadcrumbs remain plain text.
 
-In the left page rail and breadcrumbs, `Getting Started` remains a non-linked
-grouping label. In a shallow area, each page's H2/H3 outline can be expanded
-below that page in the same rail. Norna remembers which page and outline
-branches you open or close while you move through the site. Areas at least
-three visible levels deep keep the current page's outline in a separate rail on
-the right. On a small screen, pages, categories, and expandable page outlines
-move into one menu.
+For a larger collection with subgroups, the selected subgroup supplies the
+local tree. Home keeps global navigation without a persistent left tree.
+On small screens, the same pages and H2 destinations move into Menu. The
+[navigation reference](/reference/configuration/navigation/) explains how
+Norna selects areas and remembers branch choices.
 
 At the end of each page, previous and next links follow this same listed branch
 in depth-first order. They make a guide readable in sequence without carrying

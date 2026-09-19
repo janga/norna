@@ -1,0 +1,11 @@
+---
+import { getNavigationStateScript } from '../lib/navigationStateScript.mjs';
+
+interface Props {
+	scope: 'desktop' | 'mobile';
+}
+
+const { scope } = Astro.props;
+---
+
+<script is:inline data-navigation-state-scope={scope} set:html={getNavigationStateScript()} />

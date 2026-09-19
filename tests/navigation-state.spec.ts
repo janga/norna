@@ -23,14 +23,12 @@ const record = (scrollTop: unknown = 240) => JSON.stringify({
 	openPaths: [other], sectionOpenByPath: { [current]: false, [other]: true }, scrollTop,
 });
 const nativeState = { branches: [true, true, false], sections: [true, false], scrollTop: 0 };
-const savedState = { branches: [true, false, true], sections: [false, true], scrollTop: 240 };
+const savedState = { branches: [true, true, true], sections: [true, true], scrollTop: 240 };
 
 type Options = {
 	local?: string | null;
 	shared?: string | null;
 	scope?: 'desktop' | 'mobile';
-	prototype?: boolean;
-	area?: boolean;
 	entry?: string;
 	blockedStorage?: boolean;
 	parserStartsEmpty?: boolean;
@@ -77,8 +75,7 @@ const setup = (source: string, options: Options = {}) => {
 	const window = Object.assign(new EventTarget(), { scrollY: 0 });
 	const document = Object.assign(new EventTarget(), {
 		currentScript: { parentElement: container, dataset: { navigationStateScope: scope } },
-		documentElement: { hasAttribute: (name: string) => name === 'data-area-navigation-prototype'
-			? options.area === true : options.prototype !== false, lang: 'en' },
+		documentElement: { lang: 'en' },
 		querySelector: (selector: string) => selector === (scope === 'desktop'
 			? '.tree-local-navigation' : '.mobile-site-nav[data-navigation-root]') ? container : null,
 	});
@@ -118,16 +115,16 @@ const cases: { name: string; options: Options; expected: typeof nativeState }[] 
 	{ name: 'shared disclosure with local scroll', options: { local: record(), shared: record(999) }, expected: savedState },
 	{ name: 'malformed local with valid shared record', options: { local: '{', shared: record() }, expected: { ...savedState, scrollTop: 0 } },
 	{ name: 'null local with valid shared record', options: { local: 'null', shared: record() }, expected: { ...savedState, scrollTop: 0 } },
-	{ name: 'existing null shared record replaces local disclosures', options: { local: record(), shared: 'null' }, expected: { branches: [true, false, false], sections: [true, false], scrollTop: 240 } },
-	{ name: 'malformed shared record replaces local disclosures', options: { local: record(), shared: '{' }, expected: { branches: [true, false, false], sections: [true, false], scrollTop: 240 } },
-	{ name: 'malformed records still count as saved state', options: { local: '{', shared: '{' }, expected: { ...nativeState, branches: [true, false, false] } },
+	{ name: 'existing null shared record replaces local disclosures', options: { local: record(), shared: 'null' }, expected: { branches: [true, true, false], sections: [true, false], scrollTop: 240 } },
+	{ name: 'malformed shared record replaces local disclosures', options: { local: record(), shared: '{' }, expected: { branches: [true, true, false], sections: [true, false], scrollTop: 240 } },
+	{ name: 'malformed records still count as saved state', options: { local: '{', shared: '{' }, expected: { ...nativeState, branches: [true, true, false] } },
 	{ name: 'numeric string scroll', options: { local: record('240') }, expected: savedState },
 	{ name: 'non-finite scroll string', options: { local: record('Infinity') }, expected: { ...savedState, scrollTop: 0 } },
 	{ name: 'negative scroll is decoded but not restored', options: { local: record(-10) }, expected: { ...savedState, scrollTop: 0 } },
 	{ name: 'boolean scroll retains numeric coercion', options: { local: record(true) }, expected: { ...savedState, scrollTop: 1 } },
 	{ name: 'array scroll retains numeric coercion', options: { local: record([240]) }, expected: savedState },
-	{ name: 'non-boolean outline values use current-page default', options: { local: JSON.stringify({ openPaths: [other, 7, null], sectionOpenByPath: { [current]: 'false', [other]: 1 } }) }, expected: { branches: [true, false, true], sections: [true, false], scrollTop: 0 } },
-	{ name: 'non-array paths and non-object outlines', options: { local: JSON.stringify({ openPaths: other, sectionOpenByPath: true }) }, expected: { ...nativeState, branches: [true, false, false] } },
+	{ name: 'non-boolean outline values use current-page default', options: { local: JSON.stringify({ openPaths: [other, 7, null], sectionOpenByPath: { [current]: 'false', [other]: 1 } }) }, expected: { branches: [true, true, true], sections: [true, false], scrollTop: 0 } },
+	{ name: 'non-array paths and non-object outlines', options: { local: JSON.stringify({ openPaths: other, sectionOpenByPath: true }) }, expected: { ...nativeState, branches: [true, true, false] } },
 	{ name: 'storage unavailable leaves server disclosures usable', options: { local: record(), blockedStorage: true }, expected: nativeState },
 ];
 
@@ -140,27 +137,27 @@ for (const { name, options, expected } of cases) {
 }
 
 test('ordinary navigation still opens the current page and outline on arrival', () => {
-	expect(setup(runtimeScript, { local: record(), prototype: false }).snapshot()).toEqual({
+	expect(setup(runtimeScript, { local: record() }).snapshot()).toEqual({
 		branches: [true, true, true], sections: [true, true], scrollTop: 240,
 	});
 });
 
 test('new area arrivals open the selected page without closing other branches', () => {
-	const options = { area: true, local: record(), shared: record() };
+	const options = { local: record(), shared: record() };
 	const expected = { branches: [true, true, true], sections: [true, true], scrollTop: 240 };
 	expect(setup(earlyScript, options).snapshot()).toEqual(expected);
 	expect(setup(runtimeScript, options).snapshot()).toEqual(expected);
 });
 
 test('area history restores its own exact disclosures and position instead of the latest shared state', () => {
-	const options = { area: true, local: record(420), shared: record(), entry: record(0) };
+	const options = { local: record(420), shared: record(), entry: record(0) };
 	const expected = { branches: [false, false, true], sections: [false, true], scrollTop: 0 };
 	expect(setup(earlyScript, options).snapshot()).toEqual(expected);
 	expect(setup(runtimeScript, options).snapshot()).toEqual(expected);
 });
 
 test('area snapshots preserve other history owners and replace state only to identify a new entry', () => {
-	const runtime = setup(runtimeScript, { area: true });
+	const runtime = setup(runtimeScript, {});
 	expect(runtime.history.writes).toBe(1);
 	expect(runtime.history.state.nornaSearchOrigin).toBe('keep');
 	for (let index = 0; index < 20; index += 1) {
@@ -175,7 +172,7 @@ test('area snapshots preserve other history owners and replace state only to ide
 
 for (const destinationUrl of ['https://example.test/norna/reference/configuration/', 'https://example.test/norna/reference/site/pages/']) {
 	test(`pagehide saves the departing entry when traversal already exposes ${destinationUrl}`, () => {
-		const runtime = setup(runtimeScript, { area: true, entry: record(40) });
+		const runtime = setup(runtimeScript, { entry: record(40) });
 		const originalKey = `${scopedKey('desktop')}:entry:test-entry`;
 		const destinationKey = `${scopedKey('desktop')}:entry:destination`;
 		runtime.storage.set(destinationKey, record(300));
@@ -193,7 +190,7 @@ for (const destinationUrl of ['https://example.test/norna/reference/configuratio
 
 test('area navigation still has its native open branch when storage is unavailable', () => {
 	for (const source of [earlyScript, runtimeScript]) {
-		expect(setup(source, { area: true, blockedStorage: true }).snapshot()).toEqual(nativeState);
+		expect(setup(source, { blockedStorage: true }).snapshot()).toEqual(nativeState);
 	}
 });
 
@@ -205,10 +202,10 @@ test('desktop and mobile retain scoped positions and the existing serialized for
 			.toEqual(runtime.snapshot());
 		runtime.window.dispatchEvent(new Event('pagehide'));
 		expect(JSON.parse(runtime.storage.get(scopedKey(scope))!)).toEqual({
-			openPaths: [ancestor, other], sectionOpenByPath: { [current]: false, [other]: true }, scrollTop,
+			openPaths: [ancestor, current, other], sectionOpenByPath: { [current]: true, [other]: true }, scrollTop,
 		});
 		expect(JSON.parse(runtime.storage.get(sharedKey)!)).toEqual({
-			openPaths: [ancestor, other], sectionOpenByPath: { [current]: false, [other]: true },
+			openPaths: [ancestor, current, other], sectionOpenByPath: { [current]: true, [other]: true },
 		});
 	}
 });
@@ -240,7 +237,7 @@ test('early restore initializes parser additions once, disconnects and refreshes
 	const outline = early.disclosure(current, true);
 	early.sections.push(outline);
 	early.document.dispatchEvent(new Event('DOMContentLoaded'));
-	expect(outline.open).toBe(false);
+	expect(outline.open).toBe(true);
 	expect(branch.open).toBe(false);
 	expect(early.isObserving()).toBe(false);
 	outline.open = true;
@@ -248,11 +245,11 @@ test('early restore initializes parser additions once, disconnects and refreshes
 	expect(outline.open).toBe(true);
 	early.window.dispatchEvent(new Event('pagereveal'));
 	expect(branch.open).toBe(true);
-	expect(outline.open).toBe(false);
+	expect(outline.open).toBe(true);
 });
 
 test('built inline scripts preserve the characterized runtime interpretation', async () => {
-	// Run explicitly against a fresh opt-in build; importing the generator alone
+	// Run explicitly against a fresh build; importing the generator alone
 	// cannot catch bundler transformations that introduce a closure dependency.
 	const pagePath = process.env.NORNA_NAVIGATION_STATE_PAGE;
 	test.skip(!pagePath, 'Set NORNA_NAVIGATION_STATE_PAGE to the built Pages and categories HTML.');
@@ -265,7 +262,7 @@ test('built inline scripts preserve the characterized runtime interpretation', a
 				.toEqual(expected);
 		}
 		for (const entry of [undefined, record(0)]) {
-			expect(setup(source, { scope: scope as 'desktop' | 'mobile', area: true, local: record(), entry }).snapshot())
+			expect(setup(source, { scope: scope as 'desktop' | 'mobile', local: record(), entry }).snapshot())
 				.toEqual(entry === undefined
 					? { branches: [true, true, true], sections: [true, true], scrollTop: 240 }
 					: { branches: [false, false, true], sections: [false, true], scrollTop: 0 });

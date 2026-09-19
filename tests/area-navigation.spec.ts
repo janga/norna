@@ -2,9 +2,8 @@ import { expect, test, type Page, type Locator } from '@playwright/test';
 
 // Documentation-site trial. Installed Safari is assessed separately.
 test.use({ browserName: 'webkit', viewport: { width: 1440, height: 1000 } });
-test.skip(process.env.NORNA_AREA_NAVIGATION_PROTOTYPE !== '1', 'The area prototype is opt-in.');
 const ready = async (page: Page) => {
-	await expect(page.locator('html')).toHaveAttribute('data-area-navigation-prototype', '');
+	await expect(page.locator('html')).toHaveAttribute('data-area-navigation', '');
 	await page.waitForFunction(() => document.documentElement.hasAttribute('data-navigation-motion-ready'));
 };
 const tree = (page: Page) => page.locator('.tree-local-navigation');
@@ -446,7 +445,7 @@ test('reveals a direct destination in a short viewport before deferred scripts c
 	let before;
 	try {
 		await page.goto('reference/configuration/shared-content/', { waitUntil: 'commit' });
-		await page.locator('#norna-prototype-ready').waitFor({ state: 'attached' });
+		await page.locator('#norna-navigation-ready').waitFor({ state: 'attached' });
 		before = await measure();
 		expect(before.row).toBeGreaterThanOrEqual(before.top);
 		expect(before.bottom).toBeLessThanOrEqual(before.limit);

@@ -1,5 +1,5 @@
 ---
-import NavigationPrototypeState from './NavigationPrototypeState.astro';
+import NavigationState from './NavigationState.astro';
 import { Menu, Search, X } from '@lucide/astro';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
@@ -18,7 +18,6 @@ import TopPageMenu from './TopPageMenu.astro';
 import AreaNavigationMenu from './AreaNavigationMenu.astro';
 import AreaNavigationSwitcher from './AreaNavigationSwitcher.astro';
 import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
-import { areaNavigationPrototype } from '../lib/navigationPrototypeConfig.mjs';
 import { hasLargeAreaMenu, withH2Outlines } from '../lib/areaNavigation';
 import SectionNavigationScript from './SectionNavigationScript.astro';
 import SearchNavigationScript from './SearchNavigationScript.astro';
@@ -79,12 +78,7 @@ const navigationStyle = [
 	...(logo?.height ? [`--site-brand-logo-height: ${logo.height}`] : []),
 ].join('; ');
 const siteNavigationTree = getListedSiteNavigationTree(navigationEntries);
-const mobileNavigationTree = areaNavigationPrototype ? withH2Outlines(siteNavigationTree) : navigationMode === 'top'
-	? getListedSiteNavigationTree(navigationEntries.map((entry) => ({
-		...entry,
-		headings: entry.headings.filter((heading) => heading.depth === 2),
-	})))
-	: siteNavigationTree;
+const mobileNavigationTree = withH2Outlines(siteNavigationTree);
 const topLevelNavigation = siteNavigationTree;
 const showSiteNavigation = topLevelNavigation.some(({ node }) => !node.isHome);
 const homeNode = navigationEntries.find(({ node }) => node.isHome)?.node;
@@ -157,7 +151,7 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 						const destination = getNavigationDestination(navigationNode.node, categoryDestinations);
 						if (!destination) return null;
 						const nodeIsCurrentPage = isCurrentPage(navigationNode.node);
-						const useAreaMenu = areaNavigationPrototype && navigationMode === 'tree';
+						const useAreaMenu = navigationMode === 'tree';
 						return (
 							<li class:list={['site-nav-item', {
 								'site-nav-item-current-branch': (!nodeIsCurrentPage || useAreaMenu) && isCurrentBranch(navigationNode.node),
@@ -227,10 +221,10 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 								</div>
 								<div
 									class="mobile-site-nav"
-									data-navigation-root={`${areaNavigationPrototype ? 'area:' : ''}${pageHref(homePage)}`}
-									data-navigation-state-root={`${areaNavigationPrototype ? 'area:' : ''}${pageHref(homePage)}`}
+									data-navigation-root={`area:${pageHref(homePage)}`}
+									data-navigation-state-root={`area:${pageHref(homePage)}`}
 								>
-									<NavigationPrototypeState scope="mobile" />
+									<NavigationState scope="mobile" />
 									{showSiteNavigation && (
 										<nav class="mobile-nav-view" aria-label={projectConfig.locale.labels.siteNavigation}>
 											<h2 tabindex="-1">{projectConfig.locale.labels.siteNavigation}</h2>

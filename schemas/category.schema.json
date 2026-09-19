@@ -7,6 +7,12 @@
       "minLength": 1,
       "description": "Navigation label for a group of child pages without an authored page body.",
       "markdownDescription": "```yaml\nlabel: Guides\n```\n\nThe category label shown in global navigation, tree navigation, mobile navigation, and breadcrumbs.\n\n[Navigation category reference (current)](https://janga.github.io/norna/reference/site/pages/#page-or-category)\n\n[Norna 0.7.27 source reference](https://github.com/janga/norna/blob/v0.7.27/site/pages/032-reference/pages/010-site/pages/020-pages/content.md#page-or-category)"
+    },
+    "description": {
+      "description": "Short introduction shown beside the category in area menus and generated child lists.",
+      "type": "string",
+      "minLength": 1,
+      "markdownDescription": "```yaml\nlabel: Guides\ndescription: Install, configure and publish your site.\n```\n\nOptional authored text shown beside this group in area menus and generated child lists. It does not create a content page or change which pages belong to the group.\n\n[Navigation category reference (current)](https://janga.github.io/norna/reference/site/pages/#page-or-category)\n\n[Norna 0.7.27 source reference](https://github.com/janga/norna/blob/v0.7.27/site/pages/032-reference/pages/010-site/pages/020-pages/content.md#page-or-category)"
     }
   },
   "required": [

@@ -41,11 +41,10 @@ const revealEntry = (container: HTMLElement, entry: HTMLElement) => {
 };
 
 export const setupNavigationFollowing = () => {
-	const areaNavigation = document.documentElement.hasAttribute('data-area-navigation-prototype');
+	const areaNavigation = document.documentElement.hasAttribute('data-area-navigation');
 	const left = document.querySelector<HTMLElement>('.tree-local-navigation');
-	const right = document.querySelector<HTMLElement>('.page-contents-navigation-rail');
 	const compact = document.querySelector<HTMLElement>('[data-compact-navigation-panel]');
-	const states = [left, right, compact]
+	const states = [left, compact]
 		.filter((container): container is HTMLElement => container !== null)
 		.map((container) => ({
 			container,
@@ -80,10 +79,9 @@ export const setupNavigationFollowing = () => {
 
 	const update = () => {
 		frame = undefined;
-		const selected = right && isNavigationElementDisplayed(right) ? right : left;
 		for (const state of states) {
 			const ownsFocus = state.container.contains(document.activeElement);
-			updateContainer(state, state.container === selected
+			updateContainer(state, state.container === left
 				&& !state.paused && !state.arrivalPaused && !state.pointerDown && !ownsFocus
 				&& !document.querySelector('.mobile-nav-menu[open]'));
 		}
@@ -122,7 +120,10 @@ export const setupNavigationFollowing = () => {
 		// not when native history/hash restoration emits a window scroll.
 		const resumeAfterArrival = (event: Event) => {
 			if (event.target instanceof Node && states.some(({ container }) => container.contains(event.target as Node))) return;
-			states.forEach((state) => { state.arrivalPaused = false; });
+			states.forEach((state) => { state.arrivalPaused = false; state.paused = false; });
+			// A wheel gesture at the document's end may not emit scroll. Resume
+			// the outline after that real input too, without moving the document.
+			schedule();
 		};
 		for (const type of ['wheel', 'touchstart', 'pointerdown', 'keydown']) {
 			window.addEventListener(type, resumeAfterArrival, { passive: true });
