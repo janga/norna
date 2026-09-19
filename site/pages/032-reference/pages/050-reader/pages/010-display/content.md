@@ -3,7 +3,7 @@ page:
   description: Understand reader-controlled appearance, reading width, Focus reading and saved preferences.
 ---
 
-# Display and preferences
+# User preferences
 
 The site's **Display** panel always offers Appearance and reading width. It
 also offers **Focus reading** when navigation resolves to `tree`. These

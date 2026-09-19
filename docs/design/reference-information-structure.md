@@ -74,7 +74,7 @@ parts of that same task rather than mechanically splitting at every H2.
 | [Theme inspection](https://janga.github.io/norna/reference/commands/theme/) | inspect presets and resolved typography, or export a protected reference without changing the active theme. |
 | [Engine maintenance](https://janga.github.io/norna/reference/commands/engine/) | inspect the selected installation and paths, or update the exact project dependency and lockfile. |
 | [Experimental migration audit](https://janga.github.io/norna/reference/commands/migration-audit/) | understand the experimental Docusaurus inventory command and the limits of its generated report. |
-| [Display and preferences](https://janga.github.io/norna/reference/reader/display/) | understand reader-controlled appearance, reading width, Focus reading and saved preferences. |
+| [User preferences](https://janga.github.io/norna/reference/reader/display/) | understand reader-controlled appearance, reading width, Focus reading and saved preferences. |
 | [JavaScript and accessibility](https://janga.github.io/norna/reference/reader/accessibility/) | check what remains usable without JavaScript and where engine presentation safeguards end and author responsibility begins. |
 | [VS Code editor support](https://janga.github.io/norna/reference/workflows/editor/) | install optional VS Code help, recognize supported files and troubleshoot suggestions, diagnostics and formatting. |
 | [Separate AI suggestions from IntelliSense](https://janga.github.io/norna/reference/workflows/editor-ai-suggestions/) | disable optional AI editing suggestions while retaining schema-based Norna and YAML completion. |

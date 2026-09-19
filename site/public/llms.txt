@@ -74,7 +74,7 @@ are under docs/; later tags use site/pages/032-reference/.
 
 ## Reader experience
 
-- [Display and preferences](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/050-reader/pages/010-display/content.md)
+- [User preferences](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/050-reader/pages/010-display/content.md)
 - [JavaScript and accessibility](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/050-reader/pages/020-accessibility/content.md)
 
 ## Working on a site

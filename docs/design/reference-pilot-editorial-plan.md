@@ -61,7 +61,7 @@ Checked against `scripts/lib/schema-definitions.mjs`,
 `scripts/move-site-page.mjs` and `scripts/lib/page-move-plan.mjs`.
 
 The Appearance entry no longer carries cookie implementation attributes.
-Preserve these in the planned Display and preferences reference: cookie
+Preserve these in the User preferences reference: cookie
 `norna-appearance`; accepted values; one-year lifetime; `SameSite=Lax`; base-path
 scope; `Secure` on HTTPS; invalid values fall back to the default; browser
 policy can prevent persistence; overlapping paths do not provide isolation.

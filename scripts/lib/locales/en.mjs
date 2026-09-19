@@ -61,7 +61,7 @@ export default Object.freeze({
 	pageSections: 'Sections',
 	previousImage: 'Previous image',
 	previousPage: 'Previous page',
-	returnHome: 'Go to the homepage',
+	returnHome: 'Home',
 	searchReturn: 'Back to {page}',
 	search: 'Search',
 	searchDescription: 'Search the published content on this site.',
