@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- [`BL-131` VS Code Site Tree](docs/design/backlog/BL-131-vscode-site-tree.md):
+  **Ready for experimental VSIX implementation.** Open and create pages, and
+  edit their titles and metadata from a tree of the actual site structure.
+
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
@@ -71,6 +75,10 @@ verified and approved for documentation.
 These items have no implementation position yet. Move one into `Now`, `Next`,
 or `Later` only after the stated evidence or design decision exists.
 
+- [`BL-132` VS Code Site Authoring Continuation](docs/design/backlog/BL-132-vscode-site-authoring-continuation.md):
+  **Needs design after `BL-131` VS Code Site Tree.** Use the recorded priority
+  order to scope structural editing and link-oriented authoring as separate,
+  bounded implementation steps.
 - `BL-113` **Page References: Needs evidence; unprioritized wishlist idea.**
   Consider an expandable reference to one page with selected heading links and
   automatically retrieved titles, but first try ordinary Markdown links in
