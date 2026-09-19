@@ -92,6 +92,8 @@ try {
 	);
 	assert.equal(parseReviewCaptureArguments(['.', '--menu', 'compact']).menu, 'compact');
 	assert.equal(parseReviewCaptureArguments(['.', '--menu', 'Dogs']).menu, 'Dogs');
+	assert.equal(parseReviewCaptureArguments(['.', '--menu', 'area']).menu, 'area');
+	assert.equal(parseReviewCaptureArguments(['.', '--menu', 'display', '--focus-reading']).focusReading, true);
 	assert.throws(() => parseReviewCaptureArguments(['.', '--menu']), /--menu requires/);
 	assert.throws(
 		() => parseReviewCaptureArguments(['.', '--appearance', 'sepia']),
@@ -250,16 +252,19 @@ try {
 	);
 
 	const browserEvents = [];
+	const fakeLocator = (selector) => ({
+		waitFor: async (options) => browserEvents.push({ name: 'visible-control', selector, options }),
+		boundingBox: async () => ({ x: 280, y: 20, width: 90, height: 44 }),
+		locator: (child) => fakeLocator(`${selector} ${child}`),
+	});
 	const createFakeBrowser = async () => ({
 		newContext: async (options) => {
 			browserEvents.push({ name: 'context', options });
 			return {
+				addCookies: async (cookies) => browserEvents.push({ name: 'cookies', cookies }),
 				newPage: async () => ({
 					goto: async (url, options) => browserEvents.push({ name: 'goto', options, url }),
-					locator: (selector) => ({
-						waitFor: async (options) => browserEvents.push({ name: 'visible-control', selector, options }),
-						boundingBox: async () => ({ x: 280, y: 20, width: 90, height: 44 }),
-					}),
+					locator: fakeLocator,
 					mouse: { click: async (x, y) => browserEvents.push({ name: 'mouse-click', x, y }) },
 					waitForLoadState: async (state) => browserEvents.push({ name: 'load-state', state }),
 					waitForTimeout: async (duration) => browserEvents.push({ duration, name: 'wait' }),
@@ -307,6 +312,33 @@ try {
 	assert.deepEqual(browserEvents.find((event) => event.name === 'mouse-click'), { name: 'mouse-click', x: 325, y: 42 });
 	assert.ok(browserEvents.findIndex((event) => event.selector === '.mobile-nav-menu[open] [data-compact-navigation-close]')
 		< browserEvents.findIndex((event) => event.name === 'screenshot'));
+	for (const [menu, panel] of [
+		['area', '[data-area-switcher] .area-navigation-panel'],
+		['display', '[data-display-settings] .display-settings-panel'],
+	]) {
+		browserEvents.length = 0;
+		const result = await captureReviewPage({
+			environment: docsEnvironment,
+			rawArguments: ['reference/site/files/#page-folders', '--menu', menu, ...(menu === 'display' ? ['--focus-reading'] : [])],
+			root: temporaryRoot,
+			write,
+			fetchImplementation: async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(0) }),
+			launchBrowser: createFakeBrowser,
+		});
+		assert.deepEqual(browserEvents.find((event) => event.name === 'mouse-click'), { name: 'mouse-click', x: 325, y: 42 });
+		const panelEvent = browserEvents.findIndex((event) => event.selector === panel);
+		assert.ok(panelEvent >= 0 && panelEvent < browserEvents.findIndex((event) => event.name === 'screenshot'));
+		if (menu === 'display') {
+			assert.ok(result.outputPath.endsWith('-focus-menu-display.png'));
+			const cookieEvent = browserEvents.findIndex((event) => event.name === 'cookies');
+			assert.ok(cookieEvent >= 0 && cookieEvent < browserEvents.findIndex((event) => event.name === 'goto'));
+			assert.deepEqual(browserEvents[cookieEvent].cookies, [
+				{ name: 'norna-focus-reading', value: 'on', domain: '127.0.0.1', path: '/norna/' },
+			]);
+		} else {
+			assert.equal(browserEvents.some((event) => event.name === 'cookies'), false);
+		}
+	}
 
 	const portLockRoot = path.join(temporaryRoot, 'port-locks');
 	const proposedPorts = [45001, 45001, 45002];

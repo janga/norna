@@ -7,11 +7,12 @@ choosing an area from the site's navigation and showing that area's pages and
 H2 headings in one left menu. Evaluate the complete reading experience before
 changing Norna's supported navigation model.
 
-**High priority; in progress, prototype checkpoint on 2026-09-19.**
-The user requested a work-in-progress commit after the interactive design
-review. This saves the current trial for continued implementation; it does
-not complete the item. Cleanup, browser-test adaptation and final verification
-remain. Keep the prototype opt-in.
+**Completed as an opt-in prototype on 2026-09-19.** The implementation follows
+the user's interactive review, with updated browser coverage, installed-browser
+measurements and an isolated build. Final verification also corrected a WebKit
+history-entry race. The recommendation is to adopt the reviewed design in the
+separate adoption step below, settling category descriptions and the supported
+reference contract together. The prototype remains off by default.
 
 [BL-129 Regression tests for the navigation latency correction](BL-129-navigation-latency-regression-tests.md)
 completed in `11e63c7` before this implementation. The

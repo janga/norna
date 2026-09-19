@@ -173,6 +173,24 @@ test('area snapshots preserve other history owners and replace state only to ide
 	expect(JSON.parse(runtime.storage.get(key)!).scrollTop).toBe(19);
 });
 
+for (const destinationUrl of ['https://example.test/norna/reference/configuration/', 'https://example.test/norna/reference/site/pages/']) {
+	test(`pagehide saves the departing entry when traversal already exposes ${destinationUrl}`, () => {
+		const runtime = setup(runtimeScript, { area: true, entry: record(40) });
+		const originalKey = `${scopedKey('desktop')}:entry:test-entry`;
+		const destinationKey = `${scopedKey('desktop')}:entry:destination`;
+		runtime.storage.set(destinationKey, record(300));
+		const destinationState = { nornaSearchOrigin: 'keep', nornaAreaNavigationEntry: { id: 'destination', url: destinationUrl } };
+		runtime.history.state = destinationState;
+		runtime.container.scrollTop = 85;
+		runtime.branches.forEach(branch => { branch.open = false; });
+		runtime.window.dispatchEvent(new Event('pagehide'));
+		expect(runtime.history.writes).toBe(0);
+		expect(runtime.history.state).toEqual(destinationState);
+		expect(runtime.storage.get(destinationKey)).toBe(record(300));
+		expect(JSON.parse(runtime.storage.get(originalKey)!)).toMatchObject({ openPaths: [], scrollTop: 85 });
+	});
+}
+
 test('area navigation still has its native open branch when storage is unavailable', () => {
 	for (const source of [earlyScript, runtimeScript]) {
 		expect(setup(source, { area: true, blockedStorage: true }).snapshot()).toEqual(nativeState);

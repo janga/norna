@@ -21,7 +21,8 @@ interface Props {
 const { currentPage, navigationEntries, categoryDestinations, integratePageSections = false, areaReadingFrame = false } = Astro.props;
 const listedRoots = getListedSiteNavigationTree(navigationEntries);
 const roots = areaNavigationPrototype ? withH2Outlines(listedRoots) : listedRoots;
-const activeRoot = areaNavigationPrototype ? resolveAreaNavigation(roots, currentPage).localRoot : roots.find((node) => (
+const area = areaNavigationPrototype ? resolveAreaNavigation(roots, currentPage) : undefined;
+const activeRoot = areaNavigationPrototype ? area?.localRoot : roots.find((node) => (
 	currentPage.pageDirectory === node.node.pageDirectory
 	|| currentPage.pageDirectory.startsWith(`${node.node.pageDirectory}/pages/`)
 ));
@@ -33,7 +34,7 @@ const navigationRoot = navigationPage.pagePath ? `/${navigationPage.pagePath}/` 
 const navigationStateRoot = withBasePath(projectConfig.site.basePath, '/');
 const showAreaTitle = areaNavigationPrototype && activeRoot?.node.kind === 'category';
 const showReadingAreaTitle = areaReadingFrame
-	&& navigationPage.pagePath !== resolveAreaNavigation(roots, currentPage).globalRoot?.node.pagePath;
+	&& navigationPage.pagePath !== area?.globalRoot?.node.pagePath;
 const localNodes = activeRoot ? (showAreaTitle ? activeRoot.children : [activeRoot]) : [];
 // Separate scroll records from the larger continuity trial; keep disclosure
 // identities stable and shared with its compact view within this trial.

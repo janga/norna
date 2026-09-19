@@ -26,13 +26,13 @@ test('preserves a parent destination, a single H2 and existing H3 deep links', a
 	await page.goto('reference/');
 	await expect(page.locator('.tree-local-navigation')).toHaveAttribute('data-navigation-area', 'reference');
 	await expect(page.locator('.tree-local-navigation a[href="#reference-overview"]')).toBeVisible();
-	await page.locator('[data-area-menu="reference"] > summary').click();
-	await expect(page.locator('[data-area-menu="reference"] [data-area-choice]').first()).toHaveAttribute('href', '/reference/');
-	await page.locator('[data-area-menu="reference"] a[href="/reference/installation/"]').click();
+	await page.locator('[data-area-switcher] > summary').click();
+	await expect(page.locator('[data-area-switcher] [data-area-choice]').first()).toHaveAttribute('href', '/reference/');
+	await page.locator('[data-area-switcher] a[href="/reference/installation/"]').click();
 	await expect(page.locator('.tree-local-navigation')).toHaveAttribute('data-navigation-area', 'reference');
 	await expect(page.locator('.tree-local-navigation a[href="/reference/"]')).toBeVisible();
 	await expect(page.locator('.tree-local-navigation a[href="/reference/reading-position/"]')).toBeVisible();
-	await page.locator('[data-area-menu="reference"] > summary').click();
+	await page.locator('[data-area-switcher] > summary').click();
 	await page.locator('[data-area-choice="reference"]').click();
 	await expect(page.locator('h1')).toHaveText('Reference');
 	await page.setViewportSize({ width: 1440, height: 520 });
@@ -46,7 +46,7 @@ test('preserves a parent destination, a single H2 and existing H3 deep links', a
 });
 
 test('uses a direct sticky destination and full tree for a collection larger than twelve choices', async ({ page }) => {
-	await page.goto('guides/installation/');
+	await page.goto('./');
 	await expect(page.locator('[data-area-menu="guides"]')).toHaveCount(0);
 	await page.locator('.site-nav').getByRole('link', { name: 'Guides', exact: true }).click();
 	await expect(page.locator('.tree-local-navigation')).toHaveAttribute('data-navigation-area', 'guides');

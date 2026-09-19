@@ -53,23 +53,27 @@ export function createNavigationStateHelpers() {
 	});
 	// The area trial keeps snapshots per history entry. Only the identity goes
 	// into history.state: scrolling must not repeatedly call replaceState.
-	const entryStateKey = (stateKey) => {
+	let activeEntry = null;
+	const currentEntry = () => {
 		const entry = history.state?.nornaAreaNavigationEntry;
 		return entry?.url === location.href && typeof entry.id === 'string'
-			? `${stateKey}:entry:${entry.id}` : null;
+			? entry : null;
 	};
 	const readEntryState = (stateKey) => {
-		const key = entryStateKey(stateKey);
-		return key === null ? null : sessionStorage.getItem(key);
+		activeEntry = currentEntry();
+		return activeEntry === null ? null : sessionStorage.getItem(`${stateKey}:entry:${activeEntry.id}`);
 	};
 	const saveEntryState = (stateKey, state) => {
-		let key = entryStateKey(stateKey);
-		if (key === null) {
-			const entry = { url: location.href, id: `${Date.now()}-${Math.random().toString(36).slice(2)}` };
-			history.replaceState({ ...history.state, nornaAreaNavigationEntry: entry }, '');
-			key = `${stateKey}:entry:${entry.id}`;
+		// WebKit can expose the destination's history.state during the departing
+		// document's pagehide. Save into this document's remembered entry instead
+		// of replacing the destination's identity. Traversal reads and hash changes
+		// select a new entry while the document is active.
+		if (activeEntry?.url !== location.href) activeEntry = currentEntry();
+		if (activeEntry === null) {
+			activeEntry = { url: location.href, id: `${Date.now()}-${Math.random().toString(36).slice(2)}` };
+			history.replaceState({ ...history.state, nornaAreaNavigationEntry: activeEntry }, '');
 		}
-		sessionStorage.setItem(key, JSON.stringify(state));
+		sessionStorage.setItem(`${stateKey}:entry:${activeEntry.id}`, JSON.stringify(state));
 	};
 	/** @param {DisclosureState} state @param {BranchData} branch @param {DisclosurePolicy} policy */
 	const pageIsOpen = (state, branch, policy = {}) => (
