@@ -9,7 +9,8 @@ function restoreEarlyNavigationState(createHelpers) {
 	const container = script?.parentElement;
 	if (!container?.hasAttribute('data-navigation-root')) return;
 	const scope = script.dataset.navigationStateScope;
-	const { storageKeys, initialState, pageIsOpen, sectionsAreOpen } = createHelpers();
+	const area = document.documentElement.hasAttribute('data-area-navigation-prototype');
+	const { storageKeys, initialState, arrivalPolicy, readEntryState, pageIsOpen, sectionsAreOpen } = createHelpers();
 	const initialized = new WeakSet();
 	const restore = (refresh = false) => {
 		try {
@@ -21,8 +22,9 @@ function restoreEarlyNavigationState(createHelpers) {
 			}
 			const { stateKey, sharedStateKey } = storageKeys(scope,
 				container.dataset.navigationRoot, container.dataset.navigationStateRoot);
-			const state = initialState(sessionStorage.getItem(stateKey), sessionStorage.getItem(sharedStateKey));
-			const policy = { onArrival: true, preserveCurrentPage: state.hasSavedState, preserveCurrentOutline: true };
+			const state = initialState(sessionStorage.getItem(stateKey), sessionStorage.getItem(sharedStateKey),
+				area ? readEntryState(stateKey) : null);
+			const policy = arrivalPolicy(state, true, area);
 			for (const branch of container.querySelectorAll('.navigation-page-disclosure[data-page-path]')) {
 				if (!refresh && initialized.has(branch)) continue;
 				branch.open = pageIsOpen(state.disclosure, branch.dataset, policy);
@@ -40,7 +42,23 @@ function restoreEarlyNavigationState(createHelpers) {
 					break;
 				}
 			}
-			if (state.local.scrollTop > 0) scrollContainer.scrollTop = state.local.scrollTop;
+			if (state.local.scrollTop > 0 || state.fromEntry) scrollContainer.scrollTop = Math.max(0, state.local.scrollTop);
+			if (area && scope === 'desktop' && !state.fromEntry && state.local.scrollTop <= 0) {
+				// A direct arrival in a short viewport can put the selected page
+				// below the fold. Reveal its title now, before heading following is
+				// paused. An already visible title or restored position stays put.
+				const node = container.querySelector('[data-navigation-current-page="true"]');
+				const link = node?.querySelector(':scope > .navigation-page-link, :scope > .navigation-page-open-link');
+				if (link && link.getBoundingClientRect().width > 0) {
+					const box = scrollContainer.getBoundingClientRect();
+					const controls = container.querySelector('[data-tree-controls]')?.getBoundingClientRect();
+					const top = Math.max(box.top, controls?.bottom ?? box.top) + 12;
+					const bottom = box.bottom - 16;
+					const row = link.getBoundingClientRect();
+					if (row.top < top) scrollContainer.scrollTop += row.top - top;
+					else if (row.bottom > bottom) scrollContainer.scrollTop += row.bottom - bottom;
+				}
+			}
 		} catch {
 			// Ordinary links and native details remain usable without storage.
 		}

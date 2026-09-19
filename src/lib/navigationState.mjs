@@ -31,15 +31,45 @@ export function createNavigationStateHelpers() {
 			return { openPaths: [], sectionOpenByPath: {}, scrollTop: 0 };
 		}
 	};
-	/** @param {string | null} localSource @param {string | null} sharedSource */
-	const initialState = (localSource, sharedSource) => {
+	/** @param {string | null} localSource @param {string | null} sharedSource @param {string | null} entrySource */
+	const initialState = (localSource, sharedSource, entrySource = null) => {
+		if (entrySource !== null) {
+			const entry = parseState(entrySource);
+			return { local: entry, disclosure: entry, hasSavedState: true, fromEntry: true };
+		}
 		const local = parseState(localSource);
 		return {
 			local,
 			// An existing invalid shared record is empty, not a local fallback.
 			disclosure: sharedSource === null ? local : parseState(sharedSource),
 			hasSavedState: localSource !== null || sharedSource !== null,
+			fromEntry: false,
 		};
+	};
+	const arrivalPolicy = (state, prototype = true, area = false) => ({
+		onArrival: !state.fromEntry,
+		preserveCurrentPage: prototype && !area && state.hasSavedState,
+		preserveCurrentOutline: prototype && !area,
+	});
+	// The area trial keeps snapshots per history entry. Only the identity goes
+	// into history.state: scrolling must not repeatedly call replaceState.
+	const entryStateKey = (stateKey) => {
+		const entry = history.state?.nornaAreaNavigationEntry;
+		return entry?.url === location.href && typeof entry.id === 'string'
+			? `${stateKey}:entry:${entry.id}` : null;
+	};
+	const readEntryState = (stateKey) => {
+		const key = entryStateKey(stateKey);
+		return key === null ? null : sessionStorage.getItem(key);
+	};
+	const saveEntryState = (stateKey, state) => {
+		let key = entryStateKey(stateKey);
+		if (key === null) {
+			const entry = { url: location.href, id: `${Date.now()}-${Math.random().toString(36).slice(2)}` };
+			history.replaceState({ ...history.state, nornaAreaNavigationEntry: entry }, '');
+			key = `${stateKey}:entry:${entry.id}`;
+		}
+		sessionStorage.setItem(key, JSON.stringify(state));
 	};
 	/** @param {DisclosureState} state @param {BranchData} branch @param {DisclosurePolicy} policy */
 	const pageIsOpen = (state, branch, policy = {}) => (
@@ -54,5 +84,5 @@ export function createNavigationStateHelpers() {
 			&& !(policy.preserveCurrentOutline && typeof storedOpen === 'boolean')) return true;
 		return typeof storedOpen === 'boolean' ? storedOpen : branch.currentPage === 'true';
 	};
-	return { storageKeys, parseState, initialState, pageIsOpen, sectionsAreOpen };
+	return { storageKeys, parseState, initialState, arrivalPolicy, readEntryState, saveEntryState, pageIsOpen, sectionsAreOpen };
 }

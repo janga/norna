@@ -1,0 +1,377 @@
+/* BL-122 Area navigation and integrated H2 prototype. Local opt-in only. */
+.site-reading-location,
+.area-navigation-switcher {
+	display: none;
+}
+
+:root[data-area-navigation-prototype] .site-nav-row {
+	position: relative;
+}
+
+:root[data-area-navigation-prototype] .site-nav-item:has(.area-navigation-menu) {
+	position: static;
+}
+
+:root[data-area-navigation-prototype] .site-nav > ul > .site-nav-item > a,
+:root[data-area-navigation-prototype] .area-navigation-menu > summary {
+	display: flex;
+	align-items: center;
+	min-height: var(--target-size-minimum);
+	padding-block: 0;
+	width: auto;
+	color: var(--color-secondary-text);
+	font-size: 0.78rem;
+	font-weight: 500;
+	letter-spacing: 0.08em;
+	line-height: 1.2;
+	text-transform: uppercase;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-menu > summary {
+	position: relative;
+	isolation: isolate;
+	text-decoration: none;
+}
+
+/* Paint around the trigger without moving its label or neighboring links. */
+:root[data-area-navigation-prototype] .area-navigation-menu > summary::before {
+	position: absolute;
+	inset: -0.25rem -0.6rem;
+	z-index: -1;
+	border: 1px solid transparent;
+	border-radius: var(--corner-radius-small);
+	content: '';
+	pointer-events: none;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-menu > summary:is(:hover, :focus-visible),
+:root[data-area-navigation-prototype] .area-navigation-menu[open] > summary,
+:root[data-area-navigation-prototype] .site-nav-item-current-branch .area-navigation-menu > summary {
+	color: var(--site-top-text-color, var(--color-primary-text));
+}
+
+:root[data-area-navigation-prototype] .area-navigation-menu > summary:is(:hover, :focus-visible)::before,
+:root[data-area-navigation-prototype] .area-navigation-menu[open] > summary::before {
+	border-color: color-mix(in srgb, currentColor 22%, transparent);
+	background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+:root[data-area-navigation-prototype] .area-navigation-panel {
+	--area-menu-width: min(calc(var(--area-menu-columns) * 16rem), calc(100vw - 2rem));
+	/* Anchor to the entire sticky row, including wrapped global links. This
+	   also fits without the optional JavaScript panel-position adjustment. */
+	inset-inline-end: 0;
+	width: var(--area-menu-width);
+	max-width: calc(100vw - 2rem);
+	border-radius: var(--corner-radius-medium);
+	padding: 1rem;
+	display: grid;
+	grid-template-columns: repeat(var(--area-menu-columns), minmax(0, 1fr));
+	gap: 1rem;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-choices {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	grid-column: span var(--area-group-columns);
+	grid-template-rows: repeat(var(--area-group-rows), auto);
+	grid-template-columns: repeat(var(--area-group-columns), minmax(0, 1fr));
+	grid-auto-flow: column;
+	grid-auto-columns: minmax(0, 1fr);
+	gap: 0.75rem 1rem;
+	align-content: start;
+}
+
+:root[data-area-navigation-prototype] [data-area-choice-group='branches'] + [data-area-choice-group='pages'] {
+	border-inline-start: 1px solid var(--color-border);
+	padding-inline-start: 1rem;
+}
+
+:root[data-area-navigation-prototype] [data-area-choice-group='pages'] {
+	row-gap: 0.15rem;
+}
+
+:root[data-area-navigation-prototype] [data-area-choice-group='pages'] .area-navigation-title {
+	font-weight: 400;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-choices a {
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+	height: 100%;
+	padding: 0.65rem 0.75rem;
+	border-radius: var(--corner-radius-small);
+	color: var(--color-primary-text);
+	font-size: 0.875rem;
+	font-weight: 400;
+	letter-spacing: 0;
+	line-height: 1.4;
+	text-decoration: none;
+	text-transform: none;
+	overflow-wrap: break-word;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-choices a:is(:hover, :focus-visible) {
+	background: var(--color-surface-soft-background);
+}
+
+:root[data-area-navigation-prototype] .area-navigation-title {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 0.4rem;
+	font-weight: 500;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-title svg {
+	flex: 0 0 auto;
+	width: 0.85rem;
+	height: 0.85rem;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-description {
+	color: var(--color-secondary-text);
+	font-size: 0.8rem;
+	line-height: 1.55;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-other-roots {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 0.75rem;
+	margin: 0;
+	border-block-start: 1px solid var(--color-border);
+	padding: 0.75rem 0 0;
+	list-style: none;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-other-roots a {
+	display: block;
+	padding: 0.45rem 0.75rem;
+	border-radius: var(--corner-radius-small);
+	color: var(--color-secondary-text);
+	font-size: 0.8rem;
+	font-weight: 400;
+	line-height: 1.4;
+	text-decoration: none;
+}
+
+:root[data-area-navigation-prototype] .area-navigation-other-roots a:is(:hover, :focus-visible) {
+	background: var(--color-surface-soft-background);
+	color: var(--color-primary-text);
+}
+
+:root[data-area-navigation-prototype] .navigation-area-title {
+	display: block;
+	margin: 0 0 1rem;
+	color: var(--color-primary-text);
+	font-size: 0.95rem;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+:root[data-area-navigation-prototype] a.navigation-area-title:is(:hover, :focus-visible) {
+	text-decoration: underline;
+	text-underline-offset: 0.25em;
+}
+
+/* The sticky controls mask 1.25rem above their box. Keep that background
+   below the area's linked title, including its underline. */
+:root[data-area-navigation-prototype] .navigation-area-title:has(+ .navigation-tree-controls) {
+	margin-block-end: 1.5rem;
+}
+
+/* Scoped pages are now at the tree's first level. Override the ordinary
+   first-level emphasis as well as current-page emphasis at every depth. */
+:root[data-navigation-prototype][data-area-navigation-prototype]
+	.tree-local-navigation .navigation-page-tree
+	:is(.navigation-page-link, .navigation-page-open-link, .navigation-page-summary) {
+	font-size: 0.84rem;
+	font-weight: 400;
+}
+
+@media (min-width: 961px) {
+	:root[data-area-reading-frame] {
+		--area-reading-rail-width: 16rem;
+		--area-reading-header-height: 4rem;
+		--site-top-anchor-offset: calc(var(--area-reading-header-height) + 1px + var(--nav-top-safety-inset));
+		--area-reading-outer-margin: max(var(--content-gutter), calc((100vw - max(var(--page-width), 86rem)) / 2));
+		--area-reading-content-start: calc(var(--area-reading-outer-margin) + var(--area-reading-rail-width) + var(--local-navigation-gap, clamp(1.5rem, 3vw, 3rem)));
+	}
+
+	:root[data-area-reading-frame] .site-page-layout-tree > .site-content {
+		grid-column: 2;
+	}
+
+	/* One sticky row shares the article/tree columns. The ordinary header
+	   measurement supplies anchor offsets and the fixed tree's upper edge. */
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-top {
+		background: var(--color-page);
+		color: var(--color-primary-text);
+	}
+
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-nav-row {
+		display: grid;
+		grid-template-columns: var(--area-reading-rail-width) minmax(0, 1fr);
+		column-gap: var(--local-navigation-gap, clamp(1.5rem, 3vw, 3rem));
+		width: min(calc(100% - (var(--content-gutter) * 2)), max(var(--page-width), 86rem));
+		min-height: var(--area-reading-header-height);
+		padding: 0.65rem 0;
+	}
+
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-nav-leading {
+		grid-column: 1;
+		grid-row: 1;
+		max-width: calc(100% - 6rem);
+		padding-inline-start: 0.35rem;
+	}
+
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-brand {
+		min-width: 0;
+		max-width: 100%;
+		min-height: 2.25rem;
+		overflow: hidden;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-brand-logo {
+		max-width: 100%;
+		max-height: 2.25rem;
+		object-fit: contain;
+	}
+
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-nav-actions {
+		grid-column: 1;
+		grid-row: 1;
+		justify-self: end;
+		gap: 0.35rem;
+		padding-inline-end: 0.75rem;
+	}
+
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-reading-location {
+		display: flex;
+		grid-column: 2;
+		grid-row: 1;
+		align-items: center;
+		gap: 0.65rem;
+		min-width: 0;
+	}
+
+	:root[data-area-reading-frame] .site-reading-location .site-breadcrumbs {
+		flex: 1 1 auto;
+		min-width: 0;
+		min-height: 0;
+		width: auto;
+		margin: 0;
+		padding: 0;
+	}
+
+	:root[data-area-reading-frame] .site-reading-location .site-breadcrumbs ol {
+		flex-wrap: nowrap;
+	}
+
+	:root[data-area-reading-frame] .site-reading-location .site-breadcrumbs li > :is(a, span) {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	:root[data-area-reading-frame] .site-reading-location-label {
+		font-size: 0.78rem;
+		font-weight: 650;
+	}
+
+	/* The in-article breadcrumb remains available in the compact layout. */
+	:root[data-area-reading-frame] .site-content > .site-breadcrumbs {
+		display: none;
+	}
+
+	:root[data-area-reading-frame] .site-content-has-breadcrumbs > .site-section:first-of-type {
+		padding-top: var(--space-nav-to-first-section);
+	}
+
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .display-settings-panel {
+		left: 0;
+		right: auto;
+		max-height: calc(100svh - 4.5rem);
+	}
+
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .tree-local-navigation {
+		position: fixed;
+		top: var(--site-top-anchor-offset);
+		left: var(--area-reading-outer-margin);
+		bottom: 0;
+		width: var(--area-reading-rail-width);
+		max-height: calc(100svh - var(--site-top-anchor-offset));
+	}
+
+	:root[data-area-reading-frame] .site-banners {
+		width: calc(100% - var(--area-reading-content-start) - var(--area-reading-outer-margin));
+		margin-inline: var(--area-reading-content-start) var(--area-reading-outer-margin);
+	}
+
+	:root[data-area-reading-frame]:not([data-focus-reading='on']) .area-navigation-switcher {
+		position: static;
+		display: block;
+		flex: 0 0 auto;
+		min-width: 0;
+	}
+
+	:root[data-area-reading-frame] .area-navigation-switcher > summary {
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: var(--corner-radius-small);
+	}
+
+	:root[data-area-reading-frame] .area-navigation-switcher > summary:is(:hover, :focus-visible),
+	:root[data-area-reading-frame] .area-navigation-switcher[open] > summary {
+		background: var(--color-surface-soft-background);
+	}
+
+	:root[data-area-reading-frame] .area-navigation-switcher > summary svg {
+		flex: 0 0 auto;
+		transform: none;
+	}
+
+	:root[data-area-reading-frame] .area-navigation-switcher .area-navigation-panel {
+		/* Fit beneath the shared row before the disclosure's toggle event.
+		   This also keeps the panel visible without JavaScript. */
+		inset-inline-start: min(
+			calc(var(--area-reading-rail-width) + var(--local-navigation-gap, clamp(1.5rem, 3vw, 3rem))),
+			calc(100% - var(--area-menu-width))
+		);
+		inset-inline-end: auto;
+		inset-block-start: 100%;
+		max-height: calc(100svh - var(--site-top-anchor-offset) - 1rem);
+		background: var(--color-page);
+		color: var(--color-primary-text);
+		overscroll-behavior: contain;
+	}
+
+	:root[data-area-navigation-prototype] .site-page-layout-tree {
+		--tree-navigation-width: 16rem;
+		grid-template-columns: var(--tree-navigation-width) minmax(0, 1fr);
+	}
+
+	/* The recovered right column belongs to the content canvas. Do not count
+	   the old outline allowance a second time for notes or wide blocks. */
+	:root[data-area-navigation-prototype] .site-page-layout-tree .section-markdown > :is(.norna-table-frame, .code-block) {
+		--wide-block-end-width: 100cqi;
+		--wide-block-canvas-width: var(--wide-block-end-width);
+	}
+
+	:root[data-area-navigation-prototype][data-reader-preferences-ready='true'][data-focus-reading='on'] .site-page-layout-tree {
+		grid-template-columns: var(--tree-navigation-width) minmax(0, 1fr);
+	}
+
+	:root[data-area-navigation-prototype][data-reader-preferences-ready='true'][data-focus-reading='on']
+		.site-page-layout-tree .section-markdown > :is(.norna-table-frame, .code-block) {
+		--wide-block-end-width: 100cqi;
+		--wide-block-canvas-width: calc(100cqi + var(--tree-navigation-width) + var(--tree-layout-gap));
+	}
+}

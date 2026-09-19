@@ -1,0 +1,56 @@
+---
+import { Check } from '@lucide/astro';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { withBasePath } from '../lib/basePath';
+import { getNavigationDestination, type CategoryDestinationMap, type SiteNavigationNode } from '../lib/siteNavigation';
+import { getAreaMenuGroups, resolveAreaNavigation } from '../lib/areaNavigation';
+import type { SiteNode } from '../lib/sitePages';
+import { areaPreviewDescriptions } from '../lib/areaNavigationPreview';
+
+interface Props {
+	id: string;
+	node?: SiteNavigationNode;
+	currentPage?: SiteNode;
+	categoryDestinations?: CategoryDestinationMap;
+	otherRoots?: SiteNavigationNode[];
+}
+const { id, node, currentPage, categoryDestinations, otherRoots = [] } = Astro.props;
+const { localRoot } = resolveAreaNavigation(node ? [node] : [], currentPage);
+const { branches, pages } = node ? getAreaMenuGroups(node) : { branches: [], pages: [] };
+const columnsFor = (count: number, maximum: number) => count === 0 ? 0 : Math.ceil(count / Math.ceil(count / maximum));
+const branchColumns = columnsFor(branches.length, pages.length > 0 ? 2 : 3);
+const pageColumns = branches.length === 0 ? columnsFor(pages.length, 3) : pages.length > 0 ? 1 : 0;
+const groups = [
+	{ kind: 'branches', choices: branches, columns: branchColumns },
+	{ kind: 'pages', choices: pages, columns: pageColumns },
+].filter(({ choices }) => choices.length > 0);
+---
+
+<nav id={id} class="top-page-panel area-navigation-panel"
+	style={`--area-menu-columns: ${branchColumns + pageColumns || 2}`}
+	aria-label={node ? `${node.node.title}: ${projectConfig.locale.labels.navigationChildren}` : projectConfig.locale.labels.siteNavigation}>
+	{groups.map((group) => <ul class="area-navigation-choices" data-area-choice-group={group.kind}
+		style={`--area-group-columns: ${group.columns}; --area-group-rows: ${Math.ceil(group.choices.length / group.columns)}`}>
+		{group.choices.map((child) => {
+			const destination = getNavigationDestination(child.node, categoryDestinations);
+			const selected = localRoot === child || currentPage?.pagePath === child.node.pagePath;
+			const description = child.node.kind === 'page'
+				? child.node.entry.data.page?.description
+				: areaPreviewDescriptions[child.node.pagePath];
+			return <li>
+				<a href={withBasePath(projectConfig.site.basePath, destination.pathname)}
+					aria-current={selected ? 'true' : undefined} data-area-choice={child.node.pagePath}>
+					<span class="area-navigation-title">{child.node.title}{selected && <Check aria-hidden="true" />}</span>
+					{group.kind === 'branches' && description && <span class="area-navigation-description">{description}</span>}
+				</a>
+			</li>;
+		})}
+	</ul>)}
+	{otherRoots.length > 0 && <ul class="area-navigation-other-roots" aria-label={projectConfig.locale.labels.siteNavigation}>
+		{otherRoots.map(({ node: root }) => <li>
+			<a href={withBasePath(projectConfig.site.basePath, getNavigationDestination(root, categoryDestinations).pathname)}>
+				{root.isHome ? projectConfig.locale.labels.returnHome : root.title}
+			</a>
+		</li>)}
+	</ul>}
+</nav>

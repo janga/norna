@@ -30,6 +30,8 @@ type Options = {
 	shared?: string | null;
 	scope?: 'desktop' | 'mobile';
 	prototype?: boolean;
+	area?: boolean;
+	entry?: string;
 	blockedStorage?: boolean;
 	parserStartsEmpty?: boolean;
 };
@@ -38,6 +40,15 @@ const setup = (source: string, options: Options = {}) => {
 	const storage = new Map<string, string>();
 	if (options.local != null) storage.set(scopedKey(scope), options.local);
 	if (options.shared != null) storage.set(sharedKey, options.shared);
+	const href = 'https://example.test/norna/reference/site/pages/';
+	if (options.entry != null) storage.set(`${scopedKey(scope)}:entry:test-entry`, options.entry);
+	const history = {
+		state: { nornaSearchOrigin: 'keep', ...(options.entry == null ? {} : {
+			nornaAreaNavigationEntry: { id: 'test-entry', url: href },
+		}) } as Record<string, unknown>,
+		writes: 0,
+		replaceState(value: Record<string, unknown>) { this.state = value; this.writes += 1; },
+	};
 	const disclosure = (pagePath: string, isCurrent = false, isAncestor = false) => Object.assign(new EventTarget(), {
 		dataset: { pagePath, currentPage: String(isCurrent), currentBranch: String(isCurrent || isAncestor) },
 		open: isCurrent || isAncestor,
@@ -66,15 +77,16 @@ const setup = (source: string, options: Options = {}) => {
 	const window = Object.assign(new EventTarget(), { scrollY: 0 });
 	const document = Object.assign(new EventTarget(), {
 		currentScript: { parentElement: container, dataset: { navigationStateScope: scope } },
-		documentElement: { hasAttribute: () => options.prototype !== false, lang: 'en' },
+		documentElement: { hasAttribute: (name: string) => name === 'data-area-navigation-prototype'
+			? options.area === true : options.prototype !== false, lang: 'en' },
 		querySelector: (selector: string) => selector === (scope === 'desktop'
 			? '.tree-local-navigation' : '.mobile-site-nav[data-navigation-root]') ? container : null,
 	});
 	let mutationCallback = () => {};
 	let observed = false;
 	const frames: (() => void)[] = [];
-	vm.runInNewContext(source, {
-		document, window, CustomEvent, createNavigationStateHelpers,
+	vm.runInNewContext(`const createNavigationStateHelpers = ${createNavigationStateHelpers.toString()};\n${source}`, {
+		document, window, CustomEvent, history, location: { href },
 		sessionStorage: {
 			getItem: (key: string) => {
 				if (options.blockedStorage) throw new Error('Storage unavailable');
@@ -93,7 +105,7 @@ const setup = (source: string, options: Options = {}) => {
 	const flushFrames = () => { while (frames.length) frames.shift()!(); };
 	flushFrames();
 	return {
-		branches, sections, storage, window, document, container, effects, disclosure, flushFrames,
+		branches, sections, storage, window, document, container, effects, disclosure, flushFrames, history,
 		mutate: () => { if (observed) mutationCallback(); },
 		isObserving: () => observed,
 		snapshot: () => ({ branches: branches.map((branch) => branch.open), sections: sections.map((branch) => branch.open), scrollTop }),
@@ -131,6 +143,40 @@ test('ordinary navigation still opens the current page and outline on arrival', 
 	expect(setup(runtimeScript, { local: record(), prototype: false }).snapshot()).toEqual({
 		branches: [true, true, true], sections: [true, true], scrollTop: 240,
 	});
+});
+
+test('new area arrivals open the selected page without closing other branches', () => {
+	const options = { area: true, local: record(), shared: record() };
+	const expected = { branches: [true, true, true], sections: [true, true], scrollTop: 240 };
+	expect(setup(earlyScript, options).snapshot()).toEqual(expected);
+	expect(setup(runtimeScript, options).snapshot()).toEqual(expected);
+});
+
+test('area history restores its own exact disclosures and position instead of the latest shared state', () => {
+	const options = { area: true, local: record(420), shared: record(), entry: record(0) };
+	const expected = { branches: [false, false, true], sections: [false, true], scrollTop: 0 };
+	expect(setup(earlyScript, options).snapshot()).toEqual(expected);
+	expect(setup(runtimeScript, options).snapshot()).toEqual(expected);
+});
+
+test('area snapshots preserve other history owners and replace state only to identify a new entry', () => {
+	const runtime = setup(runtimeScript, { area: true });
+	expect(runtime.history.writes).toBe(1);
+	expect(runtime.history.state.nornaSearchOrigin).toBe('keep');
+	for (let index = 0; index < 20; index += 1) {
+		runtime.container.scrollTop = index;
+		runtime.container.dispatchEvent(new Event('scroll'));
+	}
+	runtime.window.dispatchEvent(new Event('pagehide'));
+	expect(runtime.history.writes).toBe(1);
+	const key = [...runtime.storage.keys()].find(key => key.includes(':entry:'))!;
+	expect(JSON.parse(runtime.storage.get(key)!).scrollTop).toBe(19);
+});
+
+test('area navigation still has its native open branch when storage is unavailable', () => {
+	for (const source of [earlyScript, runtimeScript]) {
+		expect(setup(source, { area: true, blockedStorage: true }).snapshot()).toEqual(nativeState);
+	}
 });
 
 test('desktop and mobile retain scoped positions and the existing serialized format', () => {
@@ -199,6 +245,12 @@ test('built inline scripts preserve the characterized runtime interpretation', a
 		for (const { name, options, expected } of cases) {
 			expect(setup(source, { ...options, scope: scope as 'desktop' | 'mobile' }).snapshot(), `${scope}: ${name}`)
 				.toEqual(expected);
+		}
+		for (const entry of [undefined, record(0)]) {
+			expect(setup(source, { scope: scope as 'desktop' | 'mobile', area: true, local: record(), entry }).snapshot())
+				.toEqual(entry === undefined
+					? { branches: [true, true, true], sections: [true, true], scrollTop: 240 }
+					: { branches: [false, false, true], sections: [false, true], scrollTop: 0 });
 		}
 	}
 });

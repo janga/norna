@@ -1,0 +1,30 @@
+---
+import { Menu } from '@lucide/astro';
+import projectConfig from '../../scripts/lib/project-config.mjs';
+import { hasLargeAreaMenu, resolveAreaNavigation } from '../lib/areaNavigation';
+import type { CategoryDestinationMap, SiteNavigationNode } from '../lib/siteNavigation';
+import type { SiteNode } from '../lib/sitePages';
+import AreaNavigationPanel from './AreaNavigationPanel.astro';
+
+interface Props {
+	nodes: SiteNavigationNode[];
+	currentPage?: SiteNode;
+	categoryDestinations?: CategoryDestinationMap;
+	label?: string;
+}
+
+const { nodes, currentPage, categoryDestinations, label } = Astro.props;
+const { globalRoot } = resolveAreaNavigation(nodes, currentPage);
+const currentLabel = label ?? globalRoot?.node.title ?? projectConfig.locale.labels.navigationMenu;
+const menuRoot = globalRoot && globalRoot.children.length > 0 && !hasLargeAreaMenu(globalRoot) ? globalRoot : undefined;
+const otherRoots = nodes.filter((root) => root !== menuRoot);
+const menuLabel = `${projectConfig.locale.labels.navigationMenu}: ${currentLabel}`;
+---
+
+<details class="top-page-menu area-navigation-switcher" data-area-switcher>
+	<summary aria-label={menuLabel} title={menuLabel} aria-controls="area-switcher-panel">
+		<Menu aria-hidden="true" />
+	</summary>
+	<AreaNavigationPanel id="area-switcher-panel" node={menuRoot} currentPage={currentPage}
+		categoryDestinations={categoryDestinations} otherRoots={otherRoots} />
+</details>

@@ -15,6 +15,11 @@ import DisplaySettings from './DisplaySettings.astro';
 import NavigationPageTree from './NavigationPageTree.astro';
 import NavigationTreeControls from './NavigationTreeControls.astro';
 import TopPageMenu from './TopPageMenu.astro';
+import AreaNavigationMenu from './AreaNavigationMenu.astro';
+import AreaNavigationSwitcher from './AreaNavigationSwitcher.astro';
+import SiteBreadcrumbs from './SiteBreadcrumbs.astro';
+import { areaNavigationPrototype } from '../lib/navigationPrototypeConfig.mjs';
+import { hasLargeAreaMenu, withH2Outlines } from '../lib/areaNavigation';
 import SectionNavigationScript from './SectionNavigationScript.astro';
 import SearchNavigationScript from './SearchNavigationScript.astro';
 
@@ -49,6 +54,7 @@ interface Props {
 		};
 	};
 	searchPage?: boolean;
+	areaReadingFrame?: boolean;
 }
 
 const {
@@ -62,6 +68,7 @@ const {
 	frameColors,
 	readerPreferences,
 	searchPage = false,
+	areaReadingFrame = false,
 } = Astro.props;
 const siteTopBackgroundColor = frameColors.backgroundColor === 'transparent'
 	? 'var(--color-page)'
@@ -72,7 +79,7 @@ const navigationStyle = [
 	...(logo?.height ? [`--site-brand-logo-height: ${logo.height}`] : []),
 ].join('; ');
 const siteNavigationTree = getListedSiteNavigationTree(navigationEntries);
-const mobileNavigationTree = navigationMode === 'top'
+const mobileNavigationTree = areaNavigationPrototype ? withH2Outlines(siteNavigationTree) : navigationMode === 'top'
 	? getListedSiteNavigationTree(navigationEntries.map((entry) => ({
 		...entry,
 		headings: entry.headings.filter((heading) => heading.depth === 2),
@@ -134,36 +141,41 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 >
 	{showNavigationRow && (
 		<div class:list={['site-nav-row', { 'site-nav-row-mobile-only': !showDesktopNavigationRow }]}>
-			{logo && (
+			{(logo || areaReadingFrame) && (
 				<div class="site-nav-leading">
-					<a class="site-brand" href={pageHref(homePage)}>
-						<img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} />
+					<a class="site-brand" href={pageHref(homePage)} aria-label={projectConfig.locale.labels.returnHome} title={projectConfig.locale.labels.returnHome}>
+						{logo ? <img class="site-brand-logo" src={withBasePath(projectConfig.site.basePath, logo.src)} alt={logo.alt} /> : homePage.title}
 					</a>
 				</div>
 			)}
 
 			<div class="site-nav-actions">
-				{showSiteNavigation && (
+				{showSiteNavigation && !areaReadingFrame && (
 					<nav class="site-nav" aria-label={projectConfig.locale.labels.siteNavigation}>
 					<ul>
 					{topLevelNavigation.map((navigationNode) => {
 						const destination = getNavigationDestination(navigationNode.node, categoryDestinations);
 						if (!destination) return null;
 						const nodeIsCurrentPage = isCurrentPage(navigationNode.node);
+						const useAreaMenu = areaNavigationPrototype && navigationMode === 'tree';
 						return (
 							<li class:list={['site-nav-item', {
-								'site-nav-item-current-branch': !nodeIsCurrentPage && isCurrentBranch(navigationNode.node),
+								'site-nav-item-current-branch': (!nodeIsCurrentPage || useAreaMenu) && isCurrentBranch(navigationNode.node),
 							}]}>
-								<a href={pageHref(destination)} aria-current={nodeIsCurrentPage ? 'page' : undefined}>
+								{useAreaMenu && navigationNode.children.length > 0 && !hasLargeAreaMenu(navigationNode) ? <AreaNavigationMenu
+									node={navigationNode}
+									currentPage={currentPage}
+									categoryDestinations={categoryDestinations}
+								/> : <a href={pageHref(destination)} aria-current={nodeIsCurrentPage ? 'page' : undefined}>
 									{navigationNode.node.title}
-								</a>
-								<TopPageMenu
+								</a>}
+								{!useAreaMenu && <TopPageMenu
 									node={navigationNode}
 									currentPage={currentPage}
 									categoryDestinations={categoryDestinations}
 									showSections={navigationMode === 'top'}
 									showChildren={showTopNavigationSubmenus}
-								/>
+								/>}
 							</li>
 						);
 					})}
@@ -215,8 +227,8 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 								</div>
 								<div
 									class="mobile-site-nav"
-									data-navigation-root={pageHref(homePage)}
-									data-navigation-state-root={pageHref(homePage)}
+									data-navigation-root={`${areaNavigationPrototype ? 'area:' : ''}${pageHref(homePage)}`}
+									data-navigation-state-root={`${areaNavigationPrototype ? 'area:' : ''}${pageHref(homePage)}`}
 								>
 									<NavigationPrototypeState scope="mobile" />
 									{showSiteNavigation && (
@@ -266,6 +278,19 @@ const needsNavigationScript = showMobileNavigation || hasCurrentPageSectionMenu 
 						</details>
 					)}
 			</div>
+			{areaReadingFrame && (
+				<div class="site-reading-location">
+					<AreaNavigationSwitcher
+						nodes={siteNavigationTree}
+						currentPage={currentPage}
+						categoryDestinations={categoryDestinations}
+						label={searchPage ? projectConfig.locale.labels.search : undefined}
+					/>
+					{currentPage
+						? <SiteBreadcrumbs currentPage={currentPage} nodes={navigationEntries.map(({ node }) => node)} />
+						: <span class="site-reading-location-label">{projectConfig.locale.labels.search}</span>}
+				</div>
+			)}
 		</div>
 	)}
 

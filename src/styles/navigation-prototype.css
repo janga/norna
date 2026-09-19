@@ -58,7 +58,7 @@
 @media (min-width: 1281px) {
 	/* The wide layout keeps outlines in the right rail. Keep the left tree
 	   unchanged on category destinations that have no outline of their own. */
-	:root[data-navigation-prototype] .site-page-layout-tree .tree-local-navigation
+	:root[data-navigation-prototype]:not([data-area-navigation-prototype]) .site-page-layout-tree .tree-local-navigation
 		:is(.navigation-page-sections, .navigation-page-sections-disclosure) {
 		display: none;
 	}

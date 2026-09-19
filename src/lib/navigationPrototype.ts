@@ -82,7 +82,11 @@ const setupDisclosures = (reducedMotion: MediaQueryList) => {
 	// Let filtering and the existing tree controls act on settled disclosure state.
 	for (const event of ['click', 'input']) {
 		document.addEventListener(event, (event) => {
-			if (event.target instanceof Element && event.target.closest('[data-tree-controls]')) finishAll();
+			if (!(event.target instanceof Element)) return;
+			if (event.target.closest('[data-tree-controls]') || (
+				document.documentElement.hasAttribute('data-area-navigation-prototype')
+				&& event.type === 'click' && event.target.closest('a[href]')
+			)) finishAll();
 		}, { capture: true });
 	}
 };

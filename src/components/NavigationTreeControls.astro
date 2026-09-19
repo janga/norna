@@ -6,15 +6,16 @@ import type { SiteNavigationNode } from '../lib/siteNavigation';
 interface Props {
 	idPrefix: string;
 	nodes: SiteNavigationNode[];
+	forceVisible?: boolean;
 }
 
-const { idPrefix, nodes } = Astro.props;
+const { idPrefix, nodes, forceVisible = false } = Astro.props;
 const countNodes = (tree: SiteNavigationNode[]): number => tree.reduce(
 	(total, node) => total + 1 + countNodes(node.children),
 	0,
 );
 const minimumUsefulNodeCount = 12;
-const showControls = countNodes(nodes) >= minimumUsefulNodeCount;
+const showControls = forceVisible || countNodes(nodes) >= minimumUsefulNodeCount;
 const labels = projectConfig.locale.labels;
 const filterId = `${idPrefix}-filter`;
 const statusId = `${idPrefix}-status`;

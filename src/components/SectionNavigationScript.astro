@@ -160,35 +160,118 @@
 		sectionTrackingFrame = window.requestAnimationFrame(updateReadingPosition);
 	};
 
+	const positionTopPageMenu = (menu: HTMLDetailsElement) => {
+		const panel = menu.querySelector<HTMLElement>('.top-page-panel');
+		if (!panel) return;
+		panel.style.removeProperty('--top-page-panel-shift');
+		const rectangle = panel.getBoundingClientRect();
+		let shift = Math.max(0, 16 - rectangle.left)
+			- Math.max(0, rectangle.right - document.documentElement.clientWidth + 16);
+		if (menu.hasAttribute('data-area-menu')) {
+			const trigger = menu.querySelector('summary')!.getBoundingClientRect();
+			const row = menu.closest('.site-nav-row')?.getBoundingClientRect();
+			const rightEdge = Math.min(row?.right ?? Infinity, document.documentElement.clientWidth - 16);
+			const left = Math.max(16, Math.min(trigger.left, rightEdge - rectangle.width));
+			shift = left - rectangle.left;
+		}
+		panel.style.setProperty('--top-page-panel-shift', `${shift}px`);
+	};
+
+	const closeTopPageMenu = new Map<HTMLDetailsElement, () => void>();
 	topPageMenus.forEach((menu) => {
+		let openTimer: number | undefined;
+		let closeTimer: number | undefined;
+		const clearTimers = () => {
+			window.clearTimeout(openTimer);
+			window.clearTimeout(closeTimer);
+		};
+		const close = () => {
+			clearTimers();
+			menu.open = false;
+		};
+		closeTopPageMenu.set(menu, close);
 		menu.addEventListener('toggle', () => {
 			if (!menu.open) return;
-			topPageMenus.forEach((other) => { if (other !== menu) other.open = false; });
-			const panel = menu.querySelector<HTMLElement>('.top-page-panel');
-			if (!panel) return;
-			panel.style.removeProperty('--top-page-panel-shift');
-			const rectangle = panel.getBoundingClientRect();
-			const shift = Math.max(0, 16 - rectangle.left)
-				- Math.max(0, rectangle.right - document.documentElement.clientWidth + 16);
-			panel.style.setProperty('--top-page-panel-shift', `${shift}px`);
+			topPageMenus.forEach((other) => { if (other !== menu) closeTopPageMenu.get(other)?.(); });
+			positionTopPageMenu(menu);
 		});
 		menu.addEventListener('keydown', (event) => {
 			if (event.key !== 'Escape' || !menu.open) return;
 			event.preventDefault();
-			menu.open = false;
+			close();
 			menu.querySelector('summary')?.focus();
 		});
 		menu.addEventListener('focusout', (event) => {
-			if (event.relatedTarget instanceof Node && !menu.contains(event.relatedTarget)) menu.open = false;
+			if (event.relatedTarget instanceof Node && !menu.contains(event.relatedTarget)) close();
 		});
 		menu.querySelectorAll('a').forEach((link) => {
-			link.addEventListener('click', () => { menu.open = false; });
+			link.addEventListener('click', close);
 		});
+		if (menu.hasAttribute('data-area-switcher')) {
+			menu.addEventListener('keydown', (event) => {
+				if (event.key !== 'ArrowDown' || event.target !== menu.querySelector('summary')) return;
+				event.preventDefault();
+				menu.open = true;
+				menu.querySelector('a')?.focus();
+			});
+		}
+		if (menu.hasAttribute('data-area-menu')) {
+			const canHover = window.matchMedia('(any-hover: hover)');
+			const hoverRegion = menu.closest<HTMLElement>('.site-nav-row') ?? menu;
+			const isHoverPointer = (event: PointerEvent) => event.pointerType !== 'touch' && canHover.matches;
+			menu.addEventListener('pointerenter', (event) => {
+				if (!isHoverPointer(event)) return;
+				clearTimers();
+				openTimer = window.setTimeout(() => { menu.open = true; }, 120);
+			});
+			menu.addEventListener('pointerleave', (event) => {
+				if (isHoverPointer(event)) window.clearTimeout(openTimer);
+			});
+			// The row and its descendant panel form one continuous hover region.
+			// Crossing or pausing in its padding must not start a closing timer.
+			// Other titles remain real hit targets; no invisible overlay is needed.
+			hoverRegion.addEventListener('pointerenter', (event) => {
+				if (isHoverPointer(event)) window.clearTimeout(closeTimer);
+			});
+			hoverRegion.addEventListener('pointerleave', (event) => {
+				if (!isHoverPointer(event)) return;
+				clearTimers();
+				closeTimer = window.setTimeout(() => {
+					const focus = document.activeElement;
+					if (focus instanceof Element && menu.contains(focus) && focus.matches(':focus-visible')) return;
+					close();
+				}, 180);
+			});
+			menu.querySelector('summary')?.addEventListener('click', (event) => {
+				// Mouse users open on hover; a click must not immediately fold it
+				// away. Native activation remains available for touch and keyboard.
+				if (event.detail === 0 || event.pointerType === 'touch' || !canHover.matches) return;
+				event.preventDefault();
+				clearTimers();
+				menu.open = true;
+			});
+			menu.addEventListener('keydown', (event) => {
+				if (event.key !== 'ArrowDown' || event.target !== menu.querySelector('summary')) return;
+				event.preventDefault();
+				clearTimers();
+				menu.open = true;
+				menu.querySelector('a')?.focus();
+			});
+		}
 	});
 	if (topPageMenus.length > 0) {
+		// Hover does not move focus into the panel, so Escape must also work
+		// while focus remains in the article or elsewhere on the page.
+		document.addEventListener('keydown', (event) => {
+			if (event.key !== 'Escape') return;
+			topPageMenus.filter((menu) => menu.hasAttribute('data-area-menu') || menu.hasAttribute('data-area-switcher')).forEach((menu) => {
+				if (menu.open) event.preventDefault();
+				closeTopPageMenu.get(menu)?.();
+			});
+		});
 		document.addEventListener('pointerdown', (event) => {
 			topPageMenus.forEach((menu) => {
-				if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+				if (event.target instanceof Node && !menu.contains(event.target)) closeTopPageMenu.get(menu)?.();
 			});
 		});
 	}
@@ -314,9 +397,18 @@
 	if (window.location.hash) window.requestAnimationFrame(alignInitialHashTarget);
 
 	if (siteTop && 'ResizeObserver' in window) {
-		new ResizeObserver(() => {
+		const navigationResizeObserver = new ResizeObserver(() => {
 			setAnchorOffset();
 			scheduleReadingPositionUpdate();
-		}).observe(siteTop);
+			topPageMenus.filter((menu) => menu.open).forEach((menu) => {
+				if (!menu.getClientRects().length) closeTopPageMenu.get(menu)?.();
+				else positionTopPageMenu(menu);
+			});
+		});
+		navigationResizeObserver.observe(siteTop);
+		if (topPageMenus.some((menu) => menu.hasAttribute('data-area-menu') || menu.hasAttribute('data-area-switcher'))) {
+			const row = siteTop.querySelector('.site-nav-row');
+			if (row) navigationResizeObserver.observe(row);
+		}
 	}
 </script>

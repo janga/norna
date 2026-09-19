@@ -1,4 +1,5 @@
 ---
+import { navigationPrototype, areaNavigationPrototype } from '../lib/navigationPrototypeConfig.mjs';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CodeBlockCopyScript from './CodeBlockCopyScript.astro';
@@ -46,7 +47,7 @@ interface Props {
 const { entry, categoryPath } = Astro.props;
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const siteModel = await getSiteModel(await getCollection('site'));
-const categoryDestinations = process.env.NORNA_NAVIGATION_PROTOTYPE === '1'
+const categoryDestinations = navigationPrototype
 	? siteModel.categoryDestinations.byPathname
 	: undefined;
 const { nodes: siteNodes, pages: sitePages } = siteModel;
@@ -173,11 +174,14 @@ const pagePresentation = resolvePagePresentation(themeData, themeLabel, {
 const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
 const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: `${siteDirectory || 'site'}/${siteTheme.id}` });
 const hasTreeNavigation = navigationModel.mode === 'tree';
-const showTreeNavigation = hasTreeNavigation && !currentPage.isHome;
+// Keep one reading frame across tree-mode pages, including pages with no H2.
+// Home remains the site's entry point with the global navigation row.
+const areaReadingFrame = areaNavigationPrototype && hasTreeNavigation && !currentPage.isHome;
 const currentPageNavigation = siteNavigation.find(({ node }) => (
 	node.kind === 'page' && node.pathname === currentPage.pathname
 ));
 const pageContentsHeadings = currentPageNavigation?.headings.filter(({ depth }) => depth === 2 || depth === 3) ?? [];
+const showTreeNavigation = hasTreeNavigation && !currentPage.isHome;
 const pageContentsPlacement = resolvePageContentsPlacement({
 	navigationMode: navigationModel.mode,
 	nodes: renderedNavigationEntries.map(({ node }) => ({
@@ -192,12 +196,15 @@ const pageContentsPlacement = resolvePageContentsPlacement({
 	},
 	headingCount: pageContentsHeadings.length,
 });
-const hasContentsNavigation = pageContentsPlacement.placement !== 'none';
+const hasContentsNavigation = areaNavigationPrototype && hasTreeNavigation && !currentPage.isHome
+	? pageContentsHeadings.some(({ depth }) => depth === 2)
+	: pageContentsPlacement.placement !== 'none';
 const hasTrackedSectionNavigation = hasContentsNavigation
 	|| (hasTreeNavigation && currentPage.isHome && pageContentsHeadings.length >= 2);
 const integratePageContentsInTree = hasTreeNavigation;
-const showContentsRail = pageContentsPlacement.placement === 'contents-rail';
-const hasNavigationRailFrame = !currentPage.isHome && (
+const showContentsRail = !(areaNavigationPrototype && hasTreeNavigation) && pageContentsPlacement.placement === 'contents-rail';
+// Home's global row and the reading layout share the site's wide coordinates.
+const hasNavigationRailFrame = (areaNavigationPrototype || !currentPage.isHome) && (
 	navigationModel.requestedMode === 'tree'
 	|| (
 		navigationModel.requestedMode === 'automatic'
@@ -219,6 +226,7 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 	footer={sitewideData.footer}
 	contentsNavigation={hasTrackedSectionNavigation}
 	searchable
+	areaReadingFrame={areaReadingFrame}
 >
 	<SiteNavigation
 		logo={logo}
@@ -230,6 +238,7 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 		hasNavigationRailFrame={hasNavigationRailFrame}
 		frameColors={frameColors}
 		readerPreferences={pagePresentation.readerPreferences}
+		areaReadingFrame={areaReadingFrame}
 	/>
 	{siteBanners.length > 0 && <SiteBanners banners={siteBanners} />}
 
@@ -237,7 +246,7 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 		'site-page-layout-tree': showTreeNavigation,
 		'site-page-layout-contents': showContentsRail,
 	}]}
-		data-page-contents-placement={hasContentsNavigation ? pageContentsPlacement.placement : undefined}
+		data-page-contents-placement={hasContentsNavigation ? (areaNavigationPrototype ? 'page-tree' : pageContentsPlacement.placement) : undefined}
 	>
 		{showTreeNavigation && (
 			<SiteTreeNavigation
@@ -245,6 +254,7 @@ const reserveBreadcrumbSpace = showTreeNavigation || showBreadcrumbs;
 				navigationEntries={siteNavigation}
 				categoryDestinations={categoryDestinations}
 				integratePageSections={integratePageContentsInTree}
+				areaReadingFrame={areaReadingFrame}
 			/>
 		)}
 		<main

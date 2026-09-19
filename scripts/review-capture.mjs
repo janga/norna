@@ -50,13 +50,18 @@ export const parseReviewCaptureArguments = (rawArguments) => {
 	let appearance = 'light';
 	let viewport = parseViewport('desktop');
 	let fullPage = false;
+	let focusReading = false;
 	let menu;
 
 	for (let index = 0; index < options.length; index += 1) {
 		const option = options[index];
+		if (option === '--focus-reading') {
+			focusReading = true;
+			continue;
+		}
 		if (option === '--menu') {
 			menu = options[++index];
-			if (!menu || menu.startsWith('--')) throw new Error('--menu requires compact or an exact top-level page title.');
+			if (!menu || menu.startsWith('--')) throw new Error('--menu requires compact, area, display or an exact top-level page title.');
 			continue;
 		}
 		if (option === '--full-page') {
@@ -90,7 +95,7 @@ export const parseReviewCaptureArguments = (rawArguments) => {
 		throw new Error(`Unknown review capture option "${option}".`);
 	}
 
-	return { appearance, fullPage, relativePage, viewport, ...(menu ? { menu } : {}) };
+	return { appearance, fullPage, relativePage, viewport, ...(menu ? { menu } : {}), ...(focusReading ? { focusReading } : {}) };
 };
 
 const sanitizeFilenamePart = (value, fallback) => {
@@ -130,7 +135,7 @@ export const resolveReviewCapture = ({ environment, options, root }) => {
 		pageName,
 		options.viewport.name,
 		options.appearance,
-	].join('-') + `${options.menu ? `-menu-${sanitizeFilenamePart(options.menu, 'open')}` : ''}${fullPageSuffix}.png`;
+	].join('-') + `${options.focusReading ? '-focus' : ''}${options.menu ? `-menu-${sanitizeFilenamePart(options.menu, 'open')}` : ''}${fullPageSuffix}.png`;
 	const outputPath = path.join(root, '.local', 'review-captures', environment.name, filename);
 
 	return {
@@ -199,6 +204,10 @@ export const captureReviewPage = async ({
 				height: capture.viewport.height,
 			},
 		});
+		if (capture.focusReading) {
+			const siteUrl = new URL(environment.url);
+			await context.addCookies([{ name: 'norna-focus-reading', value: 'on', domain: siteUrl.hostname, path: siteUrl.pathname }]);
+		}
 		const page = await context.newPage();
 		await page.goto(capture.url, { waitUntil: 'domcontentloaded' });
 		await page.waitForLoadState('networkidle');
@@ -220,10 +229,25 @@ export const captureReviewPage = async ({
 			await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 			await page.locator('.mobile-nav-menu[open] [data-compact-navigation-close]').waitFor({ state: 'visible' });
 			await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+		} else if (capture.menu === 'area' || capture.menu === 'display') {
+			const menu = page.locator(capture.menu === 'area' ? '[data-area-switcher]' : '[data-display-settings]');
+			const control = menu.locator(':scope > summary');
+			await control.waitFor({ state: 'visible' });
+			const box = await control.boundingBox();
+			if (!box) throw new Error('The requested navigation control has no visible bounds.');
+			await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+			await menu.locator(capture.menu === 'area' ? '.area-navigation-panel' : '.display-settings-panel').waitFor({ state: 'visible' });
 		} else if (capture.menu) {
-			await page.locator('.site-nav-item').filter({
-				has: page.getByRole('link', { name: capture.menu, exact: true }),
-			}).locator(':scope > .top-page-menu > summary').click();
+			const title = page.getByText(capture.menu, { exact: true });
+			const menu = page.locator('.site-nav-item').filter({
+				has: page.locator(':scope > a, :scope > .top-page-menu > summary > .top-page-menu-title').and(title),
+			}).locator(':scope > .top-page-menu');
+			if (await menu.getAttribute('data-area-menu') !== null) {
+				await menu.locator(':scope > summary').hover();
+				await menu.locator('.top-page-panel').waitFor({ state: 'visible' });
+			} else {
+				await menu.locator(':scope > summary').click();
+			}
 		}
 		await page.screenshot({
 			fullPage: capture.fullPage,

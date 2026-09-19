@@ -41,6 +41,7 @@ const revealEntry = (container: HTMLElement, entry: HTMLElement) => {
 };
 
 export const setupNavigationFollowing = () => {
+	const areaNavigation = document.documentElement.hasAttribute('data-area-navigation-prototype');
 	const left = document.querySelector<HTMLElement>('.tree-local-navigation');
 	const right = document.querySelector<HTMLElement>('.page-contents-navigation-rail');
 	const compact = document.querySelector<HTMLElement>('[data-compact-navigation-panel]');
@@ -49,6 +50,7 @@ export const setupNavigationFollowing = () => {
 		.map((container) => ({
 			container,
 			paused: false,
+			arrivalPaused: areaNavigation,
 			pointerDown: false,
 			expectedScrollTop: container.scrollTop,
 			ancestor: undefined as HTMLElement | undefined,
@@ -82,7 +84,7 @@ export const setupNavigationFollowing = () => {
 		for (const state of states) {
 			const ownsFocus = state.container.contains(document.activeElement);
 			updateContainer(state, state.container === selected
-				&& !state.paused && !state.pointerDown && !ownsFocus
+				&& !state.paused && !state.arrivalPaused && !state.pointerDown && !ownsFocus
 				&& !document.querySelector('.mobile-nav-menu[open]'));
 		}
 	};
@@ -114,6 +116,21 @@ export const setupNavigationFollowing = () => {
 	document.addEventListener('pointerup', releasePointer);
 	document.addEventListener('pointercancel', releasePointer);
 	window.addEventListener('blur', releasePointer);
+	if (areaNavigation) {
+		// A restored menu may deliberately be scrolled away from the current
+		// heading. Resume following when the reader acts outside navigation,
+		// not when native history/hash restoration emits a window scroll.
+		const resumeAfterArrival = (event: Event) => {
+			if (event.target instanceof Node && states.some(({ container }) => container.contains(event.target as Node))) return;
+			states.forEach((state) => { state.arrivalPaused = false; });
+		};
+		for (const type of ['wheel', 'touchstart', 'pointerdown', 'keydown']) {
+			window.addEventListener(type, resumeAfterArrival, { passive: true });
+		}
+		const pauseArrival = () => states.forEach((state) => { state.arrivalPaused = true; });
+		window.addEventListener('popstate', pauseArrival);
+		window.addEventListener('pageshow', (event) => { if (event.persisted) pauseArrival(); });
+	}
 	window.addEventListener('scroll', () => {
 		states.forEach((state) => { state.paused = false; });
 		// Section tracking schedules its own update for the new document position.

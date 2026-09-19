@@ -3,12 +3,20 @@
 ## Purpose
 
 Give documentation readers more room for the article and its sidenotes by
-choosing an area from the sticky navigation and showing that area's pages and
+choosing an area from the site's navigation and showing that area's pages and
 H2 headings in one left menu. Evaluate the complete reading experience before
 changing Norna's supported navigation model.
 
-**High priority; ready after BL-129 Regression tests for the navigation latency
-correction; queued under `Next`.** This develops the existing **BL-122
+**High priority; in progress, prototype checkpoint on 2026-09-19.**
+The user requested a work-in-progress commit after the interactive design
+review. This saves the current trial for continued implementation; it does
+not complete the item. Cleanup, browser-test adaptation and final verification
+remain. Keep the prototype opt-in.
+
+[BL-129 Regression tests for the navigation latency correction](BL-129-navigation-latency-regression-tests.md)
+completed in `11e63c7` before this implementation. The
+[working-prototype record](../area-navigation-prototype.md) contains start
+instructions, implementation boundaries and verification status. This develops the existing **BL-122
 Reconsider the right-hand menu**, originally recorded without analysis because
 the right contents rail competed with sidenotes. It is the same product
 outcome, not a second backlog item.
@@ -43,10 +51,48 @@ reference documentation.
 
 ### Sticky navigation and area choice
 
-- Keep the sticky row as the entry to the site's main destinations. A title
-  follows its page/category destination; a separate disclosure control opens
-  the area menu when there are area choices. Retain direct links where a menu
-  is unnecessary.
+- Keep the global sticky row on Home and outside the desktop tree reading
+  frame. On desktop tree pages, use one sticky row: Home, site search and
+  Display above the left tree; an icon menu button and breadcrumbs above the
+  article. Do not add a second collection-selector row above the tree. The
+  button's accessible name identifies the global collection, such as Reference.
+  Its panel reuses the global menu's area layout and adds a separate footer of
+  Home and other global destinations. Keep the breadcrumb's existing links
+  independent of the menu button. Put Site model or
+  another distinct local area title above the tree as ordinary text, without
+  a link, chevron or hover treatment. Do not repeat identical collection and
+  area titles. Keep a compact control row on mobile and in Focus reading;
+  Display must remain available to turn Focus reading off. Search retains its
+  full-site content scope; the tree filter retains its label-filtering scope.
+  Choose the frame by navigation mode, independently of the presence of H2.
+  This supersedes both the earlier Home-to-tree global-header rule and the
+  two-row left-header trial following the user's 2026-09-19 review. Compact
+  layouts retain in-article breadcrumbs; do not show a duplicate trail.
+- In the global sticky row, align direct links and menu titles on the same
+  text baseline. A title with a menu
+  opens on hover without a visible disclosure arrow. Retain keyboard, touch
+  and no-script activation. Escape must dismiss a hover-opened panel without
+  first moving focus into it. Crossing or pausing between title and panel must
+  keep it open, including a diagonal route to the first choice.
+- Give a global menu title a restrained frame and background on hover and
+  keyboard focus, and keep that treatment while its panel is open. The
+  treatment must not change label positions or dimensions. Menu titles open
+  panels and have no link underline. Reserve hover underlining for available
+  destination links; do not suggest that an unavailable link can be followed.
+- Put links to categories and content-bearing parents in a described group;
+  put direct page links in a separate group. An entirely flat collection uses
+  a horizontal panel of plain links in balanced columns; a compact list is used
+  only beside parent choices. Keep panels beneath their title's area and within
+  the available width, including after resizing. An authored root page is
+  first in the parent group and opens its own page and tree. Destinations
+  without children remain direct sticky links. These refinements follow the
+  user's 2026-09-19 review of the working trial.
+- For more than twelve visible choices, including an authored root's own
+  choice, make the sticky title a direct link to the existing destination and
+  retain the full collection tree on its pages. Count after excluding unlisted
+  nodes. Twelve is the delegated prototype decision, not a public setting or
+  an established standard. Bound the panel height at the viewport for long
+  labels and descriptions even below that threshold.
 - Use the approved Linear-inspired three-column area menu on wide screens.
   All six Reference areas have equal visual status: the same title treatment,
   description space and interaction. Do not make the last two secondary links.
@@ -54,7 +100,7 @@ reference documentation.
   Commands, Reader experience and Working on a site. The sketch's shorter
   `Content` and `Reader controls` labels do not authorize renaming content.
 - Choosing an area scopes the left menu to that branch. Keep all other areas
-  reachable through the sticky menu. A direct URL, prose link or history
+  reachable through the collection menu. A direct URL, prose link or history
   navigation must resolve the same area as arrival through the menu.
 - Preserve the area's own destination and any useful parent content. Opening
   a disclosure must not follow its link, and following a link must not toggle
@@ -64,6 +110,17 @@ reference documentation.
 
 - Show the selected area's pages and categories rather than repeating the
   complete Reference tree. Preserve hierarchy inside the selected area.
+- Keep a flat collection together: when its listed direct children have no
+  child pages, show all sibling pages and their H2 in one left tree. Apply this
+  to categories and authored parents, without a minimum page or heading count.
+  FAQ and Getting Started keep their direct sticky choices while sharing a
+  left tree within each collection. This supersedes their own-H2-only rule
+  following the user's 2026-09-19 review.
+- In a collection with subgroups, a direct leaf beside those groups has only
+  its own H2, as does a standalone global page. Omit that rail if there is no
+  H2. A parent destination shows its own tree, and a leaf inside an area
+  retains the area's tree. Large collections retain their full tree on every
+  page. Scope follows hierarchy and the overflow rule, not arrival route.
 - Show H2 links beneath their owning page. H3 headings remain in the document
   with their existing anchors but do not add another menu level in this trial.
 - Keep the current implementation's order for a page with both an outline and
@@ -72,7 +129,24 @@ reference documentation.
   to convey belonging. Add no visible `On this page` or `Child pages` labels.
 - Other pages' H2 links can be disclosed without first loading those pages.
   Preserve independent branch choices; opening one branch does not close
-  another. Keep the existing session-state and current-branch behavior.
+  another.
+- A new page choice opens the destination's branch, its H2 and the ancestors
+  needed to reach it. Apply this to sticky choices, left-menu links and other
+  internal page links, even when that destination was previously closed.
+  Clicking the current page's name returns to its beginning and opens its
+  branch; clicking an H2 follows the fragment and keeps its owner open.
+- Back/Forward restores that history entry's disclosure state, menu position
+  and article reading position. It must not apply the new-page opening rule.
+  Preserve unrelated open/closed branches. A chevron alone toggles without
+  navigating; repeated page-name clicks must not close the branch.
+- Prepare the arriving tree before its first visible frame. Do not expand
+  the departing tree immediately before a page change. Preserve the clicked
+  left-menu row's position, including low rows and the first clicks after a
+  sticky choice; later heading tracking must not move it on arrival. Rows below
+  an opened branch may move to make room for its contents. Assess opening and
+  blink/jump stability together in Safari, Chrome, Firefox and Brave.
+  A direct arrival in a short viewport must reveal the selected page name
+  before display when no saved scrolled/history position needs preserving.
 - Page text is a real page link; an H2 entry is a real fragment link; the
   separate chevron opens or closes a branch. Navigation without JavaScript,
   opening links in a new tab, deep links and normal browser history remain
@@ -110,7 +184,7 @@ The reference menu borrows the broad structure observed in
 Norna areas as the user's explicit adaptation. Linear's inspected
 [documentation page](https://linear.app/docs/update-cycles) keeps its article
 outline on the right; integrating H2 on the left is a Norna design choice.
-The separate link/disclosure behavior follows the
+The left tree's separate link/disclosure behavior follows the
 [W3C WAI navigation example](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation-hybrid/).
 These references support the pattern, not a claim that every dimension or
 interaction in the SVG is an established standard.
@@ -143,14 +217,19 @@ That inspection establishes the following foundation:
   description field.
 
 Use the existing tree as the automatic source for this opt-in trial. Area
-choices are the listed immediate children of a sticky destination. A choice
-with descendants establishes that branch as the local root; a child without
-descendants remains a direct page destination. For a direct child page, retain
-the containing root's local context rather than reducing the menu to one page.
-This keeps a flat FAQ or Getting Started collection usable. A deeper arrival
-selects the same immediate child branch from ancestry, not from a remembered
-click. At the sticky destination's own page, retain its own outline and access
-to its children. Home keeps its existing exception.
+choices are the listed immediate children of a sticky destination, preceded by
+its own authored page when present. A child with descendants establishes that
+branch as the local root; a child without descendants remains a direct page
+destination. A flat FAQ or Getting Started collection uses the sticky menu for
+page choices and retains all its siblings and their H2 in the left tree. A
+deeper arrival selects the same immediate child branch from ancestry, not from
+a remembered click. At a parent's own page, retain its own H2 followed by its
+child pages.
+When the top menu would exceed twelve visible choices, its existing
+destination and descendants retain the full collection tree. Keep the shared
+category destination: a category may already open its first child rather than
+a generated overview. Do not introduce a new redirect or landing page.
+Home keeps its existing exception.
 
 These rules are an implementation baseline derived from the existing model
 and the approved Reference sketch, not a claim that the new scoped behavior
@@ -199,12 +278,12 @@ adoption decision. Do not treat a preselected question option as user approval.
   is a separately tracked baseline issue. Record its effect on this trial
   explicitly; do not weaken fragment-position assertions or imply it is fixed.
 
-## Ready for implementation when
+## Implementation prerequisites
 
-The scope is ready and queued under `Next`; begin after
-**BL-129 Regression tests for the navigation latency correction** has completed
-and been committed. The code-derived baseline, approved SVG and decisions
-above are durable inputs; repeating the sketch approval is unnecessary.
+Implementation began after **BL-129 Regression tests for the navigation
+latency correction** completed and was committed. The code-derived baseline,
+approved SVG and subsequent sticky/flat-page decisions are durable inputs;
+repeating their design approval is unnecessary. Review the working result next.
 
 ## Prototype review and acceptance
 
@@ -219,11 +298,19 @@ from hypotheses:
 | Case | Required result |
 | --- | --- |
 | Select each Reference area; open its page directly or through a prose link. | The same area is selected and all its pages remain reachable; other areas remain available from the sticky menu. |
-| A flat collection, a direct child page beside a child branch, the global destination itself and an unlisted subtree. | Automatic scoping retains useful sibling context, parent content remains reachable and filtering does not reintroduce excluded nodes. |
+| A flat collection, mixed parent/direct choices, an authored global parent and an unlisted subtree. | Parent links and direct page links occupy separate groups. Flat collections share their full page/H2 tree on direct and menu arrival. A leaf beside subgroups has only its own H2; parent destinations retain a tree. Excluded nodes stay excluded. |
+| Hover a sticky title, pause in the gap, move diagonally into the panel, then away; dismiss with Escape while article focus remains. Also activate by keyboard and touch, allowing time after the tap. | No visible disclosure arrow or baseline mismatch. The panel stays open during the crossing and after a tap; it remains reachable, dismissible and operable without hover. |
+| Open Getting Started and FAQ at wide and intermediate widths; resize with a panel open. | Flat collections use balanced columns. The panel remains beneath its title's area and within the viewport. |
+| A collection at twelve choices, one beyond the limit and a large collection with unlisted children. | Twelve choices fit a menu; beyond the limit the sticky title is a link and all collection pages retain its full tree. Unlisted choices do not affect the threshold. |
 | Parent page with its own H2 and child pages; deep descendants; a category with no authored page. | H2 precedes child pages, each link has the right destination, and the presentation requires no invented parent content. |
 | Disclose another page's outline while reading the current page. | Both can remain open; the other page's fragment links navigate correctly. |
+| Close Install Norna, choose it from Getting Started, then click its name in the left menu; repeat with FAQ and with a low Reference row. | The selected branch/H2 opens, repeated name clicks leave it open, other branches retain their choices, and the selected row does not jump. No intermediate closed arriving tree or expanded departing tree is shown. |
+| Navigate among pages and H2 links, change disclosure/scroll state, then use Back/Forward with and without a cached document. | Each entry restores its earlier disclosure state and menu/article positions, including a deliberately closed current branch. New-tab and modified clicks retain native behavior. |
 | Open and close branches near the top and bottom of a scrolled left menu. | Expansion preserves the activated row's position; collapse permits only the existing adjustment at the scroll limit; the last item has visible breathing room. |
 | Switch sticky destinations, then make the first few left-menu clicks; include Examples to Reference. | No initial menu jump, font-weight reflow, appearance flash or renewed page-transition delay. |
+| Follow Home to What Norna Does, continue among tree-mode pages and return Home; repeat at intermediate/mobile widths and in Focus reading. | Home uses global navigation; desktop tree pages retain their stable reading frame regardless of H2 count. Home, Search and Display remain reachable; mobile and Focus reading retain a compact Menu. |
+| Open Install Norna and Site files, then expand and scroll their trees; include light and dark appearance. | Getting Started is identified in the sticky breadcrumb without an extra label above its tree. Site model remains an unobscured plain label above its filter. Scrolled rows remain masked behind the sticky controls. |
+| Scroll the article, follow an H2, and open the icon menu beside the breadcrumb; repeat at intermediate width. | The breadcrumb and button stay in one sticky row. The heading clears that row, the menu remains within the viewport, and there is no duplicate in-article trail. |
 | Scroll the article and menu independently, especially Site files and Convert legacy sources in Safari fullscreen. | Scrolling remains responsive, the menu reaches its end and rows stay below its sticky filter controls. |
 | Follow current-page H2, another page's H2, existing H3 deep links, category/overview links, prose links and Back/Forward. | Correct destination, anchor offset and history reading-position restoration; ordinary external-link behavior remains intact. |
 | Keyboard, touch, no JavaScript, reduced motion, narrow layout and Focus reading. | Links and disclosures retain distinct actions, focus stays usable, supported destinations remain reachable and notes reflow without overlap. |

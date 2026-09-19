@@ -1,4 +1,5 @@
 ---
+import { navigationPrototype, areaNavigationPrototype } from '../lib/navigationPrototypeConfig.mjs';
 import { getCollection } from 'astro:content';
 import { ArrowLeft } from '@lucide/astro';
 import { resolveNavigationModel } from '../../scripts/lib/navigation-model.mjs';
@@ -17,7 +18,7 @@ import { withBasePath } from '../lib/basePath';
 
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const siteModel = await getSiteModel(await getCollection('site'));
-const categoryDestinations = process.env.NORNA_NAVIGATION_PROTOTYPE === '1'
+const categoryDestinations = navigationPrototype
 	? siteModel.categoryDestinations.byPathname
 	: undefined;
 const { nodes: siteNodes, pages: sitePages } = siteModel;
@@ -58,6 +59,7 @@ const pagePresentation = resolvePagePresentation(siteThemeData, themeLabel, {
 	navigationMode: navigationModel.mode,
 });
 const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
+const areaReadingFrame = areaNavigationPrototype && navigationModel.mode === 'tree';
 const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: themeLabel });
 const logoAsset = getLogoAsset();
 const logo = logoAsset
@@ -133,6 +135,7 @@ const searchScript = `(() => {
 	pathname="/search/"
 	footer={sitewideData.footer}
 	indexable={false}
+	areaReadingFrame={areaReadingFrame}
 >
 	<link slot="head" rel="stylesheet" href={`${bundlePath}pagefind-ui.css`} />
 	<SiteNavigation
@@ -145,8 +148,10 @@ const searchScript = `(() => {
 		frameColors={frameColors}
 		readerPreferences={pagePresentation.readerPreferences}
 		searchPage
+		areaReadingFrame={areaReadingFrame}
 	/>
 	{siteBanners.length > 0 && <SiteBanners banners={siteBanners} />}
+	<div class:list={['site-page-layout', { 'site-page-layout-tree': areaReadingFrame }]}>
 	<main class="site-content search-page-content" id="main-content" style={`--page-text-width: ${pageTextWidth}`}>
 		<SiteSection
 			section={searchSection}
@@ -162,6 +167,7 @@ const searchScript = `(() => {
 			</div>
 		</SiteSection>
 	</main>
+	</div>
 	<script is:inline set:html={searchScript} />
 </BaseLayout>
 

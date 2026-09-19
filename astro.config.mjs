@@ -1,4 +1,5 @@
 // @ts-check
+import { navigationPrototype } from './src/lib/navigationPrototypeConfig.mjs';
 import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -24,7 +25,6 @@ import {
 import projectConfig from './scripts/lib/project-config.mjs';
 
 const execFileAsync = promisify(execFile);
-const navigationPrototype = process.env.NORNA_NAVIGATION_PROTOTYPE === '1';
 
 const isWithinDirectory = (parentDirectory, filePath) => {
 	const relativePath = path.relative(parentDirectory, filePath);

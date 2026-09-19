@@ -1,4 +1,5 @@
 ---
+import { navigationPrototype as enabled } from '../lib/navigationPrototypeConfig.mjs';
 import { getNavigationStateScript } from '../lib/navigationStateScript.mjs';
 
 interface Props {
@@ -6,7 +7,6 @@ interface Props {
 }
 
 const { scope } = Astro.props;
-const enabled = process.env.NORNA_NAVIGATION_PROTOTYPE === '1';
 ---
 
 {enabled && (

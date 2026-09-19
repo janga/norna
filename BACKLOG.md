@@ -16,13 +16,14 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- [`BL-122` Area navigation and integrated H2 prototype](docs/design/backlog/BL-122-area-navigation-prototype.md):
+  **In progress: prototype checkpoint.** The locally reviewed opt-in
+  implementation is saved as work in progress. Cleanup, updated browser regressions,
+  final verification and the completion commit remain.
+
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
-
-- [`BL-122` Area navigation and integrated H2 prototype](docs/design/backlog/BL-122-area-navigation-prototype.md):
-  **High priority; ready.** Prototype automatic area selection and integrated H2
-  navigation to free room for sidenotes, following the approved sketch.
 
 ## External Gate
 

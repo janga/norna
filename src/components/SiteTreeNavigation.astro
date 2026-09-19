@@ -1,49 +1,71 @@
 ---
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import { withBasePath } from '../lib/basePath';
-import { getListedSiteNavigationTree, type CategoryDestinationMap, type SiteNavigationEntry } from '../lib/siteNavigation';
+import { getListedSiteNavigationTree, getNavigationDestination, type CategoryDestinationMap, type SiteNavigationEntry } from '../lib/siteNavigation';
+import { areaNavigationPrototype } from '../lib/navigationPrototypeConfig.mjs';
+import { resolveAreaNavigation, withH2Outlines } from '../lib/areaNavigation';
 import type { SiteNode } from '../lib/sitePages';
 import NavigationPageTree from './NavigationPageTree.astro';
 import NavigationTreeControls from './NavigationTreeControls.astro';
 import NavigationPrototypeState from './NavigationPrototypeState.astro';
+import PageContentsLinks from './PageContentsLinks.astro';
 
 interface Props {
 	currentPage: SiteNode;
 	navigationEntries: SiteNavigationEntry[];
 	categoryDestinations?: CategoryDestinationMap;
 	integratePageSections?: boolean;
+	areaReadingFrame?: boolean;
 }
 
-const { currentPage, navigationEntries, categoryDestinations, integratePageSections = false } = Astro.props;
-const roots = getListedSiteNavigationTree(navigationEntries);
-const activeRoot = roots.find((node) => (
+const { currentPage, navigationEntries, categoryDestinations, integratePageSections = false, areaReadingFrame = false } = Astro.props;
+const listedRoots = getListedSiteNavigationTree(navigationEntries);
+const roots = areaNavigationPrototype ? withH2Outlines(listedRoots) : listedRoots;
+const activeRoot = areaNavigationPrototype ? resolveAreaNavigation(roots, currentPage).localRoot : roots.find((node) => (
 	currentPage.pageDirectory === node.node.pageDirectory
 	|| currentPage.pageDirectory.startsWith(`${node.node.pageDirectory}/pages/`)
 ));
-const navigationRoot = activeRoot?.node.pagePath ? `/${activeRoot.node.pagePath}/` : '/';
+const ownOutline = areaNavigationPrototype && !activeRoot
+	? navigationEntries.find(({ node }) => node.pagePath === currentPage.pagePath)?.headings.filter(({ depth }) => depth === 2) ?? []
+	: [];
+const navigationPage = activeRoot?.node ?? currentPage;
+const navigationRoot = navigationPage.pagePath ? `/${navigationPage.pagePath}/` : '/';
 const navigationStateRoot = withBasePath(projectConfig.site.basePath, '/');
+const showAreaTitle = areaNavigationPrototype && activeRoot?.node.kind === 'category';
+const showReadingAreaTitle = areaReadingFrame
+	&& navigationPage.pagePath !== resolveAreaNavigation(roots, currentPage).globalRoot?.node.pagePath;
+const localNodes = activeRoot ? (showAreaTitle ? activeRoot.children : [activeRoot]) : [];
+// Separate scroll records from the larger continuity trial; keep disclosure
+// identities stable and shared with its compact view within this trial.
+const prototypeStatePrefix = areaNavigationPrototype ? 'area:' : '';
 ---
 
-{activeRoot && (
+{(activeRoot || ownOutline.length > 0) && (
 	<aside
 		id="tree-local-navigation"
 		class="tree-local-navigation"
-		data-navigation-root={navigationRoot}
-		data-navigation-state-root={navigationStateRoot}
+		data-navigation-root={`${prototypeStatePrefix}${navigationRoot}`}
+		data-navigation-state-root={`${prototypeStatePrefix}${navigationStateRoot}`}
+		data-navigation-area={areaNavigationPrototype ? activeRoot?.node.pagePath : undefined}
+		data-navigation-outline={ownOutline.length > 0 ? currentPage.pagePath : undefined}
 	>
 		<NavigationPrototypeState scope="desktop" />
-		<NavigationTreeControls
+		{showReadingAreaTitle && <p class="navigation-area-title">{navigationPage.title}</p>}
+		{!areaReadingFrame && (showAreaTitle || ownOutline.length > 0) && <a class="navigation-area-title" href={withBasePath(projectConfig.site.basePath,
+			getNavigationDestination(navigationPage, categoryDestinations).pathname)}>{navigationPage.title}</a>}
+		{activeRoot && <NavigationTreeControls
 			idPrefix="desktop-tree-navigation"
-			nodes={[activeRoot]}
-		/>
-		<nav aria-label={`${activeRoot.node.title}: ${projectConfig.locale.labels.siteNavigation}`}>
-			<NavigationPageTree
-				nodes={[activeRoot]}
+			nodes={localNodes}
+			forceVisible={areaNavigationPrototype}
+		/>}
+		<nav aria-label={`${navigationPage.title}: ${projectConfig.locale.labels.siteNavigation}`}>
+			{activeRoot ? <NavigationPageTree
+				nodes={localNodes}
 				currentPage={currentPage}
 				categoryDestinations={categoryDestinations}
 				variant="sidebar"
 				integratePageSections={integratePageSections}
-			/>
+			/> : <PageContentsLinks headings={ownOutline} variant="desktop" />}
 		</nav>
 	</aside>
 )}
