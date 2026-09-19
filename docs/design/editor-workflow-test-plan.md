@@ -146,6 +146,42 @@ settings, and installed test extensions are isolated under
 `editors/vscode/.vscode-test/`. It must not edit the user's profile or authored
 site files.
 
+## Site Tree Workflows
+
+The `site-tree` suite verifies
+[BL-131 VS Code Site Tree](backlog/BL-131-vscode-site-tree.md) through the
+packaged extension's native Explorer view and input widgets. It checks:
+
+- source opening by label, independent chevrons, keyboard navigation, and
+  active-file reveal without collapsing unrelated branches;
+- page title, description and navigation visibility, plus category label and
+  description, through **Page Information**;
+- dirty-buffer edits and Undo, followed by save/close/reopen/edit/save cycles
+  with exact source comparisons, including preserved comments and link text;
+- child and sibling pages, a root category, the creation preview, cancellation,
+  URL collisions, and the restrictions on Home;
+- unlisted descendants, malformed but openable pages, custom roots, isolation
+  between sites, and refresh after external create/edit/rename/delete actions.
+
+Current VS Code uses its custom context menu, selected with keyboard navigation
+after a real right-click. VS Code 1.96 on macOS uses the Command Palette because
+its native context menus are outside the test's browser inspector. Both paths
+select real commands and use the resulting Quick Pick and input widgets.
+Native macOS context-menu selection by mouse is not covered. The minimum-version
+test waits for source opening to finish moving focus before opening the palette;
+otherwise a pending editor focus change can dismiss it.
+
+The formatter variant activates real Prettier and formats a probe before the
+same source-edit and save scenarios. It uses the documented Markdown save
+exception and Red Hat's standalone YAML formatter. It does not change the
+user's settings.
+
+Results include the extension bundle's SHA-256 hash in
+`editors/vscode/.vscode-test/site-tree-<vscode-version>.json`. Light, dark and
+compact-window captures use the same filename stem. These are ignored local
+test artifacts. The full integration suite includes these tree workflows;
+the focused suite does not rerun the completion selection matrix.
+
 ## Commands And Matrix
 
 From the repository root:
@@ -165,6 +201,13 @@ npm --prefix editors/vscode run test:integration -- --suite constructions
 
 # Category description and tree mode, from blank values/keys and partial prefixes.
 npm --prefix editors/vscode run test:integration -- --suite metadata
+
+# Native site tree and page information, without the completion matrix.
+npm --prefix editors/vscode run test:integration -- --suite site-tree
+
+# The same site-tree workflows at the compatibility and formatter boundaries.
+npm --prefix editors/vscode run test:integration -- --suite site-tree --version 1.96.0
+npm --prefix editors/vscode run test:integration -- --suite site-tree --with-prettier
 ```
 
 The metadata suite accepts category `description` from a blank YAML line and
@@ -183,6 +226,17 @@ to `false` and assigns standalone YAML to Red Hat. This verifies the documented
 ownership boundary; it does not claim arbitrary Markdown formatting is safe.
 
 ## Limits And Follow-up
+
+Site-tree verification on 2026-09-19 used Norna VSIX 0.2.0 and Red Hat YAML
+1.24.0. All 12 workflows passed on VS Code 1.138.0 and 1.96.0, and on 1.138.0
+with Prettier 12.4.0. The tested extension bundle has SHA-256
+`bc3255f673764b2930dd5023876bff4191397ede1f2e9c0409a88dd30ce21cc4`.
+Light/dark tree captures and compact Page Information captures were inspected.
+The engine tests additionally cover CRLF, flow/block YAML, source comments,
+malformed categories, stale creation plans and cross-site path rejection.
+A final full editor integration run also passed on 1.138.0, checking the tree
+together with the existing completion and persistence suites. The second-site
+tree fixture is separate from documents rewritten by completion tests.
 
 Verified on 2026-09-13: the baseline passed on VS Code 1.137.0 and 1.96.0;
 the coexistence run passed on 1.137.0 with Prettier 12.4.0. All three used

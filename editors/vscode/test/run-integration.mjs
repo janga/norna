@@ -21,14 +21,14 @@ const engineRoot = path.join(workspaceRoot, 'node_modules', '@janga', 'norna');
 const commandArguments = process.argv.slice(2);
 const suiteIndex = commandArguments.indexOf('--suite');
 const suite = suiteIndex === -1 ? 'all' : commandArguments[suiteIndex + 1];
-if (!['all', 'constructions', 'priority', 'metadata'].includes(suite)) throw new Error('Use --suite all, --suite constructions, --suite priority, or --suite metadata.');
+if (!['all', 'constructions', 'priority', 'metadata', 'site-tree'].includes(suite)) throw new Error('Use --suite all, constructions, priority, metadata, or site-tree.');
 if (suiteIndex !== -1) commandArguments.splice(suiteIndex, 2);
 const prettierIndex = commandArguments.indexOf('--with-prettier');
 const withPrettier = prettierIndex !== -1;
 if (withPrettier) commandArguments.splice(prettierIndex, 1);
 const versionArgument = commandArguments[0] === '--version' ? commandArguments[1] : undefined;
 if (commandArguments.length > 0 && (!versionArgument || commandArguments.length !== 2)) {
-	throw new Error('Usage: node test/run-integration.mjs [--version <VS Code version>] [--with-prettier] [--suite all|constructions|priority|category]');
+	throw new Error('Usage: node test/run-integration.mjs [--version <VS Code version>] [--with-prettier] [--suite all|constructions|priority|metadata|site-tree]');
 }
 const version = versionArgument ?? process.env.NORNA_VSCODE_TEST_VERSION ?? 'stable';
 let engineVersion;
@@ -57,6 +57,14 @@ const prepareWorkspace = async () => {
 		version: '1.0.0',
 	}, null, 2));
 	await write('site/config.yaml', 'url: https://example.com/\n');
+	await write('tree-content/config.yaml', 'url: https://example.com/\n');
+	await write('tree-content/pages/000-home/content.md', '# Tree Home\n');
+	await write('tree-content/pages/010-guide/content.md', '---\n# Keep metadata comment\npage:\n  description: "Original description" # keep\n  aliases: [/previous-guide/]\n---\n\n# Tree Guide\n\nKeep this prose and [authored link text](/topics/child/).\n');
+	await write('tree-content/pages/020-topics/category.yaml', 'label: Tree Topics\ndescription: Choose a topic.\n');
+	await write('tree-content/pages/020-topics/pages/010-child/content.md', '# Tree Child\n');
+	await write('tree-content/pages/030-hidden/content.md', '---\nnavigation:\n  listed: false\n---\n# Tree Hidden\n');
+	await write('tree-content/pages/030-hidden/pages/010-hidden-child/content.md', '# Tree Hidden Child\n');
+	await write('tree-content/pages/040-broken/content.md', '# First title\n\n# Second title\n');
 	await write('.vscode/settings.json', JSON.stringify({
 		...(withPrettier ? { 'editor.defaultFormatter': 'esbenp.prettier-vscode', 'editor.formatOnSave': true } : {}),
 		'[markdown]': { 'editor.formatOnSave': false },
@@ -214,6 +222,11 @@ Body text.[^margin:context]
 		await write(`${project}/site/config.yaml`, 'url: https://example.com/\n');
 		await write(`${project}/site/pages/000-home/content.md`, '# Context\n');
 		await write(`${project}/site/pages/000-home/images/second-only.svg`, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
+		if (project === 'second') {
+			// Keep tree fixtures independent of the completion suites' source edits.
+			await write('second/tree-content/config.yaml', 'url: https://example.com/\n');
+			await write('second/tree-content/pages/000-home/content.md', '# Other Tree Home\n');
+		}
 	}
 };
 
@@ -258,6 +271,15 @@ const extensionVersion = path.basename(vsixPath).match(/norna-vscode-(.+)\.vsix$
 const vscodeExecutablePath = await downloadAndUnzipVSCode({ cachePath: cacheRoot, version });
 await rm(extensionsDirectory, { force: true, recursive: true });
 await rm(userDataDirectory, { force: true, recursive: true });
+await mkdir(path.join(userDataDirectory, 'User'), { recursive: true });
+await writeFile(path.join(userDataDirectory, 'User', 'settings.json'), JSON.stringify({
+	// Keep context actions observable in the isolated renderer on current macOS
+	// VS Code. The minimum version uses its real Command Palette instead.
+	'window.menuStyle': 'custom',
+	'git.openRepositoryInParentFolders': 'never',
+	'yaml.telemetry.enabled': false,
+	'chat.disableAIFeatures': true,
+}));
 installExtension(vscodeExecutablePath, 'redhat.vscode-yaml');
 if (withPrettier) installExtension(vscodeExecutablePath, 'esbenp.prettier-vscode');
 installExtension(vscodeExecutablePath, vsixPath);

@@ -16,10 +16,6 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-131` VS Code Site Tree](docs/design/backlog/BL-131-vscode-site-tree.md):
-  **Ready for experimental VSIX implementation.** Open and create pages, and
-  edit their titles and metadata from a tree of the actual site structure.
-
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.

@@ -427,6 +427,16 @@ The VS Code extension has its own version in `editors/vscode/package.json`.
 Engine and extension releases are independent because the extension selects
 and checks the editor API supplied by each project's installed Norna engine.
 
+The optional site-tree capability is exported from
+`scripts/lib/editor-site-tree.mjs` with `siteTreeApiVersion: 1`. The extension
+loads it from the selected project's engine; an absent or unsupported capability
+disables that site's tree actions without replacing its existing language API.
+Keep this dynamic entry in `knip.json`. Structure reads accept an explicit site
+root and an editor-only tolerant mode; CLI validation and mutation plans remain
+strict. `scripts/lib/site-node-create.mjs` owns creation for both the CLI and
+editor. Metadata edits return source ranges for the editor buffer and do not
+write files or trigger saves.
+
 ### First Marketplace Release
 
 The publisher ID in the extension manifest is `janga`. Before the first public

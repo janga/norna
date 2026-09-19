@@ -5,6 +5,7 @@
 			"entry": [
 				"bin/*.mjs",
 				"scripts/*.mjs",
+				"scripts/lib/editor-site-tree.mjs",
 				"src/pages/**/*.astro",
 				"src/lib/navigationContinuity.ts",
 				"tests/**/*.spec.ts"

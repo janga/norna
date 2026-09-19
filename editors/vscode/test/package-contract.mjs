@@ -56,6 +56,7 @@ for (const filename of files) {
 	assert.notEqual(filename, 'extension.cjs');
 	assert.notEqual(filename, 'norna-project.cjs');
 	assert.notEqual(filename, 'yaml-schema-completions.cjs');
+	assert.notEqual(filename, 'site-tree.cjs');
 }
 
 console.log(`VS Code package contract passed (${files.size} packaged files).`);

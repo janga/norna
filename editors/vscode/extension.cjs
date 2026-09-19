@@ -10,6 +10,7 @@ const {
 	supportedSchemaVersion,
 } = require('./norna-project.cjs');
 const { getYamlSchemaSnippetCompletions, getYamlPropertyCompletionContext } = require('./yaml-schema-completions.cjs');
+const { registerSiteTree } = require('./site-tree.cjs');
 
 const schemaContentByUri = new Map();
 const documentContextByPath = new Map();
@@ -21,6 +22,7 @@ let diagnostics;
 let extensionVersion;
 let output;
 let statusBar;
+let siteTree;
 
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
@@ -753,6 +755,7 @@ const refresh = ({ notify = false } = {}) => {
 	for (const siteRoot of publicAssetDiagnosticUrisByRoot.keys()) clearPublicAssetDiagnostics(siteRoot);
 	for (const document of vscode.workspace.textDocuments) scheduleDiagnostics(document, 0);
 	updateStatusBar();
+	void siteTree?.refresh();
 	if (notify) void vscode.window.showInformationMessage('Norna IntelliSense refreshed.');
 };
 
@@ -836,6 +839,7 @@ async function activate(context) {
 	context.subscriptions.push(output, diagnostics, statusBar);
 
 	await registerYamlSchemas(context);
+	siteTree = registerSiteTree(context, output);
 
 	context.subscriptions.push(vscode.commands.registerCommand('nornaEditor.showStatus', showStatus));
 	context.subscriptions.push(vscode.commands.registerCommand('nornaEditor.refresh', () => refresh({ notify: true })));

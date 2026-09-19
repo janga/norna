@@ -1,12 +1,13 @@
 ---
 page:
-  description: Install optional VS Code help, recognize supported files and troubleshoot suggestions, diagnostics and formatting.
+  description: Install optional VS Code support to browse and create pages, edit page information and use Norna-aware suggestions and diagnostics.
 ---
 
 # VS Code editor support
 
 The optional Norna extension connects VS Code to the rules in a project's
-installed Norna package. It adds configuration and Markdown help, diagnostics
+installed Norna package. Its site tree opens and creates pages and edits their
+titles and metadata. It also adds configuration and Markdown help, diagnostics
 and managed-image navigation. Command-line checks remain authoritative.
 
 The extension is experimental and distributed as a manually installed VSIX,
@@ -58,6 +59,54 @@ creating `config.yaml`, an existing homepage is sufficient to recognize its
 location before saving. Start from a generated project rather than an unnamed,
 unsaved tab. VS Code must identify the language as Markdown or YAML, not Plain
 Text. See [site files](/reference/site/files/) for the source model.
+
+## Work from the site tree
+
+Open **Norna: Site Tree** in the Explorer sidebar. The tree shows authored pages
+and navigation categories in site order, using their titles and labels. A
+category groups children and stores its information in `category.yaml`; a page
+has its own `content.md`. See [pages and categories](/reference/site/pages/).
+
+Click a title to open its source. Use the separate chevron, or the keyboard
+arrow keys, to expand and collapse children. The tree follows the active Norna
+source file, including one opened through the website's **Open in VS Code**
+link. Other expanded branches remain open. Use VS Code's built-in tree find
+when looking for a visible label.
+
+Each discovered site has its own root. Opening a source file also discovers
+its site, including a folder with a name other than `site`. Pages omitted from
+generated navigation remain in the authoring tree, marked **unlisted**; they
+are still published. That mark also applies to descendants of an unlisted page.
+
+To create a page, right-click a node and choose **Norna: New Page…**. Choose
+whether it belongs inside that node, beside it or at the site root, then enter
+its title and URL segment. Review the resulting location and select **Create
+page**. The new page appears last among its siblings and opens for editing.
+**Norna: New Category…** follows the same steps for a navigation category.
+Home cannot contain children. Escape cancels before creation without writing
+files. These actions use the same rules as
+[`page:add` and `category:add`](/reference/commands/create/).
+
+Choose **Norna: Page Information…** to edit the title, description or whether
+a page is listed in navigation. For categories, edit the label and description.
+Leave a description empty to remove it. The current URL, source location and
+previous URLs are also shown; addresses are read-only in this version.
+
+A title edit changes the Markdown H1 and labels derived from it. The page's
+address and link text written elsewhere stay the same. Changes are made in
+the editor buffer, support **Undo**, and retain earlier unsaved edits. Save
+normally when ready. If the source changes while the information dialog is
+open, reopen the dialog before applying the edit. Repair invalid YAML or a
+missing/duplicate H1 in the source; other valid tree nodes remain usable.
+YAML aliases, anchors or tagged values that cannot be edited directly through
+Page Information need a source edit.
+
+The tree requires extension version 0.2.0 or later and an engine build that
+provides site-tree support. An older or incompatible engine produces a message
+on its site root; existing compatible IntelliSense can still be used. Run
+**Norna: Refresh Site Tree** after updating the engine or to rediscover sites.
+Moving, reordering and deleting pages, changing addresses, and inserting links
+are outside this first tree scope.
 
 ## Suggestions and diagnostics
 

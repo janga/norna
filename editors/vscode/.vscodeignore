@@ -7,3 +7,4 @@ package-lock.json
 extension.cjs
 norna-project.cjs
 yaml-schema-completions.cjs
+site-tree.cjs

@@ -69,6 +69,10 @@ async function run() {
 	assert.equal(extension.packageJSON.version, extensionVersion);
 	assert.ok(vscode.extensions.getExtension('redhat.vscode-yaml'), 'Red Hat YAML was not installed.');
 	await extension.activate();
+	if (process.env.NORNA_EDITOR_TEST_SUITE === 'site-tree') {
+		await require('./site-tree.cjs').runSiteTree({ openDocument, waitFor });
+		return;
+	}
 	if (['constructions', 'priority', 'metadata'].includes(process.env.NORNA_EDITOR_TEST_SUITE)) {
 		await require('./widget-constructions.cjs').runWidgetConstructions({ openDocument, waitFor, getCompletions });
 		console.log('Packaged construction widget tests passed.');
@@ -312,6 +316,7 @@ async function run() {
 	await require('./completion-relevance.cjs').runCompletionRelevance({ openDocument, getCompletions });
 	await require('./editing-workflows.cjs').runEditingWorkflows({ workspaceRoot, openDocument, waitFor, getCompletions });
 	await require('./widget-constructions.cjs').runWidgetConstructions({ openDocument, waitFor, getCompletions });
+	await require('./site-tree.cjs').runSiteTree({ openDocument, waitFor });
 	console.log('Packaged VS Code integration tests passed.');
 }
 

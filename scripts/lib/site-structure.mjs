@@ -4,11 +4,8 @@ import { categorySchema } from './schema-definitions.mjs';
 import { parsePageDirectoryPath } from './page-model.mjs';
 import {
 	homePageDirectory,
-	siteContentLabel,
-	siteDir,
-	siteDirLabel,
-	sitePagesDir,
-	sitePagesLabel,
+	siteDir as defaultSiteDir,
+	siteDirLabel as defaultSiteDirLabel,
 } from './site-paths.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
 
@@ -24,7 +21,7 @@ const compareNodeMetadata = (left, right) => (
 	|| left.pageId.localeCompare(right.pageId, 'en')
 );
 
-const assertLegacyStructureIsAbsent = async () => {
+const assertLegacyStructureIsAbsent = async ({ siteDir, siteDirLabel, sitePagesLabel }) => {
 	const legacyContentPath = path.join(siteDir, 'content.md');
 	const legacyImagesPath = path.join(siteDir, 'images');
 	const legacyPaths = [];
@@ -69,13 +66,34 @@ const assertUniqueSiblings = (nodes, pagesLabel) => {
 	}
 };
 
-const readCategory = async (categoryPath, categorySourceLabel) => {
-	const source = await readFile(categoryPath, 'utf8');
+const readCategory = async (categoryPath, categorySourceLabel, readSource) => {
+	const source = await readSource(categoryPath);
 	return parseYamlConfig(source, categorySourceLabel, { schema: categorySchema });
 };
 
-export const getSiteStructure = async () => {
-	await assertLegacyStructureIsAbsent();
+// Editors can inspect several sites in one process and retain malformed nodes
+// for repair. Builds and mutation plans keep the strict default contract.
+export const getSiteStructure = async ({
+	siteRoot = defaultSiteDir,
+	tolerant = false,
+	readSource = (filePath) => readFile(filePath, 'utf8'),
+} = {}) => {
+	const siteDir = path.resolve(siteRoot);
+	const siteDirLabel = siteDir === defaultSiteDir ? defaultSiteDirLabel : siteDir;
+	const sitePagesDir = path.join(siteDir, 'pages');
+	const sitePagesLabel = `${siteDirLabel}/pages`;
+	const siteContentLabel = `${sitePagesLabel}/${homePageDirectory}/content.md`;
+	const problems = [];
+	const report = (error, node = null) => {
+		if (!tolerant) throw error;
+		problems.push({ message: error.message, path: node?.contentPath ?? node?.categoryPath ?? siteDir });
+		if (node) (node.problems ??= []).push(error.message);
+	};
+	try {
+		await assertLegacyStructureIsAbsent({ siteDir, siteDirLabel, sitePagesLabel });
+	} catch (error) {
+		report(error);
+	}
 
 	const nodes = [];
 	const warnings = [];
@@ -98,18 +116,25 @@ export const getSiteStructure = async () => {
 				fileExists(contentPath),
 				fileExists(categoryPath),
 			]);
-			const metadata = parsePageDirectoryPath(pageDirectory, nodeLabel);
+			let metadata;
+			try {
+				metadata = parsePageDirectoryPath(pageDirectory, nodeLabel);
+			} catch (error) {
+				report(error);
+				continue;
+			}
 
 			if (hasContent === hasCategory) {
 				const problem = hasContent
 					? 'contains both content.md and category.yaml'
 					: 'contains neither content.md nor category.yaml';
-				throw new Error(`${nodeLabel} ${problem}. Keep exactly one: content.md for a page, or category.yaml for a navigation category.`);
+				report(new Error(`${nodeLabel} ${problem}. Keep exactly one: content.md for a page, or category.yaml for a navigation category.`));
+				if (!hasContent) continue;
 			}
 
 			const isHome = pageDirectory === homePageDirectory;
 			if (isHome && hasCategory) {
-				throw new Error(`${nodeLabel}/category.yaml is invalid. The homepage must be a page with content.md.`);
+				report(new Error(`${nodeLabel}/category.yaml is invalid. The homepage must be a page with content.md.`));
 			}
 
 			const node = {
@@ -124,15 +149,19 @@ export const getSiteStructure = async () => {
 
 			if (hasCategory) {
 				if (await fileExists(path.join(nodeDir, 'images'))) {
-					throw new Error(`${nodeLabel} is a navigation category and cannot contain images/. Use content.md when the collection needs editorial content or images.`);
+					report(new Error(`${nodeLabel} is a navigation category and cannot contain images/. Use content.md when the collection needs editorial content or images.`), node);
 				}
-				const category = await readCategory(categoryPath, `${nodeLabel}/category.yaml`);
 				Object.assign(node, {
 					categorySourceLabel: `${nodeLabel}/category.yaml`,
 					categoryPath,
-					label: category.label,
-					description: category.description,
+					label: metadata.pageId,
 				});
+				try {
+					const category = await readCategory(categoryPath, node.categorySourceLabel, readSource);
+					Object.assign(node, { label: category.label, description: category.description });
+				} catch (error) {
+					report(error, node);
+				}
 			} else {
 				Object.assign(node, {
 					contentLabel: `${nodeLabel}/content.md`,
@@ -145,7 +174,11 @@ export const getSiteStructure = async () => {
 			siblingNodes.push(node);
 		}
 
-		assertUniqueSiblings(siblingNodes, pagesLabel);
+		try {
+			assertUniqueSiblings(siblingNodes, pagesLabel);
+		} catch (error) {
+			report(error);
+		}
 
 		for (const node of siblingNodes.sort(compareNodeMetadata)) {
 			nodes.push(node);
@@ -153,11 +186,11 @@ export const getSiteStructure = async () => {
 			const childDirectories = (await readDirectory(childPagesDir)).filter((entry) => entry.isDirectory());
 
 			if (node.isHome && childDirectories.length > 0) {
-				throw new Error([
+				report(new Error([
 					`${node.nodeLabel} is the homepage and cannot contain child pages.`,
 					`Move these page directories beside ${homePageDirectory} under ${sitePagesLabel}/, or below another non-home page:`,
 					...childDirectories.map(({ name }) => `- ${node.nodeLabel}/pages/${name}`),
-				].join('\n'));
+				].join('\n')), node);
 			}
 
 			if (node.kind === 'category' && childDirectories.length === 0) {
@@ -176,13 +209,14 @@ export const getSiteStructure = async () => {
 
 	await collectNodes(sitePagesDir, sitePagesLabel);
 	if (!nodes.some(({ isHome }) => isHome)) {
-		throw new Error(`Homepage content is missing. Create ${siteContentLabel}.`);
+		report(new Error(`Homepage content is missing. Create ${siteContentLabel}.`));
 	}
 
 	return {
 		categories: nodes.filter(({ kind }) => kind === 'category'),
 		contentFiles: nodes.filter(({ kind }) => kind === 'page'),
 		nodes,
+		...(tolerant ? { problems } : {}),
 		warnings,
 	};
 };

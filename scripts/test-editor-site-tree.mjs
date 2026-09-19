@@ -1,0 +1,99 @@
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { createSiteNode, editSiteNodeInformation, getSiteNodeInformation, planSiteNodeCreation, readSiteTree } from './lib/editor-site-tree.mjs';
+import { getSiteStructure } from './lib/site-structure.mjs';
+
+const root = await mkdtemp(path.join(os.tmpdir(), 'norna-site-tree-'));
+const firstSite = path.join(root, 'custom-content');
+const secondSite = path.join(root, 'other', 'site');
+const write = async (filename, source) => { await mkdir(path.dirname(filename), { recursive: true }); await writeFile(filename, source); };
+const page = path.join(firstSite, 'pages', '010-guide', 'content.md');
+const category = path.join(firstSite, 'pages', '020-topics', 'category.yaml');
+const edit = async (source, field, value, sourcePath = page) => {
+	const changes = await editSiteNodeInformation({ siteRoot: firstSite, sourcePath, source, field, value });
+	return changes.sort((a, b) => b.start - a.start).reduce((text, change) => text.slice(0, change.start) + change.text + text.slice(change.end), source);
+};
+
+try {
+	for (const site of [firstSite, secondSite]) {
+		await write(path.join(site, 'config.yaml'), 'url: https://example.com/\n');
+		await write(path.join(site, 'pages', '000-home', 'content.md'), '# Home\n');
+	}
+	await write(page, '---\npage:\n  aliases: [/old-guide/]\nnavigation:\n  listed: false\n---\n\n# Guide\n\n[Authored label](/guide/).\n');
+	await write(category, 'label: Topics\ndescription: Topic choices.\n');
+	await write(path.join(firstSite, 'pages', '020-topics', 'pages', '010-child', 'content.md'), '# Child\n');
+	const [first, second] = await Promise.all([readSiteTree({ siteRoot: firstSite }), readSiteTree({ siteRoot: secondSite })]);
+	assert.deepEqual(first.nodes.map((node) => [node.title, node.url, node.kind]), [
+		['Home', '/', 'page'], ['Guide', '/guide/', 'page'], ['Topics', '/topics/', 'category'], ['Child', '/topics/child/', 'page'],
+	]);
+	assert.equal(first.nodes[1].listed, false);
+	assert.deepEqual(first.nodes[1].aliases, ['/old-guide/']);
+	assert.equal(second.nodes.length, 1, 'Sites must not share a process-global root.');
+	const sources = new Map([[page, '# Unsaved title\n'], [category, 'label: Unsaved category\n']]);
+	const overlaid = await readSiteTree({ siteRoot: firstSite, sources });
+	assert.equal(overlaid.nodes[1].title, 'Unsaved title');
+	assert.equal(overlaid.nodes[2].title, 'Unsaved category');
+	assert.match(await readFile(page, 'utf8'), /# Guide/);
+
+	await write(category, 'label: [broken\n');
+	const broken = await readSiteTree({ siteRoot: firstSite });
+	assert.equal(broken.nodes.length, 4, 'A broken category must not hide its child or valid neighbors.');
+	assert.ok(broken.nodes[2].problem);
+	assert.equal(broken.nodes[3].title, 'Child');
+	await assert.rejects(getSiteStructure({ siteRoot: firstSite }), /invalid YAML/);
+	await write(category, 'label: Topics\n');
+	await write(page, '# One\n\n# Two\n');
+	assert.match((await readSiteTree({ siteRoot: firstSite })).nodes[1].problem, /exactly one/);
+	await write(page, '# Guide\n');
+	await rename(path.dirname(page), path.join(firstSite, 'pages', '015-renamed'));
+	assert.equal((await readSiteTree({ siteRoot: firstSite })).nodes[1].url, '/renamed/');
+	await rename(path.join(firstSite, 'pages', '015-renamed'), path.dirname(page));
+
+	const crlf = '---\r\n# Metadata comment\r\npage:\r\n  description: "Old: text" # keep\r\n  aliases: [/legacy/]\r\n---\r\n\r\n# Guide\r\n\r\nUnsaved prose [keep this label](/guide/).\r\n';
+	assert.equal(await edit(crlf, 'title', 'New [title]'), crlf.replace('# Guide\r\n', '# New \\[title\\]\r\n'));
+	assert.equal(await edit(crlf, 'description', 'New: text'), crlf.replace('"Old: text"', '"New: text"'));
+	assert.equal(await edit(crlf, 'description', ''), crlf.replace('  description: "Old: text" # keep\r\n', '  # keep\r\n'));
+	assert.equal(await edit(crlf, 'listed', false), crlf.replace('---\r\n\r\n# Guide', 'navigation:\r\n  listed: false\r\n---\r\n\r\n# Guide'));
+	assert.equal(await edit('Title\n=====\n\nBody.\n', 'title', 'Renamed'), '# Renamed\n\nBody.\n');
+	assert.equal(await edit('# Guide\n\nBody.\n', 'description', 'A guide.'), '---\npage:\n  description: "A guide."\n---\n\n# Guide\n\nBody.\n');
+	assert.equal(await edit('---\npage:\n  description: Old\n---\n# Guide\n', 'description', ''), '---\n---\n# Guide\n');
+	assert.equal(await edit('---\npage: {description: "Old", aliases: [/legacy/]}\n---\n# Guide\n', 'description', 'New'), '---\npage: {description: "New", aliases: [/legacy/]}\n---\n# Guide\n');
+	assert.equal(await edit('---\npage: {description: "Old", aliases: [/legacy/]}\n---\n# Guide\n', 'description', ''), '---\npage: { aliases: [/legacy/]}\n---\n# Guide\n');
+	const block = '---\npage:\n  description: >- # retain\n    Old long\n    description.\n  aliases: [/old/]\n---\n# Guide\n';
+	assert.equal(await edit(block, 'description', 'New description.'), '---\npage:\n  description: "New description." # retain\n  aliases: [/old/]\n---\n# Guide\n');
+	assert.equal(await edit('# Same\n', 'title', 'Same'), '# Same\n');
+	assert.equal(await edit('# Only one\n\n```md\n# Example\n```\n', 'title', 'Title'), '# Title\n\n```md\n# Example\n```\n');
+	assert.equal(await edit('label: Topics # label comment\ndescription: Old\n', 'title', 'Subjects', category), 'label: "Subjects" # label comment\ndescription: Old\n');
+	assert.equal(await edit('label: Topics\n', 'description', 'Choose a topic.', category), 'label: Topics\ndescription: "Choose a topic."\n');
+	assert.equal(await edit('label: Topics\ndescription: Old\n', 'description', '', category), 'label: Topics\n');
+	await assert.rejects(edit('# Home\n', 'listed', false, path.join(firstSite, 'pages', '000-home', 'content.md')), /Home must remain listed/);
+	await assert.rejects(edit('# Guide\n', 'aliases', ['/new/']), /read-only/);
+	await assert.rejects(edit('# Guide\n', 'title', 'bad\nheading'), /single line/);
+	await assert.rejects(edit('# Other\n', 'title', 'Bad', path.join(secondSite, 'pages', '000-home', 'content.md')), /Invalid/);
+	await assert.rejects(edit('---\npage: [broken\n---\n# Guide\n', 'description', 'No'), /invalid YAML/);
+	assert.equal((await getSiteNodeInformation({ source: '# Title\n', kind: 'page', isHome: false, sourcePath: page })).title, 'Title');
+
+	const before = await readdir(path.join(firstSite, 'pages'));
+	const plan = await planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'Räksmörgås', parentPath: '/' });
+	assert.equal(plan.url, '/raksmorgas/');
+	assert.deepEqual(await readdir(path.join(firstSite, 'pages')), before, 'Preview and cancellation must not create files.');
+	const created = await createSiteNode(plan);
+	assert.match(await readFile(created.sourcePath, 'utf8'), /^# Räksmörgås\n/);
+	await assert.rejects(createSiteNode(plan), /sibling with that slug already exists/);
+	const categoryPlan = await planSiteNodeCreation({ siteRoot: secondSite, kind: 'category', title: 'Guides', parentPath: '/' });
+	await createSiteNode(categoryPlan);
+	const childPlan = await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Nested', parentPath: '/guides/' });
+	assert.equal((await createSiteNode(childPlan)).url, '/guides/nested/');
+	assert.equal((await readSiteTree({ siteRoot: firstSite })).nodes.some((node) => node.title === 'Nested'), false);
+	await assert.rejects(planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'No', parentPath: null, invocationDirectory: path.join(firstSite, 'pages', '000-home') }), /homepage cannot contain child/i);
+	await assert.rejects(planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'Bad', slug: '../escape' }), /Invalid slug/);
+	await assert.rejects(planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'Home' }), /sibling with that slug already exists/);
+	const stale = await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Reserved', parentPath: '/' });
+	await createSiteNode(await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Another', parentPath: '/' }));
+	await assert.rejects(createSiteNode(stale), /sibling already uses it/);
+	console.log('Site tree engine tests passed: source-preserving metadata, dirty overlays, isolated roots, malformed nodes, refresh and shared creation.');
+} finally {
+	await rm(root, { recursive: true, force: true });
+}

@@ -1,7 +1,8 @@
 # Norna for VS Code
 
-Norna for VS Code adds project-aware help for Norna configuration, page
-Markdown, named sidenotes, content blocks, and managed images.
+Norna for VS Code provides a site tree for opening and creating pages and
+editing their titles and metadata, together with project-aware help for Norna
+configuration, Markdown, named sidenotes, content blocks and managed images.
 
 **Experimental:** this extension is distributed as a VSIX for evaluation.
 It is not published in the Visual Studio Marketplace, and updates must be
@@ -15,6 +16,8 @@ appears only in recognized Norna files.
 
 ## Features
 
+- A site tree in Explorer, with page and category source opening, creation,
+  and source-preserving page information edits.
 - Configuration fields, values, and descriptions through Red Hat YAML using
   the project's Norna schemas.
 - Norna starting templates and structured YAML snippets.
@@ -30,6 +33,18 @@ appears only in recognized Norna files.
 The command-line checks remain authoritative. Use the extension while editing,
 then run the project's `norna:config:check` and `norna:content:check` scripts
 before building or publishing.
+
+Start with **Norna: Site Tree** in Explorer. A label opens its source; the
+chevron controls expansion. The context menu and Command Palette provide
+**Norna: New Page…**, **Norna: New Category…** and **Norna: Page Information…**.
+Creation previews the parent, address and directory before writing. Information
+edits stay in the buffer for normal save and undo. See the
+[site-tree reference](https://janga.github.io/norna/reference/workflows/editor/#work-from-the-site-tree)
+for fields, previous URLs, unlisted pages and scope limits.
+
+The tree needs an engine with the optional site-tree API. Older engines retain
+their compatible IntelliSense and show an explanatory message on the tree's
+site root. Use **Norna: Refresh Site Tree** after an engine update.
 
 ## Requirements
 
@@ -132,6 +147,17 @@ npm run test:integration -- --with-prettier
 Run that command from `editors/vscode/`. See the
 [editor workflow test plan](../../docs/design/editor-workflow-test-plan.md)
 for the scenario matrix, assertions, and limitations.
+
+For the focused site-tree workflow, run from the repository root:
+
+```sh
+npm --prefix editors/vscode run test:integration -- --suite site-tree
+```
+
+It uses the actual tree, menus and input widgets to open/create pages and edit
+information, including dirty-buffer undo, repeated saves, multiple sites and
+external file changes. Add `--version 1.96.0` for the minimum editor or
+`--with-prettier` for the supported formatter configuration.
 
 Relevance checks compare exact Norna candidate sets and reject unexpected or
 duplicate suggestions. They cover literal examples, comments, YAML text,

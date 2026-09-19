@@ -6,8 +6,8 @@ A site author can understand the Norna site structure, open a page, create a
 page, and edit its title and metadata without finding numbered directories by
 hand. Deliver this first scope in the existing experimental VS Code extension.
 
-**Status: Ready for experimental VSIX implementation.** Marketplace publication
-is not part of this item.
+**Status: Implemented in experimental VSIX 0.2.0 on 2026-09-19.** Marketplace
+publication remains outside this item.
 
 ## Author Workflow
 
@@ -109,3 +109,40 @@ page containers. This item does not change the published website's navigation.
   [editor workflow reference](../../../site/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
   with installation/update steps, the supported actions, and these scope
   boundaries once the implementation is verified.
+
+## Implementation And Verification
+
+The native Explorer tree uses the installed engine's optional site-tree API.
+CLI and editor creation share one planner and writer; page information returns
+targeted edits for VS Code to apply with normal Undo and save behavior. The
+canonical reference, extension README/changelog and engine contributor notes
+describe the delivered scope.
+
+All 12 packaged tree workflows passed on VS Code 1.138.0 and 1.96.0, and on
+1.138.0 with Prettier 12.4.0. A final full editor integration run verified the
+tree alongside existing completion and persistence workflows. Independent
+fixtures prevent completion tests from changing the tree's starting documents.
+See the [editor workflow test plan](../editor-workflow-test-plan.md#site-tree-workflows)
+for UI coverage, screenshots, bundle identity and the native-menu limitation.
+
+Checks run:
+
+- `node scripts/test-editor-site-tree.mjs`
+- `npm run test:site-node-commands`
+- `npm --prefix editors/vscode run check`
+- `npm --prefix editors/vscode run test:integration -- --suite site-tree`
+- `npm --prefix editors/vscode run test:integration -- --suite site-tree --version 1.96.0`
+- `npm --prefix editors/vscode run test:integration -- --suite site-tree --with-prettier`
+- `npm --prefix editors/vscode run test:integration`
+- `npm run test:dead-code`
+- `npm run package:check`
+- `npm run test:documentation`
+- `npm run content:check`
+- `npm run build`
+- `git diff --check`
+
+The complete engine release suite and website-navigation browser suites were
+not run: this item changes editor authoring and shared page creation, with
+focused engine, CLI, package and real-editor coverage. Remote workspaces,
+other operating systems and arbitrary formatter combinations remain outside
+the verified experimental setup.

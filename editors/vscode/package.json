@@ -1,8 +1,8 @@
 {
   "name": "norna-vscode",
   "displayName": "Norna",
-  "description": "Project-local IntelliSense for Norna configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.1.1",
+  "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
+  "version": "0.2.0",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -49,7 +49,8 @@
     "onLanguage:markdown",
     "onLanguage:yaml",
     "onCommand:nornaEditor.showStatus",
-    "onCommand:nornaEditor.refresh"
+    "onCommand:nornaEditor.refresh",
+    "onView:nornaSiteTree"
   ],
   "main": "./dist/extension.cjs",
   "extensionDependencies": [
@@ -64,13 +65,95 @@
       {
         "command": "nornaEditor.refresh",
         "title": "Norna: Refresh IntelliSense"
+      },
+      {
+        "command": "nornaEditor.openSiteNode",
+        "title": "Norna: Open Source",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "nornaEditor.newPage",
+        "title": "Norna: New Page\u2026",
+        "icon": "$(new-file)"
+      },
+      {
+        "command": "nornaEditor.newCategory",
+        "title": "Norna: New Category\u2026",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "nornaEditor.pageInformation",
+        "title": "Norna: Page Information\u2026",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "nornaEditor.refreshSiteTree",
+        "title": "Norna: Refresh Site Tree",
+        "icon": "$(refresh)"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "nornaSiteTree",
+          "name": "Norna: Site Tree",
+          "icon": "$(list-tree)",
+          "contextualTitle": "Norna"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "nornaEditor.newPage",
+          "when": "view == nornaSiteTree",
+          "group": "navigation@1"
+        },
+        {
+          "command": "nornaEditor.newCategory",
+          "when": "view == nornaSiteTree",
+          "group": "navigation@2"
+        },
+        {
+          "command": "nornaEditor.refreshSiteTree",
+          "when": "view == nornaSiteTree",
+          "group": "navigation@3"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "nornaEditor.openSiteNode",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
+          "group": "1_open@1"
+        },
+        {
+          "command": "nornaEditor.pageInformation",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
+          "group": "1_open@2"
+        },
+        {
+          "command": "nornaEditor.newPage",
+          "when": "view == nornaSiteTree && viewItem != nornaSiteUnavailable",
+          "group": "2_create@1"
+        },
+        {
+          "command": "nornaEditor.newCategory",
+          "when": "view == nornaSiteTree && viewItem != nornaSiteUnavailable",
+          "group": "2_create@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "nornaEditor.openSiteNode",
+          "when": "false"
+        }
+      ]
+    }
   },
   "scripts": {
     "audit:runtime": "npm audit --omit=dev",
     "build": "esbuild extension.cjs --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.cjs",
-    "check": "npm run build && node --check extension.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/package-contract.mjs",
+    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/package-contract.mjs",
     "package": "vsce package --out norna-vscode.vsix",
     "publish:marketplace": "vsce publish",
     "vscode:prepublish": "npm run build",
