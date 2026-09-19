@@ -180,6 +180,15 @@ The parent hides this page from navigation too.
 	assert.equal(unknownOptionResult.status, 1);
 	assert.match(unknownOptionResult.stderr, /Unknown navigation:review option "--write"/);
 
+	await writeFixtureFile(tempRoot, 'site/pages/040-empty/category.yaml', 'label: Empty\n');
+	const emptyResult = runReview(tempRoot, ['--format=json']);
+	assert.equal(emptyResult.status, 0, emptyResult.stderr);
+	const emptyReview = JSON.parse(emptyResult.stdout);
+	assert.deepEqual(emptyReview.errors, []);
+	assert.equal(emptyReview.observations.filter(({ code }) => code === 'category-without-listed-content').length, 1);
+	assert.equal(emptyReview.observations.some(({ code }) => code === 'empty-category'), false);
+	assert.equal(emptyReview.site.listedCategoryCount, review.site.listedCategoryCount);
+
 	await writeFixtureFile(tempRoot, 'site/pages/000-home/content.md', `# Home
 
 [Missing](/missing/)

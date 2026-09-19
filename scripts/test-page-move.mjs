@@ -183,6 +183,32 @@ try {
 	await assertSuccessfulResult(normal.siteDir);
 	const normalResult = await snapshotSite(normal.siteDir);
 
+	for (const mode of ['move', 'reconcile']) {
+		const lastChild = await createFixture(`last-child-${mode}`);
+		const homePath = path.join(lastChild.siteDir, 'pages/000-home/content.md');
+		await writeFile(homePath, `${await readFile(homePath, 'utf8')}\n[Overview](/reference/overview/#summary)\n[Reference](/reference/)\n`);
+		const source = path.join(lastChild.siteDir, 'pages/020-reference/pages/010-overview');
+		const destination = path.join(lastChild.siteDir, 'pages/030-overview');
+		if (mode === 'reconcile') await rename(source, destination);
+		const before = await snapshotSite(lastChild.siteDir);
+		const preview = await runNorna(lastChild.siteDir, ['page:move', '/reference/overview/', '/overview/']);
+		assert.match(preview.stdout, /Dry run only/);
+		assert.deepEqual(await snapshotSite(lastChild.siteDir), before);
+		await runNorna(lastChild.siteDir, ['page:move', '/reference/overview/', '/overview/', '--write']);
+		assert.equal(await exists(source), false);
+		assert.match(await readFile(path.join(destination, 'content.md'), 'utf8'), /aliases:\n    - \/reference\/overview\//);
+		assert.equal(await readFile(path.join(lastChild.siteDir, 'pages/020-reference/category.yaml'), 'utf8'), 'label: Reference\n');
+		const home = await readFile(homePath, 'utf8');
+		assert.match(home, /\[Overview\]\(\/overview\/#summary\)/);
+		assert.match(home, /\[Reference\]\(\/reference\/\)/);
+		const checked = await runNorna(lastChild.siteDir, ['content:check']);
+		assert.match(checked.stdout, /Content check completed with warnings/);
+		assert.match(checked.stdout, /020-reference\/category.yaml has no listed reachable content page/);
+		// An existing empty category must not prevent a subsequent move either.
+		await runNorna(lastChild.siteDir, ['page:move', '/overview/', '/overview-renamed/', '--write']);
+		assert.equal(await exists(path.join(lastChild.siteDir, 'pages/030-overview-renamed/content.md')), true);
+	}
+
 	const reconciled = await createFixture('reconciled');
 	await mkdir(path.join(reconciled.siteDir, 'pages/020-reference/pages/010-overview/pages'));
 	await rename(

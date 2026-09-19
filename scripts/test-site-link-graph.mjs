@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parsePageMarkdownSource } from './lib/page-markdown.mjs';
-import { createCategoryDestinationModel } from './lib/category-destinations.mjs';
+import { assertCategoryDestinationModel, createCategoryDestinationModel } from './lib/category-destinations.mjs';
 import {
 	createSiteLinkGraph,
 	getSiteLinkGraph,
@@ -244,7 +244,24 @@ assert.equal(categoryModel.byPathname.get('/guides/').kind, 'listing');
 assert.deepEqual(categoryModel.byPathname.get('/guides/').children.map(({ pagePath }) => pagePath), ['guides/setup', 'guides/workflows']);
 assert.equal(categoryModel.byPathname.get('/guides/setup/').target.pagePath, 'guides/setup/install');
 assert.equal(createCategoryDestinationModel([home, guides, workflows, subcategory, nestedPage]).byPathname.get('/guides/').target, workflows);
-assert.equal(createCategoryDestinationModel([guides]).diagnostics[0].code, 'category-without-listed-content');
+const emptyCategory = assertCategoryDestinationModel(createCategoryDestinationModel([guides]));
+assert.equal(emptyCategory.diagnostics[0].code, 'category-without-listed-content');
+assert.equal(emptyCategory.diagnostics[0].severity, 'warning');
+assert.equal(emptyCategory.byPathname.get('/guides/').kind, 'listing');
+assert.deepEqual(emptyCategory.byPathname.get('/guides/').children, []);
+const emptyFirstChild = createCategoryDestinationModel([home, guides, subcategory, workflows]);
+assert.equal(emptyFirstChild.byPathname.get('/guides/').target, workflows);
+assert.deepEqual(emptyFirstChild.byPathname.get('/guides/').children, [workflows]);
+const emptyChain = createCategoryDestinationModel([home, guides, subcategory]);
+assert.equal(emptyChain.diagnostics.length, 2);
+assert.ok(emptyChain.diagnostics.every(({ severity }) => severity === 'warning'));
+assert.deepEqual(emptyChain.byPathname.get('/guides/').children, []);
+const emptyCategoryLinks = createSiteLinkGraph({
+	pageDocuments: [{ contentFile: home, document: await parsePageMarkdownSource('# Home\n\n[Guides](/guides/)\n[Title](/guides/#page-title)\n') }],
+	siteStructure: { nodes: [home, guides], categories: [guides], contentFiles: [home] },
+});
+assert.deepEqual(emptyCategoryLinks.diagnostics.map(({ severity }) => severity), ['warning']);
+assert.ok(emptyCategoryLinks.references.every(({ resolution }) => resolution.kind === 'category'));
 assert.equal(createCategoryDestinationModel([guides, { ...installation, navigation: { listed: false } }]).diagnostics.length, 1);
 const excluded = createCategoryDestinationModel([
 	{ ...installation, parentPagePath: null, navigation: { listed: false } },

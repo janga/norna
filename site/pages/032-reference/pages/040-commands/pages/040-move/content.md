@@ -85,6 +85,10 @@ Links to groups inside the moved folder are also updated. Such navigation
 categories have `category.yaml` instead of `content.md`; they do not receive
 aliases.
 
+You can move the last page out of a category. The category's files remain in
+place; `content:check` and `build` warn that it has no listed content without
+stopping the move or build. See [empty category behavior](/reference/site/pages/#opening-a-category-url).
+
 This is not a search-and-replace across the repository. Links in README files,
 arbitrary HTML or JavaScript, and other websites are not repaired. Referenced
 headings must still exist at the destination.

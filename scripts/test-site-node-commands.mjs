@@ -144,9 +144,10 @@ try {
 	const emptyCategorySite = await createMinimalSite('empty-category');
 	await mkdir(path.join(emptyCategorySite, 'pages', '010-guides'));
 	await writeFile(path.join(emptyCategorySite, 'pages', '010-guides', 'category.yaml'), 'label: Guides\n');
-	const emptyCategoryCheck = await runNornaFailureForSite(emptyCategorySite, ['content:check']);
+	const { stdout: emptyCategoryCheck } = await runNornaForSite(emptyCategorySite, ['content:check']);
+	assert.match(emptyCategoryCheck, /Content check completed with warnings/);
 	assert.match(emptyCategoryCheck, /010-guides\/category.yaml has no listed reachable content page/);
-	assert.match(emptyCategoryCheck, /Add a listed page under this category, or remove the category/);
+	assert.match(emptyCategoryCheck, /include this category in navigation/);
 
 	console.log('Site node command tests passed.');
 } finally {

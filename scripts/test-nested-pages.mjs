@@ -45,8 +45,14 @@ try {
 	await addFile('pages/050-choices/pages/010-setup/category.yaml', 'label: Setup\n');
 	await addFile('pages/050-choices/pages/010-setup/pages/010-install/content.md', '# Install\n');
 	await addFile('pages/050-choices/pages/020-work/content.md', '---\npage:\n  description: Compare & choose a workflow.\n---\n# Work\n');
-	await runNorna(siteDir, 'content:check');
-	await runNorna(siteDir, 'build');
+	await addFile('pages/050-choices/pages/005-empty/category.yaml', 'label: Empty choice\n');
+	await addFile('pages/060-drafts/category.yaml', 'label: Drafts\n');
+	await addFile('pages/060-drafts/pages/010-future/category.yaml', 'label: Future\n');
+	const check = await runNorna(siteDir, 'content:check');
+	assert.match(check.stdout, /Content check completed with warnings/);
+	const build = await runNorna(siteDir, 'build');
+	assert.match(build.stdout, /060-drafts\/category.yaml has no listed reachable content page/);
+	assert.match(build.stdout, /Content check completed with warnings/);
 
 	const distDir = path.join(fixtureCopyRoot, 'dist');
 	const expectedPages = [
@@ -69,11 +75,19 @@ try {
 	assert.match(categoryListing, /href="\/choices\/setup\/"[\s\S]*?<strong>Setup<\/strong>/);
 	assert.match(categoryListing, /Compare &amp; choose a workflow/);
 	assert.doesNotMatch(categoryListing, /<strong>Install<\/strong>|http-equiv="refresh"|class="edit-source-link"/);
+	assert.doesNotMatch(categoryListing, /href="\/choices\/empty\/"/);
+	for (const [pathname, title] of [['drafts', 'Drafts'], ['drafts/future', 'Future'], ['choices/empty', 'Empty choice']]) {
+		const html = await readFile(path.join(distDir, pathname, 'index.html'), 'utf8');
+		assert.ok(html.includes(`id="page-title">${title}</h1>`));
+		assert.doesNotMatch(html, /http-equiv="refresh"/);
+		assert.match(html, /class="child-page-list"[^>]*>\s*<ul>\s*<\/ul>/);
+	}
 	const sitemap = await readFile(path.join(distDir, 'sitemap.xml'), 'utf8');
 	assert.match(sitemap, /\/choices\/<\/loc>/);
 	assert.doesNotMatch(sitemap, /\/choices\/setup\/<\/loc>|\/guides\/<\/loc>/);
 
 	const rootHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
+	assert.doesNotMatch(rootHtml, /href="\/(?:drafts|drafts\/future|choices\/empty)\/"/);
 	const installationHtml = await readFile(path.join(distDir, 'guides', 'installation', 'index.html'), 'utf8');
 	const macosHtml = await readFile(path.join(distDir, 'guides', 'installation', 'macos', 'index.html'), 'utf8');
 	const referenceInstallationHtml = await readFile(

@@ -50,13 +50,15 @@ you can edit them directly. Categories have no image content of their own.
 
 ## Opening a category URL
 
-A category has a URL despite having no `content.md`. Norna examines its first
-**listed direct child**, in numeric order:
+A category has a URL despite having no `content.md`. Norna examines its direct
+children in numeric order, excluding pages hidden from navigation and
+categories with no reachable listed page:
 
-| First listed direct child | Category URL result |
+| First child available in navigation | Category URL result |
 | --- | --- |
 | A page | Static redirect to that page |
-| Another category | Generated list of this category's listed direct children |
+| Another category | Generated list of this category's direct children available in navigation |
+| No children | Generated page with the category heading and an empty list |
 
 Norna does not search through subcategories for an arbitrary first page. The
 generated list shows labels and available page descriptions. A valid
@@ -67,9 +69,11 @@ The redirect has a normal link fallback. It is not a permanent
 first listed child. Link directly to a page when a link must keep identifying
 that page after reordering.
 
-A listed category must eventually contain a reachable listed page. Empty
-categories are possible while editing, but fail content checks and builds.
-Categories require tree navigation, normally selected automatically.
+A category with no reachable listed page is allowed. `content:check` and
+`build` report a warning, and the category is omitted from navigation until
+it has a listed page. This also applies when its only pages are hidden from
+navigation. Categories that appear in navigation require tree navigation,
+normally selected automatically.
 
 ## Listed and unlisted pages
 

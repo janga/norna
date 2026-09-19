@@ -5,6 +5,8 @@
 Complete. Implemented, visually approved, and documented on 2026-09-15.
 The canonical contract is now
 [Opening A Category URL](https://janga.github.io/norna/reference/site/pages/#opening-a-category-url).
+The empty-category policy was revised on 2026-09-19: page moves may leave a
+category empty, and builds warn instead of failing for that condition.
 
 ## Problem
 
@@ -15,21 +17,23 @@ instead send the visitor deep into the tree without letting them choose.
 
 ## Decision
 
-Evaluate listed direct children using the existing navigation order:
+Evaluate direct children available in navigation using the existing order:
 
 - If the first child is a page, redirect the category URL to that page.
 - If the first child is a category, render a generated navigation page with
   the category label as H1 and links to all listed direct children in order.
-- Do not descend automatically, skip a first category to find a later page,
-  or flatten the complete subtree onto the generated page.
+- Do not descend automatically, skip a reachable first category to find a
+  later page, or flatten the complete subtree onto the generated page.
 - Show existing descriptions when available; do not invent introductory copy
   or require descriptions solely for this listing.
 - A child-category link targets its category URL and applies the same rule.
-- A category with no listed reachable content page is a build error, not a
-  warning. Report its source path and suggest adding a listed page or removing
-  the category. Authoring a temporarily empty category remains possible.
+- A category with no listed reachable content page produces a warning in
+  `content:check` and `build`. It stays outside navigation and parent category
+  choices. Its URL renders the category heading and an empty list, preserving
+  direct links while the content is reorganized. A move may leave a category
+  empty without deleting its files or failing validation.
 
-A first child that is a category is valid and produces no build warning.
+A first child category with reachable listed content produces no build warning.
 Keep existing ancestor-based navigation exclusions; this feature must not
 expose pages excluded from navigation or require making private pages listed.
 Cover excluded subtrees explicitly in validation tests.
@@ -57,12 +61,15 @@ working ordinary destination link without JavaScript.
 ## Acceptance And Verification
 
 - `/getting-started/` reaches its first listed direct page, Install Norna.
-- A first child category produces a direct-child list, even if a later sibling
-  is an ordinary page. No automatic recursive redirect occurs.
+- A first child category with reachable listed content produces a direct-child
+  list, even if a later sibling is an ordinary page. No automatic recursive
+  redirect occurs.
 - Reordering or excluding entries recalculates the destination consistently.
-- Empty categories and categories containing only excluded content fail the
-  build with an actionable source-path diagnostic; valid nested categories do
-  not warn. Existing excluded-subtree semantics remain intact.
+- Empty categories and categories containing only excluded content allow the
+  build to finish with an actionable source-path warning. They remain outside
+  navigation, while their URLs show an empty generated list. Moving the last
+  page succeeds and keeps the category files. Existing excluded-subtree
+  semantics remain intact.
 - Links work with a deployment base path, encoded path segments, and without
   JavaScript. Alias collisions cannot overwrite a category destination.
 - Focused unit/build tests cover resolution, validation, links and route output.

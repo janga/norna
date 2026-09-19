@@ -58,7 +58,7 @@ const getSiblingGroups = (roots) => {
 	return groups;
 };
 
-const toGraphError = (diagnostic) => ({
+const toGraphFinding = (diagnostic) => ({
 	code: diagnostic.code,
 	...(diagnostic.fix ? { fix: diagnostic.fix } : {}),
 	...(diagnostic.reference?.line ? { line: diagnostic.reference.line } : {}),
@@ -235,7 +235,8 @@ export const createNavigationReview = ({
 	const siblingGroups = getSiblingGroups(listedTree);
 	const widestSiblingCount = siblingGroups.reduce((maximum, group) => Math.max(maximum, group.count), 0);
 	const observations = [
-		...siteStructure.warnings.map(toStructureObservation),
+		...siteStructure.warnings.filter(({ code }) => code !== 'empty-category').map(toStructureObservation),
+		...linkGraph.diagnostics.filter(({ severity }) => severity === 'warning').map(toGraphFinding),
 	];
 	const unlistedPages = pages.filter(({ listed }) => !listed);
 	if (unlistedPages.length > 0) {
@@ -303,7 +304,7 @@ export const createNavigationReview = ({
 		pages,
 		categories,
 		errors: [
-			...linkGraph.diagnostics.map(toGraphError),
+			...linkGraph.diagnostics.filter(({ severity }) => severity === 'error').map(toGraphFinding),
 			...navigationErrors,
 		],
 		observations,

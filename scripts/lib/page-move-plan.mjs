@@ -615,10 +615,11 @@ export const createPageMovePlan = async ({
 		publicFiles,
 		siteStructure: virtualStructure,
 	});
-	if (virtualGraph.diagnostics.length > 0) {
+	const errors = virtualGraph.diagnostics.filter(({ severity }) => severity === 'error');
+	if (errors.length > 0) {
 		throw new Error([
 			'Page move preflight failed. No file was changed.',
-			...formatGraphDiagnostics(virtualGraph.diagnostics),
+			...formatGraphDiagnostics(errors),
 		].join('\n'));
 	}
 

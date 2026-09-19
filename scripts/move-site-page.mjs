@@ -131,10 +131,11 @@ const assertSourcesUnchanged = async (plan) => {
 const assertFinalSite = async () => {
 	const structure = await getSiteStructure();
 	const graph = await getSiteLinkGraph({ siteStructure: structure });
-	if (graph.diagnostics.length === 0) return;
+	const errors = graph.diagnostics.filter(({ severity }) => severity === 'error');
+	if (errors.length === 0) return;
 	throw new Error([
 		'Post-move link validation failed.',
-		...graph.diagnostics.flatMap((diagnostic) => [
+		...errors.flatMap((diagnostic) => [
 			`- ${diagnostic.message}`,
 			...(diagnostic.fix ? [`  Fix: ${diagnostic.fix}`] : []),
 		]),
