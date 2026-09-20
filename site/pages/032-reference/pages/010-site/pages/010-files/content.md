@@ -58,14 +58,14 @@ only the homepage. A child page or category's `theme.yaml` supplies
 
 ## Generated files
 
-| Location | Purpose | Keep in Git? |
-| --- | --- | --- |
-| Markdown, YAML, images and `public/` | Editable sources | Yes |
-| `package.json` and `package-lock.json` | Requested and resolved versions | Yes |
-| `site/.norna/generated-images.json` | Image hashes and output metadata | Yes |
-| `site/.norna/public/` | Prepared files and image variants | No |
-| `site/.norna/.astro/` and `site/.norna/dev/` | Build and preview state | No |
-| `dist/` | Completed static website | No |
+| Location                                     | Purpose                           | Keep in Git? |
+| -------------------------------------------- | --------------------------------- | ------------ |
+| Markdown, YAML, images and `public/`         | Editable sources                  | Yes          |
+| `package.json` and `package-lock.json`       | Requested and resolved versions   | Yes          |
+| `site/.norna/generated-images.json`          | Image hashes and output metadata  | Yes          |
+| `site/.norna/public/`                        | Prepared files and image variants | No           |
+| `site/.norna/.astro/` and `site/.norna/dev/` | Build and preview state           | No           |
+| `dist/`                                      | Completed static website          | No           |
 
 Norna can rebuild generated output. Keep the starter's `.gitignore`; older
 project-level `.astro/` output should also remain ignored. Each selected site
