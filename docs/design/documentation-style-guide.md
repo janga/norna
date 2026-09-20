@@ -159,6 +159,31 @@ is useful only when definitions are numerous or used across unrelated
 documents; it does not replace definitions at the point where readers need
 them.
 
+### Name Norna And Its Parts Clearly
+
+Use **Norna** in ordinary prose about the product. When discussing editor
+behavior, name the responsible part explicitly so readers can tell whether
+the statement concerns VS Code, its extension, or the site itself. Apply this
+rule to documentation, design discussions and progress reports.
+
+| English | Swedish | Use for |
+| --- | --- | --- |
+| Norna | Norna | The product in general |
+| Norna VS Code extension | Nornas VS Code-tillägg | The installed extension and its editor features |
+| Site Tree in the VS Code extension | Site Tree i VS Code-tillägget | The extension's page and file tree |
+| IntelliSense | IntelliSense | Editing assistance such as suggestions, completion and contextual information |
+
+After introducing the extension, **the VS Code extension** or **the extension**
+is sufficient while the reference remains unambiguous. Use **IntelliSense**
+for the editing assistance itself; it does not name the whole extension or
+its Site Tree. Name the **Norna engine** or **Norna CLI** when their distinct
+responsibility matters.
+
+For example, write "The VS Code extension opens the page's source file"
+rather than "Norna opens the page." Preserve exact UI
+labels and command names, such as **Norna: Site Tree**, and explain which
+component they belong to when needed.
+
 ## Configuration Reference Pattern
 
 Use the reader-understanding plan, not a fixed eight-section template.
@@ -286,6 +311,8 @@ Before completing a documentation change, check:
   and a clearly named link to any necessary model?
 - Are all Norna-specific terms introduced before they are relied upon?
 - Does every public term have one unambiguous meaning?
+- When editor behavior is discussed, is the responsible part clear: the
+  VS Code extension, Site Tree, IntelliSense, VS Code itself or the Norna engine?
 - Could a more familiar and equally precise term replace a new one?
 - Do enum descriptions state concrete effects rather than echoing their names?
 - Are defaults, scope, inheritance, interactions, and invalid combinations
