@@ -69,7 +69,21 @@ sidebar. Its **Site Tree** shows pages by their readable titles and files by
 their real names. The ordinary **Explorer** remains available for other project
 files. You can also find **Site Tree** through **View: Open View…**.
 
-Each site's top row is its homepage. Clicking it opens `site/content.md`.
+The VS Code extension shows one active site from your workspace, the folder
+or set of folders opened in this VS Code window. When the workspace contains
+one site, it is selected automatically. With several sites, select
+**Choose Site…** in the empty view or run **Norna: Choose Site…** from the
+Command Palette. The chooser shows each site's title and source location.
+Use that command or the view's **Choose Site…** button to switch later.
+The extension remembers your choice in this workspace.
+
+Opening a file from another site does not add or switch the tree. To work
+with only one site's files in both Site Tree and Explorer, use **File → Open
+Folder…** to open that site's source folder. Site Tree does not change which
+folders VS Code includes in Explorer.
+
+The top row uses the homepage's title and is marked **Homepage**. Clicking it
+opens `site/content.md` (or `content.md` in your chosen site source folder).
 Beneath a page, the tree follows the actual
 [file organization](/reference/site/files/): existing configuration files come
 first, followed by `images/` and the child-page folder `pages/`. The root also
@@ -80,7 +94,7 @@ the number stays in the filesystem but does not clutter the displayed title.
 For example, a homepage titled **Norna** and a child titled **Guide** appear as:
 
 ```text
-Norna                     opens site/content.md
+Norna  Homepage           opens site/content.md
   config.yaml
   theme.yaml
   page-theme.yaml
@@ -101,15 +115,13 @@ use their labels and open `category.yaml`; that file also appears among the
 category's configuration files.
 
 Click a title to open its source. Use the separate chevron, or the keyboard
-arrow keys, to expand and collapse children. The tree follows the active Norna
-source file, including one opened through the website's **Open in VS Code**
-link. Other expanded branches remain open. Resource files use VS Code's normal
+arrow keys, to expand and collapse children. Within the chosen site, the tree
+reveals the active source file, including one opened through the website's
+**Open in VS Code** link. Other expanded branches remain open. Resource files use VS Code's normal
 editor selection: PNG images, for example, open in its image preview. Use
 VS Code's built-in tree find when looking for a visible label.
 
-Each discovered site has its own homepage row, with its source location to
-distinguish multiple sites. Opening a source file also discovers its site,
-including a folder with a name other than `site`. Pages omitted from
+Site source folders can have a name other than `site`. Pages omitted from
 generated navigation remain in the authoring tree, marked **unlisted**; they
 are still published. That mark also applies to descendants of an unlisted page.
 
@@ -141,7 +153,8 @@ missing/duplicate H1 in the source; other valid tree nodes remain usable.
 YAML aliases, anchors or tagged values that cannot be edited directly through
 Page Information need a source edit.
 
-The file tree requires extension version 0.3.0 or later and an engine build
+Single-site selection requires extension version 0.3.1 or later. The file
+tree requires extension version 0.3.0 or later and an engine build
 with page-file support. Engines with the earlier site-tree support retain
 their page tree and show a message explaining the missing file view. An
 incompatible engine reports the problem on its site root; compatible

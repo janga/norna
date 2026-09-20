@@ -28,6 +28,11 @@ assert.deepEqual(extensionManifest.contributes.viewsContainers.activitybar, [
 ]);
 assert.equal(extensionManifest.contributes.views.norna[0].id, 'nornaSiteTree');
 assert.equal(extensionManifest.contributes.views.explorer, undefined);
+assert.ok(extensionManifest.contributes.commands.some((item) => item.command === 'nornaEditor.chooseSite'));
+assert.ok(extensionManifest.contributes.menus['view/title'].some((item) => item.command === 'nornaEditor.chooseSite'
+	&& item.when.includes('nornaSiteTree.hasMultipleSites')));
+assert.ok(extensionManifest.contributes.viewsWelcome.some((item) => item.view === 'nornaSiteTree'
+	&& item.contents.includes('command:nornaEditor.chooseSite')));
 const itemMenus = extensionManifest.contributes.menus['view/item/context'];
 assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.addPage'
 	&& item.group === 'inline' && item.when.endsWith('viewItem == nornaPages')));

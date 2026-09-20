@@ -153,6 +153,10 @@ The `site-tree` suite verifies
 packaged extension's native tree view and input widgets. The current hierarchy
 and resource scenarios follow
 [BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md).
+Site selection follows
+[BL-141 VS Code Active Site Scope](backlog/BL-141-vscode-active-site-scope.md):
+show one workspace site, choose explicitly when several are available, and
+keep that choice when opening other files.
 The suite exercises:
 
 - source opening by label, independent chevrons, keyboard navigation, and
@@ -168,10 +172,21 @@ The suite exercises:
 - owned YAML, normal image previews, equal image names under different pages,
   nested public files, and the inline Add Page action on a real `pages/` folder.
 
+For active-site changes, also verify the native **Choose Site** Quick Pick:
+select a site using its title and location, cancel without changing the tree,
+and reload the window to confirm the saved choice. Open another site's source
+and a source outside the workspace; neither may replace or add a root. Remove
+the chosen workspace folder and confirm that its tree and actions disappear.
+The homepage must be marked **Homepage**, and its label must open the root
+`content.md`. Keep the beginner exercise to one site; use a separate workspace
+for multi-site scenarios.
+
 The engine's file projection and the extension adapter also have focused
 deterministic checks. They cover source ownership, real/absent directories,
 no-write browsing, resource command boundaries, creation destinations and
-fallback to an engine exposing only the earlier logical tree API. These checks
+fallback to an engine exposing only the earlier logical tree API. The adapter
+also covers selection/cancellation, restored choice, workspace removal,
+external files, dirty homepage labels and stale-node command rejection. These checks
 supplement the native controls; they do not establish widget usability.
 
 Current VS Code uses its custom context menu, selected with keyboard navigation
@@ -237,6 +252,17 @@ to `false` and assigns standalone YAML to Red Hat. This verifies the documented
 ownership boundary; it does not claim arbitrary Markdown formatting is safe.
 
 ## Limits And Follow-up
+
+The 2026-09-20 extension 0.3.1 check used the same VS Code 1.137.0 Default
+profile. Native selection, cancellation, external/inactive-site file opening,
+window reload and workspace-folder removal passed. Homepage opening, image
+preview, Page Information and cancelled Add Page were also checked. Light/dark
+and half-screen captures were inspected. The extension adapter covers the
+remaining scope and stale-node cases. The isolated integration suite was
+adapted but not rerun; minimum-version, completion and formatter matrices were
+deferred because those contracts did not change. See
+[BL-141 VS Code Active Site Scope](backlog/BL-141-vscode-active-site-scope.md)
+for exact commands and the installed package identity.
 
 The 2026-09-20 extension 0.3.0 work used the owner's VS Code 1.137.0 Default
 profile, as requested, with disposable files under `.local/bl-140-editor/`.

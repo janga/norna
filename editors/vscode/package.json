@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -95,6 +95,11 @@
         "command": "nornaEditor.refreshSiteTree",
         "title": "Norna: Refresh Site Tree",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "nornaEditor.chooseSite",
+        "title": "Norna: Choose Site…",
+        "icon": "$(globe)"
       }
     ],
     "views": {
@@ -110,13 +115,18 @@
     "menus": {
       "view/title": [
         {
+          "command": "nornaEditor.chooseSite",
+          "when": "view == nornaSiteTree && nornaSiteTree.hasMultipleSites",
+          "group": "navigation@0"
+        },
+        {
           "command": "nornaEditor.newPage",
-          "when": "view == nornaSiteTree",
+          "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
           "group": "navigation@1"
         },
         {
           "command": "nornaEditor.newCategory",
-          "when": "view == nornaSiteTree",
+          "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
           "group": "navigation@2"
         },
         {
@@ -181,7 +191,14 @@
           "icon": "media/norna.svg"
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "nornaSiteTree",
+        "contents": "Choose a site to show its pages and files.\n[Choose Site…](command:nornaEditor.chooseSite)",
+        "when": "nornaSiteTree.hasMultipleSites && !nornaSiteTree.hasActiveSite"
+      }
+    ]
   },
   "scripts": {
     "audit:runtime": "npm audit --omit=dev",

@@ -36,8 +36,16 @@ The command-line checks remain authoritative. Use the extension while editing,
 then run the project's `norna:config:check` and `norna:content:check` scripts
 before building or publishing.
 
-Select **Norna** in the Activity Bar to open **Site Tree**. Each site's root
-is its homepage, opening `site/content.md`. Existing configuration appears
+Select **Norna** in the Activity Bar to open **Site Tree**. The VS Code
+extension shows one active site from the folders in your workspace. A sole
+site is selected automatically. If the workspace contains several, use
+**Norna: Choose Site…** to select one by title and source location. The choice
+is remembered for that workspace; opening another site's file does not switch
+or add a tree. Open just your site's folder for a workspace containing only
+that site's files; the ordinary Explorer continues to show all workspace folders.
+
+The tree's root is its homepage, marked **Homepage**, opening `site/content.md`.
+Existing configuration appears
 before `pages/`, beneath the page or category that owns it. Page names hide
 numeric ordering prefixes; resource files retain their actual names. Images
 use VS Code's normal image preview, and `public/` includes nested static files.
@@ -52,7 +60,8 @@ edits stay in the buffer for normal save and undo. See the
 [site-tree reference](https://janga.github.io/norna/reference/workflows/editor/#work-from-the-site-tree)
 for fields, previous URLs, unlisted pages and scope limits.
 
-The file view needs extension 0.3.0 and the engine's optional page-file support.
+The single-site selection requires extension 0.3.1 or later. The file view
+needs extension 0.3.0 and the engine's optional page-file support.
 Engines with the earlier site-tree API retain their page tree and show a
 message explaining the unavailable file view. Compatible IntelliSense remains
 available. Use **Norna: Refresh Site Tree** after an engine update.

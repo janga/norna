@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1
+
+- Show one active workspace site in Site Tree. Select a sole site automatically;
+  use **Norna: Choose Site…** for workspaces containing several sites.
+- Remember the chosen site across window reloads. Opening other sites' files
+  no longer adds or switches trees; removed workspace folders are forgotten.
+- Mark the root page **Homepage** and keep page actions within the active site.
+
 ## 0.3.0
 
 - Move Site Tree to its own Norna Activity Bar entry and show one homepage

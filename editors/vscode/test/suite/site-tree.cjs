@@ -26,8 +26,19 @@ async function runSiteTree({ openDocument, waitFor }) {
 			await waitFor(() => probe.getText(), (source) => source === '# Probe\n\n**bold** text\n', 'Prettier did not format the probe.');
 			console.log(`Formatter coexistence: Prettier ${prettier.packageJSON.version} formatted the probe; Markdown save formatting scoped off.`);
 		}
+		const quick = window.locator('.quick-input-widget');
+		const pick = async (label) => {
+			await quick.locator('.quick-input-list .monaco-list-row').filter({ has: window.locator('.label-name').getByText(label, { exact: true }) }).click();
+		};
+		const chooseSite = async (title) => {
+			const choosing = vscode.commands.executeCommand('nornaEditor.chooseSite');
+			await quick.waitFor({ state: 'visible' });
+			await pick(title);
+			await choosing;
+		};
 		await openDocument('tree-content/pages/010-guide/content.md');
 		await vscode.commands.executeCommand('nornaSiteTree.focus');
+		await chooseSite('Tree Home');
 		await waitFor(() => window.locator('.monaco-list-row').allTextContents(), (texts) => texts.some((text) => text.includes('Tree Guide')), 'The site tree did not reveal the active page.');
 		const tree = window.getByRole('tree', { name: 'Site Tree', exact: true });
 		await vscode.commands.executeCommand('notifications.clearAll');
@@ -38,10 +49,6 @@ async function runSiteTree({ openDocument, waitFor }) {
 			const item = sourceRow(relative);
 			await item.waitFor({ state: 'visible' });
 			if (await item.getAttribute('aria-expanded') === 'false') await item.locator('.monaco-tl-twistie').click();
-		};
-		const quick = window.locator('.quick-input-widget');
-		const pick = async (label) => {
-			await quick.locator('.quick-input-list .monaco-list-row').filter({ has: window.locator('.label-name').getByText(label, { exact: true }) }).click();
 		};
 		const input = async (value, prompt, accept = true) => {
 			await waitFor(() => quick.locator('.quick-input-message').allTextContents(), (texts) => texts.some((text) => text.includes(prompt)), `Missing input prompt: ${prompt}`);
@@ -262,13 +269,19 @@ async function runSiteTree({ openDocument, waitFor }) {
 		passed('Malformed page remains openable without disabling valid pages');
 
 		await openDocument('second/tree-content/content.md');
+		assert.equal(await row('Other Tree Home').count(), 0, 'Opening another site’s source must not add it to Site Tree.');
+		assert.equal(await row('Tree Home').count(), 1);
+		await chooseSite('Other Tree Home');
 		await waitFor(() => row('Other Tree Home').getAttribute('aria-selected'), (value) => value === 'true', 'The second site was not revealed.');
+		assert.equal(await row('Tree Home').count(), 0, 'Choosing another site must show exactly one tree.');
+		assert.match(await row('Other Tree Home').innerText(), /Homepage/);
 		await information('Other Tree Home', 'Title', 'Second Site Home');
 		await vscode.window.activeTextEditor.document.save();
 		assert.equal(fs.readFileSync(path.join(root, 'tree-content/content.md'), 'utf8'), '# Tree Home\n');
 		passed('Switching sites keeps metadata edits within the selected site');
 
 		await openDocument(guidePath);
+		await chooseSite('Tree Home');
 		await waitFor(() => row('Renamed Guide').getAttribute('aria-selected'), (value) => value === 'true', 'The captured source was not selected.');
 		const settings = vscode.workspace.getConfiguration('workbench');
 		for (const [appearance, theme] of [['dark', 'Default Dark Modern'], ['light', 'Default Light Modern']]) {

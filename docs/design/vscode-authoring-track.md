@@ -17,6 +17,10 @@ model. They establish the direction, not approval of every future control.
 
 - Provide a dedicated Norna entry in VS Code's Activity Bar. Keep the normal
   Explorer available.
+- The VS Code extension's Site Tree shows one active workspace site. Select
+  a sole site automatically; choose explicitly when several are available.
+  Opening other files must not add or switch sites. Mark the root page
+  **Homepage**. Explorer retains VS Code's ordinary workspace-folder scope.
 - Follow Norna's actual file organization. Readable page titles may replace
   technical directory names and ordering prefixes, but the hierarchy must
   match storage. Do not insert synthetic directories such as `Page files`.
@@ -46,6 +50,8 @@ has implemented the root storage model;
 [BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md)
 implements the revised editor tree. The drawings remain the accepted design
 record; the editor reference describes the delivered controls.
+The selection and homepage clarification is implemented in
+[BL-141 VS Code Active Site Scope](backlog/BL-141-vscode-active-site-scope.md).
 
 | Item | Decisions it must carry into its own brief |
 | --- | --- |
