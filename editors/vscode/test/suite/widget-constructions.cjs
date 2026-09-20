@@ -117,7 +117,7 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 		}
 		if (process.env.NORNA_EDITOR_TEST_SUITE === 'metadata') return;
 
-		const usagePath = 'usage-site/pages/000-home/content.md';
+		const usagePath = 'usage-site/content.md';
 		for (const type of ['image-stack', 'image-carousel', 'card-list']) {
 			for (const filename of ['z-unused.svg', 'a-used.svg', 'y-other.svg', 'b-used.svg']) {
 				const source = `# Image usage\n\n\`\`\`${type}\nitems:\n  - image: a-used.svg\n  - image: b-used.svg\n  - image: |CURSOR|\n\`\`\`\n`;

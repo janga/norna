@@ -226,7 +226,7 @@ async function run() {
 	assert.equal(embeddedIssues[0].source, 'Norna');
 	assert.equal(embeddedIssues[0].range.start.line, 8, 'Highlight the duplicate key, not the code fence.');
 
-	const home = await openDocument('site/pages/000-home/content.md');
+	const home = await openDocument('site/content.md');
 	const imageLine = Array.from({ length: home.lineCount }, (_value, line) => line)
 		.find((line) => home.lineAt(line).text === '  - image: ');
 	const imageItems = await getCompletions(home, imageLine);

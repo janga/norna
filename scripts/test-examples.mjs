@@ -19,9 +19,9 @@ try {
 		await mkdir(path.join(discoveryRoot, 'examples', category), { recursive: true });
 	}
 	const validSite = path.join(discoveryRoot, 'examples', 'complete-sites', 'valid', 'site');
-	await mkdir(path.join(validSite, 'pages', '000-home'), { recursive: true });
+	await mkdir(validSite, { recursive: true });
 	await writeFile(path.join(validSite, 'config.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(validSite, 'pages', '000-home', 'content.md'), '# Example\n');
+	await writeFile(path.join(validSite, 'content.md'), '# Example\n');
 	await mkdir(path.join(
 		discoveryRoot,
 		'examples',
@@ -73,10 +73,14 @@ const presetExamples = themePresetNames.map((presetName) => {
 	assert.ok(example, `Missing theme-preset-${presetName} example.`);
 	return { presetName, example };
 });
-const canonicalPresetPages = await collectSourceManifest(path.join(presetExamples[0].example.siteDirectory, 'pages'));
+const presetContent = async (siteDirectory) => ({
+	content: await readFile(path.join(siteDirectory, 'content.md'), 'utf8'),
+	images: await collectSourceManifest(path.join(siteDirectory, 'images')),
+});
+const canonicalPresetPages = await presetContent(presetExamples[0].example.siteDirectory);
 
 for (const { presetName, example } of presetExamples.slice(1)) {
-	const pages = await collectSourceManifest(path.join(example.siteDirectory, 'pages'));
+	const pages = await presetContent(example.siteDirectory);
 	assert.deepEqual(
 		pages,
 		canonicalPresetPages,

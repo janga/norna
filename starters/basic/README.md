@@ -15,9 +15,9 @@ Open the address printed by the development server. Stop it later with
 Edit shared logo settings, banners, and footer in
 `site/sitewide-content.yaml`,
 site-wide visual defaults in `site/theme.yaml`, homepage content and section
-metadata in `site/pages/000-home/content.md`, and technical settings such as URL
+metadata in `site/content.md`, and technical settings such as URL
 and locale in `site/config.yaml`. Keep managed homepage source images under
-`site/pages/000-home/images/` and static public files under `site/public/`.
+`site/images/` and static public files under `site/public/`.
 
 For a GitHub Pages project site without a custom domain, include the repository
 path in the public URL:

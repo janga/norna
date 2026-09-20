@@ -19,7 +19,7 @@ const edit = async (source, field, value, sourcePath = page) => {
 try {
 	for (const site of [firstSite, secondSite]) {
 		await write(path.join(site, 'config.yaml'), 'url: https://example.com/\n');
-		await write(path.join(site, 'pages', '000-home', 'content.md'), '# Home\n');
+		await write(path.join(site, 'content.md'), '# Home\n');
 	}
 	await write(page, '---\npage:\n  aliases: [/old-guide/]\nnavigation:\n  listed: false\n---\n\n# Guide\n\n[Authored label](/guide/).\n');
 	await write(category, 'label: Topics\ndescription: Topic choices.\n');
@@ -68,10 +68,10 @@ try {
 	assert.equal(await edit('label: Topics # label comment\ndescription: Old\n', 'title', 'Subjects', category), 'label: "Subjects" # label comment\ndescription: Old\n');
 	assert.equal(await edit('label: Topics\n', 'description', 'Choose a topic.', category), 'label: Topics\ndescription: "Choose a topic."\n');
 	assert.equal(await edit('label: Topics\ndescription: Old\n', 'description', '', category), 'label: Topics\n');
-	await assert.rejects(edit('# Home\n', 'listed', false, path.join(firstSite, 'pages', '000-home', 'content.md')), /Home must remain listed/);
+	await assert.rejects(edit('# Home\n', 'listed', false, path.join(firstSite, 'content.md')), /Home must remain listed/);
 	await assert.rejects(edit('# Guide\n', 'aliases', ['/new/']), /read-only/);
 	await assert.rejects(edit('# Guide\n', 'title', 'bad\nheading'), /single line/);
-	await assert.rejects(edit('# Other\n', 'title', 'Bad', path.join(secondSite, 'pages', '000-home', 'content.md')), /Invalid/);
+	await assert.rejects(edit('# Other\n', 'title', 'Bad', path.join(secondSite, 'content.md')), /Invalid/);
 	await assert.rejects(edit('---\npage: [broken\n---\n# Guide\n', 'description', 'No'), /invalid YAML/);
 	assert.equal((await getSiteNodeInformation({ source: '# Title\n', kind: 'page', isHome: false, sourcePath: page })).title, 'Title');
 
@@ -87,9 +87,10 @@ try {
 	const childPlan = await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Nested', parentPath: '/guides/' });
 	assert.equal((await createSiteNode(childPlan)).url, '/guides/nested/');
 	assert.equal((await readSiteTree({ siteRoot: firstSite })).nodes.some((node) => node.title === 'Nested'), false);
-	await assert.rejects(planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'No', parentPath: null, invocationDirectory: path.join(firstSite, 'pages', '000-home') }), /homepage cannot contain child/i);
+	const rootChild = await planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'Root child', parentPath: null, invocationDirectory: firstSite });
+	assert.equal(rootChild.collectionDir, path.join(firstSite, 'pages'));
 	await assert.rejects(planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'Bad', slug: '../escape' }), /Invalid slug/);
-	await assert.rejects(planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'Home' }), /sibling with that slug already exists/);
+	assert.equal((await planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'Home' })).url, '/home/');
 	const stale = await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Reserved', parentPath: '/' });
 	await createSiteNode(await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Another', parentPath: '/' }));
 	await assert.rejects(createSiteNode(stale), /sibling already uses it/);

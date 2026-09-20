@@ -1,3 +1,4 @@
+import { getPageImageSourceKey } from './lib/site-conventions.mjs';
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
@@ -97,7 +98,7 @@ const fail = (message) => {
 	throw new Error(message);
 };
 
-const getImageSourceKey = (contentFile, image) => `pages/${contentFile.pageDirectory}/images/${image}`;
+const getImageSourceKey = (contentFile, image) => getPageImageSourceKey(contentFile.pageDirectory, image);
 
 const getReferencedImages = async (contentFile) => {
 	const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);

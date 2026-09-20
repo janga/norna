@@ -502,8 +502,8 @@ Markdown suggestions, Problems diagnostics, and versioned documentation links.
 ## Rendering Notes
 
 The renderer discovers a required homepage at
-`site/pages/000-home/content.md`, top-level navigation roots beside Home, and
-nested entries under each non-home page or category's `pages/` directory. An
+`site/content.md` and its child entries under `site/pages/`. Deeper entries
+live under each parent page or category's `pages/` directory. An
 entry with `content.md` is a routable page. An entry with `category.yaml` is a
 category whose path remains part of descendant URLs. The shared
 `scripts/lib/category-destinations.mjs` model resolves listed categories to
@@ -513,7 +513,17 @@ stay separate from the editorial page collection.
 Automatic navigation selects section navigation for one-page sites, top
 navigation for flat multi-page sites, and tree navigation when a listed child
 page or category exists. Explicit modes must be compatible with the listed
-hierarchy. Home remains a standalone front door without children.
+hierarchy. Root children remain top-level navigation choices; the homepage
+retains the global navigation presentation. The internal root page-directory
+identity is `.`, with depth zero and entry suffix `root`; child identities
+remain relative to `site/pages/`. Navigation's `parentPagePath: null` projects
+root children onto the top level.
+
+Root `page-theme.yaml` uses the limited page-theme schema and applies only to
+the homepage. Root `theme.yaml` remains global; descendant `theme.yaml` files
+inherit along their ordinary page/category ancestry. `norna site:upgrade`
+previews conversion from `pages/000-home/`; `--apply` moves only those homepage
+sources and refuses conflicts. Builds never perform source conversion.
 
 Tree navigation uses the shared area resolver in `src/lib/areaNavigation.ts`:
 

@@ -58,7 +58,7 @@ const prepareWorkspace = async () => {
 	}, null, 2));
 	await write('site/config.yaml', 'url: https://example.com/\n');
 	await write('tree-content/config.yaml', 'url: https://example.com/\n');
-	await write('tree-content/pages/000-home/content.md', '# Tree Home\n');
+	await write('tree-content/content.md', '# Tree Home\n');
 	await write('tree-content/pages/010-guide/content.md', '---\n# Keep metadata comment\npage:\n  description: "Original description" # keep\n  aliases: [/previous-guide/]\n---\n\n# Tree Guide\n\nKeep this prose and [authored link text](/topics/child/).\n');
 	await write('tree-content/pages/020-topics/category.yaml', 'label: Tree Topics\ndescription: Choose a topic.\n');
 	await write('tree-content/pages/020-topics/pages/010-child/content.md', '# Tree Child\n');
@@ -80,7 +80,7 @@ const prepareWorkspace = async () => {
 		'',
 	].join('\n'));
 	await write('site/sitewide-content.yaml', 'footer:\n  copyrightMessage: Example\n');
-	await write('site/pages/000-home/content.md', `---
+	await write('site/content.md', `---
 page:
   description: Editor integration fixture.
 ---
@@ -97,7 +97,7 @@ items:
   - image:${' '}
 \`\`\`
 `);
-	await write('site/pages/000-home/images/intro/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
+	await write('site/images/intro/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 	await write('site/pages/010-about/content.md', `# About
 
 ## Team {#team}
@@ -186,7 +186,7 @@ Body text.[^margin:context]
 	await write('ordinary/content.md', '# Ordinary Markdown\n');
 	await write('ordinary/theme.yaml', '');
 	await write('examples/complete-sites/priority/site/config.yaml', 'url: https://example.com/\n');
-	await write('examples/complete-sites/priority/site/pages/000-home/content.md', '# Example\n');
+	await write('examples/complete-sites/priority/site/content.md', '# Example\n');
 	await write('site/pages/070-embedded/content.md', [
 		'# Embedded YAML', '', '```card-list', 'items:',
 		'  - text: |-', '      First line.', '      Second line.',
@@ -203,15 +203,15 @@ Body text.[^margin:context]
 	await write('site/pages/120-widget/content.md', '# Widget checks\n');
 	await write('site/pages/120-widget/images/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 	await write('widget-site/config.yaml', 'url: https://example.com/\n');
-	await write('widget-site/pages/000-home/content.md', '# Widget checks\n');
+	await write('widget-site/content.md', '# Widget checks\n');
 	await write('widget-site/theme.yaml', '');
 	await write('widget-site/sitewide-content.yaml', '');
 	await write('widget-site/pages/010-category/category.yaml', '');
 	await write('usage-site/config.yaml', 'url: https://example.com/\n');
-	await write('usage-site/pages/000-home/content.md', '# Image usage\n');
+	await write('usage-site/content.md', '# Image usage\n');
 	await write('usage-site/pages/010-other/content.md', '# Other\n');
-	for (const [page, files] of [['000-home', ['a-used.svg', 'z-unused.svg']], ['010-other', ['b-used.svg', 'y-other.svg']]]) {
-		for (const file of files) await write(`usage-site/pages/${page}/images/${file}`, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
+	for (const [page, files] of [['', ['a-used.svg', 'z-unused.svg']], ['pages/010-other', ['b-used.svg', 'y-other.svg']]]) {
+		for (const file of files) await write(path.join('usage-site', page, 'images', file), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 	}
 	for (const [project, editorApiVersion] of [['second', 2], ['incompatible', 1]]) {
 		const projectEngine = path.join(workspaceRoot, project, 'node_modules', '@janga', 'norna');
@@ -220,12 +220,12 @@ Body text.[^margin:context]
 		const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 		await writeFile(manifestPath, JSON.stringify({ ...manifest, editorApiVersion }));
 		await write(`${project}/site/config.yaml`, 'url: https://example.com/\n');
-		await write(`${project}/site/pages/000-home/content.md`, '# Context\n');
-		await write(`${project}/site/pages/000-home/images/second-only.svg`, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
+		await write(`${project}/site/content.md`, '# Context\n');
+		await write(`${project}/site/images/second-only.svg`, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 		if (project === 'second') {
 			// Keep tree fixtures independent of the completion suites' source edits.
 			await write('second/tree-content/config.yaml', 'url: https://example.com/\n');
-			await write('second/tree-content/pages/000-home/content.md', '# Other Tree Home\n');
+			await write('second/tree-content/content.md', '# Other Tree Home\n');
 		}
 	}
 };

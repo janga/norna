@@ -49,23 +49,11 @@ const assertFile = async (filePath, label) => {
 	if (!stats.isFile()) throw new Error(`Scratch source ${label} is not a file: ${filePath}`);
 };
 
-const assertDirectory = async (directoryPath, label) => {
-	let stats;
-	try {
-		stats = await lstat(directoryPath);
-	} catch (error) {
-		if (error.code === 'ENOENT') throw new Error(`Scratch source is missing ${label}: ${directoryPath}`);
-		throw error;
-	}
-
-	if (!stats.isDirectory()) throw new Error(`Scratch source ${label} is not a directory: ${directoryPath}`);
-};
-
 const assertNornaSite = async (siteDirectory) => {
 	await Promise.all([
 		assertFile(path.join(siteDirectory, 'config.yaml'), 'config.yaml'),
 		assertFile(path.join(siteDirectory, 'theme.yaml'), 'theme.yaml'),
-		assertDirectory(path.join(siteDirectory, 'pages'), 'pages/'),
+		assertFile(path.join(siteDirectory, 'content.md'), 'content.md'),
 	]);
 };
 

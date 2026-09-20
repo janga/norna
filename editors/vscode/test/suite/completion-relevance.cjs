@@ -101,12 +101,12 @@ async function runCompletionRelevance({ openDocument, getCompletions }) {
 	const markerSource = '# Context\n\n```|CURSOR|';
 	const active = await check('Active project before switch', markerSource, blockNames);
 	await check('Ordinary Markdown outside page structure', markerSource, [], 'site/notes.md');
-	await check('Other project with old editor API', markerSource, [], 'incompatible/site/pages/000-home/content.md');
-	await check('Another compatible project', markerSource, blockNames, 'second/site/pages/000-home/content.md');
+	await check('Other project with old editor API', markerSource, [], 'incompatible/site/content.md');
+	await check('Another compatible project', markerSource, blockNames, 'second/site/content.md');
 	await vscode.window.showTextDocument(active.document);
 	assert.deepEqual((await read(active)).map(labelOf).sort(), blockNames);
 	const imageSource = '# Context\n\n```image-stack\nitems:\n  - image: |CURSOR|\n```';
-	await check('Image candidates stay in their own site', imageSource, ['second-only.svg'], 'second/site/pages/000-home/content.md');
+	await check('Image candidates stay in their own site', imageSource, ['second-only.svg'], 'second/site/content.md');
 	const ownImages = await setSource(defaultPath, imageSource);
 	assert.ok(!(await read(ownImages)).some((item) => labelOf(item) === 'second-only.svg'), 'A foreign project image leaked into the original site.');
 

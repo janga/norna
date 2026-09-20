@@ -55,7 +55,6 @@ const resolveParent = async ({ nodes, parent, siteRoot, invocationDirectory }) =
 		if (!node) {
 			throw new Error(`Cannot find parent "${parent}". Use an existing logical page/category path, or / for the top level.`);
 		}
-		if (node.isHome) throw new Error('The homepage cannot contain child pages or categories.');
 		return { collectionDir: path.join(node.nodeDir, 'pages'), node, pagePath: node.pagePath };
 	}
 
@@ -76,7 +75,6 @@ const resolveParent = async ({ nodes, parent, siteRoot, invocationDirectory }) =
 			`Run the command from ${sitePagesDir} for a top-level node, from an existing page/category directory for a child, or pass --parent.`,
 		].join('\n'));
 	}
-	if (node.isHome) throw new Error('The homepage cannot contain child pages or categories.');
 	return { collectionDir: path.join(node.nodeDir, 'pages'), node, pagePath: node.pagePath };
 };
 
@@ -97,7 +95,7 @@ export const planSiteNodeCreation = async ({
 
 	const structure = await getSiteStructure({ siteRoot });
 	const parent = await resolveParent({ nodes: structure.nodes, parent: parentPath, siteRoot, invocationDirectory });
-	const siblings = structure.nodes.filter((node) => node.parentPagePath === (parent.pagePath || null));
+	const siblings = structure.nodes.filter((node) => !node.isHome && node.parentPagePath === (parent.pagePath || null));
 	if (siblings.some((node) => node.pageId === slug)) {
 		throw new Error(`Cannot create "${slug}" below ${parent.pagePath ? `/${parent.pagePath}/` : '/'}. A sibling with that slug already exists.`);
 	}

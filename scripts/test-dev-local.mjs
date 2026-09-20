@@ -151,7 +151,7 @@ try {
 	assert.doesNotMatch(invalidThemeStart.stderr, /yaml-config\.mjs:\d+/u);
 	await writeFile(themePath, validTheme);
 
-	const contentPath = path.join(siteDir, 'pages', '000-home', 'content.md');
+	const contentPath = path.join(siteDir, 'content.md');
 	const validContent = await readFile(contentPath, 'utf8');
 	await writeFile(contentPath, `---
 unknownPageSetting: true
@@ -163,7 +163,7 @@ unknownPageSetting: true
 	assert.notEqual(invalidContentStart.status, 0, 'dev start unexpectedly accepted invalid page frontmatter');
 	assert.match(
 		`${invalidContentStart.stdout}\n${invalidContentStart.stderr}`,
-		/Could not prepare the site for the dev server.*site\/pages\/000-home\/content\.md frontmatter has invalid YAML structure.*unknownPageSetting.*Full log:.*preparation\.log/su,
+		/Could not prepare the site for the dev server.*site\/content\.md frontmatter has invalid YAML structure.*unknownPageSetting.*Full log:.*preparation\.log/su,
 	);
 	assert.doesNotMatch(invalidContentStart.stderr, /(?:dev-local|yaml-config|site-link-graph)\.mjs:\d+|Astro reported:|Command failed:/u);
 	const preparationLog = await readFile(path.join(siteDir, '.norna', 'dev', 'preparation.log'), 'utf8');

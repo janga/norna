@@ -4,9 +4,10 @@ import {
 	validatePageThemeYamlStructure,
 } from '../../scripts/lib/site-content.mjs';
 import { pageThemeSchema } from '../../scripts/lib/schema-definitions.mjs';
-import { sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
+import { siteDir, siteDirLabel, sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
 import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
 import { parseYamlConfig } from '../../scripts/lib/yaml-config.mjs';
+import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
 import { getPageDirectoryAncestors } from '../../scripts/lib/page-model.mjs';
 
 type PageTheme = {
@@ -17,25 +18,26 @@ type PageTheme = {
 export const getPageTheme = async (pageDirectory: string | null): Promise<PageTheme | null> => {
 	if (!pageDirectory) return null;
 
-	const pageAncestors = getPageDirectoryAncestors(pageDirectory);
+	const pageAncestors = pageDirectory === homePageDirectory ? [homePageDirectory] : getPageDirectoryAncestors(pageDirectory);
 	let inheritedData: Record<string, unknown> = {};
 	const inheritedIds: string[] = [];
 	for (const pageAncestor of pageAncestors) {
 		const themeSegments = pageAncestor.split('/');
-		const themePath = path.join(sitePagesDir, ...themeSegments, 'theme.yaml');
+		const isHome = pageAncestor === homePageDirectory;
+		const themePath = isHome ? path.join(siteDir, 'page-theme.yaml') : path.join(sitePagesDir, ...themeSegments, 'theme.yaml');
 		const source = await readFile(themePath, 'utf8').catch((error) => {
 			if (error?.code === 'ENOENT') return null;
 			throw error;
 		});
 		if (!source) continue;
-		const themeLabel = `${sitePagesLabel}/${themeSegments.join('/')}/theme.yaml`;
+		const themeLabel = isHome ? `${siteDirLabel}/page-theme.yaml` : `${sitePagesLabel}/${themeSegments.join('/')}/theme.yaml`;
 
 		const data = parseYamlConfig(source, themeLabel, {
 			schema: pageThemeSchema,
 			validateStructure: validatePageThemeYamlStructure,
 		});
 		inheritedData = mergePageThemeConfig(inheritedData, data);
-		inheritedIds.push(`pages/${themeSegments.join('/')}/theme`);
+		inheritedIds.push(isHome ? 'page-theme' : `pages/${themeSegments.join('/')}/theme`);
 	}
 
 	return inheritedIds.length > 0

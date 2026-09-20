@@ -46,7 +46,7 @@ test('page aliases use constrained old Norna page URLs', () => {
 test('page aliases reject every occupied public URL identity', () => {
 	const home = pageNode({
 		home: true,
-		label: 'site/pages/000-home/content.md',
+		label: 'site/content.md',
 		pagePath: '',
 	});
 	const existing = pageNode({
@@ -95,7 +95,7 @@ test('build emits a base-path-aware static redirect document outside the sitemap
 	try {
 		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/project/\n');
 		await writeFile(path.join(siteDir, 'theme.yaml'), 'palette: arctic-blue\nappearance:\n  default: dark\n');
-		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Home
+		await writeFile(path.join(siteDir, 'content.md'), `# Home
 
 ## Start
 
@@ -150,7 +150,7 @@ Check the local preview.
 test('content check reports an alias collision with a public index file', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
+		await writeFile(path.join(siteDir, 'content.md'), `---
 page:
   aliases:
     - /archive/
@@ -165,7 +165,7 @@ page:
 			runNorna(['--site-dir', siteDir, 'content:check']),
 			(error) => {
 				assert.match(error.output, /Page alias "\/archive\/"/);
-				assert.match(error.output, /site\/pages\/000-home\/content\.md/);
+				assert.match(error.output, /site\/content\.md/);
 				assert.match(error.output, /site\/public\/archive\/index\.html/);
 				return true;
 			},

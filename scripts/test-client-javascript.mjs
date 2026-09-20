@@ -11,7 +11,7 @@ const tempParent = path.join(repoRoot, 'node_modules', '.cache');
 await mkdir(tempParent, { recursive: true });
 const tempRoot = await mkdtemp(path.join(tempParent, 'norna-client-javascript-'));
 const siteDir = path.join(tempRoot, 'site');
-const homeDir = path.join(siteDir, 'pages', '000-home');
+const homeDir = siteDir;
 const pageDir = path.join(siteDir, 'pages', '010-details');
 const configPath = path.join(siteDir, 'config.yaml');
 

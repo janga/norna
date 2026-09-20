@@ -49,7 +49,7 @@ npm run norna:dev
 ```
 
 Open the address printed by the command. Then edit
-`site/pages/000-home/content.md` and save the file:
+`site/content.md` and save the file:
 
 ```md
 # Dog Shelter

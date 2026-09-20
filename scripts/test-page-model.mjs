@@ -22,28 +22,13 @@ assert.deepEqual(parsePageDirectory('120-api-reference'), {
 	pageId: 'api-reference',
 });
 
-assert.deepEqual(parsePageDirectory('000-home'), {
-	pageDirectory: '000-home',
-	pageOrder: 0,
-	pageId: 'home',
+assert.deepEqual(parsePageDirectoryPath('.'), {
+	pageDirectory: '.', pageDirectories: [], pageId: 'home', pageIds: [],
+	pageOrder: 0, pageOrders: [], pagePath: '', parentPagePath: null, depth: 0,
 });
-
-assert.deepEqual(parsePageDirectoryPath('000-home'), {
-	pageDirectory: '000-home',
-	pageDirectories: ['000-home'],
-	pageId: 'home',
-	pageIds: [],
-	pageOrder: 0,
-	pageOrders: [],
-	pagePath: '',
-	parentPagePath: null,
-	depth: 1,
-});
-
-assert.throws(
-	() => parsePageDirectoryPath('000-home/pages/010-about'),
-	/000-home is the homepage and cannot contain child pages.*beside it under site\/pages\/.*below another non-home page/,
-);
+assert.deepEqual(getPageDirectoryAncestors('.'), []);
+assert.throws(() => parsePageDirectoryPath('000-home'), /Child page orders must be 001–999/);
+assert.throws(() => parsePageDirectoryPath('000-home/pages/010-about'), /Child page orders must be 001–999/);
 
 assert.deepEqual(parsePageDirectoryPath('010-guides/pages/020-installation'), {
 	pageDirectory: '010-guides/pages/020-installation',
@@ -69,7 +54,7 @@ assert.equal(
 assert.equal(getSiteEntryPrefix('./examples/docs/site'), 'examples-docs-site');
 assert.equal(getSiteEntryPrefix('C:\\docs\\page-site'), 'C-docs-page-site');
 assert.equal(getSiteEntryPrefix('/'), 'site');
-assert.equal(encodePageEntryId('site', '000-home'), 'site-page-000-home');
+assert.equal(encodePageEntryId('site', '.'), 'site-page-root');
 assert.equal(
 	encodePageEntryId('./examples/docs/site', '010-guides/pages/020-installation'),
 	'examples-docs-site-page-010-guides--020-installation',
@@ -81,7 +66,7 @@ assert.equal(
 
 for (const siteDirLabel of ['site', './examples/docs/site', 'docs-page-010-site', '/tmp/page-sites/site', 'C:\\docs\\page-site', '/']) {
 	for (const pageDirectory of [
-		'000-home',
+		'.',
 		'010-about',
 		'010-guides/pages/020-installation',
 		'010-page-move',
@@ -150,14 +135,14 @@ for (const pageDirectory of [
 ]) {
 	assert.throws(
 		() => parsePageDirectory(pageDirectory),
-		/(Page directories must use the form NNN-page-id|000 prefix is reserved)/,
+		/(Page directories must use the form NNN-page-id|Child page orders must be 001–999)/,
 		`${pageDirectory} should be rejected`,
 	);
 }
 
 assert.throws(
 	() => parsePageDirectoryPath('010-guides/pages/000-home'),
-	/000-home is allowed only as a top-level page/,
+	/Child page orders must be 001–999/,
 );
 
 console.log('Page model test passed.');

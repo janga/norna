@@ -23,17 +23,17 @@ start from the current starter. Preserve a working copy before converting.
 
 ## Move Content Into Page Directories
 
-- Move the former homepage `site/content.md` to
-  `site/pages/000-home/content.md`.
-- Move homepage source images into `site/pages/000-home/images/`.
+- Keep homepage text in `site/content.md`. If it is in `site/pages/000-home/`,
+  use the [homepage conversion](/reference/site/files/#convert-the-former-homepage-folder).
+- Move homepage source images into `site/images/`.
 - Replace `site/routes/` with `site/pages/`.
 - In each old route directory, rename `route-content.md` to `content.md`.
 - Keep the three-digit sibling order prefix. A directory such as
   `010-guide/` still produces `/guide/`; the prefix is not part of the URL.
-- Put child entries under the nearest non-home page or category's `pages/`
+- Put child entries under the nearest parent page or category's `pages/`
   directory. Use `content.md` when the parent needs its own page; use
   `category.yaml` when it is only a navigation label. Home is the front door
-  and cannot have children.
+  and has its children under `site/pages/`.
 
 Every page must contain exactly one H1. H2 headings define sections. Norna now
 derives heading ids when they are omitted; keep an explicit `{#stable-id}` only

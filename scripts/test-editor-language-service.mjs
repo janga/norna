@@ -22,7 +22,7 @@ import {
 
 const root = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-language-'));
 const siteRoot = path.join(root, 'site');
-const homeContentPath = path.join(siteRoot, 'pages', '000-home', 'content.md');
+const homeContentPath = path.join(siteRoot, 'content.md');
 const pageContentPath = path.join(siteRoot, 'pages', '010-about', 'content.md');
 const pageThemePath = path.join(siteRoot, 'pages', '010-about', 'theme.yaml');
 const categoryPath = path.join(siteRoot, 'pages', '020-guides', 'category.yaml');
@@ -69,7 +69,7 @@ Page content.
 
 try {
 	await mkdir(path.join(installedNornaRoot, 'schemas'), { recursive: true });
-	await mkdir(path.join(siteRoot, 'pages', '000-home', 'images'), { recursive: true });
+	await mkdir(path.join(siteRoot, 'images'), { recursive: true });
 	await mkdir(path.join(siteRoot, 'pages', '010-about', 'images'), { recursive: true });
 	await mkdir(path.dirname(nestedPageContentPath), { recursive: true });
 	await mkdir(path.join(siteRoot, 'public'), { recursive: true });
@@ -93,7 +93,7 @@ try {
 	await writeFile(path.join(siteRoot, 'sitewide-content.yaml'), `logo:
   height: 2rem
 `);
-	await writeFile(path.join(siteRoot, 'pages', '000-home', 'images', 'local.jpg'), 'local');
+	await writeFile(path.join(siteRoot, 'images', 'local.jpg'), 'local');
 	await writeFile(path.join(siteRoot, 'pages', '010-about', 'images', 'portrait.jpg'), 'portrait');
 	await writeFile(path.join(siteRoot, 'public', 'logo.svg'), '<svg/>');
 	await writeFile(path.join(siteRoot, 'public', 'logo.png'), 'logo');
@@ -114,13 +114,15 @@ try {
 
 	assert.equal(await findNornaSiteRoot(homeContentPath), siteRoot);
 	assert.equal(getNornaDocumentContext(homeContentPath).schemaKind, 'contentFrontmatter');
-	assert.equal(getNornaDocumentContext(homeContentPath).pageDirectory, '000-home');
+	assert.equal(getNornaDocumentContext(homeContentPath).pageDirectory, '.');
 	assert.equal(getNornaDocumentContext(homeContentPath).nornaPackage.root, installedNornaRoot);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'config.yaml')).schemaKind, 'config');
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).schemaKind, 'theme');
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'sitewide-content.yaml')).schemaKind, 'sitewideContent');
 	assert.equal(getNornaDocumentContext(pageContentPath).pageDirectory, '010-about');
 	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'pageTheme');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'page-theme.yaml')).schemaKind, 'pageTheme');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'page-theme.yaml')).pageDirectory, '.');
 	assert.equal(getNornaDocumentContext(categoryPath).schemaKind, 'category');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).pageDirectory, '010-about/pages/020-team');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).schemaKind, 'contentFrontmatter');
@@ -145,12 +147,13 @@ try {
 	const legacySiteRoot = path.join(root, 'legacy-site');
 	await mkdir(legacySiteRoot, { recursive: true });
 	await writeFile(path.join(legacySiteRoot, 'config.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(legacySiteRoot, 'content.md'), '# Legacy page\n');
-	assert.equal(projectContext.findNornaSiteRoot(path.join(legacySiteRoot, 'content.md')), null);
+	await mkdir(path.join(legacySiteRoot, 'pages', '000-home'), { recursive: true });
+	await writeFile(path.join(legacySiteRoot, 'pages', '000-home', 'content.md'), '# Legacy page\n');
+	assert.equal(projectContext.findNornaSiteRoot(path.join(legacySiteRoot, 'pages', '000-home', 'content.md')), legacySiteRoot);
 	const uninstalledRoot = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-uninstalled-'));
 	try {
 		const uninstalledSite = path.join(uninstalledRoot, 'site');
-		const uninstalledContent = path.join(uninstalledSite, 'pages', '000-home', 'content.md');
+		const uninstalledContent = path.join(uninstalledSite, 'content.md');
 		await mkdir(path.dirname(uninstalledContent), { recursive: true });
 		await writeFile(path.join(uninstalledSite, 'config.yaml'), 'url: https://example.com/\n');
 		await writeFile(uninstalledContent, '# Uninstalled\n');
@@ -309,7 +312,7 @@ try {
 		line: localDefinitionLine,
 		source: homeSource,
 	});
-	assert.deepEqual(localDefinition.files, [path.join(siteRoot, 'pages', '000-home', 'images', 'local.jpg')]);
+	assert.deepEqual(localDefinition.files, [path.join(siteRoot, 'images', 'local.jpg')]);
 
 	const diagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(diagnostics.some(({ code, message }) => code === 'image-needs-sync' && message.includes('Run "norna content:sync"')));

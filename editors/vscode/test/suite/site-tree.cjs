@@ -179,16 +179,16 @@ async function runSiteTree({ openDocument, waitFor }) {
 		assert.equal(vscode.window.activeTextEditor.document.getText(), 'label: New Categories\n');
 		passed('Create child, sibling and root category through tree actions');
 
-		await openDocument('tree-content/pages/000-home/content.md');
+		await openDocument('tree-content/content.md');
 		await waitFor(() => row('Tree Home').getAttribute('aria-selected'), (value) => value === 'true', 'Home was not revealed before its actions were tested.');
 		await contextAction('Tree Home', 'New Page');
-		assert.ok(!(await quick.locator('.monaco-list-row').allTextContents()).some((text) => text.includes('Inside')));
+		assert.ok((await quick.locator('.monaco-list-row').allTextContents()).some((text) => text.includes('Inside “Tree Home”')));
 		await quick.locator('.quick-input-box input').press('Escape');
 		await contextAction('Tree Home', 'Page Information');
 		assert.match(await quick.innerText(), /Home is always listed/);
 		await pick('Navigation');
 		assert.equal(vscode.window.activeTextEditor.document.getText(), '# Tree Home\n');
-		passed('Home cannot gain children or become unlisted');
+		passed('Home offers child creation and remains listed');
 
 		await contextAction('Renamed Guide', 'New Page');
 		await pick('Beside “Renamed Guide”');
@@ -218,11 +218,11 @@ async function runSiteTree({ openDocument, waitFor }) {
 		assert.equal(vscode.window.activeTextEditor.document.getText(), cleared);
 		passed('Malformed page remains openable without disabling valid pages');
 
-		await openDocument('second/tree-content/pages/000-home/content.md');
+		await openDocument('second/tree-content/content.md');
 		await waitFor(() => row('Other Tree Home').getAttribute('aria-selected'), (value) => value === 'true', 'The second site was not revealed.');
 		await information('Other Tree Home', 'Title', 'Second Site Home');
 		await vscode.window.activeTextEditor.document.save();
-		assert.equal(fs.readFileSync(path.join(root, 'tree-content/pages/000-home/content.md'), 'utf8'), '# Tree Home\n');
+		assert.equal(fs.readFileSync(path.join(root, 'tree-content/content.md'), 'utf8'), '# Tree Home\n');
 		passed('Switching sites keeps metadata edits within the selected site');
 
 		await openDocument(guidePath);

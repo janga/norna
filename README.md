@@ -52,11 +52,11 @@ locally installed and pinned Norna version.
 site/
 |-- config.yaml
 |-- theme.yaml
+|-- page-theme.yaml       # Optional homepage-only overrides
 |-- sitewide-content.yaml
+|-- content.md
+|-- images/
 |-- pages/
-|   |-- 000-home/
-|   |   |-- content.md
-|   |   `-- images/
 |   `-- 010-guides/
 |       |-- category.yaml
 |       `-- pages/
@@ -66,15 +66,16 @@ site/
 `-- public/
 ```
 
-- `pages/000-home/content.md` is the required homepage at `/`.
-- Every other ordered directory under `pages/` contains either `content.md` for
+- `content.md` is the required homepage at `/`; `pages/` contains its children.
+- Every ordered directory under `pages/` contains either `content.md` for
   a routable page or `category.yaml` for a navigation-only group.
 - A page may contain local images. A page or category may contain limited
   presentation settings and nested entries under its own `pages/` directory.
 - Category ids remain in child URLs. Opening a category URL leads to its first
   listed direct page or a generated child list; see
   [Category destinations](https://janga.github.io/norna/reference/site/pages/#opening-a-category-url).
-- `theme.yaml` normally selects one complete visual preset.
+- `theme.yaml` selects shared visual defaults. Optional `page-theme.yaml`
+  overrides the homepage alone; a child's `theme.yaml` is inherited further.
 - `sitewide-content.yaml` holds shared logo display settings, banners, and
   footer content.
 - `config.yaml` holds the public URL and optional language, local and remote
@@ -82,7 +83,9 @@ site/
 - `public/` holds static files copied without processing.
 
 Norna validates this structure, processes managed images when needed, and
-builds the generated website into `dist/`.
+builds the generated website into `dist/`. For a site using the former
+`pages/000-home/` layout, run `norna site:upgrade` to preview its conversion,
+then `norna site:upgrade --apply`; see [source conversion](https://janga.github.io/norna/reference/site/files/#convert-the-former-homepage-folder).
 
 ## Why Norna?
 

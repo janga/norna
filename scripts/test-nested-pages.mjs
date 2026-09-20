@@ -102,7 +102,7 @@ try {
 	assert.match(rootHtml, /--image-width: 920px/);
 	assert.match(rootHtml, /--space-section-to-section-desktop: clamp\(1\.2rem, 2\.4vw, 2\.25rem\)/);
 	assert.match(rootHtml, /data-navigation-mode="tree"/);
-	assert.match(rootHtml, /<p class="edit-source-link"[^>]*>[\s\S]*?href="https:\/\/github\.com\/example\/docs\/edit\/release-2\/packages\/docs\/site\/pages\/000-home\/content\.md"[\s\S]*?Edit this page/);
+	assert.match(rootHtml, /<p class="edit-source-link"[^>]*>[\s\S]*?href="https:\/\/github\.com\/example\/docs\/edit\/release-2\/packages\/docs\/site\/content\.md"[\s\S]*?Edit this page/);
 	assert.doesNotMatch(rootHtml, /vscode:\/\/file|\/Users\/|[A-Za-z]:%5C/);
 	assert.doesNotMatch(rootHtml, /data-page-contents-placement=/);
 	assert.doesNotMatch(rootHtml, /<aside id="tree-local-navigation"/);

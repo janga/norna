@@ -20,7 +20,7 @@ navigation:
 | Listed structure | Mode | Wide-screen navigation |
 | --- | --- | --- |
 | Only Home | `sections` | H1 and H2 links in sticky navigation |
-| Home plus top-level pages, without children or categories | `top` | Page links with disclosures for their H2 sections |
+| Home and direct child pages, without deeper pages or categories | `top` | Page links with disclosures for their H2 sections |
 | Any child page or navigation category | `tree` | Area menus and a local page tree with H2 links |
 
 The selected mode is site-wide. Headings do not add page-tree depth, and

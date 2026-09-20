@@ -168,12 +168,12 @@ const themeLayout = z.object({
 	spacing: themeLayoutSpacing.optional().describe('Fine-grained spacing overrides.'),
 }).strict().describe('Optional layout overrides applied after the preset.');
 const pageThemeLayout = z.object({
-	contentSpacing: contentSpacing.optional().describe('Page content spacing. Descendant pages inherit this value.'),
-	textWidth: textWidth.optional().describe('Body-text line length. Descendant pages inherit this value.'),
+	contentSpacing: contentSpacing.optional().describe('Page content spacing.'),
+	textWidth: textWidth.optional().describe('Body-text line length.'),
 }).strict().refine(
 	(value) => value.contentSpacing !== undefined || value.textWidth !== undefined,
 	'Specify contentSpacing, textWidth, or both.',
-).describe('Page-local layout settings inherited by descendant pages.');
+).describe('Page-local layout overrides.');
 const themeImages = z.object({
 	presentation: imagePresentation.optional().describe('Managed-image presentation method. Omit this to keep the selected preset or inherited page setting.'),
 	width: visualCssLength.optional().describe('Maximum managed-image width. Omit this to keep the selected preset.'),
@@ -196,11 +196,11 @@ const themeSections = z.object({
 	backgroundPattern: backgroundPattern.optional().describe('Section background pattern. Alternating and accented create full-width bands with sections or top navigation; tree navigation requires uniform.'),
 }).strict().describe('Defaults for page section presentation.');
 const pageThemeSections = z.object({
-	backgroundPattern: backgroundPattern.optional().describe('Section background sequence inherited by descendant pages. Non-uniform patterns are invalid with tree navigation.'),
+	backgroundPattern: backgroundPattern.optional().describe('Section background sequence. Non-uniform patterns are invalid with tree navigation.'),
 }).strict().refine(
 	(value) => value.backgroundPattern !== undefined,
 	'Specify backgroundPattern.',
-).describe('Page-local section presentation inherited by descendant pages.');
+).describe('Page-local section presentation.');
 const pageNavigation = z.object({
 	listed: z.boolean().optional().default(true).describe('List this page in site navigation. The page remains public when false.'),
 }).strict();
@@ -301,6 +301,6 @@ export const pageThemeSchema = z.object(pageThemeShape).strict()
 		(value) => value.layout !== undefined || value.images !== undefined || value.sections !== undefined,
 		'Specify layout, images, sections, or a combination of them.',
 	)
-	.describe('Limited page presentation overrides inherited by descendant pages. Site colors, corners, typography, content-block defaults and navigation remain global.');
+	.describe('Limited page presentation overrides. A child page or category theme.yaml is inherited by descendants; site/page-theme.yaml affects only the homepage. Site colors, corners, typography, content-block defaults and navigation remain global.');
 export const sitewideSchema = z.object(sitewideShape).strict()
 	.describe('Editorial content and optional navigation logo display settings shared by every page.');

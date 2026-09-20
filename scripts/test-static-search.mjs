@@ -41,7 +41,7 @@ try {
 language: bg
 search: true
 `);
-	await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `# Search fixture
+	await writeFile(path.join(siteDir, 'content.md'), `# Search fixture
 
 ## Overview {#overview}
 

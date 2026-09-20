@@ -29,26 +29,26 @@
     <text class="label secondary" x="44" y="54">FILES</text>
 
     <g class="mono tree ink">
-      <text x="44" y="86">site/pages/</text>
-      <text x="44" y="107">├── 000-home/</text>
-      <text x="44" y="128">│   └── content.md</text>
-      <text class="category" x="44" y="149">├── 020-getting-started/</text>
-      <text x="44" y="170">│   ├── category.yaml</text>
-      <text x="44" y="191">│   └── pages/</text>
-      <text x="44" y="212">│       ├── 010-install-norna/</text>
-      <text x="44" y="233">│       │   └── content.md</text>
-      <text x="44" y="254">│       ├── 015-choose-a-theme/</text>
-      <text x="44" y="275">│       │   └── content.md</text>
-      <text class="current" x="44" y="296">│       ├── 020-grow-your-site/</text>
-      <text class="current" x="44" y="317">│       │   ├── content.md</text>
-      <text x="44" y="338">│       │   └── images/</text>
-      <text x="44" y="359">│       ├── 025-prepare-your-site/</text>
-      <text x="44" y="380">│       │   └── content.md</text>
-      <text x="44" y="401">│       └── 030-build-and-publish/</text>
-      <text x="44" y="422">│           └── content.md</text>
-      <text x="44" y="443">├── 030-examples/</text>
-      <text x="44" y="464">├── 035-faq/</text>
-      <text x="44" y="485">└── 040-resources/</text>
+      <text x="44" y="86">site/</text>
+      <text x="44" y="107">├── content.md</text>
+      <text x="44" y="128">└── pages/</text>
+      <text class="category" x="44" y="149">&#160;&#160;&#160;&#160;├── 020-getting-started/</text>
+      <text x="44" y="170">&#160;&#160;&#160;&#160;│   ├── category.yaml</text>
+      <text x="44" y="191">&#160;&#160;&#160;&#160;│   └── pages/</text>
+      <text x="44" y="212">&#160;&#160;&#160;&#160;│       ├── 010-install-norna/</text>
+      <text x="44" y="233">&#160;&#160;&#160;&#160;│       │   └── content.md</text>
+      <text x="44" y="254">&#160;&#160;&#160;&#160;│       ├── 015-choose-a-theme/</text>
+      <text x="44" y="275">&#160;&#160;&#160;&#160;│       │   └── content.md</text>
+      <text class="current" x="44" y="296">&#160;&#160;&#160;&#160;│       ├── 020-grow-your-site/</text>
+      <text class="current" x="44" y="317">&#160;&#160;&#160;&#160;│       │   ├── content.md</text>
+      <text x="44" y="338">&#160;&#160;&#160;&#160;│       │   └── images/</text>
+      <text x="44" y="359">&#160;&#160;&#160;&#160;│       ├── 025-prepare-your-site/</text>
+      <text x="44" y="380">&#160;&#160;&#160;&#160;│       │   └── content.md</text>
+      <text x="44" y="401">&#160;&#160;&#160;&#160;│       └── 030-build-and-publish/</text>
+      <text x="44" y="422">&#160;&#160;&#160;&#160;│           └── content.md</text>
+      <text x="44" y="443">&#160;&#160;&#160;&#160;├── 030-examples/</text>
+      <text x="44" y="464">&#160;&#160;&#160;&#160;├── 035-faq/</text>
+      <text x="44" y="485">&#160;&#160;&#160;&#160;└── 040-resources/</text>
     </g>
 
     <g transform="translate(0 42)">

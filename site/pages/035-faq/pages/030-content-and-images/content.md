@@ -60,13 +60,13 @@ Studio Marketplace. To evaluate it, obtain a VSIX build and follow
 [Install the extension](/reference/workflows/editor/#install-and-verify).
 You do not need the extension to write or build a Norna site.
 
-After installing the VSIX, open your site's `pages/000-home/content.md`.
+After installing the VSIX, open your site's `content.md`.
 Run **Norna: Show IntelliSense
 Status** from the Command Palette. The report identifies a missing project
 dependency or incompatible editor support.
 
 If the file is not recognized, check that the site has both `config.yaml` and
-`pages/000-home/content.md` saved on disk. If the project dependency is missing,
+`content.md` saved on disk. If the project dependency is missing,
 run this in the folder containing the site's `package.json`:
 
 ```sh

@@ -16,13 +16,14 @@ same reading task; and a category when a parent would only repeat child links
 already available in navigation.
 
 ```text title="A category and two pages"
-site/pages/
-|-- 000-home/content.md
-`-- 010-getting-started/
-    |-- category.yaml
-    `-- pages/
-        |-- 010-install/content.md
-        `-- 020-first-page/content.md
+site/
+|-- content.md
+`-- pages/
+    `-- 010-getting-started/
+        |-- category.yaml
+        `-- pages/
+            |-- 010-install/content.md
+            `-- 020-first-page/content.md
 ```
 
 ```yaml title="site/pages/010-getting-started/category.yaml"
@@ -35,13 +36,15 @@ is a non-empty summary used in area menus and generated category lists; it
 does not create an editorial page or determine navigation scope. A page label
 comes from its one H1.
 Both pages and categories can have children in `pages/`, with no fixed depth
-limit. Home is the exception: `pages/000-home/content.md` cannot have children.
-It is a welcome page, not an ancestor of every other page.
+limit. The homepage is the required root page at `site/content.md`; its children
+are the entries in `site/pages/`. It cannot be a category. The published menus
+present these children as top-level choices, alongside the link to Home.
 
 ## Names and order
 
 Folders use `NNN-slug`: a three-digit order number and lowercase ASCII slug,
-such as `010-install-norna`. Except for Home, numbers run from `001` to `999`.
+such as `010-install-norna`. Numbers run from `001` to `999`. The root homepage
+has no numbered folder; reordering children does not replace it.
 Slugs use letters, digits and single hyphens. Both number and slug must be
 unique among siblings; they can recur under different parents.
 

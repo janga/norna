@@ -1,3 +1,4 @@
+import { getPageImageSourceKey } from '../../scripts/lib/site-conventions.mjs';
 import { markdownToHtml } from 'satteri';
 import { groupRenderedTabs } from '../../scripts/lib/content-tabs.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
@@ -111,7 +112,7 @@ const applyH3HeadingIds = (
 	return result;
 };
 
-const getImageSourceKey = (page: SitePage, image: string) => `pages/${page.pageDirectory}/images/${image}`;
+const getImageSourceKey = (page: SitePage, image: string) => getPageImageSourceKey(page.pageDirectory, image);
 
 const renderHeadingTitleHtml = async (headingSource: string) => {
 	const headingMarkdown = headingSource

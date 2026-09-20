@@ -8,7 +8,7 @@ It is an implementation record, not another user-facing introduction.
 
 The review covered these source groups:
 
-- `site/pages/000-home/` and the complete
+- `site/content.md` and the complete
   `site/pages/020-getting-started/` documentation-site subtree;
 - the Examples, FAQ, and Resources pages where they overlap with onboarding;
 - `README.md`, `docs/README.md`, and every canonical reference linked from that

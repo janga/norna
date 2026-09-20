@@ -235,7 +235,7 @@ const assertPackageContents = async (packageRoot) => {
 		'src/pages/404.astro',
 		'starters/basic/.github/workflows/deploy.yml',
 		'starters/basic/package.json',
-		'starters/basic/site/pages/000-home/content.md',
+		'starters/basic/site/content.md',
 	];
 	const missingFiles = requiredFiles.filter((filePath) => !fileSet.has(filePath));
 
@@ -297,8 +297,8 @@ try {
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'config.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'theme.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'sitewide-content.yaml')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'pages', '000-home', 'content.md')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'pages', '000-home', 'images', '.gitkeep')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'content.md')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'images', '.gitkeep')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'public', 'robots.txt')),
 	]);
 	await assertFileIncludes(
@@ -336,7 +336,7 @@ try {
 		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="black"/></svg>\n',
 	);
 	await writeFile(path.join(siteProjectRoot, 'site', 'public', 'social-image.png'), 'social preview');
-	await writeFile(path.join(siteProjectRoot, 'site', 'pages', '000-home', 'content.md'), `---
+	await writeFile(path.join(siteProjectRoot, 'site', 'content.md'), `---
 page:
   description: Site used by package checks.
 ---
@@ -380,7 +380,7 @@ This page verifies that packaged norna sites can build additional pages.
 		assertFileExists(path.join(initializedSiteRoot, 'package.json')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'config.yaml')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'theme.yaml')),
-		assertFileExists(path.join(initializedSiteRoot, 'site', 'pages', '000-home', 'content.md')),
+		assertFileExists(path.join(initializedSiteRoot, 'site', 'content.md')),
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
 	]);
@@ -400,7 +400,7 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(initializedSiteRoot, 'site', '.gitignore'),
 		'.norna/dev/',
 	);
-	const homeImagesDir = path.join(siteProjectRoot, 'site', 'pages', '000-home', 'images');
+	const homeImagesDir = path.join(siteProjectRoot, 'site', 'images');
 	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'doctor'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'category:add', 'Guides', '--parent', '/'], { cwd: siteProjectRoot, env: npmEnv });
@@ -667,7 +667,7 @@ This page verifies that packaged norna sites can build additional pages.
 		path.join(siteProjectRoot, 'dist', 'index.html'),
 		'href="/favicon.svg"',
 	);
-	const siteContentPath = path.join(siteProjectRoot, 'site', 'pages', '000-home', 'content.md');
+	const siteContentPath = path.join(siteProjectRoot, 'site', 'content.md');
 	const siteContent = await readFile(siteContentPath, 'utf8');
 	const siteThemePath = path.join(siteProjectRoot, 'site', 'theme.yaml');
 	const siteTheme = await readFile(siteThemePath, 'utf8');

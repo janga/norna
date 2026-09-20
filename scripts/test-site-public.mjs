@@ -37,7 +37,7 @@ const readFixtureFile = (root, relativePath) => readFile(path.join(root, relativ
 const writeSiteFiles = async (root, siteDirectory = 'custom-site') => {
 	await writeFixtureFile(root, `${siteDirectory}/config.yaml`, 'url: https://example.com/docs/\n');
 	await writeFixtureFile(root, `${siteDirectory}/theme.yaml`, 'preset: documentation\n');
-	await writeFixtureFile(root, `${siteDirectory}/pages/000-home/content.md`, '# Home\n');
+	await writeFixtureFile(root, `${siteDirectory}/content.md`, '# Home\n');
 };
 
 const withTempProject = async (run) => {

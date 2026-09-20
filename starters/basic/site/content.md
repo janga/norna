@@ -10,7 +10,7 @@ of what visitors can find here.
 
 ## Welcome
 
-Edit this page in `site/pages/000-home/content.md`. Every H2 starts a section
+Edit this page in `site/content.md`. Every H2 starts a section
 and becomes a destination in this one-page site's navigation.
 
 ## Next steps

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 620" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="35 39 1010 542" role="img" aria-labelledby="title desc">
   <title id="title">Single-page Norna site</title>
   <desc id="desc">A focused Dog Shelter file tree, content Markdown and resulting single-page website are shown from left to right.</desc>
   <defs>
@@ -58,18 +58,16 @@
       <rect class="panel" width="300" height="540" rx="15"/>
       <g class="mono tree">
         <text x="22" y="32">site/</text>
-        <text x="22" y="54">├── config.yaml</text>
-        <text x="22" y="72">├── pages/</text>
-        <text x="22" y="90">│&#160;&#160;&#160;└── 000-home/</text>
-        <text x="22" y="108">│&#160;&#160;&#160;&#160;&#160;&#160;&#160;├── content.md</text>
-        <text x="22" y="126">│&#160;&#160;&#160;&#160;&#160;&#160;&#160;└── images/</text>
-        <text x="22" y="144">│&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;├── dog-house.svg</text>
-        <text x="22" y="162">│&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;└── heart.svg</text>
-        <text x="22" y="180">├── public/</text>
-        <text x="22" y="198">│&#160;&#160;&#160;├── favicon.svg</text>
-        <text x="22" y="216">│&#160;&#160;&#160;└── robots.txt</text>
-        <text x="22" y="234">├── sitewide-content.yaml</text>
-        <text x="22" y="252">└── theme.yaml</text>
+        <text x="22" y="54">├──&#160;config.yaml</text>
+        <text x="22" y="72">├──&#160;theme.yaml</text>
+        <text x="22" y="90">├──&#160;sitewide-content.yaml</text>
+        <text x="22" y="108">├──&#160;content.md</text>
+        <text x="22" y="126">├──&#160;images/</text>
+        <text x="22" y="144">│&#160;&#160;&#160;├──&#160;dog-house.svg</text>
+        <text x="22" y="162">│&#160;&#160;&#160;└──&#160;heart.svg</text>
+        <text x="22" y="180">└──&#160;public/</text>
+        <text x="22" y="198">&#160;&#160;&#160;&#160;├──&#160;favicon.svg</text>
+        <text x="22" y="216">&#160;&#160;&#160;&#160;└──&#160;robots.txt</text>
       </g>
     </g>
 
@@ -97,8 +95,8 @@
       </g>
     </g>
 
-    <path class="line" d="M254 184 L438 224" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-    <path class="line" d="M229 202 L438 392" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M229 184 L438 224" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M205 202 L438 392" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
     <path class="flow" d="M666 310 H748" marker-end="url(#arrow)"/>
 
     <g transform="translate(756 40)">

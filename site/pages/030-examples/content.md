@@ -451,14 +451,13 @@ items:
 ```
 
 ```text
-pages/
-`-- 000-home/
-    `-- content.md
+site/
+`-- content.md
 ```
 
-<!-- navigation-source: fixtures/navigation-examples/single/site/pages/000-home/content.md -->
+<!-- navigation-source: fixtures/navigation-examples/single/site/content.md -->
 
-```md title="pages/000-home/content.md"
+```md title="content.md"
 # Dog Shelter
 
 ## What we do
@@ -496,10 +495,11 @@ items:
 ```
 
 ```text
-pages/
-|-- 000-home/content.md
-|-- 010-dogs/content.md
-`-- 020-adopt/content.md
+site/
+|-- content.md
+`-- pages/
+    |-- 010-dogs/content.md
+    `-- 020-adopt/content.md
 ```
 
 <!-- navigation-source: fixtures/navigation-examples/top/site/pages/010-dogs/content.md -->
@@ -542,14 +542,15 @@ items:
 ```
 
 ```text
-pages/
-|-- 000-home/content.md
-|-- 010-dogs/
-|   |-- content.md
-|   `-- pages/
-|       |-- 010-adult-dogs/content.md
-|       `-- 020-senior-dogs/content.md
-`-- 020-adopt/content.md
+site/
+|-- content.md
+`-- pages/
+    |-- 010-dogs/
+    |   |-- content.md
+    |   `-- pages/
+    |       |-- 010-adult-dogs/content.md
+    |       `-- 020-senior-dogs/content.md
+    `-- 020-adopt/content.md
 ```
 
 <!-- navigation-source: fixtures/navigation-examples/nested/site/pages/010-dogs/pages/010-adult-dogs/content.md -->
@@ -579,22 +580,23 @@ items:
 ```
 
 ```text title="Documentation example"
-pages/
-|-- 000-home/content.md
-|-- 010-guides/
-|   |-- category.yaml
-|   `-- pages/
-|       |-- 010-installation/
-|       |   |-- content.md
-|       |   `-- pages/
-|       |       |-- 010-macos/content.md
-|       |       |-- 020-windows/content.md
-|       |       `-- 030-linux/content.md
-|       `-- 020-publishing/
-|           |-- content.md
-|           `-- pages/
-|               `-- 010-github-pages/content.md
-`-- 020-reference/content.md
+site/
+|-- content.md
+`-- pages/
+    |-- 010-guides/
+    |   |-- category.yaml
+    |   `-- pages/
+    |       |-- 010-installation/
+    |       |   |-- content.md
+    |       |   `-- pages/
+    |       |       |-- 010-macos/content.md
+    |       |       |-- 020-windows/content.md
+    |       |       `-- 030-linux/content.md
+    |       `-- 020-publishing/
+    |           |-- content.md
+    |           `-- pages/
+    |               `-- 010-github-pages/content.md
+    `-- 020-reference/content.md
 ```
 
 <!-- navigation-source: fixtures/navigation-examples/documentation/site/pages/010-guides/pages/010-installation/pages/030-linux/content.md -->

@@ -21,16 +21,16 @@ assert.equal(
 assert.equal(
 	getEditSourceUrl({
 		baseUrl: 'https://gitlab.example.com/group/project/-/edit/trunk/',
-		sourcePath: String.raw`site\pages\000-home\content.md`,
+		sourcePath: String.raw`site\content.md`,
 	}),
-	'https://gitlab.example.com/group/project/-/edit/trunk/site/pages/000-home/content.md',
+	'https://gitlab.example.com/group/project/-/edit/trunk/site/content.md',
 );
 assert.equal(
 	getLocalEditorSourceUrl({
 		editor: 'vscode',
-		sourcePath: '/Users/example/My Norna Site/site/pages/000-home/content.md',
+		sourcePath: '/Users/example/My Norna Site/site/content.md',
 	}),
-	'vscode://file/Users/example/My%20Norna%20Site/site/pages/000-home/content.md',
+	'vscode://file/Users/example/My%20Norna%20Site/site/content.md',
 );
 
 for (const hostname of ['localhost', 'docs.localhost', '127.0.0.1', '127.12.34.56', '::1', '[::1]', '::ffff:127.0.0.1']) {
@@ -43,15 +43,15 @@ for (const hostname of ['192.168.1.12', 'docs.example.com', '']) {
 const linkOptions = {
 	baseUrl: 'https://github.com/example/project/edit/main/',
 	localEditor: 'vscode',
-	sourceLabel: 'site/pages/000-home/content.md',
-	sourcePath: '/Users/example/project/site/pages/000-home/content.md',
+	sourceLabel: 'site/content.md',
+	sourcePath: '/Users/example/project/site/content.md',
 };
 assert.deepEqual(resolveEditSourceTarget({
 	...linkOptions,
 	development: true,
 	hostname: '127.0.0.1',
 }), {
-	href: 'vscode://file/Users/example/project/site/pages/000-home/content.md',
+	href: 'vscode://file/Users/example/project/site/content.md',
 	kind: 'local',
 });
 assert.deepEqual(resolveEditSourceTarget({
@@ -59,7 +59,7 @@ assert.deepEqual(resolveEditSourceTarget({
 	development: true,
 	hostname: '192.168.1.12',
 }), {
-	href: 'https://github.com/example/project/edit/main/site/pages/000-home/content.md',
+	href: 'https://github.com/example/project/edit/main/site/content.md',
 	kind: 'remote',
 });
 assert.deepEqual(resolveEditSourceTarget({
@@ -67,7 +67,7 @@ assert.deepEqual(resolveEditSourceTarget({
 	development: false,
 	hostname: '127.0.0.1',
 }), {
-	href: 'https://github.com/example/project/edit/main/site/pages/000-home/content.md',
+	href: 'https://github.com/example/project/edit/main/site/content.md',
 	kind: 'remote',
 });
 assert.equal(resolveEditSourceTarget({

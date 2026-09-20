@@ -120,8 +120,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Keep editable content, Markdown section headings, Norna image block
   references, alt text, captions, and optional section metadata in the selected
   page's `content.md`; the homepage path is
-  `site/pages/000-home/content.md`. Keep site-wide visual identity in the root
-  `site/theme.yaml`; page-local themes may use only the limited inherited
+  `site/content.md`. Keep site-wide visual identity in the root
+  `site/theme.yaml`; homepage-only presentation overrides belong in
+  `site/page-theme.yaml`. Child page themes use the limited inherited
   presentation fields accepted by the page-theme schema.
 - When adding AI-generated images to Norna sites, document their provenance and
   prompt in Markdown near the image block so future maintainers can regenerate
@@ -159,9 +160,9 @@ maintainer, put it in `README.md` instead of duplicating it here.
   is copied build preparation output plus generated image and sitemap output.
   Do not create a source `site/public/sitemap.xml`; Norna reserves it for the
   generated page-tree sitemap.
-- Keep Home at `site/pages/000-home/` without child pages. Put global
-  navigation roots beside it and nested pages under the nearest meaningful
-  non-home page.
+- Keep the homepage at `site/content.md`, its images at `site/images/`, and
+  its child pages/categories under `site/pages/`. Keep deeper pages under the
+  nearest meaningful page or category's `pages/` directory.
 
 ## Visual Design Workflow
 
@@ -260,7 +261,7 @@ maintainer, put it in `README.md` instead of duplicating it here.
 - Keep exactly one Markdown H1 as the page title. H2 and H3 ids are derived
   deterministically; use explicit ids only when a public anchor must remain
   stable across heading edits. Keep managed homepage images directly in
-  `site/pages/000-home/images/` and other images directly in their page's
+  `site/images/` and other images directly in their page's
   `images/` directory.
 - Do not commit unreferenced source images unless the user explicitly asks for
   them.

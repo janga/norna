@@ -81,7 +81,7 @@ items:
 `;
 
 const model = await parsePageMarkdown(source, {
-	label: 'site/pages/000-home/content.md',
+	label: 'site/content.md',
 	lineOffset: 3,
 });
 

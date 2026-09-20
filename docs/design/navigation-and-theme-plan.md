@@ -43,25 +43,22 @@ The page tree now supports nested pages with deterministic directory parsing,
 URLs, ordering, ancestry, breadcrumbs, inherited page resources, and collision
 diagnostics.
 
-The current breaking page-container proof of concept removes the special root
-page. Every page now uses the same physical model:
+The current model makes the homepage the site root:
 
 ```text
-site/pages/NNN-page-id/
-  content.md
-  theme.yaml       # optional page-local presentation
-  images/          # optional managed page images
-  pages/           # optional child pages
+site/
+  theme.yaml       # shared visual identity and defaults
+  page-theme.yaml  # optional homepage-only presentation
+  content.md       # homepage at the configured root URL
+  images/          # optional homepage images
+  pages/           # child pages and categories
 ```
 
-`site/pages/000-home/content.md` is required and maps to `/`. The `000` prefix
-is reserved for this page. Other top-level page directories are its siblings,
-not its children. The homepage cannot contain a `pages/` hierarchy; place each
-top-level area beside `000-home` and nest further pages below that area.
-
-The root `site/` directory now contains only site-wide files and the page
-container. Removed root-level page and image locations produce a migration
-error instead of being interpreted as a second page model.
+Child folders use `NNN-page-id`, with `content.md` or `category.yaml`, optional
+`theme.yaml` and their own `pages/`. Root children appear as top-level
+navigation choices. Homepage-only overrides are separate from the global
+theme and are not inherited. This replaces the childless `000-home` container;
+see BL-138 Root Page And Child Pages for the accepted change.
 
 ### 2. Define The Navigation Contract - Complete
 

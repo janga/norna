@@ -14,13 +14,13 @@ test('image suggestions classify live page references, not publication or saved 
 	const block = (type, names) => `\`\`\`${type}\nitems:\n${names.map((name) => `  - image: ${name}`).join('\n')}\n\`\`\`\n`;
 	try {
 		await write('config.yaml', 'url: https://example.com/\n');
-		await write('pages/000-home/content.md', `# Home\n\n${block('image-stack', ['z-unused.svg'])}`);
+		await write('content.md', `# Home\n\n${block('image-stack', ['z-unused.svg'])}`);
 		await write('pages/010-other/content.md', `# Other\n\n${block('image-stack', ['y-other.svg'])}`);
-		for (const [page, files] of [['000-home', ['a-used.svg', 'z-unused.svg']], ['010-other', ['b-used.svg', 'y-other.svg']]]) {
-			for (const file of files) await write(`pages/${page}/images/${file}`, '<svg/>');
+		for (const [page, files] of [['', ['a-used.svg', 'z-unused.svg']], ['pages/010-other', ['b-used.svg', 'y-other.svg']]]) {
+			for (const file of files) await write(path.join(page, 'images', file), '<svg/>');
 		}
 		const complete = async (source) => (await getImageCompletionContext({
-			documentPath: path.join(root, 'pages/000-home/content.md'), source,
+			documentPath: path.join(root, 'content.md'), source,
 			line: source.split('\n').findIndex((line) => line === '  - image: '),
 		})).candidates;
 		for (const type of ['image-stack', 'image-carousel', 'card-list']) {
@@ -29,8 +29,8 @@ test('image suggestions classify live page references, not publication or saved 
 			assert.deepEqual(candidates.map(({ filename, usage }) => [filename, usage]), [
 				['z-unused.svg', 'unused'], ['a-used.svg', 'used'], ['y-other.svg', 'unused'], ['b-used.svg', 'used'],
 			], type);
-			assert.ok(!candidates[0].referencedBy.includes('pages/000-home/content.md'));
-			assert.ok(candidates[1].referencedBy.includes('pages/000-home/content.md'));
+			assert.ok(!candidates[0].referencedBy.includes('content.md'));
+			assert.ok(candidates[1].referencedBy.includes('content.md'));
 			assert.deepEqual(candidates[2].referencedBy, ['pages/010-other/content.md']);
 			const deleted = await complete(source.replace('a-used.svg', ''));
 			assert.equal(deleted.find(({ filename }) => filename === 'a-used.svg').usage, 'unused');

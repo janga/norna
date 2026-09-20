@@ -9,9 +9,14 @@ const runScript = (relativePath, args = []) => runInherit(
 	{ cwd: siteProjectRoot },
 );
 
-await runScript('scripts/check-config.mjs');
-await runScript('scripts/sync-content-sections.mjs', ['--check']);
-await runScript('scripts/sync-site-public.mjs');
-await runScript('scripts/generate-images.mjs');
-await runAstroInherit(['build']);
-await runScript('scripts/generate-search-index.mjs');
+try {
+	await runScript('scripts/check-config.mjs');
+	await runScript('scripts/sync-content-sections.mjs', ['--check']);
+	await runScript('scripts/sync-site-public.mjs');
+	await runScript('scripts/generate-images.mjs');
+	await runAstroInherit(['build']);
+	await runScript('scripts/generate-search-index.mjs');
+} catch (error) {
+	console.error(error.message);
+	process.exitCode = 1;
+}

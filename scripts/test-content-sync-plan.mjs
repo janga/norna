@@ -5,14 +5,14 @@ import { applyImageSyncPlan } from './lib/content-sync-apply.mjs';
 import { createImageSyncPlan } from './lib/content-sync-plan.mjs';
 
 const page = (directoryName) => ({
-	contentLabel: `site/pages/${directoryName}/content.md`,
-	imagesDir: path.join('/project/site/pages', directoryName, 'images'),
-	imagesLabel: `site/pages/${directoryName}/images`,
+	contentLabel: `site/${directoryName ? `pages/${directoryName}/` : ''}content.md`,
+	imagesDir: path.join('/project/site', directoryName ? `pages/${directoryName}` : '', 'images'),
+	imagesLabel: `site/${directoryName ? `pages/${directoryName}/` : ''}images`,
 });
 const section = (id) => ({ id, title: id });
 const managedImage = (image) => ({ image });
 
-const homePage = page('000-home');
+const homePage = page('');
 const aboutPage = page('010-about');
 const contactPage = page('020-contact');
 
@@ -74,7 +74,7 @@ const contactPage = page('020-contact');
 
 	assert.equal(plan.moves.length, 0);
 	assert.equal(plan.issues.length, 1);
-	assert.match(plan.issues[0].issue.message, /it is still referenced from site\/pages\/000-home\/content\.md \[intro\]/);
+	assert.match(plan.issues[0].issue.message, /it is still referenced from site\/content\.md \[intro\]/);
 	assert.equal(plan.resolvedPathByReference.get(sourceReference), sourcePath);
 	assert.equal(plan.resolvedPathByReference.has(targetReference), false);
 }

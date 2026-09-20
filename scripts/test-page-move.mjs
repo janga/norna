@@ -32,7 +32,7 @@ const createFixture = async (name) => {
 	await writeFixtureFile(siteDir, 'config.yaml', 'url: https://example.com/\n');
 	await writeFixtureFile(siteDir, 'theme.yaml', 'preset: documentation\n');
 	await writeFixtureFile(siteDir, 'public/manual.pdf', 'manual');
-	await writeFixtureFile(siteDir, 'pages/000-home/content.md', `# Home
+	await writeFixtureFile(siteDir, 'content.md', `# Home
 
 ## Start {#start}
 
@@ -136,7 +136,7 @@ const assertSuccessfulResult = async (siteDir) => {
 	const movedDir = path.join(siteDir, 'pages/020-reference/pages/010-overview/pages/010-install');
 	const movedSource = await readFile(path.join(movedDir, 'content.md'), 'utf8');
 	const childSource = await readFile(path.join(movedDir, 'pages/010-reference/content.md'), 'utf8');
-	const homeSource = await readFile(path.join(siteDir, 'pages/000-home/content.md'), 'utf8');
+	const homeSource = await readFile(path.join(siteDir, 'content.md'), 'utf8');
 	const workflowSource = await readFile(path.join(siteDir, 'pages/010-guides/pages/020-workflows/content.md'), 'utf8');
 
 	assert.equal(await exists(path.join(siteDir, 'pages/010-guides/pages/010-install')), false);
@@ -185,7 +185,7 @@ try {
 
 	for (const mode of ['move', 'reconcile']) {
 		const lastChild = await createFixture(`last-child-${mode}`);
-		const homePath = path.join(lastChild.siteDir, 'pages/000-home/content.md');
+		const homePath = path.join(lastChild.siteDir, 'content.md');
 		await writeFile(homePath, `${await readFile(homePath, 'utf8')}\n[Overview](/reference/overview/#summary)\n[Reference](/reference/)\n`);
 		const source = path.join(lastChild.siteDir, 'pages/020-reference/pages/010-overview');
 		const destination = path.join(lastChild.siteDir, 'pages/030-overview');
@@ -277,8 +277,8 @@ try {
 	assert.deepEqual(await snapshotSite(failures.siteDir), initialFailureState);
 
 	await writeFile(
-		path.join(failures.siteDir, 'pages/000-home/content.md'),
-		`${initialFailureState.get('pages/000-home/content.md')}\n[Broken](/missing-page/)\n`,
+		path.join(failures.siteDir, 'content.md'),
+		`${initialFailureState.get('content.md')}\n[Broken](/missing-page/)\n`,
 	);
 	const beforeBrokenPreflight = await snapshotSite(failures.siteDir);
 	assert.match(

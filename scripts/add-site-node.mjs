@@ -10,7 +10,7 @@ Usage:
 Parent selection:
   --parent /                 Add a top-level node
   --parent /guides/         Add a child below the guides node
-  no --parent               Use the current node directory, or site/pages/
+  no --parent               Use the site root, current node directory, or site/pages/
 `.trim();
 
 const parseValueOption = (rawArgs, index, name) => {

@@ -10,6 +10,7 @@ import {
 	sitewideContentPath,
 } from '../scripts/lib/site-paths.mjs';
 import { encodePageEntryId, getSiteEntryPrefix, parsePageDirectoryPath } from '../scripts/lib/page-model.mjs';
+import { homePageDirectory } from '../scripts/lib/site-conventions.mjs';
 import {
 	siteSchema,
 	sitewideSchema,
@@ -23,9 +24,10 @@ const sitewideContentSchema = z.preprocess(emptyYamlMapping, sitewideSchema);
 
 const site = defineCollection({
 	loader: glob({
-		pattern: 'pages/**/content.md',
+		pattern: ['content.md', 'pages/**/content.md'],
 		base: pathToFileURL(siteDir),
 		generateId: ({ entry }) => {
+			if (entry === 'content.md') return encodePageEntryId(siteDirLabel, homePageDirectory);
 			const pageEntryDirectory = entry.split('/').slice(1, -1).join('/');
 			const pageDirectory = pageEntryDirectory
 				.split('/')

@@ -26,9 +26,9 @@ const importScript = `
 const createSite = async (name, config) => {
 	const projectRoot = path.join(tempRoot, name);
 	const siteDir = path.join(projectRoot, 'site');
-	await mkdir(path.join(siteDir, 'pages', '000-home'), { recursive: true });
+	await mkdir(siteDir, { recursive: true });
 	await writeFile(path.join(siteDir, 'config.yaml'), config);
-	await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), '# Config test\n\n## Intro {#intro}\n\nText.\n');
+	await writeFile(path.join(siteDir, 'content.md'), '# Config test\n\n## Intro {#intro}\n\nText.\n');
 	await writeFile(path.join(siteDir, 'theme.yaml'), 'preset: documentation\n');
 	return { projectRoot, siteDir };
 };

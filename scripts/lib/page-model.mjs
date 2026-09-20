@@ -12,8 +12,8 @@ export const parsePageDirectory = (pageDirectory, label = 'page directory') => {
 			`Invalid ${label} "${pageDirectory}". Page directories must use the form NNN-page-id, for example 010-getting-started. Page ids may contain only lowercase letters, numbers, and single hyphens.`,
 		);
 	}
-	if (match[1] === '000' && pageDirectory !== homePageDirectory) {
-		throw new Error(`Invalid ${label} "${pageDirectory}". The 000 prefix is reserved for ${homePageDirectory}.`);
+	if (match[1] === '000') {
+		throw new Error(`Invalid ${label} "${pageDirectory}". Child page orders must be 001–999. The homepage is content.md in the site root.`);
 	}
 
 	return {
@@ -27,6 +27,13 @@ const normalizePageDirectoryPath = (pageDirectoryPath) => pageDirectoryPath.repl
 
 export const parsePageDirectoryPath = (pageDirectoryPath, label = 'page directory path') => {
 	const normalizedPath = normalizePageDirectoryPath(pageDirectoryPath);
+	if (normalizedPath === homePageDirectory) {
+		return {
+			pageDirectory: homePageDirectory, pageDirectories: [], pageId: 'home',
+			pageIds: [], pageOrder: 0, pageOrders: [], pagePath: '',
+			parentPagePath: null, depth: 0,
+		};
+	}
 	const segments = normalizedPath.split('/').filter(Boolean);
 
 	if (!normalizedPath || normalizedPath.startsWith('/') || normalizedPath.endsWith('/') || segments.length % 2 === 0) {
@@ -52,29 +59,18 @@ export const parsePageDirectoryPath = (pageDirectoryPath, label = 'page director
 	const pageIds = pageDirectories.map(({ pageId }) => pageId);
 	const pageOrders = pageDirectories.map(({ pageOrder }) => pageOrder);
 	const currentPage = pageDirectories.at(-1);
-	const homeIndex = pageDirectories.findIndex(({ pageDirectory }) => pageDirectory === homePageDirectory);
-	if (homeIndex > 0) {
-		throw new Error(`Invalid ${label} "${pageDirectoryPath}". ${homePageDirectory} is allowed only as a top-level page.`);
-	}
-	if (homeIndex === 0 && pageDirectories.length > 1) {
-		throw new Error(
-			`Invalid ${label} "${pageDirectoryPath}". ${homePageDirectory} is the homepage and cannot contain child pages. Place the page beside it under site/pages/, or below another non-home page.`,
-		);
-	}
-	const isHome = homeIndex === 0;
-	const logicalPageIds = isHome ? [] : pageIds;
-	const logicalPageOrders = isHome ? [] : pageOrders;
 
 	return {
 		pageDirectory: normalizedPath,
 		pageDirectories: pageDirectories.map(({ pageDirectory }) => pageDirectory),
 		pageId: currentPage.pageId,
-		pageIds: logicalPageIds,
+		pageIds,
 		pageOrder: currentPage.pageOrder,
-		pageOrders: logicalPageOrders,
-		pagePath: logicalPageIds.join('/'),
-		parentPagePath: logicalPageIds.length > 1
-			? logicalPageIds.slice(0, -1).join('/')
+		pageOrders,
+		pagePath: pageIds.join('/'),
+		// Navigation projects the root's children as top-level entries.
+		parentPagePath: pageIds.length > 1
+			? pageIds.slice(0, -1).join('/')
 			: null,
 		depth: pageDirectories.length,
 	};
@@ -82,10 +78,11 @@ export const parsePageDirectoryPath = (pageDirectoryPath, label = 'page director
 
 export const encodePageDirectoryPath = (pageDirectoryPath) => {
 	const { pageDirectories } = parsePageDirectoryPath(pageDirectoryPath);
-	return pageDirectories.join(pageEntryPathSeparator);
+	return pageDirectories.length ? pageDirectories.join(pageEntryPathSeparator) : 'root';
 };
 
 export const decodePageDirectoryPath = (pageEntryPath, label = 'page entry path') => {
+	if (pageEntryPath === 'root') return homePageDirectory;
 	const pageDirectories = pageEntryPath.split(pageEntryPathSeparator);
 	if (pageDirectories.some((pageDirectory) => !pageDirectory)) {
 		throw new Error(`Invalid ${label} "${pageEntryPath}".`);

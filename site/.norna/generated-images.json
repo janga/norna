@@ -98,18 +98,18 @@
   "pages/020-getting-started/pages/020-grow-your-site/images/getting-started-file-map.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "787efc69e50a3f20bb6d2b447591fc0a44346862e59e1910cee9033a481b61b7",
-    "src": "/images/original/pages/020-getting-started/pages/020-grow-your-site/images/getting-started-file-map-787efc69.svg",
+    "sourceHash": "cded05eb6a6666a681d007ac35115261df95c9eefad156b2da4872e2e09f0884",
+    "src": "/images/original/pages/020-getting-started/pages/020-grow-your-site/images/getting-started-file-map-cded05eb.svg",
     "width": 722,
     "height": 1104
   },
   "pages/020-getting-started/pages/020-grow-your-site/images/single-page-site.svg": {
     "kind": "static",
     "outputVersion": 2,
-    "sourceHash": "8b11b7d33214a36fdc654bbc2ad540599b1dd6f13f5630e0db463941ce0ebc72",
-    "src": "/images/original/pages/020-getting-started/pages/020-grow-your-site/images/single-page-site-8b11b7d3.svg",
-    "width": 1080,
-    "height": 620
+    "sourceHash": "830bbf7c27b45552578af1273661a73bc1650cae5bdd9f2cd14e7b7871340ee1",
+    "src": "/images/original/pages/020-getting-started/pages/020-grow-your-site/images/single-page-site-830bbf7c.svg",
+    "width": 1010,
+    "height": 542
   },
   "pages/030-examples/images/card-carousel.svg": {
     "kind": "static",

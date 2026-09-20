@@ -167,7 +167,8 @@ export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, fi
 	const relative = path.relative(path.join(siteRoot, 'pages'), sourcePath).split(path.sep).join('/');
 	const filename = path.posix.basename(relative);
 	if (!['content.md', 'category.yaml'].includes(filename)) throw new Error('Choose a page or navigation category source file.');
-	const pageDirectory = path.posix.dirname(relative);
+	const pageDirectory = path.resolve(sourcePath) === path.join(path.resolve(siteRoot), 'content.md')
+		? homePageDirectory : path.posix.dirname(relative);
 	parsePageDirectoryPath(pageDirectory);
 	const kind = filename === 'content.md' ? 'page' : 'category';
 	const isHome = pageDirectory === homePageDirectory;

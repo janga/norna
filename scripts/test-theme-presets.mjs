@@ -276,11 +276,11 @@ try {
 		assert.match(entry.markdownDescription, /https:\/\/janga\.github\.io\/norna\/reference\/configuration\/presets\//);
 	}
 
-	await mkdir(path.join(siteDir, 'pages', '000-home'), { recursive: true });
+	await mkdir(siteDir, { recursive: true });
 	await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
 	const configPath = path.join(siteDir, 'config.yaml');
 	await writeFile(configPath, 'url: https://example.com/\nnavigation:\n  mode: top\n');
-	await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), `---
+	await writeFile(path.join(siteDir, 'content.md'), `---
 page:
   description: Root page
 ---

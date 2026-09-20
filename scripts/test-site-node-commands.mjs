@@ -10,7 +10,7 @@ const repoRoot = path.resolve(import.meta.dirname, '..');
 const root = await mkdtemp(path.join(os.tmpdir(), 'norna-site-node-'));
 const siteDir = path.join(root, 'site');
 const pagesDir = path.join(siteDir, 'pages');
-const homeDir = path.join(pagesDir, '000-home');
+const homeDir = siteDir;
 const nornaBin = path.join(repoRoot, 'bin', 'norna.mjs');
 const exists = (filePath) => access(filePath).then(() => true, () => false);
 const runNornaForSite = (targetSiteDir, args, cwd = path.dirname(targetSiteDir)) => execFileAsync(process.execPath, [
@@ -38,8 +38,8 @@ const runNornaFailureForSite = async (targetSiteDir, args) => {
 };
 const createMinimalSite = async (name) => {
 	const targetSiteDir = path.join(root, name, 'site');
-	const targetHomeDir = path.join(targetSiteDir, 'pages', '000-home');
-	await mkdir(targetHomeDir, { recursive: true });
+	const targetHomeDir = targetSiteDir;
+	await mkdir(path.join(targetHomeDir, 'pages'), { recursive: true });
 	await writeFile(path.join(targetSiteDir, 'config.yaml'), 'url: https://example.com/\n');
 	await writeFile(path.join(targetSiteDir, 'theme.yaml'), 'preset: project\n');
 	await writeFile(path.join(targetHomeDir, 'content.md'), '# Home\n\n## Introduction\n\nHome page.\n');
@@ -97,8 +97,8 @@ try {
 	assert.match(unknownParent, /Cannot find parent "\/missing\/"/);
 	const invalidCwd = await runNornaFailure(['page:add', 'Other'], root);
 	assert.match(invalidCwd, /Cannot infer where to add the node from the current directory/);
-	const homeParent = await runNornaFailure(['page:add', 'Other'], homeDir);
-	assert.match(homeParent, /homepage cannot contain child pages or categories/i);
+	const homeParent = await runNorna(['page:add', 'From the root', '--dry-run'], homeDir);
+	assert.match(homeParent.stdout, /from-the-root/);
 	const invalidSlug = await runNornaFailure(['page:add', 'Other', '--slug', 'Räka', '--parent', '/']);
 	assert.match(invalidSlug, /Invalid slug "Räka"/);
 

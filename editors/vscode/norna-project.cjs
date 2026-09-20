@@ -6,6 +6,8 @@ const supportedEditorApiVersion = 2;
 const homePageDirectory = '000-home';
 const pageDirectoryPattern = /^(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const rootFiles = new Map([
+	['content.md', { documentKind: 'content', schemaKind: 'contentFrontmatter', pageDirectory: '.' }],
+	['page-theme.yaml', { documentKind: 'yaml', schemaKind: 'pageTheme', pageDirectory: '.' }],
 	['config.yaml', { documentKind: 'yaml', schemaKind: 'config' }],
 	['theme.yaml', { documentKind: 'yaml', schemaKind: 'theme' }],
 	['sitewide-content.yaml', { documentKind: 'yaml', schemaKind: 'sitewideContent' }],
@@ -30,15 +32,15 @@ const isPageDirectoryPath = (pageDirectory) => {
 
 const hasSiteMarkers = (directory) => (
 	isFile(path.join(directory, 'config.yaml'))
-	&& isFile(path.join(directory, 'pages', homePageDirectory, 'content.md'))
+	&& (isFile(path.join(directory, 'content.md')) || isFile(path.join(directory, 'pages', homePageDirectory, 'content.md')))
 );
 
 const isRootFileBeingCreated = (documentPath, directory) => {
 	if (path.dirname(documentPath) !== directory || !rootFiles.has(path.basename(documentPath))) return false;
 	if (path.basename(documentPath) === 'config.yaml') {
-		return isFile(path.join(directory, 'pages', homePageDirectory, 'content.md'));
+		return isFile(path.join(directory, 'content.md')) || isFile(path.join(directory, 'pages', homePageDirectory, 'content.md'));
 	}
-	return false;
+	return path.basename(documentPath) === 'content.md' && isFile(path.join(directory, 'config.yaml'));
 };
 
 const findNornaSiteRoot = (documentPath) => {
@@ -88,7 +90,7 @@ const classifyDocument = (siteRoot, documentPath) => {
 	if (!relativePath || relativePath.startsWith('../') || path.isAbsolute(relativePath)) return null;
 
 	const rootFile = rootFiles.get(relativePath);
-	if (rootFile) return { ...rootFile, relativePath, pageDirectory: null };
+	if (rootFile) return { pageDirectory: null, ...rootFile, relativePath };
 
 	const pageMatch = relativePath.match(/^pages\/(.+)\/(category\.yaml|content\.md|theme\.yaml)$/);
 	if (!pageMatch || !isPageDirectoryPath(pageMatch[1])) return null;

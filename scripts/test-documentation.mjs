@@ -4,7 +4,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'js-yaml';
 import { markdownToMdast } from 'satteri';
-import { configSchema, siteSchema, sitewideSchema, themeVisualSchema } from './lib/schema-definitions.mjs';
+import { configSchema, pageThemeSchema, siteSchema, sitewideSchema, themeVisualSchema } from './lib/schema-definitions.mjs';
 import { parseContentTabs } from './lib/content-tabs.mjs';
 import { readImageDimensions } from './lib/image-dimensions.mjs';
 import {
@@ -28,8 +28,6 @@ import * as documentationLinks from './lib/documentation-links.mjs';
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
 const obsoleteSourceReferences = [
-	'site/content.md',
-	'site/images/',
 	'site/config.md',
 	'site/theme.md',
 	'site/sitewide-content.md',
@@ -561,6 +559,7 @@ const checkReferenceTree = async () => {
 			if (node.type !== 'code' || node.lang !== 'yaml') continue;
 			const title = node.meta?.match(/^title="([^"\n]+)"/)?.[1] ?? '';
 			const schema = /^site\/config\.yaml/.test(title) ? configSchema
+				: /^site\/(?:page-theme|pages\/.+\/theme)\.yaml/.test(title) ? pageThemeSchema
 				: /^(?:site\/)?theme\.yaml/.test(title) ? themeVisualSchema
 					: /^site\/sitewide-content\.yaml/.test(title) ? sitewideSchema : null;
 			if (!schema) continue;

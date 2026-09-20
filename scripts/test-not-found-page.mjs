@@ -7,7 +7,7 @@ import { createTempSite, runNorna } from './test-support/content-model.mjs';
 test('build emits an English root-hosted 404 page with a static Home link', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), '# Home\n\nWelcome.\n');
+		await writeFile(path.join(siteDir, 'content.md'), '# Home\n\nWelcome.\n');
 		await runNorna(['--site-dir', siteDir, 'build']);
 
 		const html = await readFile(path.join(root, 'dist', '404.html'), 'utf8');
@@ -34,7 +34,7 @@ test('build emits a localized base-path 404 page with valid navigation and asset
 		await writeFile(path.join(siteDir, 'public', 'logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>');
 		await writeFile(path.join(siteDir, 'public', 'favicon.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>');
 		await writeFile(path.join(siteDir, 'public', 'social-image.png'), 'preview');
-		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), '# Hem\n\nVälkommen.\n');
+		await writeFile(path.join(siteDir, 'content.md'), '# Hem\n\nVälkommen.\n');
 		await mkdir(path.join(siteDir, 'pages', '010-om'), { recursive: true });
 		await writeFile(path.join(siteDir, 'pages', '010-om', 'content.md'), '# Om\n\nOm webbplatsen.\n');
 
@@ -60,7 +60,7 @@ test('build uses Greek interface text and preserves the regional language tag', 
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\nlanguage: el-GR\n');
-		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), '# Αρχική\n\nΚαλώς ήρθατε.\n');
+		await writeFile(path.join(siteDir, 'content.md'), '# Αρχική\n\nΚαλώς ήρθατε.\n');
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 

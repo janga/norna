@@ -3,10 +3,10 @@ import path from 'node:path';
 import { decodePageEntryId, parsePageDirectoryPath } from '../../scripts/lib/page-model.mjs';
 import { parsePageMarkdown } from '../../scripts/lib/page-markdown.mjs';
 import { readSiteFile } from '../../scripts/lib/site-content.mjs';
-import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
+import { homePageDirectory, getPageSourceDirectory } from '../../scripts/lib/site-conventions.mjs';
 import { assertCategoryDestinationModel, createCategoryDestinationModel } from '../../scripts/lib/category-destinations.mjs';
 import { getSiteStructure } from '../../scripts/lib/site-structure.mjs';
-import { siteDirLabel, sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
+import { siteDir, siteDirLabel } from '../../scripts/lib/site-paths.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
 
@@ -76,8 +76,9 @@ const compareNumberPaths = (left: number[], right: number[]) => {
 
 const readPageMarkdownDocument = async (entry: SiteEntry) => {
 	const pageDirectory = getPageDirectory(entry);
-	const contentLabel = `${sitePagesLabel}/${pageDirectory}/content.md`;
-	const contentPath = path.join(sitePagesDir, pageDirectory, 'content.md');
+	const contentRelativePath = [getPageSourceDirectory(pageDirectory), 'content.md'].filter(Boolean).join('/');
+	const contentLabel = `${siteDirLabel}/${contentRelativePath}`;
+	const contentPath = path.join(siteDir, contentRelativePath);
 	const { body, frontmatter } = await readSiteFile(contentPath, contentLabel);
 	const markdownDocument = await parsePageMarkdown(body, {
 		label: contentLabel,
@@ -163,7 +164,7 @@ const createSitePages = async (entries: SiteEntry[]) => {
 
 	for (const page of pages) {
 		if (page.isHome && page.navigation.listed === false) {
-			throw new Error(`${homePageDirectory} is the required homepage and cannot set navigation.listed to false.`);
+			throw new Error(`The homepage at ${siteDirLabel}/content.md cannot set navigation.listed to false.`);
 		}
 		const existing = pathnames.get(page.pathname);
 		if (existing) {
@@ -192,7 +193,7 @@ const createSitePages = async (entries: SiteEntry[]) => {
 		siblingPageOrders.set(pageOrderKey, page);
 	}
 	if (!pages.some(({ isHome }) => isHome)) {
-		throw new Error(`Homepage page entry ${homePageDirectory} is missing.`);
+		throw new Error(`Homepage content ${siteDirLabel}/content.md is missing.`);
 	}
 
 	return pages.sort((left, right) => (

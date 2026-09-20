@@ -22,16 +22,8 @@ const compareNodeMetadata = (left, right) => (
 );
 
 const assertLegacyStructureIsAbsent = async ({ siteDir, siteDirLabel, sitePagesLabel }) => {
-	const legacyContentPath = path.join(siteDir, 'content.md');
-	const legacyImagesPath = path.join(siteDir, 'images');
-	const legacyPaths = [];
-	if (await fileExists(legacyContentPath)) legacyPaths.push(`${siteDirLabel}/content.md`);
-	if (await fileExists(legacyImagesPath)) legacyPaths.push(`${siteDirLabel}/images`);
-	if (legacyPaths.length > 0) {
-		throw new Error([
-			`The old root-page structure is no longer supported: ${legacyPaths.join(', ')}.`,
-			`Move the homepage content to ${sitePagesLabel}/${homePageDirectory}/content.md and its images to ${sitePagesLabel}/${homePageDirectory}/images/.`,
-		].join('\n'));
+	if (await fileExists(path.join(siteDir, 'pages', '000-home'))) {
+		throw new Error(`${sitePagesLabel}/000-home uses the former homepage layout. Run norna site:upgrade to preview the conversion, then norna site:upgrade --apply. The homepage now belongs in ${siteDirLabel}/content.md.`);
 	}
 
 	if (await fileExists(path.join(siteDir, 'routes'))) {
@@ -82,7 +74,7 @@ export const getSiteStructure = async ({
 	const siteDirLabel = siteDir === defaultSiteDir ? defaultSiteDirLabel : siteDir;
 	const sitePagesDir = path.join(siteDir, 'pages');
 	const sitePagesLabel = `${siteDirLabel}/pages`;
-	const siteContentLabel = `${sitePagesLabel}/${homePageDirectory}/content.md`;
+	const siteContentLabel = `${siteDirLabel}/content.md`;
 	const problems = [];
 	const report = (error, node = null) => {
 		if (!tolerant) throw error;
@@ -132,19 +124,14 @@ export const getSiteStructure = async ({
 				if (!hasContent) continue;
 			}
 
-			const isHome = pageDirectory === homePageDirectory;
-			if (isHome && hasCategory) {
-				report(new Error(`${nodeLabel}/category.yaml is invalid. The homepage must be a page with content.md.`));
-			}
-
 			const node = {
 				...metadata,
-				isHome,
+				isHome: false,
 				kind: hasCategory ? 'category' : 'page',
 				nodeDir,
 				nodeLabel,
-				pagePath: isHome ? '' : metadata.pagePath,
-				parentPagePath: isHome ? null : metadata.parentPagePath,
+				pagePath: metadata.pagePath,
+				parentPagePath: metadata.parentPagePath,
 			};
 
 			if (hasCategory) {
@@ -185,14 +172,6 @@ export const getSiteStructure = async ({
 			const childPagesDir = path.join(node.nodeDir, 'pages');
 			const childDirectories = (await readDirectory(childPagesDir)).filter((entry) => entry.isDirectory());
 
-			if (node.isHome && childDirectories.length > 0) {
-				report(new Error([
-					`${node.nodeLabel} is the homepage and cannot contain child pages.`,
-					`Move these page directories beside ${homePageDirectory} under ${sitePagesLabel}/, or below another non-home page:`,
-					...childDirectories.map(({ name }) => `- ${node.nodeLabel}/pages/${name}`),
-				].join('\n')), node);
-			}
-
 			if (node.kind === 'category' && childDirectories.length === 0) {
 				warnings.push({
 					code: 'empty-category',
@@ -201,16 +180,27 @@ export const getSiteStructure = async ({
 				});
 			}
 
-			if (!node.isHome && childDirectories.length > 0) {
+			if (childDirectories.length > 0) {
 				await collectNodes(childPagesDir, `${node.nodeLabel}/pages`, node.pageDirectory);
 			}
 		}
 	};
 
-	await collectNodes(sitePagesDir, sitePagesLabel);
-	if (!nodes.some(({ isHome }) => isHome)) {
+	const rootContentPath = path.join(siteDir, 'content.md');
+	if (await fileExists(path.join(siteDir, 'category.yaml'))) {
+		report(new Error(`${siteDirLabel}/category.yaml is invalid. The site root must be a page with content.md.`));
+	}
+	if (await fileExists(rootContentPath)) {
+		nodes.push({
+			...parsePageDirectoryPath(homePageDirectory),
+			kind: 'page', isHome: true, nodeDir: siteDir, nodeLabel: siteDirLabel,
+			contentPath: rootContentPath, contentLabel: siteContentLabel,
+			imagesDir: path.join(siteDir, 'images'), imagesLabel: `${siteDirLabel}/images`,
+		});
+	} else {
 		report(new Error(`Homepage content is missing. Create ${siteContentLabel}.`));
 	}
+	await collectNodes(sitePagesDir, sitePagesLabel);
 
 	return {
 		categories: nodes.filter(({ kind }) => kind === 'category'),

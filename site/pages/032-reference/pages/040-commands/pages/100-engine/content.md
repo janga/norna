@@ -38,6 +38,10 @@ changed if a later check fails. There is no automatic rollback. Keep a Git
 baseline and review package, lockfile and generated-manifest changes together;
 the [upgrade workflow](/reference/workflows/upgrading/) covers that task.
 
+If a new engine reports the former `pages/000-home/` layout, follow the
+[homepage conversion steps](/reference/site/files/#convert-the-former-homepage-folder).
+An engine update does not move authored sources automatically.
+
 The npm cache defaults to `node_modules/.cache/norna-npm` in the project.
 An explicit `npm_config_cache` or `NPM_CONFIG_CACHE` overrides it.
 

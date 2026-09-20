@@ -59,8 +59,25 @@ is `rounded`.
 
 ## Page themes
 
-An optional `theme.yaml` in a non-home page or category folder overrides only
-a limited part of the root theme and passes those choices to descendants:
+Page themes override a limited part of the shared root theme. The file's
+location determines its scope:
+
+| File | Applies to |
+| --- | --- |
+| `site/theme.yaml` | Shared defaults for every page |
+| `site/page-theme.yaml` | Homepage only; its children keep the shared defaults |
+| `site/pages/010-guide/theme.yaml` | Guide and its descendants |
+
+Use `site/page-theme.yaml` when the homepage needs a different text width,
+spacing or image presentation without changing other pages:
+
+```yaml title="site/page-theme.yaml"
+layout:
+  textWidth: wide
+```
+
+A child page or category's optional `theme.yaml` passes its choices to
+descendants:
 
 ```text title="An inherited local override"
 site/theme.yaml                           # Site-wide identity

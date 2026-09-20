@@ -36,9 +36,9 @@ const categoryNode = ({ directory, pagePath, label }) => ({
 });
 
 const home = pageNode({
-	directory: '000-home',
+	directory: '.',
 	home: true,
-	label: 'site/pages/000-home/content.md',
+	label: 'site/content.md',
 	pagePath: '',
 });
 const guides = categoryNode({
@@ -308,7 +308,7 @@ const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-site-links-'));
 try {
 	await writeFixtureFile(tempRoot, 'site/config.yaml', 'url: https://example.com/docs/\n');
 	await writeFixtureFile(tempRoot, 'site/theme.yaml', 'preset: documentation\n');
-	await writeFixtureFile(tempRoot, 'site/pages/000-home/content.md', brokenSource);
+	await writeFixtureFile(tempRoot, 'site/content.md', brokenSource);
 	await writeFixtureFile(tempRoot, 'site/pages/010-guides/category.yaml', 'label: Guides\n');
 	await writeFixtureFile(tempRoot, 'site/pages/010-guides/pages/010-installation/content.md', installationSource);
 	await writeFixtureFile(tempRoot, 'site/pages/010-guides/pages/020-workflows/content.md', workflowsSource);
@@ -320,7 +320,7 @@ try {
 	const output = `${result.stdout}${result.stderr}`;
 	assert.equal(result.status, 1, output);
 	assert.match(output, /Content check failed\./);
-	assert.match(output, /\[site\/pages\/000-home\/content\.md\]/);
+	assert.match(output, /\[site\/content\.md\]/);
 	assert.match(output, /Internal link "\/missing\/" on line 3 points to page "\/missing\/"/);
 	assert.match(output, /missing heading anchor "#absent" on \/guides\/installation\//);
 	assert.doesNotMatch(output, /category-has-no-url/);

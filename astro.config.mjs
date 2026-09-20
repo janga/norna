@@ -17,6 +17,7 @@ import {
 	engineRoot,
 	generatedImagesManifestPath,
 	siteContentPath,
+	siteDir,
 	siteImagesDir,
 	siteProjectRoot,
 	sitePagesDir,
@@ -72,6 +73,7 @@ const nornaGeneratedImagesWatcher = () => ({
 		const manifestPath = path.resolve(generatedImagesManifestPath);
 		const watchedSourcePaths = [
 			siteContentPath,
+			path.join(siteDir, 'page-theme.yaml'),
 			siteImagesDir,
 			sitePagesDir,
 		].map((watchedPath) => path.resolve(watchedPath));
@@ -109,7 +111,7 @@ const nornaGeneratedImagesWatcher = () => ({
 		const scheduleStructureReload = (changedPath) => {
 			if (!isRelevantSourcePath(changedPath)) return;
 			const filename = path.basename(changedPath);
-			if (filename !== 'category.yaml' && filename !== 'theme.yaml') return;
+			if (filename !== 'category.yaml' && filename !== 'theme.yaml' && filename !== 'page-theme.yaml') return;
 
 			clearTimeout(structureReloadTimer);
 			structureReloadTimer = setTimeout(() => {

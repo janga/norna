@@ -27,7 +27,7 @@ for the complete editorial test and examples.
 ## Start with one page {#single-page-site}
 
 A new Norna site starts with one Home page. Its content and images live together
-in one page directory:
+at the root of the site folder:
 
 ```text
 site/
@@ -35,10 +35,9 @@ site/
 ├── theme.yaml               # Visual choices
 ├── sitewide-content.yaml    # Shared logo settings, banners, and footer
 │
-├── pages/                   # The site's pages
-│   └── 000-home/            # The required home page
-│       ├── content.md       # Page title, sections, and text
-│       └── images/          # Images used by this page
+├── content.md               # Homepage title, sections, and text
+├── images/                  # Images used by the homepage
+├── pages/                   # Create this when adding child pages
 │
 └── public/                  # Static files copied unchanged
     ├── favicon.ico          # Optional browser tab and bookmark icon
@@ -109,14 +108,14 @@ own URL, content, and images. Its H2 headings can provide local section
 navigation:
 
 ```text
-site/pages/
-├── 000-home/
-│   └── content.md
-├── 010-dogs/
-│   ├── content.md
-│   └── images/
-└── 020-adopt/
-    └── content.md
+site/
+├── content.md
+└── pages/
+    ├── 010-dogs/
+    │   ├── content.md
+    │   └── images/
+    └── 020-adopt/
+        └── content.md
 ```
 
 Create the two pages with the project's installed Norna version:
@@ -283,9 +282,9 @@ At the end of each page, previous and next links follow this same listed branch
 in depth-first order. They make a guide readable in sequence without carrying
 the reader into another top-level area.
 
-Home is the exception: `000-home` is the site's front door and cannot have child
-pages or categories. Start each navigable hierarchy with another top-level
-entry beside it.
+Home is the root page at `site/content.md`. Its children in `site/pages/` are
+the top-level entries in navigation. Place deeper topics beneath the page or
+category they belong to.
 
 See [Pages and categories](/reference/site/pages/)
 for exact marker files, creation options, ordering, URLs, inherited page themes,

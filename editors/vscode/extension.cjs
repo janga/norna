@@ -687,7 +687,7 @@ const showStatus = async () => {
 	}
 	const project = getProjectContext(editor.document.uri.fsPath);
 	if (!project) {
-		void vscode.window.showWarningMessage('The active file is not inside a current Norna site containing config.yaml and pages/000-home/content.md.');
+		void vscode.window.showWarningMessage('The active file is not inside a current Norna site containing config.yaml and content.md.');
 		return;
 	}
 	const resolved = project.nornaPackage;

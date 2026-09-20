@@ -16,14 +16,13 @@ npm exec -- norna page:add "About" --parent /
 
 ## Choose the parent
 
-`--parent /` chooses the top level. A logical page or category path, such as
+`--parent /` creates a child of the homepage in the site root's `pages/` folder. A logical page or category path, such as
 `--parent /guides/`, chooses an existing node. These are site paths without
 the deployment prefix, numeric folder prefixes, queries or fragments.
 
 Without `--parent`, the invocation directory must be exactly the selected
-site's `pages/` directory or an existing page/category directory. Norna refuses
-to guess from the project root or a page's `images/` folder. Home cannot have
-children.
+site root, its `pages/` directory or an existing page/category directory. Norna
+refuses to guess from the project root or a page's `images/` folder.
 
 ```sh
 npm exec -- norna category:add "Guides" --parent /
@@ -59,8 +58,9 @@ options are rejected; `-h` and `--help` show usage.
 
 A page starts with the escaped title as its H1, an Introduction H2 and short
 placeholder prose. A category stores its label in YAML. Existing siblings are
-not renumbered or edited. New content is prepared in a temporary directory
-under `.norna/create/` before moving to its destination.
+not renumbered or edited. The destination is reserved exclusively; creation
+refuses an existing folder. If writing fails, Norna removes only the entries
+created by that operation.
 
 Review generated files in Git before committing. To relocate an existing page
 and repair links, use [page:move](/reference/commands/move/).

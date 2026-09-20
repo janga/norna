@@ -50,7 +50,7 @@ export const createTempSite = async ({ underRepoCache = false } = {}) => {
 	await mkdir(tempParent, { recursive: true });
 	const root = await mkdtemp(path.join(tempParent, 'norna-content-model-v2-'));
 	const siteDir = path.join(root, 'site');
-	await mkdir(path.join(siteDir, 'pages', '000-home'), { recursive: true });
+	await mkdir(siteDir, { recursive: true });
 	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
 	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
   profile: reading

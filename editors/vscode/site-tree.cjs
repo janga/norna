@@ -190,10 +190,11 @@ function registerSiteTree(context, output) {
 		const service = await serviceFor(selected.siteRoot);
 		let parentPath = '/';
 		if (selected.kind !== 'site') {
+			const rootPage = selected.isHome && selected.sourcePath === path.join(selected.siteRoot, 'content.md');
 			const choices = [
-				...(!selected.isHome ? [{ label: `Inside “${selected.title}”`, description: selected.url, parentPath: selected.url }] : []),
-				{ label: `Beside “${selected.title}”`, description: selected.parent.url ?? '/', parentPath: selected.parent.url ?? '/' },
-				...(selected.parent.kind !== 'site' ? [{ label: 'At site root', description: '/', parentPath: '/' }] : []),
+				...(!selected.isHome || rootPage ? [{ label: `Inside “${selected.title}”`, description: selected.url, parentPath: selected.url }] : []),
+				...(!rootPage ? [{ label: `Beside “${selected.title}”`, description: selected.parent.url ?? '/', parentPath: selected.parent.url ?? '/' }] : []),
+				...(!rootPage && selected.parent.kind !== 'site' ? [{ label: 'At site root', description: '/', parentPath: '/' }] : []),
 			];
 			const choice = await vscode.window.showQuickPick(choices, { title: `New ${kind}: ${labelFor(selected.siteRoot)}`, placeHolder: 'Choose where to create it', ignoreFocusOut: true });
 			if (!choice) return;

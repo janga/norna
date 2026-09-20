@@ -44,7 +44,7 @@ const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-navigation-review-'));
 try {
 	await writeFixtureFile(tempRoot, 'site/config.yaml', 'url: https://example.com/\n');
 	await writeFixtureFile(tempRoot, 'site/theme.yaml', 'preset: documentation\n');
-	await writeFixtureFile(tempRoot, 'site/pages/000-home/content.md', `# Home
+	await writeFixtureFile(tempRoot, 'site/content.md', `# Home
 
 [Verify macOS](/guides/installation/macos/#verify)
 
@@ -189,7 +189,7 @@ The parent hides this page from navigation too.
 	assert.equal(emptyReview.observations.some(({ code }) => code === 'empty-category'), false);
 	assert.equal(emptyReview.site.listedCategoryCount, review.site.listedCategoryCount);
 
-	await writeFixtureFile(tempRoot, 'site/pages/000-home/content.md', `# Home
+	await writeFixtureFile(tempRoot, 'site/content.md', `# Home
 
 [Missing](/missing/)
 
@@ -203,7 +203,7 @@ Start here.
 	assert.equal(brokenReview.errors.some(({ code }) => code === 'missing-internal-page'), true);
 	assert.match(
 		brokenReview.errors.find(({ code }) => code === 'missing-internal-page').message,
-		/site\/pages\/000-home\/content\.md|Internal link/,
+		/site\/content\.md|Internal link/,
 	);
 } finally {
 	await rm(tempRoot, { force: true, recursive: true });

@@ -24,6 +24,7 @@ Commands:
   typography profiles    Show built-in typography profile values
   typography show        Show resolved typography for the selected site
   site:public            Sync static files to the selected site's .norna/public/
+  site:upgrade           Convert the former homepage folder to a root page
   images                 Generate optimized image variants
   engine:update          Update @janga/norna in a site repository
   engine:version         Show installed engine and Astro versions
@@ -169,6 +170,8 @@ try {
 		throw new Error(`Unknown typography command: ${subcommand ?? ''}\n${usage}`);
 	} else if (command === 'site:public') {
 		await runScript('scripts/sync-site-public.mjs', rest);
+	} else if (command === 'site:upgrade') {
+		await runScript('scripts/upgrade-site.mjs', rest);
 	} else if (command === 'images') {
 		await runScript('scripts/generate-images.mjs', rest);
 	} else if (command === 'engine:update') {

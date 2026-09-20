@@ -38,10 +38,8 @@ my-site/
     ├── config.yaml
     ├── theme.yaml
     ├── sitewide-content.yaml
-    ├── pages/
-    │   └── 000-home/
-    │       ├── content.md
-    │       └── images/
+    ├── content.md
+    ├── images/
     └── public/
 ```
 
@@ -89,10 +87,8 @@ existing-project/
     ├── config.yaml
     ├── theme.yaml
     ├── sitewide-content.yaml
-    ├── pages/
-    │   └── 000-home/
-    │       ├── content.md
-    │       └── images/
+    ├── content.md
+    ├── images/
     └── public/
 ```
 

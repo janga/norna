@@ -120,9 +120,9 @@ test('tabs build with assets, index every alternative, and report invalid conten
 		}));
 		const indexed = documents.map((document) => document.content).join('\n');
 		for (const content of ['brew install', 'winget install', 'Not applicable']) assert.ok(indexed.includes(content), content);
-		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), page(tabs('[Broken](/missing/)')));
+		await writeFile(path.join(siteDir, 'content.md'), page(tabs('[Broken](/missing/)')));
 		await assert.rejects(() => runContentScript(siteDir, ['--check']), (error) => /missing/.test(error.output));
-		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), page(tabs('### Hidden heading')));
+		await writeFile(path.join(siteDir, 'content.md'), page(tabs('### Hidden heading')));
 		await assert.rejects(() => runContentScript(siteDir, ['--check']), (error) => /Tabs cannot contain headings/.test(error.output));
 	} finally { await rm(root, { recursive: true, force: true }); }
 });

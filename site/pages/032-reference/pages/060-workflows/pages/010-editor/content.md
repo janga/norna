@@ -39,20 +39,21 @@ engine, so two projects can receive different version-appropriate help.
 
 Recognition depends on the file's location, surrounding site and local engine,
 not just a familiar filename. The extension searches upward for `config.yaml`
-and `pages/000-home/content.md`; the site folder need not be named `site`.
+and `content.md`; the site folder need not be named `site`.
 
 | Location relative to the site | Help |
 | --- | --- |
 | `config.yaml` | Technical site settings |
-| `theme.yaml` | Root theme |
+| `theme.yaml` | Shared site theme |
+| `page-theme.yaml` | Homepage-only presentation overrides |
+| `content.md` | Homepage frontmatter, Markdown blocks, notes and images |
 | `sitewide-content.yaml` | Shared content |
 | `pages/010-guide/content.md` | Frontmatter, Markdown blocks, notes and images |
 | `pages/010-guide/theme.yaml` | Limited page-theme settings |
 | `pages/010-guide/category.yaml` | Navigation category |
 
 Page rules also apply to valid nested folders repeating `pages/` between
-levels. Home has no children. Unrelated Markdown/YAML files do not receive
-Norna's own help.
+levels. Unrelated Markdown/YAML files do not receive Norna's own help.
 
 An empty or invalid recognized file can still receive help. When first
 creating `config.yaml`, an existing homepage is sufficient to recognize its
@@ -83,8 +84,8 @@ whether it belongs inside that node, beside it or at the site root, then enter
 its title and URL segment. Review the resulting location and select **Create
 page**. The new page appears last among its siblings and opens for editing.
 **Norna: New Category…** follows the same steps for a navigation category.
-Home cannot contain children. Escape cancels before creation without writing
-files. These actions use the same rules as
+Choosing Home as the parent creates a child in the site root's `pages/` folder.
+Escape cancels before creation without writing files. These actions use the same rules as
 [`page:add` and `category:add`](/reference/commands/create/).
 
 Choose **Norna: Page Information…** to edit the title, description or whether

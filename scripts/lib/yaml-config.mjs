@@ -60,7 +60,7 @@ export const parseYamlConfig = (source, label, {
 	if (issues.length > 0) {
 		throw new Error([
 			`${label} has invalid YAML structure.`,
-			...issues.map((issue) => `- ${issue.message}`),
+			...issues.map((issue) => `- ${issue.message}${issue.fix ? ` ${issue.fix}` : ''}`),
 		].join('\n'));
 	}
 

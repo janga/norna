@@ -11,7 +11,7 @@ folder slugs without order numbers or intermediate `pages/` directory names.
 ## Page addresses
 
 ```text title="Folders become URL segments"
-site/pages/000-home/content.md                    -> /
+site/content.md                    -> /
 site/pages/010-guides/content.md                  -> /guides/
 site/pages/010-guides/pages/020-install/content.md -> /guides/install/
 ```

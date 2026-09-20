@@ -17,11 +17,11 @@ file or directory:
 site/
 |-- config.yaml *          # Public URL and technical settings
 |-- theme.yaml *           # Preset and visual overrides
+|-- page-theme.yaml        # Optional homepage-only presentation
 |-- sitewide-content.yaml  # Shared notices, footer and logo height
-|-- pages/ *
-|   `-- 000-home/ *        # Home has no child pages
-|       |-- content.md *   # One H1 followed by the page content
-|       `-- images/        # This page's image files
+|-- content.md *           # Homepage: one H1 followed by its content
+|-- images/                # Homepage image files
+|-- pages/                 # Child pages and categories
 `-- public/               # Files copied unchanged, such as favicon.ico
 ```
 
@@ -34,23 +34,26 @@ npm scripts and publishing workflow.
 
 ## Page folders
 
-Additional pages sit beside Home; children sit in their parent's `pages/`:
+The homepage is the root page. Its children live in `site/pages/`; deeper
+children live in their parent's `pages/`:
 
 ```text title="A page with a child"
-site/pages/
-|-- 000-home/content.md
-`-- 010-guide/
-    |-- content.md
-    |-- images/
-    `-- pages/
-        `-- 010-install/content.md
+site/
+|-- content.md
+`-- pages/
+    `-- 010-guide/
+        |-- content.md
+        |-- images/
+        `-- pages/
+            `-- 010-install/content.md
 ```
 
 A group without editorial text uses `category.yaml` instead of `content.md`.
 [Pages and categories](/reference/site/pages/) explains this choice and names.
 
-`config.yaml` and `sitewide-content.yaml` apply only at the root. A `theme.yaml`
-may also appear in a page or category folder, but accepts only
+`config.yaml` and `sitewide-content.yaml` apply only at the root. Root
+`theme.yaml` controls the whole site. Optional root `page-theme.yaml` controls
+only the homepage. A child page or category's `theme.yaml` supplies
 [limited inherited overrides](/reference/configuration/theme/#page-themes).
 
 ## Generated files
@@ -77,3 +80,31 @@ npm exec -- norna --site-dir presentation build
 The global option and `NORNA_SITE_DIR` environment variable choose a source
 folder, not a setting in `config.yaml`. [Command invocation](/reference/commands/invocation/#site-selection)
 gives the lookup rules, including commands run from inside a site.
+
+
+## Convert the former homepage folder
+
+Sites made with the former model keep the homepage under `pages/000-home/`.
+After updating Norna, stop the local dev server and preview the conversion:
+
+```sh
+norna site:upgrade
+norna site:upgrade --apply
+norna check
+norna build
+```
+
+The first command lists the moves without changing files. `--apply` moves the
+homepage's `content.md` and `images/` into the site root, and renames its local
+`theme.yaml` to root `page-theme.yaml`. The shared root `theme.yaml` and all
+child pages stay in place; public page URLs do not change. Generated image
+output is rebuilt from the new source locations.
+
+Use the same `--site-dir` selection for preview and apply when the source
+folder is not `site/`. Commit the converted sources and generated image
+manifest together, then restart the local dev server.
+
+Conversion refuses existing destination files or directories, symbolic links,
+extra files in the old homepage folder and non-empty child folders beneath it.
+Resolve the reported conflict before applying; Norna does not merge or overwrite
+these sources. Running the command on an already converted site changes nothing.

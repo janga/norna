@@ -101,7 +101,7 @@ const getNavigationNodesForEditor = async (siteRoot) => {
 					nodes.push({
 						depth,
 						headings: document.navigationHeadings,
-						isHome: depth === 1 && entry.name === homePageDirectory,
+						isHome: false,
 						kind: 'page',
 						listed: data.navigation?.listed !== false,
 					});
@@ -112,6 +112,12 @@ const getNavigationNodesForEditor = async (siteRoot) => {
 		}
 	};
 
+	const homeContent = path.join(siteRoot, 'content.md');
+	if (await fileExists(homeContent)) {
+		const source = await readFile(homeContent, 'utf8');
+		const document = await parsePageMarkdownSource(source, { label: homeContent });
+		nodes.unshift({ depth: 0, headings: document.navigationHeadings, isHome: true, kind: 'page', listed: true });
+	}
 	await visit(path.join(siteRoot, 'pages'));
 	return nodes;
 };
@@ -262,6 +268,7 @@ export const getSitePublicAssetStatus = async (documentPath) => {
 const getPageContext = (siteRoot, documentPath) => {
 	const absoluteDocumentPath = path.resolve(documentPath);
 	const relativePath = toPosixPath(path.relative(siteRoot, absoluteDocumentPath));
+	if (relativePath === 'content.md') return { contentPath: absoluteDocumentPath, imagesRoot: path.join(siteRoot, 'images'), pageLabel: 'Home', pageDirectory: homePageDirectory };
 	const match = relativePath.match(/^pages\/(.+)\/content\.md$/);
 	if (!match) return null;
 
@@ -515,6 +522,7 @@ const getContentFiles = async (siteRoot) => {
 		}
 	};
 
+	if (await fileExists(path.join(siteRoot, 'content.md'))) files.push(path.join(siteRoot, 'content.md'));
 	await visit(path.join(siteRoot, 'pages'));
 	return files;
 };
@@ -534,7 +542,7 @@ const getReferencesByFilename = async (siteRoot) => {
 
 export const createSiteImageIndex = async (siteRoot) => {
 	const files = [];
-	const pageRoots = [];
+	const pageRoots = [{ imageRoot: path.join(siteRoot, 'images'), pageLabel: 'Home' }];
 	await collectPageImageRoots(path.join(siteRoot, 'pages'), siteRoot, pageRoots);
 	for (const root of pageRoots) {
 		await collectImageFiles(root.imageRoot, root.imageRoot, root.pageLabel, files);

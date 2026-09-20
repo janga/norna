@@ -90,8 +90,8 @@ async function runWidgetPriority({ window, widget, openDocument, waitFor, getCom
 			'# Priority\n\n```card-list\nlayout: image-top\n```');
 		await check('Frontmatter fields', '---\npage:\n  |CURSOR|\n---\n# Priority', ['description', 'aliases']);
 		await check('Example site discovery', '# Priority\n\n|CURSOR|', constructors,
-			'examples/complete-sites/priority/site/pages/000-home/content.md');
-		await check('Second project images', '# Priority\n\n```image-stack\nitems:\n  - image: |CURSOR|\n```', ['second-only.svg'], 'second/site/pages/000-home/content.md',
+			'examples/complete-sites/priority/site/content.md');
+		await check('Second project images', '# Priority\n\n```image-stack\nitems:\n  - image: |CURSOR|\n```', ['second-only.svg'], 'second/site/content.md',
 			'# Priority\n\n```image-stack\nitems:\n  - image: second-only.svg\n```');
 		await check('YAML banner template', 'banners:\n  - |CURSOR|\n', ['Norna: Warning banner'], 'widget-site/sitewide-content.yaml',
 			'banners:\n  - id: project-status\n    tone: warning\n    title: Important notice\n    text: Brief explanation.\n');
@@ -100,7 +100,7 @@ async function runWidgetPriority({ window, widget, openDocument, waitFor, getCom
 			['Unrecognized content.md', '# Ordinary\n\n|CURSOR|', 'ordinary/content.md'],
 			['Adjacent YAML', '|CURSOR|', 'site/settings.yaml'],
 			['Unrecognized theme.yaml', '|CURSOR|', 'ordinary/theme.yaml'],
-			['Incompatible project', '# Priority\n\n|CURSOR|', 'incompatible/site/pages/000-home/content.md'],
+			['Incompatible project', '# Priority\n\n|CURSOR|', 'incompatible/site/content.md'],
 			['Literal YAML', '# Priority\n\n```yaml\n|CURSOR|\n```'],
 			['Literal JavaScript', '# Priority\n\n```js\n|CURSOR|\n```'],
 			['Literal Markdown example', '# Priority\n\n````md\n|CURSOR|\n````'],
