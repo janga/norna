@@ -29,11 +29,16 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await openDocument('tree-content/pages/010-guide/content.md');
 		await vscode.commands.executeCommand('nornaSiteTree.focus');
 		await waitFor(() => window.locator('.monaco-list-row').allTextContents(), (texts) => texts.some((text) => text.includes('Tree Guide')), 'The site tree did not reveal the active page.');
-		const tree = window.getByRole('tree', { name: 'Norna: Site Tree', exact: true });
-		// Give the site view room using the same pane control available to authors.
-		await window.locator('.pane').filter({ has: window.getByRole('tree', { name: 'Files Explorer', exact: true }) }).locator('.pane-header').click();
+		const tree = window.getByRole('tree', { name: 'Site Tree', exact: true });
 		await vscode.commands.executeCommand('notifications.clearAll');
 		const row = (title) => tree.locator('.monaco-list-row').filter({ has: window.getByText(title, { exact: true }) });
+		const sourceRow = (relative) => tree.locator(`.monaco-list-row[aria-label*=${JSON.stringify(path.join(root, relative))}]`)
+			.filter({ has: window.getByText(path.basename(relative), { exact: true }) });
+		const expandDirectory = async (relative) => {
+			const item = sourceRow(relative);
+			await item.waitFor({ state: 'visible' });
+			if (await item.getAttribute('aria-expanded') === 'false') await item.locator('.monaco-tl-twistie').click();
+		};
 		const quick = window.locator('.quick-input-widget');
 		const pick = async (label) => {
 			await quick.locator('.quick-input-list .monaco-list-row').filter({ has: window.locator('.label-name').getByText(label, { exact: true }) }).click();
@@ -74,12 +79,15 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await activeIs(topicPath);
 		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'false', 'Opening a category must not expand it.');
 		await row('Tree Topics').locator('.monaco-tl-twistie').click();
+		await expandDirectory('tree-content/pages/020-topics/pages');
 		await row('Tree Child').waitFor({ state: 'visible' });
 		await activeIs(topicPath);
 		await row('Tree Child').getByText('Tree Child', { exact: true }).click();
 		await activeIs('tree-content/pages/020-topics/pages/010-child/content.md');
 		passed('Label opens source; chevron expands independently');
 		await vscode.commands.executeCommand('nornaSiteTree.focus');
+		await tree.press('ArrowLeft');
+		await tree.press('ArrowLeft');
 		await tree.press('ArrowLeft');
 		await tree.press('ArrowLeft');
 		await waitFor(() => row('Tree Topics').getAttribute('aria-expanded'), (value) => value === 'false', 'Keyboard collapse did not work.');
@@ -91,6 +99,25 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await waitFor(() => row('Tree Guide').getAttribute('aria-selected'), (value) => value === 'true', 'Active source was not selected.');
 		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'true', 'Following another page reset expansion.');
 		passed('Active-file reveal preserves unrelated expanded branches');
+		// Resource rows use their actual source locations, even with equal names.
+		await row('Tree Guide').locator('.monaco-tl-twistie').click();
+		await sourceRow('tree-content/pages/010-guide/theme.yaml').click();
+		await activeIs('tree-content/pages/010-guide/theme.yaml');
+		await expandDirectory('tree-content/pages/010-guide/images');
+		await sourceRow('tree-content/pages/010-guide/images/example.png').click();
+		await waitFor(() => vscode.window.tabGroups.activeTabGroup.activeTab?.input, (input) => input instanceof vscode.TabInputCustom
+			&& input.uri.fsPath === path.join(root, 'tree-content/pages/010-guide/images/example.png'), 'The page image did not open in the normal image editor.');
+		await expandDirectory('tree-content/images');
+		await sourceRow('tree-content/images/example.png').click();
+		await waitFor(() => vscode.window.tabGroups.activeTabGroup.activeTab?.input?.uri?.fsPath,
+			(filename) => filename === path.join(root, 'tree-content/images/example.png'), 'Equal image names opened the wrong owner’s file.');
+		await expandDirectory('tree-content/public');
+		await expandDirectory('tree-content/public/downloads');
+		await sourceRow('tree-content/public/downloads/notes.txt').click();
+		await activeIs('tree-content/public/downloads/notes.txt');
+		assert.equal(vscode.window.activeTextEditor.document.getText(), 'Public download\n');
+		passed('Owned YAML, image previews, duplicate image names and nested public files');
+		await openDocument(guidePath);
 
 		const guide = vscode.window.activeTextEditor.document;
 		const diskOriginal = fs.readFileSync(guide.uri.fsPath, 'utf8');
@@ -178,6 +205,21 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await activeIs('tree-content/pages/050-new-categories/category.yaml');
 		assert.equal(vscode.window.activeTextEditor.document.getText(), 'label: New Categories\n');
 		passed('Create child, sibling and root category through tree actions');
+		await openDocument('tree-content/pages/020-topics/pages/010-child/content.md');
+		const pagesRow = sourceRow('tree-content/pages/020-topics/pages');
+		await pagesRow.hover();
+		await pagesRow.getByRole('button', { name: 'Norna: Add Page…', exact: true }).click();
+		await input('Added Directly', 'Page title');
+		await input('added-directly', 'URL segment');
+		assert.match(await quick.innerText(), /\/topics\/added-directly\//);
+		await pick('Create page');
+		await activeIs('tree-content/pages/020-topics/pages/040-added-directly/content.md');
+		passed('Add Page inline action selects the physical pages folder without a location prompt');
+		await create({ selected: 'Added Directly', kind: 'page', placement: 'Inside “Added Directly”', title: 'First Nested Page', slug: 'first-nested-page' });
+		await activeIs('tree-content/pages/020-topics/pages/040-added-directly/pages/010-first-nested-page/content.md');
+		await waitFor(() => row('First Nested Page').getAttribute('aria-selected'), (value) => value === 'true', 'The first child was not revealed under its new pages folder.');
+		assert.equal(await window.getByText(/Norna: Cannot resolve tree item/).count(), 0, 'Creation and filesystem refresh must not invalidate an active reveal.');
+		passed('First-child creation adds its physical pages folder and reveals the source without a tree error');
 
 		await openDocument('tree-content/content.md');
 		await waitFor(() => row('Tree Home').getAttribute('aria-selected'), (value) => value === 'true', 'Home was not revealed before its actions were tested.');
@@ -200,6 +242,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		passed('URL collisions are rejected without overwriting files');
 
 		await row('Tree Hidden').locator('.monaco-tl-twistie').click();
+		await expandDirectory('tree-content/pages/030-hidden/pages');
 		assert.match(await row('Tree Hidden Child').innerText(), /unlisted/);
 		const external = path.join(root, 'tree-content/pages/060-external');
 		fs.mkdirSync(external);

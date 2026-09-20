@@ -52,7 +52,7 @@ and verified, following the [track method](../vscode-authoring-track.md).
 The reference is VS Code's native views and file editors, observed in the
 owner's running VS Code window on 2026-09-20 and documented in its
 [view guidance](https://code.visualstudio.com/api/ux-guidelines/views).
-The extension source currently places **Norna: Site Tree** inside Explorer.
+The design baseline placed **Norna: Site Tree** inside Explorer.
 The owner approved the dedicated Norna entry on 2026-09-20 for discoverability.
 Proposal 2 reflects the agreed filesystem mapping: the homepage is the root,
 resources stay beneath their owner, and configuration precedes `pages/`.
@@ -61,5 +61,9 @@ and Add page at each represented `pages/`. Earlier layout alternatives remain
 in Git history. The owner approved implementation, including existing public
 files, on 2026-09-20. The accepted delivery contract is
 [BL-140 VS Code Page Files Implementation](../backlog/BL-140-vscode-page-files-implementation.md).
+That implementation is complete and verified in the owner's Default profile.
+The drawings remain design history; use the
+[editor reference](../../../site/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
+for the delivered controls and current scope.
 
 Generated-state directories belong to the scratch copy, not this source.

@@ -1,14 +1,15 @@
 ---
 page:
-  description: Install optional VS Code support to browse and create pages, edit page information and use Norna-aware suggestions and diagnostics.
+  description: Find pages, configuration and images in VS Code, create pages, edit page information and use Norna-aware suggestions.
 ---
 
 # VS Code editor support
 
 The optional Norna extension connects VS Code to the rules in a project's
-installed Norna package. Its site tree opens and creates pages and edits their
-titles and metadata. It also adds configuration and Markdown help, diagnostics
-and managed-image navigation. Command-line checks remain authoritative.
+installed Norna package. Its site tree opens pages and their files, creates
+pages and edits their titles and metadata. It also adds configuration and
+Markdown help, diagnostics and managed-image navigation. Command-line checks
+remain authoritative.
 
 The extension is experimental and distributed as a manually installed VSIX,
 not through the Visual Studio Marketplace. An npm installation of Norna does
@@ -63,26 +64,64 @@ Text. See [site files](/reference/site/files/) for the source model.
 
 ## Work from the site tree
 
-Open **Norna: Site Tree** in the Explorer sidebar. The tree shows authored pages
-and navigation categories in site order, using their titles and labels. A
-category groups children and stores its information in `category.yaml`; a page
-has its own `content.md`. See [pages and categories](/reference/site/pages/).
+Select **Norna** in VS Code's Activity Bar, the strip of view icons beside the
+sidebar. Its **Site Tree** shows pages by their readable titles and files by
+their real names. The ordinary **Explorer** remains available for other project
+files. You can also find **Site Tree** through **View: Open View…**.
+
+Each site's top row is its homepage. Clicking it opens `site/content.md`.
+Beneath a page, the tree follows the actual
+[file organization](/reference/site/files/): existing configuration files come
+first, followed by `images/` and the child-page folder `pages/`. The root also
+shows its existing `public/` folder, including nested downloads and other
+static files. A readable page row represents its numbered source directory;
+the number stays in the filesystem but does not clutter the displayed title.
+
+For example, a homepage titled **Norna** and a child titled **Guide** appear as:
+
+```text
+Norna                     opens site/content.md
+  config.yaml
+  theme.yaml
+  page-theme.yaml
+  images/
+  pages/
+    Guide                 opens site/pages/010-guide/content.md
+      theme.yaml
+      images/
+  public/
+```
+
+Only existing files and folders appear. The root `theme.yaml` controls the
+shared site appearance; optional `page-theme.yaml` affects only the homepage.
+A branch's `theme.yaml` belongs under that branch. See
+[configuration files](/reference/configuration/). The page row opens
+`content.md`, so that file is not repeated beneath it. Navigation categories
+use their labels and open `category.yaml`; that file also appears among the
+category's configuration files.
 
 Click a title to open its source. Use the separate chevron, or the keyboard
 arrow keys, to expand and collapse children. The tree follows the active Norna
 source file, including one opened through the website's **Open in VS Code**
-link. Other expanded branches remain open. Use VS Code's built-in tree find
-when looking for a visible label.
+link. Other expanded branches remain open. Resource files use VS Code's normal
+editor selection: PNG images, for example, open in its image preview. Use
+VS Code's built-in tree find when looking for a visible label.
 
-Each discovered site has its own root. Opening a source file also discovers
-its site, including a folder with a name other than `site`. Pages omitted from
+Each discovered site has its own homepage row, with its source location to
+distinguish multiple sites. Opening a source file also discovers its site,
+including a folder with a name other than `site`. Pages omitted from
 generated navigation remain in the authoring tree, marked **unlisted**; they
 are still published. That mark also applies to descendants of an unlisted page.
 
-To create a page, right-click a node and choose **Norna: New Page…**. Choose
-whether it belongs inside that node, beside it or at the site root, then enter
-its title and URL segment. Review the resulting location and select **Create
-page**. The new page appears last among its siblings and opens for editing.
+To create a page in an existing `pages/` folder, select its **Norna: Add Page…**
+plus button or the same action in its context menu. That folder is already
+the destination. Enter a title and URL segment, review the resulting address
+and directory, then select **Create page**. The new page appears last among
+its siblings and opens for editing.
+
+To create the first child of a page without `pages/`, right-click the page and
+choose **Norna: New Page…**, then **Inside**. The same command also offers
+creation beside a page or at the site root. Browsing alone creates no folders.
 **Norna: New Category…** follows the same steps for a navigation category.
 Choosing Home as the parent creates a child in the site root's `pages/` folder.
 Escape cancels before creation without writing files. These actions use the same rules as
@@ -102,12 +141,19 @@ missing/duplicate H1 in the source; other valid tree nodes remain usable.
 YAML aliases, anchors or tagged values that cannot be edited directly through
 Page Information need a source edit.
 
-The tree requires extension version 0.2.0 or later and an engine build that
-provides site-tree support. An older or incompatible engine produces a message
-on its site root; existing compatible IntelliSense can still be used. Run
-**Norna: Refresh Site Tree** after updating the engine or to rediscover sites.
-Moving, reordering and deleting pages, changing addresses, and inserting links
-are outside this first tree scope.
+The file tree requires extension version 0.3.0 or later and an engine build
+with page-file support. Engines with the earlier site-tree support retain
+their page tree and show a message explaining the missing file view. An
+incompatible engine reports the problem on its site root; compatible
+IntelliSense remains available. Run **Norna: Refresh Site Tree** after an engine
+update or to rediscover sites. External file changes normally refresh the
+tree automatically.
+
+Use **Page Information** on pages and categories. Other files open for normal
+editing and do not receive page-metadata actions. Importing or deleting images,
+creating themes, moving/reordering/deleting pages, changing addresses and
+inserting links are outside this tree's scope. Generated `.norna` output and
+symbolic links are not listed; use Explorer for files outside the tree.
 
 ## Suggestions and diagnostics
 

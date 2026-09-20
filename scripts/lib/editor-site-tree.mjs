@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { isMap, isScalar, parseDocument } from 'yaml';
 import { getMarkdownHeadings, slugifyAsciiIdentifier } from './heading-ids.mjs';
@@ -13,6 +13,7 @@ import { parseYamlConfig } from './yaml-config.mjs';
 // Optional capability: older engines keep IntelliSense without exposing writes
 // through a site-tree API whose contract they do not implement.
 export const siteTreeApiVersion = 1;
+export const siteFileTreeApiVersion = 1;
 export { createSiteNode, planSiteNodeCreation, slugifyAsciiIdentifier };
 
 const sourceParts = (source, kind) => {
@@ -80,6 +81,62 @@ export const readSiteTree = async ({ siteRoot, sources = new Map(), cache = new 
 	}
 	for (const filename of cache.keys()) if (!used.has(filename)) cache.delete(filename);
 	return { nodes, problems: structure.problems };
+};
+
+// Keep the logical page API compatible with older extensions. This optional
+// projection supplies physical resource locations without deriving new URLs.
+export const readSiteFileTree = async (options) => {
+	const siteRoot = path.resolve(options.siteRoot);
+	const snapshot = await readSiteTree({ ...options, siteRoot });
+	const home = snapshot.nodes.find((node) => node.isHome);
+	const items = [];
+	const problems = [...snapshot.problems];
+	if (!home || home.sourcePath !== path.join(siteRoot, 'content.md')) return { ...snapshot, items: null };
+	const resourceId = (filename) => `resource:${filename}`;
+	const entriesAt = async (directory) => {
+		try { return await readdir(directory, { withFileTypes: true }); }
+		catch (error) {
+			if (error.code !== 'ENOENT') problems.push({ path: directory, message: `Cannot read ${directory}: ${error.message}` });
+			return [];
+		}
+	};
+	const addResource = (owner, parentId, filename, kind, role, description = '') => {
+		const item = { id: resourceId(filename), parentId, ownerId: owner.sourcePath,
+			kind, role, sourcePath: filename, title: path.basename(filename), description };
+		items.push(item);
+		return item;
+	};
+	const addDirectory = async (owner, parentId, filename, role) => {
+		const directory = addResource(owner, parentId, filename, 'directory', role);
+		if (role === 'pages') return;
+		const entries = (await entriesAt(filename)).filter((entry) => entry.isDirectory() || entry.isFile());
+		entries.sort((a, b) => Number(b.isDirectory()) - Number(a.isDirectory()) || a.name.localeCompare(b.name, 'en', { numeric: true }));
+		for (const entry of entries) {
+			const child = path.join(filename, entry.name);
+			if (entry.isDirectory()) await addDirectory(owner, directory.id, child, 'assets');
+			else addResource(owner, directory.id, child, 'file', 'asset');
+		}
+	};
+	for (const page of snapshot.nodes) {
+		const directory = path.dirname(page.sourcePath);
+		const parentId = page.isHome ? null : resourceId(path.dirname(directory));
+		items.push({ ...page, id: page.sourcePath, parentId, ownerId: page.sourcePath });
+		const entries = new Map((await entriesAt(directory)).map((entry) => [entry.name, entry]));
+		const configuration = page.isHome
+			? ['config.yaml', 'theme.yaml', 'page-theme.yaml', 'sitewide-content.yaml']
+			: ['category.yaml', 'theme.yaml'];
+		for (const filename of configuration) {
+			if (!entries.get(filename)?.isFile()) continue;
+			const description = filename === 'page-theme.yaml' ? 'Homepage appearance only; not inherited'
+				: filename === 'theme.yaml' ? page.isHome ? 'Shared site appearance' : 'Appearance inherited by this branch'
+					: filename === 'config.yaml' ? 'Site settings' : filename === 'sitewide-content.yaml' ? 'Shared site content' : 'Category information';
+			addResource(page, page.sourcePath, path.join(directory, filename), 'file', 'configuration', description);
+		}
+		for (const name of ['images', 'pages', ...(page.isHome ? ['public'] : [])]) {
+			if (entries.get(name)?.isDirectory()) await addDirectory(page, page.sourcePath, path.join(directory, name), name);
+		}
+	}
+	return { ...snapshot, items, problems };
 };
 
 const collectComments = (token, start, end, comments = []) => {

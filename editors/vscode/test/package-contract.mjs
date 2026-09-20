@@ -23,6 +23,15 @@ assert.deepEqual(extensionManifest.extensionDependencies, ['redhat.vscode-yaml']
 assert.ok(existsSync(path.join(extensionRoot, extensionManifest.icon)));
 assert.equal(projectSupport.supportedSchemaVersion, engineManifest.schemaVersion);
 assert.equal(projectSupport.supportedEditorApiVersion, engineManifest.editorApiVersion);
+assert.deepEqual(extensionManifest.contributes.viewsContainers.activitybar, [
+	{ id: 'norna', title: 'Norna', icon: 'media/norna.svg' },
+]);
+assert.equal(extensionManifest.contributes.views.norna[0].id, 'nornaSiteTree');
+assert.equal(extensionManifest.contributes.views.explorer, undefined);
+const itemMenus = extensionManifest.contributes.menus['view/item/context'];
+assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.addPage'
+	&& item.group === 'inline' && item.when.endsWith('viewItem == nornaPages')));
+assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.pageInformation').when.includes('(Home|Page|Category)'));
 
 const executable = path.join(
 	extensionRoot,
@@ -46,6 +55,7 @@ for (const required of [
 	'README.md',
 	'dist/extension.cjs',
 	'icon.png',
+	'media/norna.svg',
 	'package.json',
 ]) {
 	assert.ok(files.has(required), `Packaged extension is missing ${required}.`);

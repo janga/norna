@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -72,18 +72,23 @@
         "icon": "$(go-to-file)"
       },
       {
+        "command": "nornaEditor.addPage",
+        "title": "Norna: Add Page…",
+        "icon": "$(add)"
+      },
+      {
         "command": "nornaEditor.newPage",
-        "title": "Norna: New Page\u2026",
+        "title": "Norna: New Page…",
         "icon": "$(new-file)"
       },
       {
         "command": "nornaEditor.newCategory",
-        "title": "Norna: New Category\u2026",
+        "title": "Norna: New Category…",
         "icon": "$(new-folder)"
       },
       {
         "command": "nornaEditor.pageInformation",
-        "title": "Norna: Page Information\u2026",
+        "title": "Norna: Page Information…",
         "icon": "$(edit)"
       },
       {
@@ -93,10 +98,10 @@
       }
     ],
     "views": {
-      "explorer": [
+      "norna": [
         {
           "id": "nornaSiteTree",
-          "name": "Norna: Site Tree",
+          "name": "Site Tree",
           "icon": "$(list-tree)",
           "contextualTitle": "Norna"
         }
@@ -123,7 +128,7 @@
       "view/item/context": [
         {
           "command": "nornaEditor.openSiteNode",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category|File)$/",
           "group": "1_open@1"
         },
         {
@@ -133,12 +138,27 @@
         },
         {
           "command": "nornaEditor.newPage",
-          "when": "view == nornaSiteTree && viewItem != nornaSiteUnavailable",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Site|Home|Page|Category)$/",
           "group": "2_create@1"
         },
         {
           "command": "nornaEditor.newCategory",
-          "when": "view == nornaSiteTree && viewItem != nornaSiteUnavailable",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Site|Home|Page|Category)$/",
+          "group": "2_create@2"
+        },
+        {
+          "command": "nornaEditor.addPage",
+          "when": "view == nornaSiteTree && viewItem == nornaPages",
+          "group": "inline"
+        },
+        {
+          "command": "nornaEditor.addPage",
+          "when": "view == nornaSiteTree && viewItem == nornaPages",
+          "group": "2_create@1"
+        },
+        {
+          "command": "nornaEditor.newCategory",
+          "when": "view == nornaSiteTree && viewItem == nornaPages",
           "group": "2_create@2"
         }
       ],
@@ -146,6 +166,19 @@
         {
           "command": "nornaEditor.openSiteNode",
           "when": "false"
+        },
+        {
+          "command": "nornaEditor.addPage",
+          "when": "false"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "norna",
+          "title": "Norna",
+          "icon": "media/norna.svg"
         }
       ]
     }
@@ -153,7 +186,7 @@
   "scripts": {
     "audit:runtime": "npm audit --omit=dev",
     "build": "esbuild extension.cjs --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.cjs",
-    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/package-contract.mjs",
+    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/package-contract.mjs",
     "package": "vsce package --out norna-vscode.vsix",
     "publish:marketplace": "vsce publish",
     "vscode:prepublish": "npm run build",

@@ -1,10 +1,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
-const { getNornaProjectContext, pageDirectoryPattern } = require('./norna-project.cjs');
+const { getNornaProjectContext } = require('./norna-project.cjs');
 
 const viewId = 'nornaSiteTree';
 const sourceNames = new Set(['content.md', 'category.yaml']);
+const isPage = (node) => node?.kind === 'page' || node?.kind === 'category';
 const inside = (root, file) => {
 	const relative = path.relative(root, file);
 	return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
@@ -18,8 +19,16 @@ function registerSiteTree(context, output) {
 	const timers = new Map();
 	const changed = new vscode.EventEmitter();
 	const diagnostics = vscode.languages.createDiagnosticCollection('norna-site-tree');
-	let refreshing = Promise.resolve();
+	let treeWork = Promise.resolve();
+	let reading = Promise.resolve();
 	let disposed = false;
+	// A refresh invalidates VS Code's handles. Keep it out of an in-flight
+	// reveal, including reveals triggered by opening a newly created source.
+	const enqueueTreeWork = (action) => {
+		const next = treeWork.catch(() => {}).then(() => disposed ? undefined : action());
+		treeWork = next;
+		return next;
+	};
 	const labelFor = (root) => vscode.workspace.asRelativePath(root, false);
 	const documentSources = () => new Map(vscode.workspace.textDocuments
 		.filter((document) => document.uri.scheme === 'file' && document.isDirty)
@@ -69,26 +78,46 @@ function registerSiteTree(context, output) {
 	const refreshSite = async (site) => {
 		try {
 			const service = await serviceFor(site.siteRoot);
-			const snapshot = await service.readSiteTree({ siteRoot: site.siteRoot, sources: documentSources(), cache: site.cache });
+			const supportsFiles = service.siteFileTreeApiVersion === 1 && typeof service.readSiteFileTree === 'function';
+			const snapshot = await (supportsFiles ? service.readSiteFileTree : service.readSiteTree)({
+				siteRoot: site.siteRoot, sources: documentSources(), cache: site.cache,
+			});
 			const previous = new Map([...nodes].filter(([, node]) => node.siteRoot === site.siteRoot));
 			for (const id of previous.keys()) nodes.delete(id);
 			site.children = [];
 			site.problem = null;
 			site.problems = snapshot.problems;
-			const byPath = new Map();
-			for (const entry of snapshot.nodes) {
-				const id = entry.sourcePath;
-				const node = Object.assign(previous.get(id) ?? {}, entry, { id, siteRoot: site.siteRoot, children: [] });
-				const parent = byPath.get(entry.parentPagePath) ?? site;
-				node.parent = parent;
-				node.hiddenFromNavigation = node.listed === false || parent.hiddenFromNavigation === true;
-				parent.children.push(node);
-				byPath.set(entry.pagePath, node);
-				nodes.set(id, node);
+			site.fileTree = Array.isArray(snapshot.items);
+			if (site.fileTree) {
+				for (const entry of snapshot.items) {
+					const node = Object.assign(previous.get(entry.id) ?? {}, entry, { siteRoot: site.siteRoot, children: [] });
+					nodes.set(node.id, node);
+				}
+				for (const entry of snapshot.items) {
+					const node = nodes.get(entry.id);
+					node.parent = nodes.get(entry.parentId);
+					(node.parent?.children ?? site.children).push(node);
+				}
+			} else {
+				const byPath = new Map();
+				for (const entry of snapshot.nodes) {
+					const id = entry.sourcePath;
+					const node = Object.assign(previous.get(id) ?? {}, entry, { id, siteRoot: site.siteRoot, children: [] });
+					node.parent = byPath.get(entry.parentPagePath) ?? site;
+					node.parent.children.push(node);
+					byPath.set(entry.pagePath, node);
+					nodes.set(id, node);
+				}
 			}
+			const visibility = (node) => {
+				node.hiddenFromNavigation = node.listed === false || node.parent?.hiddenFromNavigation === true;
+				node.children.forEach(visibility);
+			};
+			site.children.forEach(visibility);
 		} catch (error) {
 			if (site.problem !== error.message) output.appendLine(`Site tree: ${site.siteRoot}: ${error.message}`);
 			site.problem = error.message;
+			site.fileTree = false;
 			site.children = [];
 			site.problems = [];
 			for (const [id, node] of nodes) if (node.siteRoot === site.siteRoot) nodes.delete(id);
@@ -97,44 +126,50 @@ function registerSiteTree(context, output) {
 
 	const provider = {
 		onDidChangeTreeData: changed.event,
-		getChildren: async (node) => { await refreshing; return node ? node.children : [...sites.values()]; },
+		// reveal() asks for children itself: waiting for queued work here would
+		// deadlock when a refresh is queued behind that reveal.
+		getChildren: async (node) => { await reading; return node ? node.children : [...sites.values()].flatMap((site) => site.fileTree ? site.children : [site]); },
 		getParent: (node) => node.parent,
 		getTreeItem: (node) => {
 			const item = new vscode.TreeItem(node.title, node.children.length ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
 			item.id = node.id;
 			item.contextValue = node.kind === 'site' ? (node.problem ? 'nornaSiteUnavailable' : 'nornaSite')
-				: node.isHome ? 'nornaHome' : node.kind === 'category' ? 'nornaCategory' : 'nornaPage';
+				: node.kind === 'directory' ? node.role === 'pages' ? 'nornaPages' : 'nornaDirectory'
+					: node.kind === 'file' ? 'nornaFile' : node.isHome ? 'nornaHome' : node.kind === 'category' ? 'nornaCategory' : 'nornaPage';
 			const unsaved = vscode.workspace.textDocuments.some((document) => document.uri.fsPath === node.sourcePath && document.isDirty);
-			item.description = [node.problem ? 'needs attention' : node.hiddenFromNavigation ? 'unlisted' : node.kind === 'category' ? 'category' : '', unsaved ? 'unsaved' : ''].filter(Boolean).join(' · ');
-			item.iconPath = new vscode.ThemeIcon(node.problem ? 'warning' : node.kind === 'site' ? 'globe' : node.kind === 'category' ? 'folder' : node.isHome ? 'home' : 'file');
+			item.description = [node.problem ? 'needs attention' : isPage(node) && node.hiddenFromNavigation ? 'unlisted' : node.kind === 'category' ? 'category' : '',
+				node.isHome && sites.size > 1 ? labelFor(node.siteRoot) : '', unsaved ? 'unsaved' : ''].filter(Boolean).join(' · ');
+			item.iconPath = new vscode.ThemeIcon(node.problem ? 'warning' : node.kind === 'site' ? 'globe'
+				: node.kind === 'category' || node.kind === 'directory' ? 'folder' : 'file');
 			item.tooltip = [node.title, node.description, node.url, node.sourcePath ?? node.siteRoot, node.problem].filter(Boolean).join('\n');
 			if (node.sourcePath) {
 				item.resourceUri = vscode.Uri.file(node.sourcePath);
-				item.command = { command: 'nornaEditor.openSiteNode', title: 'Open Source', arguments: [node] };
+				if (node.kind !== 'directory') item.command = { command: 'nornaEditor.openSiteNode', title: 'Open Source', arguments: [node] };
 			}
 			return item;
 		},
 	};
 	const tree = vscode.window.createTreeView(viewId, { treeDataProvider: provider, showCollapseAll: true });
 
+	const activeUri = () => vscode.window.tabGroups.activeTabGroup.activeTab?.input?.uri ?? vscode.window.activeTextEditor?.document.uri;
 	const activeNode = () => {
-		const filename = vscode.window.activeTextEditor?.document.uri.fsPath;
-		return nodes.get(filename) ?? [...nodes.values()].find((node) => path.dirname(node.sourcePath) === path.dirname(filename ?? ''));
+		const uri = activeUri();
+		if (uri?.scheme !== 'file') return undefined;
+		return nodes.get(uri.fsPath) ?? nodes.get(`resource:${uri.fsPath}`);
 	};
-	const revealActive = async () => {
-		await refreshing;
+	const ownerOf = (node) => isPage(node) || node?.kind === 'site' ? node : nodes.get(node?.ownerId);
+	const revealActive = () => enqueueTreeWork(async () => {
 		const node = activeNode();
 		if (node && tree.visible) await tree.reveal(node, { select: true, focus: false, expand: false });
-	};
-	const refresh = ({ discover = false } = {}) => {
-		refreshing = refreshing.catch(() => {}).then(async () => {
-			if (disposed) return;
+	});
+	const refresh = ({ discover = false } = {}) => enqueueTreeWork(async () => {
+		reading = (async () => {
 			if (discover) {
 				const configs = await vscode.workspace.findFiles('**/config.yaml', '**/{node_modules,.git,.norna,.vscode-test,dist,marketing}/**');
 				for (const uri of configs) rememberSite(uri.fsPath);
 			}
-			const active = vscode.window.activeTextEditor?.document;
-			if (active?.uri.scheme === 'file') rememberSite(active.uri.fsPath);
+			const active = activeUri();
+			if (active?.scheme === 'file') rememberSite(active.fsPath);
 			for (const [root, site] of sites) {
 				if (!fs.existsSync(path.join(root, 'config.yaml'))) {
 					sites.delete(root);
@@ -142,10 +177,13 @@ function registerSiteTree(context, output) {
 				} else await refreshSite(site);
 			}
 			publishDiagnostics();
-			tree.message = sites.size ? undefined : 'Open a Norna site folder or one of its source files.';
-		});
-		return refreshing.then(() => { if (!disposed) changed.fire(); });
-	};
+			tree.message = !sites.size ? 'Open a Norna site folder or one of its source files.'
+				: [...sites.values()].some((site) => !site.fileTree && !site.problem)
+					? 'Some sites show pages only. Update their Norna engine and root-page format to browse configuration, images and public files.' : undefined;
+		})();
+		await reading;
+		if (!disposed) changed.fire();
+	});
 	const schedule = (key, action) => {
 		clearTimeout(timers.get(key));
 		timers.set(key, setTimeout(() => {
@@ -153,9 +191,13 @@ function registerSiteTree(context, output) {
 			if (!disposed) void action().catch((error) => output.appendLine(`Site tree: ${error.message}`));
 		}, 180));
 	};
-	const updateDocument = async (document) => {
+	const updateDocument = (document) => enqueueTreeWork(async () => {
 		const node = nodes.get(document.uri.fsPath);
-		if (!node) return;
+		if (!isPage(node)) {
+			const resource = nodes.get(`resource:${document.uri.fsPath}`);
+			if (resource) changed.fire(resource);
+			return;
+		}
 		const version = document.version;
 		const service = await serviceFor(node.siteRoot);
 		const information = await service.getSiteNodeInformation({ kind: node.kind, isHome: node.isHome,
@@ -169,10 +211,10 @@ function registerSiteTree(context, output) {
 		};
 		visibility(node);
 		publishDiagnostics();
-	};
+	});
 
 	const chooseNode = async (argument) => {
-		await refreshing;
+		await treeWork;
 		const selected = nodes.get(argument?.id) ?? sites.get(argument?.id) ?? tree.selection[0] ?? activeNode();
 		if (selected) return selected;
 		const entries = [...sites.values()].map((site) => ({ label: site.title, description: site.problem, site }));
@@ -181,20 +223,23 @@ function registerSiteTree(context, output) {
 	};
 	const openNode = async (argument) => {
 		const node = await chooseNode(argument);
-		if (node?.sourcePath) await vscode.window.showTextDocument(vscode.Uri.file(node.sourcePath), { preview: true });
+		if (node?.sourcePath && node.kind !== 'directory') await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(node.sourcePath), { preview: true });
 	};
 	const oneLine = (value) => !value.trim() || /[\r\n]/.test(value) ? 'Enter a non-empty, single line of text.' : undefined;
 	const create = async (kind, argument) => {
-		const selected = await chooseNode(argument);
+		const target = await chooseNode(argument);
+		const selected = ownerOf(target);
 		if (!selected) return;
 		const service = await serviceFor(selected.siteRoot);
 		let parentPath = '/';
-		if (selected.kind !== 'site') {
+		if (target.kind === 'directory' && target.role === 'pages') parentPath = selected.url;
+		else if (selected.kind !== 'site') {
 			const rootPage = selected.isHome && selected.sourcePath === path.join(selected.siteRoot, 'content.md');
+			const parent = ownerOf(selected.parent);
 			const choices = [
 				...(!selected.isHome || rootPage ? [{ label: `Inside “${selected.title}”`, description: selected.url, parentPath: selected.url }] : []),
-				...(!rootPage ? [{ label: `Beside “${selected.title}”`, description: selected.parent.url ?? '/', parentPath: selected.parent.url ?? '/' }] : []),
-				...(!rootPage && selected.parent.kind !== 'site' ? [{ label: 'At site root', description: '/', parentPath: '/' }] : []),
+				...(!rootPage ? [{ label: `Beside “${selected.title}”`, description: parent?.url ?? '/', parentPath: parent?.url ?? '/' }] : []),
+				...(!rootPage && parent?.url && parent.url !== '/' ? [{ label: 'At site root', description: '/', parentPath: '/' }] : []),
 			];
 			const choice = await vscode.window.showQuickPick(choices, { title: `New ${kind}: ${labelFor(selected.siteRoot)}`, placeHolder: 'Choose where to create it', ignoreFocusOut: true });
 			if (!choice) return;
@@ -218,7 +263,7 @@ function registerSiteTree(context, output) {
 
 	const editInformation = async (argument) => {
 		const node = await chooseNode(argument);
-		if (!node?.sourcePath) return;
+		if (!isPage(node)) throw new Error('Select a page or navigation category to edit its information.');
 		const service = await serviceFor(node.siteRoot);
 		const document = await vscode.workspace.openTextDocument(vscode.Uri.file(node.sourcePath));
 		const info = await service.getSiteNodeInformation({ kind: node.kind, isHome: node.isHome, source: document.getText(), sourcePath: node.sourcePath });
@@ -270,31 +315,38 @@ function registerSiteTree(context, output) {
 	}));
 	register('nornaEditor.openSiteNode', openNode);
 	register('nornaEditor.newPage', (node) => create('page', node));
+	register('nornaEditor.addPage', (node) => create('page', node));
 	register('nornaEditor.newCategory', (node) => create('category', node));
 	register('nornaEditor.pageInformation', editInformation);
 	register('nornaEditor.refreshSiteTree', async () => { services.clear(); await refresh({ discover: true }); await revealActive(); });
-	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,category.yaml,config.yaml}');
-	const directoryWatcher = vscode.workspace.createFileSystemWatcher('**/pages/**', false, true, false);
+	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,category.yaml,config.yaml,theme.yaml,page-theme.yaml,sitewide-content.yaml}');
+	const directoryWatcher = vscode.workspace.createFileSystemWatcher('**/{pages,images,public}', false, true, false);
+	const resourceWatcher = vscode.workspace.createFileSystemWatcher('**/{pages,images,public}/**', false, true, false);
 	const fileChanged = (uri) => {
+		if (uri.fsPath.split(path.sep).some((part) => ['.norna', 'node_modules', '.git'].includes(part))) return;
 		if ([...sites.keys()].some((root) => inside(root, uri.fsPath)) || path.basename(uri.fsPath) === 'config.yaml') {
 			schedule('filesystem', () => refresh({ discover: path.basename(uri.fsPath) === 'config.yaml' }));
 		}
 	};
-	const directoryChanged = (uri) => {
-		const basename = path.basename(uri.fsPath);
-		if (basename === 'pages' || pageDirectoryPattern.test(basename)) fileChanged(uri);
+	const followActive = async () => {
+		const uri = activeUri();
+		if (uri?.scheme !== 'file') return;
+		const site = rememberSite(uri.fsPath);
+		if (!site) return;
+		if (!site.children.length || !activeNode()) await refresh();
+		await revealActive();
 	};
-	context.subscriptions.push(tree, changed, diagnostics, watcher, directoryWatcher,
+	context.subscriptions.push(tree, changed, diagnostics, watcher, directoryWatcher, resourceWatcher,
 		watcher.onDidCreate(fileChanged), watcher.onDidDelete(fileChanged), watcher.onDidChange(fileChanged),
-		directoryWatcher.onDidCreate(directoryChanged), directoryWatcher.onDidDelete(directoryChanged),
+		directoryWatcher.onDidCreate(fileChanged), directoryWatcher.onDidDelete(fileChanged),
+		resourceWatcher.onDidCreate(fileChanged), resourceWatcher.onDidDelete(fileChanged),
 		vscode.workspace.onDidChangeTextDocument(({ document }) => schedule(document.uri.fsPath, () => updateDocument(document))),
-		vscode.workspace.onDidCloseTextDocument((document) => { if (nodes.has(document.uri.fsPath)) schedule('closed', () => refresh()); }),
-		vscode.workspace.onDidChangeWorkspaceFolders(() => schedule('workspace', () => refresh({ discover: true }))),
-		vscode.window.onDidChangeActiveTextEditor((editor) => {
-			if (editor?.document.uri.scheme !== 'file') return;
-			const site = rememberSite(editor.document.uri.fsPath);
-			if (site) schedule('active', async () => { if (!site.children.length) await refresh(); await revealActive(); });
+		vscode.workspace.onDidCloseTextDocument((document) => {
+			if (nodes.has(document.uri.fsPath) || nodes.has(`resource:${document.uri.fsPath}`)) schedule('closed', () => refresh());
 		}),
+		vscode.workspace.onDidChangeWorkspaceFolders(() => schedule('workspace', () => refresh({ discover: true }))),
+		vscode.window.onDidChangeActiveTextEditor(() => schedule('active', followActive)),
+		vscode.window.tabGroups.onDidChangeTabs(() => schedule('active', followActive)),
 		tree.onDidChangeVisibility(({ visible }) => { if (visible) schedule('visible', revealActive); }),
 		{ dispose: () => { disposed = true; for (const timer of timers.values()) clearTimeout(timer); } },
 	);

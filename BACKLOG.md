@@ -16,10 +16,6 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [BL-140 VS Code Page Files Implementation](docs/design/backlog/BL-140-vscode-page-files-implementation.md):
-  **Ready; authorized.** Implement the approved filesystem-based authoring
-  tree in its own Norna entry, including existing configuration, images and public files.
-
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
@@ -88,7 +84,8 @@ needs its own visual proposal and approval before implementation.
 
 Step 1's design is approved in
 [BL-133 VS Code Page Files](docs/design/backlog/BL-133-vscode-page-files.md).
-Its implementation is BL-140 VS Code Page Files Implementation in `Now`.
+Its implemented foundation is
+[BL-140 VS Code Page Files Implementation](docs/design/backlog/BL-140-vscode-page-files-implementation.md).
 The remaining steps still need their own discussion:
 
 2. [`BL-134` VS Code Image File Operations](docs/design/backlog/BL-134-vscode-image-file-operations.md):

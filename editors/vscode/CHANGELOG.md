@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0
+
+- Move Site Tree to its own Norna Activity Bar entry and show one homepage
+  root per site.
+- Show each page's existing configuration, images and child-page folders,
+  plus root public files. Open resources with VS Code's normal editor choice.
+- Add a page directly from each `pages/` folder while retaining page,
+  category and information actions.
+- Preserve the earlier page tree for compatible engines without file support.
+
 ## 0.2.0
 
 - Add Norna: Site Tree in Explorer for opening pages and categories, creating

@@ -16,8 +16,10 @@ appears only in recognized Norna files.
 
 ## Features
 
-- A site tree in Explorer, with page and category source opening, creation,
-  and source-preserving page information edits.
+- A dedicated Norna view with readable page names and their actual
+  configuration, images, child-page folders and public files.
+- Page and category opening, creation from each `pages/` folder, and
+  source-preserving page information edits.
 - Configuration fields, values, and descriptions through Red Hat YAML using
   the project's Norna schemas.
 - Norna starting templates and structured YAML snippets.
@@ -34,17 +36,26 @@ The command-line checks remain authoritative. Use the extension while editing,
 then run the project's `norna:config:check` and `norna:content:check` scripts
 before building or publishing.
 
-Start with **Norna: Site Tree** in Explorer. A label opens its source; the
-chevron controls expansion. The context menu and Command Palette provide
+Select **Norna** in the Activity Bar to open **Site Tree**. Each site's root
+is its homepage, opening `site/content.md`. Existing configuration appears
+before `pages/`, beneath the page or category that owns it. Page names hide
+numeric ordering prefixes; resource files retain their actual names. Images
+use VS Code's normal image preview, and `public/` includes nested static files.
+
+A page label opens its source; the chevron controls expansion. Each `pages/`
+offers **Norna: Add Page…** with that folder as the destination. To add a first
+child where no `pages/` exists, use **Norna: New Page…** on its parent. The
+context menu and Command Palette provide
 **Norna: New Page…**, **Norna: New Category…** and **Norna: Page Information…**.
 Creation previews the parent, address and directory before writing. Information
 edits stay in the buffer for normal save and undo. See the
 [site-tree reference](https://janga.github.io/norna/reference/workflows/editor/#work-from-the-site-tree)
 for fields, previous URLs, unlisted pages and scope limits.
 
-The tree needs an engine with the optional site-tree API. Older engines retain
-their compatible IntelliSense and show an explanatory message on the tree's
-site root. Use **Norna: Refresh Site Tree** after an engine update.
+The file view needs extension 0.3.0 and the engine's optional page-file support.
+Engines with the earlier site-tree API retain their page tree and show a
+message explaining the unavailable file view. Compatible IntelliSense remains
+available. Use **Norna: Refresh Site Tree** after an engine update.
 
 ## Requirements
 

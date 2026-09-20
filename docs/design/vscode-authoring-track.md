@@ -4,7 +4,7 @@ This track helps a site author work with pages, images and local themes through
 Norna's readable page tree. It groups five bounded items for discussion and
 delivery; each item owns its own requirements and tests.
 
-**Status: First design approved; implementation authorized on 2026-09-20.**
+**Status: First implementation completed on 2026-09-20.**
 The owner has approved the working method, order and first interface. Later
 steps retain their individual visual review and implementation decisions.
 
@@ -26,8 +26,9 @@ model. They establish the direction, not approval of every future control.
 - Show a page's images and other owned resources beneath that page, with
   actual resource filenames and recognizable `images/` and `pages/`
   directories. Begin page editing from the page's representation in the tree.
-- Every represented `pages/` provides **Add page** for that location. The
-  exact control and the first-child flow still need visual review.
+- Every represented `pages/` provides **Add page** for that location through
+  its plus button and context menu. Use **New Page** on a parent to create its
+  first child when `pages/` does not yet exist.
 - Use one common page icon unless a page has an explicit presentation of its
   own. This does not introduce a custom-icon feature.
 - The homepage is the site root and may have children: `site/content.md`,
@@ -41,8 +42,10 @@ model. They establish the direction, not approval of every future control.
 
 The [revised visual proposal](vscode-authoring-review/README.md) illustrates
 these decisions. [BL-138 Root Page And Child Pages](backlog/BL-138-root-page-and-child-pages.md)
-has implemented the root storage model; the revised editor tree remains a
-proposal.
+has implemented the root storage model;
+[BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md)
+implements the revised editor tree. The drawings remain the accepted design
+record; the editor reference describes the delivered controls.
 
 | Item | Decisions it must carry into its own brief |
 | --- | --- |
@@ -70,13 +73,13 @@ an alternative name for the chosen order.
 
 | Step | Item | Draft maturity | Technical foundation |
 | --- | --- | --- | --- |
-| 1 | [BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md) | Authorized; design accepted in [BL-133 VS Code Page Files](backlog/BL-133-vscode-page-files.md) | Implemented [BL-131 VS Code Site Tree](backlog/BL-131-vscode-site-tree.md) |
+| 1 | [BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md) | Implemented; verified in the Default profile | Implemented [BL-131 VS Code Site Tree](backlog/BL-131-vscode-site-tree.md), accepted [BL-133 VS Code Page Files](backlog/BL-133-vscode-page-files.md) design |
 | 2 | [BL-134 VS Code Image File Operations](backlog/BL-134-vscode-image-file-operations.md) | Outline | Page/file selection from BL-133 VS Code Page Files |
 | 3 | [BL-135 VS Code Image Block Insertion](backlog/BL-135-vscode-image-block-insertion.md) | Outline | BL-133 VS Code Page Files and existing block support; importing new files is not a prerequisite |
 | 4 | [BL-136 VS Code Local Theme Creation And Removal](backlog/BL-136-vscode-local-theme-creation-removal.md) | Outline | BL-133 VS Code Page Files and existing theme rules; no dependency on image insertion |
 | 5 | [BL-137 VS Code Image Usage And Removal Review](backlog/BL-137-vscode-image-usage-removal-review.md) | Outline | Removal entry point from BL-134 VS Code Image File Operations and existing managed-image reference analysis |
 
-The first implementation is in `Now`. Later drafts remain under
+The first implementation is complete. Later drafts remain under
 `Needs Decision Or Evidence` until their individual discussion is complete.
 The order here does not make those drafts implementation-ready or override
 the repository's global queue.

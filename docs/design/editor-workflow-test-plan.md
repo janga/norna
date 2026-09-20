@@ -150,7 +150,10 @@ site files.
 
 The `site-tree` suite verifies
 [BL-131 VS Code Site Tree](backlog/BL-131-vscode-site-tree.md) through the
-packaged extension's native Explorer view and input widgets. It checks:
+packaged extension's native tree view and input widgets. The current hierarchy
+and resource scenarios follow
+[BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md).
+The suite exercises:
 
 - source opening by label, independent chevrons, keyboard navigation, and
   active-file reveal without collapsing unrelated branches;
@@ -161,7 +164,15 @@ packaged extension's native Explorer view and input widgets. It checks:
 - child and sibling pages, a root category, the creation preview, cancellation,
   URL collisions, and the restrictions on Home;
 - unlisted descendants, malformed but openable pages, custom roots, isolation
-  between sites, and refresh after external create/edit/rename/delete actions.
+  between sites, and refresh after external create/edit/rename/delete actions;
+- owned YAML, normal image previews, equal image names under different pages,
+  nested public files, and the inline Add Page action on a real `pages/` folder.
+
+The engine's file projection and the extension adapter also have focused
+deterministic checks. They cover source ownership, real/absent directories,
+no-write browsing, resource command boundaries, creation destinations and
+fallback to an engine exposing only the earlier logical tree API. These checks
+supplement the native controls; they do not establish widget usability.
 
 Current VS Code uses its custom context menu, selected with keyboard navigation
 after a real right-click. VS Code 1.96 on macOS uses the Command Palette because
@@ -226,6 +237,22 @@ to `false` and assigns standalone YAML to Red Hat. This verifies the documented
 ownership boundary; it does not claim arbitrary Markdown formatting is safe.
 
 ## Limits And Follow-up
+
+The 2026-09-20 extension 0.3.0 work used the owner's VS Code 1.137.0 Default
+profile, as requested, with disposable files under `.local/bl-140-editor/`.
+Native opening/expansion, root/deep Add Page, first-child creation,
+cancellation, YAML/image/public-file opening, dirty metadata/Undo and two
+save/reopen cycles with exact byte comparisons passed. External-resource
+create/rename/delete refresh preserved unrelated expansion. Light/dark and
+half-screen tree and Page Information presentation were inspected; temporary
+workspace overrides and window size were restored.
+First-child creation exposed overlapping tree refresh and reveal operations;
+a deterministic adapter regression and a repeated native creation now pass.
+The adapted automated tree suite, minimum-version run and full completion
+matrix were intentionally not rerun; completion and formatting are unchanged.
+See the exact coverage and package identity in
+[BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md).
+Do not apply the earlier complete-matrix result below to this new hierarchy.
 
 Site-tree verification on 2026-09-19 used Norna VSIX 0.2.0 and Red Hat YAML
 1.24.0. All 12 workflows passed on VS Code 1.138.0 and 1.96.0, and on 1.138.0

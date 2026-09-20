@@ -59,7 +59,13 @@ const prepareWorkspace = async () => {
 	await write('site/config.yaml', 'url: https://example.com/\n');
 	await write('tree-content/config.yaml', 'url: https://example.com/\n');
 	await write('tree-content/content.md', '# Tree Home\n');
+	await write('tree-content/theme.yaml', 'preset: documentation\n');
+	await write('tree-content/page-theme.yaml', 'layout:\n  textWidth: narrow\n');
+	await write('tree-content/public/downloads/notes.txt', 'Public download\n');
+	await write('tree-content/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
 	await write('tree-content/pages/010-guide/content.md', '---\n# Keep metadata comment\npage:\n  description: "Original description" # keep\n  aliases: [/previous-guide/]\n---\n\n# Tree Guide\n\nKeep this prose and [authored link text](/topics/child/).\n');
+	await write('tree-content/pages/010-guide/theme.yaml', 'layout:\n  contentSpacing: compact\n');
+	await write('tree-content/pages/010-guide/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
 	await write('tree-content/pages/020-topics/category.yaml', 'label: Tree Topics\ndescription: Choose a topic.\n');
 	await write('tree-content/pages/020-topics/pages/010-child/content.md', '# Tree Child\n');
 	await write('tree-content/pages/030-hidden/content.md', '---\nnavigation:\n  listed: false\n---\n# Tree Hidden\n');
