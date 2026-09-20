@@ -16,6 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+- [BL-140 VS Code Page Files Implementation](docs/design/backlog/BL-140-vscode-page-files-implementation.md):
+  **Ready; authorized.** Implement the approved filesystem-based authoring
+  tree in its own Norna entry, including existing configuration, images and public files.
+
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
@@ -48,8 +52,13 @@ work above unless a concrete defect raises their urgency.
   unsupported `npm link` behavior.
 - `BL-014` **Needs task design.** Improve onboarding for people creating a
   standalone website rather than adding a site to an existing project.
-- `BL-015` **Needs a scoped reproducer.** Clarify dev-server recovery when
-  content, images, generated state, or watchers become stale.
+- `BL-015` **Local dev-server recovery — concrete cache conflict recorded.**
+  An active server selecting a site by absolute path can receive foreign
+  page IDs when a build of the same site uses its relative path and shares
+  the Astro cache. Reproduced on the scratch review site on 2026-09-20;
+  [evidence and isolated-build workaround](docs/design/vscode-authoring-review/README.md).
+  Resolve this identity conflict and verify page rendering during build/dev
+  coexistence as part of the recovery work.
 - [`BL-027` Editor link diagnostics](docs/design/backlog/BL-027-editor-link-diagnostics.md):
   **Ready after `BL-030` Production-ready IntelliSense.** Connect the editor to
   the shared site link graph only after its distribution, versioning, cache,
@@ -77,11 +86,11 @@ The [track overview](docs/design/vscode-authoring-track.md) records the agreed
 discussion order below, separately from technical dependencies; each draft
 needs its own visual proposal and approval before implementation.
 
-1. [`BL-133` VS Code Page Files](docs/design/backlog/BL-133-vscode-page-files.md):
-   **Needs decision; filesystem mapping agreed, revised sketch pending.** Find and open a
-   page's images and existing local/shared settings through the readable site
-   tree. [Illustrated review material](docs/design/vscode-authoring-review/README.md)
-   compares placement and file-grouping alternatives.
+Step 1's design is approved in
+[BL-133 VS Code Page Files](docs/design/backlog/BL-133-vscode-page-files.md).
+Its implementation is BL-140 VS Code Page Files Implementation in `Now`.
+The remaining steps still need their own discussion:
+
 2. [`BL-134` VS Code Image File Operations](docs/design/backlog/BL-134-vscode-image-file-operations.md):
    **Needs decision; outline.** Add and remove page images through native
    file interactions without rewriting page content.
@@ -96,6 +105,10 @@ needs its own visual proposal and approval before implementation.
    consequences of removing their source file.
 
 ### Other Items
+
+- [BL-139 Decoupled Page Addresses](docs/design/backlog/BL-139-decoupled-page-addresses.md):
+  **Needs decision; future analysis.** Assess primary public addresses that
+  remain independent of source hierarchy, beyond today's redirect aliases.
 
 - [`BL-132` VS Code Site Authoring Continuation](docs/design/backlog/BL-132-vscode-site-authoring-continuation.md):
   **Needs design after `BL-131` VS Code Site Tree.** Scope later structural and

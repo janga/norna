@@ -1,49 +1,101 @@
 ---
 page:
-  description: Ett visuellt förslag för att hitta och öppna sidans bilder och inställningar i VS Code.
+  description: Ett visuellt förslag för att hitta sidor, bilder och inställningar i ett Norna-träd som följer filsystemet.
 ---
 
 # Sidans filer i VS Code
 
-**BL-133 VS Code Page Files · Förslag 1 · 20 september 2026**
+**BL-133 VS Code Page Files · Förslag 2 · 20 september 2026**
 
-**Senare beslut:** en egen Norna-ingång och ett träd som följer filsystemet.
-Sidans filer och verkliga `pages/` visas under sidan; konfiguration kommer före
-`pages/`. Startsidan är nu sajtens rot. Bilderna nedan visar det första
-förslaget, före dessa beslut, och ska ritas om innan slutligt godkännande.
+**Godkänd riktning.** Genomförandet är beställt i
+**BL-140 VS Code Page Files Implementation**, inklusive åtkomst till befintliga
+filer i `public/`. Bilderna visar den godkända utgångspunkten för implementation.
 
-Målet är att du ska hitta en sida, se vilka filer som hör till den och öppna
-dem direkt. Sidornas namn hjälper dig att orientera dig även när katalogerna
-har nummer och tekniska namn.
+Norna får en egen ingång i VS Code. Trädet visar läsbara sidnamn, men följer
+hur sidorna och deras filer faktiskt lagras. Under varje sida finns dess
+bilder, befintliga inställningar och `pages/` med eventuella undersidor.
+
+Skisserna nedan samlar våra beslut för **hela utvecklingsspåret**. De gäller
+också kommande arbete med bilder, inställningar och sidstruktur, även när
+funktionerna genomförs i senare BL-poster.
 
 > [!NOTE]
-> Bilderna är skisser av föreslaget beteende. De visar ett diskussionsunderlag;
-> den nya vyn är ännu inte implementerad. Engelska etiketter i skisserna är
-> arbetsförslag för VS Code-gränssnittet.
+> Detta är ett gränssnittsförslag. Den nya rotmodellen finns i Norna, men den
+> nya VS Code-vyn är ännu inte implementerad. Bilderna är ritade skisser.
+> Engelska kontrolltexter och knapparnas detaljutformning är arbetsförslag.
+
+## Beslutad grund för hela spåret {#beslutad-grund}
+
+- **Egen Norna-ingång** gör sidträdet lätt att hitta i VS Code.
+- **Strukturen följer den faktiska filorganisationen.** Sidornas läsbara namn
+  ersätter tekniska katalognamn, men inga extra nivåer som ”Page files” införs.
+- **Konfigurationsfiler visas under sin ägare, före `pages/`.** Det gäller
+  både rotens `config.yaml` och `theme.yaml` och konfiguration längre ned.
+- **Sidans bilder och övriga filer ligger under sidan.** Verkliga kataloger
+  som `images/` och `pages/` är igenkännbara. Sidans representation i trädet
+  är utgångspunkten för redigering.
+- **Varje `pages/` erbjuder Add page** för att skapa en sida på just den nivån.
+- **Sidor använder samma grundikon**, om de inte har en egen uttrycklig
+  presentation.
+- **Startsidan är sajtens rot och får ha undersidor.** Texten ligger i
+  `site/content.md`, bilder i `site/images/` och undersidor i `site/pages/`.
+  Sidordningen i `pages/` utser ingen ny startsida.
+- **Startsidan kan ha egna visuella inställningar.** Rotens `theme.yaml`
+  styr det gemensamma temat och `page-theme.yaml` bara startsidan. Lokala
+  `theme.yaml` längre ned gäller respektive gren och ärvs av undersidor.
+
+Detta är beslutad riktning. Bildernas knappar och detaljutformning återstår
+att granska. Nedan visas hur principerna kan fungera tillsammans.
 
 ## Förslaget i en bild {#oversikt}
-
-Vi har valt **en egen Norna-ingång**. Det första förslaget för filerna var en utfällbar
-grupp **Page files** under sidan och en separat grupp **Site settings** för
-gemensamma inställningar.
 
 ```image-stack
 items:
   - image: overview.svg
-    alt: Hela VS Code-fönstret med en föreslagen Norna-ikon, sidträdet till vänster och en bild öppen i editorn till höger.
-    caption: Förslag A. Markeringarna 1–3 förklaras nedan. Ikonen N är en platshållare i skissen.
+    alt: VS Code med en egen Norna-ingång. Startsidan Norna innehåller konfiguration, images och pages. Under pages ligger läsbara sidnamn och under What Norna Does ligger dess images med tre bildfiler.
+    caption: Ett sammanhängande träd. Markeringarna 1–4 förklaras nedan. N-ikonen är en platshållare.
 ```
 
 1. **Norna-ingången** finns i ikonraden längst till vänster. VS Code kallar
-   ikonraden *Activity Bar*. Ett klick tar fram Norna-vyn.
-2. **Page files** betyder *sidans filer*. Gruppen hör till sidan ovanför och
-   kan fällas ut när du behöver en bild eller ett lokalt tema.
-3. **Site settings** innehåller inställningar för hela webbplatsen. Där finns
-   bland annat webbplatsens `theme.yaml`.
+   den *Activity Bar*. Den vanliga filutforskaren, *Explorer*, finns kvar via
+   sin egen ikon.
+2. **Norna är startsidan och roten.** Klick på namnet öppnar `site/content.md`.
+   Startsidan har samma sidikon som andra sidor. Dess undersidor ligger i
+   `site/pages/`.
+3. **Befintlig konfiguration ligger före `pages/`.** Filnamnen visas som de
+   lagras. Samma ordning används under en sida längre ned.
+4. **Varje `pages/` är en verklig katalog med undersidor.** Där ska det finnas
+   ett **Add page**-kommando. Plustecknet visar ett förslag till hur kommandot
+   kan nås på raden.
 
-Klick på en sidtitel öppnar fortfarande sidans `content.md`. Den lilla pilen
-fäller ut eller ihop innehållet i trädet. Ett klick på en bildfil öppnar bilden
-i VS Codes bildvisning.
+Klick på en **sidtitel** öppnar sidans text. Klick på dess **pil** fäller ut
+eller ihop innehållet i trädet. En bildfil öppnas i VS Codes vanliga bildvisning.
+Alla vanliga sidor använder samma sidikon; kategorier och resurskataloger har
+mappikon.
+
+## Det du ser motsvarar det som lagras {#sidans-filer}
+
+Sidtiteln ersätter det tekniska katalognamnet. Exempelvis visas
+`010-features` som **What Norna Does**. Katalogens plats i hierarkin ändras
+inte, och resursernas faktiska filnamn är synliga.
+
+| I Norna-trädet | Motsvarighet i filsystemet | När du öppnar raden |
+| --- | --- | --- |
+| Norna | `site/` | Startsidan i `site/content.md` öppnas. |
+| Norna → theme.yaml | `site/theme.yaml` | Sajtens gemensamma tema öppnas. |
+| Norna → pages/ | `site/pages/` | Katalogens sidor visas. Add page skapar en sida här. |
+| pages/ → What Norna Does | `site/pages/010-features/` | Sidans `content.md` öppnas. |
+| What Norna Does → images/ | `site/pages/010-features/images/` | Sidans bildfiler visas. |
+| What Norna Does → images/ → navigation-single-desktop.png | Filen med samma namn i sidans `images/` | Bilden öppnas i editorn. |
+
+`content.md` får ingen extra rad i detta förslag: **sidraden är vägen till
+sidtexten**. Filens namn och plats visas när den öppnas i editorn.
+Getting Started och Reference är kategorier i dokumentationen och har därför
+mappikon. En kategori har ingen egen `content.md`; dess befintliga
+`category.yaml` och `pages/` visas när den fälls ut.
+
+Startsidan utses inte genom sortering. Att flytta en sida högst upp i
+`pages/` ändrar sidordningen, men ersätter inte startsidan i `site/content.md`.
 
 ## Från sida till bild {#forlopp}
 
@@ -53,167 +105,101 @@ kvar, så att du kan följa vad varje klick förändrar.
 ```image-carousel
 items:
   - image: open-page.svg
-    alt: Steg 1. What Norna Does är markerad i sidträdet och sidans Markdown är öppen i editorn.
-    caption: 1. Klicka på What Norna Does. Sidans text öppnas till höger. Page files är fortfarande stängd.
+    alt: Steg 1. What Norna Does är markerad under Norna och pages. Sidans content.md är öppen till höger och sidans resurser är hopfällda.
+    caption: 1. Klicka på What Norna Does. Sidans text öppnas till höger.
   - image: show-files.svg
-    alt: Steg 2. Page files och Images är utfällda under What Norna Does och visar tre befintliga bilder.
-    caption: 2. Fäll ut Page files och därefter Images. Du ser sidans bilder medan texten ligger kvar i editorn.
+    alt: Steg 2. What Norna Does och dess verkliga images-katalog är utfällda. Tre bildfiler visas medan sidtexten ligger kvar i editorn.
+    caption: 2. Fäll ut pilen vid sidan och därefter images/. Du ser sidans bilder medan texten ligger kvar.
   - image: open-image.svg
-    alt: Steg 3. navigation-single-desktop.png är vald under sidan och visas i VS Codes bildvisning.
-    caption: 3. Klicka på navigation-single-desktop.png. Bilden öppnas. Sidans innehåll har inte ändrats.
+    alt: Steg 3. navigation-single-desktop.png är vald under sidans images och visas i VS Codes bildvisning.
+    caption: 3. Klicka på navigation-single-desktop.png. Bilden öppnas utan att sidtexten ändras.
 ```
 
-Sidan och de tre bildfilerna finns redan i Norna-dokumentationen. Bilden som
-visas i editorn kommer från sidans befintliga material. Förslaget ändrar hur du
-kommer åt filerna.
+Sidan och de tre bildfilerna finns redan i Norna-dokumentationen. Förslaget
+ändrar hur du kommer åt dem. Det här steget handlar om att hitta och öppna
+filer. Bildimport, borttagning och infogning av bilder i sidtexten kommer i
+senare delar av utvecklingsspåret.
 
-**Resultat:** du har hittat och öppnat rätt bild genom sidans namn. Att lägga
-till en ny bildfil eller infoga bilden i texten kommer i senare steg.
+## Skapa en sida på rätt nivå {#skapa-sida}
 
-## Var ska Norna-vyn ligga? {#placering}
-
-**Beslut 20 september 2026:** Norna får en egen ingång i ikonraden, eftersom
-det gör funktionen lättare att upptäcka. Bilderna visar det valda alternativet
-och jämförelsen med *Explorer*, VS Codes vanliga filutforskare.
-
-:::: tabs
-
-::: tab "A · Egen Norna-ingång"
+Varje visad `pages/` ska erbjuda **Add page**. Kommandot återanvänder stödet
+för att skapa en sida, med den valda katalogen som plats. På rotens `pages/`
+skapar du en undersida till startsidan. På en annan sidas `pages/` skapar du
+en undersida där.
 
 ```image-stack
 items:
-  - image: overview.svg
-    alt: Alternativ A. Norna har en egen ikon i ikonraden och sidträdet använder sidopanelens höjd.
-    caption: En egen ingång samlar det dagliga sidarbetet. Den vanliga filutforskaren finns kvar via sin ikon.
+  - image: add-page.svg
+    alt: Rotens pages-rad är markerad. Ett plus på raden har texten Add page, och en förklaring visar var den nya sidan skulle skapas.
+    caption: Förslag till kontroll på pages-raden. Placeringen av kommandot är beslutad; plusknappens detaljutformning återstår att granska.
 ```
 
-**Valt alternativ.** Du får en tydlig plats för sidarbetet via Norna-ikonen.
-
-:::
-
-::: tab "B · Inne i Explorer"
-
-```image-stack
-items:
-  - image: explorer.svg
-    alt: Alternativ B. Det vanliga filträdet och Norna Site Tree delar samma sidopanel under Explorer.
-    caption: Norna-trädet ligger i Explorer, på samma sätt som dagens vy. De två träden delar utrymmet.
-```
-
-Du har projektets filer och Norna-trädet nära varandra. Det tar mer av
-sidopanelens höjd när båda träden är öppna.
-
-:::
-
-::::
-
-Nästa val gäller [var sidans filer ska visas](#sidans-filer).
-
-## Var ska sidans filer visas? {#sidans-filer}
-
-Här är Norna-ingången densamma. Det som varierar är hur en sida kopplas till
-sina filer.
-
-:::: tabs
-
-::: tab "A · Under sidan"
-
-```image-stack
-items:
-  - image: show-files.svg
-    alt: En utfälld Page files-grupp ligger direkt under What Norna Does med Images och tre bildfiler.
-    caption: Filerna finns inuti samma träd som sidan. Sambandet är synligt även när du tittar på en annan sida.
-```
-
-**Mitt första förslag:** en grupp som börjar stängd. Du kan ha flera sidors
-filer synliga samtidigt. Det tillkommer två nivåer för gruppen och bilderna.
-
-:::
-
-::: tab "B · Egen ruta för vald sida"
-
-```image-stack
-items:
-  - image: selected-page-pane.svg
-    alt: Sidträdet ligger överst och en separat Page files-ruta visar bilderna för What Norna Does nedanför.
-    caption: Trädet behåller sin sidstruktur. Rutan nedanför visar tydligt namnet på sidan vars filer den innehåller.
-```
-
-Sidträdet blir lugnare. Rutan tar en del av höjden och behöver tydligt visa
-vilken sida den följer. När du öppnar en bild ska rutan fortsätta visa den
-bildens ägarsida.
-
-:::
-
-::::
-
-**Att diskutera:** föredrar du det direkta sambandet under sidan eller den
-separata rutan som håller sidträdet mindre?
+**Förslag för den första undersidan:** om en sida ännu saknar `pages/` visas
+ingen påhittad katalog. Sidans befintliga kommando för att skapa en undersida
+kan användas, och katalogen skapas först när sidan faktiskt skapas. Detta
+bevarar kopplingen mellan trädet och filsystemet.
 
 ## Öppna rätt inställningar {#installningar}
 
-Det finns två olika roller för `theme.yaml`. Filnamnet är detsamma, men
-platsen avgör vilka sidor inställningarna påverkar.
+Inställningarnas plats avgör vilka sidor de påverkar. Det finns tre fall:
+
+| Fil | Påverkan |
+| --- | --- |
+| `site/theme.yaml` | Sajtens gemensamma visuella inställningar. |
+| `site/page-theme.yaml`, om den finns | Bara startsidan. Inställningarna ärvs inte av undersidorna. |
+| `theme.yaml` i en underliggande sida eller kategori | Den grenen. Inställningarna ärvs av dess undersidor, som kan ha egna tillåtna överstyrningar. |
 
 :::: tabs
 
-::: tab "Ett lokalt tema"
-
-```image-stack
-items:
-  - image: local-theme.svg
-    alt: En lokal theme.yaml är markerad under What Norna Does och öppnad med YAML-text i editorn.
-    caption: Illustration med en extra lokal temafil. Den filen är tillagd i skissen och finns inte på denna sida i dagens dokumentation.
-```
-
-En befintlig lokal temafil visas under sin sida. Den gäller sidan och ärvs av
-dess undersidor, med hänsyn till eventuella egna inställningar längre ned.
-Att öppna filen använder samma YAML-editor och förslag som i dag.
-
-:::
-
-::: tab "Webbplatsens tema"
+::: tab "Sajtens tema"
 
 ```image-stack
 items:
   - image: site-theme.svg
-    alt: Webbplatsens theme.yaml är markerad under Site settings och öppnad i editorn med en förklaring att den gäller hela sajten.
-    caption: Site settings visar gemensamma inställningar. Sidans lokala filer och webbplatsens filer ligger i olika grupper.
+    alt: theme.yaml ligger direkt under Norna, före pages, och är öppen i YAML-editorn.
+    caption: Den gemensamma temafilen ligger under roten, tillsammans med övrig befintlig konfiguration.
 ```
 
-Här öppnas den befintliga temafilen i webbplatsens rot. Gruppen kan även ge
-åtkomst till `config.yaml` och den eventuella `sitewide-content.yaml`.
+Sajtens `config.yaml` och eventuella `sitewide-content.yaml` går också att
+öppna här. De får ingen särskild inställningspanel; du använder de vanliga
+filredigerarna och befintligt redigeringsstöd.
+
+:::
+
+::: tab "Bara startsidan"
+
+```image-stack
+items:
+  - image: home-theme.svg
+    alt: page-theme.yaml är markerad direkt under Norna. Editorn förklarar att filen påverkar startsidan utan att ärvas av undersidor.
+    caption: Illustrativt exempel med page-theme.yaml. Filen visas endast om den finns i den aktuella sajten.
+```
+
+Startsidan kan alltså få egna tillåtna visuella inställningar utan att ändra
+undersidorna. Filen i denna skiss är ett exempel och har inte lagts till i
+dokumentationssajten.
+
+:::
+
+::: tab "En sida och dess undersidor"
+
+```image-stack
+items:
+  - image: local-theme.svg
+    alt: En lokal theme.yaml ligger under What Norna Does, före images, och är öppen i editorn.
+    caption: Illustrativt exempel med en lokal temafil. Befintlig konfiguration kommer före images/ och pages/ även längre ned.
+```
+
+Sidan What Norna Does har ingen sådan fil i dagens dokumentation. Skissen
+visar hur en befintlig lokal temafil skulle presenteras. Att bara öppna eller
+fälla ut trädet skapar inga filer. Skapa och ta bort lokala teman hör till
+**BL-136 VS Code Local Theme Creation And Removal**.
 
 :::
 
 ::::
 
-I detta steg öppnar vi befintliga filer. Om ett lokalt tema saknas skapar
-vyn ingen tom fil. Skapa och ta bort lokala teman hör till
-**BL-136 VS Code Local Theme Creation And Removal**.
-
-## Vilka gemensamma filer behövs? {#gemensamma-filer}
-
-Basförslaget visar sidans bilder och befintliga inställningar. Vi behöver
-också ta ställning till logotyper, ikoner och nedladdningar. Sådana filer kan
-ligga i webbplatsens `public/` och tillhör inte en enskild sida.
-
-```image-stack
-items:
-  - image: shared-files.svg
-    alt: En möjlig Shared files-grupp under Site settings visar en illustrativ logo.svg i public.
-    caption: Möjlig utökning av steg 1. Shared files är en egen grupp för gemensamma filer. logo.svg är ett exempel.
-```
-
-**Mitt förslag:** håll grupperna åtskilda och börja med sidans bilder och
-inställningar. Ta med öppning av gemensamma filer redan här om de behövs i ditt
-vanliga arbete. Bildimport till sidans `images/` är en annan uppgift än att
-hantera en logotyp i `public/`.
-
-**Att diskutera:** behöver du komma åt logotyp, ikoner eller nedladdningar
-redan i den första versionen?
-
-## Djupa träd och tomma sidor {#kantfall}
+## Djupa träd och sidor utan extra filer {#kantfall}
 
 :::: tabs
 
@@ -222,30 +208,49 @@ redan i den första versionen?
 ```image-stack
 items:
   - image: deep-tree.svg
-    alt: Ett illustrativt djupare träd där föräldrasidan Guides har Page files och undersidan Installation på skilda rader.
-    caption: Exempel med en föräldrasida. Page files är en filgrupp; Installation är en undersida. Strukturen är illustrativ.
+    alt: Ett illustrativt träd visar Guides med theme.yaml och pages. Under pages finns Installation med egen theme.yaml och pages som i sin tur innehåller macOS.
+    caption: Samma mönster upprepas på varje nivå. Guides, Installation och macOS är exempel för att visa djupet.
 ```
 
-Sidans filer måste kunna skiljas från dess undersidor. Om extra nivåer gör
-trädet svårt att läsa är den separata rutan ett alternativ att prova.
+Konfiguration ligger under sin ägare. Undersidor ligger i ägarens `pages/`.
+De extra katalognivåerna gör trädet djupare, men motsvarar verkliga platser.
+Fäll ihop grenar du inte arbetar med. Ingen separat ruta behöver följa vilken
+sida som råkar vara vald.
 
 :::
 
-::: tab "En sida utan sidfiler"
+::: tab "En sida utan extra filer"
 
 ```image-stack
 items:
   - image: empty-page.svg
-    alt: Install Norna är vald. Raden Page files – none visar att inga bilder eller lokala inställningar finns för sidan.
-    caption: En tom sida får en begriplig tomstatus. Att titta på sidan skapar inga kataloger eller inställningsfiler.
+    alt: Install Norna är markerad under Getting Started och dess pages. Sidtexten är öppen, men inga påhittade resurskataloger finns under sidan.
+    caption: Sidtexten går att öppna även när sidan saknar bilder, lokalt tema och undersidor.
 ```
 
-Sidan går fortfarande att öppna och skriva i. Markeringen gäller dess extra
-filer, inte att sidans text saknas.
+En tom katalog som faktiskt finns kan visas som tom. En katalog som saknas
+får ingen rad. En sida utan extra filer behöver därför ingen pil eller
+texten ”inga filer”; sidraden räcker för att öppna `content.md`.
 
 :::
 
 ::::
+
+## Öppna filer i public/ {#gemensamma-filer}
+
+**Beslut: public/ ingår i första versionen.** Där kan du öppna befintliga
+logotyper, ikoner och nedladdningar. De tillhör sajten, medan en sidas
+innehållsbilder finns under sidans egen `images/`.
+
+```image-stack
+items:
+  - image: shared-files.svg
+    alt: En möjlig public-katalog ligger direkt under Norna, som syskon till pages. En illustrativ logo.svg är vald och visas i editorn.
+    caption: public/ ingår i den beslutade omfattningen och motsvarar en verklig katalog. logo.svg är en illustrativ exempelfil.
+```
+
+Filerna öppnas på samma sätt som andra befintliga filer. Import och borttagning
+kommer i senare steg; öppning flyttar inga filer till en sidas `images/`.
 
 ## Ljust, mörkt och mindre fönster {#utseende}
 
@@ -256,7 +261,7 @@ filer, inte att sidans text saknas.
 ```image-stack
 items:
   - image: open-image.svg
-    alt: Den föreslagna Norna-vyn och bildvisningen i en ljus VS Code-skiss.
+    alt: Det beslutade trädupplägget och den vanliga bildvisningen i en ljus VS Code-skiss.
 ```
 
 :::
@@ -266,7 +271,7 @@ items:
 ```image-stack
 items:
   - image: dark.svg
-    alt: Samma Norna-vy i mörkt utseende med läsbara sidnamn, filer och markerad bild.
+    alt: Samma Norna-träd i mörkt utseende med läsbara sidnamn, verkliga filer och markerad bild.
 ```
 
 :::
@@ -276,25 +281,26 @@ items:
 ```image-stack
 items:
   - image: compact.svg
-    alt: Norna-vyn i ett 820 pixlar brett VS Code-fönster. Långa filnamn är förkortade och editorn är smalare.
-    caption: Ett mindre fönster behöver fortfarande göra sidans namn och filernas tillhörighet tydliga. Långa filnamn visas med förkortning i skissen.
+    alt: Norna-trädet och bildvisningen i ett 900 pixlar brett VS Code-fönster, med smalare sidopanel och editor.
+    caption: Samma struktur i ett mindre fönster. Långa namn kan förkortas i trädet; den öppna filens namn visas också i editorn.
 ```
 
 :::
 
 ::::
 
-## Underlag för vår diskussion {#diskussion}
+## Nästa steg {#diskussion}
 
-**Egen Norna-ingång är beslutad.** De två återstående valen är **hur sidans
-filer visas** och **vilka gemensamma filer som behövs från början**. Vi kan ta
-ett val i taget och ändra skisserna när något är oklart.
+Egen Norna-ingång, filer under sin ägare, konfiguration före `pages/`,
+startsidan som rot och åtkomst till `public/` är beslutade. Nu byggs
+**BL-140 VS Code Page Files Implementation**. Därefter granskas det fungerande
+trädet i den vanliga VS Code-profilen.
 
-Mitt fortsatta förslag är sidfiler under respektive sida och befintliga
-gemensamma inställningar i en separat grupp. Dessa delar återstår att
-fastställa i BL:n.
+Friare publicerade adresser utreds senare i **BL-139 Decoupled Page Addresses**.
+Det arbetet är inget beroende för sidträdet: VS Code hämtar adresser från
+Norna-motorn och visar den verkliga filstrukturen.
 
-Upplägget använder VS Codes etablerade områden och kontroller. VS Codes
+Upplägget använder VS Codes vanliga områden och filredigerare. Dess
 [riktlinjer för vyer](https://code.visualstudio.com/api/ux-guidelines/views)
-beskriver både egna vyer och placering i Explorer. De konkreta grupperingarna
-och arbetsflödena på den här sidan är våra förslag för Norna.
+beskriver egna vyer och deras placering. Det konkreta Norna-trädet och
+kontrollernas utformning här är vårt designunderlag för Norna.

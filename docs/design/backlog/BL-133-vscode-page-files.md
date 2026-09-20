@@ -6,34 +6,38 @@ Let a site author find a page's images and existing settings through readable
 page titles, then open them without navigating numbered directories. This is
 step 1 of the [VS Code Files And Images track](../vscode-authoring-track.md).
 
-**Status: Needs decision; placement and filesystem mapping approved, revised
-sketch and resource inventory pending.** On 2026-09-20 the owner chose a
-dedicated Norna entry and a tree that follows the stored hierarchy. The
-complete implementation brief is not yet approved.
+**Status: Design accepted on 2026-09-20.** The owner approved the structural
+summary, requested an implementation item and included existing `public/`
+files. [BL-140 VS Code Page Files Implementation](BL-140-vscode-page-files-implementation.md)
+is the accepted delivery brief. The proposal history below records the
+discussion; the implementation brief resolves its former open questions.
 
-## Visual Proposal 1
+## Visual Proposal 2
 
 The [local review material](../vscode-authoring-review/README.md) contains a
 maintained Norna site and editable SVG sketches. Its scratch copy is served at
 <http://127.0.0.1:4399/vscode-review/bl-133/>.
 
-Start with the full-window overview and the three-step page-to-image journey.
-The dedicated Norna entry is approved; the Explorer alternative is retained
-as comparison material. Compare page-owned file groups with a separate pane
-for the selected page. Local/shared settings, a possible
-`public/` group, deep/empty branches, and light/dark/compact examples make the
-remaining choices concrete. Every scene is marked as a proposal.
+Start with the full-window overview, physical-path mapping and three-step
+page-to-image journey. The revised sketches show the dedicated entry,
+homepage root, real resource directories, configuration before `pages/`, and
+an Add page action on `pages/`. Shared, homepage-only and inherited themes,
+a possible `public/` directory, deep/empty branches and light/dark/compact
+examples make the remaining choices concrete. Every scene is a proposal.
 
-These first sketches predate the filesystem-mapping decision below. Retain
-them as discussion history; revise the drawings before requesting final
-acceptance. They do not establish an approved implementation brief.
+The old synthetic groups and alternative pane have been replaced; their
+discussion history remains in Git. The sketches do not establish an approved
+implementation brief. Resource inventory, labels and detailed controls remain
+open. The page proposes reusing the existing create-child action when a
+page has no `pages/` yet, creating that directory only on actual page creation.
 
 ## Scope And Boundaries
 
 Extend the existing site tree with discovery and opening of source files.
 Normal editing in VS Code remains available after opening a file. This item
-does not add file creation, import, removal, image-block insertion or a custom
-configuration editor.
+does not add resource-file creation, import, removal, image-block insertion
+or a custom configuration editor. The agreed Add page placement reuses
+existing page creation.
 
 Keep the authored page/category hierarchy, sibling order and unlisted pages
 from [BL-131 VS Code Site Tree](BL-131-vscode-site-tree.md). Add resources to
@@ -50,6 +54,18 @@ the discussion below before fixing the inventory.
 
 ## Decisions Made
 
+The owner reconfirmed the complete
+[shared authoring model](../vscode-authoring-track.md#agreed-authoring-model)
+on 2026-09-20. These structural decisions apply to later items as well;
+this item's narrower delivery scope must not omit or defer recording them.
+
+- **Implementation authorized.** Include existing `public/` files for opening
+  as ordinary resources. Reuse the existing page action for a first child
+  without an existing `pages/`. Native control details follow the accepted
+  sketch and remain subject to review of the working result.
+- Keep public URL calculation in the engine. The independent-address question
+  is recorded in [BL-139 Decoupled Page Addresses](BL-139-decoupled-page-addresses.md)
+  and is not an implementation prerequisite.
 - **2026-09-20: Dedicated Norna entry approved.** Reach the authoring view
   through its own icon in VS Code's Activity Bar. The owner chose this for
   discoverability. This becomes the tree's default location; present one
@@ -81,9 +97,11 @@ the discussion below before fixing the inventory.
 The first sketch used **Page files**, **Site settings** and a separate
 **Selected page files** alternative. The owner preferred resources under the
 owning page but required the presentation to match actual storage. Replace
-the synthetic grouping in the next sketch with real files and directories.
-Show readable page labels alongside actual resource filenames. Distinguish
-the shared root theme, homepage-only theme and inherited child themes.
+the synthetic grouping with real files and directories in Proposal 2.
+The revised view shows readable page labels alongside actual resource
+filenames and distinguishes the shared root theme, homepage-only theme and
+inherited child themes. A page row represents its source directory and opens
+`content.md`; this proposal does not duplicate that file as another row.
 
 Opening a file uses its real source URI and the editor's normal open/preview
 behavior. An image need not already be referenced in content to appear here.
@@ -95,10 +113,11 @@ Usage badges and reference searches belong to the later image-usage item.
 | --- | --- | --- |
 | Find the Norna view | Select its proposed entry point | Where the page tree lives relative to the normal file explorer and editor |
 | Open a page | Select a page title | Its `content.md` opens while the page's position in the hierarchy remains clear |
-| Find an image | Expand the page's resources, or select the page for the alternative pane | Its actual image sources are listed without navigating numbered directories |
+| Find an image | Expand the page and its actual `images/` | Its image sources are listed without navigating numbered directories |
 | View the image | Select an image | The image opens in VS Code; the owning page remains identifiable |
-| Open settings | Open the local theme, then the site's root theme | The distinction between one branch's settings and shared settings is visible |
-| Use a page with children | Expand child pages and inspect the parent's files | Resource groups do not look like published child pages or disrupt navigation |
+| Open settings | Open the site's root theme, homepage-only theme and a local theme | Shared settings, homepage-only settings and inherited branch settings are distinguishable |
+| Use a page with children | Expand its real `pages/` and inspect the parent's files | Resources and child pages map to their actual stored hierarchy |
+| Create a child | Use Add page on `pages/`, or the existing page action for a first child | The creation destination is clear without inventing nonexistent directories |
 
 Use representative existing content for the scenes. Include a narrow-window
 view and a page without images or a local theme. Inspect light/dark sketches

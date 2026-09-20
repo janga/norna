@@ -10,6 +10,10 @@ bilder, ett konkret användarförlopp och de beslut som behöver tas.
 
 **Aktuellt: [BL-133 VS Code Page Files – visa och öppna sidans filer](/bl-133/).**
 
+Den [beslutade grunden för hela spåret](/bl-133/#beslutad-grund) omfattar en
+egen Norna-ingång, ett träd som följer filsystemet och konfiguration före
+`pages/` på varje nivå. Den gäller också de senare stegen nedan.
+
 ## Vårt arbetssätt
 
 Förslag och skisser presenteras tillsammans. Vi diskuterar dem och justerar
