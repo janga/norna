@@ -227,9 +227,15 @@
 	padding: 0.15rem 0 0.2rem 0.75rem;
 }
 
+.navigation-page-tree-sidebar .navigation-page-sections {
+	margin-inline-start: 0;
+	border-left: 0;
+	padding-inline-start: 1rem;
+}
+
 .navigation-page-tree-sidebar
-	.navigation-page-sections-disclosure > .navigation-page-sections {
-	margin-inline-start: var(--tree-disclosure-offset);
+	.navigation-page-node-page-disclosure > .navigation-page-branch-content > .navigation-page-sections {
+	padding-inline-start: 0;
 }
 
 .navigation-page-sections-disclosure > summary {
@@ -249,6 +255,11 @@
 
 .navigation-page-sections-disclosure > summary::-webkit-details-marker {
 	display: none;
+}
+
+.navigation-page-tree-sidebar .navigation-page-sections-disclosure > summary {
+	right: 0;
+	left: auto;
 }
 
 .navigation-page-sections-disclosure > summary:hover,
@@ -279,8 +290,9 @@
 
 .navigation-page-tree-sidebar .navigation-page-link {
 	display: block;
+	width: calc(100% - var(--tree-disclosure-offset));
 	border-radius: var(--corner-radius-small, 2px);
-	padding: 0.375rem 0.3rem 0.375rem var(--tree-disclosure-offset);
+	padding: 0.375rem 0.3rem 0.375rem 0;
 	color: var(--color-secondary-text);
 	font-size: 0.84rem;
 	font-weight: 400;
@@ -317,9 +329,8 @@
 }
 
 .navigation-page-tree-sidebar .navigation-page-tree-sidebar {
-	margin: 0.15rem 0 0.2rem 0.25rem;
-	border-left: 1px solid color-mix(in srgb, currentColor 16%, transparent);
-	padding-left: 0.75rem;
+	margin: 0.15rem 0 0.2rem;
+	padding-left: 1rem;
 }
 
 .navigation-page-disclosure > .navigation-page-summary {
@@ -356,25 +367,27 @@
 .navigation-page-disclosure-sidebar.navigation-category-disclosure
 	> .navigation-page-summary {
 	display: grid;
-	grid-template-columns: var(--tree-disclosure-icon-width) minmax(0, 1fr);
-	column-gap: var(--tree-disclosure-gap);
+	grid-template-columns: minmax(0, 1fr) var(--tree-disclosure-offset);
+	align-items: start;
 	justify-content: normal;
+	padding-inline-end: 0;
 }
 
 .navigation-page-disclosure-sidebar.navigation-category-disclosure
 	> .navigation-page-summary > .navigation-page-summary-title {
-	grid-column: 2;
+	grid-column: 1;
 	width: auto;
+	padding-inline-end: 0.3rem;
 }
 
 .navigation-page-disclosure-sidebar.navigation-category-disclosure
 	> .navigation-page-summary > .navigation-page-chevron {
-	grid-column: 1;
+	grid-column: 2;
 	grid-row: 1;
 	display: grid;
 	place-items: center;
-	width: var(--tree-disclosure-icon-width);
-	height: 1.35em;
+	width: var(--tree-disclosure-offset);
+	height: 1.4em;
 }
 
 .navigation-page-node-page-disclosure {
@@ -402,6 +415,26 @@
 .navigation-page-node-page-disclosure > .navigation-page-open-link {
 	grid-column: 2;
 	grid-row: 1;
+}
+
+/* Labels keep their depth; disclosures share the tree's right edge. */
+.navigation-page-tree-sidebar .navigation-page-node-page-disclosure {
+	grid-template-columns: minmax(0, 1fr) var(--tree-disclosure-offset);
+}
+
+.navigation-page-tree-sidebar
+	.navigation-page-node-page-disclosure > .navigation-page-disclosure {
+	grid-column: 2;
+}
+
+.navigation-page-tree-sidebar
+	.navigation-page-node-page-disclosure > .navigation-page-disclosure > .navigation-page-summary {
+	justify-content: normal;
+}
+
+.navigation-page-tree-sidebar
+	.navigation-page-node-page-disclosure > .navigation-page-open-link {
+	grid-column: 1;
 }
 
 .navigation-page-node-page-disclosure > .navigation-page-branch-content {
@@ -545,9 +578,8 @@
 
 .navigation-page-tree-sidebar .navigation-page-disclosure > .navigation-page-branch-content,
 .navigation-page-tree-sidebar .navigation-page-node-page-disclosure > .navigation-page-branch-content {
-	margin: 0.1rem 0 0.2rem 0.25rem;
-	border-left: 1px solid color-mix(in srgb, currentColor 16%, transparent);
-	padding-left: 0.75rem;
+	margin: 0.1rem 0 0.2rem;
+	padding-left: 1rem;
 }
 
 .navigation-page-tree-sidebar .navigation-page-disclosure .navigation-page-tree-sidebar,
@@ -566,6 +598,10 @@
 	padding-left: 0.8rem;
 	border-left: 1px solid color-mix(in srgb, currentColor 16%, transparent);
 	list-style: none;
+}
+
+.navigation-page-tree-sidebar .page-contents-links ol {
+	border-left: 0;
 }
 
 .page-contents-links a {

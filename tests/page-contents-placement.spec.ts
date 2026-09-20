@@ -10,7 +10,7 @@ const shallowPagePath = '/reference/installation/';
 test.describe('adaptive page contents on desktop', () => {
 	test.use({ hasTouch: false, isMobile: false, viewport: desktopViewport });
 
-	test('uses a leading disclosure column without disturbing the label axis', async ({ page }) => {
+	test('uses a trailing disclosure column without disturbing labels or link hit areas', async ({ page }) => {
 		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 
 		const tree = page.locator('.tree-local-navigation');
@@ -20,9 +20,11 @@ test.describe('adaptive page contents on desktop', () => {
 		const chevron = summary.locator('.navigation-page-chevron');
 		const openLink = installationNode.locator(':scope > .navigation-page-open-link');
 		const siblingLink = tree.getByRole('link', { name: 'Workflows', exact: true });
-		const [treeBox, chevronBox, openLinkTextX, siblingTextX] = await Promise.all([
+		const [treeBox, chevronBox, disclosureBox, linkBox, openLinkTextX, siblingTextX] = await Promise.all([
 			tree.boundingBox(),
 			chevron.boundingBox(),
+			summary.boundingBox(),
+			openLink.boundingBox(),
 			openLink.evaluate((link) => {
 				const textNode = link.firstChild;
 				if (!textNode) throw new Error('Expected the branch link to contain text.');
@@ -41,9 +43,15 @@ test.describe('adaptive page contents on desktop', () => {
 
 		expect(treeBox).not.toBeNull();
 		expect(chevronBox).not.toBeNull();
-		expect((chevronBox?.x ?? 0) + (chevronBox?.width ?? 0)).toBeLessThan(openLinkTextX - 4);
+		expect(disclosureBox).not.toBeNull();
+		expect(linkBox).not.toBeNull();
+		expect(chevronBox?.x).toBeGreaterThan(openLinkTextX);
+		expect((linkBox?.x ?? 0) + (linkBox?.width ?? 0)).toBeLessThanOrEqual((disclosureBox?.x ?? 0) + 1);
 		expect(Math.abs(openLinkTextX - siblingTextX)).toBeLessThan(1);
-		expect((treeBox?.x ?? 0) + (treeBox?.width ?? 0) - (chevronBox?.x ?? 0)).toBeGreaterThan(40);
+		const rightGap = (treeBox?.x ?? 0) + (treeBox?.width ?? 0)
+			- ((chevronBox?.x ?? 0) + (chevronBox?.width ?? 0));
+		expect(rightGap).toBeGreaterThanOrEqual(0);
+		expect(rightGap).toBeLessThan(40);
 	});
 
 	test('separates branch disclosure from page navigation', async ({ page }) => {
