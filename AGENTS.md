@@ -65,6 +65,11 @@ maintainer, put it in `README.md` instead of duplicating it here.
   separate logical change before starting the next item.
 - When referring to a backlog item, always show both its `BL-NNN` identifier and
   its title. Never present a backlog identifier without the title.
+- During an active design or requirements discussion, keep decisions in the
+  conversation and continue with the remaining questions. Update backlog items
+  and related decision material together once those questions are answered,
+  rather than editing files and running checks after each answer. Make an
+  interim documentation update only when the user explicitly requests one.
 - Run the smallest set of automated tests that reliably covers the changed
   contract. Finishing a task or preparing a commit is not by itself a reason to
   run a broad suite.

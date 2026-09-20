@@ -68,13 +68,38 @@ verified and approved for documentation.
 
 ## Needs Decision Or Evidence
 
-These items have no implementation position yet. Move one into `Now`, `Next`,
-or `Later` only after the stated evidence or design decision exists.
+These items have no approved implementation position yet. Move one into `Now`,
+`Next`, or `Later` only after the stated evidence or design decision exists.
+
+### VS Code Files And Images Track
+
+The [track overview](docs/design/vscode-authoring-track.md) records the agreed
+discussion order below, separately from technical dependencies; each draft
+needs its own visual proposal and approval before implementation.
+
+1. [`BL-133` VS Code Page Files](docs/design/backlog/BL-133-vscode-page-files.md):
+   **Needs decision; filesystem mapping agreed, revised sketch pending.** Find and open a
+   page's images and existing local/shared settings through the readable site
+   tree. [Illustrated review material](docs/design/vscode-authoring-review/README.md)
+   compares placement and file-grouping alternatives.
+2. [`BL-134` VS Code Image File Operations](docs/design/backlog/BL-134-vscode-image-file-operations.md):
+   **Needs decision; outline.** Add and remove page images through native
+   file interactions without rewriting page content.
+3. [`BL-135` VS Code Image Block Insertion](docs/design/backlog/BL-135-vscode-image-block-insertion.md):
+   **Needs decision; outline.** Insert an existing image into the intended
+   content location using valid Norna block syntax.
+4. [`BL-136` VS Code Local Theme Creation And Removal](docs/design/backlog/BL-136-vscode-local-theme-creation-removal.md):
+   **Needs decision; outline.** Create or remove local theme overrides with
+   understandable effects on inherited settings.
+5. [`BL-137` VS Code Image Usage And Removal Review](docs/design/backlog/BL-137-vscode-image-usage-removal-review.md):
+   **Needs decision; outline.** Locate image references and explain the
+   consequences of removing their source file.
+
+### Other Items
 
 - [`BL-132` VS Code Site Authoring Continuation](docs/design/backlog/BL-132-vscode-site-authoring-continuation.md):
-  **Needs design after `BL-131` VS Code Site Tree.** Use the recorded priority
-  order to scope structural editing and link-oriented authoring as separate,
-  bounded implementation steps.
+  **Needs design after `BL-131` VS Code Site Tree.** Scope later structural and
+  link-authoring work independently of the files-and-images track above.
 - `BL-113` **Page References: Needs evidence; unprioritized wishlist idea.**
   Consider an expandable reference to one page with selected heading links and
   automatically retrieved titles, but first try ordinary Markdown links in

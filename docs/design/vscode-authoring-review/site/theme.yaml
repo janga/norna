@@ -1,0 +1,12 @@
+preset: project
+palette: near-monochrome
+appearance:
+  default: light
+layout:
+  pageWidth: 1440px
+  textWidth: wide
+images:
+  presentation: prose-aligned
+  width: 1200px
+sections:
+  backgroundPattern: uniform

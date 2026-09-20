@@ -23,6 +23,13 @@ acceptance criteria. Reuse an existing backlog item when it already owns the
 outcome. The order below is a product recommendation; existing dependencies
 still apply.
 
+The separate [VS Code Files And Images track](../vscode-authoring-track.md)
+now owns the individually reviewed drafts for browsing page files, adding and
+removing images, inserting image blocks, managing local themes and inspecting
+image usage. This record retains structural and link-authoring proposals; its
+priority table does not order or approve that separate track. Image usage is
+distinct from the inbound page-link reports below.
+
 ## Decisions Made
 
 - The first delivery is a functioning tree with open, create, and page
