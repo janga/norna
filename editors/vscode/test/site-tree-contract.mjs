@@ -84,7 +84,7 @@ try {
 	await write(path.join(siteRoot, 'public/download.txt'), 'Public text');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
-	const localRequire = (name) => name === 'vscode' ? vscode : name === './norna-project.cjs' ? {
+	const localRequire = (name) => name === 'vscode' ? vscode : name === './site-file-actions.cjs' ? require(path.join(extensionRoot, 'site-file-actions.cjs')) : name === './norna-project.cjs' ? {
 		getNornaProjectContext: (filename) => {
 			const root = [siteRoot, legacySite, outsideSite].find((root) => filename.startsWith(root + path.sep));
 			if (!root) return null;
@@ -135,7 +135,7 @@ try {
 	assert.equal(provider.getTreeItem(home).iconPath.id, provider.getTreeItem(guide).iconPath.id);
 	assert.equal(provider.getTreeItem(pages).contextValue, 'nornaPages');
 	assert.equal(provider.getTreeItem(pages).command, undefined);
-	assert.equal(provider.getTreeItem(image).contextValue, 'nornaFile');
+	assert.equal(provider.getTreeItem(image).contextValue, 'nornaImage');
 	await commands.get('nornaEditor.openSiteNode')(image);
 	assert.deepEqual(opened.pop(), ['vscode.open', image.sourcePath], 'Resources must use VS Code editor selection, not a forced text editor.');
 	await commands.get('nornaEditor.pageInformation')(image);
@@ -150,6 +150,12 @@ try {
 	assert.equal(errors.length, 0, errors.join('\n'));
 	const updatedHome = (await provider.getChildren()).find((node) => node.siteRoot === siteRoot);
 	assert.equal(updatedHome, home, 'Stable node objects and IDs preserve unrelated expansion on refresh.');
+	const firstChild = guidePages.children.find((node) => node.title === 'Child');
+	inputs.push('First grandchild', 'first-grandchild');
+	choices.push((items) => { assert.equal(items.length, 1); assert.equal(items[0].description, '/guide/child/first-grandchild/'); return items[0]; });
+	await commands.get('nornaEditor.addChildPage')(firstChild);
+	assert.match(await readFile(path.join(path.dirname(firstChild.sourcePath), 'pages/010-first-grandchild/content.md'), 'utf8'), /^# First grandchild/);
+	assert.equal(choices.length, 0, 'The visible plus must not ask for Inside/Beside.');
 	inputs.push('Cancelled', 'cancelled');
 	choices.push(() => undefined);
 	await commands.get('nornaEditor.addPage')(pages);

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.0
+
+- Add a child directly from a visible page-row plus, even without `pages/`.
+- Add page and image action menus for ordinary authoring work.
+- Import one local image, append an editable image block, replace an image,
+  and remove images or non-home page branches through the operating system's
+  Trash. Show managed-image uses, preserve originals during import, refuse
+  collisions, and guard dirty or changed removal targets.
+
+## 0.3.2
+
+- Recognize the `site-config/` layout and show page content before its
+  configuration, images and child-page folders.
+
 ## 0.3.1
 
 - Show one active workspace site in Site Tree. Select a sole site automatically;

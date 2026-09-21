@@ -8,3 +8,4 @@ extension.cjs
 norna-project.cjs
 yaml-schema-completions.cjs
 site-tree.cjs
+site-file-actions.cjs

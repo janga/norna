@@ -8,6 +8,11 @@ removing it. This is step 5 of the
 
 **Status: Needs decision; outline for later visual discussion.**
 
+[BL-144 VS Code Page And Image Authoring Prototype](BL-144-vscode-page-image-authoring-prototype.md)
+introduces a bounded baseline: show managed-image references, unsaved changes
+and incomplete checks at replacement/removal. Richer usage navigation and
+reference types remain for this item's later discussion.
+
 ## Scope And Boundaries
 
 Add usage discovery, navigation to actual content references and contextual

@@ -50,15 +50,26 @@ before `pages/`, beneath the page or category that owns it. Page names hide
 numeric ordering prefixes; resource files retain their actual names. Images
 use VS Code's normal image preview, and `public/` includes nested static files.
 
-A page label opens its source; the chevron controls expansion. Each `pages/`
-offers **Norna: Add Page…** with that folder as the destination. To add a first
-child where no `pages/` exists, use **Norna: New Page…** on its parent. The
+A page label opens its source; the chevron controls expansion. A page's **+**
+offers **Norna: Add Child Page…**, including when `pages/` does not yet exist.
+Its **…** menu exposes page information, source opening, image import and
+removal. Each existing `pages/` also offers **Norna: Add Page…**. The
 context menu and Command Palette provide
 **Norna: New Page…**, **Norna: New Category…** and **Norna: Page Information…**.
 Creation previews the parent, address and directory before writing. Information
 edits stay in the buffer for normal save and undo. See the
 [site-tree reference](https://janga.github.io/norna/reference/workflows/editor/#work-from-the-site-tree)
 for fields, previous URLs, unlisted pages and scope limits.
+
+Extension 0.4.0 adds prototype page/image actions with a compatible engine.
+Import copies one image into the selected page and offers an editable image
+block at the end of its content. Image actions also insert existing images,
+replace them and remove them after showing managed-image references. Page
+removal includes owned files and descendants; Home is protected. Removal and
+replacement use the operating system's Trash, not editor Undo, and do not
+rewrite references. See the
+[image workflow](https://janga.github.io/norna/reference/workflows/editor/#add-and-use-page-images)
+for cancellation, recovery and current limits.
 
 The single-site selection requires extension 0.3.1 or later. The file view
 needs extension 0.3.0 and the engine's optional page-file support.

@@ -37,6 +37,10 @@ const itemMenus = extensionManifest.contributes.menus['view/item/context'];
 assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.addPage'
 	&& item.group === 'inline' && item.when.endsWith('viewItem == nornaPages')));
 assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.pageInformation').when.includes('(Home|Page|Category)'));
+for (const command of ['addChildPage', 'pageActions']) {
+	assert.ok(itemMenus.some((item) => item.command === `nornaEditor.${command}`
+		&& item.group.startsWith('inline') && item.when.includes('(Home|Page|Category)')));
+}
 
 const executable = path.join(
 	extensionRoot,
@@ -72,6 +76,7 @@ for (const filename of files) {
 	assert.notEqual(filename, 'norna-project.cjs');
 	assert.notEqual(filename, 'yaml-schema-completions.cjs');
 	assert.notEqual(filename, 'site-tree.cjs');
+	assert.notEqual(filename, 'site-file-actions.cjs');
 }
 
 console.log(`VS Code package contract passed (${files.size} packaged files).`);

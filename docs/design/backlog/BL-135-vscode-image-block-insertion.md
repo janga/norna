@@ -8,6 +8,11 @@ Norna block syntax manually. This is step 3 of the
 
 **Status: Needs decision; outline for later visual discussion.**
 
+[BL-144 VS Code Page And Image Authoring Prototype](BL-144-vscode-page-image-authoring-prototype.md)
+provides an authorized first version: append one editable image stack to the
+owning page, after import or from an existing image. Use that baseline when
+discussing insertion at a selected location or into an existing block.
+
 ## Scope And Boundaries
 
 Connect a selected image source to an explicit insertion point in that page's

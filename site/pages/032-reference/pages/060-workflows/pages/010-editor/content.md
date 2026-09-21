@@ -135,9 +135,16 @@ the destination. Enter a title and URL segment, review the resulting address
 and directory, then select **Create page**. The new page appears last among
 its siblings and opens for editing.
 
-To create the first child of a page without `pages/`, right-click the page and
-choose **Norna: New Page…**, then **Inside**. The same command also offers
-creation beside a page or at the site root. Browsing alone creates no folders.
+To create a child, select its parent page and use the **+** button beside its
+title (**Norna: Add Child Page…**). This also works when `pages/` does not yet
+exist: the extension creates it with the first child. The parent is already
+selected, so the next question is the new page's title. The **+** in the tree
+toolbar acts on the selected page or the owner of a selected resource.
+
+The **…** beside a page opens **Page Actions**: create a child, edit page
+information, open the source, import an image or remove the page. The Command
+Palette and context menu remain available. **Norna: New Page…** additionally
+offers creation beside a page or at the site root. Browsing alone creates no folders.
 **Norna: New Category…** follows the same steps for a navigation category.
 Choosing Home as the parent creates a child in the site root's `pages/` folder.
 Escape cancels before creation without writing files. These actions use the same rules as
@@ -170,10 +177,61 @@ update or to rediscover sites. External file changes normally refresh the
 tree automatically.
 
 Use **Page Information** on pages and categories. Other files open for normal
-editing and do not receive page-metadata actions. Importing or deleting images,
-creating themes, moving/reordering/deleting pages, changing addresses and
-inserting links are outside this tree's scope. Generated `.norna` output and
-symbolic links are not listed; use Explorer for files outside the tree.
+editing and do not receive page-metadata actions. Creating themes, moving or
+reordering pages, changing addresses and inserting page links remain outside
+this tree's scope. Generated `.norna` output and symbolic links are not listed;
+use Explorer for files outside the tree.
+
+### Remove a page
+
+Choose **Move page to Trash…** from the page's **…** menu. Review the source
+directory and the number of page/category entries and files, then confirm.
+The whole page directory is removed, including its images, configuration and
+descendants. Links from other pages are not rewritten. The required homepage
+cannot be removed.
+
+Save or undo unsaved edits in the affected files first. If files change during
+confirmation, the action stops so you can review them again. Files go to the
+operating system's Trash; restore them there, not through editor Undo. A trash
+failure is reported without retrying as permanent deletion.
+
+After restoring a folder, check its name against the source directory shown
+in the removal confirmation. If Trash added a suffix because it already held
+the same name, rename the restored folder to its original name.
+
+## Add and use page images
+
+Select a page, open its **…** menu and choose **Import image…**. Choose one
+JPG, JPEG, PNG or SVG and confirm its filename. The VS Code extension copies
+the file into that page's `images/`, creating the directory if needed. The
+original remains unchanged. You can also choose an image from another page
+to make a local copy. An existing destination is never silently overwritten;
+choose another filename or use **Replace Image**.
+
+After import, choose **Insert image at end of page** or **Keep image file
+only**. Insertion asks for alternative text and an optional caption, then adds
+one `image-stack` at the end of the owning `content.md`. The edit remains
+unsaved and supports ordinary editor Undo. Edit the block to change its text
+or position. Cancelling insertion keeps the imported file.
+
+An existing image's **…** menu offers insertion, replacement and removal.
+**Replace image…** keeps the filename and references, copies a replacement
+of the same format and sends the previous file to Trash. Before replacement
+or removal, the confirmation shows managed-image references, including
+unsaved pages. Local images take precedence over equal filenames elsewhere.
+Unresolved references and incomplete checks are labelled; ordinary Markdown,
+HTML and external references are outside this check. Removing an image leaves
+its content references in place, where diagnostics can report the missing file.
+
+Restore a removed or replaced image through the operating system's Trash.
+If the restored file has an added suffix, rename it to the original filename
+used in `content.md`. Check that you restored the intended version before
+replacing a file that already exists.
+
+These prototype actions require extension 0.4.0 and an engine with page/image
+file-operation support. They handle one image at a time. Drag/drop, clipboard
+import and insertion into an existing block or at an arbitrary cursor position
+are not yet provided by these tree actions.
 
 ## Suggestions and diagnostics
 

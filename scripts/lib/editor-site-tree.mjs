@@ -15,6 +15,7 @@ import { parseYamlConfig } from './yaml-config.mjs';
 export const siteTreeApiVersion = 1;
 export const siteFileTreeApiVersion = 1;
 export { createSiteNode, planSiteNodeCreation, slugifyAsciiIdentifier };
+export { siteFileOperationsApiVersion, planEditorImageCopy, planEditorRemoval, getEditorImageUsage, createEditorImageAppend } from './editor-site-files.mjs';
 
 const sourceParts = (source, kind) => {
 	if (kind === 'category') return { yaml: source, offset: 0, body: '', bodyLine: 0 };

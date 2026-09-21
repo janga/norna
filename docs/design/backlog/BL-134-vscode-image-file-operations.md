@@ -9,6 +9,11 @@ interactions. This is step 2 of the
 **Status: Needs decision; outline for later visual discussion.** This is not
 an accepted implementation brief.
 
+The owner subsequently authorized the smaller working baseline in
+[BL-144 VS Code Page And Image Authoring Prototype](BL-144-vscode-page-image-authoring-prototype.md):
+single-file import, explicit replacement and trash removal. Evaluate that
+baseline before defining the remaining drag/drop, batch and recovery refinements.
+
 ## Scope And Boundaries
 
 Receive files through native tree drag and drop or a file picker, copy them to

@@ -8,6 +8,13 @@ delivery; each item owns its own requirements and tests.
 The owner has approved the working method, order and first interface. Later
 steps retain their individual visual review and implementation decisions.
 
+On 2026-09-21 the owner authorized a simple working CRUD prototype in
+[BL-144 VS Code Page And Image Authoring Prototype](backlog/BL-144-vscode-page-image-authoring-prototype.md).
+It adds visible first-child creation, page removal and a first single-image
+import/insertion/replacement/removal journey. Later drafts build on that
+baseline; their additional scope is not implicitly approved. This request
+supersedes waiting for separate visual design rounds for that bounded prototype.
+
 ## Agreed Authoring Model
 
 **Approved by the owner on 2026-09-20.** These decisions apply across the
@@ -32,8 +39,8 @@ model. They establish the direction, not approval of every future control.
   actual resource filenames and recognizable `images/` and `pages/`
   directories. Begin page editing from the page's representation in the tree.
 - Every represented `pages/` provides **Add page** for that location through
-  its plus button and context menu. Use **New Page** on a parent to create its
-  first child when `pages/` does not yet exist.
+  its plus button and context menu. A page-row **Add Child Page** plus creates
+  a child directly, including the first child when `pages/` does not yet exist.
 - Use one common page icon unless a page has an explicit presentation of its
   own. This does not introduce a custom-icon feature.
 - The homepage is the site root and may have children: `site/content.md`,
@@ -106,7 +113,8 @@ implements the root model depicted in the revised drawings.
 
 [BL-132 VS Code Site Authoring Continuation](backlog/BL-132-vscode-site-authoring-continuation.md)
 retains the later structural and link-authoring proposals. Page moves,
-reordering, page deletion and link reports are outside this track. Clipboard
+reordering and link reports remain later work; basic page deletion is now
+included in BL-144 VS Code Page And Image Authoring Prototype. Clipboard
 image import may become a separate follow-up after the basic workflows are
 evaluated. The track adds no new image format or theme model.
 

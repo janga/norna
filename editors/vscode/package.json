@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -73,22 +73,22 @@
       },
       {
         "command": "nornaEditor.addPage",
-        "title": "Norna: Add Page…",
+        "title": "Norna: Add Page\u2026",
         "icon": "$(add)"
       },
       {
         "command": "nornaEditor.newPage",
-        "title": "Norna: New Page…",
+        "title": "Norna: New Page\u2026",
         "icon": "$(new-file)"
       },
       {
         "command": "nornaEditor.newCategory",
-        "title": "Norna: New Category…",
+        "title": "Norna: New Category\u2026",
         "icon": "$(new-folder)"
       },
       {
         "command": "nornaEditor.pageInformation",
-        "title": "Norna: Page Information…",
+        "title": "Norna: Page Information\u2026",
         "icon": "$(edit)"
       },
       {
@@ -98,8 +98,48 @@
       },
       {
         "command": "nornaEditor.chooseSite",
-        "title": "Norna: Choose Site…",
+        "title": "Norna: Choose Site\u2026",
         "icon": "$(globe)"
+      },
+      {
+        "command": "nornaEditor.addChildPage",
+        "title": "Norna: Add Child Page\u2026",
+        "icon": "$(add)"
+      },
+      {
+        "command": "nornaEditor.pageActions",
+        "title": "Norna: Page Actions\u2026",
+        "icon": "$(ellipsis)"
+      },
+      {
+        "command": "nornaEditor.importImage",
+        "title": "Norna: Import Image\u2026",
+        "icon": "$(file-media)"
+      },
+      {
+        "command": "nornaEditor.insertImage",
+        "title": "Norna: Insert Image\u2026",
+        "icon": "$(add)"
+      },
+      {
+        "command": "nornaEditor.replaceImage",
+        "title": "Norna: Replace Image\u2026",
+        "icon": "$(replace)"
+      },
+      {
+        "command": "nornaEditor.removeImage",
+        "title": "Norna: Move Image to Trash\u2026",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "nornaEditor.removePage",
+        "title": "Norna: Move Page to Trash\u2026",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "nornaEditor.imageActions",
+        "title": "Norna: Image Actions\u2026",
+        "icon": "$(ellipsis)"
       }
     ],
     "views": {
@@ -120,7 +160,7 @@
           "group": "navigation@0"
         },
         {
-          "command": "nornaEditor.newPage",
+          "command": "nornaEditor.addChildPage",
           "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
           "group": "navigation@1"
         },
@@ -138,7 +178,7 @@
       "view/item/context": [
         {
           "command": "nornaEditor.openSiteNode",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category|File)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category|File|Image)$/",
           "group": "1_open@1"
         },
         {
@@ -170,6 +210,51 @@
           "command": "nornaEditor.newCategory",
           "when": "view == nornaSiteTree && viewItem == nornaPages",
           "group": "2_create@2"
+        },
+        {
+          "command": "nornaEditor.addChildPage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
+          "group": "inline@1"
+        },
+        {
+          "command": "nornaEditor.pageActions",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
+          "group": "inline@2"
+        },
+        {
+          "command": "nornaEditor.importImage",
+          "when": "view == nornaSiteTree && viewItem == nornaImages",
+          "group": "inline"
+        },
+        {
+          "command": "nornaEditor.imageActions",
+          "when": "view == nornaSiteTree && viewItem == nornaImage",
+          "group": "inline"
+        },
+        {
+          "command": "nornaEditor.importImage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Images)$/",
+          "group": "3_images@1"
+        },
+        {
+          "command": "nornaEditor.insertImage",
+          "when": "view == nornaSiteTree && viewItem == nornaImage",
+          "group": "3_images@1"
+        },
+        {
+          "command": "nornaEditor.replaceImage",
+          "when": "view == nornaSiteTree && viewItem == nornaImage",
+          "group": "3_images@2"
+        },
+        {
+          "command": "nornaEditor.removeImage",
+          "when": "view == nornaSiteTree && viewItem == nornaImage",
+          "group": "4_remove"
+        },
+        {
+          "command": "nornaEditor.removePage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Page|Category)$/",
+          "group": "4_remove"
         }
       ],
       "commandPalette": [
@@ -195,7 +280,7 @@
     "viewsWelcome": [
       {
         "view": "nornaSiteTree",
-        "contents": "Choose a site to show its pages and files.\n[Choose Site…](command:nornaEditor.chooseSite)",
+        "contents": "Choose a site to show its pages and files.\n[Choose Site\u2026](command:nornaEditor.chooseSite)",
         "when": "nornaSiteTree.hasMultipleSites && !nornaSiteTree.hasActiveSite"
       }
     ]
@@ -203,7 +288,7 @@
   "scripts": {
     "audit:runtime": "npm audit --omit=dev",
     "build": "esbuild extension.cjs --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.cjs",
-    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/package-contract.mjs",
+    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check site-file-actions.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/site-file-actions-contract.mjs && node test/package-contract.mjs",
     "package": "vsce package --out norna-vscode.vsix",
     "publish:marketplace": "vsce publish",
     "vscode:prepublish": "npm run build",

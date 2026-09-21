@@ -86,7 +86,9 @@ Step 1's design is approved in
 [BL-133 VS Code Page Files](docs/design/backlog/BL-133-vscode-page-files.md).
 Its implemented foundation is
 [BL-140 VS Code Page Files Implementation](docs/design/backlog/BL-140-vscode-page-files-implementation.md).
-The remaining steps still need their own discussion:
+The first page/image authoring prototype is implemented in
+[BL-144 VS Code Page And Image Authoring Prototype](docs/design/backlog/BL-144-vscode-page-image-authoring-prototype.md).
+The remaining refinements still need their own discussion:
 
 2. [`BL-134` VS Code Image File Operations](docs/design/backlog/BL-134-vscode-image-file-operations.md):
    **Needs decision; outline.** Add and remove page images through native

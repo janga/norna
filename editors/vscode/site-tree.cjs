@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { getNornaProjectContext } = require('./norna-project.cjs');
+const { registerSiteFileActions } = require('./site-file-actions.cjs');
 
 const viewId = 'nornaSiteTree';
 const sourceNames = new Set(['content.md', 'category.yaml']);
@@ -149,8 +150,9 @@ function registerSiteTree(context, output) {
 			const item = new vscode.TreeItem(node.title, node.children.length ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
 			item.id = node.id;
 			item.contextValue = node.kind === 'site' ? (node.problem ? 'nornaSiteUnavailable' : 'nornaSite')
-				: node.kind === 'directory' ? node.role === 'pages' ? 'nornaPages' : 'nornaDirectory'
-					: node.kind === 'file' ? 'nornaFile' : node.isHome ? 'nornaHome' : node.kind === 'category' ? 'nornaCategory' : 'nornaPage';
+				: node.kind === 'directory' ? node.role === 'pages' ? 'nornaPages' : node.role === 'images' ? 'nornaImages' : 'nornaDirectory'
+					: node.kind === 'file' ? node.parent?.role === 'images' && /\.(jpe?g|png|svg)$/i.test(node.title) ? 'nornaImage' : 'nornaFile'
+						: node.isHome ? 'nornaHome' : node.kind === 'category' ? 'nornaCategory' : 'nornaPage';
 			const unsaved = vscode.workspace.textDocuments.some((document) => document.uri.fsPath === node.sourcePath && document.isDirty);
 			item.description = [node.isHome ? 'Homepage' : '',
 				node.problem ? 'needs attention' : isPage(node) && node.hiddenFromNavigation ? 'unlisted' : node.kind === 'category' ? 'category' : '',
@@ -275,13 +277,13 @@ function registerSiteTree(context, output) {
 		if (node?.sourcePath && node.kind !== 'directory') await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(node.sourcePath), { preview: true });
 	};
 	const oneLine = (value) => !value.trim() || /[\r\n]/.test(value) ? 'Enter a non-empty, single line of text.' : undefined;
-	const create = async (kind, argument) => {
+	const create = async (kind, argument, insideSelected = false) => {
 		const target = await chooseNode(argument);
 		const selected = ownerOf(target);
 		if (!selected) return;
 		const service = await serviceFor(selected.siteRoot);
 		let parentPath = '/';
-		if (target.kind === 'directory' && target.role === 'pages') parentPath = selected.url;
+		if (insideSelected || (target.kind === 'directory' && target.role === 'pages')) parentPath = selected.url ?? '/';
 		else if (selected.kind !== 'site') {
 			const rootPage = selected.isHome && selected.sourcePath === path.join(selected.siteRoot, 'content.md');
 			const parent = ownerOf(selected.parent);
@@ -304,6 +306,7 @@ function registerSiteTree(context, output) {
 		const confirm = await vscode.window.showQuickPick([{ label: `Create ${kind}`, description: `${kind === 'category' ? 'Child URL prefix: ' : ''}${plan.url}`, detail: labelFor(plan.destination) }],
 			{ title: `Create “${title}” in ${labelFor(selected.siteRoot)}`, placeHolder: 'Review the location; Escape cancels without creating files', ignoreFocusOut: true });
 		if (!confirm) return;
+		await chooseNode(target);
 		const created = await service.createSiteNode(plan);
 		await refresh();
 		await vscode.window.showTextDocument(vscode.Uri.file(created.sourcePath), { preview: false });
@@ -365,8 +368,32 @@ function registerSiteTree(context, output) {
 	register('nornaEditor.openSiteNode', openNode);
 	register('nornaEditor.newPage', (node) => create('page', node));
 	register('nornaEditor.addPage', (node) => create('page', node));
+	register('nornaEditor.addChildPage', (node) => create('page', node, true));
 	register('nornaEditor.newCategory', (node) => create('category', node));
 	register('nornaEditor.pageInformation', editInformation);
+	registerSiteFileActions({ vscode, context, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
+	register('nornaEditor.pageActions', async (argument) => {
+		const node = await chooseNode(argument);
+		if (!isPage(node)) throw new Error('Select a page or category.');
+		const selected = await vscode.window.showQuickPick([
+			{ label: '$(add) Add child page…', command: 'addChildPage' },
+			{ label: '$(edit) Page information…', command: 'pageInformation' },
+			{ label: '$(go-to-file) Open source', command: 'openSiteNode' },
+			...(node.kind === 'page' ? [{ label: '$(file-media) Import image…', command: 'importImage' }] : []),
+			...(!node.isHome ? [{ label: '$(trash) Move page to Trash…', command: 'removePage' }] : []),
+		], { title: `Page actions: ${node.title}`, ignoreFocusOut: true });
+		if (selected) await vscode.commands.executeCommand(`nornaEditor.${selected.command}`, node);
+	});
+	register('nornaEditor.imageActions', async (argument) => {
+		const node = await chooseNode(argument);
+		if (node?.kind !== 'file' || node.parent?.role !== 'images') throw new Error('Select a page image.');
+		const selected = await vscode.window.showQuickPick([
+			{ label: '$(add) Insert image at end of page…', command: 'insertImage' },
+			{ label: '$(replace) Replace image…', command: 'replaceImage' },
+			{ label: '$(trash) Move image to Trash…', command: 'removeImage' },
+		], { title: `Image actions: ${node.title}`, ignoreFocusOut: true });
+		if (selected) await vscode.commands.executeCommand(`nornaEditor.${selected.command}`, node);
+	});
 	register('nornaEditor.chooseSite', chooseSite);
 	register('nornaEditor.refreshSiteTree', async () => { services.clear(); await refresh({ discover: true }); await revealActive(); });
 	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,category.yaml,settings.yaml,site-theme.yaml,shared-content.yaml,theme.yaml,config.yaml,page-theme.yaml,sitewide-content.yaml}');
