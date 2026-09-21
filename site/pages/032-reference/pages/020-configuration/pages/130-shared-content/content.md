@@ -1,11 +1,11 @@
 ---
 page:
-  description: Configure shared logo height, timed notices and footer text in sitewide-content.yaml.
+  description: Configure shared logo height, timed notices and footer text in site-config/shared-content.yaml.
 ---
 
 # Shared site content
 
-Optional `site/sitewide-content.yaml` contains logo display settings, notices
+Optional `site/site-config/shared-content.yaml` contains logo display settings, notices
 and footer text shared by every page. It is plain YAML, not frontmatter.
 Page text remains in `content.md`.
 
@@ -15,7 +15,7 @@ Place one supported [logo file](/reference/site/public-files/#recognized-files)
 in `public/`. Norna discovers it automatically; this setting only changes its
 height:
 
-```yaml title="site/sitewide-content.yaml"
+```yaml title="site/site-config/shared-content.yaml"
 logo:
   height: 2rem
 ```
@@ -30,7 +30,7 @@ section disclosure; Home remains an ordinary navigation item as well.
 
 ## Banners
 
-```yaml title="site/sitewide-content.yaml: a temporary notice"
+```yaml title="site/site-config/shared-content.yaml: a temporary notice"
 banners:
   - id: maintenance
     title: Scheduled maintenance
@@ -62,7 +62,7 @@ long text with an ellipsis.
 
 ## Footer
 
-```yaml title="site/sitewide-content.yaml"
+```yaml title="site/site-config/shared-content.yaml"
 footer:
   copyrightMessage: (c) Example Owner.
   buildInfo: true

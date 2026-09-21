@@ -27,7 +27,8 @@ const writePublicRoute = async (siteDir, route) => {
 test('named sidenotes render as linked lettered CSS margin notes', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/docs/\n');
+		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/docs/\n');
 		await writeFile(path.join(siteDir, 'content.md'), `---
 page:
   description: Fixture
@@ -39,7 +40,7 @@ page:
 
 The first paragraph points to an explanation.[^margin:first]
 
-[^margin:first]: This explanation names \`sitewide-content.yaml\`, links to the
+[^margin:first]: This explanation names \`site-config/shared-content.yaml\`, links to the
     [site files](/faq/#site-files), and stays beside the paragraph on wide screens.
 
 The second paragraph has its own explanation.[^margin:second]
@@ -57,7 +58,7 @@ The third paragraph points to a link-only note.[^margin:third]
 		assert.match(html, /<sup class="section-note-ref"><a href="#norna-note:margin:6d617267696e3a6669727374" id="norna-note:ref:6d617267696e3a6669727374" aria-describedby="norna-note:margin:6d617267696e3a6669727374">a<\/a><\/sup>/);
 		assert.match(html, /<aside class="section-note section-note-margin" id="norna-note:margin:6d617267696e3a6669727374" role="note" aria-label="Note a">/);
 		assert.match(html, /aria-label="Back to reference a">a<\/a>/);
-		assert.match(html, /This explanation names <code>sitewide-content\.yaml<\/code>, links to the/);
+		assert.match(html, /This explanation names <code>site-config\/shared-content\.yaml<\/code>, links to the/);
 		assert.match(html, /<a href="\/docs\/faq\/#site-files">site files<\/a>/);
 		assert.doesNotMatch(html, /href="\/docs\/docs\/faq\/|href="docs\/faq\//);
 		assert.match(html, /aria-label="Note b"/);
@@ -75,7 +76,8 @@ The third paragraph points to a link-only note.[^margin:third]
 test('page-title notes preserve root-relative links under a site base path', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/docs/\n');
+		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/docs/\n');
 		await writeFile(path.join(siteDir, 'content.md'), `---
 page:
   description: Fixture
@@ -122,7 +124,8 @@ test('reference footnotes render page-wide with localized accessible links', asy
 	]) {
 		const { root, siteDir } = await createTempSite({ underRepoCache: true });
 		try {
-			await writeFile(path.join(siteDir, 'config.yaml'), `url: https://example.com/docs/\nlanguage: ${locale.language}\n`);
+			await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+			await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `url: https://example.com/docs/\nlanguage: ${locale.language}\n`);
 			await writeFile(path.join(siteDir, 'content.md'), `# Reference footnotes
 
 The first section cites one source twice.[^scope] A second reference points to
@@ -178,7 +181,8 @@ test('semantic callouts render every supported meaning with localized accessible
 	]) {
 		const { root, siteDir } = await createTempSite({ underRepoCache: true });
 		try {
-			await writeFile(path.join(siteDir, 'config.yaml'), `url: https://example.com/\nlanguage: ${locale.language}\n`);
+			await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+			await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `url: https://example.com/\nlanguage: ${locale.language}\n`);
 			await writeFile(path.join(siteDir, 'content.md'), `# Callouts
 
 ## Meanings {#meanings}

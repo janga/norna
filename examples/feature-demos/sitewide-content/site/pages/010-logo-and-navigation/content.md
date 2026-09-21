@@ -6,7 +6,7 @@ page:
 # Logo and navigation
 The logo is discovered from `public/logo.svg`. The homepage Markdown H1
 provides its alt text, and an optional top-level `logo` setting in
-`sitewide-content.yaml` can adjust its displayed height.
+`site-config/shared-content.yaml` can adjust its displayed height.
 
 The logo is a separate home link without a section menu. The homepage remains
 the first ordinary navigation item and exposes its sections like any page.

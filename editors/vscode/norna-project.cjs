@@ -5,12 +5,19 @@ const supportedSchemaVersion = 3;
 const supportedEditorApiVersion = 2;
 const homePageDirectory = '000-home';
 const pageDirectoryPattern = /^(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
-const rootFiles = new Map([
+const legacyRootFiles = new Map([
 	['content.md', { documentKind: 'content', schemaKind: 'contentFrontmatter', pageDirectory: '.' }],
 	['page-theme.yaml', { documentKind: 'yaml', schemaKind: 'pageTheme', pageDirectory: '.' }],
 	['config.yaml', { documentKind: 'yaml', schemaKind: 'config' }],
 	['theme.yaml', { documentKind: 'yaml', schemaKind: 'theme' }],
 	['sitewide-content.yaml', { documentKind: 'yaml', schemaKind: 'sitewideContent' }],
+]);
+const rootFiles = new Map([
+	['content.md', { documentKind: 'content', schemaKind: 'contentFrontmatter', pageDirectory: '.' }],
+	['theme.yaml', { documentKind: 'yaml', schemaKind: 'pageTheme', pageDirectory: '.' }],
+	['site-config/settings.yaml', { documentKind: 'yaml', schemaKind: 'config' }],
+	['site-config/site-theme.yaml', { documentKind: 'yaml', schemaKind: 'theme' }],
+	['site-config/shared-content.yaml', { documentKind: 'yaml', schemaKind: 'sitewideContent' }],
 ]);
 
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -31,16 +38,16 @@ const isPageDirectoryPath = (pageDirectory) => {
 };
 
 const hasSiteMarkers = (directory) => (
-	isFile(path.join(directory, 'config.yaml'))
+	(isFile(path.join(directory, 'site-config', 'settings.yaml')) || isFile(path.join(directory, 'config.yaml')))
 	&& (isFile(path.join(directory, 'content.md')) || isFile(path.join(directory, 'pages', homePageDirectory, 'content.md')))
 );
 
 const isRootFileBeingCreated = (documentPath, directory) => {
-	if (path.dirname(documentPath) !== directory || !rootFiles.has(path.basename(documentPath))) return false;
-	if (path.basename(documentPath) === 'config.yaml') {
+	const relative = toPosixPath(path.relative(directory, documentPath));
+	if (relative === 'site-config/settings.yaml' || relative === 'config.yaml') {
 		return isFile(path.join(directory, 'content.md')) || isFile(path.join(directory, 'pages', homePageDirectory, 'content.md'));
 	}
-	return path.basename(documentPath) === 'content.md' && isFile(path.join(directory, 'config.yaml'));
+	return relative === 'content.md' && (isFile(path.join(directory, 'site-config', 'settings.yaml')) || isFile(path.join(directory, 'config.yaml')));
 };
 
 const findNornaSiteRoot = (documentPath) => {
@@ -89,7 +96,9 @@ const classifyDocument = (siteRoot, documentPath) => {
 	const relativePath = toPosixPath(path.relative(siteRoot, path.resolve(documentPath)));
 	if (!relativePath || relativePath.startsWith('../') || path.isAbsolute(relativePath)) return null;
 
-	const rootFile = rootFiles.get(relativePath);
+	const hasCurrentLayout = isFile(path.join(siteRoot, 'site-config', 'settings.yaml'))
+		|| (!isFile(path.join(siteRoot, 'config.yaml')) && relativePath.startsWith('site-config/'));
+	const rootFile = (hasCurrentLayout ? rootFiles : legacyRootFiles).get(relativePath);
 	if (rootFile) return { pageDirectory: null, ...rootFile, relativePath };
 
 	const pageMatch = relativePath.match(/^pages\/(.+)\/(category\.yaml|content\.md|theme\.yaml)$/);

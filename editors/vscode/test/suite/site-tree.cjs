@@ -82,6 +82,16 @@ async function runSiteTree({ openDocument, waitFor }) {
 		const activeIs = (relative) => waitFor(() => vscode.window.activeTextEditor?.document.uri.fsPath, (filename) => filename === path.join(root, relative), `Wrong source opened: ${relative}`);
 		const guidePath = 'tree-content/pages/010-guide/content.md';
 		const topicPath = 'tree-content/pages/020-topics/category.yaml';
+		await sourceRow('tree-content/content.md').click();
+		await activeIs('tree-content/content.md');
+		await sourceRow('tree-content/theme.yaml').click();
+		await activeIs('tree-content/theme.yaml');
+		await expandDirectory('tree-content/site-config');
+		for (const filename of ['settings.yaml', 'site-theme.yaml']) {
+			await sourceRow(`tree-content/site-config/${filename}`).click();
+			await activeIs(`tree-content/site-config/${filename}`);
+		}
+		passed('Homepage content and local theme are visible; physical site-config files open');
 		await row('Tree Topics').getByText('Tree Topics', { exact: true }).click();
 		await activeIs(topicPath);
 		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'false', 'Opening a category must not expand it.');

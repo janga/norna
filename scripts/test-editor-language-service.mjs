@@ -88,9 +88,10 @@ try {
 		},
 		schemaVersion: supportedSchemaVersion,
 	}));
-	await writeFile(path.join(siteRoot, 'config.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(siteRoot, 'theme.yaml'), 'preset: project\n');
-	await writeFile(path.join(siteRoot, 'sitewide-content.yaml'), `logo:
+	await mkdir(path.join(siteRoot, 'site-config'), { recursive: true });
+	await writeFile(path.join(siteRoot, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(siteRoot, 'site-config', 'site-theme.yaml'), 'preset: project\n');
+	await writeFile(path.join(siteRoot, 'site-config/shared-content.yaml'), `logo:
   height: 2rem
 `);
 	await writeFile(path.join(siteRoot, 'images', 'local.jpg'), 'local');
@@ -116,19 +117,19 @@ try {
 	assert.equal(getNornaDocumentContext(homeContentPath).schemaKind, 'contentFrontmatter');
 	assert.equal(getNornaDocumentContext(homeContentPath).pageDirectory, '.');
 	assert.equal(getNornaDocumentContext(homeContentPath).nornaPackage.root, installedNornaRoot);
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'config.yaml')).schemaKind, 'config');
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).schemaKind, 'theme');
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'sitewide-content.yaml')).schemaKind, 'sitewideContent');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'site-config/settings.yaml')).schemaKind, 'config');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'site-config', 'site-theme.yaml')).schemaKind, 'theme');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'site-config/shared-content.yaml')).schemaKind, 'sitewideContent');
 	assert.equal(getNornaDocumentContext(pageContentPath).pageDirectory, '010-about');
 	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'pageTheme');
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'page-theme.yaml')).schemaKind, 'pageTheme');
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'page-theme.yaml')).pageDirectory, '.');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).schemaKind, 'pageTheme');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).pageDirectory, '.');
 	assert.equal(getNornaDocumentContext(categoryPath).schemaKind, 'category');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).pageDirectory, '010-about/pages/020-team');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).schemaKind, 'contentFrontmatter');
 	assert.equal(getNornaDocumentContext(nestedPageThemePath).schemaKind, 'pageTheme');
 	const treeThemeDiagnostics = await getThemeDiagnostics({
-		documentPath: path.join(siteRoot, 'theme.yaml'),
+		documentPath: path.join(siteRoot, 'site-config', 'site-theme.yaml'),
 		source: 'preset: documentation\nsections:\n  backgroundPattern: alternating\n',
 	});
 	assert.deepEqual(
@@ -137,7 +138,7 @@ try {
 	);
 	assert.match(treeThemeDiagnostics[0].message, /site resolves to tree navigation/);
 	assert.deepEqual(await getThemeDiagnostics({
-		documentPath: path.join(siteRoot, 'theme.yaml'),
+		documentPath: path.join(siteRoot, 'site-config', 'site-theme.yaml'),
 		source: 'preset: documentation\nsections:\n  backgroundPattern: uniform\n',
 	}), []);
 	assert.equal(getNornaProjectContext(path.join(siteRoot, 'public', 'logo.svg')).siteRoot, siteRoot);
@@ -146,6 +147,7 @@ try {
 	assert.equal(getNornaDocumentContext(path.join(root, 'docs', 'content.md')), null);
 	const legacySiteRoot = path.join(root, 'legacy-site');
 	await mkdir(legacySiteRoot, { recursive: true });
+
 	await writeFile(path.join(legacySiteRoot, 'config.yaml'), 'url: https://example.com/\n');
 	await mkdir(path.join(legacySiteRoot, 'pages', '000-home'), { recursive: true });
 	await writeFile(path.join(legacySiteRoot, 'pages', '000-home', 'content.md'), '# Legacy page\n');
@@ -155,7 +157,8 @@ try {
 		const uninstalledSite = path.join(uninstalledRoot, 'site');
 		const uninstalledContent = path.join(uninstalledSite, 'content.md');
 		await mkdir(path.dirname(uninstalledContent), { recursive: true });
-		await writeFile(path.join(uninstalledSite, 'config.yaml'), 'url: https://example.com/\n');
+		await mkdir(path.join(uninstalledSite, 'site-config'), { recursive: true });
+		await writeFile(path.join(uninstalledSite, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 		await writeFile(uninstalledContent, '# Uninstalled\n');
 		assert.equal(getNornaProjectContext(uninstalledContent).nornaPackage, null);
 		assert.equal(getNornaDocumentContext(uninstalledContent).schemaCompatible, false);

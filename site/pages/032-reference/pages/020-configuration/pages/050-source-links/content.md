@@ -8,7 +8,7 @@ page:
 `editLink` adds a link from a rendered page to its `content.md`. It does not
 grant repository access, save edits or publish them. Omit it for no source link.
 
-```yaml title="site/config.yaml" {3,4}
+```yaml title="site/site-config/settings.yaml" {3,4}
 url: https://example.com/
 editLink:
   localEditor: vscode

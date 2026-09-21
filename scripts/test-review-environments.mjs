@@ -41,8 +41,9 @@ const expectFailure = async (operation, pattern) => {
 
 const createSite = async (siteDirectory, { title = 'Scratch page' } = {}) => {
 	await mkdir(siteDirectory, { recursive: true });
-	await writeFile(path.join(siteDirectory, 'config.yaml'), 'url: https://example.com/scratch/\n');
-	await writeFile(path.join(siteDirectory, 'theme.yaml'), 'preset: documentation\n');
+	await mkdir(path.join(siteDirectory, 'site-config'), { recursive: true });
+	await writeFile(path.join(siteDirectory, 'site-config/settings.yaml'), 'url: https://example.com/scratch/\n');
+	await writeFile(path.join(siteDirectory, 'site-config', 'site-theme.yaml'), 'preset: documentation\n');
 	await writeFile(path.join(siteDirectory, 'content.md'), `# ${title}\n`);
 };
 
@@ -412,7 +413,8 @@ try {
 
 	const brokenSource = path.join(workspaceRoot, 'broken site');
 	await mkdir(path.join(brokenSource, 'pages'), { recursive: true });
-	await writeFile(path.join(brokenSource, 'config.yaml'), 'url: https://example.com/\n');
+	await mkdir(path.join(brokenSource, 'site-config'), { recursive: true });
+	await writeFile(path.join(brokenSource, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 	await expectFailure(
 		() => prepareScratchSite({
 			repositoryRoot: workspaceRoot,
@@ -420,7 +422,7 @@ try {
 			scratchRoot,
 			replace: true,
 		}),
-		/missing theme.yaml/,
+		/missing site-config\/site-theme.yaml/,
 	);
 	assert.equal(await readFile(path.join(targetDirectory, 'content.md'), 'utf8'), '# Replaced page\n');
 

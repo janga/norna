@@ -21,14 +21,14 @@ const engineRoot = path.join(workspaceRoot, 'node_modules', '@janga', 'norna');
 const commandArguments = process.argv.slice(2);
 const suiteIndex = commandArguments.indexOf('--suite');
 const suite = suiteIndex === -1 ? 'all' : commandArguments[suiteIndex + 1];
-if (!['all', 'constructions', 'priority', 'metadata', 'site-tree'].includes(suite)) throw new Error('Use --suite all, constructions, priority, metadata, or site-tree.');
+if (!['all', 'constructions', 'priority', 'metadata', 'configuration', 'site-tree'].includes(suite)) throw new Error('Use --suite all, constructions, priority, metadata, configuration, or site-tree.');
 if (suiteIndex !== -1) commandArguments.splice(suiteIndex, 2);
 const prettierIndex = commandArguments.indexOf('--with-prettier');
 const withPrettier = prettierIndex !== -1;
 if (withPrettier) commandArguments.splice(prettierIndex, 1);
 const versionArgument = commandArguments[0] === '--version' ? commandArguments[1] : undefined;
 if (commandArguments.length > 0 && (!versionArgument || commandArguments.length !== 2)) {
-	throw new Error('Usage: node test/run-integration.mjs [--version <VS Code version>] [--with-prettier] [--suite all|constructions|priority|metadata|site-tree]');
+	throw new Error('Usage: node test/run-integration.mjs [--version <VS Code version>] [--with-prettier] [--suite all|constructions|priority|metadata|configuration|site-tree]');
 }
 const version = versionArgument ?? process.env.NORNA_VSCODE_TEST_VERSION ?? 'stable';
 let engineVersion;
@@ -56,11 +56,11 @@ const prepareWorkspace = async () => {
 		private: true,
 		version: '1.0.0',
 	}, null, 2));
-	await write('site/config.yaml', 'url: https://example.com/\n');
-	await write('tree-content/config.yaml', 'url: https://example.com/\n');
+	await write('site/site-config/settings.yaml', 'url: https://example.com/\n');
+	await write('tree-content/site-config/settings.yaml', 'url: https://example.com/\n');
 	await write('tree-content/content.md', '# Tree Home\n');
-	await write('tree-content/theme.yaml', 'preset: documentation\n');
-	await write('tree-content/page-theme.yaml', 'layout:\n  textWidth: narrow\n');
+	await write('tree-content/site-config/site-theme.yaml', 'preset: documentation\n');
+	await write('tree-content/theme.yaml', 'layout:\n  textWidth: narrow\n');
 	await write('tree-content/public/downloads/notes.txt', 'Public download\n');
 	await write('tree-content/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
 	await write('tree-content/pages/010-guide/content.md', '---\n# Keep metadata comment\npage:\n  description: "Original description" # keep\n  aliases: [/previous-guide/]\n---\n\n# Tree Guide\n\nKeep this prose and [authored link text](/topics/child/).\n');
@@ -76,7 +76,7 @@ const prepareWorkspace = async () => {
 		'[markdown]': { 'editor.formatOnSave': false },
 		'[yaml]': { 'editor.defaultFormatter': 'redhat.vscode-yaml' },
 	}));
-	await write('site/theme.yaml', [
+	await write('site/site-config/site-theme.yaml', [
 		'preset: ',
 		'typography:',
 		'  fontFamily: "Inter, sans-serif"',
@@ -85,7 +85,7 @@ const prepareWorkspace = async () => {
 		'  backgroundPattern: alternating',
 		'',
 	].join('\n'));
-	await write('site/sitewide-content.yaml', 'footer:\n  copyrightMessage: Example\n');
+	await write('site/site-config/shared-content.yaml', 'footer:\n  copyrightMessage: Example\n');
 	await write('site/content.md', `---
 page:
   description: Editor integration fixture.
@@ -191,7 +191,7 @@ Body text.[^margin:context]
 	await write('site/settings.yaml', '');
 	await write('ordinary/content.md', '# Ordinary Markdown\n');
 	await write('ordinary/theme.yaml', '');
-	await write('examples/complete-sites/priority/site/config.yaml', 'url: https://example.com/\n');
+	await write('examples/complete-sites/priority/site/site-config/settings.yaml', 'url: https://example.com/\n');
 	await write('examples/complete-sites/priority/site/content.md', '# Example\n');
 	await write('site/pages/070-embedded/content.md', [
 		'# Embedded YAML', '', '```card-list', 'items:',
@@ -208,12 +208,13 @@ Body text.[^margin:context]
 	await write('site/pages/110-context/content.md', '# Context\n');
 	await write('site/pages/120-widget/content.md', '# Widget checks\n');
 	await write('site/pages/120-widget/images/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
-	await write('widget-site/config.yaml', 'url: https://example.com/\n');
+	await write('widget-site/site-config/settings.yaml', 'url: https://example.com/\n');
 	await write('widget-site/content.md', '# Widget checks\n');
-	await write('widget-site/theme.yaml', '');
-	await write('widget-site/sitewide-content.yaml', '');
+	await write('widget-site/site-config/site-theme.yaml', '');
+	await write('widget-site/theme.yaml', 'layout:\n  textWidth: narrow\n');
+	await write('widget-site/site-config/shared-content.yaml', '');
 	await write('widget-site/pages/010-category/category.yaml', '');
-	await write('usage-site/config.yaml', 'url: https://example.com/\n');
+	await write('usage-site/site-config/settings.yaml', 'url: https://example.com/\n');
 	await write('usage-site/content.md', '# Image usage\n');
 	await write('usage-site/pages/010-other/content.md', '# Other\n');
 	for (const [page, files] of [['', ['a-used.svg', 'z-unused.svg']], ['pages/010-other', ['b-used.svg', 'y-other.svg']]]) {
@@ -225,12 +226,12 @@ Body text.[^margin:context]
 		const manifestPath = path.join(projectEngine, 'schemas', 'manifest.json');
 		const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 		await writeFile(manifestPath, JSON.stringify({ ...manifest, editorApiVersion }));
-		await write(`${project}/site/config.yaml`, 'url: https://example.com/\n');
+		await write(`${project}/site/site-config/settings.yaml`, 'url: https://example.com/\n');
 		await write(`${project}/site/content.md`, '# Context\n');
 		await write(`${project}/site/images/second-only.svg`, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 		if (project === 'second') {
 			// Keep tree fixtures independent of the completion suites' source edits.
-			await write('second/tree-content/config.yaml', 'url: https://example.com/\n');
+			await write('second/tree-content/site-config/settings.yaml', 'url: https://example.com/\n');
 			await write('second/tree-content/content.md', '# Other Tree Home\n');
 		}
 	}

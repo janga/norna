@@ -154,28 +154,28 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 		} else if (fileKind === 'content' && key === 'images') {
 			fix = 'Put local image references in image-stack or image-carousel blocks in the Markdown body.';
 		} else if (fileKind === 'content' && knownThemeTopLevelFrontmatterKeys.has(key)) {
-			fix = `Move "${key}:" to theme.yaml. Visual settings do not belong in content frontmatter.`;
+			fix = `Move "${key}:" to site-config/site-theme.yaml. Visual settings do not belong in content frontmatter.`;
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'navigation') {
-			message = `Frontmatter line ${lineNumber}: navigation is technical, site-wide configuration and does not belong in ${fileKind}. Set it in config.yaml.`;
-			fix = 'Set the navigation mode under "navigation:" in config.yaml.';
+			message = `Frontmatter line ${lineNumber}: navigation is technical, site-wide configuration and does not belong in ${fileKind}. Set it in site-config/settings.yaml.`;
+			fix = 'Set the navigation mode under "navigation:" in site-config/settings.yaml.';
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'shape') {
 			message = fileKind === 'page theme'
 				? `Frontmatter line ${lineNumber}: "shape" was replaced by the site-wide "corners" setting, which page themes cannot override.`
 				: `Frontmatter line ${lineNumber}: "shape" was replaced by "corners". Use "square" or replace the old "soft" value with "rounded".`;
 			fix = fileKind === 'page theme'
-				? 'Remove "shape:" from this page theme. Set "corners: square" or "corners: rounded" in the root theme.yaml when an override is needed.'
+				? 'Remove "shape:" from this page theme. Set "corners: square" or "corners: rounded" in site-config/site-theme.yaml when an override is needed.'
 				: 'Replace "shape:" with "corners:". Use "square" or replace the old "soft" value with "rounded".';
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'colorMode') {
 			message = `Frontmatter line ${lineNumber}: Theme setting "colorMode" was replaced by "appearance".`;
 			fix = fileKind === 'page theme'
-				? 'Remove "colorMode:" from this page theme. Set "appearance:" in the root theme.yaml when an override is needed.'
+				? 'Remove "colorMode:" from this page theme. Set "appearance:" in site-config/site-theme.yaml when an override is needed.'
 				: 'Replace "colorMode:" with "appearance:".';
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'readerControls') {
 			message = `Frontmatter line ${lineNumber}: Theme setting "readerControls" was removed. Appearance and reading width are always available; Focus reading follows tree navigation.`;
 			fix = 'Remove "readerControls:". Use "appearance.default" for the initial Appearance; reading width is always available and tree navigation provides Focus reading.';
 		} else if (fileKind === 'page theme' && ['preset', 'appearance', 'corners', 'palette', 'typography'].includes(key)) {
 			message = `Frontmatter line ${lineNumber}: page themes may not define site-wide visual identity through "${key}".`;
-			fix = `Move "${key}:" to the root theme.yaml. Page themes may set only layout.textWidth, layout.contentSpacing, images, and sections.backgroundPattern.`;
+			fix = `Move "${key}:" to site-config/site-theme.yaml. Page themes may set only layout.textWidth, layout.contentSpacing, images, and sections.backgroundPattern.`;
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && ['logo', 'site'].includes(key)) {
 			message = `Frontmatter line ${lineNumber}: ${fileKind} may not define navigation logo settings. Optional logo display settings belong under "logo:" in ${sitewideContentLabel}.`;
 			fix = `Move only the logo display settings under "logo:" in ${sitewideContentLabel}; the homepage Markdown H1 supplies navigation text and logo alternative text.`;

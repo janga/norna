@@ -585,8 +585,9 @@ export const writeMigrationReport = async (report, reportDir, { sourceRoot = nul
 		if (entries.length > 0) throw new Error('Migration report directory must be empty: ' + resolvedReportDir);
 	} else await mkdir(resolvedReportDir, { recursive: true });
 	await mkdir(path.join(resolvedReportDir, 'pages'), { recursive: true });
-	await writeFile(path.join(resolvedReportDir, 'config.yaml'), 'url: https://example.invalid/\n');
-	await writeFile(path.join(resolvedReportDir, 'theme.yaml'), 'preset: documentation\n');
+	await mkdir(path.join(resolvedReportDir, 'site-config'), { recursive: true });
+	await writeFile(path.join(resolvedReportDir, 'site-config/settings.yaml'), 'url: https://example.invalid/\n');
+	await writeFile(path.join(resolvedReportDir, 'site-config', 'site-theme.yaml'), 'preset: documentation\n');
 	await writeFile(path.join(resolvedReportDir, 'content.md'), renderReportHome(report));
 	if (report.problemTypes.length > 0) {
 		const categoryDir = path.join(resolvedReportDir, 'pages', '010-problems');

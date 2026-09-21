@@ -120,7 +120,7 @@ const buildPresets = async (tempRoot) => {
 			filter: (source) => path.basename(source) !== '.norna',
 			recursive: true,
 		});
-		await writeFile(path.join(siteDir, 'theme.yaml'), 'preset: ' + presetName + '\n');
+		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), 'preset: ' + presetName + '\n');
 		runBuild(siteDir);
 		builds.set(presetName, path.join(projectRoot, 'dist'));
 	}

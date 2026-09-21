@@ -37,12 +37,13 @@ try {
 	await mkdir(siteDir, { recursive: true });
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeFile(path.join(siteDir, 'public', 'robots.txt'), 'User-agent: *\nAllow: /\n');
-	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
+	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `typography:
   profile: restrained
 palette: near-monochrome
 `);
-	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `banners:
+	await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), `banners:
   - id: expired-banner
     visible:
       until: "2026-01-01"

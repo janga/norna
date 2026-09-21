@@ -228,6 +228,9 @@ npm --prefix editors/vscode run test:integration -- --suite constructions
 # Category description and tree mode, from blank values/keys and partial prefixes.
 npm --prefix editors/vscode run test:integration -- --suite metadata
 
+# Configuration paths, theme scopes and shared-content values.
+npm --prefix editors/vscode run test:integration -- --suite configuration
+
 # Native site tree and page information, without the completion matrix.
 npm --prefix editors/vscode run test:integration -- --suite site-tree
 
@@ -240,6 +243,14 @@ The metadata suite accepts category `description` from a blank YAML line and
 from `desc`, and `navigation.mode: tree` from a blank value and from `tr`.
 Each case uses the real suggestion widget and checks the inserted bytes. It
 is a focused metadata check, not the full construction or save matrix.
+
+The configuration suite extends those cases with the physical paths introduced
+by [BL-143 Site Configuration Directory And Page Files](backlog/BL-143-site-configuration-directory-page-files.md):
+`site-config/settings.yaml`, `site-config/site-theme.yaml`, root `theme.yaml`,
+and `site-config/shared-content.yaml`. It selects representative values from
+blank positions and partial prefixes and rejects global fields in an empty
+homepage theme. These are file-recognition checks; they do not claim exhaustive
+selection of every pre-existing configuration value.
 
 Use the current baseline for changes to authoring or persistence. Add the
 formatter scenario when changing save behavior or formatter guidance. Run the

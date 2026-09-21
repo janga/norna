@@ -20,7 +20,7 @@ const homePage = sitePages.find((page) => page.isHome);
 if (!homePage) throw new Error('The required homepage is missing from the site page model.');
 
 const [siteTheme] = await getCollection('theme');
-if (!siteTheme) throw new Error('site/theme.yaml is required. Add a root theme before building the site.');
+if (!siteTheme) throw new Error('site/site-config/site-theme.yaml is required. Add the shared site theme before building the site.');
 const [sitewide] = await getCollection('sitewide');
 const sitewideData = sitewide?.data ?? {};
 const siteThemeData = siteTheme.data;

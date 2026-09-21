@@ -138,5 +138,5 @@
   "description": "Editorial content and optional navigation logo display settings shared by every page.",
   "$id": "https://janga.github.io/norna/schemas/sitewide-content.schema.json",
   "title": "Norna site-wide content",
-  "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\n`sitewide-content.yaml` optionally defines banners, footer content, and logo display settings shared by every page.\n\n[Site-wide content reference (current)](https://janga.github.io/norna/reference/configuration/shared-content/)\n\n[Norna 0.7.27 source reference](https://github.com/janga/norna/blob/v0.7.27/site/pages/032-reference/pages/020-configuration/pages/130-shared-content/content.md)"
+  "markdownDescription": "```yaml\nfooter:\n  copyrightMessage: Copyright Example Owner.\n```\n\n`site-config/shared-content.yaml` optionally defines banners, footer content, and logo display settings shared by every page.\n\n[Site-wide content reference (current)](https://janga.github.io/norna/reference/configuration/shared-content/)\n\n[Norna 0.7.27 source reference](https://github.com/janga/norna/blob/v0.7.27/site/pages/032-reference/pages/020-configuration/pages/130-shared-content/content.md)"
 }

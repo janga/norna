@@ -95,7 +95,8 @@ test('tabs build with assets, index every alternative, and report invalid conten
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await cp(path.resolve('fixtures/content-tabs/site'), siteDir, { recursive: true, filter: (source) => !source.split(path.sep).includes('.norna') });
-		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/docs/\nsearch: true\n');
+		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/docs/\nsearch: true\n');
 		await mkdir(path.join(siteDir, 'pages', '010-plain'), { recursive: true });
 		await writeFile(path.join(siteDir, 'pages', '010-plain', 'content.md'), '# Plain page\n\nOrdinary prose.\n');
 		await runContentScript(siteDir, ['--check']);

@@ -15,8 +15,8 @@ available after [BL-133 VS Code Page Files](BL-133-vscode-page-files.md). The
 new benefit here is creating a valid local theme and removing it with
 an understandable account of the inherited result.
 
-Use the existing limited page-theme model. Root `theme.yaml` is required and
-shared. Optional root `page-theme.yaml` affects only the homepage; a child page
+Use the existing limited page-theme model. `site-config/site-theme.yaml` is required and
+shared. Optional root `theme.yaml` affects only the homepage; a child page
 or category's `theme.yaml` is inherited by descendants. An empty file has no
 overrides; the creation proposal should give the author a useful initial
 setting. A separate settings form, preset redesign and general YAML-file

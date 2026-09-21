@@ -116,18 +116,18 @@ maintainer, put it in `README.md` instead of duplicating it here.
   deploy behavior may be broken by the change. If the user explicitly says to
   skip tests, do not run them and report that they were skipped.
 - Keep the public URL, optional language and optional smooth-scroll switch in
-  `site/config.yaml`. Keep engine UI text in the built-in language packs, discover
+  `site/site-config/settings.yaml`. Keep engine UI text in the built-in language packs, discover
   GitHub repository/default-branch details at deploy time, and keep footer text
-  in `site/sitewide-content.yaml`.
+  in `site/site-config/shared-content.yaml`.
 - The site source directory defaults to `site/` and can be overridden with
   `NORNA_SITE_DIR`; use `scripts/lib/site-paths.mjs` instead of
   hardcoding site paths in scripts.
 - Keep editable content, Markdown section headings, Norna image block
   references, alt text, captions, and optional section metadata in the selected
   page's `content.md`; the homepage path is
-  `site/content.md`. Keep site-wide visual identity in the root
-  `site/theme.yaml`; homepage-only presentation overrides belong in
-  `site/page-theme.yaml`. Child page themes use the limited inherited
+  `site/content.md`. Keep site-wide visual identity in
+  `site/site-config/site-theme.yaml`; homepage-only presentation overrides belong in
+  `site/theme.yaml`. Child page themes use the limited inherited
   presentation fields accepted by the page-theme schema.
 - When adding AI-generated images to Norna sites, document their provenance and
   prompt in Markdown near the image block so future maintainers can regenerate
@@ -221,11 +221,11 @@ maintainer, put it in `README.md` instead of duplicating it here.
   Verify permission reuse with at least two different local page addresses
   before declaring the problem solved. If the environment still requires
   approval, report that limitation rather than promising prompt-free checks.
-- Run `npm run config:check` after changing `site/config.yaml` or config
+- Run `npm run config:check` after changing `site/site-config/settings.yaml` or config
   validation behavior.
 - Run `npm run content:check` before `npm run build` when changing content or
   Norna-managed images.
-- Run `npm run content:check` after changing `site/theme.yaml` or theme
+- Run `npm run content:check` after changing `site/site-config/site-theme.yaml` or theme
   validation behavior.
 - Run `npm run content:sync` after moving Norna image block references between
   pages so unambiguous image files move to the expected page image directory.

@@ -10,7 +10,7 @@ and controls. Every palette has light and dark variants. It does not choose
 which variant the reader sees; [Appearance](/reference/configuration/appearance/)
 does that.
 
-```yaml title="site/theme.yaml" {1}
+```yaml title="site/site-config/site-theme.yaml" {1}
 palette: forest-moss
 ```
 
@@ -29,7 +29,7 @@ palette: forest-moss
 | `vivid-night` | Indigo with brighter cyan and blue accents |
 
 Omit `palette` to keep the preset's choice. Without a preset the default is
-`near-monochrome`. Only the root theme selects a palette; page themes cannot
+`near-monochrome`. Only the shared theme selects a palette; page themes cannot
 change it and arbitrary RGB values are not accepted.
 
 The [Theme explorer](https://janga.github.io/norna/examples/theme-presets/) demonstrates these choices on

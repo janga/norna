@@ -18,7 +18,7 @@ const edit = async (source, field, value, sourcePath = page) => {
 
 try {
 	for (const site of [firstSite, secondSite]) {
-		await write(path.join(site, 'config.yaml'), 'url: https://example.com/\n');
+		await write(path.join(site, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 		await write(path.join(site, 'content.md'), '# Home\n');
 	}
 	await write(page, '---\npage:\n  aliases: [/old-guide/]\nnavigation:\n  listed: false\n---\n\n# Guide\n\n[Authored label](/guide/).\n');
@@ -97,7 +97,7 @@ try {
 
 	const child = path.join(firstSite, 'pages/020-topics/pages/010-child/content.md');
 	for (const [filename, source] of [
-		['theme.yaml', 'preset: documentation\n'], ['page-theme.yaml', 'layout:\n  textWidth: narrow\n'], ['sitewide-content.yaml', 'footer: {}\n'],
+		['site-config/site-theme.yaml', 'preset: documentation\n'], ['theme.yaml', 'layout:\n  textWidth: narrow\n'], ['site-config/shared-content.yaml', 'footer: {}\n'],
 		['images/shared.svg', '<svg/>'], ['pages/010-guide/theme.yaml', 'layout:\n  contentSpacing: compact\n'],
 		['pages/010-guide/images/shared.svg', '<svg><title>Guide</title></svg>'],
 		['pages/020-topics/theme.yaml', 'layout:\n  contentSpacing: compact\n'],
@@ -123,8 +123,8 @@ try {
 	const childrenOf = (id) => files.items.filter((item) => item.parentId === id);
 	const home = path.join(firstSite, 'content.md');
 	assert.deepEqual(files.items.filter((item) => item.parentId === null).map((item) => item.sourcePath), [home], 'One root page, with no synthetic site container.');
-	assert.deepEqual(childrenOf(home).map((item) => item.title), ['config.yaml', 'theme.yaml', 'page-theme.yaml', 'sitewide-content.yaml', 'images', 'pages', 'public']);
-	assert.deepEqual(childrenOf(page).map((item) => item.title), ['theme.yaml', 'images'], 'A leaf must not gain a fictional pages directory.');
+	assert.deepEqual(childrenOf(home).map((item) => item.title), ['content.md', 'theme.yaml', 'site-config', 'images', 'public', 'pages']);
+	assert.deepEqual(childrenOf(page).map((item) => item.title), ['content.md', 'theme.yaml', 'images'], 'A leaf must not gain a fictional pages directory.');
 	assert.deepEqual(childrenOf(category).map((item) => item.title), ['category.yaml', 'theme.yaml', 'pages']);
 	assert.equal(files.items.find((item) => item.id === page).parentId, resourceId('pages'));
 	assert.equal(files.items.find((item) => item.id === child).parentId, resourceId('pages/020-topics/pages'));
@@ -135,11 +135,13 @@ try {
 	assert.equal(at('public/empty').kind, 'directory');
 	assert.equal(at('public/outside'), undefined, 'Do not follow symbolic links outside the displayed source tree.');
 	assert.equal(at('.norna/public/generated.svg'), undefined);
-	assert.equal(at('content.md'), undefined, 'The page row already opens content.md.');
+	assert.equal(at('content.md').parentId, home, 'The source file is visible directly under its page.');
+	assert.deepEqual(childrenOf(resourceId('site-config')).map((item) => item.title), ['settings.yaml', 'site-theme.yaml', 'shared-content.yaml']);
+	assert.equal(at('site-config/site-theme.yaml').ownerId, home);
 	assert.equal(files.items.find((item) => item.id === page).title, 'Unsaved title');
 	assert.equal(files.items.find((item) => item.id === category).title, 'Unsaved category');
-	assert.match(at('theme.yaml').description, /Shared site/);
-	assert.match(at('page-theme.yaml').description, /not inherited/);
+	assert.match(at('site-config').description, /shared by the complete site/);
+	assert.match(at('theme.yaml').description, /not inherited/);
 	assert.match(at('pages/010-guide/theme.yaml').description, /inherited by this branch/);
 	assert.equal(new Set(files.items.map((item) => item.id)).size, files.items.length, 'Resource and page identities must be unique, including category.yaml.');
 	assert.deepEqual(files.items.filter((item) => ['page', 'category'].includes(item.kind)).map((item) => item.url), files.nodes.map((item) => item.url));
@@ -163,10 +165,10 @@ try {
 	assert.equal((await readSiteFileTree({ siteRoot: firstSite })).items.find((item) => item.id === category).problem, null);
 	const emptySite = path.join(root, 'empty-site');
 	await write(path.join(emptySite, 'content.md'), '# Empty\n');
-	await write(path.join(emptySite, 'config.yaml'), 'url: https://example.com/\n');
+	await write(path.join(emptySite, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 	await mkdir(path.join(emptySite, 'pages'));
 	const empty = await readSiteFileTree({ siteRoot: emptySite });
-	assert.deepEqual(empty.items.map((item) => item.title), ['Empty', 'config.yaml', 'pages']);
+	assert.deepEqual(empty.items.map((item) => item.title), ['Empty', 'content.md', 'site-config', 'settings.yaml', 'pages']);
 	console.log('Site tree engine tests passed: metadata, dirty overlays, isolated roots, malformed nodes, physical files, themes, public resources, read-only browsing, refresh and creation.');
 } finally {
 	await rm(root, { recursive: true, force: true });

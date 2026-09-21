@@ -9,7 +9,7 @@ Norna builds navigation from [pages and categories](/reference/site/pages/)
 and Markdown headings. Leave `navigation.mode` at `automatic` to let the
 listed hierarchy choose the presentation. No separate menu file is needed.
 
-```yaml title="site/config.yaml" {3}
+```yaml title="site/site-config/settings.yaml" {3}
 url: https://example.com/
 navigation:
   mode: automatic
@@ -118,7 +118,7 @@ JavaScript; manual navigation remains available without it.
 
 ## Explicit modes
 
-`sections`, `top` and `tree` may be selected explicitly in `config.yaml`.
+`sections`, `top` and `tree` may be selected explicitly in `site-config/settings.yaml`.
 `sections` is for a one-page site, not a way to hide additional pages.
 Explicit `top` can expose child pages in submenus, but cannot represent a
 listed category. Listed categories therefore reject `sections` and `top`.

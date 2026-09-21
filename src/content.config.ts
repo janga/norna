@@ -1,7 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { basename } from 'node:path';
+import { basename, dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
 	siteDir,
@@ -42,7 +42,7 @@ const site = defineCollection({
 const theme = defineCollection({
 	loader: glob({
 		pattern: basename(siteThemePath),
-		base: pathToFileURL(siteDir),
+		base: pathToFileURL(dirname(siteThemePath)),
 		generateId: () => `${siteEntryPrefix}-theme`,
 	}),
 	schema: siteThemeSchema,
@@ -51,7 +51,7 @@ const theme = defineCollection({
 const sitewide = defineCollection({
 	loader: glob({
 		pattern: basename(sitewideContentPath),
-		base: pathToFileURL(siteDir),
+		base: pathToFileURL(dirname(sitewideContentPath)),
 		generateId: () => `${siteEntryPrefix}-sitewide`,
 	}),
 	schema: sitewideContentSchema,

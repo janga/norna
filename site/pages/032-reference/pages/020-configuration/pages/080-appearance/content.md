@@ -10,10 +10,10 @@ their own choice in **Display**, the site's viewing-settings panel.
 
 ## Site default
 
-Set the default in `site/theme.yaml`. The highlighted line accepts `system`,
+Set the default in `site/site-config/site-theme.yaml`. The highlighted line accepts `system`,
 `light`, or `dark`:
 
-```yaml title="site/theme.yaml" {2}
+```yaml title="site/site-config/site-theme.yaml" {2}
 appearance:
   default: system
 ```
@@ -25,7 +25,7 @@ appearance:
 Omitting `appearance` uses `system`. If you include `appearance`, supply
 `default` as shown above.
 
-This setting applies to the whole site. Put it in the site's `theme.yaml`,
+This setting applies to the whole site. Put it in the site's `site-config/site-theme.yaml`,
 not in a `theme.yaml` inside a page folder.
 
 ## Reader's choice

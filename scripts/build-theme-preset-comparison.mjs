@@ -197,7 +197,7 @@ export const renderThemePresetComparison = () => {
 		</nav>
 		<p class="comparison-description" data-theme-description aria-live="polite"></p>
 		<div class="comparison-config">
-			<span>theme.yaml</span>
+		<span>site-theme.yaml</span>
 			<pre><code data-theme-config></code></pre>
 		</div>
 	</header>

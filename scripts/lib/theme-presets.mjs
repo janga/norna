@@ -93,7 +93,7 @@ export const getThemePresetMetadata = (presetName) => {
 	};
 };
 
-export const getThemePreset = (presetName, sourceLabel = 'theme.yaml') => {
+export const getThemePreset = (presetName, sourceLabel = 'site-config/site-theme.yaml') => {
 	const preset = themePresets[presetName];
 
 	if (!preset) {
@@ -103,7 +103,7 @@ export const getThemePreset = (presetName, sourceLabel = 'theme.yaml') => {
 	return structuredClone(preset);
 };
 
-export const resolveThemeConfig = (theme = {}, sourceLabel = 'theme.yaml') => {
+export const resolveThemeConfig = (theme = {}, sourceLabel = 'site-config/site-theme.yaml') => {
 	const presetName = theme?.preset;
 	if (presetName === undefined) return structuredClone(theme ?? {});
 
@@ -171,7 +171,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 	];
 };
 
-export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml') => {
+export const renderThemePresetReference = (presetName, sourceLabel = 'site-config/site-theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
 	const metadata = getThemePresetMetadata(presetName);
 	const { appearance, corners, layout, images, blocks, typography, palette, sections } = preset;
@@ -179,8 +179,8 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'theme.yaml
 	return [
 		`# Original values for Norna's "${presetName}" theme preset.`,
 		`# ${metadata.description}`,
-		'# This is a reference file. Norna only loads theme.yaml.',
-		'# Keep the preset in theme.yaml and copy only the values you want to override.',
+		'# This is a reference file. Norna loads site-config/site-theme.yaml for the shared theme.',
+		'# Keep the preset in site-config/site-theme.yaml and copy only the values you want to override.',
 		`# Available theme presets: ${themePresetNames.join(', ')}.`,
 		`preset: ${presetName}`,
 		'',

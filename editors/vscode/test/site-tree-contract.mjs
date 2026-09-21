@@ -51,7 +51,7 @@ const vscode = {
 		isTrusted: true, textDocuments: documents,
 		workspaceFolders: [siteRoot, legacySite].map((root) => ({ name: path.basename(root), uri: { scheme: 'file', fsPath: root } })),
 		asRelativePath: (filename) => path.relative(temporary, filename),
-		findFiles: async () => discoveredRoots.map((root) => vscode.Uri.file(path.join(root, 'config.yaml'))),
+		findFiles: async () => discoveredRoots.map((root) => vscode.Uri.file(path.join(root, 'site-config/settings.yaml'))),
 		createFileSystemWatcher: () => ({ onDidCreate: disposable, onDidDelete: disposable, onDidChange: disposable, dispose() {} }),
 		onDidChangeTextDocument: documentChanges.event, onDidCloseTextDocument: disposable, onDidChangeWorkspaceFolders: workspaceChanges.event,
 	},
@@ -75,7 +75,7 @@ const vscode = {
 let context = { subscriptions: [], workspaceState };
 try {
 	for (const root of [siteRoot, legacySite, outsideSite]) {
-		await write(path.join(root, 'config.yaml'), 'url: https://example.com/\n');
+		await write(path.join(root, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 		await write(path.join(root, 'content.md'), '# Home\n');
 	}
 	await write(path.join(siteRoot, 'pages/010-guide/content.md'), '# Guide\n');
@@ -268,7 +268,7 @@ try {
 	await registered.refresh();
 	assert.deepEqual(await provider.getChildren(), [], 'Restored multiple folders require a new choice after invalidation.');
 	await chooseSite(siteRoot);
-	await rm(path.join(siteRoot, 'config.yaml'));
+	await rm(path.join(siteRoot, 'site-config/settings.yaml'));
 	await registered.refresh();
 	assert.equal((await provider.getChildren())[0].siteRoot, legacySite, 'A missing selected site must not leave stale roots.');
 	assert.equal(await readFile(path.join(outsideSite, 'content.md'), 'utf8'), '# Home\n');

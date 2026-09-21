@@ -40,7 +40,8 @@ try {
 
 	const directSiteRoot = path.join(tempRoot, 'current-directory-site');
 	await mkdir(directSiteRoot, { recursive: true });
-	await writeFile(path.join(directSiteRoot, 'config.yaml'), 'url: https://example.com/\n');
+	await mkdir(path.join(directSiteRoot, 'site-config'), { recursive: true });
+	await writeFile(path.join(directSiteRoot, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 	await writeFile(path.join(directSiteRoot, 'content.md'), '# Direct Site\n\n## Intro {#intro}\n\nText.\n');
 	const directSiteProjectRoot = await realpath(tempRoot);
 	const directSiteDoctorResult = runCli(['doctor'], {
@@ -102,7 +103,7 @@ try {
 	assert.match(showResult.stdout, /pages:/);
 	assert.match(showResult.stdout, /\s+\/:/);
 	assert.match(showResult.stdout, /value: reading/);
-	assert.match(showResult.stdout, /source: "site\/theme\.yaml"/);
+	assert.match(showResult.stdout, /source: "site\/site-config\/site-theme\.yaml"/);
 	assert.match(showResult.stdout, /welcome:/);
 
 	const initAgainResult = runCli(['init', initializedSiteRoot]);
@@ -120,8 +121,8 @@ try {
 	assert.equal(customStandalonePackageJson.scripts['norna:navigation:review'], 'norna --site-dir presentation navigation:review');
 	assert.equal(customStandalonePackageJson.scripts['norna:build'], 'norna --site-dir presentation build');
 	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'content.md'));
-	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'config.yaml'));
-	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'theme.yaml'));
+	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'site-config/settings.yaml'));
+	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'site-config', 'site-theme.yaml'));
 
 	const mixedProjectRoot = path.join(tempRoot, 'mixed-project');
 	await mkdir(mixedProjectRoot, { recursive: true });
@@ -147,8 +148,8 @@ try {
 	assert.equal(mixedPackageJson.scripts['norna:engine:update'], 'norna --site-dir presentation engine:update');
 	assert.equal(mixedPackageJson.scripts['norna:engine:version'], 'norna --site-dir presentation engine:version');
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'content.md'));
-	await readFile(path.join(mixedProjectRoot, 'presentation', 'config.yaml'));
-	await readFile(path.join(mixedProjectRoot, 'presentation', 'theme.yaml'));
+	await readFile(path.join(mixedProjectRoot, 'presentation', 'site-config/settings.yaml'));
+	await readFile(path.join(mixedProjectRoot, 'presentation', 'site-config', 'site-theme.yaml'));
 	assert.match(
 		await readFile(path.join(mixedProjectRoot, 'presentation', '.gitignore'), 'utf8'),
 		/^\.norna\/\.astro\/$/m,

@@ -56,7 +56,7 @@ underlying model needs more than a brief definition. A bare link does not
 justify an otherwise incomprehensible sentence.
 
 For example, do not open an Appearance entry with restrictions on "page-local
-themes". First identify the site-wide `site/theme.yaml` file, show the
+themes". First identify the site-wide `site/site-config/site-theme.yaml` file, show the
 `appearance.default` setting, and state how a reader's choice affects it. A
 description of configuration at several file-tree levels belongs in the
 configuration model, introduced before its detailed restrictions are used.

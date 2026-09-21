@@ -295,12 +295,12 @@ export const categorySchema = z.object(categoryShape).strict()
 export const siteSchema = z.object(siteShape).strict()
 	.describe('Frontmatter for a homepage or additional page content.md file.');
 export const themeVisualSchema = z.object(themeVisualShape).strict()
-	.describe('Site-wide visual identity and default page presentation. Presets may be selected only in the root theme.');
+	.describe('Site-wide visual identity and default page presentation. Presets may be selected only in site-config/site-theme.yaml.');
 export const pageThemeSchema = z.object(pageThemeShape).strict()
 	.refine(
 		(value) => value.layout !== undefined || value.images !== undefined || value.sections !== undefined,
 		'Specify layout, images, sections, or a combination of them.',
 	)
-	.describe('Limited page presentation overrides. A child page or category theme.yaml is inherited by descendants; site/page-theme.yaml affects only the homepage. Site colors, corners, typography, content-block defaults and navigation remain global.');
+	.describe('Limited page presentation overrides. A child page or category theme.yaml is inherited by descendants; site/theme.yaml affects only the homepage. Site colors, corners, typography, content-block defaults and navigation remain global.');
 export const sitewideSchema = z.object(sitewideShape).strict()
 	.describe('Editorial content and optional navigation logo display settings shared by every page.');

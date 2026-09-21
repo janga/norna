@@ -8,7 +8,7 @@ page:
 
 ## Persistent footer content {#footer-content}
 
-The footer below this page is defined once in `sitewide-content.yaml`. Its
+The footer below this page is defined once in `site-config/shared-content.yaml`. Its
 copyright message remains the same across pages.
 
 ## Build information {#build-information}

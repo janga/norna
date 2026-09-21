@@ -33,7 +33,7 @@ const sourceEntries = await readDirectory(sitePublicDir);
 const generatedPublicFiles = [
 	{
 		filename: sitemapFilename,
-		explanation: `Norna generates ${sitemapFilename} from the public page tree and the URL in site/config.yaml.`,
+		explanation: `Norna generates ${sitemapFilename} from the public page tree and the URL in site/site-config/settings.yaml.`,
 	},
 	{
 		filename: '404.html',

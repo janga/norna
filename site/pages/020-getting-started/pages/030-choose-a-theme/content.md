@@ -38,7 +38,7 @@ content types and none of the more specific purposes fits better.
 
 ## Set the preset {#set-the-preset}
 
-Open `site/theme.yaml` and set one preset:
+Open `site/site-config/site-theme.yaml` and set one preset:
 
 ```yaml
 preset: documentation
@@ -73,7 +73,7 @@ layout:
 
 Unmentioned values still come from `documentation`. Prefer the preset alone
 until real content reveals a concrete reason for an override; this preserves a
-coordinated result and keeps `theme.yaml` short.
+coordinated result and keeps `site-theme.yaml` short.
 
 See the [Theme reference](/reference/configuration/theme/)
 for every preset, accepted override, page-theme boundary, palette, and reader

@@ -16,8 +16,8 @@ page:
   description: A short page description.
 ```
 
-Run the complete check after editing `config.yaml`, `theme.yaml`,
-`sitewide-content.yaml`, or Markdown frontmatter:
+Run the complete check after editing `site-config/settings.yaml`, `site-config/site-theme.yaml`,
+`site-config/shared-content.yaml`, or Markdown frontmatter:
 
 ```sh
 npm run norna:check
@@ -65,7 +65,7 @@ Run **Norna: Show IntelliSense
 Status** from the Command Palette. The report identifies a missing project
 dependency or incompatible editor support.
 
-If the file is not recognized, check that the site has both `config.yaml` and
+If the file is not recognized, check that the site has both `site-config/settings.yaml` and
 `content.md` saved on disk. If the project dependency is missing,
 run this in the folder containing the site's `package.json`:
 

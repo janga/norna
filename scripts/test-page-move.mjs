@@ -29,8 +29,8 @@ const writeFixtureFile = async (rootDirectory, relativePath, source) => {
 const createFixture = async (name) => {
 	const projectRoot = path.join(root, name);
 	const siteDir = path.join(projectRoot, 'site');
-	await writeFixtureFile(siteDir, 'config.yaml', 'url: https://example.com/\n');
-	await writeFixtureFile(siteDir, 'theme.yaml', 'preset: documentation\n');
+	await writeFixtureFile(siteDir, 'site-config/settings.yaml', 'url: https://example.com/\n');
+	await writeFixtureFile(siteDir, 'site-config/site-theme.yaml', 'preset: documentation\n');
 	await writeFixtureFile(siteDir, 'public/manual.pdf', 'manual');
 	await writeFixtureFile(siteDir, 'content.md', `# Home
 

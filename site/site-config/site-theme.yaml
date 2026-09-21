@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../../schemas/theme.schema.json
+
+palette: near-monochrome
+appearance:
+  default: dark

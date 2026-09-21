@@ -45,7 +45,7 @@
     },
     "width": {
       "type": "string",
-      "description": "Override the root theme's maximum width for this card list.",
+      "description": "Override the shared theme's maximum width for this card list.",
       "enum": [
         "text",
         "narrow",

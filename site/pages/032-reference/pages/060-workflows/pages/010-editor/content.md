@@ -39,16 +39,16 @@ engine, so two projects can receive different version-appropriate help.
 ## Recognized files
 
 Recognition depends on the file's location, surrounding site and local engine,
-not just a familiar filename. The extension searches upward for `config.yaml`
+not just a familiar filename. The extension searches upward for `site-config/settings.yaml`
 and `content.md`; the site folder need not be named `site`.
 
 | Location relative to the site | Help |
 | --- | --- |
-| `config.yaml` | Technical site settings |
-| `theme.yaml` | Shared site theme |
-| `page-theme.yaml` | Homepage-only presentation overrides |
+| `site-config/settings.yaml` | Technical site settings |
+| `site-config/site-theme.yaml` | Shared site theme |
+| `theme.yaml` | Homepage-only presentation overrides |
 | `content.md` | Homepage frontmatter, Markdown blocks, notes and images |
-| `sitewide-content.yaml` | Shared content |
+| `site-config/shared-content.yaml` | Shared content |
 | `pages/010-guide/content.md` | Frontmatter, Markdown blocks, notes and images |
 | `pages/010-guide/theme.yaml` | Limited page-theme settings |
 | `pages/010-guide/category.yaml` | Navigation category |
@@ -57,7 +57,7 @@ Page rules also apply to valid nested folders repeating `pages/` between
 levels. Unrelated Markdown/YAML files do not receive Norna's own help.
 
 An empty or invalid recognized file can still receive help. When first
-creating `config.yaml`, an existing homepage is sufficient to recognize its
+creating `site-config/settings.yaml`, an existing homepage is sufficient to recognize its
 location before saving. Start from a generated project rather than an unnamed,
 unsaved tab. VS Code must identify the language as Markdown or YAML, not Plain
 Text. See [site files](/reference/site/files/) for the source model.
@@ -85,34 +85,38 @@ folders VS Code includes in Explorer.
 The top row uses the homepage's title and is marked **Homepage**. Clicking it
 opens `site/content.md` (or `content.md` in your chosen site source folder).
 Beneath a page, the tree follows the actual
-[file organization](/reference/site/files/): existing configuration files come
-first, followed by `images/` and the child-page folder `pages/`. The root also
-shows its existing `public/` folder, including nested downloads and other
-static files. A readable page row represents its numbered source directory;
-the number stays in the filesystem but does not clutter the displayed title.
+[file organization](/reference/site/files/): `content.md` comes first, followed
+by the optional `theme.yaml`. The root then shows its `site-config/` folder.
+Image files belong under `images/`; site-wide published files appear under
+root `public/`. Child pages appear under the real `pages/` directory.
+A readable page row represents its numbered source directory; the number
+stays in the filesystem but does not clutter the displayed title.
 
 For example, a homepage titled **Norna** and a child titled **Guide** appear as:
 
 ```text
 Norna  Homepage           opens site/content.md
-  config.yaml
+  content.md
   theme.yaml
-  page-theme.yaml
+  site-config/
+    settings.yaml
+    site-theme.yaml
+    shared-content.yaml
   images/
+  public/
   pages/
     Guide                 opens site/pages/010-guide/content.md
+      content.md
       theme.yaml
       images/
-  public/
 ```
 
-Only existing files and folders appear. The root `theme.yaml` controls the
-shared site appearance; optional `page-theme.yaml` affects only the homepage.
-A branch's `theme.yaml` belongs under that branch. See
-[configuration files](/reference/configuration/). The page row opens
-`content.md`, so that file is not repeated beneath it. Navigation categories
-use their labels and open `category.yaml`; that file also appears among the
-category's configuration files.
+Only existing files and folders appear. `site-config/site-theme.yaml` controls
+the shared site appearance; root `theme.yaml` affects only the homepage.
+A branch's `theme.yaml` applies to that branch and its descendants. See
+[theme scope](/reference/configuration/theme/#page-themes). Both the page row
+and its `content.md` child open the same source. Categories show `category.yaml`
+first and have no `content.md`.
 
 Click a title to open its source. Use the separate chevron, or the keyboard
 arrow keys, to expand and collapse children. Within the chosen site, the tree
@@ -153,7 +157,10 @@ missing/duplicate H1 in the source; other valid tree nodes remain usable.
 YAML aliases, anchors or tagged values that cannot be edited directly through
 Page Information need a source edit.
 
-Single-site selection requires extension version 0.3.1 or later. The file
+The `site-config/` layout requires extension version 0.3.2 or later and an
+engine build supporting that source format. The extension also recognizes
+older source layouts when working with earlier engines. Single-site selection
+requires extension version 0.3.1 or later. The file
 tree requires extension version 0.3.0 or later and an engine build
 with page-file support. Engines with the earlier site-tree support retain
 their page tree and show a message explaining the missing file view. An

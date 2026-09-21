@@ -107,14 +107,17 @@ export const readSiteFileTree = async (options) => {
 		return item;
 	};
 	const addDirectory = async (owner, parentId, filename, role) => {
-		const directory = addResource(owner, parentId, filename, 'directory', role);
+		const directory = addResource(owner, parentId, filename, 'directory', role, role === 'configuration' ? 'Settings and content shared by the complete site' : '');
 		if (role === 'pages') return;
 		const entries = (await entriesAt(filename)).filter((entry) => entry.isDirectory() || entry.isFile());
-		entries.sort((a, b) => Number(b.isDirectory()) - Number(a.isDirectory()) || a.name.localeCompare(b.name, 'en', { numeric: true }));
+		const configOrder = ['settings.yaml', 'site-theme.yaml', 'shared-content.yaml'];
+		entries.sort((a, b) => role === 'configuration'
+			? (configOrder.includes(a.name) ? configOrder.indexOf(a.name) : 3) - (configOrder.includes(b.name) ? configOrder.indexOf(b.name) : 3) || a.name.localeCompare(b.name)
+			: Number(b.isDirectory()) - Number(a.isDirectory()) || a.name.localeCompare(b.name, 'en', { numeric: true }));
 		for (const entry of entries) {
 			const child = path.join(filename, entry.name);
 			if (entry.isDirectory()) await addDirectory(owner, directory.id, child, 'assets');
-			else addResource(owner, directory.id, child, 'file', 'asset');
+			else addResource(owner, directory.id, child, 'file', role === 'configuration' ? 'configuration' : 'asset');
 		}
 	};
 	for (const page of snapshot.nodes) {
@@ -122,18 +125,15 @@ export const readSiteFileTree = async (options) => {
 		const parentId = page.isHome ? null : resourceId(path.dirname(directory));
 		items.push({ ...page, id: page.sourcePath, parentId, ownerId: page.sourcePath });
 		const entries = new Map((await entriesAt(directory)).map((entry) => [entry.name, entry]));
-		const configuration = page.isHome
-			? ['config.yaml', 'theme.yaml', 'page-theme.yaml', 'sitewide-content.yaml']
-			: ['category.yaml', 'theme.yaml'];
+		const configuration = [page.kind === 'category' ? 'category.yaml' : 'content.md', 'theme.yaml'];
 		for (const filename of configuration) {
 			if (!entries.get(filename)?.isFile()) continue;
-			const description = filename === 'page-theme.yaml' ? 'Homepage appearance only; not inherited'
-				: filename === 'theme.yaml' ? page.isHome ? 'Shared site appearance' : 'Appearance inherited by this branch'
-					: filename === 'config.yaml' ? 'Site settings' : filename === 'sitewide-content.yaml' ? 'Shared site content' : 'Category information';
-			addResource(page, page.sourcePath, path.join(directory, filename), 'file', 'configuration', description);
+			const description = filename === 'theme.yaml' ? page.isHome ? 'Homepage appearance only; not inherited' : 'Appearance inherited by this branch'
+				: filename === 'content.md' ? 'Page content' : 'Category information';
+			addResource(page, page.sourcePath, path.join(directory, filename), 'file', filename === 'content.md' ? 'content' : 'configuration', description);
 		}
-		for (const name of ['images', 'pages', ...(page.isHome ? ['public'] : [])]) {
-			if (entries.get(name)?.isDirectory()) await addDirectory(page, page.sourcePath, path.join(directory, name), name);
+		for (const name of [...(page.isHome ? ['site-config'] : []), 'images', ...(page.isHome ? ['public'] : []), 'pages']) {
+			if (entries.get(name)?.isDirectory()) await addDirectory(page, page.sourcePath, path.join(directory, name), name === 'site-config' ? 'configuration' : name);
 		}
 	}
 	return { ...snapshot, items, problems };

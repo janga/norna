@@ -93,7 +93,7 @@ async function runWidgetPriority({ window, widget, openDocument, waitFor, getCom
 			'examples/complete-sites/priority/site/content.md');
 		await check('Second project images', '# Priority\n\n```image-stack\nitems:\n  - image: |CURSOR|\n```', ['second-only.svg'], 'second/site/content.md',
 			'# Priority\n\n```image-stack\nitems:\n  - image: second-only.svg\n```');
-		await check('YAML banner template', 'banners:\n  - |CURSOR|\n', ['Norna: Warning banner'], 'widget-site/sitewide-content.yaml',
+		await check('YAML banner template', 'banners:\n  - |CURSOR|\n', ['Norna: Warning banner'], 'widget-site/site-config/shared-content.yaml',
 			'banners:\n  - id: project-status\n    tone: warning\n    title: Important notice\n    text: Brief explanation.\n');
 		for (const [name, source, relativePath] of [
 			['Adjacent Markdown', '# Ordinary\n\n|CURSOR|', 'site/notes.md'],

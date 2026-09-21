@@ -13,7 +13,7 @@ test('image suggestions classify live page references, not publication or saved 
 	};
 	const block = (type, names) => `\`\`\`${type}\nitems:\n${names.map((name) => `  - image: ${name}`).join('\n')}\n\`\`\`\n`;
 	try {
-		await write('config.yaml', 'url: https://example.com/\n');
+		await write('site-config/settings.yaml', 'url: https://example.com/\n');
 		await write('content.md', `# Home\n\n${block('image-stack', ['z-unused.svg'])}`);
 		await write('pages/010-other/content.md', `# Other\n\n${block('image-stack', ['y-other.svg'])}`);
 		for (const [page, files] of [['', ['a-used.svg', 'z-unused.svg']], ['pages/010-other', ['b-used.svg', 'y-other.svg']]]) {

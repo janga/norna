@@ -13,10 +13,10 @@ Open the address printed by the development server. Stop it later with
 `npm run norna:dev:stop`.
 
 Edit shared logo settings, banners, and footer in
-`site/sitewide-content.yaml`,
-site-wide visual defaults in `site/theme.yaml`, homepage content and section
+`site/site-config/shared-content.yaml`,
+site-wide visual defaults in `site/site-config/site-theme.yaml`, homepage content and section
 metadata in `site/content.md`, and technical settings such as URL
-and locale in `site/config.yaml`. Keep managed homepage source images under
+and locale in `site/site-config/settings.yaml`. Keep managed homepage source images under
 `site/images/` and static public files under `site/public/`.
 
 For a GitHub Pages project site without a custom domain, include the repository
@@ -32,7 +32,7 @@ Norna derives `/repository-name/` as the base path. Use a root URL such as
 In GitHub repository settings, configure Pages to build from GitHub Actions.
 
 Page width, side gutters, content spacing, image sizing, palette, corners, and
-site-wide typography are configured in `site/theme.yaml`. A page may use a
+site-wide typography are configured in `site/site-config/site-theme.yaml`. A page may use a
 limited `theme.yaml` for local text width, content spacing, managed-image
 sizing, and section background pattern.
 

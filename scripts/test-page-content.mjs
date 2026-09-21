@@ -34,8 +34,8 @@ test('content model v2 fixture checks and builds', async () => {
 test('comment-only root YAML files use the same empty defaults during checks and builds', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'theme.yaml'), '# yaml-language-server: $schema=../schemas/theme.schema.json\n');
-		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), '# Shared content is optional.\n');
+		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), '# yaml-language-server: $schema=../schemas/theme.schema.json\n');
+		await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), '# Shared content is optional.\n');
 		await writeFile(path.join(siteDir, 'content.md'), '# Empty theme\n\nThe defaults render this page.\n');
 
 		await runNorna(['--site-dir', siteDir, 'config:check']);
@@ -108,7 +108,7 @@ Home content.
 test('page theme changes page presentation while preserving site visual identity', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'theme.yaml'), `preset: documentation
+		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `preset: documentation
 palette: near-monochrome
 `);
 		await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
@@ -146,7 +146,7 @@ sections:
   textWidth: narrow
 `);
 
-		await writeFile(path.join(siteDir, 'page-theme.yaml'), 'layout:\n  textWidth: wide\n');
+		await writeFile(path.join(siteDir, 'theme.yaml'), 'layout:\n  textWidth: wide\n');
 		await mkdir(path.join(siteDir, 'pages', '020-sibling'));
 		await writeFile(path.join(siteDir, 'pages', '020-sibling', 'content.md'), '# Sibling\n');
 		await runNorna(['--site-dir', siteDir, 'build']);
@@ -178,7 +178,7 @@ test('page metadata, navigation logo, and page listing have separate roles', asy
 	try {
 		await mkdir(path.join(siteDir, 'public'), { recursive: true });
 		await writeFile(path.join(siteDir, 'public', 'logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>');
-		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `logo:
+		await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), `logo:
   height: 2rem
 `);
 		await writeFile(path.join(siteDir, 'content.md'), `# Welcome
@@ -239,7 +239,8 @@ Public but unlisted content.
 test('social sharing metadata uses absolute base-path URLs and one conventional image', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/project/\n');
+		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\n');
 		await mkdir(path.join(siteDir, 'public'), { recursive: true });
 		await writeFile(path.join(siteDir, 'public', 'social-image.jpg'), 'preview');
 		await writeFile(path.join(siteDir, 'content.md'), '# Home\n\nHome content.\n');
@@ -274,8 +275,9 @@ Instructions.
 test('footer build information uses the site language and fixed formatting', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\nlanguage: sv-SE\n');
-		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `footer:
+		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/\nlanguage: sv-SE\n');
+		await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), `footer:
   buildInfo: true
 `);
 		await writeFile(path.join(siteDir, 'content.md'), `---
@@ -328,7 +330,7 @@ Page content.
 		await assert.rejects(
 			runNorna(['--site-dir', siteDir, 'config:check']),
 			(error) => {
-				assert.match(error.output, /may not define navigation logo settings\. Optional logo display settings belong under "logo:" in site\/sitewide-content\.yaml/);
+				assert.match(error.output, /may not define navigation logo settings\. Optional logo display settings belong under "logo:" in site\/site-config\/shared-content\.yaml/);
 				return true;
 			},
 		);
@@ -340,7 +342,7 @@ Page content.
 test('navigation logo settings require one conventional logo file', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `logo:
+		await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), `logo:
   height: 2rem
 `);
 
@@ -530,10 +532,10 @@ test('invalid homepage overrides produce a focused build diagnostic without a st
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'content.md'), '# Home\n');
-		await writeFile(path.join(siteDir, 'page-theme.yaml'), 'palette: near-monochrome\n');
+		await writeFile(path.join(siteDir, 'theme.yaml'), 'palette: near-monochrome\n');
 		await assert.rejects(runNorna(['--site-dir', siteDir, 'build']), (error) => {
-			assert.match(error.output, /site\/page-theme\.yaml/);
-			assert.match(error.output, /Move "palette:" to the root theme.yaml/);
+			assert.match(error.output, /site\/theme\.yaml/);
+			assert.match(error.output, /Move "palette:" to site-config\/site-theme\.yaml/);
 			assert.doesNotMatch(error.output, /file:\/\/|at ChildProcess|run-command\.mjs:\d/);
 			return true;
 		});

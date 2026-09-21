@@ -31,14 +31,13 @@ at the root of the site folder:
 
 ```text
 site/
-├── config.yaml              # Technical settings
-├── theme.yaml               # Visual choices
-├── sitewide-content.yaml    # Shared logo settings, banners, and footer
-│
 ├── content.md               # Homepage title, sections, and text
+├── site-config/
+│   ├── settings.yaml        # Technical settings
+│   ├── site-theme.yaml      # Shared visual choices
+│   └── shared-content.yaml  # Shared logo settings, banners, and footer
 ├── images/                  # Images used by the homepage
 ├── pages/                   # Create this when adding child pages
-│
 └── public/                  # Static files copied unchanged
     ├── favicon.ico          # Optional browser tab and bookmark icon
     └── robots.txt           # Instructions for search crawlers

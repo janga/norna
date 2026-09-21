@@ -41,10 +41,10 @@ const normalizeBasePath = (value) => {
 export const readConfiguredBasePath = async (siteDirectory) => {
 	let source;
 	try {
-		source = await readFile(path.join(siteDirectory, 'config.yaml'), 'utf8');
+		source = await readFile(path.join(siteDirectory, 'site-config/settings.yaml'), 'utf8');
 	} catch (error) {
 		if (error.code === 'ENOENT') {
-			throw new Error(`Review site is missing config.yaml: ${siteDirectory}`);
+			throw new Error(`Review site is missing site-config/settings.yaml: ${siteDirectory}`);
 		}
 
 		throw error;
@@ -52,13 +52,13 @@ export const readConfiguredBasePath = async (siteDirectory) => {
 
 	const config = yaml.load(source);
 	if (!config || typeof config !== 'object' || typeof config.url !== 'string') {
-		throw new Error(`Review site config must define url: ${path.join(siteDirectory, 'config.yaml')}`);
+		throw new Error(`Review site config must define url: ${path.join(siteDirectory, 'site-config/settings.yaml')}`);
 	}
 
 	try {
 		return normalizeBasePath(new URL(config.url).pathname);
 	} catch {
-		throw new Error(`Review site config has an invalid url: ${path.join(siteDirectory, 'config.yaml')}`);
+		throw new Error(`Review site config has an invalid url: ${path.join(siteDirectory, 'site-config/settings.yaml')}`);
 	}
 };
 
@@ -70,7 +70,7 @@ export const resolveReviewEnvironment = async (name, { root = repoRoot } = {}) =
 	if (definition.basePath && basePath !== definition.basePath) {
 		throw new Error([
 			`Review target "${name}" expected base path ${definition.basePath}, received ${basePath}.`,
-			`Update ${path.join(definition.siteDirectory, 'config.yaml')} or the review environment registry.`,
+			`Update ${path.join(definition.siteDirectory, 'site-config/settings.yaml')} or the review environment registry.`,
 		].join('\n'));
 	}
 
@@ -143,7 +143,7 @@ const runScratchOperation = async (
 	const targetDirectory = path.resolve(root, scratchDefinition.siteDirectory);
 	const stopPreparedScratchServer = async () => {
 		try {
-			await readFile(path.join(targetDirectory, 'config.yaml'));
+			await readFile(path.join(targetDirectory, 'site-config/settings.yaml'));
 		} catch (error) {
 			if (error.code === 'ENOENT') return;
 			throw error;

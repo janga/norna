@@ -17,8 +17,8 @@ check. These checks do not repair source files.
 
 ## Configuration checks
 
-`config:check` validates `config.yaml`, root and inherited page/category themes,
-`sitewide-content.yaml`, navigation/background compatibility, and conventional
+`config:check` validates `site-config/settings.yaml`, root and inherited page/category themes,
+`site-config/shared-content.yaml`, navigation/background compatibility, and conventional
 logo, icon and social-image filenames. It prints the resolved public URL and
 main presentation settings. It checks more than the filename in its name
 might suggest.

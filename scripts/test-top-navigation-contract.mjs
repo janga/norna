@@ -11,7 +11,8 @@ const temporary = await mkdtemp(path.join(parent, 'norna-top-contract-'));
 const site = path.join(temporary, 'site');
 try {
 	await cp(path.join(root, 'fixtures/navigation-examples/nested/site'), site, { recursive: true });
-	await writeFile(path.join(site, 'config.yaml'), 'url: https://example.test/docs/\nnavigation:\n  mode: top\n');
+	await mkdir(path.join(site, 'site-config'), { recursive: true });
+	await writeFile(path.join(site, 'site-config/settings.yaml'), 'url: https://example.test/docs/\nnavigation:\n  mode: top\n');
 	const dogsPath = path.join(site, 'pages/010-dogs/content.md');
 	await writeFile(dogsPath, `${await readFile(dogsPath, 'utf8')}\n### Daily checklist\n\nH3 remains in the document, not in the top section menu.\n`);
 	await promisify(execFile)(process.execPath, [path.join(root, 'bin/norna.mjs'), '--site-dir', site, 'build'], {

@@ -15,14 +15,15 @@ file or directory:
 
 ```text title="Source files"
 site/
-|-- config.yaml *          # Public URL and technical settings
-|-- theme.yaml *           # Preset and visual overrides
-|-- page-theme.yaml        # Optional homepage-only presentation
-|-- sitewide-content.yaml  # Shared notices, footer and logo height
-|-- content.md *           # Homepage: one H1 followed by its content
-|-- images/                # Homepage image files
-|-- pages/                 # Child pages and categories
-`-- public/               # Files copied unchanged, such as favicon.ico
+|-- content.md *                 # Homepage content
+|-- theme.yaml                   # Optional homepage-only presentation
+|-- site-config/
+|   |-- settings.yaml *          # Public URL and technical settings
+|   |-- site-theme.yaml *        # Shared preset and visual overrides
+|   `-- shared-content.yaml      # Shared notices, footer and logo height
+|-- images/                      # Homepage image files
+|-- public/                      # Files copied unchanged, such as favicon.ico
+`-- pages/                       # Child pages and categories
 ```
 
 Use these exact lowercase names for portability between file systems.
@@ -51,10 +52,11 @@ site/
 A group without editorial text uses `category.yaml` instead of `content.md`.
 [Pages and categories](/reference/site/pages/) explains this choice and names.
 
-`config.yaml` and `sitewide-content.yaml` apply only at the root. Root
-`theme.yaml` controls the whole site. Optional root `page-theme.yaml` controls
-only the homepage. A child page or category's `theme.yaml` supplies
-[limited inherited overrides](/reference/configuration/theme/#page-themes).
+The files in `site-config/` apply to the complete site. Its required
+`site-theme.yaml` sets shared visual defaults. Optional `theme.yaml` beside
+root `content.md` changes only the homepage. A child page or category's
+`theme.yaml` supplies [limited inherited overrides](/reference/configuration/theme/#page-themes)
+for that branch. `public/` contains published files, rather than configuration.
 
 ## Generated files
 
@@ -78,14 +80,15 @@ npm exec -- norna --site-dir presentation build
 ```
 
 The global option and `NORNA_SITE_DIR` environment variable choose a source
-folder, not a setting in `config.yaml`. [Command invocation](/reference/commands/invocation/#site-selection)
+folder, not a setting in `site-config/settings.yaml`. [Command invocation](/reference/commands/invocation/#site-selection)
 gives the lookup rules, including commands run from inside a site.
 
 
-## Convert the former homepage folder
+## Convert the former source layout {#convert-the-former-homepage-folder}
 
-Sites made with the former model keep the homepage under `pages/000-home/`.
-After updating Norna, stop the local dev server and preview the conversion:
+Earlier sites keep `config.yaml`, the shared `theme.yaml`, and optional
+`sitewide-content.yaml` directly in the site root. After updating Norna, stop
+the local dev server and preview the conversion:
 
 ```sh
 norna site:upgrade
@@ -94,17 +97,29 @@ norna check
 norna build
 ```
 
-The first command lists the moves without changing files. `--apply` moves the
-homepage's `content.md` and `images/` into the site root, and renames its local
-`theme.yaml` to root `page-theme.yaml`. The shared root `theme.yaml` and all
-child pages stay in place; public page URLs do not change. Generated image
-output is rebuilt from the new source locations.
+The first command lists changes without writing files. `--apply` performs them:
+
+| Former location | Current location |
+| --- | --- |
+| `config.yaml` | `site-config/settings.yaml` |
+| Shared root `theme.yaml` | `site-config/site-theme.yaml` |
+| `sitewide-content.yaml` | `site-config/shared-content.yaml` |
+| Homepage-only `page-theme.yaml` | Root `theme.yaml` |
+
+The same command also supports the older homepage at `pages/000-home/`. It
+moves that page's `content.md`, `images/` and optional `theme.yaml` into the
+root. Descendant page themes retain their scope; public page URLs do not
+change. Relative YAML schema directives are adjusted to retain their targets;
+other source bytes are preserved. Builds never move source files.
 
 Use the same `--site-dir` selection for preview and apply when the source
-folder is not `site/`. Commit the converted sources and generated image
+folder is not `site/`. Commit the converted sources and any regenerated image
 manifest together, then restart the local dev server.
 
-Conversion refuses existing destination files or directories, symbolic links,
-extra files in the old homepage folder and non-empty child folders beneath it.
-Resolve the reported conflict before applying; Norna does not merge or overwrite
-these sources. Running the command on an already converted site changes nothing.
+Conversion refuses conflicting destinations, mixed configuration layouts,
+symbolic links, extra files in the old homepage folder and non-empty child
+folders beneath that old homepage. Resolve the reported conflict before
+applying; Norna does not merge or overwrite these sources. A failed apply
+attempts to restore the original layout and reports any recovery that needs
+manual attention. Running the command on an already converted site changes
+nothing.

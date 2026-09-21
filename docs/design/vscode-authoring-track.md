@@ -26,7 +26,8 @@ model. They establish the direction, not approval of every future control.
   match storage. Do not insert synthetic directories such as `Page files`.
 - Show configuration under its owning root, page or category, **before its
   `pages/` directory**. This applies at every depth, including the site's
-  `config.yaml` and `theme.yaml` and existing local configuration below it.
+  real `site-config/` directory and existing local configuration below it.
+  Show `content.md` first under each page, followed by its optional `theme.yaml`.
 - Show a page's images and other owned resources beneath that page, with
   actual resource filenames and recognizable `images/` and `pages/`
   directories. Begin page editing from the page's representation in the tree.
@@ -39,8 +40,8 @@ model. They establish the direction, not approval of every future control.
   `site/images/` and `site/pages/`. Reordering children does not designate a
   new homepage. These paths illustrate the default site root; the selected
   site's actual root applies.
-- Keep shared appearance in root `theme.yaml`, optional homepage-only
-  appearance in root `page-theme.yaml`, and inherited branch appearance in
+- Keep shared appearance in `site-config/site-theme.yaml`, optional homepage-only
+  appearance in root `theme.yaml`, and inherited branch appearance in
   local `theme.yaml` files farther down the hierarchy. The homepage-only
   settings do not cascade to its children.
 
@@ -50,6 +51,9 @@ has implemented the root storage model;
 [BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md)
 implements the revised editor tree. The drawings remain the accepted design
 record; the editor reference describes the delivered controls.
+[BL-143 Site Configuration Directory And Page Files](backlog/BL-143-site-configuration-directory-page-files.md)
+updates the physical configuration layout and makes `content.md` visible beneath
+its page. These later decisions supersede filenames in the original drawings.
 The selection and homepage clarification is implemented in
 [BL-141 VS Code Active Site Scope](backlog/BL-141-vscode-active-site-scope.md).
 

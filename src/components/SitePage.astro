@@ -52,7 +52,7 @@ const currentPage = categoryDestination?.category
 if (!currentPage) throw new Error(`Page entry "${entry?.id ?? categoryPath}" is missing from the site page model.`);
 const [siteTheme] = await getCollection('theme');
 if (!siteTheme) {
-	throw new Error('site/theme.yaml is required. Add a root theme before building the site.');
+	throw new Error('site/site-config/site-theme.yaml is required. Add the shared site theme before building the site.');
 }
 const [sitewide] = await getCollection('sitewide');
 const sitewideData = sitewide?.data ?? {};

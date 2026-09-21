@@ -13,11 +13,11 @@ start from the current starter. Preserve a working copy before converting.
 
 
 - Replace executable `site/config.mjs` or Markdown `site/config.md` with
-  `site/config.yaml`. Re-enter only current fields from
+  `site/site-config/settings.yaml`. Re-enter only current fields from
   [Configuration](/reference/configuration/site/); do not translate JavaScript behavior.
-- Replace `site/theme.md` with `site/theme.yaml`. Start with one complete
+- Replace `site/theme.md` with `site/site-config/site-theme.yaml`. Start with one complete
   preset, then add only current overrides from [Theme](/reference/configuration/theme/).
-- Replace `site/sitewide-content.md` with `site/sitewide-content.yaml` when the
+- Replace `site/sitewide-content.md` with `site/site-config/shared-content.yaml` when the
   site has a logo display override, banners, or footer content. See
   [Sitewide Content](/reference/configuration/shared-content/).
 
@@ -60,7 +60,7 @@ one of the previous names.
 
 ## Move Page Presentation Into Theme Files
 
-The root `site/theme.yaml` owns the preset, Appearance, palette, corners,
+`site/site-config/site-theme.yaml` owns the preset, Appearance, palette, corners,
 typography, page frame, navigation presentation, and structured content-block
 defaults. A limited `theme.yaml` in a page or category directory may contain
 only the layout, image, and section-background fields documented under

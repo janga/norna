@@ -40,16 +40,18 @@ const createMinimalSite = async (name) => {
 	const targetSiteDir = path.join(root, name, 'site');
 	const targetHomeDir = targetSiteDir;
 	await mkdir(path.join(targetHomeDir, 'pages'), { recursive: true });
-	await writeFile(path.join(targetSiteDir, 'config.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(targetSiteDir, 'theme.yaml'), 'preset: project\n');
+	await mkdir(path.join(targetSiteDir, 'site-config'), { recursive: true });
+	await writeFile(path.join(targetSiteDir, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(targetSiteDir, 'site-config', 'site-theme.yaml'), 'preset: project\n');
 	await writeFile(path.join(targetHomeDir, 'content.md'), '# Home\n\n## Introduction\n\nHome page.\n');
 	return targetSiteDir;
 };
 
 try {
 	await mkdir(path.join(homeDir, 'images'), { recursive: true });
-	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(siteDir, 'theme.yaml'), 'preset: project\n');
+	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), 'preset: project\n');
 	await writeFile(path.join(homeDir, 'content.md'), '# Home\n\n## Introduction\n\nHome page.\n');
 
 	const firstPage = await runNorna(['page:add', 'Räksmörgås!', '--parent', '/']);

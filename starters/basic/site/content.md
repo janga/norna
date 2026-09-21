@@ -15,6 +15,6 @@ and becomes a destination in this one-page site's navigation.
 
 ## Next steps
 
-Add your own text, then choose a preset in `site/theme.yaml`. Put local images
+Add your own text, then choose a preset in `site/site-config/site-theme.yaml`. Put local images
 in this page's `images/` directory and reference them through a Norna image
 block when the site needs them.

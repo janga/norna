@@ -1,14 +1,14 @@
 ---
 page:
-  description: Set the public URL and find the site-wide technical settings in config.yaml.
+  description: Set the public URL and find the site-wide technical settings in site-config/settings.yaml.
 ---
 
 # Site configuration
 
-`site/config.yaml` is required. It contains plain YAML for technical choices
+`site/site-config/settings.yaml` is required. It contains plain YAML for technical choices
 that apply to the whole site. A minimal file contains only the public URL:
 
-```yaml title="site/config.yaml"
+```yaml title="site/site-config/settings.yaml"
 url: https://example.com/
 ```
 
@@ -18,7 +18,7 @@ url: https://example.com/
 absolute HTTP or HTTPS URL without query, fragment or repeated path slashes.
 Norna adds a trailing slash if missing.
 
-```yaml title="site/config.yaml: a GitHub Pages project site" {1}
+```yaml title="site/site-config/settings.yaml: a GitHub Pages project site" {1}
 url: https://owner.github.io/project/
 ```
 
@@ -38,12 +38,12 @@ without it.
 | `scrollBehavior` | Same-page anchor movement | `instant` |
 
 This is the complete configuration surface. Visual settings belong in
-[`theme.yaml`](/reference/configuration/theme/) and shared notices/footer text
-in [`sitewide-content.yaml`](/reference/configuration/shared-content/).
+[`site-config/site-theme.yaml`](/reference/configuration/theme/) and shared notices/footer text
+in [`site-config/shared-content.yaml`](/reference/configuration/shared-content/).
 
 ## Anchor movement
 
-```yaml title="site/config.yaml: animate anchor navigation" {2}
+```yaml title="site/site-config/settings.yaml: animate anchor navigation" {2}
 url: https://example.com/
 scrollBehavior: smooth
 ```

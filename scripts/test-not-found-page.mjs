@@ -29,7 +29,8 @@ test('build emits an English root-hosted 404 page with a static Home link', asyn
 test('build emits a localized base-path 404 page with valid navigation and asset URLs', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/project/\nlanguage: sv-SE\n');
+		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\nlanguage: sv-SE\n');
 		await mkdir(path.join(siteDir, 'public'), { recursive: true });
 		await writeFile(path.join(siteDir, 'public', 'logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>');
 		await writeFile(path.join(siteDir, 'public', 'favicon.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>');
@@ -59,7 +60,8 @@ test('build emits a localized base-path 404 page with valid navigation and asset
 test('build uses Greek interface text and preserves the regional language tag', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\nlanguage: el-GR\n');
+		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/\nlanguage: el-GR\n');
 		await writeFile(path.join(siteDir, 'content.md'), '# Αρχική\n\nΚαλώς ήρθατε.\n');
 
 		await runNorna(['--site-dir', siteDir, 'build']);

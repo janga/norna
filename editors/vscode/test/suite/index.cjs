@@ -73,13 +73,13 @@ async function run() {
 		await require('./site-tree.cjs').runSiteTree({ openDocument, waitFor });
 		return;
 	}
-	if (['constructions', 'priority', 'metadata'].includes(process.env.NORNA_EDITOR_TEST_SUITE)) {
+	if (['constructions', 'priority', 'metadata', 'configuration'].includes(process.env.NORNA_EDITOR_TEST_SUITE)) {
 		await require('./widget-constructions.cjs').runWidgetConstructions({ openDocument, waitFor, getCompletions });
 		console.log('Packaged construction widget tests passed.');
 		return;
 	}
 
-	const theme = await openDocument('site/theme.yaml');
+	const theme = await openDocument('site/site-config/site-theme.yaml');
 	assert.equal(theme.languageId, 'yaml');
 	const themeItems = await waitFor(
 		() => getCompletions(theme, 0),

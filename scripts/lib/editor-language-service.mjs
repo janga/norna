@@ -21,7 +21,7 @@ import { siteSchema } from './schema-definitions.mjs';
 import { homePageDirectory } from './site-conventions.mjs';
 
 const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.svg']);
-const siteConfigNames = ['config.yaml'];
+const siteConfigNames = ['site-config/settings.yaml'];
 const fileExists = (filePath) => access(filePath).then(() => true, () => false);
 const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 
@@ -123,7 +123,7 @@ const getNavigationNodesForEditor = async (siteRoot) => {
 };
 
 const getNavigationModeForEditor = async (siteRoot) => {
-	const config = await readEditorYaml(path.join(siteRoot, 'config.yaml'));
+	const config = await readEditorYaml(path.join(siteRoot, 'site-config', 'settings.yaml'));
 	if (!config) return null;
 	const requestedMode = config.navigation?.mode ?? 'automatic';
 	if (requestedMode !== 'automatic') return requestedMode;
@@ -177,7 +177,7 @@ export const getThemeDiagnostics = async ({ documentPath, source }) => {
 };
 
 const readSitewideLogoForEditor = async (siteRoot) => {
-	const filename = await findFile(siteRoot, ['sitewide-content.yaml']);
+	const filename = await findFile(siteRoot, ['site-config/shared-content.yaml']);
 	if (!filename) return null;
 	const absolutePath = path.join(siteRoot, filename);
 	const source = await readFile(absolutePath, 'utf8');

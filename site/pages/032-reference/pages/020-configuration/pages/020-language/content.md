@@ -9,7 +9,7 @@ Set `language` to the language of the site's editorial content. Norna uses it
 for HTML language metadata, its interface labels and locale-sensitive behavior.
 It does **not** translate your Markdown.
 
-```yaml title="site/config.yaml: a Swedish site" {2}
+```yaml title="site/site-config/settings.yaml: a Swedish site" {2}
 url: https://example.com/
 language: sv
 ```

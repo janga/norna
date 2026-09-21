@@ -11,10 +11,10 @@ GitHub repository and permission to configure its Pages source.
 
 ## Prepare the site
 
-Set the final public URL in `site/config.yaml`. A project site normally includes
+Set the final public URL in `site/site-config/settings.yaml`. A project site normally includes
 the repository name; a custom domain or root site does not:
 
-```yaml title="site/config.yaml: project-site example"
+```yaml title="site/site-config/settings.yaml: project-site example"
 url: https://owner.github.io/repository-name/
 ```
 

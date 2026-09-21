@@ -55,7 +55,7 @@ file exists. Other filenames have no special Norna meaning, although browsers,
 hosts or crawlers may require them.
 
 `CNAME` contains a hostname alone, for example `www.example.com`. Norna copies
-it; GitHub Pages interprets it. `config.yaml`'s public URL should use that domain.
+it; GitHub Pages interprets it. `site-config/settings.yaml`'s public URL should use that domain.
 
 ## Generated sitemap
 
@@ -71,7 +71,7 @@ Preparation writes `site/.norna/public/sitemap.xml`; the completed build has
 ## Generated 404 page
 
 Every build creates `dist/404.html` with localized text and a Home link. It
-uses the root theme, shared content and navigation without marking a current
+uses the shared theme, shared content and navigation without marking a current
 page. It has `noindex` and no canonical or social metadata. Its message and
 Home link work without JavaScript.
 

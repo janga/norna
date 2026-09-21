@@ -7,7 +7,7 @@ This document is for work on the reusable `norna` package itself.
 - `bin/norna.mjs`: public CLI launcher and local-version resolver.
 - `bin/norna-cli.mjs`: public CLI command dispatcher.
 - `scripts/lib/site-paths.mjs`: engine/site path resolution.
-- `scripts/lib/project-config.mjs`: plain YAML `site/config.yaml`
+- `scripts/lib/project-config.mjs`: plain YAML `site/site-config/settings.yaml`
   validation, defaults and derived URL path.
 - `scripts/sync-content-sections.mjs`: content validation and sync behavior.
 - `scripts/generate-images.mjs`: managed image pipeline and manifest.
@@ -519,11 +519,13 @@ identity is `.`, with depth zero and entry suffix `root`; child identities
 remain relative to `site/pages/`. Navigation's `parentPagePath: null` projects
 root children onto the top level.
 
-Root `page-theme.yaml` uses the limited page-theme schema and applies only to
-the homepage. Root `theme.yaml` remains global; descendant `theme.yaml` files
+Root `theme.yaml` uses the limited page-theme schema and applies only to
+the homepage. `site-config/site-theme.yaml` remains global; descendant `theme.yaml` files
 inherit along their ordinary page/category ancestry. `norna site:upgrade`
-previews conversion from `pages/000-home/`; `--apply` moves only those homepage
-sources and refuses conflicts. Builds never perform source conversion.
+previews configuration conversion to `site-config/` and also supports the
+former `pages/000-home/` layout. `--apply` moves sources without overwriting,
+adjusts relative schema directives and restores source files after an apply
+failure. Builds never perform source conversion.
 
 Tree navigation uses the shared area resolver in `src/lib/areaNavigation.ts`:
 
@@ -556,5 +558,5 @@ a reader's intervening interaction alone. Same-page anchors use browser
 scrolling and the configured `scrollBehavior`; reduced motion still applies.
 
 The shared layout selects Norna's built-in UI labels from the optional
-`language` in `site/config.yaml`. Keep editorial content in page Markdown and
+`language` in `site/site-config/settings.yaml`. Keep editorial content in page Markdown and
 non-editorial engine UI labels in the engine language packs.

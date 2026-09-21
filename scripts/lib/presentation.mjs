@@ -453,7 +453,7 @@ export const getPresentationCssVariables = (presentation) => {
 	return variables;
 };
 
-const getSectionSurfaces = (pattern = 'uniform', sourceLabel = 'theme.yaml') => {
+const getSectionSurfaces = (pattern = 'uniform', sourceLabel = 'site-config/site-theme.yaml') => {
 	const surfaces = sectionBackgroundPatterns[pattern];
 	if (!surfaces) {
 		throw new Error(`sections.backgroundPattern must be one of ${Object.keys(sectionBackgroundPatterns).join(', ')} in ${sourceLabel}.`);
@@ -462,7 +462,7 @@ const getSectionSurfaces = (pattern = 'uniform', sourceLabel = 'theme.yaml') => 
 	return surfaces;
 };
 
-export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
+export const resolveThemePresentation = (theme, sourceLabel = 'site-config/site-theme.yaml') => {
 	const normalizedTheme = resolveThemeConfig(theme, sourceLabel);
 	const paletteName = normalizedTheme.palette ?? 'near-monochrome';
 	const palette = getPresentationPalette(paletteName);
@@ -509,7 +509,7 @@ export const resolveThemePresentation = (theme, sourceLabel = 'theme.yaml') => {
 
 export const assertSectionBackgroundPatternCompatibility = (
 	theme,
-	sourceLabel = 'theme.yaml',
+	sourceLabel = 'site-config/site-theme.yaml',
 	navigationMode = 'sections',
 ) => {
 	const requestedPattern = theme?.sections?.backgroundPattern;

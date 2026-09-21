@@ -23,7 +23,7 @@ Choose the final presentation URL before building. For a repository named
 `project` and a presentation published below `/presentation/`, write:
 
 ```yaml
-# presentation/config.yaml
+# presentation/site-config/settings.yaml
 url: https://owner.github.io/project/presentation/
 ```
 

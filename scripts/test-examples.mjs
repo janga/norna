@@ -20,7 +20,8 @@ try {
 	}
 	const validSite = path.join(discoveryRoot, 'examples', 'complete-sites', 'valid', 'site');
 	await mkdir(validSite, { recursive: true });
-	await writeFile(path.join(validSite, 'config.yaml'), 'url: https://example.com/\n');
+	await mkdir(path.join(validSite, 'site-config'), { recursive: true });
+	await writeFile(path.join(validSite, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 	await writeFile(path.join(validSite, 'content.md'), '# Example\n');
 	await mkdir(path.join(
 		discoveryRoot,

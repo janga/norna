@@ -15,7 +15,7 @@ Commands:
   dev:logs               Show local dev server logs
   dev:stop               Stop local dev server
   check                  Validate configuration and content
-  config:check           Validate site/config.yaml
+  config:check           Validate site/site-config/settings.yaml
   content:check          Validate page content and managed image references
   content:sync           Move misplaced Norna-managed images and refresh generated images
   navigation:review      Review the derived navigation structure without changing files
@@ -24,7 +24,7 @@ Commands:
   typography profiles    Show built-in typography profile values
   typography show        Show resolved typography for the selected site
   site:public            Sync static files to the selected site's .norna/public/
-  site:upgrade           Convert the former homepage folder to a root page
+  site:upgrade           Convert former configuration and homepage locations
   images                 Generate optimized image variants
   engine:update          Update @janga/norna in a site repository
   engine:version         Show installed engine and Astro versions

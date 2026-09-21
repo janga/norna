@@ -46,7 +46,7 @@ profile:
 ## Verify the result
 
 Save the settings and press `Escape` to dismiss an existing suggestion. In a
-recognized `theme.yaml`, place the cursor after `palette: ` and run
+recognized `site-config/site-theme.yaml`, place the cursor after `palette: ` and run
 **Trigger Suggest**. The schema suggestions should include palette names such
 as `warm-paper` and `near-monochrome`, without an inline AI proposal.
 

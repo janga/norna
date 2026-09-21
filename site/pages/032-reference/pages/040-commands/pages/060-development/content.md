@@ -31,7 +31,7 @@ npm exec -- norna dev:local --kill
 
 If the platform's process tools cannot identify or stop the listener, stop it
 manually. `NORNA_NO_OPEN=1` suppresses automatic browser opening. These are
-environment variables, not `config.yaml` settings.
+environment variables, not `site-config/settings.yaml` settings.
 
 ## LAN preview
 

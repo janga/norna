@@ -5,10 +5,10 @@ page:
 
 # Theme configuration
 
-The required `site/theme.yaml` chooses the site's presentation. Start with a
+The required `site/site-config/site-theme.yaml` chooses the site's presentation. Start with a
 **preset**, a coordinated set of colors, fonts, spacing and media defaults:
 
-```yaml title="site/theme.yaml"
+```yaml title="site/site-config/site-theme.yaml"
 preset: documentation
 ```
 
@@ -22,13 +22,13 @@ preset: documentation
 | `statement` | Short editorial presentations with stronger headings and spacious rhythm |
 
 The preset does not create content or choose navigation. Those follow the
-page tree and `config.yaml`. [Preset values](/reference/configuration/presets/)
+page tree and `site-config/settings.yaml`. [Preset values](/reference/configuration/presets/)
 lists the complete public defaults; the [Theme explorer](https://janga.github.io/norna/examples/theme-presets/)
 lets you compare the same content interactively.
 
 Write overrides beside `preset`; nested objects merge by key:
 
-```yaml title="site/theme.yaml: change only palette and text width" {2,4}
+```yaml title="site/site-config/site-theme.yaml: change only palette and text width" {2,4}
 preset: documentation
 palette: near-monochrome
 layout:
@@ -59,19 +59,19 @@ is `rounded`.
 
 ## Page themes
 
-Page themes override a limited part of the shared root theme. The file's
+Page themes override a limited part of the shared theme. The file's
 location determines its scope:
 
 | File | Applies to |
 | --- | --- |
-| `site/theme.yaml` | Shared defaults for every page |
-| `site/page-theme.yaml` | Homepage only; its children keep the shared defaults |
+| `site/site-config/site-theme.yaml` | Shared defaults for every page |
+| `site/theme.yaml` | Homepage only; its children keep the shared defaults |
 | `site/pages/010-guide/theme.yaml` | Guide and its descendants |
 
-Use `site/page-theme.yaml` when the homepage needs a different text width,
+Use `site/theme.yaml` when the homepage needs a different text width,
 spacing or image presentation without changing other pages:
 
-```yaml title="site/page-theme.yaml"
+```yaml title="site/theme.yaml"
 layout:
   textWidth: wide
 ```
@@ -80,7 +80,7 @@ A child page or category's optional `theme.yaml` passes its choices to
 descendants:
 
 ```text title="An inherited local override"
-site/theme.yaml                           # Site-wide identity
+site/site-config/site-theme.yaml                           # Site-wide identity
 site/pages/010-guide/theme.yaml           # Guide and its descendants
 site/pages/010-guide/pages/010-install/   # Inherits the Guide override
 ```

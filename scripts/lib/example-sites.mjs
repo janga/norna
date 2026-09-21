@@ -42,9 +42,9 @@ export const getExampleSites = async (root) => {
 		for (const entry of entries.filter((candidate) => candidate.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
 			const exampleDirectory = path.join(categoryDirectory, entry.name);
 			const siteDirectory = path.join(exampleDirectory, 'site');
-			if (!existsSync(path.join(siteDirectory, 'config.yaml'))) {
+			if (!existsSync(path.join(siteDirectory, 'site-config/settings.yaml'))) {
 				if (await isGeneratedOnlyCacheDirectory(exampleDirectory, siteDirectory)) continue;
-				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing config.yaml.`);
+				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing site-config/settings.yaml.`);
 			}
 			if (!existsSync(path.join(siteDirectory, 'content.md'))) {
 				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing content.md.`);

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
+import { link, mkdtemp, mkdir, readFile, readdir, rename, rm, symlink, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
@@ -37,20 +37,20 @@ try {
 	const site = await makeSite('success');
 	const before = await snapshot(site);
 	const plan = await planSiteUpgrade(site);
-	assert.equal(plan.moves.length, 3);
+	assert.equal(plan.moves.length, 5);
 	assert.deepEqual(await snapshot(site), before, 'planning must not write source or generated state');
 	const run = (...args) => execFileSync(process.execPath, [cli, '--site-dir', site, 'site:upgrade', ...args], { encoding: 'utf8', cwd: site });
 	assert.match(run(), /Preview only/);
 	assert.deepEqual(await snapshot(site), before);
-	assert.match(run('--apply'), /Converted the homepage/);
+	assert.match(run('--apply'), /Converted the site configuration and homepage files/);
 	const after = await snapshot(site);
 	assert.deepEqual(after, {
-		'config.yaml': before['config.yaml'], 'content.md': before['pages/000-home/content.md'],
+		'site-config/settings.yaml': before['config.yaml'], 'content.md': before['pages/000-home/content.md'],
 		'images/hero.svg': before['pages/000-home/images/hero.svg'],
-		'page-theme.yaml': before['pages/000-home/theme.yaml'],
-		'pages/010-guide/content.md': before['pages/010-guide/content.md'], 'theme.yaml': before['theme.yaml'],
+		'theme.yaml': before['pages/000-home/theme.yaml'],
+		'pages/010-guide/content.md': before['pages/010-guide/content.md'], 'site-config/site-theme.yaml': before['theme.yaml'],
 	});
-	assert.match(run('--apply'), /already uses a root homepage/);
+	assert.match(run('--apply'), /already uses the current configuration and homepage layout/);
 	assert.deepEqual(await snapshot(site), after);
 	const tree = await getSiteStructure({ siteRoot: site });
 	assert.deepEqual(tree.nodes.map(({ pagePath, isHome, depth }) => ({ pagePath, isHome, depth })), [
@@ -92,7 +92,61 @@ try {
 	await mkdir(path.join(emptyPages, 'pages/000-home/pages'));
 	await applySiteUpgrade(await planSiteUpgrade(emptyPages));
 	assert.deepEqual((await getSiteStructure({ siteRoot: emptyPages })).nodes.map((node) => node.pagePath), ['', 'guide']);
-	console.log('Site upgrade test passed: preview, conversion, bytes, root discovery, conflicts, stale plans and symbolic links.');
+	for (const override of [false, true]) {
+		const current = await makeSite(`root-home-${override}`);
+		await rename(path.join(current, 'pages/000-home/content.md'), path.join(current, 'content.md'));
+		await rename(path.join(current, 'pages/000-home/images'), path.join(current, 'images'));
+		if (override) await rename(path.join(current, 'pages/000-home/theme.yaml'), path.join(current, 'page-theme.yaml'));
+		await rm(path.join(current, 'pages/000-home'), { recursive: true });
+		await write(path.join(current, 'sitewide-content.yaml'), '# Behåll åäö och kommentarer\r\nfooter:\r\n  copyrightMessage: Exempel\r\n');
+		const original = await snapshot(current);
+		await applySiteUpgrade(await planSiteUpgrade(current));
+		const converted = await snapshot(current);
+		assert.equal(converted['site-config/settings.yaml'], original['config.yaml']);
+		assert.equal(converted['site-config/site-theme.yaml'], original['theme.yaml']);
+		assert.equal(converted['site-config/shared-content.yaml'], original['sitewide-content.yaml']);
+		assert.equal(converted['theme.yaml'], original['page-theme.yaml']);
+		assert.equal(converted['content.md'], original['content.md']);
+		assert.equal((await planSiteUpgrade(current)).moves.length, 0);
+		assert.match(execFileSync(process.execPath, [cli, 'site:upgrade'], { cwd: path.join(current, 'site-config'), encoding: 'utf8' }), /already uses the current/);
+	}
+	for (const failAt of [2, 4, 5]) {
+		const interrupted = await makeSite(`rollback-${failAt}`);
+		const original = await snapshot(interrupted);
+		let count = 0;
+		await assert.rejects(applySiteUpgrade(await planSiteUpgrade(interrupted), { link: async (...args) => {
+			if (++count === failAt) throw new Error('Simulated filesystem failure');
+			return link(...args);
+		} }), /original files were restored/);
+		assert.deepEqual(await snapshot(interrupted), original);
+		assert.equal((await readdir(interrupted)).includes('site-config'), false);
+	}
+	const rollbackThemes = await makeSite('rollback-themes');
+	const originalThemes = await snapshot(rollbackThemes);
+	await assert.rejects(applySiteUpgrade(await planSiteUpgrade(rollbackThemes), { rmdir: async () => { throw new Error('Simulated directory removal failure'); } }), /original files were restored/);
+	assert.deepEqual(await snapshot(rollbackThemes), originalThemes, 'rollback restores both themes after the homepage theme occupied the former global path');
+	const schemaSite = await makeSite('schema-paths');
+	const schemaConfig = '# yaml-language-server: $schema=../schemas/config.schema.json\r\n# Behåll åäö\r\nurl: https://example.com/\r\n';
+	await write(path.join(schemaSite, 'config.yaml'), schemaConfig);
+	await write(path.join(schemaSite, 'theme.yaml'), '# yaml-language-server: $schema=https://example.com/theme.schema.json\npreset: documentation\n');
+	await write(path.join(schemaSite, 'pages/000-home/theme.yaml'), '# yaml-language-server: $schema=../../../schemas/page-theme.schema.json\nlayout:\n  textWidth: narrow\n');
+	const schemaBefore = await snapshot(schemaSite);
+	await assert.rejects(applySiteUpgrade(await planSiteUpgrade(schemaSite), { rmdir: async () => { throw new Error('Simulated failure after schema adjustment'); } }), /original files were restored/);
+	assert.deepEqual(await snapshot(schemaSite), schemaBefore, 'Rollback must restore the original schema directives too.');
+	await applySiteUpgrade(await planSiteUpgrade(schemaSite));
+	assert.equal(await readFile(path.join(schemaSite, 'site-config/settings.yaml'), 'utf8'), schemaConfig.replace('../schemas/', '../../schemas/'));
+	assert.equal((await snapshot(schemaSite))['site-config/site-theme.yaml'], schemaBefore['theme.yaml'], 'Absolute schema URLs remain byte-for-byte unchanged.');
+	assert.match(await readFile(path.join(schemaSite, 'theme.yaml'), 'utf8'), /\$schema=\.\.\/schemas\/page-theme\.schema\.json/);
+	const mixed = await makeSite('mixed');
+	await write(path.join(mixed, 'site-config/settings.yaml'), 'url: https://keep.example/\n');
+	const mixedBefore = await snapshot(mixed);
+	await assert.rejects(planSiteUpgrade(mixed), /mixed configuration layouts/);
+	assert.deepEqual(await snapshot(mixed), mixedBefore);
+	const linkedConfiguration = await makeSite('linked-config');
+	await rm(path.join(linkedConfiguration, 'config.yaml'));
+	await symlink(path.join(site, 'site-config'), path.join(linkedConfiguration, 'site-config'));
+	await assert.rejects(planSiteUpgrade(linkedConfiguration), /symbolic link/);
+	console.log('Site upgrade test passed: both old layouts, preview, bytes, CLI discovery, conflicts, stale plans, symbolic links and rollback including theme ownership.');
 } finally {
 	await rm(root, { recursive: true, force: true });
 }

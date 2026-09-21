@@ -32,7 +32,7 @@ if (hasStateDirectoryEnv && !configuredStateDirectory) {
 
 const hasSiteFilesInDirectory = (siteDir) => {
 	return (
-		existsSync(path.join(siteDir, 'config.yaml'))
+		(existsSync(path.join(siteDir, 'site-config', 'settings.yaml')) || existsSync(path.join(siteDir, 'config.yaml')))
 		&& (
 			existsSync(path.join(siteDir, 'pages', legacyHomePageDirectory, 'content.md'))
 			|| existsSync(path.join(siteDir, 'content.md'))
@@ -63,6 +63,16 @@ const findSiteProjectRoot = (startDirectory, siteDirectory) => {
 	}
 };
 
+const findContainingSite = (startDirectory) => {
+	let current = path.resolve(startDirectory);
+	while (true) {
+		if (hasSiteFilesInDirectory(current)) return current;
+		const parent = path.dirname(current);
+		if (parent === current) return null;
+		current = parent;
+	}
+};
+
 const hasSiteDirectoryEnv = Object.hasOwn(process.env, siteDirectoryEnvName);
 const configuredSiteDirectory = normalizeSiteDirectory(process.env[siteDirectoryEnvName]);
 const hasConfiguredSiteDirectory = hasSiteDirectoryEnv && configuredSiteDirectory !== '';
@@ -84,8 +94,9 @@ const resolveSitePaths = () => {
 		};
 	}
 
-	if (!hasConfiguredSiteDirectory && hasSiteFilesInDirectory(invocationRoot)) {
-		const siteDir = invocationRoot;
+	const containingSite = !hasConfiguredSiteDirectory && findContainingSite(invocationRoot);
+	if (containingSite) {
+		const siteDir = containingSite;
 		const siteProjectRoot = path.dirname(siteDir);
 
 		return {
@@ -126,9 +137,9 @@ const getPathLabel = (filePath) => {
 };
 
 export const siteDir = resolvedSitePaths.siteDir;
-export const siteConfigPath = path.join(siteDir, 'config.yaml');
-export const siteThemePath = path.join(siteDir, 'theme.yaml');
-export const sitewideContentPath = path.join(siteDir, 'sitewide-content.yaml');
+export const siteConfigPath = path.join(siteDir, 'site-config', 'settings.yaml');
+export const siteThemePath = path.join(siteDir, 'site-config', 'site-theme.yaml');
+export const sitewideContentPath = path.join(siteDir, 'site-config', 'shared-content.yaml');
 export const sitePagesDir = path.join(siteDir, 'pages');
 export const siteHomePageDir = siteDir;
 export const siteContentPath = path.join(siteHomePageDir, 'content.md');

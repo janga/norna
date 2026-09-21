@@ -294,9 +294,9 @@ try {
 		assertFileExists(path.join(packagedStarterRoot, '.github', 'workflows', 'deploy.yml')),
 		assertFileExists(path.join(packagedStarterRoot, 'package.json')),
 		assertFileExists(path.join(packagedStarterRoot, 'README.md')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'config.yaml')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'theme.yaml')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'sitewide-content.yaml')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'site-config/settings.yaml')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'site-config', 'site-theme.yaml')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'site-config/shared-content.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'content.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'images', '.gitkeep')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'public', 'robots.txt')),
@@ -319,13 +319,13 @@ try {
 	packageJson.name = 'norna-package-check-site';
 	packageJson.dependencies['@janga/norna'] = tarballPath;
 	await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
-	const packageCheckConfigPath = path.join(siteProjectRoot, 'site', 'config.yaml');
+	const packageCheckConfigPath = path.join(siteProjectRoot, 'site', 'site-config/settings.yaml');
 	const packageCheckConfig = await readFile(packageCheckConfigPath, 'utf8');
 	await writeFile(
 		packageCheckConfigPath,
 		packageCheckConfig.replace('url: https://example.com/', 'url: https://example.com/site/'),
 	);
-	const packageCheckSitewidePath = path.join(siteProjectRoot, 'site', 'sitewide-content.yaml');
+	const packageCheckSitewidePath = path.join(siteProjectRoot, 'site', 'site-config/shared-content.yaml');
 	const packageCheckSitewide = await readFile(packageCheckSitewidePath, 'utf8');
 	await writeFile(
 		packageCheckSitewidePath,
@@ -378,8 +378,8 @@ This page verifies that packaged norna sites can build additional pages.
 	await runInherit(nornaBinPath, ['init', initializedSiteRoot], { cwd: tempRoot, env: npmEnv });
 	await Promise.all([
 		assertFileExists(path.join(initializedSiteRoot, 'package.json')),
-		assertFileExists(path.join(initializedSiteRoot, 'site', 'config.yaml')),
-		assertFileExists(path.join(initializedSiteRoot, 'site', 'theme.yaml')),
+		assertFileExists(path.join(initializedSiteRoot, 'site', 'site-config/settings.yaml')),
+		assertFileExists(path.join(initializedSiteRoot, 'site', 'site-config', 'site-theme.yaml')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'content.md')),
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
@@ -669,7 +669,7 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	const siteContentPath = path.join(siteProjectRoot, 'site', 'content.md');
 	const siteContent = await readFile(siteContentPath, 'utf8');
-	const siteThemePath = path.join(siteProjectRoot, 'site', 'theme.yaml');
+	const siteThemePath = path.join(siteProjectRoot, 'site', 'site-config', 'site-theme.yaml');
 	const siteTheme = await readFile(siteThemePath, 'utf8');
 	await writeFile(siteThemePath, `${siteTheme.trim()}\ntypography:\n  profile: noisy\n`);
 	await runExpectFailure(
@@ -734,7 +734,7 @@ This page verifies that packaged norna sites can build additional pages.
 		'typography.fontFamily',
 	);
 	await writeFile(siteThemePath, siteTheme);
-	const siteConfigPath = path.join(siteProjectRoot, 'site', 'config.yaml');
+	const siteConfigPath = path.join(siteProjectRoot, 'site', 'site-config/settings.yaml');
 	const siteConfig = await readFile(siteConfigPath, 'utf8');
 	await writeFile(
 		siteConfigPath,

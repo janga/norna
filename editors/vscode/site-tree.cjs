@@ -44,7 +44,7 @@ function registerSiteTree(context, output) {
 
 	const serviceFor = async (root) => {
 		if (!vscode.workspace.isTrusted) throw new Error('Trust this workspace before using the Norna site tree.');
-		const project = getNornaProjectContext(path.join(root, 'config.yaml'));
+		const project = getNornaProjectContext(path.join(root, 'content.md'));
 		if (!project?.nornaPackage) throw new Error('Install this project’s @janga/norna dependency to use the site tree.');
 		if (!project.editorCompatible || !project.schemaCompatible) throw new Error('Update the Norna extension and project engine to compatible versions.');
 		const filename = path.join(project.nornaPackage.root, 'scripts', 'lib', 'editor-site-tree.mjs');
@@ -76,7 +76,7 @@ function registerSiteTree(context, output) {
 				byFile.get(filename).add(message);
 			};
 			for (const node of nodes.values()) if (node.siteRoot === site.siteRoot && node.problem) add(node.sourcePath, node.problem);
-			for (const problem of site.problems ?? []) add(sourceNames.has(path.basename(problem.path)) ? problem.path : path.join(site.siteRoot, 'config.yaml'), problem.message);
+			for (const problem of site.problems ?? []) add(sourceNames.has(path.basename(problem.path)) ? problem.path : path.join(site.siteRoot, 'content.md'), problem.message);
 			for (const [filename, messages] of byFile) diagnostics.set(vscode.Uri.file(filename), [...messages].map((message) => {
 				const diagnostic = new vscode.Diagnostic(new vscode.Range(0, 0, 0, 1), message, vscode.DiagnosticSeverity.Error);
 				diagnostic.source = 'Norna site tree';
@@ -182,14 +182,14 @@ function registerSiteTree(context, output) {
 	const refresh = ({ discover = false } = {}) => enqueueTreeWork(async () => {
 		reading = (async () => {
 			if (discover) {
-				const configs = await vscode.workspace.findFiles('**/config.yaml', '**/{node_modules,.git,.norna,.vscode-test,dist,marketing}/**');
+				const configs = await vscode.workspace.findFiles('**/{config.yaml,site-config/settings.yaml}', '**/{node_modules,.git,.norna,.vscode-test,dist,marketing}/**');
 				const discovered = new Set(configs.map((uri) => rememberSite(uri.fsPath)?.siteRoot).filter(Boolean));
 				for (const root of sites.keys()) {
 					if (!discovered.has(root)) sites.delete(root);
 				}
 			}
 			for (const [root, site] of sites) {
-				if (!inWorkspace(root) || !fs.existsSync(path.join(root, 'config.yaml'))) {
+				if (!inWorkspace(root) || !(fs.existsSync(path.join(root, 'site-config', 'settings.yaml')) || fs.existsSync(path.join(root, 'config.yaml')))) {
 					sites.delete(root);
 				} else await refreshSite(site);
 			}
@@ -369,14 +369,14 @@ function registerSiteTree(context, output) {
 	register('nornaEditor.pageInformation', editInformation);
 	register('nornaEditor.chooseSite', chooseSite);
 	register('nornaEditor.refreshSiteTree', async () => { services.clear(); await refresh({ discover: true }); await revealActive(); });
-	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,category.yaml,config.yaml,theme.yaml,page-theme.yaml,sitewide-content.yaml}');
+	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,category.yaml,settings.yaml,site-theme.yaml,shared-content.yaml,theme.yaml,config.yaml,page-theme.yaml,sitewide-content.yaml}');
 	const directoryWatcher = vscode.workspace.createFileSystemWatcher('**/{pages,images,public}', false, true, false);
 	const resourceWatcher = vscode.workspace.createFileSystemWatcher('**/{pages,images,public}/**', false, true, false);
 	const fileChanged = (uri) => {
 		if (uri.fsPath.split(path.sep).some((part) => ['.norna', 'node_modules', '.git'].includes(part))) return;
 		if (!inWorkspace(uri.fsPath)) return;
-		if ((activeSiteRoot && inside(activeSiteRoot, uri.fsPath)) || path.basename(uri.fsPath) === 'config.yaml') {
-			schedule('filesystem', () => refresh({ discover: path.basename(uri.fsPath) === 'config.yaml' }));
+		if ((activeSiteRoot && inside(activeSiteRoot, uri.fsPath)) || ['settings.yaml', 'config.yaml'].includes(path.basename(uri.fsPath))) {
+			schedule('filesystem', () => refresh({ discover: ['settings.yaml', 'config.yaml'].includes(path.basename(uri.fsPath)) }));
 		}
 	};
 	const followActive = async () => {

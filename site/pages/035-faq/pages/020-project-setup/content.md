@@ -35,10 +35,11 @@ my-site/
 ├── package.json
 ├── package-lock.json
 └── site/
-    ├── config.yaml
-    ├── theme.yaml
-    ├── sitewide-content.yaml
     ├── content.md
+    ├── site-config/
+    │   ├── settings.yaml
+    │   ├── site-theme.yaml
+    │   └── shared-content.yaml
     ├── images/
     └── public/
 ```
@@ -84,10 +85,11 @@ existing-project/
 ├── package-lock.json
 ├── src/
 └── presentation/
-    ├── config.yaml
-    ├── theme.yaml
-    ├── sitewide-content.yaml
     ├── content.md
+    ├── site-config/
+    │   ├── settings.yaml
+    │   ├── site-theme.yaml
+    │   └── shared-content.yaml
     ├── images/
     └── public/
 ```
@@ -124,7 +126,7 @@ See the full references for
 ## How do I publish an embedded Norna site beside a project homepage? {#publish-embedded-site}
 
 Publish both outputs as one GitHub Pages artifact. Give the Norna site its final
-subpath in `presentation/config.yaml`, build it first, move its generated
+subpath in `presentation/site-config/settings.yaml`, build it first, move its generated
 `dist/` aside, build the surrounding project, and copy the Norna output into the
 matching subdirectory of the final artifact.
 

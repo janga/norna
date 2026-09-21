@@ -18,12 +18,24 @@ const port = Number.parseInt(process.env.NORNA_DEV_PORT ?? '4321', 10);
 if (!Number.isInteger(port) || port < 1 || port > 65_535) {
 	throw new Error('NORNA_DEV_PORT must be an integer from 1 through 65535.');
 }
+const args = process.argv.slice(2);
+const knownCommands = new Set(['start', 'lan', 'status', 'logs', 'restart', 'stop']);
+const command = args.find((arg) => knownCommands.has(arg)) ?? args.find((arg) => !arg.startsWith('-')) ?? 'start';
+const shouldKillBlockingPort = args.includes('--kill');
+const shouldFollowLogs = args.includes('--follow');
+
 let projectConfig;
-try {
-	({ default: projectConfig } = await import('./lib/project-config.mjs'));
-} catch (error) {
-	console.error(error instanceof Error ? error.message : String(error));
-	process.exit(1);
+if (['stop', 'status', 'logs'].includes(command)) {
+	// Recovery commands use the recorded server even while sources need conversion.
+	const recorded = await readFile(path.join(siteStateDir, 'dev', 'state.json'), 'utf8').then(JSON.parse).catch(() => null);
+	projectConfig = { site: { basePath: recorded?.url ? new URL(recorded.url).pathname : '/' } };
+} else {
+	try {
+		({ default: projectConfig } = await import('./lib/project-config.mjs'));
+	} catch (error) {
+		console.error(error instanceof Error ? error.message : String(error));
+		process.exit(1);
+	}
 }
 const localHost = '127.0.0.1';
 const localUrl = `http://${localHost}:${port}${projectConfig.site.basePath}`;
@@ -38,11 +50,6 @@ const legacyStatePath = path.join(astroCacheDir, 'dev-local.json');
 const astroStatePath = path.join(astroCacheDir, 'dev.json');
 const logPath = path.join(astroCacheDir, 'dev.log');
 const preparationLogPath = path.join(stateDirectory, 'preparation.log');
-const args = process.argv.slice(2);
-const knownCommands = new Set(['start', 'lan', 'status', 'logs', 'restart', 'stop']);
-const command = args.find((arg) => knownCommands.has(arg)) ?? args.find((arg) => !arg.startsWith('-')) ?? 'start';
-const shouldKillBlockingPort = args.includes('--kill');
-const shouldFollowLogs = args.includes('--follow');
 
 const runAstro = async (args, options = {}) => execFileAsync(process.execPath, getAstroArgs(args), {
 	cwd: siteProjectRoot,

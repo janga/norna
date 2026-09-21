@@ -157,14 +157,14 @@ async function runEditingWorkflows({ openDocument, waitFor, getCompletions }) {
 	await waitFor(() => nornaIssues(author), (issues) => issues.length === 0, 'Editing a reopened image block left an error.');
 	console.log('PASS authoring: widget insertion, snippet text, image filename, repeated saves/reopens, diagnostic repair, and renewed field completion.');
 
-	let theme = await openDocument('site/theme.yaml');
+	let theme = await openDocument('site/site-config/site-theme.yaml');
 	const themeEditor = await vscode.window.showTextDocument(theme);
 	await themeEditor.edit((edit) => edit.replace(fullRange(theme), 'preset: docu\n'));
 	await acceptSuggestion(theme, 0, 'preset: docu', 'documentation');
 	await vscode.commands.executeCommand('leaveSnippet');
 	assert.equal(theme.lineAt(0).text, 'preset: documentation');
 	await saveUnchanged(theme, theme.getText());
-	theme = await reopen(theme, 'site/theme.yaml', theme.getText());
+	theme = await reopen(theme, 'site/site-config/site-theme.yaml', theme.getText());
 	await acceptSuggestion(theme, 0, 'preset: portf', 'portfolio');
 	assert.equal(theme.lineAt(0).text, 'preset: portfolio');
 	await saveUnchanged(theme, theme.getText());

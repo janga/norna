@@ -8,7 +8,7 @@ page:
 `search: true` creates a search page and static index during builds. It needs
 no search server or hosted account. The default is `false`.
 
-```yaml title="site/config.yaml" {2}
+```yaml title="site/site-config/settings.yaml" {2}
 url: https://example.com/
 search: true
 ```

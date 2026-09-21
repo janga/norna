@@ -276,9 +276,9 @@ try {
 		assert.match(entry.markdownDescription, /https:\/\/janga\.github\.io\/norna\/reference\/configuration\/presets\//);
 	}
 
-	await mkdir(siteDir, { recursive: true });
+	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 	await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
-	const configPath = path.join(siteDir, 'config.yaml');
+	const configPath = path.join(siteDir, 'site-config/settings.yaml');
 	await writeFile(configPath, 'url: https://example.com/\nnavigation:\n  mode: top\n');
 	await writeFile(path.join(siteDir, 'content.md'), `---
 page:
@@ -291,7 +291,7 @@ page:
 
 Root content.
 `);
-await writeFile(path.join(siteDir, 'theme.yaml'), `preset: documentation
+await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `preset: documentation
 layout:
   pageWidth: 1300px
 palette: near-monochrome
@@ -314,7 +314,7 @@ sections:
   backgroundPattern: accented
 `);
 
-	const rootThemePath = path.join(siteDir, 'theme.yaml');
+	const rootThemePath = path.join(siteDir, 'site-config', 'site-theme.yaml');
 	const rootThemeSource = await readFile(rootThemePath, 'utf8');
 	for (const [legacySource, expectedMessage] of [
 		['palette: paper\n', /Palette value "paper" was replaced by "warm-paper"/],
@@ -374,7 +374,7 @@ sections:
 	const pageNavigationResult = runCli(['config:check']);
 	assert.notEqual(pageNavigationResult.status, 0);
 	assert.match(pageNavigationResult.stderr, /navigation is technical, site-wide configuration/);
-	assert.match(pageNavigationResult.stderr, /config\.yaml/);
+	assert.match(pageNavigationResult.stderr, /site-config\/settings\.yaml/);
 	await writeFile(pageThemePath, pageThemeSource);
 	await writeFile(pageThemePath, `images:
   presentation: prose-aligned
@@ -403,7 +403,7 @@ sections:
 	assert.match(exportResult.stdout, /orig-documentation-theme\.yaml/);
 	const exportedPath = path.join(siteDir, 'orig-documentation-theme.yaml');
 	const exportedSource = await readFile(exportedPath, 'utf8');
-	assert.match(exportedSource, /This is a reference file\. Norna only loads theme\.yaml\./);
+	assert.match(exportedSource, /This is a reference file\. Norna loads site-config\/site-theme\.yaml for the shared theme\./);
 	assert.match(exportedSource, /Available theme presets: portfolio, documentation, project, statement\./);
 	assert.match(exportedSource, new RegExp(`# Alternatives: ${presentationPaletteNames.join(', ')}\\.`));
 	const exportedConfig = load(exportedSource);

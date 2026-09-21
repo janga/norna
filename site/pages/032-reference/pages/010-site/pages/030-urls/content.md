@@ -16,7 +16,7 @@ site/pages/010-guides/content.md                  -> /guides/
 site/pages/010-guides/pages/020-install/content.md -> /guides/install/
 ```
 
-The public `url` in `config.yaml` supplies the domain and any deployment
+The public `url` in `site-config/settings.yaml` supplies the domain and any deployment
 prefix. With `url: https://example.com/manual/`, the last page is published
 as `https://example.com/manual/guides/install/`.
 

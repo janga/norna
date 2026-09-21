@@ -54,7 +54,7 @@ Options sit beside `items`, not inside a card:
 | `layout` | `image-top`, `image-left`, `image-right` | `image-top` |
 | `flow` | `grid`, `stack` | `grid` |
 | `size` | `s`, `m`, `l`, `xl` | `m` |
-| `width` | `text`, `narrow`, `normal`, `wide` | Root theme's card-list default |
+| `width` | `text`, `narrow`, `normal`, `wide` | Shared theme's card-list default |
 
 Layout places images relative to text. Flow chooses responsive grid or one
 stacked sequence. Size coordinates card sizing; it does not set an exact
@@ -66,9 +66,9 @@ number of columns. The list adapts to available width.
 48rem; `normal` limits it to 56rem; `wide` uses available page-layout width.
 These limits apply to the **whole list**, not individual cards.
 
-Set the site default in the root theme:
+Set the site default in the shared theme:
 
-```yaml title="site/theme.yaml"
+```yaml title="site/site-config/site-theme.yaml"
 blocks:
   cardList:
     width: text

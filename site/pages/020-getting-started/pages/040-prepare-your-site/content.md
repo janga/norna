@@ -12,7 +12,7 @@ on this page is optional during an initial local preview.
 
 ## Set the site language {#language}
 
-Add `language` beside the existing public URL in `site/config.yaml` when the
+Add `language` beside the existing public URL in `site/site-config/settings.yaml` when the
 site is not written in English:
 
 ```yaml
@@ -71,7 +71,7 @@ that may be copied unchanged.
 
 Page prose belongs in each page's `content.md`. Editorial content that must be
 the same across the complete site belongs in the optional
-`site/sitewide-content.yaml` file:
+`site/site-config/shared-content.yaml` file:
 
 ```yaml
 footer:
@@ -98,7 +98,7 @@ element.
 ## Add site search {#search}
 
 For a site with enough pages that navigation alone is no longer sufficient,
-enable static search in `site/config.yaml`:
+enable static search in `site/site-config/settings.yaml`:
 
 ```yaml
 search: true

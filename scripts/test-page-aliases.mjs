@@ -93,8 +93,9 @@ test('page aliases reject every occupied public URL identity', () => {
 test('build emits a base-path-aware static redirect document outside the sitemap', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/project/\n');
-		await writeFile(path.join(siteDir, 'theme.yaml'), 'palette: arctic-blue\nappearance:\n  default: dark\n');
+		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\n');
+		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), 'palette: arctic-blue\nappearance:\n  default: dark\n');
 		await writeFile(path.join(siteDir, 'content.md'), `# Home
 
 ## Start

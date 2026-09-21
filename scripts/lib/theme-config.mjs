@@ -63,9 +63,9 @@ const getPageThemeFiles = async (directory, relativeDirectory = '') => {
 
 export const validatePageThemeFiles = async () => {
 	const files = await getPageThemeFiles(sitePagesDir);
-	const homepageThemePath = path.join(siteDir, 'page-theme.yaml');
+	const homepageThemePath = path.join(siteDir, 'theme.yaml');
 	if (await access(homepageThemePath).then(() => true, (error) => { if (error.code === 'ENOENT') return false; throw error; })) {
-		files.unshift({ path: homepageThemePath, label: `${siteDirLabel}/page-theme.yaml` });
+		files.unshift({ path: homepageThemePath, label: `${siteDirLabel}/theme.yaml` });
 	}
 	const configs = [];
 

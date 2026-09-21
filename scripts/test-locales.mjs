@@ -84,7 +84,7 @@ assert.throws(
 	/language "sr-Arab" uses an unsupported script\. Use one of: sr-Cyrl, sr-Latn\./,
 );
 assert.throws(
-	() => resolveLocale('ar', 'custom/config.yaml'),
+	() => resolveLocale('ar', 'custom/site-config/settings.yaml'),
 	/language "ar" has no built-in Norna UI text[\s\S]*Supported languages:[\s\S]*en[\s\S]*uk/,
 );
 assert.throws(

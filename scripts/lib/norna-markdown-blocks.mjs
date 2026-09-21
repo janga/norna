@@ -56,7 +56,7 @@ export const nornaMarkdownBlockDefinitions = Object.freeze({
 					xl: value('Extra large', 'Use the largest card and image size.'),
 				}),
 			}),
-			width: field('Override the root theme\'s maximum width for this card list.', {
+			width: field('Override the shared theme\'s maximum width for this card list.', {
 				values: Object.freeze({
 					text: value('Text', 'Match the active body-text width, including a reader-selected reading width.'),
 					narrow: value('Narrow', 'Limit the complete card list to at most 48rem.'),

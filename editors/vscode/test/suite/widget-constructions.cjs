@@ -80,7 +80,7 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 			// Resolve the label again at click time: a slower YAML provider may have
 			// updated the list since keyboard navigation selected this row.
 			const kind = label === 'description' ? 'property' : callouts.includes(label) ? 'enum-member' : 'snippet';
-			const rows = (label.endsWith('.svg') || label === 'tree') ? widget.locator('.monaco-list-row') : widget.locator('.monaco-list-row').filter({
+			const rows = (label.endsWith('.svg') || ['tree', 'warm-paper', 'narrow', 'true'].includes(label)) ? widget.locator('.monaco-list-row') : widget.locator('.monaco-list-row').filter({
 				has: window.locator(`.codicon-symbol-${kind}`),
 			});
 			const row = rows.filter({ has: window.locator('.label-name').getByText(label, { exact: true }) });
@@ -113,9 +113,38 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 		for (const prefix of ['', 'tr']) {
 			await accept(`tree navigation: ${prefix ? 'partial value' : 'blank value'}`,
 				`url: https://example.com/\nnavigation:\n  mode: ${prefix}|CURSOR|\n`,
-				'url: https://example.com/\nnavigation:\n  mode: tree\n', 'tree', 'widget-site/config.yaml');
+				'url: https://example.com/\nnavigation:\n  mode: tree\n', 'tree', 'widget-site/site-config/settings.yaml');
 		}
 		if (process.env.NORNA_EDITOR_TEST_SUITE === 'metadata') return;
+		for (const prefix of ['', 'wa']) {
+			await accept(`Global theme palette: ${prefix || 'blank value'}`,
+				`palette: ${prefix}|CURSOR|\n`, 'palette: warm-paper\n', 'warm-paper', 'widget-site/site-config/site-theme.yaml');
+		}
+		for (const prefix of ['', 'na']) {
+			await accept(`Homepage theme width: ${prefix || 'blank value'}`,
+				`layout:\n  textWidth: ${prefix}|CURSOR|\n`, 'layout:\n  textWidth: narrow\n', 'narrow', 'widget-site/theme.yaml');
+		}
+		for (const prefix of ['', 'tr']) {
+			await accept(`Shared content footer: ${prefix || 'blank value'}`,
+				`footer:\n  buildInfo: ${prefix}|CURSOR|\n`, 'footer:\n  buildInfo: true\n', 'true', 'widget-site/site-config/shared-content.yaml');
+		}
+		const homepageTheme = await openDocument('widget-site/theme.yaml');
+		await vscode.window.activeTextEditor.edit((edit) => edit.replace(new vscode.Range(homepageTheme.positionAt(0), homepageTheme.positionAt(homepageTheme.getText().length)), ''));
+		const pageFields = await waitFor(() => getCompletions(homepageTheme, 0, 0),
+			(items) => items.some((item) => item.label === 'layout'), 'An empty homepage theme did not offer page-theme fields.');
+		const labels = pageFields.map((item) => typeof item.label === 'string' ? item.label : item.label.label);
+		for (const name of ['preset', 'palette', 'appearance', 'corners', 'typography', 'blocks', 'navigation', 'url', 'Norna theme']) {
+			assert.ok(!labels.includes(name), `Homepage theme offered a global setting: ${name}`);
+		}
+		results.push({ name: 'Empty homepage theme excludes global settings and templates', status: 'passed' });
+		if (process.env.NORNA_EDITOR_TEST_SUITE === 'configuration') {
+			fs.writeFileSync(path.join(process.env.NORNA_EDITOR_TEST_WORKSPACE, '..', `configuration-${vscode.version}.json`), JSON.stringify({
+				runAt: new Date().toISOString(), vscodeVersion: vscode.version,
+				extensionVersion: process.env.NORNA_EDITOR_TEST_EXTENSION_VERSION,
+				extensionBundleSha256: createHash('sha256').update(fs.readFileSync(path.join(vscode.extensions.getExtension('janga.norna-vscode').extensionPath, 'dist/extension.cjs'))).digest('hex'), results,
+			}, null, 2));
+			return;
+		}
 
 		const usagePath = 'usage-site/content.md';
 		for (const type of ['image-stack', 'image-carousel', 'card-list']) {
@@ -178,9 +207,9 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 
 		// Separate YAML files leave project discovery for the Markdown fixture intact.
 		for (const [kind, filename, body] of [
-			['config', 'config.yaml', 'url: https://example.com/\n'],
-			['theme', 'theme.yaml', 'preset: portfolio\n'],
-			['sitewideContent', 'sitewide-content.yaml', 'footer:\n  copyrightMessage: Copyright owner.\n'],
+			['config', 'site-config/settings.yaml', 'url: https://example.com/\n'],
+			['theme', 'site-config/site-theme.yaml', 'preset: portfolio\n'],
+			['sitewideContent', 'site-config/shared-content.yaml', 'footer:\n  copyrightMessage: Copyright owner.\n'],
 			['category', 'pages/010-category/category.yaml', 'label: Category label\n'],
 		]) {
 			const relativePath = `widget-site/${filename}`;

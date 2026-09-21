@@ -422,7 +422,7 @@ const checkPublishedExampleReferences = async () => {
 	}
 	for (const [id, language, relativePath] of [
 		['page-list', 'md', 'fixtures/child-page-list/site/pages/010-help-a-dog/content.md'],
-		['site-wide-elements', 'yaml', 'examples/feature-demos/sitewide-content/site/sitewide-content.yaml'],
+		['site-wide-elements', 'yaml', 'examples/feature-demos/sitewide-content/site/site-config/shared-content.yaml'],
 	]) {
 		const section = examplesModel.sections.find((section) => section.id === id);
 		assert.ok(section, `Missing source-backed example: ${id}`);
@@ -558,10 +558,10 @@ const checkReferenceTree = async () => {
 		for (const node of tree.children) {
 			if (node.type !== 'code' || node.lang !== 'yaml') continue;
 			const title = node.meta?.match(/^title="([^"\n]+)"/)?.[1] ?? '';
-			const schema = /^site\/config\.yaml/.test(title) ? configSchema
+			const schema = /^site\/site-config\/settings\.yaml/.test(title) ? configSchema
 				: /^site\/(?:page-theme|pages\/.+\/theme)\.yaml/.test(title) ? pageThemeSchema
 				: /^(?:site\/)?theme\.yaml/.test(title) ? themeVisualSchema
-					: /^site\/sitewide-content\.yaml/.test(title) ? sitewideSchema : null;
+					: /^site\/site-config\/shared-content\.yaml/.test(title) ? sitewideSchema : null;
 			if (!schema) continue;
 			const result = schema.safeParse(yaml.load(node.value));
 			assert.ok(result.success, `${route}: invalid YAML example at ${node.position.start.line}: ${JSON.stringify(result.error?.issues)}`);

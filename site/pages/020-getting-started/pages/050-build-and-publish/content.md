@@ -11,7 +11,7 @@ GitHub Actions workflow needed to publish it with GitHub Pages.
 ## Set the public URL {#public-url}
 
 Before the first build for publication, set the final site URL in
-`site/config.yaml`:
+`site/site-config/settings.yaml`:
 
 ```yaml
 url: https://owner.github.io/repository/

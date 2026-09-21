@@ -151,7 +151,7 @@ const addSitewideLogoHelp = (jsonSchema) => {
 const addConfigHelp = (jsonSchema) => {
 	jsonSchema.markdownDescription = [
 		yamlExample('url: https://example.com/'),
-		'`config.yaml` contains the few technical settings shared by the complete site.',
+		'`site-config/settings.yaml` contains the few technical settings shared by the complete site.',
 		documentationLink('Configuration reference', 'configuration.md'),
 	].join('\n\n');
 	addHelp(jsonSchema, 'url', [
@@ -471,14 +471,14 @@ const addPageThemeHelp = (jsonSchema) => {
 	].join('\n\n');
 	addHelp(jsonSchema, 'layout', [
 		yamlExample('layout:\n  textWidth: narrow\n  contentSpacing: compact'),
-		'Adjusts body-text line length and vertical content spacing for the affected pages. Root page-theme.yaml affects only the homepage; a child page or category theme.yaml is inherited by its descendants.',
+		'Adjusts body-text line length and vertical content spacing for the affected pages. Root theme.yaml affects only the homepage; a child page or category theme.yaml is inherited by its descendants.',
 		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
 	]);
 	addFieldHelp(jsonSchema, 'layout.textWidth', 'layout:\n  textWidth: narrow', 'theme.md', 'page-themes', ['narrow', 'normal', 'wide']);
 	addFieldHelp(jsonSchema, 'layout.contentSpacing', 'layout:\n  contentSpacing: compact', 'theme.md', 'page-themes', ['compact', 'normal', 'spacious']);
 	addHelp(jsonSchema, 'images', [
 		yamlExample('images:\n  presentation: prose-aligned\n  width: 900px'),
-		'Adjusts managed-image presentation and sizing inside the content area. Root page-theme.yaml affects only the homepage; a child page or category theme.yaml is inherited by its descendants. Persistent navigation remains outside this area.',
+		'Adjusts managed-image presentation and sizing inside the content area. Root theme.yaml affects only the homepage; a child page or category theme.yaml is inherited by its descendants. Persistent navigation remains outside this area.',
 		documentationLink('Image sizing reference', 'theme.md', 'image-sizing'),
 	]);
 	const imageFields = [
@@ -496,7 +496,7 @@ const addPageThemeHelp = (jsonSchema) => {
 	}
 	addHelp(jsonSchema, 'sections', [
 		yamlExample('sections:\n  backgroundPattern: alternating'),
-		'Adjusts the H2 section background pattern. Root page-theme.yaml affects only the homepage; a child page or category theme.yaml is inherited by its descendants. Alternating and accented create full-width bands but are invalid when navigation resolves to tree.',
+		'Adjusts the H2 section background pattern. Root theme.yaml affects only the homepage; a child page or category theme.yaml is inherited by its descendants. Alternating and accented create full-width bands but are invalid when navigation resolves to tree.',
 		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
 	]);
 	addFieldHelp(jsonSchema, 'sections.backgroundPattern', 'sections:\n  backgroundPattern: alternating', 'theme.md', 'page-themes', ['uniform', 'alternating', 'accented']);
@@ -505,7 +505,7 @@ const addPageThemeHelp = (jsonSchema) => {
 const addSitewideHelp = (jsonSchema) => {
 	jsonSchema.markdownDescription = [
 		yamlExample('footer:\n  copyrightMessage: Copyright Example Owner.'),
-		'`sitewide-content.yaml` optionally defines banners, footer content, and logo display settings shared by every page.',
+		'`site-config/shared-content.yaml` optionally defines banners, footer content, and logo display settings shared by every page.',
 		documentationLink('Site-wide content reference', 'sitewide-content.md'),
 	].join('\n\n');
 	addSitewideLogoHelp(jsonSchema);

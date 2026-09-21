@@ -7,7 +7,7 @@ page:
 
 Inspect the definitions supplied by the installed engine before choosing
 overrides. These commands use the selected site and do not change its active
-`theme.yaml`.
+`site-config/site-theme.yaml`.
 
 ## List and export presets
 
@@ -22,7 +22,7 @@ npm exec -- norna theme:export documentation
 site directory. An existing export is never overwritten.
 
 The export is a reference file, not a second active theme. Norna continues to
-read only `theme.yaml`. Copy only the settings you intend to override; see
+read only `site-config/site-theme.yaml`. Copy only the settings you intend to override; see
 the [theme model](/reference/configuration/theme/) and
 [preset values](/reference/configuration/presets/).
 
@@ -34,7 +34,7 @@ npm exec -- norna typography show
 ```
 
 `profiles` prints exact built-in typography profile and rhythm values.
-`show` prints resolved typography for the root theme, each page and each
+`show` prints resolved typography for the shared theme, each page and each
 section, identifying the profile, rhythm or root override that supplied it.
 Both write to the terminal, not to source files.
 

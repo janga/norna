@@ -37,7 +37,8 @@ const readDeliveredScripts = async (html) => {
 };
 
 try {
-	await writeFile(path.join(siteDir, 'config.yaml'), `url: https://example.com/project/
+	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `url: https://example.com/project/
 language: bg
 search: true
 `);
@@ -92,7 +93,9 @@ This nested section contains the unique term amberotter.
 	assert.equal(searchDocuments.some(({ content }) => content.includes('Зареждане на търсенето')), false);
 	assert.equal(await fileExists(path.join(siteDir, '.norna', 'public', 'pagefind', 'pagefind.js')), true);
 
-	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/project/\nsearch: false\n');
+	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\nsearch: false\n');
 	const disabledBuild = await runSite(siteDir, 'build');
 	assert.match(disabledBuild.stdout, /Static search is disabled\./);
 	assert.equal(await fileExists(path.join(distDir, 'search', 'index.html')), false);
@@ -101,7 +104,9 @@ This nested section contains the unique term amberotter.
 	const disabledHomeHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
 	assert.doesNotMatch(await readDeliveredScripts(disabledHomeHtml), /norna:search:/);
 
-	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/project/\nsearch: true\n');
+	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
+
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\nsearch: true\n');
 	const conflictingPageDir = path.join(siteDir, 'pages', '020-search');
 	await mkdir(conflictingPageDir, { recursive: true });
 	await writeFile(path.join(conflictingPageDir, 'content.md'), '# Search page\n\nConflicting source page.\n');

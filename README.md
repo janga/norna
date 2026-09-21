@@ -50,20 +50,22 @@ locally installed and pinned Norna version.
 
 ```text
 site/
-|-- config.yaml
-|-- theme.yaml
-|-- page-theme.yaml       # Optional homepage-only overrides
-|-- sitewide-content.yaml
-|-- content.md
+|-- content.md           # Homepage content
+|-- theme.yaml           # Optional homepage-only overrides
+|-- site-config/
+|   |-- settings.yaml
+|   |-- site-theme.yaml
+|   `-- shared-content.yaml
 |-- images/
-|-- pages/
-|   `-- 010-guides/
-|       |-- category.yaml
-|       `-- pages/
-|           `-- 010-installation/
-|               |-- content.md
-|               `-- images/
-`-- public/
+|-- public/
+`-- pages/
+    `-- 010-guide/
+        |-- content.md
+        |-- theme.yaml   # Optional overrides inherited by this branch
+        |-- images/
+        `-- pages/
+            `-- 010-install/
+                `-- content.md
 ```
 
 - `content.md` is the required homepage at `/`; `pages/` contains its children.
@@ -74,16 +76,16 @@ site/
 - Category ids remain in child URLs. Opening a category URL leads to its first
   listed direct page or a generated child list; see
   [Category destinations](https://janga.github.io/norna/reference/site/pages/#opening-a-category-url).
-- `theme.yaml` selects shared visual defaults. Optional `page-theme.yaml`
+- `site-config/site-theme.yaml` selects shared visual defaults. Optional root `theme.yaml`
   overrides the homepage alone; a child's `theme.yaml` is inherited further.
-- `sitewide-content.yaml` holds shared logo display settings, banners, and
+- `site-config/shared-content.yaml` holds shared logo display settings, banners, and
   footer content.
-- `config.yaml` holds the public URL and optional language, local and remote
+- `site-config/settings.yaml` holds the public URL and optional language, local and remote
   source links, navigation model, static search, and scroll behavior.
 - `public/` holds static files copied without processing.
 
 Norna validates this structure, processes managed images when needed, and
-builds the generated website into `dist/`. For a site using the former
+builds the generated website into `dist/`. For a site using the former root configuration files or
 `pages/000-home/` layout, run `norna site:upgrade` to preview its conversion,
 then `norna site:upgrade --apply`; see [source conversion](https://janga.github.io/norna/reference/site/files/#convert-the-former-homepage-folder).
 

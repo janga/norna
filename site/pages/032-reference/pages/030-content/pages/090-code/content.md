@@ -12,13 +12,13 @@ draw attention to the relevant change.
 ## Titles and line emphasis
 
 ````md title="Source for the example below"
-```yaml title="site/config.yaml" {2}
+```yaml title="site/site-config/settings.yaml" {2}
 url: https://example.com/
 search: true
 ```
 ````
 
-```yaml title="site/config.yaml" {2}
+```yaml title="site/site-config/settings.yaml" {2}
 url: https://example.com/
 search: true
 ```

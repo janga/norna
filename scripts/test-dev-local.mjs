@@ -49,7 +49,7 @@ const assertSucceeded = (result, label) => {
 	assert.equal(
 		result.status,
 		0,
-		`${label} failed:\n${result.stdout}\n${result.stderr}`,
+		`${label} failed (${result.error?.message ?? result.signal ?? result.status}):\n${result.stdout}\n${result.stderr}`,
 	);
 };
 
@@ -130,23 +130,27 @@ try {
 	const logs = run('logs');
 	assertSucceeded(logs, 'dev logs');
 	assert.match(logs.stdout, /astro\s+v|watching for file changes/iu);
+	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
+	assertSucceeded(run('status'), 'status while configuration needs conversion');
+	assertSucceeded(run('logs'), 'logs while configuration needs conversion');
 
 	const stop = run('stop');
 	assertSucceeded(stop, 'dev stop');
 	assert.match(stop.stdout, /Stopped dev server/u);
+	await rm(path.join(siteDir, 'config.yaml'));
 
 	const stoppedStatus = run('status');
 	assertSucceeded(stoppedStatus, 'stopped dev status');
 	assert.match(stoppedStatus.stdout, /No dev server is running/u);
 
-	const themePath = path.join(siteDir, 'theme.yaml');
+	const themePath = path.join(siteDir, 'site-config', 'site-theme.yaml');
 	const validTheme = await readFile(themePath, 'utf8');
 	await writeFile(themePath, 'unknownThemeSetting: true\n');
 	const invalidThemeStart = run('start');
 	assert.notEqual(invalidThemeStart.status, 0, 'dev start unexpectedly accepted an invalid theme');
 	assert.match(
 		`${invalidThemeStart.stdout}\n${invalidThemeStart.stderr}`,
-		/site\/theme\.yaml has invalid YAML structure.*unknownThemeSetting/su,
+		/site\/site-config\/site-theme\.yaml has invalid YAML structure.*unknownThemeSetting/su,
 	);
 	assert.doesNotMatch(invalidThemeStart.stderr, /yaml-config\.mjs:\d+/u);
 	await writeFile(themePath, validTheme);

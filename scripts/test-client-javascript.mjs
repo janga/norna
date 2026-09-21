@@ -13,7 +13,7 @@ const tempRoot = await mkdtemp(path.join(tempParent, 'norna-client-javascript-')
 const siteDir = path.join(tempRoot, 'site');
 const homeDir = siteDir;
 const pageDir = path.join(siteDir, 'pages', '010-details');
-const configPath = path.join(siteDir, 'config.yaml');
+const configPath = path.join(siteDir, 'site-config/settings.yaml');
 
 const runBuild = () => {
 	const result = spawnSync(process.execPath, [nornaBin, 'build'], {
@@ -81,9 +81,10 @@ const writeSvg = (filePath, color) => writeFile(filePath, [
 
 try {
 	await mkdir(homeDir, { recursive: true });
+	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeConfig();
-	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
+	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `typography:
   profile: reading
 palette: warm-paper
 `);
@@ -372,7 +373,7 @@ page:
 # Details
 Plain page content.
 `);
-	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), `banners:
+	await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), `banners:
   - id: test-banner
     title: Test banner
     text: This banner can be dismissed.
@@ -384,7 +385,7 @@ Plain page content.
 	assert.equal(getPageFeatureScripts(bannerHtml).length, 1, 'A dismissible banner should load only its dismissal script in addition to reader preferences.');
 	assert.match(await readDeliveredScript(getPageFeatureScripts(bannerHtml)[0]), /norna-banner:/);
 
-	await writeFile(path.join(siteDir, 'sitewide-content.yaml'), '{}\n');
+	await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), '{}\n');
 	await writeFile(path.join(homeDir, 'content.md'), `---
 page:
   description: A plain page with selectable appearances.
@@ -394,7 +395,7 @@ page:
 
 Ordinary content with a reader-selectable appearance.
 `);
-	await writeFile(path.join(siteDir, 'theme.yaml'), `typography:
+	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `typography:
   profile: reading
 palette: warm-paper
 appearance:

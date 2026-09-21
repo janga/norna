@@ -117,7 +117,7 @@ evaluation update; there are no Marketplace updates for this extension.
 
 1. Open the root of a Norna site project in VS Code.
 2. Run `npm install` in that project.
-3. Open `site/theme.yaml` or a page `content.md`.
+3. Open `site/site-config/site-theme.yaml` or a page `content.md`.
 4. Check the **Norna** item on the right side of the status bar.
 5. On a blank, unindented Markdown body line, press `Ctrl+Space` or run
    **Trigger Suggest** to choose a callout, image block, card list, or page list

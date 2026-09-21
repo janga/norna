@@ -562,7 +562,7 @@ const normalizeLanguageTag = (value) => {
 
 const formatSupportedLanguages = () => supportedLocaleTags.join(', ');
 
-export const resolveLocale = (configuredLanguage = 'en', sourceLabel = 'site/config.yaml') => {
+export const resolveLocale = (configuredLanguage = 'en', sourceLabel = 'site/site-config/settings.yaml') => {
 	let parsed;
 	try {
 		parsed = normalizeLanguageTag(configuredLanguage);

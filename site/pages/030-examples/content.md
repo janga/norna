@@ -213,14 +213,14 @@ and
 
 ## Code blocks {#code-blocks}
 
-```yaml title="site/config.yaml" {2}
+```yaml title="site/site-config/settings.yaml" {2}
 url: https://example.com/
 search: true
 language: en
 ```
 
 ````md
-```yaml title="site/config.yaml" {2}
+```yaml title="site/site-config/settings.yaml" {2}
 url: https://example.com/
 search: true
 language: en
@@ -308,8 +308,8 @@ alternative appears with its label. Read the
 | Sidenotes               | Named note       | Free margin   | Inline       | No change       | Linked notes  |
 | Code                    | Code fence       | Expand        | Scroll       | Copy            | Select text   |
 | Tables                  | Markdown         | Expand        | Scroll       | Column controls | Scroll        |
-| Search                  | `config.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
-| Appearance              | `theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
+| Search                  | `site-config/settings.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
+| Appearance              | `site-config/site-theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
 
 ```md title="Table source (Markdown)"
 | Capability {row-header} | Source           | Wide screen   | Small screen | With JS         | Without JS    |
@@ -323,8 +323,8 @@ alternative appears with its label. Read the
 | Sidenotes               | Named note       | Free margin   | Inline       | No change       | Linked notes  |
 | Code                    | Code fence       | Expand        | Scroll       | Copy            | Select text   |
 | Tables                  | Markdown         | Expand        | Scroll       | Column controls | Scroll        |
-| Search                  | `config.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
-| Appearance              | `theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
+| Search                  | `site-config/settings.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
+| Appearance              | `site-config/site-theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
 ```
 
 **Source:** GitHub Flavored Markdown table syntax. The `{row-header}` marker is
@@ -671,7 +671,7 @@ accepted structure. Read the
 Norna allows searching page titles, sections, prose, captions, notes, and
 structured content without a hosted search service.
 
-```yaml title="site/config.yaml"
+```yaml title="site/site-config/settings.yaml"
 search: true
 ```
 
@@ -686,7 +686,7 @@ reading position. Read the
 | -------------- | --------------------------------------------------- |
 | `language: sv` | Sidor, Sidinnehåll, Sök, Visning, Fokuserad läsning |
 
-```yaml title="site/config.yaml"
+```yaml title="site/site-config/settings.yaml"
 language: sv
 ```
 
@@ -728,7 +728,7 @@ accepted filenames and uniqueness rules; no image path belongs in YAML. Read the
 [Open the complete site-wide elements demonstration](https://janga.github.io/norna/examples/feature-demos/sitewide-content/)
 to see the same logo, dismissible notices, and footer across several pages.
 
-```yaml title="site/sitewide-content.yaml"
+```yaml title="site/site-config/shared-content.yaml"
 logo:
   height: 2.8rem
 banners:
@@ -773,11 +773,11 @@ items:
     link: https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/
 ```
 
-```yaml title="site/theme.yaml"
+```yaml title="site/site-config/site-theme.yaml"
 preset: documentation
 ```
 
-**Source:** Root theme configuration. A preset supplies coordinated defaults for
+**Source:** Shared theme configuration. A preset supplies coordinated defaults for
 a typical scenario: typography, spacing, page width, media placement, colors,
 corners, navigation, and structured blocks. It avoids asking the author to
 design every relationship independently.
@@ -785,7 +785,7 @@ design every relationship independently.
 Override only a deliberate exception; all other values still come from the
 preset:
 
-```yaml title="site/theme.yaml"
+```yaml title="site/site-config/site-theme.yaml"
 preset: documentation
 layout:
   textWidth: normal
@@ -802,15 +802,15 @@ semantic states, Light appearance, and Dark appearance. A palette changes that
 coordinated color system without replacing the preset's typography or spacing.
 This example selects the same palette with the `documentation` preset:
 
-```yaml title="site/theme.yaml"
+```yaml title="site/site-config/site-theme.yaml"
 preset: documentation
 palette: clay-rose
 ```
 
-**Source:** Root theme configuration. Use the
+**Source:** Shared theme configuration. Use the
 [Theme explorer](https://janga.github.io/norna/examples/theme-presets/) to
 combine the built-in presets and palettes, then inspect the generated
-`theme.yaml`. Read the
+`site-config/site-theme.yaml`. Read the
 [palette and Appearance reference](/reference/configuration/palettes/).
 
 ## Let readers adapt the display {#reader-display}
@@ -821,12 +821,12 @@ source. Appearance can follow the reader's system or use Light or Dark. Focus
 reading removes persistent navigation, breadcrumbs, and the footer while
 preserving access to the site through a compact menu.
 
-```yaml title="site/theme.yaml"
+```yaml title="site/site-config/site-theme.yaml"
 appearance:
   default: system
 ```
 
-**Source:** Root theme configuration plus reader-owned choices. The theme sets
+**Source:** Shared theme configuration plus reader-owned choices. The theme sets
 the initial presentation. Appearance and reading width are always available;
 tree navigation also provides Focus reading. The reader's selection is stored
 only in that browser. Read the
@@ -879,7 +879,7 @@ norna config:check
 norna content:check
 ```
 
-- **Invalid setting:** `search: yes` in `config.yaml` supplies text where Norna
+- **Invalid setting:** `search: yes` in `site-config/settings.yaml` supplies text where Norna
   requires a boolean. Use `search: true` or `search: false`.
 - **Missing image:** `image: portrait.svg` refers to a file that does not exist.
   Put the image in the page's `images/` directory or correct the filename.
