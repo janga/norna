@@ -61,7 +61,7 @@ const prepareWorkspace = async () => {
 	await write('tree-content/content.md', '# Tree Home\n');
 	await write('tree-content/site-config/site-theme.yaml', 'preset: documentation\n');
 	await write('tree-content/theme.yaml', 'layout:\n  textWidth: narrow\n');
-	await write('tree-content/public/downloads/notes.txt', 'Public download\n');
+	await write('tree-content/public/.well-known/security.txt', 'Contact: mailto:security@example.com\n');
 	await write('tree-content/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
 	await write('tree-content/pages/010-guide/content.md', '---\n# Keep metadata comment\npage:\n  description: "Original description" # keep\n  aliases: [/previous-guide/]\n---\n\n# Tree Guide\n\nKeep this prose and [authored link text](/topics/child/).\n');
 	await write('tree-content/pages/010-guide/theme.yaml', 'layout:\n  contentSpacing: compact\n');

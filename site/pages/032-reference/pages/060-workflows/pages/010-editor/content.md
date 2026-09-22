@@ -82,44 +82,55 @@ with only one site's files in both Site Tree and Explorer, use **File → Open
 Folder…** to open that site's source folder. Site Tree does not change which
 folders VS Code includes in Explorer.
 
-The top row uses the homepage's title and is marked **Homepage**. Clicking it
-opens `site/content.md` (or `content.md` in your chosen site source folder).
-Beneath a page, the tree follows the actual
-[file organization](/reference/site/files/): `content.md` comes first, followed
-by the optional `theme.yaml`. The root then shows its `site-config/` folder.
-Image files belong under `images/`; site-wide published files appear under
-root `public/`. Child pages appear under the real `pages/` directory.
+The top row uses the homepage's title and is marked **Homepage**. Expand it
+and select **content.md** to edit `site/content.md` (or `content.md` in your
+chosen site source folder).
+The tree follows the actual [file organization](/reference/site/files/).
+The homepage shows `site-config/` first, with a settings icon, then `public/`
+when present. Its optional `theme.yaml` and own `content.md` follow. Other pages
+start with `theme.yaml` when present, then `content.md`. Images belong under `images/`;
+child pages appear under the real `pages/` directory.
 A readable page row represents its numbered source directory; the number
 stays in the filesystem but does not clutter the displayed title.
 
 For example, a homepage titled **Norna** and a child titled **Guide** appear as:
 
 ```text
-Norna  Homepage           opens site/content.md
-  content.md
-  theme.yaml
+Norna  Homepage                         +  …
   site-config/
     settings.yaml
     site-theme.yaml
     shared-content.yaml
-  images/
   public/
+    robots.txt
+    icon.ico
+  theme.yaml
+  content.md
+  images/
   pages/
-    Guide                 opens site/pages/010-guide/content.md
-      content.md
+    Guide                              +  …
       theme.yaml
+      content.md
       images/
 ```
 
-Only existing files and folders appear. `site-config/site-theme.yaml` controls
+Only existing files and folders appear. The `site-config/` folder starts
+expanded; the extension remembers your later choice for that site in the
+workspace, including after refresh or window reload. An open settings file
+does not force the folder open again.
+
+`site-config/site-theme.yaml` controls
 the shared site appearance; root `theme.yaml` affects only the homepage.
 A branch's `theme.yaml` applies to that branch and its descendants. See
-[theme scope](/reference/configuration/theme/#page-themes). Both the page row
-and its `content.md` child open the same source. Categories show `category.yaml`
-first and have no `content.md`.
+[theme scope](/reference/configuration/theme/#page-themes). Hover over `theme.yaml`
+for a reminder of its scope. Categories show `category.yaml` after their optional
+theme and have no `content.md`.
 
-Click a title to open its source. Use the separate chevron, or the keyboard
-arrow keys, to expand and collapse children. Within the chosen site, the tree
+Page headings and directory labels select a row without opening a file.
+The `public/` folder has a tooltip explaining that its files are published
+unchanged with the site, for example `robots.txt` and icons.
+Use the separate chevron, or the keyboard arrow keys,
+to expand and collapse children; select a file row to open that file. Within the chosen site, the tree
 reveals the active source file, including one opened through the website's
 **Open in VS Code** link. Other expanded branches remain open. Resource files use VS Code's normal
 editor selection: PNG images, for example, open in its image preview. Use
@@ -135,14 +146,15 @@ the destination. Enter a title and URL segment, review the resulting address
 and directory, then select **Create page**. The new page appears last among
 its siblings and opens for editing.
 
-To create a child, select its parent page and use the **+** button beside its
-title (**Norna: Add Child Page…**). This also works when `pages/` does not yet
-exist: the extension creates it with the first child. The parent is already
-selected, so the next question is the new page's title. The **+** in the tree
+To create a child, select its parent page, use the **+** button beside its
+title (**Norna: Add…**) and choose **Add child page…**. This also works when
+`pages/` does not yet exist: the extension creates it with the first child.
+The parent is already selected, so the next question is the new page's title.
+The same menu offers **Import image…** on content pages. The **+** in the tree
 toolbar acts on the selected page or the owner of a selected resource.
 
-The **…** beside a page opens **Page Actions**: create a child, edit page
-information, open the source, import an image or remove the page. The Command
+The **…** beside a page opens **Page Actions**: edit page information, open
+the source or remove the page. The Command
 Palette and context menu remain available. **Norna: New Page…** additionally
 offers creation beside a page or at the site root. Browsing alone creates no folders.
 **Norna: New Category…** follows the same steps for a navigation category.
@@ -169,8 +181,10 @@ engine build supporting that source format. The extension also recognizes
 older source layouts when working with earlier engines. Single-site selection
 requires extension version 0.3.1 or later. The file
 tree requires extension version 0.3.0 or later and an engine build
-with page-file support. Engines with the earlier site-tree support retain
-their page tree and show a message explaining the missing file view. An
+with page-file support. The Add menu and grouping-row behavior described here
+require extension 0.4.1; the root ordering also needs an updated engine.
+Engines with the earlier site-tree support retain their page tree, where page
+labels still open the source, and show a message explaining the missing file view. An
 incompatible engine reports the problem on its site root; compatible
 IntelliSense remains available. Run **Norna: Refresh Site Tree** after an engine
 update or to rediscover sites. External file changes normally refresh the
@@ -201,7 +215,8 @@ the same name, rename the restored folder to its original name.
 
 ## Add and use page images
 
-Select a page, open its **…** menu and choose **Import image…**. Choose one
+Select a page, use its **+** menu and choose **Import image…**. No `images/`
+folder is required before starting. Choose one
 JPG, JPEG, PNG or SVG and confirm its filename. The VS Code extension copies
 the file into that page's `images/`, creating the directory if needed. The
 original remains unchanged. You can also choose an image from another page

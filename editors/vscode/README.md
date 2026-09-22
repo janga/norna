@@ -44,15 +44,23 @@ is remembered for that workspace; opening another site's file does not switch
 or add a tree. Open just your site's folder for a workspace containing only
 that site's files; the ordinary Explorer continues to show all workspace folders.
 
-The tree's root is its homepage, marked **Homepage**, opening `site/content.md`.
+The tree's root is its homepage, marked **Homepage**. Expand it and open its
+`content.md` file to edit the homepage.
 Existing configuration appears
 before `pages/`, beneath the page or category that owns it. Page names hide
 numeric ordering prefixes; resource files retain their actual names. Images
 use VS Code's normal image preview, and `public/` includes nested static files.
 
-A page label opens its source; the chevron controls expansion. A page's **+**
-offers **Norna: Add Child Page…**, including when `pages/` does not yet exist.
-Its **…** menu exposes page information, source opening, image import and
+A page or directory label selects the row; the chevron controls expansion.
+Open a file from its own row. The homepage lists `site-config/` first, then
+`public/`, `theme.yaml`, `content.md`, `images/` and `pages/` when present.
+The settings folder starts expanded and remembers subsequent choices in this
+workspace. Other pages start with optional `theme.yaml`, then `content.md`.
+Hover over `theme.yaml` to see its scope, or `public/` to see that folder's purpose.
+
+A page's **+** opens **Norna: Add…** with child-page creation and image import,
+including when `pages/` or `images/` does not yet exist. Categories offer child
+pages only. Its **…** menu exposes page information, source opening and
 removal. Each existing `pages/` also offers **Norna: Add Page…**. The
 context menu and Command Palette provide
 **Norna: New Page…**, **Norna: New Category…** and **Norna: Page Information…**.
@@ -71,7 +79,9 @@ rewrite references. See the
 [image workflow](https://janga.github.io/norna/reference/workflows/editor/#add-and-use-page-images)
 for cancellation, recovery and current limits.
 
-The single-site selection requires extension 0.3.1 or later. The file view
+The Add menu and passive grouping rows require extension 0.4.1; the root order
+also needs the updated engine. The single-site selection requires extension
+0.3.1 or later. The file view
 needs extension 0.3.0 and the engine's optional page-file support.
 Engines with the earlier site-tree API retain their page tree and show a
 message explaining the unavailable file view. Compatible IntelliSense remains

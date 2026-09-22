@@ -88,6 +88,8 @@ Its implemented foundation is
 [BL-140 VS Code Page Files Implementation](docs/design/backlog/BL-140-vscode-page-files-implementation.md).
 The first page/image authoring prototype is implemented in
 [BL-144 VS Code Page And Image Authoring Prototype](docs/design/backlog/BL-144-vscode-page-image-authoring-prototype.md).
+Its tree ordering, grouping rows and Add menu are refined in
+[BL-145 VS Code Site Tree Ordering And Add Menu](docs/design/backlog/BL-145-vscode-site-tree-ordering-add-menu.md).
 The remaining refinements still need their own discussion:
 
 2. [`BL-134` VS Code Image File Operations](docs/design/backlog/BL-134-vscode-image-file-operations.md):

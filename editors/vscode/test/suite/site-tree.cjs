@@ -66,10 +66,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 				await window.keyboard.press('Enter');
 				await menuItem.waitFor({ state: 'hidden' });
 			} else {
-				const filename = (await row(title).getAttribute('aria-label')).split('\n').find((line) => line.startsWith(root));
 				await row(title).getByText(title, { exact: true }).click();
-				await waitFor(() => vscode.window.activeTextEditor?.document.uri.fsPath, (actual) => actual === filename, 'The command target source did not open.');
-				await waitFor(() => window.evaluate(() => Boolean(document.activeElement?.closest('.monaco-editor'))), Boolean, 'Source opening did not finish transferring focus to the editor.');
 				await waitFor(() => row(title).getAttribute('aria-selected'), (value) => value === 'true', 'The command target was not selected.');
 				await vscode.commands.executeCommand('workbench.action.showCommands');
 				await quick.locator('.quick-input-box input').fill(`>Norna: ${action}`);
@@ -93,31 +90,35 @@ async function runSiteTree({ openDocument, waitFor }) {
 		}
 		passed('Homepage content and local theme are visible; physical site-config files open');
 		await row('Tree Topics').getByText('Tree Topics', { exact: true }).click();
-		await activeIs(topicPath);
-		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'false', 'Opening a category must not expand it.');
+		await activeIs('tree-content/site-config/site-theme.yaml');
+		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'false', 'Selecting a category must not expand it.');
 		await row('Tree Topics').locator('.monaco-tl-twistie').click();
+		await sourceRow(topicPath).click();
+		await activeIs(topicPath);
 		await expandDirectory('tree-content/pages/020-topics/pages');
 		await row('Tree Child').waitFor({ state: 'visible' });
 		await activeIs(topicPath);
 		await row('Tree Child').getByText('Tree Child', { exact: true }).click();
+		await activeIs(topicPath);
+		assert.equal(await row('Tree Child').getAttribute('aria-expanded'), 'false');
+		await row('Tree Child').locator('.monaco-tl-twistie').click();
+		await sourceRow('tree-content/pages/020-topics/pages/010-child/content.md').click();
 		await activeIs('tree-content/pages/020-topics/pages/010-child/content.md');
-		passed('Label opens source; chevron expands independently');
+		passed('Grouping labels leave the editor unchanged; chevrons expand and file rows open');
+		await row('Tree Topics').getByText('Tree Topics', { exact: true }).click();
 		await vscode.commands.executeCommand('nornaSiteTree.focus');
 		await tree.press('ArrowLeft');
-		await tree.press('ArrowLeft');
-		await tree.press('ArrowLeft');
-		await tree.press('ArrowLeft');
 		await waitFor(() => row('Tree Topics').getAttribute('aria-expanded'), (value) => value === 'false', 'Keyboard collapse did not work.');
+		await tree.press('ArrowRight');
 		await tree.press('ArrowRight');
 		await tree.press('Enter');
 		await activeIs(topicPath);
 		passed('Keyboard expansion, collapse and opening');
 		await openDocument(guidePath);
-		await waitFor(() => row('Tree Guide').getAttribute('aria-selected'), (value) => value === 'true', 'Active source was not selected.');
+		await waitFor(() => sourceRow(guidePath).getAttribute('aria-selected'), (value) => value === 'true', 'Active source file was not selected.');
 		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'true', 'Following another page reset expansion.');
 		passed('Active-file reveal preserves unrelated expanded branches');
 		// Resource rows use their actual source locations, even with equal names.
-		await row('Tree Guide').locator('.monaco-tl-twistie').click();
 		await sourceRow('tree-content/pages/010-guide/theme.yaml').click();
 		await activeIs('tree-content/pages/010-guide/theme.yaml');
 		await expandDirectory('tree-content/pages/010-guide/images');
@@ -129,10 +130,10 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await waitFor(() => vscode.window.tabGroups.activeTabGroup.activeTab?.input?.uri?.fsPath,
 			(filename) => filename === path.join(root, 'tree-content/images/example.png'), 'Equal image names opened the wrong owner’s file.');
 		await expandDirectory('tree-content/public');
-		await expandDirectory('tree-content/public/downloads');
-		await sourceRow('tree-content/public/downloads/notes.txt').click();
-		await activeIs('tree-content/public/downloads/notes.txt');
-		assert.equal(vscode.window.activeTextEditor.document.getText(), 'Public download\n');
+		await expandDirectory('tree-content/public/.well-known');
+		await sourceRow('tree-content/public/.well-known/security.txt').click();
+		await activeIs('tree-content/public/.well-known/security.txt');
+		assert.equal(vscode.window.activeTextEditor.document.getText(), 'Contact: mailto:security@example.com\n');
 		passed('Owned YAML, image previews, duplicate image names and nested public files');
 		await openDocument(guidePath);
 
@@ -234,12 +235,12 @@ async function runSiteTree({ openDocument, waitFor }) {
 		passed('Add Page inline action selects the physical pages folder without a location prompt');
 		await create({ selected: 'Added Directly', kind: 'page', placement: 'Inside “Added Directly”', title: 'First Nested Page', slug: 'first-nested-page' });
 		await activeIs('tree-content/pages/020-topics/pages/040-added-directly/pages/010-first-nested-page/content.md');
-		await waitFor(() => row('First Nested Page').getAttribute('aria-selected'), (value) => value === 'true', 'The first child was not revealed under its new pages folder.');
+		await waitFor(() => sourceRow('tree-content/pages/020-topics/pages/040-added-directly/pages/010-first-nested-page/content.md').getAttribute('aria-selected'), (value) => value === 'true', 'The first child source was not revealed under its new pages folder.');
 		assert.equal(await window.getByText(/Norna: Cannot resolve tree item/).count(), 0, 'Creation and filesystem refresh must not invalidate an active reveal.');
 		passed('First-child creation adds its physical pages folder and reveals the source without a tree error');
 
 		await openDocument('tree-content/content.md');
-		await waitFor(() => row('Tree Home').getAttribute('aria-selected'), (value) => value === 'true', 'Home was not revealed before its actions were tested.');
+		await waitFor(() => sourceRow('tree-content/content.md').getAttribute('aria-selected'), (value) => value === 'true', 'Home source was not revealed before its actions were tested.');
 		await contextAction('Tree Home', 'New Page');
 		assert.ok((await quick.locator('.monaco-list-row').allTextContents()).some((text) => text.includes('Inside “Tree Home”')));
 		await quick.locator('.quick-input-box input').press('Escape');
@@ -282,7 +283,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		assert.equal(await row('Other Tree Home').count(), 0, 'Opening another site’s source must not add it to Site Tree.');
 		assert.equal(await row('Tree Home').count(), 1);
 		await chooseSite('Other Tree Home');
-		await waitFor(() => row('Other Tree Home').getAttribute('aria-selected'), (value) => value === 'true', 'The second site was not revealed.');
+		await waitFor(() => sourceRow('second/tree-content/content.md').getAttribute('aria-selected'), (value) => value === 'true', 'The second site source was not revealed.');
 		assert.equal(await row('Tree Home').count(), 0, 'Choosing another site must show exactly one tree.');
 		assert.match(await row('Other Tree Home').innerText(), /Homepage/);
 		await information('Other Tree Home', 'Title', 'Second Site Home');
@@ -292,7 +293,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 
 		await openDocument(guidePath);
 		await chooseSite('Tree Home');
-		await waitFor(() => row('Renamed Guide').getAttribute('aria-selected'), (value) => value === 'true', 'The captured source was not selected.');
+		await waitFor(() => sourceRow(guidePath).getAttribute('aria-selected'), (value) => value === 'true', 'The captured source was not selected.');
 		const settings = vscode.workspace.getConfiguration('workbench');
 		for (const [appearance, theme] of [['dark', 'Default Dark Modern'], ['light', 'Default Light Modern']]) {
 			await settings.update('colorTheme', theme, vscode.ConfigurationTarget.Workspace);

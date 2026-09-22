@@ -108,7 +108,9 @@ export const readSiteFileTree = async (options) => {
 		return item;
 	};
 	const addDirectory = async (owner, parentId, filename, role) => {
-		const directory = addResource(owner, parentId, filename, 'directory', role, role === 'configuration' ? 'Settings and content shared by the complete site' : '');
+		const description = role === 'configuration' ? 'Settings and content shared by the complete site'
+			: role === 'public' ? 'Files published unchanged with the site, such as robots.txt and icons.' : '';
+		const directory = addResource(owner, parentId, filename, 'directory', role, description);
 		if (role === 'pages') return;
 		const entries = (await entriesAt(filename)).filter((entry) => entry.isDirectory() || entry.isFile());
 		const configOrder = ['settings.yaml', 'site-theme.yaml', 'shared-content.yaml'];
@@ -126,16 +128,23 @@ export const readSiteFileTree = async (options) => {
 		const parentId = page.isHome ? null : resourceId(path.dirname(directory));
 		items.push({ ...page, id: page.sourcePath, parentId, ownerId: page.sourcePath });
 		const entries = new Map((await entriesAt(directory)).map((entry) => [entry.name, entry]));
-		const configuration = [page.kind === 'category' ? 'category.yaml' : 'content.md', 'theme.yaml'];
+		const addExistingDirectory = async (name) => {
+			if (entries.get(name)?.isDirectory()) await addDirectory(page, page.sourcePath, path.join(directory, name), name === 'site-config' ? 'configuration' : name);
+		};
+		if (page.isHome) {
+			await addExistingDirectory('site-config');
+			await addExistingDirectory('public');
+		}
+		const configuration = ['theme.yaml', page.kind === 'category' ? 'category.yaml' : 'content.md'];
 		for (const filename of configuration) {
 			if (!entries.get(filename)?.isFile()) continue;
-			const description = filename === 'theme.yaml' ? page.isHome ? 'Homepage appearance only; not inherited' : 'Appearance inherited by this branch'
+			const description = filename === 'theme.yaml' ? page.isHome ? 'Visual settings for this page only. Overrides site-config/site-theme.yaml.'
+				: page.kind === 'category' ? 'Visual settings for pages in this category, including their child pages. Overrides inherited settings.'
+					: 'Visual settings for this page and its child pages. Overrides inherited settings.'
 				: filename === 'content.md' ? 'Page content' : 'Category information';
 			addResource(page, page.sourcePath, path.join(directory, filename), 'file', filename === 'content.md' ? 'content' : 'configuration', description);
 		}
-		for (const name of [...(page.isHome ? ['site-config'] : []), 'images', ...(page.isHome ? ['public'] : []), 'pages']) {
-			if (entries.get(name)?.isDirectory()) await addDirectory(page, page.sourcePath, path.join(directory, name), name === 'site-config' ? 'configuration' : name);
-		}
+		for (const name of ['images', 'pages']) await addExistingDirectory(name);
 	}
 	return { ...snapshot, items, problems };
 };

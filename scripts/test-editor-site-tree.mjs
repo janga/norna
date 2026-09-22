@@ -102,7 +102,7 @@ try {
 		['pages/010-guide/images/shared.svg', '<svg><title>Guide</title></svg>'],
 		['pages/020-topics/theme.yaml', 'layout:\n  contentSpacing: compact\n'],
 		['pages/020-topics/pages/010-child/images/shared.svg', '<svg><title>Child</title></svg>'],
-		['public/logo.svg', '<svg/>'], ['public/downloads/example.txt', 'Download bytes\n'],
+		['public/robots.txt', 'User-agent: *\n'], ['public/icons/icon.svg', '<svg/>'],
 		['.norna/public/generated.svg', '<svg/>'],
 	]) await write(path.join(firstSite, filename), source);
 	await mkdir(path.join(firstSite, 'public/empty'), { recursive: true });
@@ -123,15 +123,15 @@ try {
 	const childrenOf = (id) => files.items.filter((item) => item.parentId === id);
 	const home = path.join(firstSite, 'content.md');
 	assert.deepEqual(files.items.filter((item) => item.parentId === null).map((item) => item.sourcePath), [home], 'One root page, with no synthetic site container.');
-	assert.deepEqual(childrenOf(home).map((item) => item.title), ['content.md', 'theme.yaml', 'site-config', 'images', 'public', 'pages']);
-	assert.deepEqual(childrenOf(page).map((item) => item.title), ['content.md', 'theme.yaml', 'images'], 'A leaf must not gain a fictional pages directory.');
-	assert.deepEqual(childrenOf(category).map((item) => item.title), ['category.yaml', 'theme.yaml', 'pages']);
+	assert.deepEqual(childrenOf(home).map((item) => item.title), ['site-config', 'public', 'theme.yaml', 'content.md', 'images', 'pages']);
+	assert.deepEqual(childrenOf(page).map((item) => item.title), ['theme.yaml', 'content.md', 'images'], 'A leaf must not gain a fictional pages directory.');
+	assert.deepEqual(childrenOf(category).map((item) => item.title), ['theme.yaml', 'category.yaml', 'pages']);
 	assert.equal(files.items.find((item) => item.id === page).parentId, resourceId('pages'));
 	assert.equal(files.items.find((item) => item.id === child).parentId, resourceId('pages/020-topics/pages'));
 	assert.equal(at('pages/020-topics/pages/010-child/images/shared.svg').ownerId, child);
 	assert.equal(at('pages/010-guide/images/shared.svg').ownerId, page);
 	assert.equal(at('images/shared.svg').ownerId, home);
-	assert.equal(at('public/downloads/example.txt').parentId, resourceId('public/downloads'));
+	assert.equal(at('public/icons/icon.svg').parentId, resourceId('public/icons'));
 	assert.equal(at('public/empty').kind, 'directory');
 	assert.equal(at('public/outside'), undefined, 'Do not follow symbolic links outside the displayed source tree.');
 	assert.equal(at('.norna/public/generated.svg'), undefined);
@@ -141,8 +141,10 @@ try {
 	assert.equal(files.items.find((item) => item.id === page).title, 'Unsaved title');
 	assert.equal(files.items.find((item) => item.id === category).title, 'Unsaved category');
 	assert.match(at('site-config').description, /shared by the complete site/);
-	assert.match(at('theme.yaml').description, /not inherited/);
-	assert.match(at('pages/010-guide/theme.yaml').description, /inherited by this branch/);
+	assert.match(at('theme.yaml').description, /this page only.*site-config\/site-theme\.yaml/);
+	assert.match(at('pages/010-guide/theme.yaml').description, /this page and its child pages.*inherited settings/);
+	assert.match(at('pages/020-topics/theme.yaml').description, /pages in this category.*child pages/);
+	assert.match(at('public').description, /published unchanged.*robots\.txt and icons/);
 	assert.equal(new Set(files.items.map((item) => item.id)).size, files.items.length, 'Resource and page identities must be unique, including category.yaml.');
 	assert.deepEqual(files.items.filter((item) => ['page', 'category'].includes(item.kind)).map((item) => item.url), files.nodes.map((item) => item.url));
 	assert.deepEqual(await inventory(firstSite), beforeBrowse, 'Browsing may not change source bytes, create directories or generated state.');
@@ -168,7 +170,7 @@ try {
 	await write(path.join(emptySite, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 	await mkdir(path.join(emptySite, 'pages'));
 	const empty = await readSiteFileTree({ siteRoot: emptySite });
-	assert.deepEqual(empty.items.map((item) => item.title), ['Empty', 'content.md', 'site-config', 'settings.yaml', 'pages']);
+	assert.deepEqual(empty.items.map((item) => item.title), ['Empty', 'site-config', 'settings.yaml', 'content.md', 'pages']);
 	console.log('Site tree engine tests passed: metadata, dirty overlays, isolated roots, malformed nodes, physical files, themes, public resources, read-only browsing, refresh and creation.');
 } finally {
 	await rm(root, { recursive: true, force: true });

@@ -15,6 +15,11 @@ import/insertion/replacement/removal journey. Later drafts build on that
 baseline; their additional scope is not implicitly approved. This request
 supersedes waiting for separate visual design rounds for that bounded prototype.
 
+On 2026-09-22 the owner approved
+[BL-145 VS Code Site Tree Ordering And Add Menu](backlog/BL-145-vscode-site-tree-ordering-add-menu.md):
+passive grouping rows, site configuration first, remembered configuration
+expansion and a page-row Add menu for child pages and images.
+
 ## Agreed Authoring Model
 
 **Approved by the owner on 2026-09-20.** These decisions apply across the
@@ -34,13 +39,23 @@ model. They establish the direction, not approval of every future control.
 - Show configuration under its owning root, page or category, **before its
   `pages/` directory**. This applies at every depth, including the site's
   real `site-config/` directory and existing local configuration below it.
-  Show `content.md` first under each page, followed by its optional `theme.yaml`.
+  At the root show `site-config/`, then `public/`, then optional `theme.yaml`
+  and `content.md`. Other pages start with `theme.yaml` when present, then
+  `content.md`. Explain the theme's scope on hover, preserving its actual filename.
+  Site configuration has a settings icon, starts expanded and remembers the
+  user's subsequent choice per site in the workspace.
 - Show a page's images and other owned resources beneath that page, with
   actual resource filenames and recognizable `images/` and `pages/`
-  directories. Begin page editing from the page's representation in the tree.
+  directories. Page/directory labels select without opening files or showing
+  general path tooltips. Expand with the chevron or keyboard; open the actual file row to edit.
+  `public/` stays beside `site-config/`; illustrate it with site-wide files such
+  as `robots.txt` and icons, and explain its purpose on hover. Attachment
+  handling is a separate decision.
 - Every represented `pages/` provides **Add page** for that location through
-  its plus button and context menu. A page-row **Add Child Page** plus creates
-  a child directly, including the first child when `pages/` does not yet exist.
+  its plus button and context menu. Every page also has an **Add…** plus for
+  child-page creation and image import, even without `pages/` or `images/`.
+  Create a missing directory only when the corresponding operation proceeds.
+  Categories offer child pages only. The ellipsis holds other page actions.
 - Use one common page icon unless a page has an explicit presentation of its
   own. This does not introduce a custom-icon feature.
 - The homepage is the site root and may have children: `site/content.md`,

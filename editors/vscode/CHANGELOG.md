@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.1
+
+- Keep page and directory labels as grouping rows; open sources from their
+  actual file rows. Remove grouping tooltips and follow the active file row.
+- Show site configuration with a settings icon, initially expanded, and
+  remember its expanded/collapsed state across refresh and window reload.
+  Updated engines put `site-config/` and `public/` before homepage files.
+- Use each page's plus for an Add menu with child-page creation and image
+  import, even without `pages/` or `images/`. Keep other actions in the ellipsis.
+- Put `theme.yaml` before the content it controls and explain its scope on
+  hover. Add help for `public/`, without permanent descriptions on these rows.
+
 ## 0.4.0
 
 - Add a child directly from a visible page-row plus, even without `pages/`.

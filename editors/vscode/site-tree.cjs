@@ -21,6 +21,8 @@ function registerSiteTree(context, output) {
 	const changed = new vscode.EventEmitter();
 	const diagnostics = vscode.languages.createDiagnosticCollection('norna-site-tree');
 	const selectionKey = 'norna.siteTree.activeSite';
+	const expansionKey = 'norna.siteTree.configurationExpansion';
+	const configurationExpansion = { ...context.workspaceState.get(expansionKey) };
 	let activeSiteRoot = context.workspaceState.get(selectionKey);
 	let treeWork = Promise.resolve();
 	let reading = Promise.resolve();
@@ -147,7 +149,11 @@ function registerSiteTree(context, output) {
 		},
 		getParent: (node) => node.parent,
 		getTreeItem: (node) => {
-			const item = new vscode.TreeItem(node.title, node.children.length ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
+			const configuration = node.kind === 'directory' && node.role === 'configuration';
+			const groupingRow = node.kind === 'directory' || node.kind === 'site' || (isPage(node) && sites.get(node.siteRoot)?.fileTree);
+			const expanded = configuration && configurationExpansion[node.id] !== false;
+			const item = new vscode.TreeItem(node.title, !node.children.length ? vscode.TreeItemCollapsibleState.None
+				: expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed);
 			item.id = node.id;
 			item.contextValue = node.kind === 'site' ? (node.problem ? 'nornaSiteUnavailable' : 'nornaSite')
 				: node.kind === 'directory' ? node.role === 'pages' ? 'nornaPages' : node.role === 'images' ? 'nornaImages' : 'nornaDirectory'
@@ -157,29 +163,51 @@ function registerSiteTree(context, output) {
 			item.description = [node.isHome ? 'Homepage' : '',
 				node.problem ? 'needs attention' : isPage(node) && node.hiddenFromNavigation ? 'unlisted' : node.kind === 'category' ? 'category' : '',
 				unsaved ? 'unsaved' : ''].filter(Boolean).join(' · ');
-			item.iconPath = new vscode.ThemeIcon(node.problem ? 'warning' : node.kind === 'site' ? 'globe'
+			item.iconPath = new vscode.ThemeIcon(node.problem ? 'warning' : configuration ? 'settings-gear' : node.kind === 'site' ? 'globe'
 				: node.kind === 'category' || node.kind === 'directory' ? 'folder' : 'file');
-			item.tooltip = [node.title, node.description, node.url, node.sourcePath ?? node.siteRoot, node.problem].filter(Boolean).join('\n');
-			if (node.sourcePath) {
+			if (groupingRow) {
+				item.tooltip = node.role === 'public' ? node.description : '';
+				item.accessibilityInformation = { label: [node.title, item.description,
+					node.kind === 'directory' ? node.sourcePath : undefined].filter(Boolean).join(', ') };
+				// Native trees expand labels that have no command. Keep expansion on
+				// the chevron without opening a source or changing global tree settings.
+				item.command = { command: 'nornaEditor.selectSiteGroup', title: 'Select' };
+			} else if (node.sourcePath) {
+				item.tooltip = [node.title, node.description, node.url, node.sourcePath, node.problem].filter(Boolean).join('\n');
 				item.resourceUri = vscode.Uri.file(node.sourcePath);
-				if (node.kind !== 'directory') item.command = { command: 'nornaEditor.openSiteNode', title: 'Open Source', arguments: [node] };
+				item.command = { command: 'nornaEditor.openSiteNode', title: 'Open Source', arguments: [node] };
 			}
 			return item;
 		},
 	};
 	const tree = vscode.window.createTreeView(viewId, { treeDataProvider: provider, showCollapseAll: true });
+	const rememberExpansion = ({ element }, expanded) => {
+		if (element.kind !== 'directory' || element.role !== 'configuration') return;
+		configurationExpansion[element.id] = expanded;
+		void context.workspaceState.update(expansionKey, { ...configurationExpansion })
+			.catch((error) => output.appendLine(`Site tree: ${error.message}`));
+	};
 
 	const activeUri = () => vscode.window.tabGroups.activeTabGroup.activeTab?.input?.uri ?? vscode.window.activeTextEditor?.document.uri;
 	const activeNode = () => {
 		const uri = activeUri();
 		if (uri?.scheme !== 'file') return undefined;
-		const node = nodes.get(uri.fsPath) ?? nodes.get(`resource:${uri.fsPath}`);
+		const node = nodes.get(`resource:${uri.fsPath}`) ?? nodes.get(uri.fsPath);
 		return node?.siteRoot === activeSiteRoot ? node : undefined;
 	};
 	const ownerOf = (node) => isPage(node) || node?.kind === 'site' ? node : nodes.get(node?.ownerId);
 	const revealActive = () => enqueueTreeWork(async () => {
 		const node = activeNode();
-		if (node && tree.visible) await tree.reveal(node, { select: true, focus: false, expand: false });
+		let target = node;
+		// Following an open settings file must not undo an explicit collapse,
+		// including after refresh or reload while that file is still active.
+		for (let ancestor = node?.parent; ancestor; ancestor = ancestor.parent) {
+			if (ancestor.kind === 'directory' && ancestor.role === 'configuration' && configurationExpansion[ancestor.id] === false) {
+				target = ancestor;
+				break;
+			}
+		}
+		if (target && tree.visible) await tree.reveal(target, { select: target === node, focus: false, expand: false });
 	});
 	const refresh = ({ discover = false } = {}) => enqueueTreeWork(async () => {
 		reading = (async () => {
@@ -366,20 +394,29 @@ function registerSiteTree(context, output) {
 		}
 	}));
 	register('nornaEditor.openSiteNode', openNode);
+	register('nornaEditor.selectSiteGroup', () => {});
 	register('nornaEditor.newPage', (node) => create('page', node));
 	register('nornaEditor.addPage', (node) => create('page', node));
 	register('nornaEditor.addChildPage', (node) => create('page', node, true));
 	register('nornaEditor.newCategory', (node) => create('category', node));
 	register('nornaEditor.pageInformation', editInformation);
 	registerSiteFileActions({ vscode, context, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
+	register('nornaEditor.addToPage', async (argument) => {
+		let node = ownerOf(await chooseNode(argument));
+		if (node?.kind === 'site') node = node.children.find((child) => child.isHome);
+		if (!node) return;
+		const selected = await vscode.window.showQuickPick([
+			{ label: '$(add) Add child page…', command: 'addChildPage' },
+			...(node.kind === 'page' ? [{ label: '$(file-media) Import image…', command: 'importImage' }] : []),
+		], { title: `Add to ${node.title}`, ignoreFocusOut: true });
+		if (selected) await vscode.commands.executeCommand(`nornaEditor.${selected.command}`, node);
+	});
 	register('nornaEditor.pageActions', async (argument) => {
 		const node = await chooseNode(argument);
 		if (!isPage(node)) throw new Error('Select a page or category.');
 		const selected = await vscode.window.showQuickPick([
-			{ label: '$(add) Add child page…', command: 'addChildPage' },
 			{ label: '$(edit) Page information…', command: 'pageInformation' },
 			{ label: '$(go-to-file) Open source', command: 'openSiteNode' },
-			...(node.kind === 'page' ? [{ label: '$(file-media) Import image…', command: 'importImage' }] : []),
 			...(!node.isHome ? [{ label: '$(trash) Move page to Trash…', command: 'removePage' }] : []),
 		], { title: `Page actions: ${node.title}`, ignoreFocusOut: true });
 		if (selected) await vscode.commands.executeCommand(`nornaEditor.${selected.command}`, node);
@@ -416,6 +453,8 @@ function registerSiteTree(context, output) {
 		await revealActive();
 	};
 	context.subscriptions.push(tree, changed, diagnostics, watcher, directoryWatcher, resourceWatcher,
+		tree.onDidExpandElement((event) => rememberExpansion(event, true)),
+		tree.onDidCollapseElement((event) => rememberExpansion(event, false)),
 		watcher.onDidCreate(fileChanged), watcher.onDidDelete(fileChanged), watcher.onDidChange(fileChanged),
 		directoryWatcher.onDidCreate(fileChanged), directoryWatcher.onDidDelete(fileChanged),
 		resourceWatcher.onDidCreate(fileChanged), resourceWatcher.onDidDelete(fileChanged),

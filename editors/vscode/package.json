@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -102,6 +102,11 @@
         "icon": "$(globe)"
       },
       {
+        "command": "nornaEditor.addToPage",
+        "title": "Norna: Add\u2026",
+        "icon": "$(add)"
+      },
+      {
         "command": "nornaEditor.addChildPage",
         "title": "Norna: Add Child Page\u2026",
         "icon": "$(add)"
@@ -160,7 +165,7 @@
           "group": "navigation@0"
         },
         {
-          "command": "nornaEditor.addChildPage",
+          "command": "nornaEditor.addToPage",
           "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
           "group": "navigation@1"
         },
@@ -212,7 +217,7 @@
           "group": "2_create@2"
         },
         {
-          "command": "nornaEditor.addChildPage",
+          "command": "nornaEditor.addToPage",
           "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
           "group": "inline@1"
         },

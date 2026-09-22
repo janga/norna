@@ -37,7 +37,7 @@ const itemMenus = extensionManifest.contributes.menus['view/item/context'];
 assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.addPage'
 	&& item.group === 'inline' && item.when.endsWith('viewItem == nornaPages')));
 assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.pageInformation').when.includes('(Home|Page|Category)'));
-for (const command of ['addChildPage', 'pageActions']) {
+for (const command of ['addToPage', 'pageActions']) {
 	assert.ok(itemMenus.some((item) => item.command === `nornaEditor.${command}`
 		&& item.group.startsWith('inline') && item.when.includes('(Home|Page|Category)')));
 }

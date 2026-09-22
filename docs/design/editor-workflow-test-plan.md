@@ -159,7 +159,7 @@ show one workspace site, choose explicitly when several are available, and
 keep that choice when opening other files.
 The suite exercises:
 
-- source opening by label, independent chevrons, keyboard navigation, and
+- source opening by file row, passive grouping labels, independent chevrons, keyboard navigation, and
   active-file reveal without collapsing unrelated branches;
 - page title, description and navigation visibility, plus category label and
   description, through **Page Information**;
@@ -177,8 +177,12 @@ select a site using its title and location, cancel without changing the tree,
 and reload the window to confirm the saved choice. Open another site's source
 and a source outside the workspace; neither may replace or add a root. Remove
 the chosen workspace folder and confirm that its tree and actions disappear.
-The homepage must be marked **Homepage**, and its label must open the root
-`content.md`. Keep the beginner exercise to one site; use a separate workspace
+The homepage must be marked **Homepage**, and its `content.md` child must open
+the root source. Grouping labels must leave the editor and expansion unchanged.
+Verify the configuration icon, initial expansion, and remembered collapse after
+refresh/reload even while one of its files is active. Check Add on a leaf:
+child-page creation, image import, cancellation without creating directories,
+and the shorter category menu. Keep the beginner exercise to one site; use a separate workspace
 for multi-site scenarios.
 
 The engine's file projection and the extension adapter also have focused
@@ -194,8 +198,8 @@ after a real right-click. VS Code 1.96 on macOS uses the Command Palette because
 its native context menus are outside the test's browser inspector. Both paths
 select real commands and use the resulting Quick Pick and input widgets.
 Native macOS context-menu selection by mouse is not covered. The minimum-version
-test waits for source opening to finish moving focus before opening the palette;
-otherwise a pending editor focus change can dismiss it.
+path selects the grouping row before opening the palette, without opening a
+source or triggering a competing editor focus change.
 
 The formatter variant activates real Prettier and formats a probe before the
 same source-edit and save scenarios. It uses the documented Markdown save

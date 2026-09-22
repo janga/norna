@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -44,7 +44,7 @@ const vscode = {
 	Uri: { file: (fsPath) => ({ scheme: 'file', fsPath }) },
 	TreeItem: class { constructor(label, collapsibleState) { Object.assign(this, { label, collapsibleState }); } },
 	ThemeIcon: class { constructor(id) { this.id = id; } },
-	TreeItemCollapsibleState: { None: 0, Collapsed: 1 },
+	TreeItemCollapsibleState: { None: 0, Collapsed: 1, Expanded: 2 },
 	Range: class {}, Diagnostic: class {}, DiagnosticSeverity: { Error: 0 },
 	languages: { createDiagnosticCollection: () => ({ clear() {}, set() {}, dispose() {} }) },
 	workspace: {
@@ -58,18 +58,26 @@ const vscode = {
 	window: {
 		createTreeView: (_id, options) => { provider = options.treeDataProvider; tree = {
 			visible: false, selection: [], onDidChangeVisibility: disposable,
+			expansions: new EventEmitter(), collapses: new EventEmitter(),
+			onDidExpandElement(listener) { return this.expansions.event(listener); },
+			onDidCollapseElement(listener) { return this.collapses.event(listener); },
 			reveal: async (node) => revealed.push(node), dispose() {},
 		}; return tree; },
 		tabGroups: { activeTabGroup: {}, onDidChangeTabs: tabChanges.event },
 		onDidChangeActiveTextEditor: disposable,
 		showInputBox: async () => inputs.shift(),
+		showOpenDialog: async () => undefined,
 		showQuickPick: async (items) => { const choose = choices.shift(); assert.ok(choose, 'Unexpected location or confirmation prompt.'); return choose(items); },
 		showTextDocument: async (uri) => { opened.push(['text', uri.fsPath]); },
 		showErrorMessage: async (message) => errors.push(message),
 	},
 	commands: {
 		registerCommand: (name, callback) => { commands.set(name, callback); return disposable(); },
-		executeCommand: async (name, ...args) => name === 'setContext' ? contexts.set(args[0], args[1]) : opened.push([name, args[0].fsPath]),
+		executeCommand: async (name, ...args) => {
+			if (name === 'setContext') return contexts.set(args[0], args[1]);
+			if (commands.has(name)) return commands.get(name)(...args);
+			opened.push([name, args[0].fsPath]);
+		},
 	},
 };
 let context = { subscriptions: [], workspaceState };
@@ -81,7 +89,8 @@ try {
 	await write(path.join(siteRoot, 'pages/010-guide/content.md'), '# Guide\n');
 	await write(path.join(siteRoot, 'pages/010-guide/pages/010-child/content.md'), '# Child\n');
 	await write(path.join(siteRoot, 'pages/010-guide/images/example.png'), 'Fixture bytes');
-	await write(path.join(siteRoot, 'public/download.txt'), 'Public text');
+	await write(path.join(siteRoot, 'public/robots.txt'), 'User-agent: *\n');
+	await write(path.join(siteRoot, 'theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
 	const localRequire = (name) => name === 'vscode' ? vscode : name === './site-file-actions.cjs' ? require(path.join(extensionRoot, 'site-file-actions.cjs')) : name === './norna-project.cjs' ? {
@@ -123,6 +132,20 @@ try {
 	assert.equal(home.sourcePath, path.join(siteRoot, 'content.md'));
 	assert.equal(provider.getParent(home), undefined);
 	assert.equal(provider.getTreeItem(home).description, 'Homepage');
+	const configuration = home.children[0];
+	assert.equal(configuration.title, 'site-config');
+	assert.equal(provider.getTreeItem(configuration).iconPath.id, 'settings-gear');
+	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
+	tree.collapses.fire({ element: configuration });
+	await registered.refresh();
+	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed);
+	tree.expansions.fire({ element: configuration });
+	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
+	tree.collapses.fire({ element: configuration });
+	const localTheme = provider.getTreeItem(home.children.find((node) => node.title === 'theme.yaml'));
+	assert.equal(localTheme.description, '', 'Theme help belongs in hover, not a permanent row description.');
+	assert.match(localTheme.tooltip, /Visual settings for this page only/);
+	assert.match(provider.getTreeItem(home.children.find((node) => node.role === 'public')).tooltip, /Files published unchanged/);
 	assert.equal(state.get('norna.siteTree.activeSite'), siteRoot);
 	assert.equal(contexts.get('nornaSiteTree.hasActiveSite'), true);
 	choices.push(() => undefined);
@@ -134,7 +157,19 @@ try {
 	const image = guide.children.find((node) => node.role === 'images').children[0];
 	assert.equal(provider.getTreeItem(home).iconPath.id, provider.getTreeItem(guide).iconPath.id);
 	assert.equal(provider.getTreeItem(pages).contextValue, 'nornaPages');
-	assert.equal(provider.getTreeItem(pages).command, undefined);
+	for (const node of [home, pages, guide, configuration]) {
+		const item = provider.getTreeItem(node);
+		assert.equal(item.command.command, 'nornaEditor.selectSiteGroup');
+		assert.equal(item.tooltip, '');
+		assert.equal(item.resourceUri, undefined, 'Grouping rows must not gain a filesystem hover.');
+		assert.ok(item.accessibilityInformation.label.includes(node.title));
+		await commands.get(item.command.command)();
+	}
+	assert.deepEqual(opened, [], 'Selecting grouping rows must not open files.');
+	const homeContent = home.children.find((node) => node.title === 'content.md');
+	assert.equal(provider.getTreeItem(homeContent).command.command, 'nornaEditor.openSiteNode');
+	await commands.get('nornaEditor.openSiteNode')(homeContent);
+	assert.deepEqual(opened.pop(), ['vscode.open', home.sourcePath]);
 	assert.equal(provider.getTreeItem(image).contextValue, 'nornaImage');
 	await commands.get('nornaEditor.openSiteNode')(image);
 	assert.deepEqual(opened.pop(), ['vscode.open', image.sourcePath], 'Resources must use VS Code editor selection, not a forced text editor.');
@@ -151,15 +186,37 @@ try {
 	const updatedHome = (await provider.getChildren()).find((node) => node.siteRoot === siteRoot);
 	assert.equal(updatedHome, home, 'Stable node objects and IDs preserve unrelated expansion on refresh.');
 	const firstChild = guidePages.children.find((node) => node.title === 'Child');
+	const beforeCancel = await readdir(path.dirname(firstChild.sourcePath));
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage']); return undefined; });
+	await commands.get('nornaEditor.addToPage')(firstChild);
+	assert.deepEqual(await readdir(path.dirname(firstChild.sourcePath)), beforeCancel, 'Cancelling Add must not create images or pages.');
+	choices.push((items) => items.find((item) => item.command === 'importImage'));
+	await commands.get('nornaEditor.addToPage')(firstChild);
+	assert.deepEqual(await readdir(path.dirname(firstChild.sourcePath)), beforeCancel, 'Cancelling the image picker must not create images/.');
+	choices.push((items) => items.find((item) => item.command === 'addChildPage'));
 	inputs.push('First grandchild', 'first-grandchild');
 	choices.push((items) => { assert.equal(items.length, 1); assert.equal(items[0].description, '/guide/child/first-grandchild/'); return items[0]; });
-	await commands.get('nornaEditor.addChildPage')(firstChild);
+	await commands.get('nornaEditor.addToPage')(firstChild);
 	assert.match(await readFile(path.join(path.dirname(firstChild.sourcePath), 'pages/010-first-grandchild/content.md'), 'utf8'), /^# First grandchild/);
 	assert.equal(choices.length, 0, 'The visible plus must not ask for Inside/Beside.');
+	const importImage = commands.get('nornaEditor.importImage');
+	let importedInto;
+	commands.set('nornaEditor.importImage', (node) => { importedInto = node; });
+	choices.push((items) => items.find((item) => item.command === 'importImage'));
+	await commands.get('nornaEditor.addToPage')(image);
+	assert.equal(importedInto, guide, 'Add on a resource must import into its owning page.');
+	commands.set('nornaEditor.importImage', importImage);
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['pageInformation', 'openSiteNode', 'removePage']); return undefined; });
+	await commands.get('nornaEditor.pageActions')(guide);
 	inputs.push('Cancelled', 'cancelled');
 	choices.push(() => undefined);
 	await commands.get('nornaEditor.addPage')(pages);
 	assert.equal(home.children.find((node) => node.role === 'pages').children.length, 1);
+	await write(path.join(siteRoot, 'pages/020-topics/category.yaml'), 'label: Topics\n');
+	await registered.refresh();
+	const category = pages.children.find((node) => node.kind === 'category');
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage']); return undefined; });
+	await commands.get('nornaEditor.addToPage')(category);
 	// Selecting an owned resource in the command palette resolves to its page.
 	choices.push((items) => { assert.equal(items[0].parentPath, '/guide/'); assert.equal(items[1].parentPath, '/'); return undefined; });
 	await commands.get('nornaEditor.newPage')(image);
@@ -222,6 +279,14 @@ try {
 	}
 	// Dirty titles belong to the selected site without moving source bytes.
 	const homePath = path.join(siteRoot, 'content.md');
+	await openTab(homePath);
+	assert.equal(revealed.at(-1).id, `resource:${homePath}`, 'Follow the actual content file rather than its grouping row.');
+	const beforeSettings = revealed.length;
+	await openTab(path.join(siteRoot, 'site-config/settings.yaml'));
+	await commands.get('nornaEditor.refreshSiteTree')();
+	assert.ok(revealed.length > beforeSettings);
+	assert.ok(revealed.slice(beforeSettings).every((node) => node === configuration), 'Reveal the collapsed configuration folder without reopening it for an active settings file.');
+	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed);
 	const originalHome = await readFile(homePath, 'utf8');
 	const dirty = { uri: vscode.Uri.file(homePath), isDirty: true, version: 1, getText: () => '# Unsaved Home\n' };
 	documents.push(dirty);
@@ -238,6 +303,7 @@ try {
 	assert.equal(legacy.kind, 'site', 'An older engine retains its page-only tree within the selected site.');
 	assert.match(tree.message, /pages only/);
 	assert.equal((await provider.getChildren(legacy))[0].title, 'Home');
+	assert.equal(provider.getTreeItem(legacy.children[0]).command.command, 'nornaEditor.openSiteNode', 'Old engines still need page-label source opening.');
 	assert.deepEqual(await provider.getChildren(home), [], 'Old handles cannot expose another site’s children.');
 	await commands.get('nornaEditor.addPage')(pages);
 	assert.match(errors.pop(), /active site/, 'Stale commands must not create in an inactive site.');
@@ -261,6 +327,8 @@ try {
 	await registered.refresh();
 	assert.equal((await provider.getChildren()).length, 1);
 	assert.equal((await provider.getChildren())[0].siteRoot, siteRoot, 'Removing the selected folder selects the only remaining workspace site.');
+	const restoredConfiguration = (await provider.getChildren())[0].children.find((node) => node.role === 'configuration');
+	assert.equal(provider.getTreeItem(restoredConfiguration).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed, 'Configuration collapse must survive a reload and site switch.');
 	assert.equal(contexts.get('nornaSiteTree.hasMultipleSites'), false);
 	await commands.get('nornaEditor.openSiteNode')(legacy);
 	assert.match(errors.pop(), /active site/);
