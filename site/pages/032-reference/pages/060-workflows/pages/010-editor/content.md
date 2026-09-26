@@ -82,13 +82,14 @@ with only one site's files in both Site Tree and Explorer, use **File → Open
 Folder…** to open that site's source folder. Site Tree does not change which
 folders VS Code includes in Explorer.
 
-The top row uses the homepage's title and is marked **Homepage**. Expand it
-and select **content.md** to edit `site/content.md` (or `content.md` in your
-chosen site source folder).
+The top row uses the homepage's title and is marked **Homepage**. Select its
+title to edit `content.md` in your chosen site source folder. Every page works
+the same way: its title opens its own `content.md`, which has no separate row
+in Site Tree. Hover over the page to see the actual source path.
 The tree follows the actual [file organization](/reference/site/files/).
 The homepage shows `site-config/` first, with a settings icon, then `public/`
-when present. Its optional `theme.yaml` and own `content.md` follow. Other pages
-start with `theme.yaml` when present, then `content.md`. Images belong under `images/`;
+when present. Its optional `theme.yaml` follows. Other pages
+start with `theme.yaml` when present. Images belong under `images/`;
 child pages appear under the real `pages/` directory.
 A readable page row represents its numbered source directory; the number
 stays in the filesystem but does not clutter the displayed title.
@@ -105,17 +106,17 @@ Norna  Homepage                         +  …
     robots.txt
     icon.ico
   theme.yaml
-  content.md
   images/
   pages/
     Guide                              +  …
       theme.yaml
-      content.md
       images/
 ```
 
-Only existing files and folders appear. The `site-config/` folder starts
-expanded; the extension remembers your later choice for that site in the
+Only existing folders appear. A page with no visible details has no expansion
+chevron; an existing empty folder is still a visible detail. An incomplete
+page directory remains visible so you can repair its missing source.
+The `site-config/` folder starts expanded; the extension remembers your later choice for that site in the
 workspace, including after refresh or window reload. An open settings file
 does not force the folder open again.
 
@@ -126,13 +127,17 @@ A branch's `theme.yaml` applies to that branch and its descendants. See
 for a reminder of its scope. Categories show `category.yaml` after their optional
 theme and have no `content.md`.
 
-Page headings and directory labels select a row without opening a file.
+Page titles open their content; category titles open `category.yaml`. The
+category's actual configuration-file row also remains available. Directory
+labels select a row without opening a file.
 The `public/` folder has a tooltip explaining that its files are published
 unchanged with the site, for example `robots.txt` and icons.
 Use the separate chevron, or the keyboard arrow keys,
-to expand and collapse children; select a file row to open that file. Within the chosen site, the tree
-reveals the active source file, including one opened through the website's
-**Open in VS Code** link. Other expanded branches remain open. Resource files use VS Code's normal
+to expand and collapse children without opening their source. Select an
+individual file to open it. Within the chosen site, the tree reveals the
+active file, or its owning page when editing `content.md`. This also applies
+to the website's **Open in VS Code** link. Other expanded branches remain open.
+Resource files use VS Code's normal
 editor selection: PNG images, for example, open in its image preview. Use
 VS Code's built-in tree find when looking for a visible label.
 
@@ -150,7 +155,8 @@ To create a child, select its parent page, use the **+** button beside its
 title (**Norna: Add…**) and choose **Add child page…**. This also works when
 `pages/` does not yet exist: the extension creates it with the first child.
 The parent is already selected, so the next question is the new page's title.
-The same menu offers **Import image…** on content pages. The **+** in the tree
+The same menu offers **Import image…** on content pages and missing source
+files permitted at that location, including `theme.yaml`. The **+** in the tree
 toolbar acts on the selected page or the owner of a selected resource.
 
 The **…** beside a page opens **Page Actions**: edit page information, open
@@ -181,8 +187,10 @@ engine build supporting that source format. The extension also recognizes
 older source layouts when working with earlier engines. Single-site selection
 requires extension version 0.3.1 or later. The file
 tree requires extension version 0.3.0 or later and an engine build
-with page-file support. The Add menu and grouping-row behavior described here
-require extension 0.4.1; the root ordering also needs an updated engine.
+with page-file support. The Add menu and earlier grouping-row behavior
+originally arrived in extension 0.4.1. Direct page opening and the hidden
+content row require extension 0.6.0. Missing-file creation, repair and the
+expanded file diagnostics also need the corresponding engine capability.
 Optional-file removal, incoming-link review and address editing require
 extension 0.5.0 and the corresponding engine capabilities. Earlier engines
 retain their read-only address rows in **Page Information** and report which
@@ -195,10 +203,46 @@ update or to rediscover sites. External file changes normally refresh the
 tree automatically.
 
 Use **Page Information** on pages and categories. Other files open for normal
-editing and do not receive page-metadata actions. Creating themes, moving pages
+editing and do not receive page-metadata actions. Moving pages
 to another parent, reordering pages and inserting page links remain outside
 this tree's scope. Generated `.norna` output and symbolic links are not listed;
 use Explorer for files outside the tree.
+
+### Add or repair a source file
+
+Select the owning page's **+** and choose the missing file. The `site-config/`
+folder's **+** also offers missing site configuration. Existing singleton files
+are omitted; image import and child-page creation remain available when other
+images or children already exist.
+
+Review the destination and initial effect before confirming. A new `theme.yaml`
+starts with normal body text width; the confirmation explains whether it affects
+only the homepage or the selected branch. A missing shared site theme starts
+with the documentation preset. Creating `settings.yaml` asks for the site's
+public URL. The extension opens the new file for further editing. Cancelling
+leaves no partial files or directories and creation never overwrites a file.
+
+If a page directory has neither `content.md` nor `category.yaml`, its row opens
+the Add menu. Choose page content or category information explicitly. Categories
+cannot own images, so category creation is unavailable while `images/` exists.
+The homepage requires `content.md`. A missing required file does not remove the
+active site or its remaining pages from the tree.
+
+The type icon stays recognizable when a row has an **error** or **warning**.
+Hover for the explanation; open an existing file to repair it. The owning page
+also signals problems in its descendants. Source/schema checks and available
+editor diagnostics include unsaved edits; they do not replace `norna check`.
+
+| Indication | Meaning and next step |
+| --- | --- |
+| Missing required file | Use the owner's **+** to create it, or restore it from version control. |
+| Misplaced source file | The file is visible at its actual location; hover explains where it belongs. Move it through Explorer. |
+| Invalid content or conflicting sources | Open the file to correct it. A page directory must contain either page content or category information, not both. |
+| **Not used by Norna** | An extra author file, such as notes. It is not automatically an error. Valid files in `public/` remain published resources. |
+
+Generated output, operating-system metadata and symbolic links stay outside this
+view. Use Explorer when a repair needs access to an excluded entry. Correcting
+or removing the offending file clears its tree indication after refresh.
 
 ### Inspect and change addresses
 

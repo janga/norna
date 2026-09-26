@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.0
+
+- Open page content from its title and hide the redundant `content.md` row.
+  Category titles open their information; chevrons expand independently.
+- Keep object icons recognizable beside separate error/warning descriptions.
+  Show misplaced files, unused author files and repairable incomplete entries.
+- Add missing supported source files from **+**, with validated templates,
+  explicit effects and overwrite protection; retain the selected site when
+  required files are missing.
+- Follow active page content through its owning row and preserve configuration
+  expansion. Keep existing Trash and incoming-link safeguards.
+
 ## 0.5.0
 
 - Remove optional local themes, shared content and public files through Trash,

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import './test-editor-block-completions.mjs';
 import './test-editor-image-usage.mjs';
 import './test-editor-site-tree.mjs';
+import './test-editor-source-files.mjs';
 import './test-editor-site-files.mjs';
 import './test-editor-page-addresses.mjs';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';

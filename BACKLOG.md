@@ -99,8 +99,8 @@ The remaining refinements still need their own discussion:
    **Needs decision; outline.** Insert an existing image into the intended
    content location using valid Norna block syntax.
 4. [`BL-136` VS Code Local Theme Creation And Removal](docs/design/backlog/BL-136-vscode-local-theme-creation-removal.md):
-   **Needs decision; outline.** Create or remove local theme overrides with
-   understandable effects on inherited settings.
+   **Needs decision; remaining refinements.** Assess richer initial-setting
+   choices or effective inherited values beyond the implemented create/remove controls.
 5. [`BL-137` VS Code Image Usage And Removal Review](docs/design/backlog/BL-137-vscode-image-usage-removal-review.md):
    **Needs decision; outline.** Locate image references and explain the
    consequences of removing their source file.

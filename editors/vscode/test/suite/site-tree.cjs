@@ -43,8 +43,10 @@ async function runSiteTree({ openDocument, waitFor }) {
 		const tree = window.getByRole('tree', { name: 'Site Tree', exact: true });
 		await vscode.commands.executeCommand('notifications.clearAll');
 		const row = (title) => tree.locator('.monaco-list-row').filter({ has: window.getByText(title, { exact: true }) });
-		const sourceRow = (relative) => tree.locator(`.monaco-list-row[aria-label*=${JSON.stringify(path.join(root, relative))}]`)
-			.filter({ has: window.getByText(path.basename(relative), { exact: true }) });
+		const sourceRow = (relative) => {
+			const matches = tree.locator(`.monaco-list-row[aria-label*=${JSON.stringify(path.join(root, relative))}]`);
+			return path.basename(relative) === 'content.md' ? matches : matches.filter({ has: window.getByText(path.basename(relative), { exact: true }) });
+		};
 		const expandDirectory = async (relative) => {
 			const item = sourceRow(relative);
 			await item.waitFor({ state: 'visible' });
@@ -88,9 +90,9 @@ async function runSiteTree({ openDocument, waitFor }) {
 			await sourceRow(`tree-content/site-config/${filename}`).click();
 			await activeIs(`tree-content/site-config/${filename}`);
 		}
-		passed('Homepage content and local theme are visible; physical site-config files open');
+		passed('Homepage row opens its content; theme and physical site-config files open');
 		await row('Tree Topics').getByText('Tree Topics', { exact: true }).click();
-		await activeIs('tree-content/site-config/site-theme.yaml');
+		await activeIs(topicPath);
 		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'false', 'Selecting a category must not expand it.');
 		await row('Tree Topics').locator('.monaco-tl-twistie').click();
 		await sourceRow(topicPath).click();
@@ -99,12 +101,9 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await row('Tree Child').waitFor({ state: 'visible' });
 		await activeIs(topicPath);
 		await row('Tree Child').getByText('Tree Child', { exact: true }).click();
-		await activeIs(topicPath);
-		assert.equal(await row('Tree Child').getAttribute('aria-expanded'), 'false');
-		await row('Tree Child').locator('.monaco-tl-twistie').click();
-		await sourceRow('tree-content/pages/020-topics/pages/010-child/content.md').click();
+		assert.equal(await row('Tree Child').getAttribute('aria-expanded'), null, 'A leaf without details must not expand.');
 		await activeIs('tree-content/pages/020-topics/pages/010-child/content.md');
-		passed('Grouping labels leave the editor unchanged; chevrons expand and file rows open');
+		passed('Page/category labels open their sources; chevrons expand separately and leaf pages have no expansion');
 		await row('Tree Topics').getByText('Tree Topics', { exact: true }).click();
 		await vscode.commands.executeCommand('nornaSiteTree.focus');
 		await tree.press('ArrowLeft');

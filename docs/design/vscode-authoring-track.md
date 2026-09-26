@@ -27,12 +27,27 @@ review, and native address/copy/redirect controls. This delivers local-theme
 removal; theme creation and other unapproved refinements remain in their drafts.
 Canonical address changes stay within the existing folder-derived model.
 
+On 2026-09-26 the owner approved the next tree model in
+[BL-147 VS Code Site Tree Icons And Editing Model](backlog/BL-147-vscode-site-tree-icons-editing-model.md).
+The implementation in extension 0.6.0 opens `content.md` from the page label
+and hides the separate content row. Category labels open `category.yaml`;
+chevrons continue to control expansion separately.
+The item also defines consistent object icons, file-state feedback, missing-file
+creation/repair and active-file reveal. It preserves existing removal safeguards
+and includes basic missing-theme creation, to be reconciled with the later
+theme draft when delivered.
+
 ## Agreed Authoring Model
 
 **Approved by the owner on 2026-09-20.** These decisions apply across the
 authoring track and to later authoring work. Record and carry them forward
 even when an individual item's implementation scope covers only part of the
 model. They establish the direction, not approval of every future control.
+
+The list below includes BL-147 VS Code Site Tree Icons And Editing Model.
+It supersedes passive page/category labels, visible `content.md` rows and
+suppressed page-source tooltips while retaining the physical hierarchy and
+theme scopes. Its verification and local review are recorded in that item.
 
 - Provide a dedicated Norna entry in VS Code's Activity Bar. Keep the normal
   Explorer available.
@@ -47,22 +62,27 @@ model. They establish the direction, not approval of every future control.
   `pages/` directory**. This applies at every depth, including the site's
   real `site-config/` directory and existing local configuration below it.
   At the root show `site-config/`, then `public/`, then optional `theme.yaml`
-  and `content.md`. Other pages start with `theme.yaml` when present, then
-  `content.md`. Explain the theme's scope on hover, preserving its actual filename.
+  before images and child pages. Other pages start with `theme.yaml` when
+  present. Page content opens through the page row. Explain the theme's scope
+  on hover, preserving its actual filename.
   Site configuration has a settings icon, starts expanded and remembers the
   user's subsequent choice per site in the workspace.
 - Show a page's images and other owned resources beneath that page, with
   actual resource filenames and recognizable `images/` and `pages/`
-  directories. Page/directory labels select without opening files or showing
-  general path tooltips. Expand with the chevron or keyboard; open the actual file row to edit.
+  directories. Page labels open their own `content.md`; that file has no separate
+  row. Category labels open `category.yaml`. Hover identifies the actual source
+  path. Directory labels only select; chevrons and keyboard arrows control
+  expansion independently. Individual file rows open their editor or preview.
   `public/` stays beside `site-config/`; illustrate it with site-wide files such
   as `robots.txt` and icons, and explain its purpose on hover. Attachment
   handling is a separate decision.
 - Every represented `pages/` provides **Add page** for that location through
   its plus button and context menu. Every page also has an **Add…** plus for
-  child-page creation and image import, even without `pages/` or `images/`.
+  child-page creation, image import and missing supported source files, even
+  without `pages/` or `images/`.
   Create a missing directory only when the corresponding operation proceeds.
-  Categories offer child pages only. The ellipsis holds other page actions.
+  Categories offer child pages and missing local configuration. The ellipsis
+  holds other page actions.
 - Use one common page icon unless a page has an explicit presentation of its
   own. This does not introduce a custom-icon feature.
 - The homepage is the site root and may have children: `site/content.md`,
@@ -81,8 +101,9 @@ has implemented the root storage model;
 implements the revised editor tree. The drawings remain the accepted design
 record; the editor reference describes the delivered controls.
 [BL-143 Site Configuration Directory And Page Files](backlog/BL-143-site-configuration-directory-page-files.md)
-updates the physical configuration layout and makes `content.md` visible beneath
-its page. These later decisions supersede filenames in the original drawings.
+updates the physical configuration layout; its separate `content.md` row is
+replaced by direct page opening in BL-147 VS Code Site Tree Icons And Editing Model.
+These later decisions supersede filenames and row interactions in the original drawings.
 The selection and homepage clarification is implemented in
 [BL-141 VS Code Active Site Scope](backlog/BL-141-vscode-active-site-scope.md).
 

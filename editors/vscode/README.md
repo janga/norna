@@ -44,26 +44,33 @@ is remembered for that workspace; opening another site's file does not switch
 or add a tree. Open just your site's folder for a workspace containing only
 that site's files; the ordinary Explorer continues to show all workspace folders.
 
-The tree's root is its homepage, marked **Homepage**. Expand it and open its
-`content.md` file to edit the homepage.
-Existing configuration appears
-before `pages/`, beneath the page or category that owns it. Page names hide
-numeric ordering prefixes; resource files retain their actual names. Images
-use VS Code's normal image preview, and `public/` includes nested static files.
+The tree's root is its homepage, marked **Homepage**. Select a page title to
+open its `content.md`; that file has no separate tree row. A category title
+opens `category.yaml`. Only the chevron or keyboard expansion opens the branch.
+Directories select without opening a file. Individual files use VS Code's
+normal editor or preview, including image previews.
 
-A page or directory label selects the row; the chevron controls expansion.
-Open a file from its own row. The homepage lists `site-config/` first, then
-`public/`, `theme.yaml`, `content.md`, `images/` and `pages/` when present.
-The settings folder starts expanded and remembers subsequent choices in this
-workspace. Other pages start with optional `theme.yaml`, then `content.md`.
-Hover over `theme.yaml` to see its scope, or `public/` to see that folder's purpose.
+Page names hide numeric ordering prefixes; hover reveals the actual source
+path. Configuration appears under its owner before `pages/`. The root shows
+`site-config/`, `public/`, optional `theme.yaml`, `images/` and `pages/` when
+present. The settings folder starts expanded and remembers subsequent choices.
+Other pages start with optional `theme.yaml`. Hover explains theme scope and
+what belongs in `public/`. A leaf has no chevron unless it has visible details,
+including an existing empty folder.
 
-A page's **+** opens **Norna: Add…** with child-page creation and image import,
-including when `pages/` or `images/` does not yet exist. Categories offer child
-pages only. Its **…** menu exposes page information, source opening and
-removal. Each existing `pages/` also offers **Norna: Add Page…**. The
-context menu and Command Palette provide
-**Norna: New Page…**, **Norna: New Category…** and **Norna: Page Information…**.
+A page's **+** offers child-page creation, image import and missing supported
+source files. It works without `pages/` or `images/`; the chosen operation
+creates the directory when needed. Categories offer child pages and missing
+configuration. The settings folder's **+** also exposes missing site files.
+Creation previews the target and effect, uses a valid initial setting and never
+overwrites a file. Incomplete directories remain visible with source-repair
+choices. Errors and warnings supplement type icons; unused author files are
+informational, while valid static public files remain recognized resources.
+
+Each existing `pages/` also offers **Norna: Add Page…**. Page actions remain in
+**…**, the context menu and Command Palette, including information, addresses,
+source opening and removal. Active `content.md` reveals its owning page;
+resource files retain their own selection.
 Creation previews the parent, address and directory before writing. Information
 edits stay in the buffer for normal save and undo. See the
 [site-tree reference](https://janga.github.io/norna/reference/workflows/editor/#work-from-the-site-tree)
@@ -95,8 +102,9 @@ site configuration and the homepage are protected. These actions need the
 engine's corresponding removal/address capabilities. See
 [addresses and removal](https://janga.github.io/norna/reference/workflows/editor/#inspect-and-change-addresses).
 
-The Add menu and passive grouping rows require extension 0.4.1; the root order
-also needs the updated engine. The single-site selection requires extension
+Direct page opening and the hidden content row require extension 0.6.0.
+Missing-file creation, repair and expanded file diagnostics also require the
+engine's site-tree editing capability. The single-site selection requires extension
 0.3.1 or later. The file view
 needs extension 0.3.0 and the engine's optional page-file support.
 Engines with the earlier site-tree API retain their page tree and show a

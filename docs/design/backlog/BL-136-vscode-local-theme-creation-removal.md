@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Create or remove a local theme from its page/category without manually finding
-the directory or guessing what happens to inherited settings. This is step 4
+Evaluate whether authors need a richer choice of initial overrides or a view
+of effective inherited settings beyond the basic theme create/remove controls. This is step 4
 of the [VS Code Files And Images track](../vscode-authoring-track.md).
 
 **Status: Needs decision; outline for later visual discussion.**
@@ -11,16 +11,21 @@ of the [VS Code Files And Images track](../vscode-authoring-track.md).
 Local-theme removal was approved separately on 2026-09-22 in
 [BL-146 VS Code Removal, Addresses And Incoming Links](BL-146-vscode-removal-addresses-links.md):
 the file's actions explain homepage or branch inheritance and confirm moving
-it to the operating system's Trash. This draft retains theme creation and any
-later requested presentation of effective inherited values; it must reuse the
-delivered removal action.
+it to the operating system's Trash. Basic missing-theme creation is implemented in
+[BL-147 VS Code Site Tree Icons And Editing Model](BL-147-vscode-site-tree-icons-editing-model.md):
+the page/category Add menu previews a normal text-width override and opens the
+new file, with cancellation, dirty-buffer and overwrite protection. This draft
+retains only additional initial-setting choices or a presentation of effective
+inherited values, if the owner finds those necessary. Reuse the delivered
+creation and removal actions.
 
 ## Scope And Boundaries
 
 Opening existing settings and editing them with YAML support is already
 available after [BL-133 VS Code Page Files](BL-133-vscode-page-files.md). The
-new benefit here is creating a valid local theme and removing it with
-an understandable account of the inherited result.
+remaining potential benefit is choosing an initial override with knowledge
+of the effective inherited values. Basic creation and explained removal must
+not be implemented again.
 
 Use the existing limited page-theme model. `site-config/site-theme.yaml` is required and
 shared. Optional root `theme.yaml` affects only the homepage; a child page
@@ -37,8 +42,8 @@ Default profile, verified recovery and per-item documentation.
 
 ## Preliminary Proposals
 
-- Create a local theme through the selected page/category, with the destination
-  and an explicit initial setting. Open it in the existing YAML editor.
+- Assess whether to offer additional initial-setting choices alongside the
+  delivered normal text-width override, using the same creation action.
 - Describe removal as returning to inherited settings, showing the affected
   branch and acknowledging more local overrides on descendants.
 - Preserve existing files and dirty editors. Verify the chosen recovery path;
@@ -46,9 +51,10 @@ Default profile, verified recovery and per-item documentation.
 
 ## Open Questions
 
-Show and discuss how the initial setting is chosen, how much inherited-value
-detail the author needs before removal, and how dirty files are handled. Keep
-the first proposal focused on a single understandable local override.
+Determine whether the delivered normal text-width starting point is sufficient
+and whether authors need to inspect effective inherited values before editing
+or removal. Dirty-file handling and the basic create/remove controls are
+already implemented; do not reopen them without a concrete defect.
 
 ## Dependencies
 

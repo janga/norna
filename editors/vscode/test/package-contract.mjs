@@ -39,7 +39,7 @@ assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.addPage'
 assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.pageInformation').when.includes('(Home|Page|Category)'));
 for (const command of ['addToPage', 'pageActions']) {
 	assert.ok(itemMenus.some((item) => item.command === `nornaEditor.${command}`
-		&& item.group.startsWith('inline') && item.when.includes('(Home|Page|Category)')));
+		&& item.group.startsWith('inline') && item.when.includes('(Home|Page|Category')));
 }
 
 const executable = path.join(
@@ -79,6 +79,7 @@ for (const filename of files) {
 	assert.notEqual(filename, 'site-file-actions.cjs');
 	assert.notEqual(filename, 'site-address-actions.cjs');
 	assert.notEqual(filename, 'site-link-review.cjs');
+	assert.notEqual(filename, 'site-source-actions.cjs');
 }
 
 console.log(`VS Code package contract passed (${files.size} packaged files).`);

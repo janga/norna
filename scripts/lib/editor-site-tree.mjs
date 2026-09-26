@@ -11,11 +11,13 @@ import { getSiteStructure } from './site-structure.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
 import { editorFileRemovalPolicy } from './editor-file-policy.mjs';
 import { readEditorLinkState } from './editor-site-links.mjs';
+import { readSiteEditingTree } from './editor-site-editing-tree.mjs';
 
 // Optional capability: older engines keep IntelliSense without exposing writes
 // through a site-tree API whose contract they do not implement.
 export const siteTreeApiVersion = 1;
 export const siteFileTreeApiVersion = 1;
+export { siteTreeEditingApiVersion, getEditorSourceFileChoices, planEditorSourceFileCreation, createEditorSourceFile } from './editor-source-files.mjs';
 export { createSiteNode, planSiteNodeCreation, slugifyAsciiIdentifier };
 export { siteFileOperationsApiVersion, siteRemovalApiVersion, planEditorImageCopy, planEditorRemoval, getEditorImageUsage, createEditorImageAppend } from './editor-site-files.mjs';
 export { getEditorIncomingLinks } from './editor-site-links.mjs';
@@ -92,7 +94,11 @@ export const readSiteTree = async ({ siteRoot, sources = new Map(), cache = new 
 // projection supplies physical resource locations without deriving new URLs.
 export const readSiteFileTree = async (options) => {
 	const siteRoot = path.resolve(options.siteRoot);
-	const snapshot = await readSiteTree({ ...options, siteRoot });
+	const snapshot = await readSiteTree({ ...options, siteRoot }).catch((error) => {
+		if (!options.editing) throw error;
+		return { nodes: [], problems: [{ path: siteRoot, message: error.message }] };
+	});
+	if (options.editing) return readSiteEditingTree({ ...options, siteRoot, snapshot, getInformation: getSiteNodeInformation });
 	const home = snapshot.nodes.find((node) => node.isHome);
 	const items = [];
 	const problems = [...snapshot.problems];

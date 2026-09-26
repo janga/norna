@@ -1,9 +1,10 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
-const { getNornaProjectContext } = require('./norna-project.cjs');
+const { getNornaProjectContext, findNornaPackage, supportedEditorApiVersion, supportedSchemaVersion } = require('./norna-project.cjs');
 const { registerSiteFileActions } = require('./site-file-actions.cjs');
 const { registerSiteAddressActions } = require('./site-address-actions.cjs');
+const { registerSiteSourceActions } = require('./site-source-actions.cjs');
 
 const viewId = 'nornaSiteTree';
 const sourceNames = new Set(['content.md', 'category.yaml']);
@@ -48,7 +49,12 @@ function registerSiteTree(context, output) {
 
 	const serviceFor = async (root) => {
 		if (!vscode.workspace.isTrusted) throw new Error('Trust this workspace before using the Norna site tree.');
-		const project = getNornaProjectContext(path.join(root, 'content.md'));
+		let project = getNornaProjectContext(path.join(root, 'content.md')) ?? getNornaProjectContext(path.join(root, 'site-config/settings.yaml'));
+		if (!project || project.siteRoot !== root) {
+			const nornaPackage = findNornaPackage(root);
+			project = { nornaPackage, editorCompatible: nornaPackage?.manifest.editorApiVersion === supportedEditorApiVersion,
+				schemaCompatible: nornaPackage?.manifest.schemaVersion === supportedSchemaVersion };
+		}
 		if (!project?.nornaPackage) throw new Error('Install this project’s @janga/norna dependency to use the site tree.');
 		if (!project.editorCompatible || !project.schemaCompatible) throw new Error('Update the Norna extension and project engine to compatible versions.');
 		const filename = path.join(project.nornaPackage.root, 'scripts', 'lib', 'editor-site-tree.mjs');
@@ -63,8 +69,9 @@ function registerSiteTree(context, output) {
 
 	const rememberSite = (filename) => {
 		const project = getNornaProjectContext(filename);
-		if (!project) return null;
-		const root = project.siteRoot;
+		const markerRoot = path.basename(path.dirname(filename)) === 'site-config' ? path.dirname(path.dirname(filename)) : null;
+		const root = markerRoot ?? project?.siteRoot;
+		if (!root || !project && !findNornaPackage(root)) return null;
 		if (!inWorkspace(root)) return null;
 		if (!sites.has(root)) sites.set(root, { id: root, siteRoot: root, kind: 'site', title: labelFor(root), children: [], cache: new Map() });
 		return sites.get(root);
@@ -79,13 +86,25 @@ function registerSiteTree(context, output) {
 				if (!byFile.has(filename)) byFile.set(filename, new Set());
 				byFile.get(filename).add(message);
 			};
-			for (const node of nodes.values()) if (node.siteRoot === site.siteRoot && node.problem) add(node.sourcePath, node.problem);
+			for (const node of nodes.values()) if (node.siteRoot === site.siteRoot) {
+				if (node.problem && !node.issues?.length) add(node.sourcePath, node.problem);
+			}
 			for (const problem of site.problems ?? []) add(sourceNames.has(path.basename(problem.path)) ? problem.path : path.join(site.siteRoot, 'content.md'), problem.message);
 			for (const [filename, messages] of byFile) diagnostics.set(vscode.Uri.file(filename), [...messages].map((message) => {
 				const diagnostic = new vscode.Diagnostic(new vscode.Range(0, 0, 0, 1), message, vscode.DiagnosticSeverity.Error);
 				diagnostic.source = 'Norna site tree';
 				return diagnostic;
 			}));
+			const detailed = new Map();
+			for (const node of nodes.values()) if (node.siteRoot === site.siteRoot) for (const issue of node.issues ?? []) {
+				if (!detailed.has(issue.path)) detailed.set(issue.path, new Map());
+				const line = Math.max(0, (issue.line ?? 1) - 1);
+				const diagnostic = new vscode.Diagnostic(new vscode.Range(line, 0, line, 1), issue.message,
+					issue.severity === 'warning' ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Error);
+				diagnostic.source = 'Norna site tree';
+				detailed.get(issue.path).set(`${line}:${issue.message}`, diagnostic);
+			}
+			for (const [filename, entries] of detailed) diagnostics.set(vscode.Uri.file(filename), [...entries.values()]);
 		}
 	};
 
@@ -95,6 +114,7 @@ function registerSiteTree(context, output) {
 			const supportsFiles = service.siteFileTreeApiVersion === 1 && typeof service.readSiteFileTree === 'function';
 			const snapshot = await (supportsFiles ? service.readSiteFileTree : service.readSiteTree)({
 				siteRoot: site.siteRoot, sources: documentSources(), cache: site.cache,
+				editing: service.siteTreeEditingApiVersion === 1,
 			});
 			const previous = new Map([...nodes].filter(([, node]) => node.siteRoot === site.siteRoot));
 			for (const id of previous.keys()) nodes.delete(id);
@@ -103,11 +123,12 @@ function registerSiteTree(context, output) {
 			site.problems = snapshot.problems;
 			site.fileTree = Array.isArray(snapshot.items);
 			if (site.fileTree) {
-				for (const entry of snapshot.items) {
-					const node = Object.assign(previous.get(entry.id) ?? {}, entry, { siteRoot: site.siteRoot, children: [] });
+				const entries = snapshot.items.filter((entry) => !(entry.kind === 'file' && entry.role === 'content' && entry.ownerId === entry.sourcePath));
+				for (const entry of entries) {
+					const node = Object.assign(previous.get(entry.id) ?? {}, { issues: [], problem: null, note: undefined, missingSource: false }, entry, { siteRoot: site.siteRoot, children: [] });
 					nodes.set(node.id, node);
 				}
-				for (const entry of snapshot.items) {
+				for (const entry of entries) {
 					const node = nodes.get(entry.id);
 					node.parent = nodes.get(entry.parentId);
 					(node.parent?.children ?? site.children).push(node);
@@ -138,6 +159,14 @@ function registerSiteTree(context, output) {
 		}
 	};
 
+	const ownIssues = (node) => {
+		const external = node.sourcePath ? (vscode.languages.getDiagnostics?.(vscode.Uri.file(node.sourcePath)) ?? [])
+			.filter((issue) => issue.source !== 'Norna site tree' && issue.severity <= vscode.DiagnosticSeverity.Warning)
+			.map((issue) => ({ message: issue.message, path: node.sourcePath, line: issue.range.start.line + 1,
+				severity: issue.severity === vscode.DiagnosticSeverity.Error ? 'error' : 'warning' })) : [];
+		return [...(node.issues ?? []), ...(!node.issues?.length && node.problem ? [{ message: node.problem, severity: 'error', path: node.sourcePath }] : []), ...external];
+	};
+	const allIssues = (node) => [...ownIssues(node), ...node.children.flatMap(allIssues)];
 	const provider = {
 		onDidChangeTreeData: changed.event,
 		// reveal() asks for children itself: waiting for queued work here would
@@ -151,32 +180,37 @@ function registerSiteTree(context, output) {
 		getParent: (node) => node.parent,
 		getTreeItem: (node) => {
 			const configuration = node.kind === 'directory' && node.role === 'configuration';
-			const groupingRow = node.kind === 'directory' || node.kind === 'site' || (isPage(node) && sites.get(node.siteRoot)?.fileTree);
+			const groupingRow = node.kind === 'directory' || node.kind === 'site';
 			const expanded = configuration && configurationExpansion[node.id] !== false;
 			const item = new vscode.TreeItem(node.title, !node.children.length ? vscode.TreeItemCollapsibleState.None
 				: expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed);
 			item.id = node.id;
 			item.contextValue = node.kind === 'site' ? (node.problem ? 'nornaSiteUnavailable' : 'nornaSite')
-				: node.kind === 'directory' ? node.role === 'pages' ? 'nornaPages' : node.role === 'images' ? 'nornaImages' : 'nornaDirectory'
+				: node.kind === 'incomplete' ? 'nornaIncomplete'
+				: node.kind === 'directory' ? configuration ? 'nornaConfiguration' : node.role === 'pages' ? 'nornaPages' : node.role === 'images' ? 'nornaImages' : 'nornaDirectory'
 					: node.kind === 'file' ? node.parent?.role === 'images' && /\.(jpe?g|png|svg)$/i.test(node.title) ? 'nornaImage' : node.removable ? 'nornaOptionalFile' : 'nornaFile'
 						: node.isHome ? 'nornaHome' : node.kind === 'category' ? 'nornaCategory' : 'nornaPage';
 			const unsaved = vscode.workspace.textDocuments.some((document) => document.uri.fsPath === node.sourcePath && document.isDirty);
+			const issues = allIssues(node);
+			const severity = issues.some((issue) => issue.severity === 'error') ? 'error' : issues.length ? 'warning' : '';
 			item.description = [node.isHome ? 'Homepage' : '',
-				node.problem ? 'needs attention' : isPage(node) && node.hiddenFromNavigation ? 'unlisted' : node.kind === 'category' ? 'category' : '',
+				isPage(node) && node.hiddenFromNavigation ? 'unlisted' : node.kind === 'category' ? 'category' : '',
+				severity, node.note,
 				unsaved ? 'unsaved' : ''].filter(Boolean).join(' · ');
-			item.iconPath = new vscode.ThemeIcon(node.problem ? 'warning' : configuration ? 'settings-gear' : node.kind === 'site' ? 'globe'
-				: node.kind === 'category' || node.kind === 'directory' ? 'folder' : 'file');
+			item.iconPath = new vscode.ThemeIcon(configuration ? 'settings-gear' : node.kind === 'site' ? 'globe'
+				: ['category', 'directory', 'incomplete'].includes(node.kind) ? 'folder' : 'file');
+			const problemHelp = [...new Set(issues.map((issue) => `${issue.message}\n${issue.path}${issue.line ? `:${issue.line}` : ''}`))].join('\n\n');
+			item.accessibilityInformation = { label: [node.title, item.description, node.sourcePath].filter(Boolean).join(', ') };
 			if (groupingRow) {
-				item.tooltip = node.role === 'public' ? node.description : '';
-				item.accessibilityInformation = { label: [node.title, item.description,
-					node.kind === 'directory' ? node.sourcePath : undefined].filter(Boolean).join(', ') };
+				item.tooltip = [node.role === 'public' ? node.description : '', problemHelp].filter(Boolean).join('\n\n');
 				// Native trees expand labels that have no command. Keep expansion on
 				// the chevron without opening a source or changing global tree settings.
 				item.command = { command: 'nornaEditor.selectSiteGroup', title: 'Select' };
 			} else if (node.sourcePath) {
-				item.tooltip = [node.title, node.description, node.url, node.sourcePath, node.problem].filter(Boolean).join('\n');
+				item.tooltip = [node.kind === 'page' ? 'Open page content' : node.kind === 'category' ? 'Open category information' : node.kind === 'incomplete' ? 'Add the missing source file' : node.title,
+					node.description, node.sourcePath, problemHelp].filter(Boolean).join('\n');
 				item.resourceUri = vscode.Uri.file(node.sourcePath);
-				item.command = { command: 'nornaEditor.openSiteNode', title: 'Open Source', arguments: [node] };
+				item.command = { command: node.kind === 'incomplete' ? 'nornaEditor.addToPage' : 'nornaEditor.openSiteNode', title: node.kind === 'incomplete' ? 'Repair Source' : 'Open Source', arguments: [node] };
 			}
 			return item;
 		},
@@ -196,7 +230,7 @@ function registerSiteTree(context, output) {
 		const node = nodes.get(`resource:${uri.fsPath}`) ?? nodes.get(uri.fsPath);
 		return node?.siteRoot === activeSiteRoot ? node : undefined;
 	};
-	const ownerOf = (node) => isPage(node) || node?.kind === 'site' ? node : nodes.get(node?.ownerId);
+	const ownerOf = (node) => isPage(node) || node?.kind === 'site' || node?.kind === 'incomplete' ? node : nodes.get(node?.ownerId);
 	const revealActive = () => enqueueTreeWork(async () => {
 		const node = activeNode();
 		let target = node;
@@ -213,14 +247,14 @@ function registerSiteTree(context, output) {
 	const refresh = ({ discover = false } = {}) => enqueueTreeWork(async () => {
 		reading = (async () => {
 			if (discover) {
-				const configs = await vscode.workspace.findFiles('**/{config.yaml,site-config/settings.yaml}', '**/{node_modules,.git,.norna,.vscode-test,dist,marketing}/**');
-				const discovered = new Set(configs.map((uri) => rememberSite(uri.fsPath)?.siteRoot).filter(Boolean));
-				for (const root of sites.keys()) {
-					if (!discovered.has(root)) sites.delete(root);
+				const configs = await vscode.workspace.findFiles('**/{config.yaml,site-config/settings.yaml,site-config/site-theme.yaml}', '**/{node_modules,.git,.norna,.vscode-test,dist,marketing}/**');
+				for (const uri of configs) rememberSite(uri.fsPath);
+				if (activeSiteRoot && inWorkspace(activeSiteRoot) && fs.existsSync(activeSiteRoot) && !sites.has(activeSiteRoot)) {
+					sites.set(activeSiteRoot, { id: activeSiteRoot, siteRoot: activeSiteRoot, kind: 'site', title: labelFor(activeSiteRoot), children: [], cache: new Map() });
 				}
 			}
 			for (const [root, site] of sites) {
-				if (!inWorkspace(root) || !(fs.existsSync(path.join(root, 'site-config', 'settings.yaml')) || fs.existsSync(path.join(root, 'config.yaml')))) {
+				if (!inWorkspace(root) || !fs.existsSync(root)) {
 					sites.delete(root);
 				} else await refreshSite(site);
 			}
@@ -251,11 +285,16 @@ function registerSiteTree(context, output) {
 		if (node && node.siteRoot !== activeSiteRoot) return;
 		if (!isPage(node)) {
 			const resource = nodes.get(`resource:${document.uri.fsPath}`);
-			if (resource?.siteRoot === activeSiteRoot) changed.fire(resource);
+			if (resource?.siteRoot === activeSiteRoot) {
+				await refreshSite(activeSite()); publishDiagnostics(); changed.fire();
+			}
 			return;
 		}
 		const version = document.version;
 		const service = await serviceFor(node.siteRoot);
+		if (service.siteTreeEditingApiVersion === 1) {
+			await refreshSite(activeSite()); publishDiagnostics(); changed.fire(); return;
+		}
 		const information = await service.getSiteNodeInformation({ kind: node.kind, isHome: node.isHome,
 			source: document.getText(), sourcePath: node.sourcePath, fallbackTitle: node.pageId });
 		if (document.version !== version || nodes.get(node.id) !== node) return;
@@ -303,13 +342,15 @@ function registerSiteTree(context, output) {
 	};
 	const openNode = async (argument) => {
 		const node = await chooseNode(argument);
-		if (node?.sourcePath && node.kind !== 'directory') await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(node.sourcePath), { preview: true });
+		if (node?.missingSource) return vscode.commands.executeCommand('nornaEditor.addToPage', node);
+		if (node?.sourcePath && node.kind !== 'directory') await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(node.sourcePath));
 	};
 	const oneLine = (value) => !value.trim() || /[\r\n]/.test(value) ? 'Enter a non-empty, single line of text.' : undefined;
 	const create = async (kind, argument, insideSelected = false) => {
 		const target = await chooseNode(argument);
 		const selected = ownerOf(target);
 		if (!selected) return;
+		if (selected.missingSource) throw new Error('Use the page’s Add menu to create its content or category information before adding children.');
 		const service = await serviceFor(selected.siteRoot);
 		let parentPath = '/';
 		if (insideSelected || (target.kind === 'directory' && target.role === 'pages')) parentPath = selected.url ?? '/';
@@ -406,15 +447,23 @@ function registerSiteTree(context, output) {
 	register('nornaEditor.pageInformation', editInformation);
 	registerSiteFileActions({ vscode, context, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
 	registerSiteAddressActions({ vscode, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
+	registerSiteSourceActions({ vscode, chooseNode, ownerOf, serviceFor, refresh, register });
 	register('nornaEditor.addToPage', async (argument) => {
-		let node = ownerOf(await chooseNode(argument));
+		const target = await chooseNode(argument);
+		const configurationTarget = target?.kind === 'directory' && target.role === 'configuration';
+		let node = ownerOf(target);
 		if (node?.kind === 'site') node = node.children.find((child) => child.isHome);
 		if (!node) return;
+		const service = await serviceFor(node.siteRoot);
+		const missing = (service.siteTreeEditingApiVersion === 1 ? await service.getEditorSourceFileChoices({ siteRoot: node.siteRoot, directory: node.directory ?? path.dirname(node.sourcePath) }) : [])
+			.filter((choice) => !configurationTarget || path.dirname(choice.filename) === target.sourcePath);
+		if (configurationTarget && !missing.length) return vscode.window.showInformationMessage('All supported files in site-config already exist. Select a file to edit it.');
 		const selected = await vscode.window.showQuickPick([
-			{ label: '$(add) Add child page…', command: 'addChildPage' },
-			...(node.kind === 'page' ? [{ label: '$(file-media) Import image…', command: 'importImage' }] : []),
+			...(!configurationTarget && !node.missingSource ? [{ label: '$(add) Add child page…', command: 'addChildPage' }] : []),
+			...(!configurationTarget && node.kind === 'page' ? [{ label: '$(file-media) Import image…', command: 'importImage' }] : []),
+			...missing.map((choice) => ({ label: `$(new-file) ${choice.required ? 'Create required' : 'Add'} ${choice.name}…`, description: choice.description, command: 'createSourceFile', filename: choice.filename })),
 		], { title: `Add to ${node.title}`, ignoreFocusOut: true });
-		if (selected) await vscode.commands.executeCommand(`nornaEditor.${selected.command}`, node);
+		if (selected) await vscode.commands.executeCommand(`nornaEditor.${selected.command}`, node, selected.filename);
 	});
 	register('nornaEditor.pageActions', async (argument) => {
 		const node = await chooseNode(argument);
@@ -450,7 +499,7 @@ function registerSiteTree(context, output) {
 	register('nornaEditor.refreshSiteTree', async () => { services.clear(); await refresh({ discover: true }); await revealActive(); });
 	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,category.yaml,settings.yaml,site-theme.yaml,shared-content.yaml,theme.yaml,config.yaml,page-theme.yaml,sitewide-content.yaml}');
 	const directoryWatcher = vscode.workspace.createFileSystemWatcher('**/{pages,images,public}', false, true, false);
-	const resourceWatcher = vscode.workspace.createFileSystemWatcher('**/{pages,images,public}/**', false, true, false);
+	const resourceWatcher = vscode.workspace.createFileSystemWatcher('**/*', false, true, false);
 	const fileChanged = (uri) => {
 		if (uri.fsPath.split(path.sep).some((part) => ['.norna', 'node_modules', '.git'].includes(part))) return;
 		if (!inWorkspace(uri.fsPath)) return;
@@ -463,7 +512,7 @@ function registerSiteTree(context, output) {
 		if (uri?.scheme !== 'file') return;
 		const site = activeSite();
 		if (!site) return;
-		if (getNornaProjectContext(uri.fsPath)?.siteRoot !== activeSiteRoot) return;
+		if (!inside(activeSiteRoot, uri.fsPath)) return;
 		if (!site.children.length || !activeNode()) await refresh();
 		await revealActive();
 	};
@@ -483,6 +532,9 @@ function registerSiteTree(context, output) {
 		tree.onDidChangeVisibility(({ visible }) => { if (visible) schedule('visible', revealActive); }),
 		{ dispose: () => { disposed = true; for (const timer of timers.values()) clearTimeout(timer); } },
 	);
+	if (vscode.languages.onDidChangeDiagnostics) context.subscriptions.push(vscode.languages.onDidChangeDiagnostics(({ uris }) => {
+		if (uris.some((uri) => uri.scheme === 'file' && activeSiteRoot && inside(activeSiteRoot, uri.fsPath))) schedule('diagnostics', () => enqueueTreeWork(() => changed.fire()));
+	}));
 	void refresh({ discover: true }).catch((error) => output.appendLine(`Site tree: ${error.message}`));
 	return { refresh: () => refresh({ discover: true }) };
 }

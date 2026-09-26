@@ -35,6 +35,8 @@ const state = new Map();
 const contexts = new Map();
 const workspaceChanges = new EventEmitter();
 const documentChanges = new EventEmitter();
+const editorDiagnostics = new Map();
+const diagnosticChanges = new EventEmitter();
 const workspaceState = { get: (key) => state.get(key), update: async (key, value) => { state.set(key, value); } };
 let discoveredRoots = [siteRoot, legacySite];
 let provider;
@@ -45,8 +47,9 @@ const vscode = {
 	TreeItem: class { constructor(label, collapsibleState) { Object.assign(this, { label, collapsibleState }); } },
 	ThemeIcon: class { constructor(id) { this.id = id; } },
 	TreeItemCollapsibleState: { None: 0, Collapsed: 1, Expanded: 2 },
-	Range: class {}, Diagnostic: class {}, DiagnosticSeverity: { Error: 0 },
-	languages: { createDiagnosticCollection: () => ({ clear() {}, set() {}, dispose() {} }) },
+	Range: class {}, Diagnostic: class {}, DiagnosticSeverity: { Error: 0, Warning: 1 },
+	languages: { createDiagnosticCollection: () => ({ clear() {}, set() {}, dispose() {} }),
+		getDiagnostics: (uri) => editorDiagnostics.get(uri.fsPath) ?? [], onDidChangeDiagnostics: diagnosticChanges.event },
 	workspace: {
 		isTrusted: true, textDocuments: documents,
 		workspaceFolders: [siteRoot, legacySite].map((root) => ({ name: path.basename(root), uri: { scheme: 'file', fsPath: root } })),
@@ -85,6 +88,7 @@ try {
 	for (const root of [siteRoot, legacySite, outsideSite]) {
 		await write(path.join(root, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 		await write(path.join(root, 'content.md'), '# Home\n');
+		await write(path.join(root, 'site-config/site-theme.yaml'), 'preset: documentation\n');
 	}
 	await write(path.join(siteRoot, 'pages/010-guide/content.md'), '# Guide\n');
 	await write(path.join(siteRoot, 'pages/010-guide/pages/010-child/content.md'), '# Child\n');
@@ -93,7 +97,7 @@ try {
 	await write(path.join(siteRoot, 'theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
-	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-file-actions.cjs', './site-address-actions.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
+	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
 		getNornaProjectContext: (filename) => {
 			const root = [siteRoot, legacySite, outsideSite].find((root) => filename.startsWith(root + path.sep));
 			if (!root) return null;
@@ -136,6 +140,11 @@ try {
 	assert.equal(configuration.title, 'site-config');
 	assert.equal(provider.getTreeItem(configuration).iconPath.id, 'settings-gear');
 	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
+	choices.push((items) => {
+		assert.deepEqual(items.map((item) => path.basename(item.filename)), ['shared-content.yaml']);
+		return undefined;
+	});
+	await commands.get('nornaEditor.addToPage')(configuration);
 	tree.collapses.fire({ element: configuration });
 	await registered.refresh();
 	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed);
@@ -157,7 +166,7 @@ try {
 	const image = guide.children.find((node) => node.role === 'images').children[0];
 	assert.equal(provider.getTreeItem(home).iconPath.id, provider.getTreeItem(guide).iconPath.id);
 	assert.equal(provider.getTreeItem(pages).contextValue, 'nornaPages');
-	for (const node of [home, pages, guide, configuration]) {
+	for (const node of [pages, configuration]) {
 		const item = provider.getTreeItem(node);
 		assert.equal(item.command.command, 'nornaEditor.selectSiteGroup');
 		assert.equal(item.tooltip, '');
@@ -166,9 +175,10 @@ try {
 		await commands.get(item.command.command)();
 	}
 	assert.deepEqual(opened, [], 'Selecting grouping rows must not open files.');
-	const homeContent = home.children.find((node) => node.title === 'content.md');
-	assert.equal(provider.getTreeItem(homeContent).command.command, 'nornaEditor.openSiteNode');
-	await commands.get('nornaEditor.openSiteNode')(homeContent);
+	assert.equal(home.children.some((node) => node.title === 'content.md'), false);
+	assert.match(provider.getTreeItem(home).tooltip, /Open page content/);
+	assert.equal(provider.getTreeItem(home).command.command, 'nornaEditor.openSiteNode');
+	await commands.get('nornaEditor.openSiteNode')(home);
 	assert.deepEqual(opened.pop(), ['vscode.open', home.sourcePath]);
 	assert.equal(provider.getTreeItem(image).contextValue, 'nornaImage');
 	await commands.get('nornaEditor.openSiteNode')(image);
@@ -187,7 +197,7 @@ try {
 	assert.equal(updatedHome, home, 'Stable node objects and IDs preserve unrelated expansion on refresh.');
 	const firstChild = guidePages.children.find((node) => node.title === 'Child');
 	const beforeCancel = await readdir(path.dirname(firstChild.sourcePath));
-	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage']); return undefined; });
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage', 'createSourceFile']); return undefined; });
 	await commands.get('nornaEditor.addToPage')(firstChild);
 	assert.deepEqual(await readdir(path.dirname(firstChild.sourcePath)), beforeCancel, 'Cancelling Add must not create images or pages.');
 	choices.push((items) => items.find((item) => item.command === 'importImage'));
@@ -215,8 +225,56 @@ try {
 	await write(path.join(siteRoot, 'pages/020-topics/category.yaml'), 'label: Topics\n');
 	await registered.refresh();
 	const category = pages.children.find((node) => node.kind === 'category');
-	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage']); return undefined; });
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'createSourceFile']); return undefined; });
 	await commands.get('nornaEditor.addToPage')(category);
+	assert.equal(provider.getTreeItem(category).command.command, 'nornaEditor.openSiteNode');
+	await commands.get('nornaEditor.openSiteNode')(category);
+	assert.deepEqual(opened.pop(), ['vscode.open', category.sourcePath]);
+	assert.equal(provider.getTreeItem(category).iconPath.id, 'folder');
+	const leaf = guidePages.children.find((node) => node.title === 'Added below guide');
+	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed, 'An existing empty images folder is a visible detail.');
+	await rm(path.join(path.dirname(leaf.sourcePath), 'images'), { recursive: true });
+	await registered.refresh();
+	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.None);
+	choices.push((items) => items.find((item) => item.filename?.endsWith('/theme.yaml')));
+	choices.push(() => undefined);
+	await commands.get('nornaEditor.addToPage')(leaf);
+	assert.deepEqual(await readdir(path.dirname(leaf.sourcePath)), ['content.md']);
+	choices.push((items) => items.find((item) => item.filename?.endsWith('/theme.yaml')));
+	choices.push((items) => { assert.match(items[0].description, /normal body text width/); return items[0]; });
+	await commands.get('nornaEditor.addToPage')(leaf);
+	assert.equal(await readFile(path.join(path.dirname(leaf.sourcePath), 'theme.yaml'), 'utf8'), 'layout:\n  textWidth: normal\n');
+	assert.deepEqual(opened.pop(), ['text', path.join(path.dirname(leaf.sourcePath), 'theme.yaml')]);
+	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed);
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage']); return undefined; });
+	await commands.get('nornaEditor.addToPage')(leaf);
+	const leafTheme = leaf.children[0];
+	await write(leafTheme.sourcePath, 'layout:\n  textWidth: impossible\n');
+	await registered.refresh();
+	assert.match(provider.getTreeItem(leafTheme).description, /error/);
+	assert.equal(provider.getTreeItem(leafTheme).iconPath.id, 'file', 'Errors must preserve the file type.');
+	assert.match(provider.getTreeItem(leaf).description, /error/, 'The owning page reveals a child problem.');
+	await write(leafTheme.sourcePath, 'layout:\n  textWidth: normal\n');
+	await registered.refresh();
+	assert.equal(provider.getTreeItem(leafTheme).description, '', 'Repair must clear old issues on reused nodes.');
+	editorDiagnostics.set(leafTheme.sourcePath, [{ message: 'An unsaved schema error', severity: vscode.DiagnosticSeverity.Error, source: 'YAML', range: { start: { line: 2 } } }]);
+	diagnosticChanges.fire({ uris: [vscode.Uri.file(leafTheme.sourcePath)] });
+	assert.match(provider.getTreeItem(leafTheme).tooltip, /An unsaved schema error/);
+	assert.match(provider.getTreeItem(leaf).description, /error/);
+	editorDiagnostics.clear();
+	diagnosticChanges.fire({ uris: [vscode.Uri.file(leafTheme.sourcePath)] });
+	assert.equal(provider.getTreeItem(leafTheme).description, '');
+	await rm(leafTheme.sourcePath);
+	await registered.refresh();
+	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.None);
+	const blockedPath = path.join(path.dirname(leaf.sourcePath), 'theme.yaml');
+	documents.push({ uri: vscode.Uri.file(blockedPath), isDirty: true });
+	choices.push((items) => items.find((item) => item.filename === blockedPath));
+	choices.push((items) => items[0]);
+	await commands.get('nornaEditor.addToPage')(leaf);
+	assert.match(errors.pop(), /unsaved buffer/);
+	assert.deepEqual(await readdir(path.dirname(leaf.sourcePath)), ['content.md']);
+	documents.pop();
 	// Selecting an owned resource in the command palette resolves to its page.
 	choices.push((items) => { assert.equal(items[0].parentPath, '/guide/'); assert.equal(items[1].parentPath, '/'); return undefined; });
 	await commands.get('nornaEditor.newPage')(image);
@@ -280,7 +338,7 @@ try {
 	// Dirty titles belong to the selected site without moving source bytes.
 	const homePath = path.join(siteRoot, 'content.md');
 	await openTab(homePath);
-	assert.equal(revealed.at(-1).id, `resource:${homePath}`, 'Follow the actual content file rather than its grouping row.');
+	assert.equal(revealed.at(-1).id, homePath, 'Reveal the page representing hidden content.md.');
 	const beforeSettings = revealed.length;
 	await openTab(path.join(siteRoot, 'site-config/settings.yaml'));
 	await commands.get('nornaEditor.refreshSiteTree')();
@@ -344,7 +402,25 @@ try {
 	await chooseSite(siteRoot);
 	await rm(path.join(siteRoot, 'site-config/settings.yaml'));
 	await registered.refresh();
-	assert.equal((await provider.getChildren())[0].siteRoot, legacySite, 'A missing selected site must not leave stale roots.');
+	assert.equal((await provider.getChildren())[0].siteRoot, siteRoot, 'A missing required file must not switch the active site.');
+	assert.match(provider.getTreeItem((await provider.getChildren())[0]).description, /error/);
+	await rm(homePath);
+	await registered.refresh();
+	const damagedHome = (await provider.getChildren())[0];
+	assert.equal(damagedHome.kind, 'incomplete');
+	assert.equal(provider.getTreeItem(damagedHome).contextValue, 'nornaIncomplete');
+	assert.equal(provider.getTreeItem(damagedHome).command.command, 'nornaEditor.addToPage');
+	choices.push((items) => { assert.ok(items.some((item) => item.filename === homePath)); assert.ok(items.every((item) => item.command === 'createSourceFile')); return undefined; });
+	await commands.get('nornaEditor.addToPage')(damagedHome);
+	for (const subscription of context.subscriptions) subscription.dispose();
+	context = { subscriptions: [], workspaceState };
+	registered = module.exports.registerSiteTree(context, { appendLine() {} });
+	await registered.refresh();
+	assert.equal((await provider.getChildren())[0].siteRoot, siteRoot, 'Reload must retain the damaged chosen site.');
+	choices.push((items) => items.find((item) => item.filename === homePath));
+	inputs.push('Repaired Home'); choices.push((items) => items[0]);
+	await commands.get('nornaEditor.addToPage')((await provider.getChildren())[0]);
+	assert.equal((await provider.getChildren())[0].title, 'Repaired Home');
 	assert.equal(await readFile(path.join(outsideSite, 'content.md'), 'utf8'), '# Home\n');
 	assert.equal(errors.length, 0, errors.join('\n'));
 	console.log('VS Code tree adapter contract passed: one active workspace site, explicit choice/cancellation, reload/removal, external files, dirty sources, guarded commands, physical ownership, refresh/reveal coordination and older-engine fallback.');
