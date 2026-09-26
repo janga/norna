@@ -166,15 +166,17 @@ Do not schedule these as opportunistic additions. Each requires a separate
 product brief, representative sites, migration rules, and an explicit decision
 that the expanded audience is worth the permanent complexity.
 
-- `BL-115` **Page-owned Attachments: Deferred wishlist idea.** After
+- [BL-142 Page-local Files And Explicit Sharing](docs/design/backlog/BL-142-page-local-files-explicit-sharing.md):
+  **Deferred; rules approved, implementation design remains.** Use local
+  filenames for page-owned images and attachments, diagnose missing local
+  files with repair help, and require an explicit path for sharing.
+- `BL-115` **Page-owned Attachments: Deferred language/version follow-up.**
+  Extend the basic file contract in
+  [BL-142 Page-local Files And Explicit Sharing](docs/design/backlog/BL-142-page-local-files-explicit-sharing.md)
+  with shared defaults and optional language/version variants after
   `BL-023` Multilingual Sites With A Shared Page Tree and `BL-025` Versioned
   Documentation, coordinated with `BL-100` Future Versioning Foundation,
-  consider page-owned downloadable files with shared defaults and optional
-  language variants. Reuse ordinary Markdown links; update internal links
-  during `page:move` without changing historical versions. Allow fallback to
-  an explicitly shared file, not silently to another language. Folder names,
-  URL stability, and syntax remain undecided; this is not an implementation
-  specification or a prioritized item.
+  without silent fallback to another language or rewriting historical versions.
 - [`BL-052` Docusaurus Migration Obstacle Inventory](docs/design/backlog/BL-052-documentation-migration-assistant.md):
   **Deferred; decision workflow archived.** Resume only for a real site's
   bounded migration trial, using representative pages and focused conversions
