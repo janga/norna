@@ -98,6 +98,7 @@ For example, a homepage titled **Norna** and a child titled **Guide** appear as:
 
 ```text
 Norna  Homepage                         +  …
+  theme.yaml
   site-config/
     settings.yaml
     site-theme.yaml
@@ -105,7 +106,6 @@ Norna  Homepage                         +  …
   public/
     robots.txt
     icon.ico
-  theme.yaml
   images/
   pages/
     Guide                              +  …

@@ -52,7 +52,7 @@ normal editor or preview, including image previews.
 
 Page names hide numeric ordering prefixes; hover reveals the actual source
 path. Configuration appears under its owner before `pages/`. The root shows
-`site-config/`, `public/`, optional `theme.yaml`, `images/` and `pages/` when
+optional `theme.yaml` first, then `site-config/`, `public/`, `images/` and `pages/` when
 present. The settings folder starts expanded and remembers subsequent choices.
 Other pages start with optional `theme.yaml`. Hover explains theme scope and
 what belongs in `public/`. A leaf has no chevron unless it has visible details,

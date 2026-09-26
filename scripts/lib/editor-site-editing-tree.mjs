@@ -86,7 +86,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 					? 'Files published unchanged with the site, such as robots.txt and icons.' : role === 'configuration' ? 'Settings and content shared by the complete site' : '' };
 			items.push(container);
 		}
-		const order = location ? ['site-config', 'public', 'theme.yaml', 'category.yaml', 'images', 'pages']
+		const order = location ? ['theme.yaml', 'site-config', 'public', 'category.yaml', 'images', 'pages']
 			: role === 'configuration' ? ['settings.yaml', 'site-theme.yaml', 'shared-content.yaml'] : [];
 		const rank = (entry) => order.includes(entry.name) ? order.indexOf(entry.name) : order.length;
 		entries.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'en', { numeric: true }));

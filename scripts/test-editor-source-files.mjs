@@ -32,12 +32,13 @@ try {
 	await createEditorSourceFile(settings);
 	await createEditorSourceFile(await plan('site-config/site-theme.yaml'));
 	await createEditorSourceFile(await plan('site-config/shared-content.yaml'));
+	await write('public/robots.txt', 'User-agent: *\n');
 	await createEditorSourceFile(await plan('theme.yaml'));
 	assert.deepEqual(await choices(), []);
 	view = await tree();
 	assert.ok(view.items.every((item) => !item.issues?.length), JSON.stringify(view.items.filter((item) => item.issues?.length)));
 	assert.equal(view.items.filter((item) => item.sourcePath === home.filename).length, 1, 'A page replaces its content file row.');
-	assert.deepEqual(view.items.filter((item) => item.parentId === home.filename).map((item) => item.title), ['site-config', 'theme.yaml']);
+	assert.deepEqual(view.items.filter((item) => item.parentId === home.filename).map((item) => item.title), ['theme.yaml', 'site-config', 'public']);
 
 	await write('pages/010-leaf/content.md', '# Leaf\n');
 	await mkdir(path.join(siteRoot, 'pages/020-incomplete/pages/010-child'), { recursive: true });
