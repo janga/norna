@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.0
+
+- Remove optional local themes, shared content and public files through Trash,
+  with confirmation and an explanation of their effect.
+- Review incoming links before removing a page branch. Include aliases,
+  anchors and unsaved content; open source passages and report incomplete checks.
+- Copy public/internal addresses, rename a page's URL segment through the
+  engine's page-move transaction, and add/remove redirect addresses in the
+  normal editor buffer. Keep old page addresses and update internal links
+  when renaming; protect the homepage and required files.
+
 ## 0.4.1
 
 - Keep page and directory labels as grouping rows; open sources from their

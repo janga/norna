@@ -3,15 +3,18 @@ import path from 'node:path';
 import { markdownToMdast } from 'satteri';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
 import { getSiteStructure } from './site-structure.mjs';
+import { getEditorIncomingLinks } from './editor-site-links.mjs';
+import { editorFileRemovalPolicy } from './editor-file-policy.mjs';
 
 export const siteFileOperationsApiVersion = 1;
+export const siteRemovalApiVersion = 1;
 const imageName = /^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$/i;
 const stat = (filename) => lstat(filename).catch((error) => {
 	if (error.code === 'ENOENT') return null;
 	throw error;
 });
 
-const checkedPath = async (siteRoot, filename) => {
+export const checkedPath = async (siteRoot, filename) => {
 	const root = path.resolve(siteRoot);
 	const target = path.resolve(filename);
 	const relative = path.relative(root, target);
@@ -34,7 +37,7 @@ const pageTarget = async ({ siteRoot, sourcePath }) => {
 	return { page, structure, directory: path.dirname(filename), sourcePath: filename };
 };
 
-const snapshot = async (filename) => {
+export const snapshot = async (filename) => {
 	const result = [];
 	const visit = async (current) => {
 		const information = await stat(current);
@@ -93,15 +96,19 @@ export const getEditorImageUsage = async ({ siteRoot, sourcePath, imagePath, sou
 	return { references, incomplete };
 };
 
-export const planEditorRemoval = async ({ siteRoot, sourcePath, imagePath, sources }) => {
+export const planEditorRemoval = async ({ siteRoot, sourcePath, imagePath, filePath, sources }) => {
 	const target = await pageTarget({ siteRoot, sourcePath });
-	if (!imagePath && target.page.isHome) throw new Error('The homepage is required and cannot be removed.');
-	const filename = imagePath ? await checkedPath(siteRoot, imagePath) : target.directory;
-	const usage = imagePath ? await getEditorImageUsage({ siteRoot, sourcePath, imagePath, sources }) : null;
+	if (!imagePath && !filePath && target.page.isHome) throw new Error('The homepage is required and cannot be removed.');
+	const filename = imagePath || filePath ? await checkedPath(siteRoot, imagePath ?? filePath) : target.directory;
+	const policy = filePath ? editorFileRemovalPolicy({ siteRoot: path.resolve(siteRoot), sourcePath: target.sourcePath, filePath: filename }) : null;
+	if (filePath && (!policy || !(await stat(filename))?.isFile())) throw new Error('This file cannot be removed separately. Required page files belong to their page; required site settings must remain.');
+	const usage = imagePath ? await getEditorImageUsage({ siteRoot, sourcePath, imagePath, sources })
+		: !filePath || policy.kind === 'public' ? await getEditorIncomingLinks({ siteRoot, sourcePath, sources,
+			descendants: !filePath, excludeBranch: !filePath, filePath }) : null;
 	const files = await snapshot(filename);
-	return { target: filename, recursive: !imagePath,
+	return { target: filename, recursive: !imagePath && !filePath, effect: policy?.effect,
 		files: files.filter(([, kind]) => kind === 'file').map(([relative]) => relative || path.basename(filename)),
-		pages: imagePath ? 0 : target.structure.nodes.filter((node) => {
+		pages: imagePath || filePath ? 0 : target.structure.nodes.filter((node) => {
 			const relative = path.relative(filename, node.contentPath ?? node.categoryPath);
 			return relative !== '..' && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
 		}).length,

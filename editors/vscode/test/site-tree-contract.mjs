@@ -93,7 +93,7 @@ try {
 	await write(path.join(siteRoot, 'theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
-	const localRequire = (name) => name === 'vscode' ? vscode : name === './site-file-actions.cjs' ? require(path.join(extensionRoot, 'site-file-actions.cjs')) : name === './norna-project.cjs' ? {
+	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-file-actions.cjs', './site-address-actions.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
 		getNornaProjectContext: (filename) => {
 			const root = [siteRoot, legacySite, outsideSite].find((root) => filename.startsWith(root + path.sep));
 			if (!root) return null;
@@ -206,7 +206,7 @@ try {
 	await commands.get('nornaEditor.addToPage')(image);
 	assert.equal(importedInto, guide, 'Add on a resource must import into its owning page.');
 	commands.set('nornaEditor.importImage', importImage);
-	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['pageInformation', 'openSiteNode', 'removePage']); return undefined; });
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['pageInformation', 'addressesAndLinks', 'openSiteNode', 'removePage']); return undefined; });
 	await commands.get('nornaEditor.pageActions')(guide);
 	inputs.push('Cancelled', 'cancelled');
 	choices.push(() => undefined);

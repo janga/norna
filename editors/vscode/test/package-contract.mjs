@@ -77,6 +77,8 @@ for (const filename of files) {
 	assert.notEqual(filename, 'yaml-schema-completions.cjs');
 	assert.notEqual(filename, 'site-tree.cjs');
 	assert.notEqual(filename, 'site-file-actions.cjs');
+	assert.notEqual(filename, 'site-address-actions.cjs');
+	assert.notEqual(filename, 'site-link-review.cjs');
 }
 
 console.log(`VS Code package contract passed (${files.size} packaged files).`);

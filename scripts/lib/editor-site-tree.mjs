@@ -1,6 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
-import { isMap, isScalar, parseDocument } from 'yaml';
+import { isMap, isScalar, isSeq, parseDocument } from 'yaml';
 import { getMarkdownHeadings, slugifyAsciiIdentifier } from './heading-ids.mjs';
 import { parsePageDirectoryPath } from './page-model.mjs';
 import { splitPageMarkdownSource } from './page-markdown.mjs';
@@ -9,13 +9,17 @@ import { homePageDirectory } from './site-conventions.mjs';
 import { createSiteNode, escapeMarkdownHeading, planSiteNodeCreation } from './site-node-create.mjs';
 import { getSiteStructure } from './site-structure.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
+import { editorFileRemovalPolicy } from './editor-file-policy.mjs';
+import { readEditorLinkState } from './editor-site-links.mjs';
 
 // Optional capability: older engines keep IntelliSense without exposing writes
 // through a site-tree API whose contract they do not implement.
 export const siteTreeApiVersion = 1;
 export const siteFileTreeApiVersion = 1;
 export { createSiteNode, planSiteNodeCreation, slugifyAsciiIdentifier };
-export { siteFileOperationsApiVersion, planEditorImageCopy, planEditorRemoval, getEditorImageUsage, createEditorImageAppend } from './editor-site-files.mjs';
+export { siteFileOperationsApiVersion, siteRemovalApiVersion, planEditorImageCopy, planEditorRemoval, getEditorImageUsage, createEditorImageAppend } from './editor-site-files.mjs';
+export { getEditorIncomingLinks } from './editor-site-links.mjs';
+export { siteAddressApiVersion, getEditorPageAddresses, planEditorPageAddress, applyEditorPageAddress } from './editor-page-addresses.mjs';
 
 const sourceParts = (source, kind) => {
 	if (kind === 'category') return { yaml: source, offset: 0, body: '', bodyLine: 0 };
@@ -104,6 +108,12 @@ export const readSiteFileTree = async (options) => {
 	const addResource = (owner, parentId, filename, kind, role, description = '') => {
 		const item = { id: resourceId(filename), parentId, ownerId: owner.sourcePath,
 			kind, role, sourcePath: filename, title: path.basename(filename), description };
+		if (kind === 'file') item.removable = Boolean(editorFileRemovalPolicy({ siteRoot, sourcePath: owner.sourcePath, filePath: filename }));
+		if (kind === 'file' && filename === owner.sourcePath) item.description += owner.isHome
+			? '. Required homepage content; the homepage cannot be removed.' : '. Required for this entry; remove the whole page or category through its actions menu.';
+		if (kind === 'file' && ['settings.yaml', 'site-theme.yaml'].some((name) => filename === path.join(siteRoot, 'site-config', name))) {
+			item.description = 'Required site configuration; this file cannot be removed through Site Tree.';
+		}
 		items.push(item);
 		return item;
 	};
@@ -166,7 +176,8 @@ const changeYamlField = (yaml, keys, value, eol) => {
 	const scalar = (data) => JSON.stringify(data);
 	const entryText = (key, data, indent) => {
 		const prefix = ' '.repeat(indent);
-		return data && typeof data === 'object'
+		if (Array.isArray(data)) return `${prefix}${key}:${eol}${data.map((entry) => `${prefix}  - ${scalar(entry)}${eol}`).join('')}`;
+		return data && typeof data === 'object' && !Array.isArray(data)
 			? `${prefix}${key}:${eol}${Object.entries(data).map(([child, value]) => entryText(child, value, indent + 2)).join('')}`
 			: `${prefix}${key}: ${scalar(data)}${eol}`;
 	};
@@ -194,8 +205,19 @@ const changeYamlField = (yaml, keys, value, eol) => {
 			return visit(pair.value, rest, [...ancestors, { map, pair }]);
 		}
 		if (value !== undefined) {
-			if (!isScalar(pair.value) || pair.value.anchor || pair.value.tag) {
-				throw new Error(`Edit ${keys.join('.')} in the source; Page Information changes only ordinary scalar values.`);
+			if ((!isScalar(pair.value) && !(Array.isArray(value) && isSeq(pair.value))) || pair.value.anchor || pair.value.tag
+				|| (isSeq(pair.value) && pair.value.items.some((item) => !isScalar(item) || item.anchor || item.tag))) {
+				throw new Error(`Edit ${keys.join('.')} in the source; this field uses YAML anchors, tags or values that cannot be changed through Page Information.`);
+			}
+			if (Array.isArray(value) && !map.flow) {
+				// Keep aliases in block form so a later page:move can preserve
+				// old addresses without asking the author to reformat our output.
+				const start = yaml.lastIndexOf('\n', pair.key.range[0] - 1) + 1;
+				const end = pair.value.range[2];
+				const indent = pair.key.srcToken.indent ?? 0;
+				const comments = collectComments(pair.srcToken, start, end);
+				return edit(start, end, comments.map((comment) => `${' '.repeat(indent)}${comment}${eol}`).join('')
+					+ entryText(pair.key.value, value, indent));
 			}
 			const start = pair.value.range[0];
 			const end = pair.value.range[1];
@@ -230,7 +252,7 @@ const changeYamlField = (yaml, keys, value, eol) => {
 	return visit(document.contents, keys);
 };
 
-export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, field, value }) => {
+export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, field, value, sources = new Map() }) => {
 	const relative = path.relative(path.join(siteRoot, 'pages'), sourcePath).split(path.sep).join('/');
 	const filename = path.posix.basename(relative);
 	if (!['content.md', 'category.yaml'].includes(filename)) throw new Error('Choose a page or navigation category source file.');
@@ -240,9 +262,11 @@ export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, fi
 	const kind = filename === 'content.md' ? 'page' : 'category';
 	const isHome = pageDirectory === homePageDirectory;
 	const info = await parseInformation({ source, kind, isHome, sourcePath });
-	const allowed = kind === 'page' ? ['title', 'description', 'listed'] : ['title', 'description'];
+	const allowed = kind === 'page' ? ['title', 'description', 'listed', 'aliases'] : ['title', 'description'];
 	if (!allowed.includes(field)) throw new Error('This information field is read-only.');
-	if (field === 'listed') {
+	if (field === 'aliases') {
+		if (!Array.isArray(value) || value.some((entry) => typeof entry !== 'string')) throw new Error('Enter additional addresses as site-relative paths, such as /old-guide/.');
+	} else if (field === 'listed') {
 		if (typeof value !== 'boolean') throw new Error('Choose whether this page is listed in navigation.');
 		if (isHome && !value) throw new Error('Home must remain listed.');
 	} else {
@@ -260,13 +284,18 @@ export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, fi
 	}
 	const parts = sourceParts(source, kind);
 	const keys = kind === 'category' ? [field === 'title' ? 'label' : field]
-		: field === 'listed' ? ['navigation', 'listed'] : ['page', 'description'];
-	const yaml = changeYamlField(parts.yaml, keys, field === 'description' && !value ? undefined : value, eol);
+		: field === 'listed' ? ['navigation', 'listed'] : ['page', field === 'aliases' ? 'aliases' : 'description'];
+	const yaml = changeYamlField(parts.yaml, keys, (field === 'description' && !value) || (field === 'aliases' && !value.length) ? undefined : value, eol);
 	const next = kind === 'category' ? yaml
-		: parts.bodyLine ? source.slice(0, parts.offset) + yaml + source.slice(parts.offset + parts.yaml.length)
+		: parts.bodyLine ? !yaml.trim() ? source.slice(parts.offset + parts.yaml.length).replace(/^---[ \t]*(?:\r?\n|$)/, '')
+			: source.slice(0, parts.offset) + yaml + source.slice(parts.offset + parts.yaml.length)
 			: `---${eol}${yaml}---${eol}${eol}${source}`;
 	// Validate the complete result before offering it to the editor.
 	await parseInformation({ source: next, kind, isHome, sourcePath });
+	if (field === 'aliases') {
+		const state = await readEditorLinkState({ siteRoot, sources: new Map([...sources, [sourcePath, next]]) });
+		if (state.incomplete.length) throw new Error(`Additional addresses could not be checked. ${state.incomplete.join('\n')}`);
+	}
 	let start = 0;
 	while (start < source.length && start < next.length && source[start] === next[start]) start++;
 	let end = source.length;

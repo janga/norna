@@ -58,7 +58,7 @@ try {
 	assert.equal(await edit(crlf, 'listed', false), crlf.replace('---\r\n\r\n# Guide', 'navigation:\r\n  listed: false\r\n---\r\n\r\n# Guide'));
 	assert.equal(await edit('Title\n=====\n\nBody.\n', 'title', 'Renamed'), '# Renamed\n\nBody.\n');
 	assert.equal(await edit('# Guide\n\nBody.\n', 'description', 'A guide.'), '---\npage:\n  description: "A guide."\n---\n\n# Guide\n\nBody.\n');
-	assert.equal(await edit('---\npage:\n  description: Old\n---\n# Guide\n', 'description', ''), '---\n---\n# Guide\n');
+	assert.equal(await edit('---\npage:\n  description: Old\n---\n# Guide\n', 'description', ''), '# Guide\n');
 	assert.equal(await edit('---\npage: {description: "Old", aliases: [/legacy/]}\n---\n# Guide\n', 'description', 'New'), '---\npage: {description: "New", aliases: [/legacy/]}\n---\n# Guide\n');
 	assert.equal(await edit('---\npage: {description: "Old", aliases: [/legacy/]}\n---\n# Guide\n', 'description', ''), '---\npage: { aliases: [/legacy/]}\n---\n# Guide\n');
 	const block = '---\npage:\n  description: >- # retain\n    Old long\n    description.\n  aliases: [/old/]\n---\n# Guide\n';
@@ -69,7 +69,7 @@ try {
 	assert.equal(await edit('label: Topics\n', 'description', 'Choose a topic.', category), 'label: Topics\ndescription: "Choose a topic."\n');
 	assert.equal(await edit('label: Topics\ndescription: Old\n', 'description', '', category), 'label: Topics\n');
 	await assert.rejects(edit('# Home\n', 'listed', false, path.join(firstSite, 'content.md')), /Home must remain listed/);
-	await assert.rejects(edit('# Guide\n', 'aliases', ['/new/']), /read-only/);
+	await assert.rejects(edit('# Guide\n', 'url', '/new/'), /read-only/);
 	await assert.rejects(edit('# Guide\n', 'title', 'bad\nheading'), /single line/);
 	await assert.rejects(edit('# Other\n', 'title', 'Bad', path.join(secondSite, 'content.md')), /Invalid/);
 	await assert.rejects(edit('---\npage: [broken\n---\n# Guide\n', 'description', 'No'), /invalid YAML/);

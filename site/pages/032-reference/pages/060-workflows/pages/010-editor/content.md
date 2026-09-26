@@ -154,7 +154,7 @@ The same menu offers **Import image…** on content pages. The **+** in the tree
 toolbar acts on the selected page or the owner of a selected resource.
 
 The **…** beside a page opens **Page Actions**: edit page information, open
-the source or remove the page. The Command
+the source, work with addresses and links, or remove the page. The Command
 Palette and context menu remain available. **Norna: New Page…** additionally
 offers creation beside a page or at the site root. Browsing alone creates no folders.
 **Norna: New Category…** follows the same steps for a navigation category.
@@ -164,8 +164,8 @@ Escape cancels before creation without writing files. These actions use the same
 
 Choose **Norna: Page Information…** to edit the title, description or whether
 a page is listed in navigation. For categories, edit the label and description.
-Leave a description empty to remove it. The current URL, source location and
-previous URLs are also shown; addresses are read-only in this version.
+Leave a description empty to remove it. The source location opens the file;
+**Addresses and links…** opens the address actions described below.
 
 A title edit changes the Markdown H1 and labels derived from it. The page's
 address and link text written elsewhere stay the same. Changes are made in
@@ -183,6 +183,10 @@ requires extension version 0.3.1 or later. The file
 tree requires extension version 0.3.0 or later and an engine build
 with page-file support. The Add menu and grouping-row behavior described here
 require extension 0.4.1; the root ordering also needs an updated engine.
+Optional-file removal, incoming-link review and address editing require
+extension 0.5.0 and the corresponding engine capabilities. Earlier engines
+retain their read-only address rows in **Page Information** and report which
+new actions need an engine update.
 Engines with the earlier site-tree support retain their page tree, where page
 labels still open the source, and show a message explaining the missing file view. An
 incompatible engine reports the problem on its site root; compatible
@@ -191,18 +195,89 @@ update or to rediscover sites. External file changes normally refresh the
 tree automatically.
 
 Use **Page Information** on pages and categories. Other files open for normal
-editing and do not receive page-metadata actions. Creating themes, moving or
-reordering pages, changing addresses and inserting page links remain outside
+editing and do not receive page-metadata actions. Creating themes, moving pages
+to another parent, reordering pages and inserting page links remain outside
 this tree's scope. Generated `.norna` output and symbolic links are not listed;
 use Explorer for files outside the tree.
+
+### Inspect and change addresses
+
+Select **Addresses and links…** from a page's **…** menu. **Web address** copies
+the full public address for sharing. **Internal link** copies the path to use
+in `content.md`, without the site's deployment prefix. For example, a page
+published at `https://example.com/manual/guide/` uses `/guide/` in internal
+links. The domain and `/manual/` come from `site-config/settings.yaml`.
+
+**Change URL segment…** changes the final part of a content page's address.
+Enter one segment, such as `installation`, without slashes. The extension
+previews the full old and new addresses, source directories, descendant
+pages and authored links that will change. Confirming renames the page folder
+within its current parent while keeping its order number. The title stays the
+same. The engine updates supported internal links and keeps old page addresses
+as redirects, using the same planning and transaction as
+[`page:move`](/reference/commands/move/). Descendant category paths also change;
+categories do not receive redirects.
+
+Save or undo unsaved page, category and site-settings edits before changing an
+address. The action writes affected content files and moves the complete page
+directory. Editor Undo does not reverse the whole operation. To return to an
+old address, first remove conflicting additional addresses on this page and
+its descendants, save, then change the URL segment again.
+The homepage's internal address is fixed at
+`/`. This action does not rename categories or detach addresses from folders.
+
+**Additional addresses…** manages addresses that redirect to the current page.
+Choose **Add additional address…**, or select an existing address to copy or
+remove it. Enter a site-relative path beginning and ending with `/`, such as
+`/old-guide/` or `/archive/guide/`. Omit the deployment prefix. These entries
+are stored in `page.aliases`; they do not change the page's primary address.
+Conflicts with other pages, categories, redirects, public files or generated
+routes are reported before accepting the edit. See
+[URLs and links](/reference/site/urls/#keep-an-old-url) for the exact rules.
+
+Additional-address edits stay in the page's editor buffer, preserve existing
+prose and support normal Save and Undo. Removing an address requires
+confirmation and shows known links to it. If relevant content changes while a
+dialog is open, repeat the action to review the current result.
+
+**Incoming links…** lists authored links to the selected page or category.
+The list includes source page titles, file locations, line numbers and source
+passages; select a result to open that passage. Checks include unsaved page
+content, Markdown links and Norna block links, including aliases and anchors.
+External URLs and raw HTML are not checked. If some sources cannot be checked,
+the list and removal confirmations say so instead of reporting a clean result.
+
+### Remove an optional file
+
+Use **Move to Trash…** in the file's **…** menu. This is available for local
+`theme.yaml`, `site-config/shared-content.yaml` and files in `public/`.
+Images retain their [image actions](#add-and-use-page-images).
+
+Review the path and effect before confirming. Removing a homepage theme
+returns that page to the shared site theme. Removing a branch theme restores
+inherited settings for that branch; descendants keep their own overrides.
+Removing shared content removes its authored notices, footer content and logo
+display settings. Public-file removal shows known page links, but references
+in configuration or outside page content are not checked.
+
+Required site settings and page/category source files cannot be removed
+separately through Site Tree. To remove a content page, use its grouping row's
+actions instead. Save or undo dirty edits in the file first. Files go to the
+operating system's Trash and can be restored there.
 
 ### Remove a page
 
 Choose **Move page to Trash…** from the page's **…** menu. Review the source
 directory and the number of page/category entries and files, then confirm.
 The whole page directory is removed, including its images, configuration and
-descendants. Links from other pages are not rewritten. The required homepage
-cannot be removed.
+descendants. The confirmation counts authored internal links from pages that
+remain to the removed page or its descendants, including old addresses and
+anchors. Links wholly inside the removed branch do not trigger this warning.
+Links from other pages are not rewritten. The required homepage cannot be removed.
+
+Choose **Show links** to open the source list before deciding. This cancels
+the removal; run the action again after reviewing or editing those links.
+You may still confirm removal when known incoming links exist.
 
 Save or undo unsaved edits in the affected files first. If files change during
 confirmation, the action stops so you can review them again. Files go to the

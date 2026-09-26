@@ -3,6 +3,7 @@ import './test-editor-block-completions.mjs';
 import './test-editor-image-usage.mjs';
 import './test-editor-site-tree.mjs';
 import './test-editor-site-files.mjs';
+import './test-editor-page-addresses.mjs';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';

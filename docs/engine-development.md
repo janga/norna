@@ -437,6 +437,15 @@ strict. `scripts/lib/site-node-create.mjs` owns creation for both the CLI and
 editor. Metadata edits return source ranges for the editor buffer and do not
 write files or trigger saves.
 
+Extension 0.5.0 also negotiates `siteRemovalApiVersion: 1` and
+`siteAddressApiVersion: 1` through that entry. `editor-site-links.mjs` overlays
+dirty documents on the shared link graph and records incomplete reads.
+Removal plans exclude links wholly inside a deleted branch. Address changes
+reuse `page-move-plan.mjs` and `page-move-apply.mjs`; the extension supplies a
+VS Code directory-rename callback so open editors follow the move. Alias edits
+remain source ranges in the editor buffer. Keep these file/link operations
+separate from completion-provider tests.
+
 ### First Marketplace Release
 
 The publisher ID in the extension manifest is `janga`. Before the first public

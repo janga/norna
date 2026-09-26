@@ -8,6 +8,13 @@ of the [VS Code Files And Images track](../vscode-authoring-track.md).
 
 **Status: Needs decision; outline for later visual discussion.**
 
+Local-theme removal was approved separately on 2026-09-22 in
+[BL-146 VS Code Removal, Addresses And Incoming Links](BL-146-vscode-removal-addresses-links.md):
+the file's actions explain homepage or branch inheritance and confirm moving
+it to the operating system's Trash. This draft retains theme creation and any
+later requested presentation of effective inherited values; it must reuse the
+delivered removal action.
+
 ## Scope And Boundaries
 
 Opening existing settings and editing them with YAML support is already

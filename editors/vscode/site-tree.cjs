@@ -3,6 +3,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { getNornaProjectContext } = require('./norna-project.cjs');
 const { registerSiteFileActions } = require('./site-file-actions.cjs');
+const { registerSiteAddressActions } = require('./site-address-actions.cjs');
 
 const viewId = 'nornaSiteTree';
 const sourceNames = new Set(['content.md', 'category.yaml']);
@@ -157,7 +158,7 @@ function registerSiteTree(context, output) {
 			item.id = node.id;
 			item.contextValue = node.kind === 'site' ? (node.problem ? 'nornaSiteUnavailable' : 'nornaSite')
 				: node.kind === 'directory' ? node.role === 'pages' ? 'nornaPages' : node.role === 'images' ? 'nornaImages' : 'nornaDirectory'
-					: node.kind === 'file' ? node.parent?.role === 'images' && /\.(jpe?g|png|svg)$/i.test(node.title) ? 'nornaImage' : 'nornaFile'
+					: node.kind === 'file' ? node.parent?.role === 'images' && /\.(jpe?g|png|svg)$/i.test(node.title) ? 'nornaImage' : node.removable ? 'nornaOptionalFile' : 'nornaFile'
 						: node.isHome ? 'nornaHome' : node.kind === 'category' ? 'nornaCategory' : 'nornaPage';
 			const unsaved = vscode.workspace.textDocuments.some((document) => document.uri.fsPath === node.sourcePath && document.isDirty);
 			item.description = [node.isHome ? 'Homepage' : '',
@@ -354,11 +355,14 @@ function registerSiteTree(context, output) {
 			{ label: 'Description', description: info.description || 'Not set', field: 'description' },
 			...(node.kind === 'page' ? [{ label: 'Navigation', description: node.isHome ? 'Home is always listed' : info.listed ? 'Listed' : 'Unlisted (still published)', field: node.isHome ? null : 'listed' }] : []),
 			{ label: 'Location', kind: vscode.QuickPickItemKind.Separator },
-			{ label: node.kind === 'category' ? 'Category URL' : 'Current URL', description: node.url, detail: 'Read-only; select to copy', copy: node.url },
+			...(service.siteAddressApiVersion === 1
+				? [{ label: 'Addresses and links…', detail: 'Copy or change addresses and review incoming links', addresses: true }]
+				: [{ label: node.kind === 'category' ? 'Category URL' : 'Current URL', description: node.url, detail: 'Read-only; select to copy', copy: node.url }]),
 			{ label: 'Source file', description: labelFor(node.sourcePath), detail: 'Select to open', open: true },
-			...(node.kind === 'page' ? [{ label: 'Previous URLs', description: info.aliases.join(', ') || 'None', detail: 'Read-only; select to copy', copy: info.aliases.join('\n') }] : []),
+			...(node.kind === 'page' && service.siteAddressApiVersion !== 1 ? [{ label: 'Previous URLs', description: info.aliases.join(', ') || 'None', detail: 'Read-only; select to copy', copy: info.aliases.join('\n') }] : []),
 		], { title: `Page Information: ${info.title}`, ignoreFocusOut: true });
 		if (!selected) return;
+		if (selected.addresses) return vscode.commands.executeCommand('nornaEditor.addressesAndLinks', node);
 		if (selected.open) return openNode(node);
 		if (selected.copy !== undefined) return vscode.env.clipboard.writeText(selected.copy);
 		if (!selected.field) return;
@@ -401,6 +405,7 @@ function registerSiteTree(context, output) {
 	register('nornaEditor.newCategory', (node) => create('category', node));
 	register('nornaEditor.pageInformation', editInformation);
 	registerSiteFileActions({ vscode, context, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
+	registerSiteAddressActions({ vscode, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
 	register('nornaEditor.addToPage', async (argument) => {
 		let node = ownerOf(await chooseNode(argument));
 		if (node?.kind === 'site') node = node.children.find((child) => child.isHome);
@@ -416,9 +421,19 @@ function registerSiteTree(context, output) {
 		if (!isPage(node)) throw new Error('Select a page or category.');
 		const selected = await vscode.window.showQuickPick([
 			{ label: '$(edit) Page information…', command: 'pageInformation' },
+			{ label: '$(link) Addresses and links…', command: 'addressesAndLinks' },
 			{ label: '$(go-to-file) Open source', command: 'openSiteNode' },
 			...(!node.isHome ? [{ label: '$(trash) Move page to Trash…', command: 'removePage' }] : []),
 		], { title: `Page actions: ${node.title}`, ignoreFocusOut: true });
+		if (selected) await vscode.commands.executeCommand(`nornaEditor.${selected.command}`, node);
+	});
+	register('nornaEditor.fileActions', async (argument) => {
+		const node = await chooseNode(argument);
+		if (node?.kind !== 'file' || !node.removable) throw new Error('Select an optional file. Required files cannot be removed separately.');
+		const selected = await vscode.window.showQuickPick([
+			{ label: '$(go-to-file) Open source', command: 'openSiteNode' },
+			{ label: '$(trash) Move to Trash…', command: 'removeFile' },
+		], { title: `File actions: ${node.title}`, ignoreFocusOut: true });
 		if (selected) await vscode.commands.executeCommand(`nornaEditor.${selected.command}`, node);
 	});
 	register('nornaEditor.imageActions', async (argument) => {

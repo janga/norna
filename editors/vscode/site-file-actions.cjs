@@ -1,4 +1,5 @@
 const path = require('node:path');
+const { describeLinks, showLinks } = require('./site-link-review.cjs');
 
 // Native dialogs and filesystem operations stay in the extension. The selected
 // engine owns path, content and image-reference rules.
@@ -98,18 +99,32 @@ function registerSiteFileActions({ vscode, context, chooseNode, ownerOf, service
 		const selected = await target(argument);
 		await appendImage(selected.page, selected.service, path.basename(imagePathOf(selected)));
 	};
-	const remove = async (argument, image) => {
+	const remove = async (argument, kind) => {
 		const selected = await target(argument);
 		const { page, service, options } = selected;
+		const image = kind === 'image';
+		if (!image && service.siteRemovalApiVersion !== 1) throw new Error('Update this site’s Norna engine to remove files or review incoming links before page removal.');
 		if (image) options.imagePath = imagePathOf(selected);
+		else if (kind === 'file') {
+			if (selected.selected.kind !== 'file') throw new Error('Select an optional file in Site Tree.');
+			options.filePath = selected.selected.sourcePath;
+		}
 		else if (!['page', 'category'].includes(selected.selected.kind)) throw new Error('Select the page itself to remove it.');
 		const plan = await stableSources((sources) => service.planEditorRemoval({ ...options, sources }));
 		clean(plan.target);
 		const detail = [plan.target,
-			image ? describeUsage(plan.usage, page.siteRoot) : `${plan.pages} page/category entries and ${plan.files.length} files, including all descendants. Links elsewhere are not updated.`,
+			image ? describeUsage(plan.usage, page.siteRoot) : kind === 'file' ? plan.effect
+				: `${plan.pages} page/category entries and ${plan.files.length} files, including all descendants. Links from pages that remain are not rewritten.`,
+			...(!image && plan.usage ? [describeLinks(plan.usage)] : []),
 			'Restore through the operating system’s Trash. Editor Undo does not restore these files.',
 		].join('\n\n');
-		if (!await confirm(`Move “${image ? path.basename(plan.target) : page.title}” to Trash?`, detail, 'Move to Trash')) return;
+		const choice = await vscode.window.showWarningMessage(`Move “${kind === 'page' ? page.title : path.basename(plan.target)}” to Trash?`,
+			{ modal: true, detail }, 'Move to Trash', ...(!image && plan.usage?.references.length ? ['Show links'] : []));
+		if (choice === 'Show links') {
+			await chooseNode(page);
+			return showLinks(vscode, plan.usage, page.siteRoot, 'Links to this selection — removal cancelled');
+		}
+		if (choice !== 'Move to Trash') return;
 		await chooseNode(page);
 		clean(plan.target);
 		checkPlan(plan, await stableSources((sources) => service.planEditorRemoval({ ...options, sources })));
@@ -156,7 +171,8 @@ function registerSiteFileActions({ vscode, context, chooseNode, ownerOf, service
 		}
 	};
 	let running = false;
-	for (const [name, action] of Object.entries({ importImage, insertImage, replaceImage, removeImage: (node) => remove(node, true), removePage: (node) => remove(node, false) })) {
+	for (const [name, action] of Object.entries({ importImage, insertImage, replaceImage,
+		removeImage: (node) => remove(node, 'image'), removePage: (node) => remove(node, 'page'), removeFile: (node) => remove(node, 'file') })) {
 		register(`nornaEditor.${name}`, async (argument) => {
 			if (running) throw new Error('Finish or cancel the current page/image action first.');
 			running = true;

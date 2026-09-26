@@ -20,6 +20,13 @@ On 2026-09-22 the owner approved
 passive grouping rows, site configuration first, remembered configuration
 expansion and a page-row Add menu for child pages and images.
 
+The owner subsequently approved
+[BL-146 VS Code Removal, Addresses And Incoming Links](backlog/BL-146-vscode-removal-addresses-links.md):
+optional-file removal with explained effects, page removal with incoming-link
+review, and native address/copy/redirect controls. This delivers local-theme
+removal; theme creation and other unapproved refinements remain in their drafts.
+Canonical address changes stay within the existing folder-derived model.
+
 ## Agreed Authoring Model
 
 **Approved by the owner on 2026-09-20.** These decisions apply across the

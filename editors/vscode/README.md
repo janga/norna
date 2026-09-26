@@ -79,6 +79,22 @@ rewrite references. See the
 [image workflow](https://janga.github.io/norna/reference/workflows/editor/#add-and-use-page-images)
 for cancellation, recovery and current limits.
 
+Extension 0.5.0 adds **Addresses and links…** to page actions. Copy a public
+address or internal link, change a page's final URL segment with a preview,
+manage redirect addresses, and open passages linking to a page. Address changes
+within the same parent preserve ordering, update internal links and keep old
+page addresses as redirects. Additional-address edits stay in the editor
+buffer for normal Save and Undo.
+
+Optional themes, shared content and public files have **Move to Trash…** in
+their ellipsis/context menu. Confirmations explain inherited settings or known
+page links; page removal checks links into the complete removed branch from
+pages that remain. **Show links** opens the source list and cancels removal.
+Checks include unsaved page content and report incomplete analysis. Required
+site configuration and the homepage are protected. These actions need the
+engine's corresponding removal/address capabilities. See
+[addresses and removal](https://janga.github.io/norna/reference/workflows/editor/#inspect-and-change-addresses).
+
 The Add menu and passive grouping rows require extension 0.4.1; the root order
 also needs the updated engine. The single-site selection requires extension
 0.3.1 or later. The file view

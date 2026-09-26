@@ -396,6 +396,7 @@ const formatGraphDiagnostics = (diagnostics) => diagnostics.flatMap((diagnostic)
 export const createPageMovePlan = async ({
 	from,
 	graph,
+	generatedRoutes,
 	order = null,
 	preserveAliases = true,
 	publicFiles,
@@ -614,6 +615,7 @@ export const createPageMovePlan = async ({
 		pageDocuments: virtualPageDocuments,
 		publicFiles,
 		siteStructure: virtualStructure,
+		generatedRoutes,
 	});
 	const errors = virtualGraph.diagnostics.filter(({ severity }) => severity === 'error');
 	if (errors.length > 0) {
