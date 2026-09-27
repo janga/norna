@@ -30,7 +30,8 @@ Read from the audience's position:
 
 Before drafting or substantially revising a reference page, make a short
 working note answering these questions. Keep it outside the published prose;
-for a small edit, a few lines are enough.
+reuse an existing plan for small corrections that do not change the reader's
+question or the conceptual structure. No new written plan is needed for a typo.
 
 1. **Question:** What exact answer is the reader looking up?
 2. **Starting knowledge:** What can this audience reasonably already know?
@@ -109,6 +110,10 @@ syntax, defaults, or command options.
 
 ## Pages And Navigation Categories
 
+Give each page one independent reader need. Use sections for parts of the same
+reading task, not child pages mechanically split at each H2 or length limit.
+Keep short, sequential beginner flows together.
+
 Give a page its own URL only when it serves an independent reader need. A useful
 parent page may introduce a subject, provide an overview that adds understanding,
 or help the reader complete a task before choosing a child page.
@@ -129,6 +134,12 @@ whether the page remains worth opening independently, not how many children it
 has or how long its content is.
 
 ## Terminology Contract
+
+Report ambiguous public terms instead of silently renaming them during an
+ordinary edit. Continue unrelated work when the ambiguity does not affect it.
+The [terminology review workflow](../../.agents/skills/norna-terminology-review/SKILL.md)
+is used only when explicitly requested; ordinary wording fixes do not invoke
+its proposal approval phase.
 
 Public names are part of the product interface. This includes configuration
 keys and values, commands, file and directory names, content-block names,

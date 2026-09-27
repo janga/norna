@@ -34,23 +34,60 @@ site. It is useful for dogfooding Norna documentation. Preset regression uses
 the dedicated preset-baseline fixture so changes to the documentation content
 do not silently redefine the visual contract.
 
+## Source And Review Assets
+
+The documentation site uses `site/`. CLI discovery resolves the selected source
+through `scripts/lib/site-paths.mjs`, which reads the invocation directory and
+environment at module load. Editor and reusable APIs honor their explicit
+`siteRoot` so selecting another site does not reuse that process-wide default.
+Public sites under `examples/` must be linked from
+the documentation's Examples pages. Maintained regression inputs belong under
+`fixtures/`. Private research belongs in ignored `marketing/` and its separate
+local repository. Use the registered scratch target for disposable physical
+copies; do not symlink maintained source into it.
+
+Keep page text, headings, managed image references, alt text and captions in the
+owning `content.md`. Keep exactly one H1; prefer derived H2/H3 anchors unless an
+explicit ID must preserve a public address. Managed images belong directly in
+the owning page's `images/`. After intentionally moving image references,
+`npm run content:sync` can move unambiguous images; inspect its source changes.
+Do not commit unreferenced source images unless explicitly requested.
+
+Source static files belong in the selected site's `public/`. `.norna/public/`
+is generated preparation output, including managed images and the sitemap.
+Do not author `public/sitemap.xml`; that path is reserved for the generated
+page-tree sitemap. `npm run site:public` refreshes the generated static copy
+without a full build.
+
+For user-correctable content/configuration failures encountered in changed code,
+replace avoidable parser stack traces with a focused Norna diagnostic and a
+regression test. Record concrete unresolved cases in the backlog rather than
+creating an open-ended diagnostics task.
+
 ## Common Checks
 
-Run focused checks while developing:
+Choose checks for the changed behavior and its consumers. These are alternatives
+and complements, not a checklist to run for every change:
 
-```sh
-npm run test:content-check
-npm run test:site-public
-npm run test:documentation
-npm run test:fixture:build
-npm run test:examples
-npm run test:presentation-review
-npm run test:preset-baselines
-npm run test:documentation-preset-review
-npm run test:browser-test-server
-npm run demo:build
-npm run package:check
-```
+| Changed contract | Focused check |
+| --- | --- |
+| Content validation or synchronization | `npm run test:content-check` |
+| Static public-file synchronization | `npm run test:site-public` |
+| Contributor documentation, README files or `llms.txt` | `npm run test:documentation` |
+| Package/site-root behavior | `npm run test:fixture:build` and, where packaging is affected, `npm run package:check` |
+| Runnable examples | `npm run test:examples` |
+| Rendered content, layout, configuration or images | `npm run build` |
+| Documentation Pages artifact or example deployment paths | `npm run build:pages` |
+| Navigation or shared presentation | Relevant registered `review:test` suite |
+| Editor APIs or extension behavior | Focused contracts and the changed workflows in the [editor test plan](design/editor-workflow-test-plan.md) |
+
+`npm run build` already validates configuration and content. Use `config:check`
+or `content:check` for early, narrow feedback; neither is an obligatory separate
+step before that build. `test:editor-language` includes engine language-service
+contracts and the extension's check command. Do not rerun covered child commands
+on unchanged relevant sources merely to prepare a commit. After a failure,
+rerun after a correction or a concrete diagnostic hypothesis, including evidence
+of an infrastructure failure.
 
 The **Engine tests** GitHub Actions workflow prepares a patch version and
 regenerates schemas inside its temporary checkout, then runs the complete
@@ -562,6 +599,8 @@ Scripts add intent prefetch and supported native view transitions without
 requiring a client-side router. No prototype environment switch is needed.
 
 The sticky navigation measures the header and sets root `scroll-padding-top`.
+Avoid section-level `scroll-margin-top` unless deliberately testing the combined
+anchor offsets.
 Norna coordinates initial hash placement with fonts and saved history, leaving
 a reader's intervening interaction alone. Same-page anchors use browser
 scrolling and the configured `scrollBehavior`; reduced motion still applies.
@@ -569,3 +608,6 @@ scrolling and the configured `scrollBehavior`; reduced motion still applies.
 The shared layout selects Norna's built-in UI labels from the optional
 `language` in `site/site-config/settings.yaml`. Keep editorial content in page Markdown and
 non-editorial engine UI labels in the engine language packs.
+
+Deploy monitoring belongs to site repositories. Do not run `npm run deploy:watch`
+in this engine repository unless the owner explicitly requests it.

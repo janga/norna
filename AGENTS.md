@@ -1,277 +1,70 @@
-## Agent Instructions
+# Norna: project instructions
 
-`README.md` is the project entry point. The canonical user reference is authored
-under `site/pages/032-reference/`; `docs/README.md` is the contributor entry
-point. Read the relevant reference and contributor documentation before changing
-this project.
+## Find the relevant guidance
 
-Keep this file limited to agent operating rules. If a fact is useful to a human
-maintainer, put it in `README.md` instead of duplicating it here.
+README.md introduces the product. docs/README.md indexes contributor guidance.
+Read the sections relevant to the task, not every linked document.
 
-## Working Rules
+- Engine, site paths, review environments and releases:
+  docs/engine-development.md
+- Documentation, schema descriptions, UI help and diagnostics:
+  docs/design/documentation-style-guide.md
+- Website presentation and presets:
+  docs/design/preset-design-guide.md
+- VS Code extension and engine-side editor APIs:
+  editors/vscode/README.md and docs/design/editor-workflow-test-plan.md
+- Backlog work:
+  BACKLOG.md and docs/design/backlog/README.md
 
-- Keep changes small and focused.
-- Before changing documentation, schema or IntelliSense descriptions, UI help,
-  error-message guidance, or explanatory example text, read and follow
-  `docs/design/documentation-style-guide.md`. Treat public configuration keys,
-  values, commands, and Norna content-block names as product terminology, not
-  as self-explanatory English words.
-- Apply the style guide's reader-understanding plan before drafting reference:
-  identify the reader's question, assumed knowledge, missing concepts and the
-  order needed to understand the answer. A coverage checklist is not a page
-  outline. Review for hidden prerequisites as well as factual completeness.
-- When structuring documentation, give each page one independent reader need
-  that can be stated as: `This page helps <audience> to <understand or
-  accomplish one thing>.` Use a section for another part of the same reading
-  task. Use a child page only for a distinct task or topic that remains useful
-  when opened directly and has a clear relationship to its parent.
-- Do not split documentation mechanically at every H2 or merely because a page
-  is long. Preserve short, sequential beginner flows on one page when extra
-  navigation would interrupt the task. A parent page should remain a useful
-  entry point or deliver a coherent first result instead of becoming an empty
-  index. Keep concise commands and explanations beside the task where they are
-  needed, and link to canonical reference material for complete detail.
-- Use a navigation category instead of a parent page when the proposed page
-  would only repeat its child-page names, descriptions, or links. Do not create
-  editorial content solely to give a collection its own URL. Keep a parent page
-  only when its introduction, overview, or task is useful independently of the
-  navigation tree.
-- Do not silently preserve or rename ambiguous public terminology while doing
-  an ordinary documentation edit. Explain the conflict to the user. When the
-  user explicitly invokes `$norna-terminology-review` or requests its
-  terminology-first workflow, follow the repo skill under
-  `.agents/skills/norna-terminology-review/` and stop for approval before
-  changing files.
-- When implementing a new feature, update its reference documentation in the
-  same work once deterministic regression tests cover the overwhelming
-  majority of the relevant contract. Do not require separate human testing or
-  approval merely because the feature needs documentation.
-- Add or update a concrete item under `Documentation Follow-ups` in
-  `BACKLOG.md` only when reference documentation, introduction content,
-  examples, or editor help must intentionally be deferred.
-- Defer documentation or example updates until after human testing only when
-  the feature changes rendered HTML or visible or interactive site behavior,
-  that behavior should be documented, and automated regression tests cannot
-  cover the overwhelming majority of the relevant cases.
-- When a reproducible user-correctable content or configuration error exposes
-  an avoidable Astro, YAML, or parser stack trace, replace it with a focused
-  Norna diagnostic and add a regression test. Record concrete unresolved cases
-  in `BACKLOG.md`; do not add open-ended "improve diagnostics" tasks.
-- Do not create branches unless the user asks for one.
-- Do not push uncommitted changes.
-- Before committing, run `git status --short` and make sure untracked files are
-  intentional.
-- When working through `BACKLOG.md`, commit each completed backlog item as a
-  separate logical change before starting the next item.
-- When referring to a backlog item, always show both its `BL-NNN` identifier and
-  its title. Never present a backlog identifier without the title.
-- During an active design or requirements discussion, keep decisions in the
-  conversation and continue with the remaining questions. Update backlog items
-  and related decision material together once those questions are answered,
-  rather than editing files and running checks after each answer. Make an
-  interim documentation update only when the user explicitly requests one.
-- Run the smallest set of automated tests that reliably covers the changed
-  contract. Finishing a task or preparing a commit is not by itself a reason to
-  run a broad suite.
-- Do not run both an aggregate test command and one of its covered child
-  commands against the same unchanged implementation unless the aggregate has
-  a separate verification purpose. Run multiple focused commands only when the
-  change affects distinct contracts that one command cannot cover.
-- Run normal focused checks after the implementation is coherent rather than
-  after every edit. After a failure, change the implementation, fixture, or
-  test before rerunning the command unless evidence points to an intermittent
-  infrastructure failure.
-- Scale test breadth with blast radius. Reserve the complete `npm test` chain
-  for release verification, broad cross-cutting changes, an explicit user
-  request, or changes for which no narrower set provides dependable coverage.
-- For IntelliSense changes, follow `docs/design/editor-workflow-test-plan.md`.
-  Activation and raw completion-provider responses do not prove usability:
-  verify that every added or changed suggestion can actually be selected and
-  accepted through VS Code's suggestion widget, then assert the inserted text.
-  Exercise each supported entry context, including blank lines and partial
-  prefixes when applicable. A successful callout insertion does not prove that
-  image or list snippets are selectable; provider-result tests supplement, but
-  never replace, widget tests. State explicitly any suggestions or contexts not
-  tested through the widget instead of claiming complete coverage.
-  For save/formatting changes,
-  test dirty edit/save/close/reopen/edit/save cycles and compare file bytes.
-  Verify supported formatter coexistence without changing the user's profile.
-  Test forbidden as well as required completions; use exact candidate sets
-  where unambiguous and verify context changes do not retain stale suggestions.
-- During a series of backlog changes, use focused checks for each item and at
-  most one justified broader verification pass for the final combined state.
-  In the completion summary, state the exact checks run and any verification
-  intentionally deferred.
-- Commit before pushing.
-- Do not run `npm run deploy:watch` in this engine repository unless the user
-  explicitly asks for it. Deploy monitoring is for site repositories.
-- For visual presentation, layout, color, spacing, sticky navigation, footer,
-  and demo-content changes, prefer human local inspection before automated
-  tests. Start or reuse a local dev server and give the user the URL when visual
-  inspection is needed. After the user approves the visual result, run the
-  relevant automated checks before committing, unless the user explicitly says
-  to skip tests.
-- Exceptions to human-first testing: run a quick relevant automated check early
-  when schema validation, config validation, packaging, build mechanics, or
-  deploy behavior may be broken by the change. If the user explicitly says to
-  skip tests, do not run them and report that they were skipped.
-- Keep the public URL, optional language and optional smooth-scroll switch in
-  `site/site-config/settings.yaml`. Keep engine UI text in the built-in language packs, discover
-  GitHub repository/default-branch details at deploy time, and keep footer text
-  in `site/site-config/shared-content.yaml`.
-- The site source directory defaults to `site/` and can be overridden with
-  `NORNA_SITE_DIR`; use `scripts/lib/site-paths.mjs` instead of
-  hardcoding site paths in scripts.
-- Keep editable content, Markdown section headings, Norna image block
-  references, alt text, captions, and optional section metadata in the selected
-  page's `content.md`; the homepage path is
-  `site/content.md`. Keep site-wide visual identity in
-  `site/site-config/site-theme.yaml`; homepage-only presentation overrides belong in
-  `site/theme.yaml`. Child page themes use the limited inherited
-  presentation fields accepted by the page-theme schema.
-- When adding AI-generated images to Norna sites, document their provenance and
-  prompt in Markdown near the image block so future maintainers can regenerate
-  or revise them. This is not required for disposable test fixtures where the
-  prompt has no maintenance value.
-- For diagrams and technical illustrations, the SVG `viewBox` or bitmap canvas
-  must match the visible composition. Unnecessary transparent or
-  page-background-colored canvas is forbidden when it shifts the visible
-  composition away from the image element's edges or disrupts alignment with
-  captions and surrounding content. Crop every edge to the visible artwork,
-  retaining only the minimum room required for strokes or antialiasing. When
-  the asset draws its own rectangular frame or full-canvas background, that
-  visible boundary must reach every canvas edge; transparent or
-  background-colored padding outside an asset-owned frame is forbidden. An
-  unframed composition may retain only intentional visual breathing room that
-  belongs to the artwork itself, never spacing intended to position the asset
-  on the page. Norna owns the space around the image and its caption.
-- Use root `site/` for the documentation site. Use
-  `examples/feature-demos/media-and-surfaces/site` for broad visual demo and
-  navigation checks. Every site under `examples/` is public and must be linked
-  from the documentation site's Examples pages. Use
-  `fixtures/presentation-review/site` for non-public visual review and
-  `fixtures/basic/site` for minimal standalone engine regression checks.
-- Keep private product research and non-public marketing sites in the ignored
-  `marketing/` directory and its separate local Git repository. Put maintained
-  engine inputs under `fixtures/` instead when they should participate in
-  repeatable regression tests.
-- Use `.local/test-sites/scratch/site/` for disposable local copies of sites
-  needed for temporary review or reproduction. Keep this workspace ignored by
-  Git. Copy the runnable site by default; do not run Norna through a direct
-  symlink to a maintained source site because generated `.norna` state and test
-  edits could then be written back to the source.
-- Keep site-specific static files in the selected site `public/`; the default
-  path is `site/public/`. The selected site's `.norna/public/` directory
-  is copied build preparation output plus generated image and sitemap output.
-  Do not create a source `site/public/sitemap.xml`; Norna reserves it for the
-  generated page-tree sitemap.
-- Keep the homepage at `site/content.md`, its images at `site/images/`, and
-  its child pages/categories under `site/pages/`. Keep deeper pages under the
-  nearest meaningful page or category's `pages/` directory.
+Approved design decisions remain requirements until explicitly superseded.
+Unapproved proposals and historical test results do not create requirements;
+a document's age or filename does not determine its status. Use the latest
+approved decision and report unresolved conflicts between code, documentation
+and requirements.
 
-## Visual Design Workflow
+## Project boundaries
 
-- Read `docs/design/preset-design-guide.md` before changing visual presentation.
-  Ground new or redesigned UI controls in established design systems and
-  concrete working examples that solve a comparable problem. Explain why the
-  reference fits Norna's reading-oriented pages; do not copy application UI
-  styling without considering that context.
-- Distinguish documented recommendations, observed design patterns, and your
-  own proposals. Do not call an unverified proposal "best practice" or turn
-  an untested dimension or placement into a general design rule.
-- Review the component in the whole page, not in isolation. Check visual
-  hierarchy, proportions, alignment, spacing, and interaction with existing
-  controls. Supporting controls must not compete unnecessarily with content.
-- When adding a control, reconsider existing controls with overlapping
-  functions. Do not retain them solely because they are already implemented;
-  preserve necessary input alternatives when simplifying the interface.
-- Solve accessibility and visual design together. Distinguish visible control
-  size from its hit area without allowing that hit area to obstruct adjacent
-  content or controls. Accessibility is not a justification for heavy styling.
-- Inspect relevant screenshots yourself before handing over a visual change,
-  including affected narrow-screen and light/dark states. Functional tests do
-  not replace visual inspection, and the user should not have to discover
-  obvious layout defects.
-- When the visual solution is uncertain, present a focused prototype before
-  broad regression testing, following the human-first review rules above.
-  Keep detailed reference examples and reusable design rationale in the design
-  guide rather than expanding this file with component-specific specifications.
+- For CLI site discovery, use scripts/lib/site-paths.mjs. Editor and reusable
+  APIs must honor their explicit siteRoot, not substitute the process's
+  selected site or hardcode site/.
+- The homepage is the selected site's content.md. Children live under pages/.
+  Shared appearance belongs in site-config/site-theme.yaml; root theme.yaml
+  affects only the homepage. Descendant themes inherit within their branches.
+- Reuse engine validation and mutation rules in the VS Code extension.
+  Editor support must follow the selected project's engine capabilities.
+- Generate schemas from scripts/lib/schema-definitions.mjs; do not hand-edit
+  generated schemas.
+- Use registered review commands for registered sites. Use a physical scratch
+  copy for disposable review; do not symlink it to maintained source.
+  Examples are public; fixtures and private research are not.
+- Preserve real links and usable content/navigation without JavaScript.
+- Do not use npm link to test the engine. Use npm scripts or node bin/norna.mjs
+  inside this repository, not a globally installed norna command.
 
-## Command Choices
+## Verification and review
 
+- Select checks by the changed behavior and its consumers. Do not repeat checks
+  already covered by a successful aggregate on the same relevant source state.
+  A commit alone does not justify a broader run.
+- Use the full npm test chain for release or when the change requires its scope.
+  npm run build already checks configuration and content.
+- For new or materially changed visual presentation or interaction, inspect
+  the result and obtain local user approval before committing. Quick relevant
+  checks may run before review. Reuse existing approval while the approved
+  presentation and behavior remain unchanged.
+- Verify changed IntelliSense through the real suggestion widget. For changed
+  source-editing behavior, verify Undo and dirty save/reopen cycles.
+  State clearly when practical verification is incomplete.
+- Update documentation for settled behavior in the same change. Record a
+  Documentation Follow-up only for work deliberately deferred.
 
-- Start maintained local review sites from the repository root with
-  `npm run review:start -- <target>`, where the registered target is `docs`,
-  `presentation`, `navigation`, `presets`, or `scratch`. Use the matching
-  `review:status`, `review:logs`, and `review:stop` scripts; do not compose an
-  ad hoc port and `--site-dir` for a registered target. Use `npm run dev:lan`
-  only when testing the documentation site on another device on the same local
-  network.
-- Capture a registered local review page with
-  `npm run review:capture -- <target> <relative-page>`. Use `--viewport`
-  (`desktop`, `compact`, `mobile`, or `WIDTHxHEIGHT`), `--appearance`, and
-  `--full-page` when needed. Do not compose direct Playwright screenshot
-  commands for registered targets; the wrapper constrains URLs and writes to
-  the ignored `.local/review-captures/` directory.
-- If an already approved review command requests approval again, investigate
-  why the existing permission is not matching before repeating route- or
-  filename-specific approval requests. Inspect the active rules and actual
-  invocation, including shell wrappers; do not assume the cause. Preserve
-  approval boundaries: do not bypass them or request unrestricted shell access.
-  Verify permission reuse with at least two different local page addresses
-  before declaring the problem solved. If the environment still requires
-  approval, report that limitation rather than promising prompt-free checks.
-- Run `npm run config:check` after changing `site/site-config/settings.yaml` or config
-  validation behavior.
-- Run `npm run content:check` before `npm run build` when changing content or
-  Norna-managed images.
-- Run `npm run content:check` after changing `site/site-config/site-theme.yaml` or theme
-  validation behavior.
-- Run `npm run content:sync` after moving Norna image block references between
-  pages so unambiguous image files move to the expected page image directory.
-- Run `npm run site:public` after changing `site/public/` when you need the
-  local generated public copy without a full build.
-- Run `npm run test:site-public` after changing static-public sync behavior.
-- Run `npm run test:fixture:build` after changing package/site-root behavior
-  that should work against the minimal fixture.
-- Run `npm run test:examples` after moving or changing runnable examples or
-  behavior demonstrated by them.
-- Run `npm run test:documentation` after changing the root README, files under
-  `docs/`, example README files, or `site/public/llms.txt`.
-- Run `npm run build:pages` after changing the documentation Pages artifact,
-  rendered example links, or example deployment paths.
-- Run `npm run package:check` after changing package files, CLI dispatch,
-  Astro path resolution, or starter structure.
-- Run `npm run build` after content, layout, config, or image-pipeline changes.
-- Run `npm run build:local` when a local preview may be using stale content and
-  should be rebuilt and restarted.
-- Run `npm run test:content-check` after changing content validation or
-  `content:sync` behavior.
-- Run `npm run review:test -- navigation` after tree navigation, page-contents
-  placement, anchor offset, or related scroll behavior changes. Run
-  `npm run review:test -- presets` after shared presentation behavior changes.
-- Run `npm run test:navigation` for the separate top-navigation browser suite.
-- Use `npm run test:navigation:stress` for intermittent anchor navigation
-  races.
-- Use `npm run test:navigation:preview` for production-like sticky-navigation
-  anchor testing against `dist/`.
+## Working with the owner
 
-## Implementation Notes
-
-- Preserve progressive enhancement in section navigation: keep real
-  `href="#section-id"` links so anchors work without JavaScript.
-- The sticky navigation uses root `scroll-padding-top` to compensate for the
-  fixed header area. Avoid section-level `scroll-margin-top` unless you are
-  deliberately testing anchor offsets.
-- Keep exactly one Markdown H1 as the page title. H2 and H3 ids are derived
-  deterministically; use explicit ids only when a public anchor must remain
-  stable across heading edits. Keep managed homepage images directly in
-  `site/images/` and other images directly in their page's
-  `images/` directory.
-- Do not commit unreferenced source images unless the user explicitly asks for
-  them.
-- If Playwright reports a missing Chromium browser, run
-  `npx playwright install chromium` once. In sandboxed Codex sessions,
-  Playwright may need one escalation to launch Chromium. Prefer the stable
-  `npm run review:capture` and `npm run review:test` command prefixes so later
-  target, route, viewport, and appearance changes reuse that permission.
+- Do not create branches unless requested. Commit completed backlog items
+  separately. Push and release require authorization for those actions.
+- Refer to backlog items with both identifier and title.
+- During design discussion, collect decisions and update documents together
+  when the questions are settled, unless an interim update is requested.
+- Use the owner's Default VS Code profile for local review, with disposable
+  test files. Do not change profile settings to make tests pass.
+- Include date and local time in progress reports.

@@ -159,8 +159,9 @@ show one workspace site, choose explicitly when several are available, and
 keep that choice when opening other files.
 The suite exercises:
 
-- source opening by file row, passive grouping labels, independent chevrons, keyboard navigation, and
-  active-file reveal without collapsing unrelated branches;
+- source opening through page/category labels, resource-file rows, independent
+  chevrons, keyboard navigation, and active-file reveal without collapsing
+  unrelated branches; directory labels select without opening a source;
 - page title, description and navigation visibility, plus category label and
   description, through **Page Information**;
 - dirty-buffer edits and Undo, followed by save/close/reopen/edit/save cycles
@@ -177,8 +178,10 @@ select a site using its title and location, cancel without changing the tree,
 and reload the window to confirm the saved choice. Open another site's source
 and a source outside the workspace; neither may replace or add a root. Remove
 the chosen workspace folder and confirm that its tree and actions disappear.
-The homepage must be marked **Homepage**, and its `content.md` child must open
-the root source. Grouping labels must leave the editor and expansion unchanged.
+The homepage must be marked **Homepage**, and its page label must open the root
+`content.md`; there is no separate content row. Directory labels must leave
+the editor and expansion unchanged. When present, the homepage theme appears
+first, before site configuration and public files.
 Verify the configuration icon, initial expansion, and remembered collapse after
 refresh/reload even while one of its files is active. Check Add on a leaf:
 child-page creation, image import, cancellation without creating directories,
@@ -196,10 +199,11 @@ supplement the native controls; they do not establish widget usability.
 Current VS Code uses its custom context menu, selected with keyboard navigation
 after a real right-click. VS Code 1.96 on macOS uses the Command Palette because
 its native context menus are outside the test's browser inspector. Both paths
-select real commands and use the resulting Quick Pick and input widgets.
-Native macOS context-menu selection by mouse is not covered. The minimum-version
-path selects the grouping row before opening the palette, without opening a
-source or triggering a competing editor focus change.
+select real commands and interact with the controls supplied by the tested
+engine and extension. Native macOS context-menu selection by mouse is not
+covered. The minimum-version path selects the target row before opening the
+palette. Selecting a page or category opens its source; selecting a directory
+does not. Account for the resulting focus change when invoking the command.
 
 The formatter variant activates real Prettier and formats a probe before the
 same source-edit and save scenarios. It uses the documented Markdown save
@@ -258,15 +262,21 @@ selection of every pre-existing configuration value.
 
 Use the current baseline for changes to authoring or persistence. Add the
 formatter scenario when changing save behavior or formatter guidance. Run the
-minimum-version suite for compatibility changes and before distributing an
-updated extension. Do not repeat all three after unrelated engine changes.
+minimum-version suite for compatibility changes and before release or external
+distribution. Installing a local VSIX for review in the owner's Default profile
+is not distribution: use focused checks for the changed controls. Do not repeat
+all three after unrelated engine changes.
 
 The formatter scenario sets global `editor.formatOnSave` to `true` and
 `editor.defaultFormatter` to Prettier, then overrides Markdown save formatting
 to `false` and assigns standalone YAML to Red Hat. This verifies the documented
 ownership boundary; it does not claim arbitrary Markdown formatting is safe.
 
-## Limits And Follow-up
+## Historical Verification And Limits
+
+The dated records below describe the particular changes and bundles tested.
+They are evidence, not additional test requirements or proof that a later
+bundle passes. Explicitly pending review remains pending.
 
 The 2026-09-20 extension 0.3.1 check used the same VS Code 1.137.0 Default
 profile. Native selection, cancellation, external/inactive-site file opening,

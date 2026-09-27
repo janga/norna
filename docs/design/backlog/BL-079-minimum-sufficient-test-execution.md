@@ -4,6 +4,12 @@
 
 Implemented on 2026-09-10 through the repository agent instructions.
 
+This is the historical record of that policy. Current test selection and review
+rules are maintained in [AGENTS.md](../../../AGENTS.md#verification-and-review)
+and [Engine Development](../../engine-development.md#common-checks). Those rules
+supersede the original working contract below, which is retained as decision
+history.
+
 ## Outcome
 
 Development work runs the smallest set of automated tests that gives reliable
@@ -14,7 +20,7 @@ The rule reduces repeated builds and browser runs while preserving wider
 verification for changes whose shared impact cannot be covered safely by a
 focused test.
 
-## Working Contract
+## Original Working Contract
 
 - Prefer the most focused deterministic test command that covers the changed
   behavior and its regression case.

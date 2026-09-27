@@ -1,5 +1,9 @@
 # Reference information structure
 
+This is the historical reference restructuring plan. Its filenames and proposed
+organization describe that migration, not current product requirements. Use the
+[project reference entry point](../../README.md) for current behavior.
+
 Implementation for [BL-117: Canonical web reference](backlog/BL-117-canonical-web-reference.md).
 The owner approved the pilot approach on 2026-09-16. This records the resulting
 navigation and reader tasks, not a second approval gate.

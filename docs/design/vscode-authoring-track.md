@@ -4,6 +4,9 @@ This track helps a site author work with pages, images and local themes through
 Norna's readable page tree. It groups five bounded items for discussion and
 delivery; each item owns its own requirements and tests.
 
+The chronology below records earlier decisions. The **Agreed Authoring Model**
+incorporates later decisions and takes precedence over superseded details.
+
 **Status: First implementation completed on 2026-09-20.**
 The owner has approved the working method, order and first interface. Later
 steps retain their individual visual review and implementation decisions.
@@ -23,8 +26,9 @@ expansion and a page-row Add menu for child pages and images.
 The owner subsequently approved
 [BL-146 VS Code Removal, Addresses And Incoming Links](backlog/BL-146-vscode-removal-addresses-links.md):
 optional-file removal with explained effects, page removal with incoming-link
-review, and native address/copy/redirect controls. This delivers local-theme
-removal; theme creation and other unapproved refinements remain in their drafts.
+review, and native address/copy/redirect controls. This delivered local-theme
+removal; basic theme creation was subsequently delivered with the next tree model.
+Other unapproved refinements remain in their drafts.
 Canonical address changes stay within the existing folder-derived model.
 
 On 2026-09-26 the owner approved the next tree model in
@@ -34,8 +38,8 @@ and hides the separate content row. Category labels open `category.yaml`;
 chevrons continue to control expansion separately.
 The item also defines consistent object icons, file-state feedback, missing-file
 creation/repair and active-file reveal. It preserves existing removal safeguards
-and includes basic missing-theme creation, to be reconciled with the later
-theme draft when delivered.
+and delivers basic missing-theme creation. Later theme work should build on
+these existing creation and removal controls.
 
 ## Agreed Authoring Model
 
@@ -61,8 +65,8 @@ theme scopes. Its verification and local review are recorded in that item.
 - Show configuration under its owning root, page or category, **before its
   `pages/` directory**. This applies at every depth, including the site's
   real `site-config/` directory and existing local configuration below it.
-  At the root show `site-config/`, then `public/`, then optional `theme.yaml`
-  before images and child pages. Other pages start with `theme.yaml` when
+  At the root show optional `theme.yaml` first, then `site-config/` and
+  `public/`, before images and child pages. Other pages start with `theme.yaml` when
   present. Page content opens through the page row. Explain the theme's scope
   on hover, preserving its actual filename.
   Site configuration has a settings icon, starts expanded and remembers the
@@ -207,7 +211,8 @@ focused checks to exercise the actual controls in the selected profile and
 record what was tested. Retain the plan's actual-widget and source-persistence
 requirements wherever suggestions or document edits change.
 
-Use native VS Code views, menus, file dialogs and file APIs. A custom Tree View
+Prefer native VS Code views, menus, file dialogs and file APIs. Use a themed,
+accessible webview when native widgets cannot support the agreed editing flow. A custom Tree View
 still needs commands and drop handlers connected to its resources; it does not
 inherit the Explorer's entire file manager. Add Norna behavior for page
 ownership, valid source names and content syntax. Standard trash support does
@@ -215,8 +220,10 @@ not by itself establish a working Undo or recovery contract; test the chosen
 behavior when introducing removal.
 
 Each item gets focused checks and a short human workflow review. Check the
-minimum supported editor and the combined workflows before distribution,
-without repeating the full suite after every item. No engine release or
+minimum supported editor and the combined workflows before release or external
+distribution, without repeating the full suite after every item. A local VSIX
+installation for review needs the focused checks relevant to that change, not
+a new distribution matrix. No engine release or
 Marketplace publication is implied by this track.
 
 ## From Review Material To User Documentation

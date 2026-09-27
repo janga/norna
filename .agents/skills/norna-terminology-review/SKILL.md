@@ -44,21 +44,25 @@ Begin only after the user explicitly approves the Phase 1 terminology model.
    and focused automated tests as one public contract.
 2. Prefer a clean breaking change when the user has said compatibility is not
    required. Do not add aliases or migration layers without a concrete need.
-3. Add or update the corresponding documentation item in `BACKLOG.md` as
-   required by `AGENTS.md`.
-4. Do not perform the wider documentation and example migration until the user
-   has tested the implementation and approved that next phase.
-5. Tell the user exactly where and how to test the changed terminology.
+3. Update documentation and examples for the approved, settled contract in the
+   same work. Add a Documentation Follow-up in `BACKLOG.md` only for work
+   deliberately deferred.
+4. A separate documentation approval is needed only when the user explicitly
+   requested one or the text depends on an unresolved behavior/design decision.
+   The Phase 1 approval otherwise authorizes the terminology migration.
+5. Tell the user where and how to review any changed visible behavior.
 
 ## Phase 3: Documentation Migration
 
-Begin only after the user approves the tested implementation.
+Perform this migration with implementation once the approved behavior is
+settled. This heading describes the work, not an additional approval gate.
 
 1. Update the canonical reference first.
 2. Update HTML introductions with only the local context needed there and link
    to the reference.
 3. Update schemas, IntelliSense links, examples, exported references, and
    remaining occurrences so the old public terminology is not left behind.
-4. Run documentation, schema, example, and relevant product tests.
+4. Run the focused checks affected by the migration; reuse successful coverage
+   from implementation instead of repeating aggregate and child commands.
 5. Report any intentionally retained historical or migration terminology.
 
