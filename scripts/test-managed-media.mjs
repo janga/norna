@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, stat, utimes, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { test } from 'node:test';
 import {
@@ -75,6 +75,45 @@ items:
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
+});
+
+test('raster cache reuses root and child outputs, repairs missing variants and invalidates changed sources', async () => {
+	const { root, siteDir } = await createTempSite();
+	try {
+		const directories = ['root', 'root/pages/010-guide'];
+		for (const directory of directories) {
+			await mkdir(path.join(siteDir, directory, 'images'), { recursive: true });
+			await writeFile(path.join(siteDir, directory, 'content.md'), '# Images\n\n```image-stack\nitems:\n  - image: image.jpg\n    alt: Example\n```\n');
+			await cp(path.join(fixtureSiteDir, 'root/images/image.jpg'), path.join(siteDir, directory, 'images/image.jpg'));
+		}
+		const generate = () => runNorna(['--site-dir', siteDir, 'images']);
+		const manifest = async () => JSON.parse(await readFile(path.join(siteDir, '.norna/generated-images.json'), 'utf8'));
+		const output = (variant) => path.join(siteDir, '.norna/public', variant.src);
+		await generate();
+		const first = await manifest();
+		const rootKey = 'root/images/image.jpg';
+		const childKey = 'root/pages/010-guide/images/image.jpg';
+		assert.match(first[rootKey].variants[0].src, /^\/images\/generated\/images\/image-/);
+		assert.match(first[childKey].variants[0].src, /^\/images\/generated\/pages\/010-guide\/images\/image-/);
+		const untouchedTime = new Date('2000-01-01T00:00:00Z');
+		for (const entry of Object.values(first)) for (const variant of entry.variants) await utimes(output(variant), untouchedTime, untouchedTime);
+		await generate();
+		assert.deepEqual(await manifest(), first);
+		for (const entry of Object.values(first)) for (const variant of entry.variants) {
+			assert.equal((await stat(output(variant))).mtimeMs, untouchedTime.getTime(), `Unchanged variant was regenerated: ${variant.src}`);
+		}
+		const missing = output(first[rootKey].variants[0]);
+		await rm(missing);
+		await generate();
+		assert.ok((await stat(missing)).mtimeMs > untouchedTime.getTime());
+		assert.equal((await stat(output(first[childKey].variants[0]))).mtimeMs, untouchedTime.getTime(), 'Repairing one image must preserve the other page’s cache.');
+		await cp(path.join(fixtureSiteDir, 'root/images/detail.jpg'), path.join(siteDir, 'root/images/image.jpg'));
+		await generate();
+		const updated = await manifest();
+		assert.notEqual(updated[rootKey].sourceHash, first[rootKey].sourceHash);
+		assert.equal(await fileExists(missing), false, 'Obsolete output is removed after a source change.');
+		assert.deepEqual(updated[childKey], first[childKey]);
+	} finally { await rm(root, { recursive: true, force: true }); }
 });
 
 test('updated managed SVG images get updated static output', async () => {

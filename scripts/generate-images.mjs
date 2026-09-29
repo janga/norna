@@ -263,7 +263,7 @@ const hasGeneratedVariants = async (variants) => {
 	return true;
 };
 
-const getReusableEntry = async (sourcePath, previousEntry, sourceHash) => {
+const getReusableEntry = async (sourceKey, previousEntry, sourceHash) => {
 	if (
 		previousEntry?.sourceHash !== sourceHash
 		|| previousEntry?.outputVersion !== imageOutputVersion
@@ -273,7 +273,7 @@ const getReusableEntry = async (sourcePath, previousEntry, sourceHash) => {
 		return null;
 	}
 
-	const variants = getVariants(sourcePath, sourceHash, getVariantWidths(previousEntry));
+	const variants = getVariants(sourceKey, sourceHash, getVariantWidths(previousEntry));
 
 	if (!(await hasGeneratedVariants(variants))) {
 		return null;
@@ -394,7 +394,7 @@ for (const { sourcePath, sourceKey } of sources) {
 		continue;
 	}
 
-	const reusableEntry = await getReusableEntry(sourcePath, previousManifest[sourceKey], sourceHash);
+	const reusableEntry = await getReusableEntry(sourceKey, previousManifest[sourceKey], sourceHash);
 
 	if (reusableEntry) {
 		manifest[sourceKey] = reusableEntry;
