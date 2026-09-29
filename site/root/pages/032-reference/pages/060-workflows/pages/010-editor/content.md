@@ -368,21 +368,40 @@ the same name, rename the restored folder to its original name.
 
 ## Add and use page images
 
-Select a page, use its **+** menu and choose **Import image…**. No `images/`
-folder is required before starting. Choose one
-JPG, JPEG, PNG or SVG and confirm its filename. The VS Code extension copies
-the file into that page's `images/`, creating the directory if needed. The
-original remains unchanged. You can also choose an image from another page
-to make a local copy. An existing destination is never silently overwritten;
-choose another filename or use **Replace Image**.
+Select a page, use its **+** menu and choose **Import images…**. No `images/`
+folder is required before starting. Choose one or several JPG, JPEG, PNG or
+SVG files. The VS Code extension shows a preview for each file; select one to
+view it larger before deciding. Its default action is **Import**; select
+**Import and insert** to add a reference
+to the page, or **Ignore** to skip a file. You can edit the destination
+filename. The originals remain unchanged, including when you choose an image
+from another page.
 
-After import, choose **Insert image at end of page** or **Keep image file
-only**. Insertion asks for alternative text and an optional caption, then adds
-one `image-stack` at the end of the owning `content.md`. The edit remains
-unsaved and supports ordinary editor Undo. Edit the block to change its text
-or position. Cancelling insertion keeps the imported file.
+If the filename already exists on that page, the row shows which image will be
+replaced. Change the filename to a free one to import a separate image; if
+the new name is also occupied, the row shows that image instead. The incoming
+and existing previews are labelled **New image** and **Existing image**, show
+their filenames and both open a larger view. Images in the same import must
+have different target names. One confirmation lists all replacements before
+the import starts. Old versions go to the operating system's Trash. A failed
+batch keeps completed copies and
+identifies the pending files so you can retry them. If a replacement fails
+after the old version reaches Trash, restore that version there.
+
+For **Import and insert**, enter an optional caption and alternative text.
+Mark a purely decorative image to hide the alternative-text field and give it
+an explicit empty alternative. Use the up/down buttons to set image order.
+The inserted rows form one `image-stack`
+at the end of the owning `content.md`. That edit remains unsaved and supports
+ordinary editor Undo. Edit the block to change its position. Cancelling the
+form before import starts changes nothing.
 
 An existing image's **…** menu offers insertion, replacement and removal.
+**Insert image…** opens one form with a large preview that you can expand, the current filename,
+decorative choice, optional alternative text and caption. Marking an image
+decorative hides the alternative-text field. The action adds an `image-stack`
+at the end of the owning page. The page edit stays unsaved until you save
+`content.md`.
 **Replace image…** keeps the filename and references, copies a replacement
 of the same format and sends the previous file to Trash. Before replacement
 or removal, the confirmation shows managed-image references, including
@@ -391,13 +410,14 @@ Unresolved references and incomplete checks are labelled; ordinary Markdown,
 HTML and external references are outside this check. Removing an image leaves
 its content references in place, where diagnostics can report the missing file.
 
-Restore a removed or replaced image through the operating system's Trash.
+On macOS, open **Trash** in Finder and choose **Put Back** to restore a removed
+or replaced image. VS Code's Undo command does not restore deleted files.
 If the restored file has an added suffix, rename it to the original filename
 used in `content.md`. Check that you restored the intended version before
 replacing a file that already exists.
 
-These prototype actions require extension 0.4.0 and an engine with page/image
-file-operation support. They handle one image at a time. Drag/drop, clipboard
+The combined image forms require a VS Code extension build and Norna engine
+that include the batch-image API. Finder drag/drop, clipboard
 import and insertion into an existing block or at an arbitrary cursor position
 are not yet provided by these tree actions.
 

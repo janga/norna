@@ -121,20 +121,32 @@ export const planEditorRemoval = async ({ siteRoot, sourcePath, imagePath, fileP
 };
 
 export const createEditorImageAppend = async ({ source, filename, alt, caption = '' }) => {
-	if (!imageName.test(filename)) throw new Error('Choose a managed image filename.');
 	if (typeof alt !== 'string' || !alt.trim()) throw new Error('Describe the image before inserting it.');
+	return createEditorImageBatchAppend({ source, items: [{ filename, alt, caption }] });
+};
+
+export const createEditorImageBatchAppend = async ({ source, items }) => {
+	if (!Array.isArray(items) || !items.length) throw new Error('Choose at least one image to insert.');
+	for (const item of items) {
+		if (!imageName.test(item.filename)) throw new Error('Choose a managed image filename.');
+		if (item.alt !== undefined && typeof item.alt !== 'string') throw new Error('Alternative text must be text.');
+		if (item.caption !== undefined && typeof item.caption !== 'string') throw new Error('Caption must be text.');
+	}
 	const document = await parsePageMarkdownSource(source, { label: 'content.md' });
 	if (document.diagnostics.some(({ severity }) => severity === 'error')) {
 		throw new Error('Repair this page’s content errors before appending an image block. The imported file remains available.');
 	}
 	const eol = source.includes('\r\n') ? '\r\n' : '\n';
-	const block = ['```image-stack', 'items:', `  - image: ${filename}`, `    alt: ${JSON.stringify(alt)}`,
-		...(caption ? [`    caption: ${JSON.stringify(caption)}`] : []), '```', ''].join(eol);
+	const block = ['```image-stack', 'items:', ...items.flatMap(({ filename, alt, caption }) => [
+		`  - image: ${filename}`,
+		...(alt !== undefined ? [`    alt: ${JSON.stringify(alt)}`] : []),
+		...(caption ? [`    caption: ${JSON.stringify(caption)}`] : []),
+	]), '```', ''].join(eol);
 	const text = `${source.endsWith(eol + eol) ? '' : source.endsWith(eol) ? eol : eol + eol}${block}`;
 	const result = await parsePageMarkdownSource(source + text, { label: 'content.md' });
 	const appended = markdownToMdast(source + text, { features: { gfm: true, frontmatter: true } }).children.at(-1);
 	if (appended?.type !== 'code' || appended.lang !== 'image-stack' || appended.position.start.offset < source.length
-		|| result.managedImages.length !== document.managedImages.length + 1 || result.diagnostics.some(({ severity }) => severity === 'error')) {
+		|| result.managedImages.length !== document.managedImages.length + items.length || result.diagnostics.some(({ severity }) => severity === 'error')) {
 		throw new Error('Close the open Markdown block or comment before appending an image. The imported file remains available.');
 	}
 	return { start: source.length, end: source.length, text };

@@ -12,6 +12,11 @@ Norna block syntax manually. This is step 3 of the
 provides an authorized first version: append one editable image stack to the
 owning page, after import or from an existing image. Use that baseline when
 discussing insertion at a selected location or into an existing block.
+The existing **Insert Image** action now opens a single form for the selected
+image's preview, alternative text and caption as part of
+[BL-134 VS Code Image File Operations](BL-134-vscode-image-file-operations.md).
+Consider selecting several existing images and their display order in a later
+iteration. This item still owns placement inside prose or an existing block.
 
 ## Scope And Boundaries
 

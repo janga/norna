@@ -455,7 +455,7 @@ function registerSiteTree(context, output) {
 		if (configurationTarget && !missing.length) return vscode.window.showInformationMessage('All supported files in site-config already exist. Select a file to edit it.');
 		const selected = await vscode.window.showQuickPick([
 			...(!configurationTarget && !node.missingSource ? [{ label: '$(add) Add child page…', command: 'addChildPage' }] : []),
-			...(!configurationTarget && node.kind === 'page' ? [{ label: '$(file-media) Import image…', command: 'importImage' }] : []),
+			...(!configurationTarget && node.kind === 'page' ? [{ label: '$(add) Import images…', command: 'importImage' }] : []),
 			...missing.map((choice) => ({ label: `$(new-file) ${choice.required ? 'Create required' : 'Add'} ${choice.name}…`, description: choice.description, command: 'createSourceFile', filename: choice.filename })),
 		], { title: `Add to ${node.title}`, ignoreFocusOut: true });
 		if (selected) await vscode.commands.executeCommand(`nornaEditor.${selected.command}`, node, selected.filename);

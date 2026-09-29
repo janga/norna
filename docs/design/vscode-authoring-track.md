@@ -135,12 +135,12 @@ an alternative name for the chosen order.
 | Step | Item | Draft maturity | Technical foundation |
 | --- | --- | --- | --- |
 | 1 | [BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md) | Implemented; verified in the Default profile | Implemented [BL-131 VS Code Site Tree](backlog/BL-131-vscode-site-tree.md), accepted [BL-133 VS Code Page Files](backlog/BL-133-vscode-page-files.md) design |
-| 2 | [BL-134 VS Code Image File Operations](backlog/BL-134-vscode-image-file-operations.md) | Outline | Page/file selection from BL-133 VS Code Page Files |
+| 2 | [BL-134 VS Code Image File Operations](backlog/BL-134-vscode-image-file-operations.md) | Implemented; locally approved | Page/file selection from BL-133 VS Code Page Files |
 | 3 | [BL-135 VS Code Image Block Insertion](backlog/BL-135-vscode-image-block-insertion.md) | Outline | BL-133 VS Code Page Files and existing block support; importing new files is not a prerequisite |
 | 4 | [BL-136 VS Code Local Theme Creation And Removal](backlog/BL-136-vscode-local-theme-creation-removal.md) | Outline | BL-133 VS Code Page Files and existing theme rules; no dependency on image insertion |
 | 5 | [BL-137 VS Code Image Usage And Removal Review](backlog/BL-137-vscode-image-usage-removal-review.md) | Outline | Removal entry point from BL-134 VS Code Image File Operations and existing managed-image reference analysis |
 
-The first implementation is complete. Later drafts remain under
+The first two implementations are complete. Later drafts remain under
 `Needs Decision Or Evidence` until their individual discussion is complete.
 The order here does not make those drafts implementation-ready or override
 the repository's global queue.

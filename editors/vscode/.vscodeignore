@@ -9,6 +9,8 @@ norna-project.cjs
 yaml-schema-completions.cjs
 site-tree.cjs
 site-file-actions.cjs
+image-import-form.cjs
+image-insert-form.cjs
 site-address-actions.cjs
 site-link-review.cjs
 site-source-actions.cjs

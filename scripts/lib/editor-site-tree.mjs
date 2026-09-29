@@ -19,7 +19,7 @@ export const siteFileTreeApiVersion = 1;
 export const sitePageFormApiVersion = 1;
 export { siteTreeEditingApiVersion, getEditorSourceFileChoices, planEditorSourceFileCreation, createEditorSourceFile } from './editor-source-files.mjs';
 export { createSiteNode, planSiteNodeCreation, slugifyAsciiIdentifier };
-export { siteFileOperationsApiVersion, siteRemovalApiVersion, planEditorImageCopy, planEditorRemoval, getEditorImageUsage, createEditorImageAppend } from './editor-site-files.mjs';
+export { siteFileOperationsApiVersion, siteRemovalApiVersion, planEditorImageCopy, planEditorRemoval, getEditorImageUsage, createEditorImageAppend, createEditorImageBatchAppend } from './editor-site-files.mjs';
 export { getEditorIncomingLinks } from './editor-site-links.mjs';
 export { siteAddressApiVersion, getEditorPageAddresses, planEditorPageAddress, applyEditorPageAddress } from './editor-page-addresses.mjs';
 

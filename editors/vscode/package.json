@@ -113,8 +113,8 @@
       },
       {
         "command": "nornaEditor.importImage",
-        "title": "Norna: Import Image\u2026",
-        "icon": "$(file-media)"
+        "title": "Norna: Import Images\u2026",
+        "icon": "$(add)"
       },
       {
         "command": "nornaEditor.insertImage",
@@ -187,7 +187,7 @@
         {
           "command": "nornaEditor.refreshSiteTree",
           "when": "view == nornaSiteTree",
-          "group": "navigation@3"
+          "group": "maintenance"
         }
       ],
       "view/item/context": [

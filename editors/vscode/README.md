@@ -74,6 +74,10 @@ A page's **+** offers child-page creation, image import and missing supported
 source files. It works without `pages/` or `images/`; the chosen operation
 creates the directory when needed. The settings folder's **+** also exposes
 missing site files.
+The tree updates when images are added or removed, including changes made
+outside the extension. **Norna: Refresh Site Tree** remains available in the
+view menu and Command Palette if a filesystem notification is missed or the
+site's engine was updated.
 Creation previews the target and effect, uses a valid initial setting and never
 overwrites a file. Incomplete directories remain visible with source-repair
 choices. Errors and warnings supplement type icons; unused author files are
@@ -98,9 +102,19 @@ edits stay in the buffer for normal save and undo. See the
 for fields, previous URLs, unlisted pages and scope limits.
 
 Extension 0.4.0 adds prototype page/image actions with a compatible engine.
-Import copies one image into the selected page and offers an editable image
-block at the end of its content. Image actions also insert existing images,
-replace them and remove them after showing managed-image references. Page
+The current development import form copies one or several images into the
+selected page. Its image previews open a larger view, including for an
+existing image that would be replaced. Each row can instead be ignored or
+inserted into one editable image block at the end of its content, with
+optional alt text and caption.
+The editable filename determines whether the import creates a new image or
+replaces an existing one; replacements are clearly previewed and confirmed
+together. **Insert Image** on an existing image opens one form with a large,
+expandable preview, decorative choice, alternative text and caption. Its
+current filename is shown below the image;
+renaming the stored file is a separate future Site Tree action.
+Image actions also replace and remove images after showing managed-image
+references. Page
 removal includes owned files and descendants; Home is protected. Removal and
 replacement use the operating system's Trash, not editor Undo, and do not
 rewrite references. See the

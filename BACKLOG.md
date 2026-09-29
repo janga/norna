@@ -90,11 +90,10 @@ The first page/image authoring prototype is implemented in
 [BL-144 VS Code Page And Image Authoring Prototype](docs/design/backlog/BL-144-vscode-page-image-authoring-prototype.md).
 Its tree ordering, grouping rows and Add menu are refined in
 [BL-145 VS Code Site Tree Ordering And Add Menu](docs/design/backlog/BL-145-vscode-site-tree-ordering-add-menu.md).
-The remaining refinements still need their own discussion:
+Image import and replacement are implemented in
+[BL-134 VS Code Image File Operations](docs/design/backlog/BL-134-vscode-image-file-operations.md).
+The remaining track items and their current status are:
 
-2. [`BL-134` VS Code Image File Operations](docs/design/backlog/BL-134-vscode-image-file-operations.md):
-   **Needs decision; outline.** Add and remove page images through native
-   file interactions without rewriting page content.
 3. [`BL-135` VS Code Image Block Insertion](docs/design/backlog/BL-135-vscode-image-block-insertion.md):
    **Needs decision; outline.** Insert an existing image into the intended
    content location using valid Norna block syntax.
@@ -104,6 +103,9 @@ The remaining refinements still need their own discussion:
 5. [`BL-137` VS Code Image Usage And Removal Review](docs/design/backlog/BL-137-vscode-image-usage-removal-review.md):
    **Needs decision; outline.** Locate image references and explain the
    consequences of removing their source file.
+6. [`BL-152` VS Code Image Rename](docs/design/backlog/BL-152-vscode-image-rename.md):
+   **Needs decision.** Rename an existing image from its Site Tree row after
+   reviewing the effect on managed-image references.
 
 ### Other Items
 

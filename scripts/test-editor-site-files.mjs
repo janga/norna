@@ -3,7 +3,7 @@ import { mkdtemp, mkdir, readFile, rm, stat, symlink, writeFile } from 'node:fs/
 import os from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
-import { createEditorImageAppend, getEditorImageUsage, planEditorImageCopy, planEditorRemoval } from './lib/editor-site-files.mjs';
+import { createEditorImageAppend, createEditorImageBatchAppend, getEditorImageUsage, planEditorImageCopy, planEditorRemoval } from './lib/editor-site-files.mjs';
 
 const block = (name) => `\n\`\`\`image-stack\nitems:\n  - image: ${name}\n    alt: Example\n\`\`\`\n`;
 const fixture = async (t) => {
@@ -96,4 +96,14 @@ test('image insertion preserves existing LF/CRLF source and quotes user text saf
 	for (const source of ['# Page\n\n````md\nAn unfinished example.', '# Page\n\n<!-- unfinished comment']) {
 		await assert.rejects(createEditorImageAppend({ source, filename: 'example.svg', alt: 'Example' }), /Close the open Markdown/);
 	}
+});
+
+test('batch insertion preserves chosen order and allows omitted or decorative alternatives', async () => {
+	const source = '# Page\n';
+	const edit = await createEditorImageBatchAppend({ source, items: [
+		{ filename: 'second.png', caption: 'Second' },
+		{ filename: 'first.svg', alt: '' },
+	] });
+	assert.equal(edit.text, '\n```image-stack\nitems:\n  - image: second.png\n    caption: "Second"\n  - image: first.svg\n    alt: ""\n```\n');
+	await assert.rejects(createEditorImageBatchAppend({ source, items: [] }), /at least one/);
 });

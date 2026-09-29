@@ -1,5 +1,7 @@
 const path = require('node:path');
 const { describeLinks, showLinks } = require('./site-link-review.cjs');
+const { openImageImportForm } = require('./image-import-form.cjs');
+const { openImageInsertForm } = require('./image-insert-form.cjs');
 
 // Native dialogs and filesystem operations stay in the extension. The selected
 // engine owns path, content and image-reference rules.
@@ -41,59 +43,149 @@ function registerSiteFileActions({ vscode, context, chooseNode, ownerOf, service
 		return result;
 	};
 	const describeUsage = (usage, siteRoot) => [
-		'Managed image references (including unsaved pages):',
-		...usage.references.map((reference) => `${path.relative(siteRoot, reference.sourcePath)}:${reference.line}${reference.unresolved ? ' — unresolved; may refer to this file' : ''}`),
-		...(!usage.references.length ? ['No managed-image references found.'] : []),
-		...(usage.incomplete.length ? ['Some pages could not be fully checked:', ...usage.incomplete] : []),
-		'Ordinary Markdown, HTML and external references are not checked. Content is not rewritten.',
+		usage.references.length ? `Found ${usage.references.length} reference${usage.references.length === 1 ? '' : 's'} in Norna content blocks:`
+			: 'No references found in Norna content blocks.',
+		...usage.references.map((reference) => `${path.relative(siteRoot, reference.sourcePath)}:${reference.line}${reference.unresolved ? ' — may refer to this image' : ''}`),
+		...(usage.incomplete.length ? ['Could not check all pages:', ...usage.incomplete] : []),
 	].join('\n');
 
 	const appendImage = async (page, service, filename) => {
+		if (typeof service.createEditorImageBatchAppend !== 'function') throw new Error('Update this site’s Norna engine to use the combined image form.');
+		const imagePath = path.join(path.dirname(page.sourcePath), 'images', filename);
+		await service.getEditorImageUsage({ siteRoot: page.siteRoot, sourcePath: page.sourcePath, imagePath });
 		const document = await vscode.workspace.openTextDocument(uri(page.sourcePath));
 		const version = document.version;
-		const alt = await vscode.window.showInputBox({ title: `Insert image: ${page.title}`, prompt: 'Describe the image (alternative text)',
-			validateInput: (value) => !value.trim() ? 'Enter a short description of the image.' : undefined, ignoreFocusOut: true });
-		if (alt === undefined) return;
-		const caption = await vscode.window.showInputBox({ title: `Insert image: ${page.title}`, prompt: 'Caption (optional). The image block will be added at the end of this page.', ignoreFocusOut: true });
-		if (caption === undefined) return;
-		await chooseNode(page);
-		if (document.version !== version) throw new Error('The page changed while the image dialog was open. Insert the image again.');
-		const edit = await service.createEditorImageAppend({ source: document.getText(), filename, alt, caption });
-		await service.getEditorImageUsage({ siteRoot: page.siteRoot, sourcePath: page.sourcePath, imagePath: path.join(path.dirname(page.sourcePath), 'images', filename) });
-		if (document.version !== version) throw new Error('The page changed. Insert the image again.');
-		const editor = await vscode.window.showTextDocument(document, { preview: false });
-		if (document.version !== version) throw new Error('The page changed. Insert the image again.');
-		const applied = await editor.edit((builder) => builder.insert(document.positionAt(edit.start), edit.text), { undoStopBefore: true, undoStopAfter: true });
-		if (!applied) throw new Error('The image block could not be inserted. The image file remains available.');
-		editor.revealRange(new vscode.Range(document.positionAt(edit.start), document.positionAt(document.getText().length)));
+		return openImageInsertForm(vscode, context, { pageTitle: page.title, filename, imagePath }, async (values) => {
+			if (!values || typeof values.alt !== 'string' || typeof values.caption !== 'string' || typeof values.decorative !== 'boolean') throw new Error('Enter the image information again.');
+			await chooseNode(page);
+			if (document.version !== version) throw new Error('The page changed while the image form was open. Open Insert Image again.');
+			const edit = await service.createEditorImageBatchAppend({ source: document.getText(), items: [{ filename,
+				...(values.alt.trim() || values.decorative ? { alt: values.alt } : {}),
+				...(values.caption.trim() ? { caption: values.caption } : {}),
+			}] });
+			await service.getEditorImageUsage({ siteRoot: page.siteRoot, sourcePath: page.sourcePath, imagePath });
+			if (document.version !== version) throw new Error('The page changed. Open Insert Image again.');
+			const editor = await vscode.window.showTextDocument(document, { preview: false });
+			if (document.version !== version) throw new Error('The page changed. Open Insert Image again.');
+			const applied = await editor.edit((builder) => builder.insert(document.positionAt(edit.start), edit.text), { undoStopBefore: true, undoStopAfter: true });
+			if (!applied) throw new Error('The image block could not be inserted. The image file remains available.');
+			editor.revealRange(new vscode.Range(document.positionAt(edit.start), document.positionAt(document.getText().length)));
+		});
 	};
 	const importImage = async (argument) => {
 		const { page, service, options } = await target(argument);
 		if (page.kind !== 'page') throw new Error('Choose a content page to import an image.');
-		const files = await vscode.window.showOpenDialog({ title: `Import image into “${page.title}”`, openLabel: 'Choose Image', canSelectFiles: true, canSelectFolders: false, canSelectMany: false,
+		if (typeof service.createEditorImageBatchAppend !== 'function') throw new Error('Update this site’s Norna engine to use the combined image import form.');
+		const files = await vscode.window.showOpenDialog({ title: `Import images into “${page.title}”`, openLabel: 'Choose Images', canSelectFiles: true, canSelectFolders: false, canSelectMany: true,
 			filters: { Images: ['jpg', 'jpeg', 'png', 'svg'] } });
 		if (!files?.length) return;
-		if (files[0].scheme !== 'file') throw new Error('Choose an image on this computer.');
-		const imagePath = files[0].fsPath;
-		const extension = path.extname(imagePath).toLowerCase();
-		const initial = `${service.slugifyAsciiIdentifier(path.basename(imagePath, path.extname(imagePath))) || 'image'}${extension}`;
-		const filename = await vscode.window.showInputBox({ title: `Import image: ${page.title}`, prompt: 'Filename in this page’s images folder; the original is kept', value: initial, ignoreFocusOut: true,
-			validateInput: async (filename) => { try { await service.planEditorImageCopy({ ...options, imagePath, filename }); } catch (error) { return error.message; } return undefined; } });
-		if (filename === undefined) return;
-		await chooseNode(page);
-		clean(imagePath);
-		const plan = await service.planEditorImageCopy({ ...options, imagePath, filename });
-		await vscode.workspace.fs.createDirectory(uri(path.dirname(plan.destination)));
-		checkPlan(plan, await service.planEditorImageCopy({ ...options, imagePath, filename }));
-		await chooseNode(page);
-		clean(plan.source); clean(plan.destination);
-		await vscode.workspace.fs.copy(uri(plan.source), uri(plan.destination), { overwrite: false });
-		await refresh();
-		const choice = await vscode.window.showQuickPick([
-			{ label: 'Insert image at end of page', description: page.title, insert: true },
-			{ label: 'Keep image file only', description: path.relative(page.siteRoot, plan.destination) },
-		], { title: `Imported ${filename}`, placeHolder: 'The original file is unchanged', ignoreFocusOut: true });
-		if (choice?.insert) await appendImage(page, service, filename);
+		if (files.some((file) => file.scheme !== 'file')) throw new Error('Choose images on this computer.');
+		const imageDirectory = path.join(path.dirname(page.sourcePath), 'images');
+		const rows = [];
+		for (const [id, file] of files.entries()) {
+			const extension = path.extname(file.fsPath).toLowerCase();
+			const base = service.slugifyAsciiIdentifier(path.basename(file.fsPath, path.extname(file.fsPath))) || 'image';
+			rows.push({ id, sourcePath: file.fsPath, sourceName: path.basename(file.fsPath), filename: `${base}${extension}` });
+		}
+		const completed = new Set();
+		const getRows = async (values) => {
+			const issues = {}, planned = [], names = new Map();
+			if (values.length !== rows.length || new Set(values.map((value) => value.id)).size !== rows.length) throw new Error('The image selection changed. Open Import Images again.');
+			for (const value of values) {
+				if (value.action === 'skip') continue;
+				const name = String(value.filename ?? '').trim().toLowerCase();
+				names.set(name, [...(names.get(name) ?? []), value.id]);
+			}
+			for (const value of values) {
+				const row = rows.find((candidate) => candidate.id === value.id);
+				if (!row) throw new Error('Unknown image selection.');
+				if (!['import', 'insert', 'skip'].includes(value.action)) throw new Error('Choose an image action.');
+				if (completed.has(value.id) || value.action === 'skip') continue;
+				const name = String(value.filename ?? '').trim();
+				if (names.get(name.toLowerCase()).length > 1) { issues[value.id] = { error: 'Another selected image has this filename. Choose a different name.' }; continue; }
+				try {
+					const plan = await service.planEditorImageCopy({ ...options, imagePath: row.sourcePath, filename: name });
+					planned.push({ ...value, replace: false, row, plan });
+				} catch (error) {
+					const collision = error.message === 'An image already has this name on the page. Choose another filename or use Replace Image.';
+					if (!collision) { issues[value.id] = { error: error.message }; continue; }
+					try {
+						const plan = await service.planEditorImageCopy({ ...options, imagePath: row.sourcePath, filename: name, replace: true });
+						planned.push({ ...value, replace: true, row, plan });
+						issues[value.id] = { collision: true, existingPath: plan.destination };
+					} catch (replacementError) { issues[value.id] = { error: replacementError.message }; }
+				}
+			}
+			return { issues, blocked: Object.values(issues).some((issue) => issue.error), planned, values };
+		};
+		const apply = async (prepared) => {
+			const { values, planned } = prepared;
+			const replacements = planned.filter((entry) => entry.replace);
+			const reviewedUsage = new Map();
+			if (replacements.length) {
+				const details = [];
+				for (const entry of replacements) {
+					const usage = await stableSources((sources) => service.getEditorImageUsage({ ...options, imagePath: entry.plan.destination, sources }));
+					reviewedUsage.set(entry.id, usage);
+					details.push(`${entry.plan.filename}:\n${describeUsage(usage, page.siteRoot)}`);
+				}
+				if (!await confirm(`Replace ${replacements.length} image${replacements.length === 1 ? '' : 's'} on “${page.title}”?`,
+					`${details.join('\n')}\n\nThe old files go to Trash. Existing references keep their filenames.`, 'Replace Images')) {
+					return { complete: false, summary: 'Replacement cancelled. No new images were imported.', issues: prepared.issues, blocked: false, done: [...completed] };
+				}
+			}
+			let currentEntry;
+			try {
+				for (const entry of planned) {
+					currentEntry = entry;
+					await chooseNode(page);
+					clean(entry.plan.source); clean(entry.plan.destination);
+					checkPlan(entry.plan, await service.planEditorImageCopy({ ...options, imagePath: entry.row.sourcePath, filename: entry.plan.filename, replace: Boolean(entry.replace) }));
+					await vscode.workspace.fs.createDirectory(uri(imageDirectory));
+					if (entry.replace) {
+						const currentUsage = await stableSources((sources) => service.getEditorImageUsage({ ...options, imagePath: entry.plan.destination, sources }));
+						if (JSON.stringify(currentUsage) !== JSON.stringify(reviewedUsage.get(entry.id))) throw new Error('Image references changed. Review the replacement again.');
+						const staged = uri(path.join(context.globalStorageUri.fsPath, `image-${Date.now()}-${Math.random().toString(16).slice(2)}${path.extname(entry.plan.filename)}`));
+						await vscode.workspace.fs.createDirectory(context.globalStorageUri);
+						await vscode.workspace.fs.copy(uri(entry.plan.source), staged, { overwrite: false });
+						try {
+							checkPlan(entry.plan, await service.planEditorImageCopy({ ...options, imagePath: entry.row.sourcePath, filename: entry.plan.filename, replace: true }));
+							await chooseNode(page);
+							clean(entry.plan.source); clean(entry.plan.destination);
+							await vscode.workspace.fs.delete(uri(entry.plan.destination), { useTrash: true });
+							try { await vscode.workspace.fs.copy(staged, uri(entry.plan.destination), { overwrite: false }); }
+							catch (error) { throw new Error(`The old ${entry.plan.filename} is in Trash; the replacement could not be written: ${error.message}`); }
+						} finally { await vscode.workspace.fs.delete(staged).catch(() => {}); }
+					} else await vscode.workspace.fs.copy(uri(entry.plan.source), uri(entry.plan.destination), { overwrite: false });
+					completed.add(entry.id);
+					currentEntry = undefined;
+					await refresh();
+				}
+				const inserts = values.filter((value) => value.action === 'insert' && completed.has(value.id));
+				if (inserts.length) {
+					await chooseNode(page);
+					const document = await vscode.workspace.openTextDocument(uri(page.sourcePath));
+					const version = document.version;
+					const edit = await service.createEditorImageBatchAppend({ source: document.getText(), items: inserts.map((value) => ({
+						filename: String(value.filename).trim(), ...(value.alt.trim() || value.decorative ? { alt: value.alt } : {}),
+						...(value.caption.trim() ? { caption: value.caption } : {}),
+					})) });
+					if (document.version !== version) throw new Error('The page changed before insertion. Image files were imported; retry insertion.');
+					const editor = await vscode.window.showTextDocument(document, { preview: false });
+					const applied = await editor.edit((builder) => builder.insert(document.positionAt(edit.start), edit.text), { undoStopBefore: true, undoStopAfter: true });
+					if (!applied) throw new Error('Image files were imported, but the page edit failed. Retry insertion.');
+				}
+				return { complete: true };
+			} catch (error) {
+				await refresh();
+				const succeeded = rows.filter((row) => completed.has(row.id)).map((row) => row.sourceName);
+				const pending = rows.filter((row) => !completed.has(row.id) && values.some((value) => value.id === row.id && value.action !== 'skip')).map((row) => row.sourceName);
+				return { complete: false, summary: `Imported: ${succeeded.join(', ') || 'none'}.\nPending: ${pending.join(', ') || 'none'}.\n${error.message}`,
+					issues: currentEntry ? { [currentEntry.id]: { error: error.message } } : {}, done: [...completed], blocked: false };
+			}
+		};
+		return openImageImportForm(vscode, context, { pageTitle: page.title, destination: path.relative(page.siteRoot, imageDirectory), destinationPath: imageDirectory, rows },
+			{ preview: getRows, apply });
 	};
 	const insertImage = async (argument) => {
 		const selected = await target(argument);
@@ -112,13 +204,15 @@ function registerSiteFileActions({ vscode, context, chooseNode, ownerOf, service
 		else if (!['page', 'category'].includes(selected.selected.kind)) throw new Error('Select the page itself to remove it.');
 		const plan = await stableSources((sources) => service.planEditorRemoval({ ...options, sources }));
 		clean(plan.target);
-		const detail = [plan.target,
+		const detail = [...(!image ? [plan.target] : []),
 			image ? describeUsage(plan.usage, page.siteRoot) : kind === 'file' ? plan.effect
 				: `${plan.pages} page/category entries and ${plan.files.length} files, including all descendants. Links from pages that remain are not rewritten.`,
 			...(!image && plan.usage ? [describeLinks(plan.usage)] : []),
-			'Restore through the operating system’s Trash. Editor Undo does not restore these files.',
+			...(image && plan.usage.references.length ? ['References in page content will stay unchanged.'] : []),
+			image ? 'Restore it in Finder’s Trash if needed; VS Code Undo will not restore the file.'
+				: 'Restore through the operating system’s Trash. Editor Undo does not restore these files.',
 		].join('\n\n');
-		const choice = await vscode.window.showWarningMessage(`Move “${kind === 'page' ? page.title : path.basename(plan.target)}” to Trash?`,
+		const choice = await vscode.window.showWarningMessage(`Move “${kind === 'page' ? page.title : path.basename(plan.target)}”${image ? ` from “${page.title}”` : ''} to Trash?`,
 			{ modal: true, detail }, 'Move to Trash', ...(!image && plan.usage?.references.length ? ['Show links'] : []));
 		if (choice === 'Show links') {
 			await chooseNode(page);
