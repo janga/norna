@@ -26,7 +26,7 @@ const requiredRichHelp = {
 };
 const manifest = JSON.parse(await readFile(path.join(root, 'schemas', 'manifest.json'), 'utf8'));
 assert.equal(manifest.editorApiVersion, 3);
-assert.equal(manifest.schemaVersion, 4);
+assert.equal(manifest.schemaVersion, 5);
 assert.equal(manifest.files.category, undefined);
 assert.equal(manifest.files.pageTheme, 'page-theme.schema.json');
 
@@ -68,7 +68,8 @@ const assertDocumentationLinks = async (markdownDescription, location) => {
 		}
 		const key = `${reference}:${sourcePath}`;
 		if (!documentationSourceCache.has(key)) {
-			const source = await readFile(path.join(root, sourcePath), 'utf8');
+			const localPath = packageJson.version === '0.7.27' ? sourcePath.replace('site/pages/', 'site/root/pages/') : sourcePath;
+			const source = await readFile(path.join(root, localPath), 'utf8');
 			documentationSourceCache.set(key, source);
 		}
 		if (!anchor) continue;

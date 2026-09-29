@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { homePageDirectory, legacyHomePageDirectory } from './site-conventions.mjs';
+import { getSiteSourcePaths, homePageDirectory, legacyHomePageDirectory } from './site-conventions.mjs';
 
 const siteDirectoryEnvName = 'NORNA_SITE_DIR';
 const invocationRootEnvName = 'NORNA_INVOCATION_ROOT';
@@ -35,6 +35,7 @@ const hasSiteFilesInDirectory = (siteDir) => {
 		(existsSync(path.join(siteDir, 'site-config', 'settings.yaml')) || existsSync(path.join(siteDir, 'config.yaml')))
 		&& (
 			existsSync(path.join(siteDir, 'pages', legacyHomePageDirectory, 'content.md'))
+			|| existsSync(getSiteSourcePaths(siteDir).content)
 			|| existsSync(path.join(siteDir, 'content.md'))
 		)
 	);
@@ -140,8 +141,8 @@ export const siteDir = resolvedSitePaths.siteDir;
 export const siteConfigPath = path.join(siteDir, 'site-config', 'settings.yaml');
 export const siteThemePath = path.join(siteDir, 'site-config', 'site-theme.yaml');
 export const sitewideContentPath = path.join(siteDir, 'site-config', 'shared-content.yaml');
-export const sitePagesDir = path.join(siteDir, 'pages');
-export const siteHomePageDir = siteDir;
+export const sitePagesDir = getSiteSourcePaths(siteDir).pages;
+export const siteHomePageDir = getSiteSourcePaths(siteDir).root;
 export const siteContentPath = path.join(siteHomePageDir, 'content.md');
 export const siteImagesDir = path.join(siteHomePageDir, 'images');
 export const sitePublicDir = path.join(siteDir, 'public');

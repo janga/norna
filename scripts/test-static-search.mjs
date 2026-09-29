@@ -42,15 +42,15 @@ try {
 language: bg
 search: true
 `);
-	await writeFile(path.join(siteDir, 'content.md'), `# Search fixture
+	await writeFile(path.join(siteDir, 'root/content.md'), `# Search fixture
 
 ## Overview {#overview}
 
 Началната страница съдържа уникалната дума кобалтовязовец.
 `);
-	const nestedPageDir = path.join(siteDir, 'pages', '010-guides', 'pages', '010-installation');
+	const nestedPageDir = path.join(siteDir, 'root/pages', '010-guides', 'pages', '010-installation');
 	await mkdir(nestedPageDir, { recursive: true });
-	await writeFile(path.join(siteDir, 'pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
+	await writeFile(path.join(siteDir, 'root/pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 	await writeFile(path.join(nestedPageDir, 'content.md'), `# Installation
 
 ## Verify {#verify}
@@ -107,7 +107,7 @@ This nested section contains the unique term amberotter.
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 
 	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\nsearch: true\n');
-	const conflictingPageDir = path.join(siteDir, 'pages', '020-search');
+	const conflictingPageDir = path.join(siteDir, 'root/pages', '020-search');
 	await mkdir(conflictingPageDir, { recursive: true });
 	await writeFile(path.join(conflictingPageDir, 'content.md'), '# Search page\n\nConflicting source page.\n');
 	await assert.rejects(

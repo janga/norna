@@ -4,7 +4,7 @@ import { z } from 'astro/zod';
 import { basename, dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
-	siteDir,
+	siteHomePageDir,
 	siteDirLabel,
 	siteThemePath,
 	sitewideContentPath,
@@ -25,7 +25,7 @@ const sitewideContentSchema = z.preprocess(emptyYamlMapping, sitewideSchema);
 const site = defineCollection({
 	loader: glob({
 		pattern: ['content.md', 'pages/**/content.md'],
-		base: pathToFileURL(siteDir),
+		base: pathToFileURL(siteHomePageDir),
 		generateId: ({ entry }) => {
 			if (entry === 'content.md') return encodePageEntryId(siteDirLabel, homePageDirectory);
 			const pageEntryDirectory = entry.split('/').slice(1, -1).join('/');

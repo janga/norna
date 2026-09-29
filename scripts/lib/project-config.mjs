@@ -24,7 +24,7 @@ import { parseYamlConfig } from './yaml-config.mjs';
 
 const readSiteConfig = async () => {
 	if (existsSync(path.join(siteDir, 'config.yaml')) || existsSync(path.join(siteDir, 'page-theme.yaml')) || existsSync(path.join(siteDir, 'sitewide-content.yaml'))) {
-		throw new Error('This site has configuration files in the former locations. Stop its development server, run norna site:upgrade to preview conversion, then norna site:upgrade --apply. Use the same --site-dir selection for both commands.');
+		throw new Error('This site has configuration files in the former locations. Stop its development server and follow the source-layout reference to place shared settings in site-config/ and page files in root/. Automatic historical conversion is not provided.');
 	}
 	const source = await readFile(siteConfigPath, 'utf8').catch((error) => {
 		if (error?.code === 'ENOENT') {

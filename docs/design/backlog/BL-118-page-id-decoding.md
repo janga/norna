@@ -41,6 +41,6 @@ URLs stay unchanged.
   with relative and absolute site selection. It checks page titles and sitemap
   URLs for affected pages, page/category descendants and the actual homepage.
 
-The [page naming reference](../../../site/pages/032-reference/pages/010-site/pages/020-pages/content.md#names-and-order)
+The [page naming reference](../../../site/root/pages/032-reference/pages/010-site/pages/020-pages/content.md#names-and-order)
 already describes the supported names. This fix restores that contract without
 adding a new syntax rule.

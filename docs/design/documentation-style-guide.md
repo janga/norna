@@ -245,7 +245,7 @@ Keep one canonical reference definition for each public concept:
 - design guides explain rationale without redefining behavior.
 
 The canonical user reference is authored once as Norna Markdown under
-`site/pages/032-reference/` and read on the documentation website. Contributor
+`site/root/pages/032-reference/` and read on the documentation website. Contributor
 and design material stays under `docs/`. Documentation type, not file format,
 distinguishes reference from tutorials and explanations.
 

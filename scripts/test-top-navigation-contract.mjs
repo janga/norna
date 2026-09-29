@@ -13,7 +13,7 @@ try {
 	await cp(path.join(root, 'fixtures/navigation-examples/nested/site'), site, { recursive: true });
 	await mkdir(path.join(site, 'site-config'), { recursive: true });
 	await writeFile(path.join(site, 'site-config/settings.yaml'), 'url: https://example.test/docs/\nnavigation:\n  mode: top\n');
-	const dogsPath = path.join(site, 'pages/010-dogs/content.md');
+	const dogsPath = path.join(site, 'root/pages/010-dogs/content.md');
 	await writeFile(dogsPath, `${await readFile(dogsPath, 'utf8')}\n### Daily checklist\n\nH3 remains in the document, not in the top section menu.\n`);
 	await promisify(execFile)(process.execPath, [path.join(root, 'bin/norna.mjs'), '--site-dir', site, 'build'], {
 		cwd: root, maxBuffer: 10 * 1024 * 1024,

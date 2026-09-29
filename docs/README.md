@@ -3,7 +3,7 @@
 The [Norna reference](https://janga.github.io/norna/reference/) is the canonical
 user reference for source files, configuration, content, commands and reader
 behavior. Its single authored source lives under
-[`site/pages/032-reference/`](../site/pages/032-reference/); Norna renders those
+[`site/pages/032-reference/`](../site/root/pages/032-reference/); Norna renders those
 Markdown files into the documentation site.
 
 Use [Getting Started](https://janga.github.io/norna/getting-started/install-norna/)
@@ -23,7 +23,7 @@ Read the [Documentation Style Guide](design/documentation-style-guide.md)
 before changing reference, schema help, editor descriptions or diagnostics.
 Use the [reference maintenance map](design/reference-inventory.md) to find
 the code and tests associated with each reference area. Design rationale and
-review evidence remain under [`docs/design/`](design/).
+review evidence remain under [`docs/design/`](design).
 
 ## Match documentation to a release
 

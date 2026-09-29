@@ -5,7 +5,7 @@ import { getMarkdownHeadings, slugifyAsciiIdentifier } from './heading-ids.mjs';
 import { parsePageDirectoryPath } from './page-model.mjs';
 import { splitPageMarkdownSource } from './page-markdown.mjs';
 import { siteSchema } from './schema-definitions.mjs';
-import { homePageDirectory } from './site-conventions.mjs';
+import { getSiteSourcePaths, homePageDirectory } from './site-conventions.mjs';
 import { createSiteNode, escapeMarkdownHeading, planSiteNodeCreation } from './site-node-create.mjs';
 import { getSiteStructure } from './site-structure.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
@@ -102,7 +102,7 @@ export const readSiteFileTree = async (options) => {
 	const home = snapshot.nodes.find((node) => node.isHome);
 	const items = [];
 	const problems = [...snapshot.problems];
-	if (!home || home.sourcePath !== path.join(siteRoot, 'content.md')) return { ...snapshot, items: null };
+	if (!home || home.sourcePath !== getSiteSourcePaths(siteRoot).content) return { ...snapshot, items: null };
 	const resourceId = (filename) => `resource:${filename}`;
 	const entriesAt = async (directory) => {
 		try { return await readdir(directory, { withFileTypes: true }); }
@@ -139,6 +139,9 @@ export const readSiteFileTree = async (options) => {
 			else addResource(owner, directory.id, child, 'file', role === 'configuration' ? 'configuration' : 'asset');
 		}
 	};
+	for (const name of ['site-config', 'public']) {
+		if ((await entriesAt(siteRoot)).some((entry) => entry.name === name && entry.isDirectory())) await addDirectory(home, null, path.join(siteRoot, name), name === 'site-config' ? 'configuration' : 'public');
+	}
 	for (const page of snapshot.nodes) {
 		const directory = path.dirname(page.sourcePath);
 		const parentId = page.isHome ? null : resourceId(path.dirname(directory));
@@ -147,10 +150,7 @@ export const readSiteFileTree = async (options) => {
 		const addExistingDirectory = async (name) => {
 			if (entries.get(name)?.isDirectory()) await addDirectory(page, page.sourcePath, path.join(directory, name), name === 'site-config' ? 'configuration' : name);
 		};
-		if (page.isHome) {
-			await addExistingDirectory('site-config');
-			await addExistingDirectory('public');
-		}
+		await addExistingDirectory('images');
 		const configuration = ['theme.yaml', 'content.md'];
 		for (const filename of configuration) {
 			if (!entries.get(filename)?.isFile()) continue;
@@ -159,7 +159,7 @@ export const readSiteFileTree = async (options) => {
 				: 'Page content';
 			addResource(page, page.sourcePath, path.join(directory, filename), 'file', filename === 'content.md' ? 'content' : 'configuration', description);
 		}
-		for (const name of ['images', 'pages']) await addExistingDirectory(name);
+		for (const name of ['pages']) await addExistingDirectory(name);
 	}
 	return { ...snapshot, items, problems };
 };
@@ -258,10 +258,10 @@ const changeYamlField = (yaml, keys, value, eol) => {
 };
 
 export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, field, value, sources = new Map() }) => {
-	const relative = path.relative(path.join(siteRoot, 'pages'), sourcePath).split(path.sep).join('/');
+	const relative = path.relative(getSiteSourcePaths(siteRoot).pages, sourcePath).split(path.sep).join('/');
 	const filename = path.posix.basename(relative);
 	if (filename !== 'content.md') throw new Error('Choose a page content.md source file.');
-	const pageDirectory = path.resolve(sourcePath) === path.join(path.resolve(siteRoot), 'content.md')
+	const pageDirectory = path.resolve(sourcePath) === getSiteSourcePaths(path.resolve(siteRoot)).content
 		? homePageDirectory : path.posix.dirname(relative);
 	parsePageDirectoryPath(pageDirectory);
 	const kind = 'page';

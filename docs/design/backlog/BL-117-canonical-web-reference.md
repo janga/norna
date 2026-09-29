@@ -25,7 +25,7 @@ Review material:
 
 - [Coverage inventory](../reference-inventory.md)
 - [Information structure and lookup tasks](../reference-information-structure.md)
-- [Reference source](../../../site/pages/032-reference/)
+- [Reference source](../../../site/root/pages/032-reference/)
 - [Completion plan](../reference-completion-plan.md)
 - [Verification record](../reference-pilot-verification.md)
 

@@ -40,11 +40,11 @@ const expectFailure = async (operation, pattern) => {
 };
 
 const createSite = async (siteDirectory, { title = 'Scratch page' } = {}) => {
-	await mkdir(siteDirectory, { recursive: true });
+	await mkdir(path.join(siteDirectory, 'root'), { recursive: true });
 	await mkdir(path.join(siteDirectory, 'site-config'), { recursive: true });
 	await writeFile(path.join(siteDirectory, 'site-config/settings.yaml'), 'url: https://example.com/scratch/\n');
 	await writeFile(path.join(siteDirectory, 'site-config', 'site-theme.yaml'), 'preset: documentation\n');
-	await writeFile(path.join(siteDirectory, 'content.md'), `# ${title}\n`);
+	await writeFile(path.join(siteDirectory, 'root/content.md'), `# ${title}\n`);
 };
 
 try {
@@ -380,7 +380,7 @@ try {
 	await writeFile(path.join(sourceDirectory, 'test-results', 'result.txt'), 'generated\n');
 	await writeFile(path.join(sourceDirectory, 'preview.log'), 'generated\n');
 
-	const originalContent = await readFile(path.join(sourceDirectory, 'content.md'), 'utf8');
+	const originalContent = await readFile(path.join(sourceDirectory, 'root/content.md'), 'utf8');
 	const canonicalSourceDirectory = await realpath(sourceDirectory);
 	const prepared = await prepareScratchSite({
 		repositoryRoot: workspaceRoot,
@@ -389,11 +389,11 @@ try {
 	});
 	assert.equal(prepared.sourceDirectory, canonicalSourceDirectory);
 	assert.equal(prepared.targetDirectory, targetDirectory);
-	assert.equal(await readFile(path.join(targetDirectory, 'content.md'), 'utf8'), originalContent);
+	assert.equal(await readFile(path.join(targetDirectory, 'root/content.md'), 'utf8'), originalContent);
 	for (const excludedPath of ['.norna', 'node_modules', 'dist', 'test-results', 'preview.log']) {
 		await assert.rejects(lstat(path.join(targetDirectory, excludedPath)), { code: 'ENOENT' });
 	}
-	assert.equal(await readFile(path.join(sourceDirectory, 'content.md'), 'utf8'), originalContent);
+	assert.equal(await readFile(path.join(sourceDirectory, 'root/content.md'), 'utf8'), originalContent);
 	const sourceRecord = await readScratchSource({ repositoryRoot: workspaceRoot, scratchRoot });
 	assert.equal(sourceRecord.sourceDirectory, canonicalSourceDirectory);
 
@@ -402,14 +402,14 @@ try {
 		/Scratch site already exists[\s\S]*--replace/,
 	);
 
-	await writeFile(path.join(sourceDirectory, 'content.md'), '# Replaced page\n');
+	await writeFile(path.join(sourceDirectory, 'root/content.md'), '# Replaced page\n');
 	await prepareScratchSite({
 		repositoryRoot: workspaceRoot,
 		sourcePath: 'source site',
 		scratchRoot,
 		replace: true,
 	});
-	assert.equal(await readFile(path.join(targetDirectory, 'content.md'), 'utf8'), '# Replaced page\n');
+	assert.equal(await readFile(path.join(targetDirectory, 'root/content.md'), 'utf8'), '# Replaced page\n');
 
 	const brokenSource = path.join(workspaceRoot, 'broken site');
 	await mkdir(path.join(brokenSource, 'pages'), { recursive: true });
@@ -424,7 +424,7 @@ try {
 		}),
 		/missing site-config\/site-theme.yaml/,
 	);
-	assert.equal(await readFile(path.join(targetDirectory, 'content.md'), 'utf8'), '# Replaced page\n');
+	assert.equal(await readFile(path.join(targetDirectory, 'root/content.md'), 'utf8'), '# Replaced page\n');
 
 	const stalePrevious = path.join(scratchRoot, '.previous-stale');
 	await rename(targetDirectory, stalePrevious);
@@ -433,7 +433,7 @@ try {
 		() => prepareScratchSite({ repositoryRoot: workspaceRoot, sourcePath: 'source site', scratchRoot }),
 		/Scratch site already exists/,
 	);
-	assert.equal(await readFile(path.join(targetDirectory, 'content.md'), 'utf8'), '# Replaced page\n');
+	assert.equal(await readFile(path.join(targetDirectory, 'root/content.md'), 'utf8'), '# Replaced page\n');
 	await assert.rejects(lstat(path.join(scratchRoot, '.incoming-stale')), { code: 'ENOENT' });
 
 	const cleanedTarget = await cleanScratchSite({ repositoryRoot: workspaceRoot, scratchRoot });

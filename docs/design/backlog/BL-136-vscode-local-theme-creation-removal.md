@@ -8,6 +8,12 @@ of the [VS Code Files And Images track](../vscode-authoring-track.md).
 
 **Status: Needs decision; outline for later visual discussion.**
 
+2026-09-29: Reassess this outline after BL-150 Complete Tree And Page Theme
+Packages and BL-151 Site Tree For The Site And Theme Model. Their approved
+design supersedes the old theme model described below when implemented.
+Reuse existing create/remove operations; do not implement this outline as
+a prerequisite for those items or rewrite the remaining proposals prematurely.
+
 Local-theme removal was approved separately on 2026-09-22 in
 [BL-146 VS Code Removal, Addresses And Incoming Links](BL-146-vscode-removal-addresses-links.md):
 the file's actions explain homepage or branch inheritance and confirm moving

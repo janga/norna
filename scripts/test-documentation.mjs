@@ -44,7 +44,7 @@ const obsoleteSiteFilenames = new Set([
 ]);
 const ignoredSiteDirectories = new Set(['.astro', '.norna', 'dist', 'node_modules']);
 const obsoleteReferenceDocumentation = new Set([
-	path.join(repoRoot, 'site/pages/032-reference/pages/060-workflows/pages/050-legacy-source/content.md'),
+	path.join(repoRoot, 'site/root/pages/032-reference/pages/060-workflows/pages/050-legacy-source/content.md'),
 ]);
 
 const collectMarkdownFiles = async (directory) => {
@@ -149,7 +149,7 @@ const checkDocumentedContentSyntax = async () => {
 		.filter((name) => name.endsWith('.md'))
 		.map((name) => path.join(repoRoot, 'docs', name));
 	documentationFiles.push(path.join(repoRoot, 'docs', 'design', 'norna-diagram-design.md'));
-	const siteFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'pages'));
+	const siteFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'root', 'pages'));
 	let blockCount = 0;
 
 	const checkMarkdown = (source, label) => {
@@ -195,7 +195,7 @@ const checkDocumentedContentSyntax = async () => {
 };
 
 const checkSinglePageDiagramSource = async () => {
-	const directory = path.join(repoRoot, 'site', 'pages', '020-getting-started', 'pages', '020-grow-your-site');
+	const directory = path.join(repoRoot, 'site', 'root', 'pages', '020-getting-started', 'pages', '020-grow-your-site');
 	const model = await parsePageMarkdownSource(await readFile(path.join(directory, 'content.md'), 'utf8'));
 	const section = model.sections.find((section) => section.id === 'single-page-site');
 	const tree = markdownToMdast(section.bodyMarkdown);
@@ -215,8 +215,8 @@ const checkSinglePageDiagramSource = async () => {
 
 const checkEditorFormattingGuidance = async () => {
 	for (const relativePath of [
-		'site/pages/032-reference/pages/060-workflows/pages/010-editor/content.md',
-		'site/pages/035-faq/pages/030-content-and-images/content.md',
+		'site/root/pages/032-reference/pages/060-workflows/pages/010-editor/content.md',
+		'site/root/pages/035-faq/pages/030-content-and-images/content.md',
 	]) {
 		const source = await readFile(path.join(repoRoot, relativePath), 'utf8');
 		const tree = markdownToMdast(source);
@@ -353,7 +353,7 @@ const checkSitemapReference = async () => {
 };
 
 const checkProductTour = async () => {
-	const tourDirectory = path.join(repoRoot, 'site', 'pages', '010-features');
+	const tourDirectory = path.join(repoRoot, 'site', 'root', 'pages', '010-features');
 	const source = await readFile(path.join(tourDirectory, 'content.md'), 'utf8');
 	const orderedSections = [
 		'# What Norna Does',
@@ -395,7 +395,7 @@ const checkProductTour = async () => {
 
 const checkPublishedExampleReferences = async () => {
 	const documentationUrl = new URL(projectConfig.site.url);
-	const exampleFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'pages', '030-examples'));
+	const exampleFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'root', 'pages', '030-examples'));
 	const documentationText = (await Promise.all(exampleFiles.map((filePath) => readFile(filePath, 'utf8')))).join('\n');
 	assert.equal(exampleFiles.length, 1, 'Focused Examples documentation must remain one result-first page.');
 	const examplesModel = await parsePageMarkdownSource(documentationText);
@@ -421,7 +421,7 @@ const checkPublishedExampleReferences = async () => {
 		}
 	}
 	for (const [id, language, relativePath] of [
-		['page-list', 'md', 'fixtures/child-page-list/site/pages/010-help-a-dog/content.md'],
+		['page-list', 'md', 'fixtures/child-page-list/site/root/pages/010-help-a-dog/content.md'],
 		['site-wide-elements', 'yaml', 'examples/feature-demos/sitewide-content/site/site-config/shared-content.yaml'],
 	]) {
 		const section = examplesModel.sections.find((section) => section.id === id);
@@ -501,7 +501,7 @@ const checkPublishedExampleReferences = async () => {
 		'navigation-documentation-desktop.png',
 	]) {
 		assert.ok(
-			existsSync(path.join(repoRoot, 'site', 'pages', '030-examples', 'images', imageName)),
+			existsSync(path.join(repoRoot, 'site', 'root', 'pages', '030-examples', 'images', imageName)),
 			`Examples is missing ${imageName}.`,
 		);
 	}
@@ -542,7 +542,7 @@ const checkPublishedExampleReferences = async () => {
 };
 
 const checkReferenceTree = async () => {
-	const referenceRoot = path.join(repoRoot, 'site/pages/032-reference');
+	const referenceRoot = path.join(repoRoot, 'site/root/pages/032-reference');
 	const files = await collectMarkdownFiles(referenceRoot);
 	assert.deepEqual(files.map((file) => path.relative(repoRoot, file)).sort(),
 		Object.values(documentationRoutes.sources).sort(), 'Every reference page needs a source route.');
@@ -584,7 +584,8 @@ const checkReferenceTree = async () => {
 		assert.ok(link.includes(`/blob/v${version}/docs/content.md#image-stack`), 'Older installations must keep existing tag paths.');
 		assert.ok(link.includes('/reference/content/images/#image-stack'), 'Current reference stays separately identified.');
 	}
-	for (const version of ['0.7.27', '0.8.0', '1.0.0']) {
+	assert.ok(documentationLinks.documentationLinkForVersion('0.7.27', 'Images', 'content.md', 'image-stack').includes('/blob/v0.7.27/site/pages/'), 'The published 0.7.27 tag predates root/.');
+	for (const version of ['0.7.28', '0.8.0', '1.0.0']) {
 		const link = documentationLinks.documentationLinkForVersion(version, 'Images', 'content.md', 'image-stack');
 		assert.ok(link.includes(`/blob/v${version}/${documentationRoutes.sources['content/images/']}#image-stack`));
 		assert.ok(!link.includes('/docs/'), 'Future releases must use the sole authored reference source.');

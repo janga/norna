@@ -15,7 +15,7 @@ import {
 test('content:sync moves Norna-managed images inside the same page image root', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -30,12 +30,12 @@ items:
     alt: Moved image
 \`\`\`
 `);
-		await mkdir(path.join(siteDir, 'images', 'old'), { recursive: true });
-		await writeFile(path.join(siteDir, 'images', 'old', 'moved.jpg'), 'fixture image');
+		await mkdir(path.join(siteDir, 'root/images', 'old'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/images', 'old', 'moved.jpg'), 'fixture image');
 
 		await runContentScript(siteDir, ['--write', '--yes']);
 
-		const moved = await readFile(path.join(siteDir, 'images', 'moved.jpg'), 'utf8');
+		const moved = await readFile(path.join(siteDir, 'root/images', 'moved.jpg'), 'utf8');
 		assert.equal(moved, 'fixture image');
 	} finally {
 		await rm(root, { recursive: true, force: true });
@@ -45,7 +45,7 @@ items:
 test('content:sync moves managed SVG images inside the same page image root', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -60,12 +60,12 @@ items:
     alt: Moved diagram
 \`\`\`
 `);
-		await mkdir(path.join(siteDir, 'images', 'old'), { recursive: true });
-		await writeFile(path.join(siteDir, 'images', 'old', 'moved.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"></svg>\n');
+		await mkdir(path.join(siteDir, 'root/images', 'old'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/images', 'old', 'moved.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"></svg>\n');
 
 		await runContentScript(siteDir, ['--write', '--yes']);
 
-		const moved = await readFile(path.join(siteDir, 'images', 'moved.svg'), 'utf8');
+		const moved = await readFile(path.join(siteDir, 'root/images', 'moved.svg'), 'utf8');
 		assert.match(moved, /viewBox="0 0 10 10"/);
 	} finally {
 		await rm(root, { recursive: true, force: true });
@@ -75,11 +75,11 @@ items:
 test('content:sync shows its plan and moves images across pages without requiring a Git worktree', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		const sourcePageDir = path.join(siteDir, 'pages', '010-source');
-		const targetPageDir = path.join(siteDir, 'pages', '020-target');
+		const sourcePageDir = path.join(siteDir, 'root/pages', '010-source');
+		const targetPageDir = path.join(siteDir, 'root/pages', '020-target');
 		await mkdir(path.join(sourcePageDir, 'images'), { recursive: true });
 		await mkdir(targetPageDir, { recursive: true });
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -119,8 +119,8 @@ items:
 		const { stdout } = await runContentScript(siteDir, ['--write', '--yes']);
 
 		assert.match(stdout, /Planned image moves:/);
-		assert.match(stdout, /site\/pages\/010-source\/images\/moved\.jpg -> .*site\/pages\/020-target\/images\/moved\.jpg/);
-		assert.match(stdout, /Moved image "moved\.jpg" to .*site\/pages\/020-target\/images\//);
+		assert.match(stdout, /site\/root\/pages\/010-source\/images\/moved\.jpg -> .*site\/root\/pages\/020-target\/images\/moved\.jpg/);
+		assert.match(stdout, /Moved image "moved\.jpg" to .*site\/root\/pages\/020-target\/images\//);
 		assert.equal(await fileExists(path.join(targetPageDir, 'images', 'moved.jpg')), true);
 		assert.equal(await fileExists(path.join(sourcePageDir, 'images', 'moved.jpg')), false);
 	} finally {
@@ -131,11 +131,11 @@ items:
 test('content:sync moves images across pages when Git status is dirty', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		const sourcePageDir = path.join(siteDir, 'pages', '010-source');
-		const targetPageDir = path.join(siteDir, 'pages', '020-target');
+		const sourcePageDir = path.join(siteDir, 'root/pages', '010-source');
+		const targetPageDir = path.join(siteDir, 'root/pages', '020-target');
 		await mkdir(path.join(sourcePageDir, 'images'), { recursive: true });
 		await mkdir(targetPageDir, { recursive: true });
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -188,11 +188,11 @@ items:
 test('content:check reports cross-page image moves without requiring clean git status', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		const sourcePageDir = path.join(siteDir, 'pages', '010-source');
-		const targetPageDir = path.join(siteDir, 'pages', '020-target');
+		const sourcePageDir = path.join(siteDir, 'root/pages', '010-source');
+		const targetPageDir = path.join(siteDir, 'root/pages', '020-target');
 		await mkdir(path.join(sourcePageDir, 'images'), { recursive: true });
 		await mkdir(targetPageDir, { recursive: true });
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -234,8 +234,8 @@ items:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Image "moved\.jpg" is used here but is located in .*site\/pages\/010-source\/images\/moved\.jpg\./);
-				assert.match(error.output, /Run norna content:sync to move it from .*site\/pages\/010-source to .*site\/pages\/020-target\./);
+				assert.match(error.output, /Image "moved\.jpg" is used here but is located in .*site\/root\/pages\/010-source\/images\/moved\.jpg\./);
+				assert.match(error.output, /Run norna content:sync to move it from .*site\/root\/pages\/010-source to .*site\/root\/pages\/020-target\./);
 				assert.doesNotMatch(error.output, /requires a clean git working tree before moving files/);
 				return true;
 			},
@@ -248,11 +248,11 @@ items:
 test('content:sync refuses to move a cross-page image still referenced by its current section', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		const sourcePageDir = path.join(siteDir, 'pages', '010-source');
-		const targetPageDir = path.join(siteDir, 'pages', '020-target');
+		const sourcePageDir = path.join(siteDir, 'root/pages', '010-source');
+		const targetPageDir = path.join(siteDir, 'root/pages', '020-target');
 		await mkdir(path.join(sourcePageDir, 'images'), { recursive: true });
 		await mkdir(targetPageDir, { recursive: true });
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -295,7 +295,7 @@ items:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--write', '--yes']),
 			(error) => {
-				assert.match(error.output, /Cannot relocate "shared\.jpg" from .*site\/pages\/010-source\/images\/shared\.jpg because it is still referenced from .*site\/pages\/010-source\/content\.md \[old\]\./);
+				assert.match(error.output, /Cannot relocate "shared\.jpg" from .*site\/root\/pages\/010-source\/images\/shared\.jpg because it is still referenced from .*site\/root\/pages\/010-source\/content\.md \[old\]\./);
 				return true;
 			},
 		);
@@ -310,7 +310,7 @@ items:
 test('CLI content:sync refreshes generated images after moving a carousel image', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -327,16 +327,16 @@ items:
     alt: Slide two
 \`\`\`
 `);
-		await mkdir(path.join(siteDir, 'images', 'old'), { recursive: true });
-		await cp(path.join(fixtureSiteDir, 'images', 'hero.jpg'), path.join(siteDir, 'images', 'old', 'slide-one.jpg'));
-		await cp(path.join(fixtureSiteDir, 'images', 'detail.jpg'), path.join(siteDir, 'images', 'slide-two.jpg'), { force: true });
+		await mkdir(path.join(siteDir, 'root/images', 'old'), { recursive: true });
+		await cp(path.join(fixtureSiteDir, 'root/images', 'hero.jpg'), path.join(siteDir, 'root/images', 'old', 'slide-one.jpg'));
+		await cp(path.join(fixtureSiteDir, 'root/images', 'detail.jpg'), path.join(siteDir, 'root/images', 'slide-two.jpg'), { force: true });
 
 		await runNorna(['--site-dir', siteDir, 'content:sync', '--yes']);
 
 		const manifest = JSON.parse(await readFile(path.join(siteDir, '.norna', 'generated-images.json'), 'utf8'));
-		assert.equal(await fileExists(path.join(siteDir, 'images', 'slide-one.jpg')), true);
-		assert.ok(manifest['images/slide-one.jpg']);
-		assert.ok(manifest['images/slide-two.jpg']);
+		assert.equal(await fileExists(path.join(siteDir, 'root/images', 'slide-one.jpg')), true);
+		assert.ok(manifest['root/images/slide-one.jpg']);
+		assert.ok(manifest['root/images/slide-two.jpg']);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -345,7 +345,7 @@ items:
 test('content:sync refuses ambiguous image relocation', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -360,24 +360,24 @@ items:
     alt: Shared
 \`\`\`
 `);
-		await mkdir(path.join(siteDir, 'images', 'old-a'), { recursive: true });
-		await mkdir(path.join(siteDir, 'images', 'old-b'), { recursive: true });
-		await writeFile(path.join(siteDir, 'images', 'old-a', 'shared.jpg'), 'a');
-		await writeFile(path.join(siteDir, 'images', 'old-b', 'shared.jpg'), 'b');
+		await mkdir(path.join(siteDir, 'root/images', 'old-a'), { recursive: true });
+		await mkdir(path.join(siteDir, 'root/images', 'old-b'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/images', 'old-a', 'shared.jpg'), 'a');
+		await writeFile(path.join(siteDir, 'root/images', 'old-b', 'shared.jpg'), 'b');
 
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--write', '--yes']),
 			(error) => {
 				assert.match(error.output, /Cannot relocate "shared\.jpg"\. Multiple files with this filename were found:/);
-				assert.match(error.output, /site\/images\/old-a\/shared\.jpg/);
-				assert.match(error.output, /site\/images\/old-b\/shared\.jpg/);
+				assert.match(error.output, /site\/root\/images\/old-a\/shared\.jpg/);
+				assert.match(error.output, /site\/root\/images\/old-b\/shared\.jpg/);
 				return true;
 			},
 		);
 
-		assert.equal(await fileExists(path.join(siteDir, 'images', 'shared.jpg')), false);
-		assert.equal(await fileExists(path.join(siteDir, 'images', 'old-a', 'shared.jpg')), true);
-		assert.equal(await fileExists(path.join(siteDir, 'images', 'old-b', 'shared.jpg')), true);
+		assert.equal(await fileExists(path.join(siteDir, 'root/images', 'shared.jpg')), false);
+		assert.equal(await fileExists(path.join(siteDir, 'root/images', 'old-a', 'shared.jpg')), true);
+		assert.equal(await fileExists(path.join(siteDir, 'root/images', 'old-b', 'shared.jpg')), true);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
@@ -386,7 +386,7 @@ items:
 test('content:sync moves one page-local image once when multiple sections reference it', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -409,13 +409,13 @@ items:
     alt: Shared copy
 \`\`\`
 `);
-		await mkdir(path.join(siteDir, 'images', 'intro'), { recursive: true });
-		await writeFile(path.join(siteDir, 'images', 'intro', 'shared.jpg'), 'shared image');
+		await mkdir(path.join(siteDir, 'root/images', 'intro'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/images', 'intro', 'shared.jpg'), 'shared image');
 
 		await runContentScript(siteDir, ['--write', '--yes']);
 
-		assert.equal(await fileExists(path.join(siteDir, 'images', 'intro', 'shared.jpg')), false);
-		assert.equal(await fileExists(path.join(siteDir, 'images', 'shared.jpg')), true);
+		assert.equal(await fileExists(path.join(siteDir, 'root/images', 'intro', 'shared.jpg')), false);
+		assert.equal(await fileExists(path.join(siteDir, 'root/images', 'shared.jpg')), true);
 		await runContentScript(siteDir, ['--check']);
 	} finally {
 		await rm(root, { recursive: true, force: true });

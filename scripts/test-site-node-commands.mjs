@@ -9,8 +9,8 @@ const execFileAsync = promisify(execFile);
 const repoRoot = path.resolve(import.meta.dirname, '..');
 const root = await mkdtemp(path.join(os.tmpdir(), 'norna-site-node-'));
 const siteDir = path.join(root, 'site');
-const pagesDir = path.join(siteDir, 'pages');
-const homeDir = siteDir;
+const pagesDir = path.join(siteDir, 'root/pages');
+const homeDir = path.join(siteDir, 'root');
 const nornaBin = path.join(repoRoot, 'bin', 'norna.mjs');
 const exists = (filePath) => access(filePath).then(() => true, () => false);
 const runNornaForSite = (targetSiteDir, args, cwd = path.dirname(targetSiteDir)) => execFileAsync(process.execPath, [
@@ -38,7 +38,7 @@ const runNornaFailureForSite = async (targetSiteDir, args) => {
 };
 const createMinimalSite = async (name) => {
 	const targetSiteDir = path.join(root, name, 'site');
-	const targetHomeDir = targetSiteDir;
+	const targetHomeDir = path.join(targetSiteDir, 'root');
 	await mkdir(path.join(targetHomeDir, 'pages'), { recursive: true });
 	await mkdir(path.join(targetSiteDir, 'site-config'), { recursive: true });
 	await writeFile(path.join(targetSiteDir, 'site-config/settings.yaml'), 'url: https://example.com/\n');
@@ -111,7 +111,7 @@ try {
 	assert.match((await runNorna(['content:check'])).stdout, /Content check passed/);
 
 	const bothSite = await createMinimalSite('invalid-both');
-	const bothNode = path.join(bothSite, 'pages', '010-both');
+	const bothNode = path.join(bothSite, 'root/pages', '010-both');
 	await mkdir(bothNode);
 	await writeFile(path.join(bothNode, 'content.md'), '# Both\n');
 	await writeFile(path.join(bothNode, 'category.yaml'), 'label: Both\n');
@@ -121,7 +121,7 @@ try {
 	);
 
 	const categoryImagesSite = await createMinimalSite('invalid-category-source');
-	const categoryImagesNode = path.join(categoryImagesSite, 'pages', '010-guides');
+	const categoryImagesNode = path.join(categoryImagesSite, 'root/pages', '010-guides');
 	await mkdir(categoryImagesNode, { recursive: true });
 	await writeFile(path.join(categoryImagesNode, 'category.yaml'), 'label: Guides\n');
 	assert.match(
@@ -130,18 +130,18 @@ try {
 	);
 
 	const duplicateSite = await createMinimalSite('invalid-duplicate-id');
-	await mkdir(path.join(duplicateSite, 'pages', '010-guides'));
-	await mkdir(path.join(duplicateSite, 'pages', '020-guides'));
-	await writeFile(path.join(duplicateSite, 'pages', '010-guides', 'content.md'), '# Guides\n');
-	await writeFile(path.join(duplicateSite, 'pages', '020-guides', 'content.md'), '# Guides\n');
+	await mkdir(path.join(duplicateSite, 'root/pages', '010-guides'));
+	await mkdir(path.join(duplicateSite, 'root/pages', '020-guides'));
+	await writeFile(path.join(duplicateSite, 'root/pages', '010-guides', 'content.md'), '# Guides\n');
+	await writeFile(path.join(duplicateSite, 'root/pages', '020-guides', 'content.md'), '# Guides\n');
 	assert.match(
 		await runNornaFailureForSite(duplicateSite, ['page:add', 'Test', '--parent', '/', '--dry-run']),
 		/duplicate sibling id "guides"/,
 	);
 
 	const emptyOverviewSite = await createMinimalSite('empty-overview');
-	await mkdir(path.join(emptyOverviewSite, 'pages', '010-guides'));
-	await writeFile(path.join(emptyOverviewSite, 'pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
+	await mkdir(path.join(emptyOverviewSite, 'root/pages', '010-guides'));
+	await writeFile(path.join(emptyOverviewSite, 'root/pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 	const { stdout: emptyOverviewCheck } = await runNornaForSite(emptyOverviewSite, ['content:check']);
 	assert.match(emptyOverviewCheck, /Content check completed with warnings/);
 	assert.match(emptyOverviewCheck, /page\.listChildren has no listed direct child pages/);

@@ -46,25 +46,25 @@ test('page aliases use constrained old Norna page URLs', () => {
 test('page aliases reject every occupied public URL identity', () => {
 	const home = pageNode({
 		home: true,
-		label: 'site/content.md',
+		label: 'site/root/content.md',
 		pagePath: '',
 	});
 	const existing = pageNode({
-		label: 'site/pages/010-existing/content.md',
+		label: 'site/root/pages/010-existing/content.md',
 		pagePath: 'existing',
 	});
 	const guides = pageNode({
-		label: 'site/pages/015-guides/content.md',
+		label: 'site/root/pages/015-guides/content.md',
 		pagePath: 'guides',
 	});
 	const first = pageNode({
 		aliases: ['/existing/', '/guides/', '/downloads/', '/generated/', '/shared/'],
-		label: 'site/pages/020-first/content.md',
+		label: 'site/root/pages/020-first/content.md',
 		pagePath: 'first',
 	});
 	const second = pageNode({
 		aliases: ['/shared/'],
-		label: 'site/pages/030-second/content.md',
+		label: 'site/root/pages/030-second/content.md',
 		pagePath: 'second',
 	});
 	const model = createPageAliasModel({
@@ -83,11 +83,11 @@ test('page aliases reject every occupied public URL identity', () => {
 
 	assert.deepEqual(model.aliases.map(({ pathname }) => pathname), ['/shared/']);
 	assert.equal(model.diagnostics.length, 5);
-	assert.match(model.diagnostics[0].message, /page URL from site\/pages\/010-existing\/content\.md/);
-	assert.match(model.diagnostics[1].message, /page URL from site\/pages\/015-guides\/content\.md/);
+	assert.match(model.diagnostics[0].message, /page URL from site\/root\/pages\/010-existing\/content\.md/);
+	assert.match(model.diagnostics[1].message, /page URL from site\/root\/pages\/015-guides\/content\.md/);
 	assert.match(model.diagnostics[2].message, /public file site\/public\/downloads\/index\.html/);
 	assert.match(model.diagnostics[3].message, /generated route Norna generated route/);
-	assert.match(model.diagnostics[4].message, /page alias declared in site\/pages\/020-first\/content\.md/);
+	assert.match(model.diagnostics[4].message, /page alias declared in site\/root\/pages\/020-first\/content\.md/);
 });
 
 test('build emits a base-path-aware static redirect document outside the sitemap', async () => {
@@ -96,15 +96,15 @@ test('build emits a base-path-aware static redirect document outside the sitemap
 		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\n');
 		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), 'palette: arctic-blue\nappearance:\n  default: dark\n');
-		await writeFile(path.join(siteDir, 'content.md'), `# Home
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Home
 
 ## Start
 
 [Install through its old address](/installation/#verify)
 `);
-		const installDir = path.join(siteDir, 'pages', '010-guides', 'pages', '010-install');
+		const installDir = path.join(siteDir, 'root/pages', '010-guides', 'pages', '010-install');
 		await mkdir(installDir, { recursive: true });
-		await writeFile(path.join(siteDir, 'pages', '010-guides', 'content.md'), `# Guides
+		await writeFile(path.join(siteDir, 'root/pages', '010-guides', 'content.md'), `# Guides
 
 ## Overview
 
@@ -151,7 +151,7 @@ Check the local preview.
 test('content check reports an alias collision with a public index file', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   aliases:
     - /archive/
@@ -166,7 +166,7 @@ page:
 			runNorna(['--site-dir', siteDir, 'content:check']),
 			(error) => {
 				assert.match(error.output, /Page alias "\/archive\/"/);
-				assert.match(error.output, /site\/content\.md/);
+				assert.match(error.output, /site\/root\/content\.md/);
 				assert.match(error.output, /site\/public\/archive\/index\.html/);
 				return true;
 			},

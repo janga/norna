@@ -106,14 +106,14 @@ let context = { subscriptions: [], workspaceState, asAbsolutePath: (relative) =>
 try {
 	for (const root of [siteRoot, legacySite, outsideSite]) {
 		await write(path.join(root, 'site-config/settings.yaml'), 'url: https://example.com/\n');
-		await write(path.join(root, 'content.md'), '# Home\n');
+		await write(path.join(root, 'root/content.md'), '# Home\n');
 		await write(path.join(root, 'site-config/site-theme.yaml'), 'preset: documentation\n');
 	}
-	await write(path.join(siteRoot, 'pages/010-guide/content.md'), '# Guide\n');
-	await write(path.join(siteRoot, 'pages/010-guide/pages/010-child/content.md'), '# Child\n');
-	await write(path.join(siteRoot, 'pages/010-guide/images/example.png'), 'Fixture bytes');
+	await write(path.join(siteRoot, 'root/pages/010-guide/content.md'), '# Guide\n');
+	await write(path.join(siteRoot, 'root/pages/010-guide/pages/010-child/content.md'), '# Child\n');
+	await write(path.join(siteRoot, 'root/pages/010-guide/images/example.png'), 'Fixture bytes');
 	await write(path.join(siteRoot, 'public/robots.txt'), 'User-agent: *\n');
-	await write(path.join(siteRoot, 'theme.yaml'), 'layout:\n  textWidth: narrow\n');
+	await write(path.join(siteRoot, 'root/theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
 	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
@@ -150,13 +150,14 @@ try {
 		assert.equal(errors.length, 0, errors.join('\n'));
 	};
 	await chooseSite(siteRoot);
-	const [home] = await provider.getChildren();
-	assert.equal((await provider.getChildren()).length, 1);
-	assert.equal(home.sourcePath, path.join(siteRoot, 'content.md'));
+	const roots = await provider.getChildren();
+	const home = roots.find((node) => node.isHome);
+	assert.equal((await provider.getChildren()).length, 3);
+	assert.equal(home.sourcePath, path.join(siteRoot, 'root/content.md'));
 	assert.equal(provider.getParent(home), undefined);
 	assert.equal(provider.getTreeItem(home).description, 'Homepage');
 	assert.equal(home.children[0].title, 'theme.yaml');
-	const configuration = home.children.find(node => node.kind === 'directory' && node.role === 'configuration');
+	const configuration = roots.find(node => node.kind === 'directory' && node.role === 'configuration');
 	assert.equal(configuration.title, 'site-config');
 	assert.equal(provider.getTreeItem(configuration).iconPath.id, 'settings-gear');
 	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
@@ -174,12 +175,12 @@ try {
 	const localTheme = provider.getTreeItem(home.children.find((node) => node.title === 'theme.yaml'));
 	assert.equal(localTheme.description, '', 'Theme help belongs in hover, not a permanent row description.');
 	assert.match(localTheme.tooltip, /Visual settings for this page only/);
-	assert.match(provider.getTreeItem(home.children.find((node) => node.role === 'public')).tooltip, /Files published unchanged/);
+	assert.match(provider.getTreeItem(roots.find((node) => node.role === 'public')).tooltip, /Files published unchanged/);
 	assert.equal(state.get('norna.siteTree.activeSite'), siteRoot);
 	assert.equal(contexts.get('nornaSiteTree.hasActiveSite'), true);
 	choices.push(() => undefined);
 	await commands.get('nornaEditor.chooseSite')();
-	assert.deepEqual(await provider.getChildren(), [home], 'Cancelling a later choice must preserve the active site.');
+	assert.deepEqual(await provider.getChildren(), roots, 'Cancelling a later choice must preserve the active site.');
 	const pages = home.children.find((node) => node.role === 'pages');
 	const guide = pages.children[0];
 	const guidePages = guide.children.find((node) => node.role === 'pages');
@@ -209,11 +210,11 @@ try {
 	assert.equal(errors.length, 0);
 	forms.push(model => { assert.equal(model.parentPath, '/guide/'); return {title:'Added below guide',slug:'added-below-guide',parentPath:model.parentPath,description:'',listed:true,listChildren:false,aliases:[]}; });
 	await commands.get('nornaEditor.addPage')(guidePages);
-	const created = path.join(siteRoot, 'pages/010-guide/pages/020-added-below-guide/content.md');
+	const created = path.join(siteRoot, 'root/pages/010-guide/pages/020-added-below-guide/content.md');
 	assert.match(await readFile(created, 'utf8'), /^# Added below guide\n/);
 	assert.deepEqual(opened.pop(), ['text', created]);
 	assert.equal(errors.length, 0, errors.join('\n'));
-	const updatedHome = (await provider.getChildren()).find((node) => node.siteRoot === siteRoot);
+	const updatedHome = (await provider.getChildren()).find((node) => node.isHome && node.siteRoot === siteRoot);
 	assert.equal(updatedHome, home, 'Stable node objects and IDs preserve unrelated expansion on refresh.');
 	const firstChild = guidePages.children.find((node) => node.title === 'Child');
 	const beforeCancel = await readdir(path.dirname(firstChild.sourcePath));
@@ -240,7 +241,7 @@ try {
 	forms.push(() => undefined);
 	await commands.get('nornaEditor.addPage')(pages);
 	assert.equal(home.children.find((node) => node.role === 'pages').children.length, 1);
-	await write(path.join(siteRoot, 'pages/020-topics/content.md'), '---\npage:\n  listChildren: true\n---\n# Topics\n');
+	await write(path.join(siteRoot, 'root/pages/020-topics/content.md'), '---\npage:\n  listChildren: true\n---\n# Topics\n');
 	await registered.refresh();
 	const overview = pages.children.find((node) => node.title === 'Topics');
 	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage', 'createSourceFile']); return undefined; });
@@ -299,7 +300,7 @@ try {
 	assert.equal(inputs.length, 0);
 	assert.equal(choices.length, 0);
 	assert.equal(errors.length, 0);
-	const externalImage = path.join(siteRoot, 'images/external.png');
+	const externalImage = path.join(siteRoot, 'root/images/external.png');
 	await write(externalImage, 'Image bytes');
 	tree.visible = true;
 	vscode.window.tabGroups.activeTabGroup.activeTab = { input: { uri: vscode.Uri.file(externalImage) } };
@@ -348,13 +349,13 @@ try {
 	};
 	for (const root of [outsideSite, legacySite]) {
 		const count = revealed.length;
-		await openTab(path.join(root, 'content.md'));
-		assert.deepEqual(await provider.getChildren(), [home], 'An unrelated active editor must not add or switch site roots.');
+		await openTab(path.join(root, 'root/content.md'));
+		assert.deepEqual(await provider.getChildren(), roots, 'An unrelated active editor must not add or switch site roots.');
 		assert.equal(revealed.length, count, 'An unrelated file must not reveal a row from another site.');
 		assert.equal(state.get('norna.siteTree.activeSite'), siteRoot);
 	}
 	// Dirty titles belong to the selected site without moving source bytes.
-	const homePath = path.join(siteRoot, 'content.md');
+	const homePath = path.join(siteRoot, 'root/content.md');
 	await openTab(homePath);
 	assert.equal(revealed.at(-1).id, homePath, 'Reveal the page representing hidden content.md.');
 	const beforeSettings = revealed.length;
@@ -369,7 +370,7 @@ try {
 	documentChanges.fire({ document: dirty });
 	await new Promise((resolve) => setTimeout(resolve, 250));
 	await registered.refresh();
-	assert.equal((await provider.getChildren())[0].title, 'Unsaved Home');
+	assert.equal((await provider.getChildren()).find((node) => node.isHome).title, 'Unsaved Home');
 	assert.match(provider.getTreeItem(home).description, /Homepage.*unsaved/);
 	assert.equal(await readFile(homePath, 'utf8'), originalHome);
 	documents.pop();
@@ -384,7 +385,7 @@ try {
 	await commands.get('nornaEditor.addPage')(pages);
 	assert.match(errors.pop(), /active site/, 'Stale commands must not create in an inactive site.');
 	tree.selection = [guide];
-	vscode.window.tabGroups.activeTabGroup.activeTab = { input: { uri: vscode.Uri.file(path.join(outsideSite, 'content.md')) } };
+	vscode.window.tabGroups.activeTabGroup.activeTab = { input: { uri: vscode.Uri.file(path.join(outsideSite, 'root/content.md')) } };
 	inputs.push(undefined);
 	await commands.get('nornaEditor.newPage')();
 	assert.equal(inputs.length, 0, 'An inactive selection must fall back to the chosen site, without a foreign-parent prompt.');
@@ -401,9 +402,9 @@ try {
 	workspaceChanges.fire();
 	await new Promise((resolve) => setTimeout(resolve, 250));
 	await registered.refresh();
-	assert.equal((await provider.getChildren()).length, 1);
-	assert.equal((await provider.getChildren())[0].siteRoot, siteRoot, 'Removing the selected folder selects the only remaining workspace site.');
-	const restoredConfiguration = (await provider.getChildren())[0].children.find((node) => node.kind === 'directory' && node.role === 'configuration');
+	assert.equal((await provider.getChildren()).length, 3);
+	assert.equal((await provider.getChildren()).find((node) => node.isHome).siteRoot, siteRoot, 'Removing the selected folder selects the only remaining workspace site.');
+	const restoredConfiguration = (await provider.getChildren()).find((node) => node.kind === 'directory' && node.role === 'configuration');
 	assert.equal(provider.getTreeItem(restoredConfiguration).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed, 'Configuration collapse must survive a reload and site switch.');
 	assert.equal(contexts.get('nornaSiteTree.hasMultipleSites'), false);
 	await commands.get('nornaEditor.openSiteNode')(legacy);
@@ -420,11 +421,11 @@ try {
 	await chooseSite(siteRoot);
 	await rm(path.join(siteRoot, 'site-config/settings.yaml'));
 	await registered.refresh();
-	assert.equal((await provider.getChildren())[0].siteRoot, siteRoot, 'A missing required file must not switch the active site.');
-	assert.match(provider.getTreeItem((await provider.getChildren())[0]).description, /error/);
+	assert.equal((await provider.getChildren()).find((node) => node.isHome).siteRoot, siteRoot, 'A missing required file must not switch the active site.');
+	assert.match(provider.getTreeItem((await provider.getChildren()).find((node) => node.isHome)).description, /error/);
 	await rm(homePath);
 	await registered.refresh();
-	const damagedHome = (await provider.getChildren())[0];
+	const damagedHome = (await provider.getChildren()).find((node) => node.isHome);
 	assert.equal(damagedHome.kind, 'incomplete');
 	assert.equal(provider.getTreeItem(damagedHome).contextValue, 'nornaIncomplete');
 	assert.equal(provider.getTreeItem(damagedHome).command.command, 'nornaEditor.addToPage');
@@ -434,12 +435,12 @@ try {
 	context = { subscriptions: [], workspaceState, asAbsolutePath: (relative) => path.join(extensionRoot, relative) };
 	registered = module.exports.registerSiteTree(context, { appendLine() {} });
 	await registered.refresh();
-	assert.equal((await provider.getChildren())[0].siteRoot, siteRoot, 'Reload must retain the damaged chosen site.');
+	assert.equal((await provider.getChildren()).find((node) => node.isHome).siteRoot, siteRoot, 'Reload must retain the damaged chosen site.');
 	choices.push((items) => items.find((item) => item.filename === homePath));
 	inputs.push('Repaired Home'); choices.push((items) => items[0]);
-	await commands.get('nornaEditor.addToPage')((await provider.getChildren())[0]);
-	assert.equal((await provider.getChildren())[0].title, 'Repaired Home');
-	assert.equal(await readFile(path.join(outsideSite, 'content.md'), 'utf8'), '# Home\n');
+	await commands.get('nornaEditor.addToPage')((await provider.getChildren()).find((node) => node.isHome));
+	assert.equal((await provider.getChildren()).find((node) => node.isHome).title, 'Repaired Home');
+	assert.equal(await readFile(path.join(outsideSite, 'root/content.md'), 'utf8'), '# Home\n');
 	assert.equal(errors.length, 0, errors.join('\n'));
 	console.log('VS Code tree adapter contract passed: one active workspace site, explicit choice/cancellation, reload/removal, external files, dirty sources, guarded commands, physical ownership, refresh/reveal coordination and older-engine fallback.');
 } finally {

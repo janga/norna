@@ -164,7 +164,7 @@ const createSitePages = async (entries: SiteEntry[]) => {
 
 	for (const page of pages) {
 		if (page.isHome && page.navigation.listed === false) {
-			throw new Error(`The homepage at ${siteDirLabel}/content.md cannot set navigation.listed to false.`);
+			throw new Error(`The homepage at ${siteDirLabel}/root/content.md cannot set navigation.listed to false.`);
 		}
 		const existing = pathnames.get(page.pathname);
 		if (existing) {
@@ -193,7 +193,7 @@ const createSitePages = async (entries: SiteEntry[]) => {
 		siblingPageOrders.set(pageOrderKey, page);
 	}
 	if (!pages.some(({ isHome }) => isHome)) {
-		throw new Error(`Homepage content ${siteDirLabel}/content.md is missing.`);
+		throw new Error(`Homepage content ${siteDirLabel}/root/content.md is missing.`);
 	}
 
 	return pages.sort((left, right) => (

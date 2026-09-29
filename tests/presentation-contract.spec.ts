@@ -609,7 +609,7 @@ test('code blocks expose an accessible copy control without changing copied text
 
 	await page.setViewportSize({ width: 320, height: 800 });
 	await title.locator('.norna-code-title-text').evaluate((node) => {
-		node.textContent = 'site/pages/010-guide/pages/010-components/a-deliberately-long-code-example-filename.js';
+		node.textContent = 'site/root/pages/010-guide/pages/010-components/a-deliberately-long-code-example-filename.js';
 	});
 	// Responsive table/code measurements settle on the next animation frames.
 	await expect.poll(async () => (await getHorizontalOverflow(page)).scrollWidth).toBeLessThanOrEqual(321);

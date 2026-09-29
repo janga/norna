@@ -294,6 +294,6 @@ export const pageThemeSchema = z.object(pageThemeShape).strict()
 		(value) => value.layout !== undefined || value.images !== undefined || value.sections !== undefined,
 		'Specify layout, images, sections, or a combination of them.',
 	)
-	.describe('Limited page presentation overrides. A child page or category theme.yaml is inherited by descendants; site/theme.yaml affects only the homepage. Site colors, corners, typography, content-block defaults and navigation remain global.');
+	.describe('Limited page presentation overrides. A child page or category theme.yaml is inherited by descendants; site/root/theme.yaml affects only the homepage. Site colors, corners, typography, content-block defaults and navigation remain global.');
 export const sitewideSchema = z.object(sitewideShape).strict()
 	.describe('Editorial content and optional navigation logo display settings shared by every page.');

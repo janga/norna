@@ -63,7 +63,7 @@ files, on 2026-09-20. The accepted delivery contract is
 [BL-140 VS Code Page Files Implementation](../backlog/BL-140-vscode-page-files-implementation.md).
 That implementation is complete and verified in the owner's Default profile.
 The drawings remain design history; use the
-[editor reference](../../../site/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
+[editor reference](../../../site/root/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
 for the delivered controls and current scope.
 
 Generated-state directories belong to the scratch copy, not this source.

@@ -1,3 +1,4 @@
+import { getSiteSourcePaths } from './site-conventions.mjs';
 import { lstat, mkdir, open, rmdir, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { parsePageDirectoryPath } from './page-model.mjs';
@@ -13,7 +14,7 @@ const stat = (filename) => lstat(filename).catch((error) => {
 });
 
 export const editorPageLocation = (siteRoot, directory) => {
-	const relative = path.relative(siteRoot, directory);
+	const relative = path.relative(getSiteSourcePaths(siteRoot).root, directory);
 	if (!relative) return { isHome: true, pageId: 'home', pagePath: '' };
 	if (!relative.startsWith(`pages${path.sep}`)) return null;
 	try {
@@ -44,16 +45,19 @@ export const getEditorSourceFileChoices = async ({ siteRoot, directory }) => {
 	siteRoot = path.resolve(siteRoot);
 	directory = await checkedPath(siteRoot, directory);
 	const location = editorPageLocation(siteRoot, directory);
-	if (!location || !(await stat(directory))?.isDirectory()) throw new Error('Select an existing page directory at a permitted location in this site.');
+	const directoryInfo = await stat(directory);
+	if ((!location && directory !== siteRoot) || (!directoryInfo?.isDirectory() && !(location?.isHome && !directoryInfo))) {
+		throw new Error('Select an existing page directory at a permitted location in this site.');
+	}
 	const content = await stat(path.join(directory, 'content.md'));
-	const names = [
-		...(!content ? ['content.md'] : []),
-		...(content?.isFile() ? ['theme.yaml'] : []),
-		...(location.isHome ? ['site-config/settings.yaml', 'site-config/site-theme.yaml', 'site-config/shared-content.yaml'] : []),
-	];
+	const names = location ? (!content ? ['content.md'] : content.isFile() ? ['theme.yaml'] : []) : [];
+	if (directory === siteRoot || location?.isHome) {
+		names.push('site-config/settings.yaml', 'site-config/site-theme.yaml', 'site-config/shared-content.yaml');
+	}
+	if (directory === siteRoot && !await stat(getSiteSourcePaths(siteRoot).content)) names.push('root/content.md');
 	const choices = [];
 	for (const name of names) {
-		const filename = path.join(directory, name);
+		const filename = path.join(name.startsWith('site-config/') || name.startsWith('root/') ? siteRoot : directory, name);
 		if (await stat(filename)) continue;
 		// A file or symlink occupying site-config must be repaired, not replaced.
 		const parent = await stat(path.dirname(filename));

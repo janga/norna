@@ -43,7 +43,7 @@ for (const type of blockTypes) {
 
 schemaFiles.set('manifest.json', `${JSON.stringify({
 	editorApiVersion: 3,
-	schemaVersion: 4,
+	schemaVersion: 5,
 	blockSchemas: Object.fromEntries(blockTypes.map((type) => [type, `${type}.schema.json`])),
 	files: {
 		config: 'config.schema.json',

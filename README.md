@@ -20,7 +20,7 @@ implementing a new presentation layer for every project.
 [![A multi-page dog shelter site with a logo, navigation between pages, text, a card, and a managed image.](docs/assets/norna-dog-shelter.jpg)](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/)
 
 The screenshot shows the built
-[multi-page example source](examples/complete-sites/dog-shelter-multi-page/).
+[multi-page example source](examples/complete-sites/dog-shelter-multi-page).
 
 ## Quick Start
 
@@ -50,32 +50,34 @@ locally installed and pinned Norna version.
 
 ```text
 site/
-|-- content.md           # Homepage content
-|-- theme.yaml           # Optional homepage-only overrides
 |-- site-config/
 |   |-- settings.yaml
 |   |-- site-theme.yaml
 |   `-- shared-content.yaml
-|-- images/
 |-- public/
-`-- pages/
-    `-- 010-guide/
-        |-- content.md
-        |-- theme.yaml   # Optional overrides inherited by this branch
-        |-- images/
-        `-- pages/
-            `-- 010-install/
-                `-- content.md
+`-- root/
+    |-- content.md       # Required homepage
+    |-- theme.yaml       # Optional homepage-only overrides
+    |-- images/
+    `-- pages/
+        `-- 010-guide/
+            |-- content.md
+            |-- theme.yaml   # Optional inherited branch overrides
+            |-- images/
+            `-- pages/
+                `-- 010-install/content.md
 ```
 
-- `content.md` is the required homepage at `/`; `pages/` contains its children.
+- `root/content.md` is the required homepage at `/`; `root/pages/` contains its
+  children. The site container holds shared configuration and public files
+  beside this root page. `root/` never becomes a URL segment.
 - Every ordered directory under `pages/` contains `content.md` for a routable
   page. A parent can append a generated list of its direct child pages with
   `page.listChildren: true`; see
   [Child-page lists](https://janga.github.io/norna/reference/site/pages/#list-child-pages).
 - A page may contain local images, limited presentation settings and nested
   entries under its own `pages/` directory.
-- `site-config/site-theme.yaml` selects shared visual defaults. Optional root `theme.yaml`
+- `site-config/site-theme.yaml` selects shared visual defaults. Optional `root/theme.yaml`
   overrides the homepage alone; a child's `theme.yaml` is inherited further.
 - `site-config/shared-content.yaml` holds shared logo display settings, banners, and
   footer content.
@@ -84,9 +86,10 @@ site/
 - `public/` holds static files copied without processing.
 
 Norna validates this structure, processes managed images when needed, and
-builds the generated website into `dist/`. For a site using the former root configuration files or
-`pages/000-home/` layout, run `norna site:upgrade` to preview its conversion,
-then `norna site:upgrade --apply`; see [source conversion](https://janga.github.io/norna/reference/site/files/#convert-the-former-homepage-folder).
+builds the generated website into `dist/`. Sites using an earlier layout need
+manual [source conversion](https://janga.github.io/norna/reference/site/files/#convert-the-former-homepage-folder).
+`norna site:upgrade` checks the layout and reports former locations without
+moving or overwriting source files.
 
 ## Why Norna?
 
@@ -156,7 +159,7 @@ Engine contributors should start with
 [Engine Development](docs/engine-development.md). Planning and future work are
 tracked in [BACKLOG.md](BACKLOG.md).
 
-The user reference is authored once under `site/pages/032-reference/` and
+The user reference is authored once under `site/root/pages/032-reference/` and
 rendered on the documentation site. It describes current development; use the
 installed release's Git tag when checking older behavior. Tags through 0.7.26
 keep their reference under `docs/`; later tags use the documentation page tree.

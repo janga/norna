@@ -18,7 +18,7 @@ import {
 } from './public-asset-conventions.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
 import { siteSchema } from './schema-definitions.mjs';
-import { homePageDirectory } from './site-conventions.mjs';
+import { getSiteSourcePaths, homePageDirectory } from './site-conventions.mjs';
 
 const supportedImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.svg']);
 const siteConfigNames = ['site-config/settings.yaml'];
@@ -96,13 +96,13 @@ const getNavigationNodesForEditor = async (siteRoot) => {
 		}
 	};
 
-	const homeContent = path.join(siteRoot, 'content.md');
+	const homeContent = getSiteSourcePaths(siteRoot).content;
 	if (await fileExists(homeContent)) {
 		const source = await readFile(homeContent, 'utf8');
 		const document = await parsePageMarkdownSource(source, { label: homeContent });
 		nodes.unshift({ depth: 0, headings: document.navigationHeadings, isHome: true, kind: 'page', listed: true });
 	}
-	await visit(path.join(siteRoot, 'pages'));
+	await visit(getSiteSourcePaths(siteRoot).pages);
 	return nodes;
 };
 
@@ -252,14 +252,14 @@ export const getSitePublicAssetStatus = async (documentPath) => {
 const getPageContext = (siteRoot, documentPath) => {
 	const absoluteDocumentPath = path.resolve(documentPath);
 	const relativePath = toPosixPath(path.relative(siteRoot, absoluteDocumentPath));
-	if (relativePath === 'content.md') return { contentPath: absoluteDocumentPath, imagesRoot: path.join(siteRoot, 'images'), pageLabel: 'Home', pageDirectory: homePageDirectory };
-	const match = relativePath.match(/^pages\/(.+)\/content\.md$/);
+	if (relativePath === 'root/content.md') return { contentPath: absoluteDocumentPath, imagesRoot: getSiteSourcePaths(siteRoot).images, pageLabel: 'Home', pageDirectory: homePageDirectory };
+	const match = relativePath.match(/^root\/pages\/(.+)\/content\.md$/);
 	if (!match) return null;
 
 	const pageDirectory = match[1];
 	return {
 		contentPath: absoluteDocumentPath,
-		imagesRoot: path.join(siteRoot, 'pages', ...pageDirectory.split('/'), 'images'),
+		imagesRoot: path.join(getSiteSourcePaths(siteRoot).pages, ...pageDirectory.split('/'), 'images'),
 		pageLabel: pageDirectory,
 		pageDirectory,
 	};
@@ -483,7 +483,7 @@ const collectPageImageRoots = async (directory, siteRoot, roots) => {
 		if (!entry.isDirectory()) continue;
 		const absolutePath = path.join(directory, entry.name);
 		if (entry.name === 'images') {
-			const pageDirectory = toPosixPath(path.relative(path.join(siteRoot, 'pages'), path.dirname(absolutePath)));
+			const pageDirectory = toPosixPath(path.relative(getSiteSourcePaths(siteRoot).pages, path.dirname(absolutePath)));
 			roots.push({ imageRoot: absolutePath, pageLabel: pageDirectory });
 			continue;
 		}
@@ -506,8 +506,8 @@ const getContentFiles = async (siteRoot) => {
 		}
 	};
 
-	if (await fileExists(path.join(siteRoot, 'content.md'))) files.push(path.join(siteRoot, 'content.md'));
-	await visit(path.join(siteRoot, 'pages'));
+	if (await fileExists(getSiteSourcePaths(siteRoot).content)) files.push(getSiteSourcePaths(siteRoot).content);
+	await visit(getSiteSourcePaths(siteRoot).pages);
 	return files;
 };
 
@@ -526,8 +526,8 @@ const getReferencesByFilename = async (siteRoot) => {
 
 export const createSiteImageIndex = async (siteRoot) => {
 	const files = [];
-	const pageRoots = [{ imageRoot: path.join(siteRoot, 'images'), pageLabel: 'Home' }];
-	await collectPageImageRoots(path.join(siteRoot, 'pages'), siteRoot, pageRoots);
+	const pageRoots = [{ imageRoot: getSiteSourcePaths(siteRoot).images, pageLabel: 'Home' }];
+	await collectPageImageRoots(getSiteSourcePaths(siteRoot).pages, siteRoot, pageRoots);
 	for (const root of pageRoots) {
 		await collectImageFiles(root.imageRoot, root.imageRoot, root.pageLabel, files);
 	}

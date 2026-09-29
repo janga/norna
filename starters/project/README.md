@@ -18,11 +18,11 @@ Open the address printed by the development server. Stop it later with
 - `site/site-config/settings.yaml`: public URL and optional language and smooth scrolling.
 - `site/site-config/shared-content.yaml`: shared logo display settings, banners, and footer.
 - `site/site-config/site-theme.yaml`: the site-wide visual preset and any focused overrides.
-- `site/content.md`: homepage title, sections, placeholders,
+- `site/root/content.md`: homepage title, sections, placeholders,
   project summary,
   links, install command, example usage, benefits, next steps, Norna blocks,
   and license.
-- `site/pages/010-guide/content.md`: short secondary page with realistic
+- `site/root/pages/010-guide/content.md`: short secondary page with realistic
   project guide content.
 - `site/public/robots.txt`: static public file copied into the built site.
 
@@ -33,14 +33,14 @@ GitHub Pages workflow uses `npm ci`.
 ## Adapt The Starter
 
 1. Replace the project name, tagline, links, install command, example usage,
-   benefits, use cases, and license in `site/content.md`.
-2. Replace the guide examples in `site/pages/010-guide/content.md`, or
+   benefits, use cases, and license in `site/root/content.md`.
+2. Replace the guide examples in `site/root/pages/010-guide/content.md`, or
    delete the page if the homepage is enough.
 3. Edit `site/site-config/shared-content.yaml` for logo display settings,
    banners, and footer.
 4. Select a preset in `site/site-config/site-theme.yaml`. Add focused overrides only when the
    project needs them.
-5. Put managed homepage source images in `site/images/`. Images
+5. Put managed homepage source images in `site/root/images/`. Images
    for another page belong directly in that page's `images/` directory.
 6. Edit `site/site-config/settings.yaml` for the public URL and, when needed, language or smooth
    scrolling. Deploy commands discover the GitHub repository and default branch.

@@ -1,3 +1,4 @@
+import { getSiteSourcePaths } from './site-conventions.mjs';
 import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parsePageDirectoryPath } from './page-model.mjs';
@@ -19,13 +20,11 @@ const compareNodeMetadata = (left, right) => (
 	|| left.pageId.localeCompare(right.pageId, 'en')
 );
 
-const assertLegacyStructureIsAbsent = async ({ siteDir, siteDirLabel, sitePagesLabel }) => {
-	if (await fileExists(path.join(siteDir, 'pages', '000-home'))) {
-		throw new Error(`${sitePagesLabel}/000-home uses the former homepage layout. Run norna site:upgrade to preview the conversion, then norna site:upgrade --apply. The homepage now belongs in ${siteDirLabel}/content.md.`);
-	}
-
-	if (await fileExists(path.join(siteDir, 'routes'))) {
-		throw new Error(`${siteDirLabel}/routes is no longer supported. Rename it to ${sitePagesLabel} and use NNN-page-id directory names.`);
+const assertLegacyStructureIsAbsent = async ({ siteDir, siteDirLabel }) => {
+	for (const name of ['content.md', 'theme.yaml', 'images', 'pages', 'routes']) {
+		if (await fileExists(path.join(siteDir, name))) {
+			throw new Error(`${siteDirLabel}/${name} uses the former page layout. Put the homepage content.md, theme.yaml, images/ and pages/ inside ${siteDirLabel}/root/. Keep site-config/ and public/ at the site level. Stop the development server before moving files.`);
+		}
 	}
 };
 
@@ -65,9 +64,9 @@ export const getSiteStructure = async ({
 } = {}) => {
 	const siteDir = path.resolve(siteRoot);
 	const siteDirLabel = siteDir === defaultSiteDir ? defaultSiteDirLabel : siteDir;
-	const sitePagesDir = path.join(siteDir, 'pages');
-	const sitePagesLabel = `${siteDirLabel}/pages`;
-	const siteContentLabel = `${siteDirLabel}/content.md`;
+	const sitePagesDir = getSiteSourcePaths(siteDir).pages;
+	const sitePagesLabel = `${siteDirLabel}/root/pages`;
+	const siteContentLabel = `${siteDirLabel}/root/content.md`;
 	const problems = [];
 	const report = (error, node = null) => {
 		if (!tolerant) throw error;
@@ -152,16 +151,16 @@ export const getSiteStructure = async ({
 		}
 	};
 
-	const rootContentPath = path.join(siteDir, 'content.md');
-	if (await fileExists(path.join(siteDir, 'category.yaml'))) {
-		report(new Error(`${siteDirLabel}/category.yaml is invalid. The site root must be a page with content.md.`));
+	const rootContentPath = getSiteSourcePaths(siteDir).content;
+	if (await fileExists(path.join(getSiteSourcePaths(siteDir).root, 'category.yaml'))) {
+		report(new Error(`${siteDirLabel}/root/category.yaml is invalid. The site root must be a page with content.md.`));
 	}
 	if (await fileExists(rootContentPath)) {
 		nodes.push({
 			...parsePageDirectoryPath(homePageDirectory),
-			kind: 'page', isHome: true, nodeDir: siteDir, nodeLabel: siteDirLabel,
+			kind: 'page', isHome: true, nodeDir: getSiteSourcePaths(siteDir).root, nodeLabel: `${siteDirLabel}/root`,
 			contentPath: rootContentPath, contentLabel: siteContentLabel,
-			imagesDir: path.join(siteDir, 'images'), imagesLabel: `${siteDirLabel}/images`,
+			imagesDir: getSiteSourcePaths(siteDir).images, imagesLabel: `${siteDirLabel}/root/images`,
 		});
 	} else {
 		report(new Error(`Homepage content is missing. Create ${siteContentLabel}.`));

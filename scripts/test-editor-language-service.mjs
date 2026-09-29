@@ -26,12 +26,12 @@ import {
 
 const root = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-language-'));
 const siteRoot = path.join(root, 'site');
-const homeContentPath = path.join(siteRoot, 'content.md');
-const pageContentPath = path.join(siteRoot, 'pages', '010-about', 'content.md');
-const pageThemePath = path.join(siteRoot, 'pages', '010-about', 'theme.yaml');
-const overviewPath = path.join(siteRoot, 'pages', '020-guides', 'content.md');
-const nestedPageContentPath = path.join(siteRoot, 'pages', '010-about', 'pages', '020-team', 'content.md');
-const nestedPageThemePath = path.join(siteRoot, 'pages', '010-about', 'pages', '020-team', 'theme.yaml');
+const homeContentPath = path.join(siteRoot, 'root/content.md');
+const pageContentPath = path.join(siteRoot, 'root/pages', '010-about', 'content.md');
+const pageThemePath = path.join(siteRoot, 'root/pages', '010-about', 'theme.yaml');
+const overviewPath = path.join(siteRoot, 'root/pages', '020-guides', 'content.md');
+const nestedPageContentPath = path.join(siteRoot, 'root/pages', '010-about', 'pages', '020-team', 'content.md');
+const nestedPageThemePath = path.join(siteRoot, 'root/pages', '010-about', 'pages', '020-team', 'theme.yaml');
 const installedNornaRoot = path.join(root, 'node_modules', '@janga', 'norna');
 const packageManifestPath = path.join(installedNornaRoot, 'schemas', 'manifest.json');
 const {
@@ -73,8 +73,8 @@ Page content.
 
 try {
 	await mkdir(path.join(installedNornaRoot, 'schemas'), { recursive: true });
-	await mkdir(path.join(siteRoot, 'images'), { recursive: true });
-	await mkdir(path.join(siteRoot, 'pages', '010-about', 'images'), { recursive: true });
+	await mkdir(path.join(siteRoot, 'root/images'), { recursive: true });
+	await mkdir(path.join(siteRoot, 'root/pages', '010-about', 'images'), { recursive: true });
 	await mkdir(path.dirname(nestedPageContentPath), { recursive: true });
 	await mkdir(path.join(siteRoot, 'public'), { recursive: true });
 	await writeFile(path.join(root, 'package.json'), JSON.stringify({ name: 'editor-fixture', version: '1.0.0' }));
@@ -97,8 +97,8 @@ try {
 	await writeFile(path.join(siteRoot, 'site-config/shared-content.yaml'), `logo:
   height: 2rem
 `);
-	await writeFile(path.join(siteRoot, 'images', 'local.jpg'), 'local');
-	await writeFile(path.join(siteRoot, 'pages', '010-about', 'images', 'portrait.jpg'), 'portrait');
+	await writeFile(path.join(siteRoot, 'root/images', 'local.jpg'), 'local');
+	await writeFile(path.join(siteRoot, 'root/pages', '010-about', 'images', 'portrait.jpg'), 'portrait');
 	await writeFile(path.join(siteRoot, 'public', 'logo.svg'), '<svg/>');
 	await writeFile(path.join(siteRoot, 'public', 'logo.png'), 'logo');
 	await writeFile(path.join(siteRoot, 'public', 'favicon.svg'), '<svg/>');
@@ -125,8 +125,8 @@ try {
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'site-config/shared-content.yaml')).schemaKind, 'sitewideContent');
 	assert.equal(getNornaDocumentContext(pageContentPath).pageDirectory, '010-about');
 	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'pageTheme');
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).schemaKind, 'pageTheme');
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).pageDirectory, '.');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/theme.yaml')).schemaKind, 'pageTheme');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/theme.yaml')).pageDirectory, '.');
 	assert.equal(getNornaDocumentContext(overviewPath).schemaKind, 'contentFrontmatter');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).pageDirectory, '010-about/pages/020-team');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).schemaKind, 'contentFrontmatter');
@@ -154,11 +154,11 @@ try {
 	await writeFile(path.join(legacySiteRoot, 'config.yaml'), 'url: https://example.com/\n');
 	await mkdir(path.join(legacySiteRoot, 'pages', '000-home'), { recursive: true });
 	await writeFile(path.join(legacySiteRoot, 'pages', '000-home', 'content.md'), '# Legacy page\n');
-	assert.equal(projectContext.findNornaSiteRoot(path.join(legacySiteRoot, 'pages', '000-home', 'content.md')), legacySiteRoot);
+	assert.equal(projectContext.findNornaSiteRoot(path.join(legacySiteRoot, 'pages', '000-home', 'content.md')), null);
 	const uninstalledRoot = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-uninstalled-'));
 	try {
 		const uninstalledSite = path.join(uninstalledRoot, 'site');
-		const uninstalledContent = path.join(uninstalledSite, 'content.md');
+		const uninstalledContent = path.join(uninstalledSite, 'root/content.md');
 		await mkdir(path.dirname(uninstalledContent), { recursive: true });
 		await mkdir(path.join(uninstalledSite, 'site-config'), { recursive: true });
 		await writeFile(path.join(uninstalledSite, 'site-config/settings.yaml'), 'url: https://example.com/\n');
@@ -168,13 +168,13 @@ try {
 	} finally {
 		await rm(uninstalledRoot, { recursive: true, force: true });
 	}
-	await mkdir(path.join(siteRoot, 'pages', 'about'), { recursive: true });
-	await writeFile(path.join(siteRoot, 'pages', 'about', 'content.md'), pageSource);
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', 'about', 'content.md')), null);
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', '000-home', 'pages', '010-news', 'content.md')), null);
-	await mkdir(path.join(siteRoot, 'pages', '010-about', 'nested'), { recursive: true });
-	await writeFile(path.join(siteRoot, 'pages', '010-about', 'nested', 'content.md'), pageSource);
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'pages', '010-about', 'nested', 'content.md')), null);
+	await mkdir(path.join(siteRoot, 'root/pages', 'about'), { recursive: true });
+	await writeFile(path.join(siteRoot, 'root/pages', 'about', 'content.md'), pageSource);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/pages', 'about', 'content.md')), null);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/pages', '000-home', 'pages', '010-news', 'content.md')), null);
+	await mkdir(path.join(siteRoot, 'root/pages', '010-about', 'nested'), { recursive: true });
+	await writeFile(path.join(siteRoot, 'root/pages', '010-about', 'nested', 'content.md'), pageSource);
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/pages', '010-about', 'nested', 'content.md')), null);
 
 	const compatibleManifest = await readFile(packageManifestPath, 'utf8');
 	for (const editorApiVersion of [1, supportedEditorApiVersion + 1]) {
@@ -318,7 +318,7 @@ try {
 		line: localDefinitionLine,
 		source: homeSource,
 	});
-	assert.deepEqual(localDefinition.files, [path.join(siteRoot, 'images', 'local.jpg')]);
+	assert.deepEqual(localDefinition.files, [path.join(siteRoot, 'root/images', 'local.jpg')]);
 
 	const diagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(diagnostics.some(({ code, message }) => code === 'image-needs-sync' && message.includes('Run "norna content:sync"')));
@@ -389,8 +389,8 @@ items:
 	const sharedDiagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(sharedDiagnostics.some(({ message }) => message.includes('is still referenced by')));
 
-	await mkdir(path.join(siteRoot, 'pages', '020-contact', 'images'), { recursive: true });
-	await writeFile(path.join(siteRoot, 'pages', '020-contact', 'images', 'portrait.jpg'), 'duplicate');
+	await mkdir(path.join(siteRoot, 'root/pages', '020-contact', 'images'), { recursive: true });
+	await writeFile(path.join(siteRoot, 'root/pages', '020-contact', 'images', 'portrait.jpg'), 'duplicate');
 	const ambiguousDiagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
 	assert.ok(ambiguousDiagnostics.some(({ message }) => message.includes('is ambiguous')));
 

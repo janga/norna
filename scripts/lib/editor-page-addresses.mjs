@@ -1,3 +1,4 @@
+import { getSiteSourcePaths } from './site-conventions.mjs';
 import path from 'node:path';
 import { readEditorLinkState, isInside } from './editor-site-links.mjs';
 import { checkedPath, snapshot } from './editor-site-files.mjs';
@@ -33,7 +34,7 @@ export const planEditorPageAddress = async ({ siteRoot, sourcePath, segment, sou
 	const to = `/${node.parentPagePath ? node.parentPagePath + '/' : ''}${segment}/`;
 	const plan = await createPageMovePlan({ from: `/${node.pagePath}/`, to,
 		graph: state.graph, publicFiles: state.publicFiles, siteStructure: state.structure,
-		sitePagesDir: path.join(siteRoot, 'pages'), sitePagesLabel: `${siteRoot}/pages`, generatedRoutes: state.generatedRoutes });
+		sitePagesDir: getSiteSourcePaths(siteRoot).pages, sitePagesLabel: `${siteRoot}/root/pages`, generatedRoutes: state.generatedRoutes });
 	await checkedPath(siteRoot, plan.destinationDirectory);
 	const watched = [...new Set([...sourcePaths, ...state.publicFiles.map(({ filePath }) => filePath)])].sort();
 	const snapshots = [];

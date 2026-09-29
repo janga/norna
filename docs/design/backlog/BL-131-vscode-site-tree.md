@@ -106,7 +106,7 @@ page containers. This item does not change the published website's navigation.
   packaged-editor coverage and persistence checks. Record any untested UI
   interaction explicitly.
 - Update the canonical
-  [editor workflow reference](../../../site/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
+  [editor workflow reference](../../../site/root/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
   with installation/update steps, the supported actions, and these scope
   boundaries once the implementation is verified.
 

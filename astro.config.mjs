@@ -17,7 +17,7 @@ import {
 	engineRoot,
 	generatedImagesManifestPath,
 	siteContentPath,
-	siteDir,
+	siteHomePageDir,
 	siteImagesDir,
 	siteProjectRoot,
 	sitePagesDir,
@@ -73,7 +73,7 @@ const nornaGeneratedImagesWatcher = () => ({
 		const manifestPath = path.resolve(generatedImagesManifestPath);
 		const watchedSourcePaths = [
 			siteContentPath,
-			path.join(siteDir, 'theme.yaml'),
+			path.join(siteHomePageDir, 'theme.yaml'),
 			siteImagesDir,
 			sitePagesDir,
 		].map((watchedPath) => path.resolve(watchedPath));

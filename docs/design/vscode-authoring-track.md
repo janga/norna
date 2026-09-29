@@ -234,7 +234,7 @@ Marketplace publication is implied by this track.
 Write each illustrated workflow around an author task from the start. After
 the behavior is implemented and verified, replace proposal drawings with real
 captures and move the useful instructions into the canonical
-[VS Code editor reference](../../site/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
+[VS Code editor reference](../../site/root/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
 or an appropriately scoped how-to page. Each item includes this documentation
 work; it is not postponed until all five are complete.
 

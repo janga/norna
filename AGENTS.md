@@ -27,9 +27,11 @@ and requirements.
 - For CLI site discovery, use scripts/lib/site-paths.mjs. Editor and reusable
   APIs must honor their explicit siteRoot, not substitute the process's
   selected site or hardcode site/.
-- The homepage is the selected site's content.md. Children live under pages/.
-  Shared appearance belongs in site-config/site-theme.yaml; root theme.yaml
-  affects only the homepage. Descendant themes inherit within their branches.
+- The site container holds site-config/, public/ and root/. Its required homepage
+  is root/content.md; children live under root/pages/. root/ is never a URL
+  segment. Shared appearance belongs in site-config/site-theme.yaml;
+  root/theme.yaml affects only the homepage. Descendant themes inherit within
+  their branches.
 - Reuse engine validation and mutation rules in the VS Code extension.
   Editor support must follow the selected project's engine capabilities.
 - Generate schemas from scripts/lib/schema-definitions.mjs; do not hand-edit

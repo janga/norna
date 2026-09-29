@@ -38,22 +38,22 @@ const categoryNode = ({ directory, pagePath, label }) => ({
 const home = pageNode({
 	directory: '.',
 	home: true,
-	label: 'site/content.md',
+	label: 'site/root/content.md',
 	pagePath: '',
 });
 const guides = categoryNode({
 	directory: '010-guides',
-	label: 'site/pages/010-guides/category.yaml',
+	label: 'site/root/pages/010-guides/category.yaml',
 	pagePath: 'guides',
 });
 const installation = pageNode({
 	directory: '010-guides/pages/010-installation',
-	label: 'site/pages/010-guides/pages/010-installation/content.md',
+	label: 'site/root/pages/010-guides/pages/010-installation/content.md',
 	pagePath: 'guides/installation',
 });
 const workflows = pageNode({
 	directory: '010-guides/pages/020-workflows',
-	label: 'site/pages/010-guides/pages/020-workflows/content.md',
+	label: 'site/root/pages/010-guides/pages/020-workflows/content.md',
 	pagePath: 'guides/workflows',
 });
 
@@ -308,10 +308,10 @@ const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-site-links-'));
 try {
 	await writeFixtureFile(tempRoot, 'site/site-config/settings.yaml', 'url: https://example.com/docs/\n');
 	await writeFixtureFile(tempRoot, 'site/site-config/site-theme.yaml', 'preset: documentation\n');
-	await writeFixtureFile(tempRoot, 'site/content.md', brokenSource);
-	await writeFixtureFile(tempRoot, 'site/pages/010-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
-	await writeFixtureFile(tempRoot, 'site/pages/010-guides/pages/010-installation/content.md', installationSource);
-	await writeFixtureFile(tempRoot, 'site/pages/010-guides/pages/020-workflows/content.md', workflowsSource);
+	await writeFixtureFile(tempRoot, 'site/root/content.md', brokenSource);
+	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
+	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/pages/010-installation/content.md', installationSource);
+	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/pages/020-workflows/content.md', workflowsSource);
 
 	const result = spawnSync(process.execPath, [contentScript, '--check'], {
 		cwd: tempRoot,
@@ -320,7 +320,7 @@ try {
 	const output = `${result.stdout}${result.stderr}`;
 	assert.equal(result.status, 1, output);
 	assert.match(output, /Content check failed\./);
-	assert.match(output, /\[site\/content\.md\]/);
+	assert.match(output, /\[site\/root\/content\.md\]/);
 	assert.match(output, /Internal link "\/missing\/" on line 3 points to page "\/missing\/"/);
 	assert.match(output, /missing heading anchor "#absent" on \/guides\/installation\//);
 	assert.doesNotMatch(output, /category-has-no-url/);

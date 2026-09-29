@@ -52,7 +52,7 @@ const withTempProject = async ({ site, theme = defaultTheme, files, siteDirector
 
 	try {
 		await writeFixtureFile(root, `${siteDirectory}/site-config/settings.yaml`, 'url: https://example.com/\n');
-		await writeFixtureFile(root, `${siteDirectory}/content.md`, site);
+		await writeFixtureFile(root, `${siteDirectory}/root/content.md`, site);
 		await writeFixtureFile(root, `${siteDirectory}/site-config/site-theme.yaml`, theme);
 
 		for (const file of files) {
@@ -116,11 +116,11 @@ test('content:check groups section issues, global issues, and unreferenced image
 	await withTempProject({
 		site: brokenSite,
 		files: [
-			'site/images/karin.jpg',
-			'site/images/karin-walde/unreferenced.jpg',
-			'site/images/min-konst/duplicate.jpg',
-			'site/images/home.jpg',
-			'site/images/mitt-hem/vav.jpeg',
+			'site/root/images/karin.jpg',
+			'site/root/images/karin-walde/unreferenced.jpg',
+			'site/root/images/min-konst/duplicate.jpg',
+			'site/root/images/home.jpg',
+			'site/root/images/mitt-hem/vav.jpeg',
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -128,11 +128,11 @@ test('content:check groups section issues, global issues, and unreferenced image
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Content Issues\n\n\[site\/content\.md \[min-konst\]\]\n  Errors:/);
-		assert.match(output, /Image "vav\.jpeg" is used here but is located in site\/images\/mitt-hem\/vav\.jpeg\./);
-		assert.match(output, /Image "missing\.jpeg" does not exist at site\/images\/missing\.jpeg or anywhere under any page image root\./);
+		assert.match(output, /Content Issues\n\n\[site\/root\/content\.md \[min-konst\]\]\n  Errors:/);
+		assert.match(output, /Image "vav\.jpeg" is used here but is located in site\/root\/images\/mitt-hem\/vav\.jpeg\./);
+		assert.match(output, /Image "missing\.jpeg" does not exist at site\/root\/images\/missing\.jpeg or anywhere under any page image root\./);
 		assert.match(output, /Unreferenced Images\nThese files are kept under page image roots but are not referenced by Norna-managed image references:/);
-		assert.match(output, /site\/images\/karin-walde\/unreferenced\.jpg/);
+		assert.match(output, /site\/root\/images\/karin-walde\/unreferenced\.jpg/);
 	});
 });
 
@@ -155,11 +155,11 @@ test('content:check warns when carousel images use different aspect ratios', asy
 		site: carouselAspectRatioSite,
 		files: [
 			{
-				path: 'site/images/wide.png',
+				path: 'site/root/images/wide.png',
 				contents: makePngHeader({ width: 400, height: 300 }),
 			},
 			{
-				path: 'site/images/wider.png',
+				path: 'site/root/images/wider.png',
 				contents: makePngHeader({ width: 600, height: 300 }),
 			},
 		],
@@ -190,8 +190,8 @@ test('content:check fails when Markdown uses removed inline color styles', async
 
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
-		assert.match(output, /Inline color style "\.highlight" is no longer supported in site\/content\.md\./);
-		assert.match(output, /Inline color style "\.missing" is no longer supported in site\/content\.md\./);
+		assert.match(output, /Inline color style "\.highlight" is no longer supported in site\/root\/content\.md\./);
+		assert.match(output, /Inline color style "\.missing" is no longer supported in site\/root\/content\.md\./);
 	});
 });
 
@@ -473,7 +473,7 @@ Text.
 test('content:check explains likely misindented frontmatter keys', async () => {
 	await withTempProject({
 		site: topLevelImagesSite,
-		files: ['site/images/intro/intro.jpg'],
+		files: ['site/root/images/intro/intro.jpg'],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
 		const output = getOutput(result);
@@ -490,8 +490,8 @@ test('content:check respects NORNA_SITE_DIR', async () => {
 		site: movableSite,
 		siteDirectory: 'custom-site',
 		files: [
-			'custom-site/images/move-me.jpg',
-			'custom-site/images/home.jpg',
+			'custom-site/root/images/move-me.jpg',
+			'custom-site/root/images/home.jpg',
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check'], { NORNA_SITE_DIR: 'custom-site' });
@@ -532,26 +532,26 @@ test('content:sync moves referenced images and keeps unreferenced images in plac
 	await withTempProject({
 		site: movableSite,
 		files: [
-			'site/images/home.jpg',
-			'site/images/mitt-hem/move-me.jpg',
-			'site/images/mitt-hem/unreferenced.jpg',
+			'site/root/images/home.jpg',
+			'site/root/images/mitt-hem/move-me.jpg',
+			'site/root/images/mitt-hem/unreferenced.jpg',
 		],
 	}, async (root) => {
 		const syncResult = runContentScript(root, ['--write', '--yes']);
 		const syncOutput = getOutput(syncResult);
 
 		assert.equal(syncResult.status, 0, syncOutput);
-		assert.match(syncOutput, /Moved image "move-me\.jpg" to site\/images\/\./);
-		assert.equal(await fileExists(path.join(root, 'site/images/move-me.jpg')), true);
-		assert.equal(await fileExists(path.join(root, 'site/images/mitt-hem/move-me.jpg')), false);
-		assert.equal(await fileExists(path.join(root, 'site/images/mitt-hem/unreferenced.jpg')), true);
+		assert.match(syncOutput, /Moved image "move-me\.jpg" to site\/root\/images\/\./);
+		assert.equal(await fileExists(path.join(root, 'site/root/images/move-me.jpg')), true);
+		assert.equal(await fileExists(path.join(root, 'site/root/images/mitt-hem/move-me.jpg')), false);
+		assert.equal(await fileExists(path.join(root, 'site/root/images/mitt-hem/unreferenced.jpg')), true);
 
 		const checkResult = runContentScript(root, ['--check']);
 		const checkOutput = getOutput(checkResult);
 
 		assert.equal(checkResult.status, 0, checkOutput);
 		assert.match(checkOutput, /Content check completed with warnings\./);
-		assert.match(checkOutput, /site\/images\/mitt-hem\/unreferenced\.jpg/);
+		assert.match(checkOutput, /site\/root\/images\/mitt-hem\/unreferenced\.jpg/);
 	});
 });
 
@@ -630,7 +630,7 @@ Page text.
 });
 
 test('page-list warns once per listed child with a missing or blank description', async () => {
-	const parent = 'site/pages/010-help';
+	const parent = 'site/root/pages/010-help';
 	const files = [
 		{ path: `${parent}/content.md`, contents: '# Help\n\n```page-list\n```\n\n## More choices\n\n```page-list\n```\n' },
 		...[
@@ -644,7 +644,7 @@ test('page-list warns once per listed child with a missing or blank description'
 		{ path: `${parent}/pages/040-described/pages/010-descendant/content.md`, contents: '# Descendant\n' },
 		{ path: `${parent}/pages/060-category/content.md`, contents: '---\npage:\n  description: A grouped set of pages.\n---\n# Category\n' },
 		{ path: `${parent}/pages/060-category/pages/010-page/content.md`, contents: '# Category child\n' },
-		{ path: 'site/pages/020-unrelated/content.md', contents: '# Unrelated\n' },
+		{ path: 'site/root/pages/020-unrelated/content.md', contents: '# Unrelated\n' },
 	];
 	await withTempProject({ site: '# Home\n', files }, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -667,8 +667,8 @@ test('pages without a page-list do not warn about child descriptions', async () 
 	await withTempProject({
 		site: '# Home\n',
 		files: [
-			{ path: 'site/pages/010-guides/content.md', contents: '# Guides\n\n## Syntax example\n\n````md\n```page-list\n```\n````\n' },
-			{ path: 'site/pages/010-guides/pages/010-child/content.md', contents: '# Child\n' },
+			{ path: 'site/root/pages/010-guides/content.md', contents: '# Guides\n\n## Syntax example\n\n````md\n```page-list\n```\n````\n' },
+			{ path: 'site/root/pages/010-guides/pages/010-child/content.md', contents: '# Child\n' },
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -681,8 +681,8 @@ test('an automatic child list warns when no direct listed child can appear', asy
 	await withTempProject({
 		site: '# Home\n',
 		files: [
-			{ path: 'site/pages/010-overview/content.md', contents: '---\npage:\n  listChildren: true\n---\n\n# Overview\n' },
-			{ path: 'site/pages/010-overview/pages/010-hidden/content.md', contents: '---\nnavigation:\n  listed: false\n---\n\n# Hidden\n' },
+			{ path: 'site/root/pages/010-overview/content.md', contents: '---\npage:\n  listChildren: true\n---\n\n# Overview\n' },
+			{ path: 'site/root/pages/010-overview/pages/010-hidden/content.md', contents: '---\nnavigation:\n  listed: false\n---\n\n# Hidden\n' },
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -695,7 +695,7 @@ test('an automatic child list warns when no direct listed child can appear', asy
 test('page-list warnings do not relax existing description validation', async () => {
 	await withTempProject({
 		site: '# Home\n\n```page-list\n```\n',
-		files: [{ path: 'site/pages/010-child/content.md', contents: '---\npage:\n  description: ""\n---\n# Child\n' }],
+		files: [{ path: 'site/root/pages/010-child/content.md', contents: '---\npage:\n  description: ""\n---\n# Child\n' }],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
 		assert.equal(result.status, 1, getOutput(result));
@@ -707,16 +707,16 @@ test('a homepage page-list warns for undescribed direct pages but not descendant
 	await withTempProject({
 		site: '# Home\n\n```page-list\n```\n',
 		files: [
-			{ path: 'site/pages/010-help/content.md', contents: '# Help\n' },
-			{ path: 'site/pages/020-guides/content.md', contents: '---\npage:\n  description: Find the guides.\n---\n# Guides\n' },
-			{ path: 'site/pages/020-guides/pages/010-child/content.md', contents: '# Child\n' },
+			{ path: 'site/root/pages/010-help/content.md', contents: '# Help\n' },
+			{ path: 'site/root/pages/020-guides/content.md', contents: '---\npage:\n  description: Find the guides.\n---\n# Guides\n' },
+			{ path: 'site/root/pages/020-guides/pages/010-child/content.md', contents: '# Child\n' },
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
 		const output = getOutput(result);
 		assert.equal(result.status, 0, output);
 		assert.equal((output.match(/without a non-empty page\.description/g) ?? []).length, 1, output);
-		assert.ok(output.includes('site/pages/010-help/content.md'), output);
+		assert.ok(output.includes('site/root/pages/010-help/content.md'), output);
 		assert.ok(!output.includes('020-guides'), output);
 	});
 });
@@ -725,13 +725,13 @@ test('details headings fail content checks with file, frontmatter-adjusted line 
 	await withTempProject({
 		site: '# Home\n',
 		files: [{
-			path: 'site/pages/010-guide/content.md',
+			path: 'site/root/pages/010-guide/content.md',
 			contents: '---\npage:\n  description: Guide\n---\n# Guide\n\n<details>\n<summary>More</summary>\n\n### Hidden\n\n</details>\n',
 		}],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
 		assert.equal(result.status, 1, getOutput(result));
-		assert.match(getOutput(result), /site\/pages\/010-guide\/content\.md line 10: Headings H1-H6/);
+		assert.match(getOutput(result), /site\/root\/pages\/010-guide\/content\.md line 10: Headings H1-H6/);
 		assert.match(getOutput(result), /Move the heading outside <details>, or use bold text/);
 	});
 });

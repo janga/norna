@@ -548,7 +548,7 @@ Markdown suggestions, Problems diagnostics, and versioned documentation links.
 ## Rendering Notes
 
 The renderer discovers a required homepage at
-`site/content.md` and its child entries under `site/pages/`. Deeper entries
+`site/root/content.md` and its child entries under `site/root/pages/`. Deeper entries
 live under each parent page's `pages/` directory. Every entry has `content.md`
 and a routable URL. A parent with `page.listChildren: true` appends a generated
 list of its direct listed children after all authored content.
@@ -559,16 +559,18 @@ page exists. Explicit modes must be compatible with the listed
 hierarchy. Root children remain top-level navigation choices; the homepage
 retains the global navigation presentation. The internal root page-directory
 identity is `.`, with depth zero and entry suffix `root`; child identities
-remain relative to `site/pages/`. Navigation's `parentPagePath: null` projects
+remain relative to `site/root/pages/`. Navigation's `parentPagePath: null` projects
 root children onto the top level.
 
-Root `theme.yaml` uses the limited page-theme schema and applies only to
+`root/theme.yaml` uses the limited page-theme schema and applies only to
 the homepage. `site-config/site-theme.yaml` remains global; descendant `theme.yaml` files
-inherit along their ordinary page ancestry. `norna site:upgrade`
-previews configuration conversion to `site-config/` and also supports the
-former `pages/000-home/` layout. `--apply` moves sources without overwriting,
-adjusts relative schema directives and restores source files after an apply
-failure. Builds never perform source conversion.
+inherit along their ordinary page ancestry. Shared files and `public/` remain
+beside `root/`, not inside it. `norna site:upgrade` validates this layout and
+rejects former locations with manual conversion instructions; neither it nor
+`--apply` moves sources. Builds never perform source conversion. Use
+`scripts/lib/site-conventions.mjs` for physical root-page and child paths;
+reusable editor APIs must calculate them from their explicit `siteRoot`.
+
 
 Tree navigation uses the shared area resolver in `src/lib/areaNavigation.ts`:
 

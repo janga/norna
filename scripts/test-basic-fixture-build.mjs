@@ -27,11 +27,11 @@ try {
 	await cp(fixtureRoot, fixtureCopyRoot, { recursive: true });
 	await rename(path.join(fixtureCopyRoot, 'site'), siteDir);
 	for (const [directory, , title] of pages) {
-		const pageDir = path.join(siteDir, 'pages', directory);
+		const pageDir = path.join(siteDir, 'root/pages', directory);
 		await mkdir(pageDir, { recursive: true });
 		await writeFile(path.join(pageDir, 'content.md'), `---\npage:\n  description: Regression fixture for ${title.toLowerCase()}.\n---\n\n# ${title}\n`);
 	}
-	await writeFile(path.join(siteDir, 'pages', '050-page-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Page guides\n\n## Before the list\n\nAuthor guidance comes first.\n');
+	await writeFile(path.join(siteDir, 'root/pages', '050-page-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Page guides\n\n## Before the list\n\nAuthor guidance comes first.\n');
 
 	for (const siteArgument of [siteDir, path.relative(fixtureCopyRoot, siteDir)]) {
 		await runInherit(process.execPath, [cliPath, '--site-dir', siteArgument, 'content:check'], { cwd: fixtureCopyRoot });

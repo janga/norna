@@ -14,6 +14,8 @@ installed by the current project. This keeps suggestions and documentation
 links aligned with the engine version that builds the site. Norna-specific help
 appears only in recognized Norna files.
 
+Extension 0.8.0 supports the `root/` source layout and schema version 5.
+
 ## Features
 
 - A dedicated Norna view with readable page names and their actual
@@ -44,19 +46,19 @@ is remembered for that workspace; opening another site's file does not switch
 or add a tree. Open just your site's folder for a workspace containing only
 that site's files; the ordinary Explorer continues to show all workspace folders.
 
-The tree's root is its homepage, marked **Homepage**. Select a page title to
+The tree shows site-wide `site-config/` and `public/` before the homepage,
+marked **Homepage**. The homepage represents `root/`. Select a page title to
 open its `content.md`; that file has no separate tree row. Only the chevron or
 keyboard expansion opens the branch.
 Directories select without opening a file. Individual files use VS Code's
 normal editor or preview, including image previews.
 
 Page names hide numeric ordering prefixes; hover reveals the actual source
-path. Configuration appears under its owner before `pages/`. The root shows
-optional `theme.yaml` first, then `site-config/`, `public/`, `images/` and `pages/` when
-present. The settings folder starts expanded and remembers subsequent choices.
-Other pages start with optional `theme.yaml`. Hover explains theme scope and
-what belongs in `public/`. A leaf has no chevron unless it has visible details,
-including an existing empty folder.
+path. Each page shows its existing `images/`, `theme.yaml` and `pages/` in that
+order. Site-wide files are siblings of the homepage, not its children, matching
+the physical source layout. The settings folder starts expanded and remembers
+subsequent choices. Hover explains theme scope and what belongs in `public/`.
+A leaf has no chevron unless it has visible details, including an empty folder.
 
 A page's **+** offers child-page creation, image import and missing supported
 source files. It works without `pages/` or `images/`; the chosen operation

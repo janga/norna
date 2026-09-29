@@ -87,7 +87,7 @@ try {
 	assert.deepEqual(localPayload.argv, ['build', '--flag', 'value with spaces']);
 	assert.equal(await realpath(localPayload.cwd), await realpath(localProject));
 
-	const subdirectory = path.join(localProject, 'site', 'images', 'work');
+	const subdirectory = path.join(localProject, 'site', 'root', 'images', 'work');
 	await mkdir(subdirectory, { recursive: true });
 	const subdirectoryResult = runLauncher(['doctor'], subdirectory);
 	assert.equal(subdirectoryResult.status, 0, subdirectoryResult.stderr || subdirectoryResult.stdout);

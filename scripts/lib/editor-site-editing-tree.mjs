@@ -1,3 +1,4 @@
+import { getSiteSourcePaths } from './site-conventions.mjs';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { editorPageLocation, editorSourceDefinition } from './editor-source-files.mjs';
@@ -43,14 +44,11 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 		let entries;
 		try { entries = await entriesAt(directory); }
 		catch (error) {
-			if (owner) issue(owner, `Cannot read ${directory}: ${error.message}`);
+			if (location?.isHome && error.code === 'ENOENT') entries = [];
 			else {
-				const sourcePath = path.join(siteRoot, 'content.md');
-				const root = { id: sourcePath, ownerId: sourcePath, parentId: null, sourcePath, directory: siteRoot,
-					kind: 'incomplete', isHome: true, missingSource: true, title: path.basename(siteRoot) };
-				issue(root, `Cannot read ${directory}: ${error.message}`); items.push(root);
+				if (owner) issue(owner, `Cannot read ${directory}: ${error.message}`);
+				return;
 			}
-			return;
 		}
 		const names = new Map(entries.map((entry) => [entry.name, entry]));
 		let container;
@@ -76,17 +74,20 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 				: 'Page content.md is missing. Use Add to create it.');
 			if (hasCategory) issue(container, 'category.yaml is no longer supported. Use content.md with page.listChildren: true for an overview.');
 			if (location.isHome) for (const name of ['settings.yaml', 'site-theme.yaml']) {
-				try { await read(path.join(directory, 'site-config', name)); }
-				catch (error) { if (error.code === 'ENOENT' || error.code === 'ENOTDIR') issue(container, `Required site-config/${name} is missing. Use Add to create it.`, 'error', path.join(directory, 'site-config', name)); else issue(container, error.message); }
+				try { await read(path.join(siteRoot, 'site-config', name)); }
+				catch (error) { if (error.code === 'ENOENT' || error.code === 'ENOTDIR') issue(container, `Required site-config/${name} is missing. Use Add to create it.`, 'error', path.join(siteRoot, 'site-config', name)); else issue(container, error.message); }
 			}
 			owner = container;
+		} else if (role === 'site') {
+			container = { id: null };
 		} else {
 			container = { id: resourceId(directory), parentId, ownerId: owner.id, sourcePath: directory,
 				kind: 'directory', role, title: path.basename(directory), description: role === 'public'
 					? 'Files published unchanged with the site, such as robots.txt and icons.' : role === 'configuration' ? 'Settings and content shared by the complete site' : '' };
 			items.push(container);
 		}
-		const order = location ? ['theme.yaml', 'site-config', 'public', 'images', 'pages']
+		const order = location ? ['images', 'theme.yaml', 'pages']
+			: role === 'site' ? ['site-config', 'public', 'root']
 			: role === 'configuration' ? ['settings.yaml', 'site-theme.yaml', 'shared-content.yaml'] : [];
 		const rank = (entry) => order.includes(entry.name) ? order.indexOf(entry.name) : order.length;
 		entries.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'en', { numeric: true }));
@@ -94,11 +95,11 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			const filename = path.join(directory, entry.name);
 			if (location && entry.name === 'content.md' && entry.isFile() && owner.kind === 'page' && !owner.conflict) continue;
 			if (entry.isDirectory()) {
-				const childLocation = role === 'pages' ? editorPageLocation(siteRoot, filename) : null;
-				const childRole = location && entry.name === 'pages' ? 'pages'
+				const childLocation = role === 'pages' || role === 'site' && entry.name === 'root' ? editorPageLocation(siteRoot, filename) : null;
+				const childRole = childLocation ? 'page' : location && entry.name === 'pages' ? 'pages'
 					: location && entry.name === 'images' && owner.kind === 'page' ? 'images'
-						: location?.isHome && entry.name === 'site-config' ? 'configuration'
-							: role === 'public' || location?.isHome && entry.name === 'public' ? 'public' : 'extra';
+						: role === 'site' && entry.name === 'site-config' ? 'configuration'
+							: role === 'public' || role === 'site' && entry.name === 'public' ? 'public' : 'extra';
 				await visit(filename, container.id, owner, childRole, childLocation);
 				const child = items.find((item) => item.sourcePath === filename);
 				if (child && childRole === 'extra' && (knownNames.has(entry.name) || ['images', 'pages', 'site-config', 'public'].includes(entry.name) || role === 'pages')) {
@@ -118,8 +119,11 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			else if (role !== 'public' && !(role === 'images' && /\.(jpe?g|png|svg)$/i.test(entry.name))) file.note = 'Not used by Norna';
 		}
 	};
-	await visit(siteRoot, null, null, null, editorPageLocation(siteRoot, siteRoot));
-	const home = items[0];
+	const source = getSiteSourcePaths(siteRoot);
+	const owner = { id: source.content, sourcePath: source.content };
+	await visit(siteRoot, null, owner, 'site');
+	if (!items.some((item) => item.isHome)) await visit(source.root, null, owner, 'page', editorPageLocation(siteRoot, source.root));
+	const home = items.find((item) => item.isHome);
 	// Keep shared structural diagnostics, including duplicate sibling identifiers.
 	for (const problem of snapshot.problems) {
 		if (home && !items.some((item) => item.issues?.some((entry) => entry.message === problem.message))) {

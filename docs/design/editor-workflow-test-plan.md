@@ -180,8 +180,10 @@ and a source outside the workspace; neither may replace or add a root. Remove
 the chosen workspace folder and confirm that its tree and actions disappear.
 The homepage must be marked **Homepage**, and its page label must open the root
 `content.md`; there is no separate content row. Directory labels must leave
-the editor and expansion unchanged. When present, the homepage theme appears
-first, before site configuration and public files.
+the editor and expansion unchanged. Site configuration and public files appear
+as siblings before the homepage. Within every page, images appear first,
+followed by its optional theme and child pages. Verify `root/content.md` opens
+from the homepage label, with no `root` segment added to public URLs.
 Verify the configuration icon, initial expansion, and remembered collapse after
 refresh/reload even while one of its files is active. Check Add on a leaf:
 child-page creation, image import, cancellation without creating directories,

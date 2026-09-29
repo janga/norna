@@ -13,7 +13,7 @@ import {
 } from './test-support/content-model.mjs';
 
 const writePage = async (siteDir, pageDirectory, source) => {
-	const pageDir = path.join(siteDir, 'pages', pageDirectory);
+	const pageDir = path.join(siteDir, 'root/pages', pageDirectory);
 	await mkdir(pageDir, { recursive: true });
 	await writeFile(path.join(pageDir, 'content.md'), source);
 };
@@ -29,7 +29,7 @@ test('named sidenotes render as linked lettered CSS margin notes', async () => {
 	try {
 		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/docs/\n');
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -78,7 +78,7 @@ test('page-title notes preserve root-relative links under a site base path', asy
 	try {
 		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/docs/\n');
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -126,7 +126,7 @@ test('reference footnotes render page-wide with localized accessible links', asy
 		try {
 			await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 			await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `url: https://example.com/docs/\nlanguage: ${locale.language}\n`);
-			await writeFile(path.join(siteDir, 'content.md'), `# Reference footnotes
+			await writeFile(path.join(siteDir, 'root/content.md'), `# Reference footnotes
 
 The first section cites one source twice.[^scope] A second reference points to
 the same definition.[^scope]
@@ -183,7 +183,7 @@ test('semantic callouts render every supported meaning with localized accessible
 		try {
 			await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 			await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `url: https://example.com/\nlanguage: ${locale.language}\n`);
-			await writeFile(path.join(siteDir, 'content.md'), `# Callouts
+			await writeFile(path.join(siteDir, 'root/content.md'), `# Callouts
 
 ## Meanings {#meanings}
 
@@ -241,7 +241,7 @@ Linked content.
 test('unsupported semantic callouts warn and retain a neutral blockquote fallback', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `# Invalid callout
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Invalid callout
 
 ## Warning {#warning}
 
@@ -263,7 +263,7 @@ test('unsupported semantic callouts warn and retain a neutral blockquote fallbac
 test('details blocks render as visible native disclosures', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `# Details
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Details
 
 ## Optional context {#optional-context}
 
@@ -280,7 +280,7 @@ This content is available when the reader asks for it.
 		assert.match(html, /<details>\s*<summary>Show the extra context<\/summary>/);
 		assert.match(html, /This content is available when the reader asks for it\./);
 
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Details validation
 ---
@@ -310,7 +310,7 @@ page:
 test('Markdown tables retain native semantics inside one focusable overflow frame', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `# Data table
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Data table
 
 | Feature {row-header} | Status | Notes |
 | --- | --- | --- |
@@ -353,7 +353,7 @@ test('Markdown tables retain native semantics inside one focusable overflow fram
 test('content:check rejects ambiguous row-header tables', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `# Invalid table
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Invalid table
 
 ## Comparison {#comparison}
 
@@ -379,7 +379,7 @@ test('content:check rejects ambiguous row-header tables', async () => {
 test('code titles and selected lines render without changing copied code', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `# Code examples
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Code examples
 
 ## Configuration {#configuration}
 
@@ -418,7 +418,7 @@ npm run build
 test('content:check rejects malformed code fence metadata', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `# Invalid code
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Invalid code
 
 ## Example {#example}
 
@@ -443,7 +443,7 @@ const value = true;
 test('card-list images are managed image references', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -468,8 +468,8 @@ items:
     text: Support the shelter.
 \`\`\`
 `);
-		await mkdir(path.join(siteDir, 'images'), { recursive: true });
-		await writeFile(path.join(siteDir, 'images', 'adopt.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><rect width="160" height="100"/></svg>\n');
+		await mkdir(path.join(siteDir, 'root/images'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/images', 'adopt.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><rect width="160" height="100"/></svg>\n');
 		await writePage(siteDir, '010-adopt', `# Adopt
 
 ## Start {#start}
@@ -482,7 +482,7 @@ Adoption information.
 
 		await runNorna(['--site-dir', siteDir, 'images']);
 		const manifest = JSON.parse(await readFile(path.join(siteDir, '.norna', 'generated-images.json'), 'utf8'));
-		assert.equal(manifest['images/adopt.svg'].kind, 'static');
+		assert.equal(manifest['root/images/adopt.svg'].kind, 'static');
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
@@ -503,7 +503,7 @@ Adoption information.
 test('content:check fails when a card-list image file is missing', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -522,7 +522,7 @@ items:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Image "missing\.svg" does not exist at .*site\/images\/missing\.svg or anywhere under any page image root\./);
+				assert.match(error.output, /Image "missing\.svg" does not exist at .*site\/root\/images\/missing\.svg or anywhere under any page image root\./);
 				return true;
 			},
 		);
@@ -534,7 +534,7 @@ items:
 test('content:check fails for malformed card-list blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -563,7 +563,7 @@ page:
 test('content:check fails for invalid card-list options', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -599,7 +599,7 @@ items:
 test('content:check fails for invalid card-list width', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -632,7 +632,7 @@ items:
 test('content:check fails for invalid card-list size', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -665,7 +665,7 @@ items:
 test('content:check fails for malformed Norna image blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -695,9 +695,9 @@ image hero.jpg
 test('content:check fails for unknown Norna block names', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await mkdir(path.join(siteDir, 'images', 'plain'), { recursive: true });
-		await writeFile(path.join(siteDir, 'images', 'plain', 'image.jpg'), 'fixture image');
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await mkdir(path.join(siteDir, 'root/images', 'plain'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/images', 'plain', 'image.jpg'), 'fixture image');
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -728,7 +728,7 @@ page:
 test('content:check explains renamed content block names', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `# Renamed blocks
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Renamed blocks
 
 ## Examples {#examples}
 
@@ -784,7 +784,7 @@ test('content:check explains renamed content block names', async () => {
 test('content:check rejects the removed norna-note block', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -813,7 +813,7 @@ This block is no longer supported.
 test('page-list rejects options and reports pages without direct child pages', async () => {
 	const invalid = await createTempSite();
 	try {
-		await writeFile(path.join(invalid.siteDir, 'content.md'), `# Invalid child page list
+		await writeFile(path.join(invalid.siteDir, 'root/content.md'), `# Invalid child page list
 
 ## Pages {#pages}
 
@@ -834,7 +834,7 @@ depth: all
 
 	const empty = await createTempSite();
 	try {
-		await writeFile(path.join(empty.siteDir, 'content.md'), `# Empty child page list
+		await writeFile(path.join(empty.siteDir, 'root/content.md'), `# Empty child page list
 
 ## Pages {#pages}
 
@@ -857,7 +857,7 @@ depth: all
 test('page-list description warnings do not block a static build', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), '# Home\n');
+		await writeFile(path.join(siteDir, 'root/content.md'), '# Home\n');
 		await writePage(siteDir, '010-help', '# Help\n\n```page-list\n```\n');
 		await writePage(siteDir, '010-help/pages/010-fostering', '# Fostering\n');
 		const result = await runNorna(['--site-dir', siteDir, 'build']);
@@ -873,9 +873,9 @@ test('page-list description warnings do not block a static build', async () => {
 test('content:check supports tilde fenced Norna blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await mkdir(path.join(siteDir, 'images'), { recursive: true });
-		await writeFile(path.join(siteDir, 'images', 'hero.jpg'), 'fixture image');
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await mkdir(path.join(siteDir, 'root/images'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/images', 'hero.jpg'), 'fixture image');
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -900,7 +900,7 @@ items:
 test('content:check ignores Norna blocks shown inside longer code fences', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -927,7 +927,7 @@ items:
 test('content:check fails for likely Norna block names outside fences', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -956,7 +956,7 @@ image-stack
 test('content:check fails for short Norna block fences', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -986,7 +986,7 @@ page:
 test('content:check fails for unclosed Norna blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -1017,7 +1017,7 @@ items:
 test('content:check continues after malformed Norna blocks', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -1050,8 +1050,8 @@ items:
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
 				assert.match(error.output, /image-stack: Invalid YAML:/);
-				assert.match(error.output, /Image "missing-intro\.jpg" does not exist at .*site\/images\/missing-intro\.jpg or anywhere under any page image root\./);
-				assert.match(error.output, /Image "missing-more\.jpg" does not exist at .*site\/images\/missing-more\.jpg or anywhere under any page image root\./);
+				assert.match(error.output, /Image "missing-intro\.jpg" does not exist at .*site\/root\/images\/missing-intro\.jpg or anywhere under any page image root\./);
+				assert.match(error.output, /Image "missing-more\.jpg" does not exist at .*site\/root\/images\/missing-more\.jpg or anywhere under any page image root\./);
 				return true;
 			},
 		);

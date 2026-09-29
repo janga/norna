@@ -85,12 +85,12 @@ const getFilePathFromPublicPath = (publicPath) => path.join(astroPublicDir, publ
 const getSourceHashSlug = (sourceHash) => sourceHash.slice(0, sourceHashSlugLength);
 
 const getGeneratedPath = (sourceKey, sourceHash, width) => {
-	const parsed = path.parse(sourceKey);
+	const parsed = path.parse(sourceKey.replace(/^root\//, ''));
 	return path.join(generatedImagesDir, parsed.dir, `${parsed.name}-${getSourceHashSlug(sourceHash)}-${width}.webp`);
 };
 
 const getOriginalPath = (sourceKey, sourceHash) => {
-	const parsed = path.parse(sourceKey);
+	const parsed = path.parse(sourceKey.replace(/^root\//, ''));
 	return path.join(originalImagesDir, parsed.dir, `${parsed.name}-${getSourceHashSlug(sourceHash)}${parsed.ext}`);
 };
 

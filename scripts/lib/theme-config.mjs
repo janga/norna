@@ -1,3 +1,4 @@
+import { getSiteSourcePaths } from './site-conventions.mjs';
 import { readFile, readdir, access } from 'node:fs/promises';
 import path from 'node:path';
 import {
@@ -63,9 +64,9 @@ const getPageThemeFiles = async (directory, relativeDirectory = '') => {
 
 export const validatePageThemeFiles = async () => {
 	const files = await getPageThemeFiles(sitePagesDir);
-	const homepageThemePath = path.join(siteDir, 'theme.yaml');
+	const homepageThemePath = getSiteSourcePaths(siteDir).theme;
 	if (await access(homepageThemePath).then(() => true, (error) => { if (error.code === 'ENOENT') return false; throw error; })) {
-		files.unshift({ path: homepageThemePath, label: `${siteDirLabel}/theme.yaml` });
+		files.unshift({ path: homepageThemePath, label: `${siteDirLabel}/root/theme.yaml` });
 	}
 	const configs = [];
 

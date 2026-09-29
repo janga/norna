@@ -19,8 +19,8 @@ const setup = async (t) => {
 		await writeFile(filename, source); return filename;
 	};
 	await write('site-config/settings.yaml', 'url: https://example.com/manual/\n');
-	const homePath = await write('content.md', '# Home\n\n[Guide](/guide/)\n');
-	const sourcePath = await write('pages/010-guide/content.md', '# Guide\n');
+	const homePath = await write('root/content.md', '# Home\n\n[Guide](/guide/)\n');
+	const sourcePath = await write('root/pages/010-guide/content.md', '# Guide\n');
 	const home = { kind: 'page', title: 'Home', siteRoot, sourcePath: homePath, isHome: true };
 	const page = { kind: 'page', title: 'Guide', siteRoot, sourcePath, isHome: false };
 	const commands = new Map(), documents = new Map();
@@ -134,7 +134,7 @@ test('incoming links open the exact source line; Show links cancels page deletio
 
 test('optional-file deletion cancels, protects dirty files, reports inherited effects and uses Trash', async (t) => {
 	const f = await setup(t);
-	const sourcePath = await f.write('theme.yaml', 'layout:\n  textWidth: narrow\n');
+	const sourcePath = await f.write('root/theme.yaml', 'layout:\n  textWidth: narrow\n');
 	const file = { kind: 'file', sourcePath, owner: f.home };
 	await f.run('removeFile', file); assert.equal(f.trashed.length, 0);
 	const document = await f.open(sourcePath); document.isDirty = true;
@@ -153,7 +153,7 @@ test('URL confirmation cancels without files, then renames through VS Code and u
 	assert.equal(await readFile(f.page.sourcePath, 'utf8'), '# Guide\n');
 	f.picks.push('Change URL segment…'); f.inputs.push('handbook'); f.warnings.push('Change address');
 	await f.run('addressesAndLinks');
-	assert.equal(f.opened.at(-1).path, path.join(f.siteRoot, 'pages/010-handbook/content.md'));
+	assert.equal(f.opened.at(-1).path, path.join(f.siteRoot, 'root/pages/010-handbook/content.md'));
 	assert.match(await readFile(f.home.sourcePath, 'utf8'), /\/handbook\//);
 	assert.match(await readFile(f.opened.at(-1).path, 'utf8'), /- \/guide\//);
 });

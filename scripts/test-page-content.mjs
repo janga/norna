@@ -19,8 +19,8 @@ test('content model v2 fixture checks and builds', async () => {
 		await runNorna(['--site-dir', siteDir, 'build']);
 
 		const manifest = JSON.parse(await readFile(path.join(siteDir, '.norna', 'generated-images.json'), 'utf8'));
-		assert.ok(manifest['images/duplicate.jpg']);
-		assert.ok(manifest['pages/010-guide/images/duplicate.jpg']);
+		assert.ok(manifest['root/images/duplicate.jpg']);
+		assert.ok(manifest['root/pages/010-guide/images/duplicate.jpg']);
 
 		const homepageHtml = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
 		assert.match(homepageHtml, /site-section-page-title/);
@@ -36,7 +36,7 @@ test('comment-only root YAML files use the same empty defaults during checks and
 	try {
 		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), '# yaml-language-server: $schema=../schemas/theme.schema.json\n');
 		await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), '# Shared content is optional.\n');
-		await writeFile(path.join(siteDir, 'content.md'), '# Empty theme\n\nThe defaults render this page.\n');
+		await writeFile(path.join(siteDir, 'root/content.md'), '# Empty theme\n\nThe defaults render this page.\n');
 
 		await runNorna(['--site-dir', siteDir, 'config:check']);
 		await runNorna(['--site-dir', siteDir, 'build']);
@@ -55,9 +55,9 @@ test('the former homepage folder is rejected with a conversion hint', async () =
 		await mkdir(path.join(siteDir, 'pages', '000-home'), { recursive: true });
 		await writeFile(path.join(siteDir, 'pages', '000-home', 'content.md'), '# Home\n');
 		await assert.rejects(runNorna(['--site-dir', siteDir, 'content:check']), (error) => {
-			assert.match(error.output, /uses the former homepage layout/);
-			assert.match(error.output, /norna site:upgrade --apply/);
-			assert.match(error.output, /homepage now belongs in site\/content\.md/);
+			assert.match(error.output, /uses the former page layout/);
+			assert.match(error.output, /inside site\/root\//);
+			assert.match(error.output, /Keep site-config\/ and public\/ at the site level/);
 			return true;
 		});
 	} finally {
@@ -68,7 +68,7 @@ test('the former homepage folder is rejected with a conversion hint', async () =
 test('the removed routes directory is rejected with a page migration hint', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `# Home
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Home
 Home content.
 `);
 		await mkdir(path.join(siteDir, 'routes', '010-guide'), { recursive: true });
@@ -77,7 +77,7 @@ Home content.
 		await assert.rejects(
 			runNorna(['--site-dir', siteDir, 'content:check']),
 			(error) => {
-				assert.match(error.output, /site\/routes is no longer supported\. Rename it to site\/pages and use NNN-page-id directory names\./);
+				assert.match(error.output, /site\/routes uses the former page layout/);
 				return true;
 			},
 		);
@@ -89,13 +89,13 @@ Home content.
 test('the root homepage owns ordinary child pages', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `# Home
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Home
 
 ## Welcome {#welcome}
 
 Home content.
 `);
-		const homeChildDir = path.join(siteDir, 'pages', '010-news');
+		const homeChildDir = path.join(siteDir, 'root/pages', '010-news');
 		await mkdir(homeChildDir, { recursive: true });
 		await writeFile(path.join(homeChildDir, 'content.md'), '# News\n\nNews content.\n');
 
@@ -111,8 +111,8 @@ test('page theme changes page presentation while preserving site visual identity
 		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `preset: documentation
 palette: near-monochrome
 `);
-		await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await mkdir(path.join(siteDir, 'root/pages', '010-guide'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Root page
 ---
@@ -123,7 +123,7 @@ page:
 
 Root content.
 `);
-		await writeFile(path.join(siteDir, 'pages', '010-guide', 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'content.md'), `---
 page:
   description: Guide page
 ---
@@ -131,24 +131,24 @@ page:
 # Guide
 Page content.
 `);
-		await mkdir(path.join(siteDir, 'pages', '010-guide', 'pages', '010-detail'), { recursive: true });
-		await writeFile(path.join(siteDir, 'pages', '010-guide', 'pages', '010-detail', 'content.md'), `# Detail
+		await mkdir(path.join(siteDir, 'root/pages', '010-guide', 'pages', '010-detail'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'pages', '010-detail', 'content.md'), `# Detail
 
 Inherited page content.
 `);
-		await writeFile(path.join(siteDir, 'pages', '010-guide', 'theme.yaml'), `layout:
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'theme.yaml'), `layout:
   contentSpacing: spacious
   textWidth: wide
 sections:
   backgroundPattern: uniform
 `);
-		await writeFile(path.join(siteDir, 'pages', '010-guide', 'pages', '010-detail', 'theme.yaml'), `layout:
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'pages', '010-detail', 'theme.yaml'), `layout:
   textWidth: narrow
 `);
 
-		await writeFile(path.join(siteDir, 'theme.yaml'), 'layout:\n  textWidth: wide\n');
-		await mkdir(path.join(siteDir, 'pages', '020-sibling'));
-		await writeFile(path.join(siteDir, 'pages', '020-sibling', 'content.md'), '# Sibling\n');
+		await writeFile(path.join(siteDir, 'root/theme.yaml'), 'layout:\n  textWidth: wide\n');
+		await mkdir(path.join(siteDir, 'root/pages', '020-sibling'));
+		await writeFile(path.join(siteDir, 'root/pages', '020-sibling', 'content.md'), '# Sibling\n');
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const rootHtml = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
 		const pageHtml = await readFile(path.join(path.dirname(siteDir), 'dist', 'guide', 'index.html'), 'utf8');
@@ -181,14 +181,14 @@ test('page metadata, navigation logo, and page listing have separate roles', asy
 		await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), `logo:
   height: 2rem
 `);
-		await writeFile(path.join(siteDir, 'content.md'), `# Welcome
+		await writeFile(path.join(siteDir, 'root/content.md'), `# Welcome
 
 ## Intro {#intro}
 
 Homepage content.
 `);
-		await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
-		await writeFile(path.join(siteDir, 'pages', '010-guide', 'content.md'), `---
+		await mkdir(path.join(siteDir, 'root/pages', '010-guide'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'content.md'), `---
 page:
   description: The visible guide page.
 ---
@@ -196,8 +196,8 @@ page:
 # Guide
 Guide content.
 `);
-		await mkdir(path.join(siteDir, 'pages', '020-private'), { recursive: true });
-		await writeFile(path.join(siteDir, 'pages', '020-private', 'content.md'), `---
+		await mkdir(path.join(siteDir, 'root/pages', '020-private'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/pages', '020-private', 'content.md'), `---
 navigation:
   listed: false
 ---
@@ -243,10 +243,10 @@ test('social sharing metadata uses absolute base-path URLs and one conventional 
 		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\n');
 		await mkdir(path.join(siteDir, 'public'), { recursive: true });
 		await writeFile(path.join(siteDir, 'public', 'social-image.jpg'), 'preview');
-		await writeFile(path.join(siteDir, 'content.md'), '# Home\n\nHome content.\n');
-		await mkdir(path.join(siteDir, 'pages', '010-guides', 'pages', '010-install'), { recursive: true });
-		await writeFile(path.join(siteDir, 'pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
-		await writeFile(path.join(siteDir, 'pages', '010-guides', 'pages', '010-install', 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), '# Home\n\nHome content.\n');
+		await mkdir(path.join(siteDir, 'root/pages', '010-guides', 'pages', '010-install'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
+		await writeFile(path.join(siteDir, 'root/pages', '010-guides', 'pages', '010-install', 'content.md'), `---
 page:
   description: Install the project.
 ---
@@ -280,7 +280,7 @@ test('footer build information uses the site language and fixed formatting', asy
 		await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), `footer:
   buildInfo: true
 `);
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Footer build information.
 ---
@@ -303,8 +303,8 @@ Content.
 test('page theme cannot define navigation logo settings', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await mkdir(path.join(siteDir, 'pages', '010-guide'), { recursive: true });
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await mkdir(path.join(siteDir, 'root/pages', '010-guide'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Root page
 ---
@@ -315,7 +315,7 @@ page:
 
 Root content.
 `);
-		await writeFile(path.join(siteDir, 'pages', '010-guide', 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'content.md'), `---
 page:
   description: Guide page
 ---
@@ -323,7 +323,7 @@ page:
 # Guide
 Page content.
 `);
-		await writeFile(path.join(siteDir, 'pages', '010-guide', 'theme.yaml'), `logo:
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'theme.yaml'), `logo:
   height: 3rem
 `);
 
@@ -404,7 +404,7 @@ test('multiple conventional social sharing images stop config validation', async
 test('automatic H2 and H3 ids render while explicit ids remain stable', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -437,7 +437,7 @@ Explicit identifier.
 test('content:check fails when a page repeats a section id', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -468,7 +468,7 @@ Second.
 test('content:check reports collisions between automatic H2 and H3 ids', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 ---
@@ -501,7 +501,7 @@ Topic text.
 test('content:check rejects removed sections frontmatter', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), `---
+		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
 sections:
@@ -531,10 +531,10 @@ Text.
 test('invalid homepage overrides produce a focused build diagnostic without a stack trace', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		await writeFile(path.join(siteDir, 'content.md'), '# Home\n');
-		await writeFile(path.join(siteDir, 'theme.yaml'), 'palette: near-monochrome\n');
+		await writeFile(path.join(siteDir, 'root/content.md'), '# Home\n');
+		await writeFile(path.join(siteDir, 'root/theme.yaml'), 'palette: near-monochrome\n');
 		await assert.rejects(runNorna(['--site-dir', siteDir, 'build']), (error) => {
-			assert.match(error.output, /site\/theme\.yaml/);
+			assert.match(error.output, /site\/root\/theme\.yaml/);
 			assert.match(error.output, /Move "palette:" to site-config\/site-theme\.yaml/);
 			assert.doesNotMatch(error.output, /file:\/\/|at ChildProcess|run-command\.mjs:\d/);
 			return true;

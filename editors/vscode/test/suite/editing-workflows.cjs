@@ -76,7 +76,7 @@ async function runEditingWorkflows({ openDocument, waitFor, getCompletions }) {
 	}
 
 	// Every save cycle starts dirty: saving a clean document can skip save participants.
-	for (const relativePath of ['site/pages/090-roundtrip/content.md', 'site/pages/100-crlf/content.md']) {
+	for (const relativePath of ['site/root/pages/090-roundtrip/content.md', 'site/root/pages/100-crlf/content.md']) {
 		let document = await openDocument(relativePath);
 		const original = document.getText();
 		assert.equal(vscode.workspace.getConfiguration('editor', document).get('formatOnSave'), false);
@@ -94,7 +94,7 @@ async function runEditingWorkflows({ openDocument, waitFor, getCompletions }) {
 		console.log(`PASS edit/save/close/reopen/edit/save: ${relativePath} (3 dirty saves; exact LF/CRLF bytes).`);
 	}
 
-	const authorPath = 'site/pages/080-authoring/content.md';
+	const authorPath = 'site/root/pages/080-authoring/content.md';
 	let author = await openDocument(authorPath);
 	const editor = await vscode.window.showTextDocument(author);
 	const initialAuthorSource = author.getText();

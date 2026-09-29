@@ -27,7 +27,7 @@ export const documentationLinkForVersion = (version, label, file, anchor) => {
 	const reference = version ? `v${version}` : 'main';
 	const source = usesLegacyReference(version)
 		? `docs/${file}${anchor ? `#${anchor}` : ''}`
-		: `${destination.source}${destination.anchor ? `#${destination.anchor}` : ''}`;
+		: `${version === '0.7.27' ? destination.source.replace('site/root/pages/', 'site/pages/') : destination.source}${destination.anchor ? `#${destination.anchor}` : ''}`;
 	const sourceLabel = version ? `Norna ${version} source reference` : 'Reference source';
 	return `[${label} (current)](${destination.url})\n\n[${sourceLabel}](${repositoryRoot}${reference}/${source})`;
 };

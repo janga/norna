@@ -39,10 +39,10 @@ try {
 	assert.match(deployWatchHelpResult.stdout, /Default: deploy\.yml/);
 
 	const directSiteRoot = path.join(tempRoot, 'current-directory-site');
-	await mkdir(directSiteRoot, { recursive: true });
+	await mkdir(path.join(directSiteRoot, 'root'), { recursive: true });
 	await mkdir(path.join(directSiteRoot, 'site-config'), { recursive: true });
 	await writeFile(path.join(directSiteRoot, 'site-config/settings.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(directSiteRoot, 'content.md'), '# Direct Site\n\n## Intro {#intro}\n\nText.\n');
+	await writeFile(path.join(directSiteRoot, 'root/content.md'), '# Direct Site\n\n## Intro {#intro}\n\nText.\n');
 	const directSiteProjectRoot = await realpath(tempRoot);
 	const directSiteDoctorResult = runCli(['doctor'], {
 		cwd: directSiteRoot,
@@ -120,7 +120,7 @@ try {
 	assert.equal(customStandalonePackageJson.scripts['norna:check'], 'norna --site-dir presentation check');
 	assert.equal(customStandalonePackageJson.scripts['norna:navigation:review'], 'norna --site-dir presentation navigation:review');
 	assert.equal(customStandalonePackageJson.scripts['norna:build'], 'norna --site-dir presentation build');
-	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'content.md'));
+	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'root', 'content.md'));
 	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'site-config/settings.yaml'));
 	await readFile(path.join(customStandaloneSiteRoot, 'presentation', 'site-config', 'site-theme.yaml'));
 
@@ -147,7 +147,7 @@ try {
 	assert.equal(mixedPackageJson.scripts['norna:check'], 'norna --site-dir presentation check');
 	assert.equal(mixedPackageJson.scripts['norna:engine:update'], 'norna --site-dir presentation engine:update');
 	assert.equal(mixedPackageJson.scripts['norna:engine:version'], 'norna --site-dir presentation engine:version');
-	await readFile(path.join(mixedProjectRoot, 'presentation', 'content.md'));
+	await readFile(path.join(mixedProjectRoot, 'presentation', 'root', 'content.md'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'site-config/settings.yaml'));
 	await readFile(path.join(mixedProjectRoot, 'presentation', 'site-config', 'site-theme.yaml'));
 	assert.match(

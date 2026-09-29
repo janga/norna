@@ -123,14 +123,14 @@ async function run() {
 	);
 	assert.ok(invalidTypographyDiagnostics.some((item) => /Property headings is not allowed/i.test(item.message)));
 
-	const emptyPage = await openDocument('site/pages/020-empty/content.md');
+	const emptyPage = await openDocument('site/root/pages/020-empty/content.md');
 	const emptyItems = await getCompletions(emptyPage, 0, 0);
 	const pageSnippet = emptyItems.find((item) => labelOf(item) === 'Norna content page');
 	assert.ok(pageSnippet, 'Empty content.md did not offer the Norna page snippet.');
 	assert.match(pageSnippet.insertText?.value ?? String(pageSnippet.insertText), /^---\npage:\n  description:/);
 	assert.match(pageSnippet.insertText?.value ?? String(pageSnippet.insertText), /\n# \$\{2:Page title\}\n/);
 
-	const blockPage = await openDocument('site/pages/030-block/content.md');
+	const blockPage = await openDocument('site/root/pages/030-block/content.md');
 	const blockItems = await getCompletions(blockPage, 4);
 	for (const block of ['image-stack', 'image-carousel', 'card-list']) {
 		assert.ok(blockItems.some((item) => labelOf(item) === block), `Missing block completion ${block}.`);
@@ -169,7 +169,7 @@ async function run() {
 		await widgetBrowser.close();
 	}
 
-	const calloutPage = await openDocument('site/pages/050-callouts/content.md');
+	const calloutPage = await openDocument('site/root/pages/050-callouts/content.md');
 	const calloutLine = Array.from({ length: calloutPage.lineCount }, (_value, line) => line)
 		.find((line) => calloutPage.lineAt(line).text === '> [!');
 	const calloutItems = await waitFor(
@@ -184,7 +184,7 @@ async function run() {
 	assert.match(tip.insertText?.value ?? String(tip.insertText), /> \[!TIP\]\n> \$\{1:Callout text\}/);
 	assert.match(documentationOf(tip), /reference\/content\/callouts\//);
 
-	const saveCalloutPage = await openDocument('site/pages/060-save-callout/content.md');
+	const saveCalloutPage = await openDocument('site/root/pages/060-save-callout/content.md');
 	const saveEdit = new vscode.WorkspaceEdit();
 	saveEdit.insert(saveCalloutPage.uri, new vscode.Position(saveCalloutPage.lineCount - 1, 0), '\n');
 	await vscode.workspace.applyEdit(saveEdit);
@@ -203,7 +203,7 @@ async function run() {
 	assert.equal(vscode.workspace.getConfiguration('editor', saveCalloutPage).get('formatOnSave'), false);
 	assert.equal(saveCalloutPage.getText(), firstSavedCalloutText);
 
-	const embedded = await openDocument('site/pages/070-embedded/content.md');
+	const embedded = await openDocument('site/root/pages/070-embedded/content.md');
 	const fieldItems = await getCompletions(embedded, 8);
 	for (const field of ['image', 'link', 'badge-text']) {
 		const properties = fieldItems.filter((item) => labelOf(item) === field && item.kind === vscode.CompletionItemKind.Property);
@@ -226,7 +226,7 @@ async function run() {
 	assert.equal(embeddedIssues[0].source, 'Norna');
 	assert.equal(embeddedIssues[0].range.start.line, 8, 'Highlight the duplicate key, not the code fence.');
 
-	const home = await openDocument('site/content.md');
+	const home = await openDocument('site/root/content.md');
 	const imageLine = Array.from({ length: home.lineCount }, (_value, line) => line)
 		.find((line) => home.lineAt(line).text === '  - image: ');
 	const imageItems = await getCompletions(home, imageLine);
@@ -261,7 +261,7 @@ async function run() {
 		'Norna Markdown diagnostics did not reach the Problems model.',
 	);
 	assert.ok(diagnostics.every((diagnostic) => diagnostic.source === 'Norna'));
-	const unclosed = await openDocument('site/pages/040-unclosed/content.md');
+	const unclosed = await openDocument('site/root/pages/040-unclosed/content.md');
 	const unclosedDiagnostic = await waitFor(
 		() => vscode.languages.getDiagnostics(unclosed.uri)
 			.find((diagnostic) => diagnostic.source === 'Norna' && diagnostic.code === 'unclosed-norna-block'),

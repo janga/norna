@@ -181,9 +181,9 @@ details that do not affect these author choices can be resolved in the brief.
   site is shared preparation for the visual proposal, not a dependency on
   another new editor feature.
 - Current behavior is defined in the
-  [editor reference](../../../site/pages/032-reference/pages/060-workflows/pages/010-editor/content.md),
-  [managed-image reference](../../../site/pages/032-reference/pages/010-site/pages/050-images/content.md)
-  and [theme reference](../../../site/pages/032-reference/pages/020-configuration/pages/060-theme/content.md).
+  [editor reference](../../../site/root/pages/032-reference/pages/060-workflows/pages/010-editor/content.md),
+  [managed-image reference](../../../site/root/pages/032-reference/pages/010-site/pages/050-images/content.md)
+  and [theme reference](../../../site/root/pages/032-reference/pages/020-configuration/pages/060-theme/content.md).
   Native view guidance: [VS Code views](https://code.visualstudio.com/api/ux-guidelines/views).
 
 ## Ready For Implementation When

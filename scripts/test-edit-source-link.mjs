@@ -14,9 +14,9 @@ assert.equal(
 assert.equal(
 	getEditSourceUrl({
 		baseUrl: 'https://github.com/example/project/edit/main/packages/docs/',
-		sourcePath: 'site/pages/010-guides/pages/020-first steps/content.md',
+		sourcePath: 'site/root/pages/010-guides/pages/020-first steps/content.md',
 	}),
-	'https://github.com/example/project/edit/main/packages/docs/site/pages/010-guides/pages/020-first%20steps/content.md',
+	'https://github.com/example/project/edit/main/packages/docs/site/root/pages/010-guides/pages/020-first%20steps/content.md',
 );
 assert.equal(
 	getEditSourceUrl({
@@ -43,7 +43,7 @@ for (const hostname of ['192.168.1.12', 'docs.example.com', '']) {
 const linkOptions = {
 	baseUrl: 'https://github.com/example/project/edit/main/',
 	localEditor: 'vscode',
-	sourceLabel: 'site/content.md',
+	sourceLabel: 'site/root/content.md',
 	sourcePath: '/Users/example/project/site/content.md',
 };
 assert.deepEqual(resolveEditSourceTarget({
@@ -59,7 +59,7 @@ assert.deepEqual(resolveEditSourceTarget({
 	development: true,
 	hostname: '192.168.1.12',
 }), {
-	href: 'https://github.com/example/project/edit/main/site/content.md',
+	href: 'https://github.com/example/project/edit/main/site/root/content.md',
 	kind: 'remote',
 });
 assert.deepEqual(resolveEditSourceTarget({
@@ -67,7 +67,7 @@ assert.deepEqual(resolveEditSourceTarget({
 	development: false,
 	hostname: '127.0.0.1',
 }), {
-	href: 'https://github.com/example/project/edit/main/site/content.md',
+	href: 'https://github.com/example/project/edit/main/site/root/content.md',
 	kind: 'remote',
 });
 assert.equal(resolveEditSourceTarget({
@@ -104,7 +104,7 @@ assert.throws(
 	/Unknown local editor "unknown".*vscode/,
 );
 assert.throws(
-	() => getLocalEditorSourceUrl({ editor: 'vscode', sourcePath: 'site/content.md' }),
+	() => getLocalEditorSourceUrl({ editor: 'vscode', sourcePath: 'site/root/content.md' }),
 	/Local editor source path must be absolute/,
 );
 

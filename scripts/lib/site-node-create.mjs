@@ -1,3 +1,4 @@
+import { getSiteSourcePaths } from './site-conventions.mjs';
 import { mkdir, realpath, rmdir, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { dump as dumpYaml } from 'js-yaml';
@@ -49,7 +50,7 @@ const canonicalDirectory = async (directory) => realpath(directory).catch((error
 });
 
 const resolveParent = async ({ nodes, parent, siteRoot, invocationDirectory }) => {
-	const sitePagesDir = path.join(siteRoot, 'pages');
+	const sitePagesDir = getSiteSourcePaths(siteRoot).pages;
 	if (parent !== null) {
 		const parentPath = normalizeParentPath(parent);
 		if (!parentPath) {
@@ -63,7 +64,7 @@ const resolveParent = async ({ nodes, parent, siteRoot, invocationDirectory }) =
 	}
 
 	const currentDirectory = await canonicalDirectory(invocationDirectory);
-	if (currentDirectory === await canonicalDirectory(sitePagesDir)) {
+	if (currentDirectory === await canonicalDirectory(sitePagesDir) || currentDirectory === await canonicalDirectory(siteRoot)) {
 		return { collectionDir: sitePagesDir, node: null, pagePath: '' };
 	}
 	let node = null;

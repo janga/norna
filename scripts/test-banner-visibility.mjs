@@ -34,7 +34,7 @@ const runCli = (args, env = {}) => {
 };
 
 try {
-	await mkdir(siteDir, { recursive: true });
+	await mkdir(path.join(siteDir, 'root'), { recursive: true });
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeFile(path.join(siteDir, 'public', 'robots.txt'), 'User-agent: *\nAllow: /\n');
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
@@ -56,7 +56,7 @@ palette: near-monochrome
     title: Active banner
     text: Active banner text.
 `);
-	await writeFile(path.join(siteDir, 'content.md'), `---
+	await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Test site for temporary banners.
 ---

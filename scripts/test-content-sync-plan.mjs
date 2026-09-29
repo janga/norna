@@ -74,7 +74,7 @@ const contactPage = page('020-contact');
 
 	assert.equal(plan.moves.length, 0);
 	assert.equal(plan.issues.length, 1);
-	assert.match(plan.issues[0].issue.message, /it is still referenced from site\/content\.md \[intro\]/);
+	assert.match(plan.issues[0].issue.message, /it is still referenced from site\/root\/content\.md \[intro\]/);
 	assert.equal(plan.resolvedPathByReference.get(sourceReference), sourcePath);
 	assert.equal(plan.resolvedPathByReference.has(targetReference), false);
 }

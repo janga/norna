@@ -52,7 +52,7 @@ function registerSiteTree(context, output) {
 
 	const serviceFor = async (root) => {
 		if (!vscode.workspace.isTrusted) throw new Error('Trust this workspace before using the Norna site tree.');
-		let project = getNornaProjectContext(path.join(root, 'content.md')) ?? getNornaProjectContext(path.join(root, 'site-config/settings.yaml'));
+		let project = getNornaProjectContext(path.join(root, 'root', 'content.md')) ?? getNornaProjectContext(path.join(root, 'site-config/settings.yaml'));
 		if (!project || project.siteRoot !== root) {
 			const nornaPackage = findNornaPackage(root);
 			project = { nornaPackage, editorCompatible: nornaPackage?.manifest.editorApiVersion === supportedEditorApiVersion,
@@ -92,7 +92,7 @@ function registerSiteTree(context, output) {
 			for (const node of nodes.values()) if (node.siteRoot === site.siteRoot) {
 				if (node.problem && !node.issues?.length) add(node.sourcePath, node.problem);
 			}
-			for (const problem of site.problems ?? []) add(sourceNames.has(path.basename(problem.path)) ? problem.path : path.join(site.siteRoot, 'content.md'), problem.message);
+			for (const problem of site.problems ?? []) add(sourceNames.has(path.basename(problem.path)) ? problem.path : path.join(site.siteRoot, 'root', 'content.md'), problem.message);
 			for (const [filename, messages] of byFile) diagnostics.set(vscode.Uri.file(filename), [...messages].map((message) => {
 				const diagnostic = new vscode.Diagnostic(new vscode.Range(0, 0, 0, 1), message, vscode.DiagnosticSeverity.Error);
 				diagnostic.source = 'Norna site tree';
@@ -360,7 +360,7 @@ function registerSiteTree(context, output) {
 		let parentPath = '/';
 		if (insideSelected || (target.kind === 'directory' && target.role === 'pages')) parentPath = selected.url ?? '/';
 		else if (selected.kind !== 'site') {
-			const rootPage = selected.isHome && selected.sourcePath === path.join(selected.siteRoot, 'content.md');
+			const rootPage = selected.isHome && selected.sourcePath === path.join(selected.siteRoot, 'root', 'content.md');
 			const parent = ownerOf(selected.parent);
 			const choices = [
 				...(!selected.isHome || rootPage ? [{ label: `Inside “${selected.title}”`, description: selected.url, parentPath: selected.url }] : []),

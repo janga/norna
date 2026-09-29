@@ -1,3 +1,4 @@
+import { getSiteSourcePaths } from './lib/site-conventions.mjs';
 import { randomUUID } from 'node:crypto';
 import {
 	cp,
@@ -53,7 +54,7 @@ const assertNornaSite = async (siteDirectory) => {
 	await Promise.all([
 		assertFile(path.join(siteDirectory, 'site-config/settings.yaml'), 'site-config/settings.yaml'),
 		assertFile(path.join(siteDirectory, 'site-config', 'site-theme.yaml'), 'site-config/site-theme.yaml'),
-		assertFile(path.join(siteDirectory, 'content.md'), 'content.md'),
+		assertFile(getSiteSourcePaths(siteDirectory).content, 'root/content.md'),
 	]);
 };
 

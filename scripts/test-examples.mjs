@@ -19,10 +19,10 @@ try {
 		await mkdir(path.join(discoveryRoot, 'examples', category), { recursive: true });
 	}
 	const validSite = path.join(discoveryRoot, 'examples', 'complete-sites', 'valid', 'site');
-	await mkdir(validSite, { recursive: true });
+	await mkdir(path.join(validSite, 'root'), { recursive: true });
 	await mkdir(path.join(validSite, 'site-config'), { recursive: true });
 	await writeFile(path.join(validSite, 'site-config/settings.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(validSite, 'content.md'), '# Example\n');
+	await writeFile(path.join(validSite, 'root/content.md'), '# Example\n');
 	await mkdir(path.join(
 		discoveryRoot,
 		'examples',
@@ -75,8 +75,8 @@ const presetExamples = themePresetNames.map((presetName) => {
 	return { presetName, example };
 });
 const presetContent = async (siteDirectory) => ({
-	content: await readFile(path.join(siteDirectory, 'content.md'), 'utf8'),
-	images: await collectSourceManifest(path.join(siteDirectory, 'images')),
+	content: await readFile(path.join(siteDirectory, 'root/content.md'), 'utf8'),
+	images: await collectSourceManifest(path.join(siteDirectory, 'root/images')),
 });
 const canonicalPresetPages = await presetContent(presetExamples[0].example.siteDirectory);
 

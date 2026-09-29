@@ -91,11 +91,12 @@ try {
 	assert.equal(report.navigation.files.includes('sidebars.ts'), true);
 
 	await writeMigrationReport(report, reportDir, { sourceRoot });
+	assert.match(await readFile(path.join(reportDir, 'root/pages/010-problems/content.md'), 'utf8'), /listChildren: true/);
 	const reportJson = JSON.parse(await readFile(path.join(reportDir, 'migration-report.json'), 'utf8'));
 	assert.equal(reportJson.summary.findings, report.summary.findings);
-	assert.match(await readFile(path.join(reportDir, 'content.md'), 'utf8'), /Docusaurus migration audit/);
-	assert.match(await readFile(path.join(reportDir, 'content.md'), 'utf8'), /problems\/dm-[a-f0-9]{12}\//);
-	assert.match(await readFile(path.join(reportDir, 'pages', '010-problems', 'pages', '010-' + semanticCalloutProblem.id.toLowerCase(), 'content.md'), 'utf8'), /Representative occurrences/);
+	assert.match(await readFile(path.join(reportDir, 'root/content.md'), 'utf8'), /Docusaurus migration audit/);
+	assert.match(await readFile(path.join(reportDir, 'root/content.md'), 'utf8'), /problems\/dm-[a-f0-9]{12}\//);
+	assert.match(await readFile(path.join(reportDir, 'root/pages', '010-problems', 'pages', '010-' + semanticCalloutProblem.id.toLowerCase(), 'content.md'), 'utf8'), /Representative occurrences/);
 	const check = await execFileAsync(process.execPath, [
 		path.join(repoRoot, 'bin', 'norna.mjs'),
 		'--site-dir',

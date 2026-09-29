@@ -1,3 +1,4 @@
+import { getSiteSourcePaths } from './site-conventions.mjs';
 import { existsSync } from 'node:fs';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -46,7 +47,7 @@ export const getExampleSites = async (root) => {
 				if (await isGeneratedOnlyCacheDirectory(exampleDirectory, siteDirectory)) continue;
 				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing site-config/settings.yaml.`);
 			}
-			if (!existsSync(path.join(siteDirectory, 'content.md'))) {
+			if (!existsSync(getSiteSourcePaths(siteDirectory).content)) {
 				throw new Error(`Example ${path.relative(root, siteDirectory)} is missing content.md.`);
 			}
 

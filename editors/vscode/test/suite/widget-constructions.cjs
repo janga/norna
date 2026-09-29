@@ -18,7 +18,7 @@ const bodies = {
 
 async function runWidgetConstructions({ openDocument, waitFor, getCompletions }) {
 	const results = [];
-	const markdownPath = 'site/pages/120-widget/content.md';
+	const markdownPath = 'site/root/pages/120-widget/content.md';
 	const { extractNornaMarkdownBlockDiagnostics, nornaBlockTypes } = await import(pathToFileURL(
 		path.join(process.env.NORNA_EDITOR_TEST_ENGINE_ROOT, 'scripts/lib/norna-markdown-blocks.mjs'),
 	));
@@ -109,7 +109,7 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 			await accept(`automatic child list: ${prefix ? 'partial key' : 'blank key'}`,
 				`---\npage:\n  ${prefix}|CURSOR|\n---\n\n# Widget checks\n`,
 				'---\npage:\n  listChildren: true\n---\n\n# Widget checks\n',
-				'listChildren', 'widget-site/pages/010-overview/content.md');
+				'listChildren', 'widget-site/root/pages/010-overview/content.md');
 		}
 		for (const prefix of ['', 'tr']) {
 			await accept(`tree navigation: ${prefix ? 'partial value' : 'blank value'}`,
@@ -123,13 +123,13 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 		}
 		for (const prefix of ['', 'na']) {
 			await accept(`Homepage theme width: ${prefix || 'blank value'}`,
-				`layout:\n  textWidth: ${prefix}|CURSOR|\n`, 'layout:\n  textWidth: narrow\n', 'narrow', 'widget-site/theme.yaml');
+				`layout:\n  textWidth: ${prefix}|CURSOR|\n`, 'layout:\n  textWidth: narrow\n', 'narrow', 'widget-site/root/theme.yaml');
 		}
 		for (const prefix of ['', 'tr']) {
 			await accept(`Shared content footer: ${prefix || 'blank value'}`,
 				`footer:\n  buildInfo: ${prefix}|CURSOR|\n`, 'footer:\n  buildInfo: true\n', 'true', 'widget-site/site-config/shared-content.yaml');
 		}
-		const homepageTheme = await openDocument('widget-site/theme.yaml');
+		const homepageTheme = await openDocument('widget-site/root/theme.yaml');
 		await vscode.window.activeTextEditor.edit((edit) => edit.replace(new vscode.Range(homepageTheme.positionAt(0), homepageTheme.positionAt(homepageTheme.getText().length)), ''));
 		const pageFields = await waitFor(() => getCompletions(homepageTheme, 0, 0),
 			(items) => items.some((item) => item.label === 'layout'), 'An empty homepage theme did not offer page-theme fields.');
@@ -147,7 +147,7 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 			return;
 		}
 
-		const usagePath = 'usage-site/content.md';
+		const usagePath = 'usage-site/root/content.md';
 		for (const type of ['image-stack', 'image-carousel', 'card-list']) {
 			for (const filename of ['z-unused.svg', 'a-used.svg', 'y-other.svg', 'b-used.svg']) {
 				const source = `# Image usage\n\n\`\`\`${type}\nitems:\n  - image: a-used.svg\n  - image: b-used.svg\n  - image: |CURSOR|\n\`\`\`\n`;

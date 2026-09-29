@@ -5,7 +5,7 @@ import { runReviewEnvironment } from './review-environments.mjs';
 import { captureReviewPage } from './review-capture.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const consumers = ['site/pages/010-features/images', 'site/pages/030-examples/images'];
+const consumers = ['site/root/pages/010-features/images', 'site/root/pages/030-examples/images'];
 
 // Replace only the registered disposable scratch copy, never a maintained site.
 for (const [scenario, route, pageMenu] of [
@@ -42,7 +42,7 @@ const singlePreview = await captureReviewPage({
 	environment: singleShelter, root,
 	rawArguments: ['.', '--viewport', '1200x800'],
 });
-await copyFile(singlePreview.outputPath, path.join(root, 'site/pages/030-examples/images/single-page-dog-shelter.png'));
+await copyFile(singlePreview.outputPath, path.join(root, 'site/root/pages/030-examples/images/single-page-dog-shelter.png'));
 
 await runReviewEnvironment(['scratch', 'prepare', '--from', 'examples/complete-sites/dog-shelter-multi-page/site', '--replace']);
 const shelter = await runReviewEnvironment(['start', 'scratch']);
@@ -50,14 +50,14 @@ const multiPreview = await captureReviewPage({
 	environment: shelter, root,
 	rawArguments: ['.', '--viewport', '1200x800'],
 });
-await copyFile(multiPreview.outputPath, path.join(root, 'site/pages/030-examples/images/multi-page-dog-shelter.png'));
+await copyFile(multiPreview.outputPath, path.join(root, 'site/root/pages/030-examples/images/multi-page-dog-shelter.png'));
 for (const [name, options] of [['page', []], ['navigation', ['--menu', 'compact']]]) {
 	const capture = await captureReviewPage({
 		environment: shelter, root,
 		rawArguments: ['dogs/', '--viewport', '390x600', ...options],
 	});
 	await copyFile(capture.outputPath, path.join(root,
-		`site/pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-${name}.png`));
+		`site/root/pages/020-getting-started/pages/020-grow-your-site/images/dog-shelter-mobile-${name}.png`));
 }
 
 // Leave the illustrated H2 menus available for interactive review.

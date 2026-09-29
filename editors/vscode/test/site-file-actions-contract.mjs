@@ -12,11 +12,11 @@ const setup = async (t) => {
 	const root = await mkdtemp(path.join(os.tmpdir(), 'norna-file-actions-'));
 	t.after(() => rm(root, { recursive: true, force: true }));
 	const siteRoot = path.join(root, 'site');
-	const pagePath = path.join(siteRoot, 'pages/010-page/content.md');
+	const pagePath = path.join(siteRoot, 'root/pages/010-page/content.md');
 	await mkdir(path.dirname(pagePath), { recursive: true });
 	await mkdir(path.join(siteRoot, 'site-config'));
 	await writeFile(path.join(siteRoot, 'site-config/settings.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(siteRoot, 'content.md'), '# Home\n');
+	await writeFile(path.join(siteRoot, 'root/content.md'), '# Home\n');
 	await writeFile(pagePath, '# Page\n');
 	const source = path.join(root, 'source.svg');
 	await writeFile(source, '<svg/>');
@@ -107,7 +107,7 @@ test('page removal cancels, refuses dirty/stale files, then trashes only the rev
 	await f.run('removePage');
 	assert.equal(f.trashed[0].source, path.dirname(f.page.sourcePath));
 	assert.equal(await readFile(path.join(f.trashed[0].destination, 'content.md'), 'utf8'), '# Changed\n');
-	assert.equal(await readFile(path.join(f.page.siteRoot, 'content.md'), 'utf8'), '# Home\n');
+	assert.equal(await readFile(path.join(f.page.siteRoot, 'root/content.md'), 'utf8'), '# Home\n');
 });
 
 test('replacement trashes old bytes and preserves both the selected source and references', async (t) => {

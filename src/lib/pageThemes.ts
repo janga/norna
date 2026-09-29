@@ -4,7 +4,7 @@ import {
 	validatePageThemeYamlStructure,
 } from '../../scripts/lib/site-content.mjs';
 import { pageThemeSchema } from '../../scripts/lib/schema-definitions.mjs';
-import { siteDir, siteDirLabel, sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
+import { siteHomePageDir, siteDirLabel, sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
 import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
 import { parseYamlConfig } from '../../scripts/lib/yaml-config.mjs';
 import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
@@ -24,13 +24,13 @@ export const getPageTheme = async (pageDirectory: string | null): Promise<PageTh
 	for (const pageAncestor of pageAncestors) {
 		const themeSegments = pageAncestor.split('/');
 		const isHome = pageAncestor === homePageDirectory;
-		const themePath = isHome ? path.join(siteDir, 'theme.yaml') : path.join(sitePagesDir, ...themeSegments, 'theme.yaml');
+		const themePath = isHome ? path.join(siteHomePageDir, 'theme.yaml') : path.join(sitePagesDir, ...themeSegments, 'theme.yaml');
 		const source = await readFile(themePath, 'utf8').catch((error) => {
 			if (error?.code === 'ENOENT') return null;
 			throw error;
 		});
 		if (!source) continue;
-		const themeLabel = isHome ? `${siteDirLabel}/theme.yaml` : `${sitePagesLabel}/${themeSegments.join('/')}/theme.yaml`;
+		const themeLabel = isHome ? `${siteDirLabel}/root/theme.yaml` : `${sitePagesLabel}/${themeSegments.join('/')}/theme.yaml`;
 
 		const data = parseYamlConfig(source, themeLabel, {
 			schema: pageThemeSchema,

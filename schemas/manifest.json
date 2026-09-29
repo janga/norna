@@ -1,6 +1,6 @@
 {
   "editorApiVersion": 3,
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "blockSchemas": {
     "image-stack": "image-stack.schema.json",
     "image-carousel": "image-carousel.schema.json",

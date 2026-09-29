@@ -37,7 +37,7 @@ const readFixtureFile = (root, relativePath) => readFile(path.join(root, relativ
 const writeSiteFiles = async (root, siteDirectory = 'custom-site') => {
 	await writeFixtureFile(root, `${siteDirectory}/site-config/settings.yaml`, 'url: https://example.com/docs/\n');
 	await writeFixtureFile(root, `${siteDirectory}/site-config/site-theme.yaml`, 'preset: documentation\n');
-	await writeFixtureFile(root, `${siteDirectory}/content.md`, '# Home\n');
+	await writeFixtureFile(root, `${siteDirectory}/root/content.md`, '# Home\n');
 };
 
 const withTempProject = async (run) => {
@@ -53,10 +53,10 @@ const withTempProject = async (run) => {
 test('site:public copies configured public files, removes stale generated public files, and keeps images output', async () => {
 	await withTempProject(async (root) => {
 		await writeSiteFiles(root);
-		await writeFixtureFile(root, 'custom-site/pages/010-zeta/content.md', '# Zeta\n');
-		await writeFixtureFile(root, 'custom-site/pages/020-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
-		await writeFixtureFile(root, 'custom-site/pages/020-guides/pages/010-installation/content.md', '# Installation\n');
-		await writeFixtureFile(root, 'custom-site/pages/030-hidden/content.md', `---
+		await writeFixtureFile(root, 'custom-site/root/pages/010-zeta/content.md', '# Zeta\n');
+		await writeFixtureFile(root, 'custom-site/root/pages/020-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
+		await writeFixtureFile(root, 'custom-site/root/pages/020-guides/pages/010-installation/content.md', '# Installation\n');
+		await writeFixtureFile(root, 'custom-site/root/pages/030-hidden/content.md', `---
 navigation:
   listed: false
 ---

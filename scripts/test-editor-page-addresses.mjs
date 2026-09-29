@@ -17,9 +17,9 @@ const fixture = async (t) => {
 	};
 	await write('site-config/settings.yaml', 'url: https://example.com/manual/\nsearch: true\n');
 	await write('site-config/site-theme.yaml', 'preset: editorial\n');
-	const home = await write('content.md', '# Home\n\n[Guide](/guide/)\n');
-	const sourcePath = await write('pages/010-guide/content.md', '---\npage:\n  aliases:\n    - /old-guide/\n---\n\n# Guide\n\n## Read\n\n[My child](child/)\n');
-	const child = await write('pages/010-guide/pages/020-child/content.md', '# Child\n\n[Parent](../)\n');
+	const home = await write('root/content.md', '# Home\n\n[Guide](/guide/)\n');
+	const sourcePath = await write('root/pages/010-guide/content.md', '---\npage:\n  aliases:\n    - /old-guide/\n---\n\n# Guide\n\n## Read\n\n[My child](child/)\n');
+	const child = await write('root/pages/010-guide/pages/020-child/content.md', '# Child\n\n[Parent](../)\n');
 	return { siteRoot, sourcePath, home, child, write };
 };
 const applyEdits = (source, edits) => [...edits].sort((a, b) => b.start - a.start).reduce((text, edit) => text.slice(0, edit.start) + edit.text + text.slice(edit.end), source);
@@ -30,8 +30,8 @@ test('removal policies protect required files and describe optional file scope',
 		await assert.rejects(planEditorRemoval({ ...f, sourcePath: f.home, filePath: path.join(f.siteRoot, name) }), /cannot be removed separately/);
 	}
 	for (const [file, sourcePath, effect] of [
-		['theme.yaml', f.home, /Other pages are unchanged/],
-		['pages/010-guide/theme.yaml', f.sourcePath, /descendants/],
+		['root/theme.yaml', f.home, /Other pages are unchanged/],
+		['root/pages/010-guide/theme.yaml', f.sourcePath, /descendants/],
 		['site-config/shared-content.yaml', f.home, /whole site/],
 		['public/robots.txt', f.home, /no longer be published/],
 	]) {
@@ -50,7 +50,7 @@ test('removal policies protect required files and describe optional file scope',
 
 test('incoming links resolve aliases, anchors, relative and card links, and exclude a deleted branch', async (t) => {
 	const f = await fixture(t);
-	const other = await f.write('pages/030-other/content.md', '# Other\n');
+	const other = await f.write('root/pages/030-other/content.md', '# Other\n');
 	const sources = new Map([[other, '# Other\n\n[Alias](/old-guide/#read)\n[Child](../guide/child/)\n[External](https://example.com/manual/guide/)\n[Reference][guide]\n\n[guide]: /guide/\n\n```card-list\nitems:\n  - title: Guide\n    link: /guide/\n```\n']]);
 	const usage = await getEditorIncomingLinks({ ...f, sources });
 	assert.equal(usage.references.filter((entry) => entry.sourcePath === other).length, 3);
@@ -62,7 +62,7 @@ test('incoming links resolve aliases, anchors, relative and card links, and excl
 	assert.equal((await getEditorIncomingLinks({ ...f, sources, alias: '/old-guide/' })).references.length, 1);
 	sources.set(other, '# Other\n');
 	assert.notEqual((await planEditorRemoval({ ...f, sources })).fingerprint, plan.fingerprint);
-	const broken = await f.write('pages/040-broken/content.md', '---\npage: [\n---\n# Broken\n');
+	const broken = await f.write('root/pages/040-broken/content.md', '---\npage: [\n---\n# Broken\n');
 	const incomplete = await planEditorRemoval(f);
 	assert.ok(incomplete.usage.incomplete.some((message) => message.includes('040-broken')));
 	assert.ok(incomplete.usage.references.some((entry) => entry.sourcePath === f.home));
@@ -73,7 +73,7 @@ test('addresses distinguish the site prefix, homepage, overview pages and dirty 
 	const f = await fixture(t);
 	assert.deepEqual(await getEditorPageAddresses(f), { internalLink: '/guide/', webAddress: 'https://example.com/manual/guide/', segment: 'guide', aliases: ['/old-guide/'], incomplete: [] });
 	assert.equal((await getEditorPageAddresses({ ...f, sourcePath: f.home })).webAddress, 'https://example.com/manual/');
-	const overview = await f.write('pages/030-group/content.md', '---\npage:\n  listChildren: true\n---\n# Group\n');
+	const overview = await f.write('root/pages/030-group/content.md', '---\npage:\n  listChildren: true\n---\n# Group\n');
 	assert.equal((await getEditorPageAddresses({ ...f, sourcePath: overview })).internalLink, '/group/');
 	const sources = new Map([[f.sourcePath, '---\npage:\n  aliases: [/draft/]\n---\n# Guide\n']]);
 	assert.deepEqual((await getEditorPageAddresses({ ...f, sources })).aliases, ['/draft/']);
@@ -95,7 +95,7 @@ test('alias edits preserve prose, comments and LF/CRLF; reject collisions and in
 			await assert.rejects(edit([alias]));
 		}
 		await assert.rejects(edit(['/repeat/', '/repeat/']));
-		const other = await f.write('pages/030-other/content.md', '# Other\n');
+		const other = await f.write('root/pages/030-other/content.md', '# Other\n');
 		await assert.rejects(edit(['/taken/'], { sources: new Map([[other, '---\npage:\n  aliases: [/taken/]\n---\n# Other\n']]) }), /conflicts/);
 		await f.write('public/public-guide/index.html', 'A public file');
 		await assert.rejects(edit(['/public-guide/']), /conflicts/);
@@ -117,7 +117,7 @@ test('URL segment changes preview then reuse the page-move transaction and updat
 	// then rename this page. Both actions must agree on the source format.
 	const source = await readFile(f.sourcePath, 'utf8');
 	await writeFile(f.sourcePath, applyEdits(source, await editSiteNodeInformation({ ...f, source, field: 'aliases', value: ['/old-guide/', '/archive/guide/'] })));
-	await f.write('pages/010-guide/images/example.svg', '<svg/>');
+	await f.write('root/pages/010-guide/images/example.svg', '<svg/>');
 	const plan = await planEditorPageAddress({ ...f, segment: 'handbook' });
 	assert.equal(plan.webTo, 'https://example.com/manual/handbook/');
 	assert.equal(path.basename(plan.destinationDirectory), '010-handbook');
@@ -139,7 +139,7 @@ test('rename rejects stale plans, dirty sources, collisions, home, categories an
 	await assert.rejects(planEditorPageAddress({ ...f, sourcePath: f.home, segment: 'moved' }), /homepage/);
 	await assert.rejects(planEditorPageAddress({ ...f, segment: 'moved', sources: new Map([[f.home, '# Dirty\n']]) }), /Save or undo/);
 	const plan = await planEditorPageAddress({ ...f, segment: 'moved' });
-	await f.write('content.md', '# Home changed\n');
+	await f.write('root/content.md', '# Home changed\n');
 	await assert.rejects(applyEditorPageAddress(plan), /site changed/);
 	assert.ok((await stat(path.dirname(f.sourcePath))).isDirectory());
 	await symlink(f.home, path.join(path.dirname(f.sourcePath), 'linked.md'));
