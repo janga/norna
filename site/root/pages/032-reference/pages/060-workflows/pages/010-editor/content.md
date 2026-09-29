@@ -277,9 +277,15 @@ or removing the offending file clears its tree indication after refresh.
 
 To change where a page appears in **Site Tree**, select **Move Page…** from its
 **…** or context menu. Right-click another page to place the moving page
-before, after, first or last under it. The temporary row previews the position
-and any changed addresses without writing files. Choose **Move Page Here…** to
-review and apply, or cancel. If a placement fails, the error dialog offers to
+before, after, first or last under it. The source page stays in place, marked
+**FROM** with its current address. A temporary **Preview:** row at the destination
+is marked **TO** with its proposed address. Both rows use an accent-colored icon.
+Expand the preview's details to see affected addresses and authored links.
+Under the preview, choose **Complete page move…**, then confirm **Complete page move**
+in the final dialog to apply, or choose **Cancel page move** to leave files unchanged.
+You can also cancel from the source page, including its context menu. Move status
+and controls do not appear in the Site Tree header. Another move cannot start
+until you finish or cancel this one. If a placement fails, the error dialog offers to
 open the affected file, try another placement or cancel the move. Closing that
 dialog without a choice also cancels. A new parent changes the page's address
 and those of its descendants; Norna updates supported internal links and automatically

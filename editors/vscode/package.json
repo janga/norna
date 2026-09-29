@@ -114,7 +114,8 @@
       {
         "command": "nornaEditor.movePage",
         "title": "Norna: Move Page…",
-        "icon": "$(move)"
+        "icon": "$(move)",
+        "enablement": "!nornaSiteTree.moveActive"
       },
       {
         "command": "nornaEditor.cancelMove",
@@ -139,8 +140,7 @@
       },
       {
         "command": "nornaEditor.acceptMovePreview",
-        "title": "Move Page Here…",
-        "icon": "$(check)"
+        "title": "Complete Page Move…"
       },
       {
         "command": "nornaEditor.importImage",
@@ -206,27 +206,27 @@
     "menus": {
       "view/title": [
         {
-          "command": "nornaEditor.cancelMove",
-          "when": "view == nornaSiteTree && nornaSiteTree.moveActive",
-          "group": "navigation@0"
-        },
-        {
           "command": "nornaEditor.chooseSite",
-          "when": "view == nornaSiteTree && nornaSiteTree.hasMultipleSites",
+          "when": "view == nornaSiteTree && nornaSiteTree.hasMultipleSites && !nornaSiteTree.moveActive",
           "group": "navigation@0"
         },
         {
           "command": "nornaEditor.addToPage",
-          "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
+          "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite && !nornaSiteTree.moveActive",
           "group": "navigation@1"
         },
         {
           "command": "nornaEditor.refreshSiteTree",
-          "when": "view == nornaSiteTree",
+          "when": "view == nornaSiteTree && !nornaSiteTree.moveActive",
           "group": "maintenance"
         }
       ],
       "view/item/context": [
+        {
+          "command": "nornaEditor.cancelMove",
+          "when": "view == nornaSiteTree && viewItem == nornaMoveSource",
+          "group": "0_move@1"
+        },
         {
           "command": "nornaEditor.placeMoveBefore",
           "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem == nornaPage",
@@ -250,16 +250,11 @@
         {
           "command": "nornaEditor.acceptMovePreview",
           "when": "view == nornaSiteTree && viewItem == nornaMovePreview",
-          "group": "inline@1"
-        },
-        {
-          "command": "nornaEditor.cancelMove",
-          "when": "view == nornaSiteTree && viewItem == nornaMovePreview",
-          "group": "inline@2"
+          "group": "0_move@1"
         },
         {
           "command": "nornaEditor.openSiteNode",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|File|OptionalFile|Image)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|MoveSource|File|OptionalFile|Image)$/",
           "group": "1_open@1"
         },
         {
@@ -269,7 +264,7 @@
         },
         {
           "command": "nornaEditor.movePage",
-          "when": "view == nornaSiteTree && viewItem == nornaPage",
+          "when": "view == nornaSiteTree && !nornaSiteTree.moveActive && viewItem == nornaPage",
           "group": "1_open@2.5"
         },
         {

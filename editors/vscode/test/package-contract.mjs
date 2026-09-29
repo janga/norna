@@ -34,6 +34,16 @@ assert.ok(extensionManifest.contributes.menus['view/title'].some((item) => item.
 assert.ok(extensionManifest.contributes.viewsWelcome.some((item) => item.view === 'nornaSiteTree'
 	&& item.contents.includes('command:nornaEditor.chooseSite')));
 const itemMenus = extensionManifest.contributes.menus['view/item/context'];
+assert.equal(extensionManifest.contributes.commands.find((item) => item.command === 'nornaEditor.movePage').enablement,
+	'!nornaSiteTree.moveActive');
+assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.movePage').when.includes('!nornaSiteTree.moveActive'));
+assert.ok(!extensionManifest.contributes.menus['view/title'].some((item) => item.command === 'nornaEditor.cancelMove'),
+	'Cancel belongs to the source and preview rows, not the view title.');
+assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.cancelMove' && item.when.includes('nornaMoveSource')));
+for (const command of ['chooseSite', 'addToPage', 'refreshSiteTree']) {
+	assert.ok(extensionManifest.contributes.menus['view/title'].find((item) => item.command === `nornaEditor.${command}`)
+		.when.includes('!nornaSiteTree.moveActive'));
+}
 assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.addPage'
 	&& item.group === 'inline' && item.when.endsWith('viewItem == nornaPages')));
 assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.pageInformation').when.includes('(Home|Page)'));

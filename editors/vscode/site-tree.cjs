@@ -6,7 +6,7 @@ const { registerSiteFileActions } = require('./site-file-actions.cjs');
 const { registerSiteAddressActions } = require('./site-address-actions.cjs');
 const { registerSiteSourceActions } = require('./site-source-actions.cjs');
 const { createPageForm, editPageForm } = require('./page-form-actions.cjs');
-const { isWithin, previewPlacement, describePlacement } = require('./page-placement.cjs');
+const { isWithin, previewPlacement, describePlacement, describePosition } = require('./page-placement.cjs');
 
 const viewId = 'nornaSiteTree';
 const isPage = (node) => node?.kind === 'page';
@@ -178,13 +178,17 @@ function registerSiteTree(context, output) {
 	const allIssues = (node) => [...ownIssues(node), ...node.children.flatMap(allIssues)];
 	const childrenFor = (node) => {
 		if (node?.kind === 'movePreviewPages') return [movePreview?.ghost].filter(Boolean);
+		if (node.id === moveSourceId) return [
+			{ id: `move-cancel-source:${node.id}`, kind: 'moveAction', action: 'cancel', title: 'Cancel page move',
+				siteRoot: node.siteRoot, parent: node, children: [] },
+			...node.children,
+		];
 		if (!movePreview) return node.children;
 		if (node.id === movePreview.pagesNode.id) {
-			const children = node.children.filter((child) => child.id !== moveSourceId);
+			const children = [...node.children];
 			children.splice(movePreview.insertAt, 0, movePreview.ghost);
 			return children;
 		}
-		if (node.id === movePreview.sourcePagesId) return node.children.filter((child) => child.id !== moveSourceId);
 		if (movePreview.syntheticPages && node.id === movePreview.parent.id) return [...node.children, movePreview.syntheticPages];
 		return node.children;
 	};
@@ -198,25 +202,55 @@ function registerSiteTree(context, output) {
 			const site = activeSite();
 			return site ? site.fileTree ? childrenFor(site) : [site] : [];
 		},
-		getParent: (node) => movePreview && node.parent?.id === moveSourceId ? movePreview.ghost : node.parent,
+		getParent: (node) => node.parent,
 		getTreeItem: (node) => {
 			const configuration = node.kind === 'directory' && node.role === 'configuration';
 			const groupingRow = node.kind === 'directory' || node.kind === 'site';
-			const expanded = configuration && configurationExpansion[node.id] !== false;
+			const expanded = node.kind === 'movePreview' || node.id === moveSourceId
+				|| node.kind === 'moveDetailGroup' && node.children.length <= 3
+				|| configuration && configurationExpansion[node.id] !== false;
 			const item = new vscode.TreeItem(node.title, !childrenFor(node).length ? vscode.TreeItemCollapsibleState.None
 				: expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed);
 			item.id = node.id;
+			if (node.kind === 'moveAction') {
+				const complete = node.action === 'complete';
+				item.contextValue = 'nornaMoveAction';
+				item.iconPath = complete
+					? new vscode.ThemeIcon('arrow-right', new vscode.ThemeColor('notificationsInfoIcon.foreground'))
+					: new vscode.ThemeIcon('close');
+				item.description = complete ? 'opens final confirmation' : 'leave files unchanged';
+				item.tooltip = complete ? 'Open the final confirmation. Files change only after you confirm Complete page move.'
+					: 'Cancel this page move without changing files.';
+				item.command = { command: complete ? 'nornaEditor.acceptMovePreview' : 'nornaEditor.cancelMove', title: node.title };
+				item.accessibilityInformation = { label: `${node.title}. ${item.description}.` };
+				return item;
+			}
+			if (node.kind === 'moveDetailGroup' || node.kind === 'moveDetail') {
+				item.contextValue = 'nornaMoveDetail';
+				item.iconPath = new vscode.ThemeIcon(node.kind === 'moveDetailGroup' ? 'list-tree' : 'arrow-right',
+					new vscode.ThemeColor('notificationsInfoIcon.foreground'));
+				item.description = node.description;
+				item.tooltip = node.tooltip ?? node.title;
+				item.command = { command: 'nornaEditor.selectSiteGroup', title: 'Select' };
+				item.accessibilityInformation = { label: [node.title, node.description].filter(Boolean).join(', ') };
+				return item;
+			}
 			if (node.kind === 'movePreview' || node.kind === 'movePreviewPages') {
 				item.contextValue = node.kind === 'movePreview' ? 'nornaMovePreview' : 'nornaMovePreviewPages';
 				item.iconPath = node.kind === 'movePreview'
-					? nodes.get(moveSourceId)?.listChildren ? pageListIcon : pageIcon
+					? new vscode.ThemeIcon('file', new vscode.ThemeColor('notificationsInfoIcon.foreground'))
 					: new vscode.ThemeIcon('folder');
-				item.description = node.kind === 'movePreview' ? 'placement preview · no files changed' : 'preview';
-				item.tooltip = node.kind === 'movePreview' ? movePreview?.description : 'Where the page would be placed';
+				item.description = node.kind === 'movePreview' ? `TO ${node.destinationUrl} · ${node.positionLabel}` : undefined;
+				item.tooltip = node.kind === 'movePreview'
+					? `${movePreview?.description}\nComplete or cancel using the actions directly below this preview.` : 'Where the page would be placed';
 				item.command = { command: 'nornaEditor.selectSiteGroup', title: 'Select' };
+				if (node.kind === 'movePreview') item.accessibilityInformation = {
+					label: `Preview: ${node.pageTitle}, TO ${node.destinationUrl}, ${node.positionLabel}. No files changed. Complete and cancel actions follow.`,
+				};
 				return item;
 			}
-			item.contextValue = node.kind === 'site' ? (node.problem ? 'nornaSiteUnavailable' : 'nornaSite')
+			item.contextValue = node.id === moveSourceId && node.siteRoot === moveSourceRoot ? 'nornaMoveSource'
+				: node.kind === 'site' ? (node.problem ? 'nornaSiteUnavailable' : 'nornaSite')
 				: node.kind === 'incomplete' ? 'nornaIncomplete'
 				: node.kind === 'directory' ? configuration ? 'nornaConfiguration' : node.role === 'pages' ? 'nornaPages' : node.role === 'images' ? 'nornaImages' : 'nornaDirectory'
 					: node.kind === 'file' ? node.parent?.role === 'images' && /\.(jpe?g|png|svg)$/i.test(node.title) ? 'nornaImage' : node.removable ? 'nornaOptionalFile' : 'nornaFile'
@@ -233,12 +267,14 @@ function registerSiteTree(context, output) {
 			const issues = allIssues(node);
 			const severity = issues.some((issue) => issue.severity === 'error') ? 'error' : issues.length ? 'warning' : '';
 			item.description = [node.isHome ? 'Homepage' : '',
-				node.id === moveSourceId && node.siteRoot === moveSourceRoot ? 'moving' : '',
+				node.id === moveSourceId && node.siteRoot === moveSourceRoot ? `FROM ${node.url}` : '',
 				isPage(node) && node.hiddenFromNavigation ? 'unlisted' : '',
 				severity, node.note,
 				unsaved || isPage(node) && dirtyOwners.has(node.id) ? 'unsaved' : '',
 				dirtyBelowLabel].filter(Boolean).join(' · ');
-			item.iconPath = node.kind === 'page' ? node.listChildren ? pageListIcon : pageIcon
+			item.iconPath = node.id === moveSourceId && node.siteRoot === moveSourceRoot
+				? new vscode.ThemeIcon('file', new vscode.ThemeColor('notificationsInfoIcon.foreground'))
+				: node.kind === 'page' ? node.listChildren ? pageListIcon : pageIcon
 				: new vscode.ThemeIcon(configuration ? 'settings-gear' : node.kind === 'site' ? 'globe'
 					: ['directory', 'incomplete'].includes(node.kind) ? 'folder' : 'file');
 			const problemHelp = [...new Set(issues.map((issue) => `${issue.message}\n${issue.path}${issue.line ? `:${issue.line}` : ''}`))].join('\n\n');
@@ -260,11 +296,16 @@ function registerSiteTree(context, output) {
 		},
 	};
 	const tree = vscode.window.createTreeView(viewId, { treeDataProvider: provider, showCollapseAll: true });
+	const updateMoveHeader = () => {
+		tree.title = 'Site Tree';
+		tree.description = activeSite() ? siteLocation(activeSiteRoot) : undefined;
+	};
 	const stopMove = () => {
 		moveSourceId = null;
 		moveSourceRoot = null;
 		movePreview = null;
 		tree.message = undefined;
+		updateMoveHeader();
 		void vscode.commands.executeCommand('setContext', 'nornaSiteTree.moveActive', false);
 		changed.fire();
 	};
@@ -323,10 +364,8 @@ function registerSiteTree(context, output) {
 			await vscode.commands.executeCommand('setContext', 'nornaSiteTree.hasMultipleSites', sites.size > 1);
 			await vscode.commands.executeCommand('setContext', 'nornaSiteTree.hasActiveSite', Boolean(activeSite()));
 			publishDiagnostics();
-			tree.description = activeSite() ? siteLocation(activeSiteRoot) : undefined;
-			tree.message = movePreview ? 'Placement preview · no files changed. Right-click another page to try a new position, or use the preview row to finish.'
-				: moveSourceId ? `Moving “${nodes.get(moveSourceId).title}” · right-click a destination page in this tree. Cancel from the view title.`
-				: !sites.size ? 'Open a folder containing a Norna site to use Site Tree.'
+			updateMoveHeader();
+			tree.message = moveSourceId ? undefined : !sites.size ? 'Open a folder containing a Norna site to use Site Tree.'
 				: !activeSite() ? undefined
 					: !activeSite().fileTree && !activeSite().problem
 						? 'This site shows pages only. Update its Norna engine and root-page format to browse configuration, images and public files.' : undefined;
@@ -518,7 +557,7 @@ function registerSiteTree(context, output) {
 	register('nornaEditor.addChildPage', (node) => create('page', node, true));
 	register('nornaEditor.pageInformation', editInformation);
 	register('nornaEditor.movePage', async (argument) => {
-		if (applyingMove) throw new Error('Finish the current page move first.');
+		if (moveSourceId || applyingMove) return vscode.window.showInformationMessage('A page move is already in progress. Complete or cancel it before starting another.');
 		const node = await chooseNode(argument);
 		if (!isPage(node) || node.isHome) throw new Error('Select a page below the homepage.');
 		const service = await serviceFor(node.siteRoot);
@@ -526,7 +565,8 @@ function registerSiteTree(context, output) {
 		moveSourceId = node.id;
 		moveSourceRoot = node.siteRoot;
 		movePreview = null;
-		tree.message = `Moving “${node.title}” · right-click a destination page in this tree. Cancel from the view title.`;
+		updateMoveHeader();
+		tree.message = undefined;
 		await vscode.commands.executeCommand('setContext', 'nornaSiteTree.moveActive', true);
 		changed.fire();
 	});
@@ -549,16 +589,41 @@ function registerSiteTree(context, output) {
 		const pagesNode = physicalPages ?? syntheticPages;
 		const existing = pagesNode.children.filter((child) => child.id !== source.id);
 		const next = existing.filter(isPage)[preview.index];
-		const insertAt = next ? existing.findIndex((child) => child.id === next.id) : existing.length;
-		const changes = plan.movePreview?.mappings.map((mapping) => `${mapping.oldPathname} → ${mapping.newPathname}`) ?? [];
-		const description = `${describePlacement(source, target, placement, preview)}\n${changes.length ? `Old addresses will continue to lead to the moved pages:\n${changes.join('\n')}` : 'Page addresses will not change.'}\nNo files changed yet.`;
-		const ghost = { id: `move-preview:${source.id}`, kind: 'movePreview', title: source.title,
-			siteRoot: source.siteRoot, parent: pagesNode, children: source.children };
-		movePreview = { ghost, parent: preview.parent, pagesNode, syntheticPages, sourcePagesId: source.parent.id,
+		const insertAt = next ? pagesNode.children.findIndex((child) => child.id === next.id) : pagesNode.children.length;
+		const mappings = plan.movePreview?.mappings ?? [];
+		const linkChanges = plan.movePreview?.linkChanges ?? [];
+		const changes = mappings.map((mapping) => `${mapping.oldPathname} → ${mapping.newPathname}`);
+		const description = `${describePlacement(source, target, placement, preview)}\n${changes.length ? `Old addresses will continue to lead to the moved pages:\n${changes.join('\n')}` : 'Page addresses will not change.'}\n${linkChanges.length} authored link(s) will be updated.\nNo files changed yet.`;
+		const ghost = { id: `move-preview:${source.id}`, kind: 'movePreview', title: `Preview: ${source.title}`,
+			pageTitle: source.title, positionLabel: describePosition(target, placement), destinationUrl: plan.destinationUrl,
+			siteRoot: source.siteRoot, parent: pagesNode, children: [] };
+		const detailGroup = (kind, title, entries, empty) => {
+			const group = { id: `move-${kind}:${source.id}`, kind: 'moveDetailGroup', title,
+				description: entries.length ? `${entries.length}` : empty, siteRoot: source.siteRoot, parent: ghost, children: [] };
+			group.children = entries.map((entry, index) => ({ id: `move-${kind}-${index}:${source.id}`, kind: 'moveDetail',
+				...entry, siteRoot: source.siteRoot, parent: group, children: [] }));
+			return group;
+		};
+		ghost.children = [
+			{ id: `move-complete:${source.id}`, kind: 'moveAction', action: 'complete', title: 'Complete page move…', siteRoot: source.siteRoot, parent: ghost, children: [] },
+			{ id: `move-cancel:${source.id}`, kind: 'moveAction', action: 'cancel', title: 'Cancel page move', siteRoot: source.siteRoot, parent: ghost, children: [] },
+			detailGroup('addresses', 'Affected addresses', mappings.map(({ oldPathname, newPathname }) => ({
+				title: oldPathname, description: `→ ${newPathname}`, tooltip: `${oldPathname} → ${newPathname}. The old address remains an alias.`,
+			})), `Unchanged: ${plan.sourceUrl}`),
+			detailGroup('links', 'Authored links to update', linkChanges.map(({ contentLabel, line, from, to }) => ({
+				title: `${contentLabel}:${line}`, description: `${from} → ${to}`,
+				tooltip: `${contentLabel}, line ${line}: ${from} → ${to}`,
+			})), 'None'),
+			{ id: `move-note:${source.id}`, kind: 'moveDetail', title: 'No files changed yet',
+				description: 'Save affected edits first',
+				tooltip: 'Save affected unsaved edits before completing the move. Editor Undo does not reverse the whole move.',
+				siteRoot: source.siteRoot, parent: ghost, children: [] },
+		];
+		movePreview = { ghost, parent: preview.parent, pagesNode, syntheticPages,
 			insertAt, description, plan };
-		tree.message = 'Placement preview · no files changed. Right-click another page to try a new position, or use the preview row to finish.';
+		tree.message = undefined;
 		changed.fire();
-		if (tree.visible) void enqueueTreeWork(() => tree.reveal(ghost, { select: true, focus: false, expand: false }))
+		if (tree.visible) void enqueueTreeWork(() => tree.reveal(ghost, { select: true, focus: false, expand: true }))
 			.catch((error) => output.appendLine(`Site tree preview: ${error.message}`));
 	};
 	for (const placement of ['before', 'after', 'first', 'last'])
@@ -570,18 +635,9 @@ function registerSiteTree(context, output) {
 			const { plan } = movePreview;
 			const source = nodes.get(moveSourceId);
 			if (!source) throw new Error('The moving page changed. Start the move again.');
-			const links = plan.movePreview?.linkChanges.length ?? 0;
-			const addresses = plan.movePreview?.mappings.map(({ oldPathname, newPathname }) => `${oldPathname} → ${newPathname}`) ?? [];
-			const addressPreview = addresses.length > 12
-				? [...addresses.slice(0, 12), `…and ${addresses.length - 12} more. Hover over the preview row to see all changed addresses.`]
-				: addresses;
-			const detail = [plan.sameParent ? `The page order will change. The address stays ${plan.sourceUrl}.`
-				: `The page and ${Math.max(0, addresses.length - 1)} descendant page(s) will move. Old addresses will continue to lead to their new locations.`,
-				...(addressPreview.length ? ['', ...addressPreview] : []),
-				...(links ? ['', `${links} authored link(s) will be updated.`] : []),
-				'', 'Affected unsaved edits must be saved first. Editor Undo does not reverse the whole move.'].join('\n');
-			const choice = await vscode.window.showWarningMessage(`Move “${source.title}” here?`, { modal: true, detail }, 'Move page');
-			if (choice !== 'Move page') return;
+			const choice = await vscode.window.showWarningMessage(`Complete page move for “${source.title}”?`,
+				{ modal: true, detail: 'This changes site files. Editor Undo does not reverse the whole move.' }, 'Complete page move');
+			if (choice !== 'Complete page move') return;
 			const affected = new Set(plan.movePreview?.sourceFiles.map((file) => file.contentPath) ?? []);
 			const movingDirectories = [plan.sourceDirectory, ...plan.orderChanges.map(({ from }) => from)];
 			const assertClean = () => {
@@ -629,7 +685,7 @@ function registerSiteTree(context, output) {
 		if (!isPage(node)) throw new Error('Select a page.');
 		const selected = await vscode.window.showQuickPick([
 			{ label: '$(edit) Page information…', command: 'pageInformation' },
-			...(!node.isHome ? [{ label: '$(move) Move page…', command: 'movePage' }] : []),
+			...(!node.isHome && !moveSourceId ? [{ label: '$(move) Move page…', command: 'movePage' }] : []),
 			{ label: '$(link) Addresses and links…', command: 'addressesAndLinks' },
 			{ label: '$(go-to-file) Open content.md', command: 'openSiteNode' },
 			...(!node.isHome ? [{ label: '$(trash) Move page to Trash…', command: 'removePage' }] : []),

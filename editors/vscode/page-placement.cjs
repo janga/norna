@@ -30,12 +30,16 @@ function previewPlacement(source, target, placement, pages) {
 		newUrl, descendantCount, conflict, sourceUrl: source.url };
 }
 
-function describePlacement(source, target, placement, preview) {
-	const position = placement === 'before' ? `before “${target.title}”` : placement === 'after' ? `after “${target.title}”`
+function describePosition(target, placement) {
+	return placement === 'before' ? `before “${target.title}”` : placement === 'after' ? `after “${target.title}”`
 		: placement === 'first' ? `first under “${target.title}”` : `last under “${target.title}”`;
+}
+
+function describePlacement(source, target, placement, preview) {
+	const position = describePosition(target, placement);
 	const url = preview.sameParent ? `URL remains ${source.url}.` : `URL: ${source.url} → ${preview.newUrl}.`;
 	const descendants = preview.descendantCount ? ` ${preview.descendantCount} descendant page(s) would move too.` : '';
 	return `“${source.title}” ${position}. ${url}${descendants}`;
 }
 
-module.exports = { pageParent, isWithin, previewPlacement, describePlacement };
+module.exports = { pageParent, isWithin, previewPlacement, describePlacement, describePosition };

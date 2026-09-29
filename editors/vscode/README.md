@@ -93,10 +93,19 @@ resource files retain their own selection.
 **Move Page…** is available from a page's **…** and context menu. It keeps you
 in Site Tree: expand and scroll the familiar tree, then right-click a
 destination page to place the moving page before, after, first or last under
-it. Clicking a page still opens its `content.md`. A temporary row shows the
-placement and affected addresses without changing files. Choose **Move Page
-Here…** on that row to review and apply it,
-or cancel from the view title. If planning fails, the error dialog can open
+it. Clicking a page still opens its `content.md`. The source page remains in
+place, marked **FROM** with its current URL and an accent-colored icon. It offers
+**Cancel page move** before a destination is chosen, including from its context
+menu if the branch is collapsed. A temporary **Preview:**
+row at the destination is marked **TO** with the proposed URL and the same
+accent color. Its children show affected addresses, authored links to update,
+and a reminder that files have not changed yet. Expand the detail groups to
+see individual changes. Beneath the preview,
+choose **Complete page move…**, then confirm **Complete page move** in the final dialog
+to apply it, or choose **Cancel page move** to leave files unchanged. While a
+move is active, the Site Tree header does not display move status or controls.
+A second move cannot start. If
+planning fails, the error dialog can open
 the affected file, keep the move active for another placement, or cancel it.
 Reordering among siblings leaves URLs intact; moving to another parent updates
 supported internal links and preserves old

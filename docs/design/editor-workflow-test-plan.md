@@ -287,6 +287,10 @@ minimum-version suite for compatibility changes and before release or external
 distribution. Installing a local VSIX for review in the owner's Default profile
 is not distribution: use focused checks for the changed controls. Do not repeat
 all three after unrelated engine changes.
+For the owner's open VS Code window, install each evaluation build through
+**Extensions: Install from VSIX…** and then run **Developer: Reload Window**.
+The CLI `--install-extension --force` updated the Default profile's installed
+files but reload alone did not expose the new behavior in that window.
 
 The formatter scenario sets global `editor.formatOnSave` to `true` and
 `editor.defaultFormatter` to Prettier, then overrides Markdown save formatting

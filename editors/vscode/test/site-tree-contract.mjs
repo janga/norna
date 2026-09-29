@@ -30,6 +30,7 @@ const errorActions = [];
 const errorReplies = [];
 const information = [];
 const warningReplies = [];
+const warningActions = [];
 const inputs = [];
 const forms = [];
 const choices = [];
@@ -54,7 +55,8 @@ const vscode = {
 	TreeItem: class { constructor(label, collapsibleState) { Object.assign(this, { label, collapsibleState }); } },
 	WorkspaceEdit: class { renameFile(from, to) { this.from = from.fsPath; this.to = to.fsPath; } },
 	ViewColumn: { Active: 1 },
-	ThemeIcon: class { constructor(id) { this.id = id; } },
+	ThemeIcon: class { constructor(id, color) { Object.assign(this, { id, color }); } },
+	ThemeColor: class { constructor(id) { this.id = id; } },
 	TreeItemCollapsibleState: { None: 0, Collapsed: 1, Expanded: 2 },
 	Range: class {}, Diagnostic: class { constructor(range, message, severity) { Object.assign(this, { range, message, severity }); } }, DiagnosticSeverity: { Error: 0, Warning: 1 },
 	languages: { createDiagnosticCollection: () => ({ clear() { treeDiagnostics.clear(); }, set(uri, issues) { treeDiagnostics.set(uri.fsPath, issues); }, dispose() {} }),
@@ -102,7 +104,7 @@ const vscode = {
 		showTextDocument: async (uri) => { opened.push(['text', uri.fsPath]); },
 		showErrorMessage: async (message, options, ...actions) => { errors.push(message); errorActions.push({ options, actions }); return errorReplies.shift(); },
 		showInformationMessage: async (message) => information.push(message),
-		showWarningMessage: async (message) => { information.push(message); return warningReplies.shift(); },
+		showWarningMessage: async (message, options, ...actions) => { information.push(message); warningActions.push({ options, actions }); return warningReplies.shift(); },
 	},
 	commands: {
 		registerCommand: (name, callback) => { commands.set(name, callback); return disposable(); },
@@ -285,30 +287,64 @@ try {
 	await registered.refresh();
 	await commands.get('nornaEditor.movePage')(guide);
 	assert.equal(contexts.get('nornaSiteTree.moveActive'), true);
-	assert.match(provider.getTreeItem(guide).description, /moving/);
+	assert.equal(tree.title, 'Site Tree', 'Move state belongs to the involved pages, not the view title.');
+	assert.notEqual(tree.description, 'Guide', 'The moving page is identified at its source row.');
+	assert.equal(tree.message, undefined, 'Instructions do not masquerade as tree content.');
+	const sourceCancel = (await provider.getChildren(guide))[0];
+	assert.equal(sourceCancel.title, 'Cancel page move', 'The source offers cancellation before a destination is chosen.');
+	assert.equal(provider.getTreeItem(sourceCancel).command.command, 'nornaEditor.cancelMove');
+	await commands.get('nornaEditor.movePage')(overview);
+	assert.match(information.pop(), /move is already in progress/);
+	assert.equal(tree.title, 'Site Tree', 'A second move must not replace the active source.');
+	choices.push((items) => { assert.ok(!items.some((item) => item.command === 'movePage')); return undefined; });
+	await commands.get('nornaEditor.pageActions')(overview);
+	assert.match(provider.getTreeItem(guide).description, /FROM \/guide\//);
+	assert.equal(provider.getTreeItem(guide).contextValue, 'nornaMoveSource');
+	assert.equal(provider.getTreeItem(guide).iconPath.color.id, 'notificationsInfoIcon.foreground');
 	assert.equal(provider.getTreeItem(overview).command.command, 'nornaEditor.openSiteNode');
 	assert.equal(provider.getTreeItem(overview).command.title, 'Open content.md');
 	await commands.get(provider.getTreeItem(overview).command.command)(overview);
 	assert.deepEqual(opened.pop(), ['vscode.open', overview.sourcePath], 'Clicking a page still opens its content during a move.');
 	assert.equal(contexts.get('nornaSiteTree.moveActive'), true, 'Opening content does not cancel placement.');
 	await commands.get('nornaEditor.placeMoveAfter')(overview);
+	assert.equal(tree.message, undefined, 'The destination preview carries its own actions.');
 	const movedPreview = (await provider.getChildren(pages)).at(-1);
 	assert.equal(provider.getTreeItem(movedPreview).contextValue, 'nornaMovePreview');
-	assert.equal(movedPreview.title, guide.title);
-	assert.equal((await provider.getChildren(movedPreview)).length, guide.children.length, 'The preview retains the page subtree.');
-	assert.equal(provider.getParent(guide.children[0]), movedPreview);
-	assert.equal((await provider.getChildren(pages)).some((entry) => entry.id === guide.id), false, 'The preview replaces the original row without writing files.');
+	assert.equal(movedPreview.title, 'Preview: Guide');
+	assert.equal(provider.getTreeItem(movedPreview).description, 'TO /guide/ · after “Topics”');
+	assert.equal(provider.getTreeItem(movedPreview).iconPath.color.id, 'notificationsInfoIcon.foreground');
+	assert.equal(provider.getTreeItem(movedPreview).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
+	const [completeMove, cancelMove, addresses, links, note] = await provider.getChildren(movedPreview);
+	assert.equal(completeMove.title, 'Complete page move…');
+	assert.equal(cancelMove.title, 'Cancel page move');
+	assert.equal(provider.getTreeItem(completeMove).description, 'opens final confirmation');
+	assert.equal(provider.getTreeItem(completeMove).command.command, 'nornaEditor.acceptMovePreview');
+	assert.equal(provider.getTreeItem(completeMove).iconPath.color.id, 'notificationsInfoIcon.foreground');
+	assert.equal(provider.getTreeItem(cancelMove).command.command, 'nornaEditor.cancelMove');
+	assert.equal(addresses.title, 'Affected addresses');
+	assert.match(provider.getTreeItem(addresses).description, /Unchanged: \/guide\//);
+	assert.equal(links.title, 'Authored links to update');
+	assert.equal(note.title, 'No files changed yet');
+	assert.equal(provider.getParent(completeMove), movedPreview);
+	assert.equal(provider.getParent(guide.children[0]), guide);
+	assert.equal((await provider.getChildren(pages)).some((entry) => entry.id === guide.id), true, 'The source stays at its real location until files move.');
 	await commands.get('nornaEditor.placeMoveFirst')(firstChild);
 	assert.match(information.pop(), /outside the branch/);
 	await commands.get('nornaEditor.placeMoveFirst')(overview);
 	const previewFolder = (await provider.getChildren(overview)).at(-1);
 	assert.equal(provider.getTreeItem(previewFolder).contextValue, 'nornaMovePreviewPages');
-	assert.equal((await provider.getChildren(previewFolder))[0].title, guide.title);
-	await commands.get('nornaEditor.acceptMovePreview')();
-	assert.match(information.pop(), /Move “Guide” here/);
+	assert.equal((await provider.getChildren(previewFolder))[0].title, 'Preview: Guide');
+	const crossParentPreview = (await provider.getChildren(previewFolder))[0];
+	assert.match(provider.getTreeItem(crossParentPreview).description, /TO \/topics\/guide\//);
+	const crossParentAddresses = (await provider.getChildren(crossParentPreview))[2];
+	assert.ok((await provider.getChildren(crossParentAddresses)).some((row) => row.title === '/guide/' && row.description === '→ /topics/guide/'));
+	await commands.get(provider.getTreeItem(completeMove).command.command)();
+	assert.match(information.pop(), /Complete page move for “Guide”/);
+	assert.deepEqual(warningActions.pop().actions, ['Complete page move']);
 	assert.equal(await readFile(guide.sourcePath, 'utf8'), '# Guide\n', 'Cancelling the confirmation keeps the source in place.');
-	await commands.get('nornaEditor.cancelMove')();
+	await commands.get(provider.getTreeItem(cancelMove).command.command)();
 	assert.equal(contexts.get('nornaSiteTree.moveActive'), false);
+	assert.equal(tree.title, 'Site Tree');
 	assert.equal(provider.getTreeItem(overview).command.command, 'nornaEditor.openSiteNode');
 	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage', 'createSourceFile', 'createSourceFile']); return undefined; });
 	await commands.get('nornaEditor.addToPage')(overview);
@@ -457,7 +493,7 @@ try {
 	await write(homePath, '# Home\n\n[Guide](/guide/)\n');
 	await commands.get('nornaEditor.movePage')(guide);
 	await commands.get('nornaEditor.placeMoveFirst')(overview);
-	warningReplies.push('Move page');
+	warningReplies.push('Complete page move');
 	await commands.get('nornaEditor.acceptMovePreview')();
 	const movedGuide = path.join(siteRoot, 'root/pages/020-topics/pages/500-guide/content.md');
 	assert.match(await readFile(movedGuide, 'utf8'), /- \/guide\//, 'The move preserves the old page URL.');
