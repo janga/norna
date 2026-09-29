@@ -84,7 +84,8 @@ try {
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeConfig();
-	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `typography:
+	await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), `preset: project
+typography:
   profile: reading
 palette: warm-paper
 `);
@@ -341,7 +342,7 @@ items:
 	assert.match(carouselHtml, /aria-label="Next image"/);
 	assert.match(getPageFeatureScripts(carouselHtml)[0], /\ssrc=/, 'Carousel JavaScript should be emitted as a module asset.');
 
-	await writeFile(path.join(pageDir, 'theme.yaml'), `images:
+	await writeFile(path.join(pageDir, 'tree-theme.yaml'), `images:
   presentation: centered-fit
 `);
 	runBuild();
@@ -395,7 +396,8 @@ page:
 
 Ordinary content with a reader-selectable appearance.
 `);
-	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `typography:
+	await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), `preset: project
+typography:
   profile: reading
 palette: warm-paper
 appearance:

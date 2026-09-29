@@ -309,7 +309,7 @@ alternative appears with its label. Read the
 | Code                    | Code fence       | Expand        | Scroll       | Copy            | Select text   |
 | Tables                  | Markdown         | Expand        | Scroll       | Column controls | Scroll        |
 | Search                  | `site-config/settings.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
-| Appearance              | `site-config/site-theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
+| Appearance              | `root/tree-theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
 
 ```md title="Table source (Markdown)"
 | Capability {row-header} | Source           | Wide screen   | Small screen | With JS         | Without JS    |
@@ -324,7 +324,7 @@ alternative appears with its label. Read the
 | Code                    | Code fence       | Expand        | Scroll       | Copy            | Select text   |
 | Tables                  | Markdown         | Expand        | Scroll       | Column controls | Scroll        |
 | Search                  | `site-config/settings.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
-| Appearance              | `site-config/site-theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
+| Appearance              | `root/tree-theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
 ```
 
 **Source:** GitHub Flavored Markdown table syntax. The `{row-header}` marker is
@@ -773,7 +773,7 @@ items:
     link: https://janga.github.io/norna/examples/feature-demos/theme-preset-statement/
 ```
 
-```yaml title="site/site-config/site-theme.yaml"
+```yaml title="site/root/tree-theme.yaml"
 preset: documentation
 ```
 
@@ -785,7 +785,7 @@ design every relationship independently.
 Override only a deliberate exception; all other values still come from the
 preset:
 
-```yaml title="site/site-config/site-theme.yaml"
+```yaml title="site/root/tree-theme.yaml"
 preset: documentation
 layout:
   textWidth: normal
@@ -802,7 +802,7 @@ semantic states, Light appearance, and Dark appearance. A palette changes that
 coordinated color system without replacing the preset's typography or spacing.
 This example selects the same palette with the `documentation` preset:
 
-```yaml title="site/site-config/site-theme.yaml"
+```yaml title="site/root/tree-theme.yaml"
 preset: documentation
 palette: clay-rose
 ```
@@ -810,7 +810,7 @@ palette: clay-rose
 **Source:** Shared theme configuration. Use the
 [Theme explorer](https://janga.github.io/norna/examples/theme-presets/) to
 combine the built-in presets and palettes, then inspect the generated
-`site-config/site-theme.yaml`. Read the
+`root/tree-theme.yaml`. Read the
 [palette and Appearance reference](/reference/configuration/palettes/).
 
 ## Let readers adapt the display {#reader-display}
@@ -821,7 +821,7 @@ source. Appearance can follow the reader's system or use Light or Dark. Focus
 reading removes persistent navigation, breadcrumbs, and the footer while
 preserving access to the site through a compact menu.
 
-```yaml title="site/site-config/site-theme.yaml"
+```yaml title="site/root/tree-theme.yaml"
 appearance:
   default: system
 ```

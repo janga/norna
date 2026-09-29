@@ -8,7 +8,7 @@ page:
 An H2 starts a section. `sections.backgroundPattern` assigns coordinated
 palette backgrounds to successive H2 sections, not arbitrary colors to headings.
 
-```yaml title="theme.yaml: one continuous reading surface" {2}
+```yaml title="tree-theme.yaml: one continuous reading surface" {2}
 sections:
   backgroundPattern: uniform
 ```

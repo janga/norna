@@ -52,17 +52,17 @@ locally installed and pinned Norna version.
 site/
 |-- site-config/
 |   |-- settings.yaml
-|   |-- site-theme.yaml
 |   `-- shared-content.yaml
 |-- public/
 `-- root/
     |-- content.md       # Required homepage
-    |-- theme.yaml       # Optional homepage-only overrides
+    |-- tree-theme.yaml  # Required preset and inherited overrides
+    |-- page-theme.yaml  # Optional homepage-only overrides
     |-- images/
     `-- pages/
         `-- 010-guide/
             |-- content.md
-            |-- theme.yaml   # Optional inherited branch overrides
+            |-- tree-theme.yaml   # Optional inherited branch overrides
             |-- images/
             `-- pages/
                 `-- 010-install/content.md
@@ -75,10 +75,12 @@ site/
   page. A parent can append a generated list of its direct child pages with
   `page.listChildren: true`; see
   [Child-page lists](https://janga.github.io/norna/reference/site/pages/#list-child-pages).
-- A page may contain local images, limited presentation settings and nested
+- A page may contain local images, visual settings and nested
   entries under its own `pages/` directory.
-- `site-config/site-theme.yaml` selects shared visual defaults. Optional `root/theme.yaml`
-  overrides the homepage alone; a child's `theme.yaml` is inherited further.
+- `root/tree-theme.yaml` selects shared visual defaults. Optional `page-theme.yaml`
+  overrides its page alone; a child's `tree-theme.yaml` is inherited further.
+  The root requires `preset`; elsewhere it is optional and explicitly replaces
+  the inherited base. Without it, only supplied fields change.
 - `site-config/shared-content.yaml` holds shared logo display settings, banners, and
   footer content.
 - `site-config/settings.yaml` holds the public URL and optional language, local and remote

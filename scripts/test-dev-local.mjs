@@ -143,14 +143,14 @@ try {
 	assertSucceeded(stoppedStatus, 'stopped dev status');
 	assert.match(stoppedStatus.stdout, /No dev server is running/u);
 
-	const themePath = path.join(siteDir, 'site-config', 'site-theme.yaml');
+	const themePath = path.join(siteDir, 'root', 'tree-theme.yaml');
 	const validTheme = await readFile(themePath, 'utf8');
 	await writeFile(themePath, 'unknownThemeSetting: true\n');
 	const invalidThemeStart = run('start');
 	assert.notEqual(invalidThemeStart.status, 0, 'dev start unexpectedly accepted an invalid theme');
 	assert.match(
 		`${invalidThemeStart.stdout}\n${invalidThemeStart.stderr}`,
-		/site\/site-config\/site-theme\.yaml has invalid YAML structure.*unknownThemeSetting/su,
+		/site\/root\/tree-theme\.yaml has invalid YAML structure.*unknownThemeSetting/su,
 	);
 	assert.doesNotMatch(invalidThemeStart.stderr, /yaml-config\.mjs:\d+/u);
 	await writeFile(themePath, validTheme);

@@ -35,7 +35,7 @@ examples/
 `complete-sites/` contains small sites that can be read as coherent Norna
 projects. `feature-demos/` contains focused visual test benches. The four preset
 sites use identical page content and images so their visual differences come
-only from `theme.yaml`. Feature demos are useful for documentation and
+only from `tree-theme.yaml`. Feature demos are useful for documentation and
 integration checks, but are not starter templates.
 
 The documentation site under `site/` uses selected example output inside its

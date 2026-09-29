@@ -589,7 +589,7 @@ export const writeMigrationReport = async (report, reportDir, { sourceRoot = nul
 	await mkdir(source.pages, { recursive: true });
 	await mkdir(path.join(resolvedReportDir, 'site-config'), { recursive: true });
 	await writeFile(path.join(resolvedReportDir, 'site-config/settings.yaml'), 'url: https://example.invalid/\n');
-	await writeFile(path.join(resolvedReportDir, 'site-config', 'site-theme.yaml'), 'preset: documentation\n');
+	await writeFile(path.join(resolvedReportDir, 'root', 'tree-theme.yaml'), 'preset: documentation\n');
 	await writeFile(source.content, renderReportHome(report));
 	if (report.problemTypes.length > 0) {
 		const categoryDir = path.join(source.pages, '010-problems');

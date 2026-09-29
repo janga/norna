@@ -241,7 +241,7 @@ function registerSiteTree(context, output) {
 	const refresh = ({ discover = false } = {}) => enqueueTreeWork(async () => {
 		reading = (async () => {
 			if (discover) {
-				const configs = await vscode.workspace.findFiles('**/{config.yaml,site-config/settings.yaml,site-config/site-theme.yaml}', '**/{node_modules,.git,.norna,.vscode-test,dist,marketing}/**');
+				const configs = await vscode.workspace.findFiles('**/{config.yaml,site-config/settings.yaml,root/tree-theme.yaml}', '**/{node_modules,.git,.norna,.vscode-test,dist,marketing}/**');
 				for (const uri of configs) rememberSite(uri.fsPath);
 				if (activeSiteRoot && inWorkspace(activeSiteRoot) && fs.existsSync(activeSiteRoot) && !sites.has(activeSiteRoot)) {
 					sites.set(activeSiteRoot, { id: activeSiteRoot, siteRoot: activeSiteRoot, kind: 'site', title: labelFor(activeSiteRoot), children: [], cache: new Map() });
@@ -492,7 +492,7 @@ function registerSiteTree(context, output) {
 	});
 	register('nornaEditor.chooseSite', chooseSite);
 	register('nornaEditor.refreshSiteTree', async () => { services.clear(); await refresh({ discover: true }); await revealActive(); });
-	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,settings.yaml,site-theme.yaml,shared-content.yaml,theme.yaml,config.yaml,page-theme.yaml,sitewide-content.yaml}');
+	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,settings.yaml,tree-theme.yaml,shared-content.yaml,config.yaml,page-theme.yaml,sitewide-content.yaml}');
 	const directoryWatcher = vscode.workspace.createFileSystemWatcher('**/{pages,images,public}', false, true, false);
 	const resourceWatcher = vscode.workspace.createFileSystemWatcher('**/*', false, true, false);
 	const fileChanged = (uri) => {

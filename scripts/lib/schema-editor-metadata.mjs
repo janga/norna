@@ -283,7 +283,7 @@ const addThemeHelp = (jsonSchema) => {
 	], presentationPaletteNames);
 	addHelp(jsonSchema, 'appearance', [
 		yamlExample('appearance:\n  default: system'),
-		'Selects the initial Appearance. The Appearance choice is always available in the site-wide Display panel. Omit this setting to follow the visitor\'s system preference.',
+		'Selects the initial Appearance. The Appearance choice is always available in the site-wide Display panel. Omit this setting to keep the inherited or preset value.',
 		documentationLink('Appearance', 'theme.md', 'appearance'),
 	]);
 	addFieldHelp(jsonSchema, 'appearance.default', 'appearance:\n  default: system', 'theme.md', 'appearance', ['system', 'light', 'dark']);
@@ -463,45 +463,6 @@ const addThemeHelp = (jsonSchema) => {
 	})]);
 };
 
-const addPageThemeHelp = (jsonSchema) => {
-	jsonSchema.markdownDescription = [
-		yamlExample('layout:\n  textWidth: narrow\n  contentSpacing: compact'),
-		'A limited theme in a page or category directory may adjust only page layout, managed-image sizing and the section background pattern. Descendant pages inherit these values. Tree navigation requires a uniform section background. Site colors, corners, typography, content-block defaults and navigation stay consistent.',
-		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
-	].join('\n\n');
-	addHelp(jsonSchema, 'layout', [
-		yamlExample('layout:\n  textWidth: narrow\n  contentSpacing: compact'),
-		'Adjusts body-text line length and vertical content spacing for the affected pages. Root theme.yaml affects only the homepage; a child page or category theme.yaml is inherited by its descendants.',
-		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
-	]);
-	addFieldHelp(jsonSchema, 'layout.textWidth', 'layout:\n  textWidth: narrow', 'theme.md', 'page-themes', ['narrow', 'normal', 'wide']);
-	addFieldHelp(jsonSchema, 'layout.contentSpacing', 'layout:\n  contentSpacing: compact', 'theme.md', 'page-themes', ['compact', 'normal', 'spacious']);
-	addHelp(jsonSchema, 'images', [
-		yamlExample('images:\n  presentation: prose-aligned\n  width: 900px'),
-		'Adjusts managed-image presentation and sizing inside the content area. Root theme.yaml affects only the homepage; a child page or category theme.yaml is inherited by its descendants. Persistent navigation remains outside this area.',
-		documentationLink('Image sizing reference', 'theme.md', 'image-sizing'),
-	]);
-	const imageFields = [
-		['images.presentation', 'images:\n  presentation: prose-aligned'],
-		['images.width', 'images:\n  width: 900px'],
-		['images.maxAvailableWidthPercent', 'images:\n  maxAvailableWidthPercent:\n    desktop: 100\n    mobile: 100'],
-		['images.maxAvailableWidthPercent.desktop', 'images:\n  maxAvailableWidthPercent:\n    desktop: 100'],
-		['images.maxAvailableWidthPercent.mobile', 'images:\n  maxAvailableWidthPercent:\n    mobile: 100'],
-		['images.maxAvailableHeightPercent', 'images:\n  maxAvailableHeightPercent:\n    desktop: 74\n    mobile: 68'],
-		['images.maxAvailableHeightPercent.desktop', 'images:\n  maxAvailableHeightPercent:\n    desktop: 74'],
-		['images.maxAvailableHeightPercent.mobile', 'images:\n  maxAvailableHeightPercent:\n    mobile: 68'],
-	];
-	for (const [propertyPath, example] of imageFields) {
-		addFieldHelp(jsonSchema, propertyPath, example, 'theme.md', 'image-sizing');
-	}
-	addHelp(jsonSchema, 'sections', [
-		yamlExample('sections:\n  backgroundPattern: alternating'),
-		'Adjusts the H2 section background pattern. Root theme.yaml affects only the homepage; a child page or category theme.yaml is inherited by its descendants. Alternating and accented create full-width bands but are invalid when navigation resolves to tree.',
-		documentationLink('Page theme reference', 'theme.md', 'page-themes'),
-	]);
-	addFieldHelp(jsonSchema, 'sections.backgroundPattern', 'sections:\n  backgroundPattern: alternating', 'theme.md', 'page-themes', ['uniform', 'alternating', 'accented']);
-};
-
 const addSitewideHelp = (jsonSchema) => {
 	jsonSchema.markdownDescription = [
 		yamlExample('footer:\n  copyrightMessage: Copyright Example Owner.'),
@@ -611,8 +572,13 @@ export const applySchemaEditorMetadata = (filename, jsonSchema) => {
 		addLanguageSuggestions(jsonSchema);
 		addConfigHelp(jsonSchema);
 	}
-	if (filename === 'theme.schema.json') addThemeHelp(jsonSchema);
-	if (filename === 'page-theme.schema.json') addPageThemeHelp(jsonSchema);
+	if (['root-theme.schema.json', 'theme.schema.json', 'page-theme.schema.json'].includes(filename)) {
+		addThemeHelp(jsonSchema);
+		jsonSchema.markdownDescription = [yamlExample(filename === 'root-theme.schema.json' ? 'preset: documentation' : 'layout:\n  textWidth: wide'), jsonSchema.description, documentationLink('Theme inheritance', 'theme.md', 'page-themes')].join('\n\n');
+		addHelp(jsonSchema, 'preset', [yamlExample('preset: documentation'),
+			'Selects a new base and discards inherited theme values, even when the preset name is unchanged. Required in root/tree-theme.yaml. Omit in other theme files to modify inherited values.',
+			documentationLink('Theme inheritance', 'theme.md', 'page-themes'), documentationLink('Preset reference', 'theme.md', 'theme-presets')]);
+	}
 	if (filename === 'sitewide-content.schema.json') addSitewideHelp(jsonSchema);
 	if (filename === 'content-frontmatter.schema.json') addContentHelp(jsonSchema);
 	return jsonSchema;

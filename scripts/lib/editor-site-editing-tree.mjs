@@ -5,10 +5,11 @@ import { editorPageLocation, editorSourceDefinition } from './editor-source-file
 import { editorFileRemovalPolicy } from './editor-file-policy.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
+import { sourceFileDefinitions } from './source-files.mjs';
 import { getThemeDiagnostics } from './editor-language-service.mjs';
 
 const excluded = new Set(['.norna', '.git', '.DS_Store', 'node_modules', 'dist', '.vscode-test']);
-const knownNames = new Set(['content.md', 'category.yaml', 'theme.yaml', 'settings.yaml', 'site-theme.yaml', 'shared-content.yaml']);
+const knownNames = new Set([...sourceFileDefinitions.map((entry) => entry.name), 'category.yaml', 'theme.yaml', 'site-theme.yaml']);
 const resourceId = (filename) => `resource:${filename}`;
 
 // The physical traversal retains damaged entries that the logical page model
@@ -31,8 +32,8 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			const source = await read(item.sourcePath);
 			if (definition.schema) {
 				parseYamlConfig(source, item.sourcePath, { schema: definition.schema });
-				if (['theme.yaml', 'site-theme.yaml'].includes(path.basename(item.sourcePath))) {
-					for (const diagnostic of await getThemeDiagnostics({ documentPath: item.sourcePath, source })) issue(item, diagnostic.message, diagnostic.severity, item.sourcePath, diagnostic.line);
+				if (['rootTheme', 'theme', 'pageTheme'].includes(definition.schemaKind)) {
+					for (const diagnostic of await getThemeDiagnostics({ siteRoot, documentPath: item.sourcePath, source, sources })) issue(item, diagnostic.message, diagnostic.severity, item.sourcePath, diagnostic.line);
 				}
 			} else {
 				const document = await parsePageMarkdownSource(source, { label: item.sourcePath });
@@ -81,9 +82,9 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 					? 'Files published unchanged with the site, such as robots.txt and icons.' : role === 'configuration' ? 'Settings and content shared by the complete site' : '' };
 			items.push(container);
 		}
-		const order = location ? ['images', 'theme.yaml', 'pages']
+		const order = location ? ['images', 'tree-theme.yaml', 'page-theme.yaml', 'pages']
 			: role === 'site' ? ['site-config', 'public', 'root']
-			: role === 'configuration' ? ['settings.yaml', 'site-theme.yaml', 'shared-content.yaml'] : [];
+			: role === 'configuration' ? ['settings.yaml', 'shared-content.yaml'] : [];
 		const rank = (entry) => order.includes(entry.name) ? order.indexOf(entry.name) : order.length;
 		entries.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'en', { numeric: true }));
 		for (const entry of entries) {
@@ -110,7 +111,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			if (definition) await validate(file);
 			else if (role !== 'public' && ['site-config', 'public', 'pages', 'images'].includes(entry.name)) issue(file, `Expected a directory named ${entry.name}, but this is a file. Rename or move this file through Explorer before creating the directory.`, 'warning');
 			else if (role !== 'public' && entry.name === 'category.yaml') issue(file, 'category.yaml is no longer supported. Create content.md with page.listChildren: true, then remove this file.', 'warning');
-			else if (role !== 'public' && knownNames.has(entry.name)) issue(file, `This source file is in the wrong location. Put content.md and theme.yaml in a valid page directory; put settings.yaml, site-theme.yaml and shared-content.yaml in the site's site-config/.`, 'warning');
+			else if (role !== 'public' && knownNames.has(entry.name)) issue(file, `This source file is in the wrong location. Put content.md, tree-theme.yaml and page-theme.yaml in a valid page directory; put settings.yaml and shared-content.yaml in the site's site-config/.`, 'warning');
 			else if (role !== 'public' && !(role === 'images' && /\.(jpe?g|png|svg)$/i.test(entry.name))) file.note = 'Not used by Norna';
 		}
 	};
@@ -121,14 +122,15 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 	await visit(siteRoot, null, owner, 'site');
 	if (!items.some((item) => item.isHome)) await visit(source.root, null, owner, 'page', editorPageLocation(siteRoot, source.root));
 	const configuration = items.find((item) => item.role === 'configuration' && item.kind === 'directory');
-	for (const name of ['settings.yaml', 'site-theme.yaml']) {
-		const filename = path.join(siteRoot, 'site-config', name);
+	const homepage = items.find((item) => item.isHome);
+	for (const [filename, target] of [[path.join(siteRoot, 'site-config/settings.yaml'), configuration], [source.theme, homepage]]) {
 		try { await read(filename); }
 		catch (error) {
-			issue(configuration ?? owner, error.code === 'ENOENT' || error.code === 'ENOTDIR'
-				? `Required site-config/${name} is missing. Use Add to create it.` : error.message, 'error', filename);
+			issue(target ?? owner, error.code === 'ENOENT' || error.code === 'ENOTDIR'
+				? `Required ${path.relative(siteRoot, filename)} is missing. Use Add to create it.` : error.message, 'error', filename);
 		}
 	}
+
 	// Keep shared structural diagnostics, including duplicate sibling identifiers.
 	for (const problem of snapshot.problems) {
 		if (![owner, ...items].some((item) => item.issues?.some((entry) => entry.message === problem.message && entry.path === problem.path))) {

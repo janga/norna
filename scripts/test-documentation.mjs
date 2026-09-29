@@ -560,7 +560,7 @@ const checkReferenceTree = async () => {
 			const title = node.meta?.match(/^title="([^"\n]+)"/)?.[1] ?? '';
 			const schema = /^site\/site-config\/settings\.yaml/.test(title) ? configSchema
 				: /^site\/(?:page-theme|pages\/.+\/theme)\.yaml/.test(title) ? pageThemeSchema
-				: /^(?:site\/)?theme\.yaml/.test(title) ? themeVisualSchema
+				: /^(?:site\/)?tree-theme\.yaml/.test(title) ? themeVisualSchema
 					: /^site\/site-config\/shared-content\.yaml/.test(title) ? sitewideSchema : null;
 			if (!schema) continue;
 			const result = schema.safeParse(yaml.load(node.value));

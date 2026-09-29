@@ -256,7 +256,7 @@ is a focused metadata check, not the full construction or save matrix.
 
 The configuration suite extends those cases with the physical paths introduced
 by [BL-143 Site Configuration Directory And Page Files](backlog/BL-143-site-configuration-directory-page-files.md):
-`site-config/settings.yaml`, `site-config/site-theme.yaml`, root `theme.yaml`,
+`site-config/settings.yaml`, `root/tree-theme.yaml`, root `tree-theme.yaml`,
 and `site-config/shared-content.yaml`. It selects representative values from
 blank positions and partial prefixes and rejects global fields in an empty
 homepage theme. These are file-recognition checks; they do not claim exhaustive

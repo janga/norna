@@ -1,3 +1,4 @@
+import { getSourceFileDefinition } from './source-files.mjs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { isMap, isScalar, isSeq, parseDocument } from 'yaml';
@@ -117,8 +118,9 @@ export const readSiteFileTree = async (options) => {
 		if (kind === 'file') item.removable = Boolean(editorFileRemovalPolicy({ siteRoot, sourcePath: owner.sourcePath, filePath: filename }));
 		if (kind === 'file' && filename === owner.sourcePath) item.description += owner.isHome
 			? '. Required homepage content; the homepage cannot be removed.' : '. Required for this entry; remove the whole page or category through its actions menu.';
-		if (kind === 'file' && ['settings.yaml', 'site-theme.yaml'].some((name) => filename === path.join(siteRoot, 'site-config', name))) {
-			item.description = 'Required site configuration; this file cannot be removed through Site Tree.';
+		const definition = getSourceFileDefinition(siteRoot, filename);
+		if (kind === 'file' && definition?.required && definition.schemaKind !== 'contentFrontmatter') {
+			item.description = `${definition.description} This file cannot be removed through Site Tree.`;
 		}
 		items.push(item);
 		return item;
@@ -129,7 +131,7 @@ export const readSiteFileTree = async (options) => {
 		const directory = addResource(owner, parentId, filename, 'directory', role, description);
 		if (role === 'pages') return;
 		const entries = (await entriesAt(filename)).filter((entry) => entry.isDirectory() || entry.isFile());
-		const configOrder = ['settings.yaml', 'site-theme.yaml', 'shared-content.yaml'];
+		const configOrder = ['settings.yaml', 'shared-content.yaml'];
 		entries.sort((a, b) => role === 'configuration'
 			? (configOrder.includes(a.name) ? configOrder.indexOf(a.name) : 3) - (configOrder.includes(b.name) ? configOrder.indexOf(b.name) : 3) || a.name.localeCompare(b.name)
 			: Number(b.isDirectory()) - Number(a.isDirectory()) || a.name.localeCompare(b.name, 'en', { numeric: true }));
@@ -151,12 +153,10 @@ export const readSiteFileTree = async (options) => {
 			if (entries.get(name)?.isDirectory()) await addDirectory(page, page.sourcePath, path.join(directory, name), name === 'site-config' ? 'configuration' : name);
 		};
 		await addExistingDirectory('images');
-		const configuration = ['theme.yaml', 'content.md'];
+		const configuration = ['tree-theme.yaml', 'page-theme.yaml', 'content.md'];
 		for (const filename of configuration) {
 			if (!entries.get(filename)?.isFile()) continue;
-			const description = filename === 'theme.yaml' ? page.isHome ? 'Visual settings for this page only. Overrides site-config/site-theme.yaml.'
-				: 'Visual settings for this page and its child pages. Overrides inherited settings.'
-				: 'Page content';
+			const description = getSourceFileDefinition(siteRoot, path.join(directory, filename))?.description ?? 'Page content';
 			addResource(page, page.sourcePath, path.join(directory, filename), 'file', filename === 'content.md' ? 'content' : 'configuration', description);
 		}
 		for (const name of ['pages']) await addExistingDirectory(name);

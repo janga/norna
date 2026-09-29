@@ -29,9 +29,10 @@ and requirements.
   selected site or hardcode site/.
 - The site container holds site-config/, public/ and root/. Its required homepage
   is root/content.md; children live under root/pages/. root/ is never a URL
-  segment. Shared appearance belongs in site-config/site-theme.yaml;
-  root/theme.yaml affects only the homepage. Descendant themes inherit within
-  their branches.
+  segment. root/tree-theme.yaml is required, including its preset. Descendant
+  tree-theme.yaml modifies inherited fields; an explicit preset replaces the
+  whole base. Optional page-theme.yaml follows those rules for its page only,
+  never descendants. Shared technical settings stay in site-config/.
 - Reuse engine validation and mutation rules in the VS Code extension.
   Editor support must follow the selected project's engine capabilities.
 - Generate schemas from scripts/lib/schema-definitions.mjs; do not hand-edit

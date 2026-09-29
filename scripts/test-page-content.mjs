@@ -31,10 +31,10 @@ test('content model v2 fixture checks and builds', async () => {
 	}
 });
 
-test('comment-only root YAML files use the same empty defaults during checks and builds', async () => {
+test('comment-only optional YAML uses the same empty defaults during checks and builds', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), '# yaml-language-server: $schema=../schemas/theme.schema.json\n');
+		await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), '# yaml-language-server: $schema=../schemas/root-theme.schema.json\npreset: project\n');
 		await writeFile(path.join(siteDir, 'site-config/shared-content.yaml'), '# Shared content is optional.\n');
 		await writeFile(path.join(siteDir, 'root/content.md'), '# Empty theme\n\nThe defaults render this page.\n');
 
@@ -105,10 +105,10 @@ Home content.
 	}
 });
 
-test('page theme changes page presentation while preserving site visual identity', async () => {
+test('branch modifications inherit unspecified visual settings', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `preset: documentation
+		await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), `preset: documentation
 palette: near-monochrome
 `);
 		await mkdir(path.join(siteDir, 'root/pages', '010-guide'), { recursive: true });
@@ -136,17 +136,17 @@ Page content.
 
 Inherited page content.
 `);
-		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'theme.yaml'), `layout:
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'tree-theme.yaml'), `layout:
   contentSpacing: spacious
   textWidth: wide
 sections:
   backgroundPattern: uniform
 `);
-		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'pages', '010-detail', 'theme.yaml'), `layout:
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'pages', '010-detail', 'tree-theme.yaml'), `layout:
   textWidth: narrow
 `);
 
-		await writeFile(path.join(siteDir, 'root/theme.yaml'), 'layout:\n  textWidth: wide\n');
+		await writeFile(path.join(siteDir, 'root/page-theme.yaml'), 'layout:\n  textWidth: wide\n');
 		await mkdir(path.join(siteDir, 'root/pages', '020-sibling'));
 		await writeFile(path.join(siteDir, 'root/pages', '020-sibling', 'content.md'), '# Sibling\n');
 		await runNorna(['--site-dir', siteDir, 'build']);
@@ -323,7 +323,7 @@ page:
 # Guide
 Page content.
 `);
-		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'theme.yaml'), `logo:
+		await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'tree-theme.yaml'), `logo:
   height: 3rem
 `);
 
@@ -532,10 +532,10 @@ test('invalid homepage overrides produce a focused build diagnostic without a st
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'root/content.md'), '# Home\n');
-		await writeFile(path.join(siteDir, 'root/theme.yaml'), 'palette: near-monochrome\n');
+		await writeFile(path.join(siteDir, 'root/page-theme.yaml'), 'palette: neon\n');
 		await assert.rejects(runNorna(['--site-dir', siteDir, 'build']), (error) => {
-			assert.match(error.output, /site\/root\/theme\.yaml/);
-			assert.match(error.output, /Move "palette:" to site-config\/site-theme\.yaml/);
+			assert.match(error.output, /site\/root\/page-theme\.yaml/);
+			assert.match(error.output, /palette: Invalid option/);
 			assert.doesNotMatch(error.output, /file:\/\/|at ChildProcess|run-command\.mjs:\d/);
 			return true;
 		});

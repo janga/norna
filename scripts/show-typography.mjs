@@ -1,6 +1,4 @@
 import {
-	defaultTypography,
-	resolveTypographyConfig,
 	toYamlLines,
 	typographyProfiles,
 	typographyRhythms,
@@ -13,10 +11,13 @@ import {
 } from './lib/site-content.mjs';
 import { parsePageMarkdown } from './lib/page-markdown.mjs';
 import {
+	siteDir,
 	siteThemeLabel,
 } from './lib/site-paths.mjs';
 import { readThemeConfig } from './lib/theme-config.mjs';
 import { resolveThemeConfig } from './lib/theme-presets.mjs';
+import { selectPageTheme } from './lib/theme-packages.mjs';
+import { resolveThemePresentation } from './lib/presentation.mjs';
 
 const mode = process.argv[2] ?? 'show';
 
@@ -137,14 +138,14 @@ const defaultSources = (profileName, rhythmName) => {
 	return sources;
 };
 
-const applyOverrideSources = (sources, typographyConfig, sourceLabel) => {
+const applyOverrideSources = (sources, typographyConfig, sourceFor) => {
 	const overrides = typographyConfig?.overrides;
 	if (!overrides) return sources;
 
 	for (const path of typographyValuePaths) {
 		if (hasPath(overrides, path)) {
 			setPath(sources, path, {
-				source: `${sourceLabel} override`,
+				source: `${sourceFor(['typography', 'overrides', ...path])} override`,
 				inherited: false,
 			});
 		}
@@ -153,25 +154,38 @@ const applyOverrideSources = (sources, typographyConfig, sourceLabel) => {
 	return sources;
 };
 
-const resolveAnnotatedTypographyConfig = (typographyConfig, sourceLabel) => {
-	const resolved = resolveTypographyConfig(typographyConfig ?? defaultTypography);
+const resolveAnnotatedTypographyConfig = (theme, sourceLabel, sourceFiles) => {
+	const normalized = resolveThemeConfig(theme, sourceLabel);
+	const typographyConfig = normalized.typography;
+	const resolved = resolveThemePresentation(theme, sourceLabel).typography;
+	// Attribute a value to its last authored setting, stopping at the preset
+	// that replaced its base. The resolver still determines all effective values.
+	const sourceFor = (propertyPath) => {
+		for (const file of sourceFiles.toReversed()) {
+			if (hasPath(file.config, propertyPath)) return file.label;
+			if (file.config.preset !== undefined) return `preset:${file.config.preset} (${file.label})`;
+		}
+		return 'engine default';
+	};
 	const sources = applyOverrideSources(
 		defaultSources(resolved.profile, resolved.rhythm),
 		typographyConfig,
-		sourceLabel,
+		sourceFor,
 	);
+	if (normalized.layout?.textWidth !== undefined) {
+		setPath(sources, ['body', 'width'], { source: sourceFor(['layout', 'textWidth']), inherited: false });
+	}
 
 	return {
 		profile: {
 			value: resolved.profile,
-			source: typographyConfig?.profile ? sourceLabel : 'engine default',
-			...(typographyConfig?.profile ? {} : { inherited: true }),
+			source: sourceFor(['typography', 'profile']),
 		},
 		rhythm: {
 			value: resolved.rhythm,
-			source: typographyConfig?.rhythm ? sourceLabel : 'engine default',
-			...(typographyConfig?.rhythm ? {} : { inherited: true }),
+			source: sourceFor(['typography', 'rhythm']),
 		},
+		fontFamily: { value: typographyConfig.fontFamily, source: sourceFor(['typography', 'fontFamily']) },
 		resolved,
 		sources,
 	};
@@ -180,16 +194,16 @@ const resolveAnnotatedTypographyConfig = (typographyConfig, sourceLabel) => {
 const formatAnnotatedTypography = (annotated) => ({
 	profile: annotated.profile,
 	rhythm: annotated.rhythm,
+	fontFamily: annotated.fontFamily,
 	resolved: annotateResolvedValues(annotated.resolved, annotated.sources),
 });
 
 const readThemeTypography = async () => {
-	const themeConfig = resolveThemeConfig(await readThemeConfig(), siteThemeLabel);
-	const themeTypographyConfig = themeConfig.typography;
-	return resolveAnnotatedTypographyConfig(themeTypographyConfig ?? defaultTypography, siteThemeLabel);
+	const config = await readThemeConfig();
+	return resolveAnnotatedTypographyConfig(config, siteThemeLabel, [{ config, label: siteThemeLabel }]);
 };
 
-const readPageTypography = async (contentFile, siteThemeTypography) => {
+const readPageTypography = async (contentFile) => {
 	const { frontmatter, body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 	const indentationIssues = [];
 	validateFrontmatterIndentation(frontmatter, (issue) => indentationIssues.push(issue));
@@ -201,7 +215,8 @@ const readPageTypography = async (contentFile, siteThemeTypography) => {
 		].join('\n'));
 	}
 
-	const pageTypography = siteThemeTypography;
+	const { selected, sourceFiles } = await selectPageTheme({ siteRoot: siteDir, pageDirectory: contentFile.pageDirectory });
+	const pageTypography = resolveAnnotatedTypographyConfig(selected.config, selected.label, sourceFiles);
 	const sections = (await parsePageMarkdown(body, { label: contentFile.contentLabel })).sections
 		.map((section) => {
 		return {
@@ -225,7 +240,7 @@ if (mode === 'profiles') {
 	}).join('\n'));
 } else if (mode === 'show') {
 	const themeTypography = await readThemeTypography();
-	const pages = await Promise.all((await getContentFiles()).map((contentFile) => readPageTypography(contentFile, themeTypography)));
+	const pages = await Promise.all((await getContentFiles()).map(readPageTypography));
 	const output = {
 		theme: {
 			source: siteThemeLabel,

@@ -30,7 +30,7 @@ const createSite = async (name, config) => {
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), config);
 	await writeFile(path.join(siteDir, 'root/content.md'), '# Config test\n\n## Intro {#intro}\n\nText.\n');
-	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), 'preset: documentation\n');
+	await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), 'preset: documentation\n');
 	return { projectRoot, siteDir };
 };
 

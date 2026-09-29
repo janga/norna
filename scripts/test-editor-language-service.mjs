@@ -9,6 +9,7 @@ import './test-editor-page-addresses.mjs';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { sourceFileDefinitions, sourcePageDirectoryPattern } from './lib/source-files.mjs';
 import projectContext from '../editors/vscode/norna-project.cjs';
 import yamlSchemaCompletions from '../editors/vscode/yaml-schema-completions.cjs';
 import { documentationRef } from './lib/documentation-links.mjs';
@@ -28,10 +29,10 @@ const root = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-language-'));
 const siteRoot = path.join(root, 'site');
 const homeContentPath = path.join(siteRoot, 'root/content.md');
 const pageContentPath = path.join(siteRoot, 'root/pages', '010-about', 'content.md');
-const pageThemePath = path.join(siteRoot, 'root/pages', '010-about', 'theme.yaml');
+const pageThemePath = path.join(siteRoot, 'root/pages', '010-about', 'tree-theme.yaml');
 const overviewPath = path.join(siteRoot, 'root/pages', '020-guides', 'content.md');
 const nestedPageContentPath = path.join(siteRoot, 'root/pages', '010-about', 'pages', '020-team', 'content.md');
-const nestedPageThemePath = path.join(siteRoot, 'root/pages', '010-about', 'pages', '020-team', 'theme.yaml');
+const nestedPageThemePath = path.join(siteRoot, 'root/pages', '010-about', 'pages', '020-team', 'tree-theme.yaml');
 const installedNornaRoot = path.join(root, 'node_modules', '@janga', 'norna');
 const packageManifestPath = path.join(installedNornaRoot, 'schemas', 'manifest.json');
 const {
@@ -81,6 +82,8 @@ try {
 	await writeFile(path.join(installedNornaRoot, 'package.json'), JSON.stringify({ name: '@janga/norna', version: '9.8.7' }));
 	await writeFile(packageManifestPath, JSON.stringify({
 		editorApiVersion: supportedEditorApiVersion,
+		sourceFiles: sourceFileDefinitions,
+		pageDirectoryPattern: sourcePageDirectoryPattern,
 		blockSchemas: { 'image-stack': 'image-stack.schema.json', 'image-carousel': 'image-carousel.schema.json', 'card-list': 'card-list.schema.json' },
 		files: {
 			config: 'config.schema.json',
@@ -93,7 +96,7 @@ try {
 	}));
 	await mkdir(path.join(siteRoot, 'site-config'), { recursive: true });
 	await writeFile(path.join(siteRoot, 'site-config/settings.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(siteRoot, 'site-config', 'site-theme.yaml'), 'preset: project\n');
+	await writeFile(path.join(siteRoot, 'root', 'tree-theme.yaml'), 'preset: project\n');
 	await writeFile(path.join(siteRoot, 'site-config/shared-content.yaml'), `logo:
   height: 2rem
 `);
@@ -121,29 +124,38 @@ try {
 	assert.equal(getNornaDocumentContext(homeContentPath).pageDirectory, '.');
 	assert.equal(getNornaDocumentContext(homeContentPath).nornaPackage.root, installedNornaRoot);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'site-config/settings.yaml')).schemaKind, 'config');
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'site-config', 'site-theme.yaml')).schemaKind, 'theme');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root', 'tree-theme.yaml')).schemaKind, 'rootTheme');
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'site-config/shared-content.yaml')).schemaKind, 'sitewideContent');
 	assert.equal(getNornaDocumentContext(pageContentPath).pageDirectory, '010-about');
-	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'pageTheme');
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/theme.yaml')).schemaKind, 'pageTheme');
-	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/theme.yaml')).pageDirectory, '.');
+	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'theme');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/page-theme.yaml')).schemaKind, 'pageTheme');
+	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/page-theme.yaml')).pageDirectory, '.');
 	assert.equal(getNornaDocumentContext(overviewPath).schemaKind, 'contentFrontmatter');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).pageDirectory, '010-about/pages/020-team');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).schemaKind, 'contentFrontmatter');
-	assert.equal(getNornaDocumentContext(nestedPageThemePath).schemaKind, 'pageTheme');
+	assert.equal(getNornaDocumentContext(nestedPageThemePath).schemaKind, 'theme');
 	const treeThemeDiagnostics = await getThemeDiagnostics({
-		documentPath: path.join(siteRoot, 'site-config', 'site-theme.yaml'),
+		documentPath: path.join(siteRoot, 'root', 'tree-theme.yaml'),
 		source: 'preset: documentation\nsections:\n  backgroundPattern: alternating\n',
 	});
 	assert.deepEqual(
 		treeThemeDiagnostics.map(({ code, line, severity }) => ({ code, line, severity })),
 		[{ code: 'tree-section-background-pattern', line: 3, severity: 'error' }],
 	);
-	assert.match(treeThemeDiagnostics[0].message, /site resolves to tree navigation/);
+	assert.match(treeThemeDiagnostics[0].message, /cannot be used with tree navigation/);
 	assert.deepEqual(await getThemeDiagnostics({
-		documentPath: path.join(siteRoot, 'site-config', 'site-theme.yaml'),
+		documentPath: path.join(siteRoot, 'root', 'tree-theme.yaml'),
 		source: 'preset: documentation\nsections:\n  backgroundPattern: uniform\n',
 	}), []);
+	const dirtyParent = new Map([[path.join(siteRoot, 'root/tree-theme.yaml'),
+		'preset: project\nimages:\n  presentation: prose-aligned\n  maxAvailableHeightPercent: 60\n']]);
+	assert.equal((await getThemeDiagnostics({
+		siteRoot, documentPath: pageThemePath, source: 'layout:\n  textWidth: wide\n', sources: dirtyParent,
+	}))[0].code, 'invalid-resolved-theme', 'A child must use its unsaved ancestor theme.');
+	assert.deepEqual(await getThemeDiagnostics({
+		siteRoot, documentPath: pageThemePath, source: 'layout:\n  textWidth: wide\n',
+		sources: new Map([[path.join(path.dirname(pageThemePath), 'page-theme.yaml'), 'preset: unknown\n']]),
+	}), [], 'An invalid page-only file must not be reported against its valid tree theme.');
 	assert.equal(getNornaProjectContext(path.join(siteRoot, 'public', 'logo.svg')).siteRoot, siteRoot);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'public', 'logo.svg')), null);
 	assert.equal(getNornaDocumentContext(path.join(root, 'README.md')), null);
@@ -175,7 +187,7 @@ try {
 	await writeFile(path.join(siteRoot, 'root/pages', 'about', 'content.md'), pageSource);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/pages', 'about', 'content.md')), null);
 	for (const directory of ['000-home', '000-other', '010-about/pages/000-home']) {
-		for (const filename of ['content.md', 'theme.yaml']) {
+		for (const filename of ['content.md', 'tree-theme.yaml']) {
 			assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/pages', directory, filename)), null, `Order 000 is invalid at every child level: ${directory}/${filename}`);
 		}
 	}

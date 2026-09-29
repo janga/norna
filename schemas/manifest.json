@@ -1,6 +1,52 @@
 {
   "editorApiVersion": 3,
-  "schemaVersion": 5,
+  "schemaVersion": 6,
+  "sourceFiles": [
+    {
+      "name": "settings.yaml",
+      "location": "site-config",
+      "schemaKind": "config",
+      "required": true,
+      "input": "url",
+      "description": "Required public URL and technical site settings."
+    },
+    {
+      "name": "shared-content.yaml",
+      "location": "site-config",
+      "schemaKind": "sitewideContent",
+      "text": "banners: []\n",
+      "description": "Shared notices and footer content for the complete site.",
+      "removalEffect": "Shared notices, authored footer content and logo display settings in this file will be removed from the whole site."
+    },
+    {
+      "name": "content.md",
+      "location": "page",
+      "schemaKind": "contentFrontmatter",
+      "required": true,
+      "input": "title",
+      "description": "Required page content."
+    },
+    {
+      "name": "tree-theme.yaml",
+      "location": "page",
+      "schemaKind": "theme",
+      "rootSchemaKind": "rootTheme",
+      "required": "root",
+      "rootText": "preset: documentation\n",
+      "text": "# Modify inherited settings. Add preset only to replace the complete base.\n{}\n",
+      "description": "Visual settings for this page and its descendants. Without preset, modifies inherited values; preset selects a new base. Required on the root page.",
+      "removalEffect": "This branch resumes the ancestor tree theme. Overrides on descendants remain; a descendant preset starts an independent base."
+    },
+    {
+      "name": "page-theme.yaml",
+      "location": "page",
+      "schemaKind": "pageTheme",
+      "text": "# Modify this page only. Add preset only to replace the complete base.\n{}\n",
+      "description": "Visual settings for this page only. Without preset, modifies its tree theme; preset selects a new base. Descendants keep their tree theme.",
+      "removalEffect": "This page will use its selected tree theme again. Other pages are unchanged."
+    }
+  ],
+  "pageDirectoryPattern": "^(?!000-)(\\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$",
   "blockSchemas": {
     "image-stack": "image-stack.schema.json",
     "image-carousel": "image-carousel.schema.json",
@@ -11,6 +57,7 @@
     "contentFrontmatter": "content-frontmatter.schema.json",
     "sitewideContent": "sitewide-content.schema.json",
     "theme": "theme.schema.json",
+    "rootTheme": "root-theme.schema.json",
     "pageTheme": "page-theme.schema.json"
   }
 }

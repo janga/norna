@@ -33,13 +33,14 @@ in the site’s `root/` page directory:
 site/
 ├── site-config/
 │   ├── settings.yaml        # Technical settings
-│   ├── site-theme.yaml      # Shared visual choices
 │   └── shared-content.yaml  # Shared logo settings, banners, and footer
 ├── public/                  # Static files copied unchanged
 │   ├── favicon.ico          # Optional browser tab and bookmark icon
 │   └── robots.txt           # Instructions for search crawlers
 └── root/
     ├── content.md           # Homepage title, sections, and text
+    ├── tree-theme.yaml      # Required preset and inherited visual choices
+    ├── page-theme.yaml      # Optional homepage-only changes
     ├── images/              # Images used by the homepage
     └── pages/               # Create this when adding child pages
 ```

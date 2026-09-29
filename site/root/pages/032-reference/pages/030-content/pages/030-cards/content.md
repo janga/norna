@@ -68,7 +68,7 @@ These limits apply to the **whole list**, not individual cards.
 
 Set the site default in the shared theme:
 
-```yaml title="site/site-config/site-theme.yaml"
+```yaml title="site/root/tree-theme.yaml"
 blocks:
   cardList:
     width: text

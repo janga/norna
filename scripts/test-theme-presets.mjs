@@ -246,12 +246,12 @@ try {
 	assert.equal(centeredFitOverride.images.presentation, 'centered-fit');
 	assert.equal(centeredFitOverride.images.maxAvailableHeightPercent, undefined);
 	assert.throws(
-		() => resolveThemeConfig({ preset: 'unknown' }, 'test/theme.yaml'),
-		/Unknown theme preset "unknown" in test\/theme\.yaml.*portfolio, documentation, project, statement/,
+		() => resolveThemeConfig({ preset: 'unknown' }, 'test/tree-theme.yaml'),
+		/Unknown theme preset "unknown" in test\/tree-theme\.yaml.*portfolio, documentation, project, statement/,
 	);
 	assert.throws(
-		() => resolveThemePresentation({ sections: { backgroundPattern: 'glowing' } }, 'test/theme.yaml'),
-		/sections\.backgroundPattern must be one of uniform, alternating, accented in test\/theme\.yaml/,
+		() => resolveThemePresentation({ sections: { backgroundPattern: 'glowing' } }, 'test/tree-theme.yaml'),
+		/sections\.backgroundPattern must be one of uniform, alternating, accented in test\/tree-theme\.yaml/,
 	);
 
 	const listResult = runCli(['theme:presets']);
@@ -291,7 +291,7 @@ page:
 
 Root content.
 `);
-await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `preset: documentation
+await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), `preset: documentation
 layout:
   pageWidth: 1300px
 palette: near-monochrome
@@ -304,7 +304,7 @@ page:
 # Guide
 Page content.
 `);
-	await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'theme.yaml'), `layout:
+	await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'tree-theme.yaml'), `layout:
   contentSpacing: spacious
   textWidth: wide
 images:
@@ -314,7 +314,7 @@ sections:
   backgroundPattern: accented
 `);
 
-	const rootThemePath = path.join(siteDir, 'site-config', 'site-theme.yaml');
+	const rootThemePath = path.join(siteDir, 'root', 'tree-theme.yaml');
 	const rootThemeSource = await readFile(rootThemePath, 'utf8');
 	for (const [legacySource, expectedMessage] of [
 		['palette: paper\n', /Palette value "paper" was replaced by "warm-paper"/],
@@ -326,7 +326,7 @@ sections:
 		['sections:\n  backgroundPattern: cycling\n', /Section background pattern "cycling" was replaced by "accented"/],
 		['shape: soft\n', /"shape" was replaced by "corners"[\s\S]*replace the old "soft" value with "rounded"/],
 	]) {
-		await writeFile(rootThemePath, legacySource);
+		await writeFile(rootThemePath, `preset: documentation\n${legacySource}`);
 		const legacyResult = runCli(['config:check']);
 		assert.notEqual(legacyResult.status, 0);
 		assert.match(legacyResult.stderr, expectedMessage);
@@ -363,12 +363,12 @@ sections:
 	assert.match(typographyResult.stdout, /value: reading/);
 	assert.doesNotMatch(typographyResult.stdout, /value: restrained/);
 
-	const pageThemePath = path.join(siteDir, 'root/pages', '010-guide', 'theme.yaml');
+	const pageThemePath = path.join(siteDir, 'root/pages', '010-guide', 'tree-theme.yaml');
 	const pageThemeSource = await readFile(pageThemePath, 'utf8');
 	await writeFile(pageThemePath, 'preset: unknown\n');
 	const invalidPagePresetResult = runCli(['config:check']);
 	assert.notEqual(invalidPagePresetResult.status, 0);
-	assert.match(invalidPagePresetResult.stderr, /page themes may not define site-wide visual identity through "preset"/);
+	assert.match(invalidPagePresetResult.stderr, /preset:.*Invalid option/);
 	await writeFile(pageThemePath, pageThemeSource);
 	await writeFile(pageThemePath, 'navigation:\n  mode: sections\n');
 	const pageNavigationResult = runCli(['config:check']);
@@ -383,7 +383,7 @@ sections:
 	const invalidProseAlignedHeightResult = runCli(['config:check']);
 	assert.notEqual(invalidProseAlignedHeightResult.status, 0);
 	assert.match(invalidProseAlignedHeightResult.stderr, /images\.maxAvailableHeightPercent cannot be used with images\.presentation "prose-aligned"/);
-	assert.match(invalidProseAlignedHeightResult.stderr, /pages\/010-guide\/theme\.yaml/);
+	assert.match(invalidProseAlignedHeightResult.stderr, /pages\/010-guide\/tree-theme\.yaml/);
 	assert.match(invalidProseAlignedHeightResult.stderr, /Remove images\.maxAvailableHeightPercent or set images\.presentation to "centered-fit"/);
 	await writeFile(pageThemePath, pageThemeSource);
 
@@ -391,7 +391,7 @@ sections:
 	const treeSurfaceConflictResult = runCli(['config:check']);
 	assert.notEqual(treeSurfaceConflictResult.status, 0);
 	assert.match(treeSurfaceConflictResult.stderr, /sections\.backgroundPattern "accented" cannot be used with tree navigation/);
-	assert.match(treeSurfaceConflictResult.stderr, /pages\/010-guide\/theme\.yaml/);
+	assert.match(treeSurfaceConflictResult.stderr, /pages\/010-guide\/tree-theme\.yaml/);
 	await writeFile(pageThemePath, pageThemeSource.replace('backgroundPattern: accented', 'backgroundPattern: uniform'));
 	const uniformTreeResult = runCli(['config:check']);
 	assert.equal(uniformTreeResult.status, 0, uniformTreeResult.stderr || uniformTreeResult.stdout);
@@ -403,7 +403,7 @@ sections:
 	assert.match(exportResult.stdout, /orig-documentation-theme\.yaml/);
 	const exportedPath = path.join(siteDir, 'orig-documentation-theme.yaml');
 	const exportedSource = await readFile(exportedPath, 'utf8');
-	assert.match(exportedSource, /This is a reference file\. Norna loads site-config\/site-theme\.yaml for the shared theme\./);
+	assert.match(exportedSource, /This is a reference file\. Norna loads root\/tree-theme\.yaml for the shared theme\./);
 	assert.match(exportedSource, /Available theme presets: portfolio, documentation, project, statement\./);
 	assert.match(exportedSource, new RegExp(`# Alternatives: ${presentationPaletteNames.join(', ')}\\.`));
 	const exportedConfig = load(exportedSource);
@@ -428,7 +428,7 @@ sections:
 	assert.notEqual(unknownExportResult.status, 0);
 	assert.match(unknownExportResult.stderr, /Unknown theme preset "unknown"/);
 
-	console.log('ok - complete root presets and limited inherited page themes resolve and export as protected references');
+	console.log('ok - root presets and inherited full-vocabulary themes resolve and export as protected references');
 } finally {
 	await rm(tempRoot, { force: true, recursive: true });
 }

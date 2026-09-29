@@ -24,7 +24,7 @@ const snapshot = async (directory) => {
 const makeSite = async (name, pageRoot) => {
 	const site = path.join(temporary, name, 'custom-site');
 	await write(path.join(site, 'site-config/settings.yaml'), 'url: https://example.com/docs/\n');
-	await write(path.join(site, 'site-config/site-theme.yaml'), 'preset: documentation\n');
+	await write(path.join(site, 'root/tree-theme.yaml'), 'preset: documentation\n');
 	await write(path.join(site, pageRoot, 'content.md'), '# Home\r\nBehåll åäö.\r\n');
 	await write(path.join(site, pageRoot, 'pages/010-guide/content.md'), '# Guide\n');
 	return site;

@@ -139,7 +139,7 @@ const getPathLabel = (filePath) => {
 
 export const siteDir = resolvedSitePaths.siteDir;
 export const siteConfigPath = path.join(siteDir, 'site-config', 'settings.yaml');
-export const siteThemePath = path.join(siteDir, 'site-config', 'site-theme.yaml');
+export const siteThemePath = getSiteSourcePaths(siteDir).theme;
 export const sitewideContentPath = path.join(siteDir, 'site-config', 'shared-content.yaml');
 export const sitePagesDir = getSiteSourcePaths(siteDir).pages;
 export const siteHomePageDir = getSiteSourcePaths(siteDir).root;

@@ -13,6 +13,7 @@ const expectedDocumentationRef = `v${packageJson.version}`;
 const filenames = [
 	'config.schema.json',
 	'theme.schema.json',
+	'root-theme.schema.json',
 	'page-theme.schema.json',
 	'sitewide-content.schema.json',
 	'content-frontmatter.schema.json',
@@ -20,15 +21,20 @@ const filenames = [
 const requiredRichHelp = {
 	'config.schema.json': ['url', 'language', 'editLink', 'navigation', 'search', 'scrollBehavior'],
 	'theme.schema.json': ['preset', 'appearance', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
-	'page-theme.schema.json': ['layout', 'images', 'sections'],
+	'page-theme.schema.json': ['preset', 'appearance', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
+	'root-theme.schema.json': ['preset', 'appearance', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
 	'sitewide-content.schema.json': ['logo', 'banners', 'footer'],
 	'content-frontmatter.schema.json': ['page', 'navigation'],
 };
 const manifest = JSON.parse(await readFile(path.join(root, 'schemas', 'manifest.json'), 'utf8'));
 assert.equal(manifest.editorApiVersion, 3);
-assert.equal(manifest.schemaVersion, 5);
+assert.equal(manifest.schemaVersion, 6);
 assert.equal(manifest.files.category, undefined);
 assert.equal(manifest.files.pageTheme, 'page-theme.schema.json');
+assert.equal(manifest.files.rootTheme, 'root-theme.schema.json');
+assert.ok(manifest.sourceFiles.some((entry) => entry.name === 'tree-theme.yaml' && entry.required === 'root'));
+const rootTheme = JSON.parse(await readFile(path.join(root, 'schemas/root-theme.schema.json'), 'utf8'));
+assert.deepEqual(rootTheme.required, ['preset']);
 
 const githubHeadingAnchor = (heading) => heading
 	.toLowerCase()
@@ -300,15 +306,11 @@ assert.equal(
 );
 
 const pageTheme = JSON.parse(await readFile(path.join(root, 'schemas', 'page-theme.schema.json'), 'utf8'));
-assert.deepEqual(Object.keys(pageTheme.properties), ['layout', 'images', 'sections']);
+assert.deepEqual(Object.keys(pageTheme.properties), Object.keys(theme.properties));
+assert.deepEqual(Object.keys(pageTheme.properties.layout.properties), Object.keys(theme.properties.layout.properties));
 assert.ok(pageTheme.properties.images.properties.presentation);
-assert.deepEqual(Object.keys(pageTheme.properties.layout.properties), ['contentSpacing', 'textWidth']);
-assert.equal(pageTheme.properties.preset, undefined);
-assert.equal(pageTheme.properties.palette, undefined);
-assert.equal(pageTheme.properties.appearance, undefined);
-assert.equal(pageTheme.properties.typography, undefined);
-assert.equal(pageTheme.properties.blocks, undefined);
-assert.match(pageTheme.markdownDescription, /content-block defaults/);
+assert.match(pageTheme.markdownDescription, /this page only/);
+assert.match(pageTheme.properties.preset.markdownDescription, /discards inherited theme values/);
 
 const content = JSON.parse(await readFile(path.join(root, 'schemas', 'content-frontmatter.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(content.properties), ['page', 'navigation']);

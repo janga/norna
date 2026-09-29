@@ -39,7 +39,8 @@ try {
 	await writeFile(path.join(siteDir, 'public', 'robots.txt'), 'User-agent: *\nAllow: /\n');
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `typography:
+	await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), `preset: project
+typography:
   profile: restrained
 palette: near-monochrome
 `);

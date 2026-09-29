@@ -7,7 +7,7 @@ export const legacyHomePageDirectory = '000-home';
 export const getSiteSourcePaths = (siteRoot) => {
 	const root = path.join(siteRoot, 'root');
 	return { root, pages: path.join(root, 'pages'), content: path.join(root, 'content.md'),
-		images: path.join(root, 'images'), theme: path.join(root, 'theme.yaml') };
+		images: path.join(root, 'images'), theme: path.join(root, 'tree-theme.yaml') };
 };
 
 export const getPageSourceDirectory = (pageDirectory) => (

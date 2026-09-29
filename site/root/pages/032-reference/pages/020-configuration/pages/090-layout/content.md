@@ -9,7 +9,7 @@ The **page frame** contains the content and any persistent navigation rails.
 The **reading width** limits prose inside the remaining content space.
 Increasing the frame does not automatically make paragraphs wider.
 
-```yaml title="site/site-config/site-theme.yaml: widen the frame, retain narrow prose" {2,3}
+```yaml title="site/root/tree-theme.yaml: widen the frame, retain narrow prose" {2,3}
 layout:
   pageWidth: 1320px
   textWidth: narrow
@@ -32,7 +32,7 @@ own width. No setting disables reader width choice.
 
 ## Structural gaps
 
-```yaml title="site/site-config/site-theme.yaml: selected spacing overrides"
+```yaml title="site/root/tree-theme.yaml: selected spacing overrides"
 layout:
   spacing:
     firstSectionTop: 1.5rem

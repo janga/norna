@@ -16,7 +16,7 @@ const tree = (sources) => readSiteFileTree({ siteRoot, editing: true, sources })
 const find = (snapshot, relative, kind) => snapshot.items.find((item) => item.sourcePath === path.join(siteRoot, relative) && (!kind || item.kind === kind));
 try {
 	await mkdir(siteRoot);
-	assert.deepEqual((await choices()).map((entry) => entry.name), ['site-config/settings.yaml', 'site-config/site-theme.yaml', 'site-config/shared-content.yaml', 'root/content.md']);
+	assert.deepEqual((await choices()).map((entry) => entry.name), ['site-config/settings.yaml', 'site-config/shared-content.yaml', 'root/content.md', 'root/tree-theme.yaml']);
 	let view = await tree();
 	assert.equal(view.items.find((item) => item.isHome).kind, 'incomplete');
 	assert.equal(view.items[0].isHome, true);
@@ -30,19 +30,19 @@ try {
 	const settings = await plan('site-config/settings.yaml', 'https://example.com/');
 	assert.deepEqual(await readdir(siteRoot), ['root']);
 	await createEditorSourceFile(settings);
-	await createEditorSourceFile(await plan('site-config/site-theme.yaml'));
+	await createEditorSourceFile(await plan('root/tree-theme.yaml'));
 	await createEditorSourceFile(await plan('site-config/shared-content.yaml'));
 	await write('public/robots.txt', 'User-agent: *\n');
-	await createEditorSourceFile(await plan('root/theme.yaml', undefined, path.join(siteRoot, 'root')));
+	await createEditorSourceFile(await plan('root/page-theme.yaml', undefined, path.join(siteRoot, 'root')));
 	assert.deepEqual(await choices(), []);
 	view = await tree();
 	assert.ok(view.items.every((item) => !item.issues?.length), JSON.stringify(view.items.filter((item) => item.issues?.length)));
 	assert.equal(view.items.filter((item) => item.sourcePath === home.filename).length, 1, 'A page replaces its content file row.');
-	assert.deepEqual(view.items.filter((item) => item.parentId === home.filename).map((item) => item.title), ['theme.yaml']);
+	assert.deepEqual(view.items.filter((item) => item.parentId === home.filename).map((item) => item.title), ['tree-theme.yaml', 'page-theme.yaml']);
 	for (const filename of ['site-config', 'site-config/settings.yaml', 'public', 'public/robots.txt']) {
 		assert.equal(find(view, filename).ownerId, siteRoot, `${filename} belongs to the site, independently of its homepage.`);
 	}
-	assert.equal(find(view, 'root/theme.yaml').ownerId, home.filename);
+	assert.equal(find(view, 'root/page-theme.yaml').ownerId, home.filename);
 	assert.deepEqual(view.problems, []);
 
 	await write('root/pages/010-leaf/content.md', '# Leaf\n');
@@ -57,11 +57,11 @@ try {
 	view = await tree();
 	assert.equal(find(view, 'root/pages/020-incomplete/content.md', 'page').title, 'Topics');
 	assert.equal(find(view, 'root/pages/020-incomplete/content.md', 'file'), undefined);
-	assert.deepEqual((await choices(incomplete)).map((entry) => entry.name), ['theme.yaml']);
+	assert.deepEqual((await choices(incomplete)).map((entry) => entry.name), ['tree-theme.yaml', 'page-theme.yaml']);
 
 	await write('root/pages/010-leaf/settings.yaml', 'url: https://example.com/\n');
 	await write('root/pages/010-leaf/notes.md', '# Author notes\n');
-	await write('root/pages/010-leaf/theme.yaml', 'layout:\n  textWidth: invalid\n');
+	await write('root/pages/010-leaf/tree-theme.yaml', 'layout:\n  textWidth: invalid\n');
 	await write('root/pages/010-leaf/misc/content.md', '# Misplaced\n');
 	await write('public/content.md', 'A valid public download.\n');
 	await write('public/.well-known/security.txt', 'Contact: mailto:security@example.com\n');
@@ -72,7 +72,7 @@ try {
 	view = await tree();
 	assert.equal(find(view, 'root/pages/010-leaf/settings.yaml').issues[0].severity, 'warning');
 	assert.equal(find(view, 'root/pages/010-leaf/notes.md').note, 'Not used by Norna');
-	assert.match(find(view, 'root/pages/010-leaf/theme.yaml').issues[0].message, /invalid values/);
+	assert.match(find(view, 'root/pages/010-leaf/tree-theme.yaml').issues[0].message, /invalid values/);
 	assert.equal(find(view, 'root/pages/010-leaf/misc/content.md').issues[0].severity, 'warning');
 	assert.equal(find(view, 'public/content.md').issues, undefined);
 	assert.ok(find(view, 'public/.well-known/security.txt'));
@@ -81,29 +81,29 @@ try {
 	assert.equal(find(view, '.DS_Store'), undefined);
 	assert.equal(find(view, '.norna/generated.txt'), undefined);
 	assert.equal(find(view, 'root/pages/010-leaf/images').kind, 'directory');
-	const themePath = path.join(siteRoot, 'root/pages/010-leaf/theme.yaml');
+	const themePath = path.join(siteRoot, 'root/pages/010-leaf/tree-theme.yaml');
 	view = await tree(new Map([[themePath, 'layout:\n  textWidth: normal\n']]));
-	assert.equal(find(view, 'root/pages/010-leaf/theme.yaml').issues, undefined, 'Unsaved repair must replace disk diagnostics.');
+	assert.equal(find(view, 'root/pages/010-leaf/tree-theme.yaml').issues, undefined, 'Unsaved repair must replace disk diagnostics.');
 	assert.match(await readFile(themePath, 'utf8'), /invalid/);
 	await write('root/pages/010-leaf/category.yaml', 'label: Conflict\n');
 	view = await tree();
 	assert.ok(find(view, 'root/pages/010-leaf/category.yaml', 'file').issues.some((issue) => /no longer supported/.test(issue.message)));
 	assert.ok(find(view, 'root/pages/010-leaf/content.md', 'page'), 'The valid page remains visible.');
-	assert.deepEqual(await choices(path.dirname(themePath)), [], 'Do not create more files in a complete entry.');
+	assert.deepEqual((await choices(path.dirname(themePath))).map((entry) => entry.name), ['page-theme.yaml'], 'Offer only the missing optional page theme.');
 
 	await assert.rejects(getEditorSourceFileChoices({ siteRoot, directory: temporary }), /selected site/);
 	await assert.rejects(choices(path.join(siteRoot, 'public')), /permitted location/);
 	await write('root/pages/030-safe/content.md', '# Safe\n');
 	const safe = path.join(siteRoot, 'root/pages/030-safe');
-	const stale = await plan('root/pages/030-safe/theme.yaml', undefined, safe);
+	const stale = await plan('root/pages/030-safe/tree-theme.yaml', undefined, safe);
 	await rename(safe, `${safe}-old`); await mkdir(safe); await write('root/pages/030-safe/content.md', '# Replacement\n');
 	await assert.rejects(createEditorSourceFile(stale), /directory changed/);
-	const race = await plan('root/pages/030-safe/theme.yaml', undefined, safe);
-	await write('root/pages/030-safe/theme.yaml', 'keep my bytes');
+	const race = await plan('root/pages/030-safe/tree-theme.yaml', undefined, safe);
+	await write('root/pages/030-safe/tree-theme.yaml', 'keep my bytes');
 	await assert.rejects(createEditorSourceFile(race), /already exists/);
 	assert.equal(await readFile(race.filename, 'utf8'), 'keep my bytes');
-	await rm(race.filename); await symlink(path.join(siteRoot, 'root/theme.yaml'), race.filename);
-	assert.deepEqual(await choices(safe), [], 'An existing symlink must not be offered for replacement.');
+	await rm(race.filename); await symlink(path.join(siteRoot, 'root/page-theme.yaml'), race.filename);
+	assert.deepEqual((await choices(safe)).map((entry) => entry.name), ['page-theme.yaml'], 'An existing symlink must not be offered for replacement.');
 	await rm(home.filename); await rm(path.join(siteRoot, 'site-config/settings.yaml'));
 	view = await tree();
 	assert.equal(view.items.find((item) => item.isHome).kind, 'incomplete');

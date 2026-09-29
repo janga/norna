@@ -176,7 +176,7 @@
     "theme.md#palette": "configuration/palettes/",
     "theme.md#appearance": "configuration/appearance/",
     "theme.md#reader-display-controls": "reader/display/",
-    "theme.md#corners": "configuration/theme/#site-wide-settings",
+    "theme.md#corners": "configuration/theme/#visual-settings",
     "theme.md#section-backgrounds": "configuration/sections/",
     "theme.md#page-themes": "configuration/theme/#page-themes",
     "typography.md#typography-profiles": "configuration/typography/#font-profile-and-rhythm",

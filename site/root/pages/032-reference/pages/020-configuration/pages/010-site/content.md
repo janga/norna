@@ -38,7 +38,7 @@ without it.
 | `scrollBehavior` | Same-page anchor movement | `instant` |
 
 This is the complete configuration surface. Visual settings belong in
-[`site-config/site-theme.yaml`](/reference/configuration/theme/) and shared notices/footer text
+[`root/tree-theme.yaml`](/reference/configuration/theme/) and shared notices/footer text
 in [`site-config/shared-content.yaml`](/reference/configuration/shared-content/).
 
 ## Anchor movement

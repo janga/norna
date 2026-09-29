@@ -4,7 +4,7 @@ import {
 	renderThemePresetReference,
 	themePresetNames,
 } from './lib/theme-presets.mjs';
-import { siteDir, siteThemeLabel } from './lib/site-paths.mjs';
+import { siteDir, siteDirLabel, siteThemeLabel } from './lib/site-paths.mjs';
 
 const [presetName, ...extraArgs] = process.argv.slice(2);
 
@@ -14,7 +14,7 @@ if (!presetName || extraArgs.length > 0) {
 
 const filename = `orig-${presetName}-theme.yaml`;
 const outputPath = path.join(siteDir, filename);
-const outputLabel = path.posix.join(path.posix.dirname(siteThemeLabel), filename);
+const outputLabel = path.posix.join(siteDirLabel, filename);
 const source = renderThemePresetReference(presetName, siteThemeLabel);
 
 try {

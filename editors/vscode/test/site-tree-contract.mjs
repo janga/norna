@@ -108,13 +108,13 @@ try {
 	for (const root of [siteRoot, legacySite, outsideSite]) {
 		await write(path.join(root, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 		await write(path.join(root, 'root/content.md'), '# Home\n');
-		await write(path.join(root, 'site-config/site-theme.yaml'), 'preset: documentation\n');
+		await write(path.join(root, 'root/tree-theme.yaml'), 'preset: documentation\n');
 	}
 	await write(path.join(siteRoot, 'root/pages/010-guide/content.md'), '# Guide\n');
 	await write(path.join(siteRoot, 'root/pages/010-guide/pages/010-child/content.md'), '# Child\n');
 	await write(path.join(siteRoot, 'root/pages/010-guide/images/example.png'), 'Fixture bytes');
 	await write(path.join(siteRoot, 'public/robots.txt'), 'User-agent: *\n');
-	await write(path.join(siteRoot, 'root/theme.yaml'), 'layout:\n  textWidth: narrow\n');
+	await write(path.join(siteRoot, 'root/page-theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
 	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
@@ -157,7 +157,7 @@ try {
 	assert.equal(home.sourcePath, path.join(siteRoot, 'root/content.md'));
 	assert.equal(provider.getParent(home), undefined);
 	assert.equal(provider.getTreeItem(home).description, 'Homepage');
-	assert.equal(home.children[0].title, 'theme.yaml');
+	assert.equal(home.children[0].title, 'tree-theme.yaml');
 	const configuration = roots.find(node => node.kind === 'directory' && node.role === 'configuration');
 	assert.equal(configuration.title, 'site-config');
 	assert.equal(configuration.ownerId, siteRoot);
@@ -174,9 +174,9 @@ try {
 	tree.expansions.fire({ element: configuration });
 	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
 	tree.collapses.fire({ element: configuration });
-	const localTheme = provider.getTreeItem(home.children.find((node) => node.title === 'theme.yaml'));
+	const localTheme = provider.getTreeItem(home.children.find((node) => node.title === 'tree-theme.yaml'));
 	assert.equal(localTheme.description, '', 'Theme help belongs in hover, not a permanent row description.');
-	assert.match(localTheme.tooltip, /Visual settings for this page only/);
+	assert.match(localTheme.tooltip, /Visual settings for this page and its descendants/);
 	assert.match(provider.getTreeItem(roots.find((node) => node.role === 'public')).tooltip, /Files published unchanged/);
 	assert.equal(state.get('norna.siteTree.activeSite'), siteRoot);
 	assert.equal(contexts.get('nornaSiteTree.hasActiveSite'), true);
@@ -220,7 +220,7 @@ try {
 	assert.equal(updatedHome, home, 'Stable node objects and IDs preserve unrelated expansion on refresh.');
 	const firstChild = guidePages.children.find((node) => node.title === 'Child');
 	const beforeCancel = await readdir(path.dirname(firstChild.sourcePath));
-	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage', 'createSourceFile']); return undefined; });
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage', 'createSourceFile', 'createSourceFile']); return undefined; });
 	await commands.get('nornaEditor.addToPage')(firstChild);
 	assert.deepEqual(await readdir(path.dirname(firstChild.sourcePath)), beforeCancel, 'Cancelling Add must not create images or pages.');
 	choices.push((items) => items.find((item) => item.command === 'importImage'));
@@ -246,7 +246,7 @@ try {
 	await write(path.join(siteRoot, 'root/pages/020-topics/content.md'), '---\npage:\n  listChildren: true\n---\n# Topics\n');
 	await registered.refresh();
 	const overview = pages.children.find((node) => node.title === 'Topics');
-	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage', 'createSourceFile']); return undefined; });
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage', 'createSourceFile', 'createSourceFile']); return undefined; });
 	await commands.get('nornaEditor.addToPage')(overview);
 	assert.equal(provider.getTreeItem(overview).command.command, 'nornaEditor.openSiteNode');
 	await commands.get('nornaEditor.openSiteNode')(overview);
@@ -257,17 +257,17 @@ try {
 	await rm(path.join(path.dirname(leaf.sourcePath), 'images'), { recursive: true });
 	await registered.refresh();
 	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.None);
-	choices.push((items) => items.find((item) => item.filename?.endsWith('/theme.yaml')));
+	choices.push((items) => items.find((item) => item.filename?.endsWith('/tree-theme.yaml')));
 	choices.push(() => undefined);
 	await commands.get('nornaEditor.addToPage')(leaf);
 	assert.deepEqual(await readdir(path.dirname(leaf.sourcePath)), ['content.md']);
-	choices.push((items) => items.find((item) => item.filename?.endsWith('/theme.yaml')));
-	choices.push((items) => { assert.match(items[0].description, /normal body text width/); return items[0]; });
+	choices.push((items) => items.find((item) => item.filename?.endsWith('/tree-theme.yaml')));
+	choices.push((items) => { assert.match(items[0].description, /modifies inherited values/); return items[0]; });
 	await commands.get('nornaEditor.addToPage')(leaf);
-	assert.equal(await readFile(path.join(path.dirname(leaf.sourcePath), 'theme.yaml'), 'utf8'), 'layout:\n  textWidth: normal\n');
-	assert.deepEqual(opened.pop(), ['text', path.join(path.dirname(leaf.sourcePath), 'theme.yaml')]);
+	assert.doesNotMatch(await readFile(path.join(path.dirname(leaf.sourcePath), 'tree-theme.yaml'), 'utf8'), /^preset:/m, 'Creating local modifications must preserve inheritance.');
+	assert.deepEqual(opened.pop(), ['text', path.join(path.dirname(leaf.sourcePath), 'tree-theme.yaml')]);
 	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed);
-	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage']); return undefined; });
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage', 'createSourceFile']); return undefined; });
 	await commands.get('nornaEditor.addToPage')(leaf);
 	const leafTheme = leaf.children[0];
 	await write(leafTheme.sourcePath, 'layout:\n  textWidth: impossible\n');
@@ -288,7 +288,7 @@ try {
 	await rm(leafTheme.sourcePath);
 	await registered.refresh();
 	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.None);
-	const blockedPath = path.join(path.dirname(leaf.sourcePath), 'theme.yaml');
+	const blockedPath = path.join(path.dirname(leaf.sourcePath), 'tree-theme.yaml');
 	documents.push({ uri: vscode.Uri.file(blockedPath), isDirty: true });
 	choices.push((items) => items.find((item) => item.filename === blockedPath));
 	choices.push((items) => items[0]);

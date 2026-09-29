@@ -53,7 +53,7 @@ const assertFile = async (filePath, label) => {
 const assertNornaSite = async (siteDirectory) => {
 	await Promise.all([
 		assertFile(path.join(siteDirectory, 'site-config/settings.yaml'), 'site-config/settings.yaml'),
-		assertFile(path.join(siteDirectory, 'site-config', 'site-theme.yaml'), 'site-config/site-theme.yaml'),
+		assertFile(path.join(siteDirectory, 'root', 'tree-theme.yaml'), 'root/tree-theme.yaml'),
 		assertFile(getSiteSourcePaths(siteDirectory).content, 'root/content.md'),
 	]);
 };

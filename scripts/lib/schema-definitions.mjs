@@ -167,13 +167,6 @@ const themeLayout = z.object({
 	gutter: responsiveCssLength.optional().describe('Horizontal page gutter as one value or separate desktop and mobile values.'),
 	spacing: themeLayoutSpacing.optional().describe('Fine-grained spacing overrides.'),
 }).strict().describe('Optional layout overrides applied after the preset.');
-const pageThemeLayout = z.object({
-	contentSpacing: contentSpacing.optional().describe('Page content spacing.'),
-	textWidth: textWidth.optional().describe('Body-text line length.'),
-}).strict().refine(
-	(value) => value.contentSpacing !== undefined || value.textWidth !== undefined,
-	'Specify contentSpacing, textWidth, or both.',
-).describe('Page-local layout overrides.');
 const themeImages = z.object({
 	presentation: imagePresentation.optional().describe('Managed-image presentation method. Omit this to keep the selected preset or inherited page setting.'),
 	width: visualCssLength.optional().describe('Maximum managed-image width. Omit this to keep the selected preset.'),
@@ -182,25 +175,19 @@ const themeImages = z.object({
 }).strict().describe('Optional defaults for placing managed images inside the page content area. Persistent navigation remains outside this area.');
 const themeCardList = z.object({
 	width: cardListWidth,
-}).strict().describe('Site-wide card-list defaults.');
+}).strict().describe('Card-list defaults.');
 const themeBlocks = z.object({
 	cardList: themeCardList.optional(),
 }).strict().refine(
 	(value) => value.cardList !== undefined,
 	'Specify cardList.',
-).describe('Optional site-wide defaults for structured Norna content blocks.');
+).describe('Optional defaults for structured Norna content blocks.');
 const configNavigation = z.object({
 	mode: navigationMode.optional().describe('How Norna presents the discovered page and heading hierarchy. Omit this to select automatic.'),
 }).strict().describe('Site-wide navigation behavior.');
 const themeSections = z.object({
 	backgroundPattern: backgroundPattern.optional().describe('Section background pattern. Alternating and accented create full-width bands with sections or top navigation; tree navigation requires uniform.'),
 }).strict().describe('Defaults for page section presentation.');
-const pageThemeSections = z.object({
-	backgroundPattern: backgroundPattern.optional().describe('Section background sequence. Non-uniform patterns are invalid with tree navigation.'),
-}).strict().refine(
-	(value) => value.backgroundPattern !== undefined,
-	'Specify backgroundPattern.',
-).describe('Page-local section presentation.');
 const pageNavigation = z.object({
 	listed: z.boolean().optional().default(true).describe('List this page in site navigation. The page remains public when false.'),
 }).strict();
@@ -252,21 +239,15 @@ const siteShape = {
 };
 
 const themeVisualShape = {
-	preset: themePreset.optional().describe('Complete visual starting point. Add only the overrides the site actually needs.'),
+	preset: themePreset.optional().describe('Select a new visual base, discarding all inherited theme values. Required in root/tree-theme.yaml; omit elsewhere to modify inherited values. Even the same preset starts a new base.'),
 	appearance: themeAppearance.optional(),
-	corners: cornerTreatment.optional().describe('Site-wide corner treatment. Omit this to use the selected preset.'),
+	corners: cornerTreatment.optional().describe('Corner treatment. Omit this to use the selected preset.'),
 	layout: themeLayout.optional(),
 	images: themeImages.optional(),
 	blocks: themeBlocks.optional(),
 	typography: themeTypography.optional(),
 	palette: presentationPalette.optional(),
 	sections: themeSections.optional(),
-};
-
-const pageThemeShape = {
-	layout: pageThemeLayout.optional(),
-	images: themeImages.optional(),
-	sections: pageThemeSections.optional(),
 };
 
 const sitewideShape = {
@@ -280,7 +261,7 @@ export const schemaTopLevelKeys = Object.freeze({
 	content: Object.freeze(Object.keys(siteShape)),
 	sitewide: Object.freeze(Object.keys(sitewideShape)),
 	theme: Object.freeze(Object.keys(themeVisualShape)),
-	pageTheme: Object.freeze(Object.keys(pageThemeShape)),
+	pageTheme: Object.freeze(Object.keys(themeVisualShape)),
 });
 
 export const configSchema = z.object(configShape).strict()
@@ -288,12 +269,10 @@ export const configSchema = z.object(configShape).strict()
 export const siteSchema = z.object(siteShape).strict()
 	.describe('Frontmatter for a homepage or additional page content.md file.');
 export const themeVisualSchema = z.object(themeVisualShape).strict()
-	.describe('Site-wide visual identity and default page presentation. Presets may be selected only in site-config/site-theme.yaml.');
-export const pageThemeSchema = z.object(pageThemeShape).strict()
-	.refine(
-		(value) => value.layout !== undefined || value.images !== undefined || value.sections !== undefined,
-		'Specify layout, images, sections, or a combination of them.',
-	)
-	.describe('Limited page presentation overrides. A child page or category theme.yaml is inherited by descendants; site/root/theme.yaml affects only the homepage. Site colors, corners, typography, content-block defaults and navigation remain global.');
+	.describe('Visual settings for this page and its descendants. Omit preset to modify inherited values; an explicit preset replaces the complete inherited base, even when the preset name is unchanged.');
+export const rootThemeSchema = z.object({ ...themeVisualShape, preset: themePreset }).strict()
+	.describe('Required root/tree-theme.yaml. Select a preset for the site, then add the visual settings you want to override.');
+export const pageThemeSchema = z.object(themeVisualShape).strict()
+	.describe('Visual settings for this page only. Omit preset to modify the active tree theme; an explicit preset replaces that base. Descendants keep their tree theme.');
 export const sitewideSchema = z.object(sitewideShape).strict()
 	.describe('Editorial content and optional navigation logo display settings shared by every page.');

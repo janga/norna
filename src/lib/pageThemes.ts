@@ -1,46 +1,7 @@
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import {
-	validatePageThemeYamlStructure,
-} from '../../scripts/lib/site-content.mjs';
-import { pageThemeSchema } from '../../scripts/lib/schema-definitions.mjs';
-import { siteHomePageDir, siteDirLabel, sitePagesDir, sitePagesLabel } from '../../scripts/lib/site-paths.mjs';
-import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
-import { parseYamlConfig } from '../../scripts/lib/yaml-config.mjs';
-import { homePageDirectory } from '../../scripts/lib/site-conventions.mjs';
-import { getPageDirectoryAncestors } from '../../scripts/lib/page-model.mjs';
+import { selectPageTheme } from '../../scripts/lib/theme-packages.mjs';
+import { siteDir } from '../../scripts/lib/site-paths.mjs';
 
-type PageTheme = {
-	id: string;
-	data: Record<string, unknown>;
-};
-
-export const getPageTheme = async (pageDirectory: string | null): Promise<PageTheme | null> => {
-	if (!pageDirectory) return null;
-
-	const pageAncestors = pageDirectory === homePageDirectory ? [homePageDirectory] : getPageDirectoryAncestors(pageDirectory);
-	let inheritedData: Record<string, unknown> = {};
-	const inheritedIds: string[] = [];
-	for (const pageAncestor of pageAncestors) {
-		const themeSegments = pageAncestor.split('/');
-		const isHome = pageAncestor === homePageDirectory;
-		const themePath = isHome ? path.join(siteHomePageDir, 'theme.yaml') : path.join(sitePagesDir, ...themeSegments, 'theme.yaml');
-		const source = await readFile(themePath, 'utf8').catch((error) => {
-			if (error?.code === 'ENOENT') return null;
-			throw error;
-		});
-		if (!source) continue;
-		const themeLabel = isHome ? `${siteDirLabel}/root/theme.yaml` : `${sitePagesLabel}/${themeSegments.join('/')}/theme.yaml`;
-
-		const data = parseYamlConfig(source, themeLabel, {
-			schema: pageThemeSchema,
-			validateStructure: validatePageThemeYamlStructure,
-		});
-		inheritedData = mergePageThemeConfig(inheritedData, data);
-		inheritedIds.push(isHome ? 'page-theme' : `pages/${themeSegments.join('/')}/theme`);
-	}
-
-	return inheritedIds.length > 0
-		? { id: inheritedIds.join(' + '), data: inheritedData }
-		: null;
+export const getPageTheme = async (pageDirectory: string) => {
+	const { selected } = await selectPageTheme({ siteRoot: siteDir, pageDirectory });
+	return { id: selected.label, data: selected.config };
 };

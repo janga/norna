@@ -35,13 +35,14 @@ my-site/
 ├── package.json
 ├── package-lock.json
 └── site/
-    ├── content.md
     ├── site-config/
     │   ├── settings.yaml
-    │   ├── site-theme.yaml
     │   └── shared-content.yaml
-    ├── images/
-    └── public/
+    ├── public/
+    └── root/
+        ├── tree-theme.yaml
+        ├── content.md
+        └── images/
 ```
 
 Because this repository is only a Norna site, `package.json` may provide short
@@ -85,13 +86,14 @@ existing-project/
 ├── package-lock.json
 ├── src/
 └── presentation/
-    ├── content.md
     ├── site-config/
     │   ├── settings.yaml
-    │   ├── site-theme.yaml
     │   └── shared-content.yaml
-    ├── images/
-    └── public/
+    ├── public/
+    └── root/
+        ├── tree-theme.yaml
+        ├── content.md
+        └── images/
 ```
 
 Norna preserves existing commands such as the surrounding project's `build`

@@ -9,7 +9,7 @@ page:
 Card images follow their card layout instead. The preset supplies defaults;
 you can override them for a page branch, but not for an individual image.
 
-```yaml title="theme.yaml: prose-aligned images" {2}
+```yaml title="tree-theme.yaml: prose-aligned images" {2}
 images:
   presentation: prose-aligned
   width: 900px
@@ -38,7 +38,7 @@ preset the method is `prose-aligned`.
 Percentages are numbers greater than 0 and at most 100, either one number or
 an object containing both `desktop` and `mobile`. For example:
 
-```yaml title="theme.yaml: centered images with height limits" {2,5,6,7}
+```yaml title="tree-theme.yaml: centered images with height limits" {2,5,6,7}
 images:
   presentation: centered-fit
   width: 1080px

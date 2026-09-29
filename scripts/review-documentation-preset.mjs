@@ -70,7 +70,7 @@ const buildCandidate = async (candidate) => {
 	const siteDir = path.join(candidateRoot, 'site');
 	await mkdir(candidateRoot, { recursive: true });
 	await copyFixture(siteDir);
-	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), candidate.theme, 'utf8');
+	await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), candidate.theme, 'utf8');
 
 	const configPath = path.join(siteDir, 'site-config/settings.yaml');
 	const config = load(await readFile(configPath, 'utf8'));

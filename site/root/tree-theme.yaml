@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../schemas/root-theme.schema.json
+
+palette: near-monochrome
+appearance:
+  default: dark
+preset: project
+layout:
+  contentSpacing: normal
+  pageWidth: 1180px
+images:
+  width: 900px
+typography:
+  profile: restrained
+  rhythm: normal
+  fontFamily: Arial, 'Helvetica Neue', Helvetica, sans-serif
+sections:
+  backgroundPattern: uniform

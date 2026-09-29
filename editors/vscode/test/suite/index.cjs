@@ -79,7 +79,7 @@ async function run() {
 		return;
 	}
 
-	const theme = await openDocument('site/site-config/site-theme.yaml');
+	const theme = await openDocument('site/root/tree-theme.yaml');
 	assert.equal(theme.languageId, 'yaml');
 	const themeItems = await waitFor(
 		() => getCompletions(theme, 0),

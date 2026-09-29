@@ -14,12 +14,12 @@ import { homePageDirectory } from '../scripts/lib/site-conventions.mjs';
 import {
 	siteSchema,
 	sitewideSchema,
-	themeVisualSchema,
+	rootThemeSchema,
 } from '../scripts/lib/schema-definitions.mjs';
 
 const siteEntryPrefix = getSiteEntryPrefix(siteDirLabel);
 const emptyYamlMapping = (value: unknown) => value ?? {};
-const siteThemeSchema = z.preprocess(emptyYamlMapping, themeVisualSchema);
+const siteThemeSchema = z.preprocess(emptyYamlMapping, rootThemeSchema);
 const sitewideContentSchema = z.preprocess(emptyYamlMapping, sitewideSchema);
 
 const site = defineCollection({

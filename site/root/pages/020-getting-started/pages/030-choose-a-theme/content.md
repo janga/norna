@@ -38,14 +38,14 @@ content types and none of the more specific purposes fits better.
 
 ## Set the preset {#set-the-preset}
 
-Open `site/site-config/site-theme.yaml` and set one preset:
+Open `site/root/tree-theme.yaml` and set one preset:
 
 ```yaml
 preset: documentation
 ```
 
-Save the file while the local preview is running. The complete site updates to
-use that preset. Review several real sections, images, and narrow-screen views
+Save the file while the local preview is running. Pages inheriting this root theme update to use the preset; local overrides
+remain, and branches with their own explicit preset retain their base. Review several real sections, images, and narrow-screen views
 before deciding whether anything needs an override.
 
 List the same choices from the Norna version installed in the project:
@@ -73,7 +73,7 @@ layout:
 
 Unmentioned values still come from `documentation`. Prefer the preset alone
 until real content reveals a concrete reason for an override; this preserves a
-coordinated result and keeps `site-theme.yaml` short.
+coordinated result and keeps `tree-theme.yaml` short.
 
 See the [Theme reference](/reference/configuration/theme/)
 for every preset, accepted override, page-theme boundary, palette, and reader

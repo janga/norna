@@ -59,12 +59,12 @@ const prepareWorkspace = async () => {
 	await write('site/site-config/settings.yaml', 'url: https://example.com/\n');
 	await write('tree-content/site-config/settings.yaml', 'url: https://example.com/\n');
 	await write('tree-content/root/content.md', '# Tree Home\n');
-	await write('tree-content/site-config/site-theme.yaml', 'preset: documentation\n');
-	await write('tree-content/root/theme.yaml', 'layout:\n  textWidth: narrow\n');
+	await write('tree-content/root/tree-theme.yaml', 'preset: documentation\n');
+	await write('tree-content/root/page-theme.yaml', 'layout:\n  textWidth: narrow\n');
 	await write('tree-content/public/.well-known/security.txt', 'Contact: mailto:security@example.com\n');
 	await write('tree-content/root/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
 	await write('tree-content/root/pages/010-guide/content.md', '---\n# Keep metadata comment\npage:\n  description: "Original description" # keep\n  aliases: [/previous-guide/]\n---\n\n# Tree Guide\n\nKeep this prose and [authored link text](/topics/child/).\n');
-	await write('tree-content/root/pages/010-guide/theme.yaml', 'layout:\n  contentSpacing: compact\n');
+	await write('tree-content/root/pages/010-guide/tree-theme.yaml', 'layout:\n  contentSpacing: compact\n');
 	await write('tree-content/root/pages/010-guide/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
 	await write('tree-content/root/pages/020-topics/content.md', '---\npage:\n  description: Choose a topic.\n  listChildren: true\n---\n\n# Tree Topics\n');
 	await write('tree-content/root/pages/020-topics/pages/010-child/content.md', '# Tree Child\n');
@@ -76,7 +76,7 @@ const prepareWorkspace = async () => {
 		'[markdown]': { 'editor.formatOnSave': false },
 		'[yaml]': { 'editor.defaultFormatter': 'redhat.vscode-yaml' },
 	}));
-	await write('site/site-config/site-theme.yaml', [
+	await write('site/root/tree-theme.yaml', [
 		'preset: ',
 		'typography:',
 		'  fontFamily: "Inter, sans-serif"',
@@ -190,7 +190,7 @@ Body text.[^margin:context]
 	await write('site/notes.md', '# Ordinary Markdown\n');
 	await write('site/settings.yaml', '');
 	await write('ordinary/content.md', '# Ordinary Markdown\n');
-	await write('ordinary/theme.yaml', '');
+	await write('ordinary/tree-theme.yaml', '');
 	await write('examples/complete-sites/priority/site/site-config/settings.yaml', 'url: https://example.com/\n');
 	await write('examples/complete-sites/priority/site/root/content.md', '# Example\n');
 	await write('site/root/pages/070-embedded/content.md', [
@@ -210,8 +210,8 @@ Body text.[^margin:context]
 	await write('site/root/pages/120-widget/images/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 	await write('widget-site/site-config/settings.yaml', 'url: https://example.com/\n');
 	await write('widget-site/root/content.md', '# Widget checks\n');
-	await write('widget-site/site-config/site-theme.yaml', '');
-	await write('widget-site/root/theme.yaml', 'layout:\n  textWidth: narrow\n');
+	await write('widget-site/root/tree-theme.yaml', '');
+	await write('widget-site/root/page-theme.yaml', 'layout:\n  textWidth: narrow\n');
 	await write('widget-site/site-config/shared-content.yaml', '');
 	await write('widget-site/root/pages/010-overview/content.md', '');
 	await write('usage-site/site-config/settings.yaml', 'url: https://example.com/\n');

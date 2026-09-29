@@ -14,7 +14,7 @@ installed by the current project. This keeps suggestions and documentation
 links aligned with the engine version that builds the site. Norna-specific help
 appears only in recognized Norna files.
 
-Extension 0.8.1 supports the `root/` source layout and schema version 5,
+Extension 0.9.0 supports the `root/` source layout and schema version 6,
 including independent site-resource ownership in the engine's editing tree.
 
 ## Features
@@ -55,7 +55,7 @@ Directories select without opening a file. Individual files use VS Code's
 normal editor or preview, including image previews.
 
 Page names hide numeric ordering prefixes; hover reveals the actual source
-path. Each page shows its existing `images/`, `theme.yaml` and `pages/` in that
+path. Each page shows its existing `images/`, `tree-theme.yaml`, `page-theme.yaml` and `pages/` in that
 order. Site-wide files are siblings of the homepage, not its children, matching
 the physical source layout. The settings folder starts expanded and remembers
 subsequent choices. Hover explains theme scope and what belongs in `public/`.
@@ -143,7 +143,7 @@ diagnostics; Red Hat YAML is not assigned Markdown fences.
 
 Norna gives its own suggestions a sorting preference over equally matching
 generic suggestions, only in recognized files and valid editing contexts.
-For standalone YAML, including `theme.yaml`, this applies to Norna's templates
+For standalone YAML, including `tree-theme.yaml`, this applies to Norna's templates
 and snippets, not to ordinary properties or values supplied by Red Hat YAML.
 VS Code's text matching and user snippet-placement settings still apply;
 Norna suggestions are not guaranteed first place.
@@ -174,7 +174,7 @@ evaluation update; there are no Marketplace updates for this extension.
 
 1. Open the root of a Norna site project in VS Code.
 2. Run `npm install` in that project.
-3. Open `site/site-config/site-theme.yaml` or a page `content.md`.
+3. Open `site/root/tree-theme.yaml` or a page `content.md`.
 4. Check the **Norna** item on the right side of the status bar.
 5. On a blank, unindented Markdown body line, press `Ctrl+Space` or run
    **Trigger Suggest** to choose a callout, image block, card list, or page list

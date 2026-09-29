@@ -43,7 +43,7 @@ const createSite = async (siteDirectory, { title = 'Scratch page' } = {}) => {
 	await mkdir(path.join(siteDirectory, 'root'), { recursive: true });
 	await mkdir(path.join(siteDirectory, 'site-config'), { recursive: true });
 	await writeFile(path.join(siteDirectory, 'site-config/settings.yaml'), 'url: https://example.com/scratch/\n');
-	await writeFile(path.join(siteDirectory, 'site-config', 'site-theme.yaml'), 'preset: documentation\n');
+	await writeFile(path.join(siteDirectory, 'root', 'tree-theme.yaml'), 'preset: documentation\n');
 	await writeFile(path.join(siteDirectory, 'root/content.md'), `# ${title}\n`);
 };
 
@@ -422,7 +422,7 @@ try {
 			scratchRoot,
 			replace: true,
 		}),
-		/missing site-config\/site-theme.yaml/,
+		/missing root\/tree-theme.yaml/,
 	);
 	assert.equal(await readFile(path.join(targetDirectory, 'root/content.md'), 'utf8'), '# Replaced page\n');
 

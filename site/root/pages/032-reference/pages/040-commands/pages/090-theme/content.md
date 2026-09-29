@@ -7,7 +7,7 @@ page:
 
 Inspect the definitions supplied by the installed engine before choosing
 overrides. These commands use the selected site and do not change its active
-`site-config/site-theme.yaml`.
+`root/tree-theme.yaml`.
 
 ## List and export presets
 
@@ -22,7 +22,7 @@ npm exec -- norna theme:export documentation
 site directory. An existing export is never overwritten.
 
 The export is a reference file, not a second active theme. Norna continues to
-read only `site-config/site-theme.yaml`. Copy only the settings you intend to override; see
+read the active tree and page themes. Copy only the settings you intend to override; see
 the [theme model](/reference/configuration/theme/) and
 [preset values](/reference/configuration/presets/).
 
@@ -34,8 +34,9 @@ npm exec -- norna typography show
 ```
 
 `profiles` prints exact built-in typography profile and rhythm values.
-`show` prints resolved typography for the shared theme, each page and each
-section, identifying the profile, rhythm or root override that supplied it.
+`show` prints resolved typography for the root tree theme, each page and each
+section. It follows tree inheritance and page-only settings, and identifies
+the font family, profile, rhythm and source of each override, including text width.
 Both write to the terminal, not to source files.
 
 The equivalent colon commands are `typography:profiles` and `typography:show`.

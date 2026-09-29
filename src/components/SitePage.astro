@@ -32,7 +32,6 @@ import {
 import { projectConfig, resolveThemeVisualConfig } from '../../scripts/lib/project-config.mjs';
 import { resolveEditSourceTarget } from '../../scripts/lib/edit-source-link.mjs';
 import { getTextWidthCssValue, resolveFrameColors, resolvePagePresentation } from '../../scripts/lib/presentation.mjs';
-import { mergePageThemeConfig } from '../../scripts/lib/theme-presets.mjs';
 
 type SiteEntry = CollectionEntry<'site'>;
 
@@ -47,19 +46,12 @@ const categoryDestinations = siteModel.categoryDestinations.byPathname;
 const { nodes: siteNodes, pages: sitePages } = siteModel;
 const currentPage = sitePages.find((page) => page.entry.id === entry?.id);
 if (!currentPage) throw new Error(`Page entry "${entry?.id}" is missing from the site page model.`);
-const [siteTheme] = await getCollection('theme');
-if (!siteTheme) {
-	throw new Error('site/site-config/site-theme.yaml is required. Add the shared site theme before building the site.');
-}
 const [sitewide] = await getCollection('sitewide');
 const sitewideData = sitewide?.data ?? {};
 const homePage = sitePages.find((page) => page.isHome) ?? currentPage;
-const siteThemeData = siteTheme.data;
 const pageTheme = await getPageTheme(currentPage.pageDirectory);
-const themeData = mergePageThemeConfig(siteThemeData, pageTheme?.data);
-const themeLabel = pageTheme
-	? `${siteDirectory || 'site'}/${pageTheme.id}`
-	: `${siteDirectory || 'site'}/${siteTheme.id}`;
+const themeData = pageTheme.data;
+const themeLabel = pageTheme.id;
 const visualTheme = resolveThemeVisualConfig(themeData, themeLabel);
 const logoAsset = getLogoAsset();
 const logoSettings = sitewideData.logo;
@@ -164,7 +156,7 @@ const pagePresentation = resolvePagePresentation(themeData, themeLabel, {
 	navigationMode: navigationModel.mode,
 });
 const pageTextWidth = getTextWidthCssValue(pagePresentation.typography.values.body.width);
-const frameColors = resolveFrameColors({ theme: siteThemeData, sourceLabel: `${siteDirectory || 'site'}/${siteTheme.id}` });
+const frameColors = resolveFrameColors({ theme: themeData, sourceLabel: themeLabel });
 const hasTreeNavigation = navigationModel.mode === 'tree';
 // Keep one reading frame across tree-mode pages, including pages with no H2.
 // Home remains the site's entry point with the global navigation row.

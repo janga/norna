@@ -97,10 +97,10 @@ try {
 
 	const child = path.join(firstSite, 'root/pages/020-topics/pages/010-child/content.md');
 	for (const [filename, source] of [
-		['site-config/site-theme.yaml', 'preset: documentation\n'], ['root/theme.yaml', 'layout:\n  textWidth: narrow\n'], ['site-config/shared-content.yaml', 'footer: {}\n'],
-		['root/images/shared.svg', '<svg/>'], ['root/pages/010-guide/theme.yaml', 'layout:\n  contentSpacing: compact\n'],
+		['root/tree-theme.yaml', 'preset: documentation\n'], ['root/page-theme.yaml', 'layout:\n  textWidth: narrow\n'], ['site-config/shared-content.yaml', 'footer: {}\n'],
+		['root/images/shared.svg', '<svg/>'], ['root/pages/010-guide/tree-theme.yaml', 'layout:\n  contentSpacing: compact\n'],
 		['root/pages/010-guide/images/shared.svg', '<svg><title>Guide</title></svg>'],
-		['root/pages/020-topics/theme.yaml', 'layout:\n  contentSpacing: compact\n'],
+		['root/pages/020-topics/tree-theme.yaml', 'layout:\n  contentSpacing: compact\n'],
 		['root/pages/020-topics/pages/010-child/images/shared.svg', '<svg><title>Child</title></svg>'],
 		['public/robots.txt', 'User-agent: *\n'], ['public/icons/icon.svg', '<svg/>'],
 		['.norna/public/generated.svg', '<svg/>'],
@@ -123,9 +123,9 @@ try {
 	const childrenOf = (id) => files.items.filter((item) => item.parentId === id);
 	const home = path.join(firstSite, 'root/content.md');
 	assert.deepEqual(files.items.filter((item) => item.parentId === null).map((item) => item.sourcePath), [path.join(firstSite, 'site-config'), path.join(firstSite, 'public'), home], 'Site files and the root page are siblings.');
-	assert.deepEqual(childrenOf(home).map((item) => item.title), ['images', 'theme.yaml', 'content.md', 'pages']);
-	assert.deepEqual(childrenOf(page).map((item) => item.title), ['images', 'theme.yaml', 'content.md'], 'A leaf must not gain a fictional pages directory.');
-	assert.deepEqual(childrenOf(overview).map((item) => item.title), ['theme.yaml', 'content.md', 'pages']);
+	assert.deepEqual(childrenOf(home).map((item) => item.title), ['images', 'tree-theme.yaml', 'page-theme.yaml', 'content.md', 'pages']);
+	assert.deepEqual(childrenOf(page).map((item) => item.title), ['images', 'tree-theme.yaml', 'content.md'], 'A leaf must not gain a fictional pages directory.');
+	assert.deepEqual(childrenOf(overview).map((item) => item.title), ['tree-theme.yaml', 'content.md', 'pages']);
 	assert.equal(files.items.find((item) => item.id === page).parentId, resourceId('root/pages'));
 	assert.equal(files.items.find((item) => item.id === child).parentId, resourceId('root/pages/020-topics/pages'));
 	assert.equal(at('root/pages/020-topics/pages/010-child/images/shared.svg').ownerId, child);
@@ -136,14 +136,14 @@ try {
 	assert.equal(at('public/outside'), undefined, 'Do not follow symbolic links outside the displayed source tree.');
 	assert.equal(at('.norna/public/generated.svg'), undefined);
 	assert.equal(at('root/content.md').parentId, home, 'The source file is visible directly under its page.');
-	assert.deepEqual(childrenOf(resourceId('site-config')).map((item) => item.title), ['settings.yaml', 'site-theme.yaml', 'shared-content.yaml']);
-	assert.equal(at('site-config/site-theme.yaml').ownerId, home);
+	assert.deepEqual(childrenOf(resourceId('site-config')).map((item) => item.title), ['settings.yaml', 'shared-content.yaml']);
+	assert.equal(at('root/tree-theme.yaml').ownerId, home);
 	assert.equal(files.items.find((item) => item.id === page).title, 'Unsaved title');
 	assert.equal(files.items.find((item) => item.id === overview).title, 'Unsaved overview');
 	assert.match(at('site-config').description, /shared by the complete site/);
-	assert.match(at('root/theme.yaml').description, /this page only.*site-config\/site-theme\.yaml/);
-	assert.match(at('root/pages/010-guide/theme.yaml').description, /this page and its child pages.*inherited settings/);
-	assert.match(at('root/pages/020-topics/theme.yaml').description, /this page and its child pages/);
+	assert.match(at('root/page-theme.yaml').description, /this page only.*tree theme/);
+	assert.match(at('root/pages/010-guide/tree-theme.yaml').description, /this page and its descendants.*inherited values/);
+	assert.match(at('root/pages/020-topics/tree-theme.yaml').description, /this page and its descendants/);
 	assert.match(at('public').description, /published unchanged.*robots\.txt and icons/);
 	assert.equal(new Set(files.items.map((item) => item.id)).size, files.items.length, 'Resource and page identities must be unique.');
 	assert.deepEqual(files.items.filter((item) => item.kind === 'page').map((item) => item.url), files.nodes.map((item) => item.url));

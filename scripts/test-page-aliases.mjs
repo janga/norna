@@ -95,7 +95,7 @@ test('build emits a base-path-aware static redirect document outside the sitemap
 	try {
 		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\n');
-		await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), 'palette: arctic-blue\nappearance:\n  default: dark\n');
+		await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), 'preset: project\npalette: arctic-blue\nappearance:\n  default: dark\n');
 		await writeFile(path.join(siteDir, 'root/content.md'), `# Home
 
 ## Start

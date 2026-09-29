@@ -5,6 +5,11 @@ page:
 
 # Sidans filer i VS Code
 
+Detta är den historiska granskningen av BL-133. Filnamn och temaarv i
+skisserna har senare ersatts av BL-149 och BL-150. Aktuell filmodell och
+temaarv beskrivs i [Site files](https://janga.github.io/norna/reference/site/files/)
+och [Theme](https://janga.github.io/norna/reference/configuration/theme/).
+
 **BL-133 VS Code Page Files · Förslag 2 · 20 september 2026**
 
 **Godkänd riktning.** Genomförandet är beställt i

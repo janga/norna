@@ -5,7 +5,7 @@ internal product and engineering guide, not a description of released behavior.
 
 The guide has four goals:
 
-1. make a good site possible with a one-line `site-config/site-theme.yaml`;
+1. make a good site possible with a one-line `root/tree-theme.yaml`;
 2. give every built-in preset a clear identity tied to a recognizable purpose;
 3. preserve accessibility and reader control across every preset;
 4. minimize the amount of visual design work required to create and maintain
@@ -286,7 +286,7 @@ Every public preset must have:
 
 ### 4. Site-Owner Direction And Overrides
 
-The shared `site-config/site-theme.yaml` remains deliberately short:
+The shared `root/tree-theme.yaml` remains deliberately short:
 
 ```yaml
 preset: documentation
@@ -311,12 +311,15 @@ length only when a real site demonstrates that named choices cannot express a
 legitimate need. Raw color, focus, control-state, breakpoint, and component
 spacing overrides should not be public.
 
-Page-local themes remain narrower than the site-wide theme. They may vary reading
-geometry, content rhythm, media emphasis, and section surfaces when that does
-not weaken the site's shared identity. A page theme cannot select a non-uniform
-surface pattern for pages that resolve to tree navigation. Color system,
-typography family, corners, navigation treatment, and reader-control
-availability remain site-wide.
+The approved BL-150 model uses required `root/tree-theme.yaml`, including its
+preset. Descendant `tree-theme.yaml` files inherit and override individual
+fields unless they explicitly select a preset, which resets the whole base.
+Optional `page-theme.yaml` applies the same rules to that page alone; children
+keep the tree theme. Both accept the full public visual vocabulary. Search and
+error pages use the root tree theme. A page's navigation frame and content use
+its selected palette together. Explicit non-uniform section backgrounds remain
+invalid with tree navigation. These rules supersede the earlier restriction
+that page themes could not change visual identity.
 
 ### 5. Reader Display Preferences
 

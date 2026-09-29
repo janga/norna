@@ -562,9 +562,13 @@ identity is `.`, with depth zero and entry suffix `root`; child identities
 remain relative to `site/root/pages/`. Navigation's `parentPagePath: null` projects
 root children onto the top level.
 
-`root/theme.yaml` uses the limited page-theme schema and applies only to
-the homepage. `site-config/site-theme.yaml` remains global; descendant `theme.yaml` files
-inherit along their ordinary page ancestry. Shared files and `public/` remain
+Required `root/tree-theme.yaml` includes an explicit preset. Optional
+`page-theme.yaml` applies only to its own page, including the homepage. Both
+theme types accept all visual fields. Descendant `tree-theme.yaml` files
+inherit along their ordinary page ancestry. Without `preset`, a file changes
+individual inherited fields; an explicit `preset` replaces the base even when
+its name matches the ancestor. Page-only settings never reach children.
+Shared technical files and `public/` remain
 beside `root/`, not inside it. `norna site:upgrade` validates this layout and
 rejects former locations with manual conversion instructions; neither it nor
 `--apply` moves sources. Builds never perform source conversion. Use

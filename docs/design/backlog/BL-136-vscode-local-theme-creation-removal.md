@@ -8,11 +8,17 @@ of the [VS Code Files And Images track](../vscode-authoring-track.md).
 
 **Status: Needs decision; outline for later visual discussion.**
 
-2026-09-29: Reassess this outline after BL-150 Complete Tree And Page Theme
-Packages and BL-151 Site Tree For The Site And Theme Model. Their approved
+2026-09-29: Reassess this outline after BL-150 Theme Inheritance And Explicit Preset Replacement and BL-151 Site Tree For The Site And Theme Model. Their approved
 design supersedes the old theme model described below when implemented.
 Reuse existing create/remove operations; do not implement this outline as
-a prerequisite for those items or rewrite the remaining proposals prematurely.
+a prerequisite for those items.
+
+2026-09-29 scope clarification: BL-151 owns basic creation, removal, scope and
+the distinction between inherited modifications and explicit preset replacement.
+This item is only a later evaluation of richer initial-setting assistance or
+an effective-values view showing which file supplies each value. No new
+implementation is authorized here. The old filename/model examples below are
+historical context and must not constrain that later design.
 
 Local-theme removal was approved separately on 2026-09-22 in
 [BL-146 VS Code Removal, Addresses And Incoming Links](BL-146-vscode-removal-addresses-links.md):

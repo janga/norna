@@ -23,7 +23,7 @@ const compareNodeMetadata = (left, right) => (
 const assertLegacyStructureIsAbsent = async ({ siteDir, siteDirLabel }) => {
 	for (const name of ['content.md', 'theme.yaml', 'images', 'pages', 'routes']) {
 		if (await fileExists(path.join(siteDir, name))) {
-			throw new Error(`${siteDirLabel}/${name} uses the former page layout. Put the homepage content.md, theme.yaml, images/ and pages/ inside ${siteDirLabel}/root/. Keep site-config/ and public/ at the site level. Stop the development server before moving files.`);
+			throw new Error(`${siteDirLabel}/${name} uses the former page layout. Put the homepage content.md, tree-theme.yaml, optional page-theme.yaml, images/ and pages/ inside ${siteDirLabel}/root/. Keep site-config/ and public/ at the site level. Stop the development server before moving files.`);
 		}
 	}
 };

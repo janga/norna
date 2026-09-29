@@ -294,7 +294,7 @@ try {
 		assertFileExists(path.join(packagedStarterRoot, 'package.json')),
 		assertFileExists(path.join(packagedStarterRoot, 'README.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'site-config/settings.yaml')),
-		assertFileExists(path.join(packagedStarterRoot, 'site', 'site-config', 'site-theme.yaml')),
+		assertFileExists(path.join(packagedStarterRoot, 'site', 'root', 'tree-theme.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'site-config/shared-content.yaml')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'root', 'content.md')),
 		assertFileExists(path.join(packagedStarterRoot, 'site', 'root', 'images', '.gitkeep')),
@@ -378,7 +378,7 @@ This page verifies that packaged norna sites can build additional pages.
 	await Promise.all([
 		assertFileExists(path.join(initializedSiteRoot, 'package.json')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'site-config/settings.yaml')),
-		assertFileExists(path.join(initializedSiteRoot, 'site', 'site-config', 'site-theme.yaml')),
+		assertFileExists(path.join(initializedSiteRoot, 'site', 'root', 'tree-theme.yaml')),
 		assertFileExists(path.join(initializedSiteRoot, 'site', 'root', 'content.md')),
 		assertFileMissing(path.join(initializedSiteRoot, '.DS_Store')),
 		assertFileMissing(path.join(initializedSiteRoot, 'site', '.DS_Store')),
@@ -668,7 +668,7 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	const siteContentPath = path.join(siteProjectRoot, 'site', 'root', 'content.md');
 	const siteContent = await readFile(siteContentPath, 'utf8');
-	const siteThemePath = path.join(siteProjectRoot, 'site', 'site-config', 'site-theme.yaml');
+	const siteThemePath = path.join(siteProjectRoot, 'site', 'root', 'tree-theme.yaml');
 	const siteTheme = await readFile(siteThemePath, 'utf8');
 	await writeFile(siteThemePath, `${siteTheme.trim()}\ntypography:\n  profile: noisy\n`);
 	await runExpectFailure(

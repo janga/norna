@@ -134,7 +134,7 @@ test('incoming links open the exact source line; Show links cancels page deletio
 
 test('optional-file deletion cancels, protects dirty files, reports inherited effects and uses Trash', async (t) => {
 	const f = await setup(t);
-	const sourcePath = await f.write('root/theme.yaml', 'layout:\n  textWidth: narrow\n');
+	const sourcePath = await f.write('root/page-theme.yaml', 'layout:\n  textWidth: narrow\n');
 	const file = { kind: 'file', sourcePath, owner: f.home };
 	await f.run('removeFile', file); assert.equal(f.trashed.length, 0);
 	const document = await f.open(sourcePath); document.isDirty = true;

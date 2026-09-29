@@ -87,8 +87,8 @@ async function runSiteTree({ openDocument, waitFor }) {
 		const topicPath = 'tree-content/root/pages/020-topics/content.md';
 		await sourceRow('tree-content/root/content.md').click();
 		await activeIs('tree-content/root/content.md');
-		await sourceRow('tree-content/root/theme.yaml').click();
-		await activeIs('tree-content/root/theme.yaml');
+		await sourceRow('tree-content/root/page-theme.yaml').click();
+		await activeIs('tree-content/root/page-theme.yaml');
 		await expandDirectory('tree-content/site-config');
 		for (const filename of ['settings.yaml', 'site-theme.yaml']) {
 			await sourceRow(`tree-content/site-config/${filename}`).click();
@@ -124,8 +124,8 @@ async function runSiteTree({ openDocument, waitFor }) {
 		if (await row('Tree Guide').getAttribute('aria-expanded') === 'false') {
 			await row('Tree Guide').locator('.monaco-tl-twistie').click();
 		}
-		await sourceRow('tree-content/root/pages/010-guide/theme.yaml').click();
-		await activeIs('tree-content/root/pages/010-guide/theme.yaml');
+		await sourceRow('tree-content/root/pages/010-guide/tree-theme.yaml').click();
+		await activeIs('tree-content/root/pages/010-guide/tree-theme.yaml');
 		await expandDirectory('tree-content/root/pages/010-guide/images');
 		await sourceRow('tree-content/root/pages/010-guide/images/example.png').click();
 		await waitFor(() => vscode.window.tabGroups.activeTabGroup.activeTab?.input, (input) => input instanceof vscode.TabInputCustom

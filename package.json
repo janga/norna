@@ -101,7 +101,7 @@
     "deploy:watch": "node bin/norna.mjs deploy:watch",
     "doctor": "node bin/norna.mjs doctor",
     "demo:build": "node scripts/build-demo.mjs",
-    "test": "npm run schemas:check && npm run test:dead-code && npm run test:schemas && npm run test:page-model && npm run test:site-upgrade && npm run test:page-markdown && npm run test:migration-check && npm run test:site-links && npm run test:page-aliases && npm run test:sitemap && npm run test:not-found-page && npm run test:site-node-commands && npm run test:page-move && npm run test:navigation-review && npm run test:nested-pages && npm run test:heading-ids && npm run test:navigation-model && npm run test:project-config && npm run test:locales && npm run test:edit-source-link && npm run test:static-search && npm run test:editor-language && npm run test:content-check && npm run test:content-sync-plan && npm run test:content-model && npm run test:theme-presets && npm run test:presentation-contract && npm run test:presentation-review && npm run test:preset-baselines && npm run test:documentation-preset-review && npm run test:site-public && npm run test:cli-discovery && npm run test:dev-local && npm run test:review-environments && npm run test:engine-commands && npm run test:documentation && npm run test:ci-lockfile && npm run test:banner-visibility && npm run test:client-javascript && npm run test:browser-test-server && npm run test:table-sorting && npm run test:fixture:build && npm run test:examples && npm run package:check",
+    "test": "npm run schemas:check && npm run test:dead-code && npm run test:schemas && npm run test:page-model && npm run test:site-upgrade && npm run test:page-markdown && npm run test:migration-check && npm run test:site-links && npm run test:page-aliases && npm run test:sitemap && npm run test:not-found-page && npm run test:site-node-commands && npm run test:page-move && npm run test:navigation-review && npm run test:nested-pages && npm run test:heading-ids && npm run test:navigation-model && npm run test:project-config && npm run test:locales && npm run test:edit-source-link && npm run test:static-search && npm run test:editor-language && npm run test:content-check && npm run test:content-sync-plan && npm run test:content-model && npm run test:theme-inheritance && npm run test:theme-presets && npm run test:presentation-contract && npm run test:presentation-review && npm run test:preset-baselines && npm run test:documentation-preset-review && npm run test:site-public && npm run test:cli-discovery && npm run test:dev-local && npm run test:review-environments && npm run test:engine-commands && npm run test:documentation && npm run test:ci-lockfile && npm run test:banner-visibility && npm run test:client-javascript && npm run test:browser-test-server && npm run test:table-sorting && npm run test:fixture:build && npm run test:examples && npm run package:check",
     "test:fixture:build": "node scripts/test-basic-fixture-build.mjs",
     "test:examples": "node scripts/test-examples.mjs",
     "test:examples:browser": "node scripts/test-navigation.mjs --site-dir site tests/examples-gallery.spec.ts",
@@ -176,7 +176,8 @@
     "release:minor": "node scripts/release.mjs minor",
     "release:major": "node scripts/release.mjs major",
     "preview": "node bin/norna.mjs preview",
-    "astro": "node bin/norna.mjs astro"
+    "astro": "node bin/norna.mjs astro",
+    "test:theme-inheritance": "node scripts/test-theme-inheritance.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "0.3.4",

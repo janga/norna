@@ -23,8 +23,8 @@ import { resolveThemeConfig } from './theme-presets.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
 
 const readSiteConfig = async () => {
-	if (existsSync(path.join(siteDir, 'config.yaml')) || existsSync(path.join(siteDir, 'page-theme.yaml')) || existsSync(path.join(siteDir, 'sitewide-content.yaml'))) {
-		throw new Error('This site has configuration files in the former locations. Stop its development server and follow the source-layout reference to place shared settings in site-config/ and page files in root/. Automatic historical conversion is not provided.');
+	if (existsSync(path.join(siteDir, 'site-config/site-theme.yaml')) || existsSync(path.join(siteDir, 'root/theme.yaml')) || existsSync(path.join(siteDir, 'config.yaml')) || existsSync(path.join(siteDir, 'page-theme.yaml')) || existsSync(path.join(siteDir, 'sitewide-content.yaml'))) {
+		throw new Error('This site has configuration files in the former locations. Stop its development server and follow the source-layout reference to place technical settings in site-config/ and page files in root/. Move the shared theme to root/tree-theme.yaml with an explicit preset and homepage-only overrides to root/page-theme.yaml. Automatic historical conversion is not provided.');
 	}
 	const source = await readFile(siteConfigPath, 'utf8').catch((error) => {
 		if (error?.code === 'ENOENT') {
@@ -308,13 +308,6 @@ export const resolveThemeVisualConfig = (theme, sourceLabel = siteThemeLabel) =>
 		defaultImagePresentation,
 		sourceLabel,
 	);
-	if (imagePresentation === 'prose-aligned' && rawImagesConfig.maxAvailableHeightPercent !== undefined) {
-		throw new Error([
-			`images.maxAvailableHeightPercent cannot be used with images.presentation "prose-aligned" in ${sourceLabel}.`,
-			'Prose-aligned images follow available horizontal space instead of a viewport-height limit.',
-			'Remove images.maxAvailableHeightPercent or set images.presentation to "centered-fit".',
-		].join('\n'));
-	}
 
 	return Object.freeze({
 		layout: Object.freeze({

@@ -72,7 +72,7 @@ global option `--site-dir <path>` before `page:move`.
 
 ## What changes
 
-The whole folder moves, including `content.md`, `images/`, any `theme.yaml`
+The whole folder moves, including `content.md`, `images/`, any `tree-theme.yaml`
 and nested pages. Norna adds each moved content page's old URL to
 `page.aliases`, the list of additional addresses in that page's metadata.
 

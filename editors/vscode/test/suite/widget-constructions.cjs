@@ -119,17 +119,17 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 		if (process.env.NORNA_EDITOR_TEST_SUITE === 'metadata') return;
 		for (const prefix of ['', 'wa']) {
 			await accept(`Global theme palette: ${prefix || 'blank value'}`,
-				`palette: ${prefix}|CURSOR|\n`, 'palette: warm-paper\n', 'warm-paper', 'widget-site/site-config/site-theme.yaml');
+				`palette: ${prefix}|CURSOR|\n`, 'palette: warm-paper\n', 'warm-paper', 'widget-site/root/tree-theme.yaml');
 		}
 		for (const prefix of ['', 'na']) {
 			await accept(`Homepage theme width: ${prefix || 'blank value'}`,
-				`layout:\n  textWidth: ${prefix}|CURSOR|\n`, 'layout:\n  textWidth: narrow\n', 'narrow', 'widget-site/root/theme.yaml');
+				`layout:\n  textWidth: ${prefix}|CURSOR|\n`, 'layout:\n  textWidth: narrow\n', 'narrow', 'widget-site/root/page-theme.yaml');
 		}
 		for (const prefix of ['', 'tr']) {
 			await accept(`Shared content footer: ${prefix || 'blank value'}`,
 				`footer:\n  buildInfo: ${prefix}|CURSOR|\n`, 'footer:\n  buildInfo: true\n', 'true', 'widget-site/site-config/shared-content.yaml');
 		}
-		const homepageTheme = await openDocument('widget-site/root/theme.yaml');
+		const homepageTheme = await openDocument('widget-site/root/page-theme.yaml');
 		await vscode.window.activeTextEditor.edit((edit) => edit.replace(new vscode.Range(homepageTheme.positionAt(0), homepageTheme.positionAt(homepageTheme.getText().length)), ''));
 		const pageFields = await waitFor(() => getCompletions(homepageTheme, 0, 0),
 			(items) => items.some((item) => item.label === 'layout'), 'An empty homepage theme did not offer page-theme fields.');
@@ -209,7 +209,7 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 		// Separate YAML files leave project discovery for the Markdown fixture intact.
 		for (const [kind, filename, body] of [
 			['config', 'site-config/settings.yaml', 'url: https://example.com/\n'],
-			['theme', 'site-config/site-theme.yaml', 'preset: portfolio\n'],
+			['theme', 'root/tree-theme.yaml', 'preset: portfolio\n'],
 			['sitewideContent', 'site-config/shared-content.yaml', 'footer:\n  copyrightMessage: Copyright owner.\n'],
 		]) {
 			const relativePath = `widget-site/${filename}`;

@@ -48,12 +48,12 @@ and `root/content.md`; the site folder need not be named `site`.
 | Location relative to the site | Help |
 | --- | --- |
 | `site-config/settings.yaml` | Technical site settings |
-| `site-config/site-theme.yaml` | Shared site theme |
-| `root/theme.yaml` | Homepage-only presentation overrides |
+| `root/tree-theme.yaml` | Shared site theme |
+| `root/page-theme.yaml` | Homepage-only presentation overrides |
 | `root/content.md` | Homepage frontmatter, Markdown blocks, notes and images |
 | `site-config/shared-content.yaml` | Shared content |
 | `root/pages/010-guide/content.md` | Frontmatter, Markdown blocks, notes and images |
-| `root/pages/010-guide/theme.yaml` | Limited page-theme settings |
+| `root/pages/010-guide/tree-theme.yaml` | Inherited visual settings or a new preset for the branch |
 
 Page rules also apply to valid nested folders repeating `pages/` between
 levels. Unrelated Markdown/YAML files do not receive Norna's own help.
@@ -91,7 +91,7 @@ Tree. Hover over the page to see the actual source path.
 
 The tree follows the actual [file organization](/reference/site/files/).
 Shared `site-config/` and `public/` are siblings before the homepage. Each page
-shows its existing images, optional theme and child pages in that order.
+shows its existing images, theme files and child pages in that order.
 A readable page row represents `root/` or a numbered child directory; ordering
 numbers stay in the filesystem but do not clutter the displayed title.
 
@@ -100,18 +100,18 @@ For example, a homepage titled **Norna** and a child titled **Guide** appear as:
 ```text
 site-config/                           +
   settings.yaml
-  site-theme.yaml
   shared-content.yaml
 public/
   robots.txt
   icon.ico
 Norna  Homepage                         +  …
   images/
-  theme.yaml
+  tree-theme.yaml
+  page-theme.yaml
   pages/
     Guide                              +  …
       images/
-      theme.yaml
+      tree-theme.yaml
 ```
 
 Only existing folders appear. A page with no visible details has no expansion
@@ -121,10 +121,12 @@ The `site-config/` folder starts expanded; the extension remembers your later ch
 workspace, including after refresh or window reload. An open settings file
 does not force the folder open again.
 
-`site-config/site-theme.yaml` controls
-the shared site appearance; `root/theme.yaml` affects only the homepage.
-A branch's `theme.yaml` applies to that branch and its descendants. See
-[theme scope](/reference/configuration/theme/#page-themes). Hover over `theme.yaml`
+`root/tree-theme.yaml` controls
+the initial site appearance and requires a preset. A branch's `tree-theme.yaml`
+modifies inherited values or explicitly chooses a new preset for that branch.
+Optional `page-theme.yaml` can appear beside any page, including the homepage;
+it affects only that page. See
+[theme scope](/reference/configuration/theme/#page-themes). Hover over `tree-theme.yaml`
 for a reminder of its scope. Every page has `content.md`; a page with a generated
 child list uses `page.listChildren: true` in that file.
 
@@ -156,7 +158,7 @@ title (**Norna: Add…**) and choose **Add child page…**. This also works when
 `pages/` does not yet exist: the extension creates it with the first child.
 The parent is already selected in the creation form.
 The same menu offers **Import image…** on content pages and missing source
-files permitted at that location, including `theme.yaml`. The **+** in the tree
+files permitted at that location, including `tree-theme.yaml`. The **+** in the tree
 toolbar acts on the selected page or the owner of a selected resource.
 
 The **…** beside a page opens **Page Actions**: edit page information, open
@@ -234,10 +236,10 @@ folder's **+** also offers missing site configuration. Existing singleton files
 are omitted; image import and child-page creation remain available when other
 images or children already exist.
 
-Review the destination and initial effect before confirming. A new `theme.yaml`
-starts with normal body text width; the confirmation explains whether it affects
-only the homepage or the selected branch. A missing shared site theme starts
-with the documentation preset. Creating `settings.yaml` asks for the site's
+Review the destination and initial effect before confirming. An optional theme
+starts without preset or overrides, keeping its inherited appearance. A missing
+root tree theme starts with an explicit documentation preset. The confirmation
+explains whether the file affects one page or a branch. Creating `settings.yaml` asks for the site's
 public URL. The extension opens the new file for further editing. Cancelling
 leaves no partial files or directories and creation never overwrites a file.
 
@@ -315,7 +317,8 @@ the list and removal confirmations say so instead of reporting a clean result.
 ### Remove an optional file
 
 Use **Move to Trash…** in the file's **…** menu. This is available for local
-`theme.yaml`, `site-config/shared-content.yaml` and files in `public/`.
+`page-theme.yaml`, descendant `tree-theme.yaml`, `site-config/shared-content.yaml`
+and files in `public/`. Required `root/tree-theme.yaml` cannot be removed.
 Images retain their [image actions](#add-and-use-page-images).
 
 Review the path and effect before confirming. Removing a homepage theme

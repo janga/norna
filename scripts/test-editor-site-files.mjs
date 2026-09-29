@@ -52,10 +52,10 @@ test('file operations reject other sites, homepage deletion and symbolic links',
 test('page removal includes descendants and owned files, and detects changed contents', async (t) => {
 	const f = await fixture(t);
 	await f.write('root/pages/010-page/pages/010-child/content.md', '# Child\n');
-	await f.write('root/pages/010-page/theme.yaml', 'layout:\n  textWidth: narrow\n');
+	await f.write('root/pages/010-page/tree-theme.yaml', 'layout:\n  textWidth: narrow\n');
 	const plan = await planEditorRemoval(f);
 	assert.equal(plan.pages, 2);
-	assert.deepEqual(plan.files, ['content.md', 'pages/010-child/content.md', 'theme.yaml']);
+	assert.deepEqual(plan.files, ['content.md', 'pages/010-child/content.md', 'tree-theme.yaml']);
 	await f.write('root/pages/010-page/pages/010-child/content.md', '# A changed child\n');
 	assert.notEqual((await planEditorRemoval(f)).fingerprint, plan.fingerprint);
 	assert.equal(await readFile(f.sourcePath, 'utf8'), '# Page\n', 'Planning does not delete anything.');

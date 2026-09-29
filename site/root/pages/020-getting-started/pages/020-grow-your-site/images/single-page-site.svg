@@ -58,16 +58,18 @@
       <rect class="panel" width="300" height="540" rx="15"/>
       <g class="mono tree">
         <text x="22" y="32">site/</text>
-        <text x="22" y="54">├──&#160;config.yaml</text>
-        <text x="22" y="72">├──&#160;theme.yaml</text>
-        <text x="22" y="90">├──&#160;sitewide-content.yaml</text>
-        <text x="22" y="108">├──&#160;content.md</text>
-        <text x="22" y="126">├──&#160;images/</text>
-        <text x="22" y="144">│&#160;&#160;&#160;├──&#160;dog-house.svg</text>
-        <text x="22" y="162">│&#160;&#160;&#160;└──&#160;heart.svg</text>
-        <text x="22" y="180">└──&#160;public/</text>
-        <text x="22" y="198">&#160;&#160;&#160;&#160;├──&#160;favicon.svg</text>
-        <text x="22" y="216">&#160;&#160;&#160;&#160;└──&#160;robots.txt</text>
+        <text x="22" y="50">├──&#160;site-config/</text>
+        <text x="22" y="68">│&#160;&#160;&#160;├──&#160;settings.yaml</text>
+        <text x="22" y="86">│&#160;&#160;&#160;└──&#160;shared-content.yaml</text>
+        <text x="22" y="104">├──&#160;public/</text>
+        <text x="22" y="122">│&#160;&#160;&#160;├──&#160;favicon.svg</text>
+        <text x="22" y="140">│&#160;&#160;&#160;└──&#160;robots.txt</text>
+        <text x="22" y="158">└──&#160;root/</text>
+        <text x="22" y="176">&#160;&#160;&#160;&#160;├──&#160;content.md</text>
+        <text x="22" y="194">&#160;&#160;&#160;&#160;├──&#160;tree-theme.yaml</text>
+        <text x="22" y="212">&#160;&#160;&#160;&#160;└──&#160;images/</text>
+        <text x="22" y="230">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;├──&#160;dog-house.svg</text>
+        <text x="22" y="248">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;└──&#160;heart.svg</text>
       </g>
     </g>
 
@@ -95,8 +97,8 @@
       </g>
     </g>
 
-    <path class="line" d="M229 184 L438 224" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-    <path class="line" d="M205 202 L438 392" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M245 266 L438 224" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path class="line" d="M220 284 L438 392" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
     <path class="flow" d="M666 310 H748" marker-end="url(#arrow)"/>
 
     <g transform="translate(756 40)">

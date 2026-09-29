@@ -5,3 +5,9 @@ palette: arctic-blue
 corners: rounded
 sections:
   backgroundPattern: accented
+preset: project
+layout:
+  contentSpacing: normal
+  pageWidth: 1180px
+images:
+  width: 900px

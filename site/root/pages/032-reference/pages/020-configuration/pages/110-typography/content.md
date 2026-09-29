@@ -5,11 +5,11 @@ page:
 
 # Typography
 
-`site/site-config/site-theme.yaml` controls fonts and text styling throughout the site.
+`site/root/tree-theme.yaml` controls fonts and text styling throughout the site.
 The preset already supplies coordinated values; add overrides only for choices
-that should differ. Page themes cannot change typography.
+that should differ. Tree and page-only themes can modify these values or select a new preset.
 
-```yaml title="site/site-config/site-theme.yaml: change body line height" {4}
+```yaml title="site/root/tree-theme.yaml: change body line height" {4}
 typography:
   overrides:
     body:
@@ -58,7 +58,7 @@ Put role settings below `typography.overrides`:
 | `lineHeight` | Unitless; headings 1-3, body 1.4-3, captions 1.25-3 |
 | Spacing fields | `0` or nonnegative length in `px`, `rem`, `em`, `ch` or `lh` |
 
-```yaml title="site/site-config/site-theme.yaml: heading alignment and spacing"
+```yaml title="site/root/tree-theme.yaml: heading alignment and spacing"
 typography:
   overrides:
     headings:

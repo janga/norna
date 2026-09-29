@@ -43,7 +43,7 @@ const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-navigation-review-'));
 
 try {
 	await writeFixtureFile(tempRoot, 'site/site-config/settings.yaml', 'url: https://example.com/\n');
-	await writeFixtureFile(tempRoot, 'site/site-config/site-theme.yaml', 'preset: documentation\n');
+	await writeFixtureFile(tempRoot, 'site/root/tree-theme.yaml', 'preset: documentation\n');
 	await writeFixtureFile(tempRoot, 'site/root/content.md', `# Home
 
 [Verify macOS](/guides/installation/macos/#verify)

@@ -22,9 +22,6 @@ const frontmatterDelimiterRegex = /^---\s*$/;
 const knownConfigTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.config);
 const knownContentTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.content);
 const knownThemeTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.theme);
-const knownPageThemeTopLevelFrontmatterKeys = new Set(
-	schemaTopLevelKeys.pageTheme,
-);
 const knownSitewideTopLevelFrontmatterKeys = new Set(schemaTopLevelKeys.sitewide);
 const knownNestedFrontmatterKeys = new Set([
 	'align',
@@ -160,23 +157,14 @@ export const validateFrontmatterStructure = (frontmatter, addIssue, {
 			message = `Frontmatter line ${lineNumber}: navigation is technical, site-wide configuration and does not belong in ${fileKind}. Set it in site-config/settings.yaml.`;
 			fix = 'Set the navigation mode under "navigation:" in site-config/settings.yaml.';
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'shape') {
-			message = fileKind === 'page theme'
-				? `Frontmatter line ${lineNumber}: "shape" was replaced by the site-wide "corners" setting, which page themes cannot override.`
-				: `Frontmatter line ${lineNumber}: "shape" was replaced by "corners". Use "square" or replace the old "soft" value with "rounded".`;
-			fix = fileKind === 'page theme'
-				? 'Remove "shape:" from this page theme. Set "corners: square" or "corners: rounded" in site-config/site-theme.yaml when an override is needed.'
-				: 'Replace "shape:" with "corners:". Use "square" or replace the old "soft" value with "rounded".';
+			message = `Frontmatter line ${lineNumber}: "shape" was replaced by "corners".`;
+			fix = 'Use "corners: square" or "corners: rounded"; replace the old "soft" value with "rounded".';
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'colorMode') {
 			message = `Frontmatter line ${lineNumber}: Theme setting "colorMode" was replaced by "appearance".`;
-			fix = fileKind === 'page theme'
-				? 'Remove "colorMode:" from this page theme. Set "appearance:" in site-config/site-theme.yaml when an override is needed.'
-				: 'Replace "colorMode:" with "appearance:".';
+			fix = 'Replace "colorMode:" with "appearance:".';
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && key === 'readerControls') {
 			message = `Frontmatter line ${lineNumber}: Theme setting "readerControls" was removed. Appearance and reading width are always available; Focus reading follows tree navigation.`;
 			fix = 'Remove "readerControls:". Use "appearance.default" for the initial Appearance; reading width is always available and tree navigation provides Focus reading.';
-		} else if (fileKind === 'page theme' && ['preset', 'appearance', 'corners', 'palette', 'typography'].includes(key)) {
-			message = `Frontmatter line ${lineNumber}: page themes may not define site-wide visual identity through "${key}".`;
-			fix = `Move "${key}:" to site-config/site-theme.yaml. Page themes may set only layout.textWidth, layout.contentSpacing, images, and sections.backgroundPattern.`;
 		} else if ((fileKind === 'theme' || fileKind === 'page theme') && ['logo', 'site'].includes(key)) {
 			message = `Frontmatter line ${lineNumber}: ${fileKind} may not define navigation logo settings. Optional logo display settings belong under "logo:" in ${sitewideContentLabel}.`;
 			fix = `Move only the logo display settings under "logo:" in ${sitewideContentLabel}; the homepage Markdown H1 supplies navigation text and logo alternative text.`;
@@ -222,12 +210,6 @@ export const validateThemeYamlStructure = (frontmatter, addIssue) =>
 	validateFrontmatterStructure(frontmatter, addIssue, {
 		knownTopLevelFrontmatterKeys: knownThemeTopLevelFrontmatterKeys,
 		fileKind: 'theme',
-	});
-
-export const validatePageThemeYamlStructure = (frontmatter, addIssue) =>
-	validateFrontmatterStructure(frontmatter, addIssue, {
-		knownTopLevelFrontmatterKeys: knownPageThemeTopLevelFrontmatterKeys,
-		fileKind: 'page theme',
 	});
 
 export const validateSitewideYamlStructure = (frontmatter, addIssue) =>

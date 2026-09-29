@@ -107,9 +107,6 @@ The remaining refinements still need their own discussion:
 
 ### Other Items
 
-- [BL-150 Complete Tree And Page Theme Packages](docs/design/backlog/BL-150-tree-and-page-theme-packages.md):
-  **Design approved; execution deferred until after BL-149.** Select complete
-  inherited tree themes and page-only themes using existing presets.
 - [BL-151 Site Tree For The Site And Theme Model](docs/design/backlog/BL-151-site-tree-theme-model.md):
   **After BL-150; execution deferred.** Adapt theme authoring and explain its
   scopes through existing Site Tree controls.

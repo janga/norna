@@ -17,6 +17,9 @@ import {
 	socialImageAssetFilenames,
 } from './public-asset-conventions.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
+import { selectPageTheme } from './theme-packages.mjs';
+import { getSourcePageLocation } from './source-files.mjs';
+import { assertSectionBackgroundPatternCompatibility } from './presentation.mjs';
 import { siteSchema } from './schema-definitions.mjs';
 import { getSiteSourcePaths, homePageDirectory } from './site-conventions.mjs';
 
@@ -138,26 +141,29 @@ const findNestedYamlPropertyLine = (source, parentKey, propertyKey) => {
 	return 1;
 };
 
-export const getThemeDiagnostics = async ({ documentPath, source }) => {
-	let theme;
+export const getThemeDiagnostics = async ({ siteRoot, documentPath, source, sources = new Map() }) => {
+	// Parse errors are reported by the YAML provider/schema validator.
+	try { const value = load(source); if (value && (typeof value !== 'object' || Array.isArray(value))) return []; }
+	catch { return []; }
+	siteRoot ??= await findNornaSiteRoot(documentPath);
+	if (!siteRoot) return [];
+	const location = getSourcePageLocation(siteRoot, path.dirname(documentPath));
+	if (!location) return [];
 	try {
-		theme = load(source) ?? {};
-	} catch {
+		const overlays = new Map(sources); overlays.set(documentPath, source);
+		const { treeTheme, selected } = await selectPageTheme({
+			siteRoot, pageDirectory: location.pageDirectory, sources: overlays,
+			includePageTheme: path.basename(documentPath) === 'page-theme.yaml',
+		});
+		const theme = path.basename(documentPath) === 'tree-theme.yaml' ? treeTheme : selected;
+		assertSectionBackgroundPatternCompatibility(theme.config, documentPath, await getNavigationModeForEditor(siteRoot));
 		return [];
+	} catch (error) {
+		const surface = error.message.includes('backgroundPattern');
+		return [{ code: surface ? 'tree-section-background-pattern' : 'invalid-resolved-theme',
+			line: surface ? findNestedYamlPropertyLine(source, 'sections', 'backgroundPattern') : 1,
+			message: error.message, severity: 'error' }];
 	}
-	if (!theme || typeof theme !== 'object' || Array.isArray(theme)) return [];
-
-	const backgroundPattern = theme.sections?.backgroundPattern;
-	if (backgroundPattern === undefined || backgroundPattern === 'uniform') return [];
-	const siteRoot = await findNornaSiteRoot(documentPath);
-	if (!siteRoot || await getNavigationModeForEditor(siteRoot) !== 'tree') return [];
-
-	return [{
-		code: 'tree-section-background-pattern',
-		line: findNestedYamlPropertyLine(source, 'sections', 'backgroundPattern'),
-		message: `sections.backgroundPattern "${backgroundPattern}" cannot be used because this site resolves to tree navigation. Tree navigation uses one uniform reading surface so the navigation rail and page content remain distinct. Remove sections.backgroundPattern or set it to uniform.`,
-		severity: 'error',
-	}];
 };
 
 const readSitewideLogoForEditor = async (siteRoot) => {

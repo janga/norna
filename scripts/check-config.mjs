@@ -1,12 +1,11 @@
-import path from 'node:path';
-import { siteConfigLabel, sitePagesDir, sitePublicLabel, siteThemeLabel } from './lib/site-paths.mjs';
+import { siteConfigLabel, siteDir, sitePublicLabel } from './lib/site-paths.mjs';
 import { getLogoAssets, getPublicAssetInspection } from './lib/logo-assets.mjs';
 import { logoAssetFilenames, socialImageAssetFilenames } from './lib/public-asset-conventions.mjs';
 import { getSocialImageAssets } from './lib/social-image-assets.mjs';
 import { readSitewideContent } from './lib/sitewide-content.mjs';
 import { assertSectionBackgroundPatternCompatibility } from './lib/presentation.mjs';
 import { readThemeConfig, validatePageThemeFiles } from './lib/theme-config.mjs';
-import { mergePageThemeConfig } from './lib/theme-presets.mjs';
+import { selectPageTheme } from './lib/theme-packages.mjs';
 
 const formatErrorMessage = (error) => {
 	if (error instanceof Error) {
@@ -21,26 +20,11 @@ try {
 	const themeConfig = await readThemeConfig();
 	const sitewideContent = await readSitewideContent();
 	const pageThemeFiles = await validatePageThemeFiles();
-	const pageThemesByDirectory = new Map(pageThemeFiles.map((file) => [path.dirname(file.path), file]));
-	for (const pageThemeFile of pageThemeFiles) {
-		const ancestorThemes = [];
-		let directory = path.dirname(pageThemeFile.path);
-		while (directory.startsWith(`${sitePagesDir}${path.sep}`)) {
-			const ancestorTheme = pageThemesByDirectory.get(directory);
-			if (ancestorTheme) ancestorThemes.unshift(ancestorTheme);
-			directory = path.dirname(directory);
-		}
-
-		const resolvedPageTheme = ancestorThemes.reduce(
-			(current, ancestor) => mergePageThemeConfig(current, ancestor.config),
-			themeConfig,
-		);
-		resolveThemeVisualConfig(resolvedPageTheme, pageThemeFile.label);
-	}
-	if (projectConfig.navigation.mode === 'tree') {
-		assertSectionBackgroundPatternCompatibility(themeConfig, siteThemeLabel, 'tree');
-		for (const pageThemeFile of pageThemeFiles) {
-			assertSectionBackgroundPatternCompatibility(pageThemeFile.config, pageThemeFile.label, 'tree');
+	for (const pageDirectory of new Set(['.', ...pageThemeFiles.map((file) => file.pageDirectory)])) {
+		const { treeTheme, selected } = await selectPageTheme({ siteRoot: siteDir, pageDirectory });
+		for (const theme of [treeTheme, selected]) {
+			resolveThemeVisualConfig(theme.config, theme.label);
+			if (projectConfig.navigation.mode === 'tree') assertSectionBackgroundPatternCompatibility(theme.config, theme.label, 'tree');
 		}
 	}
 	const logoAssets = getLogoAssets();

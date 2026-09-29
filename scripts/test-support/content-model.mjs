@@ -53,7 +53,8 @@ export const createTempSite = async ({ underRepoCache = false } = {}) => {
 	await mkdir(path.join(siteDir, 'root'), { recursive: true });
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/\n');
-	await writeFile(path.join(siteDir, 'site-config', 'site-theme.yaml'), `typography:
+	await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), `preset: project
+typography:
   profile: reading
 `);
 	return { root, siteDir };

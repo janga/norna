@@ -307,7 +307,7 @@ const writeFixtureFile = async (root, relativePath, contents) => {
 const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-site-links-'));
 try {
 	await writeFixtureFile(tempRoot, 'site/site-config/settings.yaml', 'url: https://example.com/docs/\n');
-	await writeFixtureFile(tempRoot, 'site/site-config/site-theme.yaml', 'preset: documentation\n');
+	await writeFixtureFile(tempRoot, 'site/root/tree-theme.yaml', 'preset: documentation\n');
 	await writeFixtureFile(tempRoot, 'site/root/content.md', brokenSource);
 	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/pages/010-installation/content.md', installationSource);

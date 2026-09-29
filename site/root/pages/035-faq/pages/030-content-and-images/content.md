@@ -16,7 +16,7 @@ page:
   description: A short page description.
 ```
 
-Run the complete check after editing `site-config/settings.yaml`, `site-config/site-theme.yaml`,
+Run the complete check after editing `site-config/settings.yaml`, `root/tree-theme.yaml`,
 `site-config/shared-content.yaml`, or Markdown frontmatter:
 
 ```sh
@@ -53,7 +53,7 @@ for placement and processing rules.
 
 Norna help depends on the file's location and the project's Norna installation,
 not just its filename or the text you type. An unrelated file named
-`theme.yaml` does not automatically become a Norna configuration file.
+`tree-theme.yaml` does not automatically become a Norna configuration file.
 
 The editor extension is experimental and is not published in the Visual
 Studio Marketplace. To evaluate it, obtain a VSIX build and follow

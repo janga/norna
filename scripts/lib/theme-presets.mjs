@@ -93,7 +93,7 @@ export const getThemePresetMetadata = (presetName) => {
 	};
 };
 
-export const getThemePreset = (presetName, sourceLabel = 'site-config/site-theme.yaml') => {
+export const getThemePreset = (presetName, sourceLabel = 'root/tree-theme.yaml') => {
 	const preset = themePresets[presetName];
 
 	if (!preset) {
@@ -103,62 +103,29 @@ export const getThemePreset = (presetName, sourceLabel = 'site-config/site-theme
 	return structuredClone(preset);
 };
 
-export const resolveThemeConfig = (theme = {}, sourceLabel = 'site-config/site-theme.yaml') => {
-	const presetName = theme?.preset;
-	if (presetName === undefined) return structuredClone(theme ?? {});
-
-	const overrides = structuredClone(theme ?? {});
-	delete overrides.preset;
-
-	const resolved = {
-		preset: presetName,
-		...mergeDeep(getThemePreset(presetName, sourceLabel), overrides),
-	};
-
-	if (
-		overrides.images?.presentation === 'prose-aligned'
-		&& overrides.images.maxAvailableHeightPercent === undefined
-	) {
-		delete resolved.images.maxAvailableHeightPercent;
+// Keep authored fields separate from preset defaults so navigation can distinguish
+// an explicit surface request from an adaptable preset default.
+export const mergeThemeOverrides = (base = {}, override = {}) => {
+	const merged = override.preset !== undefined ? structuredClone(override) : mergeDeep(base, override);
+	if (override.images?.presentation === 'prose-aligned' && override.images.maxAvailableHeightPercent === undefined) {
+		delete merged.images.maxAvailableHeightPercent;
 	}
-
-	return resolved;
+	return merged;
 };
 
-const mergePageThemePart = (base, override, keys) => Object.fromEntries(keys
-	.filter((key) => override?.[key] !== undefined || base?.[key] !== undefined)
-	.map((key) => [key, override?.[key] ?? base?.[key]]));
-
-export const mergePageThemeConfig = (base = {}, override = {}) => {
-	const images = {
-		...(base.images ?? {}),
-		...mergePageThemePart(base.images, override.images, [
-			'presentation',
-			'width',
-			'maxAvailableWidthPercent',
-			'maxAvailableHeightPercent',
-		]),
+export const resolveThemeConfig = (theme = {}, sourceLabel = 'root/tree-theme.yaml') => {
+	const presetName = theme?.preset;
+	const overrides = structuredClone(theme ?? {});
+	const resolved = presetName === undefined ? overrides : {
+		...mergeDeep(getThemePreset(presetName, sourceLabel), overrides),
 	};
-
-	if (
-		override.images?.presentation === 'prose-aligned'
-		&& override.images.maxAvailableHeightPercent === undefined
-	) {
-		delete images.maxAvailableHeightPercent;
+	if (overrides.images?.presentation === 'prose-aligned' && overrides.images.maxAvailableHeightPercent === undefined) {
+		delete resolved.images.maxAvailableHeightPercent;
 	}
-
-	return {
-		...base,
-		layout: {
-			...(base.layout ?? {}),
-			...mergePageThemePart(base.layout, override.layout, ['contentSpacing', 'textWidth']),
-		},
-		images,
-		sections: {
-			...(base.sections ?? {}),
-			...mergePageThemePart(base.sections, override.sections, ['backgroundPattern']),
-		},
-	};
+	if (resolved.images?.presentation === 'prose-aligned' && resolved.images.maxAvailableHeightPercent !== undefined) {
+		throw new Error(`images.maxAvailableHeightPercent cannot be used with images.presentation "prose-aligned" in ${sourceLabel}. Remove images.maxAvailableHeightPercent or set images.presentation to "centered-fit".`);
+	}
+	return resolved;
 };
 
 const quote = (value) => JSON.stringify(value);
@@ -171,7 +138,7 @@ const responsiveValueLines = (label, value, indent = 2) => {
 	];
 };
 
-export const renderThemePresetReference = (presetName, sourceLabel = 'site-config/site-theme.yaml') => {
+export const renderThemePresetReference = (presetName, sourceLabel = 'root/tree-theme.yaml') => {
 	const preset = getThemePreset(presetName, sourceLabel);
 	const metadata = getThemePresetMetadata(presetName);
 	const { appearance, corners, layout, images, blocks, typography, palette, sections } = preset;
@@ -179,8 +146,8 @@ export const renderThemePresetReference = (presetName, sourceLabel = 'site-confi
 	return [
 		`# Original values for Norna's "${presetName}" theme preset.`,
 		`# ${metadata.description}`,
-		'# This is a reference file. Norna loads site-config/site-theme.yaml for the shared theme.',
-		'# Keep the preset in site-config/site-theme.yaml and copy only the values you want to override.',
+		'# This is a reference file. Norna loads root/tree-theme.yaml for the shared theme.',
+		'# Keep the preset in root/tree-theme.yaml and copy only the values you want to override.',
 		`# Available theme presets: ${themePresetNames.join(', ')}.`,
 		`preset: ${presetName}`,
 		'',

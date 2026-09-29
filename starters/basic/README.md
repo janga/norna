@@ -14,7 +14,7 @@ Open the address printed by the development server. Stop it later with
 
 Edit shared logo settings, banners, and footer in
 `site/site-config/shared-content.yaml`,
-site-wide visual defaults in `site/site-config/site-theme.yaml`, homepage content and section
+site-wide visual defaults in `site/root/tree-theme.yaml`, homepage content and section
 metadata in `site/root/content.md`, and technical settings such as URL
 and locale in `site/site-config/settings.yaml`. Keep managed homepage source images under
 `site/root/images/` and static public files under `site/public/`.
@@ -32,9 +32,10 @@ Norna derives `/repository-name/` as the base path. Use a root URL such as
 In GitHub repository settings, configure Pages to build from GitHub Actions.
 
 Page width, side gutters, content spacing, image sizing, palette, corners, and
-site-wide typography are configured in `site/site-config/site-theme.yaml`. A page may use a
-limited `theme.yaml` for local text width, content spacing, managed-image
-sizing, and section background pattern.
+typography are configured in the required `site/root/tree-theme.yaml`, including
+a `preset`. A descendant `tree-theme.yaml` modifies inherited settings for its
+branch; `page-theme.yaml` affects only its own page. Both accept all visual
+settings. Adding `preset` starts a new base instead of inheriting ancestor values.
 
 Commit `package-lock.json` after the first install so GitHub Actions can use
 `npm ci`.

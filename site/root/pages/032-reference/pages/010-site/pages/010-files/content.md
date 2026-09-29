@@ -17,12 +17,12 @@ file or directory:
 site/
 |-- site-config/ *
 |   |-- settings.yaml *          # Public URL and technical settings
-|   |-- site-theme.yaml *        # Shared preset and visual overrides
 |   `-- shared-content.yaml      # Shared notices, footer and logo height
 |-- public/                      # Published site-wide files, such as favicon.ico
 `-- root/ *                      # Homepage directory
     |-- content.md *             # Homepage content
-    |-- theme.yaml               # Optional homepage-only presentation
+    |-- tree-theme.yaml *        # Required preset and inherited visual settings
+    |-- page-theme.yaml          # Optional homepage-only settings
     |-- images/                  # Homepage image files
     `-- pages/                   # Child pages
 ```
@@ -56,11 +56,12 @@ A parent with only an H1 can still be a useful overview: set
 `page.listChildren: true` to append its direct child pages. See
 [Pages and child-page lists](/reference/site/pages/).
 
-The files in `site-config/` apply to the complete site. Its required
-`site-theme.yaml` sets shared visual defaults. Optional `theme.yaml` beside
-`root/content.md` changes only the homepage. A child page's
-`theme.yaml` supplies [limited inherited overrides](/reference/configuration/theme/#page-themes)
-for that branch. `public/` contains published files, rather than configuration.
+The files in `site-config/` provide technical settings and shared content.
+The required `root/tree-theme.yaml` selects the initial preset. A child's
+optional `tree-theme.yaml` modifies its branch's inherited settings; an explicit
+`preset` starts a new base. Optional `page-theme.yaml` beside any `content.md`
+affects only that page. See [Theme inheritance](/reference/configuration/theme/#page-themes).
+`public/` contains published files, rather than configuration.
 
 ## Generated files
 
@@ -91,30 +92,30 @@ gives the lookup rules, including commands run from inside a site.
 ## Convert the former source layout {#convert-the-former-homepage-folder}
 
 Stop the development server and back up the source folder before changing its
-layout. In the immediately preceding format, the homepage and its children
-lived directly inside `site/`. Move those page-owned sources together:
+layout. For a site that already has `root/`, apply these theme changes:
 
 | Former location | Current location |
 | --- | --- |
-| `site/content.md` | `site/root/content.md` |
-| Optional `site/theme.yaml` | `site/root/theme.yaml` |
-| `site/images/` | `site/root/images/` |
-| `site/pages/` | `site/root/pages/` |
+| `site/site-config/site-theme.yaml` | `site/root/tree-theme.yaml`; an explicit `preset` is required |
+| `site/root/theme.yaml` | `site/root/page-theme.yaml`; homepage only |
+| A child's `theme.yaml` | `tree-theme.yaml` in the same page directory; inherited modifications |
 
-Keep `site-config/`, `public/` and generated `.norna/` state at the site level.
-Adjust relative source links and YAML schema directives for the additional
-folder. Page addresses, ordering and theme scopes remain unchanged.
+Existing local overrides can retain their fields and omit `preset`. If the
+shared theme had no preset, choose one and review its defaults; record explicit
+overrides for old values you want to preserve. Update schema directives: the
+root uses `root-theme.schema.json`, descendant tree themes use `theme.schema.json`,
+and page-only themes use `page-theme.schema.json`.
 
-For older formats, first place shared `config.yaml`, shared `theme.yaml` and
-optional `sitewide-content.yaml` in `site-config/` as `settings.yaml`,
-`site-theme.yaml` and `shared-content.yaml`. Homepage content, images and its
-optional local theme from `pages/000-home/` belong in `root/`; other pages belong
-in `root/pages/`. A former homepage-only `page-theme.yaml` becomes
-`root/theme.yaml`. Keep shared and page-local themes distinct.
+For earlier layouts, also move homepage `content.md`, `images/` and `pages/`
+from the site container into `root/`. Homepage sources formerly under
+`pages/000-home/` belong in `root/`; its siblings belong in `root/pages/`.
+Technical `config.yaml` becomes `site-config/settings.yaml`; shared
+`sitewide-content.yaml` becomes `site-config/shared-content.yaml`. Keep
+`public/` and generated `.norna/` state at the site level. Adjust relative source
+and schema links. Directory moves do not change public page addresses.
 
-Norna does not provide automatic conversion between these source formats.
-`site:upgrade`, including its retained `--apply` option, checks the layout and
-reports former locations without changing files. Builds never move sources.
-After moving files, run the project's `norna check` and `norna build`, inspect
-the result, and commit the changed sources and regenerated image manifest.
-Use `--site-dir` when the source folder is not `site/`, then restart the server.
+Norna does not provide an automatic historical converter. `site:upgrade`,
+including its retained `--apply` option, checks the layout and reports former
+locations without moving files. Builds never move sources. Run `norna check`
+and `norna build`, inspect the result, then commit the changed sources and
+regenerated image manifest. Use `--site-dir` when needed and restart the server.

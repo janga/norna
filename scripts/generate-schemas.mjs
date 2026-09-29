@@ -4,19 +4,22 @@ import { fileURLToPath } from 'node:url';
 import { z } from 'astro/zod';
 import {
 	configSchema,
+	rootThemeSchema,
 	pageThemeSchema,
 	siteSchema,
 	sitewideSchema,
 	themeVisualSchema,
 } from './lib/schema-definitions.mjs';
 import { applySchemaEditorMetadata } from './lib/schema-editor-metadata.mjs';
+import { sourceFileDefinitions, sourcePageDirectoryPattern } from './lib/source-files.mjs';
 import { getNornaBlockSchema } from './lib/norna-markdown-blocks.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const schemaDirectory = path.join(root, 'schemas');
 const definitions = [
 	['config.schema.json', 'Norna site configuration', configSchema],
-	['theme.schema.json', 'Norna visual theme', themeVisualSchema],
+	['theme.schema.json', 'Norna inherited tree theme', themeVisualSchema],
+	['root-theme.schema.json', 'Norna root tree theme', rootThemeSchema],
 	['page-theme.schema.json', 'Norna page theme', pageThemeSchema],
 	['sitewide-content.schema.json', 'Norna site-wide content', sitewideSchema],
 	['content-frontmatter.schema.json', 'Norna page frontmatter', siteSchema],
@@ -43,13 +46,16 @@ for (const type of blockTypes) {
 
 schemaFiles.set('manifest.json', `${JSON.stringify({
 	editorApiVersion: 3,
-	schemaVersion: 5,
+	schemaVersion: 6,
+	sourceFiles: sourceFileDefinitions,
+	pageDirectoryPattern: sourcePageDirectoryPattern,
 	blockSchemas: Object.fromEntries(blockTypes.map((type) => [type, `${type}.schema.json`])),
 	files: {
 		config: 'config.schema.json',
 		contentFrontmatter: 'content-frontmatter.schema.json',
 		sitewideContent: 'sitewide-content.schema.json',
 		theme: 'theme.schema.json',
+		rootTheme: 'root-theme.schema.json',
 		pageTheme: 'page-theme.schema.json',
 	},
 }, null, 2)}\n`);

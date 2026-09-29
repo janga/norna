@@ -152,7 +152,7 @@ const evaluateResponsiveSize = (value, viewportWidth) => {
 	return Math.min(parsed.maximumRem * 16, Math.max(parsed.minimumRem * 16, preferredPixels));
 };
 
-export const assertTypographyContract = (typography, sourceLabel = 'site-config/site-theme.yaml') => {
+export const assertTypographyContract = (typography, sourceLabel = 'root/tree-theme.yaml') => {
 	const values = typography?.values ?? typography;
 	if (!values?.headings || !values?.body || !values?.caption) {
 		throw new Error(`Incomplete typography configuration in ${sourceLabel}.`);
@@ -427,7 +427,7 @@ export const defaultTypography = {
 	rhythm: 'normal',
 };
 
-export const resolveTypographyConfig = (typography = defaultTypography, sourceLabel = 'site-config/site-theme.yaml') => {
+export const resolveTypographyConfig = (typography = defaultTypography, sourceLabel = 'root/tree-theme.yaml') => {
 	const profileName = typography?.profile ?? defaultTypography.profile;
 	const rhythmName = typography?.rhythm ?? defaultTypography.rhythm;
 	const profile = typographyProfiles[profileName];

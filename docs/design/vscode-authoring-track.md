@@ -64,15 +64,10 @@ theme scopes. Its verification and local review are recorded in that item.
 - Follow Norna's actual file organization. Readable page titles may replace
   technical directory names and ordering prefixes, but the hierarchy must
   match storage. Do not insert synthetic directories such as `Page files`.
-- Show configuration under its owning root or page, **before its
-  `pages/` directory**. This applies at every depth, including the site's
-  real `site-config/` directory and existing local configuration below it.
-  At the root show optional `theme.yaml` first, then `site-config/` and
-  `public/`, before images and child pages. Other pages start with `theme.yaml` when
-  present. Page content opens through the page row. Explain the theme's scope
-  on hover, preserving its actual filename.
-  Site configuration has a settings icon, starts expanded and remembers the
-  user's subsequent choice per site in the workspace.
+- Show site-config/ and public/ as siblings before the root page, matching
+  physical storage (BL-149). Page content opens through the page row; images
+  appear immediately below that page, followed by its existing theme files and
+  pages/. Configuration has a settings icon and remembers expansion state.
 - Show a page's images and other owned resources beneath that page, with
   actual resource filenames and recognizable `images/` and `pages/`
   directories. Page labels open their own `content.md`; that file has no separate
@@ -92,14 +87,13 @@ theme scopes. Its verification and local review are recorded in that item.
   holds other page actions.
 - Use one common page icon unless a page has an explicit presentation of its
   own. This does not introduce a custom-icon feature.
-- The homepage is the site root and may have children: `site/content.md`,
-  `site/images/` and `site/pages/`. Reordering children does not designate a
-  new homepage. These paths illustrate the default site root; the selected
-  site's actual root applies.
-- Keep shared appearance in `site-config/site-theme.yaml`, optional homepage-only
-  appearance in root `theme.yaml`, and inherited branch appearance in
-  local `theme.yaml` files farther down the hierarchy. The homepage-only
-  settings do not cascade to its children.
+- The homepage is root/content.md inside the site container; its images and
+  children live under root/images/ and root/pages/. Reordering children does
+  not select a new homepage. These paths apply to the selected site's actual root.
+- BL-150 requires root/tree-theme.yaml with preset. A descendant tree-theme.yaml
+  modifies inherited fields; an explicit preset starts a new base. Optional
+  page-theme.yaml affects its page only. BL-151 adapts the remaining authoring
+  help; BL-136 retains only later refinements beyond those basic controls.
 
 The [revised visual proposal](vscode-authoring-review/README.md) illustrates
 these decisions. [BL-138 Root Page And Child Pages](backlog/BL-138-root-page-and-child-pages.md)

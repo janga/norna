@@ -15,7 +15,7 @@ start from the current starter. Preserve a working copy before converting.
 - Replace executable `site/config.mjs` or Markdown `site/config.md` with
   `site/site-config/settings.yaml`. Re-enter only current fields from
   [Configuration](/reference/configuration/site/); do not translate JavaScript behavior.
-- Replace `site/theme.md` with `site/site-config/site-theme.yaml`. Start with one complete
+- Replace `site/theme.md` with `site/root/tree-theme.yaml`. Start with one complete
   preset, then add only current overrides from [Theme](/reference/configuration/theme/).
 - Replace `site/sitewide-content.md` with `site/site-config/shared-content.yaml` when the
   site has a logo display override, banners, or footer content. See
@@ -60,14 +60,15 @@ one of the previous names.
 
 ## Move Page Presentation Into Theme Files
 
-`site/site-config/site-theme.yaml` owns the preset, Appearance, palette, corners,
-typography, page frame, navigation presentation, and structured content-block
-defaults. A limited `theme.yaml` in a page or category directory may contain
-only the layout, image, and section-background fields documented under
-[Page Themes](/reference/configuration/theme/#page-themes). Descendants inherit those values.
+`site/root/tree-theme.yaml` requires the site's initial preset. Both tree and
+page-only themes support the full visual vocabulary. A local file without
+preset modifies inherited values; an explicit preset replaces the base.
+`tree-theme.yaml` affects a branch, while `page-theme.yaml` affects one page.
+See [Theme inheritance](/reference/configuration/theme/#page-themes).
 
-Do not carry route-specific presets, fonts, colors, or navigation settings into
-page themes.
+Navigation mode remains technical configuration in site-config/settings.yaml;
+it does not belong in a theme file. Convert old theme locations using the
+[source-layout reference](/reference/site/files/#convert-the-former-homepage-folder).
 
 Replace superseded root-theme terms when upgrading:
 
@@ -90,7 +91,7 @@ configured appearance once before making a new Display choice.
 `arctic-blue` as its closest supported replacement, then review the result in
 both Light and Dark appearances.
 
-Remove `readerControls` from `theme.yaml`. Appearance and reading width are
+Remove `readerControls` from `tree-theme.yaml`. Appearance and reading width are
 always available in the Display panel. Focus reading is offered automatically
 when navigation resolves to `tree`. Use `appearance.default` to select the
 initial Appearance and `layout.textWidth` to select the initial reading width.

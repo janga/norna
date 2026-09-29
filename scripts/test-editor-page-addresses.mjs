@@ -16,7 +16,7 @@ const fixture = async (t) => {
 		return filename;
 	};
 	await write('site-config/settings.yaml', 'url: https://example.com/manual/\nsearch: true\n');
-	await write('site-config/site-theme.yaml', 'preset: editorial\n');
+	await write('root/tree-theme.yaml', 'preset: editorial\n');
 	const home = await write('root/content.md', '# Home\n\n[Guide](/guide/)\n');
 	const sourcePath = await write('root/pages/010-guide/content.md', '---\npage:\n  aliases:\n    - /old-guide/\n---\n\n# Guide\n\n## Read\n\n[My child](child/)\n');
 	const child = await write('root/pages/010-guide/pages/020-child/content.md', '# Child\n\n[Parent](../)\n');
@@ -26,12 +26,12 @@ const applyEdits = (source, edits) => [...edits].sort((a, b) => b.start - a.star
 
 test('removal policies protect required files and describe optional file scope', async (t) => {
 	const f = await fixture(t);
-	for (const name of ['content.md', 'site-config/settings.yaml', 'site-config/site-theme.yaml']) {
+	for (const name of ['content.md', 'site-config/settings.yaml', 'root/tree-theme.yaml']) {
 		await assert.rejects(planEditorRemoval({ ...f, sourcePath: f.home, filePath: path.join(f.siteRoot, name) }), /cannot be removed separately/);
 	}
 	for (const [file, sourcePath, effect] of [
-		['root/theme.yaml', f.home, /Other pages are unchanged/],
-		['root/pages/010-guide/theme.yaml', f.sourcePath, /descendants/],
+		['root/page-theme.yaml', f.home, /Other pages are unchanged/],
+		['root/pages/010-guide/tree-theme.yaml', f.sourcePath, /descendants/],
 		['site-config/shared-content.yaml', f.home, /whole site/],
 		['public/robots.txt', f.home, /no longer be published/],
 	]) {
@@ -61,7 +61,7 @@ test('site-owned file removal does not require a homepage and still reviews link
 	assert.equal(plan.usage.references.length, 1);
 	assert.ok(plan.usage.incomplete.length, 'A missing homepage must remain visible in link-review limitations.');
 	assert.match((await planEditorRemoval({ ...options, filePath: sharedFile })).effect, /whole site/);
-	for (const file of ['site-config/settings.yaml', 'site-config/site-theme.yaml', 'root/pages/010-guide/theme.yaml']) {
+	for (const file of ['site-config/settings.yaml', 'root/tree-theme.yaml', 'root/pages/010-guide/tree-theme.yaml']) {
 		await assert.rejects(planEditorRemoval({ ...options, filePath: path.join(f.siteRoot, file) }), /cannot be removed separately/);
 	}
 	await assert.rejects(planEditorRemoval({ ...options, filePath: path.join(f.siteRoot, '../outside.txt') }), /selected site/);

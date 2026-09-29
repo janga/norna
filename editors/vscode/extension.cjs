@@ -299,18 +299,24 @@ const getEmptyYamlCompletionItems = async (document) => {
 	const presetChoices = getSchemaChoices(resolved.schema.properties?.preset).map(({ value }) => value);
 	const snippets = {
 		config: `${directive}\n\nurl: \${1:https://example.com/}\n`,
-		theme: `${directive}\n\npreset: \${1|${presetChoices.join(',')}|}\n`,
+		rootTheme: `${directive}\n\npreset: \${1|${presetChoices.join(',')}|}\n`,
+		theme: `${directive}\n\nlayout:\n  textWidth: \${1|normal,narrow,wide|}\n`,
+		pageTheme: `${directive}\n\nlayout:\n  textWidth: \${1|normal,narrow,wide|}\n`,
 		sitewideContent: `${directive}\n\nfooter:\n  copyrightMessage: \${1:Copyright owner.}\n`,
 	};
 	if (!snippets[kind]) return [];
 	const labels = {
 		config: 'Norna site configuration',
-		theme: 'Norna theme',
+		rootTheme: 'Norna root tree theme',
+		theme: 'Norna tree theme modifications',
+		pageTheme: 'Norna page theme modifications',
 		sitewideContent: 'Norna site-wide content',
 	};
 	const documentation = {
 		config: ['Configuration reference', 'configuration.md'],
+		rootTheme: ['Theme reference', 'theme.md'],
 		theme: ['Theme reference', 'theme.md'],
+		pageTheme: ['Theme reference', 'theme.md'],
 		sitewideContent: ['Site-wide content reference', 'sitewide-content.md'],
 	};
 	return [makeWholeDocumentSnippet(
@@ -560,9 +566,13 @@ const refreshDiagnostics = async (document) => {
 		if (isNornaContentDocument(document)) {
 			const issues = await service.getMarkdownDiagnostics({ documentPath: document.uri.fsPath, source: document.getText() });
 			diagnostics.set(document.uri, issues.map((issue) => toDiagnostic(document, issue)));
-		} else if (['theme', 'pageTheme'].includes(getYamlSchemaKind(document))) {
+		} else if (['rootTheme', 'theme', 'pageTheme'].includes(getYamlSchemaKind(document))) {
+			const siteRoot = getProjectContext(document.uri.fsPath)?.siteRoot;
+			const sources = new Map(vscode.workspace.textDocuments
+				.filter((open) => open.uri.scheme === 'file' && getProjectContext(open.uri.fsPath)?.siteRoot === siteRoot)
+				.map((open) => [open.uri.fsPath, open.getText()]));
 			const issues = typeof service.getThemeDiagnostics === 'function'
-				? await service.getThemeDiagnostics({ documentPath: document.uri.fsPath, source: document.getText() })
+				? await service.getThemeDiagnostics({ siteRoot, sources, documentPath: document.uri.fsPath, source: document.getText() })
 				: [];
 			diagnostics.set(document.uri, issues.map((issue) => toDiagnostic(document, issue)));
 		}
@@ -586,7 +596,7 @@ const scheduleOpenThemeDiagnostics = (documentPath, delay = 350) => {
 	const siteRoot = getProjectContext(documentPath)?.siteRoot;
 	if (!siteRoot) return;
 	for (const document of vscode.workspace.textDocuments) {
-		if (!['theme', 'pageTheme'].includes(getYamlSchemaKind(document))) continue;
+		if (!['rootTheme', 'theme', 'pageTheme'].includes(getYamlSchemaKind(document))) continue;
 		if (getProjectContext(document.uri.fsPath)?.siteRoot !== siteRoot) continue;
 		scheduleDiagnostics(document, delay);
 	}
@@ -979,7 +989,12 @@ async function activate(context) {
 	));
 
 	context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((document) => scheduleDiagnostics(document, 0)));
-	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((event) => scheduleDiagnostics(event.document)));
+	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((event) => {
+		scheduleDiagnostics(event.document);
+		if (['rootTheme', 'theme', 'pageTheme'].includes(getYamlSchemaKind(event.document))) {
+			scheduleOpenThemeDiagnostics(event.document.uri.fsPath);
+		}
+	}));
 	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((document) => {
 		scheduleDiagnostics(document, 0);
 		scheduleOpenThemeDiagnostics(document.uri.fsPath, 0);
@@ -990,6 +1005,7 @@ async function activate(context) {
 	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBar));
 	context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((document) => {
 		if (isNornaContentDocument(document) || isNornaYamlDocument(document)) diagnostics.delete(document.uri);
+		scheduleOpenThemeDiagnostics(document.uri.fsPath, 0);
 	}));
 
 	const publicAssetWatcher = vscode.workspace.createFileSystemWatcher('**/public/*');

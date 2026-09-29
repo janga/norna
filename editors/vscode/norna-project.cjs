@@ -1,29 +1,21 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const supportedSchemaVersion = 5;
+const supportedSchemaVersion = 6;
 const supportedEditorApiVersion = 3;
-const pageDirectoryPattern = /^(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
-const rootFiles = new Map([
-	['root/content.md', { documentKind: 'content', schemaKind: 'contentFrontmatter', pageDirectory: '.' }],
-	['root/theme.yaml', { documentKind: 'yaml', schemaKind: 'pageTheme', pageDirectory: '.' }],
-	['site-config/settings.yaml', { documentKind: 'yaml', schemaKind: 'config' }],
-	['site-config/site-theme.yaml', { documentKind: 'yaml', schemaKind: 'theme' }],
-	['site-config/shared-content.yaml', { documentKind: 'yaml', schemaKind: 'sitewideContent' }],
-]);
+// Only the two discovery markers are known before the selected engine is found.
+const bootstrapFiles = [
+	{ name: 'content.md', location: 'page', schemaKind: 'contentFrontmatter' },
+	{ name: 'settings.yaml', location: 'site-config', schemaKind: 'config' },
+];
 
 const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const isFile = (filePath) => fs.existsSync(filePath) && fs.statSync(filePath).isFile();
 const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
-const isPageDirectoryPath = (pageDirectory) => {
+const isPageDirectoryPath = (pageDirectory, pattern) => {
+	if (!pattern) return false;
 	const segments = pageDirectory.split('/');
-	if (segments.length % 2 === 0) return false;
-
-	return segments.every((segment, index) => {
-		if (index % 2 === 1) return segment === 'pages';
-		const match = segment.match(pageDirectoryPattern);
-		return Boolean(match && match[1] !== '000');
-	});
+	return segments.length % 2 === 1 && segments.every((segment, index) => index % 2 === 1 ? segment === 'pages' : new RegExp(pattern).test(segment));
 };
 
 const hasSiteMarkers = (directory) => (
@@ -81,24 +73,23 @@ const findNornaPackage = (siteRoot) => {
 	}
 };
 
-const classifyDocument = (siteRoot, documentPath) => {
+const classifyDocument = (siteRoot, documentPath, manifest = findNornaPackage(siteRoot)?.manifest) => {
 	const relativePath = toPosixPath(path.relative(siteRoot, path.resolve(documentPath)));
 	if (!relativePath || relativePath.startsWith('../') || path.isAbsolute(relativePath)) return null;
-
-	const rootFile = rootFiles.get(relativePath);
-	if (rootFile) return { pageDirectory: null, ...rootFile, relativePath };
-
-	const pageMatch = relativePath.match(/^root\/pages\/(.+)\/(content\.md|theme\.yaml)$/);
-	if (!pageMatch || !isPageDirectoryPath(pageMatch[1])) return null;
-	const schemaKind = pageMatch[2] === 'content.md'
-			? 'contentFrontmatter'
-			: 'pageTheme';
-	return {
-		documentKind: pageMatch[2] === 'content.md' ? 'content' : 'yaml',
-		relativePath,
-		pageDirectory: pageMatch[1],
-		schemaKind,
-	};
+	const parts = relativePath.split('/');
+	const name = parts.at(-1);
+	let pageDirectory = null;
+	if (parts[0] === 'root' && parts.length === 2) pageDirectory = '.';
+	else if (relativePath.startsWith('root/pages/')) {
+		const value = parts.slice(2, -1).join('/');
+		if (isPageDirectoryPath(value, manifest?.pageDirectoryPattern)) pageDirectory = value;
+	}
+	const definition = (manifest?.sourceFiles ?? bootstrapFiles).find((entry) => entry.name === name && (
+		entry.location === 'page' ? pageDirectory !== null : relativePath === `${entry.location}/${entry.name}`
+	));
+	if (!definition) return null;
+	return { documentKind: definition.schemaKind === 'contentFrontmatter' ? 'content' : 'yaml', relativePath, pageDirectory,
+		schemaKind: pageDirectory === '.' && definition.rootSchemaKind ? definition.rootSchemaKind : definition.schemaKind };
 };
 
 const getNornaProjectContext = (documentPath) => {
@@ -118,7 +109,7 @@ const getNornaProjectContext = (documentPath) => {
 const getNornaDocumentContext = (documentPath) => {
 	const project = getNornaProjectContext(documentPath);
 	if (!project) return null;
-	const file = classifyDocument(project.siteRoot, documentPath);
+	const file = classifyDocument(project.siteRoot, documentPath, project.nornaPackage?.manifest);
 	return file ? { ...project, ...file } : null;
 };
 
@@ -128,7 +119,6 @@ module.exports = {
 	findNornaSiteRoot,
 	getNornaDocumentContext,
 	getNornaProjectContext,
-	pageDirectoryPattern,
 	supportedEditorApiVersion,
 	supportedSchemaVersion,
 };

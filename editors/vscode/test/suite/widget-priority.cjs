@@ -99,7 +99,7 @@ async function runWidgetPriority({ window, widget, openDocument, waitFor, getCom
 			['Adjacent Markdown', '# Ordinary\n\n|CURSOR|', 'site/notes.md'],
 			['Unrecognized content.md', '# Ordinary\n\n|CURSOR|', 'ordinary/content.md'],
 			['Adjacent YAML', '|CURSOR|', 'site/settings.yaml'],
-			['Unrecognized theme.yaml', '|CURSOR|', 'ordinary/theme.yaml'],
+			['Unrecognized tree-theme.yaml', '|CURSOR|', 'ordinary/tree-theme.yaml'],
 			['Incompatible project', '# Priority\n\n|CURSOR|', 'incompatible/site/root/content.md'],
 			['Literal YAML', '# Priority\n\n```yaml\n|CURSOR|\n```'],
 			['Literal JavaScript', '# Priority\n\n```js\n|CURSOR|\n```'],
