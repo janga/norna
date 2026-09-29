@@ -4,11 +4,14 @@ import path from 'node:path';
 import { applyImageSyncPlan } from './lib/content-sync-apply.mjs';
 import { createImageSyncPlan } from './lib/content-sync-plan.mjs';
 
-const page = (directoryName) => ({
-	contentLabel: `site/${directoryName ? `pages/${directoryName}/` : ''}content.md`,
-	imagesDir: path.join('/project/site', directoryName ? `pages/${directoryName}` : '', 'images'),
-	imagesLabel: `site/${directoryName ? `pages/${directoryName}/` : ''}images`,
-});
+const page = (directoryName) => {
+	const directory = directoryName ? `root/pages/${directoryName}` : 'root';
+	return {
+		contentLabel: `site/${directory}/content.md`,
+		imagesDir: path.join('/project/site', directory, 'images'),
+		imagesLabel: `site/${directory}/images`,
+	};
+};
 const section = (id) => ({ id, title: id });
 const managedImage = (image) => ({ image });
 
