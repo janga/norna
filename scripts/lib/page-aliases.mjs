@@ -154,7 +154,9 @@ export const createPageAliasModel = ({
 					contentFile,
 					fix: conflict.kind === 'page-alias'
 						? 'Keep the old URL on exactly one current page.'
-						: 'Remove or change the alias. A public URL can identify only one site resource.',
+						: conflict.kind === 'page'
+							? `Rename the page at ${conflict.label}, or remove ${pathname} from the previous addresses in ${contentLabel}. Removing it may break old links.`
+							: 'Remove or change the alias. A public URL can identify only one site resource.',
 					message: `Page alias "${pathname}" in ${contentLabel} conflicts with ${describeIdentity(conflict)}.`,
 					severity: 'error',
 				});

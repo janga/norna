@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.2
+
+- Move and reorder pages from the native Site Tree with a placement preview.
+  Parent changes update supported links and preserve old page and descendant
+  addresses; sibling reordering keeps URLs unchanged.
+- Identify the page that owns a reserved previous address when a new page
+  tries to reuse it.
+- Keep page clicks opening `content.md` during placement; use the context menu
+  for destination choices. Mark unsaved pages and their collapsed ancestors in
+  Site Tree, and name files that must be saved before a move.
+- Offer explicit cancellation and source opening when page placement fails.
+
 ## 0.9.1
 
 - Show active presets and their source files in page and theme hovers, including

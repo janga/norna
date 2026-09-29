@@ -149,9 +149,23 @@ test('URL segment changes preview then reuse the page-move transaction and updat
 	assert.equal(renames, 1);
 	assert.equal(result.url, '/handbook/');
 	assert.match(await readFile(f.home, 'utf8'), /\[Guide\]\(\/handbook\/\)/);
-	assert.match(await readFile(result.sourcePath, 'utf8'), /- \/guide\//);
-	assert.match(await readFile(path.join(plan.destinationDirectory, 'pages/020-child/content.md'), 'utf8'), /- \/guide\/child\//);
+	assert.match(await readFile(result.sourcePath, 'utf8'), /- "?\/guide\//);
+	assert.match(await readFile(path.join(plan.destinationDirectory, 'pages/020-child/content.md'), 'utf8'), /- "?\/guide\/child\//);
 	assert.equal(await readFile(path.join(plan.destinationDirectory, 'images/example.svg'), 'utf8'), '<svg/>');
+});
+
+test('URL segment can return to an address previously owned by the same branch', async (t) => {
+	const f = await fixture(t);
+	const moved = await applyEditorPageAddress(await planEditorPageAddress({ ...f, segment: 'handbook' }));
+	const returned = await applyEditorPageAddress(await planEditorPageAddress({
+		siteRoot: f.siteRoot, sourcePath: moved.sourcePath, segment: 'guide',
+	}));
+	assert.equal(returned.url, '/guide/');
+	assert.match(await readFile(returned.sourcePath, 'utf8'), /- "?\/handbook\//);
+	assert.doesNotMatch(await readFile(returned.sourcePath, 'utf8'), /- "?\/guide\//);
+	const child = await readFile(path.join(path.dirname(returned.sourcePath), 'pages/020-child/content.md'), 'utf8');
+	assert.match(child, /- "?\/handbook\/child\//);
+	assert.doesNotMatch(child, /- "?\/guide\/child\//);
 });
 
 test('rename rejects stale plans, dirty sources, collisions, home, categories and linked paths', async (t) => {

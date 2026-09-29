@@ -1,0 +1,98 @@
+# BL-153: VS Code Site Tree Page Placement And Previous Addresses
+
+## Purpose
+
+Let an author reorder a page or move it under another page using the familiar
+Site Tree, while showing the resulting page addresses and preserving old ones
+when they change.
+
+**Status: Implemented and locally reviewed.** The owner verified repeated
+moves in Site Tree: old addresses accumulate and the address reclaimed by a
+return move is removed from the page's aliases.
+
+## Decisions Made
+
+- Start **Move Page** from the page row's `…` or context menu. Choose a target
+  and placement in the existing Site Tree, with a temporary preview row. The
+  author can try another placement or cancel before any file changes. Do not
+  introduce a second site tree or a separate placement dialog. Clicking a page
+  continues to open its `content.md` during placement; right-click chooses the
+  destination and position.
+- Use the same interaction for reordering among siblings and moving to a new
+  parent. Changing only the order keeps page addresses; changing the parent
+  changes addresses for the page and its descendants.
+- For changed addresses, automatically retain each old address on its page as
+  a `page.aliases` entry, and update supported internal links to the new
+  primary addresses. Show the old-to-new address mapping before applying the
+  move. Do not offer an advanced choice to omit the aliases in the VS Code UI.
+  The existing CLI option is outside this item's scope.
+- A previous address remains reserved until its alias is explicitly removed,
+  except when the same page moves back to that address. Then its own alias
+  becomes the primary address and is removed from `page.aliases`, including
+  for each affected descendant. An address owned by another page remains a
+  collision. New-page creation must report an address collision immediately
+  and prevent submission. Direct filesystem edits that create the same
+  collision must fail content checking and building.
+- Validate the destination against the complete site address model, including
+  pages, aliases, public files and generated routes. Uniqueness of sibling
+  slugs alone is insufficient. Recheck the plan immediately before writing;
+  stale previews and conflicts must not make partial changes.
+- Add old addresses to valid `page.aliases` lists, including inline lists
+  and one-line `page` mappings. Where source-aware editing cannot safely
+  change YAML constructs such as anchors or tags, stop the move and identify
+  the affected file. Offer **Open affected file**, **Try another placement** and
+  **Cancel move** in the error dialog. Dismissing the dialog also cancels the
+  move. Do not silently move without preserving the old address.
+- The first version does not offer an extension-specific **Undo move** after
+  applying a move. Require affected unsaved edits to be saved or undone before
+  writing. Mark dirty pages in Site Tree, including pages with dirty local
+  settings; show counts on their collapsed ancestors and name blocking files
+  in move errors. Use the engine's rollback for handled failures and report paths to
+  inspect if restoration is incomplete. Ordinary editor Undo must not be
+  presented as reversing the whole operation.
+
+## Messages To Review In The Prototype
+
+Use page titles and exact addresses in these templates. Make the full affected
+address list available from the placement preview; keep the short summary
+readable in the tree. The final wording may be tightened during local review,
+but each message must identify the conflicting owner and the next action.
+
+| Situation | Message |
+| --- | --- |
+| Address-changing preview | `This move changes 3 page addresses. Their old addresses will continue to lead to the moved pages.` |
+| Destination is another page | `Cannot move here. /guides/install/ already belongs to “Install Norna”. Choose another location.` |
+| Destination is a previous address | `Cannot move here. /guides/install/ is a previous address for “Setup” at /setup/. Choose another location.` |
+| Destination is this page's own previous address | Allow the move; remove that alias when it becomes the primary address. Apply the same rule to descendants. |
+| Destination is another resource | `Cannot move here. /guides/install/ is used by a public file.` Identify a generated route similarly. |
+| Later page creation at an old address | `/guides/install/ is a previous address for “Install Norna”, now at /reference/install/. Choose another URL segment, or remove this previous address from “Install Norna”.` |
+| Collision introduced by direct file edits | `/guides/install/ is used by both the new page and a previous address for “Install Norna”. Rename the new page or remove the previous address from “Install Norna”.` The diagnostic must identify both source files. |
+| Site changed after preview | `The site changed since this move was previewed. Review the placement and addresses again.` |
+| Old address cannot be saved in YAML | `Cannot preserve /old-address/ in [file]. Edit page.aliases in the source to remove unsupported YAML anchors or tags, then try the move again.` |
+
+Removing a previous address is a separate, existing page-information action.
+Its confirmation must explain that links to that address may stop working.
+The creation error should point the author to **Addresses and links… →
+Additional addresses…** on the named page; it should not remove the alias
+automatically.
+
+## Dependencies And Verification
+
+This item promotes the reorder and move proposals from
+[BL-132 VS Code Site Authoring Continuation](BL-132-vscode-site-authoring-continuation.md).
+Reuse the engine's `page:move` planning, link and alias validation, and the
+selected-site rules of [BL-131 VS Code Site Tree](BL-131-vscode-site-tree.md).
+
+Check sibling reordering, parent changes with descendants, return moves into
+the branch's own former addresses, collisions with another page's aliases, preview
+cancellation, cancellation after a planning error, address and alias collisions,
+later creation at an old address,
+manual-file collisions at `content:check` and build, stale plans, YAML alias
+format errors, and interrupted writes. Verify the final interaction in the
+owner's Default VS Code profile with a disposable site before committing
+changed interaction behavior.
+
+Large subtree moves and repeated moves can accumulate many aliases and static
+redirect pages. Retain the current per-page alias model; defer performance
+thresholds, prefix rules and hosting-specific redirect output until measured
+move or build costs show a real need. Do not silently discard older aliases.

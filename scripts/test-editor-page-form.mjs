@@ -17,7 +17,7 @@ try {
  assert.equal(info.problem,null); assert.equal(info.title,'Install Norna'); assert.deepEqual(info.aliases,['/old-install/','/setup/']); assert.equal(info.listed,false); assert.equal(info.listChildren,true); assert.equal(info.description,'Start here');
  await assert.rejects(planSiteNodeCreation({...options,slug:'other'}),/alias.*conflicts/is);
  await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['/install/']}}}),/conflicts/);
- await assert.rejects(planSiteNodeCreation({...options,slug:'setup',metadata:{}}),/already in use/);
+ await assert.rejects(planSiteNodeCreation({...options,slug:'setup',metadata:{}}),/previous address.*Choose another URL segment, or remove this previous address/s);
  await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['bad']}}}),/Start and end/);
  await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['/same/','/same/']}}}),/unique/);
  await write('public/legacy/index.html','Static');

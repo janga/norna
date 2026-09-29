@@ -114,7 +114,7 @@
     "test:sitemap": "node scripts/test-sitemap.mjs",
     "test:not-found-page": "node scripts/test-not-found-page.mjs",
     "test:site-node-commands": "node scripts/test-site-node-commands.mjs",
-    "test:page-move": "node scripts/test-page-move.mjs",
+    "test:page-move": "node scripts/test-page-move.mjs && node --test scripts/test-editor-page-placement.mjs",
     "test:navigation-review": "node scripts/test-navigation-review.mjs",
     "test:nested-pages": "node scripts/test-nested-pages.mjs && node scripts/test-top-navigation-contract.mjs",
     "test:heading-ids": "node scripts/test-heading-ids.mjs",

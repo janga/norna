@@ -141,13 +141,13 @@ const assertSuccessfulResult = async (siteDir) => {
 
 	assert.equal(await exists(path.join(siteDir, 'root/pages/010-guides/pages/010-install')), false);
 	assert.equal(await exists(path.join(movedDir, 'images/example.svg')), true);
-	assert.match(movedSource, /aliases:\n    - \/guides\/install\//);
+	assert.match(movedSource, /aliases:\n    - "?\/guides\/install\//);
 	assert.match(movedSource, /\[Workflow\]\(\/guides\/workflows\/#local\)/);
 	assert.match(movedSource, /\[Child\]\(reference\/#details\)/);
 	assert.match(movedSource, /\[Manual\]\(\/manual\.pdf\)/);
 	assert.match(movedSource, /\[Guides\]\(\/guides\/\)/);
 	assert.match(homeSource, /\[Setup\]\(\/reference\/overview\/install\/setup\/\)/);
-	assert.match(childSource, /aliases:\n    - \/guides\/install\/reference\//);
+	assert.match(childSource, /aliases:\n    - "?\/guides\/install\/reference\//);
 	assert.match(childSource, /\[Parent\]\(\.\.\/#steps\)/);
 	assert.match(homeSource, /\/reference\/overview\/install\/\?mode=fast#steps/);
 	assert.equal((homeSource.match(/^\[install\]:/gm) ?? []).length, 1);
@@ -182,6 +182,12 @@ try {
 	assert.match(moved.stdout, /Page move completed: \/guides\/install\/ -> \/reference\/overview\/install\//);
 	await assertSuccessfulResult(normal.siteDir);
 	const normalResult = await snapshotSite(normal.siteDir);
+	await runNorna(normal.siteDir, ['page:move', '/reference/overview/install/', '/guides/install/', '--no-aliases', '--write']);
+	const returnedPages = path.join(normal.siteDir, 'root/pages/010-guides/pages');
+	const returnedDirectory = (await readdir(returnedPages)).find((name) => name.endsWith('-install'));
+	const returnedSource = await readFile(path.join(returnedPages, returnedDirectory, 'content.md'), 'utf8');
+	assert.doesNotMatch(returnedSource, /aliases:[\s\S]*\/guides\/install\//);
+	assert.match((await runNorna(normal.siteDir, ['content:check'])).stdout, /Content check passed\./);
 
 	for (const mode of ['move', 'reconcile']) {
 		const lastChild = await createFixture(`last-child-${mode}`);
@@ -196,7 +202,7 @@ try {
 		assert.deepEqual(await snapshotSite(lastChild.siteDir), before);
 		await runNorna(lastChild.siteDir, ['page:move', '/reference/overview/', '/overview/', '--write']);
 		assert.equal(await exists(source), false);
-		assert.match(await readFile(path.join(destination, 'content.md'), 'utf8'), /aliases:\n    - \/reference\/overview\//);
+		assert.match(await readFile(path.join(destination, 'content.md'), 'utf8'), /aliases:\n    - "?\/reference\/overview\//);
 		assert.equal(await readFile(path.join(lastChild.siteDir, 'root/pages/020-reference/content.md'), 'utf8'), '---\npage:\n  listChildren: true\n---\n# Reference\n');
 		const home = await readFile(homePath, 'utf8');
 		assert.match(home, /\[Overview\]\(\/overview\/#summary\)/);

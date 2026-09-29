@@ -57,7 +57,7 @@ hyphens, matching Norna's page-folder slugs.
 | Option | Effect |
 | --- | --- |
 | `--write` | Apply the move. Without it, print a preview only. |
-| `--no-aliases` | Skip adding old addresses. Internal links are still updated, and existing aliases are kept. |
+| `--no-aliases` | Skip adding old addresses. Internal links are still updated. Existing aliases remain, except an alias that becomes the page's current address. |
 | `--order NNN` | Set the destination's folder-order number, from 1 to 999. The number must be unused among its siblings. |
 | `--help`, `-h` | Show command help. |
 
@@ -75,6 +75,9 @@ global option `--site-dir <path>` before `page:move`.
 The whole folder moves, including `content.md`, `images/`, any `tree-theme.yaml`
 and nested pages. Norna adds each moved content page's old URL to
 `page.aliases`, the list of additional addresses in that page's metadata.
+When a page returns to one of its own previous addresses, that alias becomes
+its current address and is removed from the list. The same rule applies to
+descendants; aliases owned by other pages still block the move.
 
 Norna updates Markdown links, reference-style links and card links in page
 content across the site. It keeps query strings and heading anchors. Relative
@@ -109,8 +112,8 @@ run the command again.
 
 You cannot move Home. The
 destination parent must already exist, and the destination cannot be inside
-the folder being moved. Page paths, order numbers and aliases must not collide
-with existing ones.
+the folder being moved. Page paths and order numbers must not collide with
+existing ones. An old address owned by another page also blocks the move.
 
 Before writing, Norna validates the planned site and links, checks relevant
 permissions, and checks that page source has not changed since planning.
@@ -130,20 +133,16 @@ not required.
 
 ## When alias insertion is refused
 
-The command preserves existing metadata rather than rewriting it wholesale.
-It can therefore refuse to add aliases when the `page` settings at the top of
-`content.md` are written on one line, such as `page: {description: Setup}`.
-Write those settings on separate lines instead:
+The command adds the old address to `page.aliases` whether the existing YAML
+list uses separate lines or square brackets. Each entry is a complete path
+relative to the site's root, such as `/guide/`. A page can keep several such
+addresses. The command also accepts one-line `page` settings.
 
-```yaml title="Metadata inside the opening --- markers of content.md" {1,2}
-page:
-  description: Setup
-```
-
-If `page.aliases` already exists, its addresses also need separate list lines
-beginning with `-`, not a list inside square brackets. Alternatively, use
-`--no-aliases` if you do not need to add old addresses. The command still
-checks and updates internal links.
+If the alias field uses YAML anchors, tags or other constructs the source
+editor cannot safely change, the command stops before moving the page. Edit
+that field in `content.md`, then retry. Alternatively, use `--no-aliases` if
+you do not need to keep the old address. The command still checks and updates
+internal links.
 
 ## Related tasks
 

@@ -30,6 +30,11 @@ image usage. This record retains structural and link-authoring proposals; its
 priority table does not order or approve that separate track. Image usage is
 distinct from the inbound page-link reports below.
 
+The reorder and page-move proposals in rows 1–2 have been promoted to
+[BL-153 VS Code Site Tree Page Placement And Previous Addresses](BL-153-vscode-site-tree-page-placement.md).
+That item owns their implementation and old-address behavior; the table below
+retains the original sequence for context.
+
 ## Decisions Made
 
 - The first delivery is a functioning tree with open, create, and page

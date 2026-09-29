@@ -275,6 +275,21 @@ or removing the offending file clears its tree indication after refresh.
 
 ### Inspect and change addresses
 
+To change where a page appears in **Site Tree**, select **Move Page…** from its
+**…** or context menu. Right-click another page to place the moving page
+before, after, first or last under it. The temporary row previews the position
+and any changed addresses without writing files. Choose **Move Page Here…** to
+review and apply, or cancel. If a placement fails, the error dialog offers to
+open the affected file, try another placement or cancel the move. Closing that
+dialog without a choice also cancels. A new parent changes the page's address
+and those of its descendants; Norna updates supported internal links and automatically
+keeps their old addresses as redirects. Reordering below the same parent leaves
+addresses unchanged. Moving a page back to its own previous address removes
+that address from its aliases; the same applies to affected descendants. Save
+affected edits first. Editor Undo does not reverse
+the whole move; on a handled failure Norna attempts to restore the original
+files and reports any paths that still need inspection.
+
 Select **Addresses and links…** from a page's **…** menu. **Web address** copies
 the full public address for sharing. **Internal link** copies the path to use
 in `content.md`, without the site's deployment prefix. For example, a page
@@ -293,9 +308,9 @@ and receive aliases.
 
 Save or undo unsaved page and site-settings edits before changing an
 address. The action writes affected content files and moves the complete page
-directory. Editor Undo does not reverse the whole operation. To return to an
-old address, first remove conflicting additional addresses on this page and
-its descendants, save, then change the URL segment again.
+directory. Editor Undo does not reverse the whole operation. To return to a
+previous address owned by this page, change the URL segment normally. Norna
+removes that address from its aliases. Another page's address remains unavailable.
 The homepage's internal address is fixed at
 `/`. This action does not detach addresses from folders.
 

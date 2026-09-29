@@ -112,11 +112,17 @@ export const planSiteNodeCreation = async ({
 	const directoryName = `${String(order).padStart(3, '0')}-${slug}`;
 	const destination = path.join(parent.collectionDir, directoryName);
 	const pagePath = [parent.pagePath, slug].filter(Boolean).join('/');
+	const state = await readEditorLinkState({ siteRoot, sources });
+	if (state.incomplete.length) throw new Error(`Page addresses could not be checked. ${state.incomplete.join('\n')}`);
+	const address = `/${pagePath}/`;
+	const owner = state.graph.aliasModel.identitiesByPathname.get(address);
+	if (owner?.kind === 'page-alias') {
+		const page = owner.source.page;
+		throw new Error(`${address} is a previous address for “${page.title}”, now at ${owner.source.targetPathname}. Choose another URL segment, or remove this previous address from “${page.title}” through Addresses and links… → Additional addresses….`);
+	}
+	if (owner) throw new Error(`Address ${address} is already in use by ${owner.label}. Choose another URL segment.`);
 	if (metadata !== undefined) {
 		metadata = parseYamlConfig(dumpYaml(metadata), 'Page information', { schema: siteSchema });
-		const state = await readEditorLinkState({ siteRoot, sources });
-		if (state.incomplete.length) throw new Error(`Page addresses could not be checked. ${state.incomplete.join('\n')}`);
-		if (state.graph.aliasModel.identitiesByPathname.has(`/${pagePath}/`)) throw new Error(`Address /${pagePath}/ is already in use. Choose another URL segment.`);
 		assertPageAliasModel(createPageAliasModel({ pages: [...state.graph.pages,
 			{ pathname: `/${pagePath}/`, contentLabel: destination, aliases: metadata.page?.aliases ?? [] }],
 			categories: [], publicFiles: state.publicFiles, generatedRoutes: state.generatedRoutes }));

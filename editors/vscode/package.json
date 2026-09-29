@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -68,22 +68,22 @@
       },
       {
         "command": "nornaEditor.openSiteNode",
-        "title": "Norna: Open Source",
+        "title": "Norna: Open File",
         "icon": "$(go-to-file)"
       },
       {
         "command": "nornaEditor.addPage",
-        "title": "Norna: Add Page\u2026",
+        "title": "Norna: Add Page…",
         "icon": "$(add)"
       },
       {
         "command": "nornaEditor.newPage",
-        "title": "Norna: New Page\u2026",
+        "title": "Norna: New Page…",
         "icon": "$(new-file)"
       },
       {
         "command": "nornaEditor.pageInformation",
-        "title": "Norna: Page Information\u2026",
+        "title": "Norna: Page Information…",
         "icon": "$(edit)"
       },
       {
@@ -93,72 +93,103 @@
       },
       {
         "command": "nornaEditor.chooseSite",
-        "title": "Norna: Choose Site\u2026",
+        "title": "Norna: Choose Site…",
         "icon": "$(globe)"
       },
       {
         "command": "nornaEditor.addToPage",
-        "title": "Norna: Add\u2026",
+        "title": "Norna: Add…",
         "icon": "$(add)"
       },
       {
         "command": "nornaEditor.addChildPage",
-        "title": "Norna: Add Child Page\u2026",
+        "title": "Norna: Add Child Page…",
         "icon": "$(add)"
       },
       {
         "command": "nornaEditor.pageActions",
-        "title": "Norna: Page Actions\u2026",
+        "title": "Norna: Page Actions…",
         "icon": "$(ellipsis)"
       },
       {
+        "command": "nornaEditor.movePage",
+        "title": "Norna: Move Page…",
+        "icon": "$(move)"
+      },
+      {
+        "command": "nornaEditor.cancelMove",
+        "title": "Norna: Cancel Page Move",
+        "icon": "$(close)"
+      },
+      {
+        "command": "nornaEditor.placeMoveBefore",
+        "title": "Place Moving Page Before This Page"
+      },
+      {
+        "command": "nornaEditor.placeMoveAfter",
+        "title": "Place Moving Page After This Page"
+      },
+      {
+        "command": "nornaEditor.placeMoveFirst",
+        "title": "Place Moving Page as First Child"
+      },
+      {
+        "command": "nornaEditor.placeMoveLast",
+        "title": "Place Moving Page as Last Child"
+      },
+      {
+        "command": "nornaEditor.acceptMovePreview",
+        "title": "Move Page Here…",
+        "icon": "$(check)"
+      },
+      {
         "command": "nornaEditor.importImage",
-        "title": "Norna: Import Images\u2026",
+        "title": "Norna: Import Images…",
         "icon": "$(add)"
       },
       {
         "command": "nornaEditor.insertImage",
-        "title": "Norna: Insert Image\u2026",
+        "title": "Norna: Insert Image…",
         "icon": "$(add)"
       },
       {
         "command": "nornaEditor.replaceImage",
-        "title": "Norna: Replace Image\u2026",
+        "title": "Norna: Replace Image…",
         "icon": "$(replace)"
       },
       {
         "command": "nornaEditor.removeImage",
-        "title": "Norna: Move Image to Trash\u2026",
+        "title": "Norna: Move Image to Trash…",
         "icon": "$(trash)"
       },
       {
         "command": "nornaEditor.removePage",
-        "title": "Norna: Move Page to Trash\u2026",
+        "title": "Norna: Move Page to Trash…",
         "icon": "$(trash)"
       },
       {
         "command": "nornaEditor.imageActions",
-        "title": "Norna: Image Actions\u2026",
+        "title": "Norna: Image Actions…",
         "icon": "$(ellipsis)"
       },
       {
         "command": "nornaEditor.addressesAndLinks",
-        "title": "Norna: Addresses and Links\u2026",
+        "title": "Norna: Addresses and Links…",
         "icon": "$(link)"
       },
       {
         "command": "nornaEditor.incomingLinks",
-        "title": "Norna: Incoming Links\u2026",
+        "title": "Norna: Incoming Links…",
         "icon": "$(references)"
       },
       {
         "command": "nornaEditor.fileActions",
-        "title": "Norna: File Actions\u2026",
+        "title": "Norna: File Actions…",
         "icon": "$(ellipsis)"
       },
       {
         "command": "nornaEditor.removeFile",
-        "title": "Norna: Move File to Trash\u2026",
+        "title": "Norna: Move File to Trash…",
         "icon": "$(trash)"
       }
     ],
@@ -174,6 +205,11 @@
     },
     "menus": {
       "view/title": [
+        {
+          "command": "nornaEditor.cancelMove",
+          "when": "view == nornaSiteTree && nornaSiteTree.moveActive",
+          "group": "navigation@0"
+        },
         {
           "command": "nornaEditor.chooseSite",
           "when": "view == nornaSiteTree && nornaSiteTree.hasMultipleSites",
@@ -192,6 +228,36 @@
       ],
       "view/item/context": [
         {
+          "command": "nornaEditor.placeMoveBefore",
+          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem == nornaPage",
+          "group": "0_move@1"
+        },
+        {
+          "command": "nornaEditor.placeMoveAfter",
+          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem == nornaPage",
+          "group": "0_move@2"
+        },
+        {
+          "command": "nornaEditor.placeMoveFirst",
+          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem =~ /^norna(Home|Page)$/",
+          "group": "0_move@3"
+        },
+        {
+          "command": "nornaEditor.placeMoveLast",
+          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem =~ /^norna(Home|Page)$/",
+          "group": "0_move@4"
+        },
+        {
+          "command": "nornaEditor.acceptMovePreview",
+          "when": "view == nornaSiteTree && viewItem == nornaMovePreview",
+          "group": "inline@1"
+        },
+        {
+          "command": "nornaEditor.cancelMove",
+          "when": "view == nornaSiteTree && viewItem == nornaMovePreview",
+          "group": "inline@2"
+        },
+        {
           "command": "nornaEditor.openSiteNode",
           "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|File|OptionalFile|Image)$/",
           "group": "1_open@1"
@@ -200,6 +266,11 @@
           "command": "nornaEditor.pageInformation",
           "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page)$/",
           "group": "1_open@2"
+        },
+        {
+          "command": "nornaEditor.movePage",
+          "when": "view == nornaSiteTree && viewItem == nornaPage",
+          "group": "1_open@2.5"
         },
         {
           "command": "nornaEditor.newPage",
@@ -310,7 +381,7 @@
     "viewsWelcome": [
       {
         "view": "nornaSiteTree",
-        "contents": "Choose a site to show its pages and files.\n[Choose Site\u2026](command:nornaEditor.chooseSite)",
+        "contents": "Choose a site to show its pages and files.\n[Choose Site…](command:nornaEditor.chooseSite)",
         "when": "nornaSiteTree.hasMultipleSites && !nornaSiteTree.hasActiveSite"
       }
     ]

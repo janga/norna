@@ -153,6 +153,14 @@ The `site-tree` suite verifies
 packaged extension's native tree view and input widgets. The current hierarchy
 and resource scenarios follow
 [BL-140 VS Code Page Files Implementation](backlog/BL-140-vscode-page-files-implementation.md).
+For [BL-153 VS Code Site Tree Page Placement And Previous Addresses](backlog/BL-153-vscode-site-tree-page-placement.md),
+verify the source-row action, target-row placement choices, preview and
+cancellation in the native tree. Apply a sibling reorder and a cross-parent
+move with a child page. Confirm that only the latter changes URLs, that old
+addresses lead to the moved pages, and that known internal links use the new
+addresses. Test an occupied destination and later creation at an old address;
+the error must identify its owner and how to resolve it. A failed or stale move
+must leave the original files recoverable and report any incomplete rollback.
 Site selection follows
 [BL-141 VS Code Active Site Scope](backlog/BL-141-vscode-active-site-scope.md):
 show one workspace site, choose explicitly when several are available, and

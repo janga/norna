@@ -90,6 +90,23 @@ Each existing `pages/` also offers **Norna: Add Page…**. Page actions remain i
 **…**, the context menu and Command Palette, including information, addresses,
 source opening and removal. Active `content.md` reveals its owning page;
 resource files retain their own selection.
+**Move Page…** is available from a page's **…** and context menu. It keeps you
+in Site Tree: expand and scroll the familiar tree, then right-click a
+destination page to place the moving page before, after, first or last under
+it. Clicking a page still opens its `content.md`. A temporary row shows the
+placement and affected addresses without changing files. Choose **Move Page
+Here…** on that row to review and apply it,
+or cancel from the view title. If planning fails, the error dialog can open
+the affected file, keep the move active for another placement, or cancel it.
+Reordering among siblings leaves URLs intact; moving to another parent updates
+supported internal links and preserves old
+page and descendant addresses. Moving back to a page's own previous address
+reclaims it as the primary address; another page's previous address remains
+reserved. Site Tree marks unsaved pages and shows their
+count on ancestor rows, even when the affected page is collapsed. Save affected
+edits first; move errors list the files that still need saving. VS Code Undo
+does not reverse the whole move; Norna attempts to restore files after a
+handled failure and reports any paths that still need inspection.
 With a compatible engine, creation and Page Information open a combined form.
 Existing information is prefilled; empty inputs have example placeholders.
 Additional addresses start with a **+** button and no empty row. Each added

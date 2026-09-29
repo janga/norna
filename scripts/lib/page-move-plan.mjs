@@ -11,6 +11,7 @@ import {
 	toPosixPath,
 } from './site-content.mjs';
 import { getSiteNodePathname } from './site-page-urls.mjs';
+import { changeYamlField } from './yaml-source-edit.mjs';
 
 const pagePathPattern = /^\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)+$/;
 
@@ -61,12 +62,6 @@ const applyReplacements = (source, replacements) => {
 	return updated;
 };
 
-const insertBeforeTrailingBlankLines = (lines, additions) => {
-	let index = lines.length;
-	while (index > 0 && !lines[index - 1].trim()) index -= 1;
-	lines.splice(index, 0, ...additions);
-};
-
 const addPageAliasToSource = (source, alias, label) => {
 	const eol = source.includes('\r\n') ? '\r\n' : '\n';
 	const { body, frontmatter, frontmatterBody } = splitSiteFile(source, label);
@@ -88,62 +83,29 @@ const addPageAliasToSource = (source, alias, label) => {
 		};
 	}
 
-	const lines = frontmatterBody.split(/\r?\n/);
-	const pageIndex = lines.findIndex((line) => /^page:\s*(?:#.*)?$/.test(line));
-	if (data.page && pageIndex < 0) {
-		throw new Error([
-			`Cannot add ${alias} to ${label} without rewriting its flow-style page metadata.`,
-			'Use block YAML beginning with "page:" on its own line, or rerun with --no-aliases.',
-		].join('\n'));
-	}
-
-	if (pageIndex < 0) {
-		insertBeforeTrailingBlankLines(lines, [
-			'page:',
-			'  aliases:',
-			`    - ${alias}`,
-		]);
-	} else {
-		let pageEnd = lines.length;
-		for (let index = pageIndex + 1; index < lines.length; index += 1) {
-			const line = lines[index];
-			if (!line.trim() || line.trimStart().startsWith('#')) continue;
-			if (!line.startsWith(' ')) {
-				pageEnd = index;
-				break;
-			}
-		}
-
-		const aliasesIndex = lines.findIndex((line, index) => (
-			index > pageIndex
-			&& index < pageEnd
-			&& /^ {2}aliases:\s*(?:#.*)?$/.test(line)
-		));
-		if (data.page?.aliases && aliasesIndex < 0) {
-			throw new Error([
-				`Cannot add ${alias} to ${label} without rewriting its flow-style aliases list.`,
-				'Use a block list below "  aliases:", or rerun with --no-aliases.',
-			].join('\n'));
-		}
-
-		if (aliasesIndex < 0) {
-			lines.splice(pageIndex + 1, 0, '  aliases:', `    - ${alias}`);
-		} else {
-			let lastAliasIndex = -1;
-			for (let index = aliasesIndex + 1; index < pageEnd; index += 1) {
-				if (/^ {4}-\s+/.test(lines[index])) lastAliasIndex = index;
-			}
-			if (lastAliasIndex < 0) {
-				throw new Error(`Cannot find the block-list entries below "aliases:" in ${label}.`);
-			}
-			lines.splice(lastAliasIndex + 1, 0, `    - ${alias}`);
-		}
+	let yaml;
+	try {
+		yaml = changeYamlField(frontmatterBody, ['page', 'aliases'], [...(data.page?.aliases ?? []), alias], eol);
+	} catch (error) {
+		throw Object.assign(new Error(`Cannot preserve ${alias} in ${label}. ${error.message}`), { sourcePath: label });
 	}
 
 	return {
 		changed: true,
-		source: `---${eol}${lines.join(eol)}${eol}---${eol}${body}`,
+		source: `---${eol}${yaml.replace(/\r?\n$/, '')}${eol}---${eol}${body}`,
 	};
+};
+
+const removePageAliasFromSource = (source, alias, label) => {
+	const { body, frontmatter, frontmatterBody } = splitSiteFile(source, label);
+	if (!frontmatter) return source;
+	const data = parseContentFrontmatter(frontmatterBody, label);
+	if (!data.page?.aliases?.includes(alias)) return source;
+	const eol = source.includes('\r\n') ? '\r\n' : '\n';
+	const remaining = data.page.aliases.filter((entry) => entry !== alias);
+	const yaml = changeYamlField(frontmatterBody, ['page', 'aliases'], remaining.length ? remaining : undefined, eol);
+	if (!yaml.trim()) return body.replace(/^\r?\n/, '');
+	return `---${eol}${yaml.replace(/\r?\n$/, '')}${eol}---${eol}${body}`;
 };
 
 const normalizeMovePathname = (value, optionName) => {
@@ -560,6 +522,9 @@ export const createPageMovePlan = async ({
 		})));
 
 		const mapping = mappingByContentPath.get(contentPath);
+		if (mapping && page.aliases.includes(mapping.newPathname)) {
+			updatedSource = removePageAliasFromSource(updatedSource, mapping.newPathname, page.contentFile.contentLabel);
+		}
 		if (mapping && preserveAliases) {
 			const aliasResult = addPageAliasToSource(updatedSource, mapping.oldPathname, page.contentFile.contentLabel);
 			updatedSource = aliasResult.source;
