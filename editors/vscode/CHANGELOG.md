@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.1
+
+- Show active presets and their source files in page and theme hovers, including
+  unsaved changes. Explain inherited modifications and explicit replacement.
+- Preview the inherited tree theme and preset when removing an optional theme.
+
+## 0.9.0
+
+- Support Norna schema 6: required root/tree-theme.yaml, inherited branch themes
+  and optional page-theme.yaml. An explicit preset replaces the inherited base.
+
 ## 0.8.1
 
 - Give shared configuration and public files their own site context, so their

@@ -12,7 +12,7 @@ const write = async (relative, text) => {
 };
 const choices = (directory = siteRoot) => getEditorSourceFileChoices({ siteRoot, directory });
 const plan = (relative, value, directory = siteRoot) => planEditorSourceFileCreation({ siteRoot, directory, filename: path.join(siteRoot, relative), value });
-const tree = (sources) => readSiteFileTree({ siteRoot, editing: true, sources });
+const tree = (sources) => readSiteFileTree({ siteRoot, sources });
 const find = (snapshot, relative, kind) => snapshot.items.find((item) => item.sourcePath === path.join(siteRoot, relative) && (!kind || item.kind === kind));
 try {
 	await mkdir(siteRoot);
@@ -114,7 +114,7 @@ try {
 	assert.ok(find(view, 'site-config').issues.some((entry) => entry.path.endsWith('settings.yaml')));
 	const invalidRoot = path.join(temporary, 'not-a-directory');
 	await writeFile(invalidRoot, 'A file cannot be the site container.');
-	const invalid = await readSiteFileTree({ siteRoot: invalidRoot, editing: true });
+	const invalid = await readSiteFileTree({ siteRoot: invalidRoot });
 	assert.equal(invalid.items.length, 0);
 	assert.ok(invalid.problems.some((entry) => entry.path === invalidRoot && /Cannot read/.test(entry.message)), 'An unreadable site must retain its diagnostic even without a homepage row.');
 	await rm(path.join(siteRoot, 'root'), { recursive: true });

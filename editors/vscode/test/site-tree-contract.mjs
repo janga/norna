@@ -177,6 +177,8 @@ try {
 	const localTheme = provider.getTreeItem(home.children.find((node) => node.title === 'tree-theme.yaml'));
 	assert.equal(localTheme.description, '', 'Theme help belongs in hover, not a permanent row description.');
 	assert.match(localTheme.tooltip, /Visual settings for this page and its descendants/);
+	assert.match(localTheme.tooltip, /Preset: documentation\nPreset source: root\/tree-theme.yaml/);
+	assert.match(provider.getTreeItem(home).tooltip, /Preset source: root\/tree-theme.yaml/);
 	assert.match(provider.getTreeItem(roots.find((node) => node.role === 'public')).tooltip, /Files published unchanged/);
 	assert.equal(state.get('norna.siteTree.activeSite'), siteRoot);
 	assert.equal(contexts.get('nornaSiteTree.hasActiveSite'), true);
@@ -273,11 +275,14 @@ try {
 	await write(leafTheme.sourcePath, 'layout:\n  textWidth: impossible\n');
 	await registered.refresh();
 	assert.match(provider.getTreeItem(leafTheme).description, /error/);
+	assert.match(provider.getTreeItem(leafTheme).tooltip, /Preset unavailable/);
 	assert.equal(provider.getTreeItem(leafTheme).iconPath.id, 'file', 'Errors must preserve the file type.');
 	assert.match(provider.getTreeItem(leaf).description, /error/, 'The owning page reveals a child problem.');
 	await write(leafTheme.sourcePath, 'layout:\n  textWidth: normal\n');
 	await registered.refresh();
 	assert.equal(provider.getTreeItem(leafTheme).description, '', 'Repair must clear old issues on reused nodes.');
+	assert.match(provider.getTreeItem(leafTheme).tooltip, /Preset: documentation/);
+	assert.doesNotMatch(provider.getTreeItem(leafTheme).tooltip, /Preset unavailable/);
 	editorDiagnostics.set(leafTheme.sourcePath, [{ message: 'An unsaved schema error', severity: vscode.DiagnosticSeverity.Error, source: 'YAML', range: { start: { line: 2 } } }]);
 	diagnosticChanges.fire({ uris: [vscode.Uri.file(leafTheme.sourcePath)] });
 	assert.match(provider.getTreeItem(leafTheme).tooltip, /An unsaved schema error/);
@@ -430,6 +435,7 @@ try {
 	await registered.refresh();
 	const damagedHome = (await provider.getChildren()).find((node) => node.isHome);
 	assert.equal(damagedHome.kind, 'incomplete');
+	assert.equal(damagedHome.themeHelp, undefined, 'A repaired/changed node must not retain a previous page theme summary.');
 	assert.equal(provider.getTreeItem(damagedHome).contextValue, 'nornaIncomplete');
 	assert.equal(provider.getTreeItem(damagedHome).command.command, 'nornaEditor.addToPage');
 	choices.push((items) => { assert.ok(items.some((item) => item.filename === homePath)); assert.ok(items.every((item) => item.command === 'createSourceFile')); return undefined; });

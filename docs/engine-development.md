@@ -474,6 +474,13 @@ strict. `scripts/lib/site-node-create.mjs` owns creation for both the CLI and
 editor. Metadata edits return source ranges for the editor buffer and do not
 write files or trigger saves.
 
+`readSiteFileTree` uses one physical projection in
+`scripts/lib/editor-site-editing-tree.mjs`, including incomplete and damaged
+entries. There is no separate non-editing traversal. The extension still sends
+the earlier `editing` capability flag to engines that need it. Theme hover and
+removal help use the shared theme resolver with dirty-source overlays; keep
+inheritance rules in that resolver, not in the extension.
+
 Extension 0.5.0 also negotiates `siteRemovalApiVersion: 1` and
 `siteAddressApiVersion: 1` through that entry. `editor-site-links.mjs` overlays
 dirty documents on the shared link graph and records incomplete reads.

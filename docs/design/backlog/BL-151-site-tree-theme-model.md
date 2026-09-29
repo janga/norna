@@ -2,7 +2,7 @@
 
 ## Purpose And Decisions Made
 
-Recorded on 2026-09-29; implementation awaits a separate instruction.
+Recorded on 2026-09-29; implementation authorized on the same date.
 Follow BL-150 Theme Inheritance And Explicit Preset Replacement with the remaining editor
 presentation and authoring support. BL-149 already supplies a working editor
 for root/ and correctly owned site-level files; do not implement it twice.
@@ -47,3 +47,43 @@ focused editing/persistence checks, and obtain local visual approval.
 ## Dependencies
 
 BL-149 Separate Site And Root Page and BL-150 Theme Inheritance And Explicit Preset Replacement.
+
+## Implementation And Focused Review — 2026-09-29
+
+Implemented and locally approved by the owner on 2026-09-29 before commit.
+
+The only production caller of `readSiteFileTree` was the VS Code adapter, which
+already selected the editing projection. The other projection was exercised
+only by engine tests. Removed that duplicate traversal and moved its resource,
+ownership and read-only assertions onto the shared projection. Kept the logical
+page API and extension capability checks for engines that expose only that API.
+The older `editing` request flag remains in the adapter for engines that need it.
+
+The engine now supplies concise preset/source help through its existing theme
+resolver; the extension displays it in page and theme hovers. Theme-file help
+distinguishes modifications, explicit replacement and the required root base.
+Optional-theme removal previews the resumed tree theme and preset, includes
+dirty ancestor sources, and invalidates a pending plan when that displayed
+inheritance changes. Invalid sources remain repairable and never show a stale
+resolved preset. No new theme editor or field-by-field inspector was added.
+
+Verification:
+
+- `npm run test:editor-language` passed engine and extension contracts. The
+  final adapter-only follow-up passed after clearing stale help on reused rows.
+- Added engine cases for inherited modifications, explicit and same-preset
+  replacement, page-only scope, dirty ancestors, invalid themes, protected root
+  files and inheritance after optional removal.
+- `npm run test:documentation`, `npm run test:dead-code` and VSIX packaging passed.
+- VS Code 1.138.0, Default profile, extension 0.9.1: inspected the theme hover and
+  native removal confirmation; cancelled without deleting a file. Accepted
+  `narrow` and `statement` from the real suggestion widget, checked Undo and
+  save/reopen separately, and restored all test files to their fixture bytes.
+  Local evidence is in `.local/bl-151/native/`.
+- A direct read of the maintained documentation tree returned 76 pages and 129
+  entries without structural problems in about 343 ms on the review machine.
+
+Updated the extension README/changelog, public editor reference, contributor
+API notes and the focused editor test plan. Remaining richer theme-creation
+choices and effective-value inspection belong to BL-136 VS Code Local Theme
+Creation And Removal.

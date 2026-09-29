@@ -182,13 +182,24 @@ The homepage must be marked **Homepage**, and its page label must open the root
 `content.md`; there is no separate content row. Directory labels must leave
 the editor and expansion unchanged. Site configuration and public files appear
 as siblings before the homepage. Within every page, images appear first,
-followed by its optional theme and child pages. Verify `root/content.md` opens
+followed by tree-theme.yaml, page-theme.yaml and child pages when present.
+Verify `root/content.md` opens
 from the homepage label, with no `root` segment added to public URLs.
 Verify the configuration icon, initial expansion, and remembered collapse after
 refresh/reload even while one of its files is active. Check Add on a leaf:
 child-page creation, image import, cancellation without creating directories,
 and the shorter category menu. Keep the beginner exercise to one site; use a separate workspace
 for multi-site scenarios.
+
+For theme-help changes, use the theme-inheritance fixture in a disposable copy.
+Compare page and theme-file hovers for inherited modifications, explicit
+replacement, replacement with the same preset, and a page-only replacement
+whose child keeps the branch preset. Edit an ancestor without saving and check
+that help updates; invalid themes must not leave an old preset displayed.
+Preview removal of an optional theme and check the resumed source/preset before
+cancelling. The required root tree theme must have no removal action. When
+theme editing or completion changes, accept suggestions from the native widget
+for both modifications and replacement, then verify Undo and save/reopen.
 
 The engine's file projection and the extension adapter also have focused
 deterministic checks. They cover source ownership, real/absent directories,

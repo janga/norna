@@ -118,7 +118,7 @@ function registerSiteTree(context, output) {
 			if (site.fileTree) {
 				const entries = snapshot.items.filter((entry) => !(entry.kind === 'file' && entry.role === 'content' && entry.ownerId === entry.sourcePath));
 				for (const entry of entries) {
-					const node = Object.assign(previous.get(entry.id) ?? {}, { issues: [], problem: null, note: undefined, missingSource: false }, entry, { siteRoot: site.siteRoot, children: [] });
+					const node = Object.assign(previous.get(entry.id) ?? {}, { issues: [], problem: null, note: undefined, themeHelp: undefined, missingSource: false }, entry, { siteRoot: site.siteRoot, children: [] });
 					nodes.set(node.id, node);
 				}
 				for (const entry of entries) {
@@ -202,7 +202,7 @@ function registerSiteTree(context, output) {
 				item.command = { command: 'nornaEditor.selectSiteGroup', title: 'Select' };
 			} else if (node.sourcePath) {
 				item.tooltip = [node.kind === 'page' ? node.listChildren ? 'Open page content. This page automatically lists its direct child pages.' : 'Open page content' : node.kind === 'incomplete' ? 'Add the missing source file' : node.title,
-					node.description, node.sourcePath, problemHelp].filter(Boolean).join('\n');
+					node.description, node.sourcePath, node.themeHelp, problemHelp].filter(Boolean).join('\n');
 				item.resourceUri = vscode.Uri.file(node.sourcePath);
 				item.command = { command: node.kind === 'incomplete' ? 'nornaEditor.addToPage' : 'nornaEditor.openSiteNode', title: node.kind === 'incomplete' ? 'Repair Source' : 'Open Source', arguments: [node] };
 			}

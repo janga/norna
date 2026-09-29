@@ -61,6 +61,15 @@ the physical source layout. The settings folder starts expanded and remembers
 subsequent choices. Hover explains theme scope and what belongs in `public/`.
 A leaf has no chevron unless it has visible details, including an empty folder.
 
+Hover over a page to see its active preset and the file that selected it.
+Hover over a theme file to see whether it modifies inherited settings or
+replaces them with a preset, even when that preset has the same name. Tree-theme
+help describes the branch; page-theme help describes only that page. These
+values include unsaved theme edits. Errors show that the preset is unavailable
+until the theme is repaired. Removing an optional theme previews the inherited
+tree theme and preset that resume; page-only overrides and independent presets
+farther down the tree keep their respective scopes.
+
 A page's **+** offers child-page creation, image import and missing supported
 source files. It works without `pages/` or `images/`; the chosen operation
 creates the directory when needed. The settings folder's **+** also exposes

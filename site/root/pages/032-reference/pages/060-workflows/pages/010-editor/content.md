@@ -126,8 +126,14 @@ the initial site appearance and requires a preset. A branch's `tree-theme.yaml`
 modifies inherited values or explicitly chooses a new preset for that branch.
 Optional `page-theme.yaml` can appear beside any page, including the homepage;
 it affects only that page. See
-[theme scope](/reference/configuration/theme/#page-themes). Hover over `tree-theme.yaml`
-for a reminder of its scope. Every page has `content.md`; a page with a generated
+[theme scope](/reference/configuration/theme/#page-themes). Hover over a page to
+see its active preset and the source file that selected it. Hover over a theme
+file to see its scope and whether it modifies inherited settings or starts a
+new base. An explicit preset starts a new base even when its name matches the
+inherited preset; remove that key to resume inheritance. Tree-theme help shows
+the branch's preset; page-theme help includes the page-only changes. Help
+reflects unsaved theme edits and reports when errors prevent resolving the preset.
+Every page has `content.md`; a page with a generated
 child list uses `page.listChildren: true` in that file.
 
 Page titles open their content. Directory
@@ -324,12 +330,16 @@ Images retain their [image actions](#add-and-use-page-images).
 Review the path and effect before confirming. Removing a homepage theme
 returns that page to the shared site theme. Removing a branch theme restores
 inherited settings for that branch; descendants keep their own overrides.
+The confirmation names the inherited tree-theme file, its preset and the file
+that selected that preset. A page-only theme still affects only its page;
+a descendant's explicit preset continues to provide an independent base.
+If errors in the remaining themes prevent this preview, the confirmation says so.
 Removing shared content removes its authored notices, footer content and logo
 display settings. Public-file removal shows known page links, but references
 in configuration or outside page content are not checked.
 
-Required site settings and page/category source files cannot be removed
-separately through Site Tree. To remove a content page, use its grouping row's
+Required site settings, the root tree theme and page content cannot be removed
+separately through Site Tree. To remove a page, use its page row's
 actions instead. Save or undo dirty edits in the file first. Files go to the
 operating system's Trash and can be restored there.
 

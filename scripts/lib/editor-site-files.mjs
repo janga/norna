@@ -5,6 +5,7 @@ import { parsePageMarkdownSource } from './page-markdown.mjs';
 import { getSiteStructure } from './site-structure.mjs';
 import { getEditorIncomingLinks } from './editor-site-links.mjs';
 import { editorFileRemovalPolicy } from './editor-file-policy.mjs';
+import { getEditorThemeRemovalHelp } from './editor-theme-help.mjs';
 
 export const siteFileOperationsApiVersion = 1;
 export const siteRemovalApiVersion = 1;
@@ -108,13 +109,15 @@ export const planEditorRemoval = async ({ siteRoot, sourcePath, imagePath, fileP
 		: !filePath || policy.kind === 'public' ? await getEditorIncomingLinks({ siteRoot, sourcePath, sources,
 			descendants: !filePath, excludeBranch: !filePath, filePath }) : null;
 	const files = await snapshot(filename);
-	return { target: filename, recursive: !imagePath && !filePath, effect: policy?.effect,
+	const effect = policy?.kind === 'theme'
+		? `${policy.effect}\n\n${await getEditorThemeRemovalHelp({ siteRoot, filename, sources })}` : policy?.effect;
+	return { target: filename, recursive: !imagePath && !filePath, effect,
 		files: files.filter(([, kind]) => kind === 'file').map(([relative]) => relative || path.basename(filename)),
 		pages: imagePath || filePath ? 0 : target.structure.nodes.filter((node) => {
 			const relative = path.relative(filename, node.contentPath ?? node.categoryPath);
 			return relative !== '..' && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
 		}).length,
-		usage, fingerprint: JSON.stringify([files, usage]) };
+		usage, fingerprint: JSON.stringify([files, usage, effect]) };
 };
 
 export const createEditorImageAppend = async ({ source, filename, alt, caption = '' }) => {

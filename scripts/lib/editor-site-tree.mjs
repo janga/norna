@@ -1,5 +1,4 @@
-import { getSourceFileDefinition } from './source-files.mjs';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { isMap, isScalar, isSeq, parseDocument } from 'yaml';
 import { getMarkdownHeadings, slugifyAsciiIdentifier } from './heading-ids.mjs';
@@ -10,7 +9,6 @@ import { getSiteSourcePaths, homePageDirectory } from './site-conventions.mjs';
 import { createSiteNode, escapeMarkdownHeading, planSiteNodeCreation } from './site-node-create.mjs';
 import { getSiteStructure } from './site-structure.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
-import { editorFileRemovalPolicy } from './editor-file-policy.mjs';
 import { readEditorLinkState } from './editor-site-links.mjs';
 import { readSiteEditingTree } from './editor-site-editing-tree.mjs';
 
@@ -91,77 +89,14 @@ export const readSiteTree = async ({ siteRoot, sources = new Map(), cache = new 
 	return { nodes, problems: structure.problems };
 };
 
-// Keep the logical page API compatible with older extensions. This optional
-// projection supplies physical resource locations without deriving new URLs.
+// One physical projection preserves resources and repairable entries even when
+// the logical structure cannot be read. The logical page API remains separate.
 export const readSiteFileTree = async (options) => {
 	const siteRoot = path.resolve(options.siteRoot);
-	const snapshot = await readSiteTree({ ...options, siteRoot }).catch((error) => {
-		if (!options.editing) throw error;
-		return { nodes: [], problems: [{ path: siteRoot, message: error.message }] };
-	});
-	if (options.editing) return readSiteEditingTree({ ...options, siteRoot, snapshot, getInformation: getSiteNodeInformation });
-	const home = snapshot.nodes.find((node) => node.isHome);
-	const items = [];
-	const problems = [...snapshot.problems];
-	if (!home || home.sourcePath !== getSiteSourcePaths(siteRoot).content) return { ...snapshot, items: null };
-	const resourceId = (filename) => `resource:${filename}`;
-	const entriesAt = async (directory) => {
-		try { return await readdir(directory, { withFileTypes: true }); }
-		catch (error) {
-			if (error.code !== 'ENOENT') problems.push({ path: directory, message: `Cannot read ${directory}: ${error.message}` });
-			return [];
-		}
-	};
-	const addResource = (owner, parentId, filename, kind, role, description = '') => {
-		const item = { id: resourceId(filename), parentId, ownerId: owner.sourcePath,
-			kind, role, sourcePath: filename, title: path.basename(filename), description };
-		if (kind === 'file') item.removable = Boolean(editorFileRemovalPolicy({ siteRoot, sourcePath: owner.sourcePath, filePath: filename }));
-		if (kind === 'file' && filename === owner.sourcePath) item.description += owner.isHome
-			? '. Required homepage content; the homepage cannot be removed.' : '. Required for this entry; remove the whole page or category through its actions menu.';
-		const definition = getSourceFileDefinition(siteRoot, filename);
-		if (kind === 'file' && definition?.required && definition.schemaKind !== 'contentFrontmatter') {
-			item.description = `${definition.description} This file cannot be removed through Site Tree.`;
-		}
-		items.push(item);
-		return item;
-	};
-	const addDirectory = async (owner, parentId, filename, role) => {
-		const description = role === 'configuration' ? 'Settings and content shared by the complete site'
-			: role === 'public' ? 'Files published unchanged with the site, such as robots.txt and icons.' : '';
-		const directory = addResource(owner, parentId, filename, 'directory', role, description);
-		if (role === 'pages') return;
-		const entries = (await entriesAt(filename)).filter((entry) => entry.isDirectory() || entry.isFile());
-		const configOrder = ['settings.yaml', 'shared-content.yaml'];
-		entries.sort((a, b) => role === 'configuration'
-			? (configOrder.includes(a.name) ? configOrder.indexOf(a.name) : 3) - (configOrder.includes(b.name) ? configOrder.indexOf(b.name) : 3) || a.name.localeCompare(b.name)
-			: Number(b.isDirectory()) - Number(a.isDirectory()) || a.name.localeCompare(b.name, 'en', { numeric: true }));
-		for (const entry of entries) {
-			const child = path.join(filename, entry.name);
-			if (entry.isDirectory()) await addDirectory(owner, directory.id, child, 'assets');
-			else addResource(owner, directory.id, child, 'file', role === 'configuration' ? 'configuration' : 'asset');
-		}
-	};
-	for (const name of ['site-config', 'public']) {
-		if ((await entriesAt(siteRoot)).some((entry) => entry.name === name && entry.isDirectory())) await addDirectory(home, null, path.join(siteRoot, name), name === 'site-config' ? 'configuration' : 'public');
-	}
-	for (const page of snapshot.nodes) {
-		const directory = path.dirname(page.sourcePath);
-		const parentId = page.isHome ? null : resourceId(path.dirname(directory));
-		items.push({ ...page, id: page.sourcePath, parentId, ownerId: page.sourcePath });
-		const entries = new Map((await entriesAt(directory)).map((entry) => [entry.name, entry]));
-		const addExistingDirectory = async (name) => {
-			if (entries.get(name)?.isDirectory()) await addDirectory(page, page.sourcePath, path.join(directory, name), name === 'site-config' ? 'configuration' : name);
-		};
-		await addExistingDirectory('images');
-		const configuration = ['tree-theme.yaml', 'page-theme.yaml', 'content.md'];
-		for (const filename of configuration) {
-			if (!entries.get(filename)?.isFile()) continue;
-			const description = getSourceFileDefinition(siteRoot, path.join(directory, filename))?.description ?? 'Page content';
-			addResource(page, page.sourcePath, path.join(directory, filename), 'file', filename === 'content.md' ? 'content' : 'configuration', description);
-		}
-		for (const name of ['pages']) await addExistingDirectory(name);
-	}
-	return { ...snapshot, items, problems };
+	const snapshot = await readSiteTree({ ...options, siteRoot }).catch((error) => ({
+		nodes: [], problems: [{ path: siteRoot, message: error.message }],
+	}));
+	return readSiteEditingTree({ ...options, siteRoot, snapshot, getInformation: getSiteNodeInformation });
 };
 
 const collectComments = (token, start, end, comments = []) => {

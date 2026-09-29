@@ -3,6 +3,7 @@ import './test-editor-block-completions.mjs';
 import './test-editor-image-usage.mjs';
 import './test-editor-site-tree.mjs';
 import './test-editor-source-files.mjs';
+import './test-editor-theme-help.mjs';
 import './test-editor-page-form.mjs';
 import './test-editor-site-files.mjs';
 import './test-editor-page-addresses.mjs';

@@ -7,6 +7,7 @@ import { parseYamlConfig } from './yaml-config.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
 import { sourceFileDefinitions } from './source-files.mjs';
 import { getThemeDiagnostics } from './editor-language-service.mjs';
+import { createEditorThemeHelp } from './editor-theme-help.mjs';
 
 const excluded = new Set(['.norna', '.git', '.DS_Store', 'node_modules', 'dist', '.vscode-test']);
 const knownNames = new Set([...sourceFileDefinitions.map((entry) => entry.name), 'category.yaml', 'theme.yaml', 'site-theme.yaml']);
@@ -14,10 +15,11 @@ const resourceId = (filename) => `resource:${filename}`;
 
 // The physical traversal retains damaged entries that the logical page model
 // cannot route. It reuses source schemas and page-path rules, without changing
-// build validation or the older file-tree projection.
+// build validation.
 export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snapshot, getInformation }) => {
 	siteRoot = path.resolve(siteRoot);
 	const items = [];
+	const themeHelp = createEditorThemeHelp({ siteRoot, sources });
 	const byDirectory = new Map(snapshot.nodes.map((node) => [path.dirname(node.sourcePath), node]));
 	const read = (filename) => sources.has(filename) ? sources.get(filename) : readFile(filename, 'utf8');
 	const entriesAt = async (directory) => (await readdir(directory, { withFileTypes: true }))
@@ -68,6 +70,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 				directory, title: information.title ?? (location.isHome ? path.basename(siteRoot) : location.pageId),
 				url: location.isHome ? '/' : `/${location.pagePath}/`, missingSource: kind === 'incomplete' };
 			items.push(container);
+			if (kind === 'page') container.themeHelp = await themeHelp(directory);
 			if (information.problem) issue(container, information.problem);
 			if (kind !== 'incomplete') await validate(container);
 			else issue(container, location.isHome ? 'Homepage content.md is missing. Use Add to create it.'
@@ -108,6 +111,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 				title: entry.name, role: definition ? 'configuration' : 'asset', description: definition?.description ?? '',
 				removable: Boolean(editorFileRemovalPolicy({ siteRoot, sourcePath: owner.sourcePath, filePath: filename })) };
 			items.push(file);
+			if (['rootTheme', 'theme', 'pageTheme'].includes(definition?.schemaKind)) file.themeHelp = await themeHelp(directory, filename);
 			if (definition) await validate(file);
 			else if (role !== 'public' && ['site-config', 'public', 'pages', 'images'].includes(entry.name)) issue(file, `Expected a directory named ${entry.name}, but this is a file. Rename or move this file through Explorer before creating the directory.`, 'warning');
 			else if (role !== 'public' && entry.name === 'category.yaml') issue(file, 'category.yaml is no longer supported. Create content.md with page.listChildren: true, then remove this file.', 'warning');

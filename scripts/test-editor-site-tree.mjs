@@ -123,9 +123,9 @@ try {
 	const childrenOf = (id) => files.items.filter((item) => item.parentId === id);
 	const home = path.join(firstSite, 'root/content.md');
 	assert.deepEqual(files.items.filter((item) => item.parentId === null).map((item) => item.sourcePath), [path.join(firstSite, 'site-config'), path.join(firstSite, 'public'), home], 'Site files and the root page are siblings.');
-	assert.deepEqual(childrenOf(home).map((item) => item.title), ['images', 'tree-theme.yaml', 'page-theme.yaml', 'content.md', 'pages']);
-	assert.deepEqual(childrenOf(page).map((item) => item.title), ['images', 'tree-theme.yaml', 'content.md'], 'A leaf must not gain a fictional pages directory.');
-	assert.deepEqual(childrenOf(overview).map((item) => item.title), ['tree-theme.yaml', 'content.md', 'pages']);
+	assert.deepEqual(childrenOf(home).map((item) => item.title), ['images', 'tree-theme.yaml', 'page-theme.yaml', 'pages']);
+	assert.deepEqual(childrenOf(page).map((item) => item.title), ['images', 'tree-theme.yaml'], 'A leaf must not gain a fictional pages directory.');
+	assert.deepEqual(childrenOf(overview).map((item) => item.title), ['tree-theme.yaml', 'pages']);
 	assert.equal(files.items.find((item) => item.id === page).parentId, resourceId('root/pages'));
 	assert.equal(files.items.find((item) => item.id === child).parentId, resourceId('root/pages/020-topics/pages'));
 	assert.equal(at('root/pages/020-topics/pages/010-child/images/shared.svg').ownerId, child);
@@ -135,7 +135,9 @@ try {
 	assert.equal(at('public/empty').kind, 'directory');
 	assert.equal(at('public/outside'), undefined, 'Do not follow symbolic links outside the displayed source tree.');
 	assert.equal(at('.norna/public/generated.svg'), undefined);
-	assert.equal(at('root/content.md').parentId, home, 'The source file is visible directly under its page.');
+	assert.equal(at('root/content.md'), undefined, 'The page row opens content.md without a duplicate source row.');
+	assert.equal(at('site-config/settings.yaml').ownerId, firstSite);
+	assert.equal(at('public/icons/icon.svg').ownerId, firstSite);
 	assert.deepEqual(childrenOf(resourceId('site-config')).map((item) => item.title), ['settings.yaml', 'shared-content.yaml']);
 	assert.equal(at('root/tree-theme.yaml').ownerId, home);
 	assert.equal(files.items.find((item) => item.id === page).title, 'Unsaved title');
@@ -161,7 +163,7 @@ try {
 	await write(overview, '---\npage: [broken\n---\n# Topics\n');
 	const brokenFiles = await readSiteFileTree({ siteRoot: firstSite });
 	assert.ok(brokenFiles.items.find((item) => item.id === overview).problem);
-	assert.ok(brokenFiles.items.find((item) => item.id === resourceId('root/pages/020-topics/content.md')));
+	assert.ok(brokenFiles.items.find((item) => item.id === overview).issues.length, 'Broken content remains openable through its page row.');
 	assert.ok(brokenFiles.items.find((item) => item.id === child));
 	await write(overview, '# Topics\n');
 	assert.equal((await readSiteFileTree({ siteRoot: firstSite })).items.find((item) => item.id === overview).problem, null);
@@ -170,7 +172,7 @@ try {
 	await write(path.join(emptySite, 'site-config/settings.yaml'), 'url: https://example.com/\n');
 	await mkdir(path.join(emptySite, 'root/pages'));
 	const empty = await readSiteFileTree({ siteRoot: emptySite });
-	assert.deepEqual(empty.items.map((item) => item.title), ['site-config', 'settings.yaml', 'Empty', 'content.md', 'pages']);
+	assert.deepEqual(empty.items.map((item) => item.title), ['site-config', 'settings.yaml', 'Empty', 'pages']);
 	console.log('Site tree engine tests passed: metadata, dirty overlays, isolated roots, malformed nodes, physical files, themes, public resources, read-only browsing, refresh and creation.');
 } finally {
 	await rm(root, { recursive: true, force: true });
