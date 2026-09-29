@@ -18,6 +18,14 @@ existing presets, palette/typography/image resolution, schemas and rendering.
 Share theme selection/resolution between its consumers and remove remaining
 assumptions of global visual identity. No preset redesign or theme editor.
 
+As approved in the follow-up review of BL-149, consolidate the engine's source
+file definitions when introducing the new theme files: permitted locations,
+required status, schema, creation template and scope. Reuse these definitions
+for editor classification, creation and removal instead of adding another set
+of filename checks. Keep initial project discovery small; expose the selected
+engine's rules through metadata or its editor API once the engine is located.
+Do not build a general file-type framework or duplicate this work in BL-151.
+
 Update our own themes with a bounded conversion where useful; no general
 historical converter. Verify theme selection, full replacement, local isolation,
 navigation between differently themed pages, and generated pages. Update
