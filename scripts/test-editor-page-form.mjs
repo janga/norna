@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, writeFile, readFile, rm, readdir } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { planSiteNodeCreation, createSiteNode, getSiteNodeInformation } from './lib/editor-site-tree.mjs';
+const root = await mkdtemp(path.join(os.tmpdir(), 'norna-page-form-'));
+const write = async (file, text) => { await mkdir(path.dirname(path.join(root,file)), {recursive:true}); await writeFile(path.join(root,file),text); };
+try {
+ await write('content.md','# Home\n');
+ await write('site-config/settings.yaml','url: https://example.com/\n');
+ const options={siteRoot:root,kind:'page',title:'Install Norna',slug:'install',metadata:{page:{description:'Start here',aliases:['/old-install/','/setup/'],listChildren:true},navigation:{listed:false}}};
+ const plan=await planSiteNodeCreation(options);
+ assert.deepEqual((await readdir(root)).sort(),['content.md','site-config'],'Preview must not create files');
+ const result=await createSiteNode(plan);
+ const source=await readFile(result.sourcePath,'utf8');
+ const info=await getSiteNodeInformation({source,sourcePath:result.sourcePath,kind:'page',isHome:false});
+ assert.equal(info.problem,null); assert.equal(info.title,'Install Norna'); assert.deepEqual(info.aliases,['/old-install/','/setup/']); assert.equal(info.listed,false); assert.equal(info.listChildren,true); assert.equal(info.description,'Start here');
+ await assert.rejects(planSiteNodeCreation({...options,slug:'other'}),/alias.*conflicts/is);
+ await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['/install/']}}}),/conflicts/);
+ await assert.rejects(planSiteNodeCreation({...options,slug:'setup',metadata:{}}),/already in use/);
+ await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['bad']}}}),/Start and end/);
+ await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['/same/','/same/']}}}),/unique/);
+ await write('public/legacy/index.html','Static');
+ await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['/legacy/']}}}),/conflicts/);
+ const empty=await planSiteNodeCreation({...options,slug:'empty',metadata:{}});
+ const emptyResult=await createSiteNode(empty); assert.match(await readFile(emptyResult.sourcePath,'utf8'),/^# Install Norna/);
+ const pending=await planSiteNodeCreation({...options,slug:'pending',metadata:{page:{aliases:['/new-alias/']}}});
+ await write('pages/035-another/content.md','---\npage:\n  aliases:\n    - /new-alias/\n---\n# Another\n');
+ await assert.rejects(createSiteNode(pending),/conflicts/);
+ const overview=await planSiteNodeCreation({siteRoot:root,kind:'page',title:'Guides',slug:'guides',metadata:{page:{listChildren:true,description:'Useful guides'}}});
+ const overviewResult=await createSiteNode(overview); assert.match(await readFile(overviewResult.sourcePath,'utf8'),/listChildren: true/);
+ console.log('Page form creation passed: metadata, aliases, conflicts, previews and stale plans.');
+} finally { await rm(root,{recursive:true,force:true}); }

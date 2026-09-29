@@ -1,13 +1,11 @@
 import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { categorySchema } from './schema-definitions.mjs';
 import { parsePageDirectoryPath } from './page-model.mjs';
 import {
 	homePageDirectory,
 	siteDir as defaultSiteDir,
 	siteDirLabel as defaultSiteDirLabel,
 } from './site-paths.mjs';
-import { parseYamlConfig } from './yaml-config.mjs';
 
 const fileExists = async (filePath) => access(filePath).then(() => true, () => false);
 
@@ -56,11 +54,6 @@ const assertUniqueSiblings = (nodes, pagesLabel) => {
 		}
 		byOrder.set(node.pageOrder, node);
 	}
-};
-
-const readCategory = async (categoryPath, categorySourceLabel, readSource) => {
-	const source = await readSource(categoryPath);
-	return parseYamlConfig(source, categorySourceLabel, { schema: categorySchema });
 };
 
 // Editors can inspect several sites in one process and retain malformed nodes
@@ -116,47 +109,28 @@ export const getSiteStructure = async ({
 				continue;
 			}
 
-			if (hasContent === hasCategory) {
-				const problem = hasContent
-					? 'contains both content.md and category.yaml'
-					: 'contains neither content.md nor category.yaml';
-				report(new Error(`${nodeLabel} ${problem}. Keep exactly one: content.md for a page, or category.yaml for a navigation category.`));
-				if (!hasContent) continue;
+			if (hasCategory) report(new Error(`${nodeLabel}/category.yaml is no longer supported. Create content.md with an H1 and page.listChildren: true instead.`));
+			if (!hasContent) {
+				report(new Error(`${nodeLabel} has no content.md. Every page directory needs a content.md file.`));
+				continue;
 			}
 
 			const node = {
 				...metadata,
 				isHome: false,
-				kind: hasCategory ? 'category' : 'page',
+				kind: 'page',
 				nodeDir,
 				nodeLabel,
 				pagePath: metadata.pagePath,
 				parentPagePath: metadata.parentPagePath,
 			};
 
-			if (hasCategory) {
-				if (await fileExists(path.join(nodeDir, 'images'))) {
-					report(new Error(`${nodeLabel} is a navigation category and cannot contain images/. Use content.md when the collection needs editorial content or images.`), node);
-				}
-				Object.assign(node, {
-					categorySourceLabel: `${nodeLabel}/category.yaml`,
-					categoryPath,
-					label: metadata.pageId,
-				});
-				try {
-					const category = await readCategory(categoryPath, node.categorySourceLabel, readSource);
-					Object.assign(node, { label: category.label, description: category.description });
-				} catch (error) {
-					report(error, node);
-				}
-			} else {
-				Object.assign(node, {
-					contentLabel: `${nodeLabel}/content.md`,
-					contentPath,
-					imagesDir: path.join(nodeDir, 'images'),
-					imagesLabel: `${nodeLabel}/images`,
-				});
-			}
+			Object.assign(node, {
+				contentLabel: `${nodeLabel}/content.md`,
+				contentPath,
+				imagesDir: path.join(nodeDir, 'images'),
+				imagesLabel: `${nodeLabel}/images`,
+			});
 
 			siblingNodes.push(node);
 		}
@@ -171,14 +145,6 @@ export const getSiteStructure = async ({
 			nodes.push(node);
 			const childPagesDir = path.join(node.nodeDir, 'pages');
 			const childDirectories = (await readDirectory(childPagesDir)).filter((entry) => entry.isDirectory());
-
-			if (node.kind === 'category' && childDirectories.length === 0) {
-				warnings.push({
-					code: 'empty-category',
-					label: node.categorySourceLabel,
-					message: `${node.categorySourceLabel} defines an empty navigation category. Add at least one child page under ${node.nodeLabel}/pages/.`,
-				});
-			}
 
 			if (childDirectories.length > 0) {
 				await collectNodes(childPagesDir, `${node.nodeLabel}/pages`, node.pageDirectory);

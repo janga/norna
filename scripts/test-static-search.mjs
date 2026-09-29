@@ -50,7 +50,7 @@ search: true
 `);
 	const nestedPageDir = path.join(siteDir, 'pages', '010-guides', 'pages', '010-installation');
 	await mkdir(nestedPageDir, { recursive: true });
-	await writeFile(path.join(siteDir, 'pages', '010-guides', 'category.yaml'), 'label: Guides\n');
+	await writeFile(path.join(siteDir, 'pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 	await writeFile(path.join(nestedPageDir, 'content.md'), `# Installation
 
 ## Verify {#verify}
@@ -59,7 +59,7 @@ This nested section contains the unique term amberotter.
 `);
 
 	const enabledBuild = await runSite(siteDir, 'build');
-	assert.match(enabledBuild.stdout, /Generated static search index for 2 pages\./);
+	assert.match(enabledBuild.stdout, /Generated static search index for 3 pages\./);
 
 	const homeHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
 	const nestedHtml = await readFile(path.join(distDir, 'guides', 'installation', 'index.html'), 'utf8');
@@ -86,7 +86,7 @@ This nested section contains the unique term amberotter.
 	assert.match(searchHtml, /translations: \{"placeholder":"Търсене"/);
 	assert.doesNotMatch(searchHtml, /translations: \{"language":/);
 	assert.match(searchHtml, /aria-current="page" aria-label="Търсене"/);
-	assert.deepEqual(searchDocuments.map(({ url }) => url).sort(), ['/', '/guides/installation/']);
+	assert.deepEqual(searchDocuments.map(({ url }) => url).sort(), ['/', '/guides/', '/guides/installation/']);
 	assert.equal(searchDocuments.some(({ content }) => content.includes('кобалтовязовец')), true);
 	assert.equal(searchDocuments.some(({ content }) => content.includes('amberotter')), true);
 	assert.equal(searchDocuments.some(({ content }) => content.includes('Страницата не е намерена')), false);

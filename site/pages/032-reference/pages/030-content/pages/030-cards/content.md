@@ -15,7 +15,7 @@ items:
     text: Find the source files to edit and generated files to leave alone.
     link: /reference/site/files/
   - title: Page structure
-    text: Choose pages and categories for a hierarchy.
+    text: Choose pages for a hierarchy.
     link: /reference/site/pages/
 ```
 ````
@@ -26,7 +26,7 @@ items:
     text: Find the source files to edit and generated files to leave alone.
     link: /reference/site/files/
   - title: Page structure
-    text: Choose pages and categories for a hierarchy.
+    text: Choose pages for a hierarchy.
     link: /reference/site/pages/
 ```
 

@@ -16,7 +16,7 @@ accessibility of an authored site.
 | --- | --- | --- |
 | Prose, headings, cards and page lists | Rendered content and links | None required |
 | Page links and anchors | Native links and browser history | Sticky-offset coordination, reading-position restoration and compact-menu closing |
-| Categories and aliases | HTML redirects or generated destination lists | Ordinary site enhancements are independent |
+| Page aliases | HTML redirects | Ordinary site enhancements are independent |
 | Navigation | Page/heading links and native disclosures | Area-menu hover, saved branch choices, active-section tracking, outline following and tree controls |
 | Image stacks | Responsive images, alt text, captions and original-image links | Modal inspection and persistent side captions |
 | Image carousels | Source images and captions remain in HTML | Slide switching, controls and touch dragging |

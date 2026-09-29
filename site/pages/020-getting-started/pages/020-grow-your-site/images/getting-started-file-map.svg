@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="19 23 722 1104" role="img" aria-labelledby="title desc">
   <title id="title">Getting Started files mapped to the rendered documentation</title>
-  <desc id="desc">The actual Norna documentation file tree is shown above the corresponding Getting Started navigation and Grow Your Site page. The 020-getting-started category directory maps to the Getting Started navigation group. Its numbered child directories map in order to Install Norna, Choose A Theme, Grow Your Site, Prepare Your Site, and Build And Publish. The highlighted 020-grow-your-site content file maps to the current Grow Your Site page and its section links.</desc>
+  <desc id="desc">The actual Norna documentation file tree is shown above the corresponding Getting Started navigation and Grow Your Site page. The 020-getting-started parent page maps to the Getting Started navigation group. Its numbered child directories map in order to Install Norna, Choose A Theme, Grow Your Site, Prepare Your Site, and Build And Publish. The highlighted 020-grow-your-site content file maps to the current Grow Your Site page and its section links.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
       <path d="M1 1 L9 5 L1 9" fill="none" stroke="#8a625f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -33,7 +33,7 @@
       <text x="44" y="107">├── content.md</text>
       <text x="44" y="128">└── pages/</text>
       <text class="category" x="44" y="149">&#160;&#160;&#160;&#160;├── 020-getting-started/</text>
-      <text x="44" y="170">&#160;&#160;&#160;&#160;│   ├── category.yaml</text>
+      <text x="44" y="170">&#160;&#160;&#160;&#160;│   ├── content.md</text>
       <text x="44" y="191">&#160;&#160;&#160;&#160;│   └── pages/</text>
       <text x="44" y="212">&#160;&#160;&#160;&#160;│       ├── 010-install-norna/</text>
       <text x="44" y="233">&#160;&#160;&#160;&#160;│       │   └── content.md</text>

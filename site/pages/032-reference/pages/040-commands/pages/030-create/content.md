@@ -1,13 +1,12 @@
 ---
 page:
-  description: Add a page or category with predictable parent selection, folder naming and preview controls.
+  description: Add a page with predictable parent selection, folder naming and preview controls.
 ---
 
-# Page and category creation
+# Page creation
 
-`page:add` creates `content.md` and an empty `images/` folder. `category:add`
-creates `category.yaml` and an empty `pages/` folder. Both **write immediately**;
-add `--dry-run` to inspect the destination first.
+`page:add` creates `content.md` and an empty `images/` folder. It **writes
+immediately**; add `--dry-run` to inspect the destination first.
 
 ```sh
 npm exec -- norna page:add "About" --parent / --dry-run
@@ -16,30 +15,29 @@ npm exec -- norna page:add "About" --parent /
 
 ## Choose the parent
 
-`--parent /` creates a child of the homepage in the site root's `pages/` folder. A logical page or category path, such as
-`--parent /guides/`, chooses an existing node. These are site paths without
+`--parent /` creates a child of the homepage in the site root's `pages/` folder. A page path, such as
+`--parent /guides/`, chooses an existing page. These are site paths without
 the deployment prefix, numeric folder prefixes, queries or fragments.
 
 Without `--parent`, the invocation directory must be exactly the selected
-site root, its `pages/` directory or an existing page/category directory. Norna
+site root, its `pages/` directory or an existing page directory. Norna
 refuses to guess from the project root or a page's `images/` folder.
 
 ```sh
-npm exec -- norna category:add "Guides" --parent /
+npm exec -- norna page:add "Guides" --parent /
 npm exec -- norna page:add "Installation" --parent /guides/
 ```
 
-Add listed content to a new category before building. Its generated URL
-destination follows the [category rule](/reference/site/pages/#opening-a-category-url).
+To make an overview, set `page.listChildren: true` in the parent page's
+`content.md`. See [List child pages](/reference/site/pages/#list-child-pages).
 
 ## Names and order
 
 ```text
 norna page:add <title> [--parent <path>] [--slug <slug>] [--order <NNN>] [--dry-run]
-norna category:add <label> [--parent <path>] [--slug <slug>] [--order <NNN>] [--dry-run]
 ```
 
-Titles and labels must be nonempty single-line text. Quote multiword names in
+Titles must be nonempty single-line text. Quote multiword names in
 the shell. The generated slug lowercases and transliterates text to ASCII,
 removes apostrophes and separates other runs with hyphens. Use `--slug` when
 the automatic result is empty or unsuitable. Explicit slugs contain lowercase
@@ -57,7 +55,7 @@ options are rejected; `-h` and `--help` show usage.
 ## Generated content and recovery
 
 A page starts with the escaped title as its H1, an Introduction H2 and short
-placeholder prose. A category stores its label in YAML. Existing siblings are
+placeholder prose. Existing siblings are
 not renumbered or edited. The destination is reserved exclusively; creation
 refuses an existing folder. If writing fails, Norna removes only the entries
 created by that operation.

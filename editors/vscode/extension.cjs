@@ -298,20 +298,17 @@ const getEmptyYamlCompletionItems = async (document) => {
 	const directive = new vscode.SnippetString().appendText(`# yaml-language-server: $schema=${schemaPath}`).value;
 	const presetChoices = getSchemaChoices(resolved.schema.properties?.preset).map(({ value }) => value);
 	const snippets = {
-		category: `${directive}\n\nlabel: \${1:Category label}\n`,
 		config: `${directive}\n\nurl: \${1:https://example.com/}\n`,
 		theme: `${directive}\n\npreset: \${1|${presetChoices.join(',')}|}\n`,
 		sitewideContent: `${directive}\n\nfooter:\n  copyrightMessage: \${1:Copyright owner.}\n`,
 	};
 	if (!snippets[kind]) return [];
 	const labels = {
-		category: 'Norna page category',
 		config: 'Norna site configuration',
 		theme: 'Norna theme',
 		sitewideContent: 'Norna site-wide content',
 	};
 	const documentation = {
-		category: ['Nested pages reference', 'pages.md', 'nested-pages'],
 		config: ['Configuration reference', 'configuration.md'],
 		theme: ['Theme reference', 'theme.md'],
 		sitewideContent: ['Site-wide content reference', 'sitewide-content.md'],

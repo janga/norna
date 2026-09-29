@@ -111,7 +111,7 @@ const nornaGeneratedImagesWatcher = () => ({
 		const scheduleStructureReload = (changedPath) => {
 			if (!isRelevantSourcePath(changedPath)) return;
 			const filename = path.basename(changedPath);
-			if (filename !== 'category.yaml' && filename !== 'theme.yaml') return;
+			if (filename !== 'theme.yaml') return;
 
 			clearTimeout(structureReloadTimer);
 			structureReloadTimer = setTimeout(() => {

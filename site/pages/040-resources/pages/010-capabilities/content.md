@@ -37,8 +37,8 @@ Exact behavior: [Content](/reference/content/markdown/).
 
 - **One page or a deep hierarchy.** The same ordered directory model supports
   a one-page site, independent top-level pages, and nested page trees.
-- **Pages and navigation categories.** A directory can produce a real page or
-  group descendants under a category label with a generated destination.
+- **Pages and generated child lists.** Every directory produces a real page;
+  a parent can append a generated list of its direct children.
 - **Navigation derived from structure.** Norna selects section, top, or tree
   navigation from the page hierarchy and presents the same destinations in a
   consolidated mobile menu.
@@ -53,7 +53,7 @@ Exact behavior: [Content](/reference/content/markdown/).
   collision checks, and static aliases keep links predictable.
 
 Exact behavior:
-[Pages And Categories](/reference/site/pages/)
+[Pages And Child-Page Lists](/reference/site/pages/)
 and [Configuration](/reference/configuration/navigation/).
 
 ## Present images and shared elements {#media}
@@ -106,8 +106,8 @@ Exact behavior: [Theme](/reference/configuration/theme/),
   the first issue.
 - **Checked internal links.** Pages, H2/H3 anchors, aliases, cards, and public
   files share one link graph, including sites published below a base path.
-- **Safe page creation and movement.** Commands create ordered pages and
-  categories. Page moves begin with a dry run, move complete subtrees, update
+- **Safe page creation and movement.** Commands create ordered pages. Page
+  moves begin with a dry run, move complete subtrees, update
   internal references, and preserve old URLs by default.
 - **Read-only structure review.** A command summarizes hierarchy depth, sibling
   groups, page outlines, internal page links, and effective navigation before

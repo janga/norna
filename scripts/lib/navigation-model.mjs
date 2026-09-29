@@ -21,7 +21,7 @@ export const getAutomaticNavigationMode = (nodes) => {
 	const listedNodes = getListedNodes(nodes);
 	if (listedNodes.length <= 1) return 'sections';
 
-	return listedNodes.some((node) => node.kind === 'category' || getNodeDepth(node) > 1)
+	return listedNodes.some((node) => getNodeDepth(node) > 1)
 		? 'tree'
 		: 'top';
 };
@@ -29,10 +29,6 @@ export const getAutomaticNavigationMode = (nodes) => {
 export const resolveNavigationModel = ({ mode = 'automatic', nodes }) => {
 	const requestedMode = assertNavigationMode(mode);
 	const listedNodes = getListedNodes(nodes);
-	const hasCategories = listedNodes.some((node) => node.kind === 'category');
-	if (hasCategories && requestedMode !== 'automatic' && requestedMode !== 'tree') {
-		throw new Error(`Navigation categories require tree navigation. Remove navigation.mode: ${requestedMode}, or set navigation.mode: tree.`);
-	}
 	const maximumDepth = listedNodes.reduce((maximum, node) => (
 		Math.max(maximum, getNodeDepth(node))
 	), 1);
@@ -44,7 +40,7 @@ export const resolveNavigationModel = ({ mode = 'automatic', nodes }) => {
 			: requestedMode,
 		requestedMode,
 		listedNodeCount: listedNodes.length,
-		hasCategories,
+		hasCategories: false,
 		hasNestedPages,
 		maximumDepth,
 	});

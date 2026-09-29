@@ -9,9 +9,18 @@
           "description": "Page description used in metadata, social previews and generated child-page lists.",
           "type": "string",
           "minLength": 1,
-          "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nA page-specific description used in metadata and social previews. Generated child-page and category lists can show it beside the page title; it is not inserted into the page body.\n\n[Page title and frontmatter reference (current)](https://janga.github.io/norna/reference/site/metadata/)\n\n[Norna 0.7.27 source reference](https://github.com/janga/norna/blob/v0.7.27/site/pages/032-reference/pages/010-site/pages/040-metadata/content.md)",
+          "markdownDescription": "```yaml\npage:\n  description: About this project.\n```\n\nA page-specific description used in metadata and social previews. Generated child-page lists can show it beside the page title; it is not inserted into the page body.\n\n[Page title and frontmatter reference (current)](https://janga.github.io/norna/reference/site/metadata/)\n\n[Norna 0.7.27 source reference](https://github.com/janga/norna/blob/v0.7.27/site/pages/032-reference/pages/010-site/pages/040-metadata/content.md)",
           "examples": [
             "About this project."
+          ]
+        },
+        "listChildren": {
+          "description": "Append links to every listed direct child page after this page's authored content.",
+          "type": "boolean",
+          "markdownDescription": "```yaml\npage:\n  listChildren: true\n```\n\nAppend links to every listed direct child page after this page's authored content.\n\n[Read the relevant reference (current)](https://janga.github.io/norna/reference/site/pages/)\n\n[Norna 0.7.27 source reference](https://github.com/janga/norna/blob/v0.7.27/site/pages/032-reference/pages/010-site/pages/020-pages/content.md)",
+          "examples": [
+            true,
+            false
           ]
         },
         "aliases": {

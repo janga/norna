@@ -30,7 +30,7 @@ frontmatter, structured blocks, notes, tabs, callouts, code metadata, tables,
 managed-image references and internal Markdown/card links. It reports source
 locations and actionable corrections for discovered problems.
 
-Links may target current pages, categories, aliases, headings and public files.
+Links may target current pages, aliases, headings and public files.
 External URLs are not fetched. A missing local target is an error; a local
 Markdown image outside the managed pipeline warns. Unreferenced source images,
 missing child-list descriptions and carousel-ratio differences also merit

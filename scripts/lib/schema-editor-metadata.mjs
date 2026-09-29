@@ -583,9 +583,10 @@ const addContentHelp = (jsonSchema) => {
 	]);
 	addHelp(jsonSchema, 'page.description', [
 		yamlExample('page:\n  description: About this project.'),
-		'A page-specific description used in metadata and social previews. Generated child-page and category lists can show it beside the page title; it is not inserted into the page body.',
+		'A page-specific description used in metadata and social previews. Generated child-page lists can show it beside the page title; it is not inserted into the page body.',
 		documentationLink('Page title and frontmatter reference', 'content.md', 'page-title-and-frontmatter'),
 	], ['About this project.']);
+	addFieldHelp(jsonSchema, 'page.listChildren', 'page:\n  listChildren: true', 'pages.md', 'list-child-pages', [true, false]);
 	addHelp(jsonSchema, 'page.aliases', [
 		yamlExample('page:\n  aliases:\n    - /old-about/'),
 		'Lists previous site-relative URLs that permanently identify this page. The page containing the list is always the target. Paths omit the configured base path and are excluded from the sitemap.',
@@ -604,27 +605,8 @@ const addContentHelp = (jsonSchema) => {
 	addFieldHelp(jsonSchema, 'navigation.listed', 'navigation:\n  listed: false', 'pages.md', 'navigation', [true, false]);
 };
 
-const addCategoryHelp = (jsonSchema) => {
-	jsonSchema.markdownDescription = [
-		yamlExample('label: Guides'),
-		'`category.yaml` groups child pages without editorial content. Its URL opens the first listed direct page, or a generated child list when the first child is a category.',
-		documentationLink('Navigation category reference', 'pages.md', 'navigation-categories'),
-	].join('\n\n');
-	addHelp(jsonSchema, 'label', [
-		yamlExample('label: Guides'),
-		'The category label shown in global navigation, tree navigation, mobile navigation, and breadcrumbs.',
-		documentationLink('Navigation category reference', 'pages.md', 'navigation-categories'),
-	]);
-	addHelp(jsonSchema, 'description', [
-		yamlExample('label: Guides\ndescription: Install, configure and publish your site.'),
-		'Optional authored text shown beside this group in area menus and generated child lists. It does not create a content page or change which pages belong to the group.',
-		documentationLink('Navigation category reference', 'pages.md', 'navigation-categories'),
-	]);
-};
-
 export const applySchemaEditorMetadata = (filename, jsonSchema) => {
 	addValueDescriptions(jsonSchema);
-	if (filename === 'category.schema.json') addCategoryHelp(jsonSchema);
 	if (filename === 'config.schema.json') {
 		addLanguageSuggestions(jsonSchema);
 		addConfigHelp(jsonSchema);

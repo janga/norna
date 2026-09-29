@@ -233,7 +233,6 @@ try {
 const siteStructure = await getSiteStructure();
 const contentFiles = siteStructure.contentFiles;
 for (const warning of siteStructure.warnings) {
-	if (warning.code === 'empty-category') continue;
 	addIssue({
 		severity: 'warning',
 		message: warning.message,
@@ -424,17 +423,20 @@ const listedNavigationTree = getListedSiteNavigationTree(siteStructure.nodes.map
 	return {
 		node: {
 			...node,
-			navigation: {
-				listed: node.kind === 'category'
-					? true
-					: context?.frontmatterData.navigation?.listed ?? true,
-			},
+			navigation: { listed: context?.frontmatterData.navigation?.listed ?? true },
 		},
 	};
 }));
 
 for (const context of contentFileContexts) {
 	const childPages = getDirectChildPages(listedNavigationTree, context.contentFile.pagePath);
+	if (context.frontmatterData.page?.listChildren && childPages.length === 0) {
+		addContentIssue(context.contentFile, {
+			severity: 'warning',
+			message: 'page.listChildren has no listed direct child pages to display.',
+			fix: 'Add a listed direct child page, or remove page.listChildren while this page has no children.',
+		});
+	}
 	const warnedChildren = new Set();
 
 	for (const section of context.sections) {
@@ -444,7 +446,7 @@ for (const context of contentFileContexts) {
 			if (childPages.length === 0) {
 				addSectionIssue(context.contentFile, section, {
 					severity: 'error',
-					message: `page-list on line ${block.line} has no listed direct child pages to display. Navigation categories are not pages.`,
+					message: `page-list on line ${block.line} has no listed direct child pages to display.`,
 					fix: 'Add a listed direct child page or remove the block.',
 				});
 				continue;

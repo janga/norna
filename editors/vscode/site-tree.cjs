@@ -5,10 +5,11 @@ const { getNornaProjectContext, findNornaPackage, supportedEditorApiVersion, sup
 const { registerSiteFileActions } = require('./site-file-actions.cjs');
 const { registerSiteAddressActions } = require('./site-address-actions.cjs');
 const { registerSiteSourceActions } = require('./site-source-actions.cjs');
+const { createPageForm, editPageForm } = require('./page-form-actions.cjs');
 
 const viewId = 'nornaSiteTree';
-const sourceNames = new Set(['content.md', 'category.yaml']);
-const isPage = (node) => node?.kind === 'page' || node?.kind === 'category';
+const sourceNames = new Set(['content.md']);
+const isPage = (node) => node?.kind === 'page';
 const inside = (root, file) => {
 	const relative = path.relative(root, file);
 	return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
@@ -25,6 +26,8 @@ function registerSiteTree(context, output) {
 	const selectionKey = 'norna.siteTree.activeSite';
 	const expansionKey = 'norna.siteTree.configurationExpansion';
 	const configurationExpansion = { ...context.workspaceState.get(expansionKey) };
+	const pageIcon = { light: context.asAbsolutePath('media/page-light.svg'), dark: context.asAbsolutePath('media/page-dark.svg') };
+	const pageListIcon = { light: context.asAbsolutePath('media/page-list-light.svg'), dark: context.asAbsolutePath('media/page-list-dark.svg') };
 	let activeSiteRoot = context.workspaceState.get(selectionKey);
 	let treeWork = Promise.resolve();
 	let reading = Promise.resolve();
@@ -189,16 +192,17 @@ function registerSiteTree(context, output) {
 				: node.kind === 'incomplete' ? 'nornaIncomplete'
 				: node.kind === 'directory' ? configuration ? 'nornaConfiguration' : node.role === 'pages' ? 'nornaPages' : node.role === 'images' ? 'nornaImages' : 'nornaDirectory'
 					: node.kind === 'file' ? node.parent?.role === 'images' && /\.(jpe?g|png|svg)$/i.test(node.title) ? 'nornaImage' : node.removable ? 'nornaOptionalFile' : 'nornaFile'
-						: node.isHome ? 'nornaHome' : node.kind === 'category' ? 'nornaCategory' : 'nornaPage';
+						: node.isHome ? 'nornaHome' : 'nornaPage';
 			const unsaved = vscode.workspace.textDocuments.some((document) => document.uri.fsPath === node.sourcePath && document.isDirty);
 			const issues = allIssues(node);
 			const severity = issues.some((issue) => issue.severity === 'error') ? 'error' : issues.length ? 'warning' : '';
 			item.description = [node.isHome ? 'Homepage' : '',
-				isPage(node) && node.hiddenFromNavigation ? 'unlisted' : node.kind === 'category' ? 'category' : '',
+				isPage(node) && node.hiddenFromNavigation ? 'unlisted' : '',
 				severity, node.note,
 				unsaved ? 'unsaved' : ''].filter(Boolean).join(' · ');
-			item.iconPath = new vscode.ThemeIcon(configuration ? 'settings-gear' : node.kind === 'site' ? 'globe'
-				: ['category', 'directory', 'incomplete'].includes(node.kind) ? 'folder' : 'file');
+			item.iconPath = node.kind === 'page' ? node.listChildren ? pageListIcon : pageIcon
+				: new vscode.ThemeIcon(configuration ? 'settings-gear' : node.kind === 'site' ? 'globe'
+					: ['directory', 'incomplete'].includes(node.kind) ? 'folder' : 'file');
 			const problemHelp = [...new Set(issues.map((issue) => `${issue.message}\n${issue.path}${issue.line ? `:${issue.line}` : ''}`))].join('\n\n');
 			item.accessibilityInformation = { label: [node.title, item.description, node.sourcePath].filter(Boolean).join(', ') };
 			if (groupingRow) {
@@ -207,7 +211,7 @@ function registerSiteTree(context, output) {
 				// the chevron without opening a source or changing global tree settings.
 				item.command = { command: 'nornaEditor.selectSiteGroup', title: 'Select' };
 			} else if (node.sourcePath) {
-				item.tooltip = [node.kind === 'page' ? 'Open page content' : node.kind === 'category' ? 'Open category information' : node.kind === 'incomplete' ? 'Add the missing source file' : node.title,
+				item.tooltip = [node.kind === 'page' ? node.listChildren ? 'Open page content. This page automatically lists its direct child pages.' : 'Open page content' : node.kind === 'incomplete' ? 'Add the missing source file' : node.title,
 					node.description, node.sourcePath, problemHelp].filter(Boolean).join('\n');
 				item.resourceUri = vscode.Uri.file(node.sourcePath);
 				item.command = { command: node.kind === 'incomplete' ? 'nornaEditor.addToPage' : 'nornaEditor.openSiteNode', title: node.kind === 'incomplete' ? 'Repair Source' : 'Open Source', arguments: [node] };
@@ -350,8 +354,9 @@ function registerSiteTree(context, output) {
 		const target = await chooseNode(argument);
 		const selected = ownerOf(target);
 		if (!selected) return;
-		if (selected.missingSource) throw new Error('Use the page’s Add menu to create its content or category information before adding children.');
+		if (selected.missingSource) throw new Error('Use the page’s Add menu to create its content.md before adding children.');
 		const service = await serviceFor(selected.siteRoot);
+		if (service.sitePageFormApiVersion === 1) return createPageForm({ vscode, context, service, kind, selected, target, insideSelected, ownerOf, chooseNode, documentSources, refresh, revealActive });
 		let parentPath = '/';
 		if (insideSelected || (target.kind === 'directory' && target.role === 'pages')) parentPath = selected.url ?? '/';
 		else if (selected.kind !== 'site') {
@@ -366,14 +371,14 @@ function registerSiteTree(context, output) {
 			if (!choice) return;
 			parentPath = choice.parentPath;
 		}
-		const title = await vscode.window.showInputBox({ title: `New ${kind}`, prompt: kind === 'page' ? 'Page title' : 'Navigation category label', validateInput: oneLine, ignoreFocusOut: true });
+		const title = await vscode.window.showInputBox({ title: 'New page', prompt: 'Page title', validateInput: oneLine, ignoreFocusOut: true });
 		if (title === undefined) return;
 		const options = { siteRoot: selected.siteRoot, kind, title, parentPath };
 		const slug = await vscode.window.showInputBox({ title: `New ${kind}`, prompt: 'URL segment (lowercase letters, numbers and hyphens)', value: service.slugifyAsciiIdentifier(title), ignoreFocusOut: true,
 			validateInput: async (value) => { try { await service.planSiteNodeCreation({ ...options, slug: value }); } catch (error) { return error.message; } return undefined; } });
 		if (slug === undefined) return;
 		const plan = await service.planSiteNodeCreation({ ...options, slug });
-		const confirm = await vscode.window.showQuickPick([{ label: `Create ${kind}`, description: `${kind === 'category' ? 'Child URL prefix: ' : ''}${plan.url}`, detail: labelFor(plan.destination) }],
+		const confirm = await vscode.window.showQuickPick([{ label: 'Create page', description: plan.url, detail: labelFor(plan.destination) }],
 			{ title: `Create “${title}” in ${labelFor(selected.siteRoot)}`, placeHolder: 'Review the location; Escape cancels without creating files', ignoreFocusOut: true });
 		if (!confirm) return;
 		await chooseNode(target);
@@ -385,22 +390,23 @@ function registerSiteTree(context, output) {
 
 	const editInformation = async (argument) => {
 		const node = await chooseNode(argument);
-		if (!isPage(node)) throw new Error('Select a page or navigation category to edit its information.');
+		if (!isPage(node)) throw new Error('Select a page to edit its information.');
 		const service = await serviceFor(node.siteRoot);
 		const document = await vscode.workspace.openTextDocument(vscode.Uri.file(node.sourcePath));
 		const info = await service.getSiteNodeInformation({ kind: node.kind, isHome: node.isHome, source: document.getText(), sourcePath: node.sourcePath });
 		if (info.problem) throw new Error(`${info.problem} Open the source to repair it.`);
+		if (service.sitePageFormApiVersion === 1) return editPageForm({ vscode, context, service, node, document, info, chooseNode, documentSources, updateDocument });
 		const version = document.version;
 		const selected = await vscode.window.showQuickPick([
-			{ label: node.kind === 'category' ? 'Label' : 'Title', description: info.title, field: 'title' },
+			{ label: 'Title', description: info.title, field: 'title' },
 			{ label: 'Description', description: info.description || 'Not set', field: 'description' },
-			...(node.kind === 'page' ? [{ label: 'Navigation', description: node.isHome ? 'Home is always listed' : info.listed ? 'Listed' : 'Unlisted (still published)', field: node.isHome ? null : 'listed' }] : []),
+			{ label: 'Navigation', description: node.isHome ? 'Home is always listed' : info.listed ? 'Listed' : 'Unlisted (still published)', field: node.isHome ? null : 'listed' },
 			{ label: 'Location', kind: vscode.QuickPickItemKind.Separator },
 			...(service.siteAddressApiVersion === 1
 				? [{ label: 'Addresses and links…', detail: 'Copy or change addresses and review incoming links', addresses: true }]
-				: [{ label: node.kind === 'category' ? 'Category URL' : 'Current URL', description: node.url, detail: 'Read-only; select to copy', copy: node.url }]),
+				: [{ label: 'Current URL', description: node.url, detail: 'Read-only; select to copy', copy: node.url }]),
 			{ label: 'Source file', description: labelFor(node.sourcePath), detail: 'Select to open', open: true },
-			...(node.kind === 'page' && service.siteAddressApiVersion !== 1 ? [{ label: 'Previous URLs', description: info.aliases.join(', ') || 'None', detail: 'Read-only; select to copy', copy: info.aliases.join('\n') }] : []),
+			...(service.siteAddressApiVersion !== 1 ? [{ label: 'Previous URLs', description: info.aliases.join(', ') || 'None', detail: 'Read-only; select to copy', copy: info.aliases.join('\n') }] : []),
 		], { title: `Page Information: ${info.title}`, ignoreFocusOut: true });
 		if (!selected) return;
 		if (selected.addresses) return vscode.commands.executeCommand('nornaEditor.addressesAndLinks', node);
@@ -443,7 +449,6 @@ function registerSiteTree(context, output) {
 	register('nornaEditor.newPage', (node) => create('page', node));
 	register('nornaEditor.addPage', (node) => create('page', node));
 	register('nornaEditor.addChildPage', (node) => create('page', node, true));
-	register('nornaEditor.newCategory', (node) => create('category', node));
 	register('nornaEditor.pageInformation', editInformation);
 	registerSiteFileActions({ vscode, context, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
 	registerSiteAddressActions({ vscode, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
@@ -467,7 +472,7 @@ function registerSiteTree(context, output) {
 	});
 	register('nornaEditor.pageActions', async (argument) => {
 		const node = await chooseNode(argument);
-		if (!isPage(node)) throw new Error('Select a page or category.');
+		if (!isPage(node)) throw new Error('Select a page.');
 		const selected = await vscode.window.showQuickPick([
 			{ label: '$(edit) Page information…', command: 'pageInformation' },
 			{ label: '$(link) Addresses and links…', command: 'addressesAndLinks' },
@@ -497,7 +502,7 @@ function registerSiteTree(context, output) {
 	});
 	register('nornaEditor.chooseSite', chooseSite);
 	register('nornaEditor.refreshSiteTree', async () => { services.clear(); await refresh({ discover: true }); await revealActive(); });
-	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,category.yaml,settings.yaml,site-theme.yaml,shared-content.yaml,theme.yaml,config.yaml,page-theme.yaml,sitewide-content.yaml}');
+	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,settings.yaml,site-theme.yaml,shared-content.yaml,theme.yaml,config.yaml,page-theme.yaml,sitewide-content.yaml}');
 	const directoryWatcher = vscode.workspace.createFileSystemWatcher('**/{pages,images,public}', false, true, false);
 	const resourceWatcher = vscode.workspace.createFileSystemWatcher('**/*', false, true, false);
 	const fileChanged = (uri) => {

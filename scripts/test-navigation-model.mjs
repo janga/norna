@@ -28,15 +28,6 @@ const page = (headings = [], overrides = {}) => ({
 	headings,
 	...overrides,
 });
-const category = (overrides = {}) => ({
-	pagePath: 'guides',
-	kind: 'category',
-	isHome: false,
-	listed: true,
-	depth: 1,
-	headings: [],
-	...overrides,
-});
 const h2 = { depth: 2 };
 const h3 = { depth: 3 };
 
@@ -60,12 +51,10 @@ assert.equal(
 	getAutomaticNavigationMode([home([h2]), page([h2], { pagePath: 'guides/install', depth: 2 })]),
 	'tree',
 );
-assert.equal(getAutomaticNavigationMode([home([h2]), category()]), 'tree');
-
 const hierarchicalNodes = [
 	home([h2]),
 	page([h2], { pagePath: 'about' }),
-	category(),
+	page([], { pagePath: 'guides' }),
 	page([h2], { pagePath: 'guides/install', depth: 2 }),
 ];
 assert.equal(getAutomaticNavigationMode(hierarchicalNodes), 'tree');
@@ -98,15 +87,7 @@ assert.throws(
 	/Unknown navigation mode "sidebar".*automatic, sections, top, tree/,
 );
 
-for (const mode of ['sections', 'top']) {
-	assert.throws(
-		() => resolveNavigationModel({ mode, nodes: [home(), category()] }),
-		/Navigation categories require tree navigation/,
-	);
-}
-const categoryTree = resolveNavigationModel({ mode: 'tree', nodes: [home(), category()] });
-assert.equal(categoryTree.mode, 'tree');
-assert.equal(categoryTree.hasCategories, true);
+assert.equal(resolveNavigationModel({ mode: 'tree', nodes: hierarchicalNodes }).hasCategories, false);
 
 const sequenceEntry = ({
 	pagePath,
@@ -128,7 +109,7 @@ const sequenceEntry = ({
 });
 const sequenceTree = getListedSiteNavigationTree([
 	sequenceEntry({ pagePath: '' }),
-	sequenceEntry({ pagePath: 'guides', kind: 'category', title: 'Guides' }),
+	sequenceEntry({ pagePath: 'guides', title: 'Guides' }),
 	sequenceEntry({ pagePath: 'guides/install', parentPagePath: 'guides', title: 'Install' }),
 	sequenceEntry({ pagePath: 'guides/install/macos', parentPagePath: 'guides/install', title: 'macOS' }),
 	sequenceEntry({ pagePath: 'guides/install/private', parentPagePath: 'guides/install', listed: false }),
@@ -138,7 +119,7 @@ const sequenceTree = getListedSiteNavigationTree([
 assert.deepEqual(
 	getSequentialPageNavigation(sequenceTree, 'guides/install'),
 	{
-		previous: null,
+		previous: sequenceTree[1].node,
 		next: sequenceTree[1].children[0].children[0].node,
 	},
 );
@@ -169,7 +150,7 @@ assert.deepEqual(
 		sequenceTree[1].children[1].node,
 	],
 );
-assert.deepEqual(getDirectChildPages(sequenceTree, ''), [sequenceTree[2].node]);
+assert.deepEqual(getDirectChildPages(sequenceTree, ''), [sequenceTree[1].node, sequenceTree[2].node]);
 assert.deepEqual(getDirectChildPages(sequenceTree, 'guides/install/private'), []);
 assert.deepEqual(getDirectChildPages(sequenceTree, 'missing'), []);
 
@@ -185,13 +166,13 @@ const areaEntries = [
 	sequenceEntry({ pagePath: 'manual/installation', parentPagePath: 'manual' }),
 	sequenceEntry({ pagePath: 'manual/hidden', parentPagePath: 'manual', listed: false }),
 	sequenceEntry({ pagePath: 'manual/hidden/child', parentPagePath: 'manual/hidden' }),
-	sequenceEntry({ pagePath: 'manual/empty', parentPagePath: 'manual', kind: 'category' }),
-	sequenceEntry({ pagePath: 'faq', kind: 'category' }),
+	sequenceEntry({ pagePath: 'manual/empty', parentPagePath: 'manual' }),
+	sequenceEntry({ pagePath: 'faq' }),
 	sequenceEntry({ pagePath: 'faq/first', parentPagePath: 'faq' }),
 	sequenceEntry({ pagePath: 'faq/second', parentPagePath: 'faq' }),
 	sequenceEntry({ pagePath: 'faq/hidden', parentPagePath: 'faq', listed: false }),
 	sequenceEntry({ pagePath: 'faq/hidden/child', parentPagePath: 'faq/hidden' }),
-	sequenceEntry({ pagePath: 'faq/empty', parentPagePath: 'faq', kind: 'category' }),
+	sequenceEntry({ pagePath: 'faq/empty', parentPagePath: 'faq' }),
 	sequenceEntry({ pagePath: 'resources' }),
 	sequenceEntry({ pagePath: 'resources/capabilities', parentPagePath: 'resources' }),
 	sequenceEntry({ pagePath: 'standalone' }),
@@ -214,21 +195,20 @@ assert.equal(scopeFor('manual-other').globalRoot, undefined);
 assert.equal(resolveAreaNavigation(areaRoots).localRoot, undefined);
 for (const pagePath of ['faq/first', 'faq/second']) {
 	assert.equal(scopeFor(pagePath).localRoot.node.pagePath, 'faq');
-	assert.deepEqual(scopeFor(pagePath).localRoot.children.map(({ node }) => node.pagePath), ['faq/first', 'faq/second']);
+	assert.deepEqual(scopeFor(pagePath).localRoot.children.map(({ node }) => node.pagePath), ['faq/first', 'faq/second', 'faq/empty']);
 }
 assert.equal(scopeFor('resources/capabilities').localRoot.node.pagePath, 'resources', 'A flat authored parent retains its context too.');
 assert.equal(scopeFor('standalone').localRoot, undefined);
 assert.equal(scopeFor('manual/hidden/child').localRoot, undefined);
 assert.deepEqual(scopeFor('manual/hidden/child').globalRoot.children.map(({ node }) => node.pagePath), [
-	'manual/start', 'manual/install', 'manual/installation',
+	'manual/start', 'manual/install', 'manual/installation', 'manual/empty',
 ]);
 assert.deepEqual(getAreaMenuGroups(areaRoots[1]).branches.map(({ node }) => node.pagePath), ['manual', 'manual/install']);
-assert.deepEqual(getAreaMenuGroups(areaRoots[1]).pages.map(({ node }) => node.pagePath), ['manual/start', 'manual/installation']);
-assert.deepEqual(getAreaMenuGroups(areaRoots[2]).branches, []);
+assert.deepEqual(getAreaMenuGroups(areaRoots[1]).pages.map(({ node }) => node.pagePath), ['manual/start', 'manual/installation', 'manual/empty']);
+assert.deepEqual(getAreaMenuGroups(areaRoots[2]).branches.map(({ node }) => node.pagePath), ['faq']);
 
-for (const kind of ['page', 'category']) {
-	const boundaryCount = kind === 'page' ? 11 : 12;
-	const entries = [sequenceEntry({ pagePath: 'large', kind }), ...Array.from({ length: boundaryCount }, (_, index) => (
+{
+	const entries = [sequenceEntry({ pagePath: 'large' }), ...Array.from({ length: 11 }, (_, index) => (
 		sequenceEntry({ pagePath: `large/page-${index}`, parentPagePath: 'large' })
 	))];
 	const atBoundary = getListedSiteNavigationTree(entries);

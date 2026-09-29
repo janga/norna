@@ -5,7 +5,6 @@ import { createSiteNode, planSiteNodeCreation } from './lib/site-node-create.mjs
 const usage = `
 Usage:
   norna page:add <title> [--parent <path>] [--slug <slug>] [--order <NNN>] [--dry-run]
-  norna category:add <label> [--parent <path>] [--slug <slug>] [--order <NNN>] [--dry-run]
 
 Parent selection:
   --parent /                 Add a top-level node
@@ -83,7 +82,7 @@ const toDisplayPath = (filePath) => {
 };
 
 const [kind, ...rawArgs] = process.argv.slice(2);
-if (!['category', 'page'].includes(kind)) throw new Error(usage);
+if (kind !== 'page') throw new Error(usage);
 const options = parseArgs(rawArgs);
 if (options.help) {
 	console.log(usage);
@@ -91,7 +90,7 @@ if (options.help) {
 }
 
 const title = options.titleParts.join(' ').trim();
-if (!title || /[\r\n]/.test(title)) throw new Error(`A one-line ${kind === 'page' ? 'page title' : 'category label'} is required.\n${usage}`);
+if (!title || /[\r\n]/.test(title)) throw new Error(`A one-line page title is required.\n${usage}`);
 const plan = await planSiteNodeCreation({
 	siteRoot: siteDir, kind, title, slug: options.slug, order: options.order,
 	parentPath: options.parent, invocationDirectory: invocationRoot,
@@ -100,10 +99,5 @@ const { destination, pagePath } = plan;
 const action = options.dryRun ? 'Would create' : 'Created';
 if (!options.dryRun) await createSiteNode(plan);
 
-console.log(`${action} ${kind} "${title}" at ${toDisplayPath(destination)}.`);
-if (kind === 'page') {
-	console.log(`URL: /${pagePath}/`);
-} else {
-	console.log('This navigation category has no authored content page. Norna generates its destination from the child pages.');
-	console.log(`Child URL prefix: /${pagePath}/`);
-}
+console.log(`${action} page "${title}" at ${toDisplayPath(destination)}.`);
+console.log(`URL: /${pagePath}/`);

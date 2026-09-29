@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Combine page creation and Page Information fields in a form with current
+  values, example placeholders, address previews and inline validation.
+- Add and remove additional-address rows, with engine validation and
+  incoming-link confirmation before removing saved aliases.
+
 ## 0.6.0
 
 - Open page content from its title and hide the redundant `content.md` row.

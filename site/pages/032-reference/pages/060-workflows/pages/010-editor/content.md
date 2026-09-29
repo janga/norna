@@ -51,7 +51,6 @@ and `content.md`; the site folder need not be named `site`.
 | `site-config/shared-content.yaml` | Shared content |
 | `pages/010-guide/content.md` | Frontmatter, Markdown blocks, notes and images |
 | `pages/010-guide/theme.yaml` | Limited page-theme settings |
-| `pages/010-guide/category.yaml` | Navigation category |
 
 Page rules also apply to valid nested folders repeating `pages/` between
 levels. Unrelated Markdown/YAML files do not receive Norna's own help.
@@ -124,11 +123,10 @@ does not force the folder open again.
 the shared site appearance; root `theme.yaml` affects only the homepage.
 A branch's `theme.yaml` applies to that branch and its descendants. See
 [theme scope](/reference/configuration/theme/#page-themes). Hover over `theme.yaml`
-for a reminder of its scope. Categories show `category.yaml` after their optional
-theme and have no `content.md`.
+for a reminder of its scope. Every page has `content.md`; a page with a generated
+child list uses `page.listChildren: true` in that file.
 
-Page titles open their content; category titles open `category.yaml`. The
-category's actual configuration-file row also remains available. Directory
+Page titles open their content. Directory
 labels select a row without opening a file.
 The `public/` folder has a tooltip explaining that its files are published
 unchanged with the site, for example `robots.txt` and icons.
@@ -154,7 +152,7 @@ its siblings and opens for editing.
 To create a child, select its parent page, use the **+** button beside its
 title (**Norna: Add…**) and choose **Add child page…**. This also works when
 `pages/` does not yet exist: the extension creates it with the first child.
-The parent is already selected, so the next question is the new page's title.
+The parent is already selected in the creation form.
 The same menu offers **Import image…** on content pages and missing source
 files permitted at that location, including `theme.yaml`. The **+** in the tree
 toolbar acts on the selected page or the owner of a selected resource.
@@ -163,15 +161,31 @@ The **…** beside a page opens **Page Actions**: edit page information, open
 the source, work with addresses and links, or remove the page. The Command
 Palette and context menu remain available. **Norna: New Page…** additionally
 offers creation beside a page or at the site root. Browsing alone creates no folders.
-**Norna: New Category…** follows the same steps for a navigation category.
 Choosing Home as the parent creates a child in the site root's `pages/` folder.
-Escape cancels before creation without writing files. These actions use the same rules as
-[`page:add` and `category:add`](/reference/commands/create/).
+Select **Cancel** or close the form before creation to leave files unchanged.
+These actions use the same rules as
+[`page:add`](/reference/commands/create/).
 
-Choose **Norna: Page Information…** to edit the title, description or whether
-a page is listed in navigation. For categories, edit the label and description.
-Leave a description empty to remove it. The source location opens the file;
-**Addresses and links…** opens the address actions described below.
+Creation opens a form with the fields together. Enter the title and optional
+description, review the destination, and choose whether to show the page in
+navigation. The URL segment follows the title until you edit that segment.
+The form previews the internal address and source path before **Create page**.
+Errors leave your entries in place so you can correct them.
+
+Choose **Norna: Page Information…** to open the same form with the page's
+current title, description, navigation choice, child-list choice and additional addresses filled
+in. Empty fields show example
+text; examples are not saved values. Leave a description empty to remove it.
+Changing an existing URL segment remains a separate **Addresses and links…**
+action in **Page Actions**, because it can move files and affect other pages.
+
+The **Additional addresses (aliases)** list starts with only **+** when there
+are no aliases. Use **+** to add a row and **−** to remove one. Enter paths such
+as `/old-guide/`, without the site's deployment prefix; these addresses
+redirect to the page. Remove unused rows before submitting. The engine checks
+for invalid, duplicate and conflicting addresses. Removing a saved alias
+requires confirmation with a review of incoming links. See
+[page addresses](/reference/site/urls/) for the URL rules.
 
 A title edit changes the Markdown H1 and labels derived from it. The page's
 address and link text written elsewhere stay the same. Changes are made in
@@ -191,6 +205,9 @@ with page-file support. The Add menu and earlier grouping-row behavior
 originally arrived in extension 0.4.1. Direct page opening and the hidden
 content row require extension 0.6.0. Missing-file creation, repair and the
 expanded file diagnostics also need the corresponding engine capability.
+The combined creation/information form needs an extension build containing
+the form and an engine exposing `sitePageFormApiVersion: 1`; older engines
+retain the separate input dialogs.
 Optional-file removal, incoming-link review and address editing require
 extension 0.5.0 and the corresponding engine capabilities. Earlier engines
 retain their read-only address rows in **Page Information** and report which
@@ -202,7 +219,7 @@ IntelliSense remains available. Run **Norna: Refresh Site Tree** after an engine
 update or to rediscover sites. External file changes normally refresh the
 tree automatically.
 
-Use **Page Information** on pages and categories. Other files open for normal
+Use **Page Information** on pages. Other files open for normal
 editing and do not receive page-metadata actions. Moving pages
 to another parent, reordering pages and inserting page links remain outside
 this tree's scope. Generated `.norna` output and symbolic links are not listed;
@@ -222,9 +239,8 @@ with the documentation preset. Creating `settings.yaml` asks for the site's
 public URL. The extension opens the new file for further editing. Cancelling
 leaves no partial files or directories and creation never overwrites a file.
 
-If a page directory has neither `content.md` nor `category.yaml`, its row opens
-the Add menu. Choose page content or category information explicitly. Categories
-cannot own images, so category creation is unavailable while `images/` exists.
+If a page directory lacks `content.md`, its row opens the Add menu. Create page
+content or restore the file.
 The homepage requires `content.md`. A missing required file does not remove the
 active site or its remaining pages from the tree.
 
@@ -237,7 +253,7 @@ editor diagnostics include unsaved edits; they do not replace `norna check`.
 | --- | --- |
 | Missing required file | Use the owner's **+** to create it, or restore it from version control. |
 | Misplaced source file | The file is visible at its actual location; hover explains where it belongs. Move it through Explorer. |
-| Invalid content or conflicting sources | Open the file to correct it. A page directory must contain either page content or category information, not both. |
+| Invalid content or conflicting sources | Open the file to correct it. A page directory must contain `content.md`; `category.yaml` is no longer supported. |
 | **Not used by Norna** | An extra author file, such as notes. It is not automatically an error. Valid files in `public/` remain published resources. |
 
 Generated output, operating-system metadata and symbolic links stay outside this
@@ -259,23 +275,23 @@ pages and authored links that will change. Confirming renames the page folder
 within its current parent while keeping its order number. The title stays the
 same. The engine updates supported internal links and keeps old page addresses
 as redirects, using the same planning and transaction as
-[`page:move`](/reference/commands/move/). Descendant category paths also change;
-categories do not receive redirects.
+[`page:move`](/reference/commands/move/). Descendant page paths also change
+and receive aliases.
 
-Save or undo unsaved page, category and site-settings edits before changing an
+Save or undo unsaved page and site-settings edits before changing an
 address. The action writes affected content files and moves the complete page
 directory. Editor Undo does not reverse the whole operation. To return to an
 old address, first remove conflicting additional addresses on this page and
 its descendants, save, then change the URL segment again.
 The homepage's internal address is fixed at
-`/`. This action does not rename categories or detach addresses from folders.
+`/`. This action does not detach addresses from folders.
 
 **Additional addresses…** manages addresses that redirect to the current page.
 Choose **Add additional address…**, or select an existing address to copy or
 remove it. Enter a site-relative path beginning and ending with `/`, such as
 `/old-guide/` or `/archive/guide/`. Omit the deployment prefix. These entries
 are stored in `page.aliases`; they do not change the page's primary address.
-Conflicts with other pages, categories, redirects, public files or generated
+Conflicts with other pages, redirects, public files or generated
 routes are reported before accepting the edit. See
 [URLs and links](/reference/site/urls/#keep-an-old-url) for the exact rules.
 
@@ -284,7 +300,7 @@ prose and support normal Save and Undo. Removing an address requires
 confirmation and shows known links to it. If relevant content changes while a
 dialog is open, repeat the action to review the current result.
 
-**Incoming links…** lists authored links to the selected page or category.
+**Incoming links…** lists authored links to the selected page.
 The list includes source page titles, file locations, line numbers and source
 passages; select a result to open that passage. Checks include unsaved page
 content, Markdown links and Norna block links, including aliases and anchors.

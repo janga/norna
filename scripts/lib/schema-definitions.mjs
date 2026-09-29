@@ -210,6 +210,7 @@ const pageAlias = z.string().regex(
 ).describe('Previous site-relative URL that permanently identifies this page.');
 const pageMetadata = z.object({
 	description: z.string().min(1).optional().describe('Page description used in metadata, social previews and generated child-page lists.'),
+	listChildren: z.boolean().optional().describe('Append links to every listed direct child page after this page\'s authored content.'),
 	aliases: z.array(pageAlias)
 		.min(1)
 		.refine((values) => new Set(values).size === values.length, 'Page aliases must be unique within the page.')
@@ -274,14 +275,8 @@ const sitewideShape = {
 	footer: sitewideFooter.optional().describe('Site-wide footer content.'),
 };
 
-const categoryShape = {
-	label: z.string().trim().min(1).describe('Navigation label for a group of child pages without an authored page body.'),
-	description: z.string().trim().min(1).optional().describe('Short introduction shown beside the category in area menus and generated child lists.'),
-};
-
 export const schemaTopLevelKeys = Object.freeze({
 	config: Object.freeze(Object.keys(configShape)),
-	category: Object.freeze(Object.keys(categoryShape)),
 	content: Object.freeze(Object.keys(siteShape)),
 	sitewide: Object.freeze(Object.keys(sitewideShape)),
 	theme: Object.freeze(Object.keys(themeVisualShape)),
@@ -290,8 +285,6 @@ export const schemaTopLevelKeys = Object.freeze({
 
 export const configSchema = z.object(configShape).strict()
 	.describe('Technical settings for one Norna site. Additional pages cannot provide technical configuration.');
-export const categorySchema = z.object(categoryShape).strict()
-	.describe('A navigation group without an authored page body. Opening its URL redirects when its first listed direct child is a page; otherwise it shows a generated child list.');
 export const siteSchema = z.object(siteShape).strict()
 	.describe('Frontmatter for a homepage or additional page content.md file.');
 export const themeVisualSchema = z.object(themeVisualShape).strict()

@@ -4,6 +4,10 @@ import { dump as dumpYaml } from 'js-yaml';
 import { slugifyAsciiIdentifier } from './heading-ids.mjs';
 import { pageDirectoryPattern } from './page-model.mjs';
 import { getSiteStructure } from './site-structure.mjs';
+import { siteSchema } from './schema-definitions.mjs';
+import { readEditorLinkState } from './editor-site-links.mjs';
+import { createPageAliasModel, assertPageAliasModel } from './page-aliases.mjs';
+import { parseYamlConfig } from './yaml-config.mjs';
 
 const parseOrder = (value) => {
 	if (!/^\d{1,3}$/.test(value)) {
@@ -53,7 +57,7 @@ const resolveParent = async ({ nodes, parent, siteRoot, invocationDirectory }) =
 		}
 		const node = nodes.find((candidate) => candidate.pagePath === parentPath);
 		if (!node) {
-			throw new Error(`Cannot find parent "${parent}". Use an existing logical page/category path, or / for the top level.`);
+			throw new Error(`Cannot find parent "${parent}". Use an existing page path, or / for the top level.`);
 		}
 		return { collectionDir: path.join(node.nodeDir, 'pages'), node, pagePath: node.pagePath };
 	}
@@ -72,7 +76,7 @@ const resolveParent = async ({ nodes, parent, siteRoot, invocationDirectory }) =
 	if (!node) {
 		throw new Error([
 			'Cannot infer where to add the node from the current directory.',
-			`Run the command from ${sitePagesDir} for a top-level node, from an existing page/category directory for a child, or pass --parent.`,
+			`Run the command from ${sitePagesDir} for a top-level node, from an existing page directory for a child, or pass --parent.`,
 		].join('\n'));
 	}
 	return { collectionDir: path.join(node.nodeDir, 'pages'), node, pagePath: node.pagePath };
@@ -81,12 +85,12 @@ const resolveParent = async ({ nodes, parent, siteRoot, invocationDirectory }) =
 // Planning never writes. Callers must present this same destination before applying.
 export const planSiteNodeCreation = async ({
 	siteRoot, kind, title, slug = null, order = null, parentPath = '/',
-	invocationDirectory = siteRoot,
+	invocationDirectory = siteRoot, metadata, sources = new Map(),
 }) => {
-	if (!['page', 'category'].includes(kind)) throw new Error('Choose a page or navigation category.');
+	if (kind !== 'page') throw new Error('Choose a page. Navigation categories are no longer supported; use page.listChildren: true for an overview.');
 	siteRoot = path.resolve(siteRoot);
 	title = String(title ?? '').trim();
-	if (!title || /[\r\n]/.test(title)) throw new Error(`A one-line ${kind === 'page' ? 'page title' : 'category label'} is required.`);
+	if (!title || /[\r\n]/.test(title)) throw new Error('A one-line page title is required.');
 	const generatedSlug = slug === null;
 	slug ??= slugifyAsciiIdentifier(title);
 	if (!slug || !pageDirectoryPattern.test(`010-${slug}`)) {
@@ -107,13 +111,22 @@ export const planSiteNodeCreation = async ({
 	const directoryName = `${String(order).padStart(3, '0')}-${slug}`;
 	const destination = path.join(parent.collectionDir, directoryName);
 	const pagePath = [parent.pagePath, slug].filter(Boolean).join('/');
+	if (metadata !== undefined) {
+		metadata = parseYamlConfig(dumpYaml(metadata), 'Page information', { schema: siteSchema });
+		const state = await readEditorLinkState({ siteRoot, sources });
+		if (state.incomplete.length) throw new Error(`Page addresses could not be checked. ${state.incomplete.join('\n')}`);
+		if (state.graph.aliasModel.identitiesByPathname.has(`/${pagePath}/`)) throw new Error(`Address /${pagePath}/ is already in use. Choose another URL segment.`);
+		assertPageAliasModel(createPageAliasModel({ pages: [...state.graph.pages,
+			{ pathname: `/${pagePath}/`, contentLabel: destination, aliases: metadata.page?.aliases ?? [] }],
+			categories: [], publicFiles: state.publicFiles, generatedRoutes: state.generatedRoutes }));
+	}
 	return { siteRoot, kind, title, slug, order, parentPath: parent.pagePath ? `/${parent.pagePath}/` : '/',
-		collectionDir: parent.collectionDir, destination, pagePath, url: `/${pagePath}/` };
+		collectionDir: parent.collectionDir, destination, pagePath, url: `/${pagePath}/`, ...(metadata === undefined ? {} : { metadata }) };
 };
 
-export const createSiteNode = async (plan) => {
+export const createSiteNode = async (plan, { sources = new Map() } = {}) => {
 	// Revalidate after the author has inspected the preview. Never change its placement.
-	const current = await planSiteNodeCreation(plan);
+	const current = await planSiteNodeCreation({ ...plan, sources });
 	if (current.destination !== plan.destination) throw new Error('The site changed. Preview the new location before creating the node.');
 	let createdCollection = false;
 	try {
@@ -129,13 +142,11 @@ export const createSiteNode = async (plan) => {
 		// Exclusive reservation also protects an empty destination created after planning.
 		await mkdir(current.destination);
 		created.push({ file: current.destination, directory: true });
-		const filename = path.join(current.destination, current.kind === 'page' ? 'content.md' : 'category.yaml');
-		const source = current.kind === 'page'
-			? `# ${escapeMarkdownHeading(current.title)}\n\n## Introduction\n\nStart writing here.\n`
-			: dumpYaml({ label: current.title }, { lineWidth: -1, noRefs: true });
+		const filename = path.join(current.destination, 'content.md');
+		const source = `${current.metadata && Object.keys(current.metadata).length ? `---\n${dumpYaml(current.metadata, { lineWidth: -1, noRefs: true })}---\n\n` : ''}# ${escapeMarkdownHeading(current.title)}\n\n## Introduction\n\nStart writing here.\n`;
 		await writeFile(filename, source, { flag: 'wx' });
 		created.push({ file: filename });
-		const childDirectory = path.join(current.destination, current.kind === 'page' ? 'images' : 'pages');
+		const childDirectory = path.join(current.destination, 'images');
 		await mkdir(childDirectory);
 		created.push({ file: childDirectory, directory: true });
 		return { ...current, sourcePath: filename };

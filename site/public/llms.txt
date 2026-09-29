@@ -17,8 +17,10 @@ are under docs/; later tags use site/pages/032-reference/.
 
 ## Site model
 
+- [Reference overview](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/content.md)
+- [Site model overview](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/010-site/content.md)
 - [Site files](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/010-site/pages/010-files/content.md)
-- [Pages and categories](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/010-site/pages/020-pages/content.md)
+- [Pages and child-page lists](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/010-site/pages/020-pages/content.md)
 - [URLs and links](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/010-site/pages/030-urls/content.md)
 - [Page metadata](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/010-site/pages/040-metadata/content.md)
 - [Managed images](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/010-site/pages/050-images/content.md)
@@ -27,6 +29,7 @@ are under docs/; later tags use site/pages/032-reference/.
 
 ## Configuration
 
+- [Configuration overview](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/020-configuration/content.md)
 - [Site configuration](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/020-configuration/pages/010-site/content.md)
 - [Language](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/020-configuration/pages/020-language/content.md)
 - [Automatic navigation](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/020-configuration/pages/030-navigation/content.md)
@@ -44,6 +47,7 @@ are under docs/; later tags use site/pages/032-reference/.
 
 ## Content syntax
 
+- [Content syntax overview](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/030-content/content.md)
 - [Markdown and headings](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/030-content/pages/010-markdown/content.md)
 - [Structured block syntax](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/030-content/pages/015-structured-blocks/content.md)
 - [Image blocks](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/030-content/pages/020-images/content.md)
@@ -59,9 +63,10 @@ are under docs/; later tags use site/pages/032-reference/.
 
 ## Commands
 
+- [Commands overview](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/040-commands/content.md)
 - [Command invocation](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/040-commands/pages/010-invocation/content.md)
 - [Project creation](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/040-commands/pages/020-init/content.md)
-- [Page and category creation](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/040-commands/pages/030-create/content.md)
+- [Page creation](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/040-commands/pages/030-create/content.md)
 - [page:move](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/040-commands/pages/040-move/content.md)
 - [Validation and image sync](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/040-commands/pages/050-validate/content.md)
 - [Navigation review](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/040-commands/pages/055-navigation/content.md)
@@ -74,11 +79,13 @@ are under docs/; later tags use site/pages/032-reference/.
 
 ## Reader experience
 
+- [Reader experience overview](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/050-reader/content.md)
 - [User preferences](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/050-reader/pages/010-display/content.md)
 - [JavaScript and accessibility](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/050-reader/pages/020-accessibility/content.md)
 
 ## Working on a site
 
+- [Working on a site overview](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/060-workflows/content.md)
 - [VS Code editor support](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
 - [Separate AI suggestions from IntelliSense](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/060-workflows/pages/015-editor-ai-suggestions/content.md)
 - [Publish to GitHub Pages](https://raw.githubusercontent.com/janga/norna/main/site/pages/032-reference/pages/060-workflows/pages/020-publishing/content.md)

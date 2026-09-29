@@ -23,7 +23,7 @@ site/
 |   `-- shared-content.yaml      # Shared notices, footer and logo height
 |-- images/                      # Homepage image files
 |-- public/                      # Files copied unchanged, such as favicon.ico
-`-- pages/                       # Child pages and categories
+`-- pages/                       # Child pages
 ```
 
 Use these exact lowercase names for portability between file systems.
@@ -49,12 +49,13 @@ site/
             `-- 010-install/content.md
 ```
 
-A group without editorial text uses `category.yaml` instead of `content.md`.
-[Pages and categories](/reference/site/pages/) explains this choice and names.
+A parent with only an H1 can still be a useful overview: set
+`page.listChildren: true` to append its direct child pages. See
+[Pages and child-page lists](/reference/site/pages/).
 
 The files in `site-config/` apply to the complete site. Its required
 `site-theme.yaml` sets shared visual defaults. Optional `theme.yaml` beside
-root `content.md` changes only the homepage. A child page or category's
+root `content.md` changes only the homepage. A child page's
 `theme.yaml` supplies [limited inherited overrides](/reference/configuration/theme/#page-themes)
 for that branch. `public/` contains published files, rather than configuration.
 

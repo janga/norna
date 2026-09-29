@@ -642,7 +642,7 @@ test('page-list warns once per listed child with a missing or blank description'
 		})),
 		{ path: `${parent}/pages/050-unlisted/content.md`, contents: '---\nnavigation:\n  listed: false\n---\n# Unlisted\n' },
 		{ path: `${parent}/pages/040-described/pages/010-descendant/content.md`, contents: '# Descendant\n' },
-		{ path: `${parent}/pages/060-category/category.yaml`, contents: 'label: Category\n' },
+		{ path: `${parent}/pages/060-category/content.md`, contents: '---\npage:\n  description: A grouped set of pages.\n---\n# Category\n' },
 		{ path: `${parent}/pages/060-category/pages/010-page/content.md`, contents: '# Category child\n' },
 		{ path: 'site/pages/020-unrelated/content.md', contents: '# Unrelated\n' },
 	];
@@ -677,6 +677,21 @@ test('pages without a page-list do not warn about child descriptions', async () 
 	});
 });
 
+test('an automatic child list warns when no direct listed child can appear', async () => {
+	await withTempProject({
+		site: '# Home\n',
+		files: [
+			{ path: 'site/pages/010-overview/content.md', contents: '---\npage:\n  listChildren: true\n---\n\n# Overview\n' },
+			{ path: 'site/pages/010-overview/pages/010-hidden/content.md', contents: '---\nnavigation:\n  listed: false\n---\n\n# Hidden\n' },
+		],
+	}, async (root) => {
+		const result = runContentScript(root, ['--check']);
+		const output = getOutput(result);
+		assert.equal(result.status, 0, output);
+		assert.match(output, /page\.listChildren has no listed direct child pages to display/);
+	});
+});
+
 test('page-list warnings do not relax existing description validation', async () => {
 	await withTempProject({
 		site: '# Home\n\n```page-list\n```\n',
@@ -688,12 +703,12 @@ test('page-list warnings do not relax existing description validation', async ()
 	});
 });
 
-test('a homepage page-list warns for listed top-level pages but not category descendants', async () => {
+test('a homepage page-list warns for undescribed direct pages but not descendants', async () => {
 	await withTempProject({
 		site: '# Home\n\n```page-list\n```\n',
 		files: [
 			{ path: 'site/pages/010-help/content.md', contents: '# Help\n' },
-			{ path: 'site/pages/020-guides/category.yaml', contents: 'label: Guides\n' },
+			{ path: 'site/pages/020-guides/content.md', contents: '---\npage:\n  description: Find the guides.\n---\n# Guides\n' },
 			{ path: 'site/pages/020-guides/pages/010-child/content.md', contents: '# Child\n' },
 		],
 	}, async (root) => {

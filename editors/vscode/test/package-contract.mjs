@@ -36,10 +36,10 @@ assert.ok(extensionManifest.contributes.viewsWelcome.some((item) => item.view ==
 const itemMenus = extensionManifest.contributes.menus['view/item/context'];
 assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.addPage'
 	&& item.group === 'inline' && item.when.endsWith('viewItem == nornaPages')));
-assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.pageInformation').when.includes('(Home|Page|Category)'));
+assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.pageInformation').when.includes('(Home|Page)'));
 for (const command of ['addToPage', 'pageActions']) {
 	assert.ok(itemMenus.some((item) => item.command === `nornaEditor.${command}`
-		&& item.group.startsWith('inline') && item.when.includes('(Home|Page|Category')));
+		&& item.group.startsWith('inline') && item.when.includes(command === 'addToPage' ? '(Home|Page|Incomplete|Configuration)' : '(Home|Page)')));
 }
 
 const executable = path.join(
@@ -65,6 +65,10 @@ for (const required of [
 	'dist/extension.cjs',
 	'icon.png',
 	'media/norna.svg',
+	'media/page-light.svg',
+	'media/page-dark.svg',
+	'media/page-list-light.svg',
+	'media/page-list-dark.svg',
 	'package.json',
 ]) {
 	assert.ok(files.has(required), `Packaged extension is missing ${required}.`);
@@ -80,6 +84,8 @@ for (const filename of files) {
 	assert.notEqual(filename, 'site-address-actions.cjs');
 	assert.notEqual(filename, 'site-link-review.cjs');
 	assert.notEqual(filename, 'site-source-actions.cjs');
+	assert.notEqual(filename, 'page-form.cjs');
+	assert.notEqual(filename, 'page-form-actions.cjs');
 }
 
 console.log(`VS Code package contract passed (${files.size} packaged files).`);

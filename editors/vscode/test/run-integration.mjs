@@ -66,7 +66,7 @@ const prepareWorkspace = async () => {
 	await write('tree-content/pages/010-guide/content.md', '---\n# Keep metadata comment\npage:\n  description: "Original description" # keep\n  aliases: [/previous-guide/]\n---\n\n# Tree Guide\n\nKeep this prose and [authored link text](/topics/child/).\n');
 	await write('tree-content/pages/010-guide/theme.yaml', 'layout:\n  contentSpacing: compact\n');
 	await write('tree-content/pages/010-guide/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
-	await write('tree-content/pages/020-topics/category.yaml', 'label: Tree Topics\ndescription: Choose a topic.\n');
+	await write('tree-content/pages/020-topics/content.md', '---\npage:\n  description: Choose a topic.\n  listChildren: true\n---\n\n# Tree Topics\n');
 	await write('tree-content/pages/020-topics/pages/010-child/content.md', '# Tree Child\n');
 	await write('tree-content/pages/030-hidden/content.md', '---\nnavigation:\n  listed: false\n---\n# Tree Hidden\n');
 	await write('tree-content/pages/030-hidden/pages/010-hidden-child/content.md', '# Tree Hidden Child\n');
@@ -213,14 +213,14 @@ Body text.[^margin:context]
 	await write('widget-site/site-config/site-theme.yaml', '');
 	await write('widget-site/theme.yaml', 'layout:\n  textWidth: narrow\n');
 	await write('widget-site/site-config/shared-content.yaml', '');
-	await write('widget-site/pages/010-category/category.yaml', '');
+	await write('widget-site/pages/010-overview/content.md', '');
 	await write('usage-site/site-config/settings.yaml', 'url: https://example.com/\n');
 	await write('usage-site/content.md', '# Image usage\n');
 	await write('usage-site/pages/010-other/content.md', '# Other\n');
 	for (const [page, files] of [['', ['a-used.svg', 'z-unused.svg']], ['pages/010-other', ['b-used.svg', 'y-other.svg']]]) {
 		for (const file of files) await write(path.join('usage-site', page, 'images', file), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 	}
-	for (const [project, editorApiVersion] of [['second', 2], ['incompatible', 1]]) {
+	for (const [project, editorApiVersion] of [['second', 3], ['incompatible', 1]]) {
 		const projectEngine = path.join(workspaceRoot, project, 'node_modules', '@janga', 'norna');
 		await cp(engineRoot, projectEngine, { recursive: true });
 		const manifestPath = path.join(projectEngine, 'schemas', 'manifest.json');

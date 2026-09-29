@@ -79,33 +79,17 @@ const getNavigationNodesForEditor = async (siteRoot) => {
 		for (const entry of entries) {
 			const nodeDirectory = path.join(pagesDirectory, entry.name);
 			const contentPath = path.join(nodeDirectory, 'content.md');
-			const categoryPath = path.join(nodeDirectory, 'category.yaml');
-			const [hasContent, hasCategory] = await Promise.all([
-				fileExists(contentPath),
-				fileExists(categoryPath),
-			]);
-
-			if (hasContent !== hasCategory) {
-				if (hasCategory) {
-					nodes.push({
-						depth,
-						headings: [],
-						isHome: false,
-						kind: 'category',
-						listed: true,
-					});
-				} else {
-					const source = await readFile(contentPath, 'utf8');
-					const data = readContentFrontmatterForEditor(source);
-					const document = await parsePageMarkdownSource(source, { label: contentPath });
-					nodes.push({
-						depth,
-						headings: document.navigationHeadings,
-						isHome: false,
-						kind: 'page',
-						listed: data.navigation?.listed !== false,
-					});
-				}
+			if (await fileExists(contentPath)) {
+				const source = await readFile(contentPath, 'utf8');
+				const data = readContentFrontmatterForEditor(source);
+				const document = await parsePageMarkdownSource(source, { label: contentPath });
+				nodes.push({
+					depth,
+					headings: document.navigationHeadings,
+					isHome: false,
+					kind: 'page',
+					listed: data.navigation?.listed !== false,
+				});
 			}
 
 			await visit(path.join(nodeDirectory, 'pages'), depth + 1);

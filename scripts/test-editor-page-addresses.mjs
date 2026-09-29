@@ -69,12 +69,12 @@ test('incoming links resolve aliases, anchors, relative and card links, and excl
 	await rm(broken);
 });
 
-test('addresses distinguish the site prefix, homepage, categories and dirty aliases', async (t) => {
+test('addresses distinguish the site prefix, homepage, overview pages and dirty aliases', async (t) => {
 	const f = await fixture(t);
 	assert.deepEqual(await getEditorPageAddresses(f), { internalLink: '/guide/', webAddress: 'https://example.com/manual/guide/', segment: 'guide', aliases: ['/old-guide/'], incomplete: [] });
 	assert.equal((await getEditorPageAddresses({ ...f, sourcePath: f.home })).webAddress, 'https://example.com/manual/');
-	const category = await f.write('pages/030-group/category.yaml', 'label: Group\n');
-	assert.equal((await getEditorPageAddresses({ ...f, sourcePath: category })).internalLink, '/group/');
+	const overview = await f.write('pages/030-group/content.md', '---\npage:\n  listChildren: true\n---\n# Group\n');
+	assert.equal((await getEditorPageAddresses({ ...f, sourcePath: overview })).internalLink, '/group/');
 	const sources = new Map([[f.sourcePath, '---\npage:\n  aliases: [/draft/]\n---\n# Guide\n']]);
 	assert.deepEqual((await getEditorPageAddresses({ ...f, sources })).aliases, ['/draft/']);
 });

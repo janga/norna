@@ -27,8 +27,8 @@ Write internal links **without** `/manual/`; Norna adds it during rendering:
 [Requirements](/guides/install/#requirements)
 ```
 
-A category path is also a valid link; [category URL behavior](/reference/site/pages/#opening-a-category-url)
-determines whether it shows a list or opens its first child.
+A parent page has its own URL. It can append a
+[generated list of child pages](/reference/site/pages/#list-child-pages).
 
 ## Heading anchors
 
@@ -85,7 +85,7 @@ An alias cannot name a separate destination or an external website.
 
 Paths begin and end with `/`, omit the deployment prefix and use page-folder
 slug characters. `/`, queries and fragments are forbidden. Aliases cannot
-collide with pages, categories, other aliases, public files or generated routes.
+collide with pages, other aliases, public files or generated routes.
 
 Norna currently emits static redirect documents with a canonical target,
 immediate browser navigation and an ordinary link. They are excluded from

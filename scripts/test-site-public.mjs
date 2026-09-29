@@ -54,7 +54,7 @@ test('site:public copies configured public files, removes stale generated public
 	await withTempProject(async (root) => {
 		await writeSiteFiles(root);
 		await writeFixtureFile(root, 'custom-site/pages/010-zeta/content.md', '# Zeta\n');
-		await writeFixtureFile(root, 'custom-site/pages/020-guides/category.yaml', 'label: Guides\n');
+		await writeFixtureFile(root, 'custom-site/pages/020-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 		await writeFixtureFile(root, 'custom-site/pages/020-guides/pages/010-installation/content.md', '# Installation\n');
 		await writeFixtureFile(root, 'custom-site/pages/030-hidden/content.md', `---
 navigation:
@@ -82,6 +82,9 @@ navigation:
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://example.com/docs/</loc>
+  </url>
+  <url>
+    <loc>https://example.com/docs/guides/</loc>
   </url>
   <url>
     <loc>https://example.com/docs/guides/installation/</loc>

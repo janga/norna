@@ -34,7 +34,8 @@ Canonical address changes stay within the existing folder-derived model.
 On 2026-09-26 the owner approved the next tree model in
 [BL-147 VS Code Site Tree Icons And Editing Model](backlog/BL-147-vscode-site-tree-icons-editing-model.md).
 The implementation in extension 0.6.0 opens `content.md` from the page label
-and hides the separate content row. Category labels open `category.yaml`;
+and hides the separate content row. BL-148 later replaced category rows with
+content-backed overview pages;
 chevrons continue to control expansion separately.
 The item also defines consistent object icons, file-state feedback, missing-file
 creation/repair and active-file reveal. It preserves existing removal safeguards
@@ -48,8 +49,9 @@ authoring track and to later authoring work. Record and carry them forward
 even when an individual item's implementation scope covers only part of the
 model. They establish the direction, not approval of every future control.
 
-The list below includes BL-147 VS Code Site Tree Icons And Editing Model.
-It supersedes passive page/category labels, visible `content.md` rows and
+The list below includes BL-147 VS Code Site Tree Icons And Editing Model and
+the later BL-148 Content-backed child-page lists. It supersedes passive page
+labels, visible `content.md` rows and
 suppressed page-source tooltips while retaining the physical hierarchy and
 theme scopes. Its verification and local review are recorded in that item.
 
@@ -62,7 +64,7 @@ theme scopes. Its verification and local review are recorded in that item.
 - Follow Norna's actual file organization. Readable page titles may replace
   technical directory names and ordering prefixes, but the hierarchy must
   match storage. Do not insert synthetic directories such as `Page files`.
-- Show configuration under its owning root, page or category, **before its
+- Show configuration under its owning root or page, **before its
   `pages/` directory**. This applies at every depth, including the site's
   real `site-config/` directory and existing local configuration below it.
   At the root show optional `theme.yaml` first, then `site-config/` and
@@ -74,7 +76,8 @@ theme scopes. Its verification and local review are recorded in that item.
 - Show a page's images and other owned resources beneath that page, with
   actual resource filenames and recognizable `images/` and `pages/`
   directories. Page labels open their own `content.md`; that file has no separate
-  row. Category labels open `category.yaml`. Hover identifies the actual source
+  row. A parent using `page.listChildren: true` still opens its `content.md`.
+  Hover identifies the actual source
   path. Directory labels only select; chevrons and keyboard arrows control
   expansion independently. Individual file rows open their editor or preview.
   `public/` stays beside `site-config/`; illustrate it with site-wide files such
@@ -85,7 +88,7 @@ theme scopes. Its verification and local review are recorded in that item.
   child-page creation, image import and missing supported source files, even
   without `pages/` or `images/`.
   Create a missing directory only when the corresponding operation proceeds.
-  Categories offer child pages and missing local configuration. The ellipsis
+  Overview pages offer child pages and missing local configuration. The ellipsis
   holds other page actions.
 - Use one common page icon unless a page has an explicit presentation of its
   own. This does not introduce a custom-icon feature.

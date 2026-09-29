@@ -53,6 +53,10 @@ test('page aliases reject every occupied public URL identity', () => {
 		label: 'site/pages/010-existing/content.md',
 		pagePath: 'existing',
 	});
+	const guides = pageNode({
+		label: 'site/pages/015-guides/content.md',
+		pagePath: 'guides',
+	});
 	const first = pageNode({
 		aliases: ['/existing/', '/guides/', '/downloads/', '/generated/', '/shared/'],
 		label: 'site/pages/020-first/content.md',
@@ -64,17 +68,13 @@ test('page aliases reject every occupied public URL identity', () => {
 		pagePath: 'second',
 	});
 	const model = createPageAliasModel({
-		categories: [{
-			categorySourceLabel: 'site/pages/015-guides/category.yaml',
-			isHome: false,
-			pagePath: 'guides',
-		}],
+		categories: [],
 		generatedRoutes: [{
 			kind: 'generated-route',
 			label: 'Norna generated route',
 			pathname: '/generated/',
 		}],
-		pages: [home, existing, first, second],
+		pages: [home, existing, guides, first, second],
 		publicFiles: [{
 			label: 'site/public/downloads/index.html',
 			pathname: '/downloads/index.html',
@@ -84,7 +84,7 @@ test('page aliases reject every occupied public URL identity', () => {
 	assert.deepEqual(model.aliases.map(({ pathname }) => pathname), ['/shared/']);
 	assert.equal(model.diagnostics.length, 5);
 	assert.match(model.diagnostics[0].message, /page URL from site\/pages\/010-existing\/content\.md/);
-	assert.match(model.diagnostics[1].message, /navigation category path from site\/pages\/015-guides\/category\.yaml/);
+	assert.match(model.diagnostics[1].message, /page URL from site\/pages\/015-guides\/content\.md/);
 	assert.match(model.diagnostics[2].message, /public file site\/public\/downloads\/index\.html/);
 	assert.match(model.diagnostics[3].message, /generated route Norna generated route/);
 	assert.match(model.diagnostics[4].message, /page alias declared in site\/pages\/020-first\/content\.md/);

@@ -79,7 +79,7 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 			}
 			// Resolve the label again at click time: a slower YAML provider may have
 			// updated the list since keyboard navigation selected this row.
-			const kind = label === 'description' ? 'property' : callouts.includes(label) ? 'enum-member' : 'snippet';
+			const kind = ['description', 'listChildren'].includes(label) ? 'property' : callouts.includes(label) ? 'enum-member' : 'snippet';
 			const rows = (label.endsWith('.svg') || ['tree', 'warm-paper', 'narrow', 'true'].includes(label)) ? widget.locator('.monaco-list-row') : widget.locator('.monaco-list-row').filter({
 				has: window.locator(`.codicon-symbol-${kind}`),
 			});
@@ -105,10 +105,11 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 			return document;
 		};
 
-		for (const prefix of ['', 'desc']) {
-			await accept(`category description: ${prefix ? 'partial key' : 'blank line'}`,
-				`label: Guides\n${prefix}|CURSOR|\n`, 'label: Guides\ndescription: \n',
-				'description', 'widget-site/pages/010-category/category.yaml');
+		for (const prefix of ['', 'listC']) {
+			await accept(`automatic child list: ${prefix ? 'partial key' : 'blank key'}`,
+				`---\npage:\n  ${prefix}|CURSOR|\n---\n\n# Widget checks\n`,
+				'---\npage:\n  listChildren: true\n---\n\n# Widget checks\n',
+				'listChildren', 'widget-site/pages/010-overview/content.md');
 		}
 		for (const prefix of ['', 'tr']) {
 			await accept(`tree navigation: ${prefix ? 'partial value' : 'blank value'}`,
@@ -210,14 +211,13 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 			['config', 'site-config/settings.yaml', 'url: https://example.com/\n'],
 			['theme', 'site-config/site-theme.yaml', 'preset: portfolio\n'],
 			['sitewideContent', 'site-config/shared-content.yaml', 'footer:\n  copyrightMessage: Copyright owner.\n'],
-			['category', 'pages/010-category/category.yaml', 'label: Category label\n'],
 		]) {
 			const relativePath = `widget-site/${filename}`;
-			const schemaFile = { config: 'config', theme: 'theme', sitewideContent: 'sitewide-content', category: 'category' }[kind];
+			const schemaFile = { config: 'config', theme: 'theme', sitewideContent: 'sitewide-content' }[kind];
 			let schemaPath = path.relative(path.dirname(path.join(process.env.NORNA_EDITOR_TEST_WORKSPACE, relativePath)),
 				path.join(process.env.NORNA_EDITOR_TEST_ENGINE_ROOT, 'schemas', `${schemaFile}.schema.json`)).split(path.sep).join('/');
 			if (!schemaPath.startsWith('.')) schemaPath = `./${schemaPath}`;
-			const label = { config: 'Norna site configuration', theme: 'Norna theme', sitewideContent: 'Norna site-wide content', category: 'Norna page category' }[kind];
+			const label = { config: 'Norna site configuration', theme: 'Norna theme', sitewideContent: 'Norna site-wide content' }[kind];
 			await accept(`Empty ${filename}`, '|CURSOR|', `# yaml-language-server: $schema=${schemaPath}\n\n${body}`, label, relativePath);
 		}
 

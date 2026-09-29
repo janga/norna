@@ -26,12 +26,11 @@ const getTreeMetrics = (root) => {
 	const nodes = flattenSiteNavigationTree([root]);
 	const rootDepth = root.node.depth;
 	return {
-		categoryCount: nodes.filter(({ node }) => node.kind === 'category').length,
 		maximumLevels: nodes.reduce((maximum, { node }) => (
 			Math.max(maximum, node.depth - rootDepth + 1)
 		), 1),
 		nodeCount: nodes.length,
-		pageCount: nodes.filter(({ node }) => node.kind === 'page').length,
+		pageCount: nodes.length,
 	};
 };
 
@@ -85,10 +84,8 @@ const getNavigationEntries = (siteStructure, linkGraph) => {
 	]));
 
 	return siteStructure.nodes.map((siteNode) => {
-		const page = siteNode.kind === 'page'
-			? pagesByDirectory.get(siteNode.pageDirectory)
-			: null;
-		if (siteNode.kind === 'page' && !page) {
+		const page = pagesByDirectory.get(siteNode.pageDirectory);
+		if (!page) {
 			throw new Error(`Navigation review could not find parsed content for ${siteNode.contentLabel}.`);
 		}
 
@@ -99,8 +96,8 @@ const getNavigationEntries = (siteStructure, linkGraph) => {
 				navigation: {
 					listed: siteNode.isHome || (page?.navigation.listed ?? true),
 				},
-				pathname: siteNode.kind === 'page' ? page.pathname : null,
-				title: siteNode.kind === 'page' ? page.title : siteNode.label,
+				pathname: page.pathname,
+				title: page.title,
 			},
 			page,
 			sections: [],
@@ -121,7 +118,7 @@ const getNavigationModes = ({ entries, listedEntries, requestedNavigationMode })
 	const modes = new Map();
 	const seenErrors = new Set();
 
-	for (const entry of entries.filter(({ node }) => node.kind === 'page')) {
+	for (const entry of entries) {
 		try {
 			const model = resolveNavigationModel({
 				currentPage: {
@@ -173,9 +170,7 @@ export const createNavigationReview = ({
 		requestedNavigationMode,
 	});
 
-	const pages = completeEntries
-		.filter(({ node }) => node.kind === 'page')
-		.map(({ headings, node, page }) => {
+	const pages = completeEntries.map(({ headings, node, page }) => {
 			const incomingPageLinkCount = resolvedPageReferences.filter(({ resolution }) => (
 				resolution.page.pathname === page.pathname
 			)).length;
@@ -199,21 +194,6 @@ export const createNavigationReview = ({
 				title: node.title,
 			};
 		});
-
-	const categories = completeEntries
-		.filter(({ node }) => node.kind === 'category')
-		.map(({ children, node }) => ({
-			childCount: children.length,
-			depth: node.depth,
-			listed: listedPaths.has(node.pagePath),
-			listedChildCount: listedPaths.has(node.pagePath)
-				? (listedEntries.find(({ node: listedNode }) => listedNode.pagePath === node.pagePath)?.children.length ?? 0)
-				: 0,
-			parentPath: node.parentPagePath === null ? null : `/${node.parentPagePath}/`,
-			path: logicalPathname(node),
-			source: node.categorySourceLabel,
-			title: node.title,
-		}));
 
 	const branches = listedTree.map((root) => {
 		const metrics = getTreeMetrics(root);
@@ -247,13 +227,6 @@ export const createNavigationReview = ({
 	}
 
 	const recommendations = [];
-	for (const category of categories.filter(({ listed, listedChildCount }) => listed && listedChildCount === 1)) {
-		recommendations.push({
-			code: 'single-child-category',
-			message: `${category.title} (${category.path}) has one listed child. Keep the category when its label adds useful orientation; otherwise consider moving the child to the category's parent.`,
-			path: category.path,
-		});
-	}
 	for (const branch of branches.filter(({ maximumLevels }) => maximumLevels >= thresholds.deepBranchLevels)) {
 		recommendations.push({
 			code: 'deep-branch',
@@ -280,7 +253,7 @@ export const createNavigationReview = ({
 
 	return {
 		command: 'navigation:review',
-		schemaVersion: 1,
+		schemaVersion: 2,
 		thresholds: {
 			deepBranchLevels: thresholds.deepBranchLevels,
 			sectionCount: thresholds.sectionCount,
@@ -288,10 +261,8 @@ export const createNavigationReview = ({
 		},
 		site: {
 			branchCount: branches.length,
-			categoryCount: categories.length,
 			effectiveNavigationModes,
 			internalReferenceCount: linkGraph.references.length,
-			listedCategoryCount: categories.filter(({ listed }) => listed).length,
 			listedPageCount: pages.filter(({ listed }) => listed).length,
 			maximumDepth: listedEntries.reduce((maximum, { node }) => Math.max(maximum, node.depth), 0),
 			pageCount: pages.length,
@@ -302,7 +273,6 @@ export const createNavigationReview = ({
 		branches,
 		siblingGroups,
 		pages,
-		categories,
 		errors: [
 			...linkGraph.diagnostics.filter(({ severity }) => severity === 'error').map(toGraphFinding),
 			...navigationErrors,
@@ -331,26 +301,19 @@ export const formatNavigationReviewText = (review) => {
 		'',
 		'Site',
 		`- Navigation: ${review.site.requestedNavigationMode} configured; ${review.site.effectiveNavigationModes.join(', ') || 'unresolved'} effective`,
-		`- Content: ${plural(review.site.pageCount, 'page')} (${review.site.listedPageCount} listed), ${plural(review.site.categoryCount, 'category', 'categories')} (${review.site.listedCategoryCount} listed)`,
+		`- Content: ${plural(review.site.pageCount, 'page')} (${review.site.listedPageCount} listed)`,
 		`- Structure: ${plural(review.site.branchCount, 'top-level branch', 'top-level branches')}, ${review.site.maximumDepth} listed ${review.site.maximumDepth === 1 ? 'level' : 'levels'}, widest sibling group ${review.site.widestSiblingCount}`,
 		`- Links: ${plural(review.site.internalReferenceCount, 'internal reference')}, ${review.site.resolvedPageLinkCount} resolved to pages`,
 		'',
 		'Branches',
 		...review.branches.map((branch) => (
-			`- ${branch.title} (${branch.path}; ${branch.kind}): ${plural(branch.pageCount, 'page')}, ${plural(branch.categoryCount, 'category', 'categories')}, ${plural(branch.maximumLevels, 'visible level')}; navigation ${branch.navigationModes.join(', ') || 'unresolved'}`
+			`- ${branch.title} (${branch.path}; ${branch.kind}): ${plural(branch.pageCount, 'page')}, ${plural(branch.maximumLevels, 'visible level')}; navigation ${branch.navigationModes.join(', ') || 'unresolved'}`
 		)),
 		'',
 		'Pages',
 		...review.pages.map((page) => (
 			`- ${page.title} (${page.pathname}; ${page.listed ? 'listed' : 'not listed'}): H2 ${page.h2Count}, H3 ${page.h3Count}; page links ${page.outgoingPageLinkCount} out / ${page.incomingPageLinkCount} in; navigation ${page.navigationMode ?? 'unresolved'}`
 		)),
-		'',
-		'Categories',
-		...(review.categories.length === 0
-			? ['- None.']
-			: review.categories.map((category) => (
-				`- ${category.title} (${category.path}; ${category.listed ? 'listed' : 'not listed'}): ${category.listedChildCount} listed of ${plural(category.childCount, 'direct child', 'direct children')}`
-			))),
 		'',
 		...formatFindingSection('Errors', review.errors),
 		'',

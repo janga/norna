@@ -31,7 +31,6 @@ Commands:
   init                   Create a new site project from the starter
   page:add               Add a page to the site page tree
   page:move              Move a page subtree and update internal links
-  category:add           Add a navigation group without an authored page body
   migrate:check          Audit a Docusaurus project without modifying it
   build                  Build the selected site
   build:local            Build and restart local dev server
@@ -185,7 +184,7 @@ try {
 	} else if (command === 'page:move') {
 		await runScript('scripts/move-site-page.mjs', rest);
 	} else if (command === 'category:add') {
-		await runScript('scripts/add-site-node.mjs', ['category', ...rest]);
+		throw new Error('category:add is no longer supported. Use page:add, then set page.listChildren: true in its content.md to list direct children.');
 	} else if (command === 'build') {
 		await runBuild();
 	} else if (command === 'build:local') {

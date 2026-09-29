@@ -20,7 +20,7 @@ const pages = [
 	['020-guides/pages/010-page-move', 'guides/page-move', 'Nested page move'],
 	['030-page-040-other', 'page-040-other', 'Numeric page marker'],
 	['040-page-000-home', 'page-000-home', 'Page named like Home'],
-	['050-page-guides/pages/010-installation', 'page-guides/installation', 'Installation below a category'],
+	['050-page-guides/pages/010-installation', 'page-guides/installation', 'Installation below an overview'],
 ];
 
 try {
@@ -31,7 +31,7 @@ try {
 		await mkdir(pageDir, { recursive: true });
 		await writeFile(path.join(pageDir, 'content.md'), `---\npage:\n  description: Regression fixture for ${title.toLowerCase()}.\n---\n\n# ${title}\n`);
 	}
-	await writeFile(path.join(siteDir, 'pages', '050-page-guides', 'category.yaml'), 'label: Page guides\n');
+	await writeFile(path.join(siteDir, 'pages', '050-page-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Page guides\n\n## Before the list\n\nAuthor guidance comes first.\n');
 
 	for (const siteArgument of [siteDir, path.relative(fixtureCopyRoot, siteDir)]) {
 		await runInherit(process.execPath, [cliPath, '--site-dir', siteArgument, 'content:check'], { cwd: fixtureCopyRoot });
@@ -49,6 +49,12 @@ try {
 			assert.ok(html.includes(`id="page-title">${title}</h1>`), `${siteArgument}: ${pagePath} must render its own page`);
 			assert.ok(sitemap.includes(`<loc>https://example.com/${pagePath}/</loc>`), `${pagePath} must retain its full URL`);
 		}
+		const overview = await readFile(path.join(distDir, 'page-guides', 'index.html'), 'utf8');
+		const list = overview.match(/<nav class="child-page-list"[\s\S]*?<\/nav>/)?.[0];
+		assert.ok(list, 'The overview must render its automatic child list.');
+		assert.ok(overview.indexOf('Author guidance comes first.') < overview.indexOf(list));
+		assert.match(list, /href="\/page-guides\/installation\/"/);
+		assert.doesNotMatch(list, /href="\/guides\/page-move\/"/);
 		await access(path.join(siteDir, '.norna', '.astro'));
 	}
 	console.log('Basic fixture builds passed with isolated output/cache and page-ID regressions for absolute and relative site selection.');

@@ -1,44 +1,56 @@
 ---
 page:
-  description: Organize pages and categories, order siblings and understand category URLs.
+  description: Organize content-backed pages, order siblings and generate child-page lists.
 ---
 
-# Pages and categories
+# Pages and child-page lists
 
-A **page** contains editorial content in `content.md`. A **category** groups
-pages under a label in `category.yaml`, without introductory prose. Each
-folder contains exactly one of these files, never both.
+Every page has a `content.md` with one H1. The homepage is the required root
+page at `site/content.md`; its children are ordered directories in
+`site/pages/`. Any child can have its own `pages/` directory, with no fixed
+depth limit.
 
-## Page or category
+## Choose pages and sections
 
-Use a page for an independent reader need; a section for another part of the
-same reading task; and a category when a parent would only repeat child links
-already available in navigation.
+Use a child page for an independent reader need and an H2 section for another
+part of the same reading task. A parent page can have editorial text or simply
+introduce its children. It always has its own URL and can be opened directly.
 
-```text title="A category and two pages"
+```text title="A parent and two child pages"
 site/
 |-- content.md
 `-- pages/
     `-- 010-getting-started/
-        |-- category.yaml
+        |-- content.md
         `-- pages/
             |-- 010-install/content.md
             `-- 020-first-page/content.md
 ```
 
-```yaml title="site/pages/010-getting-started/category.yaml"
-label: Getting started
-description: Install Norna and prepare your first site.
+## List child pages
+
+Set `page.listChildren: true` in the parent's frontmatter to append a generated
+list after all its authored content. The H1 is required; introductory prose,
+other headings and images are optional.
+
+```md title="site/pages/010-getting-started/content.md"
+---
+page:
+  description: Install Norna and prepare your first site.
+  listChildren: true
+---
+
+# Getting started
+
+Choose a task below.
 ```
 
-The required category label appears in navigation. The optional `description`
-is a non-empty summary used in area menus and generated category lists; it
-does not create an editorial page or determine navigation scope. A page label
-comes from its one H1.
-Both pages and categories can have children in `pages/`, with no fixed depth
-limit. The homepage is the required root page at `site/content.md`; its children
-are the entries in `site/pages/`. It cannot be a category. The published menus
-present these children as top-level choices, alongside the link to Home.
+The list contains every **direct** child listed in navigation, in sibling
+order. It uses each child's H1 and optional `page.description`; it does not
+include grandchildren or children under an unlisted branch. The list is
+generated and cannot be edited separately. A page with `listChildren: true`
+and no listed direct child remains valid, but `content:check` and `build`
+warn about the empty list.
 
 ## Names and order
 
@@ -52,35 +64,7 @@ Numeric order determines navigation order. The slug becomes a URL segment;
 the number and intermediate `pages/` folders do not. Changing the H1 or
 reordering a folder does not change its URL. See [URLs and links](/reference/site/urls/).
 
-[page:add and category:add](/reference/commands/create/) create the files, or
-you can edit them directly. Categories have no image content of their own.
-
-## Opening a category URL
-
-A category has a URL despite having no `content.md`. Norna examines its direct
-children in numeric order, excluding pages hidden from navigation and
-categories with no reachable listed page:
-
-| First child available in navigation | Category URL result |
-| --- | --- |
-| A page | Static redirect to that page |
-| Another category | Generated list of this category's direct children available in navigation |
-| No children | Generated page with the category heading and an empty list |
-
-Norna does not search through subcategories for an arbitrary first page. The
-generated list shows labels and available page or category descriptions. A valid
-category-first structure causes no warning.
-
-The redirect has a normal link fallback. It is not a permanent
-[alias](/reference/site/urls/#keep-an-old-url): its target follows the current
-first listed child. Link directly to a page when a link must keep identifying
-that page after reordering.
-
-A category with no reachable listed page is allowed. `content:check` and
-`build` report a warning, and the category is omitted from navigation until
-it has a listed page. This also applies when its only pages are hidden from
-navigation. Categories that appear in navigation require tree navigation,
-normally selected automatically.
+Use [page:add](/reference/commands/create/) or create the files directly.
 
 ## Listed and unlisted pages
 
@@ -97,8 +81,8 @@ navigation:
 ```
 
 An unlisted parent also removes its descendants from navigation. This does
-not make URLs private or remove pages from the sitemap. Categories do not
-accept this metadata, and Home must remain listed.
+not make URLs private or remove pages from the sitemap. Home must remain
+listed.
 
 [Automatic navigation](/reference/configuration/navigation/) defines menus,
 breadcrumbs and page sequences. [page:move](/reference/commands/move/) changes

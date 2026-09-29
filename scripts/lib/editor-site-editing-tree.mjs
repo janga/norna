@@ -57,9 +57,9 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 		if (location) {
 			const hasContent = names.get('content.md')?.isFile();
 			const hasCategory = names.get('category.yaml')?.isFile();
-			const conflict = Boolean(hasContent && hasCategory);
-			const kind = !hasContent && (location.isHome || !hasCategory) ? 'incomplete' : hasCategory && !location.isHome ? 'category' : 'page';
-			const sourcePath = path.join(directory, kind === 'category' ? 'category.yaml' : 'content.md');
+			const conflict = false;
+			const kind = hasContent ? 'page' : 'incomplete';
+			const sourcePath = path.join(directory, 'content.md');
 			const logical = byDirectory.get(directory);
 			let information = {};
 			if (kind !== 'incomplete') {
@@ -73,8 +73,8 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			if (information.problem) issue(container, information.problem);
 			if (kind !== 'incomplete') await validate(container);
 			else issue(container, location.isHome ? 'Homepage content.md is missing. Use Add to create it.'
-				: 'Neither content.md nor category.yaml exists. Use Add to choose a page or category source.');
-			if (conflict) issue(container, 'Both content.md and category.yaml exist. Keep one source: page content or category information.');
+				: 'Page content.md is missing. Use Add to create it.');
+			if (hasCategory) issue(container, 'category.yaml is no longer supported. Use content.md with page.listChildren: true for an overview.');
 			if (location.isHome) for (const name of ['settings.yaml', 'site-theme.yaml']) {
 				try { await read(path.join(directory, 'site-config', name)); }
 				catch (error) { if (error.code === 'ENOENT' || error.code === 'ENOTDIR') issue(container, `Required site-config/${name} is missing. Use Add to create it.`, 'error', path.join(directory, 'site-config', name)); else issue(container, error.message); }
@@ -86,7 +86,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 					? 'Files published unchanged with the site, such as robots.txt and icons.' : role === 'configuration' ? 'Settings and content shared by the complete site' : '' };
 			items.push(container);
 		}
-		const order = location ? ['theme.yaml', 'site-config', 'public', 'category.yaml', 'images', 'pages']
+		const order = location ? ['theme.yaml', 'site-config', 'public', 'images', 'pages']
 			: role === 'configuration' ? ['settings.yaml', 'site-theme.yaml', 'shared-content.yaml'] : [];
 		const rank = (entry) => order.includes(entry.name) ? order.indexOf(entry.name) : order.length;
 		entries.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'en', { numeric: true }));
@@ -113,7 +113,8 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			items.push(file);
 			if (definition) await validate(file);
 			else if (role !== 'public' && ['site-config', 'public', 'pages', 'images'].includes(entry.name)) issue(file, `Expected a directory named ${entry.name}, but this is a file. Rename or move this file through Explorer before creating the directory.`, 'warning');
-			else if (role !== 'public' && knownNames.has(entry.name)) issue(file, `This source file is in the wrong location. Put content.md, category.yaml and theme.yaml in a valid page directory; put settings.yaml, site-theme.yaml and shared-content.yaml in the site's site-config/.`, 'warning');
+			else if (role !== 'public' && entry.name === 'category.yaml') issue(file, 'category.yaml is no longer supported. Create content.md with page.listChildren: true, then remove this file.', 'warning');
+			else if (role !== 'public' && knownNames.has(entry.name)) issue(file, `This source file is in the wrong location. Put content.md and theme.yaml in a valid page directory; put settings.yaml, site-theme.yaml and shared-content.yaml in the site's site-config/.`, 'warning');
 			else if (role !== 'public' && !(role === 'images' && /\.(jpe?g|png|svg)$/i.test(entry.name))) file.note = 'Not used by Norna';
 		}
 	};

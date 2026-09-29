@@ -38,18 +38,15 @@ type SiteEntry = CollectionEntry<'site'>;
 
 interface Props {
 	entry?: SiteEntry;
-	categoryPath?: string;
 }
 
-const { entry, categoryPath } = Astro.props;
+const { entry } = Astro.props;
 const siteDirectory = (process.env.NORNA_SITE_DIR ?? 'site').trim();
 const siteModel = await getSiteModel(await getCollection('site'));
 const categoryDestinations = siteModel.categoryDestinations.byPathname;
 const { nodes: siteNodes, pages: sitePages } = siteModel;
-const categoryDestination = categoryPath ? siteModel.categoryDestinations.byPathname.get(categoryPath) : null;
-const currentPage = categoryDestination?.category
-	?? sitePages.find((page) => page.entry.id === entry?.id);
-if (!currentPage) throw new Error(`Page entry "${entry?.id ?? categoryPath}" is missing from the site page model.`);
+const currentPage = sitePages.find((page) => page.entry.id === entry?.id);
+if (!currentPage) throw new Error(`Page entry "${entry?.id}" is missing from the site page model.`);
 const [siteTheme] = await getCollection('theme');
 if (!siteTheme) {
 	throw new Error('site/site-config/site-theme.yaml is required. Add the shared site theme before building the site.');
@@ -99,20 +96,20 @@ const renderedNavigationEntries = flattenSiteNavigationTree(listedNavigationTree
 const pageSequence = getSequentialPageNavigation(listedNavigationTree, currentPage.pagePath);
 const childPages = getDirectChildPages(listedNavigationTree, currentPage.pagePath);
 const siteHtml = entry?.rendered?.html ?? '';
-const resolvedSections: ResolvedSection[] = categoryDestination ? [{
-	id: null,
-	title: currentPage.title,
-	titleHtml: currentPage.title.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-	headingLevel: 1,
-	contentBlocks: [{
-		type: 'page-list',
-		pages: categoryDestination.children.map((node) => ({
-			title: node.title,
-			pathname: getNavigationDestination(node, categoryDestinations).pathname,
-			description: node.kind === 'page' ? node.entry.data.page?.description : node.description,
-		})),
-	}],
-}] : await getSectionsContent(siteHtml, currentPage, childPages);
+const resolvedSections: ResolvedSection[] = await getSectionsContent(siteHtml, currentPage, childPages);
+if (currentPage.kind === 'page' && currentPage.entry.data.page?.listChildren) {
+	const lastSection = resolvedSections.at(-1);
+	if (lastSection && childPages.length > 0) {
+		lastSection.contentBlocks.push({
+			type: 'page-list',
+			pages: childPages.map((child) => ({
+				title: child.title,
+				pathname: child.pathname,
+				description: child.entry.data.page?.description,
+			})),
+		});
+	}
+}
 const allContentBlocks = resolvedSections.flatMap((section) => flattenContentBlocks(section.contentBlocks));
 const hasTabs = allContentBlocks.some((block) => block.type === 'tabs');
 const hasNotes = allContentBlocks.some((block) => (

@@ -30,9 +30,9 @@ start from the current starter. Preserve a working copy before converting.
 - In each old route directory, rename `route-content.md` to `content.md`.
 - Keep the three-digit sibling order prefix. A directory such as
   `010-guide/` still produces `/guide/`; the prefix is not part of the URL.
-- Put child entries under the nearest parent page or category's `pages/`
-  directory. Use `content.md` when the parent needs its own page; use
-  `category.yaml` when it is only a navigation label. Home is the front door
+- Put child entries under the nearest parent page's `pages/` directory.
+  Every parent uses `content.md`; add `page.listChildren: true` if it should
+  append a generated list of its direct children. Home is the front door
   and has its children under `site/pages/`.
 
 Every page must contain exactly one H1. H2 headings define sections. Norna now

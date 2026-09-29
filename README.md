@@ -69,13 +69,12 @@ site/
 ```
 
 - `content.md` is the required homepage at `/`; `pages/` contains its children.
-- Every ordered directory under `pages/` contains either `content.md` for
-  a routable page or `category.yaml` for a navigation-only group.
-- A page may contain local images. A page or category may contain limited
-  presentation settings and nested entries under its own `pages/` directory.
-- Category ids remain in child URLs. Opening a category URL leads to its first
-  listed direct page or a generated child list; see
-  [Category destinations](https://janga.github.io/norna/reference/site/pages/#opening-a-category-url).
+- Every ordered directory under `pages/` contains `content.md` for a routable
+  page. A parent can append a generated list of its direct child pages with
+  `page.listChildren: true`; see
+  [Child-page lists](https://janga.github.io/norna/reference/site/pages/#list-child-pages).
+- A page may contain local images, limited presentation settings and nested
+  entries under its own `pages/` directory.
 - `site-config/site-theme.yaml` selects shared visual defaults. Optional root `theme.yaml`
   overrides the homepage alone; a child's `theme.yaml` is inherited further.
 - `site-config/shared-content.yaml` holds shared logo display settings, banners, and

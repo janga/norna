@@ -108,26 +108,21 @@ experimental or unavailable behavior explicitly. Include current product
 boundaries so omission cannot be mistaken for support. Do not reproduce full
 syntax, defaults, or command options.
 
-## Pages And Navigation Categories
+## Pages And Child-Page Lists
 
 Give each page one independent reader need. Use sections for parts of the same
 reading task, not child pages mechanically split at each H2 or length limit.
 Keep short, sequential beginner flows together.
 
-Give a page its own URL only when it serves an independent reader need. A useful
-parent page may introduce a subject, provide an overview that adds understanding,
-or help the reader complete a task before choosing a child page.
+Every page has its own URL. A useful parent may introduce a subject, provide
+an overview that adds understanding, or help the reader choose a child page.
+If no introduction is useful, keep just the H1 and opt into the generated
+child list with `page.listChildren: true`. Do not add filler prose to justify
+the URL or hand-maintain a duplicate list of child links.
 
-Use a navigation category when a collection needs a shared label but no useful
-content of its own. If a proposed parent page would only repeat the names,
-descriptions, or links already present in the navigation tree, replace it with a
-category. Do not add generic introductory prose merely to justify a parent URL.
-
-Do not reproduce child-page navigation as a list of links on an overview page.
-Link to a child page only when the surrounding text explains why the reader
-should open it or establishes a recommended sequence. If a parent would
-otherwise only summarize or link to its children, use a navigation category
-instead.
+Link to a child page within authored prose when the surrounding text explains
+why the reader should open it or establishes a recommended sequence. The
+generated list appears after all authored content.
 
 Do not remove a useful parent page simply to shorten the navigation. The test is
 whether the page remains worth opening independently, not how many children it

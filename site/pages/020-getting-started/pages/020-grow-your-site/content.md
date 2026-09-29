@@ -1,7 +1,7 @@
 ---
 page:
   description:
-    Choose between sections, pages, and navigation categories as a Norna site
+    Choose between sections and pages as a Norna site
     grows.
 ---
 
@@ -21,7 +21,7 @@ distinct task or topic that remains useful when opened directly. If that page is
 a clear part of a broader topic, make it a child of the broader page.
 
 See
-[Choose a section, page, or category](/reference/site/pages/#page-or-category)
+[Choose a section or page](/reference/site/pages/#choose-pages-and-sections)
 for the complete editorial test and examples.
 
 ## Start with one page {#single-page-site}
@@ -193,12 +193,9 @@ items:
 ## Add nested pages {#child-pages}
 
 Use nested pages when several distinct pages belong under one broader heading.
-The heading can be a real parent page or a navigation category. The `Getting
-Started` area you are reading is a category with five child pages.
-
-Choose a parent page when the broader topic needs an introduction or overview
-of its own. Choose a category when the heading only needs to group child pages
-in navigation.
+The parent always has its own page. The `Getting Started` area you are reading
+has five child pages. Its parent page can introduce the area or simply list
+the child pages automatically.
 
 The illustration maps the documentation's real page directories to the
 navigation visible on this page. Numeric prefixes determine sibling order but
@@ -216,33 +213,33 @@ and navigation in the Norna documentation site.
 ```image-stack
 items:
   - image: getting-started-file-map.svg
-    alt: The actual documentation file tree mapped to the rendered Getting Started navigation. The 020-getting-started category contains Install Norna, Choose A Theme, Grow Your Site, Prepare Your Site, and Build And Publish in numeric order. The highlighted 020-grow-your-site content file maps to the current page and its H2 section links.
+    alt: The actual documentation file tree mapped to the rendered Getting Started navigation. The 020-getting-started page contains Install Norna, Choose A Theme, Grow Your Site, Prepare Your Site, and Build And Publish in numeric order. The highlighted 020-grow-your-site content file maps to the current page and its H2 section links.
     caption: The page directories and their content become the navigation and page you are using now.
 ```
 
-The category file contains only its navigation label:
+The parent page can contain only a heading and the child-list setting:
 
-```yaml
-label: Getting Started
+```md
+---
+page:
+  listChildren: true
+---
+
+# Getting Started
 ```
 
-Create the category and its first page with:
+Create the parent and its first child with:
 
 ```sh
-norna category:add "Getting Started" --parent /
+norna page:add "Getting Started" --parent /
 norna page:add "Install Norna" --parent /getting-started/
 ```
 
 The second command creates `/getting-started/install-norna/`. Opening
-`/getting-started/` takes the reader to Install Norna, its first listed child.
-If the first child is another category instead, Norna shows a list of direct
-children so the reader can choose a branch. No introductory page is required.
-See [Opening a category URL](/reference/site/pages/#opening-a-category-url).
-
-If `Getting Started` needs an introduction or overview, use `content.md`
-instead of `category.yaml`. It then becomes a real page at
-`/getting-started/`, while the child URLs remain unchanged. A page/category
-directory must contain exactly one of those two marker files.
+`/getting-started/` shows the parent page and its generated list of direct
+listed children. If the parent needs an introduction, add it after the H1;
+the list stays after all authored content. See
+[List child pages](/reference/site/pages/#list-child-pages).
 
 Each child page remains an ordinary Markdown file. For example:
 
@@ -250,7 +247,7 @@ Each child page remains an ordinary Markdown file. For example:
 ---
 page:
   description:
-    Choose between sections, pages, and navigation categories as a Norna site
+    Choose between sections and pages as a Norna site
     grows.
 ---
 
@@ -265,11 +262,10 @@ Use a section for another part of the same reading task.
 Each page keeps its Markdown content and images together.
 ```
 
-The top-level category gives Getting Started a menu in global navigation.
+The top-level page gives Getting Started a menu in global navigation.
 Its two pages stay together in one left tree, with H2 links beneath each page.
 Click a page name to open it; use the separate chevron to expand or collapse
-its outline. A category link opens its generated destination, while category
-labels in breadcrumbs remain plain text.
+its outline. A parent page opens its own content and generated child list.
 
 For a larger collection with subgroups, the selected subgroup supplies the
 local tree. Home keeps global navigation without a persistent left tree.
@@ -283,10 +279,10 @@ the reader into another top-level area.
 
 Home is the root page at `site/content.md`. Its children in `site/pages/` are
 the top-level entries in navigation. Place deeper topics beneath the page or
-category they belong to.
+parent page they belong to.
 
-See [Pages and categories](/reference/site/pages/)
-for exact marker files, creation options, ordering, URLs, inherited page themes,
+See [Pages and child-page lists](/reference/site/pages/)
+for source files, creation options, ordering, URLs, inherited page themes,
 navigation behavior, and safe page moves.
 
 ## Review the resulting structure {#review-structure}
@@ -298,10 +294,9 @@ changing any source files:
 norna navigation:review
 ```
 
-The report lists branches, pages, categories, H2/H3 outlines, internal page
+The report lists branches, pages, H2/H3 outlines, internal page
 links, and each page's effective navigation mode. Errors are reported
-separately from advisory prompts, such as reviewing a category that contains
-only one listed child. Those prompts are starting points for editorial judgment,
+separately from advisory prompts. Those prompts are starting points for editorial judgment,
 not validation failures or automatic rewrites.
 
 The [command reference](/reference/commands/navigation/)

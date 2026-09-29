@@ -56,7 +56,7 @@ Start here.
 
 Continue with the guides.
 `);
-	await writeFixtureFile(tempRoot, 'site/pages/010-guides/category.yaml', 'label: Guides\n');
+	await writeFixtureFile(tempRoot, 'site/pages/010-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 	await writeFixtureFile(tempRoot, 'site/pages/010-guides/pages/010-installation/content.md', `# Installation
 
 [Return home](/)
@@ -82,7 +82,7 @@ Read the command output.
 Change advanced settings.
 `);
 
-	await writeFixtureFile(tempRoot, 'site/pages/020-reference/category.yaml', 'label: Reference\n');
+	await writeFixtureFile(tempRoot, 'site/pages/020-reference/content.md', '---\npage:\n  listChildren: true\n---\n\n# Reference\n');
 	for (let index = 1; index <= 10; index += 1) {
 		const order = String(index * 10).padStart(3, '0');
 		const sections = index === 1
@@ -119,12 +119,10 @@ The parent hides this page from navigation too.
 	const review = JSON.parse(jsonResult.stdout);
 
 	assert.equal(review.command, 'navigation:review');
-	assert.equal(review.schemaVersion, 1);
+	assert.equal(review.schemaVersion, 2);
 	assert.deepEqual(review.site.effectiveNavigationModes, ['tree']);
-	assert.equal(review.site.pageCount, 16);
-	assert.equal(review.site.listedPageCount, 14);
-	assert.equal(review.site.categoryCount, 2);
-	assert.equal(review.site.listedCategoryCount, 2);
+	assert.equal(review.site.pageCount, 18);
+	assert.equal(review.site.listedPageCount, 16);
 	assert.equal(review.site.branchCount, 3);
 	assert.equal(review.site.maximumDepth, 4);
 	assert.equal(review.site.widestSiblingCount, 10);
@@ -149,9 +147,7 @@ The parent hides this page from navigation too.
 	assert.equal(review.pages.find(({ pathname }) => pathname === '/guides/installation/macos/').navigationMode, 'tree');
 	assert.equal(review.pages.find(({ pathname }) => pathname === '/hidden/').listed, false);
 	assert.equal(review.pages.find(({ pathname }) => pathname === '/hidden/child/').listed, false);
-	assert.equal(review.categories.find(({ path: categoryPath }) => categoryPath === '/guides/').listedChildCount, 1);
 	assert.deepEqual(review.recommendations.map(({ code }) => code), [
-		'single-child-category',
 		'deep-branch',
 		'wide-sibling-group',
 		'section-heavy-page',
@@ -163,7 +159,7 @@ The parent hides this page from navigation too.
 	assert.equal(textResult.status, 0, `${textResult.stdout}${textResult.stderr}`);
 	assert.match(textResult.stdout, /^Navigation Review/m);
 	assert.match(textResult.stdout, /Home \(\/; listed\): H2 1, H3 1/);
-	assert.match(textResult.stdout, /\[single-child-category\]/);
+	assert.match(textResult.stdout, /Guides \(\/guides\/; listed\)/);
 	assert.match(textResult.stdout, /\[deep-branch\]/);
 	assert.match(textResult.stdout, /Errors\n- None\./);
 
@@ -180,14 +176,12 @@ The parent hides this page from navigation too.
 	assert.equal(unknownOptionResult.status, 1);
 	assert.match(unknownOptionResult.stderr, /Unknown navigation:review option "--write"/);
 
-	await writeFixtureFile(tempRoot, 'site/pages/040-empty/category.yaml', 'label: Empty\n');
+	await writeFixtureFile(tempRoot, 'site/pages/040-empty/content.md', '---\npage:\n  listChildren: true\n---\n\n# Empty\n');
 	const emptyResult = runReview(tempRoot, ['--format=json']);
 	assert.equal(emptyResult.status, 0, emptyResult.stderr);
 	const emptyReview = JSON.parse(emptyResult.stdout);
 	assert.deepEqual(emptyReview.errors, []);
-	assert.equal(emptyReview.observations.filter(({ code }) => code === 'category-without-listed-content').length, 1);
-	assert.equal(emptyReview.observations.some(({ code }) => code === 'empty-category'), false);
-	assert.equal(emptyReview.site.listedCategoryCount, review.site.listedCategoryCount);
+	assert.equal(emptyReview.site.pageCount, review.site.pageCount + 1);
 
 	await writeFixtureFile(tempRoot, 'site/content.md', `# Home
 

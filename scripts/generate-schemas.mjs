@@ -3,7 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'astro/zod';
 import {
-	categorySchema,
 	configSchema,
 	pageThemeSchema,
 	siteSchema,
@@ -16,7 +15,6 @@ import { getNornaBlockSchema } from './lib/norna-markdown-blocks.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const schemaDirectory = path.join(root, 'schemas');
 const definitions = [
-	['category.schema.json', 'Norna page category', categorySchema],
 	['config.schema.json', 'Norna site configuration', configSchema],
 	['theme.schema.json', 'Norna visual theme', themeVisualSchema],
 	['page-theme.schema.json', 'Norna page theme', pageThemeSchema],
@@ -44,11 +42,10 @@ for (const type of blockTypes) {
 }
 
 schemaFiles.set('manifest.json', `${JSON.stringify({
-	editorApiVersion: 2,
-	schemaVersion: 3,
+	editorApiVersion: 3,
+	schemaVersion: 4,
 	blockSchemas: Object.fromEntries(blockTypes.map((type) => [type, `${type}.schema.json`])),
 	files: {
-		category: 'category.schema.json',
 		config: 'config.schema.json',
 		contentFrontmatter: 'content-frontmatter.schema.json',
 		sitewideContent: 'sitewide-content.schema.json',

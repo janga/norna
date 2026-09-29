@@ -44,14 +44,14 @@ try {
 	await mkdir(path.join(siteRoot, 'pages/020-incomplete/pages/010-child'), { recursive: true });
 	await write('pages/020-incomplete/pages/010-child/content.md', '# Visible child\n');
 	const incomplete = path.join(siteRoot, 'pages/020-incomplete');
-	assert.deepEqual((await choices(incomplete)).map((entry) => entry.name), ['content.md', 'category.yaml']);
+	assert.deepEqual((await choices(incomplete)).map((entry) => entry.name), ['content.md']);
 	view = await tree();
 	assert.equal(find(view, 'pages/020-incomplete/content.md').kind, 'incomplete');
 	assert.equal(find(view, 'pages/020-incomplete/pages/010-child/content.md').title, 'Visible child');
-	await createEditorSourceFile(await plan('pages/020-incomplete/category.yaml', 'Topics', incomplete));
+	await createEditorSourceFile(await plan('pages/020-incomplete/content.md', 'Topics', incomplete));
 	view = await tree();
-	assert.equal(find(view, 'pages/020-incomplete/category.yaml', 'category').title, 'Topics');
-	assert.ok(find(view, 'pages/020-incomplete/category.yaml', 'file'));
+	assert.equal(find(view, 'pages/020-incomplete/content.md', 'page').title, 'Topics');
+	assert.equal(find(view, 'pages/020-incomplete/content.md', 'file'), undefined);
 	assert.deepEqual((await choices(incomplete)).map((entry) => entry.name), ['theme.yaml']);
 
 	await write('pages/010-leaf/settings.yaml', 'url: https://example.com/\n');
@@ -82,9 +82,9 @@ try {
 	assert.match(await readFile(themePath, 'utf8'), /invalid/);
 	await write('pages/010-leaf/category.yaml', 'label: Conflict\n');
 	view = await tree();
-	assert.ok(find(view, 'pages/010-leaf/category.yaml', 'category').issues.some((issue) => /Both/.test(issue.message)));
-	assert.ok(find(view, 'pages/010-leaf/content.md', 'file'), 'A conflicting content file must stay visible.');
-	assert.deepEqual(await choices(path.dirname(themePath)), [], 'Do not create more files in a conflicting entry.');
+	assert.ok(find(view, 'pages/010-leaf/category.yaml', 'file').issues.some((issue) => /no longer supported/.test(issue.message)));
+	assert.ok(find(view, 'pages/010-leaf/content.md', 'page'), 'The valid page remains visible.');
+	assert.deepEqual(await choices(path.dirname(themePath)), [], 'Do not create more files in a complete entry.');
 
 	await assert.rejects(getEditorSourceFileChoices({ siteRoot, directory: temporary }), /selected site/);
 	await assert.rejects(choices(path.join(siteRoot, 'public')), /permitted location/);

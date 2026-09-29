@@ -584,7 +584,7 @@ site/
 |-- content.md
 `-- pages/
     |-- 010-guides/
-    |   |-- category.yaml
+    |   |-- content.md
     |   `-- pages/
     |       |-- 010-installation/
     |       |   |-- content.md

@@ -52,10 +52,16 @@ async function runSiteTree({ openDocument, waitFor }) {
 			await item.waitFor({ state: 'visible' });
 			if (await item.getAttribute('aria-expanded') === 'false') await item.locator('.monaco-tl-twistie').click();
 		};
-		const input = async (value, prompt, accept = true) => {
-			await waitFor(() => quick.locator('.quick-input-message').allTextContents(), (texts) => texts.some((text) => text.includes(prompt)), `Missing input prompt: ${prompt}`);
-			await quick.locator('.quick-input-box input').fill(value);
-			if (accept) await quick.locator('.quick-input-box input').press('Enter');
+		const form = async () => {
+			let result;
+			await waitFor(async () => {
+				for (const frame of window.frames()) {
+					if (await frame.locator('form #title').isVisible().catch(() => false)
+						&& await frame.locator('form #title').isEnabled().catch(() => false)) { result = frame; return true; }
+				}
+				return false;
+			}, Boolean, 'The page form did not open.');
+			return result;
 		};
 		const contextAction = async (title, action) => {
 			await window.bringToFront();
@@ -74,13 +80,11 @@ async function runSiteTree({ openDocument, waitFor }) {
 				await quick.locator('.quick-input-box input').fill(`>Norna: ${action}`);
 				await quick.locator('.quick-input-list .monaco-list-row').filter({ hasText: `Norna: ${action}` }).first().click();
 			}
-			await waitFor(async () => await quick.isVisible() ? await quick.locator('.quick-input-title').textContent() : '',
-				(text) => action === 'Page Information' ? text.startsWith('Page Information:') : text.startsWith(action === 'New Page' ? 'New page' : 'New category'),
-				`The ${action} dialog did not open.`);
+			await form();
 		};
 		const activeIs = (relative) => waitFor(() => vscode.window.activeTextEditor?.document.uri.fsPath, (filename) => filename === path.join(root, relative), `Wrong source opened: ${relative}`);
 		const guidePath = 'tree-content/pages/010-guide/content.md';
-		const topicPath = 'tree-content/pages/020-topics/category.yaml';
+		const topicPath = 'tree-content/pages/020-topics/content.md';
 		await sourceRow('tree-content/content.md').click();
 		await activeIs('tree-content/content.md');
 		await sourceRow('tree-content/theme.yaml').click();
@@ -93,9 +97,8 @@ async function runSiteTree({ openDocument, waitFor }) {
 		passed('Homepage row opens its content; theme and physical site-config files open');
 		await row('Tree Topics').getByText('Tree Topics', { exact: true }).click();
 		await activeIs(topicPath);
-		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'false', 'Selecting a category must not expand it.');
+		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'false', 'Selecting a page must not expand it.');
 		await row('Tree Topics').locator('.monaco-tl-twistie').click();
-		await sourceRow(topicPath).click();
 		await activeIs(topicPath);
 		await expandDirectory('tree-content/pages/020-topics/pages');
 		await row('Tree Child').waitFor({ state: 'visible' });
@@ -103,7 +106,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await row('Tree Child').getByText('Tree Child', { exact: true }).click();
 		assert.equal(await row('Tree Child').getAttribute('aria-expanded'), null, 'A leaf without details must not expand.');
 		await activeIs('tree-content/pages/020-topics/pages/010-child/content.md');
-		passed('Page/category labels open their sources; chevrons expand separately and leaf pages have no expansion');
+		passed('Page labels open their sources; chevrons expand separately and leaf pages have no expansion');
 		await row('Tree Topics').getByText('Tree Topics', { exact: true }).click();
 		await vscode.commands.executeCommand('nornaSiteTree.focus');
 		await tree.press('ArrowLeft');
@@ -118,6 +121,9 @@ async function runSiteTree({ openDocument, waitFor }) {
 		assert.equal(await row('Tree Topics').getAttribute('aria-expanded'), 'true', 'Following another page reset expansion.');
 		passed('Active-file reveal preserves unrelated expanded branches');
 		// Resource rows use their actual source locations, even with equal names.
+		if (await row('Tree Guide').getAttribute('aria-expanded') === 'false') {
+			await row('Tree Guide').locator('.monaco-tl-twistie').click();
+		}
 		await sourceRow('tree-content/pages/010-guide/theme.yaml').click();
 		await activeIs('tree-content/pages/010-guide/theme.yaml');
 		await expandDirectory('tree-content/pages/010-guide/images');
@@ -141,20 +147,16 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await vscode.window.activeTextEditor.edit((builder) => builder.insert(guide.positionAt(guide.getText().length), '\nUnsaved sentence.\n'));
 		const dirtyOriginal = guide.getText();
 		const information = async (title, field, value) => {
-			const beforeLabel = await row(title).getAttribute('aria-label');
-			const filename = beforeLabel.split('\n').find((line) => line.startsWith(root));
 			await contextAction(title, 'Page Information');
-			const oldDescription = field === 'Description' ? await quick.locator('.quick-input-list .monaco-list-row').filter({ has: window.locator('.label-name').getByText(field, { exact: true }) }).locator('.label-description').innerText() : '';
-			await pick(field);
-			if (field === 'Navigation') await pick(value);
-			else await input(value, field === 'Description' ? 'A short introduction' : 'Changes the displayed title');
-			await waitFor(() => quick.isVisible(), (visible) => !visible, 'Page Information did not close.');
-			await waitFor(() => vscode.window.activeTextEditor?.document.uri.fsPath, (actual) => actual === filename, 'The edited source was not opened.');
+			const fields = await form();
+			if (field === 'Navigation') await fields.locator('#listed').setChecked(value !== 'Unlisted');
+			else await fields.locator(field === 'Description' ? '#description' : '#title').fill(value);
+			await fields.getByRole('button', { name: 'Save changes', exact: true }).click();
+			if (field === 'Description') return;
 			const newRow = row(['Title', 'Label'].includes(field) ? value : title);
 			await waitFor(async () => await newRow.count() ? field === 'Navigation' ? await newRow.innerText() : await newRow.getAttribute('aria-label') : '', (label) => {
 				if (!label) return false;
 				if (field === 'Navigation') return label.includes('unlisted') === (value === 'Unlisted');
-				if (field === 'Description') return value ? label.includes(value) : oldDescription === 'Not set' || !label.includes(oldDescription);
 				return label.startsWith(value);
 			}, 'The tree did not reflect the edited information.');
 		};
@@ -189,24 +191,25 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await reopened.save();
 		passed('Title, description and visibility through Page Information; dirty undo and two save/reopen cycles');
 
-		await information('Tree Topics', 'Label', 'Renamed Topics');
-		await information('Renamed Topics', 'Description', 'Updated category description');
-		const categoryDocument = vscode.window.activeTextEditor.document;
-		assert.equal(categoryDocument.getText(), 'label: "Renamed Topics"\ndescription: "Updated category description"\n');
-		await categoryDocument.save();
-		passed('Category label and description through Page Information');
+		await information('Tree Topics', 'Title', 'Renamed Topics');
+		await information('Renamed Topics', 'Description', 'Updated overview description');
+		const overviewDocument = vscode.window.activeTextEditor.document;
+		assert.match(overviewDocument.getText(), /# Renamed Topics/);
+		await waitFor(() => overviewDocument.getText(), (text) => text.includes('Updated overview description'), 'The overview description did not update.');
+		await overviewDocument.save();
+		passed('Parent page title and description through Page Information');
+		const brokenPath = path.join(root, 'tree-content/pages/040-broken/content.md');
+		fs.writeFileSync(brokenPath, '# Repaired page\n');
+		await waitFor(() => row('Repaired page').count(), (count) => count === 1, 'The repaired fixture did not refresh.');
 
 		const create = async ({ selected, kind, placement, title, slug, cancel = false }) => {
 			await contextAction(selected, kind === 'page' ? 'New Page' : 'New Category');
-			if (placement) await pick(placement);
-			await input(title, kind === 'page' ? 'Page title' : 'Navigation category label');
-			await input(slug, 'URL segment');
-			await quick.locator('.quick-input-list .monaco-list-row').filter({ has: window.getByText(`Create ${kind}`, { exact: true }) }).waitFor({ state: 'visible' });
-			if (cancel) {
-				await quick.locator('.quick-input-box input').press('Escape');
-				await quick.waitFor({ state: 'hidden' });
-			}
-			else await pick(`Create ${kind}`);
+			const fields = await form();
+			if (placement) await fields.locator('#parentPath').selectOption({ label: placement });
+			await fields.locator('#title').fill(title);
+			await fields.locator('#slug').fill(slug);
+			await waitFor(() => fields.locator('#preview').innerText(), text => text.includes(slug), 'Missing destination preview.');
+			await fields.getByRole('button', { name: cancel ? 'Cancel' : `Create ${kind}`, exact: true }).click();
 		};
 		const childDir = path.join(root, 'tree-content/pages/020-topics/pages');
 		const before = fs.readdirSync(childDir);
@@ -218,18 +221,19 @@ async function runSiteTree({ openDocument, waitFor }) {
 		assert.equal(vscode.window.activeTextEditor.document.getText(), '# Created Child\n\n## Introduction\n\nStart writing here.\n');
 		await create({ selected: 'Created Child', kind: 'page', placement: 'Beside “Created Child”', title: 'Created Sibling', slug: 'created-sibling' });
 		await activeIs('tree-content/pages/020-topics/pages/030-created-sibling/content.md');
-		await create({ selected: 'Created Sibling', kind: 'category', placement: 'At site root', title: 'New Categories', slug: 'new-categories' });
-		await activeIs('tree-content/pages/050-new-categories/category.yaml');
-		assert.equal(vscode.window.activeTextEditor.document.getText(), 'label: New Categories\n');
-		passed('Create child, sibling and root category through tree actions');
+		await create({ selected: 'Created Sibling', kind: 'page', placement: 'At site root', title: 'New Overview', slug: 'new-overview' });
+		await activeIs('tree-content/pages/050-new-overview/content.md');
+		assert.match(vscode.window.activeTextEditor.document.getText(), /^# New Overview/);
+		passed('Create child, sibling and root pages through tree actions');
 		await openDocument('tree-content/pages/020-topics/pages/010-child/content.md');
 		const pagesRow = sourceRow('tree-content/pages/020-topics/pages');
 		await pagesRow.hover();
 		await pagesRow.getByRole('button', { name: 'Norna: Add Page…', exact: true }).click();
-		await input('Added Directly', 'Page title');
-		await input('added-directly', 'URL segment');
-		assert.match(await quick.innerText(), /\/topics\/added-directly\//);
-		await pick('Create page');
+		const directForm = await form();
+		await directForm.locator('#title').fill('Added Directly');
+		await directForm.locator('#slug').fill('added-directly');
+		await waitFor(() => directForm.locator('#preview').innerText(), text => text.includes('/topics/added-directly/'), 'Missing direct-child preview.');
+		await directForm.getByRole('button', { name: 'Create page', exact: true }).click();
 		await activeIs('tree-content/pages/020-topics/pages/040-added-directly/content.md');
 		passed('Add Page inline action selects the physical pages folder without a location prompt');
 		await create({ selected: 'Added Directly', kind: 'page', placement: 'Inside “Added Directly”', title: 'First Nested Page', slug: 'first-nested-page' });
@@ -241,20 +245,23 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await openDocument('tree-content/content.md');
 		await waitFor(() => sourceRow('tree-content/content.md').getAttribute('aria-selected'), (value) => value === 'true', 'Home source was not revealed before its actions were tested.');
 		await contextAction('Tree Home', 'New Page');
-		assert.ok((await quick.locator('.monaco-list-row').allTextContents()).some((text) => text.includes('Inside “Tree Home”')));
-		await quick.locator('.quick-input-box input').press('Escape');
+		const homeCreation = await form();
+		assert.match(await homeCreation.locator('#parentPath').innerText(), /Inside “Tree Home”/);
+		await homeCreation.getByRole('button', { name: 'Cancel', exact: true }).click();
 		await contextAction('Tree Home', 'Page Information');
-		assert.match(await quick.innerText(), /Home is always listed/);
-		await pick('Navigation');
-		assert.equal(vscode.window.activeTextEditor.document.getText(), '# Tree Home\n');
+		const homeInformation = await form();
+		assert.equal(await homeInformation.locator('#listed').isDisabled(), true);
+		assert.equal(await homeInformation.locator('#listed').isChecked(), true);
+		await homeInformation.getByRole('button', { name: 'Cancel', exact: true }).click();
 		passed('Home offers child creation and remains listed');
 
 		await contextAction('Renamed Guide', 'New Page');
-		await pick('Beside “Renamed Guide”');
-		await input('Duplicate', 'Page title');
-		await input('guide', 'URL segment', false);
-		await waitFor(() => quick.innerText(), (text) => text.includes('A sibling with that slug already exists'), 'A colliding URL was not rejected in the input.');
-		await quick.locator('.quick-input-box input').press('Escape');
+		const duplicateForm = await form();
+		await duplicateForm.locator('#parentPath').selectOption({ label: 'Beside “Renamed Guide”' });
+		await duplicateForm.locator('#title').fill('Duplicate');
+		await duplicateForm.locator('#slug').fill('guide');
+		await waitFor(() => duplicateForm.locator('#form-error').innerText(), text => text.includes('A sibling with that slug already exists'), 'A colliding URL was not rejected.');
+		await duplicateForm.getByRole('button', { name: 'Cancel', exact: true }).click();
 		assert.equal(fs.readFileSync(path.join(root, guidePath), 'utf8'), cleared);
 		passed('URL collisions are rejected without overwriting files');
 
@@ -272,8 +279,11 @@ async function runSiteTree({ openDocument, waitFor }) {
 		fs.rmSync(path.join(root, 'tree-content/pages/060-moved'), { recursive: true });
 		await waitFor(() => row('External Rename').count(), (count) => count === 0, 'External deletion did not refresh the tree.');
 		passed('Unlisted descendants and external create/edit/rename/delete refresh');
+		fs.writeFileSync(brokenPath, '# First title\n\n# Second title\n');
 		await openDocument('tree-content/pages/040-broken/content.md');
-		assert.ok(vscode.languages.getDiagnostics(vscode.window.activeTextEditor.document.uri).some((diagnostic) => diagnostic.source === 'Norna site tree'));
+		await waitFor(() => vscode.languages.getDiagnostics(vscode.window.activeTextEditor.document.uri),
+			(diagnostics) => diagnostics.some((diagnostic) => diagnostic.source === 'Norna site tree'),
+			'The restored broken page did not receive site-tree diagnostics.');
 		await openDocument(guidePath);
 		assert.equal(vscode.window.activeTextEditor.document.getText(), cleared);
 		passed('Malformed page remains openable without disabling valid pages');
@@ -302,7 +312,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await window.setViewportSize({ width: 960, height: 720 });
 		await contextAction('Renamed Guide', 'Page Information');
 		await window.screenshot({ path: path.join(root, '..', `site-tree-${vscode.version}-compact.png`) });
-		await quick.locator('.quick-input-box input').press('Escape');
+		await (await form()).getByRole('button', { name: 'Cancel', exact: true }).click();
 		fs.writeFileSync(path.join(root, '..', `site-tree-${vscode.version}.json`), JSON.stringify({
 			vscode: vscode.version, extension: process.env.NORNA_EDITOR_TEST_EXTENSION_VERSION,
 			bundleSha256: createHash('sha256').update(fs.readFileSync(path.join(vscode.extensions.getExtension('janga.norna-vscode').extensionPath, 'dist/extension.cjs'))).digest('hex'),

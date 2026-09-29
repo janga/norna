@@ -367,3 +367,40 @@ the failing layer before fixing it. Record whether failure occurred in project
 discovery, candidate generation, widget filtering/insertion, diagnostics,
 formatting, saving, or reopening. A successful activation is not evidence that
 the remaining stages work.
+
+## Combined Page Form Review — 2026-09-26
+
+The current development form combines page/category creation and Page
+Information. Its alias list starts empty, with an Add button; each added row
+can be removed. Existing values are prefilled when editing. Older engines
+without `sitePageFormApiVersion: 1` retain the separate dialogs.
+
+Focused checks completed:
+
+- `node scripts/test-editor-page-form.mjs`: creation metadata, alias syntax and
+  collisions, non-writing previews, empty metadata and stale creation plans.
+- `node scripts/test-site-node-commands.mjs`: existing CLI creation behavior.
+- `node editors/vscode/test/page-form-contract.mjs`: combined buffer edits,
+  alias errors/removal confirmation, cancellation, stale buffers and HTML
+  escaping. The file stays unchanged until the author saves the editor buffer.
+- `node editors/vscode/test/site-tree-contract.mjs`: form command routing,
+  parent choice, cancelled creation, site boundaries and older-engine fallback.
+- `node editors/vscode/test/package-contract.mjs` and
+  `npm --prefix editors/vscode run package`: packaged entry points and bundle.
+- `npm run test:documentation` and `git diff --check`.
+
+The actual generated webview HTML was captured and inspected in Chromium in
+light, dark and compact layouts under `.local/page-form-review/`. These
+captures use representative VS Code theme variables and do not establish
+native VS Code rendering or keyboard behavior. The extension is installed in
+the user's Default profile for that review. No complete release suite,
+completion matrix or formatter matrix was run.
+
+Before committing, review in the normal VS Code window: create a child page,
+edit its existing values, add/remove alias rows, correct an invalid alias and
+cancel an edit. Confirm that address/source previews are understandable and
+that Tab, the input labels, plus/minus controls and narrow layouts are usable.
+Review saved-alias removal with incoming links. A native interaction test of
+the new webview and the normal save/reopen cycle remains outstanding; the
+adapter checks above do not replace it. The native Site Tree suite has been adapted to use the webview fields and
+syntax-checked, but has not been executed against VS Code in this change.

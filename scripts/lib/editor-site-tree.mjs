@@ -4,7 +4,7 @@ import { isMap, isScalar, isSeq, parseDocument } from 'yaml';
 import { getMarkdownHeadings, slugifyAsciiIdentifier } from './heading-ids.mjs';
 import { parsePageDirectoryPath } from './page-model.mjs';
 import { splitPageMarkdownSource } from './page-markdown.mjs';
-import { categorySchema, siteSchema } from './schema-definitions.mjs';
+import { siteSchema } from './schema-definitions.mjs';
 import { homePageDirectory } from './site-conventions.mjs';
 import { createSiteNode, escapeMarkdownHeading, planSiteNodeCreation } from './site-node-create.mjs';
 import { getSiteStructure } from './site-structure.mjs';
@@ -17,6 +17,7 @@ import { readSiteEditingTree } from './editor-site-editing-tree.mjs';
 // through a site-tree API whose contract they do not implement.
 export const siteTreeApiVersion = 1;
 export const siteFileTreeApiVersion = 1;
+export const sitePageFormApiVersion = 1;
 export { siteTreeEditingApiVersion, getEditorSourceFileChoices, planEditorSourceFileCreation, createEditorSourceFile } from './editor-source-files.mjs';
 export { createSiteNode, planSiteNodeCreation, slugifyAsciiIdentifier };
 export { siteFileOperationsApiVersion, siteRemovalApiVersion, planEditorImageCopy, planEditorRemoval, getEditorImageUsage, createEditorImageAppend } from './editor-site-files.mjs';
@@ -24,7 +25,6 @@ export { getEditorIncomingLinks } from './editor-site-links.mjs';
 export { siteAddressApiVersion, getEditorPageAddresses, planEditorPageAddress, applyEditorPageAddress } from './editor-page-addresses.mjs';
 
 const sourceParts = (source, kind) => {
-	if (kind === 'category') return { yaml: source, offset: 0, body: '', bodyLine: 0 };
 	const split = splitPageMarkdownSource(source);
 	if (split.frontmatterUnclosed) throw new Error('Close the YAML frontmatter with --- before editing page information.');
 	const lines = source.match(/[^\n]*\n|[^\n]+$/g) ?? [];
@@ -39,8 +39,7 @@ const sourceParts = (source, kind) => {
 
 const parseInformation = async ({ source, kind, isHome, sourcePath }) => {
 	const parts = sourceParts(source, kind);
-	const data = parseYamlConfig(parts.yaml, sourcePath, { schema: kind === 'category' ? categorySchema : siteSchema });
-	if (kind === 'category') return { title: data.label, description: data.description ?? '', listed: true, aliases: [] };
+	const data = parseYamlConfig(parts.yaml, sourcePath, { schema: siteSchema });
 	const { headings } = await getMarkdownHeadings(parts.body);
 	const titles = headings.filter(({ depth }) => depth === 1);
 	if (titles.length !== 1) throw new Error('Keep exactly one Markdown H1 title in this page before editing its information.');
@@ -50,6 +49,7 @@ const parseInformation = async ({ source, kind, isHome, sourcePath }) => {
 		description: data.page?.description ?? '',
 		listed: data.navigation?.listed !== false,
 		aliases: data.page?.aliases ?? [],
+		listChildren: data.page?.listChildren === true,
 		titleLine: parts.bodyLine + titles[0].line - 1,
 		titleLineCount: titles[0].source.split('\n').length,
 	};
@@ -151,13 +151,12 @@ export const readSiteFileTree = async (options) => {
 			await addExistingDirectory('site-config');
 			await addExistingDirectory('public');
 		}
-		const configuration = ['theme.yaml', page.kind === 'category' ? 'category.yaml' : 'content.md'];
+		const configuration = ['theme.yaml', 'content.md'];
 		for (const filename of configuration) {
 			if (!entries.get(filename)?.isFile()) continue;
 			const description = filename === 'theme.yaml' ? page.isHome ? 'Visual settings for this page only. Overrides site-config/site-theme.yaml.'
-				: page.kind === 'category' ? 'Visual settings for pages in this category, including their child pages. Overrides inherited settings.'
-					: 'Visual settings for this page and its child pages. Overrides inherited settings.'
-				: filename === 'content.md' ? 'Page content' : 'Category information';
+				: 'Visual settings for this page and its child pages. Overrides inherited settings.'
+				: 'Page content';
 			addResource(page, page.sourcePath, path.join(directory, filename), 'file', filename === 'content.md' ? 'content' : 'configuration', description);
 		}
 		for (const name of ['images', 'pages']) await addExistingDirectory(name);
@@ -261,20 +260,20 @@ const changeYamlField = (yaml, keys, value, eol) => {
 export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, field, value, sources = new Map() }) => {
 	const relative = path.relative(path.join(siteRoot, 'pages'), sourcePath).split(path.sep).join('/');
 	const filename = path.posix.basename(relative);
-	if (!['content.md', 'category.yaml'].includes(filename)) throw new Error('Choose a page or navigation category source file.');
+	if (filename !== 'content.md') throw new Error('Choose a page content.md source file.');
 	const pageDirectory = path.resolve(sourcePath) === path.join(path.resolve(siteRoot), 'content.md')
 		? homePageDirectory : path.posix.dirname(relative);
 	parsePageDirectoryPath(pageDirectory);
-	const kind = filename === 'content.md' ? 'page' : 'category';
+	const kind = 'page';
 	const isHome = pageDirectory === homePageDirectory;
 	const info = await parseInformation({ source, kind, isHome, sourcePath });
-	const allowed = kind === 'page' ? ['title', 'description', 'listed', 'aliases'] : ['title', 'description'];
+	const allowed = ['title', 'description', 'listed', 'aliases', 'listChildren'];
 	if (!allowed.includes(field)) throw new Error('This information field is read-only.');
 	if (field === 'aliases') {
 		if (!Array.isArray(value) || value.some((entry) => typeof entry !== 'string')) throw new Error('Enter additional addresses as site-relative paths, such as /old-guide/.');
-	} else if (field === 'listed') {
-		if (typeof value !== 'boolean') throw new Error('Choose whether this page is listed in navigation.');
-		if (isHome && !value) throw new Error('Home must remain listed.');
+	} else if (field === 'listed' || field === 'listChildren') {
+		if (typeof value !== 'boolean') throw new Error(field === 'listed' ? 'Choose whether this page is listed in navigation.' : 'Choose whether to append the list of child pages.');
+		if (field === 'listed' && isHome && !value) throw new Error('Home must remain listed.');
 	} else {
 		if (typeof value !== 'string' || /[\r\n]/.test(value)) throw new Error('Use a single line of text.');
 		value = value.trim();
@@ -282,18 +281,16 @@ export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, fi
 	}
 	if (info[field] === value) return [];
 	const eol = source.includes('\r\n') ? '\r\n' : '\n';
-	if (field === 'title' && kind === 'page') {
+	if (field === 'title') {
 		const lines = source.match(/[^\n]*\n|[^\n]+$/g) ?? [];
 		const start = lines.slice(0, info.titleLine).join('').length;
 		const original = lines.slice(info.titleLine, info.titleLine + info.titleLineCount).join('');
 		return [{ start, end: start + original.replace(/\r?\n$/, '').length, text: `# ${escapeMarkdownHeading(value)}` }];
 	}
 	const parts = sourceParts(source, kind);
-	const keys = kind === 'category' ? [field === 'title' ? 'label' : field]
-		: field === 'listed' ? ['navigation', 'listed'] : ['page', field === 'aliases' ? 'aliases' : 'description'];
-	const yaml = changeYamlField(parts.yaml, keys, (field === 'description' && !value) || (field === 'aliases' && !value.length) ? undefined : value, eol);
-	const next = kind === 'category' ? yaml
-		: parts.bodyLine ? !yaml.trim() ? source.slice(parts.offset + parts.yaml.length).replace(/^---[ \t]*(?:\r?\n|$)/, '')
+	const keys = field === 'listed' ? ['navigation', 'listed'] : ['page', field === 'aliases' ? 'aliases' : field === 'listChildren' ? 'listChildren' : 'description'];
+	const yaml = changeYamlField(parts.yaml, keys, (field === 'description' && !value) || (field === 'aliases' && !value.length) || (field === 'listChildren' && !value) ? undefined : value, eol);
+	const next = parts.bodyLine ? !yaml.trim() ? source.slice(parts.offset + parts.yaml.length).replace(/^---[ \t]*(?:\r?\n|$)/, '')
 			: source.slice(0, parts.offset) + yaml + source.slice(parts.offset + parts.yaml.length)
 			: `---${eol}${yaml}---${eol}${eol}${source}`;
 	// Validate the complete result before offering it to the editor.

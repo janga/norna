@@ -5,7 +5,7 @@ page:
 
 # Automatic navigation
 
-Norna builds navigation from [pages and categories](/reference/site/pages/)
+Norna builds navigation from [pages](/reference/site/pages/)
 and Markdown headings. Leave `navigation.mode` at `automatic` to let the
 listed hierarchy choose the presentation. No separate menu file is needed.
 
@@ -20,8 +20,8 @@ navigation:
 | Listed structure | Mode | Wide-screen navigation |
 | --- | --- | --- |
 | Only Home | `sections` | H1 and H2 links in sticky navigation |
-| Home and direct child pages, without deeper pages or categories | `top` | Page links with disclosures for their H2 sections |
-| Any child page or navigation category | `tree` | Area menus and a local page tree with H2 links |
+| Home and direct child pages, without deeper pages | `top` | Page links with disclosures for their H2 sections |
+| Any deeper listed child page | `tree` | Area menus and a local page tree with H2 links |
 
 The selected mode is site-wide. Headings do not add page-tree depth, and
 unlisted pages do not affect the choice. In `sections` mode, one H2 is enough
@@ -34,14 +34,14 @@ duplicated in a second sticky row.
 ## Areas in tree navigation
 
 An **area** is the part of the listed page hierarchy shown in the left menu.
-Norna derives areas from existing pages and categories; there is no area
+Norna derives areas from existing pages; there is no area
 setting to maintain.
 
 Home shows the global destinations in its sticky navigation. A destination
 without children is a direct link. A destination with children opens a menu
 on hover, or through click, touch or keyboard activation. The menu groups
 parents with descendants separately from direct page links. Descriptions come
-from page metadata or the optional `description` in `category.yaml`.
+from page metadata.
 
 The selected destination determines the left menu:
 
@@ -71,7 +71,7 @@ The tree includes H2 links beneath each page, including a page with only one
 H2. H1, H3 and deeper headings remain in the document but are not extra outline
 levels. Their anchors still work as ordinary links.
 
-Clicking page or category text follows its destination. The separate chevron
+Clicking page text follows its destination. The separate chevron
 opens or closes that branch. Choosing a page opens its branch and H2 outline;
 clicking the current page name returns to its beginning and opens its outline.
 Other branches retain their choices. Expanding keeps the clicked row in place;
@@ -97,9 +97,8 @@ content; the tree's filter only matches navigation labels.
 
 ## Orientation and long trees
 
-Breadcrumbs show actual ancestors, not Home as an invented parent. Category
-labels in breadcrumbs are plain text. Previous/Next page links traverse listed
-pages depth-first within the current top-level collection, skipping categories
+Breadcrumbs show actual ancestors, not Home as an invented parent.
+Previous/Next page links traverse listed pages depth-first within the current top-level collection
 and stopping before another global collection. They do not stop at a smaller
 local area's boundary.
 
@@ -120,8 +119,8 @@ JavaScript; manual navigation remains available without it.
 
 `sections`, `top` and `tree` may be selected explicitly in `site-config/settings.yaml`.
 `sections` is for a one-page site, not a way to hide additional pages.
-Explicit `top` can expose child pages in submenus, but cannot represent a
-listed category. Listed categories therefore reject `sections` and `top`.
+Explicit `top` can expose child pages in submenus. It must still represent
+every listed page in the hierarchy.
 
 Tree mode requires [uniform section backgrounds](/reference/configuration/sections/),
 also in Focus reading and on small screens. Built-in presets make this

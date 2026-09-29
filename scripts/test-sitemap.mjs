@@ -5,15 +5,16 @@ const home = { isHome: true, pagePath: '' };
 const hidden = { isHome: false, navigation: { listed: false }, pagePath: 'hidden' };
 const installation = { isHome: false, pagePath: 'guides/installation' };
 const zeta = { isHome: false, pagePath: 'zeta' };
-const category = { isHome: false, kind: 'category', pagePath: 'guides' };
+const overview = { isHome: false, kind: 'page', pagePath: 'guides' };
 
 const siteStructure = {
-	categories: [category],
-	contentFiles: [zeta, hidden, home, installation],
+	categories: [],
+	contentFiles: [zeta, hidden, home, installation, overview],
 };
 
 assert.deepEqual(getSitemapUrls({ siteStructure, siteUrl: 'https://example.com/' }), [
 	'https://example.com/',
+	'https://example.com/guides/',
 	'https://example.com/guides/installation/',
 	'https://example.com/hidden/',
 	'https://example.com/zeta/',
@@ -21,6 +22,7 @@ assert.deepEqual(getSitemapUrls({ siteStructure, siteUrl: 'https://example.com/'
 
 assert.deepEqual(getSitemapUrls({ siteStructure, siteUrl: 'https://example.com/project/' }), [
 	'https://example.com/project/',
+	'https://example.com/project/guides/',
 	'https://example.com/project/guides/installation/',
 	'https://example.com/project/hidden/',
 	'https://example.com/project/zeta/',
@@ -31,6 +33,9 @@ assert.equal(xml, `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://example.com/docs-&amp;-guides/</loc>
+  </url>
+  <url>
+    <loc>https://example.com/docs-&amp;-guides/guides/</loc>
   </url>
   <url>
     <loc>https://example.com/docs-&amp;-guides/guides/installation/</loc>

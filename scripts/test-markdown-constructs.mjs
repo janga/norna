@@ -844,7 +844,7 @@ depth: all
 		await assert.rejects(
 			() => runContentScript(empty.siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /page-list on line \d+ has no listed direct child pages to display\. Navigation categories are not pages\./);
+				assert.match(error.output, /page-list on line \d+ has no listed direct child pages to display\./);
 				assert.match(error.output, /Fix: Add a listed direct child page or remove the block\./);
 				return true;
 			},

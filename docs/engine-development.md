@@ -549,16 +549,13 @@ Markdown suggestions, Problems diagnostics, and versioned documentation links.
 
 The renderer discovers a required homepage at
 `site/content.md` and its child entries under `site/pages/`. Deeper entries
-live under each parent page or category's `pages/` directory. An
-entry with `content.md` is a routable page. An entry with `category.yaml` is a
-category whose path remains part of descendant URLs. The shared
-`scripts/lib/category-destinations.mjs` model resolves listed categories to
-first-direct-page redirects or generated direct-child lists. These routes
-stay separate from the editorial page collection.
+live under each parent page's `pages/` directory. Every entry has `content.md`
+and a routable URL. A parent with `page.listChildren: true` appends a generated
+list of its direct listed children after all authored content.
 
 Automatic navigation selects section navigation for one-page sites, top
 navigation for flat multi-page sites, and tree navigation when a listed child
-page or category exists. Explicit modes must be compatible with the listed
+page exists. Explicit modes must be compatible with the listed
 hierarchy. Root children remain top-level navigation choices; the homepage
 retains the global navigation presentation. The internal root page-directory
 identity is `.`, with depth zero and entry suffix `root`; child identities
@@ -567,7 +564,7 @@ root children onto the top level.
 
 Root `theme.yaml` uses the limited page-theme schema and applies only to
 the homepage. `site-config/site-theme.yaml` remains global; descendant `theme.yaml` files
-inherit along their ordinary page/category ancestry. `norna site:upgrade`
+inherit along their ordinary page ancestry. `norna site:upgrade`
 previews configuration conversion to `site-config/` and also supports the
 former `pages/000-home/` layout. `--apply` moves sources without overwriting,
 adjusts relative schema directives and restores source files after an apply
@@ -581,15 +578,14 @@ Tree navigation uses the shared area resolver in `src/lib/areaNavigation.ts`:
   twelve-choice menu limit retain the full tree.
 - The left tree combines pages with H2 links. H3 anchors remain in the document;
   there is no separate right contents rail. The same destinations remain in
-  compact navigation. Category text follows the shared category destination,
-  while a separate chevron toggles the branch.
+  compact navigation. Page text opens its own URL, while a separate chevron
+  toggles the branch.
 - Reading pages place the area-menu control beside sticky breadcrumbs, with
   Home, Search and Display above the left menu. Home keeps global navigation.
   The filter matches navigation labels, independently of full-text Search.
 
-`category.yaml` may supply an optional `description` for menus and generated
-category lists. Page descriptions come from page metadata. Both are authored
-content; built-in language packs provide only engine UI labels.
+Page descriptions from frontmatter appear in menus and generated child lists.
+Built-in language packs provide only engine UI labels.
 
 The parser-time navigation state and the continuity runtime prepare fresh
 arrivals and restore per-entry tree and reading positions. New page choices

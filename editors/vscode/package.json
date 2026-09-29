@@ -82,11 +82,6 @@
         "icon": "$(new-file)"
       },
       {
-        "command": "nornaEditor.newCategory",
-        "title": "Norna: New Category\u2026",
-        "icon": "$(new-folder)"
-      },
-      {
         "command": "nornaEditor.pageInformation",
         "title": "Norna: Page Information\u2026",
         "icon": "$(edit)"
@@ -190,11 +185,6 @@
           "group": "navigation@1"
         },
         {
-          "command": "nornaEditor.newCategory",
-          "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
-          "group": "navigation@2"
-        },
-        {
           "command": "nornaEditor.refreshSiteTree",
           "when": "view == nornaSiteTree",
           "group": "navigation@3"
@@ -203,23 +193,18 @@
       "view/item/context": [
         {
           "command": "nornaEditor.openSiteNode",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category|File|OptionalFile|Image)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|File|OptionalFile|Image)$/",
           "group": "1_open@1"
         },
         {
           "command": "nornaEditor.pageInformation",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page)$/",
           "group": "1_open@2"
         },
         {
           "command": "nornaEditor.newPage",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Site|Home|Page|Category)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Site|Home|Page)$/",
           "group": "2_create@1"
-        },
-        {
-          "command": "nornaEditor.newCategory",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Site|Home|Page|Category)$/",
-          "group": "2_create@2"
         },
         {
           "command": "nornaEditor.addPage",
@@ -232,18 +217,13 @@
           "group": "2_create@1"
         },
         {
-          "command": "nornaEditor.newCategory",
-          "when": "view == nornaSiteTree && viewItem == nornaPages",
-          "group": "2_create@2"
-        },
-        {
           "command": "nornaEditor.addToPage",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category|Incomplete|Configuration)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Incomplete|Configuration)$/",
           "group": "inline@1"
         },
         {
           "command": "nornaEditor.pageActions",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page)$/",
           "group": "inline@2"
         },
         {
@@ -278,7 +258,7 @@
         },
         {
           "command": "nornaEditor.removePage",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Page|Category)$/",
+          "when": "view == nornaSiteTree && viewItem == nornaPage",
           "group": "4_remove"
         },
         {
@@ -293,17 +273,17 @@
         },
         {
           "command": "nornaEditor.addressesAndLinks",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page)$/",
           "group": "1_open@3"
         },
         {
           "command": "nornaEditor.incomingLinks",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page)$/",
           "group": "1_open@4"
         },
         {
           "command": "nornaEditor.addToPage",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Category|Incomplete|Configuration)$/",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Incomplete|Configuration)$/",
           "group": "2_create@3"
         }
       ],
@@ -338,7 +318,7 @@
   "scripts": {
     "audit:runtime": "npm audit --omit=dev",
     "build": "esbuild extension.cjs --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.cjs",
-    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check site-file-actions.cjs && node --check site-address-actions.cjs && node --check site-link-review.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/site-file-actions-contract.mjs && node test/site-address-actions-contract.mjs && node test/package-contract.mjs",
+    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check site-file-actions.cjs && node --check site-address-actions.cjs && node --check site-link-review.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/page-form-contract.mjs && node test/site-file-actions-contract.mjs && node test/site-address-actions-contract.mjs && node test/package-contract.mjs",
     "package": "vsce package --out norna-vscode.vsix",
     "publish:marketplace": "vsce publish",
     "vscode:prepublish": "npm run build",

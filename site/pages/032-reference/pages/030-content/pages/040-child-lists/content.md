@@ -32,10 +32,10 @@ the list but does not write its descriptions.
 
 ## Boundaries
 
-Only listed direct **content pages** are included, in numeric folder order.
-The block neither recurses nor includes or passes through categories. This
-differs from a [generated category list](/reference/site/pages/#opening-a-category-url),
-which can link to direct child categories as well.
+Only listed direct pages are included, in numeric folder order. The block
+does not recurse. For an overview that always ends with a generated list,
+use [page.listChildren](/reference/site/pages/#list-child-pages) instead of
+placing a `page-list` block by hand.
 
 Missing or whitespace-only descriptions warn without stopping the build.
 An explicitly empty `description: ""` fails frontmatter validation. A page-list

@@ -81,13 +81,10 @@ content across the site. It keeps query strings and heading anchors. Relative
 links remain relative when they still reach the same target; otherwise Norna
 rewrites them as paths beginning with `/`.
 
-Links to groups inside the moved folder are also updated. Such navigation
-categories have `category.yaml` instead of `content.md`; they do not receive
-aliases.
-
-You can move the last page out of a category. The category's files remain in
-place; `content:check` and `build` warn that it has no listed content without
-stopping the move or build. See [empty category behavior](/reference/site/pages/#opening-a-category-url).
+Links to parent pages inside the moved folder are also updated. Every moved
+page receives an alias for its old URL. You can move the last child out of a
+parent that uses `page.listChildren: true`; `content:check` and `build` then
+warn about its empty generated list without stopping the move or build.
 
 This is not a search-and-replace across the repository. Links in README files,
 arbitrary HTML or JavaScript, and other websites are not repaired. Referenced
@@ -110,7 +107,7 @@ run the command again.
 
 ## Limits and recovery
 
-You cannot move Home or use a navigation category as the source page. The
+You cannot move Home. The
 destination parent must already exist, and the destination cannot be inside
 the folder being moved. Page paths, order numbers and aliases must not collide
 with existing ones.

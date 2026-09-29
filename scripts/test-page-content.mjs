@@ -245,7 +245,7 @@ test('social sharing metadata uses absolute base-path URLs and one conventional 
 		await writeFile(path.join(siteDir, 'public', 'social-image.jpg'), 'preview');
 		await writeFile(path.join(siteDir, 'content.md'), '# Home\n\nHome content.\n');
 		await mkdir(path.join(siteDir, 'pages', '010-guides', 'pages', '010-install'), { recursive: true });
-		await writeFile(path.join(siteDir, 'pages', '010-guides', 'category.yaml'), 'label: Guides\n');
+		await writeFile(path.join(siteDir, 'pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 		await writeFile(path.join(siteDir, 'pages', '010-guides', 'pages', '010-install', 'content.md'), `---
 page:
   description: Install the project.

@@ -197,7 +197,6 @@ const assertPackageContents = async (packageRoot) => {
 		'bin/norna-cli.mjs',
 		'bin/norna.mjs',
 		'package.json',
-		'schemas/category.schema.json',
 		'schemas/config.schema.json',
 		'schemas/content-frontmatter.schema.json',
 		'schemas/manifest.json',
@@ -403,7 +402,7 @@ This page verifies that packaged norna sites can build additional pages.
 	const homeImagesDir = path.join(siteProjectRoot, 'site', 'images');
 	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'doctor'], { cwd: homeImagesDir, env: npmEnv });
-	await runInherit(npxBin, ['norna', 'category:add', 'Guides', '--parent', '/'], { cwd: siteProjectRoot, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'page:add', 'Guides', '--parent', '/'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'page:add', 'Installation', '--parent', '/guides/'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'page:move', '/guides/installation/', '/guides/setup/', '--write'], { cwd: siteProjectRoot, env: npmEnv });
 	const guidesDirectory = (await readdir(path.join(siteProjectRoot, 'site', 'pages')))
@@ -422,8 +421,8 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	const navigationReview = JSON.parse(navigationReviewResult.stdout);
 	assert.equal(navigationReview.command, 'navigation:review');
-	assert.equal(navigationReview.schemaVersion, 1);
-	assert.equal(navigationReview.site.pageCount, 3);
+	assert.equal(navigationReview.schemaVersion, 2);
+	assert.equal(navigationReview.site.pageCount, 4);
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
 	const previewPort = await getAvailablePort();
 	const previewEnv = {
@@ -481,7 +480,7 @@ This page verifies that packaged norna sites can build additional pages.
 	await assertFileExists(path.join(siteProjectRoot, 'dist', 'guides', 'installation', 'index.html'));
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'guides', 'index.html'),
-		'http-equiv="refresh" content="0; url=/site/guides/setup/"',
+		'id="page-title">Guides</h1>',
 	);
 	await assertFileMissing(path.join(siteProjectRoot, 'public', 'robots.txt'));
 	await assertFileExcludes(

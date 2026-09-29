@@ -51,7 +51,7 @@ items:
   - {link: "/guides/install/\\u0023steps", title: "Escaped YAML link"} # Preserve comment
 \`\`\`
 `);
-	await writeFixtureFile(siteDir, 'pages/010-guides/category.yaml', 'label: Guides\n');
+	await writeFixtureFile(siteDir, 'pages/010-guides/content.md', '---\npage:\n  listChildren: true\n---\n# Guides\n');
 	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/content.md', `---
 page:
   description: Installation instructions.
@@ -73,7 +73,7 @@ items:
 \`\`\`
 `);
 	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/images/example.svg', '<svg viewBox="0 0 10 10"></svg>\n');
-	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/pages/020-setup/category.yaml', 'label: Setup\n');
+	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/pages/020-setup/content.md', '---\npage:\n  listChildren: true\n---\n# Setup\n');
 	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/pages/020-setup/pages/010-first/content.md', '# First setup\n');
 	await writeFixtureFile(siteDir, 'pages/010-guides/pages/010-install/pages/010-reference/content.md', `# Install reference
 
@@ -87,7 +87,7 @@ items:
 
 [Install](/guides/install/)
 `);
-	await writeFixtureFile(siteDir, 'pages/020-reference/category.yaml', 'label: Reference\n');
+	await writeFixtureFile(siteDir, 'pages/020-reference/content.md', '---\npage:\n  listChildren: true\n---\n# Reference\n');
 	await writeFixtureFile(siteDir, 'pages/020-reference/pages/010-overview/content.md', `# Reference overview
 
 ## Summary {#summary}
@@ -197,14 +197,14 @@ try {
 		await runNorna(lastChild.siteDir, ['page:move', '/reference/overview/', '/overview/', '--write']);
 		assert.equal(await exists(source), false);
 		assert.match(await readFile(path.join(destination, 'content.md'), 'utf8'), /aliases:\n    - \/reference\/overview\//);
-		assert.equal(await readFile(path.join(lastChild.siteDir, 'pages/020-reference/category.yaml'), 'utf8'), 'label: Reference\n');
+		assert.equal(await readFile(path.join(lastChild.siteDir, 'pages/020-reference/content.md'), 'utf8'), '---\npage:\n  listChildren: true\n---\n# Reference\n');
 		const home = await readFile(homePath, 'utf8');
 		assert.match(home, /\[Overview\]\(\/overview\/#summary\)/);
 		assert.match(home, /\[Reference\]\(\/reference\/\)/);
 		const checked = await runNorna(lastChild.siteDir, ['content:check']);
 		assert.match(checked.stdout, /Content check completed with warnings/);
-		assert.match(checked.stdout, /020-reference\/category.yaml has no listed reachable content page/);
-		// An existing empty category must not prevent a subsequent move either.
+		assert.match(checked.stdout, /page\.listChildren has no listed direct child pages/);
+		// An empty overview must not prevent a subsequent move either.
 		await runNorna(lastChild.siteDir, ['page:move', '/overview/', '/overview-renamed/', '--write']);
 		assert.equal(await exists(path.join(lastChild.siteDir, 'pages/030-overview-renamed/content.md')), true);
 	}
@@ -251,12 +251,12 @@ try {
 		/neither \/missing\/ nor \/also-missing\/ exists/,
 	);
 	assert.match(
-		await runFailure(failures.siteDir, ['page:move', '/guides/', '/reference/new/']),
-		/navigation category, not a page/,
+		await runFailure(failures.siteDir, ['page:move', '/guides/', '/guides/install/new/']),
+		/cannot be moved below itself/i,
 	);
 	assert.match(
 		await runFailure(failures.siteDir, ['page:move', '/guides/install/', '/reference/']),
-		/navigation category already owns that path/,
+		/both pages exist/,
 	);
 	assert.match(
 		await runFailure(failures.siteDir, ['page:move', '/guides/install/', '/guides/install/reference/new/']),

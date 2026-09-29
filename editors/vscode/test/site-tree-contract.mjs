@@ -27,6 +27,7 @@ const commands = new Map();
 const opened = [];
 const errors = [];
 const inputs = [];
+const forms = [];
 const choices = [];
 const documents = [];
 const tabChanges = new EventEmitter();
@@ -45,6 +46,7 @@ const vscode = {
 	EventEmitter,
 	Uri: { file: (fsPath) => ({ scheme: 'file', fsPath }) },
 	TreeItem: class { constructor(label, collapsibleState) { Object.assign(this, { label, collapsibleState }); } },
+	ViewColumn: { Active: 1 },
 	ThemeIcon: class { constructor(id) { this.id = id; } },
 	TreeItemCollapsibleState: { None: 0, Collapsed: 1, Expanded: 2 },
 	Range: class {}, Diagnostic: class {}, DiagnosticSeverity: { Error: 0, Warning: 1 },
@@ -59,6 +61,23 @@ const vscode = {
 		onDidChangeTextDocument: documentChanges.event, onDidCloseTextDocument: disposable, onDidChangeWorkspaceFolders: workspaceChanges.event,
 	},
 	window: {
+		createWebviewPanel: () => {
+			let receive, dispose; const replies=[];
+			const panel={ webview: { html:'', onDidReceiveMessage: (fn)=>{receive=fn;return disposable();}, postMessage: async message=>{replies.push(message);} }, onDidDispose: fn=>{dispose=fn;}, dispose: ()=>dispose?.() };
+			queueMicrotask(async()=>{
+				try {
+					const model=JSON.parse(panel.webview.html.match(/const initial=(.*);\nconst byId/)[1]);
+					const action=forms.shift(); assert.ok(action,'Unexpected page form');
+					const values=action(model);
+					if(!values) return receive({type:'cancel'});
+					await receive({type:'preview',revision:1,values,suggestSlug:false});
+					assert.equal(replies.at(-1).errors,undefined,JSON.stringify(replies.at(-1)));
+					assert.match(replies.at(-1).preview,new RegExp(values.slug));
+					await receive({type:'submit',revision:1,values,suggestSlug:false});
+				} catch(error){errors.push(error.message);panel.dispose();}
+			});
+			return panel;
+		},
 		createTreeView: (_id, options) => { provider = options.treeDataProvider; tree = {
 			visible: false, selection: [], onDidChangeVisibility: disposable,
 			expansions: new EventEmitter(), collapses: new EventEmitter(),
@@ -83,7 +102,7 @@ const vscode = {
 		},
 	},
 };
-let context = { subscriptions: [], workspaceState };
+let context = { subscriptions: [], workspaceState, asAbsolutePath: (relative) => path.join(extensionRoot, relative) };
 try {
 	for (const root of [siteRoot, legacySite, outsideSite]) {
 		await write(path.join(root, 'site-config/settings.yaml'), 'url: https://example.com/\n');
@@ -97,7 +116,7 @@ try {
 	await write(path.join(siteRoot, 'theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
-	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
+	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
 		getNornaProjectContext: (filename) => {
 			const root = [siteRoot, legacySite, outsideSite].find((root) => filename.startsWith(root + path.sep));
 			if (!root) return null;
@@ -136,7 +155,8 @@ try {
 	assert.equal(home.sourcePath, path.join(siteRoot, 'content.md'));
 	assert.equal(provider.getParent(home), undefined);
 	assert.equal(provider.getTreeItem(home).description, 'Homepage');
-	const configuration = home.children[0];
+	assert.equal(home.children[0].title, 'theme.yaml');
+	const configuration = home.children.find(node => node.kind === 'directory' && node.role === 'configuration');
 	assert.equal(configuration.title, 'site-config');
 	assert.equal(provider.getTreeItem(configuration).iconPath.id, 'settings-gear');
 	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
@@ -164,7 +184,8 @@ try {
 	const guide = pages.children[0];
 	const guidePages = guide.children.find((node) => node.role === 'pages');
 	const image = guide.children.find((node) => node.role === 'images').children[0];
-	assert.equal(provider.getTreeItem(home).iconPath.id, provider.getTreeItem(guide).iconPath.id);
+	assert.deepEqual(provider.getTreeItem(home).iconPath, provider.getTreeItem(guide).iconPath);
+	assert.match(provider.getTreeItem(guide).iconPath.light, /media\/page-light\.svg$/);
 	assert.equal(provider.getTreeItem(pages).contextValue, 'nornaPages');
 	for (const node of [pages, configuration]) {
 		const item = provider.getTreeItem(node);
@@ -184,10 +205,9 @@ try {
 	await commands.get('nornaEditor.openSiteNode')(image);
 	assert.deepEqual(opened.pop(), ['vscode.open', image.sourcePath], 'Resources must use VS Code editor selection, not a forced text editor.');
 	await commands.get('nornaEditor.pageInformation')(image);
-	assert.match(errors.pop(), /Select a page or navigation category/);
+	assert.match(errors.pop(), /Select a page/);
 	assert.equal(errors.length, 0);
-	inputs.push('Added below guide', 'added-below-guide');
-	choices.push((items) => { assert.equal(items.length, 1); assert.equal(items[0].description, '/guide/added-below-guide/'); return items[0]; });
+	forms.push(model => { assert.equal(model.parentPath, '/guide/'); return {title:'Added below guide',slug:'added-below-guide',parentPath:model.parentPath,description:'',listed:true,listChildren:false,aliases:[]}; });
 	await commands.get('nornaEditor.addPage')(guidePages);
 	const created = path.join(siteRoot, 'pages/010-guide/pages/020-added-below-guide/content.md');
 	assert.match(await readFile(created, 'utf8'), /^# Added below guide\n/);
@@ -204,8 +224,7 @@ try {
 	await commands.get('nornaEditor.addToPage')(firstChild);
 	assert.deepEqual(await readdir(path.dirname(firstChild.sourcePath)), beforeCancel, 'Cancelling the image picker must not create images/.');
 	choices.push((items) => items.find((item) => item.command === 'addChildPage'));
-	inputs.push('First grandchild', 'first-grandchild');
-	choices.push((items) => { assert.equal(items.length, 1); assert.equal(items[0].description, '/guide/child/first-grandchild/'); return items[0]; });
+	forms.push(model => { assert.equal(model.parentPath, '/guide/child/'); return {title:'First grandchild',slug:'first-grandchild',parentPath:model.parentPath,description:'',listed:true,listChildren:false,aliases:[]}; });
 	await commands.get('nornaEditor.addToPage')(firstChild);
 	assert.match(await readFile(path.join(path.dirname(firstChild.sourcePath), 'pages/010-first-grandchild/content.md'), 'utf8'), /^# First grandchild/);
 	assert.equal(choices.length, 0, 'The visible plus must not ask for Inside/Beside.');
@@ -218,19 +237,18 @@ try {
 	commands.set('nornaEditor.importImage', importImage);
 	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['pageInformation', 'addressesAndLinks', 'openSiteNode', 'removePage']); return undefined; });
 	await commands.get('nornaEditor.pageActions')(guide);
-	inputs.push('Cancelled', 'cancelled');
-	choices.push(() => undefined);
+	forms.push(() => undefined);
 	await commands.get('nornaEditor.addPage')(pages);
 	assert.equal(home.children.find((node) => node.role === 'pages').children.length, 1);
-	await write(path.join(siteRoot, 'pages/020-topics/category.yaml'), 'label: Topics\n');
+	await write(path.join(siteRoot, 'pages/020-topics/content.md'), '---\npage:\n  listChildren: true\n---\n# Topics\n');
 	await registered.refresh();
-	const category = pages.children.find((node) => node.kind === 'category');
-	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'createSourceFile']); return undefined; });
-	await commands.get('nornaEditor.addToPage')(category);
-	assert.equal(provider.getTreeItem(category).command.command, 'nornaEditor.openSiteNode');
-	await commands.get('nornaEditor.openSiteNode')(category);
-	assert.deepEqual(opened.pop(), ['vscode.open', category.sourcePath]);
-	assert.equal(provider.getTreeItem(category).iconPath.id, 'folder');
+	const overview = pages.children.find((node) => node.title === 'Topics');
+	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['addChildPage', 'importImage', 'createSourceFile']); return undefined; });
+	await commands.get('nornaEditor.addToPage')(overview);
+	assert.equal(provider.getTreeItem(overview).command.command, 'nornaEditor.openSiteNode');
+	await commands.get('nornaEditor.openSiteNode')(overview);
+	assert.deepEqual(opened.pop(), ['vscode.open', overview.sourcePath]);
+	assert.match(provider.getTreeItem(overview).iconPath.light, /media\/page-list-light\.svg$/);
 	const leaf = guidePages.children.find((node) => node.title === 'Added below guide');
 	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed, 'An existing empty images folder is a visible detail.');
 	await rm(path.join(path.dirname(leaf.sourcePath), 'images'), { recursive: true });
@@ -276,7 +294,7 @@ try {
 	assert.deepEqual(await readdir(path.dirname(leaf.sourcePath)), ['content.md']);
 	documents.pop();
 	// Selecting an owned resource in the command palette resolves to its page.
-	choices.push((items) => { assert.equal(items[0].parentPath, '/guide/'); assert.equal(items[1].parentPath, '/'); return undefined; });
+	forms.push(model => { assert.equal(model.parents[0].parentPath, '/guide/'); assert.equal(model.parents[1].parentPath, '/'); return undefined; });
 	await commands.get('nornaEditor.newPage')(image);
 	assert.equal(inputs.length, 0);
 	assert.equal(choices.length, 0);
@@ -373,7 +391,7 @@ try {
 	tree.selection = [];
 	// A reload restores the explicit site rather than following the open file.
 	for (const subscription of context.subscriptions) subscription.dispose();
-	context = { subscriptions: [], workspaceState };
+	context = { subscriptions: [], workspaceState, asAbsolutePath: (relative) => path.join(extensionRoot, relative) };
 	registered = module.exports.registerSiteTree(context, { appendLine() {} });
 	await registered.refresh();
 	assert.equal((await provider.getChildren())[0].siteRoot, legacySite);
@@ -385,7 +403,7 @@ try {
 	await registered.refresh();
 	assert.equal((await provider.getChildren()).length, 1);
 	assert.equal((await provider.getChildren())[0].siteRoot, siteRoot, 'Removing the selected folder selects the only remaining workspace site.');
-	const restoredConfiguration = (await provider.getChildren())[0].children.find((node) => node.role === 'configuration');
+	const restoredConfiguration = (await provider.getChildren())[0].children.find((node) => node.kind === 'directory' && node.role === 'configuration');
 	assert.equal(provider.getTreeItem(restoredConfiguration).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed, 'Configuration collapse must survive a reload and site switch.');
 	assert.equal(contexts.get('nornaSiteTree.hasMultipleSites'), false);
 	await commands.get('nornaEditor.openSiteNode')(legacy);
@@ -413,7 +431,7 @@ try {
 	choices.push((items) => { assert.ok(items.some((item) => item.filename === homePath)); assert.ok(items.every((item) => item.command === 'createSourceFile')); return undefined; });
 	await commands.get('nornaEditor.addToPage')(damagedHome);
 	for (const subscription of context.subscriptions) subscription.dispose();
-	context = { subscriptions: [], workspaceState };
+	context = { subscriptions: [], workspaceState, asAbsolutePath: (relative) => path.join(extensionRoot, relative) };
 	registered = module.exports.registerSiteTree(context, { appendLine() {} });
 	await registered.refresh();
 	assert.equal((await provider.getChildren())[0].siteRoot, siteRoot, 'Reload must retain the damaged chosen site.');

@@ -11,7 +11,6 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
 const expectedDocumentationRef = `v${packageJson.version}`;
 const filenames = [
-	'category.schema.json',
 	'config.schema.json',
 	'theme.schema.json',
 	'page-theme.schema.json',
@@ -19,7 +18,6 @@ const filenames = [
 	'content-frontmatter.schema.json',
 ];
 const requiredRichHelp = {
-	'category.schema.json': ['label', 'description'],
 	'config.schema.json': ['url', 'language', 'editLink', 'navigation', 'search', 'scrollBehavior'],
 	'theme.schema.json': ['preset', 'appearance', 'corners', 'layout', 'images', 'blocks', 'typography', 'palette', 'sections'],
 	'page-theme.schema.json': ['layout', 'images', 'sections'],
@@ -27,9 +25,9 @@ const requiredRichHelp = {
 	'content-frontmatter.schema.json': ['page', 'navigation'],
 };
 const manifest = JSON.parse(await readFile(path.join(root, 'schemas', 'manifest.json'), 'utf8'));
-assert.equal(manifest.editorApiVersion, 2);
-assert.equal(manifest.schemaVersion, 3);
-assert.equal(manifest.files.category, 'category.schema.json');
+assert.equal(manifest.editorApiVersion, 3);
+assert.equal(manifest.schemaVersion, 4);
+assert.equal(manifest.files.category, undefined);
 assert.equal(manifest.files.pageTheme, 'page-theme.schema.json');
 
 const githubHeadingAnchor = (heading) => heading
@@ -188,13 +186,6 @@ assert.match(config.properties.editLink.properties.localEditor.markdownDescripti
 assert.equal(config.properties.editLink.properties.localEditor.oneOf[0].const, 'vscode');
 assert.equal(config.properties.editLink.properties.localEditor.oneOf[0].title, 'Visual Studio Code');
 
-const category = JSON.parse(await readFile(path.join(root, 'schemas', 'category.schema.json'), 'utf8'));
-assert.deepEqual(Object.keys(category.properties), ['label', 'description']);
-assert.deepEqual(category.required, ['label']);
-assert.match(category.markdownDescription, /groups child pages without editorial content/);
-assert.match(category.markdownDescription, /first listed direct page/);
-assert.match(category.markdownDescription, /generated child list when the first child is a category/);
-
 const sitewide = JSON.parse(await readFile(path.join(root, 'schemas', 'sitewide-content.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(sitewide.properties.logo.properties), ['height']);
 assert.match(sitewide.properties.logo.markdownDescription, /```yaml\nlogo:\n  height: 2rem\n```/);
@@ -320,7 +311,7 @@ assert.match(pageTheme.markdownDescription, /content-block defaults/);
 
 const content = JSON.parse(await readFile(path.join(root, 'schemas', 'content-frontmatter.schema.json'), 'utf8'));
 assert.deepEqual(Object.keys(content.properties), ['page', 'navigation']);
-assert.deepEqual(Object.keys(content.properties.page.properties), ['description', 'aliases']);
+assert.deepEqual(Object.keys(content.properties.page.properties), ['description', 'listChildren', 'aliases']);
 assert.match(content.properties.page.properties.aliases.markdownDescription, /permanently identify this page/);
 assert.match(content.properties.page.properties.aliases.markdownDescription, /reference\/site\/urls\/#keep-an-old-url/);
 assert.match(content.properties.page.properties.aliases.items.markdownDescription, /configured base path/);
@@ -332,6 +323,4 @@ assert.deepEqual(Object.keys(content.properties.navigation.properties), ['listed
 
 console.log('Schema metadata tests passed.');
 
-assert.equal(category.properties.description.type, 'string');
-assert.equal(category.properties.description.minLength, 1);
-assert.match(category.properties.description.markdownDescription, /Optional authored text/);
+assert.equal(content.properties.page.properties.listChildren.type, 'boolean');

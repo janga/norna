@@ -3,6 +3,7 @@ import './test-editor-block-completions.mjs';
 import './test-editor-image-usage.mjs';
 import './test-editor-site-tree.mjs';
 import './test-editor-source-files.mjs';
+import './test-editor-page-form.mjs';
 import './test-editor-site-files.mjs';
 import './test-editor-page-addresses.mjs';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
@@ -28,7 +29,7 @@ const siteRoot = path.join(root, 'site');
 const homeContentPath = path.join(siteRoot, 'content.md');
 const pageContentPath = path.join(siteRoot, 'pages', '010-about', 'content.md');
 const pageThemePath = path.join(siteRoot, 'pages', '010-about', 'theme.yaml');
-const categoryPath = path.join(siteRoot, 'pages', '020-guides', 'category.yaml');
+const overviewPath = path.join(siteRoot, 'pages', '020-guides', 'content.md');
 const nestedPageContentPath = path.join(siteRoot, 'pages', '010-about', 'pages', '020-team', 'content.md');
 const nestedPageThemePath = path.join(siteRoot, 'pages', '010-about', 'pages', '020-team', 'theme.yaml');
 const installedNornaRoot = path.join(root, 'node_modules', '@janga', 'norna');
@@ -82,7 +83,6 @@ try {
 		editorApiVersion: supportedEditorApiVersion,
 		blockSchemas: { 'image-stack': 'image-stack.schema.json', 'image-carousel': 'image-carousel.schema.json', 'card-list': 'card-list.schema.json' },
 		files: {
-			category: 'category.schema.json',
 			config: 'config.schema.json',
 			contentFrontmatter: 'content-frontmatter.schema.json',
 			pageTheme: 'page-theme.schema.json',
@@ -111,8 +111,8 @@ try {
 	await writeFile(homeContentPath, homeSource);
 	await writeFile(pageContentPath, pageSource);
 	await writeFile(pageThemePath, 'layout:\n  textWidth: wide\n');
-	await mkdir(path.dirname(categoryPath), { recursive: true });
-	await writeFile(categoryPath, 'label: Guides\n');
+	await mkdir(path.dirname(overviewPath), { recursive: true });
+	await writeFile(overviewPath, '---\npage:\n  listChildren: true\n---\n# Guides\n');
 	await writeFile(nestedPageContentPath, pageSource.replace('# About', '# Team'));
 	await writeFile(nestedPageThemePath, 'layout:\n  contentSpacing: compact\n');
 
@@ -127,7 +127,7 @@ try {
 	assert.equal(getNornaDocumentContext(pageThemePath).schemaKind, 'pageTheme');
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).schemaKind, 'pageTheme');
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'theme.yaml')).pageDirectory, '.');
-	assert.equal(getNornaDocumentContext(categoryPath).schemaKind, 'category');
+	assert.equal(getNornaDocumentContext(overviewPath).schemaKind, 'contentFrontmatter');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).pageDirectory, '010-about/pages/020-team');
 	assert.equal(getNornaDocumentContext(nestedPageContentPath).schemaKind, 'contentFrontmatter');
 	assert.equal(getNornaDocumentContext(nestedPageThemePath).schemaKind, 'pageTheme');
@@ -282,7 +282,7 @@ try {
 	assert.equal(nornaBlockDefinitions['page-list'].snippet, '```page-list\n```');
 	assert.equal(nornaBlockDefinitions['card-list'].options.layout.default, 'image-top');
 	assert.equal(nornaBlockDefinitions['card-list'].options.width.default, undefined);
-	assert.match(nornaBlockDefinitions['card-list'].options.width.description, /root theme/);
+	assert.match(nornaBlockDefinitions['card-list'].options.width.description, /shared theme/);
 	assert.doesNotMatch(nornaBlockDefinitions['card-list'].snippet, /^width:/m);
 
 	const stackFieldSource = homeSource.replace('- image: portrait.jpg', '- image: portrait.jpg\n    ');

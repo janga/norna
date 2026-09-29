@@ -12,3 +12,5 @@ site-file-actions.cjs
 site-address-actions.cjs
 site-link-review.cjs
 site-source-actions.cjs
+page-form.cjs
+page-form-actions.cjs

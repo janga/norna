@@ -1,7 +1,7 @@
 import { lstat, mkdir, open, rmdir, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { parsePageDirectoryPath } from './page-model.mjs';
-import { categorySchema, configSchema, pageThemeSchema, sitewideSchema, themeVisualSchema } from './schema-definitions.mjs';
+import { configSchema, pageThemeSchema, sitewideSchema, themeVisualSchema } from './schema-definitions.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
 import { checkedPath } from './editor-site-files.mjs';
 import { escapeMarkdownHeading } from './site-node-create.mjs';
@@ -34,10 +34,9 @@ export const editorSourceDefinition = (siteRoot, filename) => {
 	const location = editorPageLocation(siteRoot, path.dirname(filename));
 	if (!location) return null;
 	if (path.basename(filename) === 'content.md') return { input: 'title', required: true, description: 'Required page content.' };
-	if (path.basename(filename) === 'category.yaml' && !location.isHome) return { schema: categorySchema, input: 'label', required: true, description: 'Required category information. A category has no content.md.' };
 	if (path.basename(filename) === 'theme.yaml') return { schema: pageThemeSchema, text: 'layout:\n  textWidth: normal\n', description: location.isHome
 		? 'Visual settings for this page only. Overrides site-config/site-theme.yaml.'
-		: 'Visual settings for this page or category and its child pages. Overrides inherited settings.' };
+		: 'Visual settings for this page and its child pages. Overrides inherited settings.' };
 	return null;
 };
 
@@ -47,11 +46,9 @@ export const getEditorSourceFileChoices = async ({ siteRoot, directory }) => {
 	const location = editorPageLocation(siteRoot, directory);
 	if (!location || !(await stat(directory))?.isDirectory()) throw new Error('Select an existing page directory at a permitted location in this site.');
 	const content = await stat(path.join(directory, 'content.md'));
-	const category = await stat(path.join(directory, 'category.yaml'));
-	const images = await stat(path.join(directory, 'images'));
 	const names = [
-		...(!content && !category ? ['content.md', ...(!location.isHome && !images ? ['category.yaml'] : [])] : []),
-		...(content?.isFile() !== category?.isFile() ? ['theme.yaml'] : []),
+		...(!content ? ['content.md'] : []),
+		...(content?.isFile() ? ['theme.yaml'] : []),
 		...(location.isHome ? ['site-config/settings.yaml', 'site-config/site-theme.yaml', 'site-config/shared-content.yaml'] : []),
 	];
 	const choices = [];

@@ -18,7 +18,7 @@ appears only in recognized Norna files.
 
 - A dedicated Norna view with readable page names and their actual
   configuration, images, child-page folders and public files.
-- Page and category opening, creation from each `pages/` folder, and
+- Page opening, creation from each `pages/` folder, and
   source-preserving page information edits.
 - Configuration fields, values, and descriptions through Red Hat YAML using
   the project's Norna schemas.
@@ -45,8 +45,8 @@ or add a tree. Open just your site's folder for a workspace containing only
 that site's files; the ordinary Explorer continues to show all workspace folders.
 
 The tree's root is its homepage, marked **Homepage**. Select a page title to
-open its `content.md`; that file has no separate tree row. A category title
-opens `category.yaml`. Only the chevron or keyboard expansion opens the branch.
+open its `content.md`; that file has no separate tree row. Only the chevron or
+keyboard expansion opens the branch.
 Directories select without opening a file. Individual files use VS Code's
 normal editor or preview, including image previews.
 
@@ -60,8 +60,8 @@ including an existing empty folder.
 
 A page's **+** offers child-page creation, image import and missing supported
 source files. It works without `pages/` or `images/`; the chosen operation
-creates the directory when needed. Categories offer child pages and missing
-configuration. The settings folder's **+** also exposes missing site files.
+creates the directory when needed. The settings folder's **+** also exposes
+missing site files.
 Creation previews the target and effect, uses a valid initial setting and never
 overwrites a file. Incomplete directories remain visible with source-repair
 choices. Errors and warnings supplement type icons; unused author files are
@@ -71,6 +71,12 @@ Each existing `pages/` also offers **Norna: Add Page…**. Page actions remain i
 **…**, the context menu and Command Palette, including information, addresses,
 source opening and removal. Active `content.md` reveals its owning page;
 resource files retain their own selection.
+With a compatible engine, creation and Page Information open a combined form.
+Existing information is prefilled; empty inputs have example placeholders.
+Additional addresses start with a **+** button and no empty row. Each added
+row has a remove button. Saved alias removal retains incoming-link review.
+The form requires the engine's `sitePageFormApiVersion: 1`; older engines keep
+the separate dialogs.
 Creation previews the parent, address and directory before writing. Information
 edits stay in the buffer for normal save and undo. See the
 [site-tree reference](https://janga.github.io/norna/reference/workflows/editor/#work-from-the-site-tree)

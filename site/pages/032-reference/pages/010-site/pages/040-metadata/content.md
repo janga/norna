@@ -48,10 +48,10 @@ page. Norna does not derive one from the opening paragraph.
 
 `navigation.listed: false` removes a non-home page and its branch from
 navigation, not from output or the sitemap. It is not access control.
-Home must stay listed. See [Pages and categories](/reference/site/pages/).
+Home must stay listed. See [Pages and child-page lists](/reference/site/pages/).
 
 ## Validation
 
 `content:check` validates metadata and resulting links. Unknown keys are
-errors, including keys copied from another generator. `category.yaml`
-accepts `label` only; it is not a frontmatter file.
+errors, including keys copied from another generator. Every page uses
+`content.md`; `category.yaml` is no longer supported.

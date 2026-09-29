@@ -286,7 +286,7 @@ async function run() {
 
 	const manifestPath = path.join(engineRoot, 'schemas', 'manifest.json');
 	const compatibleManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-	assert.equal(compatibleManifest.editorApiVersion, 2);
+	assert.equal(compatibleManifest.editorApiVersion, 3);
 	for (const editorApiVersion of [1, compatibleManifest.editorApiVersion + 1]) {
 		writeManifest({ ...compatibleManifest, editorApiVersion });
 		await vscode.commands.executeCommand('nornaEditor.refresh');

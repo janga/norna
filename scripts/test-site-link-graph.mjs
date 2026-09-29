@@ -309,7 +309,7 @@ try {
 	await writeFixtureFile(tempRoot, 'site/site-config/settings.yaml', 'url: https://example.com/docs/\n');
 	await writeFixtureFile(tempRoot, 'site/site-config/site-theme.yaml', 'preset: documentation\n');
 	await writeFixtureFile(tempRoot, 'site/content.md', brokenSource);
-	await writeFixtureFile(tempRoot, 'site/pages/010-guides/category.yaml', 'label: Guides\n');
+	await writeFixtureFile(tempRoot, 'site/pages/010-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 	await writeFixtureFile(tempRoot, 'site/pages/010-guides/pages/010-installation/content.md', installationSource);
 	await writeFixtureFile(tempRoot, 'site/pages/010-guides/pages/020-workflows/content.md', workflowsSource);
 

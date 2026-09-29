@@ -41,17 +41,17 @@ try {
 		await mkdir(path.dirname(filePath), { recursive: true });
 		await writeFile(filePath, source);
 	};
-	await addFile('pages/050-choices/category.yaml', 'label: Choose & learn\n');
-	await addFile('pages/050-choices/pages/010-setup/category.yaml', 'label: Setup\ndescription: Install & configure your project.\n');
+	await addFile('pages/050-choices/content.md', '---\npage:\n  listChildren: true\n---\n# Choose & learn\n');
+	await addFile('pages/050-choices/pages/010-setup/content.md', '---\npage:\n  listChildren: true\n  description: Install & configure your project.\n---\n# Setup\n');
 	await addFile('pages/050-choices/pages/010-setup/pages/010-install/content.md', '# Install\n');
 	await addFile('pages/050-choices/pages/020-work/content.md', '---\npage:\n  description: Compare & choose a workflow.\n---\n# Work\n');
-	await addFile('pages/050-choices/pages/005-empty/category.yaml', 'label: Empty choice\n');
-	await addFile('pages/060-drafts/category.yaml', 'label: Drafts\n');
-	await addFile('pages/060-drafts/pages/010-future/category.yaml', 'label: Future\n');
+	await addFile('pages/050-choices/pages/005-empty/content.md', '---\npage:\n  listChildren: true\n---\n# Empty choice\n');
+	await addFile('pages/060-drafts/content.md', '---\npage:\n  listChildren: true\n---\n# Drafts\n');
+	await addFile('pages/060-drafts/pages/010-future/content.md', '---\npage:\n  listChildren: true\n---\n# Future\n');
 	const check = await runNorna(siteDir, 'content:check');
 	assert.match(check.stdout, /Content check completed with warnings/);
 	const build = await runNorna(siteDir, 'build');
-	assert.match(build.stdout, /060-drafts\/category.yaml has no listed reachable content page/);
+	assert.match(build.stdout, /page\.listChildren has no listed direct child pages/);
 	assert.match(build.stdout, /Content check completed with warnings/);
 
 	const distDir = path.join(fixtureCopyRoot, 'dist');
@@ -67,28 +67,29 @@ try {
 	for (const pagePath of expectedPages) {
 		assert.match(await readFile(path.join(distDir, pagePath), 'utf8'), /<main\b[^>]*id="main-content"/);
 	}
-	const categoryRedirect = await readFile(path.join(distDir, 'guides', 'index.html'), 'utf8');
-	assert.match(categoryRedirect, /http-equiv="refresh" content="0; url=\/guides\/installation\/"/);
-	assert.match(categoryRedirect, /data-pagefind-ignore="all"/);
-	const categoryListing = await readFile(path.join(distDir, 'choices', 'index.html'), 'utf8');
-	assert.match(categoryListing, /Install &amp; configure your project\./);
-	assert.match(categoryListing, /id="page-title">Choose &amp; learn<\/h1>/);
-	assert.match(categoryListing, /href="\/choices\/setup\/install\/"[\s\S]*?<strong>Setup<\/strong>/);
-	assert.match(categoryListing, /Compare &amp; choose a workflow/);
-	assert.doesNotMatch(categoryListing, /<strong>Install<\/strong>|http-equiv="refresh"|class="edit-source-link"/);
-	assert.doesNotMatch(categoryListing, /href="\/choices\/empty\/"/);
+	const guidesOverview = await readFile(path.join(distDir, 'guides', 'index.html'), 'utf8');
+	assert.match(guidesOverview, /href="\/guides\/installation\/"/);
+	assert.doesNotMatch(guidesOverview, /http-equiv="refresh"/);
+	const overview = await readFile(path.join(distDir, 'choices', 'index.html'), 'utf8');
+	assert.match(overview, /Install &amp; configure your project\./);
+	assert.match(overview, /id="page-title">Choose &amp; learn<\/h1>/);
+	assert.match(overview, /href="\/choices\/setup\/"[\s\S]*?<strong>Setup<\/strong>/);
+	assert.match(overview, /Compare &amp; choose a workflow/);
+	assert.doesNotMatch(overview, /<strong>Install<\/strong>|http-equiv="refresh"/);
+	assert.match(overview, /href="\/choices\/empty\/"/);
 	for (const [pathname, title] of [['drafts', 'Drafts'], ['drafts/future', 'Future'], ['choices/empty', 'Empty choice']]) {
 		const html = await readFile(path.join(distDir, pathname, 'index.html'), 'utf8');
 		assert.ok(html.includes(`id="page-title">${title}</h1>`));
 		assert.doesNotMatch(html, /http-equiv="refresh"/);
-		assert.match(html, /class="child-page-list"[^>]*>\s*<ul>\s*<\/ul>/);
+		assert.doesNotMatch(html, /class="child-page-list"[^>]*>\s*<ul>\s*<\/ul>/);
 	}
 	const sitemap = await readFile(path.join(distDir, 'sitemap.xml'), 'utf8');
 	assert.match(sitemap, /\/choices\/<\/loc>/);
-	assert.doesNotMatch(sitemap, /\/choices\/setup\/<\/loc>|\/guides\/<\/loc>/);
+	assert.match(sitemap, /\/choices\/setup\/<\/loc>/);
+	assert.match(sitemap, /\/guides\/<\/loc>/);
 
 	const rootHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
-	assert.doesNotMatch(rootHtml, /href="\/(?:drafts|drafts\/future|choices\/empty)\/"/);
+	assert.match(rootHtml, /href="\/drafts\/"/);
 	const installationHtml = await readFile(path.join(distDir, 'guides', 'installation', 'index.html'), 'utf8');
 	const macosHtml = await readFile(path.join(distDir, 'guides', 'installation', 'macos', 'index.html'), 'utf8');
 	const referenceInstallationHtml = await readFile(
@@ -125,7 +126,7 @@ try {
 		'Child page lists should follow navigation order.',
 	);
 	assert.match(installationHtml, /\/original\/pages\/010-guides\/pages\/010-installation\/images\/diagram-[a-f0-9]+\.svg/);
-	assert.doesNotMatch(installationHtml, /rel="prev"/);
+	assert.match(installationHtml, /href="\/guides\/" rel="prev"/);
 	assert.match(installationHtml, /href="\/guides\/installation\/macos\/" rel="next"/);
 	assert.doesNotMatch(rootHtml, /class="page-sequence-navigation"/);
 	assert.match(macosHtml, /data-navigation-mode="tree"/);
@@ -153,9 +154,9 @@ try {
 	assert.match(treeNavigationHtml, /href="#install">Install<\/a>/);
 	assert.match(macosHtml, /<ul class="navigation-page-tree navigation-page-tree-sidebar">/);
 	assert.doesNotMatch(treeNavigationHtml, /navigation-category-disclosure/);
-	assert.match(macosHtml, /class="navigation-page-summary-title navigation-category-link mobile-nav-destination" href="\/guides\/installation\/">Guides<\/a>/);
+	assert.match(macosHtml, /href="\/guides\/">Guides<\/a>/);
 	assert.doesNotMatch(macosHtml, /class="navigation-category-disclosure"[^>]*>[\s\S]*?class="navigation-page-open-link"[^>]*>Guides<\/a>/);
-	assert.match(macosHtml, /<nav class="site-breadcrumbs" aria-label="Breadcrumb"><ol><li><span>Guides<\/span><\/li><li><a href="\/guides\/installation\/">Installation<\/a><\/li><li><span aria-current="page">macOS<\/span>/);
+	assert.match(macosHtml, /<nav class="site-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="\/guides\/">Guides<\/a><\/li><li><a href="\/guides\/installation\/">Installation<\/a><\/li><li><span aria-current="page">macOS<\/span>/);
 	assert.doesNotMatch(macosHtml, /page-contents-navigation-inline/);
 	assert.doesNotMatch(macosHtml, /<aside class="page-contents-navigation/);
 	assert.doesNotMatch(treeNavigationHtml, /href="#prerequisites"/);

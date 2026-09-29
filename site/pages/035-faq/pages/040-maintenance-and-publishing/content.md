@@ -49,7 +49,7 @@ page containing the alias is its target. Keep the alias if the page moves
 again, and never assign the old URL to another page. Use `--no-aliases` only
 when old public URLs should deliberately stop working.
 
-Norna rejects collisions with pages, categories, public files, generated
+Norna rejects collisions with pages, public files, generated
 routes, or other aliases. Aliases are excluded from the sitemap.
 
 How the redirect is delivered depends on the hosting service. Norna currently

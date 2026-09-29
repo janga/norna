@@ -30,7 +30,6 @@ export const getListedSiteNavigationTree = (entries) => {
 	const filterListed = (nodes) => nodes.flatMap((node) => {
 		if (!node.node.isHome && !node.node.navigation.listed) return [];
 		const children = filterListed(node.children);
-		if (node.node.kind === 'category' && children.length === 0) return [];
 		return [{ ...node, children }];
 	});
 
@@ -48,9 +47,7 @@ export const getSequentialPageNavigation = (nodes, currentPagePath) => {
 	));
 	if (!activeRoot) return { previous: null, next: null };
 
-	const pages = flattenSiteNavigationTree([activeRoot])
-		.filter(({ node }) => node.kind === 'page')
-		.map(({ node }) => node);
+	const pages = flattenSiteNavigationTree([activeRoot]).map(({ node }) => node);
 	const currentIndex = pages.findIndex(({ pagePath }) => pagePath === currentPagePath);
 	if (currentIndex < 0) return { previous: null, next: null };
 
@@ -68,7 +65,5 @@ export const getDirectChildPages = (nodes, currentPagePath) => {
 		? nodes.filter(({ node }) => !node.isHome)
 		: current.children;
 
-	return children
-		.filter(({ node }) => node.kind === 'page')
-		.map(({ node }) => node);
+	return children.map(({ node }) => node);
 };

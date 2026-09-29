@@ -57,6 +57,7 @@ const knownNestedFrontmatterKeys = new Set([
 	'listed',
 	'logo',
 	'lineHeight',
+	'listChildren',
 	'maxAvailableHeightPercent',
 	'maxAvailableWidthPercent',
 	'mobile',

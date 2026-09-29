@@ -56,7 +56,7 @@ and must not be absolute or contain `..`.
 | Task | Commands | Reference |
 | --- | --- | --- |
 | Create a project | `init` | [Project creation](/reference/commands/init/) |
-| Add a page or group | `page:add`, `category:add` | [Page creation](/reference/commands/create/) |
+| Add a page | `page:add` | [Page creation](/reference/commands/create/) |
 | Move existing content | `page:move` | [Move a page](/reference/commands/move/) |
 | Check and prepare images | `check`, `config:check`, `content:check`, `content:sync`, `images` | [Validation and image sync](/reference/commands/validate/) |
 | Inspect structure | `navigation:review` | [Navigation review](/reference/commands/navigation/) |
@@ -79,7 +79,7 @@ and `norna:dev` for `dev:local`. Typography scripts use the colon aliases.
 
 Pass arguments after `--`, as in
 `npm run norna:navigation:review -- --format json`. `init`, `page:add`,
-`page:move`, `category:add`, `migrate:check` and `astro` have no generated npm
+`page:move`, `migrate:check` and `astro` have no generated npm
 wrapper; invoke them through `npm exec -- norna`.
 
 The standalone starter also supplies `dev` and `build` aliases. Embedded
