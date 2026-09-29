@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.7.0
+
+- Match Norna schema 4 and editor API 3. Content-backed overview pages replace
+  navigation categories; Site Tree and IntelliSense support `page.listChildren`.
+- Give the compatible VSIX a distinct version so VS Code does not keep an older
+  0.6.0 build after an engine update.
 
 - Combine page creation and Page Information fields in a form with current
   values, example placeholders, address previews and inline validation.
