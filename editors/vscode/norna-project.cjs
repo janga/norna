@@ -3,7 +3,6 @@ const path = require('node:path');
 
 const supportedSchemaVersion = 5;
 const supportedEditorApiVersion = 3;
-const homePageDirectory = '000-home';
 const pageDirectoryPattern = /^(\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 const rootFiles = new Map([
 	['root/content.md', { documentKind: 'content', schemaKind: 'contentFrontmatter', pageDirectory: '.' }],
@@ -19,28 +18,25 @@ const toPosixPath = (filePath) => filePath.split(path.sep).join('/');
 const isPageDirectoryPath = (pageDirectory) => {
 	const segments = pageDirectory.split('/');
 	if (segments.length % 2 === 0) return false;
-	if (segments[0] === homePageDirectory && segments.length > 1) return false;
 
 	return segments.every((segment, index) => {
 		if (index % 2 === 1) return segment === 'pages';
 		const match = segment.match(pageDirectoryPattern);
-		if (!match) return false;
-		if (match[1] !== '000') return true;
-		return index === 0 && segment === homePageDirectory;
+		return Boolean(match && match[1] !== '000');
 	});
 };
 
 const hasSiteMarkers = (directory) => (
-	(isFile(path.join(directory, 'site-config', 'settings.yaml')) || isFile(path.join(directory, 'config.yaml')))
+	isFile(path.join(directory, 'site-config', 'settings.yaml'))
 	&& (isFile(path.join(directory, 'root', 'content.md')))
 );
 
 const isRootFileBeingCreated = (documentPath, directory) => {
 	const relative = toPosixPath(path.relative(directory, documentPath));
-	if (relative === 'site-config/settings.yaml' || relative === 'config.yaml') {
+	if (relative === 'site-config/settings.yaml') {
 		return isFile(path.join(directory, 'root', 'content.md'));
 	}
-	return relative === 'root/content.md' && (isFile(path.join(directory, 'site-config', 'settings.yaml')) || isFile(path.join(directory, 'config.yaml')));
+	return relative === 'root/content.md' && isFile(path.join(directory, 'site-config', 'settings.yaml'));
 };
 
 const findNornaSiteRoot = (documentPath) => {

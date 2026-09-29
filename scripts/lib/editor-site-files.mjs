@@ -97,7 +97,9 @@ export const getEditorImageUsage = async ({ siteRoot, sourcePath, imagePath, sou
 };
 
 export const planEditorRemoval = async ({ siteRoot, sourcePath, imagePath, filePath, sources }) => {
-	const target = await pageTarget({ siteRoot, sourcePath });
+	siteRoot = path.resolve(siteRoot);
+	const siteFile = filePath && !imagePath && path.resolve(sourcePath) === siteRoot;
+	const target = siteFile ? { sourcePath: await checkedPath(siteRoot, sourcePath) } : await pageTarget({ siteRoot, sourcePath });
 	if (!imagePath && !filePath && target.page.isHome) throw new Error('The homepage is required and cannot be removed.');
 	const filename = imagePath || filePath ? await checkedPath(siteRoot, imagePath ?? filePath) : target.directory;
 	const policy = filePath ? editorFileRemovalPolicy({ siteRoot: path.resolve(siteRoot), sourcePath: target.sourcePath, filePath: filename }) : null;

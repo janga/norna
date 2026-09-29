@@ -571,6 +571,13 @@ rejects former locations with manual conversion instructions; neither it nor
 `scripts/lib/site-conventions.mjs` for physical root-page and child paths;
 reusable editor APIs must calculate them from their explicit `siteRoot`.
 
+In the editing tree, site resources use `siteRoot` as their `ownerId`; page
+resources use the owning `content.md` path. The site context is not a visible
+row. Creation and optional-file removal for site resources must work without a
+readable homepage. File-removal calls use the site root as `sourcePath` for
+site-owned files. Keep unattached structural/read errors in `snapshot.problems`
+and preserve their actual paths when publishing editor diagnostics.
+
 
 Tree navigation uses the shared area resolver in `src/lib/areaNavigation.ts`:
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.1
+
+- Give shared configuration and public files their own site context, so their
+  actions keep working when homepage content needs repair.
+- Keep unreadable-site diagnostics and report configuration errors at their
+  actual source files.
+- Reject obsolete `000-home` child directories and legacy `config.yaml`
+  discovery markers in the `root/` source layout (Norna schema 5).
+
 ## 0.7.0
 
 - Match Norna schema 4 and editor API 3. Content-backed overview pages replace

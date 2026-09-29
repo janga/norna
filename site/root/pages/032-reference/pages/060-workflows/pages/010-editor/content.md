@@ -245,6 +245,9 @@ If a page directory lacks `content.md`, its row opens the Add menu. Create page
 content or restore the file.
 The homepage requires `content.md`. A missing required file does not remove the
 active site or its remaining pages from the tree.
+The settings folder's **+** still works without homepage content. Site
+configuration errors point to the affected configuration file; open
+**View > Problems** if the site or root page directory cannot be read.
 
 The type icon stays recognizable when a row has an **error** or **warning**.
 Hover for the explanation; open an existing file to repair it. The owning page

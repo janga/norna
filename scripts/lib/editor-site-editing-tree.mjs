@@ -46,7 +46,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 		catch (error) {
 			if (location?.isHome && error.code === 'ENOENT') entries = [];
 			else {
-				if (owner) issue(owner, `Cannot read ${directory}: ${error.message}`);
+				if (owner) issue(owner, `Cannot read ${directory}: ${error.message}`, 'error', directory);
 				return;
 			}
 		}
@@ -55,7 +55,6 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 		if (location) {
 			const hasContent = names.get('content.md')?.isFile();
 			const hasCategory = names.get('category.yaml')?.isFile();
-			const conflict = false;
 			const kind = hasContent ? 'page' : 'incomplete';
 			const sourcePath = path.join(directory, 'content.md');
 			const logical = byDirectory.get(directory);
@@ -66,17 +65,13 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			}
 			container = { ...logical, ...location, ...information, kind, sourcePath, id: sourcePath, ownerId: sourcePath, parentId,
 				directory, title: information.title ?? (location.isHome ? path.basename(siteRoot) : location.pageId),
-				url: location.isHome ? '/' : `/${location.pagePath}/`, missingSource: kind === 'incomplete', conflict };
+				url: location.isHome ? '/' : `/${location.pagePath}/`, missingSource: kind === 'incomplete' };
 			items.push(container);
 			if (information.problem) issue(container, information.problem);
 			if (kind !== 'incomplete') await validate(container);
 			else issue(container, location.isHome ? 'Homepage content.md is missing. Use Add to create it.'
 				: 'Page content.md is missing. Use Add to create it.');
 			if (hasCategory) issue(container, 'category.yaml is no longer supported. Use content.md with page.listChildren: true for an overview.');
-			if (location.isHome) for (const name of ['settings.yaml', 'site-theme.yaml']) {
-				try { await read(path.join(siteRoot, 'site-config', name)); }
-				catch (error) { if (error.code === 'ENOENT' || error.code === 'ENOTDIR') issue(container, `Required site-config/${name} is missing. Use Add to create it.`, 'error', path.join(siteRoot, 'site-config', name)); else issue(container, error.message); }
-			}
 			owner = container;
 		} else if (role === 'site') {
 			container = { id: null };
@@ -93,7 +88,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 		entries.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'en', { numeric: true }));
 		for (const entry of entries) {
 			const filename = path.join(directory, entry.name);
-			if (location && entry.name === 'content.md' && entry.isFile() && owner.kind === 'page' && !owner.conflict) continue;
+			if (location && entry.name === 'content.md' && entry.isFile() && owner.kind === 'page') continue;
 			if (entry.isDirectory()) {
 				const childLocation = role === 'pages' || role === 'site' && entry.name === 'root' ? editorPageLocation(siteRoot, filename) : null;
 				const childRole = childLocation ? 'page' : location && entry.name === 'pages' ? 'pages'
@@ -120,16 +115,26 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 		}
 	};
 	const source = getSiteSourcePaths(siteRoot);
-	const owner = { id: source.content, sourcePath: source.content };
+	// Site resources have their own owner even when root/content.md is unreadable.
+	// The site context is not a visible row in the physical tree.
+	const owner = { id: siteRoot, sourcePath: siteRoot, issues: [] };
 	await visit(siteRoot, null, owner, 'site');
 	if (!items.some((item) => item.isHome)) await visit(source.root, null, owner, 'page', editorPageLocation(siteRoot, source.root));
-	const home = items.find((item) => item.isHome);
-	// Keep shared structural diagnostics, including duplicate sibling identifiers.
-	for (const problem of snapshot.problems) {
-		if (home && !items.some((item) => item.issues?.some((entry) => entry.message === problem.message))) {
-			const target = items.find((item) => item.sourcePath === problem.path) ?? home;
-			issue(target, problem.message);
+	const configuration = items.find((item) => item.role === 'configuration' && item.kind === 'directory');
+	for (const name of ['settings.yaml', 'site-theme.yaml']) {
+		const filename = path.join(siteRoot, 'site-config', name);
+		try { await read(filename); }
+		catch (error) {
+			issue(configuration ?? owner, error.code === 'ENOENT' || error.code === 'ENOTDIR'
+				? `Required site-config/${name} is missing. Use Add to create it.` : error.message, 'error', filename);
 		}
 	}
-	return { ...snapshot, items, problems: [] };
+	// Keep shared structural diagnostics, including duplicate sibling identifiers.
+	for (const problem of snapshot.problems) {
+		if (![owner, ...items].some((item) => item.issues?.some((entry) => entry.message === problem.message && entry.path === problem.path))) {
+			const target = items.find((item) => item.sourcePath === problem.path || item.directory === problem.path) ?? owner;
+			issue(target, problem.message, 'error', problem.path);
+		}
+	}
+	return { ...snapshot, items, problems: owner.issues };
 };

@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",

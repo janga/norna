@@ -14,7 +14,8 @@ installed by the current project. This keeps suggestions and documentation
 links aligned with the engine version that builds the site. Norna-specific help
 appears only in recognized Norna files.
 
-Extension 0.8.0 supports the `root/` source layout and schema version 5.
+Extension 0.8.1 supports the `root/` source layout and schema version 5,
+including independent site-resource ownership in the engine's editing tree.
 
 ## Features
 
@@ -68,6 +69,9 @@ Creation previews the target and effect, uses a valid initial setting and never
 overwrites a file. Incomplete directories remain visible with source-repair
 choices. Errors and warnings supplement type icons; unused author files are
 informational, while valid static public files remain recognized resources.
+Site configuration problems point to the affected configuration file. Its
+Add action remains available when homepage content is missing; an unreadable
+site or root page directory remains reported in Problems.
 
 Each existing `pages/` also offers **Norna: Add Page…**. Page actions remain in
 **…**, the context menu and Command Palette, including information, addresses,

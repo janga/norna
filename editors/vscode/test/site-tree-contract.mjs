@@ -37,6 +37,7 @@ const contexts = new Map();
 const workspaceChanges = new EventEmitter();
 const documentChanges = new EventEmitter();
 const editorDiagnostics = new Map();
+const treeDiagnostics = new Map();
 const diagnosticChanges = new EventEmitter();
 const workspaceState = { get: (key) => state.get(key), update: async (key, value) => { state.set(key, value); } };
 let discoveredRoots = [siteRoot, legacySite];
@@ -49,8 +50,8 @@ const vscode = {
 	ViewColumn: { Active: 1 },
 	ThemeIcon: class { constructor(id) { this.id = id; } },
 	TreeItemCollapsibleState: { None: 0, Collapsed: 1, Expanded: 2 },
-	Range: class {}, Diagnostic: class {}, DiagnosticSeverity: { Error: 0, Warning: 1 },
-	languages: { createDiagnosticCollection: () => ({ clear() {}, set() {}, dispose() {} }),
+	Range: class {}, Diagnostic: class { constructor(range, message, severity) { Object.assign(this, { range, message, severity }); } }, DiagnosticSeverity: { Error: 0, Warning: 1 },
+	languages: { createDiagnosticCollection: () => ({ clear() { treeDiagnostics.clear(); }, set(uri, issues) { treeDiagnostics.set(uri.fsPath, issues); }, dispose() {} }),
 		getDiagnostics: (uri) => editorDiagnostics.get(uri.fsPath) ?? [], onDidChangeDiagnostics: diagnosticChanges.event },
 	workspace: {
 		isTrusted: true, textDocuments: documents,
@@ -159,6 +160,7 @@ try {
 	assert.equal(home.children[0].title, 'theme.yaml');
 	const configuration = roots.find(node => node.kind === 'directory' && node.role === 'configuration');
 	assert.equal(configuration.title, 'site-config');
+	assert.equal(configuration.ownerId, siteRoot);
 	assert.equal(provider.getTreeItem(configuration).iconPath.id, 'settings-gear');
 	assert.equal(provider.getTreeItem(configuration).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
 	choices.push((items) => {
@@ -422,7 +424,8 @@ try {
 	await rm(path.join(siteRoot, 'site-config/settings.yaml'));
 	await registered.refresh();
 	assert.equal((await provider.getChildren()).find((node) => node.isHome).siteRoot, siteRoot, 'A missing required file must not switch the active site.');
-	assert.match(provider.getTreeItem((await provider.getChildren()).find((node) => node.isHome)).description, /error/);
+	assert.match(provider.getTreeItem((await provider.getChildren()).find((node) => node.role === 'configuration')).description, /error/);
+	assert.ok(treeDiagnostics.get(path.join(siteRoot, 'site-config/settings.yaml'))?.length, 'Report a site configuration problem at its own file.');
 	await rm(homePath);
 	await registered.refresh();
 	const damagedHome = (await provider.getChildren()).find((node) => node.isHome);
@@ -431,6 +434,11 @@ try {
 	assert.equal(provider.getTreeItem(damagedHome).command.command, 'nornaEditor.addToPage');
 	choices.push((items) => { assert.ok(items.some((item) => item.filename === homePath)); assert.ok(items.every((item) => item.command === 'createSourceFile')); return undefined; });
 	await commands.get('nornaEditor.addToPage')(damagedHome);
+	choices.push((items) => items.find((item) => item.filename === path.join(siteRoot, 'site-config/settings.yaml')));
+	inputs.push('https://example.com/'); choices.push((items) => items[0]);
+	await commands.get('nornaEditor.addToPage')(configuration);
+	assert.match(await readFile(path.join(siteRoot, 'site-config/settings.yaml'), 'utf8'), /example.com/);
+	assert.equal(treeDiagnostics.has(path.join(siteRoot, 'site-config/settings.yaml')), false, 'Repair clears the site-level diagnostic without a homepage.');
 	for (const subscription of context.subscriptions) subscription.dispose();
 	context = { subscriptions: [], workspaceState, asAbsolutePath: (relative) => path.join(extensionRoot, relative) };
 	registered = module.exports.registerSiteTree(context, { appendLine() {} });
@@ -440,6 +448,11 @@ try {
 	inputs.push('Repaired Home'); choices.push((items) => items[0]);
 	await commands.get('nornaEditor.addToPage')((await provider.getChildren()).find((node) => node.isHome));
 	assert.equal((await provider.getChildren()).find((node) => node.isHome).title, 'Repaired Home');
+	await rm(path.join(siteRoot, 'root'), { recursive: true });
+	await write(path.join(siteRoot, 'root'), 'Not a directory');
+	await registered.refresh();
+	assert.ok(treeDiagnostics.get(path.join(siteRoot, 'root'))?.some((entry) => /Cannot read/.test(entry.message)), 'An unreadable root page directory reports its own error without a homepage row.');
+	assert.ok((await provider.getChildren()).some((node) => node.role === 'configuration'), 'Site resources remain accessible.');
 	assert.equal(await readFile(path.join(outsideSite, 'root/content.md'), 'utf8'), '# Home\n');
 	assert.equal(errors.length, 0, errors.join('\n'));
 	console.log('VS Code tree adapter contract passed: one active workspace site, explicit choice/cancellation, reload/removal, external files, dirty sources, guarded commands, physical ownership, refresh/reveal coordination and older-engine fallback.');

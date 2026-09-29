@@ -155,6 +155,9 @@ try {
 	await mkdir(path.join(legacySiteRoot, 'pages', '000-home'), { recursive: true });
 	await writeFile(path.join(legacySiteRoot, 'pages', '000-home', 'content.md'), '# Legacy page\n');
 	assert.equal(projectContext.findNornaSiteRoot(path.join(legacySiteRoot, 'pages', '000-home', 'content.md')), null);
+	await mkdir(path.join(legacySiteRoot, 'root'));
+	await writeFile(path.join(legacySiteRoot, 'root/content.md'), '# Mixed layout\n');
+	assert.equal(projectContext.findNornaSiteRoot(path.join(legacySiteRoot, 'root/content.md')), null, 'A legacy config.yaml must not identify a current site.');
 	const uninstalledRoot = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-uninstalled-'));
 	try {
 		const uninstalledSite = path.join(uninstalledRoot, 'site');
@@ -171,6 +174,11 @@ try {
 	await mkdir(path.join(siteRoot, 'root/pages', 'about'), { recursive: true });
 	await writeFile(path.join(siteRoot, 'root/pages', 'about', 'content.md'), pageSource);
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/pages', 'about', 'content.md')), null);
+	for (const directory of ['000-home', '000-other', '010-about/pages/000-home']) {
+		for (const filename of ['content.md', 'theme.yaml']) {
+			assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/pages', directory, filename)), null, `Order 000 is invalid at every child level: ${directory}/${filename}`);
+		}
+	}
 	assert.equal(getNornaDocumentContext(path.join(siteRoot, 'root/pages', '000-home', 'pages', '010-news', 'content.md')), null);
 	await mkdir(path.join(siteRoot, 'root/pages', '010-about', 'nested'), { recursive: true });
 	await writeFile(path.join(siteRoot, 'root/pages', '010-about', 'nested', 'content.md'), pageSource);

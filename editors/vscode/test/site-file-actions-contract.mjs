@@ -77,6 +77,24 @@ const setup = async (t) => {
 		switchSite: () => { active = false; }, useService: (next) => { activeService = next; } };
 };
 
+test('site-owned optional files use confirmation and Trash independently of homepage content', async (t) => {
+	const f = await setup(t);
+	const siteRoot = f.page.siteRoot;
+	const site = { kind: 'site', siteRoot, sourcePath: siteRoot, directory: siteRoot, title: 'Site' };
+	const sourcePath = path.join(siteRoot, 'site-config/shared-content.yaml');
+	const file = { kind: 'file', sourcePath, owner: site };
+	await writeFile(sourcePath, 'banners: []\n');
+	await rm(path.join(siteRoot, 'root/content.md'));
+	await f.run('removeFile', file);
+	assert.equal(f.trashed.length, 0, 'Cancelling preserves the shared file.');
+	f.confirmations.push(true);
+	await f.run('removeFile', file);
+	assert.equal(f.trashed[0].source, sourcePath);
+	assert.match(f.messages.at(-1).detail, /whole site/);
+	await assert.rejects(f.run('importImage', site), /Select a page/);
+	await assert.rejects(f.run('removePage', site), /Select a page/);
+});
+
 test('cancelled import creates nothing; importing and appending preserves original and dirty prose', async (t) => {
 	const f = await setup(t);
 	await f.run('importImage');

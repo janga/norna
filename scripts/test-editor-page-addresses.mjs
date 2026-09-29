@@ -48,6 +48,27 @@ test('removal policies protect required files and describe optional file scope',
 	await assert.rejects(planEditorRemoval({ ...f, sourcePath: f.home, filePath: path.join(f.siteRoot, 'public/shortcut.txt') }), /Symbolic links/);
 });
 
+test('site-owned file removal does not require a homepage and still reviews links and protects required files', async (t) => {
+	const f = await fixture(t);
+	const publicFile = await f.write('public/robots.txt', 'User-agent: *\n');
+	const sharedFile = await f.write('site-config/shared-content.yaml', 'banners: []\n');
+	await rm(f.home);
+	const sources = new Map([[f.sourcePath, '# Guide\n\n[Robots](/robots.txt)\n']]);
+	const options = { siteRoot: f.siteRoot, sourcePath: f.siteRoot, sources };
+	const plan = await planEditorRemoval({ ...options, filePath: publicFile });
+	assert.equal(plan.target, publicFile);
+	assert.equal(plan.recursive, false);
+	assert.equal(plan.usage.references.length, 1);
+	assert.ok(plan.usage.incomplete.length, 'A missing homepage must remain visible in link-review limitations.');
+	assert.match((await planEditorRemoval({ ...options, filePath: sharedFile })).effect, /whole site/);
+	for (const file of ['site-config/settings.yaml', 'site-config/site-theme.yaml', 'root/pages/010-guide/theme.yaml']) {
+		await assert.rejects(planEditorRemoval({ ...options, filePath: path.join(f.siteRoot, file) }), /cannot be removed separately/);
+	}
+	await assert.rejects(planEditorRemoval({ ...options, filePath: path.join(f.siteRoot, '../outside.txt') }), /selected site/);
+	await symlink(publicFile, path.join(f.siteRoot, 'public/shortcut.txt'));
+	await assert.rejects(planEditorRemoval({ ...options, filePath: path.join(f.siteRoot, 'public/shortcut.txt') }), /Symbolic links/);
+});
+
 test('incoming links resolve aliases, anchors, relative and card links, and exclude a deleted branch', async (t) => {
 	const f = await fixture(t);
 	const other = await f.write('root/pages/030-other/content.md', '# Other\n');

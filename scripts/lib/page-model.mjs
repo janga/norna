@@ -13,7 +13,7 @@ export const parsePageDirectory = (pageDirectory, label = 'page directory') => {
 		);
 	}
 	if (match[1] === '000') {
-		throw new Error(`Invalid ${label} "${pageDirectory}". Child page orders must be 001–999. The homepage is content.md in the site root.`);
+		throw new Error(`Invalid ${label} "${pageDirectory}". Child page orders must be 001–999. The homepage is root/content.md in the site container.`);
 	}
 
 	return {

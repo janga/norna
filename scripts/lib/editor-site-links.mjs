@@ -65,8 +65,8 @@ export const summarizeReference = (reference) => ({
 export const getEditorIncomingLinks = async ({ siteRoot, sourcePath, sources, descendants = false, excludeBranch = false, filePath, alias }) => {
 	const state = await readEditorLinkState({ siteRoot, sources });
 	const node = state.structure.nodes.find((entry) => (entry.contentPath ?? entry.categoryPath) === sourcePath);
-	if (!node) throw new Error('This page is no longer in the selected site. Refresh Site Tree.');
-	const directory = path.dirname(sourcePath);
+	if (!node && !(filePath && path.resolve(sourcePath) === path.resolve(siteRoot))) throw new Error('This page is no longer in the selected site. Refresh Site Tree.');
+	const directory = node ? path.dirname(sourcePath) : siteRoot;
 	const targetPaths = new Set(state.structure.nodes.filter((entry) => entry === node || (descendants && isInside(directory, entry.nodeDir)))
 		.map((entry) => entry.isHome ? '/' : `/${entry.pagePath}/`));
 	const references = state.graph.references.filter((reference) => {

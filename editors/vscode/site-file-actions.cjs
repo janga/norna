@@ -14,10 +14,10 @@ function registerSiteFileActions({ vscode, context, chooseNode, ownerOf, service
 			throw new Error('Save or undo unsaved changes in the affected files before continuing.');
 		}
 	};
-	const target = async (argument) => {
+	const target = async (argument, allowSite = false) => {
 		const selected = await chooseNode(argument);
 		const page = ownerOf(selected);
-		if (!page || !['page', 'category'].includes(page.kind)) throw new Error('Select a page in Site Tree first.');
+		if (!page || !(['page', 'category'].includes(page.kind) || allowSite && page.kind === 'site')) throw new Error('Select a page in Site Tree first.');
 		const service = await serviceFor(page.siteRoot);
 		if (service.siteFileOperationsApiVersion !== 1) throw new Error('Update this site’s Norna engine to use page and image file actions. Existing page editing remains available.');
 		return { selected, page, service, options: { siteRoot: page.siteRoot, sourcePath: page.sourcePath } };
@@ -100,7 +100,7 @@ function registerSiteFileActions({ vscode, context, chooseNode, ownerOf, service
 		await appendImage(selected.page, selected.service, path.basename(imagePathOf(selected)));
 	};
 	const remove = async (argument, kind) => {
-		const selected = await target(argument);
+		const selected = await target(argument, kind === 'file');
 		const { page, service, options } = selected;
 		const image = kind === 'image';
 		if (!image && service.siteRemovalApiVersion !== 1) throw new Error('Update this site’s Norna engine to remove files or review incoming links before page removal.');

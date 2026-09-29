@@ -8,7 +8,6 @@ const { registerSiteSourceActions } = require('./site-source-actions.cjs');
 const { createPageForm, editPageForm } = require('./page-form-actions.cjs');
 
 const viewId = 'nornaSiteTree';
-const sourceNames = new Set(['content.md']);
 const isPage = (node) => node?.kind === 'page';
 const inside = (root, file) => {
 	const relative = path.relative(root, file);
@@ -76,7 +75,7 @@ function registerSiteTree(context, output) {
 		const root = markerRoot ?? project?.siteRoot;
 		if (!root || !project && !findNornaPackage(root)) return null;
 		if (!inWorkspace(root)) return null;
-		if (!sites.has(root)) sites.set(root, { id: root, siteRoot: root, kind: 'site', title: labelFor(root), children: [], cache: new Map() });
+		if (!sites.has(root)) sites.set(root, { id: root, siteRoot: root, sourcePath: root, directory: root, kind: 'site', title: labelFor(root), children: [], cache: new Map() });
 		return sites.get(root);
 	};
 
@@ -85,29 +84,20 @@ function registerSiteTree(context, output) {
 		for (const site of sites.values()) {
 			if (site.siteRoot !== activeSiteRoot) continue;
 			const byFile = new Map();
-			const add = (filename, message) => {
-				if (!byFile.has(filename)) byFile.set(filename, new Set());
-				byFile.get(filename).add(message);
-			};
-			for (const node of nodes.values()) if (node.siteRoot === site.siteRoot) {
-				if (node.problem && !node.issues?.length) add(node.sourcePath, node.problem);
-			}
-			for (const problem of site.problems ?? []) add(sourceNames.has(path.basename(problem.path)) ? problem.path : path.join(site.siteRoot, 'root', 'content.md'), problem.message);
-			for (const [filename, messages] of byFile) diagnostics.set(vscode.Uri.file(filename), [...messages].map((message) => {
-				const diagnostic = new vscode.Diagnostic(new vscode.Range(0, 0, 0, 1), message, vscode.DiagnosticSeverity.Error);
-				diagnostic.source = 'Norna site tree';
-				return diagnostic;
-			}));
-			const detailed = new Map();
-			for (const node of nodes.values()) if (node.siteRoot === site.siteRoot) for (const issue of node.issues ?? []) {
-				if (!detailed.has(issue.path)) detailed.set(issue.path, new Map());
+			const add = (issue) => {
+				if (!byFile.has(issue.path)) byFile.set(issue.path, new Map());
 				const line = Math.max(0, (issue.line ?? 1) - 1);
 				const diagnostic = new vscode.Diagnostic(new vscode.Range(line, 0, line, 1), issue.message,
 					issue.severity === 'warning' ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Error);
 				diagnostic.source = 'Norna site tree';
-				detailed.get(issue.path).set(`${line}:${issue.message}`, diagnostic);
+				byFile.get(issue.path).set(`${line}:${issue.message}`, diagnostic);
+			};
+			for (const node of nodes.values()) if (node.siteRoot === site.siteRoot) {
+				if (node.problem && !node.issues?.length) add({ path: node.sourcePath, message: node.problem });
+				for (const issue of node.issues ?? []) add(issue);
 			}
-			for (const [filename, entries] of detailed) diagnostics.set(vscode.Uri.file(filename), [...entries.values()]);
+			for (const problem of site.problems ?? []) add(problem);
+			for (const [filename, entries] of byFile) diagnostics.set(vscode.Uri.file(filename), [...entries.values()]);
 		}
 	};
 
@@ -234,7 +224,7 @@ function registerSiteTree(context, output) {
 		const node = nodes.get(`resource:${uri.fsPath}`) ?? nodes.get(uri.fsPath);
 		return node?.siteRoot === activeSiteRoot ? node : undefined;
 	};
-	const ownerOf = (node) => isPage(node) || node?.kind === 'site' || node?.kind === 'incomplete' ? node : nodes.get(node?.ownerId);
+	const ownerOf = (node) => isPage(node) || node?.kind === 'site' || node?.kind === 'incomplete' ? node : nodes.get(node?.ownerId) ?? sites.get(node?.ownerId);
 	const revealActive = () => enqueueTreeWork(async () => {
 		const node = activeNode();
 		let target = node;
@@ -347,7 +337,7 @@ function registerSiteTree(context, output) {
 	const openNode = async (argument) => {
 		const node = await chooseNode(argument);
 		if (node?.missingSource) return vscode.commands.executeCommand('nornaEditor.addToPage', node);
-		if (node?.sourcePath && node.kind !== 'directory') await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(node.sourcePath));
+		if (node?.sourcePath && !['directory', 'site'].includes(node.kind)) await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(node.sourcePath));
 	};
 	const oneLine = (value) => !value.trim() || /[\r\n]/.test(value) ? 'Enter a non-empty, single line of text.' : undefined;
 	const create = async (kind, argument, insideSelected = false) => {
@@ -457,7 +447,7 @@ function registerSiteTree(context, output) {
 		const target = await chooseNode(argument);
 		const configurationTarget = target?.kind === 'directory' && target.role === 'configuration';
 		let node = ownerOf(target);
-		if (node?.kind === 'site') node = node.children.find((child) => child.isHome);
+		if (node?.kind === 'site' && !configurationTarget) node = node.children.find((child) => child.isHome);
 		if (!node) return;
 		const service = await serviceFor(node.siteRoot);
 		const missing = (service.siteTreeEditingApiVersion === 1 ? await service.getEditorSourceFileChoices({ siteRoot: node.siteRoot, directory: node.directory ?? path.dirname(node.sourcePath) }) : [])

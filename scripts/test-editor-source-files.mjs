@@ -39,6 +39,11 @@ try {
 	assert.ok(view.items.every((item) => !item.issues?.length), JSON.stringify(view.items.filter((item) => item.issues?.length)));
 	assert.equal(view.items.filter((item) => item.sourcePath === home.filename).length, 1, 'A page replaces its content file row.');
 	assert.deepEqual(view.items.filter((item) => item.parentId === home.filename).map((item) => item.title), ['theme.yaml']);
+	for (const filename of ['site-config', 'site-config/settings.yaml', 'public', 'public/robots.txt']) {
+		assert.equal(find(view, filename).ownerId, siteRoot, `${filename} belongs to the site, independently of its homepage.`);
+	}
+	assert.equal(find(view, 'root/theme.yaml').ownerId, home.filename);
+	assert.deepEqual(view.problems, []);
 
 	await write('root/pages/010-leaf/content.md', '# Leaf\n');
 	await mkdir(path.join(siteRoot, 'root/pages/020-incomplete/pages/010-child'), { recursive: true });
@@ -104,5 +109,18 @@ try {
 	assert.equal(view.items.find((item) => item.isHome).kind, 'incomplete');
 	assert.ok(find(view, 'root/pages/030-safe/content.md'), 'A broken root must retain its descendants.');
 	assert.ok((await choices()).some((entry) => entry.name === 'root/content.md'));
+	assert.equal(find(view, 'public/robots.txt').ownerId, siteRoot);
+	assert.ok(find(view, 'public/robots.txt').removable, 'Public files stay actionable without homepage content.');
+	assert.ok(find(view, 'site-config').issues.some((entry) => entry.path.endsWith('settings.yaml')));
+	const invalidRoot = path.join(temporary, 'not-a-directory');
+	await writeFile(invalidRoot, 'A file cannot be the site container.');
+	const invalid = await readSiteFileTree({ siteRoot: invalidRoot, editing: true });
+	assert.equal(invalid.items.length, 0);
+	assert.ok(invalid.problems.some((entry) => entry.path === invalidRoot && /Cannot read/.test(entry.message)), 'An unreadable site must retain its diagnostic even without a homepage row.');
+	await rm(path.join(siteRoot, 'root'), { recursive: true });
+	await write('root', 'A file cannot be the root page directory.');
+	view = await tree();
+	assert.ok(view.problems.some((entry) => entry.path === path.join(siteRoot, 'root') && /Cannot read/.test(entry.message)));
+	assert.equal(find(view, 'public/robots.txt').ownerId, siteRoot, 'Site resources survive an invalid root page directory.');
 	console.log('Source-file editing tests passed: projection, diagnostics, dirty repairs, missing sources, templates, cancellation, collisions, stale paths and symlink boundaries.');
 } finally { await rm(temporary, { recursive: true, force: true }); }
