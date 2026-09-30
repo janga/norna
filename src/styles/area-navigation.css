@@ -217,8 +217,17 @@
 		--area-reading-rail-width: 16rem;
 		--area-reading-header-height: 4rem;
 		--site-top-anchor-offset: calc(var(--area-reading-header-height) + 1px + var(--nav-top-safety-inset));
-		--area-reading-outer-margin: max(var(--content-gutter), calc((100vw - max(var(--page-width), 86rem)) / 2));
+		--area-reading-outer-margin: var(--content-gutter);
+		--area-reading-frame-width: min(calc(100% - (var(--content-gutter) * 2)), max(var(--page-width), 86rem));
 		--area-reading-content-start: calc(var(--area-reading-outer-margin) + var(--area-reading-rail-width) + var(--local-navigation-gap, clamp(1.5rem, 3vw, 3rem)));
+	}
+
+	/* Keep the reading frame near navigation on wide screens. Focus reading
+	   hides navigation without moving the article to a different reading axis. */
+	:root[data-area-reading-frame] .site-page-layout-tree {
+		width: var(--area-reading-frame-width);
+		margin-inline: var(--area-reading-outer-margin) auto;
+		--tree-layout-outer-margin: max(var(--content-gutter), calc(100vw - var(--content-gutter) - max(var(--page-width), 86rem)));
 	}
 
 	:root[data-area-reading-frame] .site-page-layout-tree > .site-content {
@@ -242,7 +251,8 @@
 		display: grid;
 		grid-template-columns: var(--area-reading-rail-width) minmax(0, 1fr);
 		column-gap: var(--local-navigation-gap, clamp(1.5rem, 3vw, 3rem));
-		width: min(calc(100% - (var(--content-gutter) * 2)), max(var(--page-width), 86rem));
+		width: var(--area-reading-frame-width);
+		margin-inline: var(--area-reading-outer-margin) auto;
 	}
 
 	:root[data-area-reading-frame]:not([data-focus-reading='on']) .site-nav-leading {
@@ -333,8 +343,8 @@
 	}
 
 	:root[data-area-reading-frame] .site-banners {
-		width: calc(100% - var(--area-reading-content-start) - var(--area-reading-outer-margin));
-		margin-inline: var(--area-reading-content-start) var(--area-reading-outer-margin);
+		width: calc(var(--area-reading-frame-width) - var(--area-reading-rail-width) - var(--local-navigation-gap, clamp(1.5rem, 3vw, 3rem)));
+		margin-inline: var(--area-reading-content-start) auto;
 	}
 
 	:root[data-area-reading-frame]:not([data-focus-reading='on']) .area-navigation-switcher {

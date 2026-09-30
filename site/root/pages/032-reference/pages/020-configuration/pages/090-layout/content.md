@@ -15,6 +15,19 @@ layout:
   textWidth: narrow
 ```
 
+## Wide screens
+
+Reading pages with left navigation align their frame to the configured outer
+gutter. With the default desktop gutter, the left margin grows to at most
+`3rem`; additional screen width stays to the right once the frame reaches its
+maximum width. Paragraphs keep their reading width, and media retains its own
+width rules. The header and banners stay aligned with the navigation and
+article. Focus reading hides navigation without shifting the article sideways.
+
+Homepages and pages with top navigation keep their existing centered layout.
+At smaller window widths, the compact navigation takes over. Browser window
+size and zoom determine which layout applies.
+
 ## Layout fields
 
 | Field under `layout` | Effect | Without preset or override |

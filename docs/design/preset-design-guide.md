@@ -170,6 +170,28 @@ left header. The shared area panel and its footer of global destinations are
 Norna's design. Keep breadcrumb links separate from the disclosure control;
 keep the existing compact controls on narrow screens and in Focus reading.
 
+On desktop reading pages with a left navigation rail, align the shared frame
+to the configured outer gutter instead of centering it in excess viewport
+space. The default gutter reaches 3rem (48px with a 16px root size). Keep the
+frame's maximum width, prose measure and media widths; wider viewports leave
+additional room to the right. The header, rail, article and banners share the
+same coordinates. Focus reading hides the rail without moving the article.
+Homepage and top-navigation layouts retain their existing alignment; compact
+navigation below the desktop breakpoint retains its existing geometry.
+
+The owner approved this direction on 2026-09-30 after comparing the local
+Features page. The trial covered 1024×666 through 3840×2160, plus mobile,
+and retained the existing paragraph widths. This is shared layout behavior,
+not a new theme setting.
+
+Verification on 2026-09-30 passed the docs build, documentation checks, all
+five presentation tests, and the docs suite's wide-frame, sidenote and Focus
+reading checks. Light/dark captures covered tables, tall images and margin
+notes. The full docs suite had 55 passes, 11 failures and one skip; the same
+11 navigation/content-expectation failures reproduced with the original CSS.
+They remain unresolved separately from this layout change. The comparison
+confirmed the original 272px left margin and the new 48px margin at 1920px.
+
 A deliberate page choice opens that page's branch and H2; a chevron remains
 an independent toggle. Keep other branches' choices. Prepare the arriving
 tree before its first frame rather than expanding the departing page's tree.

@@ -605,7 +605,7 @@ test('supports keyboard and no-script area selection while retaining native link
 });
 
 test('keeps notes within the recovered canvas and reflows them on compact screens', async ({ page }) => {
-	for (const width of [1440, 1280, 1100, 1024, 390]) {
+	for (const width of [3840, 1920, 1440, 1280, 1100, 1024, 390]) {
 		await page.setViewportSize({ width, height: 1000 });
 		await openPage(page, 'reference/content/sidenotes/');
 		const geometry = await page.locator('.section-note-paragraph').first().evaluate(element => {
@@ -616,7 +616,7 @@ test('keeps notes within the recovered canvas and reflows them on compact screen
 		});
 		expect(geometry.overflow).toBeLessThanOrEqual(1);
 		expect(geometry.noteRight).toBeLessThanOrEqual(width);
-		if (width === 1440) expect(geometry.inMargin).toBe(true);
+		if (width >= 1440) expect(geometry.inMargin).toBe(true);
 		if (width <= 1100) expect(geometry.noteTop).toBeGreaterThanOrEqual(geometry.proseBottom);
 	}
 });
@@ -675,4 +675,49 @@ test('resolves prose and category-overview links directly and leaves external li
 	await expect(opened).toHaveURL(/https:\/\/github.com\/janga\/norna\//);
 	await expect(page).toHaveURL(/\/reference\/workflows\/editor\/$/);
 	await opened.close();
+});
+
+test('keeps wide reading frames near the left edge without widening prose', async ({ page }) => {
+	let wideProseWidth: number | undefined;
+	for (const [width, height] of [[1024, 666], [1152, 648], [1710, 1112], [1920, 1080], [2560, 1440], [3840, 2160]]) {
+		await page.setViewportSize({ width, height });
+		await openPage(page, 'features/');
+		await page.evaluate(() => document.fonts.ready);
+		const geometry = await page.evaluate(() => {
+			const box = (selector: string) => document.querySelector(selector)!.getBoundingClientRect().toJSON();
+			return { nav: box('.tree-local-navigation'), header: box('.site-nav-row'),
+				content: box('.site-content'), prose: box('.section-markdown p'),
+				banner: box('.site-banners'), overflow: document.documentElement.scrollWidth - innerWidth };
+		});
+		expect(geometry.nav.x).toBeGreaterThanOrEqual(16);
+		expect(geometry.nav.x).toBeLessThanOrEqual(48.5);
+		expect(geometry.header.x).toBeCloseTo(geometry.nav.x, 0);
+		expect(geometry.content.x).toBeGreaterThan(geometry.nav.right);
+		expect(geometry.banner.x).toBeCloseTo(geometry.content.x, 0);
+		expect(geometry.banner.right).toBeCloseTo(geometry.content.right, 0);
+		expect(geometry.overflow).toBeLessThanOrEqual(1);
+		if (width >= 1710) {
+			wideProseWidth ??= geometry.prose.width;
+			expect(geometry.prose.width).toBeCloseTo(wideProseWidth, 0);
+		}
+	}
+});
+
+test('Focus reading keeps the wide article on its existing reading axis', async ({ page }) => {
+	for (const width of [1920, 3840]) {
+		await page.setViewportSize({ width, height: 1080 });
+		await openPage(page, 'features/');
+		const paragraph = page.locator('.section-markdown p').first();
+		const before = (await paragraph.boundingBox())!;
+		const display = page.locator('[data-display-settings]');
+		await display.locator('summary').click();
+		const focus = display.getByRole('checkbox', { name: 'Focus reading' });
+		await focus.check();
+		await expect(tree(page)).toBeHidden();
+		const after = (await paragraph.boundingBox())!;
+		expect(after.x).toBeCloseTo(before.x, 0);
+		expect(after.width).toBeCloseTo(before.width, 0);
+		await focus.uncheck();
+		await expect(tree(page)).toBeVisible();
+	}
 });
