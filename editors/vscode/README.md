@@ -107,9 +107,10 @@ shows the complete published address and edits the other page metadata.
 in Site Tree: expand and scroll the familiar tree, then right-click a
 destination page to place the moving page before, after, first or last under
 it. Clicking a page still opens its `content.md`. The source page remains in
-place, marked **FROM** with its current URL and an accent-colored icon. It offers
-**Cancel page move** before a destination is chosen, including from its context
-menu if the branch is collapsed. A temporary **Preview:**
+place, marked **FROM** with its current URL and an accent-colored icon. Starting
+the move expands that page so **Cancel page move** appears immediately, before
+a destination is chosen. If you collapse it again, cancellation remains in its
+context menu. A temporary **Preview:**
 row at the destination is marked **TO** with the proposed URL and the same
 accent color. Its children show affected addresses, authored links to update,
 and a reminder that files have not changed yet. Expand the detail groups to

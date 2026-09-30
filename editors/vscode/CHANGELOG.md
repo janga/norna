@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.1
+
+- Explicitly expand a page when starting a move, so Cancel page move is visible
+  even when VS Code remembers the source branch as collapsed.
+
 ## 0.12.0
 
 - Preview the selected site or page in the default browser, with explicit

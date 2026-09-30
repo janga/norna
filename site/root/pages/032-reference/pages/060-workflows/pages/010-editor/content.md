@@ -297,7 +297,8 @@ To change where a page appears in **Site Tree**, select **Move…** from its
 context menu. Right-click another page to place the moving page
 before, after, first or last under it. The source page stays in place, marked
 **FROM** with its current address. A temporary **Preview:** row at the destination
-is marked **TO** with its proposed address. Both rows use an accent-colored icon.
+is marked **TO** with its proposed address. Starting the move expands the source
+page to show **Cancel page move** immediately. Both rows use an accent-colored icon.
 Expand the preview's details to see affected addresses and authored links.
 Under the preview, choose **Complete page move…**, then confirm **Complete page move**
 in the final dialog to apply, or choose **Cancel page move** to leave files unchanged.

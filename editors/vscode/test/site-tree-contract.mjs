@@ -37,6 +37,7 @@ const choices = [];
 const documents = [];
 const tabChanges = new EventEmitter();
 const revealed = [];
+const revealCalls = [];
 const state = new Map();
 const contexts = new Map();
 const workspaceChanges = new EventEmitter();
@@ -95,7 +96,7 @@ const vscode = {
 			expansions: new EventEmitter(), collapses: new EventEmitter(),
 			onDidExpandElement(listener) { return this.expansions.event(listener); },
 			onDidCollapseElement(listener) { return this.collapses.event(listener); },
-			reveal: async (node) => revealed.push(node), dispose() {},
+			reveal: async (node, options) => { revealed.push(node); revealCalls.push({ node, options }); }, dispose() {},
 		}; return tree; },
 		tabGroups: { activeTabGroup: {}, onDidChangeTabs: tabChanges.event },
 		onDidChangeActiveTextEditor: disposable,
@@ -285,7 +286,17 @@ try {
 	assert.match(errors.pop(), /Page move could not continue/);
 	await write(guide.sourcePath, '# Guide\n');
 	await registered.refresh();
+	tree.visible = true;
+	assert.equal(provider.getTreeItem(guide).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed);
 	await commands.get('nornaEditor.movePage')(guide);
+	assert.equal(revealCalls.at(-1)?.node.id, guide.id, 'Starting a move must reveal the source instead of relying on its initial expansion state.');
+	assert.deepEqual(revealCalls.at(-1)?.options, { select: true, focus: false, expand: true }, 'Explicit expansion overrides a previously collapsed native branch so Cancel is visible.');
+	await commands.get('nornaEditor.cancelMove')();
+	assert.ok(!(await provider.getChildren(guide)).some(node => node.kind === 'moveAction'));
+	const revealsBeforeRestart = revealCalls.length;
+	await commands.get('nornaEditor.movePage')(guide);
+	assert.equal(revealCalls.length, revealsBeforeRestart + 1, 'A later move must reveal cancellation again, including after the user has collapsed the source.');
+	tree.visible = false;
 	assert.equal(contexts.get('nornaSiteTree.moveActive'), true);
 	assert.equal(tree.title, 'Site Tree', 'Move state belongs to the involved pages, not the view title.');
 	assert.notEqual(tree.description, 'Guide', 'The moving page is identified at its source row.');

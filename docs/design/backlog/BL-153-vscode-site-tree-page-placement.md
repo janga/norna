@@ -92,6 +92,26 @@ format errors, and interrupted writes. Verify the final interaction in the
 owner's Default VS Code profile with a disposable site before committing
 changed interaction behavior.
 
+### Follow-up: Initially Hidden Cancellation
+
+On 2026-09-30 the owner reported that **Cancel page move** could be hidden by
+a previously collapsed source branch. VS Code remembers expansion by item ID;
+setting the item's initial expanded state again does not override that choice.
+Starting a move must explicitly reveal and expand its source page, making the
+first child action visible before a destination is chosen. Keep cancellation
+in the source context menu if the author later collapses the branch. Do not
+change the move plan, confirmation, source/destination labels or header layout.
+
+Check a previously collapsed page, cancel without changing files, collapse it
+again and start another move. Inspect the actual native tree, not just the
+provider's initial expansion property. The owner authorized committing this
+correction on 2026-09-30 and will handle further interface review.
+
+Verified on 2026-09-30: the tree-adapter regression failed before the fix and
+passed after it. Native review in the owner's Default VS Code profile with
+extension 0.12.1 confirmed that restarting a move after collapse and cancellation
+reveals **Cancel page move** again. The disposable source file remained unchanged.
+
 Large subtree moves and repeated moves can accumulate many aliases and static
 redirect pages. Retain the current per-page alias model; defer performance
 thresholds, prefix rules and hosting-specific redirect output until measured

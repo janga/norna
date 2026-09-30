@@ -582,6 +582,12 @@ function registerSiteTree(context, output) {
 		tree.message = undefined;
 		await vscode.commands.executeCommand('setContext', 'nornaSiteTree.moveActive', true);
 		changed.fire();
+		await enqueueTreeWork(async () => {
+			if (!tree.visible || moveSourceId !== node.id || moveSourceRoot !== activeSiteRoot) return;
+			// VS Code retains collapsed state by ID; changing the initial state
+			// on TreeItem alone does not reveal the new Cancel action.
+			await tree.reveal(node, { select: true, focus: false, expand: true });
+		});
 	});
 	register('nornaEditor.cancelMove', stopMove);
 	const previewMoveAt = async (argument, placement) => {
