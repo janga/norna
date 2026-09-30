@@ -229,6 +229,28 @@ for storage, sharing and publication rules, and the
 [editor workflow](https://janga.github.io/norna/reference/workflows/editor/#add-and-use-page-attachments)
 for recovery and editing behavior.
 
+## Local Preview
+
+Right-click a page for **Preview Page**, or choose **Preview Site** in Site
+Tree's view menu. Preview opens saved source in the default browser through
+the selected project's engine. Unsaved site files prompt **Save Site and
+Preview**, **Preview Saved Files** or **Cancel**; unrelated files are not saved.
+
+Port precedence is the registered review site's fixed port, otherwise
+`NORNA_DEV_PORT` from the VS Code launch environment, otherwise **4321**.
+`settings.yaml` has no development-port field. Quit and relaunch VS Code when
+changing its environment. An occupied or unverified port fails without a spare
+port or `--kill`. Only an identity-verified server for this exact site is reused.
+
+The view menu also provides **Stop Preview Server** and **Show Preview Log**.
+A ready server survives window close/reload; cancellation cleans up only a
+new server started by that request. A failed page response does not open a
+browser. Browser-launch failure retains the server and offers URL copying or
+retry. The capability is `sitePreviewApiVersion: 1`; older engines receive an
+explicit update message. See the
+[preview reference](https://janga.github.io/norna/reference/workflows/editor/#preview-your-site-locally)
+for port conflicts, saved source and recovery.
+
 ## Requirements
 
 - VS Code 1.96 or later.

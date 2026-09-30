@@ -1,6 +1,6 @@
 ---
 page:
-  description: Edit a Norna site in VS Code, manage page files and use Norna-aware suggestions.
+  description: Edit and preview a Norna site in VS Code, manage page files and use Norna-aware suggestions.
 ---
 
 # VS Code editor support
@@ -8,7 +8,7 @@ page:
 The optional Norna extension connects VS Code to the rules in a project's
 installed Norna package. Its site tree opens pages and their files, creates
 pages and edits their titles and metadata. It also manages images and page
-attachments, and adds configuration and Markdown
+attachments, opens a local site preview, and adds configuration and Markdown
 help and diagnostics. Command-line checks remain authoritative.
 
 The extension is experimental and distributed as a manually installed VSIX,
@@ -163,7 +163,7 @@ introduction shown the first time.
 
 | Row | Available actions |
 | --- | --- |
-| Page | Add, Rename, Properties, Move, Copy Link, References, Delete |
+| Page | Preview Page, Add, Rename, Properties, Move, Copy Link, References, Delete |
 | Homepage | Page actions except Move and Delete |
 | `pages/` | Add Page, Delete |
 | `images/` | Add Images, Delete |
@@ -435,6 +435,55 @@ failure is reported without retrying as permanent deletion.
 After restoring a folder, check its name against the source directory shown
 in the removal confirmation. If Trash added a suffix because it already held
 the same name, rename the restored folder to its original name.
+
+## Preview your site locally
+
+Right-click a page in Site Tree and choose **Preview Page** to open it in
+your default browser. For the homepage, choose **Preview Site** from Site Tree's
+view menu. The extension starts the selected site's local server or reuses its
+verified running server. It opens the current page address, not an alias or
+the published website, including for pages omitted from navigation.
+
+Preview uses files saved on disk. With unsaved site files, choose **Save Site
+and Preview**, **Preview Saved Files**, or **Cancel**. The first choice saves
+only files in the selected site; it does not save unrelated workspace files.
+Failed saves stop the preview request. After saving, the extension reads the
+page address and URL prefix again so configuration changes take effect.
+
+### Port and server lifetime
+
+For ordinary sites, the port is **4321**, unless VS Code's launch environment
+sets `NORNA_DEV_PORT` to another integer from 1 through 65535. This is not a
+`settings.yaml` field. To change that environment, quit VS Code and start it
+with the variable set; reloading a window is not a substitute. Norna repository
+contributors' registered review sites use their registered command and fixed
+port instead.
+
+An occupied port produces an error unless the extension can verify that it
+belongs to this exact site's local server. Preview never selects a spare port,
+uses `--kill`, stops another site's server or exposes the site on the LAN.
+If you change the port while this site is running, stop its existing server
+explicitly before starting on the new port. A site already running in LAN mode
+must likewise be stopped before using local preview.
+
+Once started, the server continues running when the VS Code window closes.
+Choose **Stop Preview Server** from Site Tree's view menu to stop the selected
+site's verified server. Cancelling a startup request cleans up its newly started
+server, but leaves a reused server running.
+
+### Failed preview
+
+**Show Preview Log** opens the selected site's startup and preparation logs in
+VS Code's Output panel. Invalid configuration, a conflicting port, an unverified
+server record or a page that fails to render prevents browser opening. Repair
+the reported cause and try again. An old or stale server record may require
+the site's [development commands](/reference/commands/development/) for recovery;
+the extension will not guess which process it may stop.
+
+If the server is ready but the browser cannot open, copy the offered local URL
+or retry. The working server stays running. These commands require an evaluation
+extension and a project-local engine with preview support; an older engine
+receives an update message rather than using another project's installation.
 
 ## Add and use page images
 

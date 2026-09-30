@@ -4,6 +4,7 @@ const { pathToFileURL } = require('node:url');
 const { getNornaProjectContext, findNornaPackage, supportedEditorApiVersion, supportedSchemaVersion } = require('./norna-project.cjs');
 const { registerSiteFileActions } = require('./site-file-actions.cjs');
 const { registerSiteAddressActions } = require('./site-address-actions.cjs');
+const { registerSitePreviewActions } = require('./site-preview-actions.cjs');
 const { registerSiteAttachmentActions } = require('./site-attachment-actions.cjs');
 const { registerSiteResourceActions } = require('./site-resource-actions.cjs');
 const { registerSiteSourceActions } = require('./site-source-actions.cjs');
@@ -134,6 +135,8 @@ function registerSiteTree(context, output) {
 			site.problems = snapshot.problems;
 			site.fileTree = Array.isArray(snapshot.items);
 			site.resourceActions = service.siteResourceActionsApiVersion === 1;
+			site.preview = service.sitePreviewApiVersion === 1;
+			site.previewRunning = site.preview && (await service.getEditorPreviewStatus({ siteRoot: site.siteRoot }).catch(() => ({ verified: false }))).verified;
 			if (site.fileTree) {
 				const entries = snapshot.items.filter((entry) => !(entry.kind === 'file' && entry.role === 'content' && entry.ownerId === entry.sourcePath));
 				for (const entry of entries) {
@@ -368,6 +371,8 @@ function registerSiteTree(context, output) {
 			await vscode.commands.executeCommand('setContext', 'nornaSiteTree.hasMultipleSites', sites.size > 1);
 			await vscode.commands.executeCommand('setContext', 'nornaSiteTree.hasActiveSite', Boolean(activeSite()));
 			await vscode.commands.executeCommand('setContext', 'nornaSiteTree.resourceActions', Boolean(activeSite()?.resourceActions));
+			await vscode.commands.executeCommand('setContext', 'nornaSiteTree.preview', Boolean(activeSite()?.preview));
+			await vscode.commands.executeCommand('setContext', 'nornaSiteTree.previewRunning', Boolean(activeSite()?.previewRunning));
 			publishDiagnostics();
 			updateMoveHeader();
 			tree.message = moveSourceId ? undefined : !sites.size ? 'Open a folder containing a Norna site to use Site Tree.'
@@ -668,6 +673,7 @@ function registerSiteTree(context, output) {
 			if (moved && tree.visible) await enqueueTreeWork(() => tree.reveal(moved, { select: true, focus: false, expand: false }));
 		} finally { applyingMove = false; }
 	});
+	registerSitePreviewActions({ vscode, context, chooseNode, activeSite, ownerOf, serviceFor, register });
 	registerSiteAttachmentActions({ vscode, context, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
 	registerSiteResourceActions({ vscode, context, chooseNode, activeSite, ownerOf, serviceFor, documentSources, refresh, register });
 	registerSiteFileActions({ vscode, context, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });

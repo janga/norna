@@ -2,6 +2,11 @@
 
 ## 0.12.0
 
+- Preview the selected site or page in the default browser, with explicit
+  unsaved-file choices and project-local engine selection.
+- Reuse only verified local servers, honor configured ports, and provide Stop
+  Preview Server and Show Preview Log without automatic port fallback or kill.
+
 - Add page-owned attachments with a batch import/link form, explicit replacement,
   existing-file insertion and reference-aware resource actions.
 - Hide empty images/downloads folders while retaining the page's Add actions.

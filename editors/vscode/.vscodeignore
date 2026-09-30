@@ -21,3 +21,5 @@ site-resource-actions.cjs
 
 site-attachment-actions.cjs
 attachment-form.cjs
+
+site-preview-actions.cjs

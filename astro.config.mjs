@@ -1,3 +1,5 @@
+import { devServerIdentityPlugin } from './scripts/lib/dev-server-identity.mjs';
+import { rewriteAttachmentLinks } from './scripts/lib/attachment-render.mjs';
 // @ts-check
 import { execFile } from 'node:child_process';
 import path from 'node:path';
@@ -16,6 +18,7 @@ import {
 	astroPublicDir,
 	engineRoot,
 	generatedImagesManifestPath,
+	siteDir,
 	siteContentPath,
 	siteHomePageDir,
 	siteImagesDir,
@@ -76,6 +79,7 @@ const nornaGeneratedImagesWatcher = () => ({
 			path.join(siteHomePageDir, 'tree-theme.yaml'),
 			path.join(siteHomePageDir, 'page-theme.yaml'),
 			siteImagesDir,
+			path.join(siteHomePageDir, 'downloads'),
 			sitePagesDir,
 		].map((watchedPath) => path.resolve(watchedPath));
 		let refreshTimer;
@@ -95,6 +99,7 @@ const nornaGeneratedImagesWatcher = () => ({
 				.then(async () => {
 					try {
 						await runGenerateImages();
+						await execFileAsync(process.execPath, [path.join(engineRoot, 'scripts', 'sync-site-public.mjs')], { cwd: siteProjectRoot });
 					} catch (error) {
 						const message = error instanceof Error ? error.message : String(error);
 						server.config.logger.error(`Norna image refresh failed:\n${message}`);
@@ -153,7 +158,8 @@ markdownProcessor.createRenderer = async (shared) => {
 	const renderer = await createMarkdownRenderer(shared);
 	return {
 		...renderer,
-		render(source, options) {
+		async render(source, options) {
+			source = await rewriteAttachmentLinks(source, options?.fileURL, siteDir);
 			return renderer.render(prepareContentTabs(source, {
 				label: options?.fileURL?.pathname ?? 'Markdown',
 			}), options);
@@ -193,6 +199,6 @@ export default defineConfig({
 		server: {
 			strictPort: true,
 		},
-		plugins: [nornaBasePathRedirect(), nornaGeneratedImagesWatcher()],
+		plugins: [nornaBasePathRedirect(), devServerIdentityPlugin(siteDir), nornaGeneratedImagesWatcher()],
 	},
 });

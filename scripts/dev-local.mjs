@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+import { readDevServerIdentity, verifyDevServer } from './lib/dev-server-identity.mjs';
 import { execFile } from 'node:child_process';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import net from 'node:net';
@@ -10,11 +12,14 @@ import {
 	engineRoot,
 	siteProjectRoot,
 	siteStateDir,
+	siteDir,
 } from './lib/site-paths.mjs';
 
 const execFileAsync = promisify(execFile);
 
-const port = Number.parseInt(process.env.NORNA_DEV_PORT ?? '4321', 10);
+const portValue = process.env.NORNA_DEV_PORT ?? '4321';
+const port = /^\d+$/.test(portValue) ? Number(portValue) : NaN;
+const serverToken = process.env.NORNA_DEV_START_TOKEN || randomUUID();
 if (!Number.isInteger(port) || port < 1 || port > 65_535) {
 	throw new Error('NORNA_DEV_PORT must be an integer from 1 through 65535.');
 }
@@ -107,6 +112,8 @@ const writeState = async (host) => {
 	await writeFile(statePath, `${JSON.stringify({
 		port,
 		pid,
+		token: serverToken,
+		siteRoot: siteDir,
 		host,
 		mode: host === '0.0.0.0' ? 'lan' : 'local',
 		url: localUrl,
@@ -367,6 +374,12 @@ const openBrowser = async () => {
 
 const stopServer = async ({ quiet = false } = {}) => {
 	const state = await readState();
+	if (process.env.NORNA_DEV_EXPECT_TOKEN) {
+		if (state?.token !== process.env.NORNA_DEV_EXPECT_TOKEN || state.port !== port || !(await verifyDevServer(state, siteDir))) throw new Error('Cannot verify this site’s server. No process was stopped.');
+		if (!(await terminateTrackedProcess(state, state.host ?? localHost))) throw new Error('The verified preview server did not stop. Try Stop Preview Server again.');
+		await removeState();
+		return;
+	}
 	let astroError;
 	let astroOutput = '';
 	try {
@@ -397,7 +410,7 @@ const stopServer = async ({ quiet = false } = {}) => {
 };
 
 const startServer = async ({ host = localHost, open = true, killBlockingPort = false } = {}) => {
-	await stopServer({ quiet: true });
+	if (process.env.NORNA_DEV_NO_RESTART !== '1') await stopServer({ quiet: true });
 
 	if (!(await isPortFree(host))) {
 		if (!killBlockingPort) {
@@ -432,8 +445,24 @@ const startServer = async ({ host = localHost, open = true, killBlockingPort = f
 	}
 	const previousLog = await readDevLog();
 	try {
-		await runAstroInherit(['dev', '--background', '--host', host, '--port', String(port)]);
+		await runAstroInherit(['dev', '--background', '--host', host, '--port', String(port)], { env: { ...process.env, NORNA_DEV_TOKEN: serverToken } });
+		// Record the process before probing rendered pages, so failed readiness
+		// checks can clean up only the server started by this request.
+		await writeState(host);
+		await waitForServer();
 	} catch (error) {
+		let cleanupHint = '';
+		const identity = await readDevServerIdentity({ port, token: serverToken }, siteDir);
+		if (identity) {
+			const candidate = { port, ...identity };
+			try {
+				if (!(await terminateTrackedProcess(candidate, host))) throw new Error('The process did not stop.');
+				const recorded = await readState();
+				if (recorded?.token === serverToken) await removeState();
+			} catch (cleanup) {
+				cleanupHint = `Cleanup failed: ${cleanup.message} Use the site's dev:stop command after inspecting the log.`;
+			}
+		}
 		const currentLog = await readDevLog();
 		const newLog = currentLog.startsWith(previousLog)
 			? currentLog.slice(previousLog.length)
@@ -443,11 +472,9 @@ const startServer = async ({ host = localHost, open = true, killBlockingPort = f
 			`Could not start the dev server at ${localUrl}.`,
 			excerpt ? `Astro reported:\n${excerpt}` : 'Astro did not write a detailed startup error.',
 			`Full log: ${logPath}`,
-		].join('\n\n'), { cause: error });
+			cleanupHint,
+		].filter(Boolean).join('\n\n'), { cause: error });
 	}
-	await waitForServer();
-
-	await writeState(host);
 	if (open) {
 		await openBrowser();
 	} else {

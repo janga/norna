@@ -512,7 +512,7 @@ Run `scripts/test-editor-resource-actions.mjs` for engine rules and
 dirty buffers, stale plans and injected application/recovery failures. Native
 menu, keyboard, Undo and save/reopen review remains a separate acceptance step.
 
-### Page Attachments
+### Attachments And Local Preview
 
 The attachment capability is `siteAttachmentsApiVersion: 1`. The shared link
 graph resolves page-owned downloads before rendering; the build copies bytes
@@ -521,6 +521,23 @@ plans copies and guarded source insertions, while the extension owns the form,
 Trash operations and dirty-buffer text edits. Run the attachment engine/adapter
 checks for those boundaries; `test:attachment-form` in the extension checks the
 actual webview HTML's focus and ordering without starting a site server.
+
+Local preview negotiates `sitePreviewApiVersion: 1`. `editor-site-preview.mjs`
+serializes requests by canonical site root and uses registered review commands
+where applicable. Other sites use the selected engine's background dev manager.
+The dev-only, loopback-only `/.well-known/norna-dev` endpoint supplies a fresh
+startup token, PID and canonical site root. Do not substitute an HTTP 200 or a
+matching port for ownership verification. Page readiness is a separate request:
+an identity-verified server can still return a rendering error.
+
+The manager records ownership before probing pages and verifies its startup
+token before cleaning a failed start. The extension never passes `--kill` or
+silently restarts an existing server. State and logs remain under the selected
+site's `.norna/`; inherited internal state-directory settings are stripped.
+`npm run test:editor-preview` covers lifecycle, collision, cancellation,
+failed-render cleanup and the extension's save/browser contracts. It is included
+in `test:dev-local`; do not run it again after a passing aggregate on unchanged
+source. Native Default-profile menu/browser and reload checks remain separate.
 
 ### First Marketplace Release
 

@@ -22,10 +22,7 @@ No implementation item is currently active.
 
 `Next` is the exact implementation sequence after `Now`.
 
-- ★ [`BL-156` VS Code Local Site Preview](docs/design/backlog/BL-156-vscode-local-site-preview.md):
-  **Ready after BL-154 VS Code Site Tree Context Actions; scheduled after BL-155 Page Attachments.**
-  Open the selected site or page in the default browser, reusing its local
-  server with configured-port precedence and explicit handling of unsaved files.
+No additional item is ready in this sequence.
 
 ## Ideas
 

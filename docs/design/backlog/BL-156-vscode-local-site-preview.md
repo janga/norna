@@ -5,12 +5,11 @@
 Open the selected page or the whole site locally from the VS Code Site Tree,
 without finding a terminal command or constructing its URL by hand.
 
-**Status: Ready after BL-154 VS Code Site Tree Context Actions.** On 2026-09-30
-the owner asked to finalize this brief and specified configured port first,
-standard port second. The bounded delivery choices below complete the brief.
-Implementation has not started. Queue after BL-155 Page Attachments to preserve
-its agreed implementation position; this is a scheduling order, not a technical
-dependency on attachments.
+**Status: Implemented; commit authorized on 2026-09-30.** Completed after BL-155 Page
+Attachments on 2026-09-30. The owner approved configured port first and standard
+port second. The implementation and documentation below are available in the
+local 0.12.0 VSIX. The owner handles further interface review and error reports;
+commit authorization does not claim that all manual checks passed.
 
 ## Scope And Boundaries
 
@@ -131,10 +130,62 @@ stop, window reload/close behavior and switching selected sites during startup.
 Cover each unsaved-file choice, failed save and changed route after save.
 Inject preparation/startup/browser-open failures and check clear recovery and
 log access. Use disposable sites and the Default VS Code profile to inspect
-actual menus, progress and browser destinations. Obtain local approval of the
-implemented interaction before commit. Run directly affected checks, not an
+actual menus, progress and browser destinations. The owner handles remaining
+manual review after commit. Run directly affected checks, not an
 unrelated release suite.
 
 Update the extension README, canonical editor reference and relevant local
 server guidance together: entry points, port precedence, saved-source preview,
 background lifetime, stopping/logs and older-engine limitations.
+
+## Implementation And Verification
+
+The engine's capability-checked preview API resolves saved page addresses,
+validates ports and verifies a live server using its canonical site root,
+startup token and process ID. The dev-only identity endpoint accepts loopback
+requests; it is not part of the published site. A ready identity is not enough:
+the requested page must also render successfully before opening the browser.
+Failed rendering cleans up a newly created server but retains a reused one.
+Startup failure also cleans up the verified new process if writing its state
+record fails. No unrelated process is terminated.
+
+Direct checks on 2026-09-30:
+
+- Port precedence, invalid values, unrelated occupied ports and stale identity
+  were already checked before the restart and were not repeated without cause.
+- Engine lifecycle checks exercised real startup, queued repeated requests,
+  nested/unlisted and homepage URLs, reuse, changed ports, cancellation, log
+  access and explicit stop. The initial combined test reached all these
+  assertions, then failed in its newly added render-error fixture. That fixture
+  was corrected and passed as a separate targeted test; the already passing
+  lifecycle assertions were not rerun just to repeat coverage.
+- New targeted cases passed for render failure, invalid theme, keeping a reused
+  server after HTTP 500, URLs without a deployment prefix, failed state-record
+  writing and the loopback-only identity endpoint.
+- Five extension adapter cases passed: selected-site saves, saved-only/cancel,
+  failed or newly dirty saves, old engines, request coalescing and site changes,
+  browser failure, logs and explicit stop. A focused follow-up also checked that
+  the modal relies on VS Code's own Cancel button rather than duplicating it.
+- The site-tree contract and VSIX package contract passed. VSIX 0.12.0 was built
+  and installed in the owner's Default profile without changing profile settings.
+- Native review opened Preview Page from its context menu, chose Preview Saved
+  Files with an unsaved title, and confirmed that Brave displayed the saved
+  page at http://127.0.0.1:4399/theme-inheritance/. After leaving and reopening
+  the scratch workspace, Preview Site reused the same server PID. Show Preview
+  Log opened the Norna Preview output, and Stop Preview Server removed that
+  server's record. The owner's occupied port 4321 was not stopped or replaced.
+- Canonical editor documentation and its links passed `content:check`.
+
+The full release suite and repeated editor-version matrices were not run.
+Native review covered macOS; other operating systems were not manually tested.
+
+### Owner Review
+
+Open `.local/test-sites/scratch/site` in the Default VS Code profile. This is a
+physical disposable site with registered port 4399, not the maintained source.
+In Norna Site Tree, try **Preview Page** on a nested page and **Preview Site**
+from the view menu. Edit a page without saving to inspect the saved/unsaved
+choice. Check **Show Preview Log** and **Stop Preview Server** in the same menu.
+The verification server was stopped; Preview starts it again when requested.
+Further manual review is owner-managed and does not block commit, as agreed
+on 2026-09-30.

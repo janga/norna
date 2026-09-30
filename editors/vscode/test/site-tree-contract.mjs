@@ -72,6 +72,7 @@ const vscode = {
 		onDidCloseTextDocument: disposable, onDidChangeWorkspaceFolders: workspaceChanges.event,
 	},
 	window: {
+		createOutputChannel: () => ({ append() {}, appendLine() {}, show() {}, dispose() {} }),
 		createWebviewPanel: () => {
 			let receive, dispose; const replies=[];
 			const panel={ webview: { html:'', onDidReceiveMessage: (fn)=>{receive=fn;return disposable();}, postMessage: async message=>{replies.push(message);} }, onDidDispose: fn=>{dispose=fn;}, dispose: ()=>dispose?.() };
@@ -129,7 +130,7 @@ try {
 	await write(path.join(siteRoot, 'root/page-theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
-	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-attachment-actions.cjs', './site-resource-actions.cjs', './site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs', './page-placement.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
+	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-preview-actions.cjs', './site-attachment-actions.cjs', './site-resource-actions.cjs', './site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs', './page-placement.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
 		getNornaProjectContext: (filename) => {
 			const root = [siteRoot, legacySite, outsideSite].find((root) => filename.startsWith(root + path.sep));
 			if (!root) return null;

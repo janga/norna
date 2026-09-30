@@ -323,6 +323,30 @@
         "title": "Replace\u2026",
         "category": "Norna",
         "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.previewPage",
+        "title": "Preview Page",
+        "category": "Norna",
+        "enablement": "nornaSiteTree.hasActiveSite"
+      },
+      {
+        "command": "nornaEditor.previewSite",
+        "title": "Preview Site",
+        "category": "Norna",
+        "enablement": "nornaSiteTree.hasActiveSite"
+      },
+      {
+        "command": "nornaEditor.stopPreview",
+        "title": "Stop Preview Server",
+        "category": "Norna",
+        "enablement": "nornaSiteTree.previewRunning"
+      },
+      {
+        "command": "nornaEditor.showPreviewLog",
+        "title": "Show Preview Log",
+        "category": "Norna",
+        "enablement": "nornaSiteTree.hasActiveSite"
       }
     ],
     "views": {
@@ -361,6 +385,21 @@
           "command": "nornaEditor.siteTreeHelp",
           "when": "view == nornaSiteTree",
           "group": "help"
+        },
+        {
+          "command": "nornaEditor.previewSite",
+          "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
+          "group": "3_preview@0"
+        },
+        {
+          "command": "nornaEditor.stopPreview",
+          "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
+          "group": "3_preview@1"
+        },
+        {
+          "command": "nornaEditor.showPreviewLog",
+          "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
+          "group": "3_preview@2"
         }
       ],
       "view/item/context": [
@@ -578,6 +617,11 @@
           "command": "nornaEditor.replaceAttachment",
           "when": "view == nornaSiteTree && viewItem =~ /;replaceAttachment;/",
           "group": "2_edit@3"
+        },
+        {
+          "command": "nornaEditor.previewPage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page);/",
+          "group": "3_preview@1"
         }
       ],
       "commandPalette": [
