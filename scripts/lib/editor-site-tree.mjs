@@ -149,3 +149,5 @@ export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, fi
 	while (end > start && nextEnd > start && source[end - 1] === next[nextEnd - 1]) { end--; nextEnd--; }
 	return [{ start, end, text: next.slice(start, nextEnd) }];
 };
+
+export { siteResourceActionsApiVersion, getEditorResourceReferences, planEditorResourceRename, planEditorPublicCreation, planEditorFolderRemoval, getEditorResourceAddress } from './editor-resource-actions.mjs';

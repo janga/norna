@@ -5,8 +5,12 @@
 Let an author rename an existing page image from its row in the VS Code Site
 Tree while understanding what happens to pages that refer to it.
 
-**Status: Needs decision.** The location of the action is approved; the source
-edit and recovery rules are not yet settled.
+**Status: Incorporated into BL-154 VS Code Site Tree Context Actions on
+2026-09-30; implementation complete and commit authorized.** That approved brief owns delivery and
+supersedes the open choices below: update known internal references during
+rename, preserve the image extension, preflight conflicts and coordinate
+source/filesystem recovery. This record retains the original scope and cases.
+See [BL-154 VS Code Site Tree Context Actions](BL-154-vscode-site-tree-context-actions.md).
 
 ## Decisions Made
 
@@ -16,7 +20,7 @@ edit and recovery rules are not yet settled.
 - A future **Rename image…** action belongs on the image row in Site Tree.
   It must review known managed-image references before changing the filename.
 
-## Open Questions
+## Original Questions Resolved By BL-154
 
 - Should the action update all known managed-image references automatically,
   or leave them unchanged after a clear warning? Decide how unsaved editor
@@ -34,4 +38,5 @@ Test the action on a disposable page with zero, one and several references,
 including an unsaved page, an ambiguous same-name image elsewhere, invalid
 filenames, collisions and a failed move. Check the resulting tree, content,
 Undo/Trash expectations and saved page rendering in the owner's Default VS
-Code profile before commit.
+Code profile. Remaining manual review belongs to the owner and does not block
+commit, as agreed on 2026-09-30.

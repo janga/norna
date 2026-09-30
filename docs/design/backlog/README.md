@@ -8,11 +8,15 @@ acceptance criteria before implementation.
 
 - `Now` contains at most five implementation-ready items in exact order.
 - `Next` is an exact technical implementation sequence, not a value ranking.
+- `Ideas` keeps active feature ideas visible beside prioritized work. Always
+  include these when reporting prioritized backlog items, clearly marked as
+  ideas rather than implementation-ready work. An idea's visibility does not
+  authorize implementation or settle its open design choices.
 - `External Gate` keeps high-value work that requires an account, publication,
   credential, or other user-owned prerequisite from blocking autonomous work.
 - `Documentation Follow-ups` tracks documentation debt for implemented
   behavior.
-- `Needs Decision Or Evidence` contains ideas that must not enter the ordered
+- `Needs Decision Or Evidence` contains design work that must not enter the ordered
   queue until a concrete need or missing design decision is resolved.
 - `Explicitly Deferred` records deliberate product boundaries.
 
@@ -23,6 +27,9 @@ acceptance criteria before implementation.
 - **Needs decision:** A product or architecture choice blocks implementation.
 - **Needs evidence:** Real usage must demonstrate that the added model is worth
   its permanent cost.
+- **Idea:** A visible, prioritized subject for discussion, not an approved
+  implementation. Explicitly deferred ideas stay under `Explicitly Deferred`
+  until the owner reopens them.
 - **Deferred:** Do not schedule without a separate product decision.
 
 The `★` marker records that the user has selected an item as particularly worth

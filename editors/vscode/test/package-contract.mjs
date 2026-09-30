@@ -36,21 +36,20 @@ assert.ok(extensionManifest.contributes.viewsWelcome.some((item) => item.view ==
 const itemMenus = extensionManifest.contributes.menus['view/item/context'];
 assert.equal(extensionManifest.contributes.commands.find((item) => item.command === 'nornaEditor.movePage').enablement,
 	'!nornaSiteTree.moveActive');
-assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.movePage').when.includes('!nornaSiteTree.moveActive'));
-assert.ok(!extensionManifest.contributes.menus['view/title'].some((item) => item.command === 'nornaEditor.cancelMove'),
-	'Cancel belongs to the source and preview rows, not the view title.');
-assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.cancelMove' && item.when.includes('nornaMoveSource')));
-for (const command of ['chooseSite', 'addToPage', 'refreshSiteTree']) {
-	assert.ok(extensionManifest.contributes.menus['view/title'].find((item) => item.command === `nornaEditor.${command}`)
-		.when.includes('!nornaSiteTree.moveActive'));
+
+assert.ok(!extensionManifest.contributes.menus['view/title'].some(item => item.command === 'nornaEditor.cancelMove'));
+assert.ok(itemMenus.some(item => item.command === 'nornaEditor.cancelMove' && item.when.includes('nornaMoveSource')));
+assert.ok(itemMenus.every(item => !item.group.startsWith('inline')), 'Resting rows have no inline Add/ellipsis buttons.');
+assert.ok(itemMenus.every(item => item.command !== 'nornaEditor.openSiteNode'), 'Opening is row activation, not a context action.');
+assert.ok(!extensionManifest.contributes.commands.some(item => /nornaEditor\.(pageActions|fileActions|imageActions)$/.test(item.command)));
+const addMenu = extensionManifest.contributes.menus['nornaSiteTree.add'];
+assert.ok(addMenu.every(item => !item.submenu), 'Only one submenu level.');
+assert.ok(addMenu.some(item => item.command === 'nornaEditor.addChildPage'));
+assert.ok(addMenu.some(item => item.command === 'nornaEditor.importImage'));
+for (const command of ['renamePage', 'renameResource', 'newPublicFile', 'addPublicFiles', 'newPublicFolder', 'replacePublicFile', 'removeFolder', 'copyResourceLink', 'resourceReferences']) {
+	assert.ok(itemMenus.some(item => item.command === 'nornaEditor.' + command), command);
 }
-assert.ok(itemMenus.some((item) => item.command === 'nornaEditor.addPage'
-	&& item.group === 'inline' && item.when.endsWith('viewItem == nornaPages')));
-assert.ok(itemMenus.find((item) => item.command === 'nornaEditor.pageInformation').when.includes('(Home|Page)'));
-for (const command of ['addToPage', 'pageActions']) {
-	assert.ok(itemMenus.some((item) => item.command === `nornaEditor.${command}`
-		&& item.group.startsWith('inline') && item.when.includes(command === 'addToPage' ? '(Home|Page|Incomplete|Configuration)' : '(Home|Page)')));
-}
+for (const command of ['addSiteConfiguration', 'addSitePublicFiles']) assert.ok(extensionManifest.contributes.menus['view/title'].some(item => item.command === 'nornaEditor.' + command && item.when.includes('resourceActions')));
 
 const executable = path.join(
 	extensionRoot,

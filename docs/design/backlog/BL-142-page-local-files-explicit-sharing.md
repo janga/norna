@@ -6,8 +6,12 @@ Make it predictable which image or attachment a page uses, while allowing
 authors to choose between independent local copies and deliberate sharing.
 The same ownership principles should apply to both kinds of file.
 
-**Status: Deferred.** The owner approved rules 1–3 below on 2026-09-21 and
-requested a backlog record to revisit later. No implementation is scheduled.
+**Status: Remaining image/sharing work deferred.** The owner approved rules
+1–3 below on 2026-09-21. On 2026-09-30, the basic attachment scope was extracted
+into the high-priority draft
+[BL-155 Page Attachments](BL-155-page-attachments.md). Its publication and
+authoring questions are owned there; the broader image lookup and shared
+resource repair work here remains unscheduled.
 
 ## Scope And Boundaries
 
@@ -65,7 +69,7 @@ later; moving the reference must not itself relocate the shared file.
 ### Related Decisions From The Discussion
 
 - Attachments belong in the owning page's `downloads/`, including
-  `site/downloads/` for the homepage. Keep `public/` for site-wide static
+  `site/root/downloads/` for the homepage under the current root model. Keep `public/` for site-wide static
   files such as `robots.txt`, logos and icons; the sitemap remains generated.
 - Attachment links use the browser's normal handling: a supported document
   can open for reading, and other files can download. Do not force every link

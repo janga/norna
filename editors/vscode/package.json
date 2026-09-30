@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -73,18 +73,20 @@
       },
       {
         "command": "nornaEditor.addPage",
-        "title": "Norna: Add Page…",
+        "title": "Norna: Add Page\u2026",
         "icon": "$(add)"
       },
       {
         "command": "nornaEditor.newPage",
-        "title": "Norna: New Page…",
+        "title": "Norna: New Page\u2026",
         "icon": "$(new-file)"
       },
       {
         "command": "nornaEditor.pageInformation",
-        "title": "Norna: Page Information…",
-        "icon": "$(edit)"
+        "title": "Properties\u2026",
+        "icon": "$(edit)",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
       },
       {
         "command": "nornaEditor.refreshSiteTree",
@@ -93,29 +95,27 @@
       },
       {
         "command": "nornaEditor.chooseSite",
-        "title": "Norna: Choose Site…",
+        "title": "Norna: Choose Site\u2026",
         "icon": "$(globe)"
       },
       {
         "command": "nornaEditor.addToPage",
-        "title": "Norna: Add…",
+        "title": "Norna: Add\u2026",
         "icon": "$(add)"
       },
       {
         "command": "nornaEditor.addChildPage",
-        "title": "Norna: Add Child Page…",
-        "icon": "$(add)"
-      },
-      {
-        "command": "nornaEditor.pageActions",
-        "title": "Norna: Page Actions…",
-        "icon": "$(ellipsis)"
+        "title": "Add Page\u2026",
+        "icon": "$(add)",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
       },
       {
         "command": "nornaEditor.movePage",
-        "title": "Norna: Move Page…",
+        "title": "Move\u2026",
         "icon": "$(move)",
-        "enablement": "!nornaSiteTree.moveActive"
+        "enablement": "!nornaSiteTree.moveActive",
+        "category": "Norna"
       },
       {
         "command": "nornaEditor.cancelMove",
@@ -140,57 +140,171 @@
       },
       {
         "command": "nornaEditor.acceptMovePreview",
-        "title": "Complete Page Move…"
+        "title": "Complete Page Move\u2026"
       },
       {
         "command": "nornaEditor.importImage",
-        "title": "Norna: Import Images…",
-        "icon": "$(add)"
+        "title": "Add Images\u2026",
+        "icon": "$(add)",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
       },
       {
         "command": "nornaEditor.insertImage",
-        "title": "Norna: Insert Image…",
-        "icon": "$(add)"
+        "title": "Insert Image in Page\u2026",
+        "icon": "$(add)",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
       },
       {
         "command": "nornaEditor.replaceImage",
-        "title": "Norna: Replace Image…",
-        "icon": "$(replace)"
+        "title": "Replace\u2026",
+        "icon": "$(replace)",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
       },
       {
         "command": "nornaEditor.removeImage",
-        "title": "Norna: Move Image to Trash…",
-        "icon": "$(trash)"
+        "title": "Delete\u2026",
+        "icon": "$(trash)",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
       },
       {
         "command": "nornaEditor.removePage",
-        "title": "Norna: Move Page to Trash…",
-        "icon": "$(trash)"
-      },
-      {
-        "command": "nornaEditor.imageActions",
-        "title": "Norna: Image Actions…",
-        "icon": "$(ellipsis)"
+        "title": "Delete\u2026",
+        "icon": "$(trash)",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
       },
       {
         "command": "nornaEditor.addressesAndLinks",
-        "title": "Norna: Addresses and Links…",
+        "title": "Norna: Addresses and Links\u2026",
         "icon": "$(link)"
       },
       {
         "command": "nornaEditor.incomingLinks",
-        "title": "Norna: Incoming Links…",
-        "icon": "$(references)"
-      },
-      {
-        "command": "nornaEditor.fileActions",
-        "title": "Norna: File Actions…",
-        "icon": "$(ellipsis)"
+        "title": "References\u2026",
+        "icon": "$(references)",
+        "category": "Norna"
       },
       {
         "command": "nornaEditor.removeFile",
-        "title": "Norna: Move File to Trash…",
-        "icon": "$(trash)"
+        "title": "Delete\u2026",
+        "icon": "$(trash)",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.addContent",
+        "title": "Page Content\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.addPageTheme",
+        "title": "Page Theme",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.addTreeTheme",
+        "title": "Branch Theme",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.addSettings",
+        "title": "Site Settings\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.addSharedContent",
+        "title": "Shared Content",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.newPublicFile",
+        "title": "New File\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.addPublicFiles",
+        "title": "Add Files\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.newPublicFolder",
+        "title": "New Folder\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.renamePage",
+        "title": "Rename\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.renameResource",
+        "title": "Rename\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.replacePublicFile",
+        "title": "Replace\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.moveResource",
+        "title": "Move\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.copyPageLink",
+        "title": "Copy Link",
+        "category": "Norna"
+      },
+      {
+        "command": "nornaEditor.copyResourceLink",
+        "title": "Copy Link",
+        "category": "Norna"
+      },
+      {
+        "command": "nornaEditor.resourceReferences",
+        "title": "References\u2026",
+        "category": "Norna"
+      },
+      {
+        "command": "nornaEditor.removeFolder",
+        "title": "Delete\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.addSitePublicFiles",
+        "title": "Add Public Files\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.addSiteConfiguration",
+        "title": "Add Site Configuration\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.siteTreeHelp",
+        "title": "Site Tree Help",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
       }
     ],
     "views": {
@@ -211,14 +325,24 @@
           "group": "navigation@0"
         },
         {
-          "command": "nornaEditor.addToPage",
-          "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite && !nornaSiteTree.moveActive",
-          "group": "navigation@1"
-        },
-        {
           "command": "nornaEditor.refreshSiteTree",
           "when": "view == nornaSiteTree && !nornaSiteTree.moveActive",
           "group": "maintenance"
+        },
+        {
+          "command": "nornaEditor.addSiteConfiguration",
+          "when": "view == nornaSiteTree && nornaSiteTree.resourceActions && !nornaSiteTree.moveActive",
+          "group": "1_site@0"
+        },
+        {
+          "command": "nornaEditor.addSitePublicFiles",
+          "when": "view == nornaSiteTree && nornaSiteTree.resourceActions && !nornaSiteTree.moveActive",
+          "group": "1_site@1"
+        },
+        {
+          "command": "nornaEditor.siteTreeHelp",
+          "when": "view == nornaSiteTree",
+          "group": "help"
         }
       ],
       "view/item/context": [
@@ -229,22 +353,22 @@
         },
         {
           "command": "nornaEditor.placeMoveBefore",
-          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem == nornaPage",
+          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem =~ /^nornaPage(;|$)/",
           "group": "0_move@1"
         },
         {
           "command": "nornaEditor.placeMoveAfter",
-          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem == nornaPage",
+          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem =~ /^nornaPage(;|$)/",
           "group": "0_move@2"
         },
         {
           "command": "nornaEditor.placeMoveFirst",
-          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem =~ /^norna(Home|Page)$/",
+          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem =~ /^norna(Home|Page)(;|$)/",
           "group": "0_move@3"
         },
         {
           "command": "nornaEditor.placeMoveLast",
-          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem =~ /^norna(Home|Page)$/",
+          "when": "view == nornaSiteTree && nornaSiteTree.moveActive && viewItem =~ /^norna(Home|Page)(;|$)/",
           "group": "0_move@4"
         },
         {
@@ -253,104 +377,174 @@
           "group": "0_move@1"
         },
         {
-          "command": "nornaEditor.openSiteNode",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|MoveSource|File|OptionalFile|Image)$/",
-          "group": "1_open@1"
+          "command": "nornaEditor.addChildPage",
+          "when": "view == nornaSiteTree && viewItem =~ /;addPage;/ && viewItem =~ /^norna(Pages|Images);/",
+          "group": "1_add@1"
+        },
+        {
+          "command": "nornaEditor.importImage",
+          "when": "view == nornaSiteTree && viewItem =~ /;addImages;/ && viewItem =~ /^norna(Pages|Images);/",
+          "group": "1_add@2"
+        },
+        {
+          "command": "nornaEditor.newPublicFile",
+          "when": "view == nornaSiteTree && viewItem =~ /;newPublicFile;/",
+          "group": "1_add@1"
+        },
+        {
+          "command": "nornaEditor.addPublicFiles",
+          "when": "view == nornaSiteTree && viewItem =~ /;addPublicFiles;/",
+          "group": "1_add@2"
+        },
+        {
+          "command": "nornaEditor.newPublicFolder",
+          "when": "view == nornaSiteTree && viewItem =~ /;newPublicFolder;/",
+          "group": "1_add@3"
+        },
+        {
+          "command": "nornaEditor.insertImage",
+          "when": "view == nornaSiteTree && viewItem =~ /;insertImage;/",
+          "group": "2_edit@1"
+        },
+        {
+          "command": "nornaEditor.renamePage",
+          "when": "view == nornaSiteTree && viewItem =~ /;renamePage;/",
+          "group": "2_edit@2"
+        },
+        {
+          "command": "nornaEditor.renameResource",
+          "when": "view == nornaSiteTree && viewItem =~ /;renameResource;/",
+          "group": "2_edit@2"
+        },
+        {
+          "command": "nornaEditor.pageInformation",
+          "when": "view == nornaSiteTree && viewItem =~ /;properties;/",
+          "group": "2_edit@3"
+        },
+        {
+          "command": "nornaEditor.replaceImage",
+          "when": "view == nornaSiteTree && viewItem =~ /;replaceImage;/",
+          "group": "2_edit@3"
+        },
+        {
+          "command": "nornaEditor.replacePublicFile",
+          "when": "view == nornaSiteTree && viewItem =~ /;replacePublicFile;/",
+          "group": "2_edit@3"
+        },
+        {
+          "command": "nornaEditor.movePage",
+          "when": "view == nornaSiteTree && viewItem =~ /;movePage;/",
+          "group": "3_organize@1"
+        },
+        {
+          "command": "nornaEditor.moveResource",
+          "when": "view == nornaSiteTree && viewItem =~ /;moveResource;/",
+          "group": "3_organize@1"
+        },
+        {
+          "command": "nornaEditor.copyPageLink",
+          "when": "view == nornaSiteTree && viewItem =~ /;copyPageLink;/",
+          "group": "4_inspect@1"
+        },
+        {
+          "command": "nornaEditor.copyResourceLink",
+          "when": "view == nornaSiteTree && viewItem =~ /;copyResourceLink;/",
+          "group": "4_inspect@1"
+        },
+        {
+          "command": "nornaEditor.incomingLinks",
+          "when": "view == nornaSiteTree && viewItem =~ /;pageReferences;/",
+          "group": "4_inspect@2"
+        },
+        {
+          "command": "nornaEditor.resourceReferences",
+          "when": "view == nornaSiteTree && viewItem =~ /;resourceReferences;/",
+          "group": "4_inspect@2"
+        },
+        {
+          "command": "nornaEditor.removePage",
+          "when": "view == nornaSiteTree && viewItem =~ /;deletePage;/",
+          "group": "5_delete@1"
+        },
+        {
+          "command": "nornaEditor.removeImage",
+          "when": "view == nornaSiteTree && viewItem =~ /;deleteImage;/",
+          "group": "5_delete@1"
+        },
+        {
+          "command": "nornaEditor.removeFile",
+          "when": "view == nornaSiteTree && viewItem =~ /;deleteFile;/",
+          "group": "5_delete@1"
+        },
+        {
+          "command": "nornaEditor.removeFolder",
+          "when": "view == nornaSiteTree && viewItem =~ /;deleteFolder;/",
+          "group": "5_delete@1"
+        },
+        {
+          "submenu": "nornaSiteTree.add",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Incomplete|Configuration);/ && viewItem =~ /;(addPage|addImages|add_[a-z_]+);/",
+          "group": "1_add@1"
+        },
+        {
+          "command": "nornaEditor.newPage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Site)$/",
+          "group": "1_add@1"
         },
         {
           "command": "nornaEditor.pageInformation",
           "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page)$/",
-          "group": "1_open@2"
-        },
-        {
-          "command": "nornaEditor.movePage",
-          "when": "view == nornaSiteTree && !nornaSiteTree.moveActive && viewItem == nornaPage",
-          "group": "1_open@2.5"
-        },
-        {
-          "command": "nornaEditor.newPage",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Site|Home|Page)$/",
-          "group": "2_create@1"
-        },
-        {
-          "command": "nornaEditor.addPage",
-          "when": "view == nornaSiteTree && viewItem == nornaPages",
-          "group": "inline"
-        },
-        {
-          "command": "nornaEditor.addPage",
-          "when": "view == nornaSiteTree && viewItem == nornaPages",
-          "group": "2_create@1"
-        },
-        {
-          "command": "nornaEditor.addToPage",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Incomplete|Configuration)$/",
-          "group": "inline@1"
-        },
-        {
-          "command": "nornaEditor.pageActions",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page)$/",
-          "group": "inline@2"
-        },
-        {
-          "command": "nornaEditor.importImage",
-          "when": "view == nornaSiteTree && viewItem == nornaImages",
-          "group": "inline"
-        },
-        {
-          "command": "nornaEditor.imageActions",
-          "when": "view == nornaSiteTree && viewItem == nornaImage",
-          "group": "inline"
-        },
-        {
-          "command": "nornaEditor.importImage",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Images)$/",
-          "group": "3_images@1"
-        },
-        {
-          "command": "nornaEditor.insertImage",
-          "when": "view == nornaSiteTree && viewItem == nornaImage",
-          "group": "3_images@1"
-        },
-        {
-          "command": "nornaEditor.replaceImage",
-          "when": "view == nornaSiteTree && viewItem == nornaImage",
-          "group": "3_images@2"
-        },
-        {
-          "command": "nornaEditor.removeImage",
-          "when": "view == nornaSiteTree && viewItem == nornaImage",
-          "group": "4_remove"
-        },
-        {
-          "command": "nornaEditor.removePage",
-          "when": "view == nornaSiteTree && viewItem == nornaPage",
-          "group": "4_remove"
-        },
-        {
-          "command": "nornaEditor.fileActions",
-          "when": "view == nornaSiteTree && viewItem == nornaOptionalFile",
-          "group": "inline"
-        },
-        {
-          "command": "nornaEditor.removeFile",
-          "when": "view == nornaSiteTree && viewItem == nornaOptionalFile",
-          "group": "4_remove"
-        },
-        {
-          "command": "nornaEditor.addressesAndLinks",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page)$/",
-          "group": "1_open@3"
+          "group": "2_edit@2"
         },
         {
           "command": "nornaEditor.incomingLinks",
           "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page)$/",
-          "group": "1_open@4"
+          "group": "4_inspect@1"
+        },
+        {
+          "command": "nornaEditor.importImage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Images)$/",
+          "group": "1_add@2"
+        },
+        {
+          "command": "nornaEditor.insertImage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Image)$/",
+          "group": "2_edit@1"
+        },
+        {
+          "command": "nornaEditor.replaceImage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Image)$/",
+          "group": "2_edit@3"
+        },
+        {
+          "command": "nornaEditor.removeImage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Image)$/",
+          "group": "5_delete@1"
+        },
+        {
+          "command": "nornaEditor.removePage",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Page)$/",
+          "group": "5_delete@1"
+        },
+        {
+          "command": "nornaEditor.removeFile",
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(OptionalFile)$/",
+          "group": "5_delete@1"
         },
         {
           "command": "nornaEditor.addToPage",
-          "when": "view == nornaSiteTree && viewItem =~ /^norna(Home|Page|Incomplete|Configuration)$/",
-          "group": "2_create@3"
+          "when": "view == nornaSiteTree && viewItem =~ /^norna(Incomplete|Configuration)$/",
+          "group": "1_add@1"
+        },
+        {
+          "command": "nornaEditor.movePage",
+          "when": "view == nornaSiteTree && viewItem == nornaPage",
+          "group": "3_organize@1"
+        },
+        {
+          "command": "nornaEditor.addPage",
+          "when": "view == nornaSiteTree && viewItem == nornaPages",
+          "group": "1_add@1"
         }
       ],
       "commandPalette": [
@@ -361,6 +555,111 @@
         {
           "command": "nornaEditor.addPage",
           "when": "false"
+        },
+        {
+          "command": "nornaEditor.addContent",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.addPageTheme",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.addTreeTheme",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.addSettings",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.addSharedContent",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.addChildPage",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.renameResource",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.renamePage",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.moveResource",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.removeFolder",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.removeImage",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.removeFile",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.removePage",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.replaceImage",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.replacePublicFile",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.copyResourceLink",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.resourceReferences",
+          "when": "false"
+        }
+      ],
+      "nornaSiteTree.add": [
+        {
+          "command": "nornaEditor.addChildPage",
+          "when": "view == nornaSiteTree && viewItem =~ /;addPage;/ && viewItem =~ /^norna(Home|Page|Incomplete|Configuration);/",
+          "group": "1_add@1"
+        },
+        {
+          "command": "nornaEditor.importImage",
+          "when": "view == nornaSiteTree && viewItem =~ /;addImages;/ && viewItem =~ /^norna(Home|Page|Incomplete|Configuration);/",
+          "group": "1_add@2"
+        },
+        {
+          "command": "nornaEditor.addContent",
+          "when": "view == nornaSiteTree && viewItem =~ /;add_content_md;/ && viewItem =~ /^norna(Home|Page|Incomplete|Configuration);/",
+          "group": "1_add@0"
+        },
+        {
+          "command": "nornaEditor.addPageTheme",
+          "when": "view == nornaSiteTree && viewItem =~ /;add_page_theme_yaml;/ && viewItem =~ /^norna(Home|Page|Incomplete|Configuration);/",
+          "group": "1_add@3"
+        },
+        {
+          "command": "nornaEditor.addTreeTheme",
+          "when": "view == nornaSiteTree && viewItem =~ /;add_tree_theme_yaml;/ && viewItem =~ /^norna(Home|Page|Incomplete|Configuration);/",
+          "group": "1_add@4"
+        },
+        {
+          "command": "nornaEditor.addSettings",
+          "when": "view == nornaSiteTree && viewItem =~ /;add_settings_yaml;/ && viewItem =~ /^norna(Home|Page|Incomplete|Configuration);/",
+          "group": "1_add@1"
+        },
+        {
+          "command": "nornaEditor.addSharedContent",
+          "when": "view == nornaSiteTree && viewItem =~ /;add_shared_content_yaml;/ && viewItem =~ /^norna(Home|Page|Incomplete|Configuration);/",
+          "group": "1_add@2"
         }
       ]
     },
@@ -376,15 +675,21 @@
     "viewsWelcome": [
       {
         "view": "nornaSiteTree",
-        "contents": "Choose a site to show its pages and files.\n[Choose Site…](command:nornaEditor.chooseSite)",
+        "contents": "Choose a site to show its pages and files.\n[Choose Site\u2026](command:nornaEditor.chooseSite)",
         "when": "nornaSiteTree.hasMultipleSites && !nornaSiteTree.hasActiveSite"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "nornaSiteTree.add",
+        "label": "Add"
       }
     ]
   },
   "scripts": {
     "audit:runtime": "npm audit --omit=dev",
     "build": "esbuild extension.cjs --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.cjs",
-    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check site-file-actions.cjs && node --check site-address-actions.cjs && node --check site-link-review.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/page-form-contract.mjs && node test/site-file-actions-contract.mjs && node test/site-address-actions-contract.mjs && node test/package-contract.mjs",
+    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check site-file-actions.cjs && node --check site-address-actions.cjs && node --check site-link-review.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/page-form-contract.mjs && node test/site-file-actions-contract.mjs && node test/site-address-actions-contract.mjs && node --test test/site-resource-actions-contract.mjs && node test/package-contract.mjs",
     "package": "vsce package --out norna-vscode.vsix",
     "publish:marketplace": "vsce publish",
     "vscode:prepublish": "npm run build",

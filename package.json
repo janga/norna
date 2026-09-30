@@ -156,7 +156,7 @@
     "test:review-environments": "node scripts/test-review-environments.mjs",
     "test:review-environments:browser": "node scripts/test-review-environments-browser.mjs",
     "test:engine-commands": "node scripts/test-engine-commands.mjs",
-    "test:editor-language": "node scripts/test-editor-language-service.mjs && npm --prefix editors/vscode run check",
+    "test:editor-language": "node scripts/test-editor-language-service.mjs && node --test scripts/test-editor-resource-actions.mjs && npm --prefix editors/vscode run check",
     "test:editor-integration": "npm --prefix editors/vscode run test:integration",
     "test:editor-integration:minimum": "npm --prefix editors/vscode run test:integration:minimum",
     "test:documentation": "node scripts/test-documentation.mjs",

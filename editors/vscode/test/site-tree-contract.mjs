@@ -129,7 +129,7 @@ try {
 	await write(path.join(siteRoot, 'root/page-theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
-	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs', './page-placement.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
+	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-resource-actions.cjs', './site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs', './page-placement.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
 		getNornaProjectContext: (filename) => {
 			const root = [siteRoot, legacySite, outsideSite].find((root) => filename.startsWith(root + path.sep));
 			if (!root) return null;
@@ -203,7 +203,7 @@ try {
 	const image = guide.children.find((node) => node.role === 'images').children[0];
 	assert.deepEqual(provider.getTreeItem(home).iconPath, provider.getTreeItem(guide).iconPath);
 	assert.match(provider.getTreeItem(guide).iconPath.light, /media\/page-light\.svg$/);
-	assert.equal(provider.getTreeItem(pages).contextValue, 'nornaPages');
+	assert.match(provider.getTreeItem(pages).contextValue, /^nornaPages;/);
 	for (const node of [pages, configuration]) {
 		const item = provider.getTreeItem(node);
 		assert.equal(item.command.command, 'nornaEditor.selectSiteGroup');
@@ -218,7 +218,7 @@ try {
 	assert.equal(provider.getTreeItem(home).command.command, 'nornaEditor.openSiteNode');
 	await commands.get('nornaEditor.openSiteNode')(home);
 	assert.deepEqual(opened.pop(), ['vscode.open', home.sourcePath]);
-	assert.equal(provider.getTreeItem(image).contextValue, 'nornaImage');
+	assert.match(provider.getTreeItem(image).contextValue, /^nornaImage;/);
 	await commands.get('nornaEditor.openSiteNode')(image);
 	assert.deepEqual(opened.pop(), ['vscode.open', image.sourcePath], 'Resources must use VS Code editor selection, not a forced text editor.');
 	await commands.get('nornaEditor.pageInformation')(image);
@@ -252,8 +252,7 @@ try {
 	await commands.get('nornaEditor.addToPage')(image);
 	assert.equal(importedInto, guide, 'Add on a resource must import into its owning page.');
 	commands.set('nornaEditor.importImage', importImage);
-	choices.push((items) => { assert.deepEqual(items.map((item) => item.command), ['pageInformation', 'movePage', 'addressesAndLinks', 'openSiteNode', 'removePage']); return undefined; });
-	await commands.get('nornaEditor.pageActions')(guide);
+	assert.equal(commands.has('nornaEditor.pageActions'), false, 'No duplicate page action picker.');
 	forms.push(() => undefined);
 	await commands.get('nornaEditor.addPage')(pages);
 	assert.equal(home.children.find((node) => node.role === 'pages').children.length, 1);
@@ -296,8 +295,7 @@ try {
 	await commands.get('nornaEditor.movePage')(overview);
 	assert.match(information.pop(), /move is already in progress/);
 	assert.equal(tree.title, 'Site Tree', 'A second move must not replace the active source.');
-	choices.push((items) => { assert.ok(!items.some((item) => item.command === 'movePage')); return undefined; });
-	await commands.get('nornaEditor.pageActions')(overview);
+	assert.equal(commands.has('nornaEditor.pageActions'), false);
 	assert.match(provider.getTreeItem(guide).description, /FROM \/guide\//);
 	assert.equal(provider.getTreeItem(guide).contextValue, 'nornaMoveSource');
 	assert.equal(provider.getTreeItem(guide).iconPath.color.id, 'notificationsInfoIcon.foreground');
@@ -552,7 +550,7 @@ try {
 	const damagedHome = (await provider.getChildren()).find((node) => node.isHome);
 	assert.equal(damagedHome.kind, 'incomplete');
 	assert.equal(damagedHome.themeHelp, undefined, 'A repaired/changed node must not retain a previous page theme summary.');
-	assert.equal(provider.getTreeItem(damagedHome).contextValue, 'nornaIncomplete');
+	assert.match(provider.getTreeItem(damagedHome).contextValue, /^nornaIncomplete;/);
 	assert.equal(provider.getTreeItem(damagedHome).command.command, 'nornaEditor.addToPage');
 	choices.push((items) => { assert.ok(items.some((item) => item.filename === homePath)); assert.ok(items.every((item) => item.command === 'createSourceFile')); return undefined; });
 	await commands.get('nornaEditor.addToPage')(damagedHome);

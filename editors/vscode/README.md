@@ -70,27 +70,40 @@ until the theme is repaired. Removing an optional theme previews the inherited
 tree theme and preset that resume; page-only overrides and independent presets
 farther down the tree keep their respective scopes.
 
-A page's **+** offers child-page creation, image import and missing supported
-source files. It works without `pages/` or `images/`; the chosen operation
-creates the directory when needed. The settings folder's **+** also exposes
-missing site files.
-The tree updates when images are added or removed, including changes made
-outside the extension. **Norna: Refresh Site Tree** remains available in the
-view menu and Command Palette if a filesystem notification is missed or the
-site's engine was updated.
-Creation previews the target and effect, uses a valid initial setting and never
-overwrites a file. Incomplete directories remain visible with source-repair
-choices. Errors and warnings supplement type icons; unused author files are
-informational, while valid static public files remain recognized resources.
-Site configuration problems point to the affected configuration file. Its
-Add action remains available when homepage content is missing; an unreadable
-site or root page directory remains reported in Problems.
+Right-click a row to add, change or delete its contents. Use the native
+keyboard context-menu command (Shift+F10) if preferred. There are no permanent
+per-row **+** or **…** buttons. The first visible Site Tree explains this once;
+**Site Tree Help** in the view menu repeats it.
 
-Each existing `pages/` also offers **Norna: Add Page…**. Page actions remain in
-**…**, the context menu and Command Palette, including information, addresses,
-source opening and removal. Active `content.md` reveals its owning page;
-resource files retain their own selection.
-**Move Page…** is available from a page's **…** and context menu. It keeps you
+| Row | Context actions |
+| --- | --- |
+| Page | Add, Rename, Properties, Move, Copy Link, References, Delete |
+| Homepage | Page actions except Move and Delete |
+| `pages/` | Add Page, Delete |
+| `images/` | Add Images, Delete |
+| Image | Insert Image in Page, Rename, Replace, References, Delete |
+| `site-config/` | Add missing supported configuration |
+| Optional configuration file | Delete |
+| `public/` | New File, Add Files, New Folder, Delete |
+| Public subfolder | Public-folder actions plus Rename and Move |
+| Public file | Rename, Replace, Move, Copy Link, References, Delete |
+
+**Add** on a page creates a child page, imports images, or creates a missing
+page/branch theme. Missing `pages/` and `images/` are created by the operation.
+A required file cannot be deleted separately. Fixed folder and configuration
+filenames cannot be renamed. Left-click or Enter opens an existing page/file;
+Open is not duplicated in its context menu.
+
+The view menu offers **Add Public Files…**, including when `public/` is absent,
+and **Add Site Configuration…** for missing site files. These actions work
+without a valid homepage. A damaged page retains its source-repair choices.
+Errors and warnings supplement type icons and point to the affected files.
+Changes made outside the extension normally refresh the tree; **Norna: Refresh
+Site Tree** remains in the view menu and Command Palette.
+
+**Rename…** on a page changes its H1 and title, preserving its URL. **Properties…**
+shows the complete published address and edits the other page metadata.
+**Move…** in the page's context menu reorders it or changes its parent. It keeps you
 in Site Tree: expand and scroll the familiar tree, then right-click a
 destination page to place the moving page before, after, first or last under
 it. Clicking a page still opens its `content.md`. The source page remains in
@@ -116,7 +129,7 @@ count on ancestor rows, even when the affected page is collapsed. Save affected
 edits first; move errors list the files that still need saving. VS Code Undo
 does not reverse the whole move; Norna attempts to restore files after a
 handled failure and reports any paths that still need inspection.
-With a compatible engine, creation and Page Information open a combined form.
+With a compatible engine, creation and Properties open a combined form.
 Existing information is prefilled; empty inputs have example placeholders.
 Additional addresses start with a **+** button and no empty row. Each added
 row has a remove button. Saved alias removal retains incoming-link review.
@@ -135,10 +148,14 @@ inserted into one editable image block at the end of its content, with
 optional alt text and caption.
 The editable filename determines whether the import creates a new image or
 replaces an existing one; replacements are clearly previewed and confirmed
-together. **Insert Image** on an existing image opens one form with a large,
+together. **Insert Image in Page…** inserts the image into its owning page,
+whose title is shown in the form. It opens one form with a large,
 expandable preview, decorative choice, alternative text and caption. Its
 current filename is shown below the image;
-renaming the stored file is a separate future Site Tree action.
+use **Rename…** on the image row to rename its file and update known image-block
+references. The extension preserves the extension and refuses collisions or
+unresolved references. Text edits retain existing unsaved work and remain
+unsaved until you save them. Editor Undo does not reverse the complete rename.
 Image actions also replace and remove images after showing managed-image
 references. Page
 removal includes owned files and descendants; Home is protected. Removal and
@@ -147,15 +164,15 @@ rewrite references. See the
 [image workflow](https://janga.github.io/norna/reference/workflows/editor/#add-and-use-page-images)
 for cancellation, recovery and current limits.
 
-Extension 0.5.0 adds **Addresses and links…** to page actions. Copy a public
+Use **Norna: Addresses and Links…** from the Command Palette for additional address operations. Copy a public
 address or internal link, change a page's final URL segment with a preview,
 manage redirect addresses, and open passages linking to a page. Address changes
 within the same parent preserve ordering, update internal links and keep old
 page addresses as redirects. Additional-address edits stay in the editor
 buffer for normal Save and Undo.
 
-Optional themes, shared content and public files have **Move to Trash…** in
-their ellipsis/context menu. Confirmations explain inherited settings or known
+Optional themes, shared content and public files have **Delete…** in
+their context menu. Confirmations explain inherited settings or known
 page links; page removal checks links into the complete removed branch from
 pages that remain. **Show links** opens the source list and cancels removal.
 Checks include unsaved page content and report incomplete analysis. Required
@@ -163,7 +180,23 @@ site configuration and the homepage are protected. These actions need the
 engine's corresponding removal/address capabilities. See
 [addresses and removal](https://janga.github.io/norna/reference/workflows/editor/#inspect-and-change-addresses).
 
-Direct page opening and the hidden content row require extension 0.6.0.
+Public files and subfolders can be created, imported, renamed and moved within
+`public/`. Public-file replacement keeps the address and sends the original to
+Trash. Renaming or moving updates known page-content links, including dirty
+buffers; configuration, raw HTML and external references are not rewritten.
+Preflight checks prevent overwriting and conflicts with generated paths, page
+addresses and conventional site logos. Warnings explain changes to automatic
+logo/icon discovery. **Copy Link** copies the full published address.
+
+Deleting a nonempty optional folder reviews its pages, files and incoming
+references before sending it to Trash. Invalid or linked filesystem entries
+that cannot be checked safely require repair in Explorer first. Resource
+rename restores the original path if its text update fails; a failed recovery
+reports both paths. Save edited references before publishing.
+
+The context action model requires extension 0.10.0 and the engine's optional
+`siteResourceActionsApiVersion: 1`. An older engine retains its supported
+commands without exposing unsupported resource operations. Direct page opening and the hidden content row require extension 0.6.0.
 Missing-file creation, repair and expanded file diagnostics also require the
 engine's site-tree editing capability. The single-site selection requires extension
 0.3.1 or later. The file view

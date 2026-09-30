@@ -98,18 +98,18 @@ numbers stay in the filesystem but do not clutter the displayed title.
 For example, a homepage titled **Norna** and a child titled **Guide** appear as:
 
 ```text
-site-config/                           +
+site-config/
   settings.yaml
   shared-content.yaml
 public/
   robots.txt
   icon.ico
-Norna  Homepage                         +  …
+Norna  Homepage
   images/
   tree-theme.yaml
   page-theme.yaml
   pages/
-    Guide                              +  …
+    Guide
       images/
       tree-theme.yaml
 ```
@@ -153,28 +153,38 @@ Site source folders can have a name other than `site`. Pages omitted from
 generated navigation remain in the authoring tree, marked **unlisted**; they
 are still published. That mark also applies to descendants of an unlisted page.
 
-To create a page in an existing `pages/` folder, select its **Norna: Add Page…**
-plus button or the same action in its context menu. That folder is already
-the destination. Enter a title and URL segment, review the resulting address
-and directory, then select **Create page**. The new page appears last among
-its siblings and opens for editing.
+Right-click a row to open its context menu. Actions are grouped as Add,
+editing, organization, links and Delete. Only actions for that element appear.
+There are no permanent **+** or **…** row buttons. Use Shift+F10 for the native
+keyboard context menu. **Site Tree Help** in the view menu repeats the short
+introduction shown the first time.
 
-To create a child, select its parent page, use the **+** button beside its
-title (**Norna: Add…**) and choose **Add child page…**. This also works when
-`pages/` does not yet exist: the extension creates it with the first child.
-The parent is already selected in the creation form.
-The same menu offers **Import image…** on content pages and missing source
-files permitted at that location, including `tree-theme.yaml`. The **+** in the tree
-toolbar acts on the selected page or the owner of a selected resource.
+| Row | Available actions |
+| --- | --- |
+| Page | Add, Rename, Properties, Move, Copy Link, References, Delete |
+| Homepage | Page actions except Move and Delete |
+| `pages/` | Add Page, Delete |
+| `images/` | Add Images, Delete |
+| Image | Insert Image in Page, Rename, Replace, References, Delete |
+| `site-config/` | Add missing supported configuration files |
+| Optional configuration file | Delete |
+| `public/` | New File, Add Files, New Folder, Delete |
+| Public subfolder | Public-folder actions plus Rename and Move |
+| Public file | Rename, Replace, Move, Copy Link, References, Delete |
 
-The **…** beside a page opens **Page Actions**: edit page information, open
-the source, work with addresses and links, or remove the page. The Command
-Palette and context menu remain available. **Norna: New Page…** additionally
-offers creation beside a page or at the site root. Browsing alone creates no folders.
-Choosing Home as the parent creates a child in the site root's `pages/` folder.
-Select **Cancel** or close the form before creation to leave files unchanged.
-These actions use the same rules as
-[`page:add`](/reference/commands/create/).
+To create a child page, right-click its parent and choose **Add → Add Page…**.
+Alternatively, right-click its `pages/` folder and choose **Add Page…**. The
+parent is already selected. Enter the title and URL segment, review the address
+and directory, then choose **Create page**. The page appears last among its
+siblings and opens for editing. The first child creates `pages/` automatically.
+
+The page's **Add** submenu also offers **Add Images…**, **Page Theme** and
+**Branch Theme**. Existing singleton files are omitted. The operation creates
+missing resource folders when needed; browsing does not create them.
+**Norna: New Page…** remains in the Command Palette for creation beside the
+selected page or at the site root. Choosing the homepage as parent creates a
+child in `root/pages/`. Cancel before creation to leave files unchanged.
+These actions use the same rules as [`page:add`](/reference/commands/create/).
 
 Creation opens a form with the fields together. Enter the title and optional
 description, review the destination, and choose whether to show the page in
@@ -182,12 +192,12 @@ navigation. The URL segment follows the title until you edit that segment.
 The form previews the internal address and source path before **Create page**.
 Errors leave your entries in place so you can correct them.
 
-Choose **Norna: Page Information…** to open the same form with the page's
+Choose **Properties…** to open the same form with the page's
 current title, description, navigation choice, child-list choice and additional addresses filled
 in. Empty fields show example
-text; examples are not saved values. Leave a description empty to remove it.
+text; examples are not saved values. The current published address is shown in full. Leave a description empty to remove it.
 Changing an existing URL segment remains a separate **Addresses and links…**
-action in **Page Actions**, because it can move files and affect other pages.
+command in the Command Palette, because it can move files and affect other pages.
 
 The **Additional addresses (aliases)** list starts with only **+** when there
 are no aliases. Use **+** to add a row and **−** to remove one. Enter paths such
@@ -204,7 +214,7 @@ normally when ready. If the source changes while the information dialog is
 open, reopen the dialog before applying the edit. Repair invalid YAML or a
 missing/duplicate H1 in the source; other valid tree nodes remain usable.
 YAML aliases, anchors or tagged values that cannot be edited directly through
-Page Information need a source edit.
+Properties need a source edit.
 
 The `site-config/` layout requires extension version 0.3.2 or later and an
 engine build supporting that source format. The extension also recognizes
@@ -215,6 +225,9 @@ with page-file support. The Add menu and earlier grouping-row behavior
 originally arrived in extension 0.4.1. Direct page opening and the hidden
 content row require extension 0.6.0. Missing-file creation, repair and the
 expanded file diagnostics also need the corresponding engine capability.
+The context-menu model requires extension 0.10.0 and an engine exposing
+`siteResourceActionsApiVersion: 1`. Earlier engines retain their supported
+actions without offering unsupported file operations.
 The combined creation/information form needs an extension build containing
 the form and an engine exposing `sitePageFormApiVersion: 1`; older engines
 retain the separate input dialogs.
@@ -229,16 +242,15 @@ IntelliSense remains available. Run **Norna: Refresh Site Tree** after an engine
 update or to rediscover sites. External file changes normally refresh the
 tree automatically.
 
-Use **Page Information** on pages. Other files open for normal
-editing and do not receive page-metadata actions. Moving pages
-to another parent, reordering pages and inserting page links remain outside
-this tree's scope. Generated `.norna` output and symbolic links are not listed;
+Use **Properties…** on pages. Other files open for normal
+editing and do not receive page-metadata actions. **Move…** handles ordering
+and changes of parent. Inserting page links remains outside this tree's scope. Generated `.norna` output and symbolic links are not listed;
 use Explorer for files outside the tree.
 
 ### Add or repair a source file
 
-Select the owning page's **+** and choose the missing file. The `site-config/`
-folder's **+** also offers missing site configuration. Existing singleton files
+Right-click the owning page and choose the missing file under **Add**. The
+`site-config/` folder's **Add** submenu offers missing site configuration. Existing singleton files
 are omitted; image import and child-page creation remain available when other
 images or children already exist.
 
@@ -253,7 +265,9 @@ If a page directory lacks `content.md`, its row opens the Add menu. Create page
 content or restore the file.
 The homepage requires `content.md`. A missing required file does not remove the
 active site or its remaining pages from the tree.
-The settings folder's **+** still works without homepage content. Site
+The settings folder's **Add** still works without homepage content. The view
+menu's **Add Site Configuration…** also repairs missing site files, including
+when their folder is absent. Site
 configuration errors point to the affected configuration file; open
 **View > Problems** if the site or root page directory cannot be read.
 
@@ -264,7 +278,7 @@ editor diagnostics include unsaved edits; they do not replace `norna check`.
 
 | Indication | Meaning and next step |
 | --- | --- |
-| Missing required file | Use the owner's **+** to create it, or restore it from version control. |
+| Missing required file | Use the owner's **Add** menu to create it, or restore it from version control. |
 | Misplaced source file | The file is visible at its actual location; hover explains where it belongs. Move it through Explorer. |
 | Invalid content or conflicting sources | Open the file to correct it. A page directory must contain `content.md`; `category.yaml` is no longer supported. |
 | **Not used by Norna** | An extra author file, such as notes. It is not automatically an error. Valid files in `public/` remain published resources. |
@@ -275,8 +289,8 @@ or removing the offending file clears its tree indication after refresh.
 
 ### Inspect and change addresses
 
-To change where a page appears in **Site Tree**, select **Move Page…** from its
-**…** or context menu. Right-click another page to place the moving page
+To change where a page appears in **Site Tree**, select **Move…** from its
+context menu. Right-click another page to place the moving page
 before, after, first or last under it. The source page stays in place, marked
 **FROM** with its current address. A temporary **Preview:** row at the destination
 is marked **TO** with its proposed address. Both rows use an accent-colored icon.
@@ -296,7 +310,8 @@ affected edits first. Editor Undo does not reverse
 the whole move; on a handled failure Norna attempts to restore the original
 files and reports any paths that still need inspection.
 
-Select **Addresses and links…** from a page's **…** menu. **Web address** copies
+Select the page, then run **Norna: Addresses and Links…** from the Command
+Palette. The row's **Copy Link** directly copies the full published address. **Web address** copies
 the full public address for sharing. **Internal link** copies the path to use
 in `content.md`, without the site's deployment prefix. For example, a page
 published at `https://example.com/manual/guide/` uses `/guide/` in internal
@@ -334,16 +349,41 @@ prose and support normal Save and Undo. Removing an address requires
 confirmation and shows known links to it. If relevant content changes while a
 dialog is open, repeat the action to review the current result.
 
-**Incoming links…** lists authored links to the selected page.
+**References…** in the context menu lists authored links to the selected page.
 The list includes source page titles, file locations, line numbers and source
 passages; select a result to open that passage. Checks include unsaved page
 content, Markdown links and Norna block links, including aliases and anchors.
 External URLs and raw HTML are not checked. If some sources cannot be checked,
 the list and removal confirmations say so instead of reporting a clean result.
 
+### Manage public files
+
+Right-click `public/` to create a text file with **New File…**, copy files from
+your computer with **Add Files…**, or create a folder with **New Folder…**.
+If `public/` does not exist, use **Add Public Files…** from the Site Tree view
+menu. These actions work even when homepage content needs repair.
+
+**Rename…** and **Move…** work on public files and author-named subfolders.
+A move chooses an existing destination inside `public/`. The `public/` folder
+itself has a fixed name and location. **Replace…** keeps a file's address and
+sends the original to Trash. Import and rename never silently overwrite files.
+The extension checks generated paths, page addresses and logo conventions.
+
+Renaming or moving updates known Markdown and Norna-block links in page
+content, including unsaved text. Configuration, raw HTML and external links
+are not rewritten. The confirmation describes this boundary and any effect
+on automatic logo/icon discovery. Updated page buffers remain unsaved; save
+them before publishing. Editor Undo does not reverse the whole resource
+operation. If reference editing fails, the extension restores the original
+resource name or reports the paths needing recovery.
+
+**Copy Link** copies the complete published address. **References…** opens
+pages that link to the resource. Static site files belong here; page-owned
+attachments are not yet supported as a separate resource type.
+
 ### Remove an optional file
 
-Use **Move to Trash…** in the file's **…** menu. This is available for local
+Use **Delete…** in the file's context menu. This is available for local
 `page-theme.yaml`, descendant `tree-theme.yaml`, `site-config/shared-content.yaml`
 and files in `public/`. Required `root/tree-theme.yaml` cannot be removed.
 Images retain their [image actions](#add-and-use-page-images).
@@ -366,7 +406,7 @@ operating system's Trash and can be restored there.
 
 ### Remove a page
 
-Choose **Move page to Trash…** from the page's **…** menu. Review the source
+Choose **Delete…** from the page's context menu. Review the source
 directory and the number of page/category entries and files, then confirm.
 The whole page directory is removed, including its images, configuration and
 descendants. The confirmation counts authored internal links from pages that
@@ -377,6 +417,11 @@ Links from other pages are not rewritten. The required homepage cannot be remove
 Choose **Show links** to open the source list before deciding. This cancels
 the removal; run the action again after reviewing or editing those links.
 You may still confirm removal when known incoming links exist.
+
+Optional `pages/`, `images/` and public folders also offer **Delete…** when
+nonempty. The confirmation summarizes affected pages/files and incoming
+references. Required site folders and the homepage are protected. Unexpected
+entries that cannot be checked safely must be repaired in Explorer first.
 
 Save or undo unsaved edits in the affected files first. If files change during
 confirmation, the action stops so you can review them again. Files go to the
@@ -389,7 +434,8 @@ the same name, rename the restored folder to its original name.
 
 ## Add and use page images
 
-Select a page, use its **+** menu and choose **Import images…**. No `images/`
+Right-click a page and choose **Add → Add Images…**, or right-click its
+`images/` folder and choose **Add Images…**. No `images/`
 folder is required before starting. Choose one or several JPG, JPEG, PNG or
 SVG files. The VS Code extension shows a preview for each file; select one to
 view it larger before deciding. Its default action is **Import**; select
@@ -417,13 +463,14 @@ at the end of the owning `content.md`. That edit remains unsaved and supports
 ordinary editor Undo. Edit the block to change its position. Cancelling the
 form before import starts changes nothing.
 
-An existing image's **…** menu offers insertion, replacement and removal.
-**Insert image…** opens one form with a large preview that you can expand, the current filename,
+An existing image's context menu offers insertion, rename, replacement, references and removal.
+**Insert Image in Page…** inserts the image into the page that owns it, whose
+title is shown in the form. The form contains a large preview that you can expand, the current filename,
 decorative choice, optional alternative text and caption. Marking an image
 decorative hides the alternative-text field. The action adds an `image-stack`
 at the end of the owning page. The page edit stays unsaved until you save
 `content.md`.
-**Replace image…** keeps the filename and references, copies a replacement
+**Replace…** keeps the filename and references, copies a replacement
 of the same format and sends the previous file to Trash. Before replacement
 or removal, the confirmation shows managed-image references, including
 unsaved pages. Local images take precedence over equal filenames elsewhere.
@@ -441,6 +488,20 @@ The combined image forms require a VS Code extension build and Norna engine
 that include the batch-image API. Finder drag/drop, clipboard
 import and insertion into an existing block or at an arbitrary cursor position
 are not yet provided by these tree actions.
+
+### Rename an image
+
+Right-click the image and choose **Rename…**. Keep its extension: this renames
+a file and does not convert its format. The confirmation reviews known image
+references. Name collisions or unresolved references stop the operation.
+
+The extension updates references in Norna image and card blocks while retaining
+existing unsaved page edits. Ordinary Markdown images, raw HTML and external
+references are not checked. Save the edited pages when ready. Editor Undo
+undoes text edits, not the complete file rename. If reference editing fails,
+the extension attempts to restore the original filename and reports any
+remaining recovery work.
+
 
 ## Suggestions and diagnostics
 

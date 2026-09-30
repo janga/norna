@@ -438,3 +438,48 @@ Review saved-alias removal with incoming links. A native interaction test of
 the new webview and the normal save/reopen cycle remains outstanding; the
 adapter checks above do not replace it. The native Site Tree suite has been adapted to use the webview fields and
 syntax-checked, but has not been executed against VS Code in this change.
+
+## Site Tree Context Actions (BL-154)
+
+Use the Default profile and the disposable `.local/bl-154-review/site` fixture.
+Install `editors/vscode/norna-vscode.vsix` through **Extensions: Install from
+VSIX…**, then **Developer: Reload Window**. The expected extension is 0.10.0.
+
+| ID | Direct review |
+| --- | --- |
+| CT-01 | Right-click homepage, page, required theme, optional theme, pages, images, image, public and a public child. Only applicable actions appear, grouped Add/edit/organize/links/Delete. There are no per-row Add or ellipsis buttons. |
+| CT-02 | Open the same menus with the keyboard. Page/file activation opens its source; folder labels select and chevrons expand independently. |
+| CT-03 | On Empty Page, Add Page and Add Images work without pre-existing folders. Cancelling creates nothing. Present singleton files disappear from Add. |
+| CT-04 | Rename Guide; H1 and label change, URL does not. Undo retains earlier dirty prose. Rename again, save, close and reopen the page. Properties displays the complete published address. |
+| CT-05 | Rename example.png with a dirty referring page. Review the effect; known block references update without losing dirty text. Save/reopen. Undo affects text only; do not claim whole-operation Undo. |
+| CT-06 | In public, create a text file and folder, import files, replace a file, rename a file/folder and move to another public folder. Check copied URL and source navigation from References. Existing files never overwrite without the Replace confirmation. |
+| CT-07 | Cancel then confirm Delete on an optional nonempty folder. The affected pages/files and incoming references are summarized. Dirty affected files block deletion. Restore with Finder Trash; required files and homepage never offer Delete. |
+| CT-08 | Start a page move. Ordinary mutations are unavailable, the source/preview controls remain usable and a second move cannot start. Cancel restores the ordinary menus. |
+| CT-09 | Remove the disposable homepage source and site settings externally. Site configuration/public actions remain available and repair works. |
+
+Automated evidence on 2026-09-30: the engine resource tests and extension
+resource-adapter tests cover local image precedence, CRLF/source preservation,
+dirty overlays, filename/route/convention collisions, explicit site ownership,
+symlinks, cancellation, stale plans, nonempty removal, failed rename/text edits
+and failed recovery. The existing editor-language/adapter contracts, public
+sync tests and documentation checks passed.
+
+Native review on 2026-09-30 used extension 0.10.0 in the Default profile:
+
+- Inspected homepage Add, image, public and public-subfolder menus using
+  Shift+F10 and keyboard selection; confirmed no per-row Add/ellipsis buttons.
+- Renamed the homepage with earlier dirty prose. Undo restored its title while
+  retaining that prose. Redo, save, close and reopen retained the new title.
+- Renamed example.png to renamed.png with a dirty referring Guide page.
+  The image editor followed its new path; the reference changed and earlier
+  dirty prose survived. Real Undo restored the reference text only. Redo,
+  save, close and reopen retained the new reference and prose.
+- Created public/review.txt from New File; it appeared in Site Tree and opened.
+- Inspected Delete on the nonempty public/notes folder: one file and one
+  incoming link were reported. Cancel preserved the folder and its contents.
+
+The remaining native matrix (all repair/move/optional-file states, public
+import/replace/move, and confirmed deletion with Finder restoration) has not
+been rerun. Automated checks cover those mutation and capability rules; they
+do not replace practical verification. The owner took responsibility for further
+manual review and authorized committing this implementation on 2026-09-30.

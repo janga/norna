@@ -48,13 +48,14 @@ function createPageForm({ vscode, context, service, kind, selected, target, insi
 	});
 }
 
-function editPageForm({ vscode, context, service, node, document, info, chooseNode, documentSources, updateDocument }) {
+async function editPageForm({ vscode, context, service, node, document, info, chooseNode, documentSources, updateDocument }) {
 	const original = document.getText(), version = document.version;
 	const unchanged = async () => {
 		await chooseNode(node);
 		if (document.isClosed || document.version !== version || document.getText() !== original) throw new Error('The source changed while this form was open. Close it and reopen Page Information to load the current values.');
 	};
-	return openPageForm(vscode, context, { ...info, kind: node.kind, isHome: node.isHome, url: node.url, edit: true }, {
+	const addresses = service.siteAddressApiVersion === 1 ? await service.getEditorPageAddresses({ siteRoot: node.siteRoot, sourcePath: node.sourcePath, sources: documentSources() }) : null;
+	return openPageForm(vscode, context, { ...info, kind: node.kind, isHome: node.isHome, url: addresses?.webAddress ?? node.url, edit: true }, {
 		prepare: async raw => {
 			const values = validate(raw, node.kind, node.isHome);
 			await unchanged();

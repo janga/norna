@@ -20,7 +20,10 @@ const context={subscriptions:[]};
 const node={kind:'page',isHome:true,sourcePath:filename,siteRoot:root,url:'/'};
 const open=async()=>{
  const info=await service.getSiteNodeInformation({kind:'page',isHome:true,sourcePath:filename,source:text});
+ receive=undefined;
  const promise=editPageForm({vscode,context,service,node,document,info,chooseNode:async()=>node,documentSources:()=>new Map([[filename,text]]),updateDocument:async()=>{}});
+ for(let i=0;!receive&&i<200;i++) await new Promise(resolve=>setTimeout(resolve,5));
+ assert.ok(receive,'Form did not open after address lookup');
  return {promise,info};
 };
 const send=async(values,type='submit')=>{lastReply=undefined;await receive({type,revision:1,values});};

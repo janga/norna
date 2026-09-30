@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.10.0
+
+- Group Site Tree editing in native context menus, with actions for each row
+  type and no permanent row Add/ellipsis buttons.
+- Rename page titles without changing URLs; show full addresses in Properties.
+- Rename managed images and public resources with known reference updates.
+- Create, import, replace and move public files; delete optional nonempty
+  folders after reviewing their contents and incoming references.
+- Keep required files protected and site-level repair available without a
+  valid homepage. New operations require the selected engine’s resource API.
+
 ## 0.9.2
 
 - Move and reorder pages from the native Site Tree with a placement preview.

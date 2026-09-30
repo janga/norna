@@ -490,6 +490,28 @@ VS Code directory-rename callback so open editors follow the move. Alias edits
 remain source ranges in the editor buffer. Keep these file/link operations
 separate from completion-provider tests.
 
+The context-menu model negotiates `siteResourceActionsApiVersion: 1`. Physical
+rows expose supported action names and missing singleton source files; the
+extension maps these capabilities to one native menu hierarchy. Future
+page-owned resources can add actions without pretending to be images.
+`editor-resource-actions.mjs` plans public-file creation, managed-image/public
+rename and move, optional-folder removal and resource references. It uses the
+shared link graph, source/removal policies and the build's reserved public
+paths. Plans honor explicit `siteRoot` and dirty-source overlays.
+
+Resource rename preflights the source, destination and references. The adapter
+renames through a VS Code resource edit and applies page changes as a separate,
+all-or-nothing text edit. Those page buffers stay dirty. If text editing fails,
+the adapter restores the old resource path or names the recovery paths.
+Do not describe editor Undo as reversing the whole filesystem operation.
+Folder removal composes constituent removal policies and uses Trash. Public
+replacement stages the new bytes before moving the original to Trash.
+
+Run `scripts/test-editor-resource-actions.mjs` for engine rules and
+`editors/vscode/test/site-resource-actions-contract.mjs` for cancellation,
+dirty buffers, stale plans and injected application/recovery failures. Native
+menu, keyboard, Undo and save/reopen review remains a separate acceptance step.
+
 ### First Marketplace Release
 
 The publisher ID in the extension manifest is `janga`. Before the first public

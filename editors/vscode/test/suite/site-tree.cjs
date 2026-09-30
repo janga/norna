@@ -63,10 +63,12 @@ async function runSiteTree({ openDocument, waitFor }) {
 			}, Boolean, 'The page form did not open.');
 			return result;
 		};
-		const contextAction = async (title, action) => {
+		const contextAction = async (title, action, direct = false) => {
+			const targetRow = typeof title === 'string' ? row(title) : title;
 			await window.bringToFront();
 			if (vscode.workspace.getConfiguration('window').inspect('menuStyle')?.defaultValue !== undefined) {
-				await row(title).click({ button: 'right' });
+				await targetRow.click({ button: 'right' });
+				if (action === 'Add Page' && !direct) { await window.getByRole('menuitem', { name: /^Add$/ }).hover(); }
 				const menuItem = window.getByRole('menuitem', { name: new RegExp(action) });
 				const position = Number(await menuItem.getAttribute('aria-posinset'));
 				await window.keyboard.press('Home');
@@ -74,11 +76,12 @@ async function runSiteTree({ openDocument, waitFor }) {
 				await window.keyboard.press('Enter');
 				await menuItem.waitFor({ state: 'hidden' });
 			} else {
-				await row(title).getByText(title, { exact: true }).click();
-				await waitFor(() => row(title).getAttribute('aria-selected'), (value) => value === 'true', 'The command target was not selected.');
+				await targetRow.click();
+				await waitFor(() => targetRow.getAttribute('aria-selected'), (value) => value === 'true', 'The command target was not selected.');
 				await vscode.commands.executeCommand('workbench.action.showCommands');
-				await quick.locator('.quick-input-box input').fill(`>Norna: ${action}`);
-				await quick.locator('.quick-input-list .monaco-list-row').filter({ hasText: `Norna: ${action}` }).first().click();
+				const paletteAction = action === 'Add Page' ? 'New Page' : action;
+				await quick.locator('.quick-input-box input').fill(`>Norna: ${paletteAction}`);
+				await quick.locator('.quick-input-list .monaco-list-row').filter({ hasText: `Norna: ${paletteAction}` }).first().click();
 			}
 			await form();
 		};
@@ -147,7 +150,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await vscode.window.activeTextEditor.edit((builder) => builder.insert(guide.positionAt(guide.getText().length), '\nUnsaved sentence.\n'));
 		const dirtyOriginal = guide.getText();
 		const information = async (title, field, value) => {
-			await contextAction(title, 'Page Information');
+			await contextAction(title, 'Properties');
 			const fields = await form();
 			if (field === 'Navigation') await fields.locator('#listed').setChecked(value !== 'Unlisted');
 			else await fields.locator(field === 'Description' ? '#description' : '#title').fill(value);
@@ -203,7 +206,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await waitFor(() => row('Repaired page').count(), (count) => count === 1, 'The repaired fixture did not refresh.');
 
 		const create = async ({ selected, kind, placement, title, slug, cancel = false }) => {
-			await contextAction(selected, kind === 'page' ? 'New Page' : 'New Category');
+			await contextAction(selected, kind === 'page' ? 'Add Page' : 'New Category');
 			const fields = await form();
 			if (placement) await fields.locator('#parentPath').selectOption({ label: placement });
 			await fields.locator('#title').fill(title);
@@ -219,23 +222,22 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await create({ selected: 'Renamed Topics', kind: 'page', placement: 'Inside “Renamed Topics”', title: 'Created Child', slug: 'created-child' });
 		await activeIs('tree-content/root/pages/020-topics/pages/020-created-child/content.md');
 		assert.equal(vscode.window.activeTextEditor.document.getText(), '# Created Child\n\n## Introduction\n\nStart writing here.\n');
-		await create({ selected: 'Created Child', kind: 'page', placement: 'Beside “Created Child”', title: 'Created Sibling', slug: 'created-sibling' });
+		await create({ selected: 'Renamed Topics', kind: 'page', placement: 'Inside “Renamed Topics”', title: 'Created Sibling', slug: 'created-sibling' });
 		await activeIs('tree-content/root/pages/020-topics/pages/030-created-sibling/content.md');
-		await create({ selected: 'Created Sibling', kind: 'page', placement: 'At site root', title: 'New Overview', slug: 'new-overview' });
+		await create({ selected: 'Tree Home', kind: 'page', placement: 'Inside “Tree Home”', title: 'New Overview', slug: 'new-overview' });
 		await activeIs('tree-content/root/pages/050-new-overview/content.md');
 		assert.match(vscode.window.activeTextEditor.document.getText(), /^# New Overview/);
 		passed('Create child, sibling and root pages through tree actions');
 		await openDocument('tree-content/root/pages/020-topics/pages/010-child/content.md');
 		const pagesRow = sourceRow('tree-content/root/pages/020-topics/pages');
-		await pagesRow.hover();
-		await pagesRow.getByRole('button', { name: 'Norna: Add Page…', exact: true }).click();
+		await contextAction(pagesRow, 'Add Page', true);
 		const directForm = await form();
 		await directForm.locator('#title').fill('Added Directly');
 		await directForm.locator('#slug').fill('added-directly');
 		await waitFor(() => directForm.locator('#preview').innerText(), text => text.includes('/topics/added-directly/'), 'Missing direct-child preview.');
 		await directForm.getByRole('button', { name: 'Create page', exact: true }).click();
 		await activeIs('tree-content/root/pages/020-topics/pages/040-added-directly/content.md');
-		passed('Add Page inline action selects the physical pages folder without a location prompt');
+		passed('Add Page context action selects the physical pages folder without a location prompt');
 		await create({ selected: 'Added Directly', kind: 'page', placement: 'Inside “Added Directly”', title: 'First Nested Page', slug: 'first-nested-page' });
 		await activeIs('tree-content/root/pages/020-topics/pages/040-added-directly/pages/010-first-nested-page/content.md');
 		await waitFor(() => sourceRow('tree-content/root/pages/020-topics/pages/040-added-directly/pages/010-first-nested-page/content.md').getAttribute('aria-selected'), (value) => value === 'true', 'The first child source was not revealed under its new pages folder.');
@@ -244,20 +246,20 @@ async function runSiteTree({ openDocument, waitFor }) {
 
 		await openDocument('tree-content/root/content.md');
 		await waitFor(() => sourceRow('tree-content/root/content.md').getAttribute('aria-selected'), (value) => value === 'true', 'Home source was not revealed before its actions were tested.');
-		await contextAction('Tree Home', 'New Page');
+		await contextAction('Tree Home', 'Add Page');
 		const homeCreation = await form();
 		assert.match(await homeCreation.locator('#parentPath').innerText(), /Inside “Tree Home”/);
 		await homeCreation.getByRole('button', { name: 'Cancel', exact: true }).click();
-		await contextAction('Tree Home', 'Page Information');
+		await contextAction('Tree Home', 'Properties');
 		const homeInformation = await form();
 		assert.equal(await homeInformation.locator('#listed').isDisabled(), true);
 		assert.equal(await homeInformation.locator('#listed').isChecked(), true);
 		await homeInformation.getByRole('button', { name: 'Cancel', exact: true }).click();
 		passed('Home offers child creation and remains listed');
 
-		await contextAction('Renamed Guide', 'New Page');
+		await contextAction('Tree Home', 'Add Page');
 		const duplicateForm = await form();
-		await duplicateForm.locator('#parentPath').selectOption({ label: 'Beside “Renamed Guide”' });
+		await duplicateForm.locator('#parentPath').selectOption({ label: 'Inside “Tree Home”' });
 		await duplicateForm.locator('#title').fill('Duplicate');
 		await duplicateForm.locator('#slug').fill('guide');
 		await waitFor(() => duplicateForm.locator('#form-error').innerText(), text => text.includes('A sibling with that slug already exists'), 'A colliding URL was not rejected.');
@@ -310,7 +312,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 			await window.screenshot({ path: path.join(root, '..', `site-tree-${vscode.version}-${appearance}.png`) });
 		}
 		await window.setViewportSize({ width: 960, height: 720 });
-		await contextAction('Renamed Guide', 'Page Information');
+		await contextAction('Renamed Guide', 'Properties');
 		await window.screenshot({ path: path.join(root, '..', `site-tree-${vscode.version}-compact.png`) });
 		await (await form()).getByRole('button', { name: 'Cancel', exact: true }).click();
 		fs.writeFileSync(path.join(root, '..', `site-tree-${vscode.version}.json`), JSON.stringify({

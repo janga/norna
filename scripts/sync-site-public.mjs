@@ -1,6 +1,7 @@
 import { cp, mkdir, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import projectConfig from './lib/project-config.mjs';
+import { getReservedPublicEntries } from './lib/public-path-policy.mjs';
 import { createSitemapXml, sitemapFilename } from './lib/sitemap.mjs';
 import {
 	astroPublicDir,
@@ -30,20 +31,7 @@ const readDirectory = async (directory) => {
 };
 
 const sourceEntries = await readDirectory(sitePublicDir);
-const generatedPublicFiles = [
-	{
-		filename: sitemapFilename,
-		explanation: `Norna generates ${sitemapFilename} from the public page tree and the URL in site/site-config/settings.yaml.`,
-	},
-	{
-		filename: '404.html',
-		explanation: 'Norna generates 404.html as the site\'s localized missing-page response.',
-	},
-	...(projectConfig.search.enabled ? [{
-		filename: 'pagefind',
-		explanation: 'Norna generates pagefind/ from the rendered editorial content when search is enabled.',
-	}] : []),
-];
+const generatedPublicFiles = getReservedPublicEntries(projectConfig.search.enabled);
 for (const generatedFile of generatedPublicFiles) {
 	const conflict = sourceEntries.find(({ name }) => name.toLowerCase() === generatedFile.filename);
 	if (!conflict) continue;

@@ -10,7 +10,7 @@ function registerSiteSourceActions({ vscode, chooseNode, ownerOf, serviceFor, re
 			if (!page) throw new Error('Select the page that should own the new file.');
 			const service = await serviceFor(page.siteRoot);
 			if (service.siteTreeEditingApiVersion !== 1) throw new Error('Update the project engine to create missing source files from Site Tree.');
-			const options = { siteRoot: page.siteRoot, directory: page.directory ?? path.dirname(page.sourcePath) };
+			const options = { siteRoot: page.siteRoot, directory: page.kind === 'site' ? page.siteRoot : page.directory ?? path.dirname(page.sourcePath) };
 			const choices = await service.getEditorSourceFileChoices(options);
 			const choice = choices.find((entry) => entry.filename === filename);
 			if (!choice) throw new Error('This file already exists or is not allowed here. Open Add again.');

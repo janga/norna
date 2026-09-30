@@ -16,9 +16,41 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
+No implementation item is currently active.
+
 ## Next
 
 `Next` is the exact implementation sequence after `Now`.
+
+- ★ [`BL-155` Page Attachments](docs/design/backlog/BL-155-page-attachments.md):
+  **Ready after BL-154 VS Code Site Tree Context Actions.** Add page-owned
+  downloads/ and Markdown links through Site Tree, with the approved import
+  form and empty-folder visibility rules for attachments and images.
+- ★ [`BL-156` VS Code Local Site Preview](docs/design/backlog/BL-156-vscode-local-site-preview.md):
+  **Ready after BL-154 VS Code Site Tree Context Actions; scheduled after BL-155 Page Attachments.**
+  Open the selected site or page in the default browser, reusing its local
+  server with configured-port precedence and explicit handling of unsaved files.
+
+## Ideas
+
+Always include active ideas when presenting prioritized backlog work. These
+are priorities for discussion, not authorization to implement; unresolved
+choices still need to be settled. Explicitly deferred ideas remain deferred.
+
+- `BL-113` **Page References: Idea; needs evidence.**
+  Consider an expandable reference to one page with selected heading links and
+  automatically retrieved titles, but first try ordinary Markdown links in
+  `details` and establish whether recurring maintenance work justifies a new
+  construct; no syntax or implementation is approved.
+- `BL-116` **Authoring Guidelines: Idea; needs scope.**
+  Write practical guidance for Norna site authors, distinct from engine rules
+  and internal documentation style instructions. Include when to version
+  documentation: significant differences in instructions or behavior, not
+  every patch release or wording correction; let one documentation version
+  cover several compatible releases and keep maintained versions few.
+  Use [Docusaurus versioning guidance](https://docusaurus.io/docs/versioning#recommended-practices)
+  as a source and coordinate feature-specific advice with `BL-025` Versioned
+  Documentation; do not imply that future versioning support already exists.
 
 ## External Gate
 
@@ -103,9 +135,10 @@ The remaining track items and their current status are:
 5. [`BL-137` VS Code Image Usage And Removal Review](docs/design/backlog/BL-137-vscode-image-usage-removal-review.md):
    **Needs decision; outline.** Locate image references and explain the
    consequences of removing their source file.
-6. [`BL-152` VS Code Image Rename](docs/design/backlog/BL-152-vscode-image-rename.md):
-   **Needs decision.** Rename an existing image from its Site Tree row after
-   reviewing the effect on managed-image references.
+
+The image rename scope recorded in
+[BL-152 VS Code Image Rename](docs/design/backlog/BL-152-vscode-image-rename.md)
+is now part of BL-154 VS Code Site Tree Context Actions, not a separate queue item.
 
 ### Other Items
 
@@ -116,20 +149,6 @@ The remaining track items and their current status are:
 - [`BL-132` VS Code Site Authoring Continuation](docs/design/backlog/BL-132-vscode-site-authoring-continuation.md):
   **Needs design after `BL-131` VS Code Site Tree.** Scope later structural and
   link-authoring work independently of the files-and-images track above.
-- `BL-113` **Page References: Needs evidence; unprioritized wishlist idea.**
-  Consider an expandable reference to one page with selected heading links and
-  automatically retrieved titles, but first try ordinary Markdown links in
-  `details` and establish whether recurring maintenance work justifies a new
-  construct; no syntax or implementation is approved.
-- `BL-116` **Authoring Guidelines: Needs scope; unprioritized documentation idea.**
-  Write practical guidance for Norna site authors, distinct from engine rules
-  and internal documentation style instructions. Include when to version
-  documentation: significant differences in instructions or behavior, not
-  every patch release or wording correction; let one documentation version
-  cover several compatible releases and keep maintained versions few.
-  Use [Docusaurus versioning guidance](https://docusaurus.io/docs/versioning#recommended-practices)
-  as a source and coordinate feature-specific advice with `BL-025` Versioned
-  Documentation; do not imply that future versioning support already exists.
 - [`BL-100` Future Versioning Foundation](docs/design/backlog/BL-100-future-versioning-foundation.md):
   **Needs design.** Establish version identity, lifecycle boundaries and the
   language interaction before versioned documentation can become ready.
@@ -169,12 +188,12 @@ product brief, representative sites, migration rules, and an explicit decision
 that the expanded audience is worth the permanent complexity.
 
 - [BL-142 Page-local Files And Explicit Sharing](docs/design/backlog/BL-142-page-local-files-explicit-sharing.md):
-  **Deferred; rules approved, implementation design remains.** Use local
-  filenames for page-owned images and attachments, diagnose missing local
-  files with repair help, and require an explicit path for sharing.
+  **Remaining image/sharing work deferred; rules approved.** Basic page-owned
+  attachments now have a prioritized design in BL-155 Page Attachments;
+  shared-resource repair and changed image lookup remain outside that delivery.
 - `BL-115` **Page-owned Attachments: Deferred language/version follow-up.**
   Extend the basic file contract in
-  [BL-142 Page-local Files And Explicit Sharing](docs/design/backlog/BL-142-page-local-files-explicit-sharing.md)
+  [BL-155 Page Attachments](docs/design/backlog/BL-155-page-attachments.md)
   with shared defaults and optional language/version variants after
   `BL-023` Multilingual Sites With A Shared Page Tree and `BL-025` Versioned
   Documentation, coordinated with `BL-100` Future Versioning Foundation,

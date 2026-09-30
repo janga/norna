@@ -1,7 +1,7 @@
 import { getSiteSourcePaths } from './site-conventions.mjs';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { editorPageLocation, editorSourceDefinition } from './editor-source-files.mjs';
+import { editorPageLocation, editorSourceDefinition, getEditorSourceFileChoices } from './editor-source-files.mjs';
 import { editorFileRemovalPolicy } from './editor-file-policy.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
@@ -132,6 +132,28 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 		catch (error) {
 			issue(target ?? owner, error.code === 'ENOENT' || error.code === 'ENOTDIR'
 				? `Required ${path.relative(siteRoot, filename)} is missing. Use Add to create it.` : error.message, 'error', filename);
+		}
+	}
+
+	// Roles own actions; the adapter only maps these names to native commands.
+	// Future page-owned resources can extend this without image/file guessing.
+	const byId = new Map(items.map(item => [item.id, item]));
+	for (const item of items) {
+		const parent = byId.get(item.parentId);
+		item.actions = [];
+		if (item.kind === 'page') item.actions.push('addPage', 'addImages', 'renamePage', 'properties', 'copyPageLink', 'pageReferences', ...(!item.isHome ? ['movePage', 'deletePage'] : []));
+		if (['page', 'incomplete'].includes(item.kind) || item.role === 'configuration' && item.kind === 'directory') {
+			const directory = item.kind === 'directory' ? siteRoot : item.directory;
+			const choices = await getEditorSourceFileChoices({ siteRoot, directory }).catch(() => []);
+			item.missingFiles = choices.filter(choice => path.dirname(choice.filename) === (item.kind === 'directory' ? item.sourcePath : item.directory));
+			for (const choice of item.missingFiles) item.actions.push('add_' + path.basename(choice.filename).replaceAll('.', '_').replaceAll('-', '_'));
+		}
+		if (item.kind === 'directory' && ['pages', 'images'].includes(item.role)) item.actions.push(item.role === 'pages' ? 'addPage' : 'addImages', 'deleteFolder');
+		if (item.kind === 'directory' && item.role === 'public') item.actions.push('newPublicFile', 'addPublicFiles', 'newPublicFolder', 'deleteFolder', ...(item.sourcePath !== path.join(siteRoot, 'public') ? ['renameResource', 'moveResource'] : []));
+		if (item.kind === 'file') {
+			if (parent?.role === 'public') item.actions.push('renameResource', 'replacePublicFile', 'moveResource', 'copyResourceLink', 'resourceReferences', 'deleteFile');
+			else if (parent?.role === 'images' && /\.(jpe?g|png|svg)$/i.test(item.title)) item.actions.push('insertImage', 'renameResource', 'replaceImage', 'resourceReferences', 'deleteImage');
+			else if (item.removable) item.actions.push('deleteFile');
 		}
 	}
 
