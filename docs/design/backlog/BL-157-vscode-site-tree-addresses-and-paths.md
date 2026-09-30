@@ -7,7 +7,7 @@ every row with address details. This helps everyday navigation as well as
 understanding page moves.
 
 Status: **Ready** for the first implementation scope. Decisions approved by
-the owner on 2026-09-30. Local path copying remains an idea recorded below.
+the owner on 2026-09-30. Local folder path copying is approved as the second implementation step.
 
 ## Scope And Boundaries
 
@@ -40,20 +40,17 @@ step. The existing page-move interaction remains governed by
 - Properties and Copy Link remain available through the page's context menu,
   including for keyboard users.
 
-## Preliminary Proposals
+## Local Folder Paths
 
-The owner also requested an idea for copying the absolute local path of a
-page, image directory or attachment directory, so it can be used with `cd`.
-Record this separately from the approved tooltip contents: a local filesystem
-path and a published URL serve different purposes.
+Approved as the second implementation step:
 
-A proposed context-menu action would copy the page's containing directory or
-the selected image/attachment directory. For a page, copying `content.md`
-itself would not provide a directory usable with `cd`.
-
-Before implementing this idea, settle the action's name, whether copying the
-source file path is also needed, and how paths containing spaces should be
-presented for terminal use. These choices do not block the first scope.
+- Add **Copy Folder Path** to the context menu for a page, its image directory
+  and its attachment directory.
+- For a page, copy the absolute directory containing `content.md`. For an
+  image or attachment directory, copy that directory's absolute path.
+- Copy the plain path without `cd` or added quotation marks. Authors must quote
+  paths containing spaces when using them with `cd`.
+- A separate command to copy the `content.md` file path is outside this scope.
 
 ## Dependencies
 
@@ -79,3 +76,11 @@ are available through the implemented
   current project workflow; record unperformed manual checks honestly.
 - Update the extension guide and canonical editor reference with the
   implemented behavior in the implementation commit.
+
+## Implementation Evidence
+
+2026-09-30, first step: concise page tooltips and the saved **Show URL paths**
+choice are implemented. The focused Site Tree adapter and package contracts
+passed. Coverage includes deployment prefixes, unsaved settings, missing
+settings, older engines, workspace reload, active move rows, and error/dirty
+indicators. Native layout and tooltip review remains for the owner.

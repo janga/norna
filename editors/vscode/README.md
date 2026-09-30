@@ -54,14 +54,20 @@ keyboard expansion opens the branch.
 Directories select without opening a file. Individual files use VS Code's
 normal editor or preview, including image previews.
 
-Page names hide numeric ordering prefixes; hover reveals the actual source
-path. Each page shows its existing `images/`, `tree-theme.yaml`, `page-theme.yaml` and `pages/` in that
+Page names hide numeric ordering prefixes. Hover over a page to see its full
+published URL and its slug on separate lines, without labels. The homepage
+shows only its URL. If the configured address is unavailable, the tooltip
+shows the known site-relative path.
+Choose **Show URL paths** in the Site Tree view menu to add paths after page
+titles. It starts off, remembers your choice for the workspace, and applies to
+collapsed and expanded pages. Warnings and unsaved markers remain visible.
+
+Each page shows its existing `images/`, `tree-theme.yaml`, `page-theme.yaml` and `pages/` in that
 order. Site-wide files are siblings of the homepage, not its children, matching
 the physical source layout. The settings folder starts expanded and remembers
 subsequent choices. Hover explains theme scope and what belongs in `public/`.
 A leaf has no chevron unless it has visible details, including an empty folder.
 
-Hover over a page to see its active preset and the file that selected it.
 Hover over a theme file to see whether it modifies inherited settings or
 replaces them with a preset, even when that preset has the same name. Tree-theme
 help describes the branch; page-theme help describes only that page. These

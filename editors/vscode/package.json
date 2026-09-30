@@ -347,6 +347,12 @@
         "title": "Show Preview Log",
         "category": "Norna",
         "enablement": "nornaSiteTree.hasActiveSite"
+      },
+      {
+        "command": "nornaEditor.toggleUrlPaths",
+        "title": "Show URL paths",
+        "category": "Norna",
+        "toggled": "nornaSiteTree.showUrlPaths"
       }
     ],
     "views": {
@@ -400,6 +406,11 @@
           "command": "nornaEditor.showPreviewLog",
           "when": "view == nornaSiteTree && nornaSiteTree.hasActiveSite",
           "group": "3_preview@2"
+        },
+        {
+          "command": "nornaEditor.toggleUrlPaths",
+          "when": "view == nornaSiteTree",
+          "group": "2_display@1"
         }
       ],
       "view/item/context": [

@@ -87,7 +87,14 @@ folders VS Code includes in Explorer.
 The homepage row uses its title and is marked **Homepage**. Select it to edit
 `root/content.md` in your chosen site source folder. Every page works the same
 way: its title opens its own `content.md`, which has no separate row in Site
-Tree. Hover over the page to see the actual source path.
+Tree. Hover over a page to see its complete published URL followed by its
+slug, without labels. The homepage shows just its URL. When site settings are
+unavailable, the tooltip shows the known site-relative path.
+
+Choose **Show URL paths** in the Site Tree view menu to show paths beside page
+titles. Paths are hidden by default. The choice is remembered for this
+workspace and works on both collapsed and expanded pages. Status indicators
+such as warnings and unsaved changes remain visible.
 
 The tree follows the actual [file organization](/reference/site/files/).
 Shared `site-config/` and `public/` are siblings before the homepage. Each page
@@ -128,8 +135,7 @@ the initial site appearance and requires a preset. A branch's `tree-theme.yaml`
 modifies inherited values or explicitly chooses a new preset for that branch.
 Optional `page-theme.yaml` can appear beside any page, including the homepage;
 it affects only that page. See
-[theme scope](/reference/configuration/theme/#page-themes). Hover over a page to
-see its active preset and the source file that selected it. Hover over a theme
+[theme scope](/reference/configuration/theme/#page-themes). Hover over a theme
 file to see its scope and whether it modifies inherited settings or starts a
 new base. An explicit preset starts a new base even when its name matches the
 inherited preset; remove that key to resume inheritance. Tree-theme help shows
@@ -276,7 +282,8 @@ configuration errors point to the affected configuration file; open
 **View > Problems** if the site or root page directory cannot be read.
 
 The type icon stays recognizable when a row has an **error** or **warning**.
-Hover for the explanation; open an existing file to repair it. The owning page
+Read the explanation in **View > Problems**, or hover over the affected file;
+open an existing file to repair it. The owning page
 also signals problems in its descendants. Source/schema checks and available
 editor diagnostics include unsaved edits; they do not replace `norna check`.
 

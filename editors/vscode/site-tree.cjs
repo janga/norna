@@ -28,6 +28,9 @@ function registerSiteTree(context, output) {
 	const diagnostics = vscode.languages.createDiagnosticCollection('norna-site-tree');
 	const selectionKey = 'norna.siteTree.activeSite';
 	const expansionKey = 'norna.siteTree.configurationExpansion';
+	const urlPathsKey = 'norna.siteTree.showUrlPaths';
+	let showUrlPaths = context.workspaceState.get(urlPathsKey) === true;
+	void vscode.commands.executeCommand('setContext', 'nornaSiteTree.showUrlPaths', showUrlPaths);
 	const configurationExpansion = { ...context.workspaceState.get(expansionKey) };
 	const pageIcon = { light: context.asAbsolutePath('media/page-light.svg'), dark: context.asAbsolutePath('media/page-dark.svg') };
 	const pageListIcon = { light: context.asAbsolutePath('media/page-list-light.svg'), dark: context.asAbsolutePath('media/page-list-dark.svg') };
@@ -53,6 +56,14 @@ function registerSiteTree(context, output) {
 	const inWorkspace = (root) => (vscode.workspace.workspaceFolders ?? [])
 		.some(({ uri }) => uri.scheme === 'file' && inside(uri.fsPath, root));
 	const activeSite = () => sites.get(activeSiteRoot);
+	const pageAddress = (node) => {
+		const base = sites.get(node.siteRoot)?.addressBase;
+		return base && node.url ? new URL(node.url.slice(1), base).href : node.url;
+	};
+	const pageUrlPath = (node) => {
+		const address = pageAddress(node);
+		return address?.startsWith('/') ? address : address ? new URL(address).pathname : '';
+	};
 	const documentSources = () => new Map(vscode.workspace.textDocuments
 		.filter((document) => document.uri.scheme === 'file' && document.isDirty)
 		.map((document) => [document.uri.fsPath, document.getText()]));
@@ -128,6 +139,16 @@ function registerSiteTree(context, output) {
 				siteRoot: site.siteRoot, sources: documentSources(), cache: site.cache,
 				editing: service.siteTreeEditingApiVersion === 1,
 			});
+			// Resolve the deployment base once per site refresh, through its own
+			// engine. Reuse it for all rows rather than reading the link graph per page.
+			site.addressBase = null;
+			const anchor = snapshot.nodes?.find((node) => node.isHome) ?? snapshot.nodes?.find(isPage);
+			if (anchor && service.siteAddressApiVersion === 1) {
+				try {
+					const address = await service.getEditorPageAddresses({ siteRoot: site.siteRoot, sourcePath: anchor.sourcePath, sources: documentSources() });
+					if (address.webAddress) site.addressBase = address.webAddress.slice(0, address.webAddress.length - address.internalLink.slice(1).length);
+				} catch (error) { output.appendLine(`Site tree address: ${error.message}`); }
+			}
 			const previous = new Map([...nodes].filter(([, node]) => node.siteRoot === site.siteRoot));
 			for (const id of previous.keys()) nodes.delete(id);
 			site.children = [];
@@ -278,23 +299,25 @@ function registerSiteTree(context, output) {
 				isPage(node) && node.hiddenFromNavigation ? 'unlisted' : '',
 				severity, node.note,
 				unsaved || isPage(node) && dirtyOwners.has(node.id) ? 'unsaved' : '',
-				dirtyBelowLabel].filter(Boolean).join(' · ');
+				dirtyBelowLabel,
+				showUrlPaths && isPage(node) && node.id !== moveSourceId ? pageUrlPath(node) : ''].filter(Boolean).join(' · ');
 			item.iconPath = node.id === moveSourceId && node.siteRoot === moveSourceRoot
 				? new vscode.ThemeIcon('file', new vscode.ThemeColor('notificationsInfoIcon.foreground'))
 				: node.kind === 'page' ? node.listChildren ? pageListIcon : pageIcon
 				: new vscode.ThemeIcon(configuration ? 'settings-gear' : node.kind === 'site' ? 'globe'
 					: ['directory', 'incomplete'].includes(node.kind) ? 'folder' : 'file');
 			const problemHelp = [...new Set(issues.map((issue) => `${issue.message}\n${issue.path}${issue.line ? `:${issue.line}` : ''}`))].join('\n\n');
-			item.accessibilityInformation = { label: [node.title, item.description, node.sourcePath].filter(Boolean).join(', ') };
+			item.accessibilityInformation = { label: [node.title, item.description, isPage(node) ? pageAddress(node) : node.sourcePath].filter(Boolean).join(', ') };
 			if (groupingRow) {
 				item.tooltip = [node.role === 'public' ? node.description : '', problemHelp].filter(Boolean).join('\n\n');
 				// Native trees expand labels that have no command. Keep expansion on
 				// the chevron without opening a source or changing global tree settings.
 				item.command = { command: 'nornaEditor.selectSiteGroup', title: 'Select' };
 			} else if (node.sourcePath) {
-				item.tooltip = [moveSourceId && isPage(node) && node.siteRoot === moveSourceRoot ? 'Right-click to choose where the moving page should be placed.'
-					: node.kind === 'page' ? node.listChildren ? 'Open page content. This page automatically lists its direct child pages.' : 'Open page content' : node.kind === 'incomplete' ? 'Add the missing source file' : node.title,
-					node.description, node.sourcePath, node.themeHelp, problemHelp].filter(Boolean).join('\n');
+				item.tooltip = isPage(node)
+					? [pageAddress(node), node.isHome ? '' : node.url?.split('/').filter(Boolean).at(-1)].filter(Boolean).join('\n')
+					: [node.kind === 'incomplete' ? 'Add the missing source file' : node.title,
+						node.description, node.sourcePath, node.themeHelp, problemHelp].filter(Boolean).join('\n');
 				item.resourceUri = vscode.Uri.file(node.sourcePath);
 				item.command = { command: node.kind === 'incomplete' ? 'nornaEditor.addToPage' : 'nornaEditor.openSiteNode',
 					title: node.kind === 'incomplete' ? 'Repair Source' : isPage(node) ? 'Open content.md' : 'Open file', arguments: [node] };
@@ -720,6 +743,12 @@ function registerSiteTree(context, output) {
 	});
 	const help = () => vscode.window.showInformationMessage('Site Tree: click a page or file to open it. Right-click a row for Add, Rename, Move or Delete. The arrow expands its contents. Use Shift+F10 for the keyboard menu.');
 	register('nornaEditor.siteTreeHelp', help);
+	register('nornaEditor.toggleUrlPaths', async () => {
+		showUrlPaths = !showUrlPaths;
+		await context.workspaceState.update(urlPathsKey, showUrlPaths);
+		await vscode.commands.executeCommand('setContext', 'nornaSiteTree.showUrlPaths', showUrlPaths);
+		await enqueueTreeWork(() => changed.fire());
+	});
 	register('nornaEditor.chooseSite', chooseSite);
 	register('nornaEditor.refreshSiteTree', async () => { services.clear(); await refresh({ discover: true }); await revealActive(); });
 	const watcher = vscode.workspace.createFileSystemWatcher('**/{content.md,settings.yaml,tree-theme.yaml,shared-content.yaml,config.yaml,page-theme.yaml,sitewide-content.yaml}');
