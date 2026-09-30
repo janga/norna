@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.13.0
+
+- Edit a page's slug in Properties with a separate Change address action,
+  a preview of descendant addresses and a final confirmation.
+- Choose whether to preserve old addresses as aliases for the entire affected
+  subtree. The choice starts checked; existing aliases remain available.
+- Keep metadata buffer edits separate from address changes, and reject stale
+  forms or unsaved affected sources before moving files.
+
 ## 0.12.3
 
 - Label page tooltip values URL and Slug so a slug cannot be mistaken for a

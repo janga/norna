@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.12.3",
+  "version": "0.13.0",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -808,13 +808,14 @@
   "scripts": {
     "audit:runtime": "npm audit --omit=dev",
     "build": "esbuild extension.cjs --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.cjs",
-    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check site-file-actions.cjs && node --check site-address-actions.cjs && node --check site-link-review.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/page-form-contract.mjs && node test/site-file-actions-contract.mjs && node test/site-address-actions-contract.mjs && node --test test/site-resource-actions-contract.mjs && node --test test/attachment-actions-contract.mjs && node test/package-contract.mjs",
+    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check site-file-actions.cjs && node --check site-address-actions.cjs && node --check site-link-review.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/page-form-contract.mjs && node --test test/page-address-form-contract.mjs && node test/site-file-actions-contract.mjs && node test/site-address-actions-contract.mjs && node --test test/site-resource-actions-contract.mjs && node --test test/attachment-actions-contract.mjs && node test/package-contract.mjs",
     "package": "vsce package --out norna-vscode.vsix",
     "publish:marketplace": "vsce publish",
     "vscode:prepublish": "npm run build",
     "test:attachment-form": "node --test test/attachment-form-browser.mjs",
     "test:integration": "node test/run-integration.mjs",
-    "test:integration:minimum": "node test/run-integration.mjs --version 1.96.0"
+    "test:integration:minimum": "node test/run-integration.mjs --version 1.96.0",
+    "test:page-address-form": "node --test test/page-address-form-browser.mjs"
   },
   "devDependencies": {
     "@vscode/test-electron": "3.1.0",

@@ -211,8 +211,26 @@ Choose **Properties…** to open the same form with the page's
 current title, description, navigation choice, child-list choice and additional addresses filled
 in. Empty fields show example
 text; examples are not saved values. The current published address is shown in full. Leave a description empty to remove it.
-Changing an existing URL segment remains a separate **Addresses and links…**
-command in the Command Palette, because it can move files and affect other pages.
+For a page below the homepage, edit **Slug**, review the proposed address and
+choose **Change address…**. The preview lists changed descendant addresses
+and the number of authored links to update. The final **Change address**
+confirmation moves the directory and writes the affected files.
+
+**Preserve old addresses as aliases** is checked by default. It preserves the
+old address of this page and every affected descendant. Uncheck it to create
+no new aliases for those addresses. Existing aliases remain available; an
+alias becoming its page's primary address is reclaimed. The choice covers
+page addresses, not old image or attachment URLs. You can edit each page's
+alias list afterwards.
+
+Apply slug changes separately from other Properties changes. Save metadata
+changes in the editor before reopening Properties to change the slug. If both
+were entered together, restore the current slug to save the metadata first.
+Save or undo unsaved page and site-settings edits before changing an address.
+Editor Undo does not reverse the whole address change. The homepage has no
+editable slug. This form requires extension 0.13.0 and an engine exposing
+`sitePageAddressOptionsApiVersion: 1`; earlier engines keep the current-address
+display and their existing address commands.
 
 The **Additional addresses (aliases)** list starts with only **+** when there
 are no aliases. Use **+** to add a row and **−** to remove one. Enter paths such
@@ -336,8 +354,8 @@ links. The domain and `/manual/` come from `site-config/settings.yaml`.
 
 **Change URL segment…** changes the final part of a content page's address.
 Enter one segment, such as `installation`, without slashes. The extension
-previews the full old and new addresses, source directories, descendant
-pages and authored links that will change. Confirming renames the page folder
+previews the full old and new addresses, descendant pages and the number of
+authored links that will change. Confirming renames the page folder
 within its current parent while keeping its order number. The title stays the
 same. The engine updates supported internal links and keeps old page addresses
 as redirects, using the same planning and transaction as

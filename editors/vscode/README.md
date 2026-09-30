@@ -114,7 +114,22 @@ containing `content.md`. The clipboard contains a plain path, without `cd` or
 added quotation marks. Quote paths containing spaces when using them with `cd`.
 
 **Rename…** on a page changes its H1 and title, preserving its URL. **Properties…**
-shows the complete published address and edits the other page metadata.
+shows the complete published address and edits page metadata. With extension
+0.13.0 and the engine's `sitePageAddressOptionsApiVersion: 1`, it also provides
+**Slug** and a separate **Change address…** action. Review the new address,
+affected descendants and links, then confirm. The homepage has no slug field.
+
+**Preserve old addresses as aliases** starts checked and covers the page and
+all affected descendants. Uncheck it to create no aliases for their old
+addresses. Existing aliases remain available; an alias becoming the primary
+address is reclaimed. Edit each page's alias list later if needed.
+
+Apply metadata and slug changes separately. Save or undo unsaved page and
+site-settings edits before changing the slug. **Save changes** edits metadata
+in the buffer; **Change address…** moves the directory and writes affected
+files. Editor Undo does not reverse the address change. Earlier engines keep
+the current address display and their existing address commands.
+
 **Move…** in the page's context menu reorders it or changes its parent. It keeps you
 in Site Tree: expand and scroll the familiar tree, then right-click a
 destination page to place the moving page before, after, first or last under

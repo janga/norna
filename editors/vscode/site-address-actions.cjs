@@ -1,6 +1,48 @@
 const path = require('node:path');
 const { describeLinks, showLinks } = require('./site-link-review.cjs');
 
+const describePageAddressPlan = (plan) => [
+	`${plan.webFrom}\n→ ${plan.webTo}`,
+	`${plan.mappings.length - 1} descendant page(s) and ${plan.linkChanges.length} authored link(s) will change.`,
+	plan.mappings.length > 1 ? plan.mappings.slice(1).map(({ oldPathname, newPathname }) => `${oldPathname} → ${newPathname}`).join('\n') : '',
+	plan.preserveAliases === false
+		? 'No new aliases will be created for this page or its descendants. Their old addresses will stop working after publication.'
+		: 'Old addresses of this page and its descendants will be kept as aliases.',
+	'Existing aliases remain available. An alias becoming the primary address is reclaimed.',
+].filter(Boolean).join('\n\n');
+
+async function confirmPageAddressChange({ vscode, page, service, plan, chooseNode, documentSources, refresh, isOpen = () => true, assertCurrent = async () => {} }) {
+	const clean = () => {
+		const current = documentSources();
+		if ([...current.keys()].some((filename) => filename === path.join(page.siteRoot, 'site-config/settings.yaml')
+			|| plan.sourceFiles.some((file) => file.contentPath === filename)
+			|| filename === plan.sourceDirectory || filename.startsWith(plan.sourceDirectory + path.sep))) {
+			throw new Error('Save or undo unsaved edits in the affected files before changing the address.');
+		}
+	};
+	const check = async () => {
+		await chooseNode(page);
+		await assertCurrent();
+		clean();
+		return isOpen();
+	};
+	if (!await check()) return false;
+	const choice = await vscode.window.showWarningMessage(`Change the address of “${page.title}”?`, { modal: true,
+		detail: `${describePageAddressPlan(plan)}\n\nThis writes the page directory and affected files. Editor Undo does not reverse the whole operation.` }, 'Change address');
+	if (choice !== 'Change address' || !await check()) return false;
+	const result = await service.applyEditorPageAddress(plan, { renameDirectory: async (from, to) => {
+		// Recovery must still be able to rename back after the form closes or
+		// the selected site changes during an operation already in progress.
+		if (from === plan.sourceDirectory && !await check()) throw new Error('The address form was closed. No address change was started.');
+		const edit = new vscode.WorkspaceEdit();
+		edit.renameFile(vscode.Uri.file(from), vscode.Uri.file(to), { overwrite: false });
+		if (!await vscode.workspace.applyEdit(edit)) throw new Error('VS Code could not move the page directory.');
+	} });
+	await refresh();
+	await vscode.window.showTextDocument(vscode.Uri.file(result.sourcePath), { preview: false });
+	return true;
+}
+
 function registerSiteAddressActions({ vscode, chooseNode, ownerOf, serviceFor, documentSources, refresh, register }) {
 	const target = async (argument) => {
 		const page = ownerOf(await chooseNode(argument));
@@ -79,28 +121,7 @@ function registerSiteAddressActions({ vscode, chooseNode, ownerOf, serviceFor, d
 			} });
 		if (segment === undefined) return;
 		const plan = await stable((sources) => service.planEditorPageAddress({ ...options, segment, sources }));
-		const clean = () => {
-			const current = documentSources();
-			if ([...current.keys()].some((filename) => filename === path.join(page.siteRoot, 'site-config/settings.yaml')
-				|| plan.sourceFiles.some((file) => file.contentPath === filename)
-				|| filename === plan.sourceDirectory || filename.startsWith(plan.sourceDirectory + path.sep))) {
-				throw new Error('Save or undo unsaved edits in the affected files before changing the address.');
-			}
-		};
-		clean();
-		const choice = await vscode.window.showWarningMessage(`Change the address of “${page.title}”?`, { modal: true,
-			detail: `${plan.webFrom}\n→ ${plan.webTo}\n\n${plan.mappings.length - 1} descendant page(s) and ${plan.linkChanges.length} authored link(s) will change.\nOld page addresses are kept as redirects. Nested category addresses follow the folder move but have no redirects.\n\nDirectory: ${plan.sourceDirectory}\n→ ${plan.destinationDirectory}\n\nThis writes the directory and affected content files. Editor Undo does not reverse the whole operation. To return to an old address, first remove conflicting additional addresses on this page and its descendants, save, then change the URL segment again.` }, 'Change address');
-		if (choice !== 'Change address') return;
-		await chooseNode(page);
-		clean();
-		const result = await service.applyEditorPageAddress(plan, { renameDirectory: async (from, to) => {
-			if (from === plan.sourceDirectory) { await chooseNode(page); clean(); }
-			const edit = new vscode.WorkspaceEdit();
-			edit.renameFile(vscode.Uri.file(from), vscode.Uri.file(to), { overwrite: false });
-			if (!await vscode.workspace.applyEdit(edit)) throw new Error('VS Code could not move the page directory.');
-		} });
-		await refresh();
-		await vscode.window.showTextDocument(vscode.Uri.file(result.sourcePath), { preview: false });
+		return confirmPageAddressChange({ vscode, page, service, plan, chooseNode, documentSources, refresh });
 	};
 	let running = false;
 	for (const [name, action] of Object.entries({ incomingLinks: incoming, addressesAndLinks: async (target) => {
@@ -129,4 +150,4 @@ function registerSiteAddressActions({ vscode, chooseNode, ownerOf, serviceFor, d
 	});
 }
 
-module.exports = { registerSiteAddressActions };
+module.exports = { registerSiteAddressActions, describePageAddressPlan, confirmPageAddressChange };

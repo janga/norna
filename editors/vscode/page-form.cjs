@@ -9,7 +9,7 @@ body{font-family:var(--vscode-font-family);color:var(--vscode-foreground);backgr
 </style></head><body><h1>${model.edit ? 'Page information' : `New ${model.kind}`}</h1><form novalidate>
 ${field('title', 'Page title', 'For example: Install Norna', model.title)}
 ${field('description', 'Description (optional)', 'A short introduction to this page', model.description)}
-${model.edit ? `<p class="hint">Current address: ${escape(model.url)}. Changing the title does not change this address.</p>` : `<label for="parentPath">Create in</label><select id="parentPath">${model.parents.map((parent) => `<option value="${escape(parent.parentPath)}" ${parent.parentPath === model.parentPath ? 'selected' : ''}>${escape(parent.label)}</option>`).join('')}</select>${field('slug', 'URL segment', 'install-norna', '')}<p class="hint">Lowercase letters, numbers and hyphens. Suggested from the title until you edit it.</p>`}
+${model.edit ? `<p class="hint">Current address: ${escape(model.url)}. Changing the title does not change this address.</p>${model.canChangeAddress ? `<fieldset><legend>Page address</legend>${field('slug', 'Slug', 'install-norna', model.slug)}<label><input id="preserve-aliases" type="checkbox" checked> Preserve old addresses as aliases</label><p class="hint">Applies to this page and all affected descendants. Existing aliases are kept.</p><button id="change-address" type="button" class="secondary">Change address…</button><p class="hint">Review and confirm the address change separately from other Properties changes.</p></fieldset>` : ''}` : `<label for="parentPath">Create in</label><select id="parentPath">${model.parents.map((parent) => `<option value="${escape(parent.parentPath)}" ${parent.parentPath === model.parentPath ? 'selected' : ''}>${escape(parent.label)}</option>`).join('')}</select>${field('slug', 'URL segment', 'install-norna', '')}<p class="hint">Lowercase letters, numbers and hyphens. Suggested from the title until you edit it.</p>`}
 <label><input id="listed" type="checkbox" ${model.listed !== false ? 'checked' : ''} ${model.isHome ? 'disabled' : ''}> Show in navigation</label><p class="hint">Unlisted pages are still published.${model.isHome ? ' The homepage is always listed.' : ''}</p>
 <label><input id="listChildren" type="checkbox" ${model.listChildren ? 'checked' : ''}> List direct child pages after this page</label><p class="hint">Norna keeps this list in navigation order. Unlisted pages are omitted.</p>
 <fieldset><legend>Additional addresses (aliases)</legend><p class="hint">These addresses redirect to this page. Start and end with /, and omit the site's deployment prefix.</p><div id="aliases"></div><button type="button" id="add-alias" class="secondary" aria-label="Add additional address" title="Add additional address">+</button><p class="error" id="aliases-error"></p></fieldset>
@@ -17,7 +17,7 @@ ${model.edit ? `<p class="hint">Current address: ${escape(model.url)}. Changing 
 <script nonce="${nonce}">
 const vscode=acquireVsCodeApi(); const initial=${JSON.stringify(model).replace(/</g, '\\u003c')};
 const byId=(id)=>document.getElementById(id);let revision=0,busy=false,slugEdited=false,timer;
-const values=()=>({title:byId('title').value,description:byId('description').value,listed:byId('listed')?.checked??true,listChildren:byId('listChildren').checked,aliases:[...document.querySelectorAll('.alias input')].map(input=>input.value),...(!initial.edit?{parentPath:byId('parentPath').value,slug:byId('slug').value}: {})});
+const values=()=>({title:byId('title').value,description:byId('description').value,listed:byId('listed')?.checked??true,listChildren:byId('listChildren').checked,aliases:[...document.querySelectorAll('.alias input')].map(input=>input.value),...(!initial.edit?{parentPath:byId('parentPath').value,slug:byId('slug').value}: initial.canChangeAddress?{slug:byId('slug').value,preserveAliases:byId('preserve-aliases').checked}: {})});
 function send(type){vscode.postMessage({type,revision,values:values(),suggestSlug:!slugEdited});}
 function lock(value){for(const element of document.querySelectorAll('input,select,button'))element.disabled=value; if(initial.isHome&&byId('listed'))byId('listed').disabled=true;}
 function changed(){revision++;clearTimeout(timer);timer=setTimeout(()=>send('preview'),180);}
@@ -26,14 +26,16 @@ function addAlias(value='',focus=true){const row=document.createElement('div');r
 byId('add-alias')?.addEventListener('click',()=>{addAlias();changed();});
 document.querySelector('form').addEventListener('input',(event)=>{if(event.target.id==='slug')slugEdited=true;changed();});
 byId('parentPath')?.addEventListener('change',changed);
-document.querySelector('form').onsubmit=(event)=>{event.preventDefault();if(busy)return;clearTimeout(timer);busy=true;lock(true);send('submit');};
+function submit(type){if(busy)return;clearTimeout(timer);busy=true;lock(true);send(type);}
+document.querySelector('form').onsubmit=(event)=>{event.preventDefault();submit('submit');};
+byId('change-address')?.addEventListener('click',()=>submit('address'));
 byId('cancel').onclick=()=>{if(!busy)vscode.postMessage({type:'cancel'});};
 window.addEventListener('message',({data})=>{if(data.revision!==revision)return;if(data.slug!==undefined&&!slugEdited)byId('slug').value=data.slug;for(const id of ['title','description','slug','aliases','form']){const error=byId(id+'-error');if(error)error.textContent=data.errors?.[id]||'';byId(id)?.setAttribute('aria-invalid',String(Boolean(data.errors?.[id])));}byId('preview').querySelector('pre').textContent=data.preview||'';if(data.type==='result'){busy=false;lock(false);}});
 byId('title').focus();if(initial.edit)send('preview');
 </script></body></html>`;
 }
 
-function openPageForm(vscode, context, model, { prepare, apply }) {
+function openPageForm(vscode, context, model, { prepare, apply, applyAddress }) {
 	const panel = vscode.window.createWebviewPanel('nornaPageForm', model.edit ? `Page information: ${model.title}` : `New ${model.kind}`, vscode.ViewColumn.Active,
 		{ enableScripts: true, retainContextWhenHidden: true, localResourceRoots: [] });
 	panel.webview.html = pageFormHtml(model, randomBytes(24).toString('hex'));
@@ -42,14 +44,14 @@ function openPageForm(vscode, context, model, { prepare, apply }) {
 		const messages = panel.webview.onDidReceiveMessage(async (message) => {
 			if (disposed || busy) return;
 			if (message?.type === 'cancel') { panel.dispose(); return; }
-			if (!['preview', 'submit'].includes(message?.type) || !Number.isInteger(message.revision)) return;
-			const submit = message.type === 'submit';
+			if (!['preview', 'submit', ...(applyAddress ? ['address'] : [])].includes(message?.type) || !Number.isInteger(message.revision)) return;
+			const submit = message.type !== 'preview';
 			if (submit) busy = true;
 			try {
 				const prepared = await prepare(message.values, Boolean(message.suggestSlug));
 				if (disposed) return;
 				if (submit) {
-					const applied = await apply(prepared, () => !disposed);
+					const applied = await (message.type === 'address' ? applyAddress : apply)(prepared, () => !disposed);
 					if (applied !== false) { panel.dispose(); return; }
 				}
 				await panel.webview.postMessage({ type: submit ? 'result' : 'preview', revision: message.revision, preview: prepared.preview, slug: prepared.slug });

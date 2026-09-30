@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { openPageForm } = require('./page-form.cjs');
 const { describeLinks } = require('./site-link-review.cjs');
+const { describePageAddressPlan, confirmPageAddressChange } = require('./site-address-actions.cjs');
 const fail = (field, message) => { throw Object.assign(new Error(message), { field }); };
 function validate(values, kind, isHome) {
 	if (!values || typeof values.title !== 'string' || !values.title.trim() || /[\r\n]/.test(values.title)) fail('title', 'Enter a non-empty title on one line.');
@@ -48,14 +49,16 @@ function createPageForm({ vscode, context, service, kind, selected, target, insi
 	});
 }
 
-async function editPageForm({ vscode, context, service, node, document, info, chooseNode, documentSources, updateDocument }) {
+async function editPageForm({ vscode, context, service, node, document, info, chooseNode, documentSources, updateDocument, refresh }) {
 	const original = document.getText(), version = document.version;
 	const unchanged = async () => {
 		await chooseNode(node);
 		if (document.isClosed || document.version !== version || document.getText() !== original) throw new Error('The source changed while this form was open. Close it and reopen Page Information to load the current values.');
 	};
 	const addresses = service.siteAddressApiVersion === 1 ? await service.getEditorPageAddresses({ siteRoot: node.siteRoot, sourcePath: node.sourcePath, sources: documentSources() }) : null;
-	return openPageForm(vscode, context, { ...info, kind: node.kind, isHome: node.isHome, url: addresses?.webAddress ?? node.url, edit: true }, {
+	const canChangeAddress = !node.isHome && service.sitePageAddressOptionsApiVersion === 1 && addresses !== null;
+	return openPageForm(vscode, context, { ...info, kind: node.kind, isHome: node.isHome, url: addresses?.webAddress ?? node.url,
+		slug: addresses?.segment, canChangeAddress, edit: true }, {
 		prepare: async raw => {
 			const values = validate(raw, node.kind, node.isHome);
 			await unchanged();
@@ -65,9 +68,26 @@ async function editPageForm({ vscode, context, service, node, document, info, ch
 				try { source = applyEdits(source, await service.editSiteNodeInformation({ siteRoot: node.siteRoot, sourcePath: node.sourcePath, source, field, value: values[field], sources: documentSources() })); }
 				catch (error) { error.field = field; throw error; }
 			}
-			return { source, values, preview: `Source: ${node.sourcePath}\nChanges stay in the editor until you save the file.` };
+			let addressPlan;
+			if (canChangeAddress && raw.slug !== undefined && raw.slug !== addresses.segment) {
+				try {
+					addressPlan = await service.planEditorPageAddress({ siteRoot: node.siteRoot, sourcePath: node.sourcePath,
+						segment: raw.slug, preserveAliases: raw.preserveAliases, sources: documentSources() });
+				} catch (error) { error.field = 'slug'; throw error; }
+				await unchanged();
+			}
+			return { source, values, addressPlan, preview: addressPlan ? describePageAddressPlan(addressPlan)
+				: `Source: ${node.sourcePath}\nChanges stay in the editor until you save the file.` };
 		},
-		apply: async ({ source, values }, isOpen) => {
+		applyAddress: async ({ source, addressPlan }, isOpen) => {
+			if (!canChangeAddress) throw new Error('Update this site’s Norna engine to change the slug through Properties.');
+			if (!addressPlan) fail('slug', 'Enter a different slug to change the address.');
+			if (source !== original) throw new Error('Save other Properties changes separately. Restore the current slug to save them, then reopen Properties to change the address.');
+			return confirmPageAddressChange({ vscode, page: node, service, plan: addressPlan, chooseNode, documentSources,
+				refresh, isOpen, assertCurrent: unchanged });
+		},
+		apply: async ({ source, values, addressPlan }, isOpen) => {
+			if (addressPlan) fail('slug', 'Use Change address… to apply the new slug, or restore the current slug to save other Properties changes.');
 			await unchanged();
 			const removed = info.aliases.filter(alias => !values.aliases.includes(alias));
 			if (removed.length) {

@@ -75,7 +75,9 @@ public/ or a synthetic directory to host the action.
 - Rename on a page changes its displayed title and H1, preserving its URL.
   Properties separates title, address, aliases and other page metadata.
   It shows the full address; it does not introduce decoupled addresses or
-  silently make a read-only address editable.
+  silently make a read-only address editable. Slug editing with a separate
+  explicit action is subsequently approved in
+  [BL-158 VS Code Page Slug Editing](BL-158-vscode-page-slug-editing.md).
 - Rename on an image or public resource changes its actual filename or
   author-named directory. Update known internal references together with the
   filesystem change. Review the effect using the selected engine's rules.

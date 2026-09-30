@@ -510,3 +510,32 @@ settings, older-engine fallback, persistence, move markers and plain directory
 copying. The package contract checks command/menu contributions. Automated
 checks do not establish native tooltip layout, truncation or keyboard usability.
 The owner's approval is recorded separately above.
+
+
+## Page Slug Editing (BL-158)
+
+Evaluation extension **0.13.0** adds a Slug field and **Change address…** in
+Properties for engines with `sitePageAddressOptionsApiVersion: 1`.
+The owner installs the VSIX and performs the following native review:
+
+- Change a parent slug with **Preserve old addresses as aliases** checked.
+  Inspect the new URL and descendants in the preview. Cancel the confirmation
+  once, then apply. Check links, retained ordering and aliases on each page.
+- Repeat on a disposable branch with the checkbox cleared and existing aliases
+  on both parent and child. Existing aliases stay; no new aliases are added.
+- Return to the branch's own former address. That alias becomes the primary
+  address again. Another page's address and alias must remain unavailable.
+- Try Properties with unsaved files and with both metadata and slug edits.
+  Confirm that nothing is silently lost. Save metadata separately, close and
+  reopen, then change the slug. Ordinary metadata Undo remains available;
+  filesystem address changes do not claim normal editor Undo support.
+- Review keyboard access, checkbox persistence after cancellation, errors and
+  the descendant preview in a narrow panel. The homepage has no slug control.
+
+Focused engine tests cover both alias choices across three page levels,
+existing aliases, reclaimed addresses, links and attachments. The Properties
+adapter covers both choices, separate metadata application, cancellation,
+stale/dirty sources, site changes, capability fallback and recovery after the
+form closes. A headless Chromium test exercises the real webview script's
+input, checkbox, keyboard activation, cancellation response and error display.
+This automated evidence does not replace the owner's native review.

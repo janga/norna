@@ -59,3 +59,32 @@ keeps its previous default, and records the choice in the reviewed plan.
 All 13 focused engine address tests passed, including whole-subtree choices,
 existing aliases, reclaimed addresses, updated attachment links and rejection
 of a changed choice after planning.
+
+
+Properties now offers the current slug, the checked alias-preservation choice
+and **Change address…**, followed by an explicit final confirmation. Metadata
+and slug edits apply separately. The homepage and older engines do not show
+unsupported controls. The existing palette address command shares the guarded
+application and updated confirmation, retaining its preserve-all default.
+
+Further focused checks passed:
+
+- `node --test editors/vscode/test/page-address-form-contract.mjs`: 10 cases,
+  including cancellation, changed files/site, both alias policies and rollback
+  after form closure.
+- `node --test editors/vscode/test/page-address-form-browser.mjs`: real form
+  input, checkbox values, keyboard activation, cancellation and error response
+  in headless Chromium. Sandbox launch was blocked by macOS process permissions;
+  the isolated test passed when run with the required process permission.
+- Existing page-form, site-address-actions and site-tree adapter contracts.
+- Package contract and `npm run test:documentation`. The documentation check
+  exposed missing BL-155 attachment entries in the source-route index and
+  `llms.txt`; those were corrected in a separate commit.
+
+The owner handles installation and native review of **0.13.0**, including Undo
+for metadata and dirty save/reopen behavior. Those manual checks have not been
+performed here. No full release suite, push or publication was performed.
+
+VSIX packaging passed for **0.13.0** at
+`editors/vscode/norna-vscode.vsix`; the archived version and bundled code were
+verified against the build output.

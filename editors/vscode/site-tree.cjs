@@ -527,7 +527,11 @@ function registerSiteTree(context, output) {
 		const document = await vscode.workspace.openTextDocument(vscode.Uri.file(node.sourcePath));
 		const info = await service.getSiteNodeInformation({ kind: node.kind, isHome: node.isHome, source: document.getText(), sourcePath: node.sourcePath });
 		if (info.problem) throw new Error(`${info.problem} Open the source to repair it.`);
-		if (service.sitePageFormApiVersion === 1) return editPageForm({ vscode, context, service, node, document, info, chooseNode, documentSources, updateDocument });
+		if (service.sitePageFormApiVersion === 1) return editPageForm({ vscode, context, service, node, document, info,
+			chooseNode: async (argument) => {
+				if (moveSourceId || applyingMove) throw new Error('Complete or cancel the current page move before editing Properties.');
+				return chooseNode(argument);
+			}, documentSources, updateDocument, refresh });
 		const version = document.version;
 		const selected = await vscode.window.showQuickPick([
 			{ label: 'Title', description: info.title, field: 'title' },
