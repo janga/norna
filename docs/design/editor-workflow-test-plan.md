@@ -487,10 +487,11 @@ manual review and authorized committing this implementation on 2026-09-30.
 
 ## Site Tree Addresses And Paths (BL-157)
 
-The owner installs evaluation extension **0.12.2** and reviews these changes:
+The owner installs evaluation extension **0.12.3** and reviews these changes:
 
 - Hover over the homepage and nested pages. A page shows its full URL and
-  slug on separate lines without headings; the homepage has only its URL.
+  slug on separate lines labelled **URL:** and **Slug:**; the homepage has
+  only **URL:**. Check that a wrapped long URL is distinct from the slug.
 - Toggle **Show URL paths** in the view menu, then reload the window. Check
   that the choice persists and that narrow rows with long paths still show
   error and unsaved indicators before the path. Expansion has no effect on

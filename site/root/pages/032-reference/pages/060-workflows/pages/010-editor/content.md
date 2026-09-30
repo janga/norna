@@ -88,7 +88,7 @@ The homepage row uses its title and is marked **Homepage**. Select it to edit
 `root/content.md` in your chosen site source folder. Every page works the same
 way: its title opens its own `content.md`, which has no separate row in Site
 Tree. Hover over a page to see its complete published URL followed by its
-slug, without labels. The homepage shows just its URL. When site settings are
+slug, labelled **URL:** and **Slug:**. The homepage shows only **URL:**. When site settings are
 unavailable, the tooltip shows the known site-relative path.
 
 Choose **Show URL paths** in the Site Tree view menu to show paths beside page

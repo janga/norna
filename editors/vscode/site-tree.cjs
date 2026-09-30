@@ -317,7 +317,7 @@ function registerSiteTree(context, output) {
 				item.command = { command: 'nornaEditor.selectSiteGroup', title: 'Select' };
 			} else if (node.sourcePath) {
 				item.tooltip = isPage(node)
-					? [pageAddress(node), node.isHome ? '' : node.url?.split('/').filter(Boolean).at(-1)].filter(Boolean).join('\n')
+					? [`URL: ${pageAddress(node)}`, node.isHome ? '' : `Slug: ${node.url?.split('/').filter(Boolean).at(-1)}`].filter(Boolean).join('\n')
 					: [node.kind === 'incomplete' ? 'Add the missing source file' : node.title,
 						node.description, node.sourcePath, node.themeHelp, problemHelp].filter(Boolean).join('\n');
 				item.resourceUri = vscode.Uri.file(node.sourcePath);

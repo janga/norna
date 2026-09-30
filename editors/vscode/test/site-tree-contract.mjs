@@ -195,7 +195,7 @@ try {
 	assert.equal(localTheme.description, '', 'Theme help belongs in hover, not a permanent row description.');
 	assert.match(localTheme.tooltip, /Visual settings for this page and its descendants/);
 	assert.match(localTheme.tooltip, /Preset: documentation\nPreset source: root\/tree-theme.yaml/);
-	assert.equal(provider.getTreeItem(home).tooltip, 'https://example.com/');
+	assert.equal(provider.getTreeItem(home).tooltip, 'URL: https://example.com/');
 	assert.match(provider.getTreeItem(roots.find((node) => node.role === 'public')).tooltip, /Files published unchanged/);
 	assert.equal(state.get('norna.siteTree.activeSite'), siteRoot);
 	assert.equal(contexts.get('nornaSiteTree.hasActiveSite'), true);
@@ -220,7 +220,7 @@ try {
 	}
 	assert.deepEqual(copied, []);
 
-	assert.equal(provider.getTreeItem(guide).tooltip, 'https://example.com/guide/\nguide');
+	assert.equal(provider.getTreeItem(guide).tooltip, 'URL: https://example.com/guide/\nSlug: guide');
 	assert.equal(provider.getTreeItem(guide).description, '');
 	assert.equal(contexts.get('nornaSiteTree.showUrlPaths'), false);
 	await commands.get('nornaEditor.toggleUrlPaths')();
@@ -232,12 +232,12 @@ try {
 	const settingsOverlay = { uri: vscode.Uri.file(settingsPath), isDirty: true, getText: () => 'url: https://docs.example.org/manual/\n' };
 	documents.push(settingsOverlay);
 	await registered.refresh();
-	assert.equal(provider.getTreeItem(guide).tooltip, 'https://docs.example.org/manual/guide/\nguide');
+	assert.equal(provider.getTreeItem(guide).tooltip, 'URL: https://docs.example.org/manual/guide/\nSlug: guide');
 	assert.equal(provider.getTreeItem(guide).description, '/manual/guide/');
-	assert.equal(provider.getTreeItem(home).tooltip, 'https://docs.example.org/manual/');
+	assert.equal(provider.getTreeItem(home).tooltip, 'URL: https://docs.example.org/manual/');
 	documents.splice(documents.indexOf(settingsOverlay), 1);
 	await registered.refresh();
-	assert.equal(provider.getTreeItem(guide).tooltip, 'https://example.com/guide/\nguide');
+	assert.equal(provider.getTreeItem(guide).tooltip, 'URL: https://example.com/guide/\nSlug: guide');
 	await commands.get('nornaEditor.toggleUrlPaths')();
 	assert.equal(provider.getTreeItem(guide).description, '');
 
@@ -254,7 +254,7 @@ try {
 	}
 	assert.deepEqual(opened, [], 'Selecting grouping rows must not open files.');
 	assert.equal(home.children.some((node) => node.title === 'content.md'), false);
-	assert.equal(provider.getTreeItem(home).tooltip, 'https://example.com/');
+	assert.equal(provider.getTreeItem(home).tooltip, 'URL: https://example.com/');
 	assert.equal(provider.getTreeItem(home).command.command, 'nornaEditor.openSiteNode');
 	await commands.get('nornaEditor.openSiteNode')(home);
 	assert.deepEqual(opened.pop(), ['vscode.open', home.sourcePath]);
@@ -348,7 +348,7 @@ try {
 	assert.equal(commands.has('nornaEditor.pageActions'), false);
 	await commands.get('nornaEditor.toggleUrlPaths')();
 	assert.equal(provider.getTreeItem(guide).description, 'FROM /guide/', 'The move source must not repeat the same path.');
-	assert.equal(provider.getTreeItem(guide).tooltip, 'https://example.com/guide/\nguide');
+	assert.equal(provider.getTreeItem(guide).tooltip, 'URL: https://example.com/guide/\nSlug: guide');
 	await commands.get('nornaEditor.toggleUrlPaths')();
 	assert.equal(provider.getTreeItem(guide).contextValue, 'nornaMoveSource');
 	await commands.get('nornaEditor.copyFolderPath')(guide);
@@ -573,7 +573,7 @@ try {
 	await commands.get('nornaEditor.newPage')();
 	assert.equal(inputs.length, 0, 'An inactive selection must fall back to the chosen site, without a foreign-parent prompt.');
 	tree.selection = [];
-	assert.equal(provider.getTreeItem(legacy.children[0]).tooltip, '/', 'Older engines without address support keep the known path.');
+	assert.equal(provider.getTreeItem(legacy.children[0]).tooltip, 'URL: /', 'Older engines without address support keep the known path.');
 	await commands.get('nornaEditor.toggleUrlPaths')();
 	// A reload restores the explicit site rather than following the open file.
 	for (const subscription of context.subscriptions) subscription.dispose();
@@ -612,7 +612,7 @@ try {
 	assert.equal((await provider.getChildren()).find((node) => node.isHome).siteRoot, siteRoot, 'A missing required file must not switch the active site.');
 	assert.match(provider.getTreeItem((await provider.getChildren()).find((node) => node.role === 'configuration')).description, /error/);
 	assert.ok(treeDiagnostics.get(path.join(siteRoot, 'site-config/settings.yaml'))?.length, 'Report a site configuration problem at its own file.');
-	assert.equal(provider.getTreeItem((await provider.getChildren()).find((node) => node.isHome)).tooltip, '/', 'Missing settings must clear the previous domain.');
+	assert.equal(provider.getTreeItem((await provider.getChildren()).find((node) => node.isHome)).tooltip, 'URL: /', 'Missing settings must clear the previous domain.');
 	await rm(homePath);
 	await registered.refresh();
 	const damagedHome = (await provider.getChildren()).find((node) => node.isHome);

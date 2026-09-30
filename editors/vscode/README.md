@@ -55,8 +55,8 @@ Directories select without opening a file. Individual files use VS Code's
 normal editor or preview, including image previews.
 
 Page names hide numeric ordering prefixes. Hover over a page to see its full
-published URL and its slug on separate lines, without labels. The homepage
-shows only its URL. If the configured address is unavailable, the tooltip
+published URL and its slug on separate lines labelled **URL:** and **Slug:**.
+The homepage shows only **URL:**. If the configured address is unavailable, the tooltip
 shows the known site-relative path.
 Choose **Show URL paths** in the Site Tree view menu to add paths after page
 titles. It starts off, remembers your choice for the workspace, and applies to

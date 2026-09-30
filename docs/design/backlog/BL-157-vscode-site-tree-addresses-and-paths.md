@@ -21,14 +21,14 @@ step. The existing page-move interaction remains governed by
 - Keep page titles as the normal tree labels. Indentation communicates the
   hierarchy; expansion continues to reveal page contents and child pages.
 - Replace the verbose ordinary page tooltip with the complete published URL
-  and the page's own slug, on separate lines. Neither value has a label or
-  heading. Omit the repeated page title, generic click instructions and local
+  and the page's own slug, on separate lines labelled **URL:** and **Slug:**.
+  The homepage shows only **URL:**. Omit the repeated page title, generic click instructions and local
   source path from this ordinary tooltip.
 - Example tooltip for a page with slug `installation`:
 
   ```text
-  https://example.se/guide/installation/
-  installation
+  URL: https://example.se/guide/installation/
+  Slug: installation
   ```
 
 - Add **Show URL paths** to the existing Site Tree view menu. It applies to
@@ -62,7 +62,7 @@ are available through the implemented
 
 ## Acceptance And Verification
 
-- Default page rows remain compact; ordinary tooltips contain the unlabelled
+- Default page rows remain compact; ordinary tooltips contain the labelled
   address and slug in that order.
 - The view-menu choice shows and hides paths throughout the tree and survives
   reopening the workspace. Page expansion does not control address visibility.
@@ -97,3 +97,13 @@ editor reference parses without errors. VSIX **0.12.2** was built at
 checked. No installation, native interface review or full release suite was
 performed. The owner's review steps are in the
 [editor workflow test plan](../editor-workflow-test-plan.md#site-tree-addresses-and-paths-bl-157).
+
+
+The owner revised the tooltip decision on 2026-09-30 after reviewing 0.12.2:
+label the values **URL:** and **Slug:** so that the slug cannot be mistaken
+for a continuation of a wrapped URL. This supersedes the original decision
+to omit labels; the tooltip retains the same two values.
+
+The label correction passed the focused Site Tree adapter contract and VSIX
+**0.12.3** packaging. The owner reviews the labels and long-URL wrapping in the
+native interface; that manual check has not been performed here.

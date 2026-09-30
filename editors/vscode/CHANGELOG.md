@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.3
+
+- Label page tooltip values URL and Slug so a slug cannot be mistaken for a
+  continuation of a wrapped address.
+
 ## 0.12.2
 
 - Show only the published URL and slug in page tooltips. Theme details remain
