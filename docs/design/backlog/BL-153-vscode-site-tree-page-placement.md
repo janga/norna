@@ -256,4 +256,5 @@ Implemented in **0.13.6**. The focused tree adapter and documentation checks
 passed. The adapter covers changed-address and reorder labels, cancellation
 at both locations, removal of the extra row/description and the existing final
 confirmation flow. VSIX packaging passed and its version and bundle were
-verified. Native review remains for the owner.
+verified. The owner approved the native presentation in **0.13.6** on
+2026-09-30 at 17:51 CEST (“Ser bra ut. Godkänner.”).

@@ -599,4 +599,6 @@ Verify that the page titles/icons and optional URL display retain their ordinary
 appearance. The normal selection highlight follows selection.
 
 Focused adapter checks verify the labels, removed description/note row, and
-continued confirmation flow. Native presentation remains for the owner's review.
+continued confirmation flow. The owner approved the native presentation in
+**0.13.6** on 2026-09-30 at 17:51 CEST. This approval does not add evidence of
+individual test cases beyond the checks recorded above.
