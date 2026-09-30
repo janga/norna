@@ -598,7 +598,9 @@ Try both cancellation rows. The normal selection highlight follows selection;
 there is no persistent custom background or toolbar styling in this revision.
 
 
-Extension **0.13.4** refines the destination labels to `Complete move to <slug>`
+Extension **0.13.5** corrects the destination labels to `Complete move to <slug>`
 and `Cancel move to <slug>`. Review a move to another parent: both actions
-should use only the moving page's slug, while source cancellation still shows
-the original relative URL. Completion continues to open the final confirmation.
+should use the selected target page's slug, while source cancellation still
+shows the original relative URL. Test before/after placement as well as child
+placement; the label identifies the selected target in each case. The homepage
+is shown as `/` because it has no slug. Completion continues to open the final confirmation.

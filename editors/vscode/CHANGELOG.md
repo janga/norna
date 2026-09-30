@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.5
+
+- Fix destination move actions to show the selected target page's slug instead
+  of the moving page's slug. Show `/` when the target is the homepage.
+
 ## 0.13.4
 
 - Shorten the destination actions to `Complete move to <slug>` and

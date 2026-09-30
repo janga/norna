@@ -212,13 +212,22 @@ were verified. Native presentation remains for the owner's review.
 
 ### Shorter Destination Actions
 
-Owner refinement on 2026-09-30, implemented in **0.13.4**: the destination
+Owner refinement on 2026-09-30, corrected in **0.13.5**: the destination
 rows read `Complete move to <slug>` and `Cancel move to <slug>`. Use the
-moving page's destination slug (the final URL segment), without slashes or
-parent path. For `/topics/guide/`, both rows end in `guide`. The source's
+selected target page's slug, without slashes or parent path. Moving `guide`
+under, before or after `topics` makes both rows end in `topics`. When the
+selected target is the homepage, use `/` because it has no slug. The source's
 **Cancel page move from /relative/path/** label remains unchanged. Completion
 still opens the existing final confirmation.
 
 The focused tree adapter and documentation checks passed. VSIX 0.13.4 was
 built and its version and bundle verified. Native label review remains for
 the owner.
+
+Owner review caught the incorrect source slug in 0.13.4. The labels now use
+the selected target, rather than the resulting URL of the moving page.
+
+The updated regression failed before the fix and passed after it. Focused
+adapter checks cover a different target slug for sibling/child placement and
+`/` for the homepage. Documentation and VSIX packaging passed; version 0.13.5
+and its packaged bundle were verified. Native review remains for the owner.

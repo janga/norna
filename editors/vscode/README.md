@@ -137,8 +137,9 @@ it. Clicking a page still opens its `content.md`. The source page remains in
 place with its normal title, page icon and description. Starting the move
 expands that page to show **Cancel page move from /relative/path/**. A temporary
 row at the destination uses the same page title and icon; its cancellation
-row reads **Cancel move to slug**. From extension 0.13.4, destination actions
-use the moving page’s slug, for example **Cancel move to guide**. With **Show URL paths** enabled, page rows show their
+row reads **Cancel move to slug**. From extension 0.13.5, destination actions
+use the selected target page’s slug, for example **Cancel move to topics**.
+The homepage is shown as `/`. With **Show URL paths** enabled, page rows show their
 respective paths. The ordinary selection highlight follows the selected row.
 The destination's other children show affected addresses, authored links to update,
 and a reminder that files have not changed yet. Expand the detail groups to

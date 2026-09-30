@@ -381,6 +381,11 @@ try {
 	await commands.get(provider.getTreeItem(overview).command.command)(overview);
 	assert.deepEqual(opened.pop(), ['vscode.open', overview.sourcePath], 'Clicking a page still opens its content during a move.');
 	assert.equal(contexts.get('nornaSiteTree.moveActive'), true, 'Opening content does not cancel placement.');
+	await commands.get('nornaEditor.placeMoveLast')(home);
+	const homePreview = (await provider.getChildren(pages)).find(node => node.kind === 'movePreview');
+	const homeActions = await provider.getChildren(homePreview);
+	assert.equal(homeActions[0].title, 'Complete move to /', 'The homepage has no slug; show its root path.');
+	assert.equal(homeActions[1].title, 'Cancel move to /');
 	await commands.get('nornaEditor.placeMoveAfter')(overview);
 	assert.equal(tree.message, undefined, 'The destination preview carries its own actions.');
 	const movedPreview = (await provider.getChildren(pages)).at(-1);
@@ -390,8 +395,8 @@ try {
 	assert.deepEqual(provider.getTreeItem(movedPreview).iconPath, restingGuideItem.iconPath);
 	assert.equal(provider.getTreeItem(movedPreview).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
 	const [completeMove, cancelMove, addresses, links, note] = await provider.getChildren(movedPreview);
-	assert.equal(completeMove.title, 'Complete move to guide');
-	assert.equal(cancelMove.title, 'Cancel move to guide');
+	assert.equal(completeMove.title, 'Complete move to topics');
+	assert.equal(cancelMove.title, 'Cancel move to topics');
 	assert.equal(provider.getTreeItem(cancelMove).description, undefined);
 	assert.equal(provider.getTreeItem(cancelMove).tooltip, undefined);
 	assert.equal(provider.getTreeItem(completeMove).description, 'opens final confirmation');
@@ -417,8 +422,8 @@ try {
 	assert.equal((await provider.getChildren(previewFolder))[0].title, 'Guide');
 	const crossParentPreview = (await provider.getChildren(previewFolder))[0];
 	assert.equal(provider.getTreeItem(crossParentPreview).description, undefined);
-	assert.equal((await provider.getChildren(crossParentPreview))[0].title, 'Complete move to guide');
-	assert.equal((await provider.getChildren(crossParentPreview))[1].title, 'Cancel move to guide');
+	assert.equal((await provider.getChildren(crossParentPreview))[0].title, 'Complete move to topics');
+	assert.equal((await provider.getChildren(crossParentPreview))[1].title, 'Cancel move to topics');
 	assert.equal((await provider.getChildren(guide))[0].title, 'Cancel page move from /guide/');
 	await commands.get('nornaEditor.toggleUrlPaths')();
 	assert.equal(provider.getTreeItem(crossParentPreview).description, '/topics/guide/');
