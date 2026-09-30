@@ -171,3 +171,10 @@ Verify menu visibility for normal pages, the homepage, the moving branch,
 resources and the preview. Verify cancellation without a selected source,
 cleanup of the preview and restored menus. The owner installs the evaluation
 VSIX and reviews toolbar visibility, native menus and keyboard focus behavior.
+
+Implemented in evaluation extension **0.13.2**. The Site Tree adapter and package
+contract passed, including valid target markers, cancellation from another row,
+unchanged source files, restored state, hidden ordinary menu entries and the
+focus conditions for Escape. Documentation checks passed. The VSIX was built
+and its manifest and bundle verified against the current files. Native menus,
+toolbar presentation and keyboard dispatch remain for the owner's review.

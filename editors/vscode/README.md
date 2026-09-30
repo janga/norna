@@ -149,10 +149,16 @@ descendants. Existing aliases remain available. Confirm **Complete page move**
 to apply, or cancel to return to the tree. **Cancel page move** leaves files
 unchanged and ends the move. Reordering keeps its simple confirmation because
 addresses do not change. The checkbox requires extension 0.13.1 and the engine's
-`sitePagePlacementOptionsApiVersion: 1`; older engines retain preservation. While a
-move is active, the Site Tree header does not display move status or controls.
-A second move cannot start. If
-planning fails, the error dialog can open
+`sitePagePlacementOptionsApiVersion: 1`; older engines retain preservation.
+
+Extension 0.13.2 shows only applicable placement actions and **Cancel Page Move**
+in row menus during a move; the preview also offers completion. To cancel from
+anywhere in the tree, use the **Cancel Page Move** close icon in the Site Tree
+toolbar, any row's context menu, or Escape while the tree has focus. Escape in
+an editor or input field keeps its normal behavior. Cancellation leaves files
+unchanged and restores the ordinary menus. The source and preview cancellation
+rows remain available. A second move cannot start until the current move ends.
+If planning fails, the error dialog can open
 the affected file, keep the move active for another placement, or cancel it.
 Reordering among siblings leaves URLs intact; moving to another parent updates
 supported internal links and preserves old

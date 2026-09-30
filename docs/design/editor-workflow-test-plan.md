@@ -561,3 +561,23 @@ stale source state and cancellation. Confirmation lifecycle and headless
 Chromium checks cover the default checkbox, keyboard activation, selected
 policy, errors and closing during planning. Native owner review remains
 outstanding.
+
+
+## Move Menus And Cancellation (BL-153 Follow-up)
+
+Evaluation extension **0.13.2** simplifies row menus during a page move and
+adds cancellation in the Site Tree toolbar and on Escape.
+
+Owner review: start a move, collapse the source branch and scroll it out of
+view. Open another page's menu: only applicable placement actions and
+**Cancel Page Move** should appear. The moving branch and resource rows offer
+cancellation without placement actions. Cancel using the toolbar close icon,
+then repeat using another row's menu and Escape with focus in the tree.
+Try both before choosing a destination and after a preview appears. Files
+must remain unchanged, the preview must disappear and normal menus return.
+Escape in an editor or an input field must keep its usual behavior. Check
+that cancellation at the source and preview still works.
+
+Native toolbar visibility, menu presentation and keyboard dispatch remain for
+the owner's review. Focused automated checks cover the contributed menu and
+keybinding conditions, valid targets and cancellation state cleanup.

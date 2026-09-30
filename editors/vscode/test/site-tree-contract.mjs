@@ -338,7 +338,10 @@ try {
 	await commands.get('nornaEditor.movePage')(guide);
 	assert.equal(revealCalls.at(-1)?.node.id, guide.id, 'Starting a move must reveal the source instead of relying on its initial expansion state.');
 	assert.deepEqual(revealCalls.at(-1)?.options, { select: true, focus: false, expand: true }, 'Explicit expansion overrides a previously collapsed native branch so Cancel is visible.');
-	await commands.get('nornaEditor.cancelMove')();
+	await commands.get('nornaEditor.cancelMove')(overview);
+	assert.equal(contexts.get('nornaSiteTree.moveActive'), false, 'Cancellation from another row does not depend on the source selection.');
+	assert.equal(await readFile(guide.sourcePath, 'utf8'), '# Guide\n');
+	assert.doesNotMatch(provider.getTreeItem(overview).contextValue, /;moveTarget;/);
 	assert.ok(!(await provider.getChildren(guide)).some(node => node.kind === 'moveAction'));
 	const revealsBeforeRestart = revealCalls.length;
 	await commands.get('nornaEditor.movePage')(guide);
@@ -360,8 +363,11 @@ try {
 	assert.equal(provider.getTreeItem(guide).tooltip, 'URL: https://example.com/guide/\nSlug: guide');
 	await commands.get('nornaEditor.toggleUrlPaths')();
 	assert.equal(provider.getTreeItem(guide).contextValue, 'nornaMoveSource');
+	assert.doesNotMatch(provider.getTreeItem(firstChild).contextValue, /;moveTarget;/, 'Descendants are not placement targets.');
+	assert.match(provider.getTreeItem(overview).contextValue, /;moveTarget;/);
+	assert.match(provider.getTreeItem(home).contextValue, /;moveTarget;/);
 	await commands.get('nornaEditor.copyFolderPath')(guide);
-	assert.equal(copied.pop(), path.dirname(guide.sourcePath), 'Folder copying remains available during a move.');
+	assert.equal(copied.pop(), path.dirname(guide.sourcePath), 'The existing folder-copy command remains callable even while hidden from the move menu.');
 	assert.equal(provider.getTreeItem(guide).iconPath.color.id, 'notificationsInfoIcon.foreground');
 	assert.equal(provider.getTreeItem(overview).command.command, 'nornaEditor.openSiteNode');
 	assert.equal(provider.getTreeItem(overview).command.title, 'Open content.md');

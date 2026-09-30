@@ -43,8 +43,21 @@ assert.ok(extensionManifest.contributes.menus['view/title'].some(item => item.co
 assert.equal(extensionManifest.contributes.commands.find((item) => item.command === 'nornaEditor.movePage').enablement,
 	'!nornaSiteTree.moveActive');
 
-assert.ok(!extensionManifest.contributes.menus['view/title'].some(item => item.command === 'nornaEditor.cancelMove'));
-assert.ok(itemMenus.some(item => item.command === 'nornaEditor.cancelMove' && item.when.includes('nornaMoveSource')));
+assert.ok(extensionManifest.contributes.menus['view/title'].some(item => item.command === 'nornaEditor.cancelMove'
+	&& item.when === 'view == nornaSiteTree && nornaSiteTree.moveActive' && item.group.startsWith('navigation')));
+assert.ok(itemMenus.some(item => item.command === 'nornaEditor.cancelMove'
+	&& item.when === 'view == nornaSiteTree && nornaSiteTree.moveActive'), 'Cancellation is available on every row during a move.');
+for (const item of itemMenus) {
+	if (item.command?.startsWith('nornaEditor.placeMove')) assert.ok(item.when.includes(';moveTarget;'), 'Only pages outside the moving branch are targets.');
+	else if (!['nornaEditor.cancelMove', 'nornaEditor.acceptMovePreview'].includes(item.command)) {
+		assert.ok(item.when.includes('!nornaSiteTree.moveActive'), `Hide ${item.command ?? item.submenu} during placement.`);
+	}
+}
+assert.deepEqual(extensionManifest.contributes.keybindings.filter(item => item.command === 'nornaEditor.cancelMove'), [{
+	command: 'nornaEditor.cancelMove', key: 'escape',
+	when: 'focusedView == nornaSiteTree && listFocus && !inputFocus && nornaSiteTree.moveActive',
+}]);
+assert.equal(extensionManifest.contributes.commands.find(item => item.command === 'nornaEditor.cancelMove').enablement, 'nornaSiteTree.moveActive');
 assert.ok(itemMenus.every(item => !item.group.startsWith('inline')), 'Resting rows have no inline Add/ellipsis buttons.');
 assert.ok(itemMenus.every(item => item.command !== 'nornaEditor.openSiteNode'), 'Opening is row activation, not a context action.');
 assert.ok(!extensionManifest.contributes.commands.some(item => /nornaEditor\.(pageActions|fileActions|imageActions)$/.test(item.command)));

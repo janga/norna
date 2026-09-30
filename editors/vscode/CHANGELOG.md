@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.2
+
+- Hide ordinary row actions during page moves and show placement choices only
+  for pages outside the moving branch.
+- Cancel a move from the Site Tree toolbar, any row menu, or Escape while the
+  tree has focus, even when the original page is out of sight.
+
 ## 0.13.1
 
 - Add a checked Preserve old addresses as aliases option to the final page-move

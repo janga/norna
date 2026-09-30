@@ -339,9 +339,13 @@ the tree, or choose **Cancel page move** to end the move without changing files.
 The checkbox requires extension 0.13.1 and the engine's
 `sitePagePlacementOptionsApiVersion: 1`; older engines retain preservation.
 Reordering has no alias choice because its addresses stay the same.
-You can also cancel from the source page, including its context menu. Move status
-and controls do not appear in the Site Tree header. Another move cannot start
-until you finish or cancel this one. If a placement fails, the error dialog offers to
+With extension 0.13.2, row menus show only applicable placement actions and
+**Cancel Page Move** during a move; the preview also offers completion. Cancel
+from anywhere using the **Cancel Page Move** close icon in the Site Tree toolbar,
+any row's context menu, or Escape while the tree has focus. Escape in an editor
+or input field keeps its normal behavior. Cancellation leaves files unchanged
+and restores ordinary menus. The cancellation rows at the source and preview
+remain available. Another move cannot start until you finish or cancel this one. If a placement fails, the error dialog offers to
 open the affected file, try another placement or cancel the move. Closing that
 dialog without a choice also cancels. A new parent changes the page's address
 and those of its descendants; Norna updates supported internal links and

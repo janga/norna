@@ -286,6 +286,8 @@ function registerSiteTree(context, output) {
 						: node.isHome ? 'nornaHome' : 'nornaPage';
 			if (sites.get(node.siteRoot)?.resourceActions && node.actions && !(node.id === moveSourceId && node.siteRoot === moveSourceRoot)) item.contextValue += ';' + node.actions.join(';;') + ';';
 			if (hasFolderPath(node) && item.contextValue !== 'nornaMoveSource') item.contextValue += ';copyFolderPath;';
+			const moveSource = nodes.get(moveSourceId);
+			if (moveSource && node.siteRoot === moveSourceRoot && isPage(node) && !isWithin(node, moveSource)) item.contextValue += ';moveTarget;';
 			const unsaved = vscode.workspace.textDocuments.some((document) => document.uri.fsPath === node.sourcePath && document.isDirty);
 			const dirtyOwners = dirtyPageOwners(node.siteRoot);
 			const subtreeDirectory = isPage(node) ? path.dirname(node.sourcePath)
