@@ -16,7 +16,9 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-No implementation item is currently active.
+- [`BL-158` VS Code Page Slug Editing](docs/design/backlog/BL-158-vscode-page-slug-editing.md):
+  **Ready.** Edit the slug through Properties with a preview and a choice to
+  preserve old addresses for the page and its descendants.
 
 ## Next
 
