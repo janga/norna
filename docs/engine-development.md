@@ -482,7 +482,13 @@ removal help use the shared theme resolver with dirty-source overlays; keep
 inheritance rules in that resolver, not in the extension.
 
 Extension 0.5.0 also negotiates `siteRemovalApiVersion: 1` and
-`siteAddressApiVersion: 1` through that entry. `editor-site-links.mjs` overlays
+`siteAddressApiVersion: 1` through that entry. The optional
+`sitePageAddressOptionsApiVersion: 1` adds the boolean `preserveAliases` option
+to `planEditorPageAddress`, defaulting to true. False suppresses new aliases
+for all changed pages in the subtree while retaining existing aliases; an
+alias reclaimed as the primary address is removed from the alias list. The
+option is carried by the plan and rechecked during application.
+`editor-site-links.mjs` overlays
 dirty documents on the shared link graph and records incomplete reads.
 Removal plans exclude links wholly inside a deleted branch. Address changes
 reuse `page-move-plan.mjs` and `page-move-apply.mjs`; the extension supplies a

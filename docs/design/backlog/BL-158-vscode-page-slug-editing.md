@@ -51,3 +51,11 @@ remain the separate BL-139 design topic.
 - Use focused engine address, form and adapter tests. The owner installs the
   VSIX and reviews the interface, including cancellation, dirty buffers and
   save/reopen behavior. Record manual checks as outstanding until reported.
+
+## Implementation Evidence
+
+2026-09-30: the engine address API accepts a boolean alias-preservation choice,
+keeps its previous default, and records the choice in the reviewed plan.
+All 13 focused engine address tests passed, including whole-subtree choices,
+existing aliases, reclaimed addresses, updated attachment links and rejection
+of a changed choice after planning.

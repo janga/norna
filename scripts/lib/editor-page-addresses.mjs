@@ -6,6 +6,7 @@ import { createPageMovePlan } from './page-move-plan.mjs';
 import { applyPageMovePlan } from './page-move-apply.mjs';
 
 export const siteAddressApiVersion = 1;
+export const sitePageAddressOptionsApiVersion = 1;
 
 export const getEditorPageAddresses = async (options) => {
 	const { structure, graph, settings, incomplete } = await readEditorLinkState(options);
@@ -21,7 +22,8 @@ export const getEditorPageAddresses = async (options) => {
 	};
 };
 
-export const planEditorPageAddress = async ({ siteRoot, sourcePath, segment, sources = new Map() }) => {
+export const planEditorPageAddress = async ({ siteRoot, sourcePath, segment, preserveAliases = true, sources = new Map() }) => {
+	if (typeof preserveAliases !== 'boolean') throw new Error('Choose whether to preserve old addresses as aliases.');
 	await checkedPath(siteRoot, sourcePath);
 	if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(segment)) throw new Error('Use lowercase letters, numbers and single hyphens, for example install-norna. Enter one URL segment, without slashes.');
 	const state = await readEditorLinkState({ siteRoot, sources });
@@ -32,7 +34,7 @@ export const planEditorPageAddress = async ({ siteRoot, sourcePath, segment, sou
 	if (sourcePaths.some((filename) => sources.has(filename))) throw new Error('Save or undo unsaved page, category and site-settings edits before changing an address.');
 	for (const filename of sourcePaths) await checkedPath(siteRoot, filename);
 	const to = `/${node.parentPagePath ? node.parentPagePath + '/' : ''}${segment}/`;
-	const plan = await createPageMovePlan({ from: `/${node.pagePath}/`, to,
+	const plan = await createPageMovePlan({ from: `/${node.pagePath}/`, to, preserveAliases,
 		graph: state.graph, publicFiles: state.publicFiles, siteStructure: state.structure,
 		sitePagesDir: getSiteSourcePaths(siteRoot).pages, sitePagesLabel: `${siteRoot}/root/pages`, generatedRoutes: state.generatedRoutes });
 	await checkedPath(siteRoot, plan.destinationDirectory);
@@ -43,7 +45,7 @@ export const planEditorPageAddress = async ({ siteRoot, sourcePath, segment, sou
 	return { ...plan, siteRoot, sourcePath, segment, generatedRoutes: state.generatedRoutes,
 		webFrom: addresses.webAddress,
 		webTo: new URL(to.slice(1), state.settings.url.replace(/\/$/, '') + '/').href,
-		fingerprint: JSON.stringify([await snapshot(plan.sourceDirectory), snapshots, plan.to, plan.fileChanges.map(({ updatedSource }) => updatedSource)]) };
+		fingerprint: JSON.stringify([await snapshot(plan.sourceDirectory), snapshots, plan.to, preserveAliases, plan.fileChanges.map(({ updatedSource }) => updatedSource)]) };
 };
 
 export const applyEditorPageAddress = async (plan, { renameDirectory } = {}) => {

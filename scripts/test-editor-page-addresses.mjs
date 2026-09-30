@@ -201,3 +201,43 @@ test('a refused editor rename does not roll back sources when no move has starte
 	assert.equal(await readFile(f.home, 'utf8'), '# A new saved edit\n');
 	assert.equal(await readFile(f.sourcePath, 'utf8'), plan.sourceFiles.find(({ contentPath }) => contentPath === f.sourcePath).source);
 });
+
+for (const preserveAliases of [true, false]) test(`slug change preserves existing aliases and applies preserveAliases=${preserveAliases} to the whole subtree`, async (t) => {
+	const f = await fixture(t);
+	await writeFile(f.child, '---\npage:\n  aliases: [/old-child/]\n---\n# Child\n\n[Parent](../)\n');
+	await f.write('root/pages/010-guide/pages/020-child/pages/030-deep/content.md', '# Deep\n');
+	await f.write('root/pages/010-guide/downloads/manual.pdf', 'Attachment bytes');
+	await writeFile(f.home, '# Home\n\n[Guide](/guide/)\n[Child](/guide/child/)\n[Deep](/guide/child/deep/)\n[Old alias](/old-guide/)\n[File](/guide/downloads/manual.pdf)\n');
+	const plan = await planEditorPageAddress({ ...f, segment: 'handbook', preserveAliases });
+	assert.equal(plan.preserveAliases, preserveAliases);
+	assert.equal(plan.mappings.length, 3);
+	assert.equal(plan.aliasChanges.length, preserveAliases ? 3 : 0);
+	await assert.rejects(applyEditorPageAddress({ ...plan, preserveAliases: !preserveAliases }), /site changed/);
+	const result = await applyEditorPageAddress(plan);
+	for (const [relative, oldPath, existing] of [
+		['', '/guide/', ['/old-guide/']],
+		['pages/020-child/', '/guide/child/', ['/old-child/']],
+		['pages/020-child/pages/030-deep/', '/guide/child/deep/', []],
+	]) {
+		const addresses = await getEditorPageAddresses({ siteRoot: f.siteRoot, sourcePath: path.join(plan.destinationDirectory, relative, 'content.md') });
+		assert.deepEqual([...addresses.aliases].sort(), [...existing, ...(preserveAliases ? [oldPath] : [])].sort());
+	}
+	assert.equal(path.basename(plan.destinationDirectory), '010-handbook');
+	assert.match(await readFile(result.sourcePath, 'utf8'), /# Guide/);
+	const home = await readFile(f.home, 'utf8');
+	assert.match(home, /\[Child\]\(\/handbook\/child\/\)/);
+	assert.match(home, /\[Deep\]\(\/handbook\/child\/deep\/\)/);
+	assert.match(home, /\[File\]\(\/handbook\/downloads\/manual.pdf\)/);
+	assert.equal(await readFile(path.join(plan.destinationDirectory, 'downloads/manual.pdf'), 'utf8'), 'Attachment bytes');
+	// Reclaiming a prior primary address also works when no new aliases are wanted.
+	if (preserveAliases) {
+		const returned = await applyEditorPageAddress(await planEditorPageAddress({ siteRoot: f.siteRoot, sourcePath: result.sourcePath, segment: 'guide', preserveAliases: false }));
+		assert.deepEqual((await getEditorPageAddresses({ siteRoot: f.siteRoot, sourcePath: returned.sourcePath })).aliases, ['/old-guide/']);
+	}
+});
+
+test('alias preservation accepts only a boolean and defaults to preserving addresses', async (t) => {
+	const f = await fixture(t);
+	for (const preserveAliases of [null, 'false', 0]) await assert.rejects(planEditorPageAddress({ ...f, segment: 'handbook', preserveAliases }), /Choose whether/);
+	assert.equal((await planEditorPageAddress({ ...f, segment: 'handbook' })).preserveAliases, true);
+});

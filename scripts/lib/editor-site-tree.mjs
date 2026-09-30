@@ -21,7 +21,7 @@ export { siteTreeEditingApiVersion, getEditorSourceFileChoices, planEditorSource
 export { createSiteNode, planSiteNodeCreation, slugifyAsciiIdentifier };
 export { siteFileOperationsApiVersion, siteRemovalApiVersion, planEditorImageCopy, planEditorRemoval, getEditorImageUsage, createEditorImageAppend, createEditorImageBatchAppend } from './editor-site-files.mjs';
 export { getEditorIncomingLinks } from './editor-site-links.mjs';
-export { siteAddressApiVersion, getEditorPageAddresses, planEditorPageAddress, applyEditorPageAddress } from './editor-page-addresses.mjs';
+export { siteAddressApiVersion, sitePageAddressOptionsApiVersion, getEditorPageAddresses, planEditorPageAddress, applyEditorPageAddress } from './editor-page-addresses.mjs';
 export { sitePagePlacementApiVersion, planEditorPagePlacement, applyEditorPagePlacement } from './editor-page-placement.mjs';
 
 const sourceParts = (source, kind) => {
