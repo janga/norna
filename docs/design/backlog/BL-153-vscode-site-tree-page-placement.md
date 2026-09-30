@@ -147,3 +147,27 @@ documentation check passed. The tree adapter covers both alias choices,
 cancelled moves and stale previews; the lifecycle check discards plans when
 the form closes during planning. Native review of **0.13.1** remains for the
 owner. No complete release suite or installation was performed here.
+
+
+## Focused Move Menus And Reachable Cancellation
+
+Approved on 2026-09-30: while a page move is active, Site Tree context menus
+show only applicable placement actions and **Cancel Page Move**. The preview
+also retains **Complete Page Move…**. Hide ordinary actions, including disabled
+editing actions, inspection commands and the Add submenu, until the move ends.
+The moving page and its descendants cannot be placement targets.
+
+Cancellation must remain reachable without finding the original page:
+
+- Show a close icon in the Site Tree toolbar, labelled **Cancel Page Move**,
+  only during a move.
+- Offer **Cancel Page Move** from any row's context menu during a move.
+- Let Escape cancel while Site Tree has focus. Escape in an editor, input
+  field or final confirmation keeps its own behavior.
+- Retain the existing source and preview cancellation rows. Cancelling needs
+  no confirmation and leaves files unchanged; normal menus then return.
+
+Verify menu visibility for normal pages, the homepage, the moving branch,
+resources and the preview. Verify cancellation without a selected source,
+cleanup of the preview and restored menus. The owner installs the evaluation
+VSIX and reviews toolbar visibility, native menus and keyboard focus behavior.
