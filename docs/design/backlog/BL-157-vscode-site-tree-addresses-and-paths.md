@@ -107,3 +107,10 @@ to omit labels; the tooltip retains the same two values.
 The label correction passed the focused Site Tree adapter contract and VSIX
 **0.12.3** packaging. The owner reviews the labels and long-URL wrapping in the
 native interface; that manual check has not been performed here.
+
+## Owner Approval
+
+2026-09-30 at 15:51 CEST: the owner approved **BL-157 VS Code Site Tree
+Addresses And Paths** following the 0.12.3 tooltip correction. This closes the
+owner-review follow-up above. The approval does not add claims that each
+individual manual test scenario was performed.

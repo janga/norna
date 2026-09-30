@@ -487,7 +487,9 @@ manual review and authorized committing this implementation on 2026-09-30.
 
 ## Site Tree Addresses And Paths (BL-157)
 
-The owner installs evaluation extension **0.12.3** and reviews these changes:
+The owner approved **BL-157 VS Code Site Tree Addresses And Paths** on
+2026-09-30 at 15:51 CEST following evaluation build **0.12.3**. The scenarios
+below remain the review reference; individual results were not reported.
 
 - Hover over the homepage and nested pages. A page shows its full URL and
   slug on separate lines labelled **URL:** and **Slug:**; the homepage has
@@ -506,5 +508,5 @@ The owner installs evaluation extension **0.12.3** and reviews these changes:
 The focused tree adapter covers deployment prefixes, dirty settings, missing
 settings, older-engine fallback, persistence, move markers and plain directory
 copying. The package contract checks command/menu contributions. Automated
-checks do not establish native tooltip layout, truncation or keyboard usability;
-those remain for owner review.
+checks do not establish native tooltip layout, truncation or keyboard usability.
+The owner's approval is recorded separately above.
