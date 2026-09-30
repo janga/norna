@@ -208,7 +208,7 @@ function registerSiteTree(context, output) {
 	const childrenFor = (node) => {
 		if (node?.kind === 'movePreviewPages') return [movePreview?.ghost].filter(Boolean);
 		if (node.id === moveSourceId) return [
-			{ id: `move-cancel-source:${node.id}`, kind: 'moveAction', action: 'cancel', title: 'Cancel page move',
+			{ id: `move-cancel-source:${node.id}`, kind: 'moveAction', action: 'cancel', title: `Cancel page move from ${node.url}`,
 				siteRoot: node.siteRoot, parent: node, children: [] },
 			...node.children,
 		];
@@ -247,11 +247,11 @@ function registerSiteTree(context, output) {
 				item.iconPath = complete
 					? new vscode.ThemeIcon('arrow-right', new vscode.ThemeColor('notificationsInfoIcon.foreground'))
 					: new vscode.ThemeIcon('close');
-				item.description = complete ? 'opens final confirmation' : 'leave files unchanged';
+				item.description = complete ? 'opens final confirmation' : undefined;
 				item.tooltip = complete ? 'Open the final confirmation. Files change only after you confirm Complete page move.'
-					: 'Cancel this page move without changing files.';
+					: undefined;
 				item.command = { command: complete ? 'nornaEditor.acceptMovePreview' : 'nornaEditor.cancelMove', title: node.title };
-				item.accessibilityInformation = { label: `${node.title}. ${item.description}.` };
+				item.accessibilityInformation = { label: [node.title, item.description].filter(Boolean).join('. ') };
 				return item;
 			}
 			if (node.kind === 'moveDetailGroup' || node.kind === 'moveDetail') {
@@ -267,9 +267,9 @@ function registerSiteTree(context, output) {
 			if (node.kind === 'movePreview' || node.kind === 'movePreviewPages') {
 				item.contextValue = node.kind === 'movePreview' ? 'nornaMovePreview' : 'nornaMovePreviewPages';
 				item.iconPath = node.kind === 'movePreview'
-					? new vscode.ThemeIcon('file', new vscode.ThemeColor('notificationsInfoIcon.foreground'))
+					? node.listChildren ? pageListIcon : pageIcon
 					: new vscode.ThemeIcon('folder');
-				item.description = node.kind === 'movePreview' ? `TO ${node.destinationUrl} · ${node.positionLabel}` : undefined;
+				item.description = node.kind === 'movePreview' && showUrlPaths ? node.destinationUrl : undefined;
 				item.tooltip = node.kind === 'movePreview'
 					? `${movePreview?.description}\nComplete or cancel using the actions directly below this preview.` : 'Where the page would be placed';
 				item.command = { command: 'nornaEditor.selectSiteGroup', title: 'Select' };
@@ -300,15 +300,12 @@ function registerSiteTree(context, output) {
 			const issues = allIssues(node);
 			const severity = issues.some((issue) => issue.severity === 'error') ? 'error' : issues.length ? 'warning' : '';
 			item.description = [node.isHome ? 'Homepage' : '',
-				node.id === moveSourceId && node.siteRoot === moveSourceRoot ? `FROM ${node.url}` : '',
 				isPage(node) && node.hiddenFromNavigation ? 'unlisted' : '',
 				severity, node.note,
 				unsaved || isPage(node) && dirtyOwners.has(node.id) ? 'unsaved' : '',
 				dirtyBelowLabel,
-				showUrlPaths && isPage(node) && node.id !== moveSourceId ? pageUrlPath(node) : ''].filter(Boolean).join(' · ');
-			item.iconPath = node.id === moveSourceId && node.siteRoot === moveSourceRoot
-				? new vscode.ThemeIcon('file', new vscode.ThemeColor('notificationsInfoIcon.foreground'))
-				: node.kind === 'page' ? node.listChildren ? pageListIcon : pageIcon
+				showUrlPaths && isPage(node) ? pageUrlPath(node) : ''].filter(Boolean).join(' · ');
+			item.iconPath = node.kind === 'page' ? node.listChildren ? pageListIcon : pageIcon
 				: new vscode.ThemeIcon(configuration ? 'settings-gear' : node.kind === 'site' ? 'globe'
 					: ['directory', 'incomplete'].includes(node.kind) ? 'folder' : 'file');
 			const problemHelp = [...new Set(issues.map((issue) => `${issue.message}\n${issue.path}${issue.line ? `:${issue.line}` : ''}`))].join('\n\n');
@@ -646,7 +643,7 @@ function registerSiteTree(context, output) {
 		const changes = mappings.map((mapping) => `${mapping.oldPathname} → ${mapping.newPathname}`);
 		const aliasChoice = service.sitePagePlacementOptionsApiVersion === 1;
 		const description = `${describePlacement(source, target, placement, preview)}\n${changes.length ? `${aliasChoice ? 'Old addresses are preserved by default; review this choice when completing the move.' : 'Old addresses will continue to lead to the moved pages.'}\n${changes.join('\n')}` : 'Page addresses will not change.'}\n${linkChanges.length} authored link(s) will be updated.\nNo files changed yet.`;
-		const ghost = { id: `move-preview:${source.id}`, kind: 'movePreview', title: `Preview: ${source.title}`,
+		const ghost = { id: `move-preview:${source.id}`, kind: 'movePreview', title: source.title, listChildren: source.listChildren,
 			pageTitle: source.title, positionLabel: describePosition(target, placement), destinationUrl: plan.destinationUrl,
 			siteRoot: source.siteRoot, parent: pagesNode, children: [] };
 		const detailGroup = (kind, title, entries, empty) => {
@@ -658,7 +655,7 @@ function registerSiteTree(context, output) {
 		};
 		ghost.children = [
 			{ id: `move-complete:${source.id}`, kind: 'moveAction', action: 'complete', title: 'Complete page move…', siteRoot: source.siteRoot, parent: ghost, children: [] },
-			{ id: `move-cancel:${source.id}`, kind: 'moveAction', action: 'cancel', title: 'Cancel page move', siteRoot: source.siteRoot, parent: ghost, children: [] },
+			{ id: `move-cancel:${source.id}`, kind: 'moveAction', action: 'cancel', title: `Cancel page move to ${plan.destinationUrl}`, siteRoot: source.siteRoot, parent: ghost, children: [] },
 			detailGroup('addresses', 'Affected addresses', mappings.map(({ oldPathname, newPathname }) => ({
 				title: oldPathname, description: `→ ${newPathname}`, tooltip: `${oldPathname} → ${newPathname}. ${aliasChoice ? 'Preserved as an alias by default; choose in the final confirmation.' : 'The old address remains an alias.'}`,
 			})), `Unchanged: ${plan.sourceUrl}`),

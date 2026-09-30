@@ -325,10 +325,13 @@ or removing the offending file clears its tree indication after refresh.
 
 To change where a page appears in **Site Tree**, select **Move…** from its
 context menu. Right-click another page to place the moving page
-before, after, first or last under it. The source page stays in place, marked
-**FROM** with its current address. A temporary **Preview:** row at the destination
-is marked **TO** with its proposed address. Starting the move expands the source
-page to show **Cancel page move** immediately. Both rows use an accent-colored icon.
+before, after, first or last under it. From extension 0.13.3, the source page
+keeps its normal title, icon and description. Starting the move expands it to
+show **Cancel page move from /relative/path/**. The temporary destination row
+uses the same page title and icon, with **Cancel page move to /proposed/path/**
+under it. Both actions cancel the complete move. **Show URL paths** continues
+to control path display beside page titles, using the proposed path at the
+destination. The ordinary selection highlight follows the selected row.
 Expand the preview's details to see affected addresses and authored links.
 Under the preview, choose **Complete page move…**. For a move to another
 parent, the final confirmation offers **Preserve old addresses as aliases**,

@@ -178,3 +178,33 @@ unchanged source files, restored state, hidden ordinary menu entries and the
 focus conditions for Escape. Documentation checks passed. The VSIX was built
 and its manifest and bundle verified against the current files. Native menus,
 toolbar presentation and keyboard dispatch remain for the owner's review.
+
+
+## Keep Page Rows Familiar During Moves
+
+Owner decision on 2026-09-30: preserve the source page's normal title, icon
+and description during a move. The destination preview uses the same page
+title and icon, with its proposed URL only when Show URL paths is enabled.
+Remove the added FROM/TO row descriptions and Preview title prefix.
+
+Put the addresses on the cancellation rows instead:
+
+- At the source: **Cancel page move from /relative/path/**.
+- At the proposed destination: **Cancel page move to /relative/path/**.
+
+Both cancel the complete move. Remove the “leave files unchanged” description
+and the equivalent cancellation tooltip; that behavior is already expected.
+Keep the existing completion and review details under the destination.
+
+Use VS Code's ordinary selection highlight. The owner accepted dropping a
+persistent custom background if it cannot be implemented cleanly. Do not add
+file decorations, theme overrides, custom row backgrounds or change the toolbar
+icon as part of this revision. The existing toolbar and Escape cancellation
+remain available. Verify source/preview presentation and both addresses with
+focused adapter checks; the owner reviews the resulting VSIX.
+
+Implemented in **0.13.3**. The focused Site Tree adapter check passed, covering
+unchanged source presentation, normal preview icons, source/destination cancel
+labels, absent cancellation descriptions/tooltips and optional URL display.
+Documentation checks and VSIX packaging passed; the packaged version and bundle
+were verified. Native presentation remains for the owner's review.

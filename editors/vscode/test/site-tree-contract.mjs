@@ -334,6 +334,7 @@ try {
 	await write(guide.sourcePath, '# Guide\n');
 	await registered.refresh();
 	tree.visible = true;
+	const restingGuideItem = provider.getTreeItem(guide);
 	assert.equal(provider.getTreeItem(guide).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed);
 	await commands.get('nornaEditor.movePage')(guide);
 	assert.equal(revealCalls.at(-1)?.node.id, guide.id, 'Starting a move must reveal the source instead of relying on its initial expansion state.');
@@ -352,14 +353,20 @@ try {
 	assert.notEqual(tree.description, 'Guide', 'The moving page is identified at its source row.');
 	assert.equal(tree.message, undefined, 'Instructions do not masquerade as tree content.');
 	const sourceCancel = (await provider.getChildren(guide))[0];
-	assert.equal(sourceCancel.title, 'Cancel page move', 'The source offers cancellation before a destination is chosen.');
+	assert.equal(sourceCancel.title, 'Cancel page move from /guide/', 'The source offers cancellation before a destination is chosen.');
 	assert.equal(provider.getTreeItem(sourceCancel).command.command, 'nornaEditor.cancelMove');
+	assert.equal(provider.getTreeItem(sourceCancel).description, undefined);
+	assert.equal(provider.getTreeItem(sourceCancel).tooltip, undefined);
+	assert.equal(provider.getTreeItem(sourceCancel).accessibilityInformation.label, sourceCancel.title);
+	for (const field of ['label', 'description', 'iconPath', 'tooltip']) {
+		assert.deepEqual(provider.getTreeItem(guide)[field], restingGuideItem[field], `Moving preserves the source ${field}.`);
+	}
 	await commands.get('nornaEditor.movePage')(overview);
 	assert.match(information.pop(), /move is already in progress/);
 	assert.equal(tree.title, 'Site Tree', 'A second move must not replace the active source.');
 	assert.equal(commands.has('nornaEditor.pageActions'), false);
 	await commands.get('nornaEditor.toggleUrlPaths')();
-	assert.equal(provider.getTreeItem(guide).description, 'FROM /guide/', 'The move source must not repeat the same path.');
+	assert.equal(provider.getTreeItem(guide).description, '/guide/', 'The move source keeps the ordinary URL path display.');
 	assert.equal(provider.getTreeItem(guide).tooltip, 'URL: https://example.com/guide/\nSlug: guide');
 	await commands.get('nornaEditor.toggleUrlPaths')();
 	assert.equal(provider.getTreeItem(guide).contextValue, 'nornaMoveSource');
@@ -368,7 +375,7 @@ try {
 	assert.match(provider.getTreeItem(home).contextValue, /;moveTarget;/);
 	await commands.get('nornaEditor.copyFolderPath')(guide);
 	assert.equal(copied.pop(), path.dirname(guide.sourcePath), 'The existing folder-copy command remains callable even while hidden from the move menu.');
-	assert.equal(provider.getTreeItem(guide).iconPath.color.id, 'notificationsInfoIcon.foreground');
+	assert.deepEqual(provider.getTreeItem(guide).iconPath, restingGuideItem.iconPath);
 	assert.equal(provider.getTreeItem(overview).command.command, 'nornaEditor.openSiteNode');
 	assert.equal(provider.getTreeItem(overview).command.title, 'Open content.md');
 	await commands.get(provider.getTreeItem(overview).command.command)(overview);
@@ -378,13 +385,15 @@ try {
 	assert.equal(tree.message, undefined, 'The destination preview carries its own actions.');
 	const movedPreview = (await provider.getChildren(pages)).at(-1);
 	assert.equal(provider.getTreeItem(movedPreview).contextValue, 'nornaMovePreview');
-	assert.equal(movedPreview.title, 'Preview: Guide');
-	assert.equal(provider.getTreeItem(movedPreview).description, 'TO /guide/ · after “Topics”');
-	assert.equal(provider.getTreeItem(movedPreview).iconPath.color.id, 'notificationsInfoIcon.foreground');
+	assert.equal(movedPreview.title, 'Guide');
+	assert.equal(provider.getTreeItem(movedPreview).description, undefined);
+	assert.deepEqual(provider.getTreeItem(movedPreview).iconPath, restingGuideItem.iconPath);
 	assert.equal(provider.getTreeItem(movedPreview).collapsibleState, vscode.TreeItemCollapsibleState.Expanded);
 	const [completeMove, cancelMove, addresses, links, note] = await provider.getChildren(movedPreview);
 	assert.equal(completeMove.title, 'Complete page move…');
-	assert.equal(cancelMove.title, 'Cancel page move');
+	assert.equal(cancelMove.title, 'Cancel page move to /guide/');
+	assert.equal(provider.getTreeItem(cancelMove).description, undefined);
+	assert.equal(provider.getTreeItem(cancelMove).tooltip, undefined);
 	assert.equal(provider.getTreeItem(completeMove).description, 'opens final confirmation');
 	assert.equal(provider.getTreeItem(completeMove).command.command, 'nornaEditor.acceptMovePreview');
 	assert.equal(provider.getTreeItem(completeMove).iconPath.color.id, 'notificationsInfoIcon.foreground');
@@ -405,9 +414,15 @@ try {
 	await commands.get('nornaEditor.placeMoveFirst')(overview);
 	const previewFolder = (await provider.getChildren(overview)).at(-1);
 	assert.equal(provider.getTreeItem(previewFolder).contextValue, 'nornaMovePreviewPages');
-	assert.equal((await provider.getChildren(previewFolder))[0].title, 'Preview: Guide');
+	assert.equal((await provider.getChildren(previewFolder))[0].title, 'Guide');
 	const crossParentPreview = (await provider.getChildren(previewFolder))[0];
-	assert.match(provider.getTreeItem(crossParentPreview).description, /TO \/topics\/guide\//);
+	assert.equal(provider.getTreeItem(crossParentPreview).description, undefined);
+	assert.equal((await provider.getChildren(crossParentPreview))[1].title, 'Cancel page move to /topics/guide/');
+	assert.equal((await provider.getChildren(guide))[0].title, 'Cancel page move from /guide/');
+	await commands.get('nornaEditor.toggleUrlPaths')();
+	assert.equal(provider.getTreeItem(crossParentPreview).description, '/topics/guide/');
+	assert.equal(provider.getTreeItem(guide).description, '/guide/');
+	await commands.get('nornaEditor.toggleUrlPaths')();
 	const crossParentAddresses = (await provider.getChildren(crossParentPreview))[2];
 	assert.ok((await provider.getChildren(crossParentAddresses)).some((row) => row.title === '/guide/' && row.description === '→ /topics/guide/'));
 	await commands.get(provider.getTreeItem(completeMove).command.command)();

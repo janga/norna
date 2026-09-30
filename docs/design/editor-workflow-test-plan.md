@@ -497,7 +497,7 @@ below remain the review reference; individual results were not reported.
 - Toggle **Show URL paths** in the view menu, then reload the window. Check
   that the choice persists and that narrow rows with long paths still show
   error and unsaved indicators before the path. Expansion has no effect on
-  this choice. During a move, the source keeps its single FROM path.
+  this choice. During a move, the source keeps its ordinary path display.
 - Use **Copy Folder Path** on a page, `images/` and `downloads/`, including a
   path containing spaces. Paste into an editor to inspect the exact absolute
   directory. No command or quotation marks are added. Try the keyboard
@@ -581,3 +581,18 @@ that cancellation at the source and preview still works.
 Native toolbar visibility, menu presentation and keyboard dispatch remain for
 the owner's review. Focused automated checks cover the contributed menu and
 keybinding conditions, valid targets and cancellation state cleanup.
+
+
+## Move Addresses On Cancellation Rows (BL-153 Follow-up)
+
+Evaluation extension **0.13.3** preserves the page title and icon at both move
+locations. The source keeps its ordinary description. Cancellation rows read
+**Cancel page move from /relative/path/** and **Cancel page move to /proposed/path/**,
+without a supplementary description or cancellation tooltip.
+
+Owner review: move a page with children to another parent, then try a sibling
+reorder. Verify that page icons keep their normal shapes and that the two
+cancellation labels show the original and proposed relative URLs. Toggle
+**Show URL paths**: source and destination rows should follow that preference.
+Try both cancellation rows. The normal selection highlight follows selection;
+there is no persistent custom background or toolbar styling in this revision.

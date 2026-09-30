@@ -134,12 +134,13 @@ the current address display and their existing address commands.
 in Site Tree: expand and scroll the familiar tree, then right-click a
 destination page to place the moving page before, after, first or last under
 it. Clicking a page still opens its `content.md`. The source page remains in
-place, marked **FROM** with its current URL and an accent-colored icon. Starting
-the move expands that page so **Cancel page move** appears immediately, before
-a destination is chosen. If you collapse it again, cancellation remains in its
-context menu. A temporary **Preview:**
-row at the destination is marked **TO** with the proposed URL and the same
-accent color. Its children show affected addresses, authored links to update,
+place with its normal title, page icon and description. Starting the move
+expands that page to show **Cancel page move from /relative/path/**. A temporary
+row at the destination uses the same page title and icon; its cancellation
+row reads **Cancel page move to /proposed/path/**. These labels are available
+from extension 0.13.3. With **Show URL paths** enabled, page rows show their
+respective paths. The ordinary selection highlight follows the selected row.
+The destination's other children show affected addresses, authored links to update,
 and a reminder that files have not changed yet. Expand the detail groups to
 see individual changes. Beneath the preview,
 choose **Complete page move…**. For a parent change, the final confirmation

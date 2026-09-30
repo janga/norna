@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.3
+
+- Keep the page title and page icon at both the original and proposed move
+  locations. Source rows retain their ordinary descriptions and URL display.
+- Show the source and destination paths on the Cancel page move from/to rows,
+  with no extra cancellation description or tooltip.
+- Use the native tree selection highlight without custom background styling.
+
 ## 0.13.2
 
 - Hide ordinary row actions during page moves and show placement choices only
