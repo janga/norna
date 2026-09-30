@@ -7,6 +7,7 @@
     "site/urls/": "site/root/pages/032-reference/pages/010-site/pages/030-urls/content.md",
     "site/metadata/": "site/root/pages/032-reference/pages/010-site/pages/040-metadata/content.md",
     "site/images/": "site/root/pages/032-reference/pages/010-site/pages/050-images/content.md",
+    "site/attachments/": "site/root/pages/032-reference/pages/010-site/pages/055-attachments/content.md",
     "site/public-files/": "site/root/pages/032-reference/pages/010-site/pages/060-public-files/content.md",
     "site/requirements/": "site/root/pages/032-reference/pages/010-site/pages/070-requirements/content.md",
     "configuration/": "site/root/pages/032-reference/pages/020-configuration/content.md",

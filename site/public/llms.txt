@@ -24,6 +24,7 @@ are under docs/; later tags use site/pages/032-reference/.
 - [URLs and links](https://raw.githubusercontent.com/janga/norna/main/site/root/pages/032-reference/pages/010-site/pages/030-urls/content.md)
 - [Page metadata](https://raw.githubusercontent.com/janga/norna/main/site/root/pages/032-reference/pages/010-site/pages/040-metadata/content.md)
 - [Managed images](https://raw.githubusercontent.com/janga/norna/main/site/root/pages/032-reference/pages/010-site/pages/050-images/content.md)
+- [Page attachments](https://raw.githubusercontent.com/janga/norna/main/site/root/pages/032-reference/pages/010-site/pages/055-attachments/content.md)
 - [Public files and output](https://raw.githubusercontent.com/janga/norna/main/site/root/pages/032-reference/pages/010-site/pages/060-public-files/content.md)
 - [Requirements and limits](https://raw.githubusercontent.com/janga/norna/main/site/root/pages/032-reference/pages/010-site/pages/070-requirements/content.md)
 
