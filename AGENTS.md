@@ -52,9 +52,10 @@ and requirements.
 - Use the full npm test chain for release or when the change requires its scope.
   npm run build already checks configuration and content.
 - For new or materially changed visual presentation or interaction, inspect
-  the result and obtain local user approval before committing. Quick relevant
-  checks may run before review. Reuse existing approval while the approved
-  presentation and behavior remain unchanged.
+  the result and obtain local user approval before committing unless the owner
+  has explicitly taken responsibility for later review. Quick relevant checks
+  may run before review. Reuse existing approval while the approved presentation
+  and behavior remain unchanged.
 - Verify changed IntelliSense through the real suggestion widget. For changed
   source-editing behavior, verify Undo and dirty save/reopen cycles.
   State clearly when practical verification is incomplete.
@@ -68,6 +69,13 @@ and requirements.
 - Refer to backlog items with both identifier and title.
 - During design discussion, collect decisions and update documents together
   when the questions are settled, unless an interim update is requested.
-- Use the owner's Default VS Code profile for local review, with disposable
-  test files. Do not change profile settings to make tests pass.
+- The owner installs evaluation VSIX packages and reviews the implemented
+  editor interface. Supply the package path, version and a short review task;
+  do not routinely install it or drive the owner's VS Code for manual review.
+  Commit completed editor changes after directly relevant automated checks;
+  later owner review does not block those commits. Record unverified behavior
+  honestly, without treating commit authorization as a passed review.
+- When specifically asked to perform local VS Code review, use the owner's
+  Default profile and disposable test files. Do not change profile settings to
+  make tests pass.
 - Include date and local time in progress reports.

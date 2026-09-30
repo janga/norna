@@ -287,10 +287,19 @@ minimum-version suite for compatibility changes and before release or external
 distribution. Installing a local VSIX for review in the owner's Default profile
 is not distribution: use focused checks for the changed controls. Do not repeat
 all three after unrelated engine changes.
-For the owner's open VS Code window, install each evaluation build through
-**Extensions: Install from VSIX…** and then run **Developer: Reload Window**.
-The CLI `--install-extension --force` updated the Default profile's installed
-files but reload alone did not expose the new behavior in that window.
+The owner handles evaluation VSIX installation and manual interface review.
+Provide the package path, version and a short review task. Directly relevant
+automated checks remain the agent's responsibility; do not repeat earlier
+passing checks without a relevant change. Completed editor changes may be
+committed before owner review. Record remaining manual checks as unverified,
+not passed. This decision, made on 2026-09-30, supersedes earlier per-item
+requirements to install a VSIX or obtain manual interface approval before commit.
+
+For installation, use **Extensions: Install from VSIX…** and then
+**Developer: Reload Window**. If the running version remains old, investigate
+that installation specifically rather than repeating UI installation for every
+development edit. Do not operate the owner's VS Code for routine review unless
+explicitly requested.
 
 The formatter scenario sets global `editor.formatOnSave` to `true` and
 `editor.defaultFormatter` to Prettier, then overrides Markdown save formatting
