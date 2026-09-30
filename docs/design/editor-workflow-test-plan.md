@@ -516,7 +516,9 @@ The owner's approval is recorded separately above.
 
 Evaluation extension **0.13.0** adds a Slug field and **Change address…** in
 Properties for engines with `sitePageAddressOptionsApiVersion: 1`.
-The owner installs the VSIX and performs the following native review:
+The owner approved **BL-158 VS Code Page Slug Editing** on 2026-09-30 at
+16:30 CEST following evaluation build **0.13.0**. The scenarios below remain
+the review reference; individual results were not reported.
 
 - Change a parent slug with **Preserve old addresses as aliases** checked.
   Inspect the new URL and descendants in the preview. Cancel the confirmation

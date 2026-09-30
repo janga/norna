@@ -88,3 +88,9 @@ performed here. No full release suite, push or publication was performed.
 VSIX packaging passed for **0.13.0** at
 `editors/vscode/norna-vscode.vsix`; the archived version and bundled code were
 verified against the build output.
+
+## Owner Approval
+
+2026-09-30 at 16:30 CEST: the owner approved **BL-158 VS Code Page Slug
+Editing** following evaluation build **0.13.0**. This closes the owner-review
+follow-up above. Individual manual test results were not reported.
