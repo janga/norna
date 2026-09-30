@@ -16,9 +16,7 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [`BL-157` VS Code Site Tree Addresses And Paths](docs/design/backlog/BL-157-vscode-site-tree-addresses-and-paths.md):
-  **Ready.** Keep page rows compact, show URL and slug in concise tooltips, and
-  offer a saved choice to show URL paths throughout the tree.
+No implementation item is currently active.
 
 ## Next
 

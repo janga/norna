@@ -13,6 +13,7 @@ const { isWithin, previewPlacement, describePlacement, describePosition } = requ
 
 const viewId = 'nornaSiteTree';
 const isPage = (node) => node?.kind === 'page';
+const hasFolderPath = (node) => isPage(node) || node?.kind === 'directory' && ['images', 'downloads'].includes(node.role);
 const inside = (root, file) => {
 	const relative = path.relative(root, file);
 	return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
@@ -283,6 +284,7 @@ function registerSiteTree(context, output) {
 					: node.kind === 'file' ? node.parent?.role === 'images' && /\.(jpe?g|png|svg)$/i.test(node.title) ? 'nornaImage' : node.removable ? 'nornaOptionalFile' : 'nornaFile'
 						: node.isHome ? 'nornaHome' : 'nornaPage';
 			if (sites.get(node.siteRoot)?.resourceActions && node.actions && !(node.id === moveSourceId && node.siteRoot === moveSourceRoot)) item.contextValue += ';' + node.actions.join(';;') + ';';
+			if (hasFolderPath(node) && item.contextValue !== 'nornaMoveSource') item.contextValue += ';copyFolderPath;';
 			const unsaved = vscode.workspace.textDocuments.some((document) => document.uri.fsPath === node.sourcePath && document.isDirty);
 			const dirtyOwners = dirtyPageOwners(node.siteRoot);
 			const subtreeDirectory = isPage(node) ? path.dirname(node.sourcePath)
@@ -743,6 +745,11 @@ function registerSiteTree(context, output) {
 	});
 	const help = () => vscode.window.showInformationMessage('Site Tree: click a page or file to open it. Right-click a row for Add, Rename, Move or Delete. The arrow expands its contents. Use Shift+F10 for the keyboard menu.');
 	register('nornaEditor.siteTreeHelp', help);
+	register('nornaEditor.copyFolderPath', async (argument) => {
+		const node = await chooseNode(argument);
+		if (!hasFolderPath(node)) throw new Error('Choose a page, images folder or downloads folder to copy its folder path.');
+		await vscode.env.clipboard.writeText(isPage(node) ? path.dirname(node.sourcePath) : node.sourcePath);
+	});
 	register('nornaEditor.toggleUrlPaths', async () => {
 		showUrlPaths = !showUrlPaths;
 		await context.workspaceState.update(urlPathsKey, showUrlPaths);

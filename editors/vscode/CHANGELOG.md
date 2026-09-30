@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.2
+
+- Show only the published URL and slug in page tooltips. Theme details remain
+  on theme files; page errors remain in Problems.
+- Add Show URL paths to the Site Tree view menu, with a saved workspace choice.
+- Add Copy Folder Path for pages and image/attachment directories, copying
+  the plain absolute directory path.
+
 ## 0.12.1
 
 - Explicitly expand a page when starting a move, so Cancel page move is visible

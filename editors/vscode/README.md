@@ -83,11 +83,12 @@ per-row **+** or **…** buttons. The first visible Site Tree explains this once
 
 | Row | Context actions |
 | --- | --- |
-| Page | Add, Rename, Properties, Move, Copy Link, References, Delete |
+| Page | Add, Rename, Properties, Move, Copy Link, Copy Folder Path, References, Delete |
 | Homepage | Page actions except Move and Delete |
 | `pages/` | Add Page, Delete |
-| `images/` | Add Images, Delete |
+| `images/` | Add Images, Copy Folder Path, Delete |
 | Image | Insert Image in Page, Rename, Replace, References, Delete |
+| `downloads/` | Add Attachments, Copy Folder Path, Delete |
 | `site-config/` | Add missing supported configuration |
 | Optional configuration file | Delete |
 | `public/` | New File, Add Files, New Folder, Delete |
@@ -106,6 +107,11 @@ without a valid homepage. A damaged page retains its source-repair choices.
 Errors and warnings supplement type icons and point to the affected files.
 Changes made outside the extension normally refresh the tree; **Norna: Refresh
 Site Tree** remains in the view menu and Command Palette.
+
+**Copy Folder Path** in the context menu copies the absolute local directory
+for a page, `images/` or `downloads/`. For a page, this is the directory
+containing `content.md`. The clipboard contains a plain path, without `cd` or
+added quotation marks. Quote paths containing spaces when using them with `cd`.
 
 **Rename…** on a page changes its H1 and title, preserving its URL. **Properties…**
 shows the complete published address and edits the other page metadata.

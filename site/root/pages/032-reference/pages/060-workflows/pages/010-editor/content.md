@@ -161,6 +161,11 @@ Site source folders can have a name other than `site`. Pages omitted from
 generated navigation remain in the authoring tree, marked **unlisted**; they
 are still published. That mark also applies to descendants of an unlisted page.
 
+**Copy Folder Path** in the context menu copies the absolute local directory
+for a page, `images/` or `downloads/`. For a page, this is the directory
+containing `content.md`. The clipboard contains a plain path, without `cd` or
+added quotation marks. Quote paths containing spaces when using them with `cd`.
+
 Right-click a row to open its context menu. Actions are grouped as Add,
 editing, organization, links and Delete. Only actions for that element appear.
 There are no permanent **+** or **…** row buttons. Use Shift+F10 for the native
@@ -169,12 +174,12 @@ introduction shown the first time.
 
 | Row | Available actions |
 | --- | --- |
-| Page | Preview Page, Add, Rename, Properties, Move, Copy Link, References, Delete |
+| Page | Preview Page, Add, Rename, Properties, Move, Copy Link, Copy Folder Path, References, Delete |
 | Homepage | Page actions except Move and Delete |
 | `pages/` | Add Page, Delete |
-| `images/` | Add Images, Delete |
+| `images/` | Add Images, Copy Folder Path, Delete |
 | Image | Insert Image in Page, Rename, Replace, References, Delete |
-| `downloads/` | Add Attachments, Delete |
+| `downloads/` | Add Attachments, Copy Folder Path, Delete |
 | Attachment | Insert Link in Page, Rename, Replace, Copy Link, References, Delete |
 | `site-config/` | Add missing supported configuration files |
 | Optional configuration file | Delete |

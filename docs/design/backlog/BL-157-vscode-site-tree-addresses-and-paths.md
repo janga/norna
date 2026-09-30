@@ -6,8 +6,8 @@ Let authors inspect a page's address directly from Site Tree without filling
 every row with address details. This helps everyday navigation as well as
 understanding page moves.
 
-Status: **Ready** for the first implementation scope. Decisions approved by
-the owner on 2026-09-30. Local folder path copying is approved as the second implementation step.
+Decisions approved by the owner on 2026-09-30. The implementation comprises
+page address display followed by local folder path copying.
 
 ## Scope And Boundaries
 
@@ -84,3 +84,16 @@ choice are implemented. The focused Site Tree adapter and package contracts
 passed. Coverage includes deployment prefixes, unsaved settings, missing
 settings, older engines, workspace reload, active move rows, and error/dirty
 indicators. Native layout and tooltip review remains for the owner.
+
+2026-09-30, second step: **Copy Folder Path** is implemented for pages and
+image/attachment directories, including during a page move. The focused tree
+adapter covers exact plain paths with spaces, homepage and directory targets,
+unsupported selections and stale handles from another site. No source files
+are changed by either step. Manual interface review remains outstanding.
+
+The final tree adapter and package contracts passed. The changed canonical
+editor reference parses without errors. VSIX **0.12.2** was built at
+`editors/vscode/norna-vscode.vsix`; its version, bundled code and changelog were
+checked. No installation, native interface review or full release suite was
+performed. The owner's review steps are in the
+[editor workflow test plan](../editor-workflow-test-plan.md#site-tree-addresses-and-paths-bl-157).

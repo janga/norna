@@ -483,3 +483,27 @@ import/replace/move, and confirmed deletion with Finder restoration) has not
 been rerun. Automated checks cover those mutation and capability rules; they
 do not replace practical verification. The owner took responsibility for further
 manual review and authorized committing this implementation on 2026-09-30.
+
+
+## Site Tree Addresses And Paths (BL-157)
+
+The owner installs evaluation extension **0.12.2** and reviews these changes:
+
+- Hover over the homepage and nested pages. A page shows its full URL and
+  slug on separate lines without headings; the homepage has only its URL.
+- Toggle **Show URL paths** in the view menu, then reload the window. Check
+  that the choice persists and that narrow rows with long paths still show
+  error and unsaved indicators before the path. Expansion has no effect on
+  this choice. During a move, the source keeps its single FROM path.
+- Use **Copy Folder Path** on a page, `images/` and `downloads/`, including a
+  path containing spaces. Paste into an editor to inspect the exact absolute
+  directory. No command or quotation marks are added. Try the keyboard
+  context menu as well.
+- Read page errors in Problems and theme help on the theme-file rows; these
+  details no longer fill ordinary page tooltips.
+
+The focused tree adapter covers deployment prefixes, dirty settings, missing
+settings, older-engine fallback, persistence, move markers and plain directory
+copying. The package contract checks command/menu contributions. Automated
+checks do not establish native tooltip layout, truncation or keyboard usability;
+those remain for owner review.

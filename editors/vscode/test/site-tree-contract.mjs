@@ -11,7 +11,7 @@ const extensionRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 const engineRoot = path.resolve(extensionRoot, '../..');
 const require = createRequire(import.meta.url);
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'norna-tree-adapter-'));
-const siteRoot = path.join(temporary, 'site');
+const siteRoot = path.join(temporary, 'site with spaces');
 const legacySite = path.join(temporary, 'legacy-site');
 const legacyEngine = path.join(temporary, 'legacy-engine');
 const outsideSite = path.join(temporary, 'outside');
@@ -25,6 +25,7 @@ class EventEmitter {
 }
 const commands = new Map();
 const opened = [];
+const copied = [];
 const errors = [];
 const errorActions = [];
 const errorReplies = [];
@@ -51,6 +52,7 @@ let discoveredRoots = [siteRoot, legacySite];
 let provider;
 let tree;
 const vscode = {
+	env: { clipboard: { writeText: async (text) => copied.push(text) } },
 	EventEmitter,
 	Uri: { file: (fsPath) => ({ scheme: 'file', fsPath }) },
 	TreeItem: class { constructor(label, collapsibleState) { Object.assign(this, { label, collapsibleState }); } },
@@ -127,6 +129,7 @@ try {
 	await write(path.join(siteRoot, 'root/pages/010-guide/content.md'), '# Guide\n');
 	await write(path.join(siteRoot, 'root/pages/010-guide/pages/010-child/content.md'), '# Child\n');
 	await write(path.join(siteRoot, 'root/pages/010-guide/images/example.png'), 'Fixture bytes');
+	await write(path.join(siteRoot, 'root/pages/010-guide/downloads/manual.pdf'), 'Fixture attachment');
 	await write(path.join(siteRoot, 'public/robots.txt'), 'User-agent: *\n');
 	await write(path.join(siteRoot, 'root/page-theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
@@ -203,6 +206,20 @@ try {
 	const guide = pages.children[0];
 	const guidePages = guide.children.find((node) => node.role === 'pages');
 	const image = guide.children.find((node) => node.role === 'images').children[0];
+	const imagesFolder = guide.children.find(node => node.role === 'images');
+	const downloadsFolder = guide.children.find(node => node.role === 'downloads');
+	for (const [node, expected] of [[home, path.join(siteRoot, 'root')], [guide, path.join(siteRoot, 'root/pages/010-guide')], [imagesFolder, imagesFolder.sourcePath], [downloadsFolder, downloadsFolder.sourcePath]]) {
+		assert.match(provider.getTreeItem(node).contextValue, /;copyFolderPath;/);
+		await commands.get('nornaEditor.copyFolderPath')(node);
+		assert.equal(copied.pop(), expected, 'Copy the plain absolute folder path, including spaces, without quoting or a command.');
+	}
+	for (const node of [image, pages, configuration]) {
+		assert.doesNotMatch(provider.getTreeItem(node).contextValue, /;copyFolderPath;/);
+		await commands.get('nornaEditor.copyFolderPath')(node);
+		assert.match(errors.pop(), /Choose a page, images folder or downloads folder/);
+	}
+	assert.deepEqual(copied, []);
+
 	assert.equal(provider.getTreeItem(guide).tooltip, 'https://example.com/guide/\nguide');
 	assert.equal(provider.getTreeItem(guide).description, '');
 	assert.equal(contexts.get('nornaSiteTree.showUrlPaths'), false);
@@ -334,6 +351,8 @@ try {
 	assert.equal(provider.getTreeItem(guide).tooltip, 'https://example.com/guide/\nguide');
 	await commands.get('nornaEditor.toggleUrlPaths')();
 	assert.equal(provider.getTreeItem(guide).contextValue, 'nornaMoveSource');
+	await commands.get('nornaEditor.copyFolderPath')(guide);
+	assert.equal(copied.pop(), path.dirname(guide.sourcePath), 'Folder copying remains available during a move.');
 	assert.equal(provider.getTreeItem(guide).iconPath.color.id, 'notificationsInfoIcon.foreground');
 	assert.equal(provider.getTreeItem(overview).command.command, 'nornaEditor.openSiteNode');
 	assert.equal(provider.getTreeItem(overview).command.title, 'Open content.md');
@@ -543,6 +562,9 @@ try {
 	assert.equal((await provider.getChildren(legacy))[0].title, 'Home');
 	assert.equal(provider.getTreeItem(legacy.children[0]).command.command, 'nornaEditor.openSiteNode', 'Old engines still need page-label source opening.');
 	assert.deepEqual(await provider.getChildren(home), [], 'Old handles cannot expose another site’s children.');
+	await commands.get('nornaEditor.copyFolderPath')(guide);
+	assert.match(errors.pop(), /active site/);
+	assert.deepEqual(copied, [], 'An inactive site handle must not copy a path.');
 	await commands.get('nornaEditor.addPage')(pages);
 	assert.match(errors.pop(), /active site/, 'Stale commands must not create in an inactive site.');
 	tree.selection = [guide];

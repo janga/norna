@@ -34,6 +34,9 @@ assert.ok(extensionManifest.contributes.menus['view/title'].some((item) => item.
 assert.ok(extensionManifest.contributes.viewsWelcome.some((item) => item.view === 'nornaSiteTree'
 	&& item.contents.includes('command:nornaEditor.chooseSite')));
 const itemMenus = extensionManifest.contributes.menus['view/item/context'];
+assert.ok(itemMenus.some(item => item.command === 'nornaEditor.copyFolderPath' && item.when.includes(';copyFolderPath;') && item.when.includes('nornaMoveSource')));
+assert.ok(extensionManifest.contributes.menus.commandPalette.some(item => item.command === 'nornaEditor.copyFolderPath' && item.when === 'false'));
+
 assert.equal(extensionManifest.contributes.commands.find(item => item.command === 'nornaEditor.toggleUrlPaths').toggled, 'nornaSiteTree.showUrlPaths');
 assert.ok(extensionManifest.contributes.menus['view/title'].some(item => item.command === 'nornaEditor.toggleUrlPaths' && item.when === 'view == nornaSiteTree'));
 
