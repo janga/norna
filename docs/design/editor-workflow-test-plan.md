@@ -596,3 +596,9 @@ cancellation labels show the original and proposed relative URLs. Toggle
 **Show URL paths**: source and destination rows should follow that preference.
 Try both cancellation rows. The normal selection highlight follows selection;
 there is no persistent custom background or toolbar styling in this revision.
+
+
+Extension **0.13.4** refines the destination labels to `Complete move to <slug>`
+and `Cancel move to <slug>`. Review a move to another parent: both actions
+should use only the moving page's slug, while source cancellation still shows
+the original relative URL. Completion continues to open the final confirmation.

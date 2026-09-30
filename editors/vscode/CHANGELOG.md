@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.4
+
+- Shorten the destination actions to `Complete move to <slug>` and
+  `Cancel move to <slug>`, using the moving page's destination slug.
+
 ## 0.13.3
 
 - Keep the page title and page icon at both the original and proposed move

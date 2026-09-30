@@ -653,9 +653,10 @@ function registerSiteTree(context, output) {
 				...entry, siteRoot: source.siteRoot, parent: group, children: [] }));
 			return group;
 		};
+		const destinationSlug = plan.destinationUrl.split('/').filter(Boolean).at(-1);
 		ghost.children = [
-			{ id: `move-complete:${source.id}`, kind: 'moveAction', action: 'complete', title: 'Complete page move…', siteRoot: source.siteRoot, parent: ghost, children: [] },
-			{ id: `move-cancel:${source.id}`, kind: 'moveAction', action: 'cancel', title: `Cancel page move to ${plan.destinationUrl}`, siteRoot: source.siteRoot, parent: ghost, children: [] },
+			{ id: `move-complete:${source.id}`, kind: 'moveAction', action: 'complete', title: `Complete move to ${destinationSlug}`, siteRoot: source.siteRoot, parent: ghost, children: [] },
+			{ id: `move-cancel:${source.id}`, kind: 'moveAction', action: 'cancel', title: `Cancel move to ${destinationSlug}`, siteRoot: source.siteRoot, parent: ghost, children: [] },
 			detailGroup('addresses', 'Affected addresses', mappings.map(({ oldPathname, newPathname }) => ({
 				title: oldPathname, description: `→ ${newPathname}`, tooltip: `${oldPathname} → ${newPathname}. ${aliasChoice ? 'Preserved as an alias by default; choose in the final confirmation.' : 'The old address remains an alias.'}`,
 			})), `Unchanged: ${plan.sourceUrl}`),

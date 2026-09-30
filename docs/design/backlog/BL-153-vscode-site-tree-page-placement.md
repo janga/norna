@@ -208,3 +208,17 @@ unchanged source presentation, normal preview icons, source/destination cancel
 labels, absent cancellation descriptions/tooltips and optional URL display.
 Documentation checks and VSIX packaging passed; the packaged version and bundle
 were verified. Native presentation remains for the owner's review.
+
+
+### Shorter Destination Actions
+
+Owner refinement on 2026-09-30, implemented in **0.13.4**: the destination
+rows read `Complete move to <slug>` and `Cancel move to <slug>`. Use the
+moving page's destination slug (the final URL segment), without slashes or
+parent path. For `/topics/guide/`, both rows end in `guide`. The source's
+**Cancel page move from /relative/path/** label remains unchanged. Completion
+still opens the existing final confirmation.
+
+The focused tree adapter and documentation checks passed. VSIX 0.13.4 was
+built and its version and bundle verified. Native label review remains for
+the owner.

@@ -137,13 +137,13 @@ it. Clicking a page still opens its `content.md`. The source page remains in
 place with its normal title, page icon and description. Starting the move
 expands that page to show **Cancel page move from /relative/path/**. A temporary
 row at the destination uses the same page title and icon; its cancellation
-row reads **Cancel page move to /proposed/path/**. These labels are available
-from extension 0.13.3. With **Show URL paths** enabled, page rows show their
+row reads **Cancel move to slug**. From extension 0.13.4, destination actions
+use the moving page’s slug, for example **Cancel move to guide**. With **Show URL paths** enabled, page rows show their
 respective paths. The ordinary selection highlight follows the selected row.
 The destination's other children show affected addresses, authored links to update,
 and a reminder that files have not changed yet. Expand the detail groups to
 see individual changes. Beneath the preview,
-choose **Complete page move…**. For a parent change, the final confirmation
+choose **Complete move to slug**. For a parent change, the final confirmation
 shows **Preserve old addresses as aliases**, checked by default. Uncheck it to
 create no aliases for the old addresses of the page and its affected
 descendants. Existing aliases remain available. Confirm **Complete page move**
