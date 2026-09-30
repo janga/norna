@@ -9,6 +9,7 @@ import { getSiteSourcePaths } from './site-conventions.mjs';
 import { getSiteStructure } from './site-structure.mjs';
 
 export const sitePagePlacementApiVersion = 1;
+export const sitePagePlacementOptionsApiVersion = 1;
 
 const urlFor = (node) => node.isHome ? '/' : `/${node.pagePath}/`;
 const childOf = (node, parent) => node.parentPagePath === (parent.pagePath || null);
@@ -62,7 +63,8 @@ const applyDirectoryRenames = async (changes, renameDirectory) => {
 	return restore;
 };
 
-export const planEditorPagePlacement = async ({ siteRoot, sourcePath, targetPath, placement, sources = new Map() }) => {
+export const planEditorPagePlacement = async ({ siteRoot, sourcePath, targetPath, placement, preserveAliases = true, sources = new Map() }) => {
+	if (typeof preserveAliases !== 'boolean') throw new Error('Choose whether to preserve old addresses as aliases.');
 	if (!['before', 'after', 'first', 'last'].includes(placement)) throw new Error('Choose before, after, first child or last child.');
 	siteRoot = path.resolve(siteRoot);
 	await checkedPath(siteRoot, sourcePath);
@@ -121,7 +123,7 @@ export const planEditorPagePlacement = async ({ siteRoot, sourcePath, targetPath
 		const provisionalOrder = occupied.has(sourceOrder)
 			? Array.from({ length: 999 }, (_, position) => position + 1).find((order) => !occupied.has(order))
 			: sourceOrder;
-		movePreview = await createPageMovePlan({ from: urlFor(source), to, order: provisionalOrder,
+		movePreview = await createPageMovePlan({ from: urlFor(source), to, order: provisionalOrder, preserveAliases,
 			graph: state.graph, publicFiles: state.publicFiles, siteStructure: state.structure,
 			sitePagesDir: getSiteSourcePaths(siteRoot).pages,
 			sitePagesLabel: `${siteRoot}/root/pages`, generatedRoutes: state.generatedRoutes });
@@ -135,8 +137,9 @@ export const planEditorPagePlacement = async ({ siteRoot, sourcePath, targetPath
 	return {
 		siteRoot, sourcePath, targetPath, placement, sourceDirectory: source.nodeDir,
 		sameParent, sourceOrder, sourceUrl: urlFor(source), destinationUrl: to,
-		sourceDestination, orderChanges, movePreview,
-		fingerprint: JSON.stringify(fingerprints),
+		sourceDestination, orderChanges, movePreview, preserveAliases,
+		stateFingerprint: JSON.stringify(fingerprints),
+		fingerprint: JSON.stringify([fingerprints, preserveAliases]),
 	};
 };
 
@@ -159,7 +162,7 @@ export const applyEditorPagePlacement = async (plan, { renameDirectory = rename 
 	const restoreOrder = await applyDirectoryRenames(current.orderChanges, renameDirectory);
 	try {
 		const state = await readEditorLinkState({ siteRoot: plan.siteRoot });
-		const move = await createPageMovePlan({ from: current.sourceUrl, to: current.destinationUrl, order: current.sourceOrder,
+		const move = await createPageMovePlan({ from: current.sourceUrl, to: current.destinationUrl, order: current.sourceOrder, preserveAliases: current.preserveAliases,
 			graph: state.graph, publicFiles: state.publicFiles, siteStructure: state.structure,
 			sitePagesDir: getSiteSourcePaths(plan.siteRoot).pages,
 			sitePagesLabel: `${plan.siteRoot}/root/pages`, generatedRoutes: state.generatedRoutes });

@@ -160,3 +160,33 @@ test('source-aware alias editing refuses YAML anchors before writing', async (t)
 		(error) => /Cannot preserve \/first\/.*anchors/.test(error.message) && error.sourcePath === files.first);
 	assert.equal(await readFile(files.first, 'utf8'), source);
 });
+
+for (const preserveAliases of [true, false]) test(`move confirmation can choose preserveAliases=${preserveAliases} for all affected pages`, async t => {
+	const { siteRoot, files, home, write } = await fixture(t);
+	await write('root/pages/010-first/content.md', '---\npage:\n  aliases: [/older-first/]\n---\n# first\n');
+	await write('root/pages/010-first/pages/010-child/content.md', '---\npage:\n  aliases: [/older-child/]\n---\n# Child\n');
+	const options = { siteRoot, sourcePath: files.first, targetPath: files.second, placement: 'first' };
+	const initial = await planEditorPagePlacement(options);
+	assert.equal(initial.preserveAliases, true);
+	const plan = await planEditorPagePlacement({ ...options, preserveAliases });
+	assert.equal(plan.stateFingerprint, initial.stateFingerprint);
+	assert.equal(plan.movePreview.aliasChanges.length, preserveAliases ? 2 : 0);
+	await assert.rejects(applyEditorPagePlacement({ ...plan, preserveAliases: !preserveAliases }), /site changed/);
+	const result = await applyEditorPagePlacement(plan);
+	const state = await readEditorLinkState({ siteRoot });
+	assert.deepEqual(state.graph.pagesByPathname.get('/second/first/').aliases.sort(), ['/older-first/', ...(preserveAliases ? ['/first/'] : [])].sort());
+	assert.deepEqual(state.graph.pagesByPathname.get('/second/first/child/').aliases.sort(), ['/older-child/', ...(preserveAliases ? ['/first/child/'] : [])].sort());
+	assert.match(await readFile(home, 'utf8'), /\[First\]\(\/second\/first\/\)/);
+	assert.equal(result.url, '/second/first/');
+});
+
+test('reordering with alias preservation unchecked still leaves all addresses unchanged', async t => {
+	const { siteRoot, files, write } = await fixture(t);
+	const source = '---\npage:\n  aliases: [/older-third/]\n---\n# third\n';
+	await write('root/pages/030-third/content.md', source);
+	const plan = await planEditorPagePlacement({ siteRoot, sourcePath: files.third, targetPath: files.first, placement: 'before', preserveAliases: false });
+	assert.equal(plan.movePreview, null);
+	const result = await applyEditorPagePlacement(plan);
+	assert.equal(result.url, '/third/');
+	assert.equal(await readFile(result.sourcePath, 'utf8'), source);
+});

@@ -21,11 +21,15 @@ return move is removed from the page's aliases.
 - Use the same interaction for reordering among siblings and moving to a new
   parent. Changing only the order keeps page addresses; changing the parent
   changes addresses for the page and its descendants.
-- For changed addresses, automatically retain each old address on its page as
+- For changed addresses, retain each old address by default on its page as
   a `page.aliases` entry, and update supported internal links to the new
   primary addresses. Show the old-to-new address mapping before applying the
-  move. Do not offer an advanced choice to omit the aliases in the VS Code UI.
-  The existing CLI option is outside this item's scope.
+  move. Updated owner decision on 2026-09-30: the final confirmation offers
+  **Preserve old addresses as aliases**, checked by default. Unchecking it
+  creates no aliases for the old addresses of the page or affected descendants.
+  Existing aliases remain available, with the same primary-address reclaim
+  rule. Reordering within the same parent leaves addresses unchanged and does
+  not need this choice.
 - A previous address remains reserved until its alias is explicitly removed,
   except when the same page moves back to that address. Then its own alias
   becomes the primary address and is removed from `page.aliases`, including
@@ -116,3 +120,16 @@ Large subtree moves and repeated moves can accumulate many aliases and static
 redirect pages. Retain the current per-page alias model; defer performance
 thresholds, prefix rules and hosting-specific redirect output until measured
 move or build costs show a real need. Do not silently discard older aliases.
+
+
+## Alias Choice In Move Confirmation
+
+Owner request on 2026-09-30: match the slug-editing choice from BL-158 in the
+final page-move confirmation. The engine now exposes
+`sitePagePlacementOptionsApiVersion: 1`, carrying the boolean `preserveAliases`
+choice through planning and application. The default remains true. Source
+state and the reviewed option are both checked before application.
+
+The 13 focused placement tests passed, including both choices for a branch
+with pre-existing parent/child aliases and unchanged addresses on reordering.
+The owner handles the subsequent VSIX installation and native review.

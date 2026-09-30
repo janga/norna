@@ -488,6 +488,10 @@ to `planEditorPageAddress`, defaulting to true. False suppresses new aliases
 for all changed pages in the subtree while retaining existing aliases; an
 alias reclaimed as the primary address is removed from the alias list. The
 option is carried by the plan and rechecked during application.
+`sitePagePlacementOptionsApiVersion: 1` exposes the same option on
+`planEditorPagePlacement`. Its `stateFingerprint` identifies the source state
+independently of that choice, while `fingerprint` also includes the choice;
+confirmation can replan the option only if the source state still matches.
 `editor-site-links.mjs` overlays
 dirty documents on the shared link graph and records incomplete reads.
 Removal plans exclude links wholly inside a deleted branch. Address changes
