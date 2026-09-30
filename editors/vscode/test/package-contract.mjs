@@ -103,6 +103,7 @@ for (const filename of files) {
 	assert.notEqual(filename, 'site-source-actions.cjs');
 	assert.notEqual(filename, 'page-form.cjs');
 	assert.notEqual(filename, 'page-form-actions.cjs');
+	assert.notEqual(filename, 'page-move-confirmation.cjs');
 }
 
 console.log(`VS Code package contract passed (${files.size} packaged files).`);

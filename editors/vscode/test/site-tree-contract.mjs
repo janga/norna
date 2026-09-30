@@ -34,6 +34,8 @@ const warningReplies = [];
 const warningActions = [];
 const inputs = [];
 const forms = [];
+const moveConfirmations = [];
+const moveResponses = [];
 const choices = [];
 const documents = [];
 const tabChanges = new EventEmitter();
@@ -76,11 +78,18 @@ const vscode = {
 	},
 	window: {
 		createOutputChannel: () => ({ append() {}, appendLine() {}, show() {}, dispose() {} }),
-		createWebviewPanel: () => {
+		createWebviewPanel: (viewType) => {
 			let receive, dispose; const replies=[];
 			const panel={ webview: { html:'', onDidReceiveMessage: (fn)=>{receive=fn;return disposable();}, postMessage: async message=>{replies.push(message);} }, onDidDispose: fn=>{dispose=fn;}, dispose: ()=>dispose?.() };
 			queueMicrotask(async()=>{
 				try {
+					if (viewType === 'nornaPageMoveConfirmation') {
+						moveConfirmations.push(panel.webview.html);
+						assert.match(panel.webview.html, /id="preserve-aliases"[^>]*checked/);
+						const response = moveResponses.shift();
+						if (typeof response === 'function') return await response({ receive, panel, replies });
+						return await receive(response === undefined ? { type: 'cancel' } : { type: 'complete', preserveAliases: response });
+					}
 					const model=JSON.parse(panel.webview.html.match(/const initial=(.*);\nconst byId/)[1]);
 					const action=forms.shift(); assert.ok(action,'Unexpected page form');
 					const values=action(model);
@@ -134,7 +143,7 @@ try {
 	await write(path.join(siteRoot, 'root/page-theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
-	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-preview-actions.cjs', './site-attachment-actions.cjs', './site-resource-actions.cjs', './site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs', './page-placement.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
+	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-preview-actions.cjs', './site-attachment-actions.cjs', './site-resource-actions.cjs', './site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs', './page-placement.cjs', './page-move-confirmation.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
 		getNornaProjectContext: (filename) => {
 			const root = [siteRoot, legacySite, outsideSite].find((root) => filename.startsWith(root + path.sep));
 			if (!root) return null;
@@ -381,6 +390,10 @@ try {
 	assert.equal(provider.getParent(completeMove), movedPreview);
 	assert.equal(provider.getParent(guide.children[0]), guide);
 	assert.equal((await provider.getChildren(pages)).some((entry) => entry.id === guide.id), true, 'The source stays at its real location until files move.');
+	await commands.get('nornaEditor.acceptMovePreview')();
+	assert.deepEqual(warningActions.pop().actions, ['Complete page move'], 'Reordering keeps the existing confirmation without an alias checkbox.');
+	information.pop();
+
 	await commands.get('nornaEditor.placeMoveFirst')(firstChild);
 	assert.match(information.pop(), /outside the branch/);
 	await commands.get('nornaEditor.placeMoveFirst')(overview);
@@ -392,9 +405,26 @@ try {
 	const crossParentAddresses = (await provider.getChildren(crossParentPreview))[2];
 	assert.ok((await provider.getChildren(crossParentAddresses)).some((row) => row.title === '/guide/' && row.description === '→ /topics/guide/'));
 	await commands.get(provider.getTreeItem(completeMove).command.command)();
-	assert.match(information.pop(), /Complete page move for “Guide”/);
-	assert.deepEqual(warningActions.pop().actions, ['Complete page move']);
+	assert.match(moveConfirmations.at(-1), /Complete page move/);
+	assert.match(moveConfirmations.at(-1), /Preserve old addresses as aliases/);
 	assert.equal(await readFile(guide.sourcePath, 'utf8'), '# Guide\n', 'Cancelling the confirmation keeps the source in place.');
+	moveResponses.push(async ({ receive, replies }) => {
+		await write(guide.sourcePath, '# Guide changed after preview\n');
+		await receive({ type: 'complete', preserveAliases: false });
+		assert.match(replies.at(-1).message, /site changed/);
+		await write(guide.sourcePath, '# Guide\n');
+		await receive({ type: 'cancel' });
+	});
+	await commands.get('nornaEditor.acceptMovePreview')();
+	moveResponses.push(async ({ receive, replies }) => {
+		await commands.get('nornaEditor.cancelMove')();
+		await receive({ type: 'complete', preserveAliases: false });
+		assert.match(replies.at(-1).message, /cancelled or changed/);
+		await receive({ type: 'cancel' });
+	});
+	await commands.get('nornaEditor.acceptMovePreview')();
+	assert.equal(await readFile(guide.sourcePath, 'utf8'), '# Guide\n');
+
 	await commands.get(provider.getTreeItem(cancelMove).command.command)();
 	assert.equal(contexts.get('nornaSiteTree.moveActive'), false);
 	assert.equal(tree.title, 'Site Tree');
@@ -550,11 +580,21 @@ try {
 	await write(homePath, '# Home\n\n[Guide](/guide/)\n');
 	await commands.get('nornaEditor.movePage')(guide);
 	await commands.get('nornaEditor.placeMoveFirst')(overview);
-	warningReplies.push('Complete page move');
+	moveResponses.push(true);
 	await commands.get('nornaEditor.acceptMovePreview')();
 	const movedGuide = path.join(siteRoot, 'root/pages/020-topics/pages/500-guide/content.md');
 	assert.match(await readFile(movedGuide, 'utf8'), /- \/guide\//, 'The move preserves the old page URL.');
 	assert.match(await readFile(homePath, 'utf8'), /\[Guide\]\(\/topics\/guide\/\)/, 'The move updates known internal links.');
+	const movedNode = (await provider.getChildren(overview)).find(node => node.role === 'pages').children.find(node => node.title === 'Guide');
+	await commands.get('nornaEditor.movePage')(movedNode);
+	await commands.get('nornaEditor.placeMoveFirst')(home);
+	moveResponses.push(false);
+	await commands.get('nornaEditor.acceptMovePreview')();
+	assert.equal(errors.length, 0, errors.join('\n'));
+	const returnedNode = (await provider.getChildren(home)).find(node => node.role === 'pages').children.find(node => node.title === 'Guide');
+	assert.equal(returnedNode.url, '/guide/');
+	assert.doesNotMatch(await readFile(returnedNode.sourcePath, 'utf8'), /aliases:/, 'Unchecked confirmation must create no alias for the old parent path.');
+
 	await chooseSite(legacySite);
 	const [legacy] = await provider.getChildren();
 	assert.equal(legacy.kind, 'site', 'An older engine retains its page-only tree within the selected site.');

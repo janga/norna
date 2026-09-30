@@ -142,15 +142,21 @@ row at the destination is marked **TO** with the proposed URL and the same
 accent color. Its children show affected addresses, authored links to update,
 and a reminder that files have not changed yet. Expand the detail groups to
 see individual changes. Beneath the preview,
-choose **Complete page move…**, then confirm **Complete page move** in the final dialog
-to apply it, or choose **Cancel page move** to leave files unchanged. While a
+choose **Complete page move…**. For a parent change, the final confirmation
+shows **Preserve old addresses as aliases**, checked by default. Uncheck it to
+create no aliases for the old addresses of the page and its affected
+descendants. Existing aliases remain available. Confirm **Complete page move**
+to apply, or cancel to return to the tree. **Cancel page move** leaves files
+unchanged and ends the move. Reordering keeps its simple confirmation because
+addresses do not change. The checkbox requires extension 0.13.1 and the engine's
+`sitePagePlacementOptionsApiVersion: 1`; older engines retain preservation. While a
 move is active, the Site Tree header does not display move status or controls.
 A second move cannot start. If
 planning fails, the error dialog can open
 the affected file, keep the move active for another placement, or cancel it.
 Reordering among siblings leaves URLs intact; moving to another parent updates
 supported internal links and preserves old
-page and descendant addresses. Moving back to a page's own previous address
+page and descendant addresses by default. Moving back to a page's own previous address
 reclaims it as the primary address; another page's previous address remains
 reserved. Site Tree marks unsaved pages and shows their
 count on ancestor rows, even when the affected page is collapsed. Save affected

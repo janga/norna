@@ -35,8 +35,9 @@ operations so a slug change cannot discard unsaved form fields. Save affected
 source edits before changing the address. Ordinary editor Undo does not
 reverse the filesystem operation.
 
-Existing move commands retain their current alias policy. Decoupled addresses
-remain the separate BL-139 design topic.
+Page-move confirmation follows the decisions in BL-153, including its later
+alias-preservation choice. Decoupled addresses remain the separate BL-139 design
+topic.
 
 ## Acceptance And Verification
 

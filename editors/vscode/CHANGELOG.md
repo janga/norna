@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.1
+
+- Add a checked Preserve old addresses as aliases option to the final page-move
+  confirmation. Unchecking it skips new aliases for the complete affected
+  subtree; existing aliases remain available.
+- Recheck the reviewed source state and chosen alias policy before moving.
+
 ## 0.13.0
 
 - Edit a page's slug in Properties with a separate Change address action,

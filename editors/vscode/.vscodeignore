@@ -17,6 +17,7 @@ site-source-actions.cjs
 page-form.cjs
 page-form-actions.cjs
 page-placement.cjs
+page-move-confirmation.cjs
 site-resource-actions.cjs
 
 site-attachment-actions.cjs

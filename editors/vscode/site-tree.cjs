@@ -9,6 +9,7 @@ const { registerSiteAttachmentActions } = require('./site-attachment-actions.cjs
 const { registerSiteResourceActions } = require('./site-resource-actions.cjs');
 const { registerSiteSourceActions } = require('./site-source-actions.cjs');
 const { createPageForm, editPageForm } = require('./page-form-actions.cjs');
+const { confirmPageMove } = require('./page-move-confirmation.cjs');
 const { isWithin, previewPlacement, describePlacement, describePosition } = require('./page-placement.cjs');
 
 const viewId = 'nornaSiteTree';
@@ -641,7 +642,8 @@ function registerSiteTree(context, output) {
 		const mappings = plan.movePreview?.mappings ?? [];
 		const linkChanges = plan.movePreview?.linkChanges ?? [];
 		const changes = mappings.map((mapping) => `${mapping.oldPathname} → ${mapping.newPathname}`);
-		const description = `${describePlacement(source, target, placement, preview)}\n${changes.length ? `Old addresses will continue to lead to the moved pages:\n${changes.join('\n')}` : 'Page addresses will not change.'}\n${linkChanges.length} authored link(s) will be updated.\nNo files changed yet.`;
+		const aliasChoice = service.sitePagePlacementOptionsApiVersion === 1;
+		const description = `${describePlacement(source, target, placement, preview)}\n${changes.length ? `${aliasChoice ? 'Old addresses are preserved by default; review this choice when completing the move.' : 'Old addresses will continue to lead to the moved pages.'}\n${changes.join('\n')}` : 'Page addresses will not change.'}\n${linkChanges.length} authored link(s) will be updated.\nNo files changed yet.`;
 		const ghost = { id: `move-preview:${source.id}`, kind: 'movePreview', title: `Preview: ${source.title}`,
 			pageTitle: source.title, positionLabel: describePosition(target, placement), destinationUrl: plan.destinationUrl,
 			siteRoot: source.siteRoot, parent: pagesNode, children: [] };
@@ -656,7 +658,7 @@ function registerSiteTree(context, output) {
 			{ id: `move-complete:${source.id}`, kind: 'moveAction', action: 'complete', title: 'Complete page move…', siteRoot: source.siteRoot, parent: ghost, children: [] },
 			{ id: `move-cancel:${source.id}`, kind: 'moveAction', action: 'cancel', title: 'Cancel page move', siteRoot: source.siteRoot, parent: ghost, children: [] },
 			detailGroup('addresses', 'Affected addresses', mappings.map(({ oldPathname, newPathname }) => ({
-				title: oldPathname, description: `→ ${newPathname}`, tooltip: `${oldPathname} → ${newPathname}. The old address remains an alias.`,
+				title: oldPathname, description: `→ ${newPathname}`, tooltip: `${oldPathname} → ${newPathname}. ${aliasChoice ? 'Preserved as an alias by default; choose in the final confirmation.' : 'The old address remains an alias.'}`,
 			})), `Unchanged: ${plan.sourceUrl}`),
 			detailGroup('links', 'Authored links to update', linkChanges.map(({ contentLabel, line, from, to }) => ({
 				title: `${contentLabel}:${line}`, description: `${from} → ${to}`,
@@ -680,12 +682,30 @@ function registerSiteTree(context, output) {
 		if (!movePreview || applyingMove) return;
 		applyingMove = true;
 		try {
-			const { plan } = movePreview;
+			const preview = movePreview;
+			let { plan } = preview;
 			const source = nodes.get(moveSourceId);
 			if (!source) throw new Error('The moving page changed. Start the move again.');
-			const choice = await vscode.window.showWarningMessage(`Complete page move for “${source.title}”?`,
-				{ modal: true, detail: 'This changes site files. Editor Undo does not reverse the whole move.' }, 'Complete page move');
-			if (choice !== 'Complete page move') return;
+			const service = await serviceFor(source.siteRoot);
+			const assertCurrentMove = async () => {
+				await chooseNode(source);
+				if (movePreview !== preview || moveSourceId !== source.id || moveSourceRoot !== activeSiteRoot) throw new Error('The move was cancelled or changed. Start the move again.');
+			};
+			if (!plan.sameParent && service.sitePagePlacementOptionsApiVersion === 1) {
+				plan = await confirmPageMove(vscode, context, { title: source.title, plan }, async preserveAliases => {
+					await assertCurrentMove();
+					const next = await service.planEditorPagePlacement({ ...preview.plan, preserveAliases, sources: documentSources() });
+					await assertCurrentMove();
+					if (next.stateFingerprint !== preview.plan.stateFingerprint) throw new Error('The site changed since this move was previewed. Cancel and review the placement again.');
+					return next;
+				});
+				if (!plan) return;
+			} else {
+				const choice = await vscode.window.showWarningMessage(`Complete page move for “${source.title}”?`,
+					{ modal: true, detail: 'This changes site files. Editor Undo does not reverse the whole move.' }, 'Complete page move');
+				if (choice !== 'Complete page move') return;
+			}
+			await assertCurrentMove();
 			const affected = new Set(plan.movePreview?.sourceFiles.map((file) => file.contentPath) ?? []);
 			const movingDirectories = [plan.sourceDirectory, ...plan.orderChanges.map(({ from }) => from)];
 			const assertClean = () => {
@@ -695,7 +715,6 @@ function registerSiteTree(context, output) {
 				if (dirty.length) throw new Error(`Save or undo these unsaved files before moving:\n${dirty.map((filename) => `- ${path.relative(source.siteRoot, filename)}`).join('\n')}`);
 			};
 			assertClean();
-			const service = await serviceFor(source.siteRoot);
 			const result = await service.applyEditorPagePlacement(plan, { renameDirectory: async (from, to) => {
 				assertClean();
 				const edit = new vscode.WorkspaceEdit();

@@ -330,15 +330,22 @@ before, after, first or last under it. The source page stays in place, marked
 is marked **TO** with its proposed address. Starting the move expands the source
 page to show **Cancel page move** immediately. Both rows use an accent-colored icon.
 Expand the preview's details to see affected addresses and authored links.
-Under the preview, choose **Complete page move…**, then confirm **Complete page move**
-in the final dialog to apply, or choose **Cancel page move** to leave files unchanged.
+Under the preview, choose **Complete page move…**. For a move to another
+parent, the final confirmation offers **Preserve old addresses as aliases**,
+checked by default. Uncheck it to create no new aliases for the old addresses
+of the page and all affected descendants. Existing aliases remain available.
+Confirm **Complete page move** to apply. Cancel the confirmation to return to
+the tree, or choose **Cancel page move** to end the move without changing files.
+The checkbox requires extension 0.13.1 and the engine's
+`sitePagePlacementOptionsApiVersion: 1`; older engines retain preservation.
+Reordering has no alias choice because its addresses stay the same.
 You can also cancel from the source page, including its context menu. Move status
 and controls do not appear in the Site Tree header. Another move cannot start
 until you finish or cancel this one. If a placement fails, the error dialog offers to
 open the affected file, try another placement or cancel the move. Closing that
 dialog without a choice also cancels. A new parent changes the page's address
-and those of its descendants; Norna updates supported internal links and automatically
-keeps their old addresses as redirects. Reordering below the same parent leaves
+and those of its descendants; Norna updates supported internal links and
+keeps their old addresses as redirects when the preservation choice is checked. Reordering below the same parent leaves
 addresses unchanged. Moving a page back to its own previous address removes
 that address from its aliases; the same applies to affected descendants. Save
 affected edits first. Editor Undo does not reverse

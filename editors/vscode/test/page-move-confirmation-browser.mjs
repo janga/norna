@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { createRequire } from 'node:module';
+import { chromium } from '@playwright/test';
+const { pageMoveConfirmationHtml } = createRequire(import.meta.url)('../page-move-confirmation.cjs');
+
+test('move checkbox defaults on, updates its explanation and submits the selected policy', async t => {
+	const browser = await chromium.launch();
+	t.after(() => browser.close());
+	const page = await browser.newPage();
+	const errors = [];
+	page.on('pageerror', error => errors.push(error.message));
+	await page.evaluate(() => { window.messages = []; window.acquireVsCodeApi = () => ({ postMessage: value => window.messages.push(value) }); });
+	await page.setContent(pageMoveConfirmationHtml({ title: 'Guide', plan: { sourceUrl: '/guide/', destinationUrl: '/topics/guide/', movePreview: { mappings: [{ oldPathname: '/guide/', newPathname: '/topics/guide/' }, { oldPathname: '/guide/child/', newPathname: '/topics/guide/child/' }], linkChanges: [] } } }, 'test'));
+	assert.equal(await page.locator('#preserve-aliases').isChecked(), true);
+	await page.locator('#preserve-aliases').uncheck();
+	assert.match(await page.locator('#alias-effect').textContent(), /No new aliases/);
+	await page.locator('#complete').focus(); await page.keyboard.press('Enter');
+	assert.deepEqual(await page.evaluate(() => window.messages.at(-1)), { type: 'complete', preserveAliases: false });
+	assert.equal(await page.locator('#complete').isDisabled(), true);
+	await page.evaluate(() => window.dispatchEvent(new MessageEvent('message', { data: { type: 'error', message: 'The site changed.' } })));
+	assert.equal(await page.locator('#preserve-aliases').isChecked(), false);
+	assert.equal(await page.locator('#error').textContent(), 'The site changed.');
+	await page.locator('#preserve-aliases').check();
+	await page.locator('#complete').click();
+	assert.deepEqual(await page.evaluate(() => window.messages.at(-1)), { type: 'complete', preserveAliases: true });
+	await page.evaluate(() => window.dispatchEvent(new MessageEvent('message', { data: { type: 'error', message: 'Try again.' } })));
+	await page.keyboard.press('Escape');
+	assert.deepEqual(await page.evaluate(() => window.messages.at(-1)), { type: 'cancel' });
+	assert.deepEqual(errors, []);
+});

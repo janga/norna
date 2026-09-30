@@ -541,3 +541,23 @@ stale/dirty sources, site changes, capability fallback and recovery after the
 form closes. A headless Chromium test exercises the real webview script's
 input, checkbox, keyboard activation, cancellation response and error display.
 This automated evidence does not replace the owner's native review.
+
+
+## Page Move Alias Choice (BL-153 Follow-up)
+
+Evaluation extension **0.13.1** adds a checked **Preserve old addresses as
+aliases** checkbox to the final confirmation for a move to another parent.
+The selected engine must expose `sitePagePlacementOptionsApiVersion: 1`.
+
+Owner review: start a move in Site Tree, choose a destination and select
+**Complete page move…**. Inspect the default checkbox and try cancelling the
+confirmation. Repeat with the checkbox cleared and complete the move. Check
+both parent and descendant alias lists: existing aliases remain and no new
+aliases are added. Also try leaving the checkbox checked. Reordering siblings
+retains its simple confirmation and unchanged addresses.
+
+Focused placement and tree adapter checks cover both policies, reordering,
+stale source state and cancellation. Confirmation lifecycle and headless
+Chromium checks cover the default checkbox, keyboard activation, selected
+policy, errors and closing during planning. Native owner review remains
+outstanding.

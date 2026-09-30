@@ -133,3 +133,17 @@ state and the reviewed option are both checked before application.
 The 13 focused placement tests passed, including both choices for a branch
 with pre-existing parent/child aliases and unchanged addresses on reordering.
 The owner handles the subsequent VSIX installation and native review.
+
+The final confirmation now presents the checked preservation option when
+addresses change and the engine supports the optional API. The original tree
+preview remains the source of the reviewed placement; changed source state
+requires cancelling and reviewing that placement again. Cancelling just the
+confirmation returns to the active move. Sibling reordering and older engines
+retain their existing simple confirmation.
+
+Focused placement tests, the Site Tree adapter, confirmation lifecycle tests,
+a headless Chromium checkbox/keyboard test, the package contract and the
+documentation check passed. The tree adapter covers both alias choices,
+cancelled moves and stale previews; the lifecycle check discards plans when
+the form closes during planning. Native review of **0.13.1** remains for the
+owner. No complete release suite or installation was performed here.
