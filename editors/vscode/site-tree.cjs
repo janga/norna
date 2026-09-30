@@ -208,7 +208,7 @@ function registerSiteTree(context, output) {
 	const childrenFor = (node) => {
 		if (node?.kind === 'movePreviewPages') return [movePreview?.ghost].filter(Boolean);
 		if (node.id === moveSourceId) return [
-			{ id: `move-cancel-source:${node.id}`, kind: 'moveAction', action: 'cancel', title: `Cancel page move from ${node.url}`,
+			{ id: `move-cancel-source:${node.id}`, kind: 'moveAction', action: 'cancel', title: 'Cancel page move',
 				siteRoot: node.siteRoot, parent: node, children: [] },
 			...node.children,
 		];
@@ -247,11 +247,10 @@ function registerSiteTree(context, output) {
 				item.iconPath = complete
 					? new vscode.ThemeIcon('arrow-right', new vscode.ThemeColor('notificationsInfoIcon.foreground'))
 					: new vscode.ThemeIcon('close');
-				item.description = complete ? 'opens final confirmation' : undefined;
 				item.tooltip = complete ? 'Open the final confirmation. Files change only after you confirm Complete page move.'
 					: undefined;
 				item.command = { command: complete ? 'nornaEditor.acceptMovePreview' : 'nornaEditor.cancelMove', title: node.title };
-				item.accessibilityInformation = { label: [node.title, item.description].filter(Boolean).join('. ') };
+				item.accessibilityInformation = { label: node.title };
 				return item;
 			}
 			if (node.kind === 'moveDetailGroup' || node.kind === 'moveDetail') {
@@ -653,10 +652,12 @@ function registerSiteTree(context, output) {
 				...entry, siteRoot: source.siteRoot, parent: group, children: [] }));
 			return group;
 		};
-		const destinationSlug = target.url.split('/').filter(Boolean).at(-1) ?? '/';
+		const completeLabel = plan.sourceUrl === plan.destinationUrl
+			? `Complete move ${describePosition(target, placement)}`
+			: `Complete move from ${plan.sourceUrl} to ${plan.destinationUrl}`;
 		ghost.children = [
-			{ id: `move-complete:${source.id}`, kind: 'moveAction', action: 'complete', title: `Complete move to ${destinationSlug}`, siteRoot: source.siteRoot, parent: ghost, children: [] },
-			{ id: `move-cancel:${source.id}`, kind: 'moveAction', action: 'cancel', title: `Cancel move to ${destinationSlug}`, siteRoot: source.siteRoot, parent: ghost, children: [] },
+			{ id: `move-complete:${source.id}`, kind: 'moveAction', action: 'complete', title: completeLabel, siteRoot: source.siteRoot, parent: ghost, children: [] },
+			{ id: `move-cancel:${source.id}`, kind: 'moveAction', action: 'cancel', title: 'Cancel page move', siteRoot: source.siteRoot, parent: ghost, children: [] },
 			detailGroup('addresses', 'Affected addresses', mappings.map(({ oldPathname, newPathname }) => ({
 				title: oldPathname, description: `→ ${newPathname}`, tooltip: `${oldPathname} → ${newPathname}. ${aliasChoice ? 'Preserved as an alias by default; choose in the final confirmation.' : 'The old address remains an alias.'}`,
 			})), `Unchanged: ${plan.sourceUrl}`),
@@ -664,10 +665,6 @@ function registerSiteTree(context, output) {
 				title: `${contentLabel}:${line}`, description: `${from} → ${to}`,
 				tooltip: `${contentLabel}, line ${line}: ${from} → ${to}`,
 			})), 'None'),
-			{ id: `move-note:${source.id}`, kind: 'moveDetail', title: 'No files changed yet',
-				description: 'Save affected edits first',
-				tooltip: 'Save affected unsaved edits before completing the move. Editor Undo does not reverse the whole move.',
-				siteRoot: source.siteRoot, parent: ghost, children: [] },
 		];
 		movePreview = { ghost, parent: preview.parent, pagesNode, syntheticPages,
 			insertAt, description, plan };

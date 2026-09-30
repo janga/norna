@@ -583,24 +583,20 @@ the owner's review. Focused automated checks cover the contributed menu and
 keybinding conditions, valid targets and cancellation state cleanup.
 
 
-## Move Addresses On Cancellation Rows (BL-153 Follow-up)
+## Move Completion With Address Context (BL-153 Follow-up)
 
-Evaluation extension **0.13.3** preserves the page title and icon at both move
-locations. The source keeps its ordinary description. Cancellation rows read
-**Cancel page move from /relative/path/** and **Cancel page move to /proposed/path/**,
-without a supplementary description or cancellation tooltip.
+Evaluation extension **0.13.6** shows **Complete move from /old/path/ to
+/new/path/** for an address change. Sibling reordering instead describes the
+placement, such as **Complete move after “Topics”** or **Complete move last
+under “Home”**. Both cancellation rows read **Cancel page move**.
 
-Owner review: move a page with children to another parent, then try a sibling
-reorder. Verify that page icons keep their normal shapes and that the two
-cancellation labels show the original and proposed relative URLs. Toggle
-**Show URL paths**: source and destination rows should follow that preference.
-Try both cancellation rows. The normal selection highlight follows selection;
-there is no persistent custom background or toolbar styling in this revision.
+Owner review: move a page with children to another parent, then try sibling
+reordering. Inspect the complete paths and placement descriptions. Confirm that
+**opens final confirmation** and the **No files changed yet / Save affected
+edits first** row are gone. Completion still opens the existing confirmation
+and its alias choice for an address change. Try cancellation at both locations.
+Verify that the page titles/icons and optional URL display retain their ordinary
+appearance. The normal selection highlight follows selection.
 
-
-Extension **0.13.5** corrects the destination labels to `Complete move to <slug>`
-and `Cancel move to <slug>`. Review a move to another parent: both actions
-should use the selected target page's slug, while source cancellation still
-shows the original relative URL. Test before/after placement as well as child
-placement; the label identifies the selected target in each case. The homepage
-is shown as `/` because it has no slug. Completion continues to open the final confirmation.
+Focused adapter checks verify the labels, removed description/note row, and
+continued confirmation flow. Native presentation remains for the owner's review.

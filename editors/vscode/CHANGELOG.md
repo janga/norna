@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.6
+
+- Show the complete old and new relative URLs on the move completion row.
+  For sibling reordering, describe the placement instead.
+- Use Cancel page move at both locations, and remove the extra completion
+  description and the unchanged-files/save-first note row.
+
 ## 0.13.5
 
 - Fix destination move actions to show the selected target page's slug instead

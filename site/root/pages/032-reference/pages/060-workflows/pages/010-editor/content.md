@@ -327,15 +327,16 @@ To change where a page appears in **Site Tree**, select **Move…** from its
 context menu. Right-click another page to place the moving page
 before, after, first or last under it. From extension 0.13.3, the source page
 keeps its normal title, icon and description. Starting the move expands it to
-show **Cancel page move from /relative/path/**. The temporary destination row
-uses the same page title and icon. From extension 0.13.5, its actions read
-**Complete move to slug** and **Cancel move to slug**, using the selected target
-page’s slug; for example, **Cancel move to topics**. The homepage is shown as `/`.
-Both cancellation rows cancel the complete move. **Show URL paths** continues
-to control path display beside page titles, using the proposed path at the
-destination. The ordinary selection highlight follows the selected row.
+show **Cancel page move**. The temporary destination row uses the same page
+title and icon. From extension 0.13.6, the completion action shows both relative
+URLs, for example **Complete move from /guide/ to /topics/guide/**. Sibling
+reordering instead describes the placement, such as **Complete move after
+“Topics”**. Both locations offer **Cancel page move**, which cancels the complete
+move. **Show URL paths** controls path display beside page titles, using the
+proposed path at the destination. The ordinary selection highlight follows
+the selected row.
 Expand the preview's details to see affected addresses and authored links.
-Under the preview, choose **Complete move to slug**. For a move to another
+Choose the completion action to continue. For a move to another
 parent, the final confirmation offers **Preserve old addresses as aliases**,
 checked by default. Uncheck it to create no new aliases for the old addresses
 of the page and all affected descendants. Existing aliases remain available.

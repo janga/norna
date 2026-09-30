@@ -135,16 +135,17 @@ in Site Tree: expand and scroll the familiar tree, then right-click a
 destination page to place the moving page before, after, first or last under
 it. Clicking a page still opens its `content.md`. The source page remains in
 place with its normal title, page icon and description. Starting the move
-expands that page to show **Cancel page move from /relative/path/**. A temporary
-row at the destination uses the same page title and icon; its cancellation
-row reads **Cancel move to slug**. From extension 0.13.5, destination actions
-use the selected target page’s slug, for example **Cancel move to topics**.
-The homepage is shown as `/`. With **Show URL paths** enabled, page rows show their
-respective paths. The ordinary selection highlight follows the selected row.
-The destination's other children show affected addresses, authored links to update,
-and a reminder that files have not changed yet. Expand the detail groups to
-see individual changes. Beneath the preview,
-choose **Complete move to slug**. For a parent change, the final confirmation
+expands that page to show **Cancel page move**. A temporary row at the
+destination uses the same page title and icon. With **Show URL paths** enabled,
+page rows show their respective paths. The ordinary selection highlight follows
+the selected row. Expand the destination's details to see affected addresses
+and authored links to update.
+
+From extension 0.13.6, the destination action reads, for example,
+**Complete move from /guide/ to /topics/guide/**. Sibling reordering instead
+shows the placement, such as **Complete move after “Topics”**. Both locations
+offer **Cancel page move**. Completion opens the final confirmation, which
+for a parent change
 shows **Preserve old addresses as aliases**, checked by default. Uncheck it to
 create no aliases for the old addresses of the page and its affected
 descendants. Existing aliases remain available. Confirm **Complete page move**

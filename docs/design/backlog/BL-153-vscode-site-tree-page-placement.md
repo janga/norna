@@ -231,3 +231,29 @@ The updated regression failed before the fix and passed after it. Focused
 adapter checks cover a different target slug for sibling/child placement and
 `/` for the homepage. Documentation and VSIX packaging passed; version 0.13.5
 and its packaged bundle were verified. Native review remains for the owner.
+
+
+## Complete Move With Address Context
+
+Owner decision on 2026-09-30 supersedes the source/destination action wording
+above. Both cancellation rows read **Cancel page move**. At the destination,
+a changed URL produces **Complete move from /old/path/ to /new/path/**, using
+the moving page's complete old and proposed site-relative paths. A sibling
+reorder instead describes the placement, for example **Complete move after
+“Topics”** or **Complete move last under “Home”**.
+
+Remove the **opens final confirmation** row description and the entire
+**No files changed yet / Save affected edits first** detail row. Keep the
+address/link detail groups. Completion still opens the existing confirmation
+with the alias choice where relevant. Keep guards for unsaved files and stale
+plans. The existing page icons, normal selection and global cancellation stay.
+
+Verify both completion labels, short cancellation labels, removed descriptions
+and note row, and that the completion command still opens confirmation. The
+owner reviews the native presentation after installing the evaluation VSIX.
+
+Implemented in **0.13.6**. The focused tree adapter and documentation checks
+passed. The adapter covers changed-address and reorder labels, cancellation
+at both locations, removal of the extra row/description and the existing final
+confirmation flow. VSIX packaging passed and its version and bundle were
+verified. Native review remains for the owner.
