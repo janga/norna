@@ -1,3 +1,4 @@
+import { getSiteAttachments, resolveAttachment, localAttachmentName, attachmentOutputIssues } from './page-attachments.mjs';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
@@ -149,6 +150,7 @@ export const createSiteLinkGraph = ({
 	siteStructure,
 	pageDocuments,
 	publicFiles = [],
+	attachments = { files: [], diagnostics: [] },
 	generatedRoutes,
 }) => {
 	const activeGeneratedRoutes = generatedRoutes ?? generatedSiteRoutes;
@@ -193,7 +195,8 @@ export const createSiteLinkGraph = ({
 
 	const references = [];
 	const referencesByTarget = new Map();
-	const diagnostics = [...aliasModel.diagnostics, ...categoryModel.diagnostics];
+	const diagnostics = [...aliasModel.diagnostics, ...categoryModel.diagnostics, ...attachments.diagnostics,
+		...attachmentOutputIssues({ files: attachments.files, pages, publicFiles, generatedRoutes: activeGeneratedRoutes })];
 
 	for (const page of pages) {
 		for (const sourceReference of page.document.links) {
@@ -221,6 +224,17 @@ export const createSiteLinkGraph = ({
 			const targetKey = getTargetKey(target);
 			if (!referencesByTarget.has(targetKey)) referencesByTarget.set(targetKey, []);
 			referencesByTarget.get(targetKey).push(reference);
+
+			const attachment = resolveAttachment(sourceReference.target, page.pathname, attachments.files, target.pathname);
+			if (attachment) {
+				const ambiguous = localAttachmentName(sourceReference.target) && (publicFilesByPathname.has(target.pathname) || pagesByPathname.has(target.pageLookupPathname) || aliasModel.aliasesByPathname.has(target.pageLookupPathname));
+				if (ambiguous) {
+					reference.resolution = { kind: 'ambiguous-attachment' };
+					diagnostics.push(createIssue(reference, 'ambiguous-attachment', `Link "${sourceReference.target}" could identify a page/public file or a local attachment.`, `Use ${attachment.pathname} for the attachment or an explicit site-relative page/public link.`));
+				} else reference.resolution = { kind: 'attachment', file: attachment, pathname: attachment.pathname };
+				continue;
+			}
+
 
 			const targetPage = target.pageLookupPathname
 				? pagesByPathname.get(target.pageLookupPathname)
@@ -304,12 +318,18 @@ export const createSiteLinkGraph = ({
 				continue;
 			}
 
+			if (target.pathname.includes('/downloads/') && !target.pathname.endsWith('/')) {
+				reference.resolution = { kind: 'missing-attachment', pathname: target.pathname };
+				diagnostics.push(createIssue(reference, 'missing-attachment', `Attachment "${sourceReference.target}" does not exist.`, 'Add the file to its owning page’s downloads/ or correct the link.'));
+				continue;
+			}
+
 			if (looksLikePublicFile(target.pathname)) {
 				reference.resolution = { kind: 'missing-public-file', pathname: target.pathname };
 				diagnostics.push(createIssue(
 					reference,
 					'missing-public-file',
-					`Internal link "${sourceReference.target}" on line ${sourceReference.line} points to public file "${target.pathname}", but no matching file exists under ${sitePublicLabel}/.`,
+					`Internal link "${sourceReference.target}" on line ${sourceReference.line} points to public file "${target.pathname}", but no matching file exists under ${sitePublicLabel}/ or the owning page’s downloads/.`,
 					`Add the file under ${sitePublicLabel}/ with the same relative path, or correct the link.`,
 				));
 				continue;
@@ -327,6 +347,7 @@ export const createSiteLinkGraph = ({
 	}
 
 	return {
+		attachments,
 		categoryModel,
 		aliasModel,
 		aliases: aliasModel.aliases,
@@ -360,6 +381,7 @@ export const getSiteLinkGraph = async (options = {}) => {
 		pageDocuments,
 		publicFiles,
 		siteStructure,
+		attachments: await getSiteAttachments(siteStructure),
 		generatedRoutes: options.generatedRoutes,
 	});
 };

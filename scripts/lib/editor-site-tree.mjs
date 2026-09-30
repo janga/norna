@@ -151,3 +151,5 @@ export const editSiteNodeInformation = async ({ siteRoot, sourcePath, source, fi
 };
 
 export { siteResourceActionsApiVersion, getEditorResourceReferences, planEditorResourceRename, planEditorPublicCreation, planEditorFolderRemoval, getEditorResourceAddress } from './editor-resource-actions.mjs';
+
+export { siteAttachmentsApiVersion, planEditorAttachmentCopy, createEditorAttachmentInsertion } from './editor-attachments.mjs';

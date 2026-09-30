@@ -1,4 +1,4 @@
-import { cp, mkdir, readdir, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import projectConfig from './lib/project-config.mjs';
 import { getReservedPublicEntries } from './lib/public-path-policy.mjs';
@@ -43,7 +43,11 @@ for (const generatedFile of generatedPublicFiles) {
 }
 
 const siteStructure = await getSiteStructure();
-const { categoryModel } = await getSiteLinkGraph({ siteStructure });
+const { categoryModel, attachments, diagnostics } = await getSiteLinkGraph({ siteStructure });
+const attachmentErrors = diagnostics.filter(issue => ['invalid-attachment', 'attachment-output-collision'].includes(issue.code));
+if (attachmentErrors.length) throw new Error(attachmentErrors.map(issue => issue.message).join('\n'));
+const attachmentManifest = path.join(path.dirname(astroPublicDir), 'attachments.json');
+const previousAttachments = await readFile(attachmentManifest, 'utf8').then(JSON.parse).catch(error => { if (error.code === 'ENOENT') return []; throw error; });
 const { destinations: categoryDestinations } = assertCategoryDestinationModel(categoryModel);
 const sitemapXml = createSitemapXml({
 	siteStructure,
@@ -53,6 +57,11 @@ const sitemapXml = createSitemapXml({
 
 await mkdir(astroPublicDir, { recursive: true });
 
+for (const relative of previousAttachments) {
+	const filename = path.resolve(astroPublicDir, relative);
+	if (!filename.startsWith(path.resolve(astroPublicDir) + path.sep)) throw new Error('Invalid generated attachment manifest path.');
+	await rm(filename, { force: true });
+}
 for (const entry of await readDirectory(astroPublicDir)) {
 	if (keepAstroPublicEntries.has(entry.name)) {
 		continue;
@@ -69,6 +78,12 @@ for (const entry of sourceEntries) {
 	);
 }
 
+for (const file of attachments.files) {
+	const destination = path.join(astroPublicDir, file.pathname.slice(1));
+	await mkdir(path.dirname(destination), { recursive: true });
+	await cp(file.filePath, destination, { force: false, errorOnExist: true });
+}
+await writeFile(attachmentManifest, JSON.stringify(attachments.files.map(file => file.pathname.slice(1))));
 await writeFile(path.join(astroPublicDir, sitemapFilename), sitemapXml);
 
 console.log(`Synced ${sitePublicLabel}/ to ${astroPublicLabel}/.`);

@@ -1,5 +1,6 @@
 import { getSiteSourcePaths } from './site-conventions.mjs';
 import path from 'node:path';
+import { getSourcePageLocation } from './source-files.mjs';
 import { getSourceFileDefinition } from './source-files.mjs';
 import { isInside } from './editor-site-links.mjs';
 
@@ -14,5 +15,6 @@ export const editorFileRemovalPolicy = ({ siteRoot, sourcePath, filePath }) => {
 	if (siteOwner && isInside(path.join(siteRoot, 'public'), filePath)) return {
 		kind: 'public', effect: 'This file will no longer be published. Links to it may break; an icon or logo may disappear. References outside page content are not checked.',
 	};
+	if (getSourcePageLocation(siteRoot, directory) && path.dirname(filePath) === path.join(directory, 'downloads')) return { kind: 'attachment', effect: 'Links to this attachment will stop working. Restore its file from Trash if needed.' };
 	return null;
 };

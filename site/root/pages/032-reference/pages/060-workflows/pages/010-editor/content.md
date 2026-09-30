@@ -1,15 +1,15 @@
 ---
 page:
-  description: Find pages, configuration and images in VS Code, create pages, edit page information and use Norna-aware suggestions.
+  description: Edit a Norna site in VS Code, manage page files and use Norna-aware suggestions.
 ---
 
 # VS Code editor support
 
 The optional Norna extension connects VS Code to the rules in a project's
 installed Norna package. Its site tree opens pages and their files, creates
-pages and edits their titles and metadata. It also adds configuration and
-Markdown help, diagnostics and managed-image navigation. Command-line checks
-remain authoritative.
+pages and edits their titles and metadata. It also manages images and page
+attachments, and adds configuration and Markdown
+help and diagnostics. Command-line checks remain authoritative.
 
 The extension is experimental and distributed as a manually installed VSIX,
 not through the Visual Studio Marketplace. An npm installation of Norna does
@@ -91,7 +91,7 @@ Tree. Hover over the page to see the actual source path.
 
 The tree follows the actual [file organization](/reference/site/files/).
 Shared `site-config/` and `public/` are siblings before the homepage. Each page
-shows its existing images, theme files and child pages in that order.
+shows its images, attachments, theme files and child pages in that order.
 A readable page row represents `root/` or a numbered child directory; ordering
 numbers stay in the filesystem but do not clutter the displayed title.
 
@@ -106,6 +106,7 @@ public/
   icon.ico
 Norna  Homepage
   images/
+  downloads/
   tree-theme.yaml
   page-theme.yaml
   pages/
@@ -114,8 +115,9 @@ Norna  Homepage
       tree-theme.yaml
 ```
 
-Only existing folders appear. A page with no visible details has no expansion
-chevron; an existing empty folder is still a visible detail. An incomplete
+Only existing folders appear; empty `images/` and `downloads/` folders are
+hidden. Their **Add** actions remain available on the page. A page with no
+visible details has no expansion chevron. An incomplete
 page directory remains visible so you can repair its missing source.
 The `site-config/` folder starts expanded; the extension remembers your later choice for that site in the
 workspace, including after refresh or window reload. An open settings file
@@ -166,6 +168,8 @@ introduction shown the first time.
 | `pages/` | Add Page, Delete |
 | `images/` | Add Images, Delete |
 | Image | Insert Image in Page, Rename, Replace, References, Delete |
+| `downloads/` | Add Attachments, Delete |
+| Attachment | Insert Link in Page, Rename, Replace, Copy Link, References, Delete |
 | `site-config/` | Add missing supported configuration files |
 | Optional configuration file | Delete |
 | `public/` | New File, Add Files, New Folder, Delete |
@@ -178,8 +182,8 @@ parent is already selected. Enter the title and URL segment, review the address
 and directory, then choose **Create page**. The page appears last among its
 siblings and opens for editing. The first child creates `pages/` automatically.
 
-The page's **Add** submenu also offers **Add Images…**, **Page Theme** and
-**Branch Theme**. Existing singleton files are omitted. The operation creates
+The page's **Add** submenu also offers **Add Images…**, **Add Attachments…**,
+**Page Theme** and **Branch Theme**. Existing singleton files are omitted. The operation creates
 missing resource folders when needed; browsing does not create them.
 **Norna: New Page…** remains in the Command Palette for creation beside the
 selected page or at the site root. Choosing the homepage as parent creates a
@@ -378,8 +382,8 @@ operation. If reference editing fails, the extension restores the original
 resource name or reports the paths needing recovery.
 
 **Copy Link** copies the complete published address. **References…** opens
-pages that link to the resource. Static site files belong here; page-owned
-attachments are not yet supported as a separate resource type.
+pages that link to the resource. Shared static files belong here; use
+[page attachments](#add-and-use-page-attachments) for files owned by a page.
 
 ### Remove an optional file
 
@@ -418,7 +422,7 @@ Choose **Show links** to open the source list before deciding. This cancels
 the removal; run the action again after reviewing or editing those links.
 You may still confirm removal when known incoming links exist.
 
-Optional `pages/`, `images/` and public folders also offer **Delete…** when
+Optional `pages/`, `images/`, `downloads/` and public folders also offer **Delete…** when
 nonempty. The confirmation summarizes affected pages/files and incoming
 references. Required site folders and the homepage are protected. Unexpected
 entries that cannot be checked safely must be repaired in Explorer first.
@@ -502,6 +506,48 @@ undoes text edits, not the complete file rename. If reference editing fails,
 the extension attempts to restore the original filename and reports any
 remaining recovery work.
 
+
+## Add and use page attachments
+
+Right-click a page in Site Tree and choose **Add > Add Attachments…**.
+Select one or several files. The extension copies them into `downloads/`
+beside that page's `content.md`; source files remain unchanged. No folder
+needs to exist beforehand. Empty `downloads/` and `images/` folders are hidden
+in Site Tree, but their page's Add actions remain available.
+
+The form names the page and insertion position. If that page was active when
+you started, links go at its captured cursor position. Otherwise they are
+appended to the owning page, never to a different active page.
+
+For each file, keep **Import and insert link**, choose **Import** to copy
+without a link, or **Ignore** to skip it. Edit the destination filename and
+link text; use **Move up** and **Move down** to order inserted links. One file
+produces a Markdown link; several produce a bullet list. File type, size and
+Modified describe the source file on disk, not a publication date.
+
+A name collision shows **Existing file** and **New file** for comparison.
+Replace is preselected for an initial collision, but a separate confirmation
+is required before replacement. Choose a free name or Ignore instead. If you
+edit a name and it collides with a different file, select Replace again.
+Files in the same batch cannot overwrite one another.
+
+The text edit remains unsaved and supports ordinary Undo. Undo does not remove
+imported files or restore replaced files; previous files go to the operating
+system's Trash. Cancel before applying changes nothing. If the page changes
+while the form is open, reopen the form at the intended position. The extension
+refuses insertion inside code, links, tables, HTML or page settings.
+
+An existing attachment offers **Insert Link in Page…**, **Rename…**, **Replace…**,
+**References**, **Copy Link** and **Delete…**. Rename updates known references;
+Replace preserves its address. Deletion reports known incoming links but does
+not remove those links. A failed import lists copied files and recovery work;
+check that report before retrying. Restore a replaced original from Trash when
+needed.
+
+These actions need an evaluation extension and project engine with attachment
+support. They accept any file type and do not promise that the browser will
+download rather than display it. See [page attachments](/reference/site/attachments/)
+for local links, sharing between pages and published addresses.
 
 ## Suggestions and diagnostics
 

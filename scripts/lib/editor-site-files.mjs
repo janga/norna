@@ -106,7 +106,7 @@ export const planEditorRemoval = async ({ siteRoot, sourcePath, imagePath, fileP
 	const policy = filePath ? editorFileRemovalPolicy({ siteRoot: path.resolve(siteRoot), sourcePath: target.sourcePath, filePath: filename }) : null;
 	if (filePath && (!policy || !(await stat(filename))?.isFile())) throw new Error('This file cannot be removed separately. Required page files belong to their page; required site settings must remain.');
 	const usage = imagePath ? await getEditorImageUsage({ siteRoot, sourcePath, imagePath, sources })
-		: !filePath || policy.kind === 'public' ? await getEditorIncomingLinks({ siteRoot, sourcePath, sources,
+		: !filePath || ['public', 'attachment'].includes(policy.kind) ? await getEditorIncomingLinks({ siteRoot, sourcePath, sources,
 			descendants: !filePath, excludeBranch: !filePath, filePath }) : null;
 	const files = await snapshot(filename);
 	const effect = policy?.kind === 'theme'

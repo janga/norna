@@ -512,6 +512,16 @@ Run `scripts/test-editor-resource-actions.mjs` for engine rules and
 dirty buffers, stale plans and injected application/recovery failures. Native
 menu, keyboard, Undo and save/reopen review remains a separate acceptance step.
 
+### Page Attachments
+
+The attachment capability is `siteAttachmentsApiVersion: 1`. The shared link
+graph resolves page-owned downloads before rendering; the build copies bytes
+unchanged and page moves update known references. `editor-attachments.mjs`
+plans copies and guarded source insertions, while the extension owns the form,
+Trash operations and dirty-buffer text edits. Run the attachment engine/adapter
+checks for those boundaries; `test:attachment-form` in the extension checks the
+actual webview HTML's focus and ordering without starting a site server.
+
 ### First Marketplace Release
 
 The publisher ID in the extension manifest is `janga`. Before the first public

@@ -1,4 +1,5 @@
 import { getPageImageSourceKey } from '../../scripts/lib/site-conventions.mjs';
+import { readPageAttachments, resolveAttachment, attachmentHref } from '../../scripts/lib/page-attachments.mjs';
 import { markdownToHtml } from 'satteri';
 import { groupRenderedTabs } from '../../scripts/lib/content-tabs.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
@@ -164,6 +165,7 @@ const resolveContentBlocks = async (
 		}
 
 		if (block.type === 'card-list') {
+			const { files } = await readPageAttachments(page);
 			resolvedBlocks.push({
 				type: 'card-list',
 				layout: block.layout,
@@ -172,6 +174,7 @@ const resolveContentBlocks = async (
 				width: block.width,
 				cards: block.cards.map((card: CardListItem) => ({
 					...card,
+					...(card.link && resolveAttachment(card.link, page.pathname, files) ? { link: attachmentHref(resolveAttachment(card.link, page.pathname, files), card.link) } : {}),
 					...(card.image ? { src: getImageSourceKey(page, card.image) } : {}),
 				})),
 			});

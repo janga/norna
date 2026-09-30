@@ -5,9 +5,10 @@
 Let authors keep PDFs, archives, spreadsheets and other files with the page
 that owns them, and insert links without manually writing paths.
 
-**Status: Ready after BL-154 VS Code Site Tree Context Actions.** The owner
-approved the product decisions and visual form layout on 2026-09-30. This item
-is in Next. No attachment implementation has started.
+**Status: Implemented; commit authorized on 2026-09-30.** The owner approved the product
+decisions and form sketch on 2026-09-30. Engine, editor integration and reference
+documentation are implemented. The owner handles further interface review and
+error reports. Commit authorization does not claim that all manual checks passed.
 
 ## Scope And Boundaries
 
@@ -180,9 +181,9 @@ empty-downloads-folder visibility. Do not let that cross-cutting requirement
 fall between BL-154 and BL-155.
 
 The design review is complete. Implementation details follow the existing
-engine contracts. Review the functioning interaction locally before commit,
-as required for materially changed UI; the approved sketch is not evidence
-that the implemented behavior has passed that review.
+engine contracts. The owner handles further review of the functioning
+interaction after commit; the approved sketch is not evidence that every
+implemented interaction has passed manual review.
 
 ## Direct Acceptance Checks
 
@@ -200,3 +201,30 @@ Check cursor versus end insertion and stale buffers. Test any new IntelliSense
 in the real suggestion widget, and source edits with Undo and dirty save/reopen
 in the Default profile. Update author documentation with delivered behavior;
 run directly affected tests, not an unrelated full release suite.
+
+## Delivery Evidence: 2026-09-30
+
+- Earlier passing checks are retained: six attachment engine cases, five
+  attachment adapter cases, six resource-action cases, page-move and public-file
+  checks. They cover ownership, ambiguous/missing links, collisions, dirty-source
+  planning, cancellation and partial replacement recovery. They were not repeated
+  merely because work resumed.
+- A new focused browser test passes for form focus/selection after validation,
+  Action changes, replacement checkbox and reordering. The native form uses the
+  same generated HTML. Run `npm --prefix editors/vscode run test:attachment-form`.
+- A new build case passes for card/Markdown attachment links, Unicode, spaces,
+  deployment prefix, query/fragment and unchanged output bytes. It is included
+  in `scripts/test-page-attachments.mjs`; only this new case was run on resume.
+- VSIX 0.12.0 was built, package-checked and installed in the owner's Default
+  profile. Native Add > Add Attachments, form fields, import, unsaved insertion,
+  Undo/Redo, save, close/reopen and a second edit/save were checked using the
+  disposable `.local/bl155-review/site`. Imported bytes remained after text Undo.
+  Batch failure/cancellation permutations use adapter tests, not a claim that
+  every permutation was manually repeated.
+- Canonical rules: `/reference/site/attachments/`. Editor procedure:
+  `/reference/workflows/editor/#add-and-use-page-attachments`.
+
+Review by opening `.local/bl155-review/site` in the Default VS Code profile.
+Guide contains disposable attachments; Empty Page demonstrates absent resource
+folders with Add actions still available. Further manual review is owner-managed
+and does not block commit, as agreed on 2026-09-30.

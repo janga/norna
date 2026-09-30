@@ -1,3 +1,4 @@
+import { getSiteAttachments } from './lib/page-attachments.mjs';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import path from 'node:path';
@@ -468,6 +469,7 @@ for (const context of contentFileContexts) {
 }
 
 const siteLinkGraph = createSiteLinkGraph({
+	attachments: await getSiteAttachments(siteStructure),
 	pageDocuments: contentFileContexts.map(({ contentFile, frontmatterData, page }) => ({
 		contentFile,
 		data: frontmatterData,

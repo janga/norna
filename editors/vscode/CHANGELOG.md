@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.0
+
+- Add page-owned attachments with a batch import/link form, explicit replacement,
+  existing-file insertion and reference-aware resource actions.
+- Hide empty images/downloads folders while retaining the page's Add actions.
+- Preserve native text Undo and unsaved buffers; report partial file failures
+  and Trash recovery separately from editor Undo.
+
 ## 0.10.0
 
 - Group Site Tree editing in native context menus, with actions for each row

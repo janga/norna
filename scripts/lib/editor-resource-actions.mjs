@@ -1,3 +1,4 @@
+import { attachmentHref, attachmentPathname, attachmentOutputIssues, localAttachmentName, encodeAttachmentPath } from './page-attachments.mjs';
 import { lstat, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseDocument, isScalar, isSeq } from 'yaml';
@@ -32,6 +33,7 @@ const resource = async ({ siteRoot, filePath }) => {
 	const publicRoot = path.join(path.resolve(siteRoot), 'public');
 	if (isInside(publicRoot, filename)) return { filename, kind: 'public', directory: info.isDirectory(), fixed: filename === publicRoot };
 	const owner = path.dirname(path.dirname(filename));
+	if (info.isFile() && path.basename(path.dirname(filename)) === 'downloads' && getSourcePageLocation(siteRoot, owner)) return { filename, kind: 'attachment', directory: false, sourcePath: path.join(owner, 'content.md') };
 	if (info.isFile() && path.basename(path.dirname(filename)) === 'images' && getSourcePageLocation(siteRoot, owner) && imageName.test(path.basename(filename))) {
 		return { filename, kind: 'image', directory: false, sourcePath: path.join(owner, 'content.md') };
 	}
@@ -55,6 +57,8 @@ const validatePublic = (siteRoot, state, filenames, directories = []) => {
 		}
 	}
 	for (const directory of directories) if ([...outputPaths].some(output => output.toLowerCase() === publicPath(siteRoot, directory).toLowerCase())) throw new Error('This folder would occupy a generated file path. Choose another name.');
+	const attachmentIssues = attachmentOutputIssues({ files: state.graph.attachments.files, pages: state.graph.pages, publicFiles: filenames.map(filename => ({ pathname: publicPath(siteRoot, filename) })), generatedRoutes: state.generatedRoutes });
+	if (attachmentIssues.length) throw new Error(attachmentIssues.map(issue => issue.message).join('\n'));
 	const inspection = inspectPublicAssetFilenames(filenames.filter(filename => path.dirname(filename) === path.join(siteRoot, 'public')).map(filename => path.basename(filename)));
 	if (inspection.logos.length > 1) throw new Error(`Keep one navigation logo in public/: ${inspection.logos.join(', ')}. Use Replace on the existing logo.`);
 	if (inspection.socialImages.length > 1) throw new Error(`Keep one social image in public/: ${inspection.socialImages.join(', ')}.`);
@@ -65,7 +69,7 @@ export const getEditorResourceReferences = async (options) => {
 	const selected = await resource(options);
 	if (selected.kind === 'image') return { ...await getEditorImageUsage({ ...options, sourcePath: selected.sourcePath, imagePath: selected.filename }), scope: 'Norna image blocks. Ordinary Markdown images, HTML and external references are not checked.' };
 	const state = await readEditorLinkState(options);
-	return { references: state.graph.references.filter(ref => ref.resolution?.kind === 'public-file' && (selected.directory ? isInside(selected.filename, ref.resolution.file.filePath) : selected.filename === ref.resolution.file.filePath)).map(summarizeReference),
+	return { references: state.graph.references.filter(ref => ['public-file', 'attachment'].includes(ref.resolution?.kind) && (selected.directory ? isInside(selected.filename, ref.resolution.file.filePath) : selected.filename === ref.resolution.file.filePath)).map(summarizeReference),
 		incomplete: state.incomplete, scope: 'Page-content links. HTML, configuration and external references are not checked.' };
 };
 
@@ -99,7 +103,7 @@ export const planEditorResourceRename = async ({ siteRoot, filePath, name, desti
 	const selected = await resource({ siteRoot, filePath });
 	if (selected.fixed) throw new Error('The public folder has a fixed name and location.');
 	const directory = destinationDirectory ?? path.dirname(selected.filename);
-	if (selected.kind === 'image' && directory !== path.dirname(selected.filename)) throw new Error('Images stay in their owning page’s images folder.');
+	if (['image', 'attachment'].includes(selected.kind) && directory !== path.dirname(selected.filename)) throw new Error('Images stay in their owning page’s images folder.');
 	const destination = await checkedPath(siteRoot, path.join(directory, checkedName(name)));
 	if (destination === selected.filename) throw new Error('Enter a different name or location, or cancel.');
 	if (!(await stat(directory))?.isDirectory()) throw new Error('Choose an existing destination folder.');
@@ -120,6 +124,22 @@ export const planEditorResourceRename = async ({ siteRoot, filePath, name, desti
 			if (!edits.length) throw new Error(`Cannot locate the image reference in ${sourcePath}. No files changed.`);
 			changes.push({ sourcePath, original, updated: applyText(original, edits) });
 		}
+	} else if (selected.kind === 'attachment') {
+		const state = await readEditorLinkState({ siteRoot, sources });
+		const file = state.graph.attachments.files.find(file => file.filePath === selected.filename);
+		if (!file) throw new Error('The attachment is no longer available.');
+		const updated = { ...file, filePath: destination, filename: name, pathname: attachmentPathname(file.ownerPathname, name) };
+		const problems = attachmentOutputIssues({ files: state.graph.attachments.files.map(entry => entry === file ? updated : entry), pages: state.graph.pages, publicFiles: state.publicFiles, generatedRoutes: state.generatedRoutes });
+		if (problems.length) throw new Error(problems.map(issue => issue.message).join('\n'));
+		const bySource = new Map();
+		for (const ref of state.graph.references.filter(ref => ref.resolution?.kind === 'attachment' && ref.resolution.file.filePath === file.filePath)) {
+			if (!ref.targetRange) throw new Error('Cannot safely locate this attachment reference. No files changed.');
+			const filename = ref.sourceContentFile.contentPath;
+			if (!bySource.has(filename)) bySource.set(filename, { original: ref.sourcePage.document.fullSource, edits: new Map() });
+			const href = localAttachmentName(ref.targetSource) ? encodeURIComponent(name) + (ref.targetSource.match(/[?#].*$/)?.[0] ?? '') : attachmentHref(updated, ref.targetSource);
+			bySource.get(filename).edits.set(ref.targetRange.start, { ...ref.targetRange, text: ref.yamlScalar ? JSON.stringify(href) : href });
+		}
+		for (const [sourcePath, { original, edits }] of bySource) { await checkedPath(siteRoot, sourcePath); changes.push({ sourcePath, original, updated: applyText(original, [...edits.values()]) }); }
 	} else {
 		const state = await readEditorLinkState({ siteRoot, sources });
 		const mapped = state.publicFiles.map(file => isInside(selected.filename, file.filePath) ? path.join(destination, path.relative(selected.filename, file.filePath)) : file.filePath);
@@ -169,7 +189,7 @@ export const planEditorFolderRemoval = async ({ siteRoot, directory, sources = n
 	const publicFolder = isInside(publicRoot, directory);
 	const kind = path.basename(directory);
 	const ownerDirectory = path.dirname(directory);
-	if (!publicFolder && (!['images', 'pages'].includes(kind) || !getSourcePageLocation(siteRoot, ownerDirectory))) throw new Error('Only optional pages, images and public folders can be deleted.');
+	if (!publicFolder && (!['images', 'downloads', 'pages'].includes(kind) || !getSourcePageLocation(siteRoot, ownerDirectory))) throw new Error('Only optional pages, images and public folders can be deleted.');
 	if (!(await stat(directory))?.isDirectory()) throw new Error('The selected folder no longer exists.');
 	const files = await snapshot(directory);
 	const plans = [];
@@ -178,7 +198,8 @@ export const planEditorFolderRemoval = async ({ siteRoot, directory, sources = n
 	} else {
 		for (const entry of await readdir(directory, { withFileTypes: true })) {
 			const filename = path.join(directory, entry.name);
-			if (kind === 'images' && entry.isFile()) plans.push(await planEditorRemoval({ siteRoot, sourcePath: path.join(ownerDirectory, 'content.md'), imagePath: filename, sources }));
+			if (kind === 'downloads' && entry.isFile()) plans.push(await planEditorRemoval({ siteRoot, sourcePath: path.join(ownerDirectory, 'content.md'), filePath: filename, sources }));
+			else if (kind === 'images' && entry.isFile()) plans.push(await planEditorRemoval({ siteRoot, sourcePath: path.join(ownerDirectory, 'content.md'), imagePath: filename, sources }));
 			else if (kind === 'pages' && entry.isDirectory()) plans.push(await planEditorRemoval({ siteRoot, sourcePath: path.join(filename, 'content.md'), sources }));
 			else throw new Error(`Cannot delete this folder safely: ${entry.name} is not a supported ${kind === 'pages' ? 'page' : 'image'}. Review it in Explorer first.`);
 		}
@@ -190,8 +211,10 @@ export const planEditorFolderRemoval = async ({ siteRoot, directory, sources = n
 
 export const getEditorResourceAddress = async (options) => {
 	const selected = await resource(options);
-	if (selected.kind !== 'public' || selected.directory) throw new Error('Select a public file.');
-	const { settings } = await readEditorLinkState(options);
+	if (!['public', 'attachment'].includes(selected.kind) || selected.directory) throw new Error('Select a public file.');
+	const { settings, graph } = await readEditorLinkState(options);
 	if (!settings) throw new Error('Repair site-config/settings.yaml to copy the published address.');
-	return new URL(encodePath(publicPath(options.siteRoot, selected.filename)).slice(1), settings.url.replace(/\/$/, '') + '/').href;
+	const pathname = selected.kind === 'attachment' ? graph.attachments.files.find(file => file.filePath === selected.filename)?.pathname : publicPath(options.siteRoot, selected.filename);
+	if (!pathname) throw new Error('The file no longer belongs to this site.');
+	return new URL(encodeAttachmentPath(pathname).slice(1), settings.url.replace(/\/$/, '') + '/').href;
 };

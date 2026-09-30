@@ -4,6 +4,7 @@ const { pathToFileURL } = require('node:url');
 const { getNornaProjectContext, findNornaPackage, supportedEditorApiVersion, supportedSchemaVersion } = require('./norna-project.cjs');
 const { registerSiteFileActions } = require('./site-file-actions.cjs');
 const { registerSiteAddressActions } = require('./site-address-actions.cjs');
+const { registerSiteAttachmentActions } = require('./site-attachment-actions.cjs');
 const { registerSiteResourceActions } = require('./site-resource-actions.cjs');
 const { registerSiteSourceActions } = require('./site-source-actions.cjs');
 const { createPageForm, editPageForm } = require('./page-form-actions.cjs');
@@ -541,7 +542,7 @@ function registerSiteTree(context, output) {
 
 	const register = (name, callback) => context.subscriptions.push(vscode.commands.registerCommand(name, async (...args) => {
 		try {
-			if (moveSourceId && /^nornaEditor\.(newPage|addPage|addChildPage|importImage|insertImage|replaceImage|removeImage|removePage|removeFile|createSourceFile|renamePage|renameResource|moveResource|removeFolder|newPublicFile|newPublicFolder|addPublicFiles|replacePublicFile|addSitePublicFiles|pageInformation)$/.test(name)) throw new Error('Complete or cancel the current page move before editing site files.');
+			if (moveSourceId && /^nornaEditor\.(addAttachments|insertAttachment|replaceAttachment|newPage|addPage|addChildPage|importImage|insertImage|replaceImage|removeImage|removePage|removeFile|createSourceFile|renamePage|renameResource|moveResource|removeFolder|newPublicFile|newPublicFolder|addPublicFiles|replacePublicFile|addSitePublicFiles|pageInformation)$/.test(name)) throw new Error('Complete or cancel the current page move before editing site files.');
 			return await callback(...args);
 		} catch (error) {
 			output.appendLine(`Site tree: ${error.stack ?? error.message}`);
@@ -667,6 +668,7 @@ function registerSiteTree(context, output) {
 			if (moved && tree.visible) await enqueueTreeWork(() => tree.reveal(moved, { select: true, focus: false, expand: false }));
 		} finally { applyingMove = false; }
 	});
+	registerSiteAttachmentActions({ vscode, context, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
 	registerSiteResourceActions({ vscode, context, chooseNode, activeSite, ownerOf, serviceFor, documentSources, refresh, register });
 	registerSiteFileActions({ vscode, context, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });
 	registerSiteAddressActions({ vscode, chooseNode, ownerOf, serviceFor, documentSources, refresh, register });

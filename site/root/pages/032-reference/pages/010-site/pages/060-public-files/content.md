@@ -6,7 +6,9 @@ page:
 # Public files and output
 
 `site/public/` holds files copied unchanged to the site's public root. Use it
-for downloads, icons, `robots.txt` and verification files. These files keep
+for shared downloads, icons, `robots.txt` and verification files. Keep a file
+owned by one page in that page's [attachments folder](/reference/site/attachments/)
+so it follows the page when moved. Public files keep
 their format and are not processed as managed images.
 
 ## Recognized files

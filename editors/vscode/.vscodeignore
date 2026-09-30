@@ -18,3 +18,6 @@ page-form.cjs
 page-form-actions.cjs
 page-placement.cjs
 site-resource-actions.cjs
+
+site-attachment-actions.cjs
+attachment-form.cjs

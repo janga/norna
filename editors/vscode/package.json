@@ -2,7 +2,7 @@
   "name": "norna-vscode",
   "displayName": "Norna",
   "description": "A site tree and project-local IntelliSense for Norna pages, configuration, Markdown blocks, notes, and managed images.",
-  "version": "0.10.0",
+  "version": "0.12.0",
   "publisher": "janga",
   "license": "GPL-3.0-only",
   "icon": "icon.png",
@@ -305,6 +305,24 @@
         "title": "Site Tree Help",
         "category": "Norna",
         "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.addAttachments",
+        "title": "Add Attachments\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.insertAttachment",
+        "title": "Insert Link in Page\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
+      },
+      {
+        "command": "nornaEditor.replaceAttachment",
+        "title": "Replace\u2026",
+        "category": "Norna",
+        "enablement": "!nornaSiteTree.moveActive"
       }
     ],
     "views": {
@@ -545,6 +563,21 @@
           "command": "nornaEditor.addPage",
           "when": "view == nornaSiteTree && viewItem == nornaPages",
           "group": "1_add@1"
+        },
+        {
+          "command": "nornaEditor.addAttachments",
+          "when": "view == nornaSiteTree && viewItem =~ /;addAttachments;/ && viewItem =~ /^nornaDirectory;/",
+          "group": "1_add@1"
+        },
+        {
+          "command": "nornaEditor.insertAttachment",
+          "when": "view == nornaSiteTree && viewItem =~ /;insertAttachment;/",
+          "group": "2_edit@1"
+        },
+        {
+          "command": "nornaEditor.replaceAttachment",
+          "when": "view == nornaSiteTree && viewItem =~ /;replaceAttachment;/",
+          "group": "2_edit@3"
         }
       ],
       "commandPalette": [
@@ -623,6 +656,18 @@
         {
           "command": "nornaEditor.resourceReferences",
           "when": "false"
+        },
+        {
+          "command": "nornaEditor.addAttachments",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.insertAttachment",
+          "when": "false"
+        },
+        {
+          "command": "nornaEditor.replaceAttachment",
+          "when": "false"
         }
       ],
       "nornaSiteTree.add": [
@@ -660,6 +705,11 @@
           "command": "nornaEditor.addSharedContent",
           "when": "view == nornaSiteTree && viewItem =~ /;add_shared_content_yaml;/ && viewItem =~ /^norna(Home|Page|Incomplete|Configuration);/",
           "group": "1_add@2"
+        },
+        {
+          "command": "nornaEditor.addAttachments",
+          "when": "view == nornaSiteTree && viewItem =~ /;addAttachments;/ && viewItem =~ /^norna(Home|Page);/",
+          "group": "1_add@3"
         }
       ]
     },
@@ -689,10 +739,11 @@
   "scripts": {
     "audit:runtime": "npm audit --omit=dev",
     "build": "esbuild extension.cjs --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.cjs",
-    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check site-file-actions.cjs && node --check site-address-actions.cjs && node --check site-link-review.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/page-form-contract.mjs && node test/site-file-actions-contract.mjs && node test/site-address-actions-contract.mjs && node --test test/site-resource-actions-contract.mjs && node test/package-contract.mjs",
+    "check": "npm run build && node --check extension.cjs && node --check site-tree.cjs && node --check site-file-actions.cjs && node --check site-address-actions.cjs && node --check site-link-review.cjs && node --check norna-project.cjs && node --check yaml-schema-completions.cjs && node --check dist/extension.cjs && node test/markdown-contract.mjs && node test/site-tree-contract.mjs && node test/page-form-contract.mjs && node test/site-file-actions-contract.mjs && node test/site-address-actions-contract.mjs && node --test test/site-resource-actions-contract.mjs && node --test test/attachment-actions-contract.mjs && node test/package-contract.mjs",
     "package": "vsce package --out norna-vscode.vsix",
     "publish:marketplace": "vsce publish",
     "vscode:prepublish": "npm run build",
+    "test:attachment-form": "node --test test/attachment-form-browser.mjs",
     "test:integration": "node test/run-integration.mjs",
     "test:integration:minimum": "node test/run-integration.mjs --version 1.96.0"
   },

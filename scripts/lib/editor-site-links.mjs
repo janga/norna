@@ -1,3 +1,4 @@
+import { getSiteAttachments } from './page-attachments.mjs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { getGeneratedSiteRoutes } from './page-aliases.mjs';
@@ -46,10 +47,10 @@ export const readEditorLinkState = async ({ siteRoot, sources = new Map() }) => 
 	try { publicFiles = await getSitePublicFiles(path.join(siteRoot, 'public')); }
 	catch (error) { incomplete.push(error.message); }
 	const generatedRoutes = getGeneratedSiteRoutes({ searchEnabled: settings?.search });
-	const graph = createSiteLinkGraph({ siteStructure: structure, pageDocuments, publicFiles, generatedRoutes });
+	const graph = createSiteLinkGraph({ siteStructure: structure, pageDocuments, publicFiles, generatedRoutes, attachments: await getSiteAttachments(structure) });
 	// Missing destinations do not make reference discovery incomplete. Ambiguous
 	// ownership of an address does, and must never be presented as a clean check.
-	incomplete.push(...graph.diagnostics.filter((entry) => !entry.reference && entry.severity === 'error').map(({ message }) => message));
+	incomplete.push(...graph.diagnostics.filter((entry) => (!entry.reference || entry.code === 'ambiguous-attachment') && entry.severity === 'error').map(({ message }) => message));
 	return { structure, graph, publicFiles, generatedRoutes, settings, incomplete: [...new Set(incomplete)].sort() };
 };
 
@@ -72,7 +73,8 @@ export const getEditorIncomingLinks = async ({ siteRoot, sourcePath, sources, de
 	const references = state.graph.references.filter((reference) => {
 		if (excludeBranch && isInside(directory, reference.sourceContentFile.contentPath)) return false;
 		if (alias) return reference.target.pageLookupPathname === alias;
-		if (filePath) return reference.resolution?.kind === 'public-file' && reference.resolution.file.filePath === filePath;
+		if (filePath) return ['public-file', 'attachment'].includes(reference.resolution?.kind) && reference.resolution.file.filePath === filePath;
+		if (reference.resolution?.kind === 'attachment' && targetPaths.has(reference.resolution.file.ownerPathname)) return true;
 		return targetPaths.has(reference.resolution?.pathname ?? reference.target.pageLookupPathname);
 	}).map(summarizeReference);
 	return { references, incomplete: state.incomplete };

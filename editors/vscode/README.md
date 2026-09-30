@@ -205,6 +205,30 @@ Engines with the earlier site-tree API retain their page tree and show a
 message explaining the unavailable file view. Compatible IntelliSense remains
 available. Use **Norna: Refresh Site Tree** after an engine update.
 
+## Page Attachments
+
+Use **Add > Add Attachments…** on a page to copy files into its `downloads/`
+folder. The batch form offers **Import and insert link**, **Import** and
+**Ignore**, with editable filenames/link text and ordering. It inserts at the
+owning page's captured cursor or appends when that page was not active.
+Single links use ordinary Markdown; multiple links form a list.
+
+Name collisions show the existing and incoming file's type, size and filesystem
+modification date. Replacement requires confirmation and moves the previous
+file to Trash. Text edits stay dirty and support Undo; filesystem copies and
+replacement do not. Cancellation before applying changes nothing. Stale pages
+and unsafe insertion locations are rejected, and partial failures list recovery
+work instead of claiming the batch was atomic.
+
+Existing attachments offer insertion, rename, replacement, reference lookup,
+link copying and deletion. Empty `downloads/` and `images/` folders are hidden;
+the page always retains Add actions. This requires the selected engine's
+`siteAttachmentsApiVersion: 1`, available in current development builds.
+See [page attachments](https://janga.github.io/norna/reference/site/attachments/)
+for storage, sharing and publication rules, and the
+[editor workflow](https://janga.github.io/norna/reference/workflows/editor/#add-and-use-page-attachments)
+for recovery and editing behavior.
+
 ## Requirements
 
 - VS Code 1.96 or later.

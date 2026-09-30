@@ -1,3 +1,4 @@
+import { attachmentPathname, encodeAttachmentPath, localAttachmentName } from './page-attachments.mjs';
 import { access, constants, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import {
@@ -201,6 +202,11 @@ const getResolvedReferenceIntent = ({
 		};
 	}
 
+	if (resolution?.kind === 'attachment') {
+		const owner = movedCurrentToNew.get(resolution.file.ownerPathname) ?? resolution.file.ownerPathname;
+		return { kind: 'attachment', lookupPathname: attachmentPathname(owner, resolution.file.filename), owner, filename: resolution.file.filename };
+	}
+
 	if (resolution?.kind === 'public-file') {
 		return { kind: 'public-file', lookupPathname: target.pathname };
 	}
@@ -312,7 +318,7 @@ const createReferenceChanges = ({ graph, mappings }) => {
 		const sourcePathname = movedCurrentToNew.get(reference.sourcePage.pathname)
 			?? reference.sourcePage.pathname;
 		const resolvedAfterMove = resolveInternalTarget(reference.targetSource, sourcePathname);
-		const stillResolves = resolvedAfterMove.kind === 'internal'
+		const stillResolves = intent.kind === 'attachment' ? (localAttachmentName(reference.targetSource) === intent.filename && sourcePathname === intent.owner || resolvedAfterMove.pathname === intent.lookupPathname) : resolvedAfterMove.kind === 'internal'
 			&& (intent.kind === 'public-file'
 				? resolvedAfterMove.pathname === intent.lookupPathname
 				: resolvedAfterMove.pageLookupPathname === intent.lookupPathname);
@@ -324,7 +330,7 @@ const createReferenceChanges = ({ graph, mappings }) => {
 			);
 		}
 
-		const value = `${intent.lookupPathname}${getTargetSuffix(reference.targetSource)}`;
+		const value = `${intent.kind === 'attachment' ? encodeAttachmentPath(intent.lookupPathname) : intent.lookupPathname}${getTargetSuffix(reference.targetSource)}`;
 		const key = `${reference.sourceContentFile.contentPath}:${reference.targetRange.start}:${reference.targetRange.end}`;
 		const existing = changeKeys.get(key);
 		if (existing && existing.to !== value) {
@@ -576,7 +582,13 @@ export const createPageMovePlan = async ({
 		nodes: virtualNodes,
 		warnings: siteStructure.warnings,
 	};
+	const virtualAttachments = { diagnostics: graph.attachments?.diagnostics ?? [], files: (graph.attachments?.files ?? []).map(file => {
+		const mapping = mappings.find(entry => entry.currentPathname === file.ownerPathname);
+		if (!mapping) return file;
+		return { ...file, ownerPathname: mapping.newPathname, pathname: attachmentPathname(mapping.newPathname, file.filename) };
+	}) };
 	const virtualGraph = createSiteLinkGraph({
+		attachments: virtualAttachments,
 		pageDocuments: virtualPageDocuments,
 		publicFiles,
 		siteStructure: virtualStructure,

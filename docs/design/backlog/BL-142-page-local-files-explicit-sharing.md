@@ -8,7 +8,7 @@ The same ownership principles should apply to both kinds of file.
 
 **Status: Remaining image/sharing work deferred.** The owner approved rules
 1–3 below on 2026-09-21. On 2026-09-30, the basic attachment scope was extracted
-into the high-priority draft
+into the implemented
 [BL-155 Page Attachments](BL-155-page-attachments.md). Its publication and
 authoring questions are owned there; the broader image lookup and shared
 resource repair work here remains unscheduled.

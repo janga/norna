@@ -22,10 +22,6 @@ No implementation item is currently active.
 
 `Next` is the exact implementation sequence after `Now`.
 
-- ★ [`BL-155` Page Attachments](docs/design/backlog/BL-155-page-attachments.md):
-  **Ready after BL-154 VS Code Site Tree Context Actions.** Add page-owned
-  downloads/ and Markdown links through Site Tree, with the approved import
-  form and empty-folder visibility rules for attachments and images.
 - ★ [`BL-156` VS Code Local Site Preview](docs/design/backlog/BL-156-vscode-local-site-preview.md):
   **Ready after BL-154 VS Code Site Tree Context Actions; scheduled after BL-155 Page Attachments.**
   Open the selected site or page in the default browser, reusing its local
@@ -189,7 +185,7 @@ that the expanded audience is worth the permanent complexity.
 
 - [BL-142 Page-local Files And Explicit Sharing](docs/design/backlog/BL-142-page-local-files-explicit-sharing.md):
   **Remaining image/sharing work deferred; rules approved.** Basic page-owned
-  attachments now have a prioritized design in BL-155 Page Attachments;
+  attachments are implemented in BL-155 Page Attachments;
   shared-resource repair and changed image lookup remain outside that delivery.
 - `BL-115` **Page-owned Attachments: Deferred language/version follow-up.**
   Extend the basic file contract in

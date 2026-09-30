@@ -85,7 +85,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 					? 'Files published unchanged with the site, such as robots.txt and icons.' : role === 'configuration' ? 'Settings and content shared by the complete site' : '' };
 			items.push(container);
 		}
-		const order = location ? ['images', 'tree-theme.yaml', 'page-theme.yaml', 'pages']
+		const order = location ? ['images', 'downloads', 'tree-theme.yaml', 'page-theme.yaml', 'pages']
 			: role === 'site' ? ['site-config', 'public', 'root']
 			: role === 'configuration' ? ['settings.yaml', 'shared-content.yaml'] : [];
 		const rank = (entry) => order.includes(entry.name) ? order.indexOf(entry.name) : order.length;
@@ -97,11 +97,19 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 				const childLocation = role === 'pages' || role === 'site' && entry.name === 'root' ? editorPageLocation(siteRoot, filename) : null;
 				const childRole = childLocation ? 'page' : location && entry.name === 'pages' ? 'pages'
 					: location && entry.name === 'images' && owner.kind === 'page' ? 'images'
+						: location && entry.name === 'downloads' && owner.kind === 'page' ? 'downloads'
 						: role === 'site' && entry.name === 'site-config' ? 'configuration'
 							: role === 'public' || role === 'site' && entry.name === 'public' ? 'public' : 'extra';
+				if (['images', 'downloads'].includes(childRole)) {
+					const resources = await entriesAt(filename);
+					if (!resources.some(resource => resource.isFile() && (childRole === 'downloads' || /\.(jpe?g|png|svg)$/i.test(resource.name)))) {
+						if (resources.length) issue(owner, `${filename} has no supported files; inspect its unsupported entries in Explorer.`, 'warning', filename);
+						continue;
+					}
+				}
 				await visit(filename, container.id, owner, childRole, childLocation);
 				const child = items.find((item) => item.sourcePath === filename);
-				if (child && childRole === 'extra' && (knownNames.has(entry.name) || ['images', 'pages', 'site-config', 'public'].includes(entry.name) || role === 'pages')) {
+				if (child && childRole === 'extra' && (knownNames.has(entry.name) || ['images', 'downloads', 'pages', 'site-config', 'public'].includes(entry.name) || role === 'pages')) {
 					issue(child, `This directory is not at a permitted Norna location: ${filename}. Use pages/NNN-page-id for child entries, images/ beside page content, and site-config/ or public/ only at the site root.`, 'warning');
 				}
 				continue;
@@ -113,10 +121,10 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			items.push(file);
 			if (['rootTheme', 'theme', 'pageTheme'].includes(definition?.schemaKind)) file.themeHelp = await themeHelp(directory, filename);
 			if (definition) await validate(file);
-			else if (role !== 'public' && ['site-config', 'public', 'pages', 'images'].includes(entry.name)) issue(file, `Expected a directory named ${entry.name}, but this is a file. Rename or move this file through Explorer before creating the directory.`, 'warning');
+			else if (role !== 'public' && ['site-config', 'public', 'pages', 'images', 'downloads'].includes(entry.name)) issue(file, `Expected a directory named ${entry.name}, but this is a file. Rename or move this file through Explorer before creating the directory.`, 'warning');
 			else if (role !== 'public' && entry.name === 'category.yaml') issue(file, 'category.yaml is no longer supported. Create content.md with page.listChildren: true, then remove this file.', 'warning');
 			else if (role !== 'public' && knownNames.has(entry.name)) issue(file, `This source file is in the wrong location. Put content.md, tree-theme.yaml and page-theme.yaml in a valid page directory; put settings.yaml and shared-content.yaml in the site's site-config/.`, 'warning');
-			else if (role !== 'public' && !(role === 'images' && /\.(jpe?g|png|svg)$/i.test(entry.name))) file.note = 'Not used by Norna';
+			else if (!['public', 'downloads'].includes(role) && !(role === 'images' && /\.(jpe?g|png|svg)$/i.test(entry.name))) file.note = 'Not used by Norna';
 		}
 	};
 	const source = getSiteSourcePaths(siteRoot);
@@ -141,7 +149,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 	for (const item of items) {
 		const parent = byId.get(item.parentId);
 		item.actions = [];
-		if (item.kind === 'page') item.actions.push('addPage', 'addImages', 'renamePage', 'properties', 'copyPageLink', 'pageReferences', ...(!item.isHome ? ['movePage', 'deletePage'] : []));
+		if (item.kind === 'page') item.actions.push('addPage', 'addImages', 'addAttachments', 'renamePage', 'properties', 'copyPageLink', 'pageReferences', ...(!item.isHome ? ['movePage', 'deletePage'] : []));
 		if (['page', 'incomplete'].includes(item.kind) || item.role === 'configuration' && item.kind === 'directory') {
 			const directory = item.kind === 'directory' ? siteRoot : item.directory;
 			const choices = await getEditorSourceFileChoices({ siteRoot, directory }).catch(() => []);
@@ -149,9 +157,11 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			for (const choice of item.missingFiles) item.actions.push('add_' + path.basename(choice.filename).replaceAll('.', '_').replaceAll('-', '_'));
 		}
 		if (item.kind === 'directory' && ['pages', 'images'].includes(item.role)) item.actions.push(item.role === 'pages' ? 'addPage' : 'addImages', 'deleteFolder');
+		if (item.kind === 'directory' && item.role === 'downloads') item.actions.push('addAttachments', 'deleteFolder');
 		if (item.kind === 'directory' && item.role === 'public') item.actions.push('newPublicFile', 'addPublicFiles', 'newPublicFolder', 'deleteFolder', ...(item.sourcePath !== path.join(siteRoot, 'public') ? ['renameResource', 'moveResource'] : []));
 		if (item.kind === 'file') {
 			if (parent?.role === 'public') item.actions.push('renameResource', 'replacePublicFile', 'moveResource', 'copyResourceLink', 'resourceReferences', 'deleteFile');
+			else if (parent?.role === 'downloads') item.actions.push('insertAttachment', 'renameResource', 'replaceAttachment', 'resourceReferences', 'copyResourceLink', 'deleteFile');
 			else if (parent?.role === 'images' && /\.(jpe?g|png|svg)$/i.test(item.title)) item.actions.push('insertImage', 'renameResource', 'replaceImage', 'resourceReferences', 'deleteImage');
 			else if (item.removable) item.actions.push('deleteFile');
 		}

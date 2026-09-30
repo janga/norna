@@ -129,7 +129,7 @@ try {
 	await write(path.join(siteRoot, 'root/page-theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
 		`export { siteTreeApiVersion, readSiteTree, getSiteNodeInformation, editSiteNodeInformation, planSiteNodeCreation, createSiteNode, slugifyAsciiIdentifier } from ${JSON.stringify(pathToFileURL(path.join(engineRoot, 'scripts/lib/editor-site-tree.mjs')).href)};\n`);
-	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-resource-actions.cjs', './site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs', './page-placement.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
+	const localRequire = (name) => name === 'vscode' ? vscode : ['./site-attachment-actions.cjs', './site-resource-actions.cjs', './site-file-actions.cjs', './site-address-actions.cjs', './site-source-actions.cjs', './page-form-actions.cjs', './page-placement.cjs'].includes(name) ? require(path.join(extensionRoot, name)) : name === './norna-project.cjs' ? {
 		getNornaProjectContext: (filename) => {
 			const root = [siteRoot, legacySite, outsideSite].find((root) => filename.startsWith(root + path.sep));
 			if (!root) return null;
@@ -351,7 +351,7 @@ try {
 	assert.deepEqual(opened.pop(), ['vscode.open', overview.sourcePath]);
 	assert.match(provider.getTreeItem(overview).iconPath.light, /media\/page-list-light\.svg$/);
 	const leaf = guidePages.children.find((node) => node.title === 'Added below guide');
-	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.Collapsed, 'An existing empty images folder is a visible detail.');
+	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.None, 'An empty images folder is hidden; Add stays on the page.');
 	await rm(path.join(path.dirname(leaf.sourcePath), 'images'), { recursive: true });
 	await registered.refresh();
 	assert.equal(provider.getTreeItem(leaf).collapsibleState, vscode.TreeItemCollapsibleState.None);
