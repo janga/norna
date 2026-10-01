@@ -45,7 +45,9 @@ test('the visible examples render their exact source without broken image refere
 	await page.goto('examples/');
 	await expect(page.locator('#main-content .section-header h2')).toHaveCount(6);
 	await expect(page.locator('#main-content .section-header h2').first()).toHaveAttribute('id', 'standard-markdown');
-	await expect(section(page, 'semantic-callouts').locator('.norna-callout')).toHaveCount(2);
+	for (const type of ['note', 'tip', 'important', 'warning', 'caution', 'danger']) {
+		await expect(section(page, 'semantic-callouts').locator(`.norna-callout-${type}`)).toHaveCount(1);
+	}
 	await expect(page.locator('#main-content a[href$="/examples/downloads/visit-checklist.txt"]')).toHaveCount(1);
 	await expect(section(page, 'image-carousels').locator('[data-carousel]')).toHaveAttribute('data-carousel-ready', 'true');
 	await page.evaluate(async () => {

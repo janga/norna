@@ -9,7 +9,7 @@ and the final implementation audit for
 ## Current Structure — 2026-10-01
 
 The owner approved reorganizing the single Examples page into six H2 groups:
-Everyday Markdown; Images and files outside Norna’s management; Common
+Everyday Markdown; External images and files; Common
 Markdown extensions; Norna extensions; Building a site with Norna; Complete
 sites. H3 headings identify individual examples. The six groups appear in
 page navigation; each example keeps its own heading anchor.
@@ -41,6 +41,12 @@ no-JavaScript rendering. The generated attachment matches its source file.
 Desktop light/dark captures and the compact dark menu were inspected locally.
 The historical section audit below records the original examples; its
 22-section ordering and former source paths are not the current structure.
+
+The owner's follow-up on 2026-10-01 shortens the file section's title to
+External images and files, recommends H1–H3 for ordinary pages and demonstrates
+all six supported alert types. `DANGER` remains explicitly identified as
+Norna's addition. Splitting Examples to remove its H4 headings is planned
+for a later change; the current page retains them.
 
 ## Earlier Review Status
 

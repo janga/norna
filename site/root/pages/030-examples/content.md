@@ -35,7 +35,9 @@ Tell us when you would like to come.
 
 **Source:** Standard Markdown. A page starts with one H1 (`#`); H2 (`##`)
 introduces its main sections and H3 (`###`) subdivides them. The heading above
-uses H4 because it is an example inside this subsection. Read the
+uses H4 because it is an example inside this subsection. H4 is not recommended
+for ordinary pages: keep the hierarchy shallow and aim for H1–H3. If a topic
+needs more levels, simplify its structure or give it a separate page. Read the
 [heading reference](/reference/content/markdown/#page-title-and-sections).
 
 ### Emphasis, lists and quotations {#emphasis-lists-and-quotations}
@@ -90,7 +92,7 @@ highlighting. Norna supplies the presentation and a copy control when
 JavaScript is available. [Titles and highlighted lines](#code-blocks) use
 additional Norna syntax.
 
-## Images and files outside Norna’s management {#unmanaged-files}
+## External images and files {#unmanaged-files}
 
 Ordinary Markdown can refer to images and files hosted elsewhere or kept in
 `site/public/`. These have useful roles, but they do not receive the same
@@ -230,22 +232,54 @@ with a link back to its reference. A definition can be reused. See
 
 ### GitHub-style alerts {#semantic-callouts}
 
+> [!NOTE]
+>
+> Norna builds a static site from your source files.
+
 > [!TIP]
 >
 > Preview the site before publishing it.
 
+> [!IMPORTANT]
+>
+> Keep a copy of the source files so you can rebuild the site.
+
 > [!WARNING]
 >
 > Commit source files before a structural change that you may want to undo.
+
+> [!CAUTION]
+>
+> Check the destination before replacing an existing file.
+
+> [!DANGER]
+>
+> Never publish passwords or private API keys. Visitors can read published files.
 
 ```md
+> [!NOTE]
+>
+> Norna builds a static site from your source files.
+
 > [!TIP]
 >
 > Preview the site before publishing it.
 
+> [!IMPORTANT]
+>
+> Keep a copy of the source files so you can rebuild the site.
+
 > [!WARNING]
 >
 > Commit source files before a structural change that you may want to undo.
+
+> [!CAUTION]
+>
+> Check the destination before replacing an existing file.
+
+> [!DANGER]
+>
+> Never publish passwords or private API keys. Visitors can read published files.
 ```
 
 **Source:** GitHub-style alerts, supported by Norna as semantic callouts. Alerts
