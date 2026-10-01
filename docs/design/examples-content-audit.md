@@ -6,7 +6,43 @@ behind the public Examples page. It includes the original
 and the final implementation audit for
 [BL-091: Final examples audit against implemented behavior](backlog/BL-091-final-examples-implementation-audit.md).
 
-## Current Review Status
+## Current Structure — 2026-10-01
+
+The owner approved reorganizing the single Examples page into six H2 groups:
+Everyday Markdown; Images and files outside Norna’s management; Common
+Markdown extensions; Norna extensions; Building a site with Norna; Complete
+sites. H3 headings identify individual examples. The six groups appear in
+page navigation; each example keeps its own heading anchor.
+
+The reader's question is which syntax to use and what Norna adds. Begin with
+ordinary writing, explain file ownership, then introduce common and Norna
+extensions before site configuration. Keep rendered results beside exact
+source and link to reference for full constraints. This replaces the earlier
+visual-first ordering recorded below.
+
+The reorganization retains the existing demonstrations and adds small examples
+of links, plain code fences, task lists, strikethrough, numbered footnotes,
+explicit heading IDs and a downloadable page attachment. Ordinary GFM tables
+are shown without the Norna row-heading marker; a separate example teaches
+that marker. Code titles and line emphasis likewise follow ordinary fences.
+Public and external files remain valid choices with explicit ownership and
+processing boundaries. External example URLs are shown as source only.
+
+Existing referenced anchors such as `image-stacks`, `tables`, `tabs`,
+`page-list`, `automatic-navigation` and `presets` remain. Merged subsections
+use their group's anchor: `single-image` becomes `image-stacks`, `language`
+becomes `search`, `site-wide-elements` becomes `branding`, and `palettes`
+becomes `presets`. No maintained incoming links used the retired anchors.
+
+The maintained source is `site/root/pages/030-examples/content.md`.
+Verification passed `npm run test:documentation`, the isolated docs build
+and all four `test:examples:browser` checks, including narrow screens and
+no-JavaScript rendering. The generated attachment matches its source file.
+Desktop light/dark captures and the compact dark menu were inspected locally.
+The historical section audit below records the original examples; its
+22-section ordering and former source paths are not the current structure.
+
+## Earlier Review Status
 
 Technical audit completed on 2026-09-11 after the seven ordered corrections,
 then refreshed for the four follow-up items: BL-092: Top navigation without a
@@ -173,9 +209,9 @@ Published paths above are relative to `https://janga.github.io/norna/`.
 
 ## Teaching Decisions
 
-- Keep one result-first documentation Examples page. Its H2 sections expose
-  focused demonstrations directly in the page outline instead of making the
-  reader choose an example area before seeing a result.
+- Keep one Examples page. Its six H2 groups distinguish syntax and file
+  ownership, followed by site construction and complete sites. H3 examples
+  pair each result with its source.
 - Put the rendered result before the smallest exact source, identify whether
   the source is standard Markdown or a Norna extension, and link to canonical
   reference instead of repeating complete option tables.

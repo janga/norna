@@ -7,7 +7,265 @@ page:
 
 # Examples
 
-## Add a single image {#single-image}
+Start with everyday Markdown, then add the features your content needs.
+Each example pairs its result with the source that produces it. Images and
+files need one further choice: whether they belong to a page, are shared by
+the site, or live elsewhere.
+
+## Everyday Markdown {#standard-markdown}
+
+Use ordinary Markdown for the main text of a page. These examples need no
+Norna-specific syntax.
+
+### Headings and paragraphs {#headings-and-paragraphs}
+
+#### Arrange a visit
+
+We welcome visitors by appointment.
+
+Tell us when you would like to come.
+
+````md
+#### Arrange a visit
+
+We welcome visitors by appointment.
+
+Tell us when you would like to come.
+````
+
+**Source:** Standard Markdown. A page starts with one H1 (`#`); H2 (`##`)
+introduces its main sections and H3 (`###`) subdivides them. The heading above
+uses H4 because it is an example inside this subsection. Read the
+[heading reference](/reference/content/markdown/#page-title-and-sections).
+
+### Emphasis, lists and quotations {#emphasis-lists-and-quotations}
+
+Tell us **who lives at home** and _when you can visit_.
+
+1. Read about the dogs.
+2. Send us your questions.
+
+> Visits are by appointment.
+
+````md
+Tell us **who lives at home** and _when you can visit_.
+
+1. Read about the dogs.
+2. Send us your questions.
+
+> Visits are by appointment.
+````
+
+**Source:** Standard Markdown. Use emphasis, lists and quotations to make the
+relationships in your text clear.
+
+### Links {#links}
+
+Read [Getting started](/getting-started/) or jump to the
+[complete sites](#complete-sites).
+
+````md
+Read [Getting started](/getting-started/) or jump to the
+[complete sites](#complete-sites).
+````
+
+**Source:** Standard Markdown. Use meaningful link text. Norna resolves local
+page URLs for the site's deployment path; do not add `/norna/` to source links.
+See [URLs and links](/reference/site/urls/).
+
+### Code blocks {#plain-code-blocks}
+
+```sh
+npm run norna:dev
+```
+
+````md
+```sh
+npm run norna:dev
+```
+````
+
+**Source:** Standard fenced Markdown. The language name enables syntax
+highlighting. Norna supplies the presentation and a copy control when
+JavaScript is available. [Titles and highlighted lines](#code-blocks) use
+additional Norna syntax.
+
+## Images and files outside Norna’s management {#unmanaged-files}
+
+Ordinary Markdown can refer to images and files hosted elsewhere or kept in
+`site/public/`. These have useful roles, but they do not receive the same
+processing and page ownership as files in a page's `images/` or `downloads/`.
+
+### External images and files
+
+```md
+![A diagram hosted elsewhere](https://example.com/diagram.png)
+[Download an external report](https://example.com/report.pdf)
+```
+
+These are illustrative URLs. The external host controls whether the files
+remain available. Norna does not import or resize the image, move these files
+with a page, or check the external site's availability.
+
+### Shared files in public/
+
+[Open this site's robots.txt](/robots.txt).
+
+```md
+[Open this site's robots.txt](/robots.txt).
+```
+
+The file lives in `site/public/robots.txt`. Public files keep a site-wide
+address and suit logos, icons, crawler instructions and other shared files.
+Ordinary Markdown images can also refer to public image files; those images
+stay outside managed image processing. See [public files](/reference/site/public-files/).
+
+### Why page-owned images and attachments are preferred
+
+For an image that belongs to an article, put its source in the page's
+`images/` directory and use a [Norna image block](#image-stacks). Norna can
+validate it, generate responsive output and move it with the page.
+
+For a downloadable file that belongs to a page, use its `downloads/` directory
+and an [ordinary attachment link](#page-attachments). Norna publishes the file
+unchanged and keeps it with its page. This relative Markdown image bypasses
+the managed image pipeline and produces a warning:
+
+```md
+![Portrait](portrait.jpg)
+```
+
+Use an image block for this local image instead.
+
+## Common Markdown extensions {#common-markdown-extensions}
+
+These conventions are supported by other Markdown tools as well as Norna.
+Tables, task lists and strikethrough belong to GitHub Flavored Markdown (GFM).
+Footnotes and GitHub-style alerts are additional conventions, so support can
+vary between tools.
+
+### Tables {#tables}
+
+| Capability | Source | Wide screen | Small screen | With JS | Without JS |
+| --- | --- | --- | --- | --- | --- |
+| Links | Markdown | Inline | Wrap | No change | Links |
+| Images | `image-stack` | Preset width | Fit | Inspector | Image link |
+| Carousels | `image-carousel` | Fit | Swipe | Slides | Static images |
+| Cards | `card-list` | Grid | Reflow | No change | Full list |
+| Callouts | Alert quote | In prose | Reflow | No change | Labels |
+| Tabs | Tab fences | Alternatives | Wrap labels | Select | All options |
+| Sidenotes | Named note | Free margin | Inline | No change | Linked notes |
+| Code | Code fence | Expand | Scroll | Copy | Select text |
+| Tables | Markdown | Expand | Scroll | Column controls | Scroll |
+| Search | `site-config/settings.yaml` | Search page | Same page | Pagefind | Navigation |
+| Appearance | `root/tree-theme.yaml` | Light or Dark | Same choice | Reader choice | Default |
+
+```md title="Table source (Markdown)"
+| Capability | Source | Wide screen | Small screen | With JS | Without JS |
+| --- | --- | --- | --- | --- | --- |
+| Links | Markdown | Inline | Wrap | No change | Links |
+| Images | `image-stack` | Preset width | Fit | Inspector | Image link |
+| Carousels | `image-carousel` | Fit | Swipe | Slides | Static images |
+| Cards | `card-list` | Grid | Reflow | No change | Full list |
+| Callouts | Alert quote | In prose | Reflow | No change | Labels |
+| Tabs | Tab fences | Alternatives | Wrap labels | Select | All options |
+| Sidenotes | Named note | Free margin | Inline | No change | Linked notes |
+| Code | Code fence | Expand | Scroll | Copy | Select text |
+| Tables | Markdown | Expand | Scroll | Column controls | Scroll |
+| Search | `site-config/settings.yaml` | Search page | Same page | Pagefind | Navigation |
+| Appearance | `root/tree-theme.yaml` | Light or Dark | Same choice | Reader choice | Default |
+```
+
+**Source:** GitHub Flavored Markdown table syntax. Norna supplies the width,
+scrolling and sorting behavior described below. [Table row headings](#table-row-headings)
+use an additional Norna marker.
+
+Click a column heading to sort ascending, click again for descending, and a
+third time to restore the order above. Hover over a heading, or focus it with
+the keyboard, to see what the next activation does. Text comparison follows
+the site's language; numeric and ISO-date columns sort by value.
+
+The table uses available space before scrolling horizontally. Its column
+headings stay visible while you scroll its rows. When columns extend beyond
+the visible area, matching scrollbars below the headings and at the table's
+bottom show the same horizontal position. Drag either handle or click its
+track to reach more columns. Without JavaScript, the rows keep their original
+order and the browser provides horizontal scrolling.
+
+The code block above contains every cell of this table, unchanged. Read the
+[table reference](/reference/content/tables/).
+
+### Task lists and strikethrough {#task-lists-and-strikethrough}
+
+- [x] Read about the dogs.
+- [ ] Arrange a visit.
+
+~~Drop in at any time.~~ Book a visit first.
+
+````md
+- [x] Read about the dogs.
+- [ ] Arrange a visit.
+
+~~Drop in at any time.~~ Book a visit first.
+````
+
+**Source:** GFM task lists and strikethrough. Checkmarks are published content;
+they do not store readers' progress. Edit the Markdown to change them.
+
+### Footnotes {#footnotes}
+
+Keep supporting details in a numbered note.[^visit]
+
+[^visit]: Tell us about accessibility needs when booking your visit.
+
+````md
+Keep supporting details in a numbered note.[^visit]
+
+[^visit]: Tell us about accessibility needs when booking your visit.
+````
+
+**Source:** Reference-footnote syntax. The note appears at the end of the page,
+with a link back to its reference. A definition can be reused. See
+[footnotes](/reference/content/footnotes/).
+
+### GitHub-style alerts {#semantic-callouts}
+
+> [!TIP]
+>
+> Preview the site before publishing it.
+
+> [!WARNING]
+>
+> Commit source files before a structural change that you may want to undo.
+
+```md
+> [!TIP]
+>
+> Preview the site before publishing it.
+
+> [!WARNING]
+>
+> Commit source files before a structural change that you may want to undo.
+```
+
+**Source:** GitHub-style alerts, supported by Norna as semantic callouts. Alerts
+are not part of the formal GFM specification. Norna supports `NOTE`, `TIP`,
+`IMPORTANT`, `WARNING`, `CAUTION`, and `DANGER`; the meaning is expressed by
+structure and a localized label rather than color alone. Other tools may call
+similar blocks custom containers or admonitions. Norna's set of styled semantic
+meanings is closed: an unknown uppercase type remains readable as a neutral
+blockquote and produces a warning. `DANGER` is an additional Norna type. Read
+the
+[semantic-callout reference](/reference/content/callouts/).
+
+## Norna extensions {#norna-extensions}
+
+Use these additions for managed media and structured content. Each example
+links to its reference for the complete options and constraints.
+
+### Single images and image stacks {#image-stacks}
+
+#### A single image
 
 ```image-stack
 items:
@@ -43,7 +301,7 @@ the image needs descriptive or empty alternative text. Read the
 [managed-image reference](/reference/site/images/#source-files)
 and [W3C image decision guidance](https://www.w3.org/WAI/tutorials/images/).
 
-## Image stacks {#image-stacks}
+#### Several images
 
 ```image-stack
 items:
@@ -71,7 +329,7 @@ items:
 visible in sequence. See the
 [image-stack reference](/reference/content/images/#image-stack).
 
-## Image carousels {#image-carousels}
+### Image carousels {#image-carousels}
 
 ```image-carousel
 items:
@@ -106,7 +364,7 @@ share one visual position. Norna adds fitted controls, keyboard operation, touch
 dragging, slide status, and a readable no-JavaScript fallback. See the
 [image-carousel reference](/reference/content/images/#image-carousel).
 
-## Card lists {#card-lists}
+### Card lists {#card-lists}
 
 ```card-list
 layout: image-top
@@ -151,37 +409,7 @@ to a page or an external resource. Read the
 to inspect these blocks together across several pages, or
 [browse its maintained source](https://github.com/janga/norna/tree/main/examples/feature-demos/media-and-surfaces).
 
-## Semantic callouts {#semantic-callouts}
-
-> [!TIP]
->
-> Preview the site before publishing it.
-
-> [!WARNING]
->
-> Commit source files before a structural change that you may want to undo.
-
-```md
-> [!TIP]
->
-> Preview the site before publishing it.
-
-> [!WARNING]
->
-> Commit source files before a structural change that you may want to undo.
-```
-
-**Source:** GitHub-style alerts, supported by Norna as semantic callouts. Alerts
-are not part of the formal GFM specification. Norna supports `NOTE`, `TIP`,
-`IMPORTANT`, `WARNING`, `CAUTION`, and `DANGER`; the meaning is expressed by
-structure and a localized label rather than color alone. Other tools may call
-similar blocks custom containers or admonitions. Norna's set of styled semantic
-meanings is closed: an unknown uppercase type remains readable as a neutral
-blockquote and produces a warning. `DANGER` is an additional Norna type. Read
-the
-[semantic-callout reference](/reference/content/callouts/).
-
-## Sidenotes {#sidenotes}
+### Sidenotes {#sidenotes}
 
 A short qualification can remain next to the sentence that needs it when the
 layout has a free margin.[^margin:available-space]
@@ -211,29 +439,7 @@ belongs at the end of the page. Read the
 and
 [reference-footnote alternative](/reference/content/footnotes/).
 
-## Code blocks {#code-blocks}
-
-```yaml title="site/site-config/settings.yaml" {2}
-url: https://example.com/
-search: true
-language: en
-```
-
-````md
-```yaml title="site/site-config/settings.yaml" {2}
-url: https://example.com/
-search: true
-language: en
-```
-````
-
-**Source:** Standard fenced Markdown with optional Norna metadata. The title
-identifies the file, `{2}` emphasizes the relevant line, and the title stays in
-view while a long example scrolls. JavaScript adds a copy control without
-changing the readable fallback. Read the
-[code-block reference](/reference/content/code/).
-
-## Tabs for alternatives {#tabs}
+### Tabs {#tabs}
 
 :::: tabs
 
@@ -295,58 +501,62 @@ starts with its first option. Without JavaScript, or when printing, every
 alternative appears with its label. Read the
 [tabs reference](/reference/content/tabs/).
 
-## Get readable tables from standard Markdown {#tables}
+### Code titles and highlighted lines {#code-blocks}
 
-| Capability {row-header} | Source           | Wide screen   | Small screen | With JS         | Without JS    |
-| ----------------------- | ---------------- | ------------- | ------------ | --------------- | ------------- |
-| Links                   | Markdown         | Inline        | Wrap         | No change       | Links         |
-| Images                  | `image-stack`    | Preset width  | Fit          | Inspector       | Image link    |
-| Carousels               | `image-carousel` | Fit           | Swipe        | Slides          | Static images |
-| Cards                   | `card-list`      | Grid          | Reflow       | No change       | Full list     |
-| Callouts                | Alert quote      | In prose      | Reflow       | No change       | Labels        |
-| Tabs                    | Tab fences       | Alternatives  | Wrap labels  | Select          | All options   |
-| Sidenotes               | Named note       | Free margin   | Inline       | No change       | Linked notes  |
-| Code                    | Code fence       | Expand        | Scroll       | Copy            | Select text   |
-| Tables                  | Markdown         | Expand        | Scroll       | Column controls | Scroll        |
-| Search                  | `site-config/settings.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
-| Appearance              | `root/tree-theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
-
-```md title="Table source (Markdown)"
-| Capability {row-header} | Source           | Wide screen   | Small screen | With JS         | Without JS    |
-| ----------------------- | ---------------- | ------------- | ------------ | --------------- | ------------- |
-| Links                   | Markdown         | Inline        | Wrap         | No change       | Links         |
-| Images                  | `image-stack`    | Preset width  | Fit          | Inspector       | Image link    |
-| Carousels               | `image-carousel` | Fit           | Swipe        | Slides          | Static images |
-| Cards                   | `card-list`      | Grid          | Reflow       | No change       | Full list     |
-| Callouts                | Alert quote      | In prose      | Reflow       | No change       | Labels        |
-| Tabs                    | Tab fences       | Alternatives  | Wrap labels  | Select          | All options   |
-| Sidenotes               | Named note       | Free margin   | Inline       | No change       | Linked notes  |
-| Code                    | Code fence       | Expand        | Scroll       | Copy            | Select text   |
-| Tables                  | Markdown         | Expand        | Scroll       | Column controls | Scroll        |
-| Search                  | `site-config/settings.yaml`    | Search page   | Same page    | Pagefind        | Navigation    |
-| Appearance              | `root/tree-theme.yaml`     | Light or Dark | Same choice  | Reader choice   | Default       |
+```yaml title="site/site-config/settings.yaml" {2}
+url: https://example.com/
+search: true
+language: en
 ```
 
-**Source:** GitHub Flavored Markdown table syntax. The `{row-header}` marker is
-a Norna extension: it makes the first column's cells row headings. Omit that
-marker for an ordinary table.
+````md
+```yaml title="site/site-config/settings.yaml" {2}
+url: https://example.com/
+search: true
+language: en
+```
+````
 
-Click a column heading to sort ascending, click again for descending, and a
-third time to restore the order above. Hover over a heading, or focus it with
-the keyboard, to see what the next activation does. Text comparison follows
-the site's language; numeric and ISO-date columns sort by value.
+**Source:** Standard fenced Markdown with optional Norna metadata. The title
+identifies the file, `{2}` emphasizes the relevant line, and the title stays in
+view while a long example scrolls. JavaScript adds a copy control without
+changing the readable fallback. Read the
+[code-block reference](/reference/content/code/).
 
-The table uses available space before scrolling horizontally. Its column
-headings stay visible while you scroll its rows. When columns extend beyond
-the visible area, matching scrollbars below the headings and at the table's
-bottom show the same horizontal position. Drag either handle or click its
-track to reach more columns. Without JavaScript, the rows keep their original
-order and the browser provides horizontal scrolling.
+### Table row headings {#table-row-headings}
 
-The code block above contains every cell of this table, unchanged. Read the
-[table reference](/reference/content/tables/).
+| Task {row-header} | Minutes |
+| --- | ---: |
+| Review text | 12 |
+| Check links | 3 |
 
-## List child pages automatically {#page-list}
+````md
+| Task {row-header} | Minutes |
+| --- | ---: |
+| Review text | 12 |
+| Check links | 3 |
+````
+
+**Source:** GFM table syntax with Norna's `{row-header}` marker. The first
+column identifies each row and remains visible during horizontal scrolling.
+Use unique, nonempty row labels. See [row headings](/reference/content/tables/#row-headings).
+
+### Explicit heading IDs {#explicit-heading-ids}
+
+[Open the complete-site examples](#complete-sites).
+
+```md
+[Open the complete-site examples](#complete-sites).
+
+## Complete sites {#complete-sites}
+```
+
+**Source:** Markdown links with Norna's explicit heading-ID syntax. The H2
+at the end of this page uses the shown ID. Keeping it when the heading text
+changes preserves links to that section. Explicit IDs are available on H2
+and H3. See [heading anchors](/reference/site/urls/#heading-anchors).
+
+### Child-page lists {#page-list}
 
 <!-- norna-image-provenance:
 image: child-page-list.png
@@ -422,13 +632,40 @@ Adding, moving, or removing a child updates the list; descriptions stay with
 their pages. Norna warns if an included page has no description.
 
 **Source:** Norna Markdown extension with no options. Use a list when its
-context helps readers choose. If it only repeats navigation, use a category
-instead of creating a parent page. Read the
+context helps readers choose. If a parent needs only a list of children, use `page.listChildren: true`
+in its page metadata. Read the
 [child-page-list reference](/reference/content/child-lists/).
 
-## Automatic responsive navigation {#automatic-navigation}
+## Building a site with Norna {#building-a-site}
 
-### One page: sections
+These examples combine page files, configuration and commands. They control
+how the site is organized, presented and published.
+
+### Page attachments {#page-attachments}
+
+[Download the visit checklist](visit-checklist.txt).
+
+````md
+[Download the visit checklist](visit-checklist.txt).
+````
+
+**Source:** An ordinary Markdown link to a file in this page's `downloads/`
+directory. The file is published unchanged.
+
+```text
+030-examples/
+|-- content.md
+`-- downloads/
+    `-- visit-checklist.txt
+```
+
+Norna moves the directory with its page and updates known internal links.
+Old external attachment URLs are not redirected. See
+[page attachments](/reference/site/attachments/).
+
+### Automatic navigation {#automatic-navigation}
+
+#### One page: sections
 
 A single page needs only its title and section links. These screenshots use the
 complete Markdown shown below, with the `project` preset.
@@ -469,7 +706,7 @@ We rescue and rehome dogs.
 Adopt. Foster. Donate.
 ```
 
-### Top-level pages: top navigation
+#### Top-level pages: top navigation
 
 Adding Dogs and Adopt gives each page its own URL. Select a page name to open
 it, or its chevron to choose a section directly.
@@ -516,7 +753,7 @@ Each dog needs a home that suits its personality and daily routine.
 Talk to our volunteers about exercise, company, and veterinary care.
 ```
 
-### Nested pages: a page tree
+#### Nested pages: a page tree
 
 As documentation grows, group related guides and reference pages into branches.
 Readers can explore one topic at a time.
@@ -647,7 +884,7 @@ Read the
 [navigation reference](/reference/configuration/navigation/)
 for mode selection, depth, exceptions, and responsive fallbacks.
 
-## Move pages without breaking links {#page-move}
+### Moving pages and preserving links {#page-move}
 
 The preview reports the directory move, affected internal links, and old URLs
 without writing files. The write step moves the complete page subtree and its
@@ -666,7 +903,7 @@ failed post-write validation stop the operation rather than leaving a partially
 accepted structure. Read the
 [page-move reference](/reference/commands/move/).
 
-## Add static search {#search}
+### Search and language {#search}
 
 Norna allows searching page titles, sections, prose, captions, notes, and
 structured content without a hosted search service.
@@ -680,7 +917,7 @@ search page. Use **Back to Examples** above the search heading to return to your
 reading position. Read the
 [search reference](/reference/configuration/search/).
 
-## Set the site language {#language}
+#### Site language
 
 | Source choice  | Example generated interface labels                  |
 | -------------- | --------------------------------------------------- |
@@ -697,7 +934,7 @@ were AI-generated and must be reviewed by a fluent speaker before publication.
 Read the
 [language reference](/reference/configuration/language/).
 
-## Brand your site {#branding}
+### Branding, notices and footer {#branding}
 
 <!-- norna-image-provenance:
 image: navigation-logo.svg
@@ -723,7 +960,7 @@ site/public/
 accepted filenames and uniqueness rules; no image path belongs in YAML. Read the
 [public-files reference](/reference/site/public-files/).
 
-## Add site-wide notices and a footer {#site-wide-elements}
+#### Notices and footer
 
 [Open the complete site-wide elements demonstration](https://janga.github.io/norna/examples/feature-demos/sitewide-content/)
 to see the same logo, dismissible notices, and footer across several pages.
@@ -753,7 +990,7 @@ override belong here. Browse the
 or read the
 [site-wide content reference](/reference/configuration/shared-content/).
 
-## Get coherent defaults from a preset {#presets}
+### Presets and palettes {#presets}
 
 ```card-list
 flow: grid
@@ -795,7 +1032,7 @@ layout:
 to switch presets while keeping its comparison content unchanged. Read the
 [preset reference](/reference/configuration/presets/).
 
-## Choose a coordinated color palette {#palettes}
+#### Color palettes
 
 This documentation site uses one palette across navigation, prose, controls,
 semantic states, Light appearance, and Dark appearance. A palette changes that
@@ -813,7 +1050,7 @@ combine the built-in presets and palettes, then inspect the generated
 `root/tree-theme.yaml`. Read the
 [palette and Appearance reference](/reference/configuration/palettes/).
 
-## Let readers adapt the display {#reader-display}
+### Reader display choices {#reader-display}
 
 Open **Display** in this site's header. Reading width is always available;
 Narrow, Standard, and Wide alter the reading measure without changing the
@@ -834,33 +1071,7 @@ only in that browser. Read the
 and
 [client-side JavaScript contract](/reference/reader/accessibility/).
 
-## Write with standard Markdown {#standard-markdown}
-
-### Arrange a visit
-
-Tell us **who lives at home** and _when you can visit_.
-
-1. Read about the dogs.
-2. Send us your questions.
-
-> Visits are by appointment.
-
-```md
-### Arrange a visit
-
-Tell us **who lives at home** and _when you can visit_.
-
-1. Read about the dogs.
-2. Send us your questions.
-
-> Visits are by appointment.
-```
-
-**Source:** Standard Markdown. Headings, emphasis, lists, and quotations need no
-Norna-specific syntax. Read the
-[Markdown text reference](/reference/content/markdown/#standard-syntax-and-extensions).
-
-## Check before publishing {#source-checks}
+### Checks before publishing {#source-checks}
 
 ```sh title="Check the site's source files"
 # Check configuration, then content
@@ -905,31 +1116,41 @@ for content errors and image synchronization.
 
 ## Complete sites {#complete-sites}
 
-The dog-shelter sites are complete Norna projects rather than isolated feature
-fragments. They are intentionally small enough that desktop navigation barely
-needs more than a top row. This documentation site demonstrates the contrasting
-hierarchical case with area menus and H2 links in the page tree.
+These complete Norna projects show how content, files and configuration work
+together. The small shelter sites illustrate sections and top-level pages;
+this documentation site demonstrates a deeper hierarchy.
+
+### Single-page site
 
 ```image-stack
 items:
   - image: single-page-dog-shelter.png
     alt: The complete single-page dog shelter example shown in a desktop browser.
     caption: One page whose H2 sections become its navigation destinations.
+```
+
+[Open the single-page site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/)
+or [browse its source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-single-page).
+
+### Multi-page site
+
+```image-stack
+items:
   - image: multi-page-dog-shelter.png
     alt: The complete multi-page dog shelter example shown in a desktop browser.
     caption: Several top-level pages sharing one responsive top navigation.
 ```
 
-[Open the single-page site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-single-page/)
-or
-[browse its source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-single-page).
 [Open the multi-page site](https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/)
-or
-[browse its source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-multi-page).
-The [documentation-site source](https://github.com/janga/norna/tree/main/site)
-shows the deeper hierarchy used by the page you are reading. Read the
-[page structure and navigation reference](/reference/configuration/navigation/)
-for the rules behind these layouts.
+or [browse its source](https://github.com/janga/norna/tree/main/examples/complete-sites/dog-shelter-multi-page).
+
+### Documentation site
+
+The site you are reading demonstrates nested pages, area menus and section
+links in a local tree. [Browse its source](https://github.com/janga/norna/tree/main/site)
+and compare it with the [navigation examples](#automatic-navigation).
+The [navigation reference](/reference/configuration/navigation/) explains
+the rules behind these layouts.
 
 Norna generates semantic HTML, responsive layout, keyboard behavior, focus
 handling, and accessible labels for its own controls. Authors remain responsible

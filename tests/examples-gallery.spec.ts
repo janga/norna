@@ -8,11 +8,11 @@ test('the gallery keeps its table source readable and bounded at every width', a
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto('examples/#tables');
 	const tables = section(page, 'tables');
-	const code = tables.locator('.code-block');
+	const code = tables.locator('.code-block').filter({ hasText: '| Capability' });
 	await expect(code).toHaveAttribute('data-code-overflow', 'false');
 	await expect(tables.locator('tbody tr')).toHaveCount(11);
 	await expect(tables.locator('thead th')).toHaveCount(6);
-	await expect(tables.locator('pre code')).toContainText('Capability {row-header}');
+	await expect(code.locator('pre code')).toContainText('| Capability');
 	const widths = await tables.evaluate((node) => ({
 		prose: node.querySelector('.section-markdown')!.getBoundingClientRect().width,
 		code: node.querySelector('.code-block')!.getBoundingClientRect().width,
@@ -43,9 +43,10 @@ test('the gallery keeps its table source readable and bounded at every width', a
 
 test('the visible examples render their exact source without broken image references', async ({ page }) => {
 	await page.goto('examples/');
-	await expect(page.locator('#main-content .section-header h2')).toHaveCount(22);
-	await expect(page.locator('#main-content .section-header h2').first()).toHaveAttribute('id', 'single-image');
+	await expect(page.locator('#main-content .section-header h2')).toHaveCount(6);
+	await expect(page.locator('#main-content .section-header h2').first()).toHaveAttribute('id', 'standard-markdown');
 	await expect(section(page, 'semantic-callouts').locator('.norna-callout')).toHaveCount(2);
+	await expect(page.locator('#main-content a[href$="/examples/downloads/visit-checklist.txt"]')).toHaveCount(1);
 	await expect(section(page, 'image-carousels').locator('[data-carousel]')).toHaveAttribute('data-carousel-ready', 'true');
 	await page.evaluate(async () => {
 		await Promise.all(Array.from(document.querySelectorAll<HTMLImageElement>('#main-content img'), async (image) => {
@@ -62,7 +63,7 @@ test.describe('gallery without JavaScript', () => {
 		await page.goto('examples/#tables');
 		await expect(section(page, 'tables').locator('tbody tr')).toHaveCount(11);
 		await expect(section(page, 'tabs').locator('[data-tab-panel]:visible')).toHaveCount(2);
-		await expect(section(page, 'tables').locator('pre code')).toContainText('Capability {row-header}');
+		await expect(section(page, 'tables').locator('pre code').filter({ hasText: '| Capability' })).toContainText('| Capability');
 		await expect(page.locator('.code-block-copy')).toHaveCount(0);
 		const carousel = section(page, 'image-carousels').locator('[data-carousel]');
 		await expect(carousel.locator('img')).toHaveCount(3);
@@ -70,7 +71,7 @@ test.describe('gallery without JavaScript', () => {
 		await expect(carousel.locator('[data-carousel-next]')).toBeHidden();
 		await page.locator('.mobile-nav-menu > summary').click();
 		await expect(page.locator('.mobile-nav-menu')).toHaveAttribute('open');
-		await expect(page.locator('.mobile-nav-menu a[href="#tables"]')).toBeVisible();
+		await expect(page.locator('.mobile-nav-menu a[href="#common-markdown-extensions"]')).toBeVisible();
 	});
 });
 

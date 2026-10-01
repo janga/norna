@@ -399,14 +399,32 @@ const checkPublishedExampleReferences = async () => {
 	const documentationText = (await Promise.all(exampleFiles.map((filePath) => readFile(filePath, 'utf8')))).join('\n');
 	assert.equal(exampleFiles.length, 1, 'Focused Examples documentation must remain one result-first page.');
 	const examplesModel = await parsePageMarkdownSource(documentationText);
-	for (const id of ['standard-markdown', 'single-image', 'image-stacks', 'image-carousels', 'card-lists', 'semantic-callouts', 'sidenotes', 'code-blocks', 'tabs', 'tables']) {
-		const section = examplesModel.sections.find((section) => section.id === id);
+	// Extract each H3 example from its H2 group; fenced sample headings stay literal.
+	const exampleSubsections = new Map();
+	for (const section of examplesModel.sections) {
+		const tree = await markdownToMdast(section.bodyMarkdown);
+		const headings = tree.children.filter((node) => node.type === 'heading' && node.depth === 3);
+		for (const [index, heading] of headings.entries()) {
+			const start = heading.position.start.offset;
+			const end = headings[index + 1]?.position.start.offset ?? section.bodyMarkdown.length;
+			const source = section.bodyMarkdown.slice(start, end).replace(/^### /, '## ');
+			const model = await parsePageMarkdownSource(`# Example\n\n${source}`);
+			exampleSubsections.set(model.sections[0].id, model.sections[0]);
+		}
+	}
+	for (const id of ['headings-and-paragraphs', 'emphasis-lists-and-quotations', 'links',
+		'plain-code-blocks', 'task-lists-and-strikethrough', 'footnotes', 'image-stacks',
+		'image-carousels', 'card-lists', 'semantic-callouts', 'sidenotes', 'code-blocks',
+		'tabs', 'tables', 'table-row-headings', 'page-attachments']) {
+		const section = exampleSubsections.get(id);
 		assert.ok(section, `Missing live/source example: ${id}`);
 		const tree = await markdownToMdast(section.bodyMarkdown);
-		const sourceBlock = tree.children.find((node) => node.type === 'code' && node.lang === 'md');
-		assert.ok(sourceBlock, `${id} must show its Markdown source.`);
-		const liveSource = section.bodyMarkdown.slice(0, sourceBlock.position.start.offset).trim();
-		assert.equal(sourceBlock.value.trim(), liveSource, `${id}: shown source must exactly match the live example.`);
+		const sourceBlocks = tree.children.filter((node) => node.type === 'code' && node.lang === 'md');
+		assert.ok(sourceBlocks.length, `${id} must show its Markdown source.`);
+		for (const sourceBlock of sourceBlocks) {
+			const beforeSource = section.bodyMarkdown.slice(0, sourceBlock.position.start.offset);
+			assert.ok(beforeSource.includes(sourceBlock.value.trim()), `${id}: shown source must exactly match a preceding live example.`);
+		}
 		if (id === 'image-carousels') {
 			assert.deepEqual(section.blocks[0].images.map((image) => image.caption), [
 				'First frame: a broad direction.',
@@ -420,11 +438,12 @@ const checkPublishedExampleReferences = async () => {
 			], 'The live named sidenote must use a letter without counting its source sample.');
 		}
 	}
+
 	for (const [id, language, relativePath] of [
 		['page-list', 'md', 'fixtures/child-page-list/site/root/pages/010-help-a-dog/content.md'],
-		['site-wide-elements', 'yaml', 'examples/feature-demos/sitewide-content/site/site-config/shared-content.yaml'],
+		['branding', 'yaml', 'examples/feature-demos/sitewide-content/site/site-config/shared-content.yaml'],
 	]) {
-		const section = examplesModel.sections.find((section) => section.id === id);
+		const section = exampleSubsections.get(id);
 		assert.ok(section, `Missing source-backed example: ${id}`);
 		const tree = await markdownToMdast(section.bodyMarkdown);
 		const sourceBlock = tree.children.find((node) => node.type === 'code' && node.lang === language);
@@ -442,38 +461,14 @@ const checkPublishedExampleReferences = async () => {
 		}
 	}
 
-	const orderedSections = [
-		'## Add a single image',
-		'## Image stacks',
-		'## Image carousels',
-		'## Card lists',
-		'## Semantic callouts',
-		'## Sidenotes',
-		'## Code blocks',
-		'## Get readable tables from standard Markdown',
-		'## List child pages automatically',
-		'## Automatic responsive navigation',
-		'## Move pages without breaking links',
-		'## Add static search',
-		'## Set the site language',
-		'## Brand your site',
-		'## Add site-wide notices and a footer',
-		'## Get coherent defaults from a preset',
-		'## Choose a coordinated color palette',
-		'## Let readers adapt the display',
-		'## Write with standard Markdown',
-		'## Check before publishing',
-		'## Complete sites',
-	];
-	let previousSectionIndex = -1;
-	for (const heading of orderedSections) {
-		const sectionIndex = documentationText.indexOf(heading);
-		assert.ok(sectionIndex > previousSectionIndex, `Examples is missing or has misplaced heading: ${heading}`);
-		previousSectionIndex = sectionIndex;
-	}
-	assert.equal(examplesModel.sections[0]?.id, 'single-image',
-		'Examples must open with a visual example rather than a publishing checklist.');
-	const checksSection = examplesModel.sections.find((section) => section.id === 'source-checks');
+	assert.deepEqual(examplesModel.sections.map(({ id }) => id), [
+		'standard-markdown', 'unmanaged-files', 'common-markdown-extensions',
+		'norna-extensions', 'building-a-site', 'complete-sites',
+	], 'Examples must distinguish everyday syntax, file ownership, extensions and site construction.');
+	assert.ok(!exampleSubsections.get('tables').bodyMarkdown.includes('{row-header}'),
+		'The ordinary GFM example must not require Norna row-heading syntax.');
+	assert.ok(exampleSubsections.get('table-row-headings').bodyMarkdown.includes('{row-header}'));
+	const checksSection = exampleSubsections.get('source-checks');
 	const checksTree = await markdownToMdast(checksSection.bodyMarkdown);
 	const checkCommands = checksTree.children.filter((node) => node.type === 'code' && node.lang === 'sh')
 		.flatMap((node) => node.value.split('\n').map((line) => line.trim()).filter((line) => line && !line.startsWith('#')));
