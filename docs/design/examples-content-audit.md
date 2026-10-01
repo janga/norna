@@ -11,7 +11,7 @@ and the final implementation audit for
 The owner approved one page per example area. `/examples/` introduces the
 collection and lists its six children with descriptions:
 
-- `everyday-markdown/`: headings, prose, links and plain code fences;
+- `standard-markdown/`: a beginner tour of paragraphs, headings, emphasis, lists, quotations, links and code;
 - `external-images-and-files/`: external resources, public files and page ownership;
 - `common-markdown-extensions/`: tables, task lists, footnotes and alerts;
 - `norna-extensions/`: managed media and structured content;
@@ -30,7 +30,7 @@ source and link to reference for full constraints. Ordinary GFM tables and
 plain code fences are separate from Norna's additional metadata.
 
 The overview remains at `site/root/pages/030-examples/content.md`. Its child
-sources live under `pages/010-everyday-markdown/` through `060-complete-sites/`.
+sources live under `pages/010-standard-markdown/` through `060-complete-sites/`.
 Images and the downloadable checklist moved to their owning pages. Maintained
 incoming links and capture destinations now use the child addresses. The old
 single-page fragment URLs do not redirect across pages; links within the
@@ -41,6 +41,17 @@ Verification passed the documentation check, the isolated docs build, all
 The browser checks visit all six children, load their images, retrieve the
 attachment and confirm that no rendered H4–H6 remains. The overview, a mobile
 Markdown page and the dark Norna-extension page were inspected locally.
+
+The Standard Markdown page was expanded for first-time writers on 2026-10-01.
+It explains source versus rendered output, blank lines, formatting markers,
+list markers, link text and destinations, backticks and escaping. Images and
+tables lead to the relevant examples; tables remain identified as a GFM
+extension, with Norna's sticky headings explained separately. The former
+`/examples/everyday-markdown/` address is retained as a page alias.
+The docs build, source/example checks and all four Examples browser checks
+pass on the expanded page. Desktop light and mobile dark captures were
+inspected. The old page address redirects successfully; the existing static
+redirect does not preserve a fragment such as `#links`.
 
 The historical audit below describes the original demonstrations. Its
 single-page ordering and former source paths are not the current structure.

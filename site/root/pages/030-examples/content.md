@@ -6,7 +6,7 @@ page:
 
 # Examples
 
-Start with everyday Markdown, then choose the additions your content needs.
+Start with standard Markdown, then choose the additions your content needs.
 Each area pairs rendered examples with their source and links to the full
 reference. The file examples explain which resources belong to a page and
 which are shared or hosted elsewhere.

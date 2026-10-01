@@ -417,7 +417,8 @@ const checkPublishedExampleReferences = async () => {
 		}
 	}
 
-	for (const id of ['headings-and-paragraphs', 'emphasis-lists-and-quotations', 'links',
+	for (const id of ['paragraphs', 'headings-and-paragraphs', 'emphasis-lists-and-quotations',
+		'lists', 'quotations', 'links', 'inline-code', 'literal-punctuation',
 		'plain-code-blocks', 'task-lists-and-strikethrough', 'footnotes', 'image-stacks',
 		'image-carousels', 'card-lists', 'semantic-callouts', 'sidenotes', 'code-blocks',
 		'tabs', 'tables', 'table-row-headings', 'page-attachments']) {

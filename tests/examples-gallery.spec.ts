@@ -45,6 +45,8 @@ test('the overview links to six areas with working media and attachments', async
 	await page.goto('examples/');
 	const links = page.locator('.child-page-list a');
 	await expect(links).toHaveCount(6);
+	await expect(links.first()).toContainText('Standard Markdown');
+	await expect(links.first()).toHaveAttribute('href', /\/examples\/standard-markdown\/$/);
 	const destinations = await links.evaluateAll((links: HTMLAnchorElement[]) => links.map(link => link.href));
 	for (const destination of destinations) {
 		await page.goto(destination);
@@ -58,6 +60,9 @@ test('the overview links to six areas with working media and attachments', async
 		});
 		expect(await page.locator('#main-content img').evaluateAll((images: HTMLImageElement[]) => images.filter((image) => !image.naturalWidth).map((image) => image.src))).toEqual([]);
 	}
+	await page.goto('examples/everyday-markdown/');
+	await expect(page).toHaveURL(/\/examples\/standard-markdown\/$/);
+	await expect(page.locator('#main-content h1')).toHaveText('Standard Markdown');
 	await page.goto('examples/common-markdown-extensions/');
 	for (const type of ['note', 'tip', 'important', 'warning', 'caution', 'danger']) {
 		await expect(section(page, 'semantic-callouts').locator(`.norna-callout-${type}`)).toHaveCount(1);

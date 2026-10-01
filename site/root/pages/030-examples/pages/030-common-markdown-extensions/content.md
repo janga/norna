@@ -42,7 +42,9 @@ vary between tools.
 | Appearance | `root/tree-theme.yaml` | Light or Dark | Same choice | Reader choice | Default |
 ```
 
-**Source:** GitHub Flavored Markdown table syntax. Norna supplies the width,
+**Source:** [GitHub Flavored Markdown table syntax](https://github.github.com/gfm/#tables-extension-).
+Tables are a GFM extension to core Markdown. Norna keeps column headings
+visible (sticky) while you scroll through the rows, and adds the width,
 scrolling and sorting behavior described below. [Table row headings](/examples/norna-extensions/#table-row-headings)
 use an additional Norna marker.
 
