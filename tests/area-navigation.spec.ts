@@ -311,11 +311,11 @@ test('keeps the root overview and standalone destinations distinct from flat col
 	await expect(tree(page)).toHaveAttribute('data-navigation-area', 'reference');
 	await openPage(page, './');
 	await expect(tree(page)).toHaveCount(0);
-	const examples = page.locator('.site-nav > ul > li > a[href$="/examples/"]');
-	await expect(examples).toBeVisible();
-	await expect(examples.locator('..').locator('summary')).toHaveCount(0);
-	await examples.click();
-	await page.waitForURL('**/examples/');
+	const features = page.locator('.site-nav > ul > li > a[href$="/features/"]');
+	await expect(features).toBeVisible();
+	await expect(features.locator('..').locator('summary')).toHaveCount(0);
+	await features.click();
+	await page.waitForURL('**/features/');
 	await ready(page);
 	await expect(tree(page).locator('.navigation-page-tree')).toHaveCount(0);
 });
@@ -343,8 +343,8 @@ test('a page choice reopens its outline from sticky navigation and from its own 
 	await current.locator('summary').click();
 	await expect(current).not.toHaveAttribute('open', '');
 	await openReadingMenu(page);
-	await page.locator('.area-navigation-other-roots a[href$="/examples/"]').click();
-	await page.waitForURL('**/examples/');
+	await page.locator('.area-navigation-other-roots a[href$="/features/"]').click();
+	await page.waitForURL('**/features/');
 	await ready(page);
 	await page.locator('.site-brand').click();
 	await ready(page);

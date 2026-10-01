@@ -6,7 +6,7 @@ const section = (page, id: string) => page.locator('.site-section').filter({ has
 
 test('the gallery keeps its table source readable and bounded at every width', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
-	await page.goto('examples/#tables');
+	await page.goto('examples/common-markdown-extensions/#tables');
 	const tables = section(page, 'tables');
 	const code = tables.locator('.code-block').filter({ hasText: '| Capability' });
 	await expect(code).toHaveAttribute('data-code-overflow', 'false');
@@ -41,44 +41,58 @@ test('the gallery keeps its table source readable and bounded at every width', a
 	await expect(page.locator('.mobile-nav-menu > summary')).toBeVisible();
 });
 
-test('the visible examples render their exact source without broken image references', async ({ page }) => {
+test('the overview links to six areas with working media and attachments', async ({ page }) => {
 	await page.goto('examples/');
-	await expect(page.locator('#main-content .section-header h2')).toHaveCount(6);
-	await expect(page.locator('#main-content .section-header h2').first()).toHaveAttribute('id', 'standard-markdown');
+	const links = page.locator('.child-page-list a');
+	await expect(links).toHaveCount(6);
+	const destinations = await links.evaluateAll((links: HTMLAnchorElement[]) => links.map(link => link.href));
+	for (const destination of destinations) {
+		await page.goto(destination);
+		await expect(page.locator('#main-content h1')).toHaveCount(1);
+		await expect(page.locator('#main-content :is(h4,h5,h6)')).toHaveCount(0);
+		await page.evaluate(async () => {
+			await Promise.all(Array.from(document.querySelectorAll<HTMLImageElement>('#main-content img'), async (image) => {
+				image.loading = 'eager';
+				await image.decode().catch(() => {});
+			}));
+		});
+		expect(await page.locator('#main-content img').evaluateAll((images: HTMLImageElement[]) => images.filter((image) => !image.naturalWidth).map((image) => image.src))).toEqual([]);
+	}
+	await page.goto('examples/common-markdown-extensions/');
 	for (const type of ['note', 'tip', 'important', 'warning', 'caution', 'danger']) {
 		await expect(section(page, 'semantic-callouts').locator(`.norna-callout-${type}`)).toHaveCount(1);
 	}
-	await expect(page.locator('#main-content a[href$="/examples/downloads/visit-checklist.txt"]')).toHaveCount(1);
+	await page.goto('examples/building-a-site/');
+	const attachment = page.locator('#main-content a[href$="/examples/building-a-site/downloads/visit-checklist.txt"]');
+	await expect(attachment).toHaveCount(1);
+	const response = await page.request.get((await attachment.getAttribute('href'))!);
+	expect(response.ok()).toBe(true);
+	expect(await response.text()).toContain('Visit checklist');
+	await page.goto('examples/norna-extensions/');
 	await expect(section(page, 'image-carousels').locator('[data-carousel]')).toHaveAttribute('data-carousel-ready', 'true');
-	await page.evaluate(async () => {
-		await Promise.all(Array.from(document.querySelectorAll<HTMLImageElement>('#main-content img'), async (image) => {
-			image.loading = 'eager';
-			await image.decode().catch(() => {});
-		}));
-	});
-	expect(await page.locator('#main-content img').evaluateAll((images: HTMLImageElement[]) => images.filter((image) => !image.naturalWidth).map((image) => image.src))).toEqual([]);
 });
 
 test.describe('gallery without JavaScript', () => {
 	test.use({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
 	test('keeps table cells, source, images, and native navigation available', async ({ page }) => {
-		await page.goto('examples/#tables');
+		await page.goto('examples/common-markdown-extensions/#tables');
 		await expect(section(page, 'tables').locator('tbody tr')).toHaveCount(11);
-		await expect(section(page, 'tabs').locator('[data-tab-panel]:visible')).toHaveCount(2);
 		await expect(section(page, 'tables').locator('pre code').filter({ hasText: '| Capability' })).toContainText('| Capability');
 		await expect(page.locator('.code-block-copy')).toHaveCount(0);
+		await page.goto('examples/norna-extensions/#tabs');
+		await expect(section(page, 'tabs').locator('[data-tab-panel]:visible')).toHaveCount(2);
 		const carousel = section(page, 'image-carousels').locator('[data-carousel]');
 		await expect(carousel.locator('img')).toHaveCount(3);
 		await expect(carousel.locator('a')).toHaveCount(0);
 		await expect(carousel.locator('[data-carousel-next]')).toBeHidden();
 		await page.locator('.mobile-nav-menu > summary').click();
 		await expect(page.locator('.mobile-nav-menu')).toHaveAttribute('open');
-		await expect(page.locator('.mobile-nav-menu a[href="#common-markdown-extensions"]')).toBeVisible();
+		await expect(page.locator('.mobile-nav-menu a[href="#tabs"]')).toBeVisible();
 	});
 });
 
 test('gallery alternatives retain exact code and a stable page outline', async ({ page }) => {
-	await page.goto('examples/#tabs');
+	await page.goto('examples/norna-extensions/#tabs');
 	const example = section(page, 'tabs');
 	const group = example.locator('[data-content-tabs]');
 	const headings = await page.locator('#main-content :is(h1,h2,h3)').allTextContents();

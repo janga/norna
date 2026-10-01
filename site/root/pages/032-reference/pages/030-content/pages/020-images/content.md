@@ -68,4 +68,4 @@ inspection are automatic enhancements; see
 
 [Managed images](/reference/site/images/) covers variants, source files,
 metadata and cache state. To compare actual stack and carousel rendering,
-open the [image examples](/examples/#image-stacks).
+open the [image examples](/examples/norna-extensions/#image-stacks).

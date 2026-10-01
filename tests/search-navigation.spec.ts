@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const originPath = 'examples/?review=search#semantic-callouts';
+const originPath = 'examples/norna-extensions/?review=search#sidenotes';
 const returnLink = (page: Page) => page.locator('[data-search-return]');
 const searchLink = (page: Page) => page.locator('.site-search-link');
 const relativeUrl = (page: Page, path: string) => new URL(path, process.env.PLAYWRIGHT_BASE_URL!).href;
@@ -10,7 +10,7 @@ const prepareOrigin = async (page: Page) => {
 	await expect(page.locator('#main-content [data-carousel]').first()).toHaveAttribute('data-carousel-ready', 'true');
 	await page.evaluate(async () => {
 		await document.fonts.ready;
-		window.scrollTo({ top: document.querySelector('#semantic-callouts')!.getBoundingClientRect().top + scrollY + 120, behavior: 'instant' });
+		window.scrollTo({ top: document.querySelector('#sidenotes')!.getBoundingClientRect().top + scrollY + 120, behavior: 'instant' });
 	});
 	await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(1000);
 	return page.evaluate(() => scrollY);
@@ -21,7 +21,7 @@ const openSearch = async (page: Page) => {
 	const box = await searchLink(page).boundingBox();
 	expect(box).not.toBeNull();
 	await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
-	await expect(returnLink(page)).toHaveText('Back to Examples');
+	await expect(returnLink(page)).toHaveText('Back to Norna extensions');
 	await expect(page).toHaveURL(relativeUrl(page, 'search/'));
 };
 
@@ -45,7 +45,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 700 
 		await openSearch(page);
 		await expect(page.locator('[data-search-status]')).toContainText('Search is unavailable');
 		await page.reload();
-		await expect(returnLink(page)).toHaveText('Back to Examples');
+		await expect(returnLink(page)).toHaveText('Back to Norna extensions');
 		await expect(returnLink(page)).toHaveAttribute('href', new URL(sourceUrl).pathname + new URL(sourceUrl).search + new URL(sourceUrl).hash);
 		await expect(returnLink(page)).toBeInViewport();
 		const bounds = await returnLink(page).boundingBox();
@@ -82,7 +82,7 @@ test('return remains available while search reports no matching results', async 
 	await openSearch(page);
 	await page.getByRole('textbox', { name: 'Search' }).fill('unmatched-query');
 	await expect(page.locator('#norna-search').getByRole('status')).toHaveText('No results found');
-	await expect(returnLink(page)).toHaveText('Back to Examples');
+	await expect(returnLink(page)).toHaveText('Back to Norna extensions');
 	await returnLink(page).click();
 	await expect(page).toHaveURL(relativeUrl(page, originPath));
 });
@@ -99,7 +99,7 @@ test('direct visits do not reuse an earlier search origin', async ({ page }) => 
 });
 
 test('search links in page content also offer a return to their source', async ({ page }) => {
-	await page.goto('examples/#search');
+	await page.goto('examples/building-a-site/#search');
 	// Keep this link fixture independent of changes to the authored examples.
 	await page.locator('#search').evaluate((heading, href) => {
 		const link = document.createElement('a');
@@ -108,9 +108,9 @@ test('search links in page content also offer a return to their source', async (
 		heading.after(link);
 	}, relativeUrl(page, 'search/'));
 	await page.getByRole('link', { name: 'Search this site', exact: true }).click();
-	await expect(returnLink(page)).toHaveText('Back to Examples');
+	await expect(returnLink(page)).toHaveText('Back to Building a site with Norna');
 	await returnLink(page).click();
-	await expect(page).toHaveURL(relativeUrl(page, 'examples/#search'));
+	await expect(page).toHaveURL(relativeUrl(page, 'examples/building-a-site/#search'));
 });
 
 test('browser Back still returns to the source page', async ({ page }) => {

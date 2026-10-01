@@ -126,13 +126,13 @@ size: s
 items:
   - title: Image stack
     text: Keep every image visible in a deliberate reading order.
-    link: /examples/#image-stacks
+    link: /examples/norna-extensions/#image-stacks
   - title: Image carousel
     text: Place a related sequence in one bounded, keyboard-operable position.
-    link: /examples/#image-carousels
+    link: /examples/norna-extensions/#image-carousels
   - title: Card list
     text: Present a short set of comparable choices without building a component.
-    link: /examples/#card-lists
+    link: /examples/norna-extensions/#card-lists
 ```
 
 This page itself uses a carousel, a callout, a side note and a card list. The
@@ -162,7 +162,7 @@ layout:
 
 The preset still owns the remaining relationships, so a wider reading measure
 does not require the author to redesign controls, captions or navigation. Use
-the [theme explorer](/examples/#presets) to compare identical
+the [theme explorer](/examples/building-a-site/#presets) to compare identical
 content, then consult the [theme reference](/reference/configuration/theme/)
 for supported overrides.
 

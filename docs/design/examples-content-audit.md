@@ -8,45 +8,42 @@ and the final implementation audit for
 
 ## Current Structure — 2026-10-01
 
-The owner approved reorganizing the single Examples page into six H2 groups:
-Everyday Markdown; External images and files; Common
-Markdown extensions; Norna extensions; Building a site with Norna; Complete
-sites. H3 headings identify individual examples. The six groups appear in
-page navigation; each example keeps its own heading anchor.
+The owner approved one page per example area. `/examples/` introduces the
+collection and lists its six children with descriptions:
+
+- `everyday-markdown/`: headings, prose, links and plain code fences;
+- `external-images-and-files/`: external resources, public files and page ownership;
+- `common-markdown-extensions/`: tables, task lists, footnotes and alerts;
+- `norna-extensions/`: managed media and structured content;
+- `building-a-site/`: attachments, navigation, settings and checks;
+- `complete-sites/`: published projects and their sources.
+
+Each page uses H1 for its title, H2 for examples and H3 where an example needs
+subsections. No authored example requires H4. The ordinary Markdown page keeps
+the recommendation to use a shallow hierarchy, normally H1–H3. All six alert
+types are demonstrated, with `DANGER` identified as Norna's addition.
 
 The reader's question is which syntax to use and what Norna adds. Begin with
 ordinary writing, explain file ownership, then introduce common and Norna
 extensions before site configuration. Keep rendered results beside exact
-source and link to reference for full constraints. This replaces the earlier
-visual-first ordering recorded below.
+source and link to reference for full constraints. Ordinary GFM tables and
+plain code fences are separate from Norna's additional metadata.
 
-The reorganization retains the existing demonstrations and adds small examples
-of links, plain code fences, task lists, strikethrough, numbered footnotes,
-explicit heading IDs and a downloadable page attachment. Ordinary GFM tables
-are shown without the Norna row-heading marker; a separate example teaches
-that marker. Code titles and line emphasis likewise follow ordinary fences.
-Public and external files remain valid choices with explicit ownership and
-processing boundaries. External example URLs are shown as source only.
+The overview remains at `site/root/pages/030-examples/content.md`. Its child
+sources live under `pages/010-everyday-markdown/` through `060-complete-sites/`.
+Images and the downloadable checklist moved to their owning pages. Maintained
+incoming links and capture destinations now use the child addresses. The old
+single-page fragment URLs do not redirect across pages; links within the
+maintained site point directly to the new destinations.
 
-Existing referenced anchors such as `image-stacks`, `tables`, `tabs`,
-`page-list`, `automatic-navigation` and `presets` remain. Merged subsections
-use their group's anchor: `single-image` becomes `image-stacks`, `language`
-becomes `search`, `site-wide-elements` becomes `branding`, and `palettes`
-becomes `presets`. No maintained incoming links used the retired anchors.
+Verification passed the documentation check, the isolated docs build, all
+20 Examples/search browser checks and the two adjusted navigation checks.
+The browser checks visit all six children, load their images, retrieve the
+attachment and confirm that no rendered H4–H6 remains. The overview, a mobile
+Markdown page and the dark Norna-extension page were inspected locally.
 
-The maintained source is `site/root/pages/030-examples/content.md`.
-Verification passed `npm run test:documentation`, the isolated docs build
-and all four `test:examples:browser` checks, including narrow screens and
-no-JavaScript rendering. The generated attachment matches its source file.
-Desktop light/dark captures and the compact dark menu were inspected locally.
-The historical section audit below records the original examples; its
-22-section ordering and former source paths are not the current structure.
-
-The owner's follow-up on 2026-10-01 shortens the file section's title to
-External images and files, recommends H1–H3 for ordinary pages and demonstrates
-all six supported alert types. `DANGER` remains explicitly identified as
-Norna's addition. Splitting Examples to remove its H4 headings is planned
-for a later change; the current page retains them.
+The historical audit below describes the original demonstrations. Its
+single-page ordering and former source paths are not the current structure.
 
 ## Earlier Review Status
 
@@ -161,16 +158,16 @@ credentials, and focused tests cover the changed contracts.
 
 ## Human Review Still Required
 
-- At `/norna/examples/#tabs`, compare the two installation alternatives with
+- At `/norna/examples/norna-extensions/#tabs`, compare the two installation alternatives with
   their source. Try mouse and keyboard selection, then a narrow window and
   print preview. Judge whether the distinction from ordinary page headings is
   clear without requiring a reader tutorial.
-- At `/norna/examples/#tables`, compare the rendered table with its code at a
+- At `/norna/examples/common-markdown-extensions/#tables`, compare the rendered table with its code at a
   wide viewport, then narrow the browser. Judge row-label readability, source
   size, overflow cues, and Focus reading without changing the page content.
-- At `/norna/examples/#page-list`, judge whether the shelter commitment context
+- At `/norna/examples/norna-extensions/#page-list`, judge whether the shelter commitment context
   and descriptions justify a generated list beside navigation.
-- At `/norna/examples/#automatic-navigation`, compare the four source trees
+- At `/norna/examples/building-a-site/#automatic-navigation`, compare the four source trees
   with the captured wide and compact states. Read the shown source, not just
   the screenshots; all illustrated pages are runnable fixtures.
 - For live interaction, use the minimal top-navigation fixture left on
@@ -215,9 +212,8 @@ Published paths above are relative to `https://janga.github.io/norna/`.
 
 ## Teaching Decisions
 
-- Keep one Examples page. Its six H2 groups distinguish syntax and file
-  ownership, followed by site construction and complete sites. H3 examples
-  pair each result with its source.
+- Keep an Examples overview with one child page per area. Individual H2
+  examples pair each result with its source and remain reachable in navigation.
 - Put the rendered result before the smallest exact source, identify whether
   the source is standard Markdown or a Norna extension, and link to canonical
   reference instead of repeating complete option tables.
@@ -233,7 +229,7 @@ Published paths above are relative to `https://janga.github.io/norna/`.
 - Keep Theme explorer as generated comparison output, not a fifth configurable
   source site.
 - Keep media and site-wide demonstrations as independently built source sites,
-  but introduce their useful results on the single Examples page. The external
+  but introduce their useful results on the relevant Examples child page. The external
   builds remain available when a reader needs to inspect a complete site state.
 - Keep exact syntax and constraints in Markdown reference pages. Example pages
   explain intent, show a representative result, and link to those definitions.

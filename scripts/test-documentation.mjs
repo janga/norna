@@ -397,21 +397,26 @@ const checkPublishedExampleReferences = async () => {
 	const documentationUrl = new URL(projectConfig.site.url);
 	const exampleFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'root', 'pages', '030-examples'));
 	const documentationText = (await Promise.all(exampleFiles.map((filePath) => readFile(filePath, 'utf8')))).join('\n');
-	assert.equal(exampleFiles.length, 1, 'Focused Examples documentation must remain one result-first page.');
-	const examplesModel = await parsePageMarkdownSource(documentationText);
-	// Extract each H3 example from its H2 group; fenced sample headings stay literal.
-	const exampleSubsections = new Map();
-	for (const section of examplesModel.sections) {
-		const tree = await markdownToMdast(section.bodyMarkdown);
-		const headings = tree.children.filter((node) => node.type === 'heading' && node.depth === 3);
-		for (const [index, heading] of headings.entries()) {
-			const start = heading.position.start.offset;
-			const end = headings[index + 1]?.position.start.offset ?? section.bodyMarkdown.length;
-			const source = section.bodyMarkdown.slice(start, end).replace(/^### /, '## ');
-			const model = await parsePageMarkdownSource(`# Example\n\n${source}`);
-			exampleSubsections.set(model.sections[0].id, model.sections[0]);
+	assert.equal(exampleFiles.length, 7, 'Examples has an overview and one page for each of six areas.');
+	const exampleModels = await Promise.all(exampleFiles.map(async (file) => ({
+		file, model: await parsePageMarkdownSource(await readFile(file, 'utf8')),
+	})));
+	const exampleSubsections = new Map(exampleModels.flatMap(({ model }) =>
+		model.sections.map((section) => [section.id, section])));
+	for (const { file, model } of exampleModels) {
+		const tree = await markdownToMdast(await readFile(file, 'utf8'));
+		assert.ok(!tree.children.some((node) => node.type === 'heading' && node.depth > 3),
+			`${file}: examples must use H1–H3 without deeper headings.`);
+		for (const section of model.sections) {
+			for (const block of section.blocks) {
+				for (const image of block.images ?? []) {
+					assert.ok(existsSync(path.join(path.dirname(file), 'images', image.src ?? image.image)),
+						`${file}: an image must stay with its owning page.`);
+				}
+			}
 		}
 	}
+
 	for (const id of ['headings-and-paragraphs', 'emphasis-lists-and-quotations', 'links',
 		'plain-code-blocks', 'task-lists-and-strikethrough', 'footnotes', 'image-stacks',
 		'image-carousels', 'card-lists', 'semantic-callouts', 'sidenotes', 'code-blocks',
@@ -461,10 +466,7 @@ const checkPublishedExampleReferences = async () => {
 		}
 	}
 
-	assert.deepEqual(examplesModel.sections.map(({ id }) => id), [
-		'standard-markdown', 'unmanaged-files', 'common-markdown-extensions',
-		'norna-extensions', 'building-a-site', 'complete-sites',
-	], 'Examples must distinguish everyday syntax, file ownership, extensions and site construction.');
+
 	assert.ok(!exampleSubsections.get('tables').bodyMarkdown.includes('{row-header}'),
 		'The ordinary GFM example must not require Norna row-heading syntax.');
 	assert.ok(exampleSubsections.get('table-row-headings').bodyMarkdown.includes('{row-header}'));
@@ -488,18 +490,6 @@ const checkPublishedExampleReferences = async () => {
 		assert.ok(documentationText.includes(requiredText), `Examples is missing required result-first content: ${requiredText}`);
 	}
 
-	for (const imageName of [
-		'child-page-list.png',
-		'navigation-single-desktop.png',
-		'navigation-top-desktop.png',
-		'navigation-nested-desktop.png',
-		'navigation-documentation-desktop.png',
-	]) {
-		assert.ok(
-			existsSync(path.join(repoRoot, 'site', 'root', 'pages', '030-examples', 'images', imageName)),
-			`Examples is missing ${imageName}.`,
-		);
-	}
 
 	const documentationTree = await markdownToMdast(documentationText);
 	const navigationSources = documentationTree.children.flatMap((node, index) => {
