@@ -57,10 +57,18 @@ On 2026-10-02, the Markdown tour added rendered/source pairs for nested lists,
 reference-style links, hard line breaks, thematic dividers and longer code
 fences. The GFM page now also demonstrates table alignment and automatic links
 for plain web and email addresses. These additions document useful existing
-syntax; they do not assert complete CommonMark or GFM conformance. BL-162 tracks
-a deeper end-to-end compatibility audit. BL-161 separately investigates
-common HTML patterns and possible Norna-shaped alternatives; it does not
-propose prohibiting HTML.
+syntax; they do not assert complete CommonMark or GFM conformance.
+[BL-161 Norna-Shaped Alternatives To Common HTML](backlog/BL-161-norna-shaped-alternatives-to-common-html.md)
+separately investigates common HTML patterns and possible Norna-shaped
+alternatives; it does not propose prohibiting HTML.
+
+[BL-162 Audit Supported Standard Markdown](backlog/BL-162-audit-supported-standard-markdown.md)
+completed the deeper compatibility review on 2026-10-02. Its
+[built-site evidence and syntax matrix](standard-markdown-compatibility-audit.md)
+cover representative CommonMark, GFM and Norna integrations. The review fixed
+underlined H1/H2 title rendering and H3 headings nested inside quotations or
+lists. The public Markdown reference now states which headings take part in
+page navigation and identifies the remaining local-image management boundary.
 
 The historical audit below describes the original demonstrations. Its
 single-page ordering and former source paths are not the current structure.

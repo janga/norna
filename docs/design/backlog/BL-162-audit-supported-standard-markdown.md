@@ -6,12 +6,10 @@ Give authors and maintainers a reliable account of which CommonMark and GFM
 constructs Norna supports end to end, and ensure Examples documents the useful
 constructs that already work.
 
-**Status: Needs evidence.** The Standard Markdown and Common Markdown
-Extensions examples were expanded on 2026-10-02 with demonstrations of nested
-lists, reference-style links, hard line breaks, thematic dividers, longer
-code fences, aligned GFM tables and GFM autolinks. This backlog item is for a
-deeper compatibility audit; the additions are not a claim of full
-specification compliance.
+**Status: Completed on 2026-10-02.** The representative built-site fixture,
+findings, fixes and remaining boundaries are recorded in the
+[Standard Markdown compatibility audit](../standard-markdown-compatibility-audit.md).
+The result is not a claim of full specification compliance.
 
 ## Scope And Boundaries
 
@@ -42,7 +40,7 @@ Local image and attachment management decisions remain with
 This list is a starting point. Record deviations and meaningful edge cases,
 not only successful examples.
 
-## Open Questions
+## Questions Reviewed
 
 1. Which constructs are parsed correctly in isolation and preserved through
    Norna's complete content pipeline?
@@ -55,7 +53,7 @@ not only successful examples.
 5. Are any current examples misleading, inconsistent with exact source, or
    teaching a nonportable dialect without saying so?
 
-## Ready For Implementation When
+## Completion Criteria
 
 - The audit records parser configuration and relevant integration points.
 - A representative fixture set covers supported, constrained and unsupported

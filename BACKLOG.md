@@ -116,9 +116,6 @@ These items have no approved implementation position yet. Move one into `Now`,
   **Needs evidence and decision; next prioritized design discussion.** Identify
   common HTML authoring patterns and decide where Norna constructs can offer
   a more coherent experience while HTML remains available.
-- [`BL-162` Audit Supported Standard Markdown](docs/design/backlog/BL-162-audit-supported-standard-markdown.md):
-  **Needs evidence.** Verify commonly used CommonMark and GFM constructs
-  through Norna's full publishing path and document useful existing support.
 
 ### VS Code Files And Images Track
 

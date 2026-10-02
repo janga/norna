@@ -59,6 +59,10 @@ levels, simplify the structure or give the topic a separate page. Norna uses
 H2 headings in navigation. See the
 [heading reference](/reference/content/markdown/#page-title-and-sections).
 
+CommonMark also allows an H1 to be underlined with `=` or an H2 with `-`.
+Norna supports these headings, though hash signs make the level easier to see
+while editing.
+
 ## Bold and italic text {#emphasis-lists-and-quotations}
 
 Tell us **who lives at home** and _when you can visit_.

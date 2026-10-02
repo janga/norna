@@ -6,7 +6,8 @@ page:
 # Common Markdown extensions
 
 These conventions are supported by other Markdown tools as well as Norna.
-Tables, task lists and strikethrough belong to GitHub Flavored Markdown (GFM).
+Tables, task lists, strikethrough and automatic links for plain addresses belong
+to GitHub Flavored Markdown (GFM).
 Footnotes and GitHub-style alerts are additional conventions, so support can
 vary between tools.
 
