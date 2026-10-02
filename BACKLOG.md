@@ -101,13 +101,17 @@ verified and approved for documentation.
 These items have no approved implementation position yet. Move one into `Now`,
 `Next`, or `Later` only after the stated evidence or design decision exists.
 
-### First Design Priority
+### Prioritized Design Work
 
 - ★ [`BL-159` Managed Local Markdown Images](docs/design/backlog/BL-159-managed-local-markdown-images.md):
   **Needs decision; highest-priority design discussion.** Give local Markdown
   images the same management as `image-stack`, settling HTML placement,
   Standard Markdown guidance and the caption/title distinction before the
   remaining image-authoring design work.
+- ★ [`BL-160` Standard Markdown For Local Attachments](docs/design/backlog/BL-160-standard-markdown-local-attachments.md):
+  **Needs evidence and decision; follows BL-159 in discussion order.** Review
+  existing Markdown attachment links, identify any missing reference forms
+  and clarify management and open/download behavior for beginners.
 
 ### VS Code Files And Images Track
 
