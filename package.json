@@ -131,7 +131,7 @@
     "test:page-content": "node scripts/test-page-content.mjs",
     "test:managed-media": "node scripts/test-managed-media.mjs",
     "test:content-sync": "node scripts/test-content-sync.mjs",
-    "test:markdown-constructs": "node scripts/test-markdown-constructs.mjs",
+    "test:markdown-constructs": "node scripts/test-markdown-constructs.mjs && node scripts/test-standard-markdown-compatibility.mjs",
     "test:theme-presets": "node scripts/test-theme-presets.mjs",
     "test:presentation-contract": "node scripts/test-presentation-contract.mjs",
     "test:presentation-review": "node scripts/test-presentation-review-fixture.mjs",

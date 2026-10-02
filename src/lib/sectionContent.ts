@@ -1,6 +1,7 @@
 import { getPageImageSourceKey } from '../../scripts/lib/site-conventions.mjs';
 import { readPageAttachments, resolveAttachment, attachmentHref } from '../../scripts/lib/page-attachments.mjs';
 import { markdownToHtml } from 'satteri';
+import { parseFragment } from 'parse5';
 import { groupRenderedTabs } from '../../scripts/lib/content-tabs.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import {
@@ -95,21 +96,51 @@ const applyH3HeadingIds = (
 	html: string,
 	headings: Array<{ id: string | null }>,
 ) => {
+	const renderHeading = (attributes: string, headingHtml: string, heading: { id: string | null }) => {
+		if (!heading.id) throw new Error('Rendered Markdown H3 could not be matched to its heading id.');
+		const cleanAttributes = attributes
+			.replace(/\s+data-norna-page-heading="true"/g, '')
+			.replace(/\s+id=(["']).*?\1/gi, '');
+		const cleanHeadingHtml = headingHtml.replace(explicitHeadingIdRegex, '').trim();
+		return `<h3${cleanAttributes} id="${heading.id}">${cleanHeadingHtml}</h3>`;
+	};
+
+	// Content rendered before the heading marker was introduced may still be in
+	// Astro's content cache. Its top-level H3s can be identified from the HTML tree.
+	if (!html.includes('data-norna-page-heading=') && headings.length > 0) {
+		const fragment = parseFragment(html, { sourceCodeLocationInfo: true });
+		const renderedHeadings = fragment.childNodes.filter((node) => (
+			'tagName' in node && node.tagName === 'h3' && node.sourceCodeLocation?.startTag && node.sourceCodeLocation?.endTag
+		));
+		if (renderedHeadings.length !== headings.length) {
+			throw new Error('Markdown H3 headings could not be matched to the rendered page content.');
+		}
+		let result = html;
+		for (let index = renderedHeadings.length - 1; index >= 0; index -= 1) {
+			const location = renderedHeadings[index]?.sourceCodeLocation;
+			const heading = headings[index];
+			if (!location?.startTag || !location.endTag || !heading) {
+				throw new Error('Rendered Markdown H3 could not be matched to its heading id.');
+			}
+			const source = html.slice(location.startOffset, location.endOffset);
+			const replacement = source.replace(/<h3\b([^>]*)>([\s\S]*?)<\/h3>/i, (_match, attributes, headingHtml) =>
+				renderHeading(String(attributes), String(headingHtml), heading));
+			result = result.slice(0, location.startOffset) + replacement + result.slice(location.endOffset);
+		}
+		return result;
+	}
+
 	let headingIndex = 0;
-	const result = html.replace(/<h3\b([^>]*)>([\s\S]*?)<\/h3>/gi, (_match, attributes, headingHtml) => {
+	const result = html.replace(/<h3\b([^>]*)>([\s\S]*?)<\/h3>/gi, (source, attributes, headingHtml) => {
+		if (!/\sdata-norna-page-heading="true"/.test(attributes)) return source;
 		const heading = headings[headingIndex];
 		headingIndex += 1;
-		if (!heading?.id) throw new Error('Rendered Markdown H3 could not be matched to its heading id.');
-
-		const cleanAttributes = String(attributes).replace(/\s+id=(["']).*?\1/gi, '');
-		const cleanHeadingHtml = String(headingHtml).replace(explicitHeadingIdRegex, '').trim();
-		return `<h3${cleanAttributes} id="${heading.id}">${cleanHeadingHtml}</h3>`;
+		if (!heading) throw new Error('Rendered Markdown H3 could not be matched to its heading id.');
+		return renderHeading(String(attributes), String(headingHtml), heading);
 	});
-
 	if (headingIndex !== headings.length) {
 		throw new Error('Markdown H3 headings could not be matched to the rendered page content.');
 	}
-
 	return result;
 };
 
@@ -118,6 +149,7 @@ const getImageSourceKey = (page: SitePage, image: string) => getPageImageSourceK
 const renderHeadingTitleHtml = async (headingSource: string) => {
 	const headingMarkdown = headingSource
 		.replace(/^#{1,6}[ \t]+/, '')
+		.replace(/\n[ \t]*(?:=+|-+)[ \t]*$/, '')
 		.replace(explicitHeadingIdRegex, '')
 		.trim();
 	const result = await markdownToHtml(headingMarkdown, {

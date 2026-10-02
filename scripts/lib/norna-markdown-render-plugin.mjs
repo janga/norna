@@ -88,6 +88,13 @@ export const nornaMarkdownRenderPlugin = defineMdastPlugin({
 		});
 	},
 	heading(node, context) {
+		if (node.depth === 3) {
+			if (context.parent(node)?.type !== 'root') return;
+			context.setProperty(node, 'data', {
+				hProperties: { 'data-norna-page-heading': 'true' },
+			});
+			return;
+		}
 		if (node.depth !== 1 && node.depth !== 2) return;
 		const state = getState(context);
 		const regionIndex = state.regionIndex;
