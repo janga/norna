@@ -70,6 +70,17 @@ Use the [GFM specification](https://github.github.com/gfm/) for general syntax;
 this reference defines Norna's additional contracts. Norna does not support
 arbitrary inline color or style classes.
 
+## HTML in Markdown {#html-in-markdown}
+
+CommonMark permits author-written HTML in `content.md`, and Norna does not ban
+it. Norna documents specific uses such as native
+[`<details>` disclosures](/reference/content/details/). For images, notices,
+tables and other supported content, use the documented Markdown or Norna
+construct when you want its managed files, responsive layout or site styling.
+HTML markup does not automatically receive those features. Check custom HTML
+in the built page, including on narrow screens and without JavaScript; Norna
+does not define a support contract for arbitrary elements, classes or scripts.
+
 ## Markdown images
 
 ```md title="content.md: images outside the managed pipeline"

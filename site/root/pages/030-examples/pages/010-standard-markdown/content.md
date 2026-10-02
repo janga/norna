@@ -288,3 +288,18 @@ Norna syntax. Norna keeps the column headings visible while you scroll through
 the rows and lets wide tables scroll horizontally. Continue with the
 [table example](/examples/common-markdown-extensions/#tables), or explore
 [checklists and footnotes](/examples/common-markdown-extensions/).
+
+## HTML in Markdown {#html-in-markdown}
+
+CommonMark also lets you write HTML in `content.md` when you need it. Norna
+does not prohibit HTML. For ordinary text, images, tables and notices, start
+with the Markdown or Norna examples above: their documented presentation and
+file handling are built for the site. An HTML image, for example, does not
+enter Norna's managed-image pipeline just because its file is local.
+
+Some HTML is useful as it is. A native `<details>` element can hide optional
+context; see the [details reference](/reference/content/details/) for a working
+example and its Norna constraints. Other HTML may require you to check its
+layout and accessibility yourself. See the
+[Markdown reference](/reference/content/markdown/#html-in-markdown) for the
+support boundary.
