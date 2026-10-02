@@ -63,6 +63,22 @@ order and the browser provides horizontal scrolling.
 The code block above contains every cell of this table, unchanged. Read the
 [table reference](/reference/content/tables/).
 
+GFM tables also support column alignment. Add a colon to the separator row
+for left, centered or right alignment:
+
+| Left | Center | Right |
+| :--- | :---: | ---: |
+| Start | Middle | End |
+
+```md
+| Left | Center | Right |
+| :--- | :---: | ---: |
+| Start | Middle | End |
+```
+
+The alignment markers affect the column's text; Norna still applies its
+responsive table layout.
+
 ## Task lists and strikethrough {#task-lists-and-strikethrough}
 
 - [x] Read about the dogs.
@@ -79,6 +95,17 @@ The code block above contains every cell of this table, unchanged. Read the
 
 **Source:** GFM task lists and strikethrough. Checkmarks are published content;
 they do not store readers' progress. Edit the Markdown to change them.
+
+GFM also turns plain web addresses and email addresses into links:
+
+Visit https://example.com/ or write to hello@example.com.
+
+```md
+Visit https://example.com/ or write to hello@example.com.
+```
+
+Use named links when the address itself is not useful to the reader, as shown
+in [Standard Markdown links](/examples/standard-markdown/#links).
 
 ## Footnotes {#footnotes}
 

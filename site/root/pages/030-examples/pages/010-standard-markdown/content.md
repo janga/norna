@@ -103,6 +103,23 @@ a number, a period and a space for a numbered list. Bullets collect related
 items; numbers suit steps whose order matters. Put each item on its own line,
 and leave an empty line before and after the list.
 
+Lists can contain smaller lists. Indent the nested marker by two spaces so it
+belongs to the item above:
+
+- Meet the dogs
+  - Ask about their routines.
+  - Ask what they need.
+- Plan a visit
+
+```md
+- Meet the dogs
+  - Ask about their routines.
+  - Ask what they need.
+- Plan a visit
+```
+
+Keep nesting shallow so readers can scan the list.
+
 ## Quotations {#quotations}
 
 > Visits are by appointment.
@@ -142,6 +159,25 @@ Norna adds any deployment prefix, so do not add `/norna/` to source links.
 A link such as `[Lists](#lists)` jumps to a heading on the same page. See
 [URLs and links](/reference/site/urls/) for more examples.
 
+### Reference-style links
+
+You can put the destination in a definition instead of the sentence. This is
+useful when the same address appears more than once or when a long address
+would make the paragraph hard to read.
+
+Read [Getting started][guide] before your first build.
+
+[guide]: /getting-started/ "Install Norna"
+
+```md
+Read [Getting started][guide] before your first build.
+
+[guide]: /getting-started/ "Install Norna"
+```
+
+The label connects the reference to its definition. The optional title may be
+shown by a browser on hover; it does not replace clear link text.
+
 ## Code within a sentence {#inline-code}
 
 Edit `content.md` and save the file.
@@ -176,6 +212,15 @@ Norna adds a copy control when JavaScript is available.
 [Titles and highlighted lines](/examples/norna-extensions/#code-blocks) use
 additional Norna syntax.
 
+If the code itself contains three backticks, use a longer fence around the
+example:
+
+````md
+```sh
+npm run norna:dev
+```
+````
+
 ## Literal punctuation {#literal-punctuation}
 
 Write \*these asterisks\* as ordinary text.
@@ -188,6 +233,29 @@ Write \*these asterisks\* as ordinary text.
 formatting, put a backslash (`\`) before it. The backslash tells Markdown to
 show the mark itself. For a code fragment or filename, backticks are usually
 clearer.
+
+## Line breaks and dividers {#line-breaks-and-dividers}
+
+This sentence ends here.\
+This sentence starts on the next line, in the same paragraph.
+
+---
+
+The divider separates these paragraphs.
+
+```md
+This sentence ends here.\
+This sentence starts on the next line, in the same paragraph.
+
+---
+
+The divider separates these paragraphs.
+```
+
+**Source:** Standard Markdown. A backslash at the end of a source line makes
+a hard line break. A blank line starts a new paragraph. A line with three
+hyphens creates a thematic divider; use a heading when the next part has a
+name, because a divider alone does not describe the new section.
 
 ## Images and tables {#images-and-tables}
 

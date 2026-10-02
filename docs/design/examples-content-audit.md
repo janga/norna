@@ -53,6 +53,15 @@ pass on the expanded page. Desktop light and mobile dark captures were
 inspected. The old page address redirects successfully; the existing static
 redirect does not preserve a fragment such as `#links`.
 
+On 2026-10-02, the Markdown tour added rendered/source pairs for nested lists,
+reference-style links, hard line breaks, thematic dividers and longer code
+fences. The GFM page now also demonstrates table alignment and automatic links
+for plain web and email addresses. These additions document useful existing
+syntax; they do not assert complete CommonMark or GFM conformance. BL-162 tracks
+a deeper end-to-end compatibility audit. BL-161 separately investigates
+common HTML patterns and possible Norna-shaped alternatives; it does not
+propose prohibiting HTML.
+
 The historical audit below describes the original demonstrations. Its
 single-page ordering and former source paths are not the current structure.
 
