@@ -4,14 +4,40 @@ test.use({ reducedMotion: 'reduce' });
 
 const section = (page, id: string) => page.locator('.site-section').filter({ has: page.locator(`#${id}`) });
 
+test('nested Markdown list stays indented below its parent item', async ({ page }) => {
+	await page.goto('examples/standard-markdown/#lists');
+	const list = section(page, 'lists').locator('.section-markdown > ul').filter({ hasText: 'Before the visit' });
+	await expect(list.locator(':scope > li')).toHaveCount(2);
+	await expect(list.locator(':scope > li:first-child > ul > li')).toHaveCount(2);
+
+	for (const width of [1440, 390]) {
+		await page.setViewportSize({ width, height: 900 });
+		const placement = await list.evaluate((root) => {
+			const parent = root.querySelector(':scope > li:first-child')!;
+			const nested = parent.querySelector(':scope > ul')!;
+			const text = document.createRange();
+			text.selectNode(parent.firstChild!);
+			return {
+				display: getComputedStyle(nested).display,
+				parent: text.getBoundingClientRect().toJSON(),
+				child: nested.querySelector('li')!.getBoundingClientRect().toJSON(),
+			};
+		});
+		expect(placement.display).toBe('block');
+		expect(placement.child.top).toBeGreaterThanOrEqual(placement.parent.bottom - 1);
+		expect(placement.child.left).toBeGreaterThan(placement.parent.left);
+	}
+});
+
 test('the gallery keeps its table source readable and bounded at every width', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto('examples/common-markdown-extensions/#tables');
 	const tables = section(page, 'tables');
+	const comparison = tables.locator('table').filter({ hasText: 'Capability' });
 	const code = tables.locator('.code-block').filter({ hasText: '| Capability' });
 	await expect(code).toHaveAttribute('data-code-overflow', 'false');
-	await expect(tables.locator('tbody tr')).toHaveCount(11);
-	await expect(tables.locator('thead th')).toHaveCount(6);
+	await expect(comparison.locator('tbody tr')).toHaveCount(11);
+	await expect(comparison.locator('thead th')).toHaveCount(6);
 	await expect(code.locator('pre code')).toContainText('| Capability');
 	const widths = await tables.evaluate((node) => ({
 		prose: node.querySelector('.section-markdown')!.getBoundingClientRect().width,
@@ -27,7 +53,7 @@ test('the gallery keeps its table source readable and bounded at every width', a
 			if (width === 390) {
 				await expect(code).toHaveAttribute('data-code-overflow', 'true');
 				await expect(code.locator('pre')).toHaveAttribute('tabindex', '0');
-				await expect(tables.locator('.norna-table-frame')).toHaveAttribute('data-table-overflow', 'true');
+				await expect(tables.locator('.norna-table-frame').filter({ hasText: 'Capability' })).toHaveAttribute('data-table-overflow', 'true');
 			}
 		}
 	}
@@ -81,7 +107,7 @@ test.describe('gallery without JavaScript', () => {
 	test.use({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
 	test('keeps table cells, source, images, and native navigation available', async ({ page }) => {
 		await page.goto('examples/common-markdown-extensions/#tables');
-		await expect(section(page, 'tables').locator('tbody tr')).toHaveCount(11);
+		await expect(section(page, 'tables').locator('table').filter({ hasText: 'Capability' }).locator('tbody tr')).toHaveCount(11);
 		await expect(section(page, 'tables').locator('pre code').filter({ hasText: '| Capability' })).toContainText('| Capability');
 		await expect(page.locator('.code-block-copy')).toHaveCount(0);
 		await page.goto('examples/norna-extensions/#tabs');

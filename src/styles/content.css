@@ -1174,6 +1174,12 @@ ul {
 	text-align: left;
 }
 
+.section-markdown li > :is(ul, ol) {
+	display: block;
+	margin-right: 0;
+	margin-left: 0;
+}
+
 .section-markdown li + li {
 	margin-top: 0.35rem;
 }

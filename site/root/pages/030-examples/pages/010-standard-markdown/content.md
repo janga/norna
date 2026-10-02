@@ -103,22 +103,27 @@ a number, a period and a space for a numbered list. Bullets collect related
 items; numbers suit steps whose order matters. Put each item on its own line,
 and leave an empty line before and after the list.
 
-Lists can contain smaller lists. Indent the nested marker by four spaces to
-show that it belongs under the item above:
+Indent a list item to put it under the main item it belongs to. For example,
+each part of a visit can have its own details:
 
-- Meet the dogs
-    - Ask about their routines.
-    - Ask what they need.
-- Plan a visit
+- Before the visit
+    - Read about the dogs.
+    - Write down your questions.
+- On the day
+    - Bring your notes.
+    - Arrive at the agreed time.
 
 ```md
-- Meet the dogs
-    - Ask about their routines.
-    - Ask what they need.
-- Plan a visit
+- Before the visit
+    - Read about the dogs.
+    - Write down your questions.
+- On the day
+    - Bring your notes.
+    - Arrive at the agreed time.
 ```
 
-Keep nesting shallow so readers can scan the list.
+Indent nested markers by four spaces. Keep nesting shallow so readers can scan
+the list.
 
 ## Quotations {#quotations}
 
