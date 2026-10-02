@@ -112,10 +112,12 @@ These items have no approved implementation position yet. Move one into `Now`,
   **Needs evidence and decision; follows BL-159 in discussion order.** Review
   existing Markdown attachment links, identify any missing reference forms
   and clarify management and open/download behavior for beginners.
-- ★ [`BL-161` Norna-Shaped Alternatives To Common HTML](docs/design/backlog/BL-161-norna-shaped-alternatives-to-common-html.md):
-  **Needs evidence and decision; next prioritized design discussion.** Identify
-  common HTML authoring patterns and decide where Norna constructs can offer
-  a more coherent experience while HTML remains available.
+
+### HTML Publication Boundary
+
+- [`BL-163` Author HTML Publication Boundary](docs/design/backlog/BL-163-author-html-publication-boundary.md):
+  **Needs evidence and decision.** Define the trust model and publication
+  boundary for authored HTML, including scripts and arbitrary attributes.
 
 ### VS Code Files And Images Track
 

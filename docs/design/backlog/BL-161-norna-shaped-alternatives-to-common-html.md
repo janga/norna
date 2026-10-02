@@ -6,10 +6,11 @@ Help authors get a coherent, accessible and responsive result by showing when
 to use a Norna construct instead of author-written HTML, while keeping HTML
 available where it is useful and supported.
 
-**Status: Needs evidence and decision; prioritized design discussion.** The
-owner asked for an investigation of commonly used HTML patterns and how they
-might have Norna-shaped equivalents. This is a design brief, not approval to
-add syntax or prohibit HTML.
+**Status: Investigation completed on 2026-10-02.** The
+[BL-161 authoring audit](../common-html-authoring-audit.md) records built-site
+evidence and recommends current constructs where they serve readers better.
+No new syntax follows from the evidence. The owner asked for an investigation,
+not a ban on HTML or automatic approval to add syntax.
 
 ## Scope And Boundaries
 
@@ -62,7 +63,7 @@ Also inventory scripts, forms, custom elements and arbitrary attributes only
 to establish the current authoring and publication boundary; do not elevate
 them to feature candidates without concrete user evidence.
 
-## Open Questions
+## Investigation Questions
 
 1. Which patterns appear in maintained content, incoming examples, support
    requests or common author workflows? Which are merely familiar from HTML?
@@ -79,7 +80,7 @@ them to feature candidates without concrete user evidence.
 6. What documentation should say about the boundary of HTML support without
    implying either a blanket guarantee or a ban?
 
-## Ready For Implementation When
+## Evidence Required For Any Future Implementation
 
 - The inventory is backed by source searches and representative rendered
   examples, with current behavior separated from proposals.

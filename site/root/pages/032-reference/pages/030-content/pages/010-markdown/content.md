@@ -80,6 +80,8 @@ construct when you want its managed files, responsive layout or site styling.
 HTML markup does not automatically receive those features. Check custom HTML
 in the built page, including on narrow screens and without JavaScript; Norna
 does not define a support contract for arbitrary elements, classes or scripts.
+A build can publish scripts written in `content.md`, so review contributed
+HTML before publishing it.
 
 ## Markdown images
 
