@@ -40,3 +40,7 @@ Keep competitor sources read-only; do not execute or build their projects.
 
 No further detectors, corpus-wide reporting, or conversion work is authorized
 by this deferred item.
+
+[BL-164 Migration-Friendly Authoring Syntax](BL-164-migration-friendly-authoring-syntax.md)
+is a separately requested, bounded investigation of Norna's own source syntax.
+It does not resume this migration assistant or its archived workflow.

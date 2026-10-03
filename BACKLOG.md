@@ -55,6 +55,10 @@ not block `Now` or `Next`.
   **In progress: experimental VSIX evaluation.** Continue everyday editing with
   identifiable manual updates and regression tests for reported failures;
   Marketplace publication requires a later explicit decision.
+- ★ [`BL-027` Editor Link Diagnostics](docs/design/backlog/BL-027-editor-link-diagnostics.md):
+  **Prioritized; ready after `BL-030` Production-ready IntelliSense.** Show
+  broken internal destinations and Go to Definition in the VS Code extension
+  once the editor's distribution and cache boundaries are stable.
 
 ## Later
 
@@ -80,10 +84,6 @@ work above unless a concrete defect raises their urgency.
   [evidence and isolated-build workaround](docs/design/vscode-authoring-review/README.md).
   Resolve this identity conflict and verify page rendering during build/dev
   coexistence as part of the recovery work.
-- [`BL-027` Editor link diagnostics](docs/design/backlog/BL-027-editor-link-diagnostics.md):
-  **Ready after `BL-030` Production-ready IntelliSense.** Connect the editor to
-  the shared site link graph only after its distribution, versioning, cache,
-  and test boundaries are stable.
 
 ## Documentation Follow-ups
 
@@ -103,6 +103,10 @@ These items have no approved implementation position yet. Move one into `Now`,
 
 ### Prioritized Design Work
 
+These owner-selected items are ordered for design discussion, not yet for
+implementation. `Now` and `Next` remain empty until their open decisions are
+settled.
+
 - ★ [`BL-159` Managed Local Markdown Images](docs/design/backlog/BL-159-managed-local-markdown-images.md):
   **Needs decision; highest-priority design discussion.** Give local Markdown
   images the same management as `image-stack`, settling HTML placement,
@@ -112,6 +116,21 @@ These items have no approved implementation position yet. Move one into `Now`,
   **Needs evidence and decision; follows BL-159 in discussion order.** Review
   existing Markdown attachment links, identify any missing reference forms
   and clarify management and open/download behavior for beginners.
+- ★ [`BL-050` Source-Backed Code Excerpts](docs/design/backlog/BL-050-source-backed-code.md):
+  **Needs design.** Include checked source-file regions in documentation
+  without maintaining copied code, after settling path and sensitive-file rules.
+- ★ [`BL-165` Current Search In Local Preview](docs/design/backlog/BL-165-current-search-in-local-preview.md):
+  **Needs design.** Refresh local search after content changes without a
+  separate build or stale destinations.
+- ★ [`BL-051` Technical Diagram Sources](docs/design/backlog/BL-051-technical-diagram-sources.md):
+  **Needs implementation design.** Render Mermaid fences with accessible,
+  responsive output and Light/Dark behavior comparable to documentation peers.
+- ★ [`BL-053` Accessible Mathematics](docs/design/backlog/BL-053-accessible-mathematics.md):
+  **Needs implementation design.** Render LaTeX-style inline and display
+  mathematics with accessible, readable output.
+- ★ [`BL-164` Migration-Friendly Authoring Syntax](docs/design/backlog/BL-164-migration-friendly-authoring-syntax.md):
+  **Needs evidence and decision.** Test whether a small syntax change or
+  shorthand would materially reduce migration work across source systems.
 
 ### HTML Publication Boundary
 
@@ -160,23 +179,6 @@ is now part of BL-154 VS Code Site Tree Context Actions, not a separate queue it
 - [`BL-132` VS Code Site Authoring Continuation](docs/design/backlog/BL-132-vscode-site-authoring-continuation.md):
   **Needs design after `BL-131` VS Code Site Tree.** Scope later structural and
   link-authoring work independently of the files-and-images track above.
-- [`BL-100` Future Versioning Foundation](docs/design/backlog/BL-100-future-versioning-foundation.md):
-  **Needs design.** Establish version identity, lifecycle boundaries and the
-  language interaction before versioned documentation can become ready.
-- [`BL-101` Deprecation Status](docs/design/backlog/BL-101-deprecation-status.md):
-  **Needs design after `BL-100` Future Versioning Foundation.** Define
-  page-level deprecation metadata with replacement and version context; this is
-  an intentionally incomplete design item, not an implementation-ready
-  specification.
-- [`BL-050` Source-backed code excerpts](docs/design/backlog/BL-050-source-backed-code.md):
-  **Needs design.** Establish path, package, watch, and sensitive-file
-  boundaries before source files can be included in documentation.
-- [`BL-051` Technical diagram sources](docs/design/backlog/BL-051-technical-diagram-sources.md):
-  **Needs evidence.** Retain managed SVG as the migration path until maintained
-  Norna sites demonstrate a recurring need for build-time diagram rendering.
-- [`BL-053` Accessible mathematics](docs/design/backlog/BL-053-accessible-mathematics.md):
-  **Needs evidence and syntax review.** Keep static conversion as the migration
-  path until scientific or mathematical Norna sites justify native rendering.
 - `BL-018` **Needs evidence.** Extend cross-page sync to whole-section metadata
   or additional assets only when a real section-bound resource exists; retain
   unambiguous discovery and never guess.
@@ -219,10 +221,16 @@ that the expanded audience is worth the permanent complexity.
   explicit fallback behavior.
 - `BL-024` **Deferred.** Collections, taxonomies, pagination, and feeds, which
   together require recurring-content identity and a generated-page model.
+- [`BL-100` Future Versioning Foundation](docs/design/backlog/BL-100-future-versioning-foundation.md):
+  **Deferred with versioned documentation.** Settle version identity and
+  lifecycle boundaries only when this product area is resumed.
 - [`BL-025` Versioned Documentation](docs/design/backlog/BL-025-versioned-documentation.md):
-  **Deferred; needs design after `BL-100` Future Versioning Foundation.**
+  **Deferred by owner on 2026-10-03; needs design after `BL-100`.**
   Publish a small set of materially different documentation trees with
   version-local navigation, search, and explicit version-switch fallback.
+- [`BL-101` Deprecation Status](docs/design/backlog/BL-101-deprecation-status.md):
+  **Deferred with `BL-100` and `BL-025`.** Define page-level deprecation
+  metadata only after the version context has been designed.
 - `BL-026` **Deferred.** A general template, component, or plugin API; prefer
   narrow engine-owned constructs and a general-purpose generator when a
   project requires implementation freedom.

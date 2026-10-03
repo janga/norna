@@ -1,5 +1,9 @@
 # BL-050: Source-Backed Code Excerpts
 
+**Status: Prioritized by the owner on 2026-10-03; needs design before
+implementation.** Versioned documentation remains deferred, so excerpts must
+work in ordinary single-version sites without depending on that model.
+
 ## Outcome
 
 Developer documentation can display a selected file or named source region

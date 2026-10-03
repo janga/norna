@@ -1,5 +1,9 @@
 # BL-027: Editor Link Diagnostics
 
+**Priority update, 2026-10-03:** The owner selected this for prioritized
+documentation work. Its existing dependency on BL-030 Production-ready
+IntelliSense still applies; the priority does not make it ready to start now.
+
 ## Outcome
 
 The experimental VS Code integration reports internal link problems and can
