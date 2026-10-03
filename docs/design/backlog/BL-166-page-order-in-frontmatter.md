@@ -7,10 +7,10 @@ names. Store sibling order in each page's frontmatter, with predictable
 placement in both the CLI and VS Code and advance notice when placement
 requires updating several pages.
 
-**Status: Needs decision; highest-priority design discussion.** Created at the
-owner's request on 2026-10-03, ahead of BL-159. Frontmatter is the working
-direction; the exact field and ordering rules below still need agreement.
-This record does not start implementation.
+**Status: In progress; implementation approved on 2026-10-03.** The owner
+approved optional order, warnings for duplicates and confirmation before
+renumbering, and delegated the remaining technical choices. Implement before
+returning to BL-159.
 
 Today, directories such as `010-guides` carry both order and slug. Norna omits
 the numeric prefix from the public URL, but reordering can rename source
@@ -50,11 +50,11 @@ Independent URL hierarchy remains separate work under
   source-layout changes. Include adapting repository sites, starters and
   fixtures; do not build a general migrator or permanent dual-format support.
 
-## Preliminary Proposals
+## Implementation Contract
 
 ### Order And Source Paths
 
-Use a field such as:
+Use this optional field:
 
 ```yaml
 navigation:
@@ -62,8 +62,8 @@ navigation:
 ```
 
 A page could then live at `root/pages/guides/pages/install/content.md`.
-Choose positive integers with gaps, initially for example 1000, 2000 and
-3000. These names and values illustrate the proposal, not current syntax.
+Use positive safe integers with gaps, normally 1000, 2000 and 3000.
+This contract describes the implementation being developed.
 
 - Treat order as local to one sibling group, including unlisted pages. The
   homepage has no sibling order.
@@ -74,8 +74,8 @@ Choose positive integers with gaps, initially for example 1000, 2000 and
   own order values when their parent moves.
 - Warn about duplicate values and use slug as a deterministic tie-breaker.
   Put pages without an order after explicitly ordered pages, sorted by slug.
-  Avoid dates as a hidden sorting rule. Diagnostic severity and whether order
-  may be omitted remain open questions.
+  The owner approved optional order and warnings on 2026-10-03. Dates never
+  affect ordering. CLI/editor placement assigns order automatically.
 - Keep build and preview read-only with respect to authored order. Renumber
   only as part of an explicit authoring operation.
 
@@ -98,7 +98,7 @@ from the new or moved page itself. Cancellation leaves source files unchanged.
 After applying the operation, summarize the extra files changed. Preserve
 unrelated frontmatter, comments and page content when editing order values.
 
-Proposed CLI forms, subject to the command compatibility decision:
+CLI placement forms:
 
 ```sh
 norna page:add "Installation" --after /guides/overview/
@@ -115,7 +115,7 @@ independent of deployment prefixes and physical directory names.
 `--dry-run` should show the complete plan, including renumbering. Interactive
 CLI use should request confirmation when extra existing pages need new order
 values. Unattended use should require an explicit allowance for those changes;
-the flag name remains to be chosen. Do not add a second editor confirmation
+use `--allow-renumber` for this explicit allowance. Do not add a second editor confirmation
 solely for renumbering.
 
 ### Conversion Of Existing Sites
@@ -145,18 +145,18 @@ part of the public slug; a legitimate numeric slug must remain distinguishable.
 Do not infer format independently for each directory or silently convert it
 during build, preview or a page move.
 
-## Open Questions
+## Technical Choices
 
-1. Confirm the field name, integer range, initial spacing and renumbering
-   algorithm. Is `navigation.order` the right public name?
-2. May authors omit order? Confirm duplicate warning versus error and the
-   proposed deterministic fallback rules.
-3. Choose the smallest explicit format/version boundary that distinguishes
-   converted sites from former numbered directories, and gate editor actions
-   by the selected engine's capabilities.
-4. Settle placement flags, compatibility with existing `--order`/move options
-   and the explicit CLI allowance for renumbering. Define the final editor
-   confirmation presentation and dirty-file handling for sibling edits.
+- `navigation.order` is an optional positive safe integer. Missing values sort
+  last; ties sort by slug. Renumber with spacing 1000 when a gap is exhausted.
+- Mark the new source format with `sourceFormat: 2` in site settings. Diagnose
+  an unconverted site before interpreting its directory names as slugs.
+- Retain explicit `--order` for authors choosing a value. Reject combining it
+  with relative placement flags. Keep the existing URL-to-URL move form and
+  add placement selectors. Require `--allow-renumber` in unattended commands
+  that change other pages' order values.
+- Preserve the existing dirty-file guards. Show sibling edits in the normal
+  creation/move confirmation, with paths and old/new values.
 
 ## Dependencies
 
@@ -171,9 +171,8 @@ syntax in [BL-142 Page-local Files And Explicit Sharing](BL-142-page-local-files
 follows this item in discussion order; its page-local image processing does
 not require completing this implementation.
 
-## Ready For Implementation When
+## Acceptance Criteria
 
-- The four open decisions have an agreed, bounded implementation brief.
 - One ordering contract covers engine structure, rendered navigation and Site
   Tree, including missing/duplicate values and all placement choices.
 - The focused check plan covers normal insertion, exhausted gaps, sibling reorder,
@@ -186,8 +185,7 @@ not require completing this implementation.
 
 ## Rough Implementation Size
 
-Allow roughly **6–10 focused development days** for the scope above, after the
-open choices are settled. This is an engineering estimate, not a delivery
+Allow roughly **6–10 focused development days** for the scope above, for the approved contract. This is an engineering estimate, not a delivery
 date; it excludes waiting for owner interface review and converting an
 unknown number of external sites.
 
