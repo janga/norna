@@ -1,3 +1,5 @@
+import { comparePageOrder, parsePageOrder, planPageOrder, describeRenumbering } from './page-order.mjs';
+import { setPageOrder } from './page-order-source.mjs';
 import { attachmentPathname, encodeAttachmentPath, localAttachmentName } from './page-attachments.mjs';
 import { access, constants, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
@@ -38,15 +40,6 @@ const replacePagePathPrefix = (pagePath, fromPagePath, toPagePath) => {
 const replaceFilePathPrefix = (filePath, fromDirectory, toDirectory) => (
 	path.join(toDirectory, path.relative(fromDirectory, filePath))
 );
-
-const getNextOrder = (siblings) => {
-	const highestOrder = siblings.reduce((highest, node) => Math.max(highest, node.pageOrder), 0);
-	const nextOrder = Math.floor(highestOrder / 10) * 10 + 10;
-	if (nextOrder > 999) {
-		throw new Error('No automatic page order remains below 1000. Reorder the destination siblings or pass --order.');
-	}
-	return nextOrder;
-};
 
 const getTargetSuffix = (target) => {
 	const queryIndex = target.indexOf('?');
@@ -366,6 +359,7 @@ export const createPageMovePlan = async ({
 	graph,
 	generatedRoutes,
 	order = null,
+	siblingOrderChanges = [],
 	preserveAliases = true,
 	publicFiles,
 	sitePagesDir,
@@ -411,6 +405,7 @@ export const createPageMovePlan = async ({
 	let destinationCollectionDirectory = null;
 	let destinationCollectionExists = true;
 	let virtualNodes = siteStructure.nodes;
+	let orderChanges = siblingOrderChanges;
 
 	if (mode === 'move') {
 		const destinationParentPath = getParentPagePath(destination.pagePath);
@@ -425,22 +420,23 @@ export const createPageMovePlan = async ({
 		}
 
 		const destinationSiblings = siteStructure.nodes.filter((node) => (
-			node.parentPagePath === destinationParentPath
+			!node.isHome && node.parentPagePath === destinationParentPath
 			&& !isPathInSubtree(node.pagePath, source.pagePath)
 		));
 		const sameParent = sourceNode.parentPagePath === destinationParentPath;
-		destinationOrder = order ?? (sameParent ? sourceNode.pageOrder : getNextOrder(destinationSiblings));
-		if (destinationSiblings.some((node) => node.pageOrder === destinationOrder)) {
-			throw new Error(`Destination order ${String(destinationOrder).padStart(3, '0')} is already used below ${destinationParentPath ? `/${destinationParentPath}/` : '/'}.`);
+		if (order !== null) destinationOrder = parsePageOrder(order, '--order');
+		else if (!sameParent) {
+			const insertion = planPageOrder(destinationSiblings.sort(comparePageOrder), destinationSiblings.length);
+			destinationOrder = insertion.order;
+			orderChanges = insertion.orderChanges;
 		}
-
 		const destinationSlug = destination.pagePath.split('/').at(-1);
 		destinationCollectionDirectory = destinationParent
 			? path.join(destinationParent.nodeDir, 'pages')
 			: sitePagesDir;
 		destinationDirectory = path.join(
 			destinationCollectionDirectory,
-			`${String(destinationOrder).padStart(3, '0')}-${destinationSlug}`,
+			destinationSlug,
 		);
 		if (await exists(destinationDirectory)) {
 			throw new Error(`Destination directory ${destinationDirectory} already exists.`);
@@ -542,6 +538,11 @@ export const createPageMovePlan = async ({
 			}
 		}
 
+		const siblingChange = orderChanges.find(change => change.node.contentPath === contentPath);
+		if (siblingChange) updatedSource = setPageOrder(updatedSource, siblingChange.newOrder, contentPath);
+		if (mode === 'move' && contentPath === activeRoot.contentPath && destinationOrder !== activeRoot.pageOrder) {
+			updatedSource = setPageOrder(updatedSource, destinationOrder, contentPath);
+		}
 		updatedSources.set(contentPath, updatedSource);
 		if (updatedSource !== page.document.fullSource) {
 			const fileStat = await stat(contentPath);
@@ -614,6 +615,8 @@ export const createPageMovePlan = async ({
 
 	return {
 		aliasChanges,
+		generatedRoutes,
+		orderChanges,
 		destinationCollectionDirectory,
 		destinationCollectionExists,
 		destinationDirectory,
@@ -648,6 +651,7 @@ export const formatPageMovePlan = (plan, displayPath) => {
 	for (const change of plan.linkChanges) {
 		lines.push(`- ${change.contentLabel} line ${change.line}: ${change.from} -> ${change.to}`);
 	}
+	if (plan.orderChanges?.length) lines.push('', describeRenumbering(plan.orderChanges, displayPath));
 	lines.push('', 'Aliases:');
 	if (!plan.preserveAliases) lines.push('- skipped by --no-aliases');
 	else if (plan.aliasChanges.length === 0) lines.push('- none needed');

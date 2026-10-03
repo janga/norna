@@ -1,6 +1,0 @@
----
-page:
-  listChildren: true
----
-
-# Reference

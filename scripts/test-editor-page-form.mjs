@@ -7,7 +7,7 @@ const root = await mkdtemp(path.join(os.tmpdir(), 'norna-page-form-'));
 const write = async (file, text) => { await mkdir(path.dirname(path.join(root,file)), {recursive:true}); await writeFile(path.join(root,file),text); };
 try {
  await write('root/content.md','# Home\n');
- await write('site-config/settings.yaml','url: https://example.com/\n');
+ await write('site-config/settings.yaml','sourceFormat: 2\nurl: https://example.com/\n');
  const options={siteRoot:root,kind:'page',title:'Install Norna',slug:'install',metadata:{page:{description:'Start here',aliases:['/old-install/','/setup/'],listChildren:true},navigation:{listed:false}}};
  const plan=await planSiteNodeCreation(options);
  assert.deepEqual((await readdir(root)).sort(),['root','site-config'],'Preview must not create files');
@@ -23,11 +23,11 @@ try {
  await write('public/legacy/index.html','Static');
  await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['/legacy/']}}}),/conflicts/);
  const empty=await planSiteNodeCreation({...options,slug:'empty',metadata:{}});
- const emptyResult=await createSiteNode(empty); assert.match(await readFile(emptyResult.sourcePath,'utf8'),/^# Install Norna/);
+ const emptyResult=await createSiteNode(empty); assert.match(await readFile(emptyResult.sourcePath,'utf8'),/# Install Norna/);
  const pending=await planSiteNodeCreation({...options,slug:'pending',metadata:{page:{aliases:['/new-alias/']}}});
- await write('root/pages/035-another/content.md','---\npage:\n  aliases:\n    - /new-alias/\n---\n# Another\n');
+ await write('root/pages/another/content.md','---\npage:\n  aliases:\n    - /new-alias/\n---\n# Another\n');
  await assert.rejects(createSiteNode(pending),/conflicts/);
  const overview=await planSiteNodeCreation({siteRoot:root,kind:'page',title:'Guides',slug:'guides',metadata:{page:{listChildren:true,description:'Useful guides'}}});
- const overviewResult=await createSiteNode(overview); assert.match(await readFile(overviewResult.sourcePath,'utf8'),/listChildren: true/);
+ const overviewResult=await createSiteNode(overview, { allowRenumber: true }); assert.match(await readFile(overviewResult.sourcePath,'utf8'),/listChildren: true/);
  console.log('Page form creation passed: metadata, aliases, conflicts, previews and stale plans.');
 } finally { await rm(root,{recursive:true,force:true}); }

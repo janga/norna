@@ -1,3 +1,4 @@
+import { assertSiteSourceFormat } from './site-source-format.mjs';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -34,6 +35,7 @@ const readSiteConfig = async () => {
 		throw error;
 	});
 
+	await assertSiteSourceFormat(siteDir);
 	return parseYamlConfig(source, siteConfigLabel, {
 		validateStructure: validateConfigYamlStructure,
 	});

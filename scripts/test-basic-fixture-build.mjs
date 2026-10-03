@@ -13,14 +13,14 @@ const fixtureCopyRoot = path.join(tempRoot, 'basic');
 const siteDir = path.join(fixtureCopyRoot, 'site-page-010-fixture');
 const cliPath = path.join(repoRoot, 'bin', 'norna.mjs');
 const pages = [
-	['010-page-move', 'page-move', 'Page move'],
-	['010-page-move/pages/010-child', 'page-move/child', 'Child below page move'],
-	['010-page-move/pages/020-page-copy', 'page-move/page-copy', 'Page copy'],
-	['020-guides', 'guides', 'Guides'],
-	['020-guides/pages/010-page-move', 'guides/page-move', 'Nested page move'],
-	['030-page-040-other', 'page-040-other', 'Numeric page marker'],
-	['040-page-000-home', 'page-000-home', 'Page named like Home'],
-	['050-page-guides/pages/010-installation', 'page-guides/installation', 'Installation below an overview'],
+	['page-move', 'page-move', 'Page move'],
+	['page-move/pages/child', 'page-move/child', 'Child below page move'],
+	['page-move/pages/page-copy', 'page-move/page-copy', 'Page copy'],
+	['guides', 'guides', 'Guides'],
+	['guides/pages/page-move', 'guides/page-move', 'Nested page move'],
+	['page-040-other', 'page-040-other', 'Numeric page marker'],
+	['page-000-home', 'page-000-home', 'Page named like Home'],
+	['page-guides/pages/installation', 'page-guides/installation', 'Installation below an overview'],
 ];
 
 try {
@@ -31,7 +31,7 @@ try {
 		await mkdir(pageDir, { recursive: true });
 		await writeFile(path.join(pageDir, 'content.md'), `---\npage:\n  description: Regression fixture for ${title.toLowerCase()}.\n---\n\n# ${title}\n`);
 	}
-	await writeFile(path.join(siteDir, 'root/pages', '050-page-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Page guides\n\n## Before the list\n\nAuthor guidance comes first.\n');
+	await writeFile(path.join(siteDir, 'root/pages', 'page-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Page guides\n\n## Before the list\n\nAuthor guidance comes first.\n');
 
 	for (const siteArgument of [siteDir, path.relative(fixtureCopyRoot, siteDir)]) {
 		await runInherit(process.execPath, [cliPath, '--site-dir', siteArgument, 'content:check'], { cwd: fixtureCopyRoot });

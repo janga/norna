@@ -22,7 +22,7 @@ Open the address printed by the development server. Stop it later with
   project summary,
   links, install command, example usage, benefits, next steps, Norna blocks,
   and license.
-- `site/root/pages/010-guide/content.md`: short secondary page with realistic
+- `site/root/pages/guide/content.md`: short secondary page with realistic
   project guide content.
 - `site/public/robots.txt`: static public file copied into the built site.
 
@@ -34,7 +34,7 @@ GitHub Pages workflow uses `npm ci`.
 
 1. Replace the project name, tagline, links, install command, example usage,
    benefits, use cases, and license in `site/root/content.md`.
-2. Replace the guide examples in `site/root/pages/010-guide/content.md`, or
+2. Replace the guide examples in `site/root/pages/guide/content.md`, or
    delete the page if the homepage is enough.
 3. Edit `site/site-config/shared-content.yaml` for logo display settings,
    banners, and footer.

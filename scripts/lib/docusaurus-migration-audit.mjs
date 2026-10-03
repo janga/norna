@@ -560,12 +560,12 @@ const renderReportHome = (report) => {
 		+ (problemRows || '| None | No findings | 0 | copy |') + '\n';
 };
 
-const renderProblemPage = (report, problem) => {
+const renderProblemPage = (report, problem, order) => {
 	const rows = problem.sample.map((occurrence) => {
 		const link = sourceLink(report, occurrence);
 		return '| ' + occurrence.pageTitle.replaceAll('|', '\\|') + ' | ' + codeMark + occurrence.sourceFile + codeMark + ' | ' + occurrence.line + ' | ' + (link ? '[Open source](' + link + ')' : 'Unavailable') + ' |';
 	}).join('\n');
-	return '---\npage:\n  description: ' + problemDescription(problem) + '.\n---\n\n'
+	return '---\nnavigation:\n  order: ' + order + '\npage:\n  description: ' + problemDescription(problem) + '.\n---\n\n'
 		+ '# ' + problem.id + '\n\n'
 		+ problem.message + '\n\n'
 		+ 'Classification: **' + problem.classification + '**. Occurrences: **' + problem.occurrences + '**.\n\n'
@@ -588,17 +588,17 @@ export const writeMigrationReport = async (report, reportDir, { sourceRoot = nul
 	const source = getSiteSourcePaths(resolvedReportDir);
 	await mkdir(source.pages, { recursive: true });
 	await mkdir(path.join(resolvedReportDir, 'site-config'), { recursive: true });
-	await writeFile(path.join(resolvedReportDir, 'site-config/settings.yaml'), 'url: https://example.invalid/\n');
+	await writeFile(path.join(resolvedReportDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.invalid/\n');
 	await writeFile(path.join(resolvedReportDir, 'root', 'tree-theme.yaml'), 'preset: documentation\n');
 	await writeFile(source.content, renderReportHome(report));
 	if (report.problemTypes.length > 0) {
-		const categoryDir = path.join(source.pages, '010-problems');
+		const categoryDir = path.join(source.pages, 'problems');
 		await mkdir(path.join(categoryDir, 'pages'), { recursive: true });
-		await writeFile(path.join(categoryDir, 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Problems\n');
+		await writeFile(path.join(categoryDir, 'content.md'), '---\nnavigation:\n  order: 1000\npage:\n  listChildren: true\n---\n\n# Problems\n');
 		for (const [index, problem] of report.problemTypes.entries()) {
-			const pageDir = path.join(categoryDir, 'pages', String((index + 1) * 10).padStart(3, '0') + '-' + problemPageId(problem));
+			const pageDir = path.join(categoryDir, 'pages', problemPageId(problem));
 			await mkdir(pageDir, { recursive: true });
-			await writeFile(path.join(pageDir, 'content.md'), renderProblemPage(report, problem));
+			await writeFile(path.join(pageDir, 'content.md'), renderProblemPage(report, problem, (index + 1) * 1000));
 		}
 	}
 	await writeFile(path.join(resolvedReportDir, 'migration-report.json'), JSON.stringify(report, null, 2) + '\n');

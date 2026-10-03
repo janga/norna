@@ -42,18 +42,18 @@ const home = pageNode({
 	pagePath: '',
 });
 const guides = categoryNode({
-	directory: '010-guides',
-	label: 'site/root/pages/010-guides/category.yaml',
+	directory: 'guides',
+	label: 'site/root/pages/guides/category.yaml',
 	pagePath: 'guides',
 });
 const installation = pageNode({
-	directory: '010-guides/pages/010-installation',
-	label: 'site/root/pages/010-guides/pages/010-installation/content.md',
+	directory: 'guides/pages/installation',
+	label: 'site/root/pages/guides/pages/installation/content.md',
 	pagePath: 'guides/installation',
 });
 const workflows = pageNode({
-	directory: '010-guides/pages/020-workflows',
-	label: 'site/root/pages/010-guides/pages/020-workflows/content.md',
+	directory: 'guides/pages/workflows',
+	label: 'site/root/pages/guides/pages/workflows/content.md',
 	pagePath: 'guides/workflows',
 });
 
@@ -210,7 +210,7 @@ const brokenSource = `# Broken links
 [Missing page](/missing/)
 [Missing anchor](/guides/installation/#absent)
 [Category](/guides/)
-[Missing public file](/downloads/missing.pdf)
+[Missing public file](/files/missing.pdf)
 [Invalid encoding](/broken%ZZ/)
 `;
 const brokenDocument = await parsePageMarkdownSource(brokenSource, { label: home.contentLabel });
@@ -236,8 +236,8 @@ assert.deepEqual(brokenGraph.diagnostics.map(({ code }) => code), [
 assert.equal(brokenGraph.referencesByTarget.get('/missing/')?.length, 1);
 assert.equal(brokenGraph.referencesByTarget.get('/guides/')[0].resolution.kind, 'category');
 
-const subcategory = categoryNode({ directory: '010-guides/pages/010-setup', pagePath: 'guides/setup', label: 'setup/category.yaml' });
-const nestedPage = pageNode({ directory: '010-guides/pages/010-setup/pages/010-install', pagePath: 'guides/setup/install', label: 'install/content.md' });
+const subcategory = categoryNode({ directory: 'guides/pages/setup', pagePath: 'guides/setup', label: 'setup/category.yaml' });
+const nestedPage = pageNode({ directory: 'guides/pages/setup/pages/install', pagePath: 'guides/setup/install', label: 'install/content.md' });
 const categoryModel = createCategoryDestinationModel([home, guides, subcategory, nestedPage, workflows]);
 assert.deepEqual(categoryModel.diagnostics, []);
 assert.equal(categoryModel.byPathname.get('/guides/').kind, 'listing');
@@ -306,12 +306,12 @@ const writeFixtureFile = async (root, relativePath, contents) => {
 
 const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-site-links-'));
 try {
-	await writeFixtureFile(tempRoot, 'site/site-config/settings.yaml', 'url: https://example.com/docs/\n');
+	await writeFixtureFile(tempRoot, 'site/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/docs/\n');
 	await writeFixtureFile(tempRoot, 'site/root/tree-theme.yaml', 'preset: documentation\n');
 	await writeFixtureFile(tempRoot, 'site/root/content.md', brokenSource);
-	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
-	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/pages/010-installation/content.md', installationSource);
-	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/pages/020-workflows/content.md', workflowsSource);
+	await writeFixtureFile(tempRoot, 'site/root/pages/guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
+	await writeFixtureFile(tempRoot, 'site/root/pages/guides/pages/installation/content.md', installationSource);
+	await writeFixtureFile(tempRoot, 'site/root/pages/guides/pages/workflows/content.md', workflowsSource);
 
 	const result = spawnSync(process.execPath, [contentScript, '--check'], {
 		cwd: tempRoot,

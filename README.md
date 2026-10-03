@@ -60,21 +60,24 @@ site/
     |-- page-theme.yaml  # Optional homepage-only overrides
     |-- images/
     `-- pages/
-        `-- 010-guide/
+        `-- guide/
             |-- content.md
             |-- tree-theme.yaml   # Optional inherited branch overrides
             |-- images/
             `-- pages/
-                `-- 010-install/content.md
+                `-- install/content.md
 ```
 
 - `root/content.md` is the required homepage at `/`; `root/pages/` contains its
   children. The site container holds shared configuration and public files
   beside this root page. `root/` never becomes a URL segment.
-- Every ordered directory under `pages/` contains `content.md` for a routable
+- Every page directory under `pages/` contains `content.md` for a routable
   page. A parent can append a generated list of its direct child pages with
   `page.listChildren: true`; see
   [Child-page lists](https://janga.github.io/norna/reference/site/pages/#list-child-pages).
+- Page directories use their URL slug. Set optional `navigation.order` in each
+  page’s frontmatter to order siblings; reordering keeps their paths unchanged.
+  New sites declare `sourceFormat: 2` in `site-config/settings.yaml`.
 - A page may contain local images, visual settings and nested
   entries under its own `pages/` directory.
 - `root/tree-theme.yaml` selects shared visual defaults. Optional `page-theme.yaml`
@@ -161,7 +164,7 @@ Engine contributors should start with
 [Engine Development](docs/engine-development.md). Planning and future work are
 tracked in [BACKLOG.md](BACKLOG.md).
 
-The user reference is authored once under `site/root/pages/032-reference/` and
+The user reference is authored once under `site/root/pages/reference/` and
 rendered on the documentation site. It describes current development; use the
 installed release's Git tag when checking older behavior. Tags through 0.7.26
 keep their reference under `docs/`; later tags use the documentation page tree.

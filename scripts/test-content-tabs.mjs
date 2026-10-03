@@ -79,9 +79,9 @@ for (const [name, body, message] of [
 	['nested in container', `::: warning\n\n${tabs()}\n\n:::`, /outside other containers/],
 	['extra closing marker', `${tabs()}\n::::`, /no open tab group/],
 ]) test(`tabs reject ${name} with source context`, () => {
-	const errors = parseContentTabs(page(body), { label: 'site/root/pages/010-install/content.md', lineOffset: 4 }).diagnostics;
+	const errors = parseContentTabs(page(body), { label: 'site/root/pages/install/content.md', lineOffset: 4 }).diagnostics;
 	assert.ok(errors.some((e) => message.test(e.message)), JSON.stringify(errors));
-	assert.ok(errors.every((e) => e.message.includes('site/root/pages/010-install/content.md') && e.message.includes('section "Install"')));
+	assert.ok(errors.every((e) => e.message.includes('site/root/pages/install/content.md') && e.message.includes('section "Install"')));
 	assert.throws(() => prepareContentTabs(page(body)), /./);
 });
 
@@ -96,9 +96,9 @@ test('tabs build with assets, index every alternative, and report invalid conten
 	try {
 		await cp(path.resolve('fixtures/content-tabs/site'), siteDir, { recursive: true, filter: (source) => !source.split(path.sep).includes('.norna') });
 		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/docs/\nsearch: true\n');
-		await mkdir(path.join(siteDir, 'root/pages', '010-plain'), { recursive: true });
-		await writeFile(path.join(siteDir, 'root/pages', '010-plain', 'content.md'), '# Plain page\n\nOrdinary prose.\n');
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/docs/\nsearch: true\n');
+		await mkdir(path.join(siteDir, 'root/pages', 'plain'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/pages', 'plain', 'content.md'), '# Plain page\n\nOrdinary prose.\n');
 		await runContentScript(siteDir, ['--check']);
 		await runNorna(['build'], { cwd: root, env: { ...process.env, NORNA_SITE_DIR: siteDir } });
 		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');

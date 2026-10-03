@@ -7,10 +7,10 @@ import { readSiteFileTree, planEditorRemoval } from './lib/editor-site-tree.mjs'
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'norna-editor-theme-help-'));
 const siteRoot = path.join(temporary, 'site');
 const rootTheme = path.join(siteRoot, 'root/tree-theme.yaml');
-const inherited = 'root/pages/010-inherited';
-const replacement = 'root/pages/020-replacement';
-const pageOnly = 'root/pages/030-page-only';
-const samePreset = 'root/pages/040-same-preset';
+const inherited = 'root/pages/inherited';
+const replacement = 'root/pages/replacement';
+const pageOnly = 'root/pages/page-only';
+const samePreset = 'root/pages/same-preset';
 const find = (tree, relative) => tree.items.find((item) => item.sourcePath === path.join(siteRoot, relative));
 const removal = (relative, sources) => planEditorRemoval({ siteRoot, filePath: path.join(siteRoot, relative),
 	sourcePath: path.join(siteRoot, path.dirname(relative), 'content.md'), sources });
@@ -20,11 +20,11 @@ try {
 	assert.match(find(tree, 'root/tree-theme.yaml').themeHelp, /Preset: project\nPreset source: root\/tree-theme.yaml\nRequired base/);
 	assert.equal(find(tree, 'root/tree-theme.yaml').removable, false);
 	assert.match(find(tree, `${inherited}/tree-theme.yaml`).themeHelp, /Preset: project\nPreset source: root\/tree-theme.yaml\nModifies inherited/);
-	assert.equal(find(tree, `${inherited}/content.md`).themeHelp, find(tree, `${inherited}/pages/010-child/content.md`).themeHelp);
-	assert.match(find(tree, `${replacement}/tree-theme.yaml`).themeHelp, /Preset: documentation\nPreset source: root\/pages\/020-replacement\/tree-theme.yaml\nReplaces inherited/);
-	assert.match(find(tree, `${samePreset}/tree-theme.yaml`).themeHelp, /Preset: project\nPreset source: root\/pages\/040-same-preset\/tree-theme.yaml\nReplaces inherited/);
+	assert.equal(find(tree, `${inherited}/content.md`).themeHelp, find(tree, `${inherited}/pages/child/content.md`).themeHelp);
+	assert.match(find(tree, `${replacement}/tree-theme.yaml`).themeHelp, /Preset: documentation\nPreset source: root\/pages\/replacement\/tree-theme.yaml\nReplaces inherited/);
+	assert.match(find(tree, `${samePreset}/tree-theme.yaml`).themeHelp, /Preset: project\nPreset source: root\/pages\/same-preset\/tree-theme.yaml\nReplaces inherited/);
 	assert.match(find(tree, `${pageOnly}/content.md`).themeHelp, /Preset: statement\nPreset source: .*page-theme.yaml/);
-	assert.match(find(tree, `${pageOnly}/pages/010-child/content.md`).themeHelp, /Preset: project\nPreset source: root\/tree-theme.yaml$/);
+	assert.match(find(tree, `${pageOnly}/pages/child/content.md`).themeHelp, /Preset: project\nPreset source: root\/tree-theme.yaml$/);
 
 	const source = await readFile(rootTheme, 'utf8');
 	const dirty = new Map([[rootTheme, source.replace('preset: project', 'preset: documentation')]]);
@@ -42,7 +42,7 @@ try {
 	assert.ok(find(tree, 'root/tree-theme.yaml').issues.length);
 	tree = await readSiteFileTree({ siteRoot, sources: new Map([[pagePath, 'preset: unknown\n']]) });
 	assert.match(find(tree, `${pageOnly}/content.md`).themeHelp, /Preset unavailable/);
-	assert.match(find(tree, `${pageOnly}/pages/010-child/content.md`).themeHelp, /Preset: project/);
+	assert.match(find(tree, `${pageOnly}/pages/child/content.md`).themeHelp, /Preset: project/);
 
 	const branchRemoval = await removal(`${replacement}/tree-theme.yaml`);
 	assert.match(branchRemoval.effect, /Overrides on descendants remain/);

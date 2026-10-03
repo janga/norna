@@ -25,7 +25,7 @@ Review material:
 
 - [Coverage inventory](../reference-inventory.md)
 - [Information structure and lookup tasks](../reference-information-structure.md)
-- [Reference source](../../../site/root/pages/032-reference/)
+- [Reference source](../../../site/root/pages/reference/)
 - [Completion plan](../reference-completion-plan.md)
 - [Verification record](../reference-pilot-verification.md)
 
@@ -49,7 +49,7 @@ text, declare tests passed, or authorize publishing.
 ### Work saved on disk
 
 The new, entirely untracked reference tree is
-`site/pages/032-reference/`. It currently contains 23 content pages and the
+`site/pages/reference/`. It currently contains 23 content pages and the
 root category plus six group categories. These are working drafts, not a
 completed migration:
 
@@ -57,8 +57,8 @@ completed migration:
 | --- | --- |
 | `010-site/` | Seven pages: files, pages/categories, URLs/links, metadata, managed images, public files/output, requirements/limits |
 | `020-configuration/` | Fourteen pages: site settings, language, navigation, search, source links, theme model, preset values, palettes, Appearance, layout, image presentation, typography, section backgrounds, shared content |
-| `030-content/` | Sidenotes only, at `pages/100-sidenotes/content.md` |
-| `040-commands/` | `page:move` only, at `pages/040-move/content.md` |
+| `030-content/` | Sidenotes only, at `pages/sidenotes/content.md` |
+| `040-commands/` | `page:move` only, at `pages/move/content.md` |
 | `050-reader/` | Category only; no pages yet |
 | `060-workflows/` | Category only; no pages yet |
 

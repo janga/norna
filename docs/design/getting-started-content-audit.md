@@ -9,7 +9,7 @@ It is an implementation record, not another user-facing introduction.
 The review covered these source groups:
 
 - `site/content.md` and the complete
-  `site/pages/020-getting-started/` documentation-site subtree;
+  `site/pages/getting-started/` documentation-site subtree;
 - the Examples, FAQ, and Resources pages where they overlap with onboarding;
 - `README.md`, `docs/README.md`, and every canonical reference linked from that
   index;

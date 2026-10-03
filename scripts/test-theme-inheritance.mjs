@@ -23,8 +23,8 @@ test('root theme and its preset are required, optional empty themes preserve inh
 	await put('tree-theme.yaml', 'palette: warm-paper\n');
 	await assert.rejects(resolve(), /preset/);
 	await put('tree-theme.yaml', 'preset: project\npalette: warm-paper\n');
-	await put('pages/010-guide/tree-theme.yaml', '# No modifications\n');
-	const result = await resolve('010-guide');
+	await put('pages/guide/tree-theme.yaml', '# No modifications\n');
+	const result = await resolve('guide');
 	assert.equal(result.selected.config.palette, 'warm-paper');
 	assert.equal(result.selected.config.preset, 'project');
 }));
@@ -32,11 +32,11 @@ test('root theme and its preset are required, optional empty themes preserve inh
 test('nested fields inherit, page themes stay local, and deletion resumes inheritance', () => fixture(async ({ siteRoot, put, resolve }) => {
 	await put('tree-theme.yaml', 'preset: project\npalette: warm-paper\nlayout:\n  textWidth: wide\n  contentSpacing: spacious\n');
 	await put('page-theme.yaml', 'preset: statement\n');
-	const parent = await put('pages/010-guide/tree-theme.yaml', 'layout:\n  textWidth: narrow\n');
-	const local = await put('pages/010-guide/page-theme.yaml', 'appearance:\n  default: dark\n');
-	const child = '010-guide/pages/020-install';
+	const parent = await put('pages/guide/tree-theme.yaml', 'layout:\n  textWidth: narrow\n');
+	const local = await put('pages/guide/page-theme.yaml', 'appearance:\n  default: dark\n');
+	const child = 'guide/pages/install';
 	await put(`pages/${child}/page-theme.yaml`, 'corners: square\n');
-	const own = await resolve('010-guide');
+	const own = await resolve('guide');
 	assert.equal(own.selected.config.appearance.default, 'dark');
 	assert.equal(own.selected.config.preset, 'project');
 	const before = await resolve(child);
@@ -52,37 +52,37 @@ test('nested fields inherit, page themes stay local, and deletion resumes inheri
 	assert.equal((await resolve(child)).selected.config.layout.textWidth, 'wide');
 	assert.equal(getSourceFileDefinition(siteRoot, path.join(siteRoot, 'root/tree-theme.yaml')).required, true);
 	assert.equal(getSourceFileDefinition(siteRoot, path.join(siteRoot, 'root/page-theme.yaml')).required, false);
-	assert.equal(getSourceFileDefinition(siteRoot, path.join(siteRoot, 'root/pages/000-home/tree-theme.yaml')), null);
+	assert.equal(getSourceFileDefinition(siteRoot, path.join(siteRoot, 'root/pages/Invalid/tree-theme.yaml')), null);
 }));
 
 test('an explicit preset resets every ancestor override, even the same preset; removing it resumes inheritance', () => fixture(async ({ put, resolve }) => {
 	await put('tree-theme.yaml', 'preset: project\npalette: warm-paper\nlayout:\n  textWidth: wide\n');
-	await put('pages/010-guide/tree-theme.yaml', 'preset: project\ncorners: square\n');
-	let theme = (await resolve('010-guide')).selected.config;
+	await put('pages/guide/tree-theme.yaml', 'preset: project\ncorners: square\n');
+	let theme = (await resolve('guide')).selected.config;
 	assert.equal(theme.palette, undefined);
 	assert.equal(resolveThemeConfig(theme).palette, 'near-monochrome');
 	assert.equal(resolveThemeConfig(theme).layout.textWidth, 'normal');
-	await put('pages/010-guide/page-theme.yaml', 'preset: documentation\n');
-	assert.equal((await resolve('010-guide')).selected.config.preset, 'documentation');
-	assert.equal((await resolve('010-guide/pages/020-child')).selected.config.preset, 'project');
-	await put('pages/010-guide/tree-theme.yaml', 'corners: square\n');
-	theme = (await resolve('010-guide/pages/020-child')).selected.config;
+	await put('pages/guide/page-theme.yaml', 'preset: documentation\n');
+	assert.equal((await resolve('guide')).selected.config.preset, 'documentation');
+	assert.equal((await resolve('guide/pages/child')).selected.config.preset, 'project');
+	await put('pages/guide/tree-theme.yaml', 'corners: square\n');
+	theme = (await resolve('guide/pages/child')).selected.config;
 	assert.equal(theme.palette, 'warm-paper');
 	assert.equal(theme.layout.textWidth, 'wide');
 }));
 
 test('resolved combinations retain image, navigation and typography contracts', () => fixture(async ({ put, resolve }) => {
 	await put('tree-theme.yaml', 'preset: portfolio\nimages:\n  maxAvailableHeightPercent: 60\n');
-	await put('pages/010-guide/tree-theme.yaml', 'images:\n  presentation: prose-aligned\n');
-	assert.equal(resolveThemeConfig((await resolve('010-guide')).selected.config).images.maxAvailableHeightPercent, undefined);
-	await put('pages/010-guide/tree-theme.yaml', 'images:\n  presentation: prose-aligned\n  maxAvailableHeightPercent: 70\n');
-	await assert.rejects(resolve('010-guide'), /cannot be used with images.presentation/);
-	await put('pages/010-guide/tree-theme.yaml', 'typography:\n  overrides:\n    headings:\n      h1:\n        size: small\n      h2:\n        size: xlarge\n');
-	await assert.rejects(resolve('010-guide'), /Typography must preserve/);
-	await put('pages/010-guide/tree-theme.yaml', 'sections:\n  backgroundPattern: alternating\n');
-	const theme = (await resolve('010-guide/pages/020-child')).selected;
+	await put('pages/guide/tree-theme.yaml', 'images:\n  presentation: prose-aligned\n');
+	assert.equal(resolveThemeConfig((await resolve('guide')).selected.config).images.maxAvailableHeightPercent, undefined);
+	await put('pages/guide/tree-theme.yaml', 'images:\n  presentation: prose-aligned\n  maxAvailableHeightPercent: 70\n');
+	await assert.rejects(resolve('guide'), /cannot be used with images.presentation/);
+	await put('pages/guide/tree-theme.yaml', 'typography:\n  overrides:\n    headings:\n      h1:\n        size: small\n      h2:\n        size: xlarge\n');
+	await assert.rejects(resolve('guide'), /Typography must preserve/);
+	await put('pages/guide/tree-theme.yaml', 'sections:\n  backgroundPattern: alternating\n');
+	const theme = (await resolve('guide/pages/child')).selected;
 	assert.throws(() => resolvePagePresentation(theme.config, theme.label, { navigationMode: 'tree' }), /cannot be used with tree navigation/);
-	await put('pages/010-guide/tree-theme.yaml', 'preset: documentation\n');
+	await put('pages/guide/tree-theme.yaml', 'preset: documentation\n');
 	assert.doesNotThrow(() => resolvePagePresentation({ preset: 'documentation' }, 'example', { navigationMode: 'tree' }));
 }));
 
@@ -142,9 +142,9 @@ test('rendered pages use their own complete theme; generated pages use the root 
 		assert.equal(pages['/page-only/'].typography.profile.value, 'statement');
 		assert.equal(pages['/page-only/child/'].typography.profile.value, 'reading');
 		assert.equal(pages['/inherited/child/'].typography.resolved.body.width.value, 'narrow');
-		assert.match(pages['/inherited/child/'].typography.resolved.body.width.source, /010-inherited\/tree-theme\.yaml$/);
+		assert.match(pages['/inherited/child/'].typography.resolved.body.width.source, /inherited\/tree-theme\.yaml$/);
 		assert.match(pages['/replacement/'].typography.fontFamily.value, /Georgia/);
-		assert.match(pages['/same-preset/'].typography.resolved.body.width.source, /preset:project.*040-same-preset\/tree-theme\.yaml/);
+		assert.match(pages['/same-preset/'].typography.resolved.body.width.source, /preset:project.*same-preset\/tree-theme\.yaml/);
 	} finally {
 		await rm(projectRoot, { recursive: true, force: true });
 	}

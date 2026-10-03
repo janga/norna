@@ -15,7 +15,7 @@ page-contents rail for deeper branches, where combining both hierarchies would
 make the page tree harder to scan.
 
 The local source review at
-`todos/page-contents-placement-study/site/pages/000-home/content.md` provides
+`todos/page-contents-placement-study/site/pages/home/content.md` provides
 the research background. The exact depth boundary remains a Norna product rule
 rather than a universal usability standard.
 

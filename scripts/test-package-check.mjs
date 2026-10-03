@@ -322,7 +322,7 @@ try {
 	const packageCheckConfig = await readFile(packageCheckConfigPath, 'utf8');
 	await writeFile(
 		packageCheckConfigPath,
-		packageCheckConfig.replace('url: https://example.com/', 'url: https://example.com/site/'),
+		packageCheckConfig.replace('sourceFormat: 2\nurl: https://example.com/', 'sourceFormat: 2\nurl: https://example.com/site/'),
 	);
 	const packageCheckSitewidePath = path.join(siteProjectRoot, 'site', 'site-config/shared-content.yaml');
 	const packageCheckSitewide = await readFile(packageCheckSitewidePath, 'utf8');
@@ -359,8 +359,8 @@ This section verifies styled section headings.
 
 This section keeps the package check independent from user-facing starter copy.
 `);
-	await mkdir(path.join(siteProjectRoot, 'site', 'root', 'pages', '010-about'), { recursive: true });
-	await writeFile(path.join(siteProjectRoot, 'site', 'root', 'pages', '010-about', 'content.md'), `---
+	await mkdir(path.join(siteProjectRoot, 'site', 'root', 'pages', 'about'), { recursive: true });
+	await writeFile(path.join(siteProjectRoot, 'site', 'root', 'pages', 'about', 'content.md'), `---
 page:
   description: Page used by package checks.
 ---
@@ -402,14 +402,14 @@ This page verifies that packaged norna sites can build additional pages.
 	const homeImagesDir = path.join(siteProjectRoot, 'site', 'root', 'images');
 	await runInherit(npxBin, ['norna', 'engine:version'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'doctor'], { cwd: homeImagesDir, env: npmEnv });
-	await runInherit(npxBin, ['norna', 'page:add', 'Guides', '--parent', '/'], { cwd: siteProjectRoot, env: npmEnv });
+	await runInherit(npxBin, ['norna', 'page:add', 'Guides', '--parent', '/', '--allow-renumber'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'page:add', 'Installation', '--parent', '/guides/'], { cwd: siteProjectRoot, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'page:move', '/guides/installation/', '/guides/setup/', '--write'], { cwd: siteProjectRoot, env: npmEnv });
 	const guidesDirectory = (await readdir(path.join(siteProjectRoot, 'site', 'root', 'pages')))
-		.find((entry) => entry.endsWith('-guides'));
+		.find((entry) => entry === 'guides');
 	assert.ok(guidesDirectory, 'Expected the packaged page commands to create a guides directory.');
 	await assert.doesNotReject(access(
-		path.join(siteProjectRoot, 'site', 'root', 'pages', guidesDirectory, 'pages', '010-setup', 'content.md'),
+		path.join(siteProjectRoot, 'site', 'root', 'pages', guidesDirectory, 'pages', 'setup', 'content.md'),
 	));
 	await runInherit(npxBin, ['norna', 'config:check'], { cwd: homeImagesDir, env: npmEnv });
 	await runInherit(npxBin, ['norna', 'content:check'], { cwd: siteProjectRoot, env: npmEnv });
@@ -737,7 +737,7 @@ This page verifies that packaged norna sites can build additional pages.
 	const siteConfig = await readFile(siteConfigPath, 'utf8');
 	await writeFile(
 		siteConfigPath,
-		siteConfig.replace('url: https://example.com/site/', 'url: example.com/site/'),
+		siteConfig.replace('sourceFormat: 2\nurl: https://example.com/site/', 'sourceFormat: 2\nurl: example.com/site/'),
 	);
 	await runExpectFailure(
 		npxBin,

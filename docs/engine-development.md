@@ -34,6 +34,25 @@ site. It is useful for dogfooding Norna documentation. Preset regression uses
 the dedicated preset-baseline fixture so changes to the documentation content
 do not silently redefine the visual contract.
 
+## Page Source Format
+
+Current sites declare `sourceFormat: 2` in `site-config/settings.yaml`. Child
+page directories contain a slug only; `navigation.order` frontmatter controls
+sibling order. `page-model.mjs` parses paths, `page-order.mjs` owns comparison
+and insertion rules, and `site-structure.mjs` supplies the ordered tree to both
+rendering and the editor. Missing order follows explicit order; ties use slug.
+
+Editor movement uses `sitePagePlacementApiVersion: 2`; the extension supports
+versions 1 and 2, but earlier extensions cannot apply the changed transaction.
+`sitePageOrderApiVersion: 1` enables creation placement and renumbering review.
+Additional sibling edits require explicit allowance after the plan is shown.
+
+The maintained documentation, starters, examples and fixtures use format 2.
+Convert other sites individually before switching their engine. The public
+[conversion instructions](../site/root/pages/reference/pages/workflows/pages/legacy-source/content.md)
+cover preserving URLs, sibling order and owned files. Do not infer order from
+a numeric slug in format 2, or add a permanent legacy-format reader.
+
 ## Source And Review Assets
 
 The documentation site uses `site/`. CLI discovery resolves the selected source

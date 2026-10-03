@@ -17,6 +17,7 @@ import { readSiteEditingTree } from './editor-site-editing-tree.mjs';
 export const siteTreeApiVersion = 1;
 export const siteFileTreeApiVersion = 1;
 export const sitePageFormApiVersion = 1;
+export const sitePageOrderApiVersion = 1;
 export { siteTreeEditingApiVersion, getEditorSourceFileChoices, planEditorSourceFileCreation, createEditorSourceFile } from './editor-source-files.mjs';
 export { createSiteNode, planSiteNodeCreation, slugifyAsciiIdentifier };
 export { siteFileOperationsApiVersion, siteRemovalApiVersion, planEditorImageCopy, planEditorRemoval, getEditorImageUsage, createEditorImageAppend, createEditorImageBatchAppend } from './editor-site-files.mjs';
@@ -87,7 +88,7 @@ export const readSiteTree = async ({ siteRoot, sources = new Map(), cache = new 
 			problem: information.problem ?? node.problems?.[0] ?? null });
 	}
 	for (const filename of cache.keys()) if (!used.has(filename)) cache.delete(filename);
-	return { nodes, problems: structure.problems };
+	return { nodes, problems: [...structure.problems, ...structure.warnings.map(warning => ({ ...warning, severity: 'warning' }))] };
 };
 
 // One physical projection preserves resources and repairable entries even when

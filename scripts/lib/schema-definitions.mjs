@@ -189,6 +189,7 @@ const themeSections = z.object({
 	backgroundPattern: backgroundPattern.optional().describe('Section background pattern. Alternating and accented create full-width bands with sections or top navigation; tree navigation requires uniform.'),
 }).strict().describe('Defaults for page section presentation.');
 const pageNavigation = z.object({
+	order: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER).optional().describe('Sibling presentation order. Positive integer; lower values appear first. Omit to follow ordered siblings, sorted by slug. Duplicate values warn and use slug to break ties.'),
 	listed: z.boolean().optional().default(true).describe('List this page in site navigation. The page remains public when false.'),
 }).strict();
 const pageAlias = z.string().regex(
@@ -225,6 +226,7 @@ const sitewideFooter = z.object({
 }).strict().describe('Site-wide footer content.');
 
 const configShape = {
+	sourceFormat: z.literal(2).describe('Source format 2: page directories use slugs and sibling order lives in navigation.order frontmatter. Convert older sites before setting this value.'),
 	url: z.string().url().describe('Absolute public URL for the built site.'),
 	language: z.string().regex(supportedLocaleTagPattern).optional().describe('Site language tag selecting one complete built-in Norna interface language; the default is en.'),
 	editLink: editLink.optional(),

@@ -2,6 +2,9 @@ import { getSiteSourcePaths } from './site-conventions.mjs';
 import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parsePageDirectoryPath } from './page-model.mjs';
+import { comparePageOrder, parsePageOrder } from './page-order.mjs';
+import { assertSiteSourceFormat } from './site-source-format.mjs';
+import { parseContentFrontmatter, splitSiteFile } from './site-content.mjs';
 import {
 	homePageDirectory,
 	siteDir as defaultSiteDir,
@@ -15,11 +18,6 @@ const readDirectory = async (directory) => readdir(directory, { withFileTypes: t
 	throw error;
 });
 
-const compareNodeMetadata = (left, right) => (
-	left.pageOrder - right.pageOrder
-	|| left.pageId.localeCompare(right.pageId, 'en')
-);
-
 const assertLegacyStructureIsAbsent = async ({ siteDir, siteDirLabel }) => {
 	for (const name of ['content.md', 'theme.yaml', 'images', 'pages', 'routes']) {
 		if (await fileExists(path.join(siteDir, name))) {
@@ -28,7 +26,7 @@ const assertLegacyStructureIsAbsent = async ({ siteDir, siteDirLabel }) => {
 	}
 };
 
-const assertUniqueSiblings = (nodes, pagesLabel) => {
+const assertUniqueSiblings = (nodes, pagesLabel, warnings) => {
 	const byId = new Map();
 	const byOrder = new Map();
 
@@ -43,13 +41,11 @@ const assertUniqueSiblings = (nodes, pagesLabel) => {
 		}
 		byId.set(node.pageId, node);
 
+		if (node.pageOrder === null) continue;
 		const existingOrder = byOrder.get(node.pageOrder);
 		if (existingOrder) {
-			throw new Error([
-				`${pagesLabel} contains duplicate sibling order "${String(node.pageOrder).padStart(3, '0')}".`,
-				`- ${existingOrder.nodeLabel}`,
-				`- ${node.nodeLabel}`,
-			].join('\n'));
+			const message = `${pagesLabel} contains duplicate sibling navigation.order ${node.pageOrder}: ${existingOrder.pageId} and ${node.pageId}. Slug determines their order. Choose different values to set an explicit order.`;
+			for (const sibling of [existingOrder, node]) warnings.push({ code: 'duplicate-page-order', message, label: sibling.contentLabel, path: sibling.contentPath });
 		}
 		byOrder.set(node.pageOrder, node);
 	}
@@ -75,6 +71,7 @@ export const getSiteStructure = async ({
 	};
 	try {
 		await assertLegacyStructureIsAbsent({ siteDir, siteDirLabel, sitePagesLabel });
+		await assertSiteSourceFormat(siteDir, readSource);
 	} catch (error) {
 		report(error);
 	}
@@ -131,16 +128,20 @@ export const getSiteStructure = async ({
 				imagesLabel: `${nodeLabel}/images`,
 			});
 
+			try {
+				const { frontmatterBody } = splitSiteFile(await readSource(contentPath), node.contentLabel);
+				node.pageOrder = parsePageOrder(parseContentFrontmatter(frontmatterBody, node.contentLabel).navigation?.order, `${node.contentLabel}: navigation.order`);
+			} catch (error) { report(error, node); }
 			siblingNodes.push(node);
 		}
 
 		try {
-			assertUniqueSiblings(siblingNodes, pagesLabel);
+			assertUniqueSiblings(siblingNodes, pagesLabel, warnings);
 		} catch (error) {
 			report(error);
 		}
 
-		for (const node of siblingNodes.sort(compareNodeMetadata)) {
+		for (const node of siblingNodes.sort(comparePageOrder)) {
 			nodes.push(node);
 			const childPagesDir = path.join(node.nodeDir, 'pages');
 			const childDirectories = (await readDirectory(childPagesDir)).filter((entry) => entry.isDirectory());

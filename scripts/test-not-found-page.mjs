@@ -30,14 +30,14 @@ test('build emits a localized base-path 404 page with valid navigation and asset
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\nlanguage: sv-SE\n');
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/project/\nlanguage: sv-SE\n');
 		await mkdir(path.join(siteDir, 'public'), { recursive: true });
 		await writeFile(path.join(siteDir, 'public', 'logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>');
 		await writeFile(path.join(siteDir, 'public', 'favicon.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>');
 		await writeFile(path.join(siteDir, 'public', 'social-image.png'), 'preview');
 		await writeFile(path.join(siteDir, 'root/content.md'), '# Hem\n\nVälkommen.\n');
-		await mkdir(path.join(siteDir, 'root/pages', '010-om'), { recursive: true });
-		await writeFile(path.join(siteDir, 'root/pages', '010-om', 'content.md'), '# Om\n\nOm webbplatsen.\n');
+		await mkdir(path.join(siteDir, 'root/pages', 'om'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/pages', 'om', 'content.md'), '# Om\n\nOm webbplatsen.\n');
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 
@@ -61,7 +61,7 @@ test('build uses Greek interface text and preserves the regional language tag', 
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/\nlanguage: el-GR\n');
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\nlanguage: el-GR\n');
 		await writeFile(path.join(siteDir, 'root/content.md'), '# Αρχική\n\nΚαλώς ήρθατε.\n');
 
 		await runNorna(['--site-dir', siteDir, 'build']);

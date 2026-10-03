@@ -80,7 +80,7 @@ items:
 test('raster cache reuses root and child outputs, repairs missing variants and invalidates changed sources', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		const directories = ['root', 'root/pages/010-guide'];
+		const directories = ['root', 'root/pages/guide'];
 		for (const directory of directories) {
 			await mkdir(path.join(siteDir, directory, 'images'), { recursive: true });
 			await writeFile(path.join(siteDir, directory, 'content.md'), '# Images\n\n```image-stack\nitems:\n  - image: image.jpg\n    alt: Example\n```\n');
@@ -92,9 +92,9 @@ test('raster cache reuses root and child outputs, repairs missing variants and i
 		await generate();
 		const first = await manifest();
 		const rootKey = 'root/images/image.jpg';
-		const childKey = 'root/pages/010-guide/images/image.jpg';
+		const childKey = 'root/pages/guide/images/image.jpg';
 		assert.match(first[rootKey].variants[0].src, /^\/images\/generated\/images\/image-/);
-		assert.match(first[childKey].variants[0].src, /^\/images\/generated\/pages\/010-guide\/images\/image-/);
+		assert.match(first[childKey].variants[0].src, /^\/images\/generated\/pages\/guide\/images\/image-/);
 		const untouchedTime = new Date('2000-01-01T00:00:00Z');
 		for (const entry of Object.values(first)) for (const variant of entry.variants) await utimes(output(variant), untouchedTime, untouchedTime);
 		await generate();

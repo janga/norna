@@ -16,8 +16,8 @@ import { applyPageMovePlan } from './lib/page-move-apply.mjs';
 const fixture=async t=>{
  const temp=await mkdtemp(path.join(os.tmpdir(),'norna-attachments-'));t.after(()=>rm(temp,{recursive:true,force:true}));const root=path.join(temp,'site');
  const write=async(name,text)=>{const file=path.join(root,name);await mkdir(path.dirname(file),{recursive:true});await writeFile(file,text);return file;};
- await write('site-config/settings.yaml','url: https://example.com/manual/\n');await write('root/tree-theme.yaml','preset: documentation\n');const home=await write('root/content.md','# Home\n\n[Local](checklist.pdf)\n\n[Shared](/guide/downloads/checklist.pdf#page=2)\n');
- await write('root/downloads/checklist.pdf','home PDF');const guide=await write('root/pages/010-guide/content.md','# Guide\n\n[File](checklist.pdf?mode=view#page=1)\n\n[Unicode](<r%C3%A4kningar%20ett.zip>)\n');const pdf=await write('root/pages/010-guide/downloads/checklist.pdf','guide PDF');await write('root/pages/010-guide/downloads/räkningar ett.zip','ZIP');
+ await write('site-config/settings.yaml','sourceFormat: 2\nurl: https://example.com/manual/\n');await write('root/tree-theme.yaml','preset: documentation\n');const home=await write('root/content.md','# Home\n\n[Local](checklist.pdf)\n\n[Shared](/guide/downloads/checklist.pdf#page=2)\n');
+ await write('root/downloads/checklist.pdf','home PDF');const guide=await write('root/pages/guide/content.md','# Guide\n\n[File](checklist.pdf?mode=view#page=1)\n\n[Unicode](<r%C3%A4kningar%20ett.zip>)\n');const pdf=await write('root/pages/guide/downloads/checklist.pdf','guide PDF');await write('root/pages/guide/downloads/räkningar ett.zip','ZIP');
  return {temp,root,write,home,guide,pdf,state:()=>readEditorLinkState({siteRoot:root})};
 };
 test('local attachment lookup, rendering, explicit sharing and distinct missing links',async t=>{
@@ -35,7 +35,7 @@ test('import validation, original modification date, pending duplicates and publ
  const options={siteRoot:f.root,sourcePath:f.guide,filePath:source,filename:'example.html'};const plan=await planEditorAttachmentCopy(options);assert.ok(plan.sourceInfo.modified>0);assert.equal(plan.sourceInfo.size,13);
  await assert.rejects(planEditorAttachmentCopy({...options,filename:'../escape.html'}),/filename/);await assert.rejects(planEditorAttachmentCopy({...options,pending:['EXAMPLE.html']}),/Two selected/);
  await f.write('public/guide/downloads/example.html','public conflict');await assert.rejects(planEditorAttachmentCopy(options),/conflicts/);
- await f.write('root/pages/010-guide/downloads/nested/file.txt','unsupported');assert.ok((await f.state()).incomplete.some(message=>message.includes('subfolders')));
+ await f.write('root/pages/guide/downloads/nested/file.txt','unsupported');assert.ok((await f.state()).incomplete.some(message=>message.includes('subfolders')));
 });
 test('empty images/downloads disappear while page retains Add; folder removal reports incoming links',async t=>{
  const f=await fixture(t);await mkdir(path.join(f.root,'root/images'));const tree=await readSiteFileTree({siteRoot:f.root});assert.ok(!tree.items.some(item=>item.role==='images'));assert.ok(tree.items.find(item=>item.isHome).actions.includes('addAttachments'));
@@ -58,10 +58,10 @@ test('build renders local card and Markdown attachment URLs with the deployment 
  const directory = await mkdtemp(path.join(fileURLToPath(cache), 'norna-attachment-build-'));
  t.after(() => rm(directory, { recursive: true, force: true }));
  const siteRoot = path.join(directory, 'site');
- const page = path.join(siteRoot, 'root/pages/010-guide');
+ const page = path.join(siteRoot, 'root/pages/guide');
  await mkdir(path.join(siteRoot, 'site-config'), { recursive: true });
  await mkdir(path.join(page, 'downloads'), { recursive: true });
- await writeFile(path.join(siteRoot, 'site-config/settings.yaml'), 'url: https://example.com/manual/\n');
+ await writeFile(path.join(siteRoot, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/manual/\n');
  await writeFile(path.join(siteRoot, 'root/tree-theme.yaml'), 'preset: documentation\n');
  await writeFile(path.join(siteRoot, 'root/content.md'), '# Home\n');
  await writeFile(path.join(page, 'content.md'), '# Guide\n\n[File](<räkningar ett.txt>)\n\n```card-list\nitems:\n  - title: Download example\n    text: An unchanged source file.\n    link: "räkningar ett.txt?mode=view#part"\n```\n');

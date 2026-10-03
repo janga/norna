@@ -47,7 +47,7 @@ features from experimental or unavailable behavior.
 
 ## Audit Method
 
-- Inventory every H2 example in `site/pages/030-examples/content.md`, not just
+- Inventory every H2 example in `site/pages/examples/content.md`, not just
   the table and navigation sections that triggered this work.
 - Compare each claim with the relevant parser, schema, default, component or
   CLI behavior, focused tests, and canonical documentation. A passing content

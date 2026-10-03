@@ -130,7 +130,7 @@ try {
 	const logs = run('logs');
 	assertSucceeded(logs, 'dev logs');
 	assert.match(logs.stdout, /astro\s+v|watching for file changes/iu);
-	await writeFile(path.join(siteDir, 'config.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(siteDir, 'config.yaml'), 'sourceFormat: 2\nurl: https://example.com/\n');
 	assertSucceeded(run('status'), 'status while configuration needs conversion');
 	assertSucceeded(run('logs'), 'logs while configuration needs conversion');
 

@@ -1,3 +1,6 @@
+import { comparePageOrder, parsePageOrder, planPageOrder, assertRenumberingAllowed } from './page-order.mjs';
+import { pageOrderFileChanges } from './page-order-source.mjs';
+import { writeFileAtomically } from './page-move-apply.mjs';
 import { getSiteSourcePaths } from './site-conventions.mjs';
 import { mkdir, realpath, rmdir, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -10,17 +13,6 @@ import { readEditorLinkState } from './editor-site-links.mjs';
 import { createPageAliasModel, assertPageAliasModel } from './page-aliases.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
 
-const parseOrder = (value) => {
-	if (!/^\d{1,3}$/.test(value)) {
-		throw new Error(`Invalid --order "${value}". Use an integer from 1 to 999.`);
-	}
-	const order = Number.parseInt(value, 10);
-	if (order < 1 || order > 999) {
-		throw new Error(`Invalid --order "${value}". Use an integer from 1 to 999.`);
-	}
-	return order;
-};
-
 const normalizeParentPath = (value) => {
 	if (value === '/') return '';
 	if (value.includes('\\') || value.includes('?') || value.includes('#')) {
@@ -31,15 +23,6 @@ const normalizeParentPath = (value) => {
 		throw new Error(`Invalid --parent "${value}". Use / for the top level or a logical path such as /guides/installation/.`);
 	}
 	return normalized;
-};
-
-const getNextOrder = (siblings) => {
-	const highestOrder = siblings.reduce((highest, node) => Math.max(highest, node.pageOrder), 0);
-	const nextOrder = Math.floor(highestOrder / 10) * 10 + 10;
-	if (nextOrder > 999) {
-		throw new Error('No automatic page order remains below 1000. Reorder the sibling nodes before adding another one.');
-	}
-	return nextOrder;
 };
 
 export const escapeMarkdownHeading = (value) => value.replace(/([\\`*_[\]{}<>#])/g, '\\$1');
@@ -86,30 +69,40 @@ const resolveParent = async ({ nodes, parent, siteRoot, invocationDirectory }) =
 // Planning never writes. Callers must present this same destination before applying.
 export const planSiteNodeCreation = async ({
 	siteRoot, kind, title, slug = null, order = null, parentPath = '/',
-	invocationDirectory = siteRoot, metadata, sources = new Map(),
+	invocationDirectory = siteRoot, metadata, sources = new Map(), placement = null, targetPath = null,
 }) => {
+	const request = { siteRoot, kind, title, slug, order, parentPath, invocationDirectory, metadata, placement, targetPath };
+	if (placement !== null && !['before', 'after', 'first', 'last'].includes(placement)) throw new Error('Choose before, after, first or last.');
+	if (placement !== null && order !== null) throw new Error('Do not combine --order with a placement selector.');
 	if (kind !== 'page') throw new Error('Choose a page. Navigation categories are no longer supported; use page.listChildren: true for an overview.');
 	siteRoot = path.resolve(siteRoot);
 	title = String(title ?? '').trim();
 	if (!title || /[\r\n]/.test(title)) throw new Error('A one-line page title is required.');
 	const generatedSlug = slug === null;
 	slug ??= slugifyAsciiIdentifier(title);
-	if (!slug || !pageDirectoryPattern.test(`010-${slug}`)) {
+	if (!slug || !pageDirectoryPattern.test(slug)) {
 		throw new Error(`Invalid ${generatedSlug ? 'generated ' : ''}slug "${slug}". Use lowercase ASCII letters, numbers, and single hyphens; pass --slug when automatic transliteration is unsuitable.`);
 	}
 
 	const structure = await getSiteStructure({ siteRoot });
+	let relativeTarget = null;
+	if (placement === 'before' || placement === 'after') {
+		relativeTarget = structure.nodes.find(node => node.contentPath === targetPath || `/${node.pagePath}/` === targetPath);
+		if (!relativeTarget || relativeTarget.isHome) throw new Error('Choose an existing sibling page for before/after placement.');
+		parentPath = relativeTarget.parentPagePath ? `/${relativeTarget.parentPagePath}/` : '/';
+	}
 	const parent = await resolveParent({ nodes: structure.nodes, parent: parentPath, siteRoot, invocationDirectory });
-	const siblings = structure.nodes.filter((node) => !node.isHome && node.parentPagePath === (parent.pagePath || null));
+	const siblings = structure.nodes.filter((node) => !node.isHome && node.parentPagePath === (parent.pagePath || null)).sort(comparePageOrder);
 	if (siblings.some((node) => node.pageId === slug)) {
 		throw new Error(`Cannot create "${slug}" below ${parent.pagePath ? `/${parent.pagePath}/` : '/'}. A sibling with that slug already exists.`);
 	}
-	order = order === null ? getNextOrder(siblings) : parseOrder(String(order));
-	if (siblings.some((node) => node.pageOrder === order)) {
-		throw new Error(`Cannot use order ${String(order).padStart(3, '0')} below ${parent.pagePath ? `/${parent.pagePath}/` : '/'}. A sibling already uses it.`);
-	}
-
-	const directoryName = `${String(order).padStart(3, '0')}-${slug}`;
+	const dirty = [...sources.keys()].filter(filename => filename === path.join(siteRoot, 'site-config/settings.yaml') || siblings.some(node => node.contentPath === filename));
+	if (dirty.length) throw new Error(`Save or undo these unsaved files before choosing page placement:\n${dirty.join('\n')}`);
+	const index = placement === 'first' ? 0 : relativeTarget ? siblings.indexOf(relativeTarget) + (placement === 'after' ? 1 : 0) : siblings.length;
+	const insertion = order === null ? planPageOrder(siblings, index) : { order: parsePageOrder(Number(order), '--order'), orderChanges: [] };
+	order = insertion.order;
+	const orderChanges = await pageOrderFileChanges(insertion.orderChanges);
+	const directoryName = slug;
 	const destination = path.join(parent.collectionDir, directoryName);
 	const pagePath = [parent.pagePath, slug].filter(Boolean).join('/');
 	const state = await readEditorLinkState({ siteRoot, sources });
@@ -127,14 +120,19 @@ export const planSiteNodeCreation = async ({
 			{ pathname: `/${pagePath}/`, contentLabel: destination, aliases: metadata.page?.aliases ?? [] }],
 			categories: [], publicFiles: state.publicFiles, generatedRoutes: state.generatedRoutes }));
 	}
-	return { siteRoot, kind, title, slug, order, parentPath: parent.pagePath ? `/${parent.pagePath}/` : '/',
+	metadata = { ...metadata, navigation: { ...metadata?.navigation, order } };
+	const fingerprint = JSON.stringify([destination, title, metadata, order, orderChanges, state.settings,
+		state.graph.pages.map(page => [page.contentFile.contentPath, page.document.fullSource]), state.publicFiles.map(file => file.filePath)]);
+	return { request, fingerprint, orderChanges, siteRoot, kind, title, slug, order, parentPath: parent.pagePath ? `/${parent.pagePath}/` : '/',
 		collectionDir: parent.collectionDir, destination, pagePath, url: `/${pagePath}/`, ...(metadata === undefined ? {} : { metadata }) };
 };
 
-export const createSiteNode = async (plan, { sources = new Map() } = {}) => {
+export const createSiteNode = async (plan, { sources = new Map(), allowRenumber = false, writeSource = writeFileAtomically } = {}) => {
 	// Revalidate after the author has inspected the preview. Never change its placement.
-	const current = await planSiteNodeCreation({ ...plan, sources });
-	if (current.destination !== plan.destination) throw new Error('The site changed. Preview the new location before creating the node.');
+	const current = await planSiteNodeCreation({ ...(plan.request ?? plan), sources });
+	if (current.destination !== plan.destination || current.fingerprint !== plan.fingerprint) throw new Error('The site changed. Preview the new location before creating the node.');
+	assertRenumberingAllowed(current.orderChanges, allowRenumber);
+	const written = [];
 	let createdCollection = false;
 	try {
 		const info = await stat(current.collectionDir);
@@ -156,14 +154,24 @@ export const createSiteNode = async (plan, { sources = new Map() } = {}) => {
 		const childDirectory = path.join(current.destination, 'images');
 		await mkdir(childDirectory);
 		created.push({ file: childDirectory, directory: true });
-		return { ...current, sourcePath: filename };
+		for (const change of current.orderChanges) {
+			await writeSource(change.originalPath, change.updatedSource, change.mode);
+			written.push(change);
+		}
+		return { ...current, sourcePath: filename, renumberedPages: current.orderChanges.length };
 	} catch (error) {
+		const restoreErrors = [];
+		for (const change of written.reverse()) {
+			try { await writeFileAtomically(change.originalPath, change.originalSource, change.mode); }
+			catch (failure) { restoreErrors.push(`${change.originalPath}: ${failure.message}`); }
+		}
 		// Remove only entries this operation created; never recursively remove an
 		// unexpected file written concurrently by another process.
 		for (const entry of created.reverse()) {
 			await (entry.directory ? rmdir(entry.file) : unlink(entry.file)).catch(() => {});
 		}
 		if (createdCollection) await rmdir(current.collectionDir).catch(() => {});
+		if (restoreErrors.length) throw new Error(`${error.message}\nRestoration was incomplete:\n${restoreErrors.join('\n')}`);
 		throw error;
 	}
 };

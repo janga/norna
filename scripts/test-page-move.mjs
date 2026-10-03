@@ -29,7 +29,7 @@ const writeFixtureFile = async (rootDirectory, relativePath, source) => {
 const createFixture = async (name) => {
 	const projectRoot = path.join(root, name);
 	const siteDir = path.join(projectRoot, 'site');
-	await writeFixtureFile(siteDir, 'site-config/settings.yaml', 'url: https://example.com/\n');
+	await writeFixtureFile(siteDir, 'site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	await writeFixtureFile(siteDir, 'root/tree-theme.yaml', 'preset: documentation\n');
 	await writeFixtureFile(siteDir, 'public/manual.pdf', 'manual');
 	await writeFixtureFile(siteDir, 'root/content.md', `# Home
@@ -51,8 +51,8 @@ items:
   - {link: "/guides/install/\\u0023steps", title: "Escaped YAML link"} # Preserve comment
 \`\`\`
 `);
-	await writeFixtureFile(siteDir, 'root/pages/010-guides/content.md', '---\npage:\n  listChildren: true\n---\n# Guides\n');
-	await writeFixtureFile(siteDir, 'root/pages/010-guides/pages/010-install/content.md', `---
+	await writeFixtureFile(siteDir, 'root/pages/guides/content.md', '---\npage:\n  listChildren: true\n---\n# Guides\n');
+	await writeFixtureFile(siteDir, 'root/pages/guides/pages/install/content.md', `---
 page:
   description: Installation instructions.
 ---
@@ -72,23 +72,23 @@ items:
     alt: Example diagram.
 \`\`\`
 `);
-	await writeFixtureFile(siteDir, 'root/pages/010-guides/pages/010-install/images/example.svg', '<svg viewBox="0 0 10 10"></svg>\n');
-	await writeFixtureFile(siteDir, 'root/pages/010-guides/pages/010-install/pages/020-setup/content.md', '---\npage:\n  listChildren: true\n---\n# Setup\n');
-	await writeFixtureFile(siteDir, 'root/pages/010-guides/pages/010-install/pages/020-setup/pages/010-first/content.md', '# First setup\n');
-	await writeFixtureFile(siteDir, 'root/pages/010-guides/pages/010-install/pages/010-reference/content.md', `# Install reference
+	await writeFixtureFile(siteDir, 'root/pages/guides/pages/install/images/example.svg', '<svg viewBox="0 0 10 10"></svg>\n');
+	await writeFixtureFile(siteDir, 'root/pages/guides/pages/install/pages/setup/content.md', '---\npage:\n  listChildren: true\n---\n# Setup\n');
+	await writeFixtureFile(siteDir, 'root/pages/guides/pages/install/pages/setup/pages/first/content.md', '# First setup\n');
+	await writeFixtureFile(siteDir, 'root/pages/guides/pages/install/pages/reference/content.md', `# Install reference
 
 ## Details {#details}
 
 [Parent](../#steps)
 `);
-	await writeFixtureFile(siteDir, 'root/pages/010-guides/pages/020-workflows/content.md', `# Workflows
+	await writeFixtureFile(siteDir, 'root/pages/guides/pages/workflows/content.md', `# Workflows
 
 ## Local {#local}
 
 [Install](/guides/install/)
 `);
-	await writeFixtureFile(siteDir, 'root/pages/020-reference/content.md', '---\npage:\n  listChildren: true\n---\n# Reference\n');
-	await writeFixtureFile(siteDir, 'root/pages/020-reference/pages/010-overview/content.md', `# Reference overview
+	await writeFixtureFile(siteDir, 'root/pages/reference/content.md', '---\npage:\n  listChildren: true\n---\n# Reference\n');
+	await writeFixtureFile(siteDir, 'root/pages/reference/pages/overview/content.md', `# Reference overview
 
 ## Summary {#summary}
 
@@ -133,13 +133,13 @@ const snapshotSite = async (siteDir) => {
 };
 
 const assertSuccessfulResult = async (siteDir) => {
-	const movedDir = path.join(siteDir, 'root/pages/020-reference/pages/010-overview/pages/010-install');
+	const movedDir = path.join(siteDir, 'root/pages/reference/pages/overview/pages/install');
 	const movedSource = await readFile(path.join(movedDir, 'content.md'), 'utf8');
-	const childSource = await readFile(path.join(movedDir, 'pages/010-reference/content.md'), 'utf8');
+	const childSource = await readFile(path.join(movedDir, 'pages/reference/content.md'), 'utf8');
 	const homeSource = await readFile(path.join(siteDir, 'root/content.md'), 'utf8');
-	const workflowSource = await readFile(path.join(siteDir, 'root/pages/010-guides/pages/020-workflows/content.md'), 'utf8');
+	const workflowSource = await readFile(path.join(siteDir, 'root/pages/guides/pages/workflows/content.md'), 'utf8');
 
-	assert.equal(await exists(path.join(siteDir, 'root/pages/010-guides/pages/010-install')), false);
+	assert.equal(await exists(path.join(siteDir, 'root/pages/guides/pages/install')), false);
 	assert.equal(await exists(path.join(movedDir, 'images/example.svg')), true);
 	assert.match(movedSource, /aliases:\n    - "?\/guides\/install\//);
 	assert.match(movedSource, /\[Workflow\]\(\/guides\/workflows\/#local\)/);
@@ -177,14 +177,14 @@ try {
 		'page:move',
 		'/guides/install/',
 		'/reference/overview/install/',
-		'--write',
+		'--write', '--allow-renumber',
 	]);
 	assert.match(moved.stdout, /Page move completed: \/guides\/install\/ -> \/reference\/overview\/install\//);
 	await assertSuccessfulResult(normal.siteDir);
 	const normalResult = await snapshotSite(normal.siteDir);
-	await runNorna(normal.siteDir, ['page:move', '/reference/overview/install/', '/guides/install/', '--no-aliases', '--write']);
-	const returnedPages = path.join(normal.siteDir, 'root/pages/010-guides/pages');
-	const returnedDirectory = (await readdir(returnedPages)).find((name) => name.endsWith('-install'));
+	await runNorna(normal.siteDir, ['page:move', '/reference/overview/install/', '/guides/install/', '--no-aliases', '--write', '--allow-renumber']);
+	const returnedPages = path.join(normal.siteDir, 'root/pages/guides/pages');
+	const returnedDirectory = (await readdir(returnedPages)).find((name) => name === 'install');
 	const returnedSource = await readFile(path.join(returnedPages, returnedDirectory, 'content.md'), 'utf8');
 	assert.doesNotMatch(returnedSource, /aliases:[\s\S]*\/guides\/install\//);
 	assert.match((await runNorna(normal.siteDir, ['content:check'])).stdout, /Content check passed\./);
@@ -193,17 +193,17 @@ try {
 		const lastChild = await createFixture(`last-child-${mode}`);
 		const homePath = path.join(lastChild.siteDir, 'root/content.md');
 		await writeFile(homePath, `${await readFile(homePath, 'utf8')}\n[Overview](/reference/overview/#summary)\n[Reference](/reference/)\n`);
-		const source = path.join(lastChild.siteDir, 'root/pages/020-reference/pages/010-overview');
-		const destination = path.join(lastChild.siteDir, 'root/pages/030-overview');
+		const source = path.join(lastChild.siteDir, 'root/pages/reference/pages/overview');
+		const destination = path.join(lastChild.siteDir, 'root/pages/overview');
 		if (mode === 'reconcile') await rename(source, destination);
 		const before = await snapshotSite(lastChild.siteDir);
 		const preview = await runNorna(lastChild.siteDir, ['page:move', '/reference/overview/', '/overview/']);
 		assert.match(preview.stdout, /Dry run only/);
 		assert.deepEqual(await snapshotSite(lastChild.siteDir), before);
-		await runNorna(lastChild.siteDir, ['page:move', '/reference/overview/', '/overview/', '--write']);
+		await runNorna(lastChild.siteDir, ['page:move', '/reference/overview/', '/overview/', '--write', '--allow-renumber']);
 		assert.equal(await exists(source), false);
 		assert.match(await readFile(path.join(destination, 'content.md'), 'utf8'), /aliases:\n    - "?\/reference\/overview\//);
-		assert.equal(await readFile(path.join(lastChild.siteDir, 'root/pages/020-reference/content.md'), 'utf8'), '---\npage:\n  listChildren: true\n---\n# Reference\n');
+		assert.match(await readFile(path.join(lastChild.siteDir, 'root/pages/reference/content.md'), 'utf8'), /page:\n  listChildren: true\n(?:navigation:\n  order: 2000\n)?---\n# Reference\n/);
 		const home = await readFile(homePath, 'utf8');
 		assert.match(home, /\[Overview\]\(\/overview\/#summary\)/);
 		assert.match(home, /\[Reference\]\(\/reference\/\)/);
@@ -211,25 +211,28 @@ try {
 		assert.match(checked.stdout, /Content check completed with warnings/);
 		assert.match(checked.stdout, /page\.listChildren has no listed direct child pages/);
 		// An empty overview must not prevent a subsequent move either.
-		await runNorna(lastChild.siteDir, ['page:move', '/overview/', '/overview-renamed/', '--write']);
-		assert.equal(await exists(path.join(lastChild.siteDir, 'root/pages/030-overview-renamed/content.md')), true);
+		await runNorna(lastChild.siteDir, ['page:move', '/overview/', '/overview-renamed/', '--write', '--allow-renumber']);
+		assert.equal(await exists(path.join(lastChild.siteDir, 'root/pages/overview-renamed/content.md')), true);
 	}
 
 	const reconciled = await createFixture('reconciled');
-	await mkdir(path.join(reconciled.siteDir, 'root/pages/020-reference/pages/010-overview/pages'));
+	await mkdir(path.join(reconciled.siteDir, 'root/pages/reference/pages/overview/pages'));
 	await rename(
-		path.join(reconciled.siteDir, 'root/pages/010-guides/pages/010-install'),
-		path.join(reconciled.siteDir, 'root/pages/020-reference/pages/010-overview/pages/010-install'),
+		path.join(reconciled.siteDir, 'root/pages/guides/pages/install'),
+		path.join(reconciled.siteDir, 'root/pages/reference/pages/overview/pages/install'),
 	);
 	const reconciliation = await runNorna(reconciled.siteDir, [
 		'page:move',
 		'/guides/install/',
 		'/reference/overview/install/',
-		'--write',
+		'--write', '--allow-renumber',
 	]);
 	assert.match(reconciliation.stdout, /Mode: reconcile an already moved page/);
 	await assertSuccessfulResult(reconciled.siteDir);
-	assert.deepEqual(await snapshotSite(reconciled.siteDir), normalResult);
+	const reconciledExpected = new Map(normalResult);
+	const installedPath = 'root/pages/reference/pages/overview/pages/install/content.md';
+	reconciledExpected.set(installedPath, reconciledExpected.get(installedPath).replace('navigation:\n  order: 1000\n', ''));
+	assert.deepEqual(await snapshotSite(reconciled.siteDir), reconciledExpected);
 
 	const noAliases = await createFixture('no-aliases');
 	await runNorna(noAliases.siteDir, [
@@ -237,10 +240,10 @@ try {
 		'/guides/install/',
 		'/reference/overview/install/',
 		'--no-aliases',
-		'--write',
+		'--write', '--allow-renumber',
 	]);
 	const noAliasSource = await readFile(
-		path.join(noAliases.siteDir, 'root/pages/020-reference/pages/010-overview/pages/010-install/content.md'),
+		path.join(noAliases.siteDir, 'root/pages/reference/pages/overview/pages/install/content.md'),
 		'utf8',
 	);
 	assert.doesNotMatch(noAliasSource, /aliases:/);
@@ -269,8 +272,8 @@ try {
 		/cannot be moved below itself/i,
 	);
 	assert.match(
-		await runFailure(failures.siteDir, ['page:move', '/guides/install/', '/reference/install/', '--order', '10']),
-		/Destination order 010 is already used/,
+		await runFailure(failures.siteDir, ['page:move', '/guides/install/', '/reference/install/', '--order', '0']),
+		/positive safe integer/,
 	);
 	assert.match(
 		await runFailure(failures.siteDir, ['page:move', '/guides/install/', '/missing-parent/install/']),
@@ -288,16 +291,16 @@ try {
 	);
 	const beforeBrokenPreflight = await snapshotSite(failures.siteDir);
 	assert.match(
-		await runFailure(failures.siteDir, ['page:move', '/guides/install/', '/reference/overview/install/', '--write']),
+		await runFailure(failures.siteDir, ['page:move', '/guides/install/', '/reference/overview/install/', '--write', '--allow-renumber']),
 		/Page move preflight failed\. No file was changed/,
 	);
 	assert.deepEqual(await snapshotSite(failures.siteDir), beforeBrokenPreflight);
 
 	const reconcileOrder = await createFixture('reconcile-order');
-	await mkdir(path.join(reconcileOrder.siteDir, 'root/pages/020-reference/pages/010-overview/pages'));
+	await mkdir(path.join(reconcileOrder.siteDir, 'root/pages/reference/pages/overview/pages'));
 	await rename(
-		path.join(reconcileOrder.siteDir, 'root/pages/010-guides/pages/010-install'),
-		path.join(reconcileOrder.siteDir, 'root/pages/020-reference/pages/010-overview/pages/010-install'),
+		path.join(reconcileOrder.siteDir, 'root/pages/guides/pages/install'),
+		path.join(reconcileOrder.siteDir, 'root/pages/reference/pages/overview/pages/install'),
 	);
 	assert.match(
 		await runFailure(reconcileOrder.siteDir, [
@@ -313,16 +316,16 @@ try {
 	const ambiguous = await createFixture('ambiguous-reconciliation');
 	const ambiguousDestination = path.join(
 		ambiguous.siteDir,
-		'root/pages/020-reference/pages/010-overview/pages',
+		'root/pages/reference/pages/overview/pages',
 	);
 	await writeFixtureFile(
 		ambiguousDestination,
-		'020-workflows/content.md',
+		'workflows/content.md',
 		'# Other workflows\n\n## Local {#local}\n\nDifferent target.\n',
 	);
 	await rename(
-		path.join(ambiguous.siteDir, 'root/pages/010-guides/pages/010-install'),
-		path.join(ambiguousDestination, '010-install'),
+		path.join(ambiguous.siteDir, 'root/pages/guides/pages/install'),
+		path.join(ambiguousDestination, 'install'),
 	);
 	const beforeAmbiguousReconciliation = await snapshotSite(ambiguous.siteDir);
 	assert.match(
@@ -330,7 +333,7 @@ try {
 			'page:move',
 			'/guides/install/',
 			'/reference/overview/install/',
-			'--write',
+			'--write', '--allow-renumber',
 		]),
 		/Cannot safely reconcile.*From the old page location it identifies \/guides\/workflows\/, but from the new location it identifies \/reference\/overview\/workflows\//s,
 	);

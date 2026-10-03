@@ -277,9 +277,9 @@ try {
 	}
 
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-	await mkdir(path.join(siteDir, 'root/pages', '010-guide'), { recursive: true });
+	await mkdir(path.join(siteDir, 'root/pages', 'guide'), { recursive: true });
 	const configPath = path.join(siteDir, 'site-config/settings.yaml');
-	await writeFile(configPath, 'url: https://example.com/\nnavigation:\n  mode: top\n');
+	await writeFile(configPath, 'sourceFormat: 2\nurl: https://example.com/\nnavigation:\n  mode: top\n');
 	await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Root page
@@ -296,7 +296,7 @@ layout:
   pageWidth: 1300px
 palette: near-monochrome
 `);
-	await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'content.md'), `---
+	await writeFile(path.join(siteDir, 'root/pages', 'guide', 'content.md'), `---
 page:
   description: Additional page
 ---
@@ -304,7 +304,7 @@ page:
 # Guide
 Page content.
 `);
-	await writeFile(path.join(siteDir, 'root/pages', '010-guide', 'tree-theme.yaml'), `layout:
+	await writeFile(path.join(siteDir, 'root/pages', 'guide', 'tree-theme.yaml'), `layout:
   contentSpacing: spacious
   textWidth: wide
 images:
@@ -363,7 +363,7 @@ sections:
 	assert.match(typographyResult.stdout, /value: reading/);
 	assert.doesNotMatch(typographyResult.stdout, /value: restrained/);
 
-	const pageThemePath = path.join(siteDir, 'root/pages', '010-guide', 'tree-theme.yaml');
+	const pageThemePath = path.join(siteDir, 'root/pages', 'guide', 'tree-theme.yaml');
 	const pageThemeSource = await readFile(pageThemePath, 'utf8');
 	await writeFile(pageThemePath, 'preset: unknown\n');
 	const invalidPagePresetResult = runCli(['config:check']);
@@ -383,19 +383,19 @@ sections:
 	const invalidProseAlignedHeightResult = runCli(['config:check']);
 	assert.notEqual(invalidProseAlignedHeightResult.status, 0);
 	assert.match(invalidProseAlignedHeightResult.stderr, /images\.maxAvailableHeightPercent cannot be used with images\.presentation "prose-aligned"/);
-	assert.match(invalidProseAlignedHeightResult.stderr, /pages\/010-guide\/tree-theme\.yaml/);
+	assert.match(invalidProseAlignedHeightResult.stderr, /pages\/guide\/tree-theme\.yaml/);
 	assert.match(invalidProseAlignedHeightResult.stderr, /Remove images\.maxAvailableHeightPercent or set images\.presentation to "centered-fit"/);
 	await writeFile(pageThemePath, pageThemeSource);
 
-	await writeFile(configPath, 'url: https://example.com/\nnavigation:\n  mode: tree\n');
+	await writeFile(configPath, 'sourceFormat: 2\nurl: https://example.com/\nnavigation:\n  mode: tree\n');
 	const treeSurfaceConflictResult = runCli(['config:check']);
 	assert.notEqual(treeSurfaceConflictResult.status, 0);
 	assert.match(treeSurfaceConflictResult.stderr, /sections\.backgroundPattern "accented" cannot be used with tree navigation/);
-	assert.match(treeSurfaceConflictResult.stderr, /pages\/010-guide\/tree-theme\.yaml/);
+	assert.match(treeSurfaceConflictResult.stderr, /pages\/guide\/tree-theme\.yaml/);
 	await writeFile(pageThemePath, pageThemeSource.replace('backgroundPattern: accented', 'backgroundPattern: uniform'));
 	const uniformTreeResult = runCli(['config:check']);
 	assert.equal(uniformTreeResult.status, 0, uniformTreeResult.stderr || uniformTreeResult.stdout);
-	await writeFile(configPath, 'url: https://example.com/\nnavigation:\n  mode: top\n');
+	await writeFile(configPath, 'sourceFormat: 2\nurl: https://example.com/\nnavigation:\n  mode: top\n');
 	await writeFile(pageThemePath, pageThemeSource);
 
 	const exportResult = runCli(['theme:export', 'documentation']);

@@ -16,8 +16,8 @@ const section = (id) => ({ id, title: id });
 const managedImage = (image) => ({ image });
 
 const homePage = page('');
-const aboutPage = page('010-about');
-const contactPage = page('020-contact');
+const aboutPage = page('about');
+const contactPage = page('contact');
 
 {
 	const reference = managedImage('portrait.jpg');

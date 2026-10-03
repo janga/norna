@@ -41,13 +41,13 @@ try {
 		await mkdir(path.dirname(filePath), { recursive: true });
 		await writeFile(filePath, source);
 	};
-	await addFile('root/pages/050-choices/content.md', '---\npage:\n  listChildren: true\n---\n# Choose & learn\n');
-	await addFile('root/pages/050-choices/pages/010-setup/content.md', '---\npage:\n  listChildren: true\n  description: Install & configure your project.\n---\n# Setup\n');
-	await addFile('root/pages/050-choices/pages/010-setup/pages/010-install/content.md', '# Install\n');
-	await addFile('root/pages/050-choices/pages/020-work/content.md', '---\npage:\n  description: Compare & choose a workflow.\n---\n# Work\n');
-	await addFile('root/pages/050-choices/pages/005-empty/content.md', '---\npage:\n  listChildren: true\n---\n# Empty choice\n');
-	await addFile('root/pages/060-drafts/content.md', '---\npage:\n  listChildren: true\n---\n# Drafts\n');
-	await addFile('root/pages/060-drafts/pages/010-future/content.md', '---\npage:\n  listChildren: true\n---\n# Future\n');
+	await addFile('root/pages/choices/content.md', '---\npage:\n  listChildren: true\n---\n# Choose & learn\n');
+	await addFile('root/pages/choices/pages/setup/content.md', '---\npage:\n  listChildren: true\n  description: Install & configure your project.\n---\n# Setup\n');
+	await addFile('root/pages/choices/pages/setup/pages/install/content.md', '# Install\n');
+	await addFile('root/pages/choices/pages/work/content.md', '---\npage:\n  description: Compare & choose a workflow.\n---\n# Work\n');
+	await addFile('root/pages/choices/pages/empty/content.md', '---\npage:\n  listChildren: true\n---\n# Empty choice\n');
+	await addFile('root/pages/drafts/content.md', '---\npage:\n  listChildren: true\n---\n# Drafts\n');
+	await addFile('root/pages/drafts/pages/future/content.md', '---\npage:\n  listChildren: true\n---\n# Future\n');
 	const check = await runNorna(siteDir, 'content:check');
 	assert.match(check.stdout, /Content check completed with warnings/);
 	const build = await runNorna(siteDir, 'build');
@@ -125,12 +125,12 @@ try {
 		&& installationHtml.indexOf('<strong>Linux</strong>') < installationHtml.indexOf('<strong>Windows</strong>'),
 		'Child page lists should follow navigation order.',
 	);
-	assert.match(installationHtml, /\/original\/pages\/010-guides\/pages\/010-installation\/images\/diagram-[a-f0-9]+\.svg/);
+	assert.match(installationHtml, /\/original\/pages\/guides\/pages\/installation\/images\/diagram-[a-f0-9]+\.svg/);
 	assert.match(installationHtml, /href="\/guides\/" rel="prev"/);
 	assert.match(installationHtml, /href="\/guides\/installation\/macos\/" rel="next"/);
 	assert.doesNotMatch(rootHtml, /class="page-sequence-navigation"/);
 	assert.match(macosHtml, /data-navigation-mode="tree"/);
-	assert.match(macosHtml, /href="https:\/\/github\.com\/example\/docs\/edit\/release-2\/packages\/docs\/site\/root\/pages\/010-guides\/pages\/010-installation\/pages\/010-macos\/content\.md"/);
+	assert.match(macosHtml, /href="https:\/\/github\.com\/example\/docs\/edit\/release-2\/packages\/docs\/site\/root\/pages\/guides\/pages\/installation\/pages\/macos\/content\.md"/);
 	assert.match(macosHtml, /data-page-contents-placement="page-tree"/);
 	assert.match(macosHtml, /data-section-tracking="enabled"/);
 	assert.match(rootHtml, /data-section-tracking="enabled"/);
@@ -189,12 +189,12 @@ try {
 		siteDir,
 		'root',
 		'pages',
-		'010-guides',
+		'guides',
 		'pages',
-		'010-installation',
+		'installation',
 		'content.md',
 	);
-	const workflowsContentPath = path.join(siteDir, 'root/pages', '010-guides', 'pages', '020-workflows', 'content.md');
+	const workflowsContentPath = path.join(siteDir, 'root/pages', 'guides', 'pages', 'workflows', 'content.md');
 	const imageBlockPattern = /\n```image-stack\n[\s\S]*?\n```\n/;
 	const installationContent = await readFile(installationContentPath, 'utf8');
 	const imageBlock = installationContent.match(imageBlockPattern)?.[0];
@@ -205,8 +205,8 @@ try {
 	await runGit(['commit', '-m', 'Move nested image reference']);
 	await runNorna(siteDir, 'content:sync', '--yes');
 
-	const previousImagePath = path.join(siteDir, 'root/pages', '010-guides', 'pages', '010-installation', 'images', 'diagram.svg');
-	const nextImagePath = path.join(siteDir, 'root/pages', '010-guides', 'pages', '020-workflows', 'images', 'diagram.svg');
+	const previousImagePath = path.join(siteDir, 'root/pages', 'guides', 'pages', 'installation', 'images', 'diagram.svg');
+	const nextImagePath = path.join(siteDir, 'root/pages', 'guides', 'pages', 'workflows', 'images', 'diagram.svg');
 	assert.equal(await fileExists(previousImagePath), false);
 	assert.equal(await fileExists(nextImagePath), true);
 	await runNorna(siteDir, 'content:check');

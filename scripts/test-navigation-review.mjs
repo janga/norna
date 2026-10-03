@@ -42,7 +42,7 @@ const runReview = (cwd, args = []) => spawnSync(
 const tempRoot = await mkdtemp(path.join(tmpdir(), 'norna-navigation-review-'));
 
 try {
-	await writeFixtureFile(tempRoot, 'site/site-config/settings.yaml', 'url: https://example.com/\n');
+	await writeFixtureFile(tempRoot, 'site/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	await writeFixtureFile(tempRoot, 'site/root/tree-theme.yaml', 'preset: documentation\n');
 	await writeFixtureFile(tempRoot, 'site/root/content.md', `# Home
 
@@ -56,8 +56,8 @@ Start here.
 
 Continue with the guides.
 `);
-	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
-	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/pages/010-installation/content.md', `# Installation
+	await writeFixtureFile(tempRoot, 'site/root/pages/guides/content.md', '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
+	await writeFixtureFile(tempRoot, 'site/root/pages/guides/pages/installation/content.md', `# Installation
 
 [Return home](/)
 
@@ -65,7 +65,7 @@ Continue with the guides.
 
 Select the relevant operating system.
 `);
-	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/pages/010-installation/pages/010-macos/content.md', `# macOS
+	await writeFixtureFile(tempRoot, 'site/root/pages/guides/pages/installation/pages/macos/content.md', `# macOS
 
 ## Verify {#verify}
 
@@ -75,14 +75,14 @@ Check the installed version.
 
 Read the command output.
 `);
-	await writeFixtureFile(tempRoot, 'site/root/pages/010-guides/pages/010-installation/pages/010-macos/pages/010-advanced/content.md', `# Advanced macOS
+	await writeFixtureFile(tempRoot, 'site/root/pages/guides/pages/installation/pages/macos/pages/advanced/content.md', `# Advanced macOS
 
 ## Configuration {#configuration}
 
 Change advanced settings.
 `);
 
-	await writeFixtureFile(tempRoot, 'site/root/pages/020-reference/content.md', '---\npage:\n  listChildren: true\n---\n\n# Reference\n');
+	await writeFixtureFile(tempRoot, 'site/root/pages/reference/content.md', '---\npage:\n  listChildren: true\n---\n\n# Reference\n');
 	for (let index = 1; index <= 10; index += 1) {
 		const order = String(index * 10).padStart(3, '0');
 		const sections = index === 1
@@ -90,12 +90,12 @@ Change advanced settings.
 			: '## Reference {#reference}\n\nReference text.\n';
 		await writeFixtureFile(
 			tempRoot,
-			`site/root/pages/020-reference/pages/${order}-item-${index}/content.md`,
+			`site/root/pages/reference/pages/${order}-item-${index}/content.md`,
 			`# Item ${index}\n\n${sections}`,
 		);
 	}
 
-	await writeFixtureFile(tempRoot, 'site/root/pages/030-hidden/content.md', `---
+	await writeFixtureFile(tempRoot, 'site/root/pages/hidden/content.md', `---
 navigation:
   listed: false
 ---
@@ -106,7 +106,7 @@ navigation:
 
 This page remains public but is not listed.
 `);
-	await writeFixtureFile(tempRoot, 'site/root/pages/030-hidden/pages/010-child/content.md', `# Hidden child
+	await writeFixtureFile(tempRoot, 'site/root/pages/hidden/pages/child/content.md', `# Hidden child
 
 ## Details {#details}
 
@@ -176,7 +176,7 @@ The parent hides this page from navigation too.
 	assert.equal(unknownOptionResult.status, 1);
 	assert.match(unknownOptionResult.stderr, /Unknown navigation:review option "--write"/);
 
-	await writeFixtureFile(tempRoot, 'site/root/pages/040-empty/content.md', '---\npage:\n  listChildren: true\n---\n\n# Empty\n');
+	await writeFixtureFile(tempRoot, 'site/root/pages/empty/content.md', '---\npage:\n  listChildren: true\n---\n\n# Empty\n');
 	const emptyResult = runReview(tempRoot, ['--format=json']);
 	assert.equal(emptyResult.status, 0, emptyResult.stderr);
 	const emptyReview = JSON.parse(emptyResult.stdout);

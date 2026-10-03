@@ -14,9 +14,9 @@ assert.equal(
 assert.equal(
 	getEditSourceUrl({
 		baseUrl: 'https://github.com/example/project/edit/main/packages/docs/',
-		sourcePath: 'site/root/pages/010-guides/pages/020-first steps/content.md',
+		sourcePath: 'site/root/pages/guides/pages/first steps/content.md',
 	}),
-	'https://github.com/example/project/edit/main/packages/docs/site/root/pages/010-guides/pages/020-first%20steps/content.md',
+	'https://github.com/example/project/edit/main/packages/docs/site/root/pages/guides/pages/first%20steps/content.md',
 );
 assert.equal(
 	getEditSourceUrl({

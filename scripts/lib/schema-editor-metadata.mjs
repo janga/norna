@@ -150,10 +150,11 @@ const addSitewideLogoHelp = (jsonSchema) => {
 
 const addConfigHelp = (jsonSchema) => {
 	jsonSchema.markdownDescription = [
-		yamlExample('url: https://example.com/'),
+		yamlExample('sourceFormat: 2\nurl: https://example.com/'),
 		'`site-config/settings.yaml` contains the few technical settings shared by the complete site.',
 		documentationLink('Configuration reference', 'configuration.md'),
 	].join('\n\n');
+	addFieldHelp(jsonSchema, 'sourceFormat', 'sourceFormat: 2', 'pages.md', 'page-source-layout');
 	addHelp(jsonSchema, 'url', [
 		yamlExample('url: https://example.com/'),
 		'The absolute public URL. Its path also determines the base path for generated links and assets.',
@@ -563,6 +564,7 @@ const addContentHelp = (jsonSchema) => {
 		'Optionally excludes an additional page from site navigation without removing its public URL.',
 		documentationLink('Site navigation reference', 'pages.md', 'navigation'),
 	]);
+	addFieldHelp(jsonSchema, 'navigation.order', 'navigation:\n  order: 1000', 'pages.md', 'navigation');
 	addFieldHelp(jsonSchema, 'navigation.listed', 'navigation:\n  listed: false', 'pages.md', 'navigation', [true, false]);
 };
 

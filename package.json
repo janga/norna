@@ -105,7 +105,7 @@
     "test:fixture:build": "node scripts/test-basic-fixture-build.mjs",
     "test:examples": "node scripts/test-examples.mjs",
     "test:examples:browser": "node scripts/test-navigation.mjs --site-dir site tests/examples-gallery.spec.ts",
-    "test:page-model": "node scripts/test-page-model.mjs",
+    "test:page-model": "node scripts/test-page-model.mjs && node --test scripts/test-page-order.mjs scripts/test-page-order-integration.mjs",
     "test:site-upgrade": "node scripts/test-site-upgrade.mjs",
     "test:page-markdown": "node scripts/test-page-markdown.mjs && node scripts/test-structured-blocks.mjs && node scripts/test-named-notes.mjs && node scripts/test-content-tabs.mjs",
     "test:tabs:browser": "node scripts/test-navigation.mjs --site-dir fixtures/content-tabs/site tests/content-tabs.spec.ts",

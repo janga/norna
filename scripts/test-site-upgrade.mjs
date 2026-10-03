@@ -23,10 +23,10 @@ const snapshot = async (directory) => {
 };
 const makeSite = async (name, pageRoot) => {
 	const site = path.join(temporary, name, 'custom-site');
-	await write(path.join(site, 'site-config/settings.yaml'), 'url: https://example.com/docs/\n');
+	await write(path.join(site, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/docs/\n');
 	await write(path.join(site, 'root/tree-theme.yaml'), 'preset: documentation\n');
 	await write(path.join(site, pageRoot, 'content.md'), '# Home\r\nBehåll åäö.\r\n');
-	await write(path.join(site, pageRoot, 'pages/010-guide/content.md'), '# Guide\n');
+	await write(path.join(site, pageRoot, 'pages/guide/content.md'), '# Guide\n');
 	return site;
 };
 const run = (site, args = [], cwd = site) => spawnSync(process.execPath, [cli, '--site-dir', site, 'site:upgrade', ...args], { encoding: 'utf8', cwd });
@@ -35,7 +35,7 @@ try {
 	const before = await snapshot(site);
 	assert.deepEqual((await planSiteUpgrade(site)).moves, []);
 	for (const args of [[], ['--apply']]) {
-		const result = run(site, args, path.join(site, 'root/pages/010-guide'));
+		const result = run(site, args, path.join(site, 'root/pages/guide'));
 		assert.equal(result.status, 0, result.stderr);
 		assert.match(result.stdout, /already uses the current/);
 		assert.deepEqual(await snapshot(site), before, 'Current layouts are checked without writes.');

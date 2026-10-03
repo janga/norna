@@ -40,7 +40,7 @@ not establish that page rendering still works.
 The editable SVG generator produces schematic full-window VS Code proposals,
 including light/dark and compact examples. They are not actual screenshots of
 implemented behavior. The embedded image preview comes from the existing
-`site/pages/010-features/images/navigation-single-desktop.png`; the homepage
+`site/pages/features/images/navigation-single-desktop.png`; the homepage
 theme, local theme, deep-tree and shared-file scenes identify illustrative
 files or structures. YAML and Markdown editor text is schematic.
 
@@ -63,7 +63,7 @@ files, on 2026-09-20. The accepted delivery contract is
 [BL-140 VS Code Page Files Implementation](../backlog/BL-140-vscode-page-files-implementation.md).
 That implementation is complete and verified in the owner's Default profile.
 The drawings remain design history; use the
-[editor reference](../../../site/root/pages/032-reference/pages/060-workflows/pages/010-editor/content.md)
+[editor reference](../../../site/root/pages/reference/pages/workflows/pages/editor/content.md)
 for the delivered controls and current scope.
 
 Generated-state directories belong to the scratch copy, not this source.

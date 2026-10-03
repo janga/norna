@@ -322,7 +322,7 @@ assert.deepEqual(content.properties.page.properties.aliases.examples, [['/old-ab
 assert.deepEqual(content.properties.page.properties.aliases.items.examples, ['/old-about/']);
 assert.equal(content.properties.page.required, undefined);
 assert.equal(content.required, undefined);
-assert.deepEqual(Object.keys(content.properties.navigation.properties), ['listed']);
+assert.deepEqual(Object.keys(content.properties.navigation.properties), ['order', 'listed']);
 
 console.log('Schema metadata tests passed.');
 

@@ -13,10 +13,10 @@ test('image suggestions classify live page references, not publication or saved 
 	};
 	const block = (type, names) => `\`\`\`${type}\nitems:\n${names.map((name) => `  - image: ${name}`).join('\n')}\n\`\`\`\n`;
 	try {
-		await write('site-config/settings.yaml', 'url: https://example.com/\n');
+		await write('site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 		await write('root/content.md', `# Home\n\n${block('image-stack', ['z-unused.svg'])}`);
-		await write('root/pages/010-other/content.md', `# Other\n\n${block('image-stack', ['y-other.svg'])}`);
-		for (const [page, files] of [['root', ['a-used.svg', 'z-unused.svg']], ['root/pages/010-other', ['b-used.svg', 'y-other.svg']]]) {
+		await write('root/pages/other/content.md', `# Other\n\n${block('image-stack', ['y-other.svg'])}`);
+		for (const [page, files] of [['root', ['a-used.svg', 'z-unused.svg']], ['root/pages/other', ['b-used.svg', 'y-other.svg']]]) {
 			for (const file of files) await write(path.join(page, 'images', file), '<svg/>');
 		}
 		const complete = async (source) => (await getImageCompletionContext({
@@ -31,7 +31,7 @@ test('image suggestions classify live page references, not publication or saved 
 			], type);
 			assert.ok(!candidates[0].referencedBy.includes('root/content.md'));
 			assert.ok(candidates[1].referencedBy.includes('root/content.md'));
-			assert.deepEqual(candidates[2].referencedBy, ['root/pages/010-other/content.md']);
+			assert.deepEqual(candidates[2].referencedBy, ['root/pages/other/content.md']);
 			const deleted = await complete(source.replace('a-used.svg', ''));
 			assert.equal(deleted.find(({ filename }) => filename === 'a-used.svg').usage, 'unused');
 		}
@@ -46,10 +46,10 @@ test('image suggestions classify live page references, not publication or saved 
 			const candidates = await complete(`# Home\n\n${literal}\n\n${block('image-stack', [''])}`);
 			assert.ok(candidates.every(({ usage }) => usage === 'unused'), literal);
 		}
-		await write('root/pages/010-other/images/a-used.svg', '<svg/>');
+		await write('root/pages/other/images/a-used.svg', '<svg/>');
 		let candidates = await complete(`# Home\n\n${block('image-stack', ['a-used.svg', ''])}`);
 		assert.deepEqual(candidates.filter(({ filename }) => filename === 'a-used.svg').map(({ usage }) => usage), ['used', 'unused']);
-		await write('root/pages/020-third/images/b-used.svg', '<svg/>');
+		await write('root/pages/third/images/b-used.svg', '<svg/>');
 		candidates = await complete(`# Home\n\n${block('image-stack', ['b-used.svg', ''])}`);
 		assert.deepEqual(candidates.filter(({ filename }) => filename === 'b-used.svg').map(({ usage }) => usage), ['ambiguous', 'ambiguous']);
 	} finally {

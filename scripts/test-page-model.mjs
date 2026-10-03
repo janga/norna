@@ -10,72 +10,71 @@ import {
 	parsePageDirectoryPath,
 } from './lib/page-model.mjs';
 
-assert.deepEqual(parsePageDirectory('010-getting-started'), {
-	pageDirectory: '010-getting-started',
-	pageOrder: 10,
+assert.deepEqual(parsePageDirectory('getting-started'), {
+	pageDirectory: 'getting-started',
+	pageOrder: null,
 	pageId: 'getting-started',
 });
 
-assert.deepEqual(parsePageDirectory('120-api-reference'), {
-	pageDirectory: '120-api-reference',
-	pageOrder: 120,
+assert.deepEqual(parsePageDirectory('api-reference'), {
+	pageDirectory: 'api-reference',
+	pageOrder: null,
 	pageId: 'api-reference',
 });
 
 assert.deepEqual(parsePageDirectoryPath('.'), {
 	pageDirectory: '.', pageDirectories: [], pageId: 'home', pageIds: [],
-	pageOrder: 0, pageOrders: [], pagePath: '', parentPagePath: null, depth: 0,
+	pageOrder: 0, pagePath: '', parentPagePath: null, depth: 0,
 });
 assert.deepEqual(getPageDirectoryAncestors('.'), []);
-assert.throws(() => parsePageDirectoryPath('000-home'), /Child page orders must be 001–999/);
-assert.throws(() => parsePageDirectoryPath('000-home/pages/010-about'), /Child page orders must be 001–999/);
 
-assert.deepEqual(parsePageDirectoryPath('010-guides/pages/020-installation'), {
-	pageDirectory: '010-guides/pages/020-installation',
-	pageDirectories: ['010-guides', '020-installation'],
+assert.deepEqual(parsePageDirectoryPath('guides/pages/installation'), {
+	pageDirectory: 'guides/pages/installation',
+	pageDirectories: ['guides', 'installation'],
 	pageId: 'installation',
 	pageIds: ['guides', 'installation'],
-	pageOrder: 20,
-	pageOrders: [10, 20],
+	pageOrder: null,
 	pagePath: 'guides/installation',
 	parentPagePath: 'guides',
 	depth: 2,
 });
 
 assert.equal(
-	encodePageDirectoryPath('010-guides/pages/020-installation'),
-	'010-guides--020-installation',
+	encodePageDirectoryPath('guides/pages/installation'),
+	'guides--installation',
 );
 assert.equal(
-	decodePageDirectoryPath('010-guides--020-installation'),
-	'010-guides/pages/020-installation',
+	decodePageDirectoryPath('guides--installation'),
+	'guides/pages/installation',
 );
 
 assert.equal(getSiteEntryPrefix('./examples/docs/site'), 'examples-docs-site');
 assert.equal(getSiteEntryPrefix('C:\\docs\\page-site'), 'C-docs-page-site');
 assert.equal(getSiteEntryPrefix('/'), 'site');
-assert.equal(encodePageEntryId('site', '.'), 'site-page-root');
+assert.equal(encodePageEntryId('site', '.'), 'site-page-~home');
 assert.equal(
-	encodePageEntryId('./examples/docs/site', '010-guides/pages/020-installation'),
-	'examples-docs-site-page-010-guides--020-installation',
+	encodePageEntryId('./examples/docs/site', 'guides/pages/installation'),
+	'examples-docs-site-page-guides--installation',
 );
 assert.equal(
-	encodePageEntryId('docs-page-010-site', '010-page-move'),
-	'docs-page-010-site-page-010-page-move',
+	encodePageEntryId('docs-page-site', 'page-move'),
+	'docs-page-site-page-page-move',
 );
 
-for (const siteDirLabel of ['site', './examples/docs/site', 'docs-page-010-site', '/tmp/page-sites/site', 'C:\\docs\\page-site', '/']) {
+for (const siteDirLabel of ['site', './examples/docs/site', 'docs-page-site', '/tmp/page-sites/site', 'C:\\docs\\page-site', '/']) {
 	for (const pageDirectory of [
 		'.',
-		'010-about',
-		'010-guides/pages/020-installation',
-		'010-page-move',
-		'010-page-move/pages/020-installation',
-		'010-guides/pages/020-page-move',
-		'010-page-move/pages/020-page-copy',
-		'010-page-020-home',
-		'010-page-000-home',
-		'010-one-page-020-two-page-030-three/pages/040-child',
+		'root',
+		'guide',
+		'about',
+		'guides/pages/installation',
+		'page-move',
+		'page-move/pages/installation',
+		'guides/pages/page-move',
+		'page-move/pages/page-copy',
+		'page-home',
+		'page-home',
+		'one-page-two-page-three/pages/child',
 	]) {
 		assert.equal(
 			decodePageEntryId(siteDirLabel, encodePageEntryId(siteDirLabel, pageDirectory)),
@@ -89,33 +88,29 @@ for (const entryId of [
 	'site-theme',
 	'site-sitewide',
 	'site-page-',
-	'other-site-page-010-about',
-	'site-extra-page-010-about',
-	'site-page-about',
-	'site-page-000-about',
+	'other-site-page-about',
+	'site-extra-page-about',
 	'site-page-010-About',
-	'site-page-010-page-move--',
-	'site-page-010-about---020-child',
-	'site-page-010-about--000-home',
-	'site-page-000-home--010-child',
+	'site-page-page-move--',
+	'site-page-about---child',
 ]) {
 	assert.equal(decodePageEntryId('site', entryId), null, `${entryId} is not a valid page entry for site`);
 }
 
 assert.deepEqual(
-	getPageDirectoryAncestors('010-guides/pages/020-installation/pages/030-macos'),
+	getPageDirectoryAncestors('guides/pages/installation/pages/macos'),
 	[
-		'010-guides',
-		'010-guides/pages/020-installation',
-		'010-guides/pages/020-installation/pages/030-macos',
+		'guides',
+		'guides/pages/installation',
+		'guides/pages/installation/pages/macos',
 	],
 );
 
 for (const pageDirectoryPath of [
-	'010-guides/020-installation',
-	'010-guides/children/020-installation',
-	'pages/010-guides',
-	'010-guides/pages',
+	'guides/installation',
+	'guides/children/installation',
+	'pages/guides',
+	'guides/pages',
 ]) {
 	assert.throws(
 		() => parsePageDirectoryPath(pageDirectoryPath),
@@ -125,24 +120,17 @@ for (const pageDirectoryPath of [
 }
 
 for (const pageDirectory of [
-	'000-about',
-	'10-about',
 	'010_About',
 	'010-About',
-	'010-about-',
-	'010-about--team',
-	'010-om-oss!',
+	'about-',
+	'about--team',
+	'om-oss!',
 ]) {
 	assert.throws(
 		() => parsePageDirectory(pageDirectory),
-		/(Page directories must use the form NNN-page-id|Child page orders must be 001–999)/,
+		/Page directories must use a slug/,
 		`${pageDirectory} should be rejected`,
 	);
 }
-
-assert.throws(
-	() => parsePageDirectoryPath('010-guides/pages/000-home'),
-	/Child page orders must be 001–999/,
-);
 
 console.log('Page model test passed.');

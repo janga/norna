@@ -1,3 +1,4 @@
+import { assertSiteSourceFormat } from './site-source-format.mjs';
 import { lstat } from 'node:fs/promises';
 import path from 'node:path';
 import { readThemePackage } from './theme-packages.mjs';
@@ -25,6 +26,7 @@ export const planSiteUpgrade = async (siteRoot) => {
 	for (const filename of [source.content, path.join(siteRoot, 'site-config', 'settings.yaml'), source.theme]) {
 		if (!(await inspect(filename))?.isFile()) throw new Error(`${filename} is required and must be a regular file.`);
 	}
+	await assertSiteSourceFormat(siteRoot);
 	await readThemePackage({ siteRoot, filename: source.theme });
 	return { siteRoot, moves: [] };
 };

@@ -14,5 +14,5 @@ npm run review:capture -- scratch help-a-dog/ --viewport 1200x800
 ```
 
 The image is `.local/review-captures/scratch/help-a-dog-1200x800-light.png`.
-Copy it to `site/root/pages/030-examples/pages/040-norna-extensions/images/child-page-list.png` after checking
+Copy it to `site/root/pages/examples/pages/norna-extensions/images/child-page-list.png` after checking
 that headings, descriptions, and order agree with the source.

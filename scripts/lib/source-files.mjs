@@ -11,7 +11,7 @@ export const sourceFileDefinitions = [
 	{ name: 'tree-theme.yaml', location: 'page', schemaKind: 'theme', rootSchemaKind: 'rootTheme', required: 'root', rootText: 'preset: documentation\n', text: '# Modify inherited settings. Add preset only to replace the complete base.\n{}\n', description: 'Visual settings for this page and its descendants. Without preset, modifies inherited values; preset selects a new base. Required on the root page.', removalEffect: 'This branch resumes the ancestor tree theme. Overrides on descendants remain; a descendant preset starts an independent base.' },
 	{ name: 'page-theme.yaml', location: 'page', schemaKind: 'pageTheme', text: '# Modify this page only. Add preset only to replace the complete base.\n{}\n', description: 'Visual settings for this page only. Without preset, modifies its tree theme; preset selects a new base. Descendants keep their tree theme.', removalEffect: 'This page will use its selected tree theme again. Other pages are unchanged.' },
 ];
-export const sourcePageDirectoryPattern = pageDirectoryPattern.source.replace('^', '^(?!000-)');
+export const sourcePageDirectoryPattern = pageDirectoryPattern.source;
 const schemas = { config: configSchema, contentFrontmatter: siteSchema, sitewideContent: sitewideSchema, theme: themeVisualSchema, rootTheme: rootThemeSchema, pageTheme: pageThemeSchema };
 
 export const getSourcePageLocation = (siteRoot, directory) => {

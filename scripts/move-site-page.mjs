@@ -1,135 +1,48 @@
-import { applyPageMovePlan } from './lib/page-move-apply.mjs';
 import path from 'node:path';
-import {
-	createPageMovePlan,
-	formatPageMovePlan,
-} from './lib/page-move-plan.mjs';
-import {
-	getSiteLinkGraph,
-	getSitePublicFiles,
-} from './lib/site-link-graph.mjs';
-import {
-	sitePagesDir,
-	sitePagesLabel,
-	siteProjectRoot,
-	siteDir,
-} from './lib/site-paths.mjs';
-import { getSiteStructure } from './lib/site-structure.mjs';
+import { applyPageMovePlan } from './lib/page-move-apply.mjs';
+import { createPageMovePlan, formatPageMovePlan } from './lib/page-move-plan.mjs';
+import { planEditorPagePlacement, applyEditorPagePlacement } from './lib/editor-page-placement.mjs';
+import { parsePlacementArguments, confirmCliRenumbering, describeRenumbering } from './lib/page-placement-cli.mjs';
+import { readEditorLinkState } from './lib/editor-site-links.mjs';
+import { sitePagesDir, sitePagesLabel, siteProjectRoot, siteDir } from './lib/site-paths.mjs';
 
-const usage = `
-Usage:
-  norna page:move <old-url> <new-url> [--order <NNN>] [--no-aliases] [--write]
+const usage = `Usage:
+  norna page:move <old-url> <new-url> [--order <integer>]
+  norna page:move <page-url> --before <target-url> | --after <target-url>
+  norna page:move <page-url> --parent <parent-url> [--first | --last]
 
-Examples:
-  norna page:move /guides/install/ /guides/installation/
-  norna page:move /guides/install/ /reference/install/ --write
-
-The command is a dry run unless --write is present. If the old page has
-already been moved by hand, the same command reconciles its links and aliases.
-`.trim();
-
-const parseOrder = (value) => {
-	if (!/^\d{1,3}$/.test(value ?? '')) {
-		throw new Error(`Invalid --order "${value ?? ''}". Use an integer from 1 to 999.\n${usage}`);
-	}
-	const order = Number.parseInt(value, 10);
-	if (order < 1 || order > 999) {
-		throw new Error(`Invalid --order "${value}". Use an integer from 1 to 999.\n${usage}`);
-	}
-	return order;
-};
-
-const parseArgs = (rawArgs) => {
-	const options = {
-		help: false,
-		order: null,
-		preserveAliases: true,
-		urls: [],
-		write: false,
-	};
-	const seen = new Set();
-
-	for (let index = 0; index < rawArgs.length; index += 1) {
-		const arg = rawArgs[index];
-		if (arg === '-h' || arg === '--help') {
-			options.help = true;
-			continue;
-		}
-		if (arg === '--write') {
-			if (seen.has('write')) throw new Error(`--write may be specified only once.\n${usage}`);
-			seen.add('write');
-			options.write = true;
-			continue;
-		}
-		if (arg === '--no-aliases') {
-			if (seen.has('aliases')) throw new Error(`--no-aliases may be specified only once.\n${usage}`);
-			seen.add('aliases');
-			options.preserveAliases = false;
-			continue;
-		}
-		if (arg === '--order' || arg.startsWith('--order=')) {
-			if (seen.has('order')) throw new Error(`--order may be specified only once.\n${usage}`);
-			seen.add('order');
-			const inlineValue = arg.startsWith('--order=') ? arg.slice('--order='.length) : null;
-			const value = inlineValue ?? rawArgs[index + 1];
-			if (inlineValue === null) index += 1;
-			options.order = parseOrder(value);
-			continue;
-		}
-		if (arg.startsWith('-')) throw new Error(`Unknown option: ${arg}\n${usage}`);
-		options.urls.push(arg);
-	}
-
-	if (!options.help && options.urls.length !== 2) {
-		throw new Error(`page:move requires an old URL and a new URL.\n${usage}`);
-	}
-	return options;
-};
-
-const toDisplayPath = (filePath) => {
-	const relativePath = path.relative(siteProjectRoot, filePath);
-	return (relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath)
-		? relativePath
-		: filePath).split(path.sep).join('/');
-};
-
-const main = async () => {
-	const options = parseArgs(process.argv.slice(2));
-	if (options.help) {
-		console.log(usage);
-		return;
-	}
-
-	const siteStructure = await getSiteStructure();
-	const [graph, publicFiles] = await Promise.all([
-		getSiteLinkGraph({ siteStructure }),
-		getSitePublicFiles(),
-	]);
-	const plan = await createPageMovePlan({
-		from: options.urls[0],
-		graph,
-		order: options.order,
-		preserveAliases: options.preserveAliases,
-		publicFiles,
-		sitePagesDir,
-		sitePagesLabel,
-		siteStructure,
-		to: options.urls[1],
-	});
-
-	console.log(formatPageMovePlan(plan, toDisplayPath).join('\n'));
-	if (!options.write) {
-		console.log('\nDry run only. Run the same command with --write to apply this plan.');
-		return;
-	}
-
-	await applyPageMovePlan(plan, { siteRoot: siteDir });
-	console.log(`\nPage move completed: ${plan.from} -> ${plan.to}`);
-};
-
+Options: --no-aliases, --write, --dry-run, --allow-renumber
+Dry run unless --write is present. The URL-to-URL form also reconciles a page
+already moved by hand. Renumbering other pages requires confirmation.`;
+const display = filename => path.relative(siteProjectRoot, filename) || filename;
 try {
-	await main();
-} catch (error) {
-	console.error(error instanceof Error ? error.message : String(error));
-	process.exit(1);
-}
+ const options = parsePlacementArguments(process.argv.slice(2));
+ if (options.help) { console.log(usage); process.exit(0); }
+ if (options.slug !== null) throw new Error('Use the new URL to change a slug with page:move.');
+ const relative = options.placement !== null;
+ if (options.positionals.length !== (relative ? 1 : 2)) throw new Error(usage);
+ if (relative && options.order !== null) throw new Error('Do not combine --order with a placement selector.');
+ const state = await readEditorLinkState({ siteRoot: siteDir });
+ if (state.incomplete.length) throw new Error(state.incomplete.join('\n'));
+ let plan;
+ if (relative) {
+  const find = url => state.structure.nodes.find(node => (node.isHome ? '/' : `/${node.pagePath}/`) === url);
+  const source = find(options.positionals[0]), target = find(options.target);
+  if (!source || !target) throw new Error('Choose existing source and target page URLs.');
+  plan = await planEditorPagePlacement({ siteRoot: siteDir, sourcePath: source.contentPath, targetPath: target.contentPath,
+   placement: options.placement, preserveAliases: options.preserveAliases });
+  console.log(`Page placement: ${plan.sourceUrl} ${options.placement} ${options.target}\nOrder: ${plan.sourceOrder}`);
+  if (plan.movePreview) console.log(formatPageMovePlan(plan.movePreview, display).join('\n'));
+  else if (plan.orderChanges.length) console.log(describeRenumbering(plan.orderChanges, display));
+ } else {
+  plan = await createPageMovePlan({ from: options.positionals[0], to: options.positionals[1], order: options.order,
+   preserveAliases: options.preserveAliases, graph: state.graph, publicFiles: state.publicFiles,
+   siteStructure: state.structure, sitePagesDir, sitePagesLabel, generatedRoutes: state.generatedRoutes });
+  console.log(formatPageMovePlan(plan, display).join('\n'));
+ }
+ if (!options.write) { console.log('\nDry run only. Run with --write to apply this plan.'); process.exit(0); }
+ if (!await confirmCliRenumbering(plan.orderChanges, options)) { console.log('Cancelled. No files changed.'); process.exit(0); }
+ if (relative) await applyEditorPagePlacement(plan, { allowRenumber: true });
+ else await applyPageMovePlan(plan, { siteRoot: siteDir, generatedRoutes: state.generatedRoutes, allowRenumber: true });
+ console.log(`Page move completed: ${plan.sourceUrl ?? plan.from} -> ${plan.destinationUrl ?? plan.to}. ${plan.orderChanges.length} existing sibling page(s) renumbered.`);
+} catch (error) { console.error(error.message); process.exitCode = 1; }

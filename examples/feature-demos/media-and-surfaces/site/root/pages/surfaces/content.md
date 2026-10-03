@@ -1,0 +1,62 @@
+---
+page:
+  description: See how palette defaults and section surfaces work together.
+navigation:
+  order: 2000
+---
+
+# Surfaces
+
+
+## Appearance {#appearance}
+
+The site preset provides coordinated Light and Dark colors. Use the Appearance
+selector in the navigation to compare this page using System, Light, and Dark.
+The choice applies to the complete site, including navigation, prose,
+section surfaces, cards, captions, and carousel controls.
+
+The root theme enables the selector with:
+
+```yaml
+appearance:
+  default: system
+```
+
+
+## Palette options {#palette-options}
+
+Norna provides a small set of named palettes. The theme chooses one
+for the whole site:
+
+```yaml
+palette: near-monochrome
+```
+
+The examples use `near-monochrome` and `warm-paper`. A palette defines the page,
+navigation, frame and section colours together, so these parts stay in balance.
+See the theme reference for the complete list of supported choices.
+
+## Emphasis surface {#emphasis-surface}
+
+The page theme uses a palette and a surface sequence when a visual pause or
+change of rhythm helps the reader. This is not a free-form colour override:
+
+```yaml
+sections:
+  backgroundPattern: accented
+```
+
+The theme moves through base, soft and emphasis backgrounds, then back through
+soft to base before repeating. Individual sections do not select their own
+colours. This example uses top navigation, so the changing section backgrounds
+span the browser width. Sites with tree navigation use one uniform reading
+surface instead.
+
+## A practical rule {#practical-rule}
+
+Use the site palette for the overall tone. Use soft and emphasis surfaces for a
+small number of meaningful transitions, not to make every section look
+unrelated.
+
+Typography profiles and Norna blocks can vary the content inside that system;
+surfaces provide the page-level rhythm around it.

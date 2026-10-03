@@ -8,9 +8,9 @@ import { createTempSite, runNorna } from './test-support/content-model.mjs';
 test('CommonMark and GFM constructs survive a complete Norna build', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
-		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/docs/\n');
-		await mkdir(path.join(siteDir, 'root/pages/010-guide'), { recursive: true });
-		await writeFile(path.join(siteDir, 'root/pages/010-guide/content.md'), '# Guide\n\n## Intro\n\nA destination.\n');
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/docs/\n');
+		await mkdir(path.join(siteDir, 'root/pages/guide'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/pages/guide/content.md'), '# Guide\n\n## Intro\n\nA destination.\n');
 		const source = [
 			'Markdown audit',
 			'==============',

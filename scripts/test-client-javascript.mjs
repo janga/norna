@@ -12,7 +12,7 @@ await mkdir(tempParent, { recursive: true });
 const tempRoot = await mkdtemp(path.join(tempParent, 'norna-client-javascript-'));
 const siteDir = path.join(tempRoot, 'site');
 const homeDir = path.join(siteDir, 'root');
-const pageDir = path.join(siteDir, 'root/pages', '010-details');
+const pageDir = path.join(siteDir, 'root/pages', 'details');
 const configPath = path.join(siteDir, 'site-config/settings.yaml');
 
 const runBuild = () => {
@@ -70,7 +70,7 @@ const assertScrollBehavior = (html, behavior, label) => {
 		`${label} should render scroll-behavior: ${behavior}.`,
 	);
 };
-const writeConfig = (scrollBehavior) => writeFile(configPath, `url: https://example.com/
+const writeConfig = (scrollBehavior) => writeFile(configPath, `sourceFormat: 2\nurl: https://example.com/
 ${scrollBehavior ? `scrollBehavior: ${scrollBehavior}\n` : ''}`);
 const writeSvg = (filePath, color) => writeFile(filePath, [
 	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90">',
@@ -226,7 +226,7 @@ items:
 		'An image stack should load only its inspection and persistent-caption enhancement in addition to reader preferences.',
 	);
 	assert.match(imageStackHtml, /data-image-inspection-trigger/);
-	assert.match(imageStackHtml, /href="\/images\/original\/pages\/010-details\/images\/first-[a-f0-9]+\.svg"/);
+	assert.match(imageStackHtml, /href="\/images\/original\/pages\/details\/images\/first-[a-f0-9]+\.svg"/);
 	assert.match(imageStackHtml, /data-image-inspector/);
 	const imageStackScript = await readDeliveredScript(getPageFeatureScripts(imageStackHtml)[0]);
 	assert.match(imageStackScript, /showModal/);

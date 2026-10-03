@@ -1,10 +1,11 @@
+import { assertRenumberingAllowed } from './page-order.mjs';
 import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, rename, rm, rmdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { getSiteLinkGraph } from './site-link-graph.mjs';
 import { getSiteStructure } from './site-structure.mjs';
 
-const writeFileAtomically = async (filePath, source, mode) => {
+export const writeFileAtomically = async (filePath, source, mode) => {
 	const temporaryPath = path.join(
 		path.dirname(filePath),
 		`.${path.basename(filePath)}.norna-${process.pid}-${randomUUID()}.tmp`,
@@ -43,7 +44,8 @@ const assertFinalSite = async (siteRoot, generatedRoutes) => {
 	].join('\n'));
 };
 
-export const applyPageMovePlan = async (plan, { siteRoot, generatedRoutes, renameDirectory = rename }) => {
+export const applyPageMovePlan = async (plan, { siteRoot, generatedRoutes, renameDirectory = rename, writeSource = writeFileAtomically, allowRenumber = false }) => {
+	assertRenumberingAllowed(plan.orderChanges ?? [], allowRenumber);
 	await assertSourcesUnchanged(plan);
 	let collectionCreated = false;
 	let directoryMoved = false;
@@ -67,7 +69,7 @@ export const applyPageMovePlan = async (plan, { siteRoot, generatedRoutes, renam
 		}
 
 		for (const change of plan.fileChanges) {
-			await writeFileAtomically(change.finalPath, change.updatedSource, change.mode);
+			await writeSource(change.finalPath, change.updatedSource, change.mode);
 			fileWritten = true;
 		}
 		await assertFinalSite(siteRoot, generatedRoutes);

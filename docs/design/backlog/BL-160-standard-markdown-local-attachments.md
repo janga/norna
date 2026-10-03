@@ -96,9 +96,9 @@ Coordinate terminology and beginner guidance with BL-159. Its discussion
 priority does not imply that image rendering must be implemented first.
 
 Current documentation is in the
-[page-attachment reference](../../../site/root/pages/032-reference/pages/010-site/pages/055-attachments/content.md)
+[page-attachment reference](../../../site/root/pages/reference/pages/site/pages/attachments/content.md)
 and the working
-[attachment example](../../../site/root/pages/030-examples/pages/050-building-a-site/content.md).
+[attachment example](../../../site/root/pages/examples/pages/building-a-site/content.md).
 
 ## Ready For Implementation When
 

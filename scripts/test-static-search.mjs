@@ -38,7 +38,7 @@ const readDeliveredScripts = async (html) => {
 
 try {
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `url: https://example.com/project/
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `sourceFormat: 2\nurl: https://example.com/project/
 language: bg
 search: true
 `);
@@ -48,9 +48,9 @@ search: true
 
 Началната страница съдържа уникалната дума кобалтовязовец.
 `);
-	const nestedPageDir = path.join(siteDir, 'root/pages', '010-guides', 'pages', '010-installation');
+	const nestedPageDir = path.join(siteDir, 'root/pages', 'guides', 'pages', 'installation');
 	await mkdir(nestedPageDir, { recursive: true });
-	await writeFile(path.join(siteDir, 'root/pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
+	await writeFile(path.join(siteDir, 'root/pages', 'guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 	await writeFile(path.join(nestedPageDir, 'content.md'), `# Installation
 
 ## Verify {#verify}
@@ -95,7 +95,7 @@ This nested section contains the unique term amberotter.
 
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 
-	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\nsearch: false\n');
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/project/\nsearch: false\n');
 	const disabledBuild = await runSite(siteDir, 'build');
 	assert.match(disabledBuild.stdout, /Static search is disabled\./);
 	assert.equal(await fileExists(path.join(distDir, 'search', 'index.html')), false);
@@ -106,8 +106,8 @@ This nested section contains the unique term amberotter.
 
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 
-	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/project/\nsearch: true\n');
-	const conflictingPageDir = path.join(siteDir, 'root/pages', '020-search');
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/project/\nsearch: true\n');
+	const conflictingPageDir = path.join(siteDir, 'root/pages', 'search');
 	await mkdir(conflictingPageDir, { recursive: true });
 	await writeFile(path.join(conflictingPageDir, 'content.md'), '# Search page\n\nConflicting source page.\n');
 	await assert.rejects(

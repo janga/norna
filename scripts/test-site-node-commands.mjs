@@ -41,7 +41,7 @@ const createMinimalSite = async (name) => {
 	const targetHomeDir = path.join(targetSiteDir, 'root');
 	await mkdir(path.join(targetHomeDir, 'pages'), { recursive: true });
 	await mkdir(path.join(targetSiteDir, 'site-config'), { recursive: true });
-	await writeFile(path.join(targetSiteDir, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(targetSiteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\n');
 	await writeFile(path.join(targetSiteDir, 'root', 'tree-theme.yaml'), 'preset: project\n');
 	await writeFile(path.join(targetHomeDir, 'content.md'), '# Home\n\n## Introduction\n\nHome page.\n');
 	return targetSiteDir;
@@ -50,47 +50,47 @@ const createMinimalSite = async (name) => {
 try {
 	await mkdir(path.join(homeDir, 'images'), { recursive: true });
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\n');
 	await writeFile(path.join(siteDir, 'root', 'tree-theme.yaml'), 'preset: project\n');
 	await writeFile(path.join(homeDir, 'content.md'), '# Home\n\n## Introduction\n\nHome page.\n');
 
 	const firstPage = await runNorna(['page:add', 'Räksmörgås!', '--parent', '/']);
-	const sandwichDir = path.join(pagesDir, '010-raksmorgas');
+	const sandwichDir = path.join(pagesDir, 'raksmorgas');
 	assert.match(firstPage.stdout, /Created page "Räksmörgås!"/);
 	assert.match(firstPage.stdout, /URL: \/raksmorgas\//);
 	assert.equal(await exists(path.join(sandwichDir, 'images')), true);
-	assert.equal(await readFile(path.join(sandwichDir, 'content.md'), 'utf8'), '# Räksmörgås!\n\n## Introduction\n\nStart writing here.\n');
+	assert.equal(await readFile(path.join(sandwichDir, 'content.md'), 'utf8'), '---\nnavigation:\n  order: 1000\n---\n\n# Räksmörgås!\n\n## Introduction\n\nStart writing here.\n');
 
 	const guides = await runNorna(['page:add', 'Guides', '--parent=/']);
-	const guidesDir = path.join(pagesDir, '020-guides');
+	const guidesDir = path.join(pagesDir, 'guides');
 	assert.equal(await exists(path.join(guidesDir, 'content.md')), true);
 	assert.equal(await exists(path.join(guidesDir, 'images')), true);
 	assert.match(guides.stdout, /URL: \/guides\//);
 
 	await runNorna(['page:add', 'Installation', '--parent', '/guides/']);
-	const installationDir = path.join(guidesDir, 'pages', '010-installation');
+	const installationDir = path.join(guidesDir, 'pages', 'installation');
 	assert.equal(await exists(path.join(installationDir, 'content.md')), true);
 
 	await runNorna(['page:add', 'Workflows'], guidesDir);
-	assert.equal(await exists(path.join(guidesDir, 'pages', '020-workflows', 'content.md')), true);
+	assert.equal(await exists(path.join(guidesDir, 'pages', 'workflows', 'content.md')), true);
 
 	await runNorna(['page:add', 'API v2', '--slug', 'api', '--order', '015', '--parent', 'guides']);
-	assert.equal(await exists(path.join(guidesDir, 'pages', '015-api', 'content.md')), true);
+	assert.equal(await exists(path.join(guidesDir, 'pages', 'api', 'content.md')), true);
 	await runNorna(['page:add', 'Deployment', '--parent', 'guides']);
-	assert.equal(await exists(path.join(guidesDir, 'pages', '030-deployment', 'content.md')), true);
+	assert.equal(await exists(path.join(guidesDir, 'pages', 'deployment', 'content.md')), true);
 
 	await runNorna(['page:add', 'About'], pagesDir);
-	assert.equal(await exists(path.join(pagesDir, '030-about', 'content.md')), true);
+	assert.equal(await exists(path.join(pagesDir, 'about', 'content.md')), true);
 	await runNorna(['page:add', "What's {new}?", '--parent', '/']);
 	assert.equal(
-		await readFile(path.join(pagesDir, '040-whats-new', 'content.md'), 'utf8'),
-		"# What's \\{new\\}?\n\n## Introduction\n\nStart writing here.\n",
+		await readFile(path.join(pagesDir, 'whats-new', 'content.md'), 'utf8'),
+		"---\nnavigation:\n  order: 4000\n---\n\n# What's \\{new\\}?\n\n## Introduction\n\nStart writing here.\n",
 	);
 
 	const duplicateSlug = await runNornaFailure(['page:add', 'Installation', '--parent', 'guides']);
 	assert.match(duplicateSlug, /A sibling with that slug already exists/);
-	const duplicateOrder = await runNornaFailure(['page:add', 'Other', '--order', '010', '--parent', 'guides']);
-	assert.match(duplicateOrder, /A sibling already uses it/);
+	await runNorna(['page:add', 'Other', '--order', '1000', '--parent', 'guides']);
+	assert.match((await runNorna(['content:check'])).stdout, /duplicate sibling navigation.order 1000/);
 	const unknownParent = await runNornaFailure(['page:add', 'Other', '--parent', '/missing/']);
 	assert.match(unknownParent, /Cannot find parent "\/missing\/"/);
 	const invalidCwd = await runNornaFailure(['page:add', 'Other'], root);
@@ -105,13 +105,13 @@ try {
 	assert.equal((await readdir(pagesDir)).some((entry) => entry.endsWith('-drafts')), false);
 
 	await runNorna(['page:add', 'Platforms', '--parent', 'guides']);
-	const platformsDir = path.join(guidesDir, 'pages', '040-platforms');
+	const platformsDir = path.join(guidesDir, 'pages', 'platforms');
 	await runNorna(['page:add', 'Windows'], platformsDir);
-	assert.equal(await exists(path.join(platformsDir, 'pages', '010-windows', 'content.md')), true);
-	assert.match((await runNorna(['content:check'])).stdout, /Content check passed/);
+	assert.equal(await exists(path.join(platformsDir, 'pages', 'windows', 'content.md')), true);
+	assert.match((await runNorna(['content:check'])).stdout, /Content check completed with warnings/);
 
 	const bothSite = await createMinimalSite('invalid-both');
-	const bothNode = path.join(bothSite, 'root/pages', '010-both');
+	const bothNode = path.join(bothSite, 'root/pages', 'both');
 	await mkdir(bothNode);
 	await writeFile(path.join(bothNode, 'content.md'), '# Both\n');
 	await writeFile(path.join(bothNode, 'category.yaml'), 'label: Both\n');
@@ -121,7 +121,7 @@ try {
 	);
 
 	const categoryImagesSite = await createMinimalSite('invalid-category-source');
-	const categoryImagesNode = path.join(categoryImagesSite, 'root/pages', '010-guides');
+	const categoryImagesNode = path.join(categoryImagesSite, 'root/pages', 'guides');
 	await mkdir(categoryImagesNode, { recursive: true });
 	await writeFile(path.join(categoryImagesNode, 'category.yaml'), 'label: Guides\n');
 	assert.match(
@@ -129,19 +129,9 @@ try {
 		/category\.yaml is no longer supported/,
 	);
 
-	const duplicateSite = await createMinimalSite('invalid-duplicate-id');
-	await mkdir(path.join(duplicateSite, 'root/pages', '010-guides'));
-	await mkdir(path.join(duplicateSite, 'root/pages', '020-guides'));
-	await writeFile(path.join(duplicateSite, 'root/pages', '010-guides', 'content.md'), '# Guides\n');
-	await writeFile(path.join(duplicateSite, 'root/pages', '020-guides', 'content.md'), '# Guides\n');
-	assert.match(
-		await runNornaFailureForSite(duplicateSite, ['page:add', 'Test', '--parent', '/', '--dry-run']),
-		/duplicate sibling id "guides"/,
-	);
-
 	const emptyOverviewSite = await createMinimalSite('empty-overview');
-	await mkdir(path.join(emptyOverviewSite, 'root/pages', '010-guides'));
-	await writeFile(path.join(emptyOverviewSite, 'root/pages', '010-guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
+	await mkdir(path.join(emptyOverviewSite, 'root/pages', 'guides'));
+	await writeFile(path.join(emptyOverviewSite, 'root/pages', 'guides', 'content.md'), '---\npage:\n  listChildren: true\n---\n\n# Guides\n');
 	const { stdout: emptyOverviewCheck } = await runNornaForSite(emptyOverviewSite, ['content:check']);
 	assert.match(emptyOverviewCheck, /Content check completed with warnings/);
 	assert.match(emptyOverviewCheck, /page\.listChildren has no listed direct child pages/);

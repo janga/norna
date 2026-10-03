@@ -15,11 +15,11 @@ const fixture = async (t) => {
 		await writeFile(filename, source);
 		return filename;
 	};
-	await write('site-config/settings.yaml', 'url: https://example.com/manual/\nsearch: true\n');
+	await write('site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/manual/\nsearch: true\n');
 	await write('root/tree-theme.yaml', 'preset: editorial\n');
 	const home = await write('root/content.md', '# Home\n\n[Guide](/guide/)\n');
-	const sourcePath = await write('root/pages/010-guide/content.md', '---\npage:\n  aliases:\n    - /old-guide/\n---\n\n# Guide\n\n## Read\n\n[My child](child/)\n');
-	const child = await write('root/pages/010-guide/pages/020-child/content.md', '# Child\n\n[Parent](../)\n');
+	const sourcePath = await write('root/pages/guide/content.md', '---\npage:\n  aliases:\n    - /old-guide/\n---\n\n# Guide\n\n## Read\n\n[My child](child/)\n');
+	const child = await write('root/pages/guide/pages/child/content.md', '# Child\n\n[Parent](../)\n');
 	return { siteRoot, sourcePath, home, child, write };
 };
 const applyEdits = (source, edits) => [...edits].sort((a, b) => b.start - a.start).reduce((text, edit) => text.slice(0, edit.start) + edit.text + text.slice(edit.end), source);
@@ -31,7 +31,7 @@ test('removal policies protect required files and describe optional file scope',
 	}
 	for (const [file, sourcePath, effect] of [
 		['root/page-theme.yaml', f.home, /Other pages are unchanged/],
-		['root/pages/010-guide/tree-theme.yaml', f.sourcePath, /descendants/],
+		['root/pages/guide/tree-theme.yaml', f.sourcePath, /descendants/],
 		['site-config/shared-content.yaml', f.home, /whole site/],
 		['public/robots.txt', f.home, /no longer be published/],
 	]) {
@@ -61,7 +61,7 @@ test('site-owned file removal does not require a homepage and still reviews link
 	assert.equal(plan.usage.references.length, 1);
 	assert.ok(plan.usage.incomplete.length, 'A missing homepage must remain visible in link-review limitations.');
 	assert.match((await planEditorRemoval({ ...options, filePath: sharedFile })).effect, /whole site/);
-	for (const file of ['site-config/settings.yaml', 'root/tree-theme.yaml', 'root/pages/010-guide/tree-theme.yaml']) {
+	for (const file of ['site-config/settings.yaml', 'root/tree-theme.yaml', 'root/pages/guide/tree-theme.yaml']) {
 		await assert.rejects(planEditorRemoval({ ...options, filePath: path.join(f.siteRoot, file) }), /cannot be removed separately/);
 	}
 	await assert.rejects(planEditorRemoval({ ...options, filePath: path.join(f.siteRoot, '../outside.txt') }), /selected site/);
@@ -71,7 +71,7 @@ test('site-owned file removal does not require a homepage and still reviews link
 
 test('incoming links resolve aliases, anchors, relative and card links, and exclude a deleted branch', async (t) => {
 	const f = await fixture(t);
-	const other = await f.write('root/pages/030-other/content.md', '# Other\n');
+	const other = await f.write('root/pages/other/content.md', '# Other\n');
 	const sources = new Map([[other, '# Other\n\n[Alias](/old-guide/#read)\n[Child](../guide/child/)\n[External](https://example.com/manual/guide/)\n[Reference][guide]\n\n[guide]: /guide/\n\n```card-list\nitems:\n  - title: Guide\n    link: /guide/\n```\n']]);
 	const usage = await getEditorIncomingLinks({ ...f, sources });
 	assert.equal(usage.references.filter((entry) => entry.sourcePath === other).length, 3);
@@ -83,9 +83,9 @@ test('incoming links resolve aliases, anchors, relative and card links, and excl
 	assert.equal((await getEditorIncomingLinks({ ...f, sources, alias: '/old-guide/' })).references.length, 1);
 	sources.set(other, '# Other\n');
 	assert.notEqual((await planEditorRemoval({ ...f, sources })).fingerprint, plan.fingerprint);
-	const broken = await f.write('root/pages/040-broken/content.md', '---\npage: [\n---\n# Broken\n');
+	const broken = await f.write('root/pages/broken/content.md', '---\npage: [\n---\n# Broken\n');
 	const incomplete = await planEditorRemoval(f);
-	assert.ok(incomplete.usage.incomplete.some((message) => message.includes('040-broken')));
+	assert.ok(incomplete.usage.incomplete.some((message) => message.includes('broken')));
 	assert.ok(incomplete.usage.references.some((entry) => entry.sourcePath === f.home));
 	await rm(broken);
 });
@@ -94,7 +94,7 @@ test('addresses distinguish the site prefix, homepage, overview pages and dirty 
 	const f = await fixture(t);
 	assert.deepEqual(await getEditorPageAddresses(f), { internalLink: '/guide/', webAddress: 'https://example.com/manual/guide/', segment: 'guide', aliases: ['/old-guide/'], incomplete: [] });
 	assert.equal((await getEditorPageAddresses({ ...f, sourcePath: f.home })).webAddress, 'https://example.com/manual/');
-	const overview = await f.write('root/pages/030-group/content.md', '---\npage:\n  listChildren: true\n---\n# Group\n');
+	const overview = await f.write('root/pages/group/content.md', '---\npage:\n  listChildren: true\n---\n# Group\n');
 	assert.equal((await getEditorPageAddresses({ ...f, sourcePath: overview })).internalLink, '/group/');
 	const sources = new Map([[f.sourcePath, '---\npage:\n  aliases: [/draft/]\n---\n# Guide\n']]);
 	assert.deepEqual((await getEditorPageAddresses({ ...f, sources })).aliases, ['/draft/']);
@@ -116,7 +116,7 @@ test('alias edits preserve prose, comments and LF/CRLF; reject collisions and in
 			await assert.rejects(edit([alias]));
 		}
 		await assert.rejects(edit(['/repeat/', '/repeat/']));
-		const other = await f.write('root/pages/030-other/content.md', '# Other\n');
+		const other = await f.write('root/pages/other/content.md', '# Other\n');
 		await assert.rejects(edit(['/taken/'], { sources: new Map([[other, '---\npage:\n  aliases: [/taken/]\n---\n# Other\n']]) }), /conflicts/);
 		await f.write('public/public-guide/index.html', 'A public file');
 		await assert.rejects(edit(['/public-guide/']), /conflicts/);
@@ -138,10 +138,10 @@ test('URL segment changes preview then reuse the page-move transaction and updat
 	// then rename this page. Both actions must agree on the source format.
 	const source = await readFile(f.sourcePath, 'utf8');
 	await writeFile(f.sourcePath, applyEdits(source, await editSiteNodeInformation({ ...f, source, field: 'aliases', value: ['/old-guide/', '/archive/guide/'] })));
-	await f.write('root/pages/010-guide/images/example.svg', '<svg/>');
+	await f.write('root/pages/guide/images/example.svg', '<svg/>');
 	const plan = await planEditorPageAddress({ ...f, segment: 'handbook' });
 	assert.equal(plan.webTo, 'https://example.com/manual/handbook/');
-	assert.equal(path.basename(plan.destinationDirectory), '010-handbook');
+	assert.equal(path.basename(plan.destinationDirectory), 'handbook');
 	assert.equal(plan.mappings.length, 2);
 	assert.equal(await readFile(f.home, 'utf8'), '# Home\n\n[Guide](/guide/)\n');
 	let renames = 0;
@@ -150,7 +150,7 @@ test('URL segment changes preview then reuse the page-move transaction and updat
 	assert.equal(result.url, '/handbook/');
 	assert.match(await readFile(f.home, 'utf8'), /\[Guide\]\(\/handbook\/\)/);
 	assert.match(await readFile(result.sourcePath, 'utf8'), /- "?\/guide\//);
-	assert.match(await readFile(path.join(plan.destinationDirectory, 'pages/020-child/content.md'), 'utf8'), /- "?\/guide\/child\//);
+	assert.match(await readFile(path.join(plan.destinationDirectory, 'pages/child/content.md'), 'utf8'), /- "?\/guide\/child\//);
 	assert.equal(await readFile(path.join(plan.destinationDirectory, 'images/example.svg'), 'utf8'), '<svg/>');
 });
 
@@ -163,7 +163,7 @@ test('URL segment can return to an address previously owned by the same branch',
 	assert.equal(returned.url, '/guide/');
 	assert.match(await readFile(returned.sourcePath, 'utf8'), /- "?\/handbook\//);
 	assert.doesNotMatch(await readFile(returned.sourcePath, 'utf8'), /- "?\/guide\//);
-	const child = await readFile(path.join(path.dirname(returned.sourcePath), 'pages/020-child/content.md'), 'utf8');
+	const child = await readFile(path.join(path.dirname(returned.sourcePath), 'pages/child/content.md'), 'utf8');
 	assert.match(child, /- "?\/handbook\/child\//);
 	assert.doesNotMatch(child, /- "?\/guide\/child\//);
 });
@@ -205,8 +205,8 @@ test('a refused editor rename does not roll back sources when no move has starte
 for (const preserveAliases of [true, false]) test(`slug change preserves existing aliases and applies preserveAliases=${preserveAliases} to the whole subtree`, async (t) => {
 	const f = await fixture(t);
 	await writeFile(f.child, '---\npage:\n  aliases: [/old-child/]\n---\n# Child\n\n[Parent](../)\n');
-	await f.write('root/pages/010-guide/pages/020-child/pages/030-deep/content.md', '# Deep\n');
-	await f.write('root/pages/010-guide/downloads/manual.pdf', 'Attachment bytes');
+	await f.write('root/pages/guide/pages/child/pages/deep/content.md', '# Deep\n');
+	await f.write('root/pages/guide/downloads/manual.pdf', 'Attachment bytes');
 	await writeFile(f.home, '# Home\n\n[Guide](/guide/)\n[Child](/guide/child/)\n[Deep](/guide/child/deep/)\n[Old alias](/old-guide/)\n[File](/guide/downloads/manual.pdf)\n');
 	const plan = await planEditorPageAddress({ ...f, segment: 'handbook', preserveAliases });
 	assert.equal(plan.preserveAliases, preserveAliases);
@@ -216,13 +216,13 @@ for (const preserveAliases of [true, false]) test(`slug change preserves existin
 	const result = await applyEditorPageAddress(plan);
 	for (const [relative, oldPath, existing] of [
 		['', '/guide/', ['/old-guide/']],
-		['pages/020-child/', '/guide/child/', ['/old-child/']],
-		['pages/020-child/pages/030-deep/', '/guide/child/deep/', []],
+		['pages/child/', '/guide/child/', ['/old-child/']],
+		['pages/child/pages/deep/', '/guide/child/deep/', []],
 	]) {
 		const addresses = await getEditorPageAddresses({ siteRoot: f.siteRoot, sourcePath: path.join(plan.destinationDirectory, relative, 'content.md') });
 		assert.deepEqual([...addresses.aliases].sort(), [...existing, ...(preserveAliases ? [oldPath] : [])].sort());
 	}
-	assert.equal(path.basename(plan.destinationDirectory), '010-handbook');
+	assert.equal(path.basename(plan.destinationDirectory), 'handbook');
 	assert.match(await readFile(result.sourcePath, 'utf8'), /# Guide/);
 	const home = await readFile(f.home, 'utf8');
 	assert.match(home, /\[Child\]\(\/handbook\/child\/\)/);

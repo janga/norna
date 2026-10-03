@@ -1,0 +1,23 @@
+---
+page:
+  description: Meet dogs currently waiting for adoption.
+navigation:
+  order: 1000
+---
+
+# Dogs
+Meet Rover and Rex.
+
+```card-list
+layout: image-top
+flow: grid
+size: s
+width: narrow
+items:
+  - title: Rover
+    text: Curious and active. Rover needs daily walks and room to explore.
+    image: rover.jpg
+  - title: Rex
+    text: Gentle and observant. Rex needs a patient home with quiet routines.
+    image: rex.jpg
+```

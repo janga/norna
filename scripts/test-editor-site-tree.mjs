@@ -8,8 +8,8 @@ const root = await mkdtemp(path.join(os.tmpdir(), 'norna-site-tree-'));
 const firstSite = path.join(root, 'custom-content');
 const secondSite = path.join(root, 'other', 'site');
 const write = async (filename, source) => { await mkdir(path.dirname(filename), { recursive: true }); await writeFile(filename, source); };
-const page = path.join(firstSite, 'root/pages', '010-guide', 'content.md');
-const overview = path.join(firstSite, 'root/pages', '020-topics', 'content.md');
+const page = path.join(firstSite, 'root/pages', 'guide', 'content.md');
+const overview = path.join(firstSite, 'root/pages', 'topics', 'content.md');
 const edit = async (source, field, value, sourcePath = page) => {
 	const changes = await editSiteNodeInformation({ siteRoot: firstSite, sourcePath, source, field, value });
 	return changes.sort((a, b) => b.start - a.start).reduce((text, change) => text.slice(0, change.start) + change.text + text.slice(change.end), source);
@@ -17,12 +17,12 @@ const edit = async (source, field, value, sourcePath = page) => {
 
 try {
 	for (const site of [firstSite, secondSite]) {
-		await write(path.join(site, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+		await write(path.join(site, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\n');
 		await write(path.join(site, 'root/content.md'), '# Home\n');
 	}
 	await write(page, '---\npage:\n  aliases: [/old-guide/]\nnavigation:\n  listed: false\n---\n\n# Guide\n\n[Authored label](/guide/).\n');
 	await write(overview, '---\npage:\n  listChildren: true\n  description: Topic choices.\n---\n# Topics\n');
-	await write(path.join(firstSite, 'root/pages', '020-topics', 'pages', '010-child', 'content.md'), '# Child\n');
+	await write(path.join(firstSite, 'root/pages', 'topics', 'pages', 'child', 'content.md'), '# Child\n');
 	const [first, second] = await Promise.all([readSiteTree({ siteRoot: firstSite }), readSiteTree({ siteRoot: secondSite })]);
 	assert.deepEqual(first.nodes.map((node) => [node.title, node.url, node.kind]), [
 		['Home', '/', 'page'], ['Guide', '/guide/', 'page'], ['Topics', '/topics/', 'page'], ['Child', '/topics/child/', 'page'],
@@ -46,9 +46,9 @@ try {
 	await write(page, '# One\n\n# Two\n');
 	assert.match((await readSiteTree({ siteRoot: firstSite })).nodes[1].problem, /exactly one/);
 	await write(page, '# Guide\n');
-	await rename(path.dirname(page), path.join(firstSite, 'root/pages', '015-renamed'));
+	await rename(path.dirname(page), path.join(firstSite, 'root/pages', 'renamed'));
 	assert.equal((await readSiteTree({ siteRoot: firstSite })).nodes[1].url, '/renamed/');
-	await rename(path.join(firstSite, 'root/pages', '015-renamed'), path.dirname(page));
+	await rename(path.join(firstSite, 'root/pages', 'renamed'), path.dirname(page));
 
 	const crlf = '---\r\n# Metadata comment\r\npage:\r\n  description: "Old: text" # keep\r\n  aliases: [/legacy/]\r\n---\r\n\r\n# Guide\r\n\r\nUnsaved prose [keep this label](/guide/).\r\n';
 	assert.equal(await edit(crlf, 'title', 'New [title]'), crlf.replace('# Guide\r\n', '# New \\[title\\]\r\n'));
@@ -79,11 +79,11 @@ try {
 	const plan = await planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'Räksmörgås', parentPath: '/' });
 	assert.equal(plan.url, '/raksmorgas/');
 	assert.deepEqual(await readdir(path.join(firstSite, 'root/pages')), before, 'Preview and cancellation must not create files.');
-	const created = await createSiteNode(plan);
-	assert.match(await readFile(created.sourcePath, 'utf8'), /^# Räksmörgås\n/);
-	await assert.rejects(createSiteNode(plan), /sibling with that slug already exists/);
+	const created = await createSiteNode(plan, { allowRenumber: true });
+	assert.match(await readFile(created.sourcePath, 'utf8'), /# Räksmörgås\n/);
+	await assert.rejects(createSiteNode(plan, { allowRenumber: true }), /sibling with that slug already exists/);
 	const overviewPlan = await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Guides', parentPath: '/', metadata: { page: { listChildren: true } } });
-	await createSiteNode(overviewPlan);
+	await createSiteNode(overviewPlan, { allowRenumber: true });
 	const childPlan = await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Nested', parentPath: '/guides/' });
 	assert.equal((await createSiteNode(childPlan)).url, '/guides/nested/');
 	assert.equal((await readSiteTree({ siteRoot: firstSite })).nodes.some((node) => node.title === 'Nested'), false);
@@ -93,15 +93,15 @@ try {
 	assert.equal((await planSiteNodeCreation({ siteRoot: firstSite, kind: 'page', title: 'Home' })).url, '/home/');
 	const stale = await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Reserved', parentPath: '/' });
 	await createSiteNode(await planSiteNodeCreation({ siteRoot: secondSite, kind: 'page', title: 'Another', parentPath: '/' }));
-	await assert.rejects(createSiteNode(stale), /sibling already uses it/);
+	await assert.rejects(createSiteNode(stale), /site changed/i);
 
-	const child = path.join(firstSite, 'root/pages/020-topics/pages/010-child/content.md');
+	const child = path.join(firstSite, 'root/pages/topics/pages/child/content.md');
 	for (const [filename, source] of [
 		['root/tree-theme.yaml', 'preset: documentation\n'], ['root/page-theme.yaml', 'layout:\n  textWidth: narrow\n'], ['site-config/shared-content.yaml', 'footer: {}\n'],
-		['root/images/shared.svg', '<svg/>'], ['root/pages/010-guide/tree-theme.yaml', 'layout:\n  contentSpacing: compact\n'],
-		['root/pages/010-guide/images/shared.svg', '<svg><title>Guide</title></svg>'],
-		['root/pages/020-topics/tree-theme.yaml', 'layout:\n  contentSpacing: compact\n'],
-		['root/pages/020-topics/pages/010-child/images/shared.svg', '<svg><title>Child</title></svg>'],
+		['root/images/shared.svg', '<svg/>'], ['root/pages/guide/tree-theme.yaml', 'layout:\n  contentSpacing: compact\n'],
+		['root/pages/guide/images/shared.svg', '<svg><title>Guide</title></svg>'],
+		['root/pages/topics/tree-theme.yaml', 'layout:\n  contentSpacing: compact\n'],
+		['root/pages/topics/pages/child/images/shared.svg', '<svg><title>Child</title></svg>'],
 		['public/robots.txt', 'User-agent: *\n'], ['public/icons/icon.svg', '<svg/>'],
 		['.norna/public/generated.svg', '<svg/>'],
 	]) await write(path.join(firstSite, filename), source);
@@ -127,9 +127,9 @@ try {
 	assert.deepEqual(childrenOf(page).map((item) => item.title), ['images', 'tree-theme.yaml'], 'A leaf must not gain a fictional pages directory.');
 	assert.deepEqual(childrenOf(overview).map((item) => item.title), ['tree-theme.yaml', 'pages']);
 	assert.equal(files.items.find((item) => item.id === page).parentId, resourceId('root/pages'));
-	assert.equal(files.items.find((item) => item.id === child).parentId, resourceId('root/pages/020-topics/pages'));
-	assert.equal(at('root/pages/020-topics/pages/010-child/images/shared.svg').ownerId, child);
-	assert.equal(at('root/pages/010-guide/images/shared.svg').ownerId, page);
+	assert.equal(files.items.find((item) => item.id === child).parentId, resourceId('root/pages/topics/pages'));
+	assert.equal(at('root/pages/topics/pages/child/images/shared.svg').ownerId, child);
+	assert.equal(at('root/pages/guide/images/shared.svg').ownerId, page);
 	assert.equal(at('root/images/shared.svg').ownerId, home);
 	assert.equal(at('public/icons/icon.svg').parentId, resourceId('public/icons'));
 	assert.equal(at('public/empty').kind, 'directory');
@@ -144,8 +144,8 @@ try {
 	assert.equal(files.items.find((item) => item.id === overview).title, 'Unsaved overview');
 	assert.match(at('site-config').description, /shared by the complete site/);
 	assert.match(at('root/page-theme.yaml').description, /this page only.*tree theme/);
-	assert.match(at('root/pages/010-guide/tree-theme.yaml').description, /this page and its descendants.*inherited values/);
-	assert.match(at('root/pages/020-topics/tree-theme.yaml').description, /this page and its descendants/);
+	assert.match(at('root/pages/guide/tree-theme.yaml').description, /this page and its descendants.*inherited values/);
+	assert.match(at('root/pages/topics/tree-theme.yaml').description, /this page and its descendants/);
 	assert.match(at('public').description, /published unchanged.*robots\.txt and icons/);
 	assert.equal(new Set(files.items.map((item) => item.id)).size, files.items.length, 'Resource and page identities must be unique.');
 	assert.deepEqual(files.items.filter((item) => item.kind === 'page').map((item) => item.url), files.nodes.map((item) => item.url));
@@ -169,7 +169,7 @@ try {
 	assert.equal((await readSiteFileTree({ siteRoot: firstSite })).items.find((item) => item.id === overview).problem, null);
 	const emptySite = path.join(root, 'empty-site');
 	await write(path.join(emptySite, 'root/content.md'), '# Empty\n');
-	await write(path.join(emptySite, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await write(path.join(emptySite, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\n');
 	await mkdir(path.join(emptySite, 'root/pages'));
 	const empty = await readSiteFileTree({ siteRoot: emptySite });
 	assert.deepEqual(empty.items.map((item) => item.title), ['site-config', 'settings.yaml', 'Empty', 'pages']);

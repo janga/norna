@@ -46,7 +46,7 @@
       "removalEffect": "This page will use its selected tree theme again. Other pages are unchanged."
     }
   ],
-  "pageDirectoryPattern": "^(?!000-)(\\d{3})-([a-z0-9]+(?:-[a-z0-9]+)*)$",
+  "pageDirectoryPattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
   "blockSchemas": {
     "image-stack": "image-stack.schema.json",
     "image-carousel": "image-carousel.schema.json",

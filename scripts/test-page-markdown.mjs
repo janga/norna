@@ -4,7 +4,7 @@ import { splitNornaRenderedBlocks } from './lib/norna-markdown-blocks.mjs';
 
 const details = (body) => `<details>\n<summary>More</summary>\n\n${body}\n\n</details>`;
 const detailsIssues = async (body) => (await parsePageMarkdownSource(`# Page\n\n${body}`, {
-	label: 'site/root/pages/010-guide/content.md',
+	label: 'site/root/pages/guide/content.md',
 })).diagnostics.filter((issue) => issue.code === 'heading-inside-details');
 
 for (const heading of [
@@ -18,7 +18,7 @@ for (const heading of [
 	const issues = await detailsIssues(details(heading));
 	assert.equal(issues.length, 1, heading);
 	assert.equal(issues[0].severity, 'error');
-	assert.match(issues[0].message, /site\/root\/pages\/010-guide\/content\.md line \d+: Headings H1-H6/);
+	assert.match(issues[0].message, /site\/root\/pages\/guide\/content\.md line \d+: Headings H1-H6/);
 	assert.match(issues[0].fix, /outside <details>.*bold text/);
 }
 

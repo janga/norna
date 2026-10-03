@@ -75,8 +75,8 @@ items:
 test('content:sync shows its plan and moves images across pages without requiring a Git worktree', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		const sourcePageDir = path.join(siteDir, 'root/pages', '010-source');
-		const targetPageDir = path.join(siteDir, 'root/pages', '020-target');
+		const sourcePageDir = path.join(siteDir, 'root/pages', 'source');
+		const targetPageDir = path.join(siteDir, 'root/pages', 'target');
 		await mkdir(path.join(sourcePageDir, 'images'), { recursive: true });
 		await mkdir(targetPageDir, { recursive: true });
 		await writeFile(path.join(siteDir, 'root/content.md'), `---
@@ -119,8 +119,8 @@ items:
 		const { stdout } = await runContentScript(siteDir, ['--write', '--yes']);
 
 		assert.match(stdout, /Planned image moves:/);
-		assert.match(stdout, /site\/root\/pages\/010-source\/images\/moved\.jpg -> .*site\/root\/pages\/020-target\/images\/moved\.jpg/);
-		assert.match(stdout, /Moved image "moved\.jpg" to .*site\/root\/pages\/020-target\/images\//);
+		assert.match(stdout, /site\/root\/pages\/source\/images\/moved\.jpg -> .*site\/root\/pages\/target\/images\/moved\.jpg/);
+		assert.match(stdout, /Moved image "moved\.jpg" to .*site\/root\/pages\/target\/images\//);
 		assert.equal(await fileExists(path.join(targetPageDir, 'images', 'moved.jpg')), true);
 		assert.equal(await fileExists(path.join(sourcePageDir, 'images', 'moved.jpg')), false);
 	} finally {
@@ -131,8 +131,8 @@ items:
 test('content:sync moves images across pages when Git status is dirty', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		const sourcePageDir = path.join(siteDir, 'root/pages', '010-source');
-		const targetPageDir = path.join(siteDir, 'root/pages', '020-target');
+		const sourcePageDir = path.join(siteDir, 'root/pages', 'source');
+		const targetPageDir = path.join(siteDir, 'root/pages', 'target');
 		await mkdir(path.join(sourcePageDir, 'images'), { recursive: true });
 		await mkdir(targetPageDir, { recursive: true });
 		await writeFile(path.join(siteDir, 'root/content.md'), `---
@@ -188,8 +188,8 @@ items:
 test('content:check reports cross-page image moves without requiring clean git status', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		const sourcePageDir = path.join(siteDir, 'root/pages', '010-source');
-		const targetPageDir = path.join(siteDir, 'root/pages', '020-target');
+		const sourcePageDir = path.join(siteDir, 'root/pages', 'source');
+		const targetPageDir = path.join(siteDir, 'root/pages', 'target');
 		await mkdir(path.join(sourcePageDir, 'images'), { recursive: true });
 		await mkdir(targetPageDir, { recursive: true });
 		await writeFile(path.join(siteDir, 'root/content.md'), `---
@@ -234,8 +234,8 @@ items:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--check']),
 			(error) => {
-				assert.match(error.output, /Image "moved\.jpg" is used here but is located in .*site\/root\/pages\/010-source\/images\/moved\.jpg\./);
-				assert.match(error.output, /Run norna content:sync to move it from .*site\/root\/pages\/010-source to .*site\/root\/pages\/020-target\./);
+				assert.match(error.output, /Image "moved\.jpg" is used here but is located in .*site\/root\/pages\/source\/images\/moved\.jpg\./);
+				assert.match(error.output, /Run norna content:sync to move it from .*site\/root\/pages\/source to .*site\/root\/pages\/target\./);
 				assert.doesNotMatch(error.output, /requires a clean git working tree before moving files/);
 				return true;
 			},
@@ -248,8 +248,8 @@ items:
 test('content:sync refuses to move a cross-page image still referenced by its current section', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
-		const sourcePageDir = path.join(siteDir, 'root/pages', '010-source');
-		const targetPageDir = path.join(siteDir, 'root/pages', '020-target');
+		const sourcePageDir = path.join(siteDir, 'root/pages', 'source');
+		const targetPageDir = path.join(siteDir, 'root/pages', 'target');
 		await mkdir(path.join(sourcePageDir, 'images'), { recursive: true });
 		await mkdir(targetPageDir, { recursive: true });
 		await writeFile(path.join(siteDir, 'root/content.md'), `---
@@ -295,7 +295,7 @@ items:
 		await assert.rejects(
 			() => runContentScript(siteDir, ['--write', '--yes']),
 			(error) => {
-				assert.match(error.output, /Cannot relocate "shared\.jpg" from .*site\/root\/pages\/010-source\/images\/shared\.jpg because it is still referenced from .*site\/root\/pages\/010-source\/content\.md \[old\]\./);
+				assert.match(error.output, /Cannot relocate "shared\.jpg" from .*site\/root\/pages\/source\/images\/shared\.jpg because it is still referenced from .*site\/root\/pages\/source\/content\.md \[old\]\./);
 				return true;
 			},
 		);

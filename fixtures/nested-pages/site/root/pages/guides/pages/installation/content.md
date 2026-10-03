@@ -1,0 +1,28 @@
+---
+page:
+  description: A nested installation guide.
+navigation:
+  order: 1000
+---
+
+# Installation
+
+## Installation details
+
+This page should be available at `/guides/installation/` and inherit the Guides
+theme.
+
+```page-list
+
+```
+
+## Examples
+
+The managed image belongs to this nested page and section.
+
+```image-stack
+items:
+  - image: diagram.svg
+    alt: Three nested page levels connected in sequence.
+    caption: A managed SVG resolved from the nested page image directory.
+```

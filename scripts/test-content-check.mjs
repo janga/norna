@@ -52,7 +52,7 @@ const withTempProject = async ({ site, theme = defaultTheme, files, siteDirector
 	const root = await mkdtemp(path.join(tmpdir(), 'walde-content-check-'));
 
 	try {
-		await writeFixtureFile(root, `${siteDirectory}/site-config/settings.yaml`, 'url: https://example.com/\n');
+		await writeFixtureFile(root, `${siteDirectory}/site-config/settings.yaml`, 'sourceFormat: 2\nurl: https://example.com/\n');
 		await writeFixtureFile(root, `${siteDirectory}/root/content.md`, site);
 		await writeFixtureFile(root, `${siteDirectory}/root/tree-theme.yaml`, theme);
 
@@ -631,21 +631,21 @@ Page text.
 });
 
 test('page-list warns once per listed child with a missing or blank description', async () => {
-	const parent = 'site/root/pages/010-help';
+	const parent = 'site/root/pages/help';
 	const files = [
 		{ path: `${parent}/content.md`, contents: '# Help\n\n```page-list\n```\n\n## More choices\n\n```page-list\n```\n' },
 		...[
-			['010-missing', ''],
-			['030-whitespace', '---\npage:\n  description: "   "\n---\n'],
-			['040-described', '---\npage:\n  description: Learn how to offer a temporary home.\n---\n'],
+			['missing', ''],
+			['whitespace', '---\npage:\n  description: "   "\n---\n'],
+			['described', '---\npage:\n  description: Learn how to offer a temporary home.\n---\n'],
 		].map(([directory, frontmatter]) => ({
 			path: `${parent}/pages/${directory}/content.md`, contents: `${frontmatter}# ${directory}\n`,
 		})),
-		{ path: `${parent}/pages/050-unlisted/content.md`, contents: '---\nnavigation:\n  listed: false\n---\n# Unlisted\n' },
-		{ path: `${parent}/pages/040-described/pages/010-descendant/content.md`, contents: '# Descendant\n' },
-		{ path: `${parent}/pages/060-category/content.md`, contents: '---\npage:\n  description: A grouped set of pages.\n---\n# Category\n' },
-		{ path: `${parent}/pages/060-category/pages/010-page/content.md`, contents: '# Category child\n' },
-		{ path: 'site/root/pages/020-unrelated/content.md', contents: '# Unrelated\n' },
+		{ path: `${parent}/pages/unlisted/content.md`, contents: '---\nnavigation:\n  listed: false\n---\n# Unlisted\n' },
+		{ path: `${parent}/pages/described/pages/descendant/content.md`, contents: '# Descendant\n' },
+		{ path: `${parent}/pages/category/content.md`, contents: '---\npage:\n  description: A grouped set of pages.\n---\n# Category\n' },
+		{ path: `${parent}/pages/category/pages/page/content.md`, contents: '# Category child\n' },
+		{ path: 'site/root/pages/unrelated/content.md', contents: '# Unrelated\n' },
 	];
 	await withTempProject({ site: '# Home\n', files }, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -654,11 +654,11 @@ test('page-list warns once per listed child with a missing or blank description'
 		assert.match(output, /^Content check completed with warnings\./m);
 		assert.ok(output.includes(`[${parent}/content.md [Help]]`), output);
 		assert.equal((output.match(/without a non-empty page\.description/g) ?? []).length, 2, output);
-		for (const name of ['010-missing', '030-whitespace']) {
+		for (const name of ['missing', 'whitespace']) {
 			assert.ok(output.includes(`page-list on line 3 includes ${parent}/pages/${name}/content.md`), output);
 		}
 		assert.match(output, /Add page\.description to that child file's frontmatter/);
-		for (const name of ['040-described', '050-unlisted', '010-descendant', '060-category', '020-unrelated']) {
+		for (const name of ['described', 'unlisted', 'descendant', 'category', 'unrelated']) {
 			assert.ok(!output.includes(name), output);
 		}
 	});
@@ -668,8 +668,8 @@ test('pages without a page-list do not warn about child descriptions', async () 
 	await withTempProject({
 		site: '# Home\n',
 		files: [
-			{ path: 'site/root/pages/010-guides/content.md', contents: '# Guides\n\n## Syntax example\n\n````md\n```page-list\n```\n````\n' },
-			{ path: 'site/root/pages/010-guides/pages/010-child/content.md', contents: '# Child\n' },
+			{ path: 'site/root/pages/guides/content.md', contents: '# Guides\n\n## Syntax example\n\n````md\n```page-list\n```\n````\n' },
+			{ path: 'site/root/pages/guides/pages/child/content.md', contents: '# Child\n' },
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -682,8 +682,8 @@ test('an automatic child list warns when no direct listed child can appear', asy
 	await withTempProject({
 		site: '# Home\n',
 		files: [
-			{ path: 'site/root/pages/010-overview/content.md', contents: '---\npage:\n  listChildren: true\n---\n\n# Overview\n' },
-			{ path: 'site/root/pages/010-overview/pages/010-hidden/content.md', contents: '---\nnavigation:\n  listed: false\n---\n\n# Hidden\n' },
+			{ path: 'site/root/pages/overview/content.md', contents: '---\npage:\n  listChildren: true\n---\n\n# Overview\n' },
+			{ path: 'site/root/pages/overview/pages/hidden/content.md', contents: '---\nnavigation:\n  listed: false\n---\n\n# Hidden\n' },
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
@@ -696,7 +696,7 @@ test('an automatic child list warns when no direct listed child can appear', asy
 test('page-list warnings do not relax existing description validation', async () => {
 	await withTempProject({
 		site: '# Home\n\n```page-list\n```\n',
-		files: [{ path: 'site/root/pages/010-child/content.md', contents: '---\npage:\n  description: ""\n---\n# Child\n' }],
+		files: [{ path: 'site/root/pages/child/content.md', contents: '---\npage:\n  description: ""\n---\n# Child\n' }],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
 		assert.equal(result.status, 1, getOutput(result));
@@ -708,17 +708,17 @@ test('a homepage page-list warns for undescribed direct pages but not descendant
 	await withTempProject({
 		site: '# Home\n\n```page-list\n```\n',
 		files: [
-			{ path: 'site/root/pages/010-help/content.md', contents: '# Help\n' },
-			{ path: 'site/root/pages/020-guides/content.md', contents: '---\npage:\n  description: Find the guides.\n---\n# Guides\n' },
-			{ path: 'site/root/pages/020-guides/pages/010-child/content.md', contents: '# Child\n' },
+			{ path: 'site/root/pages/help/content.md', contents: '# Help\n' },
+			{ path: 'site/root/pages/guides/content.md', contents: '---\npage:\n  description: Find the guides.\n---\n# Guides\n' },
+			{ path: 'site/root/pages/guides/pages/child/content.md', contents: '# Child\n' },
 		],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
 		const output = getOutput(result);
 		assert.equal(result.status, 0, output);
 		assert.equal((output.match(/without a non-empty page\.description/g) ?? []).length, 1, output);
-		assert.ok(output.includes('site/root/pages/010-help/content.md'), output);
-		assert.ok(!output.includes('020-guides'), output);
+		assert.ok(output.includes('site/root/pages/help/content.md'), output);
+		assert.ok(!output.includes('guides'), output);
 	});
 });
 
@@ -726,13 +726,13 @@ test('details headings fail content checks with file, frontmatter-adjusted line 
 	await withTempProject({
 		site: '# Home\n',
 		files: [{
-			path: 'site/root/pages/010-guide/content.md',
+			path: 'site/root/pages/guide/content.md',
 			contents: '---\npage:\n  description: Guide\n---\n# Guide\n\n<details>\n<summary>More</summary>\n\n### Hidden\n\n</details>\n',
 		}],
 	}, async (root) => {
 		const result = runContentScript(root, ['--check']);
 		assert.equal(result.status, 1, getOutput(result));
-		assert.match(getOutput(result), /site\/root\/pages\/010-guide\/content\.md line 10: Headings H1-H6/);
+		assert.match(getOutput(result), /site\/root\/pages\/guide\/content\.md line 10: Headings H1-H6/);
 		assert.match(getOutput(result), /Move the heading outside <details>, or use bold text/);
 	});
 });

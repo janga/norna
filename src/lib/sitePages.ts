@@ -16,7 +16,7 @@ type SiteNodeBase = {
 	isHome: boolean;
 	navigation: {
 		listed: boolean;
-		order: number;
+		order: number | null;
 	};
 	depth: number;
 	pageDirectories: string[];
@@ -25,7 +25,6 @@ type SiteNodeBase = {
 	pageDirectory: string;
 	pageId: string;
 	pageIds: string[];
-	pageOrders: number[];
 	pagePath: string;
 	parentPagePath: string | null;
 	title: string;
@@ -63,16 +62,6 @@ const getPageMetadata = (entry: SiteEntry) => {
 };
 
 const getPagePathname = (pathSegment: string) => pathSegment ? `/${pathSegment}/` : '/';
-
-const compareNumberPaths = (left: number[], right: number[]) => {
-	const sharedLength = Math.min(left.length, right.length);
-	for (let index = 0; index < sharedLength; index += 1) {
-		const difference = left[index] - right[index];
-		if (difference !== 0) return difference;
-	}
-
-	return left.length - right.length;
-};
 
 const readPageMarkdownDocument = async (entry: SiteEntry) => {
 	const pageDirectory = getPageDirectory(entry);
@@ -112,7 +101,7 @@ const createSitePage = async (entry: SiteEntry): Promise<SitePage> => {
 		depth: pageMetadata.depth,
 		navigation: {
 		listed: navigation.listed ?? true,
-			order: isHome ? 0 : pageMetadata.pageOrder,
+			order: isHome ? 0 : navigation.order ?? null,
 		},
 		pathSegment,
 		pathname: getPagePathname(pathSegment),
@@ -120,7 +109,6 @@ const createSitePage = async (entry: SiteEntry): Promise<SitePage> => {
 		pageDirectories: pageMetadata.pageDirectories,
 		pageId,
 		pageIds: pageMetadata.pageIds,
-		pageOrders: pageMetadata.pageOrders,
 		pagePath,
 		parentPagePath: isHome ? null : pageMetadata.parentPagePath,
 		contentLabel,
@@ -148,7 +136,6 @@ const createSiteCategory = (category: Awaited<ReturnType<typeof getSiteStructure
 	pageDirectories: category.pageDirectories,
 	pageId: category.pageId,
 	pageIds: category.pageIds,
-	pageOrders: category.pageOrders,
 	pagePath: category.pagePath,
 	parentPagePath: category.parentPagePath,
 	title: category.label,
@@ -160,7 +147,6 @@ const createSitePages = async (entries: SiteEntry[]) => {
 	const pages = await Promise.all(entries.map(createSitePage));
 	const pathnames = new Map<string, SitePage>();
 	const siblingPageIds = new Map<string, SitePage>();
-	const siblingPageOrders = new Map<string, SitePage>();
 
 	for (const page of pages) {
 		if (page.isHome && page.navigation.listed === false) {
@@ -184,24 +170,12 @@ const createSitePages = async (entries: SiteEntry[]) => {
 
 		siblingPageIds.set(pageIdKey, page);
 
-		const pageOrderKey = `${siblingScope}\0${page.navigation.order}`;
-		const existingPageOrder = siblingPageOrders.get(pageOrderKey);
-		if (existingPageOrder) {
-			throw new Error(`Duplicate sibling page order "${String(page.navigation.order).padStart(3, '0')}" below "${page.parentPagePath ?? '/'}" from "${existingPageOrder.entry.id}" and "${page.entry.id}".`);
-		}
-
-		siblingPageOrders.set(pageOrderKey, page);
 	}
 	if (!pages.some(({ isHome }) => isHome)) {
 		throw new Error(`Homepage content ${siteDirLabel}/root/content.md is missing.`);
 	}
 
-	return pages.sort((left, right) => (
-		left.isHome ? -1 : right.isHome ? 1 :
-		compareNumberPaths(left.pageOrders, right.pageOrders) ||
-		left.title.localeCompare(right.title, 'sv') ||
-		left.pathname.localeCompare(right.pathname, 'sv')
-	));
+	return pages;
 };
 
 export const getSiteModel = async (entries: SiteEntry[]) => {
@@ -228,7 +202,7 @@ export const getSiteModel = async (entries: SiteEntry[]) => {
 		categoryDestinations: assertCategoryDestinationModel(createCategoryDestinationModel(nodes)),
 		categories: nodes.filter((node): node is SiteCategory => node.kind === 'category'),
 		nodes,
-		pages,
+		pages: nodes.filter((node): node is SitePage => node.kind === 'page'),
 		warnings: structure.warnings,
 	};
 };

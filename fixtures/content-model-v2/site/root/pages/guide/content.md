@@ -1,0 +1,21 @@
+---
+page:
+  description: Internal page fixture for content model v2.
+navigation:
+  order: 1000
+---
+
+# Guide
+
+
+## Intro {#intro}
+
+Pages may use the same section id and image filename as other pages without
+making the site invalid.
+
+```image-stack
+items:
+  - image: duplicate.jpg
+    alt: A page-local duplicated filename.
+    caption: This file is resolved in the page image root.
+```

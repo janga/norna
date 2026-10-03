@@ -42,7 +42,7 @@ const expectFailure = async (operation, pattern) => {
 const createSite = async (siteDirectory, { title = 'Scratch page' } = {}) => {
 	await mkdir(path.join(siteDirectory, 'root'), { recursive: true });
 	await mkdir(path.join(siteDirectory, 'site-config'), { recursive: true });
-	await writeFile(path.join(siteDirectory, 'site-config/settings.yaml'), 'url: https://example.com/scratch/\n');
+	await writeFile(path.join(siteDirectory, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/scratch/\n');
 	await writeFile(path.join(siteDirectory, 'root', 'tree-theme.yaml'), 'preset: documentation\n');
 	await writeFile(path.join(siteDirectory, 'root/content.md'), `# ${title}\n`);
 };
@@ -414,7 +414,7 @@ try {
 	const brokenSource = path.join(workspaceRoot, 'broken site');
 	await mkdir(path.join(brokenSource, 'pages'), { recursive: true });
 	await mkdir(path.join(brokenSource, 'site-config'), { recursive: true });
-	await writeFile(path.join(brokenSource, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(brokenSource, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\n');
 	await expectFailure(
 		() => prepareScratchSite({
 			repositoryRoot: workspaceRoot,

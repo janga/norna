@@ -29,8 +29,8 @@ extensions before site configuration. Keep rendered results beside exact
 source and link to reference for full constraints. Ordinary GFM tables and
 plain code fences are separate from Norna's additional metadata.
 
-The overview remains at `site/root/pages/030-examples/content.md`. Its child
-sources live under `pages/010-standard-markdown/` through `060-complete-sites/`.
+The overview remains at `site/root/pages/examples/content.md`. Its child
+sources live under `pages/standard-markdown/` through `060-complete-sites/`.
 Images and the downloadable checklist moved to their owning pages. Maintained
 incoming links and capture destinations now use the child addresses. The old
 single-page fragment URLs do not redirect across pages; links within the
@@ -97,7 +97,7 @@ and carousel JavaScript boundaries remain explicit.
 
 ## Final Section Audit
 
-The page source is `site/pages/030-examples/content.md`. Paths in the evidence
+The page source is `site/pages/examples/content.md`. Paths in the evidence
 column are repository-relative. "Exact source" means that the documentation
 test compares the displayed code with the live Markdown or maintained fixture,
 not merely that its syntax parses.

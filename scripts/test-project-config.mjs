@@ -61,7 +61,7 @@ try {
 	assert.equal(getBasePathRedirectLocation('/norna/', '/norna/concepts/'), undefined);
 	assert.equal(getBasePathRedirectLocation('/', '/'), undefined);
 
-	const minimalSite = await createSite('minimal', 'url: https://example.com/docs\n');
+	const minimalSite = await createSite('minimal', 'sourceFormat: 2\nurl: https://example.com/docs\n');
 	const minimalResult = loadConfig(minimalSite);
 	assert.equal(minimalResult.status, 0, minimalResult.stderr);
 	assert.deepEqual(JSON.parse(minimalResult.stdout), {
@@ -152,7 +152,7 @@ try {
 		url: 'https://example.com/docs/',
 	});
 
-	const localizedSite = await createSite('localized', 'url: https://example.com/\nlanguage: sv-SE\nscrollBehavior: smooth\n');
+	const localizedSite = await createSite('localized', 'sourceFormat: 2\nurl: https://example.com/\nlanguage: sv-SE\nscrollBehavior: smooth\n');
 	const localizedResult = loadConfig(localizedSite);
 	assert.equal(localizedResult.status, 0, localizedResult.stderr);
 	const localizedConfig = JSON.parse(localizedResult.stdout);
@@ -198,26 +198,26 @@ try {
 	assert.equal(localizedConfig.labels.tableSortReset, 'Återställ ursprunglig ordning');
 	assert.equal(localizedConfig.scrollBehavior, 'smooth');
 
-	const greekSite = await createSite('greek', 'url: https://example.com/\nlanguage: el-GR\n');
+	const greekSite = await createSite('greek', 'sourceFormat: 2\nurl: https://example.com/\nlanguage: el-GR\n');
 	const greekResult = loadConfig(greekSite);
 	assert.equal(greekResult.status, 0, greekResult.stderr);
 	const greekConfig = JSON.parse(greekResult.stdout);
 	assert.equal(greekConfig.language, 'el-GR');
 	assert.equal(greekConfig.labels.notFound, 'Η σελίδα δεν βρέθηκε');
 
-	const treeNavigationSite = await createSite('tree-navigation', 'url: https://example.com/\nnavigation:\n  mode: tree\n');
+	const treeNavigationSite = await createSite('tree-navigation', 'sourceFormat: 2\nurl: https://example.com/\nnavigation:\n  mode: tree\n');
 	const treeNavigationResult = loadConfig(treeNavigationSite);
 	assert.equal(treeNavigationResult.status, 0, treeNavigationResult.stderr);
 	assert.equal(JSON.parse(treeNavigationResult.stdout).navigationMode, 'tree');
 
-	const searchSite = await createSite('search', 'url: https://example.com/\nsearch: true\n');
+	const searchSite = await createSite('search', 'sourceFormat: 2\nurl: https://example.com/\nsearch: true\n');
 	const searchResult = loadConfig(searchSite);
 	assert.equal(searchResult.status, 0, searchResult.stderr);
 	assert.equal(JSON.parse(searchResult.stdout).searchEnabled, true);
 
 	const editLinkSite = await createSite(
 		'edit-link',
-		'url: https://example.com/\neditLink:\n  baseUrl: https://github.com/example/project/edit/release-2/packages/docs\n',
+		'sourceFormat: 2\nurl: https://example.com/\neditLink:\n  baseUrl: https://github.com/example/project/edit/release-2/packages/docs\n',
 	);
 	const editLinkResult = loadConfig(editLinkSite);
 	assert.equal(editLinkResult.status, 0, editLinkResult.stderr);
@@ -228,7 +228,7 @@ try {
 
 	const localEditLinkSite = await createSite(
 		'local-edit-link',
-		'url: https://example.com/\neditLink:\n  localEditor: vscode\n',
+		'sourceFormat: 2\nurl: https://example.com/\neditLink:\n  localEditor: vscode\n',
 	);
 	const localEditLinkResult = loadConfig(localEditLinkSite);
 	assert.equal(localEditLinkResult.status, 0, localEditLinkResult.stderr);
@@ -239,7 +239,7 @@ try {
 
 	const combinedEditLinkSite = await createSite(
 		'combined-edit-link',
-		'url: https://example.com/\neditLink:\n  localEditor: vscode\n  baseUrl: https://github.com/example/project/edit/main/\n',
+		'sourceFormat: 2\nurl: https://example.com/\neditLink:\n  localEditor: vscode\n  baseUrl: https://github.com/example/project/edit/main/\n',
 	);
 	const combinedEditLinkResult = loadConfig(combinedEditLinkSite);
 	assert.equal(combinedEditLinkResult.status, 0, combinedEditLinkResult.stderr);
@@ -262,55 +262,55 @@ try {
 	);
 
 	assertFailure(
-		loadConfig(await createSite('unknown-field', 'url: https://example.com/\nbasePath: /docs/\n')),
+		loadConfig(await createSite('unknown-field', 'sourceFormat: 2\nurl: https://example.com/\nbasePath: /docs/\n')),
 		/not a valid top-level config field/,
 	);
 	assertFailure(
-		loadConfig(await createSite('invalid-yaml', 'url: https://example.com/\nConfiguration prose.\n')),
+		loadConfig(await createSite('invalid-yaml', 'sourceFormat: 2\nurl: https://example.com/\nConfiguration prose.\n')),
 		/contains invalid YAML/,
 	);
 	assertFailure(
-		loadConfig(await createSite('unsupported-language', 'url: https://example.com/\nlanguage: ar\n')),
+		loadConfig(await createSite('unsupported-language', 'sourceFormat: 2\nurl: https://example.com/\nlanguage: ar\n')),
 		/has no built-in Norna UI text/,
 	);
 	assertFailure(
-		loadConfig(await createSite('missing-script', 'url: https://example.com/\nlanguage: sr\n')),
+		loadConfig(await createSite('missing-script', 'sourceFormat: 2\nurl: https://example.com/\nlanguage: sr\n')),
 		/must identify a supported script[\s\S]*sr-Cyrl, sr-Latn/,
 	);
 	assertFailure(
-		loadConfig(await createSite('invalid-url', 'url: example.com\n')),
+		loadConfig(await createSite('invalid-url', 'sourceFormat: 2\nurl: example.com\n')),
 		/url must be an absolute URL/,
 	);
 	assertFailure(
-		loadConfig(await createSite('missing-edit-base-url', 'url: https://example.com/\neditLink: {}\n')),
+		loadConfig(await createSite('missing-edit-base-url', 'sourceFormat: 2\nurl: https://example.com/\neditLink: {}\n')),
 		/editLink must specify baseUrl, localEditor, or both/,
 	);
 	assertFailure(
-		loadConfig(await createSite('invalid-local-editor', 'url: https://example.com/\neditLink:\n  localEditor: cursor\n')),
+		loadConfig(await createSite('invalid-local-editor', 'sourceFormat: 2\nurl: https://example.com/\neditLink:\n  localEditor: cursor\n')),
 		/editLink\.localEditor must be one of vscode/,
 	);
 	assertFailure(
-		loadConfig(await createSite('invalid-edit-url', 'url: https://example.com/\neditLink:\n  baseUrl: file:\/\/\/tmp\/site\n')),
+		loadConfig(await createSite('invalid-edit-url', 'sourceFormat: 2\nurl: https://example.com/\neditLink:\n  baseUrl: file:\/\/\/tmp\/site\n')),
 		/editLink\.baseUrl must use http or https/,
 	);
 	assertFailure(
-		loadConfig(await createSite('edit-url-query', 'url: https://example.com/\neditLink:\n  baseUrl: https:\/\/example.com\/edit\/main\/?preview=true\n')),
+		loadConfig(await createSite('edit-url-query', 'sourceFormat: 2\nurl: https://example.com/\neditLink:\n  baseUrl: https:\/\/example.com\/edit\/main\/?preview=true\n')),
 		/editLink\.baseUrl must not contain a query string or fragment/,
 	);
 	assertFailure(
-		loadConfig(await createSite('invalid-scroll-behavior', 'url: https://example.com/\nscrollBehavior: slow\n')),
+		loadConfig(await createSite('invalid-scroll-behavior', 'sourceFormat: 2\nurl: https://example.com/\nscrollBehavior: slow\n')),
 		/scrollBehavior must be one of instant, smooth/,
 	);
 	assertFailure(
-		loadConfig(await createSite('invalid-search', 'url: https://example.com/\nsearch: yes\n')),
+		loadConfig(await createSite('invalid-search', 'sourceFormat: 2\nurl: https://example.com/\nsearch: yes\n')),
 		/config YAML\.search must be true or false/,
 	);
 	assertFailure(
-		loadConfig(await createSite('removed-section-tracking', 'url: https://example.com/\nnavigation:\n  sectionTracking: true\n')),
+		loadConfig(await createSite('removed-section-tracking', 'sourceFormat: 2\nurl: https://example.com/\nnavigation:\n  sectionTracking: true\n')),
 		/navigation\.sectionTracking is no longer supported[\s\S]*Section tracking is automatic on tree-navigation pages with H2 headings[\s\S]*Remove navigation\.sectionTracking/,
 	);
 	assertFailure(
-		loadConfig(await createSite('obsolete-smooth-scroll', 'url: https://example.com/\nsmoothScroll: true\n')),
+		loadConfig(await createSite('obsolete-smooth-scroll', 'sourceFormat: 2\nurl: https://example.com/\nsmoothScroll: true\n')),
 		/not a valid top-level config field/,
 	);
 	console.log('Project config test passed.');

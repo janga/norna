@@ -83,8 +83,8 @@ and [BL-137 VS Code Image Usage And Removal Review](BL-137-vscode-image-usage-re
 before choosing new insertion defaults or usage displays.
 
 Current behavior is described in the
-[managed-image reference](../../../site/root/pages/032-reference/pages/010-site/pages/050-images/content.md)
-and [image-block reference](../../../site/root/pages/032-reference/pages/030-content/pages/020-images/content.md).
+[managed-image reference](../../../site/root/pages/reference/pages/site/pages/images/content.md)
+and [image-block reference](../../../site/root/pages/reference/pages/content/pages/images/content.md).
 [CommonMark image syntax](https://spec.commonmark.org/0.31.2/#images) defines
 the alt-text and optional-title baseline.
 

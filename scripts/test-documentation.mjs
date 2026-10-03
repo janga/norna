@@ -44,7 +44,7 @@ const obsoleteSiteFilenames = new Set([
 ]);
 const ignoredSiteDirectories = new Set(['.astro', '.norna', 'dist', 'node_modules']);
 const obsoleteReferenceDocumentation = new Set([
-	path.join(repoRoot, 'site/root/pages/032-reference/pages/060-workflows/pages/050-legacy-source/content.md'),
+	path.join(repoRoot, 'site/root/pages/reference/pages/workflows/pages/legacy-source/content.md'),
 ]);
 
 const collectMarkdownFiles = async (directory) => {
@@ -195,7 +195,7 @@ const checkDocumentedContentSyntax = async () => {
 };
 
 const checkSinglePageDiagramSource = async () => {
-	const directory = path.join(repoRoot, 'site', 'root', 'pages', '020-getting-started', 'pages', '020-grow-your-site');
+	const directory = path.join(repoRoot, 'site', 'root', 'pages', 'getting-started', 'pages', 'grow-your-site');
 	const model = await parsePageMarkdownSource(await readFile(path.join(directory, 'content.md'), 'utf8'));
 	const section = model.sections.find((section) => section.id === 'single-page-site');
 	const tree = markdownToMdast(section.bodyMarkdown);
@@ -215,8 +215,8 @@ const checkSinglePageDiagramSource = async () => {
 
 const checkEditorFormattingGuidance = async () => {
 	for (const relativePath of [
-		'site/root/pages/032-reference/pages/060-workflows/pages/010-editor/content.md',
-		'site/root/pages/035-faq/pages/030-content-and-images/content.md',
+		'site/root/pages/reference/pages/workflows/pages/editor/content.md',
+		'site/root/pages/faq/pages/content-and-images/content.md',
 	]) {
 		const source = await readFile(path.join(repoRoot, relativePath), 'utf8');
 		const tree = markdownToMdast(source);
@@ -353,7 +353,7 @@ const checkSitemapReference = async () => {
 };
 
 const checkProductTour = async () => {
-	const tourDirectory = path.join(repoRoot, 'site', 'root', 'pages', '010-features');
+	const tourDirectory = path.join(repoRoot, 'site', 'root', 'pages', 'features');
 	const source = await readFile(path.join(tourDirectory, 'content.md'), 'utf8');
 	const orderedSections = [
 		'# What Norna Does',
@@ -395,7 +395,7 @@ const checkProductTour = async () => {
 
 const checkPublishedExampleReferences = async () => {
 	const documentationUrl = new URL(projectConfig.site.url);
-	const exampleFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'root', 'pages', '030-examples'));
+	const exampleFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'root', 'pages', 'examples'));
 	const documentationText = (await Promise.all(exampleFiles.map((filePath) => readFile(filePath, 'utf8')))).join('\n');
 	assert.equal(exampleFiles.length, 7, 'Examples has an overview and one page for each of six areas.');
 	const exampleModels = await Promise.all(exampleFiles.map(async (file) => ({
@@ -446,7 +446,7 @@ const checkPublishedExampleReferences = async () => {
 	}
 
 	for (const [id, language, relativePath] of [
-		['page-list', 'md', 'fixtures/child-page-list/site/root/pages/010-help-a-dog/content.md'],
+		['page-list', 'md', 'fixtures/child-page-list/site/root/pages/help-a-dog/content.md'],
 		['branding', 'yaml', 'examples/feature-demos/sitewide-content/site/site-config/shared-content.yaml'],
 	]) {
 		const section = exampleSubsections.get(id);
@@ -459,7 +459,7 @@ const checkPublishedExampleReferences = async () => {
 		if (id === 'page-list') {
 			const excerpts = tree.children.filter((node) => node.type === 'code' && node.lang === 'md').slice(1);
 			assert.equal(excerpts.length, 3, 'Show the metadata behind all three child-page choices.');
-			for (const [index, directory] of ['010-adoption', '020-fostering', '030-sponsorship'].entries()) {
+			for (const [index, directory] of ['adoption', 'fostering', 'sponsorship'].entries()) {
 				const childPath = path.join(repoRoot, path.dirname(relativePath), 'pages', directory, 'content.md');
 				const childSource = await readFile(childPath, 'utf8');
 				assert.ok(childSource.startsWith(excerpts[index].value.trim()), `Child source differs: ${directory}`);
@@ -528,7 +528,7 @@ const checkPublishedExampleReferences = async () => {
 };
 
 const checkReferenceTree = async () => {
-	const referenceRoot = path.join(repoRoot, 'site/root/pages/032-reference');
+	const referenceRoot = path.join(repoRoot, 'site/root/pages/reference');
 	const files = await collectMarkdownFiles(referenceRoot);
 	assert.deepEqual(files.map((file) => path.relative(repoRoot, file)).sort(),
 		Object.values(documentationRoutes.sources).sort(), 'Every reference page needs a source route.');

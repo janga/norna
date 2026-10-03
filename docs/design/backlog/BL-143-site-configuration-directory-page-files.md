@@ -49,7 +49,7 @@ documentation together. Keep public URLs, configuration keys, and rendered
 presentation unchanged.
 
 Extend `site:upgrade` with a read-only preview and explicit `--apply` conversion.
-Support both the immediately previous layout and the older `pages/000-home/`
+Support both the immediately previous layout and the older `pages/home/`
 layout. Refuse conflicting destinations, ambiguous mixtures and symbolic links;
 never overwrite or silently migrate sources during a build. Adjust relative
 YAML schema directives to preserve their target, retain all other source bytes,

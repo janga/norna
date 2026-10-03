@@ -7,7 +7,7 @@ Markdown, without running a separate local build and restarting the preview.
 
 **Status: Prioritized by the owner on 2026-10-03; needs implementation design.**
 Production builds already create a fresh static Pagefind index. The
-[current search reference](../../../site/root/pages/032-reference/pages/020-configuration/pages/040-search/content.md)
+[current search reference](../../../site/root/pages/reference/pages/configuration/pages/search/content.md)
 says that `dev` can serve an older index until `build:local` is run.
 
 ## Scope And Boundaries

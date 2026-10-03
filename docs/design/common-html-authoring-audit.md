@@ -8,7 +8,7 @@ compatibility or security contract, and it proposes no new Norna syntax.
 
 - A source search across maintained `site/root/`, `examples/`, `starters/` and
   `fixtures/` `content.md` files found authored `<details>` and `<summary>` in
-  the public [details reference](../../site/root/pages/032-reference/pages/030-content/pages/070-details/content.md),
+  the public [details reference](../../site/root/pages/reference/pages/content/pages/details/content.md),
   but no live authored image figures, layout wrappers, media embeds or inline
   semantic HTML examples. The references to `<details>` in the newly updated
   Markdown pages are prose, not rendered HTML examples.
@@ -48,12 +48,12 @@ compatibility or security contract, and it proposes no new Norna syntax.
 
 ## Documentation And Follow-up
 
-The [Standard Markdown example](../../site/root/pages/030-examples/pages/010-standard-markdown/content.md)
+The [Standard Markdown example](../../site/root/pages/examples/pages/standard-markdown/content.md)
 now introduces HTML as part of CommonMark, recommends documented Norna
 constructs where their behavior matters, and links to the native details
 example. The Common Markdown Extensions page points back to that section;
 HTML is not presented as a GFM-specific extension. The
-[Markdown reference](../../site/root/pages/032-reference/pages/030-content/pages/010-markdown/content.md)
+[Markdown reference](../../site/root/pages/reference/pages/content/pages/markdown/content.md)
 states the support boundary. A general catalog of every HTML element would
 overpromise based on this narrow probe.
 

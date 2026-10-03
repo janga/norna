@@ -21,7 +21,7 @@ try {
 	const validSite = path.join(discoveryRoot, 'examples', 'complete-sites', 'valid', 'site');
 	await mkdir(path.join(validSite, 'root'), { recursive: true });
 	await mkdir(path.join(validSite, 'site-config'), { recursive: true });
-	await writeFile(path.join(validSite, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(validSite, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\n');
 	await writeFile(path.join(validSite, 'root/content.md'), '# Example\n');
 	await mkdir(path.join(
 		discoveryRoot,

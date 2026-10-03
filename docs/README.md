@@ -3,7 +3,7 @@
 The [Norna reference](https://janga.github.io/norna/reference/) is the canonical
 user reference for source files, configuration, content, commands and reader
 behavior. Its single authored source lives under
-[`site/pages/032-reference/`](../site/root/pages/032-reference/); Norna renders those
+[`site/pages/reference/`](../site/root/pages/reference/); Norna renders those
 Markdown files into the documentation site.
 
 Use [Getting Started](https://janga.github.io/norna/getting-started/install-norna/)
@@ -33,7 +33,7 @@ latest published package. `norna engine:version` reports the active installation
 
 For a fixed release, open its Git tag. Through `v0.7.26`, reference sources
 remain in that tag's `docs/` directory. Later releases use
-`site/pages/032-reference/`. Schema and editor links distinguish the current
+`site/pages/reference/`. Schema and editor links distinguish the current
 web reference from the installed release's source reference.
 
 The published [AI index](https://janga.github.io/norna/llms.txt) links directly

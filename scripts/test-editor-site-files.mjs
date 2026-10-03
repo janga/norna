@@ -16,9 +16,9 @@ const fixture = async (t) => {
 		await writeFile(filename, text);
 		return filename;
 	};
-	await write('site-config/settings.yaml', 'url: https://example.com/\n');
+	await write('site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	const home = await write('root/content.md', '# Home\n');
-	const sourcePath = await write('root/pages/010-page/content.md', '# Page\n');
+	const sourcePath = await write('root/pages/page/content.md', '# Page\n');
 	const external = path.join(root, 'outside.svg');
 	await writeFile(external, '<svg/>');
 	return { root, siteRoot, home, sourcePath, external, write };
@@ -33,7 +33,7 @@ test('image copy plans choose the page-owned folder and never overwrite or renam
 	await assert.rejects(planEditorImageCopy({ ...options, filename: '../escape.svg' }), /filename/);
 	await assert.rejects(planEditorImageCopy({ ...options, filename: 'example.png' }), /extension/);
 	await assert.rejects(planEditorImageCopy({ ...options, replace: true }), /no longer exists/);
-	await f.write('root/pages/010-page/images/example.svg', 'existing');
+	await f.write('root/pages/page/images/example.svg', 'existing');
 	await assert.rejects(planEditorImageCopy(options), /already has this name/);
 	const replacement = await planEditorImageCopy({ ...options, replace: true });
 	await writeFile(f.external, 'changed source');
@@ -51,26 +51,26 @@ test('file operations reject other sites, homepage deletion and symbolic links',
 
 test('page removal includes descendants and owned files, and detects changed contents', async (t) => {
 	const f = await fixture(t);
-	await f.write('root/pages/010-page/pages/010-child/content.md', '# Child\n');
-	await f.write('root/pages/010-page/tree-theme.yaml', 'layout:\n  textWidth: narrow\n');
+	await f.write('root/pages/page/pages/child/content.md', '# Child\n');
+	await f.write('root/pages/page/tree-theme.yaml', 'layout:\n  textWidth: narrow\n');
 	const plan = await planEditorRemoval(f);
 	assert.equal(plan.pages, 2);
-	assert.deepEqual(plan.files, ['content.md', 'pages/010-child/content.md', 'tree-theme.yaml']);
-	await f.write('root/pages/010-page/pages/010-child/content.md', '# A changed child\n');
+	assert.deepEqual(plan.files, ['content.md', 'pages/child/content.md', 'tree-theme.yaml']);
+	await f.write('root/pages/page/pages/child/content.md', '# A changed child\n');
 	assert.notEqual((await planEditorRemoval(f)).fingerprint, plan.fingerprint);
 	assert.equal(await readFile(f.sourcePath, 'utf8'), '# Page\n', 'Planning does not delete anything.');
 });
 
 test('image usage observes local precedence, dirty buffers, literal examples and unresolved references', async (t) => {
 	const f = await fixture(t);
-	const imagePath = await f.write('root/pages/010-page/images/example.svg', '<svg/>');
+	const imagePath = await f.write('root/pages/page/images/example.svg', '<svg/>');
 	await f.write('root/images/example.svg', '<svg/>');
 	await writeFile(f.home, '# Home\n' + block('example.svg'));
-	const other = await f.write('root/pages/020-other/content.md', '# Other\n' + block('example.svg'));
+	const other = await f.write('root/pages/other/content.md', '# Other\n' + block('example.svg'));
 	const source = '# Page\n' + block('example.svg') + '\n````md\n' + block('example.svg') + '````\n';
 	const options = { ...f, imagePath, sources: new Map([[f.sourcePath, source]]) };
 	const usage = await getEditorImageUsage(options);
-	assert.deepEqual(usage.references.map(({ sourcePath, unresolved }) => [sourcePath, unresolved]), [[f.sourcePath, false], [other, true]]);
+	assert.deepEqual(usage.references.map(({ sourcePath, unresolved }) => [sourcePath, unresolved]), [[other, true], [f.sourcePath, false]]);
 	assert.deepEqual(usage.incomplete, []);
 	const caseInsensitive = await stat(path.join(path.dirname(imagePath), 'EXAMPLE.SVG')).then(() => true, () => false);
 	const caseUsage = await getEditorImageUsage({ ...options, sources: new Map([[f.sourcePath, '# Page\n' + block('EXAMPLE.SVG')]]) });

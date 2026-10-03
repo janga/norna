@@ -29,10 +29,7 @@ const site = defineCollection({
 		generateId: ({ entry }) => {
 			if (entry === 'content.md') return encodePageEntryId(siteDirLabel, homePageDirectory);
 			const pageEntryDirectory = entry.split('/').slice(1, -1).join('/');
-			const pageDirectory = pageEntryDirectory
-				.split('/')
-				.filter((segment) => segment !== 'pages')
-				.join('/pages/');
+			const pageDirectory = pageEntryDirectory;
 			return encodePageEntryId(siteDirLabel, parsePageDirectoryPath(pageDirectory, `page directory pages/${pageEntryDirectory}`).pageDirectory);
 		},
 	}),

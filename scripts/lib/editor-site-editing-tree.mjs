@@ -1,3 +1,4 @@
+import { comparePageOrder } from './page-order.mjs';
 import { getSiteSourcePaths } from './site-conventions.mjs';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -89,7 +90,9 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 			: role === 'site' ? ['site-config', 'public', 'root']
 			: role === 'configuration' ? ['settings.yaml', 'shared-content.yaml'] : [];
 		const rank = (entry) => order.includes(entry.name) ? order.indexOf(entry.name) : order.length;
-		entries.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name, 'en', { numeric: true }));
+		entries.sort((a, b) => role === 'pages'
+			? comparePageOrder(byDirectory.get(path.join(directory, a.name)) ?? { pageId: a.name }, byDirectory.get(path.join(directory, b.name)) ?? { pageId: b.name })
+			: rank(a) - rank(b) || a.name.localeCompare(b.name, 'en', { numeric: true }));
 		for (const entry of entries) {
 			const filename = path.join(directory, entry.name);
 			if (location && entry.name === 'content.md' && entry.isFile() && owner.kind === 'page') continue;
@@ -110,7 +113,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 				await visit(filename, container.id, owner, childRole, childLocation);
 				const child = items.find((item) => item.sourcePath === filename);
 				if (child && childRole === 'extra' && (knownNames.has(entry.name) || ['images', 'downloads', 'pages', 'site-config', 'public'].includes(entry.name) || role === 'pages')) {
-					issue(child, `This directory is not at a permitted Norna location: ${filename}. Use pages/NNN-page-id for child entries, images/ beside page content, and site-config/ or public/ only at the site root.`, 'warning');
+					issue(child, `This directory is not at a permitted Norna location: ${filename}. Use pages/page-id for child entries, images/ beside page content, and site-config/ or public/ only at the site root.`, 'warning');
 				}
 				continue;
 			}
@@ -171,7 +174,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 	for (const problem of snapshot.problems) {
 		if (![owner, ...items].some((item) => item.issues?.some((entry) => entry.message === problem.message && entry.path === problem.path))) {
 			const target = items.find((item) => item.sourcePath === problem.path || item.directory === problem.path) ?? owner;
-			issue(target, problem.message, 'error', problem.path);
+			issue(target, problem.message, problem.severity ?? 'error', problem.path);
 		}
 	}
 	return { ...snapshot, items, problems: owner.issues };

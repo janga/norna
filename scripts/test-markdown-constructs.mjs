@@ -28,7 +28,7 @@ test('named sidenotes render as linked lettered CSS margin notes', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/docs/\n');
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/docs/\n');
 		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
@@ -77,7 +77,7 @@ test('page-title notes preserve root-relative links under a site base path', asy
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'url: https://example.com/docs/\n');
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/docs/\n');
 		await writeFile(path.join(siteDir, 'root/content.md'), `---
 page:
   description: Fixture
@@ -125,7 +125,7 @@ test('reference footnotes render page-wide with localized accessible links', asy
 		const { root, siteDir } = await createTempSite({ underRepoCache: true });
 		try {
 			await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-			await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `url: https://example.com/docs/\nlanguage: ${locale.language}\n`);
+			await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `sourceFormat: 2\nurl: https://example.com/docs/\nlanguage: ${locale.language}\n`);
 			await writeFile(path.join(siteDir, 'root/content.md'), `# Reference footnotes
 
 The first section cites one source twice.[^scope] A second reference points to
@@ -138,7 +138,7 @@ The definition may live in another page section.
 [^scope]: The first line of the definition continues on a second line and
     links to the [About page](/about/).
 `);
-			await writePage(siteDir, '010-about', `# About
+			await writePage(siteDir, 'about', `# About
 
 ## Scope {#scope}
 
@@ -182,7 +182,7 @@ test('semantic callouts render every supported meaning with localized accessible
 		const { root, siteDir } = await createTempSite({ underRepoCache: true });
 		try {
 			await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
-			await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `url: https://example.com/\nlanguage: ${locale.language}\n`);
+			await writeFile(path.join(siteDir, 'site-config/settings.yaml'), `sourceFormat: 2\nurl: https://example.com/\nlanguage: ${locale.language}\n`);
 			await writeFile(path.join(siteDir, 'root/content.md'), `# Callouts
 
 ## Meanings {#meanings}
@@ -207,7 +207,7 @@ test('semantic callouts render every supported meaning with localized accessible
 
 > An ordinary blockquote remains ordinary.
 `);
-			await writePage(siteDir, '010-about', `# About
+			await writePage(siteDir, 'about', `# About
 
 ## Context {#context}
 
@@ -470,7 +470,7 @@ items:
 `);
 		await mkdir(path.join(siteDir, 'root/images'), { recursive: true });
 		await writeFile(path.join(siteDir, 'root/images', 'adopt.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><rect width="160" height="100"/></svg>\n');
-		await writePage(siteDir, '010-adopt', `# Adopt
+		await writePage(siteDir, 'adopt', `# Adopt
 
 ## Start {#start}
 
@@ -858,8 +858,8 @@ test('page-list description warnings do not block a static build', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
 		await writeFile(path.join(siteDir, 'root/content.md'), '# Home\n');
-		await writePage(siteDir, '010-help', '# Help\n\n```page-list\n```\n');
-		await writePage(siteDir, '010-help/pages/010-fostering', '# Fostering\n');
+		await writePage(siteDir, 'help', '# Help\n\n```page-list\n```\n');
+		await writePage(siteDir, 'help/pages/fostering', '# Fostering\n');
 		const result = await runNorna(['--site-dir', siteDir, 'build']);
 		assert.match(result.stdout, /without a non-empty page\.description/);
 		const html = await readFile(path.join(path.dirname(siteDir), 'dist/help/index.html'), 'utf8');

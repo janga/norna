@@ -17,7 +17,7 @@ const fixture = async t => {
  const root = await realpath(await mkdtemp(path.join(cache,'norna-preview-')));
  const siteRoot = path.join(root,'site');
  const write = async (name,text) => { const file=path.join(siteRoot,name);await mkdir(path.dirname(file),{recursive:true});await writeFile(file,text);return file; };
- await write('site-config/settings.yaml','url: https://example.com/manual/\n');await write('root/tree-theme.yaml','preset: documentation\n');await write('root/content.md','# Home\n');const page=await write('root/pages/010-guide/content.md','---\nnavigation:\n  listed: false\n---\n# Guide\n');
+ await write('site-config/settings.yaml','sourceFormat: 2\nurl: https://example.com/manual/\n');await write('root/tree-theme.yaml','preset: documentation\n');await write('root/content.md','# Home\n');const page=await write('root/pages/guide/content.md','---\nnavigation:\n  listed: false\n---\n# Guide\n');
  t.after(async()=>{
   const state=await readFile(path.join(siteRoot,'.norna/dev/state.json'),'utf8').then(JSON.parse).catch(()=>null);
   if(state?.pid!==process.pid)await stopEditorSitePreview({siteRoot}).catch(()=>{});
@@ -62,8 +62,8 @@ test('failed target rendering cleans up its new server; invalid theme never star
  const f=await fixture(t),port=await freePort(),options={...f,sourcePath:f.page,environment:{NORNA_DEV_PORT:port}};
  // Valid source can still fail at render time (tree navigation plus explicit
  // alternating surfaces). A successful identity probe alone is insufficient.
- await f.write('root/pages/010-guide/content.md','# Guide\n');
- await f.write('root/pages/010-guide/pages/010-child/content.md','# Child\n');
+ await f.write('root/pages/guide/content.md','# Guide\n');
+ await f.write('root/pages/guide/pages/child/content.md','# Child\n');
  await f.write('root/tree-theme.yaml','preset: documentation\nsections:\n  backgroundPattern: alternating\n');
  await assert.rejects(startEditorSitePreview({...options,sourcePath:undefined}),/HTTP 500/);
  assert.equal((await getEditorPreviewStatus(f)).verified,false);
@@ -80,7 +80,7 @@ test('a reused server with a failing target page remains running and does not pr
  identity=state;await f.write('.norna/dev/state.json',JSON.stringify(state));
  await assert.rejects(startEditorSitePreview({...f,sourcePath:f.page,environment:{NORNA_DEV_PORT:String(port)}}),/HTTP 500/);
  assert.equal((await getEditorPreviewStatus(f)).verified,true);
- status=200;await f.write('site-config/settings.yaml','url: https://example.com/\n');
+ status=200;await f.write('site-config/settings.yaml','sourceFormat: 2\nurl: https://example.com/\n');
  assert.equal((await startEditorSitePreview({...f,sourcePath:f.page,environment:{NORNA_DEV_PORT:String(port)}})).url,`http://127.0.0.1:${port}/guide/`);
  // Prevent fixture cleanup from treating this deliberately simulated identity
  // as a real child process owned by the dev manager.

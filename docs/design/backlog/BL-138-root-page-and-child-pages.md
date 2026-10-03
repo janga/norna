@@ -54,7 +54,7 @@ layout remain unchanged by this source-model change.
 - Root `theme.yaml` remains the shared theme. Root `page-theme.yaml` accepts
   the limited page-theme schema and affects only the homepage. Descendant
   `theme.yaml` inheritance is unchanged.
-- The old `pages/000-home/` layout receives actionable conversion guidance.
+- The old `pages/home/` layout receives actionable conversion guidance.
   Conversion preserves content, images and homepage overrides; collisions or
   unsupported contents fail before source files change.
 - Custom site roots, source links, image generation, aliases, search and the

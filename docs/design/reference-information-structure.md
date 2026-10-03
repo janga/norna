@@ -23,7 +23,7 @@ experience needs no authoring knowledge. The working notes in
 [the completion plan](reference-completion-plan.md) record missing concepts and
 reading order separately from implementation coverage.
 
-The canonical source is `site/pages/032-reference/`. The website and Git source
+The canonical source is `site/pages/reference/`. The website and Git source
 share one authored Markdown tree. `docs/` retains contributor/design material.
 
 ## Page contracts
