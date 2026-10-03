@@ -1,49 +1,55 @@
 # BL-053: Accessible Mathematics
 
-## Outcome
+## Purpose And Status
 
-Decide whether Norna should render mathematical notation from source or retain
-static conversion as the migration path for scientific and mathematical
-documentation.
+Let authors write LaTeX-style mathematical notation in Markdown and publish
+accessible inline and display mathematics on a level comparable to established
+documentation systems. This covers equations, not complete `.tex` documents.
+
+**Status: Prioritized by the owner on 2026-10-03; needs implementation design.**
+The decision to add mathematics support supersedes the earlier gate requiring
+two maintained Norna sites before native rendering could be pursued.
 
 ## Evidence
 
 [Docusaurus](https://docusaurus.io/docs/markdown-features/math-equations),
 [VitePress](https://vitepress.dev/guide/markdown#math-equations), and
 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/math/)
-support TeX-style mathematics through built-in options or extensions. The
-completed `BL-046` review found the capability relevant to a narrower audience
-than callouts, code metadata, or content alternatives.
+support TeX-style inline and display mathematics through options or
+extensions. Docusaurus also documents a fenced `math` form. Norna currently
+has no native mathematics renderer; static conversion is the migration path.
 
-## Syntax Status: Evidence And Review Required
+## Scope And Preliminary Syntax
 
-If native support is justified, prefer the established inline `$...$` and
-display `$$...$$` forms instead of a Norna-specific block. Before accepting
-them, define escaping, currency-like text, code spans, code fences, malformed
-delimiters, and whether inline mathematics is permitted in headings or links.
+Prefer the established inline `$...$` and display `$$...$$` forms instead of
+a Norna-specific block. Evaluate fenced `math` and backslash-delimited forms
+as compatibility forms where they materially help migration; do not silently
+accept several forms with different semantics. Define escaping, currency-like
+text, code spans, code fences, malformed delimiters, and whether math is
+permitted in headings, links, tables, tabs and callouts.
 
-Until then, migration should retain the formula source and use accessible
-static HTML or SVG output. A picture of a formula without an equivalent text
-description is not an acceptable conversion.
+Keep the equation source in `content.md`. A valid expression must render in
+local preview and published output. Preserve static conversion as a temporary
+migration option; a picture of a formula without equivalent text is not an
+acceptable result.
 
-## Evidence Required
+## Open Decisions
 
-- Identify at least two maintained Norna sites or representative migrations
-  where ordinary Unicode and prose cannot express the required notation.
-- Compare build-time KaTeX, MathJax output, and pre-rendered static output for
-  accessibility, package size, build time, fonts, and Light/Dark appearances.
-- Verify whether the selected renderer can produce useful MathML or another
-  screen-reader representation without page-wide client JavaScript.
-- Establish the minimum TeX subset that Norna can validate and support.
+- Compare build-time KaTeX, MathJax and static output for supported commands,
+  accessibility, package size, build time, font assets and Light/Dark themes.
+- Choose a maintained TeX subset and a single normative authoring contract.
+  Establish MathML or another useful screen-reader representation without
+  requiring page-wide client JavaScript.
+- Specify overflow, wrapping, zoom or scrolling for long equations on narrow
+  screens; check print, copied text and search indexing.
+- Define page-and-line diagnostics for malformed or unsupported expressions
+  and a way to inspect source without exposing renderer stack traces.
 
-## Acceptance Criteria For Decision
+## Ready For Implementation When
 
-- The decision states which user need cannot be met by static conversion.
-- Any native proposal uses one established source grammar and one maintained
-  build-time renderer.
-- Mathematical content remains understandable in print, search, copied text,
-  and assistive technology.
-- Invalid source reports the page and line without exposing a renderer stack
-  trace.
-- If evidence remains weak, document static conversion and close this item
-  without adding product code.
+- A tested source grammar, renderer and asset model cover inline and display
+  math, errors, accessibility and no-JavaScript output.
+- Representative equations remain understandable in print, search, copied
+  text, and assistive technology at narrow and wide widths.
+- Examples and reference pages clearly identify LaTeX-style math as an
+  extension, not standard Markdown or GFM.

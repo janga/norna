@@ -6,8 +6,9 @@ Define the minimum shared model that lets future Norna documentation identify
 which instructions, configuration, commands, and migration guidance belong to
 which product version.
 
-**Needs design; not implementation-ready.** This is the prerequisite design
-record for versioned documentation and version-aware lifecycle features.
+**Deferred with versioned documentation by the owner on 2026-10-03.** This is
+the prerequisite design record for that later work, not an active design task
+or implementation-ready specification.
 
 ## Scope And Boundaries
 

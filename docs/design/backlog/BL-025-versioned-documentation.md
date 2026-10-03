@@ -6,9 +6,9 @@ Let a documentation site publish a small set of materially different document
 versions without duplicating unrelated site content or sending readers and
 search across versions unexpectedly.
 
-**Deferred; design not complete.** This record captures decisions already
-made about the reader model. It does not yet define source paths, URL syntax,
-or implementation work.
+**Deferred by the owner on 2026-10-03; design not complete.** This record
+captures decisions already made about the reader model. It does not yet define
+source paths, URL syntax, or implementation work.
 
 ## Scope And Boundaries
 

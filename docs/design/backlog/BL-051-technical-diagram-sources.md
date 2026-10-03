@@ -1,25 +1,29 @@
 # BL-051: Technical Diagram Sources
 
-## Outcome
+## Purpose And Status
 
-Decide whether frequently edited technical diagrams should be rendered from
-text source by Norna or remain externally generated managed SVG images.
+Let documentation authors write Mermaid diagrams in page Markdown and publish
+readable diagrams with a level of usability comparable to established
+documentation systems.
+
+**Status: Prioritized by the owner on 2026-10-03; needs implementation design.**
+The decision to add Mermaid support supersedes the earlier evidence gate that
+required two maintained Norna sites before native rendering could be pursued.
+Existing managed SVG remains useful for diagrams authored elsewhere.
 
 ## Evidence
 
-Docusaurus and Material for MkDocs offer Mermaid integrations. Norna can
-already publish a pre-rendered SVG through its managed image model, which is a
-good information-preserving migration path. Native source rendering adds value
-only when maintainers need to edit diagrams often enough to justify another
-build dependency and content syntax.
+[Docusaurus](https://docusaurus.io/docs/markdown-features/diagrams) renders
+Mermaid fences and supports Light/Dark themes.
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/diagrams/)
+also renders Mermaid fences and describes responsive and appearance limits by
+diagram type. Norna currently publishes pre-rendered SVG through its managed
+image model, but does not render Mermaid source in Markdown.
 
-## Syntax Status: Conditional
+## Scope And Preliminary Syntax
 
-No new syntax is justified while managed SVG remains the recommended path. If
-the evidence supports native Mermaid rendering, reuse the established fenced
-language form documented by
-[Docusaurus](https://docusaurus.io/docs/markdown-features/diagrams) and
-[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/diagrams/):
+Use the established fenced language form unless a concrete parser conflict is
+found:
 
 ````md
 ```mermaid
@@ -28,29 +32,34 @@ graph LR
 ```
 ````
 
-Do not introduce `norna-diagram`. A design is still required for an accessible
-description, appearance-aware output, and the checked-in source or provenance
-needed to regenerate the SVG.
+Do not introduce `norna-diagram` or a general diagram plugin API. Start with
+the common flowchart, sequence, class, state, and entity-relationship cases;
+document which other Mermaid diagram types are supported. A valid fence must
+produce a diagram in preview and in the published site, not a raw code block.
+Keep the editable Mermaid source in `content.md`.
 
-## Evidence Required
+## Open Decisions
 
-- Collect at least two maintained Norna sites whose diagram source changes as
-  part of normal documentation work.
-- Compare checked-in generated SVG, build-time Mermaid rendering, and an
-  external diagram-generation command.
-- Measure dependency and package impact, deterministic output, build time, and
-  dark/light appearance behavior.
-- Define how alt text, a longer text description, source provenance, and
-  fallback output remain available to assistive technology.
-- Confirm that the implementation adds no diagram runtime to ordinary pages.
+- Compare build-time output with a page-scoped client renderer. Choose a
+  bounded dependency and caching model; diagrams must remain meaningful in
+  print and without JavaScript, and pages without diagrams should carry no
+  Mermaid runtime.
+- Define how an author supplies an accessible name and longer description
+  when the visual diagram alone is insufficient. Keep text alternatives close
+  to the diagram in reading order.
+- Specify Light/Dark colors, narrow-screen fitting or scrolling, zoom or
+  inspection when detail is too small, and behavior after an appearance change.
+- Define validation and source-location diagnostics for malformed Mermaid and
+  unsupported diagram types. Review links and HTML embedded in diagram source
+  against [BL-163 Author HTML Publication Boundary](BL-163-author-html-publication-boundary.md).
+- Decide how generated assets are cached and whether they belong to the image
+  manifest; preserve deterministic builds and source provenance.
 
-## Acceptance Criteria For Decision
+## Ready For Implementation When
 
-- The recommendation names the user workflow that static managed SVG cannot
-  serve adequately.
-- Any native proposal owns one closed source syntax and renderer rather than a
-  general diagram plugin API.
-- Generated output is deterministic, cacheable, and compatible with the
-  existing image manifest and source-location rules.
-- If evidence remains weak, retain external generation as the documented
-  migration strategy and close this item without product code.
+- A bounded renderer and source contract cover common Mermaid diagram types,
+  invalid input, cache behavior, and generated assets.
+- Representative examples verify desktop/mobile, Light/Dark, print,
+  no-JavaScript reading, and assistive-technology text alternatives.
+- The Examples and reference placement distinguish Mermaid from standard
+  Markdown, GFM and other Norna extensions.

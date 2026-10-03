@@ -8,7 +8,8 @@ version in which the old material became deprecated or may be removed.
 
 ## Status
 
-This is an intentionally incomplete design item, not an implementation-ready
+Deferred with versioned documentation by the owner on 2026-10-03. This is an
+intentionally incomplete design item, not an implementation-ready
 specification. It depends on `BL-100` Future Versioning Foundation and must be
 clarified after that model exists.
 
