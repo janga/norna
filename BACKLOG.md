@@ -107,8 +107,12 @@ These owner-selected items are ordered for design discussion, not yet for
 implementation. `Now` and `Next` remain empty until their open decisions are
 settled.
 
+- ★ [`BL-166` Page Order In Frontmatter](docs/design/backlog/BL-166-page-order-in-frontmatter.md):
+  **Needs decision; highest-priority design discussion.** Remove ordering
+  prefixes from page directories, support creation at the intended position
+  and show affected files before renumbering sibling pages.
 - ★ [`BL-159` Managed Local Markdown Images](docs/design/backlog/BL-159-managed-local-markdown-images.md):
-  **Needs decision; highest-priority design discussion.** Give local Markdown
+  **Needs decision; follows BL-166 in discussion order.** Give local Markdown
   images the same management as `image-stack`, settling HTML placement,
   Standard Markdown guidance and the caption/title distinction before the
   remaining image-authoring design work.

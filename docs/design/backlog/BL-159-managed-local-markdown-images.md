@@ -6,9 +6,12 @@ Let authors use ordinary Markdown image references for local images while
 receiving the same file validation, responsive variants and file-lifecycle
 support as images referenced through `image-stack`.
 
-**Status: Needs decision; highest-priority design discussion.** Created at the
-owner's request on 2026-10-02. Settle this model before further image-authoring
-design; the open choices below are not an implementation-ready specification.
+**Status: Needs decision; follows BL-166 in discussion order.** Created at the
+owner's request on 2026-10-02. Discuss
+[BL-166 Page Order In Frontmatter](BL-166-page-order-in-frontmatter.md) first,
+then settle this model before further image-authoring design. This discussion
+order does not make page-local image management technically dependent on
+BL-166's implementation. The open choices below still need agreement.
 
 ## Scope And Boundaries
 
