@@ -1,3 +1,4 @@
+const { describeOrderChanges } = require('./page-order-review.cjs');
 const { randomBytes } = require('node:crypto');
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
@@ -8,20 +9,21 @@ body{font-family:var(--vscode-font-family);color:var(--vscode-foreground);backgr
 </style></head><body><h1>Complete page move</h1><p>${escape(title)}</p><pre>${escape(plan.sourceUrl)} → ${escape(plan.destinationUrl)}</pre>
 <p>${Math.max(0, mappings.length - 1)} descendant page(s) and ${plan.movePreview?.linkChanges.length ?? 0} authored link(s) will change.</p>
 ${mappings.length > 1 ? `<details><summary>Affected descendant addresses</summary><pre>${mappings.slice(1).map(({ oldPathname, newPathname }) => escape(`${oldPathname} → ${newPathname}`)).join('\n')}</pre></details>` : ''}
-<form><label><input id="preserve-aliases" type="checkbox" checked> Preserve old addresses as aliases</label>
-<p id="alias-effect" class="hint" aria-live="polite"></p><p class="hint">Existing aliases remain available. This applies to the page and all affected descendants.</p>
+${plan.orderChanges?.length ? `<details open><summary>Page order changes</summary><pre>${escape(describeOrderChanges(plan))}</pre></details>` : ''}
+<form>${plan.sameParent ? '' : `<label><input id="preserve-aliases" type="checkbox" checked> Preserve old addresses as aliases</label>
+<p id="alias-effect" class="hint" aria-live="polite"></p><p class="hint">Existing aliases remain available. This applies to the page and all affected descendants.</p>`}
 <p>This changes site files. Editor Undo does not reverse the whole move.</p><p id="error" class="error" role="alert"></p>
 <footer><button id="complete" type="submit">Complete page move</button><button id="cancel" type="button" class="secondary">Cancel</button></footer></form>
 <script nonce="${nonce}">
 const vscode=acquireVsCodeApi(), keep=document.getElementById('preserve-aliases');let busy=false;
-const effect=()=>{document.getElementById('alias-effect').textContent=keep.checked?'Old page addresses will redirect to the new addresses.':'No new aliases will be created. Old page addresses will stop working after publication.';};
+const effect=()=>{if(!keep)return;document.getElementById('alias-effect').textContent=keep.checked?'Old page addresses will redirect to the new addresses.':'No new aliases will be created. Old page addresses will stop working after publication.';};
 const lock=value=>{busy=value;for(const element of document.querySelectorAll('input,button'))element.disabled=value;};
-keep.addEventListener('change',effect);effect();
-document.querySelector('form').onsubmit=event=>{event.preventDefault();if(busy)return;lock(true);vscode.postMessage({type:'complete',preserveAliases:keep.checked});};
+keep?.addEventListener('change',effect);effect();
+document.querySelector('form').onsubmit=event=>{event.preventDefault();if(busy)return;lock(true);vscode.postMessage({type:'complete',preserveAliases:keep?.checked??true});};
 document.getElementById('cancel').onclick=()=>{if(!busy)vscode.postMessage({type:'cancel'});};
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!busy)vscode.postMessage({type:'cancel'});});
 window.addEventListener('message',({data})=>{if(data.type==='error'){document.getElementById('error').textContent=data.message;lock(false);}});
-keep.focus();
+(keep??document.getElementById('complete')).focus();
 </script></body></html>`;
 }
 

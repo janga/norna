@@ -27,7 +27,7 @@ async function runWidgetPriority({ window, widget, openDocument, waitFor, getCom
 			return [item];
 		},
 	});
-	const setSource = async (source, relativePath = 'site/root/pages/120-widget/content.md') => {
+	const setSource = async (source, relativePath = 'site/root/pages/widget/content.md') => {
 		await vscode.commands.executeCommand('hideSuggestWidget');
 		await vscode.commands.executeCommand('leaveSnippet');
 		const document = await openDocument(relativePath);

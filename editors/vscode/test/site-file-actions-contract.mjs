@@ -12,10 +12,10 @@ const setup = async (t) => {
 	const root = await mkdtemp(path.join(os.tmpdir(), 'norna-file-actions-'));
 	t.after(() => rm(root, { recursive: true, force: true }));
 	const siteRoot = path.join(root, 'site');
-	const pagePath = path.join(siteRoot, 'root/pages/010-page/content.md');
+	const pagePath = path.join(siteRoot, 'root/pages/page/content.md');
 	await mkdir(path.dirname(pagePath), { recursive: true });
 	await mkdir(path.join(siteRoot, 'site-config'));
-	await writeFile(path.join(siteRoot, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+	await writeFile(path.join(siteRoot, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\n');
 	await writeFile(path.join(siteRoot, 'root/content.md'), '# Home\n');
 	await writeFile(pagePath, '# Page\n');
 	const source = path.join(root, 'source.svg');

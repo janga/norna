@@ -16,10 +16,7 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- ★ [`BL-166` Page Order In Frontmatter](docs/design/backlog/BL-166-page-order-in-frontmatter.md):
-  **In progress; approved 2026-10-03.** Remove ordering
-  prefixes from page directories, support creation at the intended position
-  and show affected files before renumbering sibling pages.
+No active implementation item.
 
 ## Next
 
@@ -110,7 +107,7 @@ These owner-selected items are ordered for design discussion, not yet for
 implementation. They enter `Now` or `Next` after their open decisions are settled.
 
 - ★ [`BL-159` Managed Local Markdown Images](docs/design/backlog/BL-159-managed-local-markdown-images.md):
-  **Needs decision; follows BL-166 in discussion order.** Give local Markdown
+  **Needs decision; first in discussion order.** Give local Markdown
   images the same management as `image-stack`, settling HTML placement,
   Standard Markdown guidance and the caption/title distinction before the
   remaining image-authoring design work.

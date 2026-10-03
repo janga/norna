@@ -18,7 +18,7 @@ const bodies = {
 
 async function runWidgetConstructions({ openDocument, waitFor, getCompletions }) {
 	const results = [];
-	const markdownPath = 'site/root/pages/120-widget/content.md';
+	const markdownPath = 'site/root/pages/widget/content.md';
 	const { extractNornaMarkdownBlockDiagnostics, nornaBlockTypes } = await import(pathToFileURL(
 		path.join(process.env.NORNA_EDITOR_TEST_ENGINE_ROOT, 'scripts/lib/norna-markdown-blocks.mjs'),
 	));
@@ -109,7 +109,7 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 			await accept(`automatic child list: ${prefix ? 'partial key' : 'blank key'}`,
 				`---\npage:\n  ${prefix}|CURSOR|\n---\n\n# Widget checks\n`,
 				'---\npage:\n  listChildren: true\n---\n\n# Widget checks\n',
-				'listChildren', 'widget-site/root/pages/010-overview/content.md');
+				'listChildren', 'widget-site/root/pages/overview/content.md');
 		}
 		for (const prefix of ['', 'tr']) {
 			await accept(`tree navigation: ${prefix ? 'partial value' : 'blank value'}`,

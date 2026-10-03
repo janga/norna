@@ -28,7 +28,7 @@ const open=async()=>{
 };
 const send=async(values,type='submit')=>{lastReply=undefined;await receive({type,revision:1,values});};
 try {
- await mkdir(path.join(root,'site-config'));await writeFile(path.join(root,'site-config/settings.yaml'),'url: https://example.com/\n');await mkdir(path.dirname(filename));await writeFile(filename,text);
+ await mkdir(path.join(root,'site-config'));await writeFile(path.join(root,'site-config/settings.yaml'),'sourceFormat: 2\nurl: https://example.com/\n');await mkdir(path.dirname(filename));await writeFile(filename,text);
  let opened=await open();
  await send({title:'Changed',description:'Summary',listed:true,listChildren:false,aliases:['bad']});
  assert.match(lastReply.errors.aliases,/Start and end/);assert.equal(applied,0);assert.equal(disposed,false);

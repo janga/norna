@@ -602,7 +602,7 @@ function registerSiteTree(context, output) {
 		const node = await chooseNode(argument);
 		if (!isPage(node) || node.isHome) throw new Error('Select a page below the homepage.');
 		const service = await serviceFor(node.siteRoot);
-		if (service.sitePagePlacementApiVersion !== 1) throw new Error('Update this site’s Norna engine to move pages from Site Tree.');
+		if (![1, 2].includes(service.sitePagePlacementApiVersion)) throw new Error('Update this site’s Norna engine to move pages from Site Tree.');
 		moveSourceId = node.id;
 		moveSourceRoot = node.siteRoot;
 		movePreview = null;
@@ -688,7 +688,7 @@ function registerSiteTree(context, output) {
 				await chooseNode(source);
 				if (movePreview !== preview || moveSourceId !== source.id || moveSourceRoot !== activeSiteRoot) throw new Error('The move was cancelled or changed. Start the move again.');
 			};
-			if (!plan.sameParent && service.sitePagePlacementOptionsApiVersion === 1) {
+			if ((!plan.sameParent || service.sitePageOrderApiVersion === 1 && plan.orderChanges.length) && service.sitePagePlacementOptionsApiVersion === 1) {
 				plan = await confirmPageMove(vscode, context, { title: source.title, plan }, async preserveAliases => {
 					await assertCurrentMove();
 					const next = await service.planEditorPagePlacement({ ...preview.plan, preserveAliases, sources: documentSources() });
@@ -703,8 +703,9 @@ function registerSiteTree(context, output) {
 				if (choice !== 'Complete page move') return;
 			}
 			await assertCurrentMove();
-			const affected = new Set(plan.movePreview?.sourceFiles.map((file) => file.contentPath) ?? []);
-			const movingDirectories = [plan.sourceDirectory, ...plan.orderChanges.map(({ from }) => from)];
+			const affected = new Set([...(plan.movePreview?.sourceFiles.map((file) => file.contentPath) ?? []),
+				...(plan.fileChanges?.map(change => change.originalPath) ?? [])]);
+			const movingDirectories = [plan.sourceDirectory, ...plan.orderChanges.map(({ from }) => from).filter(Boolean)];
 			const assertClean = () => {
 				const dirty = [...documentSources().keys()].filter((filename) => affected.has(filename)
 					|| filename === path.join(source.siteRoot, 'site-config/settings.yaml')
@@ -712,13 +713,14 @@ function registerSiteTree(context, output) {
 				if (dirty.length) throw new Error(`Save or undo these unsaved files before moving:\n${dirty.map((filename) => `- ${path.relative(source.siteRoot, filename)}`).join('\n')}`);
 			};
 			assertClean();
-			const result = await service.applyEditorPagePlacement(plan, { renameDirectory: async (from, to) => {
+			const result = await service.applyEditorPagePlacement(plan, { allowRenumber: true, sources: documentSources(), renameDirectory: async (from, to) => {
 				assertClean();
 				const edit = new vscode.WorkspaceEdit();
 				edit.renameFile(vscode.Uri.file(from), vscode.Uri.file(to), { overwrite: false });
 				if (!await vscode.workspace.applyEdit(edit)) throw new Error('VS Code could not move a page directory.');
 			} });
 			stopMove();
+			if (result.renumberedPages) void vscode.window.showInformationMessage(`${result.renumberedPages} existing sibling page(s) received new order values.`);
 			await refresh();
 			const moved = [...nodes.values()].find((node) => node.sourcePath === result.sourcePath);
 			if (moved && tree.visible) await enqueueTreeWork(() => tree.reveal(moved, { select: true, focus: false, expand: false }));
@@ -741,7 +743,7 @@ function registerSiteTree(context, output) {
 			.filter((choice) => !configurationTarget || path.dirname(choice.filename) === target.sourcePath);
 		if (configurationTarget && !missing.length) return vscode.window.showInformationMessage('All supported files in site-config already exist. Select a file to edit it.');
 		const selected = await vscode.window.showQuickPick([
-			...(!configurationTarget && !node.missingSource ? [{ label: '$(add) Add child page…', command: 'addChildPage' }] : []),
+			...(!configurationTarget && !node.missingSource ? [{ label: '$(add) Add page…', command: 'addChildPage' }] : []),
 			...(!configurationTarget && node.kind === 'page' ? [{ label: '$(add) Import images…', command: 'importImage' }] : []),
 			...missing.map((choice) => ({ label: `$(new-file) ${choice.required ? 'Create required' : 'Add'} ${choice.name}…`, description: choice.description, command: 'createSourceFile', filename: choice.filename })),
 		], { title: `Add to ${node.title}`, ignoreFocusOut: true });

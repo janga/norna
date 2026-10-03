@@ -85,7 +85,7 @@ const vscode = {
 				try {
 					if (viewType === 'nornaPageMoveConfirmation') {
 						moveConfirmations.push(panel.webview.html);
-						assert.match(panel.webview.html, /id="preserve-aliases"[^>]*checked/);
+						if (!panel.webview.html.includes('Page order changes') || panel.webview.html.includes('Preserve old addresses')) assert.match(panel.webview.html, /id="preserve-aliases"[^>]*checked/);
 						const response = moveResponses.shift();
 						if (typeof response === 'function') return await response({ receive, panel, replies });
 						return await receive(response === undefined ? { type: 'cancel' } : { type: 'complete', preserveAliases: response });
@@ -131,14 +131,14 @@ const vscode = {
 let context = { subscriptions: [], workspaceState, asAbsolutePath: (relative) => path.join(extensionRoot, relative) };
 try {
 	for (const root of [siteRoot, legacySite, outsideSite]) {
-		await write(path.join(root, 'site-config/settings.yaml'), 'url: https://example.com/\n');
+		await write(path.join(root, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\n');
 		await write(path.join(root, 'root/content.md'), '# Home\n');
 		await write(path.join(root, 'root/tree-theme.yaml'), 'preset: documentation\n');
 	}
-	await write(path.join(siteRoot, 'root/pages/010-guide/content.md'), '# Guide\n');
-	await write(path.join(siteRoot, 'root/pages/010-guide/pages/010-child/content.md'), '# Child\n');
-	await write(path.join(siteRoot, 'root/pages/010-guide/images/example.png'), 'Fixture bytes');
-	await write(path.join(siteRoot, 'root/pages/010-guide/downloads/manual.pdf'), 'Fixture attachment');
+	await write(path.join(siteRoot, 'root/pages/guide/content.md'), '# Guide\n');
+	await write(path.join(siteRoot, 'root/pages/guide/pages/child/content.md'), '# Child\n');
+	await write(path.join(siteRoot, 'root/pages/guide/images/example.png'), 'Fixture bytes');
+	await write(path.join(siteRoot, 'root/pages/guide/downloads/manual.pdf'), 'Fixture attachment');
 	await write(path.join(siteRoot, 'public/robots.txt'), 'User-agent: *\n');
 	await write(path.join(siteRoot, 'root/page-theme.yaml'), 'layout:\n  textWidth: narrow\n');
 	await write(path.join(legacyEngine, 'scripts/lib/editor-site-tree.mjs'),
@@ -217,7 +217,7 @@ try {
 	const image = guide.children.find((node) => node.role === 'images').children[0];
 	const imagesFolder = guide.children.find(node => node.role === 'images');
 	const downloadsFolder = guide.children.find(node => node.role === 'downloads');
-	for (const [node, expected] of [[home, path.join(siteRoot, 'root')], [guide, path.join(siteRoot, 'root/pages/010-guide')], [imagesFolder, imagesFolder.sourcePath], [downloadsFolder, downloadsFolder.sourcePath]]) {
+	for (const [node, expected] of [[home, path.join(siteRoot, 'root')], [guide, path.join(siteRoot, 'root/pages/guide')], [imagesFolder, imagesFolder.sourcePath], [downloadsFolder, downloadsFolder.sourcePath]]) {
 		assert.match(provider.getTreeItem(node).contextValue, /;copyFolderPath;/);
 		await commands.get('nornaEditor.copyFolderPath')(node);
 		assert.equal(copied.pop(), expected, 'Copy the plain absolute folder path, including spaces, without quoting or a command.');
@@ -238,7 +238,7 @@ try {
 	assert.equal(provider.getTreeItem(home).description, 'Homepage · /');
 	assert.equal(contexts.get('nornaSiteTree.showUrlPaths'), true);
 	const settingsPath = path.join(siteRoot, 'site-config/settings.yaml');
-	const settingsOverlay = { uri: vscode.Uri.file(settingsPath), isDirty: true, getText: () => 'url: https://docs.example.org/manual/\n' };
+	const settingsOverlay = { uri: vscode.Uri.file(settingsPath), isDirty: true, getText: () => 'sourceFormat: 2\nurl: https://docs.example.org/manual/\n' };
 	documents.push(settingsOverlay);
 	await registered.refresh();
 	assert.equal(provider.getTreeItem(guide).tooltip, 'URL: https://docs.example.org/manual/guide/\nSlug: guide');
@@ -273,10 +273,10 @@ try {
 	await commands.get('nornaEditor.pageInformation')(image);
 	assert.match(errors.pop(), /Select a page/);
 	assert.equal(errors.length, 0);
-	forms.push(model => { assert.equal(model.parentPath, '/guide/'); return {title:'Added below guide',slug:'added-below-guide',parentPath:model.parentPath,description:'',listed:true,listChildren:false,aliases:[]}; });
+	forms.push(model => { assert.equal(model.parentPath, 'last'); return {title:'Added below guide',slug:'added-below-guide',parentPath:model.parentPath,description:'',listed:true,listChildren:false,aliases:[]}; });
 	await commands.get('nornaEditor.addPage')(guidePages);
-	const created = path.join(siteRoot, 'root/pages/010-guide/pages/020-added-below-guide/content.md');
-	assert.match(await readFile(created, 'utf8'), /^# Added below guide\n/);
+	const created = path.join(siteRoot, 'root/pages/guide/pages/added-below-guide/content.md');
+	assert.match(await readFile(created, 'utf8'), /# Added below guide\n/);
 	assert.deepEqual(opened.pop(), ['text', created]);
 	assert.equal(errors.length, 0, errors.join('\n'));
 	const updatedHome = (await provider.getChildren()).find((node) => node.isHome && node.siteRoot === siteRoot);
@@ -290,9 +290,9 @@ try {
 	await commands.get('nornaEditor.addToPage')(firstChild);
 	assert.deepEqual(await readdir(path.dirname(firstChild.sourcePath)), beforeCancel, 'Cancelling the image picker must not create images/.');
 	choices.push((items) => items.find((item) => item.command === 'addChildPage'));
-	forms.push(model => { assert.equal(model.parentPath, '/guide/child/'); return {title:'First grandchild',slug:'first-grandchild',parentPath:model.parentPath,description:'',listed:true,listChildren:false,aliases:[]}; });
+	forms.push(model => { assert.equal(model.parentPath, 'last'); return {title:'First grandchild',slug:'first-grandchild',parentPath:model.parentPath,description:'',listed:true,listChildren:false,aliases:[]}; });
 	await commands.get('nornaEditor.addToPage')(firstChild);
-	assert.match(await readFile(path.join(path.dirname(firstChild.sourcePath), 'pages/010-first-grandchild/content.md'), 'utf8'), /^# First grandchild/);
+	assert.match(await readFile(path.join(path.dirname(firstChild.sourcePath), 'pages/first-grandchild/content.md'), 'utf8'), /# First grandchild/);
 	assert.equal(choices.length, 0, 'The visible plus must not ask for Inside/Beside.');
 	const importImage = commands.get('nornaEditor.importImage');
 	let importedInto;
@@ -305,7 +305,7 @@ try {
 	forms.push(() => undefined);
 	await commands.get('nornaEditor.addPage')(pages);
 	assert.equal(home.children.find((node) => node.role === 'pages').children.length, 1);
-	await write(path.join(siteRoot, 'root/pages/020-topics/content.md'), '---\npage:\n  listChildren: true\n---\n# Topics\n');
+	await write(path.join(siteRoot, 'root/pages/topics/content.md'), '---\npage:\n  listChildren: true\n---\n# Topics\n');
 	await registered.refresh();
 	const overview = pages.children.find((node) => node.title === 'Topics');
 	await write(guide.sourcePath, '---\npage:\n  aliases: &previous [/older-guide/]\n---\n# Guide\n');
@@ -412,7 +412,8 @@ try {
 	assert.equal(provider.getParent(guide.children[0]), guide);
 	assert.equal((await provider.getChildren(pages)).some((entry) => entry.id === guide.id), true, 'The source stays at its real location until files move.');
 	await commands.get('nornaEditor.acceptMovePreview')();
-	assert.deepEqual(warningActions.pop().actions, ['Complete page move'], 'Reordering keeps the existing confirmation without an alias checkbox.');
+	assert.match(moveConfirmations.at(-1), /Page order changes/);
+	assert.doesNotMatch(moveConfirmations.at(-1), /id="preserve-aliases"/);
 	information.pop();
 
 	await commands.get('nornaEditor.placeMoveFirst')(firstChild);
@@ -513,7 +514,7 @@ try {
 	assert.deepEqual(await readdir(path.dirname(leaf.sourcePath)), ['content.md']);
 	documents.pop();
 	// Selecting an owned resource in the command palette resolves to its page.
-	forms.push(model => { assert.equal(model.parents[0].parentPath, '/guide/'); assert.equal(model.parents[1].parentPath, '/'); return undefined; });
+	forms.push(model => { assert.equal(model.parents[0].parentPath, '/guide/'); assert.equal(model.parents.find(choice => choice.value === 'before').parentPath, '/'); return undefined; });
 	await commands.get('nornaEditor.newPage')(image);
 	assert.equal(inputs.length, 0);
 	assert.equal(choices.length, 0);
@@ -610,7 +611,7 @@ try {
 	await commands.get('nornaEditor.placeMoveFirst')(overview);
 	moveResponses.push(true);
 	await commands.get('nornaEditor.acceptMovePreview')();
-	const movedGuide = path.join(siteRoot, 'root/pages/020-topics/pages/500-guide/content.md');
+	const movedGuide = path.join(siteRoot, 'root/pages/topics/pages/guide/content.md');
 	assert.match(await readFile(movedGuide, 'utf8'), /- \/guide\//, 'The move preserves the old page URL.');
 	assert.match(await readFile(homePath, 'utf8'), /\[Guide\]\(\/topics\/guide\/\)/, 'The move updates known internal links.');
 	const movedNode = (await provider.getChildren(overview)).find(node => node.role === 'pages').children.find(node => node.title === 'Guide');

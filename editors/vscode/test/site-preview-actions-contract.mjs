@@ -24,7 +24,7 @@ const setup = () => {
    withProgress: async (_options, callback) => callback({ report() {} }, { isCancellationRequested: false, onCancellationRequested: () => ({ dispose() {} }) }),
   },
  };
- const page = { siteRoot: root, sourcePath: root + '/root/pages/010-guide/content.md', title: 'Guide' };
+ const page = { siteRoot: root, sourcePath: root + '/root/pages/guide/content.md', title: 'Guide' };
  registerSitePreviewActions({ vscode, context: { subscriptions: [] }, chooseNode: async arg => arg ?? page, activeSite: () => site,
   ownerOf: node => node, serviceFor: async () => service, register: (name, callback) => commands.set(name.split('.').at(-1), callback),
  });

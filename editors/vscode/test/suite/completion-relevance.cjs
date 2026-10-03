@@ -14,7 +14,7 @@ const isNorna = (item) => {
 };
 
 async function runCompletionRelevance({ openDocument, getCompletions }) {
-	const defaultPath = 'site/root/pages/110-context/content.md';
+	const defaultPath = 'site/root/pages/context/content.md';
 	const setSource = async (relativePath, source) => {
 		const marker = source.indexOf('|CURSOR|');
 		assert.notEqual(marker, -1);

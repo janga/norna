@@ -11,7 +11,7 @@ const moduleSource=await readFile(new URL('../site-attachment-actions.cjs',impor
 const setup=async t=>{
  const temp=await mkdtemp(path.join(os.tmpdir(),'norna-attachment-adapter-'));t.after(()=>rm(temp,{recursive:true,force:true}));const root=path.join(temp,'site');
  const write=async(name,text)=>{const file=path.join(temp,name);await mkdir(path.dirname(file),{recursive:true});await writeFile(file,text);return file;};
- await write('site/site-config/settings.yaml','url: https://example.com/manual/\n');await write('site/root/tree-theme.yaml','preset: documentation\n');const home=await write('site/root/content.md','# Home\n\nText\n');
+ await write('site/site-config/settings.yaml','sourceFormat: 2\nurl: https://example.com/manual/\n');await write('site/root/tree-theme.yaml','preset: documentation\n');const home=await write('site/root/content.md','# Home\n\nText\n');
  let form,callbacks,failCopy=false;const documents=[],commands=new Map(),open=[],warnings=[],trashed=[];
  const document=async filename=>{let doc=documents.find(doc=>doc.uri.fsPath===filename);if(doc)return doc;let text=await readFile(filename,'utf8');doc={uri:{scheme:'file',fsPath:filename},version:1,isDirty:false,isClosed:false,getText:()=>text,positionAt:x=>x,offsetAt:x=>x,set(value){text=value;this.version++;this.isDirty=true;}};documents.push(doc);return doc;};
  const vscode={ViewColumn:{Active:1},Range:class{constructor(start,end){Object.assign(this,{start,end});}},Uri:{file:fsPath=>({fsPath,scheme:'file'})},workspace:{textDocuments:documents,openTextDocument:uri=>document(uri.fsPath),fs:{

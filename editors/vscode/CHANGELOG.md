@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.14.0
+
+- Support frontmatter page order with the updated project-local engine.
+- Choose before, after, first child or last child when creating a page.
+- Show affected files and old/new order values before creating or moving a
+  page that needs sibling renumbering. Recheck the reviewed plan before writing.
+- Reorder siblings without renaming their source directories. Existing sites
+  need conversion to source format 2 before adopting the updated engine.
+
 ## 0.13.6
 
 - Show the complete old and new relative URLs on the move completion row.

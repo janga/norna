@@ -56,21 +56,21 @@ const prepareWorkspace = async () => {
 		private: true,
 		version: '1.0.0',
 	}, null, 2));
-	await write('site/site-config/settings.yaml', 'url: https://example.com/\n');
-	await write('tree-content/site-config/settings.yaml', 'url: https://example.com/\n');
+	await write('site/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
+	await write('tree-content/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	await write('tree-content/root/content.md', '# Tree Home\n');
 	await write('tree-content/root/tree-theme.yaml', 'preset: documentation\n');
 	await write('tree-content/root/page-theme.yaml', 'layout:\n  textWidth: narrow\n');
 	await write('tree-content/public/.well-known/security.txt', 'Contact: mailto:security@example.com\n');
 	await write('tree-content/root/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
-	await write('tree-content/root/pages/010-guide/content.md', '---\n# Keep metadata comment\npage:\n  description: "Original description" # keep\n  aliases: [/previous-guide/]\n---\n\n# Tree Guide\n\nKeep this prose and [authored link text](/topics/child/).\n');
-	await write('tree-content/root/pages/010-guide/tree-theme.yaml', 'layout:\n  contentSpacing: compact\n');
-	await write('tree-content/root/pages/010-guide/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
-	await write('tree-content/root/pages/020-topics/content.md', '---\npage:\n  description: Choose a topic.\n  listChildren: true\n---\n\n# Tree Topics\n');
-	await write('tree-content/root/pages/020-topics/pages/010-child/content.md', '# Tree Child\n');
-	await write('tree-content/root/pages/030-hidden/content.md', '---\nnavigation:\n  listed: false\n---\n# Tree Hidden\n');
-	await write('tree-content/root/pages/030-hidden/pages/010-hidden-child/content.md', '# Tree Hidden Child\n');
-	await write('tree-content/root/pages/040-broken/content.md', '# First title\n\n# Second title\n');
+	await write('tree-content/root/pages/guide/content.md', '---\nnavigation:\n  order: 1000\n# Keep metadata comment\npage:\n  description: "Original description" # keep\n  aliases: [/previous-guide/]\n---\n\n# Tree Guide\n\nKeep this prose and [authored link text](/topics/child/).\n');
+	await write('tree-content/root/pages/guide/tree-theme.yaml', 'layout:\n  contentSpacing: compact\n');
+	await write('tree-content/root/pages/guide/images/example.png', await readFile(path.join(extensionRoot, 'icon.png')));
+	await write('tree-content/root/pages/topics/content.md', '---\nnavigation:\n  order: 2000\npage:\n  description: Choose a topic.\n  listChildren: true\n---\n\n# Tree Topics\n');
+	await write('tree-content/root/pages/topics/pages/child/content.md', '---\nnavigation:\n  order: 1000\n---\n# Tree Child\n');
+	await write('tree-content/root/pages/hidden/content.md', '---\nnavigation:\n  order: 3000\n  listed: false\n---\n# Tree Hidden\n');
+	await write('tree-content/root/pages/hidden/pages/hidden-child/content.md', '# Tree Hidden Child\n');
+	await write('tree-content/root/pages/broken/content.md', '# First title\n\n# Second title\n');
 	await write('.vscode/settings.json', JSON.stringify({
 		...(withPrettier ? { 'editor.defaultFormatter': 'esbenp.prettier-vscode', 'editor.formatOnSave': true } : {}),
 		'[markdown]': { 'editor.formatOnSave': false },
@@ -104,28 +104,28 @@ items:
 \`\`\`
 `);
 	await write('site/root/images/intro/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
-	await write('site/root/pages/010-about/content.md', `# About
+	await write('site/root/pages/about/content.md', `# About
 
 ## Team {#team}
 
 Team content.
 `);
-	await write('site/root/pages/010-about/pages/010-team/content.md', `# Team
+	await write('site/root/pages/about/pages/team/content.md', `# Team
 
 ## People {#people}
 
 Team members.
 `);
-	await write('site/root/pages/010-about/images/team/portrait.jpg', 'test image');
-	await write('site/root/pages/020-empty/content.md', '');
-	await write('site/root/pages/030-block/content.md', `# Blocks
+	await write('site/root/pages/about/images/team/portrait.jpg', 'test image');
+	await write('site/root/pages/empty/content.md', '');
+	await write('site/root/pages/block/content.md', `# Blocks
 
 ## Example {#example}
 
 \`\`\`
 \`\`\`
 `);
-	await write('site/root/pages/040-unclosed/content.md', `# Unclosed block
+	await write('site/root/pages/unclosed/content.md', `# Unclosed block
 
 ## Example {#example}
 
@@ -133,13 +133,13 @@ Team members.
 items:
   - image: missing.jpg
 `);
-	await write('site/root/pages/050-callouts/content.md', `# Callouts
+	await write('site/root/pages/callouts/content.md', `# Callouts
 
 ## Completion {#completion}
 
 > [!
 `);
-await write('site/root/pages/060-save-callout/content.md', `# Save callout
+await write('site/root/pages/save-callout/content.md', `# Save callout
 
 ## Example {#example}
 
@@ -191,33 +191,33 @@ Body text.[^margin:context]
 	await write('site/settings.yaml', '');
 	await write('ordinary/content.md', '# Ordinary Markdown\n');
 	await write('ordinary/tree-theme.yaml', '');
-	await write('examples/complete-sites/priority/site/site-config/settings.yaml', 'url: https://example.com/\n');
+	await write('examples/complete-sites/priority/site/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	await write('examples/complete-sites/priority/site/root/content.md', '# Example\n');
-	await write('site/root/pages/070-embedded/content.md', [
+	await write('site/root/pages/embedded/content.md', [
 		'# Embedded YAML', '', '```card-list', 'items:',
 		'  - text: |-', '      First line.', '      Second line.',
 		'    title: "Card: first"', '    ', 'layout: image-top', '```', '',
 	].join('\n'));
 	await write('other.yaml', 'preset: \n');
-	await write('site/root/pages/080-authoring/content.md', '# Authoring\n\n```image-st');
-	await write('site/root/pages/080-authoring/images/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
-	const roundTripSource = await readFile(path.join(workspaceRoot, 'site/root/pages/060-save-callout/content.md'), 'utf8');
-	await write('site/root/pages/090-roundtrip/content.md', roundTripSource);
-	await write('site/root/pages/100-crlf/content.md', roundTripSource.replaceAll('\n', '\r\n'));
+	await write('site/root/pages/authoring/content.md', '# Authoring\n\n```image-st');
+	await write('site/root/pages/authoring/images/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
+	const roundTripSource = await readFile(path.join(workspaceRoot, 'site/root/pages/save-callout/content.md'), 'utf8');
+	await write('site/root/pages/roundtrip/content.md', roundTripSource);
+	await write('site/root/pages/crlf/content.md', roundTripSource.replaceAll('\n', '\r\n'));
 	await write('formatter-probe.md', '# Probe\n\n**bold**    text\n');
-	await write('site/root/pages/110-context/content.md', '# Context\n');
-	await write('site/root/pages/120-widget/content.md', '# Widget checks\n');
-	await write('site/root/pages/120-widget/images/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
-	await write('widget-site/site-config/settings.yaml', 'url: https://example.com/\n');
+	await write('site/root/pages/context/content.md', '# Context\n');
+	await write('site/root/pages/widget/content.md', '# Widget checks\n');
+	await write('site/root/pages/widget/images/local.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
+	await write('widget-site/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	await write('widget-site/root/content.md', '# Widget checks\n');
 	await write('widget-site/root/tree-theme.yaml', '');
 	await write('widget-site/root/page-theme.yaml', 'layout:\n  textWidth: narrow\n');
 	await write('widget-site/site-config/shared-content.yaml', '');
-	await write('widget-site/root/pages/010-overview/content.md', '');
-	await write('usage-site/site-config/settings.yaml', 'url: https://example.com/\n');
+	await write('widget-site/root/pages/overview/content.md', '');
+	await write('usage-site/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	await write('usage-site/root/content.md', '# Image usage\n');
-	await write('usage-site/root/pages/010-other/content.md', '# Other\n');
-	for (const [page, files] of [['', ['a-used.svg', 'z-unused.svg']], ['root/pages/010-other', ['b-used.svg', 'y-other.svg']]]) {
+	await write('usage-site/root/pages/other/content.md', '# Other\n');
+	for (const [page, files] of [['', ['a-used.svg', 'z-unused.svg']], ['root/pages/other', ['b-used.svg', 'y-other.svg']]]) {
 		for (const file of files) await write(path.join('usage-site', page, 'images', file), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 	}
 	for (const [project, editorApiVersion] of [['second', 3], ['incompatible', 1]]) {
@@ -226,12 +226,12 @@ Body text.[^margin:context]
 		const manifestPath = path.join(projectEngine, 'schemas', 'manifest.json');
 		const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 		await writeFile(manifestPath, JSON.stringify({ ...manifest, editorApiVersion }));
-		await write(`${project}/site/site-config/settings.yaml`, 'url: https://example.com/\n');
+		await write(`${project}/site/site-config/settings.yaml`, 'sourceFormat: 2\nurl: https://example.com/\n');
 		await write(`${project}/site/root/content.md`, '# Context\n');
 		await write(`${project}/site/root/images/second-only.svg`, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 		if (project === 'second') {
 			// Keep tree fixtures independent of the completion suites' source edits.
-			await write('second/tree-content/site-config/settings.yaml', 'url: https://example.com/\n');
+			await write('second/tree-content/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 			await write('second/tree-content/root/content.md', '# Other Tree Home\n');
 		}
 	}

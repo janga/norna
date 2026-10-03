@@ -17,11 +17,11 @@ async function fixture(t, { isHome = false, service = engine } = {}) {
 		await mkdir(path.dirname(filename), { recursive: true });
 		await writeFile(filename, text); return filename;
 	};
-	await write('site-config/settings.yaml', 'url: https://example.com/manual/\n');
+	await write('site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/manual/\n');
 	await write('root/tree-theme.yaml', 'preset: documentation\n');
 	const home = await write('root/content.md', '# Home\n\n[Guide](/guide/)\n');
-	const page = await write('root/pages/010-guide/content.md', '---\npage:\n  aliases: [/old-guide/]\n---\n# Guide\n');
-	const child = await write('root/pages/010-guide/pages/020-child/content.md', '---\npage:\n  aliases: [/old-child/]\n---\n# Child\n');
+	const page = await write('root/pages/guide/content.md', '---\npage:\n  aliases: [/old-guide/]\n---\n# Guide\n');
+	const child = await write('root/pages/guide/pages/child/content.md', '---\npage:\n  aliases: [/old-child/]\n---\n# Child\n');
 	const filename = isHome ? home : page;
 	const initial = await readFile(filename, 'utf8');
 	let text = initial, version = 1, dirty = false, active = true, receive, panel, onDispose, ready;
@@ -91,10 +91,10 @@ for (const preserveAliases of [true, false]) test(`Properties previews and appli
 	assert.equal(f.panel.disposed, true);
 	assert.equal(f.renames.length, 1);
 	assert.match(f.dialogs.at(-1).detail, preserveAliases ? /will be kept as aliases/ : /No new aliases/);
-	const sourcePath = path.join(f.siteRoot, 'root/pages/010-handbook/content.md');
+	const sourcePath = path.join(f.siteRoot, 'root/pages/handbook/content.md');
 	assert.equal(f.opened.at(-1).fsPath, sourcePath);
 	assert.deepEqual((await engine.getEditorPageAddresses({ siteRoot: f.siteRoot, sourcePath })).aliases.sort(), ['/old-guide/', ...(preserveAliases ? ['/guide/'] : [])].sort());
-	const childPath = path.join(path.dirname(sourcePath), 'pages/020-child/content.md');
+	const childPath = path.join(path.dirname(sourcePath), 'pages/child/content.md');
 	assert.deepEqual((await engine.getEditorPageAddresses({ siteRoot: f.siteRoot, sourcePath: childPath })).aliases.sort(), ['/old-child/', ...(preserveAliases ? ['/guide/child/'] : [])].sort());
 	assert.match(await readFile(f.home, 'utf8'), /\[Guide\]\(\/handbook\/\)/);
 });
@@ -142,7 +142,7 @@ test('address rollback remains available after the Properties form closes', asyn
 	f.confirm('Change address');
 	f.onRename(async () => {
 		f.panel.dispose();
-		const extra = path.join(f.siteRoot, 'root/pages/030-broken/content.md');
+		const extra = path.join(f.siteRoot, 'root/pages/broken/content.md');
 		await mkdir(path.dirname(extra), { recursive: true });
 		await writeFile(extra, '# Broken\n\n[Missing](/missing/)\n');
 	});

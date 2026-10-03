@@ -54,7 +54,8 @@ keyboard expansion opens the branch.
 Directories select without opening a file. Individual files use VS Code's
 normal editor or preview, including image previews.
 
-Page names hide numeric ordering prefixes. Hover over a page to see its full
+Pages use their H1 titles. With source format 2, directory names contain only
+slugs and sibling order comes from `navigation.order` frontmatter. Hover over a page to see its full
 published URL and its slug on separate lines labelled **URL:** and **Slug:**.
 The homepage shows only **URL:**. If the configured address is unavailable, the tooltip
 shows the known site-relative path.
@@ -95,7 +96,7 @@ per-row **+** or **…** buttons. The first visible Site Tree explains this once
 | Public subfolder | Public-folder actions plus Rename and Move |
 | Public file | Rename, Replace, Move, Copy Link, References, Delete |
 
-**Add** on a page creates a child page, imports images, or creates a missing
+**Add** on a page creates a page, imports images, or creates a missing
 page/branch theme. Missing `pages/` and `images/` are created by the operation.
 A required file cannot be deleted separately. Fixed folder and configuration
 filenames cannot be renamed. Left-click or Enter opens an existing page/file;
@@ -178,6 +179,21 @@ Additional addresses start with a **+** button and no empty row. Each added
 row has a remove button. Saved alias removal retains incoming-link review.
 The form requires the engine's `sitePageFormApiVersion: 1`; older engines keep
 the separate dialogs.
+Extension 0.14.0 supports frontmatter ordering through the engine's
+`sitePageOrderApiVersion: 1` and `sitePagePlacementApiVersion: 2`. Its creation
+form offers **Before**, **After**, **First child** and **Last child** relative to
+the selected page. A `pages/` row starts at last child; Home offers child
+positions only. Choose the placement in the form before creating the page.
+
+Reordering changes page frontmatter and keeps source directories and URLs
+stable. If insertion needs new order values for other siblings, the normal
+creation/move confirmation shows their count, paths and old/new values.
+Review them before confirming; cancellation writes nothing. If the plan
+changes while the form is open, review the new plan before applying it.
+The completion message reports how many existing siblings were renumbered.
+Save or undo affected unsaved files first. Older engines keep their existing
+placement behavior; older extensions cannot invoke the new move API.
+
 Creation previews the parent, address and directory before writing. Information
 edits stay in the buffer for normal save and undo. See the
 [site-tree reference](https://janga.github.io/norna/reference/workflows/editor/#work-from-the-site-tree)

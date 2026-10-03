@@ -13,7 +13,7 @@ const fixture = async t => {
 	t.after(() => rm(root, { recursive: true, force: true }));
 	const siteRoot = path.join(root, 'site');
 	const write = async (name, text) => { const filename = path.join(siteRoot, name); await mkdir(path.dirname(filename), { recursive: true }); await writeFile(filename, text); return filename; };
-	await write('site-config/settings.yaml', 'url: https://example.com/manual/\n');
+	await write('site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/manual/\n');
 	await write('root/tree-theme.yaml', 'preset: documentation\n');
 	const home = await write('root/content.md', '# Home\n\n```image-stack\nitems:\n  - image: old.png\n```\n');
 	const image = await write('root/images/old.png', 'Old image');

@@ -1,3 +1,4 @@
+const { describeOrderChanges } = require('./page-order-review.cjs');
 const path = require('node:path');
 const { openPageForm } = require('./page-form.cjs');
 const { describeLinks } = require('./site-link-review.cjs');
@@ -17,31 +18,42 @@ function validate(values, kind, isHome) {
 const applyEdits = (source, edits) => [...edits].sort((a,b) => b.start-a.start).reduce((text, edit) => text.slice(0,edit.start)+edit.text+text.slice(edit.end),source);
 
 function createPageForm({ vscode, context, service, kind, selected, target, insideSelected, ownerOf, chooseNode, documentSources, refresh, revealActive }) {
-	const parents = [{ label: `Inside “${selected.title}”`, parentPath: selected.url ?? '/' }];
-	if (!insideSelected && target.role !== 'pages' && !selected.isHome && selected.kind !== 'site') {
-		const parent = ownerOf(selected.parent);
+	const ordering = service.sitePageOrderApiVersion === 1;
+	const parent = ownerOf(selected.parent);
+	const parents = ordering ? [
+		{ value: 'last', label: `Last child of “${selected.title}”`, parentPath: selected.url ?? '/', placement: 'last' },
+		{ value: 'first', label: `First child of “${selected.title}”`, parentPath: selected.url ?? '/', placement: 'first' },
+		...(!selected.isHome && selected.kind !== 'site' && target.role !== 'pages' ? [
+			{ value: 'before', label: `Before “${selected.title}”`, parentPath: parent?.url ?? '/', placement: 'before', targetPath: selected.sourcePath },
+			{ value: 'after', label: `After “${selected.title}”`, parentPath: parent?.url ?? '/', placement: 'after', targetPath: selected.sourcePath },
+		] : []),
+	] : [{ label: `Inside “${selected.title}”`, parentPath: selected.url ?? '/' }];
+	if (!ordering && !insideSelected && target.role !== 'pages' && !selected.isHome && selected.kind !== 'site') {
 		parents.push({ label: `Beside “${selected.title}”`, parentPath: parent?.url ?? '/' });
 		if (parent?.url && parent.url !== '/') parents.push({ label: 'At site root', parentPath: '/' });
 	}
-	return openPageForm(vscode, context, { kind, parents, parentPath: parents[0].parentPath, aliases: [] }, {
+	return openPageForm(vscode, context, { kind, parents, ordering, parentPath: parents[0].value ?? parents[0].parentPath, aliases: [] }, {
 		prepare: async (raw, suggestSlug) => {
 			const values = validate(raw, kind, false);
-			if (!parents.some(parent => parent.parentPath === values.parentPath)) fail('form', 'Choose a listed destination.');
+			const destination = parents.find(parent => (parent.value ?? parent.parentPath) === values.parentPath);
+			if (!destination) fail('form', 'Choose a listed destination.');
 			const slug = suggestSlug ? service.slugifyAsciiIdentifier(values.title) : values.slug;
 			if (typeof slug !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) fail('slug', 'Use lowercase letters, numbers and single hyphens.');
 			const metadata = { ...(values.description || values.aliases.length || values.listChildren ? { page: { ...(values.description ? { description: values.description } : {}), ...(values.aliases.length ? { aliases: values.aliases } : {}), ...(values.listChildren ? { listChildren: true } : {}) } } : {}), ...(!values.listed ? { navigation: { listed: false } } : {}) };
 			await chooseNode(target);
 			let plan;
-			try { plan = await service.planSiteNodeCreation({ siteRoot: selected.siteRoot, kind, title: values.title, slug, parentPath: values.parentPath, metadata, sources: documentSources() }); }
+			try { plan = await service.planSiteNodeCreation({ siteRoot: selected.siteRoot, kind, title: values.title, slug, parentPath: destination.parentPath, ...(ordering ? { placement: destination.placement, targetPath: destination.targetPath } : {}), metadata, sources: documentSources() }); }
 			catch (error) { error.field = /alias/i.test(error.message) ? 'aliases' : 'form'; throw error; }
-			return { plan, slug, preview: `Address: ${plan.url}\nSource: ${path.join(plan.destination, 'content.md')}` };
+			return { plan, slug, requiresReview: Boolean(plan.orderChanges?.length), reviewFingerprint: plan.fingerprint,
+				preview: `Placement: ${destination.label}\nAddress: ${plan.url}\nSource: ${path.join(plan.destination, 'content.md')}${plan.orderChanges?.length ? '\n\n' + describeOrderChanges(plan) : ''}` };
 		},
 		apply: async ({ plan }, isOpen) => {
 			await chooseNode(target);
 			if (!isOpen()) return false;
 			const sourcePath = path.join(plan.destination, 'content.md');
 			if (vscode.workspace.textDocuments.some(document => document.uri.fsPath === sourcePath && document.isDirty)) throw new Error('Save or close the unsaved destination file before creating this page.');
-			const created = await service.createSiteNode(plan, { sources: documentSources() });
+			const created = await service.createSiteNode(plan, { sources: documentSources(), allowRenumber: true });
+			if (created.renumberedPages) void vscode.window.showInformationMessage(`${created.renumberedPages} existing sibling page(s) received new order values.`);
 			await refresh();
 			await vscode.window.showTextDocument(vscode.Uri.file(created.sourcePath), { preview: false });
 			await revealActive();

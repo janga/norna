@@ -9,7 +9,7 @@ body{font-family:var(--vscode-font-family);color:var(--vscode-foreground);backgr
 </style></head><body><h1>${model.edit ? 'Page information' : `New ${model.kind}`}</h1><form novalidate>
 ${field('title', 'Page title', 'For example: Install Norna', model.title)}
 ${field('description', 'Description (optional)', 'A short introduction to this page', model.description)}
-${model.edit ? `<p class="hint">Current address: ${escape(model.url)}. Changing the title does not change this address.</p>${model.canChangeAddress ? `<fieldset><legend>Page address</legend>${field('slug', 'Slug', 'install-norna', model.slug)}<label><input id="preserve-aliases" type="checkbox" checked> Preserve old addresses as aliases</label><p class="hint">Applies to this page and all affected descendants. Existing aliases are kept.</p><button id="change-address" type="button" class="secondary">Change address…</button><p class="hint">Review and confirm the address change separately from other Properties changes.</p></fieldset>` : ''}` : `<label for="parentPath">Create in</label><select id="parentPath">${model.parents.map((parent) => `<option value="${escape(parent.parentPath)}" ${parent.parentPath === model.parentPath ? 'selected' : ''}>${escape(parent.label)}</option>`).join('')}</select>${field('slug', 'URL segment', 'install-norna', '')}<p class="hint">Lowercase letters, numbers and hyphens. Suggested from the title until you edit it.</p>`}
+${model.edit ? `<p class="hint">Current address: ${escape(model.url)}. Changing the title does not change this address.</p>${model.canChangeAddress ? `<fieldset><legend>Page address</legend>${field('slug', 'Slug', 'install-norna', model.slug)}<label><input id="preserve-aliases" type="checkbox" checked> Preserve old addresses as aliases</label><p class="hint">Applies to this page and all affected descendants. Existing aliases are kept.</p><button id="change-address" type="button" class="secondary">Change address…</button><p class="hint">Review and confirm the address change separately from other Properties changes.</p></fieldset>` : ''}` : `<label for="parentPath">${model.ordering ? 'Placement' : 'Create in'}</label><select id="parentPath">${model.parents.map((parent) => `<option value="${escape(parent.value ?? parent.parentPath)}" ${(parent.value ?? parent.parentPath) === model.parentPath ? 'selected' : ''}>${escape(parent.label)}</option>`).join('')}</select>${field('slug', 'URL segment', 'install-norna', '')}<p class="hint">Lowercase letters, numbers and hyphens. Suggested from the title until you edit it.</p>`}
 <label><input id="listed" type="checkbox" ${model.listed !== false ? 'checked' : ''} ${model.isHome ? 'disabled' : ''}> Show in navigation</label><p class="hint">Unlisted pages are still published.${model.isHome ? ' The homepage is always listed.' : ''}</p>
 <label><input id="listChildren" type="checkbox" ${model.listChildren ? 'checked' : ''}> List direct child pages after this page</label><p class="hint">Norna keeps this list in navigation order. Unlisted pages are omitted.</p>
 <fieldset><legend>Additional addresses (aliases)</legend><p class="hint">These addresses redirect to this page. Start and end with /, and omit the site's deployment prefix.</p><div id="aliases"></div><button type="button" id="add-alias" class="secondary" aria-label="Add additional address" title="Add additional address">+</button><p class="error" id="aliases-error"></p></fieldset>
@@ -39,7 +39,7 @@ function openPageForm(vscode, context, model, { prepare, apply, applyAddress }) 
 	const panel = vscode.window.createWebviewPanel('nornaPageForm', model.edit ? `Page information: ${model.title}` : `New ${model.kind}`, vscode.ViewColumn.Active,
 		{ enableScripts: true, retainContextWhenHidden: true, localResourceRoots: [] });
 	panel.webview.html = pageFormHtml(model, randomBytes(24).toString('hex'));
-	let busy = false, disposed = false;
+	let busy = false, disposed = false, reviewed = null;
 	return new Promise((resolve) => {
 		const messages = panel.webview.onDidReceiveMessage(async (message) => {
 			if (disposed || busy) return;
@@ -50,6 +50,13 @@ function openPageForm(vscode, context, model, { prepare, apply, applyAddress }) 
 			try {
 				const prepared = await prepare(message.values, Boolean(message.suggestSlug));
 				if (disposed) return;
+				if (prepared.requiresReview && submit && (reviewed?.revision !== message.revision || reviewed?.fingerprint !== prepared.reviewFingerprint)) {
+					reviewed = { revision: message.revision, fingerprint: prepared.reviewFingerprint };
+					await panel.webview.postMessage({ type: 'result', revision: message.revision, preview: prepared.preview, slug: prepared.slug,
+						errors: { form: 'Review the affected files and order values, then choose Create page to confirm.' } });
+					return;
+				}
+				if (!submit) reviewed = { revision: message.revision, fingerprint: prepared.reviewFingerprint };
 				if (submit) {
 					const applied = await (message.type === 'address' ? applyAddress : apply)(prepared, () => !disposed);
 					if (applied !== false) { panel.dispose(); return; }
