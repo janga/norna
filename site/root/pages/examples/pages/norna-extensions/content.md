@@ -248,6 +248,32 @@ starts with its first option. Without JavaScript, or when printing, every
 alternative appears with its label. Read the
 [tabs reference](/reference/content/tabs/).
 
+## Details {#details}
+
+Use Details for optional explanations that readers can open when they need
+them. Keep essential instructions visible.
+
+<details>
+<summary>Why arrange a visit first?</summary>
+
+A visit lets you meet the dog and discuss its routines with our volunteers.
+
+</details>
+
+```md title="content.md: optional explanation"
+<details>
+<summary>Why arrange a visit first?</summary>
+
+A visit lets you meet the dog and discuss its routines with our volunteers.
+
+</details>
+```
+
+**Source:** Use `<details>` for the block and `<summary>` for its visible label.
+Write the body in Markdown, with a blank line before and after it. Keep
+headings and sidenotes outside the block. Read the
+[Details reference](/reference/content/details/) for the complete rules.
+
 ## Code titles and highlighted lines {#code-blocks}
 
 ```yaml title="site/site-config/settings.yaml" {3}

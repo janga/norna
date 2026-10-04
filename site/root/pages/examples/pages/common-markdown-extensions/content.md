@@ -12,9 +12,6 @@ Tables, task lists, strikethrough and automatic links for plain addresses belong
 to GitHub Flavored Markdown (GFM).
 Footnotes and GitHub-style alerts are additional conventions, so support can
 vary between tools.
-HTML written in Markdown belongs to the [standard Markdown
-tour](/examples/standard-markdown/#html-in-markdown), not to these GFM
-extensions.
 
 ## Tables {#tables}
 
