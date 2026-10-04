@@ -33,15 +33,15 @@ managed-image references and internal Markdown/card links. It reports source
 locations and actionable corrections for discovered problems.
 
 Links may target current pages, aliases, headings and public files.
-External URLs are not fetched. A missing local target is an error; a local
-Markdown image outside the managed pipeline warns. Unreferenced source images,
+External URLs are not fetched. Missing local targets and unsupported local
+Markdown image paths are errors. Unreferenced source images,
 missing child-list descriptions and carousel-ratio differences also merit
 review. Successful validation does not establish editorial quality or visual
 correctness.
 
 ## Image sync
 
-After moving an image block between pages, use:
+After moving a managed Markdown image or image block between pages, use:
 
 ```sh
 npm exec -- norna content:sync

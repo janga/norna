@@ -616,9 +616,10 @@ Right-click the image and choose **Rename…**. Keep its extension: this renames
 a file and does not convert its format. The confirmation reviews known image
 references. Name collisions or unresolved references stop the operation.
 
-The extension updates references in Norna image and card blocks while retaining
-existing unsaved page edits. Ordinary Markdown images, raw HTML and external
-references are not checked. Save the edited pages when ready. Editor Undo
+The extension updates managed Markdown image references, including shared
+reference definitions, and Norna image/card blocks while retaining existing
+unsaved page edits. It preserves the chosen local path form. Raw HTML and
+external references are not checked. Save the edited pages when ready. Editor Undo
 undoes text edits, not the complete file rename. If reference editing fails,
 the extension attempts to restore the original filename and reports any
 remaining recovery work.
@@ -699,17 +700,19 @@ propose invalid text. A suggestion's presence does not make it valid Norna.
 ## Managed images and quick fixes
 
 Image suggestions show **Unused on this page** or **Already used on this page**,
-including unsaved references in image/card blocks. Current-page files precede
+including unsaved references in managed Markdown images and image/card blocks. Current-page files precede
 other-page files; unused files precede used files within each group. These
 labels do not describe publication status.
 
 Other-page images are offered because `content:sync` can relocate an unambiguous
 source. Duplicate filenames are not guessed: unresolved references show
 **Ambiguous on this page** with the source path. **Go to Definition** opens the
-matching source, including an unambiguous file under another page.
+matching source. Markdown image definitions resolve only within their owning
+page; for block references, another page's matching file may be offered to help
+repair a misplaced image.
 
 Quick Fix offers selected repairs: close an unfinished Norna block, run image
-sync, or turn a local Markdown image into an image stack. Review edits and run
+sync. Local Markdown images are already managed and need no conversion. Review edits and run
 `content:check`; diagnostics and quick fixes do not replace the full check.
 
 ## Formatting

@@ -115,6 +115,7 @@ const hasTables = allContentBlocks.some((block) => (
 ));
 const hasImageStack = allContentBlocks.some((block) => (
 	block.type === 'image-stack'
+	|| (block.type === 'html' && block.html.includes('data-norna-managed-image='))
 ));
 const hasPrioritizableImage = (section: ResolvedSection) => section.contentBlocks.some((block) => (
 	block.type === 'image-stack'

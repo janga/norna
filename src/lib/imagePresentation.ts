@@ -5,6 +5,9 @@ export type ManagedImage = {
 	src?: string;
 	alt?: string;
 	caption?: string;
+	title?: string;
+	href?: string;
+	linkTitle?: string;
 };
 
 type GeneratedImageWithDimensions = NonNullable<ReturnType<typeof getGeneratedImage>> & {

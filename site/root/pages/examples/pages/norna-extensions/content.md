@@ -36,10 +36,10 @@ items:
 and `caption` adds visible context. All three supported fields are shown above;
 only `image` is required.
 
-Use a Norna image block rather than ordinary Markdown image syntax for local
-editorial images. Norna can then validate the file, generate responsive output,
-and keep it with the page when `page:move` moves that page. Ordinary Markdown
-images remain suitable for external URLs and static files in `site/public/`.
+Use an image block for visible captions or several images in a stack.
+[Ordinary Markdown images](/examples/standard-markdown/#images-and-tables)
+receive the same file validation, responsive variants and page-move support
+when they refer to files in the page's `images/` directory.
 
 Norna supplies semantic image markup and responsive presentation. The author
 still owns the image's meaning. An AI tool may draft alternative text, but the

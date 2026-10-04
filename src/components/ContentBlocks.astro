@@ -4,6 +4,7 @@ import ImageCarousel from './ImageCarousel.astro';
 import ImageStack from './ImageStack.astro';
 import PageList from './PageList.astro';
 import type { SectionContentBlock } from '../lib/sectionContent';
+import { renderNestedMarkdownImages } from '../lib/markdownImages';
 
 interface Props {
 	blocks: SectionContentBlock[];
@@ -20,7 +21,7 @@ const firstMediaIndex = blocks.findIndex((block) => block.type === 'image-stack'
 ---
 
 {blocks.map((block, index) => {
-	if (block.type === 'html') return <div class="section-markdown" set:html={block.html} />;
+	if (block.type === 'html') return <div class="section-markdown" set:html={renderNestedMarkdownImages(block.html, title, images.maxAvailableWidthPercent)} />;
 	if (block.type === 'tabs') return (
 		<div class="content-tabs content-block-note-lane-boundary" data-content-tabs>
 			<div class="content-tabs-controls" data-tabs-controls hidden></div>

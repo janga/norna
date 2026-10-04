@@ -16,10 +16,7 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- ★ [`BL-159` Managed Local Markdown Images](docs/design/backlog/BL-159-managed-local-markdown-images.md):
-  **Ready.** Give page-owned Markdown images the same management as `image-stack`,
-  recommend `images/name.jpg`, and preserve authored text flow, links and title
-  semantics under the approved presentation and ownership rules.
+No implementation item is currently scheduled.
 
 ## Next
 

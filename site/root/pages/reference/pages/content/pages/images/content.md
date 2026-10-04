@@ -11,6 +11,10 @@ Use `image-stack` for one or more images in reading order. Use `image-carousel`
 for two or more images the reader switches between. Both reference files in
 the page's `images/` folder.
 
+For a single image without a visible caption, you can also use an ordinary
+[Markdown image](/reference/content/markdown/#markdown-images). Both forms
+receive the same file validation, processing and page ownership.
+
 ## Image stack
 
 ````md title="content.md: one image"

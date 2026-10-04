@@ -337,6 +337,30 @@
 	object-fit: contain;
 }
 
+.managed-markdown-inline {
+	display: inline;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	vertical-align: middle;
+}
+
+.section-markdown .managed-markdown-standalone {
+	margin-block: var(--space-image-item);
+	max-width: 100%;
+}
+
+.section-markdown :is(ul, ol):has(.managed-markdown-standalone) {
+	display: block;
+}
+
+.section-markdown li > .managed-markdown-standalone {
+	display: inline-grid;
+	width: 100%;
+	margin-block: 0;
+	vertical-align: top;
+}
+
 :root[data-image-inspector-open='true'] {
 	overflow: hidden;
 }

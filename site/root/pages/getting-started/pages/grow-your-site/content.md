@@ -100,7 +100,8 @@ The example places both images in the page's `images/` directory and inserts
 them with `image-stack` blocks. A stack may contain one or several images;
 alt text and captions can be added to each entry.
 
-External images can use ordinary Markdown image syntax. See
+You can also write `![Alternative text](images/name.jpg)` for a managed local
+image without a visible caption. External images use their full URL. See
 [Images and metadata](/reference/site/images/)
 for image placement, processing, and captions.
 

@@ -1,5 +1,7 @@
 import { isAlias, isMap, isScalar, isSeq, LineCounter, parseDocument } from 'yaml';
 
+export const managedImageFilenamePattern = '^[a-zA-Z0-9][a-zA-Z0-9.-]*\\.(?:[jJ][pP][eE]?[gG]|[pP][nN][gG]|[sS][vV][gG])$(?![\\s\\S])';
+
 const stringSchema = (name, definition) => ({
 	type: 'string',
 	description: definition.description,
@@ -7,7 +9,7 @@ const stringSchema = (name, definition) => ({
 	...(definition.values ? { enum: Object.keys(definition.values) } : {}),
 	...(name === 'alt' ? {} : { minLength: 1 }),
 	pattern: name === 'image'
-		? '^[a-zA-Z0-9][a-zA-Z0-9.-]*\\.(?:[jJ][pP][eE]?[gG]|[pP][nN][gG]|[sS][vV][gG])$(?![\\s\\S])'
+		? managedImageFilenamePattern
 		: name === 'caption' || name === 'text'
 			? '^(?=[\\s\\S]*\\S)[^\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F-\\x9F]*$(?![\\s\\S])'
 			: name === 'alt'

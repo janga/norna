@@ -10,12 +10,17 @@ import {
 import { splitNornaRenderedBlocks } from '../../scripts/lib/norna-markdown-blocks.mjs';
 import { applyBasePathToHtml } from './basePath';
 import type { SitePage } from './sitePages';
+import { splitMarkdownImages, renderNestedMarkdownImages } from './markdownImages';
+import { nornaMarkdownImagePlugin } from '../../scripts/lib/norna-markdown-render-plugin.mjs';
 
 type ManagedImage = {
 	image: string;
 	src: string;
 	alt?: string;
 	caption?: string;
+	title?: string;
+	href?: string;
+	linkTitle?: string;
 };
 type CardListItem = {
 	title: string;
@@ -146,13 +151,15 @@ const applyH3HeadingIds = (
 
 const getImageSourceKey = (page: SitePage, image: string) => getPageImageSourceKey(page.pageDirectory, image);
 
-const renderHeadingTitleHtml = async (headingSource: string) => {
+const renderHeadingTitleHtml = async (headingSource: string, page: SitePage) => {
 	const headingMarkdown = headingSource
 		.replace(/^#{1,6}[ \t]+/, '')
 		.replace(/\n[ \t]*(?:=+|-+)[ \t]*$/, '')
 		.replace(explicitHeadingIdRegex, '')
 		.trim();
-	const result = await markdownToHtml(headingMarkdown, {
+	const definitions = [...new Set(page.markdownDocument.markdownImages.map((image) => image.definitionSource).filter(Boolean))].join('\n');
+	const result = await markdownToHtml(`${headingMarkdown}\n\n${definitions}`, {
+		mdastPlugins: [nornaMarkdownImagePlugin],
 		features: {
 			gfm: true,
 			smartPunctuation: true,
@@ -160,7 +167,9 @@ const renderHeadingTitleHtml = async (headingSource: string) => {
 	});
 	const paragraph = result.html.trim().match(/^<p>([\s\S]*)<\/p>$/i);
 	if (!paragraph) throw new Error('Markdown heading could not be rendered as inline content.');
-	return prepareContentHtml(paragraph[1] ?? '');
+	const html = prepareContentHtml(paragraph[1] ?? '');
+	const marked = splitMarkdownImages(html, page.pageDirectory).map((block) => block.type === 'html' ? block.html : '').join('');
+	return renderNestedMarkdownImages(marked, page.title, { desktop: 100, mobile: 100 });
 };
 
 const splitRenderedRegions = (html: string, regionCount: number) => {
@@ -192,7 +201,7 @@ const resolveContentBlocks = async (
 
 	for (const block of splitBlocks) {
 		if (block.type === 'html') {
-			resolvedBlocks.push({ type: 'html', html: prepareContentHtml(block.html) });
+			resolvedBlocks.push(...splitMarkdownImages(prepareContentHtml(block.html), page.pageDirectory));
 			continue;
 		}
 
@@ -293,7 +302,7 @@ export const getSectionsContent = async (
 		sections.push({
 			id,
 			title,
-			titleHtml: await renderHeadingTitleHtml(bodySection.heading.source),
+			titleHtml: await renderHeadingTitleHtml(bodySection.heading.source, page),
 			headingLevel,
 			contentBlocks: groupRenderedTabs(
 				await resolveContentBlocks(content, bodySection.blocks, page, childPages),

@@ -1,3 +1,4 @@
+import { extractMarkdownImageReferences, markdownImageDiagnostic } from './markdown-images.mjs';
 import { getCodeFenceMetadataDiagnostics } from './code-fence-metadata.mjs';
 import { parseContentTabs } from './content-tabs.mjs';
 import { getDetailsHeadingDiagnostics } from './details-headings.mjs';
@@ -11,7 +12,6 @@ import {
 } from './markdown-links.mjs';
 import {
 	extractInlineNoteDiagnostics,
-	extractMarkdownImageReferences,
 	extractNornaMarkdownBlockDiagnostics,
 	getNornaBlockImageReferences,
 	nornaBlockTypes,
@@ -191,6 +191,7 @@ const createRegion = ({
 	tableErrors,
 	tabResult,
 	pageNotes,
+	imageReferences,
 }) => {
 	const endOffset = nextHeading?.index ?? source.length;
 	const markdown = source.slice(heading.index, endOffset).trimEnd();
@@ -201,10 +202,7 @@ const createRegion = ({
 	});
 	const inRegion = (offset) => offset >= heading.index && offset < endOffset;
 	const fieldNoteErrors = getStructuredSidenoteDiagnostics(blockResult.blocks, { label, regionOffset: heading.index });
-	const markdownImages = extractMarkdownImageReferences(markdown).map((reference) => ({
-		...reference,
-		line: regionLineOffset + reference.line,
-	}));
+	const markdownImages = imageReferences.filter((reference) => inRegion(reference.range.start));
 	const regionHeadings = headings.filter((candidate) => (
 		candidate.index >= heading.index
 		&& candidate.index < endOffset
@@ -226,7 +224,7 @@ const createRegion = ({
 		kind: heading.depth === 1 ? 'page-intro' : 'section',
 		bodyLine: heading.line,
 		line: lineOffset + heading.line,
-		managedImages: getNornaBlockImageReferences(blockResult.blocks),
+		managedImages: [...getNornaBlockImageReferences(blockResult.blocks), ...markdownImages.filter((reference) => reference.kind === 'managed')],
 		markdown,
 		markdownImages,
 		notes: pageNotes.notes.filter((note) => inRegion(note.referenceOffset)),
@@ -246,6 +244,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	const tabResult = parseContentTabs(source, { label, lineOffset });
 	const pageNotes = extractInlineNoteDiagnostics(source, { label, lineOffset, tabResult });
 	const { headings, tree } = await getMarkdownHeadings(tabResult.maskedSource);
+	const imageReferences = extractMarkdownImageReferences({ source, tree, lineOffset });
 	const detailsDiagnostics = getDetailsHeadingDiagnostics(tree, { source: tabResult.maskedSource, label, lineOffset });
 	const calloutErrors = getSemanticCalloutDiagnostics(tree, { label, lineOffset });
 	const codeFenceErrors = getCodeFenceMetadataDiagnostics(tree, {
@@ -271,6 +270,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		pageNotes,
 		tableErrors,
 		tabResult,
+		imageReferences,
 	}));
 	const headingIssues = getHeadingIdentifierIssues(headings);
 	const headingDiagnostics = getHeadingDiagnostics(headings, lineOffset);
@@ -346,6 +346,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 	return {
 		blocks,
 		diagnostics: [
+			...imageReferences.filter((reference) => reference.kind === 'invalid').map((reference) => markdownImageDiagnostic(reference, label)),
 			...detailsDiagnostics,
 			...structureDiagnostics,
 			...headingDiagnostics,
@@ -363,7 +364,7 @@ export const parsePageMarkdown = async (markdown, options = {}) => {
 		lineOffset,
 		links,
 		managedImages: regions.flatMap((region) => region.managedImages),
-		markdownImages: regions.flatMap((region) => region.markdownImages),
+		markdownImages: imageReferences,
 		navigationHeadings,
 		notes: regions.flatMap((region) => region.notes),
 		noteDiagnostics,
@@ -395,8 +396,11 @@ export const parsePageMarkdownSource = async (source, options = {}) => {
 		};
 	};
 
+	const mapImage = (reference) => reference.blockType === 'markdown-image' ? { ...reference, range: toOriginalRange(reference.range), targetRange: toOriginalRange(reference.targetRange) } : reference;
 	return {
 		...model,
+		markdownImages: model.markdownImages.map(mapImage),
+		managedImages: model.managedImages.map(mapImage),
 		bodyOffset: normalization.originalOffsets[split.bodyOffset] ?? split.bodyOffset,
 		frontmatter: split.frontmatter,
 		frontmatterUnclosed: split.frontmatterUnclosed,

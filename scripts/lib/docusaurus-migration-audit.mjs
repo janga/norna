@@ -313,11 +313,11 @@ const inspectPage = async ({ absolutePath, relativePath, root }) => {
 		if (node.type === 'code') codeRanges.push(nodeRange(node));
 		if (node.type === 'image') {
 			collector.add({
-				action: 'Move the asset beside the Norna page and convert the reference to image-stack or image-carousel syntax.',
+				action: "Place the local asset in the Norna page's images/ folder and update its Markdown path if needed; review external images separately.",
 				classification: 'rewrite',
 				code: 'managed-image-rewrite',
 				line: nodeRange(node).line,
-				message: 'A Markdown image needs conversion to a Norna-managed image block.',
+				message: 'Review the image location and supported format; ordinary Markdown images can use Norna-managed files.',
 			});
 		}
 		if (node.type === 'html') inspectHtmlNode(node, collector);

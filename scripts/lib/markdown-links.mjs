@@ -1,4 +1,4 @@
-const getNodeRange = (node) => {
+export const getNodeRange = (node) => {
 	const start = node.position?.start.offset;
 	const end = node.position?.end.offset;
 	return Number.isInteger(start) && Number.isInteger(end)
@@ -6,7 +6,7 @@ const getNodeRange = (node) => {
 		: null;
 };
 
-const visitNodes = (node, visit) => {
+export const visitNodes = (node, visit) => {
 	if (!node || typeof node !== 'object') return;
 	visit(node);
 	if (!Array.isArray(node.children)) return;
@@ -55,9 +55,28 @@ const scanDestination = (source, start, end) => {
 	return { start: targetStart, end: cursor };
 };
 
-const getInlineLinkTargetRange = (source, node) => {
+export const getInlineLinkTargetRange = (source, node) => {
 	const nodeRange = getNodeRange(node);
 	if (!nodeRange) return null;
+	if (node.type === 'image') {
+		let depth = 1;
+		for (let cursor = nodeRange.start + 2; cursor < nodeRange.end; cursor += 1) {
+			if (source[cursor] === '\\') { cursor += 1; continue; }
+			if (source[cursor] === '`') {
+				const run = source.slice(cursor).match(/^`+/)[0];
+				const followingRuns = source.slice(cursor + run.length, nodeRange.end).matchAll(/`+/g);
+				const closing = [...followingRuns].find((match) => match[0].length === run.length);
+				if (closing) { cursor += run.length + closing.index + run.length - 1; continue; }
+				cursor += run.length - 1;
+				continue;
+			}
+			if (source[cursor] === '[') depth += 1;
+			if (source[cursor] === ']' && --depth === 0) {
+				return source[cursor + 1] === '(' ? scanDestination(source, cursor + 2, nodeRange.end) : null;
+			}
+		}
+		return null;
+	}
 	const childEnd = Array.isArray(node.children)
 		? Math.max(nodeRange.start, ...node.children.map((child) => child.position?.end.offset ?? nodeRange.start))
 		: nodeRange.start;
@@ -66,7 +85,7 @@ const getInlineLinkTargetRange = (source, node) => {
 	return scanDestination(source, delimiter + 2, nodeRange.end);
 };
 
-const getDefinitionTargetRange = (source, node) => {
+export const getDefinitionTargetRange = (source, node) => {
 	const nodeRange = getNodeRange(node);
 	if (!nodeRange) return null;
 	const delimiter = source.indexOf(']:', nodeRange.start);
@@ -82,7 +101,7 @@ export const extractMarkdownLinks = ({ source, tree, lineOffset = 0 }) => {
 	const definitions = new Map();
 	visitNodes(tree, (node) => {
 		if (node.type !== 'definition') return;
-		definitions.set(node.identifier, node);
+		if (!definitions.has(node.identifier)) definitions.set(node.identifier, node);
 	});
 
 	const links = [];

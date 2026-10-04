@@ -335,6 +335,14 @@
     "width": 1200,
     "height": 700
   },
+  "root/pages/examples/pages/standard-markdown/images/circle.svg": {
+    "kind": "static",
+    "outputVersion": 2,
+    "sourceHash": "c835acc71775886a86829989398b2e498fb2ccedafa465ee03f97dd8f6695c69",
+    "src": "/images/original/pages/examples/pages/standard-markdown/images/circle-c835acc7.svg",
+    "width": 1200,
+    "height": 700
+  },
   "root/pages/features/images/navigation-nested-desktop.png": {
     "outputVersion": 2,
     "sourceHash": "02b274fefd25b0fbfed3c65677b302d4114b3aaf81bf9d35cffa33f3b6149f50",

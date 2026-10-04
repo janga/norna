@@ -103,6 +103,8 @@ const getImageSourceKey = (contentFile, image) => getPageImageSourceKey(contentF
 const getReferencedImages = async (contentFile) => {
 	const { body } = await readSiteFile(contentFile.contentPath, contentFile.contentLabel);
 	const page = await parsePageMarkdown(body, { label: contentFile.contentLabel });
+	const imageError = page.diagnostics.find((issue) => issue.code === 'invalid-markdown-image');
+	if (imageError) throw new Error(imageError.message + ' ' + imageError.fix);
 	const references = [];
 
 	for (const region of page.regions) {
@@ -203,13 +205,13 @@ const validateCarouselOrientations = async (manifest) => {
 	}
 };
 
-const identify = async (sourcePath) => {
+const identify = async (sourcePath, imageMagick) => {
 	const output = await imageMagick.identify(sourcePath);
 	const [width, height] = output.split(' ').map(Number);
 	return { width, height };
 };
 
-const convert = async (sourcePath, outputPath, width) => {
+const convert = async (sourcePath, outputPath, width, imageMagick) => {
 	await mkdir(path.dirname(outputPath), { recursive: true });
 	await imageMagick.convert(sourcePath, outputPath, width);
 };
@@ -349,80 +351,89 @@ const removeUnreferencedGeneratedFiles = async (manifest) => {
 	}
 };
 
-await mkdir(generatedImagesDir, { recursive: true });
+const main = async () => {
+	await mkdir(generatedImagesDir, { recursive: true });
 
-const previousManifest = await readManifest();
-const sources = await getReferencedSources();
-const manifest = {};
-const isStaticSource = (sourcePath) => staticImageExtensions.has(path.extname(sourcePath).toLowerCase());
-const isRasterSource = (sourcePath) => rasterImageExtensions.has(path.extname(sourcePath).toLowerCase());
+	const previousManifest = await readManifest();
+	const sources = await getReferencedSources();
+	const manifest = {};
+	const isStaticSource = (sourcePath) => staticImageExtensions.has(path.extname(sourcePath).toLowerCase());
+	const isRasterSource = (sourcePath) => rasterImageExtensions.has(path.extname(sourcePath).toLowerCase());
 
-if (sources.length === 0) {
-	await removeUnreferencedGeneratedFiles(manifest);
-	await mkdir(path.dirname(generatedImagesManifestPath), { recursive: true });
-	await writeFile(generatedImagesManifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-	process.exit(0);
-}
+	if (sources.length === 0) {
+		await removeUnreferencedGeneratedFiles(manifest);
+		await mkdir(path.dirname(generatedImagesManifestPath), { recursive: true });
+		await writeFile(generatedImagesManifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+		return;
+	}
 
-const imageMagick = sources.some(({ sourcePath }) => isRasterSource(sourcePath))
-	? await getImageMagick()
-	: null;
+	const imageMagick = sources.some(({ sourcePath }) => isRasterSource(sourcePath))
+		? await getImageMagick()
+		: null;
 
-for (const { sourcePath, sourceKey } of sources) {
-	const sourceHash = await getSourceHash(sourcePath);
+	for (const { sourcePath, sourceKey } of sources) {
+		const sourceHash = await getSourceHash(sourcePath);
 
-	if (isStaticSource(sourcePath)) {
-		const reusableEntry = await getReusableStaticEntry(previousManifest[sourceKey], sourceHash);
+		if (isStaticSource(sourcePath)) {
+			const reusableEntry = await getReusableStaticEntry(previousManifest[sourceKey], sourceHash);
+
+			if (reusableEntry) {
+				manifest[sourceKey] = reusableEntry;
+				continue;
+			}
+
+			const outputPath = getOriginalPath(sourceKey, sourceHash);
+			await mkdir(path.dirname(outputPath), { recursive: true });
+			await copyFile(sourcePath, outputPath);
+
+			const dimensions = await readImageDimensions(sourcePath).catch(() => null);
+			manifest[sourceKey] = {
+				kind: 'static',
+				outputVersion: imageOutputVersion,
+				sourceHash,
+				src: getPublicPath(outputPath),
+				...(dimensions ? { width: dimensions.width, height: dimensions.height } : {}),
+			};
+			continue;
+		}
+
+		const reusableEntry = await getReusableEntry(sourceKey, previousManifest[sourceKey], sourceHash);
 
 		if (reusableEntry) {
 			manifest[sourceKey] = reusableEntry;
 			continue;
 		}
 
-		const outputPath = getOriginalPath(sourceKey, sourceHash);
-		await mkdir(path.dirname(outputPath), { recursive: true });
-		await copyFile(sourcePath, outputPath);
+		if (!imageMagick) {
+			throw new Error(`ImageMagick is missing for raster image: ${sourcePath}`);
+		}
 
-		const dimensions = await readImageDimensions(sourcePath).catch(() => null);
+		const dimensions = await identify(sourcePath, imageMagick);
+		const variantWidths = getVariantWidths(dimensions);
+		const variants = getVariants(sourceKey, sourceHash, variantWidths);
+		for (const width of variantWidths) {
+			const outputPath = getGeneratedPath(sourceKey, sourceHash, width);
+			await convert(sourcePath, outputPath, width, imageMagick);
+		}
+
 		manifest[sourceKey] = {
-			kind: 'static',
 			outputVersion: imageOutputVersion,
 			sourceHash,
-			src: getPublicPath(outputPath),
-			...(dimensions ? { width: dimensions.width, height: dimensions.height } : {}),
+			width: dimensions.width,
+			height: dimensions.height,
+			variants,
 		};
-		continue;
 	}
 
-	const reusableEntry = await getReusableEntry(sourceKey, previousManifest[sourceKey], sourceHash);
+	await validateCarouselOrientations(manifest);
+	await removeUnreferencedGeneratedFiles(manifest);
+	await mkdir(path.dirname(generatedImagesManifestPath), { recursive: true });
+	await writeFile(generatedImagesManifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+};
 
-	if (reusableEntry) {
-		manifest[sourceKey] = reusableEntry;
-		continue;
-	}
-
-	if (!imageMagick) {
-		throw new Error(`ImageMagick is missing for raster image: ${sourcePath}`);
-	}
-
-	const dimensions = await identify(sourcePath);
-	const variantWidths = getVariantWidths(dimensions);
-	const variants = getVariants(sourceKey, sourceHash, variantWidths);
-	for (const width of variantWidths) {
-		const outputPath = getGeneratedPath(sourceKey, sourceHash, width);
-		await convert(sourcePath, outputPath, width);
-	}
-
-	manifest[sourceKey] = {
-		outputVersion: imageOutputVersion,
-		sourceHash,
-		width: dimensions.width,
-		height: dimensions.height,
-		variants,
-	};
+try {
+	await main();
+} catch (error) {
+	console.error(error.message);
+	process.exitCode = 1;
 }
-
-await validateCarouselOrientations(manifest);
-await removeUnreferencedGeneratedFiles(manifest);
-await mkdir(path.dirname(generatedImagesManifestPath), { recursive: true });
-await writeFile(generatedImagesManifestPath, `${JSON.stringify(manifest, null, 2)}\n`);

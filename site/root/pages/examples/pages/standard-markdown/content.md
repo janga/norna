@@ -1,6 +1,6 @@
 ---
 page:
-  description: Learn the basics of Markdown with small examples of paragraphs, headings, emphasis, lists, links and code.
+  description: Learn the basics of Markdown with small examples of paragraphs, headings, emphasis, lists, links, images and code.
   aliases:
     - /examples/everyday-markdown/
 navigation:
@@ -268,21 +268,51 @@ a hard line break. A blank line starts a new paragraph. A line with three
 hyphens creates a thematic divider; use a heading when the next part has a
 name, because a divider alone does not describe the new section.
 
-## Images and tables {#images-and-tables}
+## Images {#images-and-tables}
 
-Ordinary Markdown has image syntax: an exclamation mark followed by alternative
-text in brackets and an image address in parentheses.
+Put the image in the page's `images/` folder, beside `content.md`:
 
-```md
-![A dog resting on a blanket](https://example.com/dog.jpg)
+```text
+content.md
+images/
+  circle.svg
 ```
 
-This is an illustrative address. Alternative text describes what matters in
-the image for a reader who cannot see it. In Norna, use
-[managed image blocks](/examples/norna-extensions/#image-stacks) for a page's
-own images, so Norna can process and move them with the page. Read
-[External images and files](/examples/external-images-and-files/) for the other
-choices.
+![A brown circle above two short lines on a warm background](images/circle.svg)
+
+```md
+![A brown circle above two short lines on a warm background](images/circle.svg)
+```
+
+**Source:** Standard Markdown. Start with an exclamation mark, put the
+alternative text in brackets, and put the image path in parentheses.
+Alternative text describes what matters for a reader who cannot see the image;
+use `![](images/circle.svg)` for a purely decorative image.
+
+Norna checks the local file, prepares suitable image sizes and tracks its use.
+The image stays with its page when the page moves. A standalone image follows
+the site's image presentation and can open for closer inspection. Images
+inside text keep their position; a linked image follows its authored link.
+
+### Title and visible caption
+
+Markdown also allows an optional title:
+
+```md
+![A brown circle above two short lines](images/circle.svg "A simple visual composition")
+```
+
+The title is additional information that some browsers show on hover. It is
+not a visible caption and does not replace alternative text. Use
+[an image stack](/examples/norna-extensions/#image-stacks) when you want a
+visible caption, or an image carousel when readers should browse several images.
+
+The [managed-image reference](/reference/site/images/) explains supported files
+and processing. [Markdown images](/reference/content/markdown/#markdown-images)
+shows alternative reference forms. See [External images and files](/examples/external-images-and-files/)
+for images hosted elsewhere or kept in `public/`.
+
+## Using tables
 
 Tables are a common Markdown extension, included in GitHub Flavored Markdown
 (GFM) rather than core CommonMark. You can use them in Norna without special

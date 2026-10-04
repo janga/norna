@@ -39,12 +39,15 @@ test('image suggestions classify live page references, not publication or saved 
 			`\`\`\`\`md\n${block('image-stack', ['z-unused.svg'])}\`\`\`\``,
 			'<!--\n' + block('image-stack', ['z-unused.svg']) + '-->',
 			block('yaml', ['z-unused.svg']),
-			'![An ordinary Markdown image](z-unused.svg)',
 			'```card-list\nitems:\n  - title: Example\n    text: |\n      - image: z-unused.svg\n```',
 		];
 		for (const literal of literals) {
 			const candidates = await complete(`# Home\n\n${literal}\n\n${block('image-stack', [''])}`);
 			assert.ok(candidates.every(({ usage }) => usage === 'unused'), literal);
+		}
+		for (const reference of ['![Local](z-unused.svg)', '![Local](images/z-unused.svg)', '![Local](./images/z-unused.svg)', '![Local][asset]\n\n[asset]: images/z-unused.svg']) {
+			const candidates = await complete(`# Home\n\n${reference}\n\n${block('image-stack', [''])}`);
+			assert.equal(candidates.find(({ filename }) => filename === 'z-unused.svg').usage, 'used');
 		}
 		await write('root/pages/other/images/a-used.svg', '<svg/>');
 		let candidates = await complete(`# Home\n\n${block('image-stack', ['a-used.svg', ''])}`);

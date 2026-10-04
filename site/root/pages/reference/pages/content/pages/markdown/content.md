@@ -87,15 +87,54 @@ HTML before publishing it.
 
 ## Markdown images
 
-```md title="content.md: images outside the managed pipeline"
+```md title="content.md: an image owned by this page"
+![A dog resting on a blanket](images/dog.jpg "Optional extra information")
+```
+
+Store the source directly in the page's `images/` directory. Norna validates
+and processes it through the same [managed-image pipeline](/reference/site/images/)
+as an image block. Prefer the explicit relative path: VS Code's built-in
+Markdown preview can resolve it without Norna-specific support.
+`./images/dog.jpg` and the shorthand `dog.jpg` are also accepted and identify
+the same page-owned file.
+
+Inline and reference-style image syntax both work. Definitions apply throughout
+the page, including across sections:
+
+```md title="content.md: a reference-style image"
+![A dog resting on a blanket][resting-dog]
+
+[resting-dog]: images/dog.jpg "Optional extra information"
+```
+
+Collapsed (`![resting-dog][]`) and shortcut (`![resting-dog]`) references are
+also supported when the matching definition exists.
+
+A single image in its own paragraph follows the theme's image placement and
+size limits. It keeps its proportions, without cropping or enlargement above
+its natural size. An unlinked standalone image offers closer inspection;
+inside a list or quotation it stays within that container. Images mixed with
+text remain inline, and several images in one paragraph retain that structure.
+An authored image link keeps its destination:
+
+```md
+[![A dog resting on a blanket](images/dog.jpg)](/contact/)
+```
+
+The bracketed text becomes the image's **alt text**, its text alternative.
+It belongs to each occurrence, so the same image can have different alternatives
+in different contexts. An empty alternative is allowed for decorative images.
+The optional **title** is additional information preserved in the image's
+`title` attribute. Neither field becomes a visible caption. Use an
+[image stack](/reference/content/images/#image-stack) for a visible caption.
+
+External URLs and root-relative public image paths keep their ordinary behavior
+and stay outside managed processing:
+
+```md title="content.md: external and public images"
 ![External diagram](https://example.com/diagram.png)
 ![Public icon](/favicon.svg)
 ```
-
-These images stay outside [managed image processing](/reference/site/images/).
-Local Markdown images are not managed or checked consistently. Use an
-[image block](/reference/content/images/) for page-local images that Norna
-should validate, resize and move.
 
 ## Metadata and embedded examples
 

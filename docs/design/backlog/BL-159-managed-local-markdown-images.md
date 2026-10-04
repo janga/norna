@@ -6,11 +6,9 @@ Let authors use ordinary Markdown image references for local images while
 receiving the same file validation, responsive variants and file-lifecycle
 support as images referenced through `image-stack`.
 
-**Status: Ready.** Created at the owner's request on 2026-10-02; the authoring
-and presentation decisions below were approved on 2026-10-04.
-[BL-166 Page Order In Frontmatter](BL-166-page-order-in-frontmatter.md)
-is implemented. This is the next implementation item, ahead of the remaining
-image-authoring design work. The feature is not yet implemented.
+**Status: Implemented 2026-10-04.** Created at the owner's request on 2026-10-02;
+the authoring and presentation decisions below were approved on 2026-10-04.
+Native editor review remains with the owner under the existing review agreement.
 
 ## Scope And Boundaries
 
@@ -156,6 +154,32 @@ should create Markdown or `image-stack`; that remains a separate product choice.
 - Relevant editor behavior is checked through the shared engine contracts;
   changed suggestions and source editing follow the repository's manual review
   agreement. Record any owner review still pending when packaging a VSIX.
+
+## Implementation And Verification
+
+The full-page Markdown AST now supplies image references to the existing
+processing, synchronization and editor APIs. Shared definitions are resolved
+across sections and edited once during rename. Same-named images on other
+pages do not count as use of the selected file. Rendering resolves page-owned
+images through the generated manifest and preserves each authored context.
+
+Standard Markdown now contains a live managed image and explains the image
+folder, alt text, title and captions. The image, Markdown, validation, migration
+and editor guidance use the same ownership contract.
+
+Focused checks cover parsing and source ranges, SVG/raster processing, strict
+ownership, usage/removal, dirty-buffer rename, page movement, content checks
+and synchronization, site links, editor APIs, migration guidance, documentation
+and presentation contracts. The documentation site builds with isolated state.
+The browser fixture checks 390, 1024 and 1920px widths, natural image size,
+list/quotation/disclosure containment, keyboard inspection, authored links and
+direct links without JavaScript. Light/dark and narrow screenshots were
+inspected; list markers were adjusted to align with the top of an image.
+
+VS Code 0.15.0 forwards the cursor column for image Go to Definition.
+Its focused Markdown and packaging checks pass. The owner installs the VSIX
+and reviews Go to Definition, usage labels, rename, Undo and dirty save/reopen
+in the native editor; these manual checks are not claimed as completed.
 
 ## Evidence Behind The Decisions
 

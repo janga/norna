@@ -7,9 +7,10 @@ navigation:
 
 # Managed images
 
-Norna manages an image when an `image-stack`, `image-carousel` or `card-list`
-names a file in the page's `images/` folder. It can then check the reference,
-generate display sizes and move the image with its page.
+Norna manages images referenced with ordinary Markdown or an `image-stack`,
+`image-carousel` or `card-list` block. The file belongs in the referring page's
+`images/` folder. Norna checks the reference, generates display sizes and moves
+the image with its page, regardless of which supported syntax you use.
 
 ## Source files
 
@@ -20,18 +21,23 @@ site/root/pages/guide/
     `-- workspace.jpg
 ```
 
-````md title="content.md: a managed image"
-```image-stack
-items:
-  - image: workspace.jpg
-    alt: A laptop displaying the local preview beside an open text editor.
-    caption: The editing workspace.
+```md title="content.md: a managed image"
+![A laptop displaying the local preview beside an open text editor](images/workspace.jpg)
 ```
-````
 
-Use filenames, not paths or URLs. Supported extensions are `.jpg`, `.jpeg`,
-`.png` and `.svg`. Filenames are page-local; another page can use the same
-name. [Image blocks](/reference/content/images/) defines the fields.
+For Markdown, prefer `images/workspace.jpg`; `./images/workspace.jpg` and the
+Norna shorthand `workspace.jpg` identify the same local file. Image blocks use
+the bare filename. See [Markdown images](/reference/content/markdown/#markdown-images)
+for presentation and text fields, or [image blocks](/reference/content/images/)
+for captions and collections.
+
+Supported extensions are `.jpg`, `.jpeg`, `.png` and `.svg`, including uppercase
+spellings. Filenames start with a letter or number and contain only letters,
+numbers, dots and hyphens. Keep files directly in `images/`; nested directories
+and relative references to other pages are not supported. Another page may
+have an independent image with the same filename. A missing local file is an
+error even when that name exists elsewhere; building never borrows another
+page's file.
 
 `content:check` reports missing, misplaced and unused images. `content:sync`
 moves only unambiguous misplaced files; see [image sync](/reference/commands/validate/#image-sync).
@@ -83,6 +89,6 @@ prompt: An overhead view of a writing desk and laptop, no lettering.
 The marker hides the whole comment from published content. Its fields are an
 editorial convention, not validated settings.
 
-Ordinary Markdown images can reference external URLs and `public/` assets,
-but do not use this pipeline. Relative local Markdown images produce a warning.
-See [Markdown images](/reference/content/markdown/#markdown-images).
+Markdown references to external URLs and root-relative `public/` assets stay
+outside managed image processing. Norna does not download remote images.
+Custom HTML images also remain outside this pipeline.

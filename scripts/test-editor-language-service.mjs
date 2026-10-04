@@ -392,7 +392,8 @@ try {
 		documentPath: homeContentPath,
 		source: homeSource.replace('Text with a missing note [^margin:missing].', '![Portrait](portrait.jpg)'),
 	});
-	assert.ok(markdownImageDiagnostics.some(({ code }) => code === 'local-markdown-image'));
+	assert.ok(!markdownImageDiagnostics.some(({ code }) => code === 'local-markdown-image'));
+	assert.ok(markdownImageDiagnostics.some(({ code, severity }) => code === 'image-needs-sync' && severity === 'error'));
 	const rowHeaderDiagnostics = await getMarkdownDiagnostics({
 		documentPath: homeContentPath,
 		source: `${homeSource}\n| Feature {row-header} | State |\n| --- | --- |\n| Search | Ready |\n| search | Planned |\n`,
@@ -412,7 +413,7 @@ items:
 	await mkdir(path.join(siteRoot, 'root/pages', 'contact', 'images'), { recursive: true });
 	await writeFile(path.join(siteRoot, 'root/pages', 'contact', 'images', 'portrait.jpg'), 'duplicate');
 	const ambiguousDiagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: homeSource });
-	assert.ok(ambiguousDiagnostics.some(({ message }) => message.includes('is ambiguous')));
+	assert.ok(ambiguousDiagnostics.some(({ code, severity, message }) => code === 'ambiguous-image' && severity === 'error' && message.includes('Repair candidates')));
 
 	const missingSource = homeSource.replace('portrait.jpg', 'missing.jpg');
 	const missingDiagnostics = await getMarkdownDiagnostics({ documentPath: homeContentPath, source: missingSource });

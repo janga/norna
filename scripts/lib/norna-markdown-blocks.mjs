@@ -534,63 +534,6 @@ export const splitNornaRenderedBlocks = (html, blocks) => {
 	return result.filter((block) => block.type !== 'html' || block.html.trim());
 };
 
-const maskFencedCodeBlocks = (markdown) => {
-	const lines = normalizeLines(markdown);
-	const maskedLines = [];
-	let index = 0;
-
-	while (index < lines.length) {
-		const fence = getFenceInfo(lines[index]);
-		if (!fence || fence.length < 3) {
-			maskedLines.push(lines[index]);
-			index += 1;
-			continue;
-		}
-
-		let closingIndex = -1;
-		for (let candidateIndex = index + 1; candidateIndex < lines.length; candidateIndex += 1) {
-			if (getFenceCloseInfo(lines[candidateIndex], fence)) {
-				closingIndex = candidateIndex;
-				break;
-			}
-		}
-
-		if (closingIndex === -1) {
-			maskedLines.push(lines[index]);
-			index += 1;
-			continue;
-		}
-
-		for (let maskedIndex = index; maskedIndex <= closingIndex; maskedIndex += 1) {
-			maskedLines.push(lines[maskedIndex].replace(/[^\r\n]/g, ' '));
-		}
-		index = closingIndex + 1;
-	}
-
-	return maskedLines.join('\n');
-};
-
-const isExternalImageTarget = (target) => /^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('//');
-const isRootRelativePublicTarget = (target) => target.startsWith('/');
-
-export const extractMarkdownImageReferences = (markdown) => {
-	const masked = maskFencedCodeBlocks(markdown);
-	const references = [];
-	const imageRegex = /!\[[^\]\n]*\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g;
-
-	for (const match of masked.matchAll(imageRegex)) {
-		const target = match[1] ?? '';
-		if (!target || target.startsWith('#') || isExternalImageTarget(target) || isRootRelativePublicTarget(target)) continue;
-
-		references.push({
-			target,
-			line: getLineNumber(markdown, match.index ?? 0),
-		});
-	}
-
-	return references;
-};
-
 export const getNornaBlockImageReferences = (blocks) =>
 	blocks.flatMap((block) => {
 		if (block.type === 'card-list') {

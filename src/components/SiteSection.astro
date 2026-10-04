@@ -109,6 +109,7 @@ const bodyWidth = {
 };
 const hasMedia = flattenContentBlocks(section.contentBlocks).some((block) => (
 	block.type === 'image-stack'
+	|| (block.type === 'html' && block.html.includes('data-norna-managed-image='))
 	|| block.type === 'image-carousel'
 	|| (block.type === 'card-list' && block.cards.some((card) => card.image))
 ));

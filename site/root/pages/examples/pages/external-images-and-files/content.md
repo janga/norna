@@ -38,16 +38,10 @@ stay outside managed image processing. See [public files](/reference/site/public
 ## Why page-owned images and attachments are preferred
 
 For an image that belongs to an article, put its source in the page's
-`images/` directory and use a [Norna image block](/examples/norna-extensions/#image-stacks). Norna can
+`images/` directory and use a [Markdown image](/examples/standard-markdown/#images-and-tables)
+or a [Norna image block](/examples/norna-extensions/#image-stacks). Norna can
 validate it, generate responsive output and move it with the page.
 
 For a downloadable file that belongs to a page, use its `downloads/` directory
 and an [ordinary attachment link](/examples/building-a-site/#page-attachments). Norna publishes the file
-unchanged and keeps it with its page. This relative Markdown image bypasses
-the managed image pipeline and produces a warning:
-
-```md
-![Portrait](portrait.jpg)
-```
-
-Use an image block for this local image instead.
+unchanged and keeps it with its page.

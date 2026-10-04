@@ -38,11 +38,11 @@ test('image rename updates only managed scalar references, preserving CRLF, comm
 	await assert.rejects(planEditorResourceRename(options), /already in use/);
 });
 
-test('image rename refuses unresolved and incomplete reference analysis', async t => {
+test('image rename ignores another owner’s missing file and refuses incomplete local analysis', async t => {
 	const { siteRoot, home, page, write } = await fixture(t);
 	const filePath = await write('root/images/picture.png', 'Image bytes');
 	await writeFile(page, '# Guide\n\n' + stack('picture.png'));
-	await assert.rejects(planEditorResourceRename({ siteRoot, filePath, name: 'new.png' }), /References could not be resolved/);
+	assert.equal((await planEditorResourceRename({ siteRoot, filePath, name: 'new.png' })).changes.length, 0);
 	await writeFile(page, '# Guide\n');
 	await writeFile(home, '# Home\n\n```image-stack\nbad: true\n```\n');
 	await assert.rejects(planEditorResourceRename({ siteRoot, filePath, name: 'new.png' }), /References could not be resolved/);

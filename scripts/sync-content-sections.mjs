@@ -273,7 +273,7 @@ for (const contentFile of contentFiles) {
 		prelude,
 		regions: sections,
 	} = page;
-	for (const issue of page.diagnostics.filter((candidate) => candidate.code === 'heading-inside-details')) {
+	for (const issue of page.diagnostics.filter((candidate) => ['heading-inside-details', 'invalid-markdown-image'].includes(candidate.code))) {
 		addContentIssue(contentFile, issue);
 	}
 	for (const issue of page.noteDiagnostics) {
@@ -532,14 +532,6 @@ for (const context of contentFileContexts) {
 
 	for (const section of sections) {
 		if (!validSections.has(section)) continue;
-
-		for (const reference of section.markdownImages) {
-			addSectionIssue(contentFile, section, {
-				severity: 'warning',
-				message: `Markdown image "${reference.target}" references a local image that is not managed by Norna.`,
-				fix: 'Use an image-stack, image-carousel, or card-list block for site images that should be validated, processed and synced.',
-			});
-		}
 
 		const { blocks, errors: blockErrors } = blockResultsBySection.get(section) ?? { blocks: [], errors: [] };
 		for (const error of blockErrors) {

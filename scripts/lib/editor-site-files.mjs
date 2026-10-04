@@ -82,6 +82,7 @@ export const getEditorImageUsage = async ({ siteRoot, sourcePath, imagePath, sou
 	const references = [];
 	const incomplete = structure.problems.map((problem) => problem.message);
 	for (const node of structure.nodes.filter((node) => node.contentPath)) {
+		if (path.dirname(node.contentPath) !== directory) continue;
 		try {
 			const source = sources.has(node.contentPath) ? sources.get(node.contentPath) : await readFile(node.contentPath, 'utf8');
 			const document = await parsePageMarkdownSource(source, { label: node.contentPath });
@@ -89,7 +90,7 @@ export const getEditorImageUsage = async ({ siteRoot, sourcePath, imagePath, sou
 			for (const reference of document.managedImages.filter((reference) => reference.image.toLowerCase() === path.basename(target).toLowerCase())) {
 				const localPath = path.join(path.dirname(node.contentPath), 'images', reference.image);
 				const local = await stat(localPath);
-				if (local ? local.dev !== targetStat.dev || local.ino !== targetStat.ino : reference.image !== path.basename(target)) continue;
+				if (!local || local.dev !== targetStat.dev || local.ino !== targetStat.ino) continue;
 				references.push({ sourcePath: node.contentPath, line: reference.line, unresolved: !local });
 			}
 		} catch (error) { incomplete.push(`${node.contentPath}: ${error.message}`); }

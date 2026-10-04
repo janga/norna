@@ -482,7 +482,7 @@ test('content:check explains likely misindented frontmatter keys', async () => {
 		assert.equal(result.status, 1, output);
 		assert.match(output, /^Content check failed\./m);
 		assert.match(output, /Frontmatter line 4 defines "images" at the top level, but it is not a valid top-level content field\./);
-		assert.match(output, /Put local image references in image-stack or image-carousel blocks in the Markdown body\./);
+		assert.match(output, /Put local image references in the Markdown body, using images\/name.jpg or an image-stack or image-carousel block\./);
 	});
 });
 

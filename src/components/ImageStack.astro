@@ -43,10 +43,11 @@ const managedImageSizes = getManagedImageSizes(maxAvailableWidthPercent);
 				<div class="managed-image-frame">
 					<a
 						class="managed-image-inspection-link"
-						href={inspection.href}
-						aria-label={inspectionLabel}
+						href={image.href ?? inspection.href}
+						title={image.linkTitle}
+						aria-label={image.href === undefined ? inspectionLabel : undefined}
 						aria-describedby={captionId}
-						data-image-inspection-trigger
+						data-image-inspection-trigger={image.href === undefined ? '' : undefined}
 						data-image-intrinsic-width={inspection.width}
 						data-image-intrinsic-height={inspection.height}
 						data-image-inspection-scalable={inspection.scalable ? 'true' : undefined}
@@ -56,12 +57,13 @@ const managedImageSizes = getManagedImageSizes(maxAvailableWidthPercent);
 							{...getImageAttributes(image.src ?? image.image, managedImageSizes)}
 							class:list={['managed-image', getImageClass(image)]}
 							alt={image.alt ?? ''}
+							title={image.title}
 							aria-describedby={captionId}
 							{...getImageLoadingProps(isPriorityItem)}
 						/>
-						<span class="managed-image-inspection-affordance" aria-hidden="true">
+						{image.href === undefined && <span class="managed-image-inspection-affordance" aria-hidden="true">
 							<Maximize2 size={18} stroke-width={2} />
-						</span>
+						</span>}
 					</a>
 				</div>
 				{image.caption && (

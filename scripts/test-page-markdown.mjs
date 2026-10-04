@@ -100,8 +100,8 @@ assert.equal(model.notes.length, 1);
 assert.equal(model.blocks.length, 1);
 assert.equal(model.blocks[0].type, 'image-stack');
 assert.equal(model.blocks[0].images[0].image, 'rover.svg');
-assert.deepEqual(model.managedImages.map(({ image }) => image), ['rover.svg']);
-assert.deepEqual(model.markdownImages, [{ target: 'portrait.jpg', line: 26 }]);
+assert.deepEqual(model.managedImages.map(({ image }) => image), ['rover.svg', 'portrait.jpg']);
+assert.deepEqual(model.markdownImages.map(({ target, line }) => ({ target, line })), [{ target: 'portrait.jpg', line: 26 }]);
 assert.deepEqual(model.diagnostics, []);
 
 const hotReloadBlocks = [

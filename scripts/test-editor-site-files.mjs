@@ -61,16 +61,16 @@ test('page removal includes descendants and owned files, and detects changed con
 	assert.equal(await readFile(f.sourcePath, 'utf8'), '# Page\n', 'Planning does not delete anything.');
 });
 
-test('image usage observes local precedence, dirty buffers, literal examples and unresolved references', async (t) => {
+test('image usage observes local precedence, dirty buffers, literal examples and page ownership', async (t) => {
 	const f = await fixture(t);
 	const imagePath = await f.write('root/pages/page/images/example.svg', '<svg/>');
 	await f.write('root/images/example.svg', '<svg/>');
 	await writeFile(f.home, '# Home\n' + block('example.svg'));
-	const other = await f.write('root/pages/other/content.md', '# Other\n' + block('example.svg'));
+	await f.write('root/pages/other/content.md', '# Other\n' + block('example.svg'));
 	const source = '# Page\n' + block('example.svg') + '\n````md\n' + block('example.svg') + '````\n';
 	const options = { ...f, imagePath, sources: new Map([[f.sourcePath, source]]) };
 	const usage = await getEditorImageUsage(options);
-	assert.deepEqual(usage.references.map(({ sourcePath, unresolved }) => [sourcePath, unresolved]), [[other, true], [f.sourcePath, false]]);
+	assert.deepEqual(usage.references.map(({ sourcePath, unresolved }) => [sourcePath, unresolved]), [[f.sourcePath, false]]);
 	assert.deepEqual(usage.incomplete, []);
 	const caseInsensitive = await stat(path.join(path.dirname(imagePath), 'EXAMPLE.SVG')).then(() => true, () => false);
 	const caseUsage = await getEditorImageUsage({ ...options, sources: new Map([[f.sourcePath, '# Page\n' + block('EXAMPLE.SVG')]]) });

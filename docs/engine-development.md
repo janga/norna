@@ -68,7 +68,10 @@ copies; do not symlink maintained source into it.
 Keep page text, headings, managed image references, alt text and captions in the
 owning `content.md`. Keep exactly one H1; prefer derived H2/H3 anchors unless an
 explicit ID must preserve a public address. Managed images belong directly in
-the owning page's `images/`. After intentionally moving image references,
+the owning page's `images/`. Ordinary Markdown images (including reference
+definitions) share validation, usage tracking and processing with image blocks;
+recommend `images/name.jpg`. Remote URLs and `public/` images remain separate.
+After intentionally moving image references,
 `npm run content:sync` can move unambiguous images; inspect its source changes.
 Do not commit unreferenced source images unless explicitly requested.
 

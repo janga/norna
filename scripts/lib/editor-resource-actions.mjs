@@ -67,21 +67,30 @@ const validatePublic = (siteRoot, state, filenames, directories = []) => {
 
 export const getEditorResourceReferences = async (options) => {
 	const selected = await resource(options);
-	if (selected.kind === 'image') return { ...await getEditorImageUsage({ ...options, sourcePath: selected.sourcePath, imagePath: selected.filename }), scope: 'Norna image blocks. Ordinary Markdown images, HTML and external references are not checked.' };
+	if (selected.kind === 'image') return { ...await getEditorImageUsage({ ...options, sourcePath: selected.sourcePath, imagePath: selected.filename }), scope: 'Managed Markdown images and Norna image blocks on the owning page. HTML and external references are not checked.' };
 	const state = await readEditorLinkState(options);
 	return { references: state.graph.references.filter(ref => ['public-file', 'attachment'].includes(ref.resolution?.kind) && (selected.directory ? isInside(selected.filename, ref.resolution.file.filePath) : selected.filename === ref.resolution.file.filePath)).map(summarizeReference),
 		incomplete: state.incomplete, scope: 'Page-content links. HTML, configuration and external references are not checked.' };
 };
 
-// Change YAML scalar ranges, not matching prose or example snippets. Map the
+// Change parsed image destinations and YAML scalars, preserving examples. Map the
 // scanner's normalized offsets back to the original CRLF/LF source.
 const renameImageReferences = async (source, oldName, newName) => {
 	const normalized = source.replace(/\r\n?/g, '\n');
 	const offsets = []; for (let i = 0; i < source.length; i++) { offsets.push(i); if (source[i] === '\r' && source[i + 1] === '\n') i++; } offsets.push(source.length);
 	const document = await parsePageMarkdownSource(normalized);
-	if (document.diagnostics.some(issue => issue.severity === 'error')) throw new Error('Repair the image blocks before renaming this image.');
+	if (document.diagnostics.some(issue => issue.severity === 'error')) throw new Error('Repair the page content before renaming this image.');
 	const blocks = document.regions.flatMap(region => region.blocks.map(block => ({ ...block, sourceStartOffset: document.bodyOffset + region.startOffset + block.sourceStartOffset })));
 	const edits = [];
+	const destinations = new Set();
+	for (const reference of document.markdownImages.filter(reference => reference.image === oldName)) {
+		if (!reference.targetRange) throw new Error('This Markdown image reference has no editable source range.');
+		const { start, end } = reference.targetRange;
+		if (destinations.has(start)) continue;
+		destinations.add(start);
+		const prefix = reference.targetSource.slice(0, reference.targetSource.lastIndexOf('/') + 1);
+		edits.push({ start: offsets[start], end: offsets[end], text: prefix + newName });
+	}
 	for (const block of blocks) {
 		if (!['image-stack', 'image-carousel', 'card-list'].includes(block.blockType)) continue;
 		const doc = parseDocument(block.source);

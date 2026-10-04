@@ -1,3 +1,4 @@
+import { extractMarkdownImageReferences } from './markdown-images.mjs';
 import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
@@ -564,7 +565,9 @@ const getEditorImageReferences = (source) => {
 		}
 		for (const child of node.children ?? []) visit(child);
 	};
-	visit(markdownToMdast(source, { features: { gfm: true, frontmatter: true } }));
+	const tree = markdownToMdast(source, { features: { gfm: true, frontmatter: true } });
+	visit(tree);
+	for (const reference of extractMarkdownImageReferences({ source, tree })) if (reference.image) names.add(reference.image);
 	return names;
 };
 
@@ -616,10 +619,17 @@ export const getImageCompletionContext = async ({ documentPath, source, line }) 
 	};
 };
 
-export const getImageDefinitionContext = async ({ documentPath, source, line }) => {
+export const getImageDefinitionContext = async ({ documentPath, source, line, character = 0 }) => {
 	const context = getNornaBlockFieldContext({ source, line });
-	if (context?.key !== 'image' || typeof context.value !== 'string') return null;
-	const filename = context.value;
+	let filename = context?.key === 'image' && typeof context.value === 'string' ? context.value : null;
+	const markdown = !filename;
+	if (markdown) {
+		const document = await parsePageMarkdownSource(source);
+		const offset = source.split('\n').slice(0, line).reduce((count, text) => count + text.length + 1, 0) + character;
+		const reference = document.markdownImages.find((ref) => [ref.range, ref.targetRange].some(range => range && offset >= range.start && offset < range.end));
+		filename = reference?.image;
+	}
+	if (!filename) return null;
 	if (!/^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$/i.test(filename)) return null;
 	const siteRoot = await findNornaSiteRoot(documentPath);
 	const page = siteRoot ? getPageContext(siteRoot, documentPath) : null;
@@ -627,6 +637,7 @@ export const getImageDefinitionContext = async ({ documentPath, source, line }) 
 
 	const expectedPath = path.join(page.imagesRoot, filename);
 	if (await fileExists(expectedPath)) return { files: [expectedPath], filename, siteRoot };
+	if (markdown) return { files: [], filename, siteRoot };
 
 	const index = await createSiteImageIndex(siteRoot);
 	return {
@@ -678,14 +689,6 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 				: diagnostic.message,
 		})),
 	];
-	for (const reference of document.markdownImages) {
-		diagnostics.push({
-			code: 'local-markdown-image',
-			severity: 'warning',
-			line: reference.line,
-			message: `Local Markdown image "${reference.target}" is not managed by Norna. Use image-stack, image-carousel, or card-list for validated and synchronized site images.`,
-		});
-	}
 
 	const siteRoot = await findNornaSiteRoot(documentPath);
 	const pageContext = siteRoot ? getPageContext(siteRoot, documentPath) : null;
@@ -703,16 +706,16 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 				code: 'missing-image',
 				severity: 'error',
 				line: reference.line,
-				message: `Image "${filename}" was not found in this page's images folder or elsewhere in this Norna site.`,
+				message: `Image "${filename}" was not found at ${toPosixPath(expectedPath)}.`,
 			});
 			continue;
 		}
 		if (candidates.length > 1) {
 			diagnostics.push({
 				code: 'ambiguous-image',
-				severity: 'warning',
+				severity: 'error',
 				line: reference.line,
-				message: `Image "${filename}" is ambiguous. Found: ${candidates.map((candidate) => toPosixPath(path.relative(siteRoot, candidate.absolutePath))).join(', ')}.`,
+				message: `Image "${filename}" is missing at ${toPosixPath(expectedPath)}. Repair candidates: ${candidates.map((candidate) => toPosixPath(path.relative(siteRoot, candidate.absolutePath))).join(', ')}.`,
 			});
 			continue;
 		}
@@ -727,11 +730,11 @@ export const getMarkdownDiagnostics = async ({ documentPath, source }) => {
 				imagePath: candidate.absolutePath,
 				siteRoot,
 			},
-			severity: 'warning',
+			severity: 'error',
 			line: reference.line,
-			message: otherReferences.length > 0
+			message: `Image "${filename}" is missing at ${toPosixPath(expectedPath)}. ` + (otherReferences.length > 0
 				? `Image "${filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))} and is still referenced by ${otherReferences.join(', ')}. Norna cannot relocate it safely.`
-				: `Image "${filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))}. Run "norna content:sync" to relocate it to this page's images folder.`,
+				: `Image "${filename}" is stored at ${toPosixPath(path.relative(siteRoot, candidate.absolutePath))}. Run "norna content:sync" to relocate it to this page's images folder.`),
 		});
 	}
 

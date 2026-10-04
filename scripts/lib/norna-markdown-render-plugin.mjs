@@ -3,6 +3,26 @@ import { nornaBlockTypes } from './norna-markdown-blocks.mjs';
 import projectConfig from './project-config.mjs';
 import { getSemanticCalloutMarker } from './semantic-callouts.mjs';
 import { applyTableRowHeaderDeclaration } from './table-row-headers.mjs';
+import { classifyMarkdownImage, getImageDefinitions } from './markdown-images.mjs';
+
+const escapeAttribute = (value) => String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+const markManagedImage = (node, context) => {
+	let root = node;
+	while (context.parent(root)) root = context.parent(root);
+	const destination = node.type === 'image' ? node : getImageDefinitions(root).get(node.identifier);
+	if (!destination) return;
+	const result = classifyMarkdownImage(destination.url ?? '');
+	if (result.kind === 'external') return;
+	if (result.kind === 'invalid') throw new Error(`Local Markdown image "${destination.url}" must reference a .jpg, .jpeg, .png or .svg file directly in this page's images/ folder.`);
+	const title = destination.title == null ? '' : ` title="${escapeAttribute(destination.title)}"`;
+	// Raw HTML keeps Astro's independent image importer from processing these
+	// sources. The page renderer resolves this marker through Norna's manifest.
+	context.replaceNode(node, { type: 'html', value: `<img data-norna-managed-image="${escapeAttribute(result.image)}" alt="${escapeAttribute(node.alt ?? '')}"${title}>` });
+};
+
+export const nornaMarkdownImagePlugin = defineMdastPlugin({
+	name: 'norna-markdown-images', image: markManagedImage, imageReference: markManagedImage,
+});
 
 const stateKey = 'nornaMarkdownRender';
 
@@ -33,6 +53,8 @@ const hasBlockquoteAncestor = (node, context) => {
 
 export const nornaMarkdownRenderPlugin = defineMdastPlugin({
 	name: 'norna-markdown-render',
+	image: markManagedImage,
+	imageReference: markManagedImage,
 	blockquote(node, context) {
 		const marker = getSemanticCalloutMarker(node);
 		if (

@@ -12,7 +12,7 @@ import {
 	runNorna,
 } from './test-support/content-model.mjs';
 
-test('content:check warns for local Markdown images but not external Markdown images', async () => {
+test('content:check requires local Markdown images but ignores external and public image files', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'root/content.md'), `---
@@ -31,8 +31,9 @@ page:
 ![Public](/favicon.svg)
 `);
 
-		const { stdout } = await runContentScript(siteDir, ['--check']);
-		assert.match(stdout, /Markdown image "portrait\.jpg" references a local image that is not managed by Norna\./);
+		const error = await runContentScript(siteDir, ['--check']).then(() => assert.fail('Missing image passed'), error => error);
+		const stdout = error.output;
+		assert.match(stdout, /Image "portrait\.jpg" does not exist at .*root\/images\/portrait\.jpg/);
 		assert.doesNotMatch(stdout, /https:\/\/example\.com\/portrait\.jpg/);
 		assert.doesNotMatch(stdout, /\/favicon\.svg/);
 	} finally {
