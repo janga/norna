@@ -1,3 +1,4 @@
+import { searchOutputDirectory } from './lib/publication-paths.mjs';
 import { cp, mkdir, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import * as pagefind from 'pagefind';
@@ -7,7 +8,7 @@ import {
 	astroPublicDir,
 } from './lib/site-paths.mjs';
 
-const searchDirectoryName = 'pagefind';
+const searchDirectoryName = searchOutputDirectory;
 const distSearchDirectory = path.join(astroDistDir, searchDirectoryName);
 const localSearchDirectory = path.join(astroPublicDir, searchDirectoryName);
 
@@ -44,7 +45,7 @@ if (!projectConfig.search.enabled) {
 		}
 
 		await rm(localSearchDirectory, { force: true, recursive: true });
-		await mkdir(astroPublicDir, { recursive: true });
+		await mkdir(path.dirname(localSearchDirectory), { recursive: true });
 		await cp(distSearchDirectory, localSearchDirectory, { recursive: true });
 
 		console.log(`Generated static search index for ${indexedPageCount} page${indexedPageCount === 1 ? '' : 's'}.`);

@@ -34,7 +34,7 @@ Install the evaluation VSIX yourself if needed: `editors/vscode/norna-vscode.vsi
 | BL-166 Move between pages | Move Move me after Alpha in a separate group; cancel, then confirm. |
 | BL-159 Markdown images | Three path forms, shared definitions, title/alt text, rename and page move. |
 | BL-160 Markdown files | Three path forms, shared definitions, incoming links and page move. |
-| BL-154 Context actions | Page title, public file/folder operations and optional themes. |
+| BL-154 Context actions | Page title, shared-image file/folder operations, public-file restrictions and optional themes. |
 | BL-155 Import and replace | Single/batch import, collision, replacement, deletion and Trash. |
 | BL-156 Local preview | Start/reuse/stop, nested page, saved edits and logs. |
 | Incoming links | Verify attachment and public-file links after rename/move. |
@@ -82,3 +82,9 @@ bytes and opened the nested preview target. The creation instructions and
 order table were inspected at the compact viewport.
 
 Native VS Code interactions and owner approval remain pending.
+
+BL-177 Publication Path Ownership And Collision Checks updates the maintained
+fixture's public-file operations to shared images and changes cross-page
+attachment addresses to the reserved resource area. Its isolated build passed
+on 2026-10-04 with 20 generated HTML pages. An existing disposable copy is not
+updated automatically; retain any wanted edits before using **Start Again**.

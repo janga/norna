@@ -7,13 +7,13 @@ navigation:
 
 ## Attachment links
 
-[Checklist owned by Markdown files](/markdown-files/downloads/checklist.txt "Incoming checklist title")
+[Checklist owned by Markdown files](/_norna/downloads/markdown-files/checklist.txt "Incoming checklist title")
 
-[Replacement target owned by Import and replace](/import-files/downloads/replace.txt)
+[Replacement target owned by Import and replace](/_norna/downloads/import-files/replace.txt)
 
 ## Public link
 
-[Public note](/review-files/note.txt)
+[Shared image](/_norna/shared/images/review-files/note.svg)
 
 ## Page links
 

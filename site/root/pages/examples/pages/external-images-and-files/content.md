@@ -31,7 +31,8 @@ with a page, or check the external site's availability.
 ```
 
 The file lives in `site/public/robots.txt`. Public files keep a site-wide
-address and suit logos, icons, crawler instructions and other shared files.
+address and suit logos, icons, crawler instructions and declared verification files. Put downloadable documents
+in a page’s `downloads/`, including documents linked from several pages.
 Ordinary Markdown images can also refer to public image files; those images
 stay outside managed image processing. See [public files](/reference/site/public-files/).
 

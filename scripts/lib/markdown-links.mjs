@@ -106,11 +106,11 @@ export const extractMarkdownLinks = ({ source, tree, lineOffset = 0 }) => {
 
 	const links = [];
 	visitNodes(tree, (node) => {
-		if (node.type === 'link') {
+		if (node.type === 'link' || node.type === 'image' && /^(?:\/|https?:)/i.test(node.url ?? '')) {
 			const range = getNodeRange(node);
 			const targetRange = getInlineLinkTargetRange(source, node);
 			links.push({
-				kind: 'markdown-link',
+				kind: node.type === 'image' ? 'markdown-image-link' : 'markdown-link',
 				column: node.position?.start.column ?? 1,
 				line: lineOffset + (node.position?.start.line ?? 1),
 				range,
@@ -121,9 +121,9 @@ export const extractMarkdownLinks = ({ source, tree, lineOffset = 0 }) => {
 			return;
 		}
 
-		if (node.type !== 'linkReference') return;
+		if (!['linkReference', 'imageReference'].includes(node.type)) return;
 		const definition = definitions.get(node.identifier);
-		if (!definition) return;
+		if (!definition || node.type === 'imageReference' && !/^(?:\/|https?:)/i.test(definition.url ?? '')) return;
 		const targetRange = getDefinitionTargetRange(source, definition);
 		links.push({
 			kind: 'markdown-reference-link',

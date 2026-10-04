@@ -160,6 +160,7 @@ const addConfigHelp = (jsonSchema) => {
 		'The absolute public URL. Its path also determines the base path for generated links and assets.',
 		documentationLink('Public URL reference', 'configuration.md', 'url'),
 	], ['https://example.com/', 'https://owner.github.io/repository-name/']);
+	addFieldHelp(jsonSchema, 'verificationFiles', 'verificationFiles:\n  - google-example.html', 'public-files.md', 'verification-files');
 	addHelp(jsonSchema, 'language', [
 		yamlExample('language: en-GB'),
 		'Sets the language of the complete site and selects the matching built-in Norna interface text. Regional tags are preserved. The default is `en`; editorial Markdown is not translated.',

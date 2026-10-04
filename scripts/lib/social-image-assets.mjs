@@ -1,3 +1,4 @@
+import { publicFilePublication } from './publication-paths.mjs';
 import { getPublicAssetInspection } from './logo-assets.mjs';
 import {
 	socialImageAssetDefinitions,
@@ -13,7 +14,7 @@ export const getSocialImageAssets = () => getPublicAssetInspection().socialImage
 	.map((filename) => ({
 		...definitionsByFilename.get(filename),
 		filename,
-		href: `/${filename}`,
+		href: publicFilePublication(filename).pathname,
 	}));
 
 export const getSocialImageAsset = () => {

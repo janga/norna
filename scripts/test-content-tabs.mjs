@@ -103,7 +103,7 @@ test('tabs build with assets, index every alternative, and report invalid conten
 		await runNorna(['build'], { cwd: root, env: { ...process.env, NORNA_SITE_DIR: siteDir } });
 		const html = await readFile(path.join(root, 'dist', 'index.html'), 'utf8');
 		assert.equal([...html.matchAll(/class="content-tab-panel"/g)].length, 5);
-		assert.match(html, /src="\/docs\/images\//);
+		assert.match(html, /src="\/docs\/_norna\/images\//);
 		assert.match(html, /role="group" aria-labelledby="norna-tabs-label-/);
 		assert.match(html, /norna-callout-note/);
 		assert.doesNotMatch(html, /data-norna-tabs-marker|:::: tabs/);
@@ -114,7 +114,7 @@ test('tabs build with assets, index every alternative, and report invalid conten
 		assert.ok((await readScripts(html)).some((source) => source.includes('data-content-tabs')));
 		const plain = await readFile(path.join(root, 'dist', 'plain', 'index.html'), 'utf8');
 		assert.ok((await readScripts(plain)).every((source) => !source.includes('data-content-tabs')));
-		const fragmentDir = path.join(root, 'dist', 'pagefind', 'fragment');
+		const fragmentDir = path.join(root, 'dist', '_norna', 'search', 'fragment');
 		const documents = await Promise.all((await readdir(fragmentDir)).filter((name) => name.endsWith('.pf_fragment')).map(async (name) => {
 			const text = gunzipSync(await readFile(path.join(fragmentDir, name))).toString();
 			return JSON.parse(text.slice(text.indexOf('{')));

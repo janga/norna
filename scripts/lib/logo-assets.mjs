@@ -1,3 +1,4 @@
+import { publicFilePublication } from './publication-paths.mjs';
 import { readdirSync } from 'node:fs';
 import { sitePublicDir, sitePublicLabel } from './site-paths.mjs';
 import {
@@ -23,7 +24,7 @@ export const getPublicAssetInspection = () => inspectPublicAssetFilenames(getPub
 export const getLogoAssets = () => getPublicAssetInspection().logos
 	.map((entry) => ({
 		filename: entry,
-		href: `/${entry}`,
+		href: publicFilePublication(entry).pathname,
 	}));
 
 export const getLogoAsset = () => {

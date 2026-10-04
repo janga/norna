@@ -1,5 +1,6 @@
+import { publicFilePublication } from './publication-paths.mjs';
 import { getSiteAttachments, resolveAttachment, parseLocalAttachmentTarget, attachmentOutputIssues } from './page-attachments.mjs';
-import { readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile, lstat } from 'node:fs/promises';
 import path from 'node:path';
 import {
 	createPageAliasModel,
@@ -26,7 +27,9 @@ import { configSchema } from './schema-definitions.mjs';
 const internalUrlOrigin = 'https://norna.invalid';
 const externalSchemePattern = /^[a-z][a-z0-9+.-]*:/i;
 
-const readPublicFiles = async (directory, relativeDirectory = '') => {
+const readPublicFiles = async (directory, settings = {}, relativeDirectory = '') => {
+	const info = await lstat(directory).catch(error => { if (error.code === 'ENOENT') return null; throw error; });
+	if (info && (!info.isDirectory() || info.isSymbolicLink())) throw new Error(`${directory} must be a regular public directory.`);
 	const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
 		if (error?.code === 'ENOENT') return [];
 		throw error;
@@ -34,19 +37,22 @@ const readPublicFiles = async (directory, relativeDirectory = '') => {
 	const files = [];
 
 	for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name, 'en'))) {
+		if (entry.name === '.DS_Store' || entry.name.startsWith('._')) continue;
 		const relativePath = relativeDirectory
 			? path.join(relativeDirectory, entry.name)
 			: entry.name;
 		const entryPath = path.join(directory, entry.name);
 		if (entry.isDirectory()) {
-			files.push(...await readPublicFiles(entryPath, relativePath));
+			publicFilePublication(toPosixPath(relativePath), settings, { directory: true });
+			files.push(...await readPublicFiles(entryPath, settings, relativePath));
 		} else if (entry.isFile()) {
 			files.push({
 				filePath: entryPath,
-				label: `${sitePublicLabel}/${toPosixPath(relativePath)}`,
-				pathname: `/${toPosixPath(relativePath)}`,
+				label: entryPath,
+				relativePath: toPosixPath(relativePath),
+				...publicFilePublication(toPosixPath(relativePath), settings),
 			});
-		}
+		} else throw new Error(`${entryPath} must be a regular public file. Symbolic links are not supported.`);
 	}
 
 	return files;
@@ -355,7 +361,7 @@ export const createSiteLinkGraph = ({
 				continue;
 			}
 
-			if (target.pathname.includes('/downloads/') && !target.pathname.endsWith('/')) {
+			if (target.pathname.startsWith('/_norna/downloads/') && !target.pathname.endsWith('/')) {
 				reference.resolution = { kind: 'missing-attachment', pathname: target.pathname };
 				diagnostics.push(createIssue(reference, 'missing-attachment', `Attachment "${sourceReference.target}" does not exist.`, 'Add the file to its owning page’s downloads/ or correct the link.'));
 				continue;
@@ -367,7 +373,7 @@ export const createSiteLinkGraph = ({
 					reference,
 					'missing-public-file',
 					`Internal link "${sourceReference.target}" on line ${sourceReference.line} points to public file "${target.pathname}", but no matching file exists under ${sitePublicLabel}/ or the owning page’s downloads/.`,
-					`Add the file under ${sitePublicLabel}/ with the same relative path, or correct the link.`,
+					'Use the published address of an allowed public image or technical file, or link to a page-owned attachment.',
 				));
 				continue;
 			}
@@ -415,7 +421,7 @@ export const getSiteLinkGraph = async (options = {}) => {
 				document: await parsePageMarkdownSource(source, { label: contentFile.contentLabel }),
 			};
 		})),
-		readPublicFiles(options.publicDir ?? path.join(siteRoot, 'public')),
+		readPublicFiles(options.publicDir ?? path.join(siteRoot, 'public'), settings),
 	]);
 
 	return createSiteLinkGraph({
@@ -428,4 +434,4 @@ export const getSiteLinkGraph = async (options = {}) => {
 	});
 };
 
-export const getSitePublicFiles = async (publicDir = sitePublicDir) => readPublicFiles(publicDir);
+export const getSitePublicFiles = async (publicDir = sitePublicDir, settings = {}) => readPublicFiles(publicDir, settings);

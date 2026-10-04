@@ -1,3 +1,4 @@
+import { publicFilePublication } from '../../scripts/lib/publication-paths.mjs';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { sitePublicDir } from '../../scripts/lib/site-paths.mjs';
@@ -28,5 +29,5 @@ export const getIconLinks = () => faviconCandidates
 	.filter((candidate) => publicAssetExists(candidate.href))
 	.map((candidate) => ({
 		...candidate,
-		href: withBasePath(projectConfig.site.basePath, candidate.href),
+		href: withBasePath(projectConfig.site.basePath, publicFilePublication(candidate.href.slice(1)).pathname),
 	}));

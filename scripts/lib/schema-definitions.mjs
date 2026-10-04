@@ -1,3 +1,4 @@
+import { isVerificationFilename } from './publication-paths.mjs';
 import { z } from 'astro/zod';
 import { localEditorNames } from './edit-source-link.mjs';
 import { imagePresentationNames } from './image-presentation.mjs';
@@ -229,6 +230,7 @@ const configShape = {
 	sourceFormat: z.literal(2).describe('Source format 2: page directories use slugs and sibling order lives in navigation.order frontmatter. Convert older sites before setting this value.'),
 	url: z.string().url().describe('Absolute public URL for the built site.'),
 	language: z.string().regex(supportedLocaleTagPattern).optional().describe('Site language tag selecting one complete built-in Norna interface language; the default is en.'),
+	verificationFiles: z.array(z.string().refine(isVerificationFilename, 'Use one verification filename outside Norna’s reserved and recognized paths.')).optional().describe('Exact filenames in public/ that verify ownership with an external service. Published unchanged at the site root. .well-known/ files need no declaration.'),
 	editLink: editLink.optional(),
 	navigation: configNavigation.optional(),
 	search: z.boolean().optional().default(false).describe('Generate a static site search page and Pagefind index. The default is false.'),

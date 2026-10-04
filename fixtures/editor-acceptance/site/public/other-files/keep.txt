@@ -1,2 +1,0 @@
-KEEP
-This keeps the public move destination visible.

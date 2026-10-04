@@ -26,8 +26,8 @@ const openSearch = async (page: Page) => {
 };
 
 test.beforeEach(async ({ page }) => {
-	await page.route('**/pagefind/pagefind-ui.js', (route) => route.abort());
-	await page.route('**/pagefind/pagefind-ui.css', (route) => route.fulfill({ contentType: 'text/css', body: '' }));
+	await page.route('**/_norna/search/pagefind-ui.js', (route) => route.abort());
+	await page.route('**/_norna/search/pagefind-ui.css', (route) => route.fulfill({ contentType: 'text/css', body: '' }));
 });
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 700 }]) {
@@ -64,7 +64,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 700 
 }
 
 test('return remains available while search reports no matching results', async ({ page }) => {
-	await page.route('**/pagefind/pagefind-ui.js', (route) => route.fulfill({
+	await page.route('**/_norna/search/pagefind-ui.js', (route) => route.fulfill({
 		contentType: 'application/javascript',
 		body: `window.PagefindUI = class {
 			constructor(options) {

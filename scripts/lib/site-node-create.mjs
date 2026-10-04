@@ -12,6 +12,7 @@ import { siteSchema } from './schema-definitions.mjs';
 import { readEditorLinkState } from './editor-site-links.mjs';
 import { createPageAliasModel, assertPageAliasModel } from './page-aliases.mjs';
 import { parseYamlConfig } from './yaml-config.mjs';
+import { publicationIssues } from './publication-paths.mjs';
 
 const normalizeParentPath = (value) => {
 	if (value === '/') return '';
@@ -120,6 +121,10 @@ export const planSiteNodeCreation = async ({
 			{ pathname: `/${pagePath}/`, contentLabel: destination, aliases: metadata.page?.aliases ?? [] }],
 			categories: [], publicFiles: state.publicFiles, generatedRoutes: state.generatedRoutes }));
 	}
+	const publicationErrors = publicationIssues({ pages: [...state.graph.pages,
+		{ pathname: address, contentLabel: destination, aliases: metadata?.page?.aliases ?? [] }],
+		publicFiles: state.publicFiles, attachments: state.graph.attachments.files, generatedRoutes: state.generatedRoutes });
+	if (publicationErrors.length) throw new Error(publicationErrors.map(({ message }) => message).join('\n'));
 	metadata = { ...metadata, navigation: { ...metadata?.navigation, order } };
 	const fingerprint = JSON.stringify([destination, title, metadata, order, orderChanges, state.settings,
 		state.graph.pages.map(page => [page.contentFile.contentPath, page.document.fullSource]), state.publicFiles.map(file => file.filePath)]);

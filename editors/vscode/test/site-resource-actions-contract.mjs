@@ -94,8 +94,8 @@ test('public file creation/import works at site level without a homepage; cancel
 	const f=await fixture(t);await rm(f.home);f.inputs.push(undefined);
 	await f.run('newPublicFile',f.site);assert.equal(await exists(path.join(f.siteRoot,'public')),false);
 	f.inputs.push('robots.txt');await f.run('newPublicFile',f.site);assert.equal(await readFile(path.join(f.siteRoot,'public/robots.txt'),'utf8'),'');
-	const source=await f.write('test-input.txt','public bytes');f.open.push([{scheme:'file',fsPath:source}]);
-	await f.run('addSitePublicFiles');assert.equal(await readFile(path.join(f.siteRoot,'public/test-input.txt'),'utf8'),'public bytes');
+	const source=await f.write('llms.txt','public bytes');f.open.push([{scheme:'file',fsPath:source}]);
+	await f.run('addSitePublicFiles');assert.equal(await readFile(path.join(f.siteRoot,'public/llms.txt'),'utf8'),'public bytes');
 });
 
 test('folder deletion waits for confirmation, detects changed contents, and uses Trash', async t => {

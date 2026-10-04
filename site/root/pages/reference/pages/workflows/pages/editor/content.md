@@ -166,8 +166,9 @@ child list uses `page.listChildren: true` in that file.
 
 Page titles open their content. Directory
 labels select a row without opening a file.
-The `public/` folder has a tooltip explaining that its files are published
-unchanged with the site, for example `robots.txt` and icons.
+The `public/` folder has a tooltip explaining its technical files and shared images.
+Their published locations follow the [public-file rules](/reference/site/public-files/).
+Their bytes are copied unchanged.
 Use the separate chevron, or the keyboard arrow keys,
 to expand and collapse children without opening their source. Select an
 individual file to open it. Within the chosen site, the tree reveals the
@@ -430,13 +431,14 @@ the list and removal confirmations say so instead of reporting a clean result.
 
 ### Manage public files
 
-Right-click `public/` to create a text file with **New File…**, copy files from
+Right-click `public/` to create a supported technical file with **New File…**, copy files from
 your computer with **Add Files…**, or create a folder with **New Folder…**.
 If `public/` does not exist, use **Add Public Files…** from the Site Tree view
 menu. These actions work even when homepage content needs repair.
 
 **Rename…** and **Move…** work on public files and author-named subfolders.
-A move chooses an existing destination inside `public/`. The `public/` folder
+A move chooses an existing permitted destination inside `public/`. Shared images
+belong in `public/images/`; documents belong in page-owned `downloads/`. The `public/` folder
 itself has a fixed name and location. **Replace…** keeps a file's address and
 sends the original to Trash. Import and rename never silently overwrite files.
 The extension checks generated paths, page addresses and logo conventions.

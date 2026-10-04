@@ -1,3 +1,4 @@
+import { publicFilePublication, publicationIssues } from './publication-paths.mjs';
 import { attachmentHref, attachmentPathname, attachmentOutputIssues, parseLocalAttachmentTarget, encodeAttachmentPath } from './page-attachments.mjs';
 import { lstat, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -7,13 +8,12 @@ import { isInside, readEditorLinkState, summarizeReference } from './editor-site
 import { getSourcePageLocation } from './source-files.mjs';
 import { parsePageMarkdownSource } from './page-markdown.mjs';
 import { inspectPublicAssetFilenames } from './public-asset-conventions.mjs';
-import { getReservedPublicEntries } from './public-path-policy.mjs';
 
 export const siteResourceActionsApiVersion = 1;
 const stat = (filename) => lstat(filename).catch(error => { if (error.code === 'ENOENT') return null; throw error; });
 const imageName = /^[a-z0-9][a-z0-9.-]*\.(jpe?g|png|svg)$/i;
-const publicPath = (siteRoot, filename) => '/' + path.relative(path.join(siteRoot, 'public'), filename).split(path.sep).join('/');
-const encodePath = (value) => value.split('/').map(encodeURIComponent).join('/');
+const publicPath = (siteRoot, filename, settings, directory = false) => publicFilePublication(path.relative(path.join(siteRoot, 'public'), filename).split(path.sep).join('/'), settings, { directory }).pathname;
+const encodePath = encodeAttachmentPath;
 const checkedName = (name) => {
 	if (typeof name !== 'string' || !name || name !== name.trim() || /[\\/\x00-\x1f\x7f<>:"|?*#%]/.test(name) || /^\.{1,2}$/.test(name) || /[. ]$/.test(name)) {
 		throw new Error('Enter one filename or folder name, without slashes, URL punctuation or trailing dots/spaces.');
@@ -41,24 +41,10 @@ const resource = async ({ siteRoot, filePath }) => {
 };
 
 const validatePublic = (siteRoot, state, filenames, directories = []) => {
-	const paths = [...filenames, ...directories].map(filename => publicPath(siteRoot, filename));
-	for (const pathname of paths) {
-		const first = pathname.split('/')[1].toLowerCase();
-		const reserved = getReservedPublicEntries(state.settings?.search !== false).find(entry => entry.filename === first);
-		if (reserved) throw new Error(`${pathname} conflicts with Norna's generated ${reserved.filename}. ${reserved.explanation}`);
-	}
-	const outputPaths = new Set(state.graph.pages.map(page => `${page.pathname}index.html`));
-	for (const page of state.graph.pages) for (const alias of page.aliases) outputPaths.add(`${alias}index.html`);
-	for (const route of state.generatedRoutes) outputPaths.add(route.pathname.endsWith('/') ? `${route.pathname}index.html` : route.pathname);
-	for (const filename of filenames) {
-		const pathname = publicPath(siteRoot, filename);
-		for (const output of outputPaths) if (pathname.toLowerCase() === output.toLowerCase() || output.toLowerCase().startsWith(pathname.toLowerCase() + '/') || pathname.toLowerCase().startsWith(output.toLowerCase() + '/')) {
-			throw new Error(`${pathname} conflicts with the generated page or route ${output}. Choose another name or location.`);
-		}
-	}
-	for (const directory of directories) if ([...outputPaths].some(output => output.toLowerCase() === publicPath(siteRoot, directory).toLowerCase())) throw new Error('This folder would occupy a generated file path. Choose another name.');
-	const attachmentIssues = attachmentOutputIssues({ files: state.graph.attachments.files, pages: state.graph.pages, publicFiles: filenames.map(filename => ({ pathname: publicPath(siteRoot, filename) })), generatedRoutes: state.generatedRoutes });
-	if (attachmentIssues.length) throw new Error(attachmentIssues.map(issue => issue.message).join('\n'));
+	for (const directory of directories) publicPath(siteRoot, directory, state.settings, true);
+	const issues = publicationIssues({ pages: state.graph.pages, attachments: state.graph.attachments.files, generatedRoutes: state.generatedRoutes,
+		publicFiles: filenames.map(filePath => ({ filePath, pathname: publicPath(siteRoot, filePath, state.settings) })) });
+	if (issues.length) throw new Error(issues.map(issue => issue.message).join('\n'));
 	const inspection = inspectPublicAssetFilenames(filenames.filter(filename => path.dirname(filename) === path.join(siteRoot, 'public')).map(filename => path.basename(filename)));
 	if (inspection.logos.length > 1) throw new Error(`Keep one navigation logo in public/: ${inspection.logos.join(', ')}. Use Replace on the existing logo.`);
 	if (inspection.socialImages.length > 1) throw new Error(`Keep one social image in public/: ${inspection.socialImages.join(', ')}.`);
@@ -161,7 +147,7 @@ export const planEditorResourceRename = async ({ siteRoot, filePath, name, desti
 		for (const ref of state.graph.references) {
 			if (ref.resolution?.kind !== 'public-file' || !isInside(selected.filename, ref.resolution.file.filePath)) continue;
 			if (!ref.targetRange) throw new Error(`Cannot safely update the reference on line ${ref.line} in ${ref.sourceContentFile.contentPath}.`);
-			const target = publicPath(siteRoot, path.join(destination, path.relative(selected.filename, ref.resolution.file.filePath)));
+			const target = publicPath(siteRoot, path.join(destination, path.relative(selected.filename, ref.resolution.file.filePath)), state.settings);
 			const suffix = ref.targetSource.match(/[?#].*$/)?.[0] ?? '';
 			const filename = ref.sourceContentFile.contentPath;
 			if (!bySource.has(filename)) bySource.set(filename, { original: ref.sourcePage.document.fullSource, edits: new Map() });
@@ -224,7 +210,7 @@ export const getEditorResourceAddress = async (options) => {
 	if (!['public', 'attachment'].includes(selected.kind) || selected.directory) throw new Error('Select a public file.');
 	const { settings, graph } = await readEditorLinkState(options);
 	if (!settings) throw new Error('Repair site-config/settings.yaml to copy the published address.');
-	const pathname = selected.kind === 'attachment' ? graph.attachments.files.find(file => file.filePath === selected.filename)?.pathname : publicPath(options.siteRoot, selected.filename);
+	const pathname = selected.kind === 'attachment' ? graph.attachments.files.find(file => file.filePath === selected.filename)?.pathname : publicPath(options.siteRoot, selected.filename, settings);
 	if (!pathname) throw new Error('The file no longer belongs to this site.');
 	return new URL(encodeAttachmentPath(pathname).slice(1), settings.url.replace(/\/$/, '') + '/').href;
 };

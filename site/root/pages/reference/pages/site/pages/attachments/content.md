@@ -49,16 +49,18 @@ whether the browser opens or downloads the file. Try the
 
 ## Share an attachment
 
-From another page, use the owning page's URL followed by `downloads/` and the
-filename:
+From another page, use the attachment's published address. **Copy Link** in
+Site Tree gives its full address:
 
 ```md title="A link from another page"
-[Download Guide's checklist](/guide/downloads/checklist.pdf)
+[Download Guide's checklist](/_norna/downloads/guide/checklist.pdf)
 ```
 
 Do not include a deployment prefix such as `/norna/`. Norna adds it to the
 rendered link. Home's attachments live in `site/root/downloads/` and use
-`/downloads/filename` when linked from other pages. Sharing does not copy a file.
+`/_norna/downloads/~home/filename` when linked from other pages. Sharing does not
+copy a file. For nested pages, join their slugs with `--`: a file
+owned by `/help/install/` uses `/_norna/downloads/help--install/filename`.
 
 Spaces and Unicode are supported. Enclose a Markdown destination containing
 spaces in angle brackets, for example `[Report](<downloads/annual report.pdf>)`.

@@ -1,7 +1,7 @@
 import { getPageImageSourceKey } from './lib/site-conventions.mjs';
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, readFile, rm, stat, lstat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import {
@@ -24,7 +24,7 @@ import {
 
 const execFileAsync = promisify(execFile);
 
-const imageOutputVersion = 2;
+const imageOutputVersion = 3;
 const sourceHashSlugLength = 8;
 const widths = [480, 768, 1080, 1440, 1920];
 
@@ -86,7 +86,7 @@ const getSourceHashSlug = (sourceHash) => sourceHash.slice(0, sourceHashSlugLeng
 
 const getGeneratedPath = (sourceKey, sourceHash, width) => {
 	const parsed = path.parse(sourceKey.replace(/^root\//, ''));
-	return path.join(generatedImagesDir, parsed.dir, `${parsed.name}-${getSourceHashSlug(sourceHash)}-${width}.webp`);
+	return path.join(generatedImagesDir, parsed.dir, `${parsed.base}-${getSourceHashSlug(sourceHash)}-${width}.webp`);
 };
 
 const getOriginalPath = (sourceKey, sourceHash) => {
@@ -140,6 +140,7 @@ const getContentSourcePath = ({ image, sourceKey }) => {
 const getReferencedSources = async () => {
 	const contentFiles = await getContentFiles();
 	const seen = new Set();
+	const normalizedSources = new Map();
 	const sources = [];
 
 	for (const contentFile of contentFiles) {
@@ -154,7 +155,9 @@ const getReferencedSources = async () => {
 				continue;
 			}
 
-			const fileStat = await stat(sourcePath).catch(() => null);
+			const fileStat = await lstat(sourcePath).catch(() => null);
+			const directoryStat = await lstat(contentFile.imagesDir).catch(() => null);
+			if (fileStat?.isSymbolicLink() || directoryStat?.isSymbolicLink()) fail(`Image ${sourcePath} must belong to a regular images/ directory; symbolic links are not supported.`);
 			if (!fileStat?.isFile()) {
 				fail(`Image file does not exist: ${contentFile.imagesLabel}/${siteImagePath}`);
 			}
@@ -163,6 +166,10 @@ const getReferencedSources = async () => {
 				fail(`Image "${imageName}" is used in ${reference.sectionLabel} but is not stored directly in ${contentFile.imagesLabel}/. Run norna content:sync, or npm run norna:sync in starter-style repositories, to move it.`);
 			}
 
+			const normalizedKey = reference.sourceKey.normalize('NFC').toLowerCase();
+			const previous = normalizedSources.get(normalizedKey);
+			if (previous) fail(`Image sources ${previous} and ${sourcePath} conflict after case/Unicode normalization. Rename one image.`);
+			normalizedSources.set(normalizedKey, sourcePath);
 			seen.add(reference.sourceKey);
 			sources.push({ sourcePath, sourceKey: reference.sourceKey, reference });
 		}
@@ -290,12 +297,12 @@ const getReusableEntry = async (sourceKey, previousEntry, sourceHash) => {
 	};
 };
 
-const getReusableStaticEntry = async (previousEntry, sourceHash) => {
+const getReusableStaticEntry = async (previousEntry, sourceHash, sourceKey) => {
 	if (
 		previousEntry?.kind !== 'static'
 		|| previousEntry?.sourceHash !== sourceHash
 		|| previousEntry?.outputVersion !== imageOutputVersion
-		|| typeof previousEntry?.src !== 'string'
+		|| previousEntry?.src !== getPublicPath(getOriginalPath(sourceKey, sourceHash))
 		|| !(await fileExists(getFilePathFromPublicPath(previousEntry.src)))
 	) {
 		return null;
@@ -375,7 +382,7 @@ const main = async () => {
 		const sourceHash = await getSourceHash(sourcePath);
 
 		if (isStaticSource(sourcePath)) {
-			const reusableEntry = await getReusableStaticEntry(previousManifest[sourceKey], sourceHash);
+			const reusableEntry = await getReusableStaticEntry(previousManifest[sourceKey], sourceHash, sourceKey);
 
 			if (reusableEntry) {
 				manifest[sourceKey] = reusableEntry;

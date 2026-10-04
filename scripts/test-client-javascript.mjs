@@ -226,7 +226,7 @@ items:
 		'An image stack should load only its inspection and persistent-caption enhancement in addition to reader preferences.',
 	);
 	assert.match(imageStackHtml, /data-image-inspection-trigger/);
-	assert.match(imageStackHtml, /href="\/images\/original\/pages\/details\/images\/first-[a-f0-9]+\.svg"/);
+	assert.match(imageStackHtml, /href="\/_norna\/images\/original\/pages\/details\/images\/first-[a-f0-9]+\.svg"/);
 	assert.match(imageStackHtml, /data-image-inspector/);
 	const imageStackScript = await readDeliveredScript(getPageFeatureScripts(imageStackHtml)[0]);
 	assert.match(imageStackScript, /showModal/);

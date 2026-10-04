@@ -78,4 +78,4 @@ Use the surrounding project's workflow rather than `npm run norna:deploy`,
 because that workflow owns the combined build order and artifact. Norna's
 `norna:check`, `norna:build`, local preview, and generated-image cache remain
 usable independently. When caching generated images, use the selected site
-directory, for example `presentation/.norna/public/images/generated`.
+directory, for example `presentation/.norna/public/_norna/images/generated`.

@@ -325,6 +325,14 @@
       ],
       "markdownDescription": "```yaml\nlanguage: en-GB\n```\n\nSets the language of the complete site and selects the matching built-in Norna interface text. Regional tags are preserved. The default is `en`; editorial Markdown is not translated.\n\n[Language reference (current)](https://janga.github.io/norna/reference/configuration/language/)\n\n[Norna 0.7.28 source reference](https://github.com/janga/norna/blob/v0.7.28/site/root/pages/reference/pages/configuration/pages/language/content.md)"
     },
+    "verificationFiles": {
+      "description": "Exact filenames in public/ that verify ownership with an external service. Published unchanged at the site root. .well-known/ files need no declaration.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "markdownDescription": "```yaml\nverificationFiles:\n  - google-example.html\n```\n\nExact filenames in public/ that verify ownership with an external service. Published unchanged at the site root. .well-known/ files need no declaration.\n\n[Read the relevant reference (current)](https://janga.github.io/norna/reference/site/public-files/)\n\n[Norna 0.7.28 source reference](https://github.com/janga/norna/blob/v0.7.28/site/root/pages/reference/pages/site/pages/public-files/content.md)"
+    },
     "editLink": {
       "type": "object",
       "properties": {

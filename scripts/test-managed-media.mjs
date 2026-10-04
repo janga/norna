@@ -12,7 +12,7 @@ import {
 	runNorna,
 } from './test-support/content-model.mjs';
 
-test('content:check requires local Markdown images but ignores external and public image files', async () => {
+test('content:check requires local Markdown images and accepts external and published shared images', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'root/content.md'), `---
@@ -28,9 +28,11 @@ page:
 
 ![External](https://example.com/portrait.jpg)
 
-![Public](/favicon.svg)
+![Public](/_norna/shared/favicon.svg)
 `);
 
+		await mkdir(path.join(siteDir, 'public'), { recursive: true });
+		await writeFile(path.join(siteDir, 'public/favicon.svg'), '<svg/>');
 		const error = await runContentScript(siteDir, ['--check']).then(() => assert.fail('Missing image passed'), error => error);
 		const stdout = error.output;
 		assert.match(stdout, /Image "portrait\.jpg" does not exist at .*root\/images\/portrait\.jpg/);
@@ -70,7 +72,7 @@ items:
 		assert.equal(entry.kind, 'static');
 		assert.equal(entry.width, 900);
 		assert.equal(entry.height, 620);
-		assert.match(entry.src, /^\/images\/original\/images\/diagram-[a-f0-9]{8}\.svg$/);
+		assert.match(entry.src, /^\/_norna\/images\/original\/images\/diagram-[a-f0-9]{8}\.svg$/);
 		assert.equal(entry.variants, undefined);
 		assert.equal(await fileExists(path.join(siteDir, '.norna', 'public', entry.src.replace(/^\//, ''))), true);
 	} finally {
@@ -87,6 +89,8 @@ test('raster cache reuses root and child outputs, repairs missing variants and i
 			await writeFile(path.join(siteDir, directory, 'content.md'), '# Images\n\n```image-stack\nitems:\n  - image: image.jpg\n    alt: Example\n```\n');
 			await cp(path.join(fixtureSiteDir, 'root/images/image.jpg'), path.join(siteDir, directory, 'images/image.jpg'));
 		}
+		await cp(path.join(siteDir, 'root/images/image.jpg'), path.join(siteDir, 'root/images/image.jpeg'));
+		await writeFile(path.join(siteDir, 'root/content.md'), '# Images\n\n![JPG](image.jpg)\n\n![JPEG](image.jpeg)\n');
 		const generate = () => runNorna(['--site-dir', siteDir, 'images']);
 		const manifest = async () => JSON.parse(await readFile(path.join(siteDir, '.norna/generated-images.json'), 'utf8'));
 		const output = (variant) => path.join(siteDir, '.norna/public', variant.src);
@@ -94,8 +98,10 @@ test('raster cache reuses root and child outputs, repairs missing variants and i
 		const first = await manifest();
 		const rootKey = 'root/images/image.jpg';
 		const childKey = 'root/pages/guide/images/image.jpg';
-		assert.match(first[rootKey].variants[0].src, /^\/images\/generated\/images\/image-/);
-		assert.match(first[childKey].variants[0].src, /^\/images\/generated\/pages\/guide\/images\/image-/);
+		assert.match(first[rootKey].variants[0].src, /^\/_norna\/images\/generated\/images\/image\.jpg-/);
+		assert.match(first[childKey].variants[0].src, /^\/_norna\/images\/generated\/pages\/guide\/images\/image\.jpg-/);
+		assert.equal(first[rootKey].sourceHash, first['root/images/image.jpeg'].sourceHash);
+		assert.notEqual(first[rootKey].variants[0].src, first['root/images/image.jpeg'].variants[0].src, 'Identical bytes with different extensions still have distinct owners.');
 		const untouchedTime = new Date('2000-01-01T00:00:00Z');
 		for (const entry of Object.values(first)) for (const variant of entry.variants) await utimes(output(variant), untouchedTime, untouchedTime);
 		await generate();

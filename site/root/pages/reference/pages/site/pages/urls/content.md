@@ -57,10 +57,10 @@ From `/guides/install/`, `../` reaches `/guides/` and `../usage/` reaches
 `/guides/usage/`. Prefer paths beginning with `/` when the target is unclear.
 Reference-style links and card `link` fields use the same destination rules.
 
-For `site/public/downloads/checklist.pdf`, write:
+For `site/root/downloads/checklist.pdf`, a link from another page uses:
 
-```md title="content.md: a public download"
-[Download the checklist](/downloads/checklist.pdf)
+```md title="content.md: a homepage attachment"
+[Download the checklist](/_norna/downloads/~home/checklist.pdf)
 ```
 
 Norna checks that the file exists, but not anchors inside PDFs or other public
@@ -76,16 +76,29 @@ An absolute URL with no locally owned destination also stays external: the
 same server may host other, independently built sites. Short internal links
 still report missing destinations.
 
-For the same public file, these identify the same destination when the site
+For the same attachment, these identify the same destination when the site
 URL is `https://example.com/manual/`:
 
 ```md title="Short and complete addresses"
-[Checklist](/downloads/checklist.pdf)
-[Checklist](https://example.com/manual/downloads/checklist.pdf)
+[Checklist](/_norna/downloads/~home/checklist.pdf)
+[Checklist](https://example.com/manual/_norna/downloads/~home/checklist.pdf)
 ```
 
-`manual/downloads/checklist.pdf` is a different, relative destination beneath
+`manual/_norna/downloads/~home/checklist.pdf` is a different, relative destination beneath
 the current page. Do not add the deployment prefix to a short internal link.
+
+## Resource addresses
+
+Resources occupy `/_norna/`, separately from page URLs. Managed images use
+`/_norna/images/` with content hashes. Attachments use
+`/_norna/downloads/<page-key>/<filename>`; the homepage key is `~home`, and
+other keys join page slugs with `--` (for example `guides--install`).
+Shared public images use `/_norna/shared/`. Known technical public files keep
+their required site-relative paths. See [public files](/reference/site/public-files/).
+
+Pages can use the slugs `images`, `downloads` and `shared` without claiming
+resource directories. Internal resource references and **Copy Link** follow
+the same publication rules. Local attachment syntax stays `downloads/filename`.
 
 ## Keep an old URL
 

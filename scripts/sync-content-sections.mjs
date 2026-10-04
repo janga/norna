@@ -476,7 +476,10 @@ const siteLinkGraph = createSiteLinkGraph({
 		data: frontmatterData,
 		document: page,
 	})),
-	publicFiles: await getSitePublicFiles(),
+	publicFiles: await getSitePublicFiles(undefined, projectConfig).catch(error => {
+		addIssue({ severity: 'error', message: error.message, fix: 'Use the supported public-file locations and verificationFiles settings.' });
+		return [];
+	}),
 	siteStructure,
 	generatedRoutes: getGeneratedSiteRoutes({ searchEnabled: projectConfig.search.enabled }),
 });

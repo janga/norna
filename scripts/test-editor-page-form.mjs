@@ -20,8 +20,10 @@ try {
  await assert.rejects(planSiteNodeCreation({...options,slug:'setup',metadata:{}}),/previous address.*Choose another URL segment, or remove this previous address/s);
  await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['bad']}}}),/Start and end/);
  await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['/same/','/same/']}}}),/unique/);
- await write('public/legacy/index.html','Static');
+ await write('site-config/settings.yaml','sourceFormat: 2\nurl: https://example.com/\nverificationFiles: [legacy]\n');
+ await write('public/legacy','Verification');
  await assert.rejects(planSiteNodeCreation({...options,slug:'other',metadata:{page:{aliases:['/legacy/']}}}),/conflicts/);
+ await assert.rejects(planSiteNodeCreation({...options,slug:'legacy',metadata:undefined}),/conflicts/);
  const empty=await planSiteNodeCreation({...options,slug:'empty',metadata:{}});
  const emptyResult=await createSiteNode(empty); assert.match(await readFile(emptyResult.sourcePath,'utf8'),/# Install Norna/);
  const pending=await planSiteNodeCreation({...options,slug:'pending',metadata:{page:{aliases:['/new-alias/']}}});

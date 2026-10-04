@@ -425,6 +425,7 @@ export const projectConfig = Object.freeze({
 		url: siteUrl.href,
 	}),
 	...resolveThemeVisualConfig(rawTheme, siteThemeLabel),
+	verificationFiles: Object.freeze(rawConfig.verificationFiles ?? []),
 	editLink: resolveEditLinkConfig(rawConfig, siteConfigLabel),
 	search: Object.freeze({
 		enabled: readBoolean(rawConfig, 'search', 'config YAML', false),

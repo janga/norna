@@ -1,4 +1,5 @@
 ---
+import { searchOutputDirectory } from '../../scripts/lib/publication-paths.mjs';
 import { getCollection } from 'astro:content';
 import { ArrowLeft } from '@lucide/astro';
 import { resolveNavigationModel } from '../../scripts/lib/navigation-model.mjs';
@@ -84,7 +85,7 @@ const hasNavigationRailFrame = navigationModel.requestedMode === 'tree'
 		navigationModel.requestedMode === 'automatic'
 		&& (navigationModel.hasNestedPages || navigationModel.hasCategories)
 	);
-const bundlePath = withBasePath(projectConfig.site.basePath, '/pagefind/');
+const bundlePath = withBasePath(projectConfig.site.basePath, `/${searchOutputDirectory}/`);
 const pagefindTranslationOption = projectConfig.locale.pagefindTranslations
 	? `,\n\t\t\ttranslations: ${JSON.stringify(projectConfig.locale.pagefindTranslations)}`
 	: '';

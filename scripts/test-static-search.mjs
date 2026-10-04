@@ -64,7 +64,7 @@ This nested section contains the unique term amberotter.
 	const homeHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
 	const nestedHtml = await readFile(path.join(distDir, 'guides', 'installation', 'index.html'), 'utf8');
 	const searchHtml = await readFile(path.join(distDir, 'search', 'index.html'), 'utf8');
-	const searchDocuments = await readSearchDocuments(path.join(distDir, 'pagefind'));
+	const searchDocuments = await readSearchDocuments(path.join(distDir, '_norna/search'));
 
 	assert.match(homeHtml, /<main\b[^>]*data-pagefind-body/);
 	assert.match(nestedHtml, /<main\b[^>]*data-pagefind-body/);
@@ -79,8 +79,8 @@ This nested section contains the unique term amberotter.
 	assert.doesNotMatch(homeHtml, /pagefind-ui\.js/);
 	assert.doesNotMatch(nestedHtml, /pagefind-ui\.js/);
 	assert.match(searchHtml, /<meta name="robots" content="noindex"/);
-	assert.match(searchHtml, /href="\/project\/pagefind\/pagefind-ui\.css"/);
-	assert.match(searchHtml, /\/project\/pagefind\/pagefind-ui\.js/);
+	assert.match(searchHtml, /href="\/project\/_norna\/search\/pagefind-ui\.css"/);
+	assert.match(searchHtml, /\/project\/_norna\/search\/pagefind-ui\.js/);
 	assert.match(searchHtml, /baseUrl: "\/project\/"/);
 	assert.match(searchHtml, /<html lang="bg"/);
 	assert.match(searchHtml, /translations: \{"placeholder":"Търсене"/);
@@ -91,7 +91,7 @@ This nested section contains the unique term amberotter.
 	assert.equal(searchDocuments.some(({ content }) => content.includes('amberotter')), true);
 	assert.equal(searchDocuments.some(({ content }) => content.includes('Страницата не е намерена')), false);
 	assert.equal(searchDocuments.some(({ content }) => content.includes('Зареждане на търсенето')), false);
-	assert.equal(await fileExists(path.join(siteDir, '.norna', 'public', 'pagefind', 'pagefind.js')), true);
+	assert.equal(await fileExists(path.join(siteDir, '.norna', 'public', '_norna/search', 'pagefind.js')), true);
 
 	await mkdir(path.join(siteDir, 'site-config'), { recursive: true });
 
@@ -99,8 +99,8 @@ This nested section contains the unique term amberotter.
 	const disabledBuild = await runSite(siteDir, 'build');
 	assert.match(disabledBuild.stdout, /Static search is disabled\./);
 	assert.equal(await fileExists(path.join(distDir, 'search', 'index.html')), false);
-	assert.equal(await fileExists(path.join(distDir, 'pagefind')), false);
-	assert.equal(await fileExists(path.join(siteDir, '.norna', 'public', 'pagefind')), false);
+	assert.equal(await fileExists(path.join(distDir, '_norna/search')), false);
+	assert.equal(await fileExists(path.join(siteDir, '.norna', 'public', '_norna/search')), false);
 	const disabledHomeHtml = await readFile(path.join(distDir, 'index.html'), 'utf8');
 	assert.doesNotMatch(await readDeliveredScripts(disabledHomeHtml), /norna:search:/);
 

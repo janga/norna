@@ -72,12 +72,12 @@ test('site-owned file removal does not require a homepage and still reviews link
 test('incoming links resolve aliases, anchors, relative and card links, and exclude a deleted branch', async (t) => {
 	const f = await fixture(t);
 	const other = await f.write('root/pages/other/content.md', '# Other\n');
-	const sources = new Map([[other, '# Other\n\n[Alias](/old-guide/#read)\n[Child](../guide/child/)\n[External](https://example.com/manual/guide/)\n[Reference][guide]\n\n[guide]: /guide/\n\n```card-list\nitems:\n  - title: Guide\n    link: /guide/\n```\n']]);
+	const sources = new Map([[other, '# Other\n\n[Alias](/old-guide/#read)\n[Child](../guide/child/)\n[Full address](https://example.com/manual/guide/)\n[Reference][guide]\n\n[guide]: /guide/\n\n```card-list\nitems:\n  - title: Guide\n    link: /guide/\n```\n']]);
 	const usage = await getEditorIncomingLinks({ ...f, sources });
-	assert.equal(usage.references.filter((entry) => entry.sourcePath === other).length, 3);
+	assert.equal(usage.references.filter((entry) => entry.sourcePath === other).length, 4);
 	assert.ok(usage.references.some((entry) => entry.sourcePath === f.child));
 	const plan = await planEditorRemoval({ ...f, sources });
-	assert.equal(plan.usage.references.length, 5);
+	assert.equal(plan.usage.references.length, 6);
 	assert.deepEqual(new Set(plan.usage.references.map(({ sourcePath }) => sourcePath)), new Set([f.home, other]));
 	assert.equal(plan.usage.incomplete.length, 0);
 	assert.equal((await getEditorIncomingLinks({ ...f, sources, alias: '/old-guide/' })).references.length, 1);
@@ -118,7 +118,8 @@ test('alias edits preserve prose, comments and LF/CRLF; reject collisions and in
 		await assert.rejects(edit(['/repeat/', '/repeat/']));
 		const other = await f.write('root/pages/other/content.md', '# Other\n');
 		await assert.rejects(edit(['/taken/'], { sources: new Map([[other, '---\npage:\n  aliases: [/taken/]\n---\n# Other\n']]) }), /conflicts/);
-		await f.write('public/public-guide/index.html', 'A public file');
+		await f.write('site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/manual/\nsearch: true\nverificationFiles: [public-guide]\n');
+		await f.write('public/public-guide', 'Verification');
 		await assert.rejects(edit(['/public-guide/']), /conflicts/);
 	}
 	for (const source of ['# Guide\n', '---\npage: {description: "Keep", aliases: [/old-guide/]}\n---\n# Guide\n']) {
@@ -207,7 +208,7 @@ for (const preserveAliases of [true, false]) test(`slug change preserves existin
 	await writeFile(f.child, '---\npage:\n  aliases: [/old-child/]\n---\n# Child\n\n[Parent](../)\n');
 	await f.write('root/pages/guide/pages/child/pages/deep/content.md', '# Deep\n');
 	await f.write('root/pages/guide/downloads/manual.pdf', 'Attachment bytes');
-	await writeFile(f.home, '# Home\n\n[Guide](/guide/)\n[Child](/guide/child/)\n[Deep](/guide/child/deep/)\n[Old alias](/old-guide/)\n[File](/guide/downloads/manual.pdf)\n');
+	await writeFile(f.home, '# Home\n\n[Guide](/guide/)\n[Child](/guide/child/)\n[Deep](/guide/child/deep/)\n[Old alias](/old-guide/)\n[File](/_norna/downloads/guide/manual.pdf)\n');
 	const plan = await planEditorPageAddress({ ...f, segment: 'handbook', preserveAliases });
 	assert.equal(plan.preserveAliases, preserveAliases);
 	assert.equal(plan.mappings.length, 3);
@@ -227,7 +228,7 @@ for (const preserveAliases of [true, false]) test(`slug change preserves existin
 	const home = await readFile(f.home, 'utf8');
 	assert.match(home, /\[Child\]\(\/handbook\/child\/\)/);
 	assert.match(home, /\[Deep\]\(\/handbook\/child\/deep\/\)/);
-	assert.match(home, /\[File\]\(\/handbook\/downloads\/manual.pdf\)/);
+	assert.match(home, /\[File\]\(\/_norna\/downloads\/handbook\/manual.pdf\)/);
 	assert.equal(await readFile(path.join(plan.destinationDirectory, 'downloads/manual.pdf'), 'utf8'), 'Attachment bytes');
 	// Reclaiming a prior primary address also works when no new aliases are wanted.
 	if (preserveAliases) {

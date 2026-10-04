@@ -68,3 +68,42 @@ is deployed below a path; no build writes outside its own output directory.
 Builds on BL-154 Site Tree Context Actions, BL-155 Page Attachments,
 BL-159 Managed Local Markdown Images and BL-160 Standard Markdown For Local
 Attachments. Supersedes their unrestricted public-file publication paths.
+
+## Implementation And Verification
+
+Implemented on 2026-10-04. The shared publication policy supplies resource
+addresses, public-source validation and collision checks to build, content
+validation, editor operations and page creation. Public Markdown image links
+now participate in reference discovery and rename/move updates. Generated
+image names preserve the source extension so equal bytes in same-stem JPG
+and JPEG sources cannot claim one output file. Existing content hashing and
+cache reuse remain in place.
+
+Directly relevant checks passed:
+
+- Publication policy and output collisions; public sync; page attachments;
+  link resolution; file and page rename/move; aliases; new-page creation.
+- Editor engine language/source operations, placement and resource adapter
+  contracts, including cancellation and rollback. These are automated tests.
+- Managed SVG/raster output, changed-image hashes, cache reuse and repair;
+  ordinary Markdown images; card images and client asset loading; static
+  search and search indexing of tabs.
+- Generated schema consistency, schema metadata, unused-code check and
+  whitespace check.
+- Isolated documentation build: 87 HTML pages and 83 search documents.
+  All 74 distinct resource files referenced by rendered HTML existed.
+- A dedicated build verified logo, icon, social-image, shared-image and
+  attachment addresses below `/docs/`, including unchanged published bytes.
+- Updated editor acceptance fixture: 20 generated HTML pages. Its source
+  examples use supported shared images and the new attachment addresses.
+
+The documentation test reaches an existing unrelated assertion: it expects
+seven entries below Examples, while the owner's current move of Complete
+sites leaves six there. That source move and assertion were left unchanged.
+
+Native VS Code suggestions, Undo/save/reopen and manual interface acceptance
+remain for the owner. This changes the engine and generated schema, with no
+new extension package. Reload Window loads the working-tree engine. The active
+editor-review scratch copy and its in-progress tests were left untouched;
+only the maintained fixture was updated. Shared-image processing remains
+BL-178 Managed Shared Images.

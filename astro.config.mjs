@@ -1,3 +1,4 @@
+import { compiledOutputDirectory } from './scripts/lib/publication-paths.mjs';
 import { devServerIdentityPlugin } from './scripts/lib/dev-server-identity.mjs';
 import { rewriteAttachmentLinks } from './scripts/lib/attachment-render.mjs';
 // @ts-check
@@ -19,6 +20,8 @@ import {
 	engineRoot,
 	generatedImagesManifestPath,
 	siteDir,
+	sitePublicDir,
+	siteConfigPath,
 	siteContentPath,
 	siteHomePageDir,
 	siteImagesDir,
@@ -76,6 +79,8 @@ const nornaGeneratedImagesWatcher = () => ({
 		const manifestPath = path.resolve(generatedImagesManifestPath);
 		const watchedSourcePaths = [
 			siteContentPath,
+			sitePublicDir,
+			siteConfigPath,
 			path.join(siteHomePageDir, 'tree-theme.yaml'),
 			path.join(siteHomePageDir, 'page-theme.yaml'),
 			siteImagesDir,
@@ -170,6 +175,7 @@ markdownProcessor.createRenderer = async (shared) => {
 // https://astro.build/config
 export default defineConfig({
 	base: projectConfig.site.basePath,
+	build: { assets: compiledOutputDirectory },
 	cacheDir: astroCacheDir,
 	prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
 	integrations: [{

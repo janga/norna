@@ -75,7 +75,14 @@ After intentionally moving image references,
 `npm run content:sync` can move unambiguous images; inspect its source changes.
 Do not commit unreferenced source images unless explicitly requested.
 
-Source static files belong in the selected site's `public/`. `.norna/public/`
+`publication-paths.mjs` owns resource URLs, public-source policy and output
+collision checks. `public/` accepts known technical files, declared verification
+files, `.well-known/` and shared images. Page attachments use
+`/_norna/downloads/<page-key>/`, managed images use `/_norna/images/`, shared
+images use `/_norna/shared/`, and search/build assets have separate areas under
+`/_norna/`. Builds do not rewrite authored source or preserve former resource
+URLs. The [public-file reference](../site/root/pages/reference/pages/site/pages/public-files/content.md)
+defines allowed sources and `verificationFiles`. `.norna/public/`
 is generated preparation output, including managed images and the sitemap.
 Do not author `public/sitemap.xml`; that path is reserved for the generated
 page-tree sitemap. `npm run site:public` refreshes the generated static copy

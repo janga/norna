@@ -16,9 +16,7 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [BL-177 Publication Path Ownership And Collision Checks](docs/design/backlog/BL-177-publication-path-ownership.md):
-  **Ready; implementation approved.** Give published resources reserved URL areas
-  and restrict public sources through shared build and editor validation.
+No item is currently ready for implementation.
 
 ## Next
 

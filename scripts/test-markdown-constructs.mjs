@@ -494,7 +494,7 @@ Adoption information.
 		assert.match(html, /class="card-list-badge">Recommended<\/p>/);
 		assert.match(html, /Give a dog a new home\./);
 		assert.match(html, /href="\/adopt\/"/);
-		assert.match(html, /src="\/images\/original\/images\/adopt-[a-f0-9]{8}\.svg"/);
+		assert.match(html, /src="\/_norna\/images\/original\/images\/adopt-[a-f0-9]{8}\.svg"/);
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}

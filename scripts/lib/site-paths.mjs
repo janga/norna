@@ -155,8 +155,8 @@ export const astroDistDir = configuredStateDirectory
 	: path.join(siteProjectRoot, 'dist');
 export const astroRootDir = siteStateDir;
 export const astroCacheDir = path.join(astroRootDir, '.astro');
-export const generatedImagesDir = path.join(astroPublicDir, 'images', 'generated');
-export const originalImagesDir = path.join(astroPublicDir, 'images', 'original');
+export const generatedImagesDir = path.join(astroPublicDir, '_norna', 'images', 'generated');
+export const originalImagesDir = path.join(astroPublicDir, '_norna', 'images', 'original');
 export const generatedImagesManifestPath = path.join(siteStateDir, 'generated-images.json');
 
 export const engineRootLabel = getPathLabel(engineRoot);

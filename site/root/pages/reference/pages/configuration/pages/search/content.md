@@ -18,7 +18,7 @@ search: true
 
 ## Index and reserved routes
 
-The build creates `/search/` and `dist/pagefind/` and adds a Search button to
+The build creates `/search/` and `dist/_norna/search/` and adds a Search button to
 the header. These routes, including their public-file destinations, cannot
 also be source pages, aliases or public assets.
 

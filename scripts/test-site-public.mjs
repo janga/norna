@@ -65,10 +65,10 @@ navigation:
 `);
 		await writeFixtureFile(root, 'custom-site/public/CNAME', 'example.com\n');
 		await writeFixtureFile(root, 'custom-site/public/robots.txt', 'User-agent: *\nAllow: /\n');
-		await writeFixtureFile(root, 'custom-site/public/nested/source.txt', 'source file\n');
+		await writeFixtureFile(root, 'custom-site/public/.well-known/nested/source.txt', 'source file\n');
 		await writeFixtureFile(root, 'custom-site/.norna/public/stale.txt', 'stale generated file\n');
 		await writeFixtureFile(root, 'custom-site/.norna/public/nested/old.txt', 'stale nested file\n');
-		await writeFixtureFile(root, 'custom-site/.norna/public/images/generated/keep.webp', 'generated image\n');
+		await writeFixtureFile(root, 'custom-site/.norna/public/_norna/images/generated/keep.webp', 'generated image\n');
 
 		const result = runSyncScript(root, { NORNA_SITE_DIR: 'custom-site' });
 		const output = getOutput(result);
@@ -77,7 +77,7 @@ navigation:
 		assert.match(output, /Synced custom-site\/public\/ to custom-site\/\.norna\/public\/\./);
 		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/CNAME'), 'example.com\n');
 		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/robots.txt'), 'User-agent: *\nAllow: /\n');
-		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/nested/source.txt'), 'source file\n');
+		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/.well-known/nested/source.txt'), 'source file\n');
 		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -99,7 +99,7 @@ navigation:
 `);
 		assert.equal(await fileExists(path.join(root, 'custom-site/.norna/public/stale.txt')), false);
 		assert.equal(await fileExists(path.join(root, 'custom-site/.norna/public/nested/old.txt')), false);
-		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/images/generated/keep.webp'), 'generated image\n');
+		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/_norna/images/generated/keep.webp'), 'generated image\n');
 	});
 });
 
@@ -114,8 +114,8 @@ test('site:public rejects a source sitemap before changing generated public outp
 		const output = getOutput(result);
 
 		assert.notEqual(result.status, 0, output);
-		assert.match(output, /custom-site\/public\/sitemap\.xml conflicts with Norna's generated sitemap\.xml/);
-		assert.match(output, /Remove that source file/);
+		assert.match(output, /public\/sitemap\.xml conflicts with a generated resource area/);
+		assert.match(output, /page’s downloads/);
 		assert.equal(await readFixtureFile(root, 'custom-site/public/sitemap.xml'), 'source sitemap\n');
 		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/sitemap.xml'), 'previous generated sitemap\n');
 		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/stale.txt'), 'keep after failed preflight\n');
@@ -133,8 +133,8 @@ test('site:public rejects a source 404 page before changing generated public out
 		const output = getOutput(result);
 
 		assert.notEqual(result.status, 0, output);
-		assert.match(output, /custom-site\/public\/404\.html conflicts with Norna's generated 404\.html/);
-		assert.match(output, /localized missing-page response/);
+		assert.match(output, /public\/404\.html conflicts with a generated resource area/);
+		assert.match(output, /generated resource area/);
 		assert.equal(await readFixtureFile(root, 'custom-site/public/404.html'), 'source error page\n');
 		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/404.html'), 'previous generated error page\n');
 		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/stale.txt'), 'keep after failed preflight\n');

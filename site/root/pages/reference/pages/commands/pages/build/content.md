@@ -26,7 +26,7 @@ Git. PNG/JPEG processing requires ImageMagick when cached output cannot be
 reused.
 
 The artifact includes generated page/category destinations, aliases,
-`sitemap.xml` and `404.html`; enabled search adds `/search/` and `pagefind/`.
+`sitemap.xml` and `404.html`; enabled search adds `/search/` and `/_norna/search/`.
 See [public files and output](/reference/site/public-files/) for inclusion,
 reserved paths and host behavior.
 
@@ -40,10 +40,10 @@ artifact instead of development output.
 npm exec -- norna site:public
 ```
 
-This copies the selected site's `public/` files into `.norna/public/`, removes
+This validates and publishes the selected site's supported `public/` files into `.norna/public/`, removes
 stale copied static files and generates the sitemap. It rejects reserved
-source names such as `sitemap.xml`, `404.html`, and `pagefind/` when search is
-enabled. It does not build pages or refresh search. Use it when a local
+source names such as `sitemap.xml`, `404.html`, and `_norna/`, along with
+unsupported files. See [allowed public files](/reference/site/public-files/). It does not build pages or refresh search. Use it when a local
 development server needs an updated copied public file without a full build.
 
 ## Direct Astro access

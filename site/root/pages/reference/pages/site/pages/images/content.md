@@ -48,12 +48,12 @@ moves only unambiguous misplaced files; see [image sync](/reference/commands/val
 `images` and `build` prepare raster images with ImageMagick. Normal WebP
 widths are 480, 768, 1080, 1440 and 1920 pixels, skipping sizes above the
 source width. The source width is also included when it differs from these sizes,
-including sources narrower than 480 pixels. Output lives in `site/.norna/public/images/generated/`.
+including sources narrower than 480 pixels. Output lives in `site/.norna/public/_norna/images/generated/`.
 
 Filenames include the first eight characters of the source SHA-256 hash.
 Changing a source therefore changes its published URLs and avoids stale caches.
 
-SVG files are copied to `site/.norna/public/images/original/` with hashed names.
+SVG files are copied to `site/.norna/public/_norna/images/original/` with hashed names.
 They are not rasterized and need no ImageMagick. A `viewBox` or numeric width
 and height supplies an intrinsic ratio; an unreadable ratio does not prevent
 direct SVG rendering.

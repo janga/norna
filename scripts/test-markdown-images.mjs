@@ -21,7 +21,7 @@ test('Markdown image discovery uses the complete AST and preserves editable CRLF
 		'`![Example](ignored.svg)`', '\\![Escaped](ignored.svg)', '<!-- ![Hidden](ignored.svg) -->',
 		'', '    ![Indented](ignored.svg)', '', '```md', '![Fenced](ignored.svg)', '```',
 		'', '## Definitions', '', '[dog]: ./images/dog.svg "Reference title"', '[dog]: ignored.svg',
-		'', '![Remote](https://example.com/dog.svg)', '![Public](/logo.svg)',
+		'', '![Remote](https://example.com/dog.svg)', '![Public](/_norna/shared/logo.svg)',
 	].join('\r\n');
 	const document = await parsePageMarkdownSource(source);
 	assert.deepEqual(document.diagnostics, []);
@@ -115,7 +115,7 @@ test('a complete build manages local Markdown images and preserves each renderin
 		'![Raster][photo]', '', '[photo]: images/photo.jpg "Photo title"', '',
 		'## Heading ![Heading image][photo]', '',
 		'<details>', '<summary>More</summary>', '', '![Details](dog.svg)', '', '</details>', '',
-		'![Remote](https://example.com/remote.svg)', '', '![Public](/logo.svg)', '',
+		'![Remote](https://example.com/remote.svg)', '', '![Public](/_norna/shared/logo.svg)', '',
 	].join('\n'));
 	await mkdir(path.join(siteDir, 'public'), { recursive: true });
 	await writeFile(path.join(siteDir, 'public/logo.svg'), svg);
@@ -131,10 +131,10 @@ test('a complete build manages local Markdown images and preserves each renderin
 	const attr = (node, name) => node.attrs?.find(attr => attr.name === name)?.value;
 	const image = alt => elements.find(({ node }) => node.tagName === 'img' && attr(node, 'alt') === alt);
 	for (const alt of ['Standalone', 'Inline', 'Linked', 'Quoted', 'List', 'List inline', 'First', 'Second', 'Details']) {
-		assert.match(attr(image(alt).node, 'src'), /^\/docs\/images\/original\//, alt);
+		assert.match(attr(image(alt).node, 'src'), /^\/docs\/_norna\/images\/original\//, alt);
 	}
-	assert.match(attr(image('Raster').node, 'srcset'), /\/docs\/images\/generated\//);
-	assert.match(attr(image('Heading image').node, 'srcset'), /\/docs\/images\/generated\//);
+	assert.match(attr(image('Raster').node, 'srcset'), /\/docs\/_norna\/images\/generated\//);
+	assert.match(attr(image('Heading image').node, 'srcset'), /\/docs\/_norna\/images\/generated\//);
 	assert.equal(attr(image('Standalone').node, 'title'), 'A title, not a caption');
 	assert.ok(image('Standalone').ancestors.some(node => attr(node, 'data-image-inspection-trigger') !== undefined));
 	assert.equal(attr(image('Linked').ancestors.findLast(node => node.tagName === 'a'), 'href'), 'https://example.com/destination/');
@@ -149,7 +149,7 @@ test('a complete build manages local Markdown images and preserves each renderin
 	assert.equal(elements.filter(({ node }) => node.tagName === 'figcaption').length, 0);
 	assert.ok(!elements.some(({ node, ancestors }) => node.tagName === 'a' && ancestors.some(parent => parent.tagName === 'a')));
 	assert.equal(attr(image('Remote').node, 'src'), 'https://example.com/remote.svg');
-	assert.equal(attr(image('Public').node, 'src'), '/docs/logo.svg');
+	assert.equal(attr(image('Public').node, 'src'), '/docs/_norna/shared/logo.svg');
 	assert.doesNotMatch(html, /data-norna-managed-image=/);
 	await mkdir(path.join(siteDir, 'root/pages/missing'), { recursive: true });
 	await writeFile(path.join(siteDir, 'root/pages/missing/content.md'), '# Missing\n\n![Missing](images/dog.svg)\n');

@@ -148,7 +148,7 @@ Check the local preview.
 	}
 });
 
-test('content check reports an alias collision with a public index file', async () => {
+test('content check reports an alias directory collision with a public verification file', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'root/content.md'), `---
@@ -159,15 +159,16 @@ page:
 
 # Home
 `);
-		await mkdir(path.join(siteDir, 'public', 'archive'), { recursive: true });
-		await writeFile(path.join(siteDir, 'public', 'archive', 'index.html'), '<p>Archive</p>\n');
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/\nverificationFiles: [archive]\n');
+		await mkdir(path.join(siteDir, 'public'), { recursive: true });
+		await writeFile(path.join(siteDir, 'public', 'archive'), 'Verification\n');
 
 		await assert.rejects(
 			runNorna(['--site-dir', siteDir, 'content:check']),
 			(error) => {
-				assert.match(error.output, /Page alias "\/archive\/"/);
+				assert.match(error.output, /alias \/archive\//);
 				assert.match(error.output, /site\/root\/content\.md/);
-				assert.match(error.output, /site\/public\/archive\/index\.html/);
+				assert.match(error.output, /site\/public\/archive/);
 				return true;
 			},
 		);

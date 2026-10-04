@@ -15,15 +15,17 @@ navigation:
 
 ## Public files and folders
 
-[Public note to rename and move](/review-files/note.txt)
+[Shared image to rename and move](/_norna/shared/images/review-files/note.svg)
 
-[Same file using Copy Link](http://127.0.0.1:4398/review/review-files/note.txt "Full address")
+[Same file using Copy Link](http://127.0.0.1:4398/review/_norna/shared/images/review-files/note.svg "Full address")
 
-1. Under `public/`, create folder **created-here** and a file **new-note.txt** inside it.
-2. Inspect References and Copy Link for `public/review-files/note.txt`.
-   Expect `http://127.0.0.1:4398/review/review-files/note.txt`.
-   The source directory `public/` is omitted from published URLs.
-3. Rename it to `renamed-note.txt`, then move it into `public/other-files/`.
+1. Under `public/images/`, create folder **created-here** and import
+   `imports/replacement-image.svg` into it. Creating `public/new-note.txt` must
+   be rejected with guidance to use a page attachment.
+2. Inspect References and Copy Link for `public/images/review-files/note.svg`.
+   Expect `http://127.0.0.1:4398/review/_norna/shared/images/review-files/note.svg`.
+   Shared pictures use the reserved `/_norna/shared/` resource area.
+3. Rename it to `renamed-note.svg`, then move it into `public/images/other-files/`.
    Both links here and the link on Incoming links must update. The full address
    stays full, with its title. Save changed buffers.
 4. Rename `other-files` to `renamed-folder`; links to its file must follow.

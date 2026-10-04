@@ -31,7 +31,7 @@ const createFixture = async (name) => {
 	const siteDir = path.join(projectRoot, 'site');
 	await writeFixtureFile(siteDir, 'site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	await writeFixtureFile(siteDir, 'root/tree-theme.yaml', 'preset: documentation\n');
-	await writeFixtureFile(siteDir, 'public/manual.pdf', 'manual');
+	await writeFixtureFile(siteDir, 'root/downloads/manual.pdf', 'manual');
 	await writeFixtureFile(siteDir, 'root/content.md', `# Home
 
 ## Start {#start}
@@ -63,7 +63,7 @@ page:
 
 [Workflow](../workflows/#local)
 [Child](reference/#details)
-[Manual](../../manual.pdf)
+[Manual](/_norna/downloads/~home/manual.pdf)
 [Guides](/guides/)
 
 \`\`\`image-stack
@@ -144,7 +144,7 @@ const assertSuccessfulResult = async (siteDir) => {
 	assert.match(movedSource, /aliases:\n    - "?\/guides\/install\//);
 	assert.match(movedSource, /\[Workflow\]\(\/guides\/workflows\/#local\)/);
 	assert.match(movedSource, /\[Child\]\(reference\/#details\)/);
-	assert.match(movedSource, /\[Manual\]\(\/manual\.pdf\)/);
+	assert.match(movedSource, /\[Manual\]\(\/_norna\/downloads\/~home\/manual\.pdf\)/);
 	assert.match(movedSource, /\[Guides\]\(\/guides\/\)/);
 	assert.match(homeSource, /\[Setup\]\(\/reference\/overview\/install\/setup\/\)/);
 	assert.match(childSource, /aliases:\n    - "?\/guides\/install\/reference\//);

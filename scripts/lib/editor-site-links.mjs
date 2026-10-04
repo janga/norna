@@ -44,7 +44,7 @@ export const readEditorLinkState = async ({ siteRoot, sources = new Map() }) => 
 		return { contentFile, data, document };
 	}));
 	let publicFiles = [];
-	try { publicFiles = await getSitePublicFiles(path.join(siteRoot, 'public')); }
+	try { publicFiles = await getSitePublicFiles(path.join(siteRoot, 'public'), settings); }
 	catch (error) { incomplete.push(error.message); }
 	const generatedRoutes = getGeneratedSiteRoutes({ searchEnabled: settings?.search });
 	const graph = createSiteLinkGraph({ siteUrl: settings?.url, siteStructure: structure, pageDocuments, publicFiles, generatedRoutes, attachments: await getSiteAttachments(structure) });

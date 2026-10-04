@@ -1,9 +1,9 @@
 import { lstat, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { getSiteNodePathname } from './site-page-urls.mjs';
-import { getReservedPublicEntries } from './public-path-policy.mjs';
+import { attachmentPublicationPath, publicationIssues } from './publication-paths.mjs';
 
-export const attachmentPathname = (pagePathname, filename) => `${pagePathname}downloads/${filename}`;
+export const attachmentPathname = attachmentPublicationPath;
 export const encodeAttachmentPath = value => value.split('/').map(segment => encodeURIComponent(segment).replace(/[()']/g, char => '%' + char.charCodeAt(0).toString(16))).join('/');
 export const validateAttachmentName = name => {
 	if (typeof name !== 'string' || !name || name !== name.trim() || /[\\/\x00-\x1f\x7f<>:"|?*#%]/.test(name) || /^\.{1,2}$/.test(name) || /[. ]$/.test(name)) throw new Error('Use one filename without slashes, URL punctuation or trailing dots/spaces.');
@@ -55,19 +55,5 @@ export const resolveAttachment = (target, sourcePathname, files, resolvedPathnam
 };
 export const attachmentHref = (file, target) => encodeAttachmentPath(file.pathname) + (target.match(/[?#].*$/)?.[0] ?? '');
 
-export const attachmentOutputIssues = ({ files, pages, publicFiles, generatedRoutes }) => {
-	const outputs = [
-		...pages.flatMap(page => [page.pathname, ...(page.aliases ?? [])].map(route => route + 'index.html')),
-		...publicFiles.map(file => file.pathname),
-		...generatedRoutes.map(route => route.pathname.endsWith('/') ? route.pathname + 'index.html' : route.pathname),
-	];
-	const key = value => value.normalize('NFC').toLowerCase();
-	const overlaps = (a, b) => a === b || a.startsWith(b + '/') || b.startsWith(a + '/');
-	return files.flatMap((file, index) => {
-		const pathname = key(file.pathname);
-		const collision = [...outputs, ...files.slice(0, index).map(entry => entry.pathname)].find(output => overlaps(pathname, key(output)));
-		const reserved = getReservedPublicEntries(true).find(entry => pathname.split('/')[1] === entry.filename);
-		if (!collision && !reserved) return [];
-		return [{ severity: 'error', code: 'attachment-output-collision', message: `Attachment ${file.pathname} conflicts with ${collision ?? reserved.filename}.`, fix: 'Rename the attachment or change the conflicting page/public path.' }];
-	});
-};
+export const attachmentOutputIssues = ({ files, pages, publicFiles, generatedRoutes }) =>
+	publicationIssues({ attachments: files, pages, publicFiles, generatedRoutes });

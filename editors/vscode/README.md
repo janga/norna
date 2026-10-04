@@ -20,7 +20,10 @@ including independent site-resource ownership in the engine's editing tree.
 Full URLs copied with **Copy Link** participate in reference discovery and
 rename/move updates when they match the selected site's configured URL,
 including its scheme, host, port and deployment prefix. Short internal paths
-omit that prefix. The project engine owns these rules.
+omit that prefix. The project engine owns these rules. Resource addresses use its reserved
+`/_norna/` areas; `public/` accepts supported technical files and shared images.
+Use page-owned `downloads/` for documents and `public/images/` for shared
+pictures. The engine validates names and locations before editor operations.
 
 ## Features
 
