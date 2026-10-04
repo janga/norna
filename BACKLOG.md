@@ -131,6 +131,44 @@ implementation. They enter `Now` or `Next` after their open decisions are settle
   **Needs evidence and decision.** Test whether a small syntax change or
   shorthand would materially reduce migration work across source systems.
 
+### Vanliga HTML-konstruktioner
+
+These separate design items were requested on 2026-10-04 following
+[BL-161's authoring audit](docs/design/common-html-authoring-audit.md).
+They cover reader needs often addressed with HTML in Markdown. Existing
+syntax may be retained when it gives a clear authoring experience, as with
+Details. Each item settles its own syntax, presentation and Examples entry;
+creating these briefs does not approve implementation. The discussion order
+below is proposed within this group and preserves the priorities above.
+
+- [`BL-167` Keyboard Keys](docs/design/backlog/BL-167-keyboard-keys.md):
+  **Needs decision.** Present keys and keyboard shortcuts consistently in instructions.
+- [`BL-168` Definition Lists](docs/design/backlog/BL-168-definition-lists.md):
+  **Needs decision.** Pair terms or parameters with readable explanations.
+- [`BL-169` Abbreviations And Glossaries](docs/design/backlog/BL-169-abbreviations-and-glossaries.md):
+  **Needs decision.** Explain unfamiliar terms where readers encounter them.
+- [`BL-172` Download Lists](docs/design/backlog/BL-172-download-lists.md):
+  **Needs decision; coordinate with BL-160.** Show one coherent download menu on a page
+  with several downloadable files.
+- [`BL-171` Button Links](docs/design/backlog/BL-171-button-links.md):
+  **Needs decision.** Give prominent links such as Download or Get started a consistent
+  button presentation.
+- [`BL-170` Subscript Superscript And Highlighted Text](docs/design/backlog/BL-170-subscript-superscript-highlighted-text.md):
+  **Needs decision.** Support small text distinctions such as H₂O, m² and highlighted
+  passages.
+- [`BL-173` Video And Audio](docs/design/backlog/BL-173-video-and-audio.md):
+  **Needs evidence and decision.** Present instructional recordings with usable playback
+  and supporting text.
+- [`BL-174` Embedded Content](docs/design/backlog/BL-174-embedded-content.md):
+  **Needs evidence and decision.** Integrate external players, maps or demonstrations
+  through a bounded authoring model.
+- [`BL-175` Advanced Tables](docs/design/backlog/BL-175-advanced-tables.md):
+  **Needs evidence and decision.** Support table structures beyond GFM when real data
+  requires merged cells or grouped headings.
+- [`BL-176` Content Columns](docs/design/backlog/BL-176-content-columns.md):
+  **Needs evidence and decision.** Place related content side by side while preserving
+  reading order on narrow screens.
+
 ### HTML Publication Boundary
 
 - [`BL-163` Author HTML Publication Boundary](docs/design/backlog/BL-163-author-html-publication-boundary.md):

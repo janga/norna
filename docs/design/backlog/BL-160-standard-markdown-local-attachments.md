@@ -47,6 +47,11 @@ Use the existing `downloads/` model and shared engine rules as the baseline.
 Do not broaden this item into remote-file importing, custom viewers, file
 conversion, shared-resource repair or language/version variants.
 
+[BL-172 Download Lists](BL-172-download-lists.md) separately covers a coherent
+download menu for several files on a page. Coordinate link targets and
+open/download behavior here; selection, metadata, order and menu presentation
+belong to BL-172.
+
 ## Decisions Made
 
 - The owner requested a separate investigation analogous to BL-159.

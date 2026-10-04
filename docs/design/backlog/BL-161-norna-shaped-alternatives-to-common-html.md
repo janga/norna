@@ -12,6 +12,13 @@ evidence and recommends current constructs where they serve readers better.
 No new syntax follows from the evidence. The owner asked for an investigation,
 not a ban on HTML or automatic approval to add syntax.
 
+On 2026-10-04 the owner requested separate feature briefs, now grouped under
+[Vanliga HTML-konstruktioner](../../../BACKLOG.md#vanliga-html-konstruktioner).
+BL-167 through BL-176 carry their individual design questions, including the
+new download-menu request. This completed investigation remains their evidence
+baseline. Details is now demonstrated under Norna extensions in Examples;
+the former HTML in Markdown section in Examples has been removed.
+
 ## Scope And Boundaries
 
 Inventory common HTML patterns in Markdown content, establish what Norna and
