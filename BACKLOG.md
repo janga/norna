@@ -16,7 +16,9 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-No item is currently scheduled here.
+- [BL-177 Publication Path Ownership And Collision Checks](docs/design/backlog/BL-177-publication-path-ownership.md):
+  **Ready; implementation approved.** Give published resources reserved URL areas
+  and restrict public sources through shared build and editor validation.
 
 ## Next
 
@@ -105,6 +107,10 @@ These items have no approved implementation position yet. Move one into `Now`,
 
 These owner-selected items are ordered for design discussion, not yet for
 implementation. They enter `Now` or `Next` after their open decisions are settled.
+
+- [BL-178 Managed Shared Images](docs/design/backlog/BL-178-managed-shared-images.md):
+  **Needs design; follows BL-177.** Process shared site images with content hashes
+  and usage tracking after agreeing reference syntax and the first consumers.
 
 - ★ [`BL-050` Source-Backed Code Excerpts](docs/design/backlog/BL-050-source-backed-code.md):
   **Needs design.** Include checked source-file regions in documentation
