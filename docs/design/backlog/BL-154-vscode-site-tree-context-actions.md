@@ -151,3 +151,34 @@ The owner handles any remaining review after commit. Update the
 extension README, canonical editor reference and relevant engine documentation
 with delivered behavior. Run directly affected checks; this item alone does
 not require a full release test run.
+
+## Copy Link And Reference Updates — 2026-10-04
+
+Owner review found that a URL copied with Copy Link was treated as external,
+even when it identified a file in the same configured site. Rename/move and
+References therefore missed it. The shared link graph now recognizes full
+HTTP/HTTPS URLs to known local destinations within the configured scheme,
+host, port and deployment prefix. A matching prefix alone does not establish
+ownership: other sites can be built independently beneath it. Unknown full
+URLs retain their external-link behavior.
+CLI checks, editor references, resource actions and page moves use this rule.
+Updates preserve the full URL form, suffixes, titles and shared definitions.
+
+Relative links keep their existing meaning. `review/created-here/note.txt`
+resolves beneath the current page; the short path for
+`public/created-here/note.txt` is `/created-here/note.txt`. A different origin,
+preview port or path outside the site's deployment prefix stays external.
+
+This engine change uses the existing extension API. Reload the VS Code window
+to load it; no new VSIX is required for extension 0.15.0. The maintained
+acceptance fixture now includes a full Copy Link URL beside the short form.
+The owner's active test copy and unsaved page edits are preserved.
+
+Verification: the failing Copy Link regression passes after the fix. The
+shared link-graph suite (including CLI parity), 18 resource/attachment tests,
+page-move suite and seven extension resource-action adapter tests pass.
+A read-only plan against the owner's test site updates the exact reported
+absolute URL and leaves the differently resolved relative URL unchanged.
+Native review remains with the owner. The documentation suite stops at its
+existing seven-page Examples assertion after the owner's separate Complete
+sites move; this correction does not change that navigation layout.

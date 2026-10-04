@@ -258,7 +258,7 @@ const getReferenceIntent = ({
 	const sourceMapping = mappingByCurrentPathname.get(reference.sourcePage.pathname);
 	if (!sourceMapping || sourceMapping.oldPathname === sourceMapping.currentPathname) return currentIntent;
 
-	const oldTarget = resolveInternalTarget(reference.targetSource, sourceMapping.oldPathname);
+	const oldTarget = resolveInternalTarget(reference.targetSource, sourceMapping.oldPathname, graph.siteUrl);
 	const oldIntent = getTargetIntent({
 		graph,
 		movedCurrentToNew,
@@ -311,7 +311,7 @@ const createReferenceChanges = ({ graph, mappings }) => {
 		const sourcePathname = movedCurrentToNew.get(reference.sourcePage.pathname)
 			?? reference.sourcePage.pathname;
 		const originalTarget = intent.kind === 'attachment' ? reference.sourceTarget ?? reference.targetSource : reference.targetSource;
-		const resolvedAfterMove = resolveInternalTarget(originalTarget, sourcePathname);
+		const resolvedAfterMove = resolveInternalTarget(originalTarget, sourcePathname, graph.siteUrl);
 		const stillResolves = intent.kind === 'attachment' ? (localAttachmentName(originalTarget) === intent.filename && sourcePathname === intent.owner || resolvedAfterMove.pathname === intent.lookupPathname) : resolvedAfterMove.kind === 'internal'
 			&& (intent.kind === 'public-file'
 				? resolvedAfterMove.pathname === intent.lookupPathname
@@ -324,7 +324,7 @@ const createReferenceChanges = ({ graph, mappings }) => {
 			);
 		}
 
-		const value = `${intent.kind === 'attachment' ? encodeAttachmentPath(intent.lookupPathname) : intent.lookupPathname}${getTargetSuffix(reference.targetSource)}`;
+		const value = `${reference.target.absolutePrefix ?? ''}${intent.kind === 'attachment' ? encodeAttachmentPath(intent.lookupPathname) : intent.lookupPathname}${getTargetSuffix(reference.targetSource)}`;
 		const key = `${reference.sourceContentFile.contentPath}:${reference.targetRange.start}:${reference.targetRange.end}`;
 		const existing = changeKeys.get(key);
 		if (existing && existing.to !== value) {
@@ -590,6 +590,7 @@ export const createPageMovePlan = async ({
 		return { ...file, ownerPathname: mapping.newPathname, pathname: attachmentPathname(mapping.newPathname, file.filename) };
 	}) };
 	const virtualGraph = createSiteLinkGraph({
+		siteUrl: graph.siteUrl,
 		attachments: virtualAttachments,
 		pageDocuments: virtualPageDocuments,
 		publicFiles,

@@ -12,6 +12,7 @@ import {
 	toPosixPath,
 } from './site-content.mjs';
 import {
+	siteDir as defaultSiteDir,
 	sitePagesLabel,
 	sitePublicDir,
 	sitePublicLabel,
@@ -19,6 +20,8 @@ import {
 import { getSiteNodePathname } from './site-page-urls.mjs';
 import { getSiteStructure } from './site-structure.mjs';
 import { createCategoryDestinationModel } from './category-destinations.mjs';
+import { parseYamlConfig } from './yaml-config.mjs';
+import { configSchema } from './schema-definitions.mjs';
 
 const internalUrlOrigin = 'https://norna.invalid';
 const externalSchemePattern = /^[a-z][a-z0-9+.-]*:/i;
@@ -69,32 +72,47 @@ const getPageLookupPathname = (pathname) => {
 
 const isExternalTarget = (target) => target.startsWith('//') || externalSchemePattern.test(target);
 
-export const resolveInternalTarget = (target, sourcePathname) => {
-	if (isExternalTarget(target)) return { kind: 'external' };
+export const resolveInternalTarget = (target, sourcePathname, siteUrl) => {
+	const absolute = isExternalTarget(target);
+	if (absolute && (!siteUrl || !/^(?:https?:)?\/\//i.test(target))) return { kind: 'external' };
 
 	let url;
+	let siteBase;
 	try {
-		url = new URL(target, `${internalUrlOrigin}${sourcePathname}`);
+		siteBase = absolute ? new URL(siteUrl) : null;
+		url = new URL(target, siteBase ?? `${internalUrlOrigin}${sourcePathname}`);
 	} catch {
+		if (absolute) return { kind: 'external' };
 		return {
 			kind: 'invalid',
 			reason: 'The target is not a valid relative or site-relative URL.',
 		};
 	}
 
-	if (url.origin !== internalUrlOrigin) return { kind: 'external' };
+	if (url.origin !== (siteBase?.origin ?? internalUrlOrigin) || url.username || url.password) return { kind: 'external' };
 
 	try {
-		const pathname = decodePathname(url.pathname);
+		let pathname = decodePathname(url.pathname);
+		let absolutePrefix;
+		if (siteBase) {
+			const encodedBase = siteBase.pathname.replace(/\/?$/, '/');
+			const base = decodePathname(encodedBase);
+			if (pathname === base.slice(0, -1)) pathname = '/';
+			else if (pathname.startsWith(base)) pathname = '/' + pathname.slice(base.length);
+			else return { kind: 'external' };
+			absolutePrefix = (target.startsWith('//') ? `//${url.host}` : url.origin) + encodedBase.slice(0, -1);
+		}
 		const fragment = url.hash.length > 1 ? decodeFragment(url.hash.slice(1)) : '';
 		return {
 			kind: 'internal',
+			...(absolutePrefix ? { absolutePrefix } : {}),
 			fragment,
 			pageLookupPathname: getPageLookupPathname(pathname),
 			pathname,
 			query: url.search,
 		};
 	} catch (error) {
+		if (absolute) return { kind: 'external' };
 		return {
 			kind: 'invalid',
 			reason: error instanceof Error ? error.message : String(error),
@@ -147,6 +165,7 @@ const looksLikePublicFile = (pathname) => {
 };
 
 export const createSiteLinkGraph = ({
+	siteUrl,
 	siteStructure,
 	pageDocuments,
 	publicFiles = [],
@@ -200,8 +219,19 @@ export const createSiteLinkGraph = ({
 
 	for (const page of pages) {
 		for (const sourceReference of page.document.links) {
-			const target = resolveInternalTarget(sourceReference.target, page.pathname);
+			const target = resolveInternalTarget(sourceReference.target, page.pathname, siteUrl);
 			if (target.kind === 'external') continue;
+			const attachment = target.kind === 'internal'
+				? resolveAttachment(sourceReference.target, page.pathname, attachments.files, target.pathname) : null;
+			// One origin/base path may also host independently built sites. Only
+			// adopt absolute URLs whose destination this source tree actually owns.
+			if (target.absolutePrefix && !attachment
+				&& !pagesByPathname.has(target.pageLookupPathname)
+				&& !aliasModel.aliasesByPathname.has(target.pageLookupPathname)
+				&& !publicFilesByPathname.has(target.pathname)
+				&& !categoriesByPathname.has(target.pageLookupPathname)
+				&& !generatedRoutesByPathname.has(target.pathname)
+				&& !generatedRoutesByPathname.has(target.pageLookupPathname)) continue;
 
 			const reference = {
 				...sourceReference,
@@ -226,7 +256,6 @@ export const createSiteLinkGraph = ({
 			if (!referencesByTarget.has(targetKey)) referencesByTarget.set(targetKey, []);
 			referencesByTarget.get(targetKey).push(reference);
 
-			const attachment = resolveAttachment(sourceReference.target, page.pathname, attachments.files, target.pathname);
 			const localAttachment = parseLocalAttachmentTarget(sourceReference.target);
 			if (attachment) {
 				const ambiguous = localAttachment?.prefix === '' && (publicFilesByPathname.has(target.pathname) || pagesByPathname.has(target.pageLookupPathname) || aliasModel.aliasesByPathname.has(target.pageLookupPathname));
@@ -355,6 +384,7 @@ export const createSiteLinkGraph = ({
 	}
 
 	return {
+		siteUrl,
 		attachments,
 		categoryModel,
 		aliasModel,
@@ -371,7 +401,10 @@ export const createSiteLinkGraph = ({
 };
 
 export const getSiteLinkGraph = async (options = {}) => {
-	const siteStructure = options.siteStructure ?? await getSiteStructure();
+	const siteRoot = options.siteRoot ?? defaultSiteDir;
+	const siteStructure = options.siteStructure ?? await getSiteStructure({ siteRoot });
+	const settingsPath = path.join(siteRoot, 'site-config/settings.yaml');
+	const settings = parseYamlConfig(await readFile(settingsPath, 'utf8'), settingsPath, { schema: configSchema });
 	const [pageDocuments, publicFiles] = await Promise.all([
 		Promise.all(siteStructure.contentFiles.map(async (contentFile) => {
 			const source = await readFile(contentFile.contentPath, 'utf8');
@@ -382,10 +415,11 @@ export const getSiteLinkGraph = async (options = {}) => {
 				document: await parsePageMarkdownSource(source, { label: contentFile.contentLabel }),
 			};
 		})),
-		readPublicFiles(options.publicDir ?? sitePublicDir),
+		readPublicFiles(options.publicDir ?? path.join(siteRoot, 'public')),
 	]);
 
 	return createSiteLinkGraph({
+		siteUrl: settings.url,
 		pageDocuments,
 		publicFiles,
 		siteStructure,

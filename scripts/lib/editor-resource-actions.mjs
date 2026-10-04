@@ -146,7 +146,7 @@ export const planEditorResourceRename = async ({ siteRoot, filePath, name, desti
 			const filename = ref.sourceContentFile.contentPath;
 			if (!bySource.has(filename)) bySource.set(filename, { original: ref.sourcePage.document.fullSource, edits: new Map() });
 			const local = parseLocalAttachmentTarget(ref.sourceTarget);
-			const href = local ? local.prefix + encodeAttachmentPath(name) + (ref.targetSource.match(/[?#].*$/)?.[0] ?? '') : attachmentHref(updated, ref.targetSource);
+			const href = local ? local.prefix + encodeAttachmentPath(name) + (ref.targetSource.match(/[?#].*$/)?.[0] ?? '') : (ref.target.absolutePrefix ?? '') + attachmentHref(updated, ref.targetSource);
 			bySource.get(filename).edits.set(ref.targetRange.start, { ...ref.targetRange, text: ref.yamlScalar ? JSON.stringify(href) : href });
 		}
 		for (const [sourcePath, { original, edits }] of bySource) { await checkedPath(siteRoot, sourcePath); changes.push({ sourcePath, original, updated: applyText(original, [...edits.values()]) }); }
@@ -165,7 +165,7 @@ export const planEditorResourceRename = async ({ siteRoot, filePath, name, desti
 			const suffix = ref.targetSource.match(/[?#].*$/)?.[0] ?? '';
 			const filename = ref.sourceContentFile.contentPath;
 			if (!bySource.has(filename)) bySource.set(filename, { original: ref.sourcePage.document.fullSource, edits: new Map() });
-			bySource.get(filename).edits.set(ref.targetRange.start, { ...ref.targetRange, text: encodePath(target) + suffix });
+			bySource.get(filename).edits.set(ref.targetRange.start, { ...ref.targetRange, text: (ref.target.absolutePrefix ?? '') + encodePath(target) + suffix });
 		}
 		for (const [sourcePath, { original, edits }] of bySource) { await checkedPath(siteRoot, sourcePath); changes.push({ sourcePath, original, updated: applyText(original, [...edits.values()]) }); }
 	}

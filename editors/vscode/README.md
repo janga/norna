@@ -17,6 +17,11 @@ appears only in recognized Norna files.
 Extension 0.9.0 supports the `root/` source layout and schema version 6,
 including independent site-resource ownership in the engine's editing tree.
 
+Full URLs copied with **Copy Link** participate in reference discovery and
+rename/move updates when they match the selected site's configured URL,
+including its scheme, host, port and deployment prefix. Short internal paths
+omit that prefix. The project engine owns these rules.
+
 ## Features
 
 - A dedicated Norna view with readable page names and their actual

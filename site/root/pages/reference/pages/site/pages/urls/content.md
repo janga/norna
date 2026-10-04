@@ -66,6 +66,27 @@ For `site/public/downloads/checklist.pdf`, write:
 Norna checks that the file exists, but not anchors inside PDFs or other public
 files. External URLs are not fetched by the local link checker.
 
+Full HTTP/HTTPS URLs to known pages and files in this source tree are also
+checked and followed when pages or files are renamed or moved. The scheme,
+host, port and deployment prefix must match `url` in `site-config/settings.yaml`. **Copy Link** in Site
+Tree produces this form. A full URL stays full when Norna updates its target;
+link text, titles, queries and fragments are retained. URLs outside that site
+remain external, including old domains and other local preview ports.
+An absolute URL with no locally owned destination also stays external: the
+same server may host other, independently built sites. Short internal links
+still report missing destinations.
+
+For the same public file, these identify the same destination when the site
+URL is `https://example.com/manual/`:
+
+```md title="Short and complete addresses"
+[Checklist](/downloads/checklist.pdf)
+[Checklist](https://example.com/manual/downloads/checklist.pdf)
+```
+
+`manual/downloads/checklist.pdf` is a different, relative destination beneath
+the current page. Do not add the deployment prefix to a short internal link.
+
 ## Keep an old URL
 
 An **alias** is an additional address owned by one current page. Add it at the

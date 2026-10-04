@@ -469,6 +469,7 @@ for (const context of contentFileContexts) {
 }
 
 const siteLinkGraph = createSiteLinkGraph({
+	siteUrl: projectConfig.site.url,
 	attachments: await getSiteAttachments(siteStructure),
 	pageDocuments: contentFileContexts.map(({ contentFile, frontmatterData, page }) => ({
 		contentFile,

@@ -120,6 +120,22 @@ test('a deeper page move keeps local source paths and shared definitions while u
  assert.match(await readFile(f.home, 'utf8'), /\/parent\/guide\/downloads\/checklist.pdf#page=2/);
  assert.deepEqual((await f.state()).graph.diagnostics, []);
 });
+test('same-site absolute attachment links follow rename and page moves alongside page links', async t => {
+ const f = await fixture(t);
+ const source = '# Home\n\n[File](https://example.com/manual/guide/downloads/checklist.pdf?view=1#part "Keep title")\n\n[Page](https://example.com/manual/guide/)\n';
+ await f.write('root/content.md', source);
+ const rename = await planEditorResourceRename({siteRoot: f.root, filePath: f.pdf, name: 'renamed.pdf'});
+ assert.ok(rename.changes.find(change => change.sourcePath === f.home).updated.includes('https://example.com/manual/guide/downloads/renamed.pdf?view=1#part "Keep title"'));
+ const state = await f.state();
+ const plan = await createPageMovePlan({ from: '/guide/', to: '/renamed/', graph: state.graph, publicFiles: state.publicFiles, siteStructure: state.structure, sitePagesDir: path.join(f.root, 'root/pages'), sitePagesLabel: 'site/root/pages', generatedRoutes: state.generatedRoutes });
+ const home = plan.fileChanges.find(change => change.originalPath === f.home).updatedSource;
+ assert.ok(home.includes('https://example.com/manual/renamed/downloads/checklist.pdf?view=1#part "Keep title"'));
+ assert.ok(home.includes('[Page](https://example.com/manual/renamed/)'));
+ await applyPageMovePlan(plan, {siteRoot: f.root, generatedRoutes: state.generatedRoutes});
+ assert.deepEqual((await f.state()).graph.diagnostics, []);
+ assert.equal(await readFile(f.home, 'utf8'), home);
+});
+
 test('build renders local card and Markdown attachment URLs with the deployment prefix', async t => {
  const engineRoot = new URL('../', import.meta.url);
  const cache = new URL('../node_modules/.cache/', import.meta.url);

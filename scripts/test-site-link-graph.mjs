@@ -199,6 +199,31 @@ assert.deepEqual(resolveInternalTarget('/guides/installation/', '/docs/current/'
 });
 
 const crlfSource = '# CRLF\r\n\r\n[Install](/guides/installation/)\r\n';
+const siteUrl = 'https://example.com/manual/';
+assert.deepEqual(resolveInternalTarget('https://example.com/manual/guides/installation/?view=1#verify', '/elsewhere/', siteUrl), {
+	kind: 'internal', absolutePrefix: 'https://example.com/manual', fragment: 'verify',
+	pageLookupPathname: '/guides/installation/', pathname: '/guides/installation/', query: '?view=1',
+});
+assert.equal(resolveInternalTarget('//example.com/manual/guides/installation/', '/', siteUrl).absolutePrefix, '//example.com/manual');
+assert.equal(resolveInternalTarget(siteUrl, '/', siteUrl).pathname, '/');
+assert.equal(resolveInternalTarget('https://example.com/manual', '/', siteUrl).pathname, '/');
+assert.equal(resolveInternalTarget('https://example.com/guides/', '/', 'https://example.com/').pathname, '/guides/');
+for (const target of [
+	'https://other.example/manual/guides/', 'https://example.com:8443/manual/guides/',
+	'http://example.com/manual/guides/', 'https://example.com/manual-copy/guides/',
+	'https://example.com/guides/', 'https://user@example.com/manual/guides/', 'mailto:author@example.com',
+]) assert.equal(resolveInternalTarget(target, '/', siteUrl).kind, 'external', target);
+assert.equal(resolveInternalTarget('https://example.com/manual/bad%2Fpath/', '/', siteUrl).kind, 'external');
+assert.equal(resolveInternalTarget('manual/created-here/note.txt', '/guide/', siteUrl).pathname, '/guide/manual/created-here/note.txt');
+
+const absoluteGraph = createSiteLinkGraph({
+	siteUrl,
+	pageDocuments: [{ contentFile: home, document: await parsePageMarkdownSource('# Home\n\n[Missing anchor](https://example.com/manual/#missing)\n[Another build](https://example.com/manual/separate-site/)\n[External](https://example.com/outside/)\n') }],
+	siteStructure: { nodes: [home], categories: [], contentFiles: [home] },
+});
+assert.deepEqual(absoluteGraph.diagnostics.map(issue => issue.code), ['missing-internal-anchor']);
+assert.equal(absoluteGraph.references.length, 1, 'A separately built destination under the same prefix is not owned by this source tree');
+
 const crlfDocument = await parsePageMarkdownSource(crlfSource);
 assert.equal(
 	crlfSource.slice(crlfDocument.links[0].targetRange.start, crlfDocument.links[0].targetRange.end),
@@ -326,11 +351,15 @@ try {
 	assert.doesNotMatch(output, /category-has-no-url/);
 	assert.match(output, /no matching file exists under site\/public\//);
 	assert.match(output, /Internal link "\/broken%ZZ\/" on line 7 is invalid/);
+	await writeFixtureFile(tempRoot, 'site/root/content.md', '# Home\n\n[Missing absolute anchor](https://example.com/docs/#missing)\n');
+	const absoluteCheck = spawnSync(process.execPath, [contentScript, '--check'], { cwd: tempRoot, encoding: 'utf8' });
+	assert.equal(absoluteCheck.status, 1);
+	assert.match(absoluteCheck.stdout + absoluteCheck.stderr, /Internal link "https:\/\/example.com\/docs\/#missing".*missing heading anchor "#missing"/);
 } finally {
 	await rm(tempRoot, { force: true, recursive: true });
 }
 
 const repositoryGraph = await getSiteLinkGraph();
-assert.deepEqual(repositoryGraph.diagnostics, []);
+assert.deepEqual(repositoryGraph.diagnostics.map(({ code, message }) => ({ code, message })), []);
 
 console.log('Site link graph tests passed.');

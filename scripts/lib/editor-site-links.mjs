@@ -47,7 +47,7 @@ export const readEditorLinkState = async ({ siteRoot, sources = new Map() }) => 
 	try { publicFiles = await getSitePublicFiles(path.join(siteRoot, 'public')); }
 	catch (error) { incomplete.push(error.message); }
 	const generatedRoutes = getGeneratedSiteRoutes({ searchEnabled: settings?.search });
-	const graph = createSiteLinkGraph({ siteStructure: structure, pageDocuments, publicFiles, generatedRoutes, attachments: await getSiteAttachments(structure) });
+	const graph = createSiteLinkGraph({ siteUrl: settings?.url, siteStructure: structure, pageDocuments, publicFiles, generatedRoutes, attachments: await getSiteAttachments(structure) });
 	// Missing destinations do not make reference discovery incomplete. Ambiguous
 	// ownership of an address does, and must never be presented as a clean check.
 	incomplete.push(...graph.diagnostics.filter((entry) => (!entry.reference || entry.code === 'ambiguous-attachment') && entry.severity === 'error').map(({ message }) => message));

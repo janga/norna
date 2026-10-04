@@ -5,6 +5,7 @@ import path from 'node:path';
 import { test } from 'node:test';
 import { planEditorResourceRename, planEditorPublicCreation, planEditorFolderRemoval, getEditorResourceReferences, getEditorResourceAddress } from './lib/editor-resource-actions.mjs';
 import { readSiteFileTree } from './lib/editor-site-tree.mjs';
+import { readEditorLinkState } from './lib/editor-site-links.mjs';
 
 const fixture = async t => {
 	const siteRoot = await mkdtemp(path.join(os.tmpdir(), 'norna-resource-actions-'));
@@ -66,6 +67,37 @@ test('public rename/move rewrites Markdown and card links, definitions, suffixes
 	await assert.rejects(planEditorResourceRename({ siteRoot, filePath: path.join(siteRoot, 'public'), name: 'other' }), /fixed name/);
 	await assert.rejects(planEditorResourceRename({ siteRoot, filePath: path.dirname(filePath), name: 'nested', destinationDirectory: path.dirname(filePath) }), /inside itself/);
 	await assert.rejects(planEditorResourceRename({ siteRoot, filePath, name: 'guide.pdf', destinationDirectory: path.join(siteRoot, 'root') }), /inside public/);
+});
+
+test('copied same-site URLs participate in public file moves without guessing other destinations', async t => {
+	const { siteRoot, page, write } = await fixture(t);
+	const filePath = await write('public/created-here/note.txt', 'Original bytes');
+	await write('public/destination/keep.txt', 'Keep destination');
+	const copied = await getEditorResourceAddress({ siteRoot, filePath });
+	const untouched = [
+		'[Relative](manual/created-here/note.txt)',
+		'[Other site](https://other.example/manual/created-here/note.txt)',
+		'[Outside base](https://example.com/created-here/note.txt)',
+		'[Similar base](https://example.com/manual-copy/created-here/note.txt)',
+	];
+	const source = ['# Guide', '', `[Copied](${copied}?view=1#part "Keep title")`,
+		'[First][note]', '[Second][note]', '', `[note]: ${copied} "Definition title"`,
+		...untouched, '', 'Unsaved prose.', ''].join('\r\n');
+	const options = { siteRoot, sources: new Map([[page, source]]) };
+	const state = await readEditorLinkState(options);
+	assert.equal(state.graph.diagnostics.length, 1, 'The incorrectly relative link remains a missing target');
+	assert.equal(state.graph.diagnostics[0].reference.target.pathname, '/guide/manual/created-here/note.txt');
+	assert.equal((await getEditorResourceReferences({ ...options, filePath })).references.length, 3);
+	const plan = await planEditorResourceRename({ ...options, filePath, name: 'renamed note.txt', destinationDirectory: path.join(siteRoot, 'public/destination') });
+	assert.equal(plan.changes.length, 1);
+	const updated = plan.changes[0].updated;
+	assert.ok(updated.includes('[Copied](https://example.com/manual/destination/renamed%20note.txt?view=1#part "Keep title")'));
+	assert.ok(updated.includes('[note]: https://example.com/manual/destination/renamed%20note.txt "Definition title"'));
+	assert.equal((updated.match(/renamed%20note.txt/g) ?? []).length, 2, 'Definition is edited only once');
+	for (const line of untouched) assert.ok(updated.includes(line));
+	assert.ok(updated.endsWith('\r\nUnsaved prose.\r\n'));
+	assert.equal(updated.replaceAll('\r\n', '').includes('\n'), false);
+	assert.equal(await readFile(page, 'utf8'), '# Guide\n', 'Planning does not save dirty buffers');
 });
 
 test('public creation checks generated paths, page and alias output, conventions and physical collisions', async t => {

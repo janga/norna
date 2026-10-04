@@ -32,7 +32,7 @@ const assertSourcesUnchanged = async (plan) => {
 
 const assertFinalSite = async (siteRoot, generatedRoutes) => {
 	const structure = await getSiteStructure({ siteRoot });
-	const graph = await getSiteLinkGraph({ siteStructure: structure, publicDir: path.join(siteRoot, 'public'), generatedRoutes });
+	const graph = await getSiteLinkGraph({ siteRoot, siteStructure: structure, publicDir: path.join(siteRoot, 'public'), generatedRoutes });
 	const errors = graph.diagnostics.filter(({ severity }) => severity === 'error');
 	if (errors.length === 0) return;
 	throw new Error([

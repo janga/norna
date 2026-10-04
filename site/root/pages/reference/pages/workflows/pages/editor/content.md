@@ -442,7 +442,10 @@ sends the original to Trash. Import and rename never silently overwrite files.
 The extension checks generated paths, page addresses and logo conventions.
 
 Renaming or moving updates known Markdown and Norna-block links in page
-content, including unsaved text. Configuration, raw HTML and external links
+content, including unsaved text and full URLs within the configured site.
+Links copied with **Copy Link** participate in these updates; see
+[URL matching rules](/reference/site/urls/#relative-links-and-files).
+Configuration, raw HTML and external links
 are not rewritten. The confirmation describes this boundary and any effect
 on automatic logo/icon discovery. Updated page buffers remain unsaved; save
 them before publishing. Editor Undo does not reverse the whole resource
