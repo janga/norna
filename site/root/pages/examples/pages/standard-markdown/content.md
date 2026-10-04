@@ -298,6 +298,8 @@ inside text keep their position; a linked image follows its authored link.
 
 Markdown also allows an optional title:
 
+![A brown circle above two short lines](images/circle.svg "A simple visual composition")
+
 ```md
 ![A brown circle above two short lines](images/circle.svg "A simple visual composition")
 ```
