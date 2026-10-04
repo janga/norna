@@ -12,10 +12,16 @@ met.
 
 ## Current Status
 
-**In progress: experimental VSIX evaluation.** On 2026-09-14 the user chose
-continued everyday editing with manually installed VSIX builds before deciding
-whether to publish in the Visual Studio Marketplace. Publication is not the
-only remaining acceptance step and is not required for this evaluation phase.
+**Practical VSIX evaluation approved on 2026-10-04 at 14:21 CEST; public
+distribution remains open.** The owner approved the everyday IntelliSense
+workflow after the manual VSIX evaluation begun on 2026-09-14. This records
+product acceptance of that workflow; it does not claim a new run of every
+manual scenario or approve later features awaiting their own review.
+
+The complete item still includes the public installation/update channel and
+the public-support criteria below. No public artifact or Marketplace release
+is established by this approval. Marketplace publication requires a separate
+explicit decision.
 
 The current implementation has packaged-extension tests in minimum supported
 and current VS Code, including actual suggestion-widget selection, negative
@@ -31,10 +37,13 @@ availability, automatic updates, or complete IntelliSense coverage.
 Related implementation and tests remain under BL-108: Standard And Uniform
 Content Syntax, BL-109: Context-Relevant IntelliSense Tests, and BL-110:
 Context-Scoped Completion Priority. Those items are complete and committed
-together as a compatible engine/extension combination; practical VSIX
-evaluation remains open here.
+together as a compatible engine/extension combination. The practical VSIX
+evaluation is now approved; reported regressions still receive focused fixes.
 
-## Next Step: Practical VSIX Evaluation
+## Practical VSIX Evaluation — Approved
+
+The owner accepted this phase on 2026-10-04. These remain the installation and
+regression-review practices for later builds:
 
 - Use the extension during ordinary authoring, not only in a dedicated test
   profile. Record relevant enabled extensions when a problem occurs.
@@ -52,9 +61,10 @@ evaluation remains open here.
 - Keep canonical documentation aligned with observed behavior and explicit
   limitations. Do not wait for Marketplace publication to document the
   evaluation workflow.
-- Keep the item open until the user considers the practical editing workflow
-  reliable. Marketplace publication requires a separate explicit decision;
-  elapsed time or passing automated tests alone does not authorize it.
+- Record later feature-specific review separately. This approval does not
+  close the pending reviews for BL-159 Managed Local Markdown Images,
+  BL-160 Standard Markdown For Local Attachments or BL-166 Page Order In
+  Frontmatter, or establish results for unperformed manual checks.
 
 If external testers are invited, a versioned VSIX attached to a GitHub
 pre-release is a possible distribution path. No such published artifact is

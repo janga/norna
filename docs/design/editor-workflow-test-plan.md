@@ -15,6 +15,16 @@ and save again. Saving a clean document twice is insufficient because save
 participants may not run. Preserve line endings and all text outside the
 intentional edit. Also verify that an unchanged save is harmless.
 
+## BL-030 Everyday IntelliSense Approval
+
+On 2026-10-04 at 14:21 CEST the owner approved the practical IntelliSense/VSIX
+evaluation in **BL-030 Production-ready IntelliSense**. This closes its
+everyday-editing acceptance step. Public distribution remains open in that
+item, and Marketplace publication requires a separate explicit decision.
+
+The approval does not claim a new run of individual test cases or close the
+separate feature reviews below, including BL-159, BL-160 and BL-166.
+
 ## BL-159 Managed Markdown Image Review
 
 Development extension 0.15.0 uses the updated engine's Markdown image handling.

@@ -52,9 +52,9 @@ action, practical user evaluation, or another user-owned prerequisite. They do
 not block `Now` or `Next`.
 
 - [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
-  **In progress: experimental VSIX evaluation.** Continue everyday editing with
-  identifiable manual updates and regression tests for reported failures;
-  Marketplace publication requires a later explicit decision.
+  **Practical VSIX evaluation approved 2026-10-04; public distribution remains.**
+  Settle and deliver the public installation/update channel; Marketplace
+  publication requires a separate explicit decision.
 - ★ [`BL-027` Editor Link Diagnostics](docs/design/backlog/BL-027-editor-link-diagnostics.md):
   **Prioritized; ready after `BL-030` Production-ready IntelliSense.** Show
   broken internal destinations and Go to Definition in the VS Code extension
