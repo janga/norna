@@ -276,7 +276,10 @@ Use **Add > Add Attachments…** on a page to copy files into its `downloads/`
 folder. The batch form offers **Import and insert link**, **Import** and
 **Ignore**, with editable filenames/link text and ordering. It inserts at the
 owning page's captured cursor or appends when that page was not active.
-Single links use ordinary Markdown; multiple links form a list.
+Single links use ordinary Markdown; multiple links form a list. The current
+development engine inserts `downloads/filename` so the path also works in
+ordinary Markdown tools. It recognizes that form, `./downloads/filename` and
+the filename shorthand for usage and rename, including reference definitions.
 
 Name collisions show the existing and incoming file's type, size and filesystem
 modification date. Replacement requires confirmation and moves the previous

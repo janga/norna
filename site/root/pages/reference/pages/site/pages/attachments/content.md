@@ -18,15 +18,34 @@ site/root/pages/guide/
     `-- checklist.pdf
 ```
 
-In that page, link using the filename:
+In that page, prefer the relative path to the actual file:
 
 ```md title="Guide's content.md"
-[Download the checklist](checklist.pdf)
+[Open the checklist](downloads/checklist.pdf)
 ```
 
-This link refers only to Guide's `downloads/`. Another page may have its own
+Norna also accepts `./downloads/checklist.pdf` and the `checklist.pdf` shorthand.
+The explicit relative paths work in ordinary Markdown tools; VS Code's Norna
+insertion action uses `downloads/filename` with a compatible project engine.
+
+These forms refer only to Guide's `downloads/`. Another page may have its own
 `checklist.pdf`; Norna never substitutes that file if Guide's copy is missing.
 The same shorthand works in a [card's `link` field](/reference/content/cards/).
+
+Inline links and full, collapsed and shortcut reference links are supported.
+A reference definition can appear in another section of the same page:
+
+```md title="Guide's content.md: reference-style links"
+[Open the checklist][checklist]
+[checklist][]
+[checklist]
+
+[checklist]: downloads/checklist.pdf "A short checklist before publishing"
+```
+
+The optional title stays on the link; visible text and title do not control
+whether the browser opens or downloads the file. Try the
+[working example](/examples/standard-markdown/#local-files).
 
 ## Share an attachment
 
@@ -42,8 +61,8 @@ rendered link. Home's attachments live in `site/root/downloads/` and use
 `/downloads/filename` when linked from other pages. Sharing does not copy a file.
 
 Spaces and Unicode are supported. Enclose a Markdown destination containing
-spaces in angle brackets, for example `[Report](<annual report.pdf>)`.
-Queries and fragments, such as `checklist.pdf#page=2`, are retained.
+spaces in angle brackets, for example `[Report](<downloads/annual report.pdf>)`.
+Queries and fragments, such as `downloads/checklist.pdf#page=2`, are retained.
 
 ## Move or replace files
 
@@ -54,7 +73,9 @@ the page. Old external attachment links are not redirected.
 Replacing a file under the same name preserves its address. In the
 [VS Code attachment workflow](/reference/workflows/editor/#add-and-use-page-attachments),
 Rename updates known page-content references and Replace sends the previous
-file to Trash. Save edited references before publishing. Moving Markdown text
+file to Trash. Rename preserves the local path form, optional titles, queries
+and fragments; shared reference definitions are updated once.
+Save edited references before publishing. Moving Markdown text
 alone does not move an attachment or preserve its former owner.
 
 ## Supported files

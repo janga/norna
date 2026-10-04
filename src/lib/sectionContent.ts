@@ -12,6 +12,9 @@ import { applyBasePathToHtml } from './basePath';
 import type { SitePage } from './sitePages';
 import { splitMarkdownImages, renderNestedMarkdownImages } from './markdownImages';
 import { nornaMarkdownImagePlugin } from '../../scripts/lib/norna-markdown-render-plugin.mjs';
+import { rewriteAttachmentLinks } from '../../scripts/lib/attachment-render.mjs';
+import { siteDir } from '../../scripts/lib/site-paths.mjs';
+import { pathToFileURL } from 'node:url';
 
 type ManagedImage = {
 	image: string;
@@ -157,8 +160,10 @@ const renderHeadingTitleHtml = async (headingSource: string, page: SitePage) => 
 		.replace(/\n[ \t]*(?:=+|-+)[ \t]*$/, '')
 		.replace(explicitHeadingIdRegex, '')
 		.trim();
-	const definitions = [...new Set(page.markdownDocument.markdownImages.map((image) => image.definitionSource).filter(Boolean))].join('\n');
-	const result = await markdownToHtml(`${headingMarkdown}\n\n${definitions}`, {
+	const references = [...page.markdownDocument.markdownImages, ...page.markdownDocument.links];
+	const definitions = [...new Set(references.map((reference) => reference.definitionSource).filter(Boolean))].join('\n');
+	const source = await rewriteAttachmentLinks(`${headingMarkdown}\n\n${definitions}`, pathToFileURL(page.contentPath), siteDir);
+	const result = await markdownToHtml(source, {
 		mdastPlugins: [nornaMarkdownImagePlugin],
 		features: {
 			gfm: true,

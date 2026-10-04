@@ -3,7 +3,7 @@ import path from 'node:path';
 import { markdownToMdast } from 'satteri';
 import { checkedPath, snapshot } from './editor-site-files.mjs';
 import { readEditorLinkState } from './editor-site-links.mjs';
-import { attachmentPathname, attachmentOutputIssues, validateAttachmentName } from './page-attachments.mjs';
+import { attachmentPathname, attachmentOutputIssues, validateAttachmentName, encodeAttachmentPath } from './page-attachments.mjs';
 
 export const siteAttachmentsApiVersion = 1;
 const info = filename => lstat(filename).catch(error => { if (error.code === 'ENOENT') return null; throw error; });
@@ -51,7 +51,7 @@ export const createEditorAttachmentInsertion = ({ source, items, offset = source
 		validateAttachmentName(item.filename);
 		if (typeof item.text !== 'string' || !item.text.trim() || /[\r\n]/.test(item.text)) throw new Error('Enter link text on one line for each inserted attachment.');
 		const text = item.text.replace(/[\\`*_[\]<>]/g, '\\$&');
-		const href = encodeURIComponent(item.filename).replace(/[()']/g, char => '%' + char.charCodeAt(0).toString(16));
+		const href = `downloads/${encodeAttachmentPath(item.filename)}`;
 		return `[${text}](${href})`;
 	});
 	const multiple = links.length > 1;

@@ -1,4 +1,4 @@
-import { getSiteAttachments, resolveAttachment, localAttachmentName, attachmentOutputIssues } from './page-attachments.mjs';
+import { getSiteAttachments, resolveAttachment, parseLocalAttachmentTarget, attachmentOutputIssues } from './page-attachments.mjs';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
@@ -205,6 +205,7 @@ export const createSiteLinkGraph = ({
 
 			const reference = {
 				...sourceReference,
+				sourceTarget: sourceReference.target,
 				sourceContentFile: page.contentFile,
 				sourcePage: page,
 				target,
@@ -226,8 +227,9 @@ export const createSiteLinkGraph = ({
 			referencesByTarget.get(targetKey).push(reference);
 
 			const attachment = resolveAttachment(sourceReference.target, page.pathname, attachments.files, target.pathname);
+			const localAttachment = parseLocalAttachmentTarget(sourceReference.target);
 			if (attachment) {
-				const ambiguous = localAttachmentName(sourceReference.target) && (publicFilesByPathname.has(target.pathname) || pagesByPathname.has(target.pageLookupPathname) || aliasModel.aliasesByPathname.has(target.pageLookupPathname));
+				const ambiguous = localAttachment?.prefix === '' && (publicFilesByPathname.has(target.pathname) || pagesByPathname.has(target.pageLookupPathname) || aliasModel.aliasesByPathname.has(target.pageLookupPathname));
 				if (ambiguous) {
 					reference.resolution = { kind: 'ambiguous-attachment' };
 					diagnostics.push(createIssue(reference, 'ambiguous-attachment', `Link "${sourceReference.target}" could identify a page/public file or a local attachment.`, `Use ${attachment.pathname} for the attachment or an explicit site-relative page/public link.`));
@@ -235,6 +237,12 @@ export const createSiteLinkGraph = ({
 				continue;
 			}
 
+			if (localAttachment?.prefix) {
+				const expectedPath = path.join(path.dirname(page.contentFile.contentPath), 'downloads', localAttachment.filename);
+				reference.resolution = { kind: 'missing-attachment', pathname: target.pathname };
+				diagnostics.push(createIssue(reference, 'missing-attachment', `Attachment "${sourceReference.target}" was not found at ${toPosixPath(expectedPath)}.`, 'Add the file to this page’s downloads/ folder or correct the link.'));
+				continue;
+			}
 
 			const targetPage = target.pageLookupPathname
 				? pagesByPathname.get(target.pageLookupPathname)

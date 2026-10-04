@@ -640,7 +640,8 @@ appended to the owning page, never to a different active page.
 For each file, keep **Import and insert link**, choose **Import** to copy
 without a link, or **Ignore** to skip it. Edit the destination filename and
 link text; use **Move up** and **Move down** to order inserted links. One file
-produces a Markdown link; several produce a bullet list. File type, size and
+produces a Markdown link to `downloads/filename`; several produce a bullet
+list. Filenames are URL-encoded when needed. File type, size and
 Modified describe the source file on disk, not a publication date.
 
 A name collision shows **Existing file** and **New file** for comparison.
@@ -656,7 +657,9 @@ while the form is open, reopen the form at the intended position. The extension
 refuses insertion inside code, links, tables, HTML or page settings.
 
 An existing attachment offers **Insert Link in Page…**, **Rename…**, **Replace…**,
-**References**, **Copy Link** and **Delete…**. Rename updates known references;
+**References**, **Copy Link** and **Delete…**. Rename updates known references,
+including shared Markdown definitions, while preserving local path forms,
+titles, queries and fragments.
 Replace preserves its address. Deletion reports known incoming links but does
 not remove those links. A failed import lists copied files and recovery work;
 check that report before retrying. Restore a replaced original from Trash when

@@ -12,17 +12,19 @@ how the site is organized, presented and published.
 
 ## Page attachments {#page-attachments}
 
-[Download the visit checklist](visit-checklist.txt).
+[Open the visit checklist](downloads/visit-checklist.txt).
 
 ````md
-[Download the visit checklist](visit-checklist.txt).
+[Open the visit checklist](downloads/visit-checklist.txt).
 ````
 
 **Source:** An ordinary Markdown link to a file in this page's `downloads/`
-directory. The file is published unchanged.
+directory. The file is published unchanged; the browser decides whether to
+open it or download it. [Standard Markdown](/examples/standard-markdown/#local-files)
+introduces the link syntax.
 
 ```text
-050-building-a-site/
+building-a-site/
 |-- content.md
 `-- downloads/
     `-- visit-checklist.txt

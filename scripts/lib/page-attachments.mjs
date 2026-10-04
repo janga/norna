@@ -4,7 +4,7 @@ import { getSiteNodePathname } from './site-page-urls.mjs';
 import { getReservedPublicEntries } from './public-path-policy.mjs';
 
 export const attachmentPathname = (pagePathname, filename) => `${pagePathname}downloads/${filename}`;
-export const encodeAttachmentPath = value => value.split('/').map(encodeURIComponent).join('/');
+export const encodeAttachmentPath = value => value.split('/').map(segment => encodeURIComponent(segment).replace(/[()']/g, char => '%' + char.charCodeAt(0).toString(16))).join('/');
 export const validateAttachmentName = name => {
 	if (typeof name !== 'string' || !name || name !== name.trim() || /[\\/\x00-\x1f\x7f<>:"|?*#%]/.test(name) || /^\.{1,2}$/.test(name) || /[. ]$/.test(name)) throw new Error('Use one filename without slashes, URL punctuation or trailing dots/spaces.');
 	return name;
@@ -35,14 +35,19 @@ export const getSiteAttachments = async siteStructure => {
 	return { files: results.flatMap(result => result.files), diagnostics: results.flatMap(result => result.diagnostics) };
 };
 
-// A bare target is local shorthand only when it identifies an attachment.
-// Other existing page/public links retain their meaning; the graph diagnoses
-// shorthand which would refer to both instead of silently choosing one.
-export const localAttachmentName = target => {
+// Explicit downloads paths identify page-owned files. Bare names retain the
+// existing shorthand rules, including ambiguity with page/public links.
+export const parseLocalAttachmentTarget = target => {
 	const raw = target.split(/[?#]/, 1)[0];
-	if (!raw || raw.includes('/') || /^[a-z][a-z\d+.-]*:/i.test(raw)) return null;
-	try { const name = decodeURIComponent(raw); validateAttachmentName(name); return name; } catch { return null; }
+	if (!raw || /^[a-z][a-z\d+.-]*:/i.test(raw)) return null;
+	const prefix = raw.match(/^(?:\.\/)?downloads\//)?.[0] ?? '';
+	try {
+		const filename = decodeURIComponent(raw.slice(prefix.length));
+		validateAttachmentName(filename);
+		return { filename, prefix };
+	} catch { return null; }
 };
+export const localAttachmentName = target => parseLocalAttachmentTarget(target)?.filename ?? null;
 export const resolveAttachment = (target, sourcePathname, files, resolvedPathname) => {
 	const name = localAttachmentName(target);
 	return name ? files.find(file => file.ownerPathname === sourcePathname && file.filename === name)

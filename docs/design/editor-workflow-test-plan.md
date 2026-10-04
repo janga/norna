@@ -34,6 +34,29 @@ Owner review remains pending under the agreed VSIX workflow:
   Exercise text Undo; it does not undo the complete file rename transaction.
 - Move the page and verify its Markdown images still render.
 
+## BL-160 Standard Markdown Attachment Review
+
+The updated engine uses the existing attachment API in development extension
+**0.15.0**; no new VSIX is needed. Reload the VS Code window before reviewing.
+Focused engine and adapter tests cover local path forms, shared definitions,
+titles, dirty buffers, ownership errors, removal and moves. These checks do
+not establish native Undo or save/reopen behavior.
+
+Owner review remains pending under the agreed workflow:
+
+- Import one attachment with **Import and insert link**, then use **Insert Link
+  in Page…** on an existing file. Confirm that both insert
+  `[text](downloads/filename)` at the intended position. Try several files and
+  verify the resulting list. Exercise text Undo, then save, close and reopen.
+- Link to one file using `downloads/name.pdf`, `./downloads/name.pdf`, the bare
+  filename and a shared reference definition. Include an optional title.
+  Rename the attachment while the page has unsaved prose. Confirm that each
+  prefix, the title and unsaved text survive, and the definition changes once.
+  Exercise text Undo separately from the file rename, then redo, save and
+  reopen. Text Undo does not undo the complete filesystem transaction.
+- Review **References** and deletion for a file used only by a reference
+  definition. Cancel deletion. Move the owning page and check the live links.
+
 ## Automated Scenarios
 
 | Scenario | Required evidence |

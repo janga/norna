@@ -16,10 +16,7 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- ★ [`BL-160` Standard Markdown For Local Attachments](docs/design/backlog/BL-160-standard-markdown-local-attachments.md):
-  **Ready; implementation authorized.** Recommend `downloads/file.pdf`, support
-  both relative forms and the filename shorthand, and preserve ordinary browser
-  handling across rendering, editing and a working Standard Markdown example.
+No item is currently scheduled here.
 
 ## Next
 

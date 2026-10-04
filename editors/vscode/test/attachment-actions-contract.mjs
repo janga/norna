@@ -28,7 +28,7 @@ test('one form imports a batch, preserves dirty prose and inserts only chosen li
  const f=await setup(t),doc=await f.document(f.home);doc.set('# Home\n\nUnsaved text\n');f.vscode.window.activeTextEditor={document:doc,selection:{active:8}};
  const a=await f.write('inputs/a.txt','A'),b=await f.write('inputs/b.zip','B');f.open.push([f.vscode.Uri.file(a),f.vscode.Uri.file(b)]);await f.run('addAttachments');assert.match(f.form.placement,/at cursor/);assert.ok(f.form.rows[0].sourceInfo.modified>0);
  const rows=f.form.rows.map((row,i)=>({...row,action:i?'import':'insert'}));assert.equal((await f.callbacks.preview(rows)).blocked,false);assert.equal(await f.callbacks.apply(rows),true);
- assert.equal(await readFile(path.join(f.root,'root/downloads/a.txt'),'utf8'),'A');assert.equal(await readFile(path.join(f.root,'root/downloads/b.zip'),'utf8'),'B');assert.match(doc.getText(),/\[a.txt\]\(a.txt\)Unsaved text/);assert.doesNotMatch(doc.getText(),/b.zip/);assert.equal(await readFile(f.home,'utf8'),'# Home\n\nText\n');
+ assert.equal(await readFile(path.join(f.root,'root/downloads/a.txt'),'utf8'),'A');assert.equal(await readFile(path.join(f.root,'root/downloads/b.zip'),'utf8'),'B');assert.match(doc.getText(),/\[a.txt\]\(downloads\/a.txt\)Unsaved text/);assert.doesNotMatch(doc.getText(),/b.zip/);assert.equal(await readFile(f.home,'utf8'),'# Home\n\nText\n');
 });
 test('initial replacement is preselected; a changed colliding filename requires an active choice',async t=>{
  const f=await setup(t);await f.write('site/root/downloads/a.txt','old A');await f.write('site/root/downloads/b.txt','old B');const incoming=await f.write('inputs/a.txt','new');f.open.push([f.vscode.Uri.file(incoming)]);await f.run('addAttachments');const [row]=f.form.rows;
@@ -49,6 +49,6 @@ test('failed replacement keeps the old bytes in Trash and gives a locked, accura
 });
 test('insertion targets owning page even with a different active editor; form script is valid and metadata escaped',async t=>{
  const f=await setup(t),file=await f.write('site/root/downloads/image.svg','<svg/>');f.vscode.window.activeTextEditor={document:{uri:{fsPath:'/another/content.md'}},selection:{active:0}};
- await f.run('insertAttachment',{kind:'file',title:'image.svg',sourcePath:file});assert.match(f.form.placement,/at end/);await f.callbacks.apply(f.form.rows);assert.match((await f.document(f.home)).getText(),/\[image.svg\]\(image.svg\)/);
+ await f.run('insertAttachment',{kind:'file',title:'image.svg',sourcePath:file});assert.match(f.form.placement,/at end/);await f.callbacks.apply(f.form.rows);assert.match((await f.document(f.home)).getText(),/\[image.svg\]\(downloads\/image.svg\)/);
  const html=attachmentFormHtml({...f.form,title:'<script>bad</script>'},'nonce');assert.ok(!html.includes('<h1>Insert attachment link: <script>'));const script=html.match(/<script nonce="nonce">([\s\S]*)<\/script>/)[1];new Function(script);
 });

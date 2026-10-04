@@ -310,8 +310,9 @@ const createReferenceChanges = ({ graph, mappings }) => {
 
 		const sourcePathname = movedCurrentToNew.get(reference.sourcePage.pathname)
 			?? reference.sourcePage.pathname;
-		const resolvedAfterMove = resolveInternalTarget(reference.targetSource, sourcePathname);
-		const stillResolves = intent.kind === 'attachment' ? (localAttachmentName(reference.targetSource) === intent.filename && sourcePathname === intent.owner || resolvedAfterMove.pathname === intent.lookupPathname) : resolvedAfterMove.kind === 'internal'
+		const originalTarget = intent.kind === 'attachment' ? reference.sourceTarget ?? reference.targetSource : reference.targetSource;
+		const resolvedAfterMove = resolveInternalTarget(originalTarget, sourcePathname);
+		const stillResolves = intent.kind === 'attachment' ? (localAttachmentName(originalTarget) === intent.filename && sourcePathname === intent.owner || resolvedAfterMove.pathname === intent.lookupPathname) : resolvedAfterMove.kind === 'internal'
 			&& (intent.kind === 'public-file'
 				? resolvedAfterMove.pathname === intent.lookupPathname
 				: resolvedAfterMove.pageLookupPathname === intent.lookupPathname);

@@ -129,6 +129,7 @@ export const extractMarkdownLinks = ({ source, tree, lineOffset = 0 }) => {
 			kind: 'markdown-reference-link',
 			column: node.position?.start.column ?? 1,
 			definitionLine: lineOffset + (definition.position?.start.line ?? 1),
+			definitionSource: source.slice(definition.position.start.offset, definition.position.end.offset),
 			line: lineOffset + (node.position?.start.line ?? 1),
 			range: getNodeRange(node),
 			target: definition.url ?? '',

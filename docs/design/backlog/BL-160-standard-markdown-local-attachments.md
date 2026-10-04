@@ -5,7 +5,8 @@
 Let authors link to page-owned files using ordinary Markdown, with predictable
 file management and clear beginner guidance.
 
-**Status: Ready; implementation authorized 2026-10-04.** Requested on 2026-10-02
+**Status: Implemented 2026-10-04; native VS Code review remains with the owner.**
+Requested on 2026-10-02
 as the attachment counterpart to
 [BL-159 Managed Local Markdown Images](BL-159-managed-local-markdown-images.md).
 The owner approved the following decisions on 2026-10-04.
@@ -89,14 +90,53 @@ advanced path forms in the reference. BL-172 owns the multi-file download menu.
 - Update Standard Markdown, attachment and editor guidance, and verify actual
   published destinations, unchanged attachment bytes and a non-root base path.
 
-## Existing Gaps Identified
+## Gaps Addressed
 
-The link graph already resolves source-relative downloads paths as URLs.
-Rendering preparation recognizes only the bare local filename, editor
-insertion emits that shorthand, and rename turns a source-relative downloads
-path into a site-relative URL. These consumers need one local-target model.
-The standard attachment test currently covers inline shorthand and explicit
-sharing, but needs coverage for reference definitions and all local forms.
+The link graph already resolved source-relative downloads paths as URLs, but
+rendering preparation recognized only the bare filename, editor insertion
+emitted that shorthand, and rename converted relative paths into site-relative
+URLs. These consumers now share one local-target parser. Rename retains the
+author's prefix and updates a shared definition once. Page moves preserve
+working local paths, including escaped filenames.
+
+Heading rendering now includes link definitions from the complete page and
+rewrites local attachments, so reference links and filename shorthand work in
+headings too. Explicit local paths report a missing page-owned file instead
+of falling back to public files or another page's attachment.
+
+The engine inserts `downloads/filename` through the existing editor API.
+The current development extension **0.15.0** needs no runtime change or new
+VSIX; reload the VS Code window to load the updated engine.
+
+Standard Markdown now includes a real publishing checklist, a working link
+and matching source. Attachment, Markdown and editor references describe the
+accepted forms, rename behavior, optional titles and browser-controlled file
+handling.
+
+## Verification
+
+Verified on 2026-10-04:
+
+- The link-graph suite and 21 focused attachment, resource-action and VS Code
+  adapter tests passed. Coverage includes all three local forms, inline/full/
+  collapsed/shortcut references, titles, shared definitions across sections,
+  missing-file ownership errors, dirty CRLF source, Unicode/spaces, removal,
+  rename and page movement.
+- The page-move and page-Markdown suites passed. After adding escaped-filename
+  preservation, the page-move suite and focused deeper-move case passed again.
+- Attachment build coverage verified heading, list, quote and card contexts,
+  non-root deployment URLs, unchanged file bytes and no forced download.
+  The existing complete Markdown-image build test also passed after the
+  shared heading-rendering change.
+- Documentation checks and an isolated documentation build passed.
+- The Local files example was inspected at the registered compact viewport.
+  A browser with JavaScript disabled followed the real link under `/norna/`
+  and received the original checklist bytes with HTTP 200. The link retained
+  its title and had no forced-download attribute.
+
+Native insertion, Undo and dirty save/reopen checks remain for the owner;
+automated adapter checks do not establish those results. See the
+[editor review scenarios](../editor-workflow-test-plan.md#bl-160-standard-markdown-attachment-review).
 
 ## Dependencies
 

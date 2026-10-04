@@ -1,4 +1,4 @@
-import { attachmentHref, attachmentPathname, attachmentOutputIssues, localAttachmentName, encodeAttachmentPath } from './page-attachments.mjs';
+import { attachmentHref, attachmentPathname, attachmentOutputIssues, parseLocalAttachmentTarget, encodeAttachmentPath } from './page-attachments.mjs';
 import { lstat, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseDocument, isScalar, isSeq } from 'yaml';
@@ -145,7 +145,8 @@ export const planEditorResourceRename = async ({ siteRoot, filePath, name, desti
 			if (!ref.targetRange) throw new Error('Cannot safely locate this attachment reference. No files changed.');
 			const filename = ref.sourceContentFile.contentPath;
 			if (!bySource.has(filename)) bySource.set(filename, { original: ref.sourcePage.document.fullSource, edits: new Map() });
-			const href = localAttachmentName(ref.targetSource) ? encodeURIComponent(name) + (ref.targetSource.match(/[?#].*$/)?.[0] ?? '') : attachmentHref(updated, ref.targetSource);
+			const local = parseLocalAttachmentTarget(ref.sourceTarget);
+			const href = local ? local.prefix + encodeAttachmentPath(name) + (ref.targetSource.match(/[?#].*$/)?.[0] ?? '') : attachmentHref(updated, ref.targetSource);
 			bySource.get(filename).edits.set(ref.targetRange.start, { ...ref.targetRange, text: ref.yamlScalar ? JSON.stringify(href) : href });
 		}
 		for (const [sourcePath, { original, edits }] of bySource) { await checkedPath(siteRoot, sourcePath); changes.push({ sourcePath, original, updated: applyText(original, [...edits.values()]) }); }

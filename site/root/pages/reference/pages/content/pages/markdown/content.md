@@ -85,6 +85,21 @@ does not define a support contract for arbitrary elements, classes or scripts.
 A build can publish scripts written in `content.md`, so review contributed
 HTML before publishing it.
 
+## Local file links
+
+Use an ordinary Markdown link to a file in the page's `downloads/` directory:
+
+```md
+[Open the checklist](downloads/checklist.pdf "Before publishing")
+```
+
+Inline and reference-style links receive the same file management. Norna
+also accepts `./downloads/checklist.pdf` and the `checklist.pdf` shorthand.
+The browser decides whether the file opens or downloads; the link's text and
+optional title do not force downloading. See the
+[working example](/examples/standard-markdown/#local-files) and
+[attachment reference](/reference/site/attachments/) for ownership and sharing.
+
 ## Markdown images
 
 ```md title="content.md: an image owned by this page"

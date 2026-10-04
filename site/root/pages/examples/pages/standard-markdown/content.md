@@ -189,6 +189,35 @@ Read [Getting started][guide] before your first build.
 The label connects the reference to its definition. The optional title may be
 shown by a browser on hover; it does not replace clear link text.
 
+## Local files
+
+Put a file in the page's `downloads/` folder, beside `content.md`:
+
+```text
+content.md
+downloads/
+  publishing-checklist.txt
+```
+
+[Open the publishing checklist](downloads/publishing-checklist.txt "A short checklist before publishing")
+
+```md
+[Open the publishing checklist](downloads/publishing-checklist.txt "A short checklist before publishing")
+```
+
+**Source:** Standard Markdown. The link text tells the reader what to expect;
+the path points to the actual file. The optional title adds information that
+some browsers show on hover. Reference-style links work here too.
+
+Norna checks the link, publishes the file unchanged and keeps it with the page
+when the page moves. Renaming the attachment in Site Tree updates known links.
+The browser decides whether to open the file or download it. Writing
+"Download" in the link text does not force a download.
+
+See [page attachments](/reference/site/attachments/) for other accepted paths,
+links from another page and filename rules. Files in `public/` and external
+URLs follow their own [file-link rules](/examples/external-images-and-files/).
+
 ## Code within a sentence {#inline-code}
 
 Edit `content.md` and save the file.

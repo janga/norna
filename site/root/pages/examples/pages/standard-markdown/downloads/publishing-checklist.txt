@@ -1,0 +1,7 @@
+Publishing checklist
+
+- Preview the pages you changed at wide and narrow screen widths.
+- Check headings, link text and image alternatives.
+- Open links to local files and confirm that they reach the intended file.
+- Run Norna's content checks and build the site.
+- Review the result before publishing.

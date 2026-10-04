@@ -13,6 +13,8 @@ import { planEditorResourceRename, planEditorFolderRemoval } from './lib/editor-
 import { readSiteFileTree } from './lib/editor-site-tree.mjs';
 import { createPageMovePlan } from './lib/page-move-plan.mjs';
 import { applyPageMovePlan } from './lib/page-move-apply.mjs';
+import { parsePageMarkdownSource } from './lib/page-markdown.mjs';
+import { parseFragment } from 'parse5';
 const fixture=async t=>{
  const temp=await mkdtemp(path.join(os.tmpdir(),'norna-attachments-'));t.after(()=>rm(temp,{recursive:true,force:true}));const root=path.join(temp,'site');
  const write=async(name,text)=>{const file=path.join(root,name);await mkdir(path.dirname(file),{recursive:true});await writeFile(file,text);return file;};
@@ -42,7 +44,7 @@ test('empty images/downloads disappear while page retains Add; folder removal re
  const plan=await planEditorFolderRemoval({siteRoot:f.root,directory:path.dirname(f.pdf)});assert.equal(plan.files,2);assert.equal(plan.usage.references.length,3);
 });
 test('insertion escapes text, respects CRLF and rejects code/frontmatter positions',()=>{
- const items=[{filename:'räkningar ett.zip',text:'A [file]'}];const source='# Home\r\n\r\nText';assert.match(createEditorAttachmentInsertion({source,items}).text,/\[A \\\[file\\\]\]\(r%C3%A4kningar%20ett.zip\)/);
+ const items=[{filename:'räkningar ett.zip',text:'A [file]'}];const source='# Home\r\n\r\nText';assert.match(createEditorAttachmentInsertion({source,items}).text,/\[A \\\[file\\\]\]\(downloads\/r%C3%A4kningar%20ett.zip\)/);
  assert.throws(()=>createEditorAttachmentInsertion({source:'# Home\n\n```js\ncode\n```\n',offset:15,items}),/ordinary page text/);
  const batch=createEditorAttachmentInsertion({source,items:[...items,{filename:'next.txt',text:'Next'}]});assert.match(batch.text,/\r\n- \[Next\]/);
 });
@@ -50,6 +52,73 @@ test('moving a page carries attachments and updates sharing while retaining loca
  const f=await fixture(t),state=await f.state();const plan=await createPageMovePlan({from:'/guide/',to:'/renamed/',graph:state.graph,publicFiles:state.publicFiles,siteStructure:state.structure,sitePagesDir:path.join(f.root,'root/pages'),sitePagesLabel:'site/root/pages',generatedRoutes:state.generatedRoutes});
  assert.match(plan.fileChanges.find(change=>change.originalPath===f.home).updatedSource,/\/renamed\/downloads\/checklist.pdf#page=2/);
  await applyPageMovePlan(plan,{siteRoot:f.root,generatedRoutes:state.generatedRoutes});const after=await f.state();assert.equal(after.graph.diagnostics.length,0);assert.equal(after.graph.attachments.files.length,3);
+});
+
+test('all local attachment paths and reference forms retain ownership, titles and editable ranges', async t => {
+ const f = await fixture(t);
+ const source = ['---', 'page:', '  description: Attachment forms', '---', '# Guide', '',
+  '[Explicit](downloads/checklist.pdf?view=1#page=2 "Inline title")',
+  '[Dotted](./downloads/checklist.pdf)', '[Short](checklist.pdf)',
+  '[Full][checklist]', '[checklist][]', '[checklist]',
+  '[Unicode](<./downloads/räkningar ett.zip> "Unicode title")', '',
+  '## Later definitions', '', '[checklist]: downloads/checklist.pdf "Reference title"',
+  '[checklist]: ignored.pdf', '', '`[Example](downloads/ignored.pdf)`',
+  '[Public](/public.pdf)', '[External](https://example.org/checklist.pdf)', '',
+ ].join('\r\n');
+ await f.write('root/pages/guide/content.md', source);
+ await f.write('public/public.pdf', 'Public file');
+ const state = await f.state();
+ assert.deepEqual(state.graph.diagnostics, []);
+ const refs = state.graph.references.filter(ref => ref.sourceContentFile.contentPath === f.guide && ref.resolution?.kind === 'attachment');
+ assert.equal(refs.length, 7);
+ assert.ok(refs.every(ref => ref.resolution.file.ownerPathname === '/guide/'));
+ const rendered = await rewriteAttachmentLinks(source, pathToFileURL(f.guide), f.root);
+ assert.ok(rendered.includes('[Explicit](/guide/downloads/checklist.pdf?view=1#page=2 "Inline title")'));
+ assert.ok(rendered.includes('[checklist]: /guide/downloads/checklist.pdf "Reference title"'));
+ assert.ok(rendered.includes('[Unicode](</guide/downloads/r%C3%A4kningar%20ett.zip> "Unicode title")'));
+ assert.ok(rendered.includes('[checklist]: ignored.pdf'));
+ const dirty = source + '\r\nUnsaved prose.\r\n';
+ const plan = await planEditorResourceRename({ siteRoot: f.root, filePath: f.pdf, name: 'ny rapport).pdf', sources: new Map([[f.guide, dirty]]) });
+ const updated = plan.changes.find(change => change.sourcePath === f.guide).updated;
+ assert.ok(updated.includes('[Explicit](downloads/ny%20rapport%29.pdf?view=1#page=2 "Inline title")'));
+ assert.ok(updated.includes('[Dotted](./downloads/ny%20rapport%29.pdf)'));
+ assert.ok(updated.includes('[Short](ny%20rapport%29.pdf)'));
+ assert.ok(updated.includes('[checklist]: downloads/ny%20rapport%29.pdf "Reference title"'));
+ assert.equal((updated.match(/ny%20rapport%29.pdf/g) ?? []).length, 4, 'Shared definition changes once');
+ assert.ok(updated.includes('`[Example](downloads/ignored.pdf)`'));
+ assert.ok(updated.includes('[Public](/public.pdf)'));
+ assert.ok(updated.endsWith('\r\nUnsaved prose.\r\n'));
+ assert.equal(updated.replaceAll('\r\n', '').includes('\n'), false);
+ assert.equal((await parsePageMarkdownSource(updated)).links.length, 9);
+ assert.equal(await readFile(f.guide, 'utf8'), source, 'Planning preserves the saved source');
+ const usage = await planEditorFolderRemoval({ siteRoot: f.root, directory: path.dirname(f.pdf) });
+ assert.equal(usage.usage.references.length, 8, 'Seven local uses and one explicit incoming link');
+});
+
+test('missing explicit local attachments cannot resolve to another owner or a public file', async t => {
+ const f = await fixture(t);
+ await f.write('root/downloads/home-only.txt', 'Owned by Home');
+ await f.write('public/guide/downloads/home-only.txt', 'Public file');
+ await f.write('root/pages/guide/content.md', '# Guide\n\n[Missing](downloads/home-only.txt)\n\n[Missing too](./downloads/home-only.txt)\n\n[Public](/guide/downloads/home-only.txt)\n');
+ const state = await f.state();
+ assert.deepEqual(state.graph.diagnostics.map(issue => issue.code), ['missing-attachment', 'missing-attachment']);
+ assert.ok(state.graph.diagnostics.every(issue => issue.message.includes(path.join(f.root, 'root/pages/guide/downloads/home-only.txt'))));
+ assert.equal(state.graph.references.at(-1).resolution.kind, 'public-file');
+});
+
+test('a deeper page move keeps local source paths and shared definitions while updating incoming URLs', async t => {
+ const f = await fixture(t);
+ await f.write('root/pages/parent/content.md', '# Parent\n');
+ await f.write('root/pages/guide/downloads/paren).txt', 'Escaped filename');
+ const local = '[One](downloads/checklist.pdf?x=1#page=2 "Keep title")\n\n[Two](./downloads/checklist.pdf)\n\n[Three](checklist.pdf)\n\n[Four][file]\n\n[file]: ./downloads/checklist.pdf "Shared title"\n\n[Escaped](downloads/paren\\).txt)\n';
+ await f.write('root/pages/guide/content.md', '# Guide\n\n' + local);
+ const state = await f.state();
+ const plan = await createPageMovePlan({ from: '/guide/', to: '/parent/guide/', graph: state.graph, publicFiles: state.publicFiles, siteStructure: state.structure, sitePagesDir: path.join(f.root, 'root/pages'), sitePagesLabel: 'site/root/pages', generatedRoutes: state.generatedRoutes });
+ await applyPageMovePlan(plan, { siteRoot: f.root, generatedRoutes: state.generatedRoutes });
+ assert.ok((await readFile(path.join(f.root, 'root/pages/parent/pages/guide/content.md'), 'utf8')).includes(local));
+ assert.equal(await readFile(path.join(f.root, 'root/pages/parent/pages/guide/downloads/checklist.pdf'), 'utf8'), 'guide PDF');
+ assert.match(await readFile(f.home, 'utf8'), /\/parent\/guide\/downloads\/checklist.pdf#page=2/);
+ assert.deepEqual((await f.state()).graph.diagnostics, []);
 });
 test('build renders local card and Markdown attachment URLs with the deployment prefix', async t => {
  const engineRoot = new URL('../', import.meta.url);
@@ -64,9 +133,21 @@ test('build renders local card and Markdown attachment URLs with the deployment 
  await writeFile(path.join(siteRoot, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/manual/\n');
  await writeFile(path.join(siteRoot, 'root/tree-theme.yaml'), 'preset: documentation\n');
  await writeFile(path.join(siteRoot, 'root/content.md'), '# Home\n');
- await writeFile(path.join(page, 'content.md'), '# Guide\n\n[File](<räkningar ett.txt>)\n\n```card-list\nitems:\n  - title: Download example\n    text: An unchanged source file.\n    link: "räkningar ett.txt?mode=view#part"\n```\n');
+ await writeFile(path.join(page, 'content.md'), ['# Guide', '',
+  '[File](<räkningar ett.txt>)', '', '[Relative](<downloads/räkningar ett.txt> "Inline title")', '',
+  '[Dotted](./downloads/r%C3%A4kningar%20ett.txt?mode=view#part)', '',
+  '[Full][file]', '[file][]', '[file]', '',
+  '> [Quoted](downloads/r%C3%A4kningar%20ett.txt)', '',
+  '- [Listed](./downloads/r%C3%A4kningar%20ett.txt)', '',
+  '[Parenthesis](<downloads/data).txt>)', '',
+  '## Download [Heading][file]', '',
+  '[file]: <./downloads/räkningar ett.txt> "Reference title"', '',
+  '```card-list', 'items:', '  - title: Download example', '    text: An unchanged source file.',
+  '    link: "downloads/räkningar ett.txt?mode=view#part"', '```', '',
+ ].join('\n'));
  const bytes = Buffer.from([0, 1, 127, 128, 255]);
  await writeFile(path.join(page, 'downloads/räkningar ett.txt'), bytes);
+ await writeFile(path.join(page, 'downloads/data).txt'), 'Parenthesis filename');
  await promisify(execFile)(process.execPath, ['bin/norna.mjs', 'build'], {
   cwd: engineRoot, env: { ...process.env, NORNA_SITE_DIR: siteRoot, NORNA_INTERNAL_STATE_DIR: path.join(directory, 'state') },
   timeout: 60_000, maxBuffer: 2_000_000,
@@ -75,4 +156,20 @@ test('build renders local card and Markdown attachment URLs with the deployment 
  assert.ok(html.includes('href="/manual/guide/downloads/r%C3%A4kningar%20ett.txt"'));
  assert.ok(html.includes('href="/manual/guide/downloads/r%C3%A4kningar%20ett.txt?mode=view#part"'));
  assert.deepEqual(await readFile(path.join(directory, 'state/dist/guide/downloads/räkningar ett.txt')), bytes);
+ const links = [];
+ const visit = node => { if (node.tagName === 'a') links.push(node); for (const child of node.childNodes ?? []) visit(child); };
+ visit(parseFragment(html));
+ const text = node => node.value ?? (node.childNodes ?? []).map(text).join('');
+ const attr = (node, name) => node.attrs.find(attr => attr.name === name)?.value;
+ for (const label of ['File', 'Relative', 'Full', 'Quoted', 'Listed', 'Heading']) {
+  const link = links.find(link => text(link) === label);
+  assert.ok(link, label);
+  assert.equal(attr(link, 'href'), '/manual/guide/downloads/r%C3%A4kningar%20ett.txt', label);
+  assert.equal(attr(link, 'download'), undefined, label);
+ }
+ assert.equal(links.filter(link => text(link) === 'file' && attr(link, 'href') === '/manual/guide/downloads/r%C3%A4kningar%20ett.txt').length, 2);
+ assert.equal(attr(links.find(link => text(link) === 'Relative'), 'title'), 'Inline title');
+ assert.equal(attr(links.find(link => text(link) === 'Full'), 'title'), 'Reference title');
+ assert.equal(attr(links.find(link => text(link) === 'Heading'), 'title'), 'Reference title');
+ assert.equal(attr(links.find(link => text(link) === 'Parenthesis'), 'href'), '/manual/guide/downloads/data%29.txt');
 });
