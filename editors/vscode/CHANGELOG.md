@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.15.0
+
+- With the updated project-local engine, ordinary local Markdown images take
+  part in image usage, removal review and rename. Keep their path form and
+  reference definitions when renaming the file.
+- Open a managed Markdown image with Go to Definition, including references
+  to a shared definition within the same page.
+
 ## 0.14.0
 
 - Support frontmatter page order with the updated project-local engine.

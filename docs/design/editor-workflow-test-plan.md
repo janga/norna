@@ -15,6 +15,25 @@ and save again. Saving a clean document twice is insufficient because save
 participants may not run. Preserve line endings and all text outside the
 intentional edit. Also verify that an unchanged save is harmless.
 
+## BL-159 Managed Markdown Image Review
+
+Development extension 0.15.0 uses the updated engine's Markdown image handling.
+Automated checks cover inline/full/collapsed/shortcut references, all three
+accepted path forms, same-page ownership, usage/removal, Go to Definition,
+shared-definition rename, dirty CRLF buffers and page moves. Focused extension
+Markdown and package contracts pass.
+
+Owner review remains pending under the agreed VSIX workflow:
+
+- Use `images/name.jpg`, `./images/name.jpg`, the bare filename and a reference
+  definition. Verify Go to Definition opens the owning page's actual image.
+- Verify an image used only in Markdown is marked used in suggestions and
+  included in removal review.
+- Rename an image while the page has unsaved edits. Check path prefixes,
+  reference definitions, alt text and title, then save, close and reopen.
+  Exercise text Undo; it does not undo the complete file rename transaction.
+- Move the page and verify its Markdown images still render.
+
 ## Automated Scenarios
 
 | Scenario | Required evidence |

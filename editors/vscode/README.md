@@ -211,12 +211,18 @@ together. **Insert Image in Page…** inserts the image into its owning page,
 whose title is shown in the form. It opens one form with a large,
 expandable preview, decorative choice, alternative text and caption. Its
 current filename is shown below the image;
-use **Rename…** on the image row to rename its file and update known image-block
-references. The extension preserves the extension and refuses collisions or
+use **Rename…** on the image row to rename its file and update managed Markdown
+image references and image/card blocks on the owning page. The extension preserves the extension and refuses collisions or
 unresolved references. Text edits retain existing unsaved work and remain
 unsaved until you save them. Editor Undo does not reverse the complete rename.
 Image actions also replace and remove images after showing managed-image
-references. Page
+references, including ordinary Markdown and its reference-style forms.
+Extension 0.15.0 passes the cursor position to the compatible engine for
+Markdown image definitions. Write `![Alternative text](images/name.jpg)` for a local Markdown image; the
+explicit path also works in VS Code’s built-in Markdown preview. Norna accepts
+`./images/name.jpg` and the bare filename too. With a compatible engine,
+Go to Definition resolves these references in the owning page’s images folder.
+The tree’s insertion form still creates an image block with optional caption. Page
 removal includes owned files and descendants; Home is protected. Removal and
 replacement use the operating system's Trash, not editor Undo, and do not
 rewrite references. See the

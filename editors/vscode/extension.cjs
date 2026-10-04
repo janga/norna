@@ -965,6 +965,7 @@ async function activate(context) {
 				const service = await getLanguageService(document.uri.fsPath);
 				const definition = await service?.getImageDefinitionContext({
 					documentPath: document.uri.fsPath,
+					character: position.character,
 					line: position.line,
 					source: document.getText(),
 				});
