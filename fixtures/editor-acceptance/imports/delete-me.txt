@@ -1,0 +1,2 @@
+DISPOSABLE IMPORT
+Import without a link, then delete via Trash.

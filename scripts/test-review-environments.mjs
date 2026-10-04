@@ -48,7 +48,7 @@ const createSite = async (siteDirectory, { title = 'Scratch page' } = {}) => {
 };
 
 try {
-	assert.deepEqual(reviewEnvironmentNames, ['docs', 'presentation', 'navigation', 'presets', 'scratch']);
+	assert.deepEqual(reviewEnvironmentNames, ['docs', 'presentation', 'navigation', 'presets', 'editor', 'scratch']);
 	assert.equal(
 		new Set(Object.values(reviewEnvironments).map(({ port }) => port)).size,
 		reviewEnvironmentNames.length,
@@ -59,7 +59,7 @@ try {
 		reviewEnvironmentNames.length,
 		'Every review target must have a distinct site directory.',
 	);
-	assert.throws(() => getReviewEnvironment('missing'), /Choose one of: docs, presentation, navigation, presets, scratch/);
+	assert.throws(() => getReviewEnvironment('missing'), /Choose one of: docs, presentation, navigation, presets, editor, scratch/);
 
 	const docsEnvironment = await resolveReviewEnvironment('docs', { root: repoRoot });
 	assert.equal(docsEnvironment.url, 'http://127.0.0.1:4321/norna/');

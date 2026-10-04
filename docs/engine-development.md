@@ -178,6 +178,7 @@ has one source directory and one fixed local URL:
 | `presentation` | Presentation review path | `http://127.0.0.1:4322/` |
 | `navigation` | Nested-navigation fixture | `http://127.0.0.1:4323/` |
 | `presets` | Preset baseline fixture | `http://127.0.0.1:4324/` |
+| `editor` | Disposable editor acceptance copy | `http://127.0.0.1:4398/review/` |
 | `scratch` | Disposable copied site | Port `4399`, using the copied site's base path |
 
 Start and manage a target through the same command family:
@@ -262,6 +263,11 @@ npx playwright install chromium
 ```
 
 ## Temporary Review Sites
+
+For the BL-166, BL-159/160 and BL-154–156 owner review, prepare the dedicated
+`editor` copy with `node fixtures/editor-acceptance/prepare.mjs`. Its
+[examples and reset instructions](../fixtures/editor-acceptance/README.md)
+keep mutation tests separate from the general scratch site.
 
 Prepare a disposable copy when a site is needed for one investigation but does
 not belong in the maintained registry:

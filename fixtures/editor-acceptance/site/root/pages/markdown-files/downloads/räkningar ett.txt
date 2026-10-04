@@ -1,0 +1,2 @@
+UNICODE FILENAME
+Spaces and Swedish characters must survive URL encoding.

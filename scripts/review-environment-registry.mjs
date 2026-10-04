@@ -32,6 +32,13 @@ const definitions = {
 		basePath: '/',
 		browserSuites: ['tests/presentation-contract.spec.ts'],
 	},
+	editor: {
+		label: 'Disposable editor acceptance site',
+		siteDirectory: '.local/test-sites/editor-review/site',
+		port: 4398,
+		basePath: '/review/',
+		browserSuites: [],
+	},
 	scratch: {
 		label: 'Temporary scratch site',
 		siteDirectory: '.local/test-sites/scratch/site',

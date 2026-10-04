@@ -1,0 +1,2 @@
+REPLACE ORIGINAL
+Keep these bytes when import/replace is cancelled.

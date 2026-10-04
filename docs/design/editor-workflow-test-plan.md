@@ -5,6 +5,11 @@ real editing, not just activation or completion-provider responses.
 
 ## Acceptance Boundary
 
+The [editor acceptance examples](../../fixtures/editor-acceptance/README.md)
+provide a disposable site for BL-166, BL-159/160 and BL-154–156. Two independent
+groups force renumbering; other pages include actual images, attachments,
+incoming links and import/replacement files. The owner performs native review.
+
 A completion test must accept a suggestion through VS Code's suggestion
 widget and check the inserted text. Calling the provider API only establishes
 that a candidate exists; VS Code can still filter it out.
