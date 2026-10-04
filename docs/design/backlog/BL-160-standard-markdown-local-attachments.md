@@ -2,14 +2,13 @@
 
 ## Purpose
 
-Investigate how ordinary Markdown should let authors link to local files and
-attachments for readers to open or download, with predictable file management
-and clear beginner guidance.
+Let authors link to page-owned files using ordinary Markdown, with predictable
+file management and clear beginner guidance.
 
-**Status: Needs evidence and decision.** Requested on 2026-10-02 as the
-attachment counterpart to
+**Status: Ready; implementation authorized 2026-10-04.** Requested on 2026-10-02
+as the attachment counterpart to
 [BL-159 Managed Local Markdown Images](BL-159-managed-local-markdown-images.md).
-Discuss it immediately after BL-159; this is not yet an implementation brief.
+The owner approved the following decisions on 2026-10-04.
 
 ## Existing Baseline
 
@@ -54,43 +53,50 @@ belong to BL-172.
 
 ## Decisions Made
 
-- The owner requested a separate investigation analogous to BL-159.
-- Whether additional syntax or behavior is needed remains open.
-- BL-155's existing attachment and browser-handling decisions remain in force
-  unless explicitly changed during this investigation.
+Recommend the actual relative source path, including for links inserted by
+VS Code:
 
-## Open Questions
+```md
+[Open the checklist](downloads/checklist.pdf)
+```
 
-1. **Syntax coverage.** Which ordinary Markdown forms work end to end today:
-   inline links, reference-style links and optional titles? Verify parsing,
-   rendered destinations and reference updates rather than assuming parity.
-2. **Paths and management.** Should the author use `file.pdf`,
-   `downloads/file.pdf`, or both? Which forms already work? Explain how a
-   page-owned file differs from a `public/` file or an external URL, and
-   preserve explicit ownership and missing-file diagnostics.
-3. **HTML and browser behavior.** Is a normal link the complete intended
-   presentation? Does the product need an explicit way to request download,
-   or should it retain normal browser handling? Any download-specific option
-   would require a separate decision and an honest explanation of its limits.
-4. **Standard Markdown guidance.** Where should the beginner tour demonstrate
-   a working local file link and explain Norna's publication and management?
-   Distinguish visible link text, an optional title and the actual file action;
-   avoid promising that a label alone controls downloading.
-5. **Editor and file lifecycle.** Do insertion, usage discovery, rename and
-   page moves handle the chosen forms consistently, including filenames with
-   spaces or Unicode and links containing queries or fragments?
+Accept `downloads/checklist.pdf`, `./downloads/checklist.pdf` and the existing
+`checklist.pdf` shorthand as references to the same page-owned file. This
+follows BL-159 and lets ordinary Markdown tools resolve the recommended path.
+Keep explicit cross-page attachment URLs under BL-155's existing ownership
+rules. An explicit local downloads path must not silently use a public file
+or a same-named attachment owned by another page.
 
-## Preliminary Proposals
+Use ordinary text links. The browser and hosting headers decide whether to
+open or download a file; do not introduce a forced-download attribute or a
+custom viewer. A link's visible text and optional title do not control this.
 
-- Prefer ordinary Markdown links as the default authoring form, building on
-  the implementation already delivered in BL-155.
-- Compare source-relative `downloads/file.pdf` with the existing filename
-  shorthand for readability and compatibility with other Markdown tools.
-- Show a real attachment in Standard Markdown and link to the attachment
-  reference for ownership and lifecycle rules.
+Add a real attachment, a working link and its exact Markdown source to
+Standard Markdown. Explain the downloads directory and file lifecycle, with
+advanced path forms in the reference. BL-172 owns the multi-file download menu.
 
-These are discussion proposals; no new path convention, download attribute
-or editor default has been approved.
+## Implementation Brief
+
+- Verify inline, full, collapsed and shortcut reference links, including
+  optional titles and definitions used across sections.
+- Resolve all three local path forms through the shared attachment model.
+  Preserve existing external, public and explicit cross-page URL behavior.
+- Preserve the author's path form, titles, queries/fragments, Unicode/spaces,
+  CRLF and unrelated text during rename; edit shared definitions only once.
+- Check usage/removal and page movement against the same link graph.
+- Have the engine's editor insertion API generate `downloads/filename` links,
+  retaining the existing insertion, dirty-buffer and Undo boundaries.
+- Update Standard Markdown, attachment and editor guidance, and verify actual
+  published destinations, unchanged attachment bytes and a non-root base path.
+
+## Existing Gaps Identified
+
+The link graph already resolves source-relative downloads paths as URLs.
+Rendering preparation recognizes only the bare local filename, editor
+insertion emits that shorthand, and rename turns a source-relative downloads
+path into a site-relative URL. These consumers need one local-target model.
+The standard attachment test currently covers inline shorthand and explicit
+sharing, but needs coverage for reference definitions and all local forms.
 
 ## Dependencies
 
@@ -105,12 +111,15 @@ Current documentation is in the
 and the working
 [attachment example](../../../site/root/pages/examples/pages/building-a-site/content.md).
 
-## Ready For Implementation When
+## Acceptance Checks
 
-- Existing support has been compared with representative Markdown links and
-  any remaining gap is concrete.
-- Reference syntax, ownership and open/download behavior are agreed.
-- Standard Markdown guidance and editor implications are specified.
-- Either a bounded implementation with directly relevant checks is ready,
-  or the investigation concludes that existing behavior only needs clearer
-  documentation.
+- All accepted local forms resolve to the owning page's file in validation,
+  rendering, usage, insertion, rename and page movement.
+- Missing explicit local files are errors with the expected source path.
+- Reference definitions, optional titles and literal code examples survive
+  editing correctly; a shared definition is changed once.
+- Published URLs include the deployment prefix and retain queries/fragments;
+  attachment bytes are unchanged and no download attribute is forced.
+- The beginner example has a usable attachment link and matching source.
+- Focused engine and extension-adapter checks pass. The owner handles native
+  VS Code review of insertion, Undo, rename and dirty save/reopen.

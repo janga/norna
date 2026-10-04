@@ -16,7 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-No implementation item is currently scheduled.
+- ★ [`BL-160` Standard Markdown For Local Attachments](docs/design/backlog/BL-160-standard-markdown-local-attachments.md):
+  **Ready; implementation authorized.** Recommend `downloads/file.pdf`, support
+  both relative forms and the filename shorthand, and preserve ordinary browser
+  handling across rendering, editing and a working Standard Markdown example.
 
 ## Next
 
@@ -106,10 +109,6 @@ These items have no approved implementation position yet. Move one into `Now`,
 These owner-selected items are ordered for design discussion, not yet for
 implementation. They enter `Now` or `Next` after their open decisions are settled.
 
-- ★ [`BL-160` Standard Markdown For Local Attachments](docs/design/backlog/BL-160-standard-markdown-local-attachments.md):
-  **Needs evidence and decision; first in discussion order.** Review
-  existing Markdown attachment links, identify any missing reference forms
-  and clarify management and open/download behavior for beginners.
 - ★ [`BL-050` Source-Backed Code Excerpts](docs/design/backlog/BL-050-source-backed-code.md):
   **Needs design.** Include checked source-file regions in documentation
   without maintaining copied code, after settling path and sensitive-file rules.
