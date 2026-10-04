@@ -22,6 +22,8 @@ another package. The existing general scratch site is separate.
 
 Review URL: <http://127.0.0.1:4398/review/>. The registered `editor` target gives
 VS Code's **Preview Page/Site** the same port, independently of the docs server.
+The fixture's configured site URL is this local address, so **Copy Link** also
+produces usable local links. That action uses the configured publication URL.
 The edit link at the bottom of each preview page opens that copied page's
 `content.md` in VS Code.
 Install the evaluation VSIX yourself if needed: `editors/vscode/norna-vscode.vsix`.

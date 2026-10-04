@@ -1,4 +1,4 @@
 sourceFormat: 2
-url: https://example.test/review/
+url: http://127.0.0.1:4398/review/
 editLink:
   localEditor: vscode

@@ -19,6 +19,8 @@ navigation:
 
 1. Under `public/`, create folder **created-here** and a file **new-note.txt** inside it.
 2. Inspect References and Copy Link for `public/review-files/note.txt`.
+   Expect `http://127.0.0.1:4398/review/review-files/note.txt`.
+   The source directory `public/` is omitted from published URLs.
 3. Rename it to `renamed-note.txt`, then move it into `public/other-files/`.
    This link and the link on Incoming links must update. Save changed buffers.
 4. Rename `other-files` to `renamed-folder`; links to its file must follow.
