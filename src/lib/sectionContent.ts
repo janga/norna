@@ -155,14 +155,10 @@ const applyH3HeadingIds = (
 const getImageSourceKey = (page: SitePage, image: string) => getPageImageSourceKey(page.pageDirectory, image);
 
 const renderHeadingTitleHtml = async (headingSource: string, page: SitePage) => {
-	const headingMarkdown = headingSource
-		.replace(/^#{1,6}[ \t]+/, '')
-		.replace(/\n[ \t]*(?:=+|-+)[ \t]*$/, '')
-		.replace(explicitHeadingIdRegex, '')
-		.trim();
 	const references = [...page.markdownDocument.markdownImages, ...page.markdownDocument.links];
 	const definitions = [...new Set(references.map((reference) => reference.definitionSource).filter(Boolean))].join('\n');
-	const source = await rewriteAttachmentLinks(`${headingMarkdown}\n\n${definitions}`, pathToFileURL(page.contentPath), siteDir);
+	// Keep the heading syntax: text such as "1. Plan" becomes a list if parsed alone.
+	const source = await rewriteAttachmentLinks(`${headingSource}\n\n${definitions}`, pathToFileURL(page.contentPath), siteDir);
 	const result = await markdownToHtml(source, {
 		mdastPlugins: [nornaMarkdownImagePlugin],
 		features: {
@@ -170,9 +166,9 @@ const renderHeadingTitleHtml = async (headingSource: string, page: SitePage) => 
 			smartPunctuation: true,
 		},
 	});
-	const paragraph = result.html.trim().match(/^<p>([\s\S]*)<\/p>$/i);
-	if (!paragraph) throw new Error('Markdown heading could not be rendered as inline content.');
-	const html = prepareContentHtml(paragraph[1] ?? '');
+	const heading = result.html.trim().match(/^<h([12])\b[^>]*>([\s\S]*)<\/h\1>$/i);
+	if (!heading) throw new Error('Markdown heading could not be rendered as inline content.');
+	const html = prepareContentHtml((heading[2] ?? '').replace(explicitHeadingIdRegex, '').trim());
 	const marked = splitMarkdownImages(html, page.pageDirectory).map((block) => block.type === 'html' ? block.html : '').join('');
 	return renderNestedMarkdownImages(marked, page.title, { desktop: 100, mobile: 100 });
 };

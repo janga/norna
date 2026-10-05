@@ -5,6 +5,58 @@ import { test } from 'node:test';
 import { parsePageMarkdownSource } from './lib/page-markdown.mjs';
 import { createTempSite, runNorna } from './test-support/content-model.mjs';
 
+test('heading text keeps its inline meaning when it starts like a Markdown block', async () => {
+	const { root, siteDir } = await createTempSite({ underRepoCache: true });
+	try {
+		await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/docs/\n');
+		await mkdir(path.join(siteDir, 'root/pages/guide'), { recursive: true });
+		await writeFile(path.join(siteDir, 'root/pages/guide/content.md'), 'Setext **page**\n==============\n\nGuide content.\n');
+		await writeFile(path.join(siteDir, 'root/content.md'), [
+			'# 1. Inriktning',
+			'',
+			'## 2. **Plan** and [guide][guide] {#plan}',
+			'',
+			'### 3. Details',
+			'',
+			'Numbered headings remain headings.',
+			'',
+			'## 4) Next step',
+			'',
+			'## - A literal list marker {#list-marker}',
+			'',
+			'## > A literal quote marker {#quote-marker}',
+			'',
+			'## # A literal hash {#hash-marker} ###',
+			'',
+			'Setext **section**',
+			'on two lines {#setext}',
+			'---------------------',
+			'',
+			'Final content.',
+			'',
+			'[guide]: /guide/ "Guide title"',
+			'',
+		].join('\n'));
+
+		await runNorna(['--site-dir', siteDir, 'build']);
+		const html = await readFile(path.join(root, 'dist/index.html'), 'utf8');
+		const contains = (pattern) => assert.ok(pattern.test(html), `Missing rendered heading: ${pattern}`);
+		contains(/<h1[^>]*>1\. Inriktning<\/h1>/);
+		contains(/<h2 id="plan">2\. <strong>Plan<\/strong> and <a href="\/docs\/guide\/" title="Guide title">guide<\/a><\/h2>/);
+		contains(/<h3 id="3-details">3\. Details<\/h3>/);
+		contains(/<h2 id="4-next-step">4\) Next step<\/h2>/);
+		contains(/<h2 id="list-marker">- A literal list marker<\/h2>/);
+		contains(/<h2 id="quote-marker">&gt; A literal quote marker<\/h2>/);
+		contains(/<h2 id="hash-marker"># A literal hash<\/h2>/);
+		contains(/<h2 id="setext">Setext <strong>section<\/strong>\s+on two lines<\/h2>/);
+		assert.ok(!/<h[12]\b[^>]*>\s*<(?:ol|ul|blockquote|h[1-6])\b/.test(html));
+		const guideHtml = await readFile(path.join(root, 'dist/guide/index.html'), 'utf8');
+		assert.ok(/<h1[^>]*>Setext <strong>page<\/strong><\/h1>/.test(guideHtml));
+	} finally {
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
 test('CommonMark and GFM constructs survive a complete Norna build', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {

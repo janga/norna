@@ -35,6 +35,10 @@ CommonMark's underlined heading form also works: `=` underlines an H1 and `-`
 underlines an H2. Use hash signs when you want the level to be obvious in the
 source. H3 and deeper headings use hash signs.
 
+Heading text can begin with a number, for example `# 1. Introduction` or
+`## 2. Installation`. The number is part of the title. Bold text, code and
+Markdown links also work inside headings.
+
 Text between H1 and the first H2 is the introduction. Each H2 (`##`) starts
 a section extending to the next H2. H3 and deeper headings subdivide that
 section. Navigation uses H2 links; H3 retains its anchor without adding
