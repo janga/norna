@@ -28,6 +28,59 @@ const clickVisibleControl = async (control: Locator) => {
 const openReadingMenu = (page: Page) => clickVisibleControl(page.locator('[data-area-switcher] > summary'));
 const referenceAreas = ['site', 'configuration', 'content', 'commands', 'reader', 'workflows'] as const;
 
+for (const width of [1440, 1024, 390]) {
+	for (const configuredHeight of [null, '3rem']) {
+		test(`keeps navigation logo size across Home and reading pages at ${width}px (${configuredHeight ?? 'default'})`, async ({ page }) => {
+			await page.setViewportSize({ width, height: 1000 });
+			if (configuredHeight) {
+				await page.addInitScript(height => {
+					document.addEventListener('DOMContentLoaded', () => {
+						document.querySelector<HTMLElement>('.site-top')?.style.setProperty('--site-brand-logo-height', height);
+					});
+				}, configuredHeight);
+			}
+			await openPage(page, './');
+			const homePath = new URL(page.url()).pathname;
+			const logo = page.locator('.site-brand-logo');
+			const logoSize = async () => {
+				await logo.evaluate((image: HTMLImageElement) => image.decode());
+				const box = (await logo.boundingBox())!;
+				return { width: box.width, height: box.height };
+			};
+			const home = await logoSize();
+			const rem = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).fontSize));
+			expect(home.height).toBeCloseTo(rem * (width <= 700 ? 2.15 : configuredHeight ? 3 : 2.6), 1);
+			if (width < 961) {
+				await clickVisibleControl(page.locator('.mobile-nav-menu > summary'));
+				await page.locator('.mobile-site-nav a[href$="/features/"]').click();
+			} else {
+				await page.locator('.site-nav > ul > li > a[href$="/features/"]').click();
+			}
+			await page.waitForURL('**/features/');
+			await ready(page);
+			await expect(page.locator('html')).toHaveAttribute('data-area-reading-frame', '');
+			expect(await logoSize()).toEqual(home);
+			const assertLogoFitsHeader = async () => {
+				const [image, header] = await Promise.all([logo.boundingBox(), page.locator('.site-top').boundingBox()]);
+				expect(image!.y).toBeGreaterThanOrEqual(header!.y);
+				expect(image!.y + image!.height).toBeLessThanOrEqual(header!.y + header!.height);
+			};
+			await assertLogoFitsHeader();
+			const settings = page.locator('[data-display-settings]');
+			await settings.locator('summary').click();
+			await settings.getByRole('checkbox', { name: 'Focus reading' }).check();
+			await expect(page.locator('html')).toHaveAttribute('data-focus-reading', 'on');
+			expect(await logoSize()).toEqual(home);
+			await assertLogoFitsHeader();
+			await page.keyboard.press('Escape');
+			await page.locator('.site-brand').click();
+			await page.waitForURL(url => url.pathname === homePath);
+			await ready(page);
+			expect(await logoSize()).toEqual(home);
+		});
+	}
+}
+
 test('keeps the reading frame stable and restores the global Home navigation', async ({ page }) => {
 	const snapshot = () => page.locator('.site-top').evaluate(header =>
 		[header, ...header.querySelectorAll<HTMLElement>(

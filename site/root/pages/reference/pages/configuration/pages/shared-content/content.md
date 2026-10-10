@@ -24,6 +24,7 @@ logo:
 
 The default is 2.6rem on wider screens, capped at 2.15rem on narrow screens.
 The narrow cap also applies to custom heights. Width follows the image ratio.
+The same height setting applies to Home and reading pages.
 Height uses the [layout length syntax](/reference/configuration/layout/#length-syntax).
 Configuring `logo` without a logo file is an error.
 
