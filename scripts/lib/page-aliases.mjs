@@ -4,6 +4,11 @@ import { sitemapFilename } from './sitemap.mjs';
 export const getGeneratedSiteRoutes = ({ searchEnabled = false } = {}) => Object.freeze([
 	Object.freeze({
 		kind: 'generated-route',
+		label: 'Norna generated 404 page',
+		pathname: '/404.html',
+	}),
+	Object.freeze({
+		kind: 'generated-route',
 		label: `Norna generated ${sitemapFilename}`,
 		pathname: `/${sitemapFilename}`,
 	}),

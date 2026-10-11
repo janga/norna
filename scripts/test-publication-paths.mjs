@@ -93,10 +93,10 @@ test('public sync maps shared images, keeps technical bytes and rejects invalid 
 	assert.equal(await readFile(path.join(root, '.norna/public/ownership.html'), 'utf8'), 'verification bytes');
 });
 
-test('a build links shared site images and keeps resource URLs below the configured base', async t => {
+test('a build links shared images, declared verification files and the generated 404 below the configured base', async t => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	t.after(() => rm(root, { recursive: true, force: true }));
-	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/docs/\n');
+	await writeFile(path.join(siteDir, 'site-config/settings.yaml'), 'sourceFormat: 2\nurl: https://example.com/docs/\nverificationFiles: [ownership.html]\n');
 	await mkdir(path.join(siteDir, 'public/images'), { recursive: true });
 	await mkdir(path.join(siteDir, 'root/downloads'), { recursive: true });
 	await writeFile(path.join(siteDir, 'root/downloads/guide.pdf'), 'attachment bytes');
@@ -105,7 +105,8 @@ test('a build links shared site images and keeps resource URLs below the configu
 	// A small valid PNG, copied byte-for-byte as the site-wide social image.
 	const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZ1kAAAAASUVORK5CYII=', 'base64');
 	await writeFile(path.join(siteDir, 'public/social-image.png'), png);
-	await writeFile(path.join(siteDir, 'root/content.md'), '# Home\n\n![Shared](/_norna/shared/images/mark.svg)\n\n[Guide](guide.pdf)\n');
+	await writeFile(path.join(siteDir, 'public/ownership.html'), 'verification bytes\n');
+	await writeFile(path.join(siteDir, 'root/content.md'), '# Home\n\n![Shared](/_norna/shared/images/mark.svg)\n\n[Guide](guide.pdf)\n\n[Verify](/ownership.html)\n\n[Missing page](/404.html)\n');
 	await runNorna(['--site-dir', siteDir, 'build']);
 	const html = await readFile(path.join(root, 'dist/index.html'), 'utf8');
 	for (const file of ['logo.svg', 'favicon.svg', 'images/mark.svg', 'social-image.png']) {
@@ -115,4 +116,8 @@ test('a build links shared site images and keeps resource URLs below the configu
 	assert.ok(html.includes('https://example.com/docs/_norna/shared/social-image.png'));
 	assert.ok(html.includes('/docs/_norna/downloads/~home/guide.pdf'));
 	assert.equal(await readFile(path.join(root, 'dist/_norna/downloads/~home/guide.pdf'), 'utf8'), 'attachment bytes');
+	assert.ok(html.includes('href="/docs/ownership.html"'));
+	assert.equal(await readFile(path.join(root, 'dist/ownership.html'), 'utf8'), 'verification bytes\n');
+	assert.ok(html.includes('href="/docs/404.html"'));
+	assert.match(await readFile(path.join(root, 'dist/404.html'), 'utf8'), /<meta name="robots" content="noindex">/);
 });

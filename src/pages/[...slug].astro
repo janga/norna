@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import { assertPageAliasModel, createPageAliasModel } from '../../scripts/lib/page-aliases.mjs';
 import { getGeneratedSiteRoutes } from '../../scripts/lib/page-aliases.mjs';
 import { getSitePublicFiles } from '../../scripts/lib/site-link-graph.mjs';
+import { sitePublicDir } from '../../scripts/lib/site-paths.mjs';
 import projectConfig from '../../scripts/lib/project-config.mjs';
 import PageAliasRedirect from '../components/PageAliasRedirect.astro';
 import SearchPage from '../components/SearchPage.astro';
@@ -15,7 +16,7 @@ export async function getStaticPaths() {
 	const aliasModel = assertPageAliasModel(createPageAliasModel({
 		categories: siteModel.categories,
 		pages: siteModel.pages,
-		publicFiles: await getSitePublicFiles(),
+		publicFiles: await getSitePublicFiles(sitePublicDir, projectConfig),
 		generatedRoutes: getGeneratedSiteRoutes({ searchEnabled: projectConfig.search.enabled }),
 	}));
 	const pagesByPathname = new Map(siteModel.pages.map((page) => [page.pathname, page]));
