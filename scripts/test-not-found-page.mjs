@@ -47,11 +47,17 @@ test('build emits a localized base-path 404 page with valid navigation and asset
 		assert.match(html, /Den begärda sidan finns inte eller kan ha flyttats\./);
 		assert.match(html, /<a href="\/project\/">Gå till startsidan<\/a>/);
 		assert.match(html, /<a class="site-brand" href="\/project\/"[^>]*>/);
-		assert.match(html, /src="\/project\/logo\.svg" alt="Hem"/);
+		assert.match(html, /src="\/project\/_norna\/shared\/logo\.svg" alt="Hem"/);
 		assert.match(html, /href="\/project\/om\/">\s*Om\s*<\/a>/);
 		assert.doesNotMatch(html, /aria-current="page"/);
-		assert.match(html, /<link rel="icon" type="image\/svg\+xml" href="\/project\/favicon\.svg">/);
+		assert.match(html, /<link rel="icon" type="image\/svg\+xml" href="\/project\/_norna\/shared\/favicon\.svg">/);
 		assert.doesNotMatch(html, /social-image\.png/);
+		for (const filename of ['logo.svg', 'favicon.svg']) {
+			assert.deepEqual(
+				await readFile(path.join(root, 'dist', '_norna', 'shared', filename)),
+				await readFile(path.join(siteDir, 'public', filename)),
+			);
+		}
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}
