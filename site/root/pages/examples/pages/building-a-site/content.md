@@ -322,29 +322,86 @@ Read the
 
 ## Branding, notices and footer {#branding}
 
+### Logo and browser icons
+
+Where will readers see each image? Open the
+[Sitewide Content demonstration](https://janga.github.io/norna/examples/feature-demos/sitewide-content/).
+Its navigation shows the Shared Frame logo; the browser tab uses the simpler
+frame symbol. On a supporting device, adding the site to the home screen uses
+the supplied touch icon.
+
 <!-- norna-image-provenance:
-image: navigation-logo.svg
+image: /_norna/shared/images/shared-frame.svg
 source: maintained repository asset
 Copied from the public files of the site-wide content demonstration.
 -->
 
-```image-stack
-items:
-  - image: navigation-logo.svg
-    alt: The Shared Frame example logo, made from overlapping outlined squares and a wordmark.
-    caption: A conventionally named logo is discovered without a path setting.
-```
+![The Shared Frame example logo: overlapping frames and a wordmark.](/_norna/shared/images/shared-frame.svg)
+
+This illustration uses the same public image as the
+[shared-image example](/examples/external-images-and-files/#shared-files-in-public).
+In the demo itself, the navigation logo is discovered by its filename:
 
 ```text
 site/public/
-|-- logo.svg          # Navigation logo
-|-- favicon.svg       # Browser tab and bookmark icon
-`-- social-image.jpg  # Default social sharing image
+|-- logo.svg              # Navigation logo
+|-- favicon.svg           # Browser tab icon
+|-- apple-touch-icon.png  # Home-screen icon
+`-- social-image.png      # Link preview image
 ```
 
-**Source:** Convention-based public files. Each role has an exact set of
-accepted filenames and uniqueness rules; no image path belongs in YAML. Read the
-[public-files reference](/reference/site/public-files/).
+The logo links to Home. Its optional height setting appears in the shared
+configuration below. Use a transparent background for a logo that should blend
+into the page, and check it in both Light and Dark appearance. Norna publishes
+the supplied artwork; it does not remove a background or create icon sizes.
+
+The favicon can use a simpler symbol without small lettering. The demo supplies
+an SVG favicon and a 180 × 180 PNG touch icon. To use an ICO favicon instead,
+place a real `favicon.ico` in `public/`. Browsers choose among the icon formats
+you supply.
+
+**Source:** Convention-based public files. No image path belongs in YAML.
+See the [recognized filenames](/reference/site/public-files/#recognized-files)
+for the accepted formats and uniqueness rules.
+
+### Link previews {#link-previews}
+
+When someone shares a link, Norna supplies the page's title and description,
+plus the site's sharing image. This is the demo's actual `social-image.png`:
+
+<!-- norna-image-provenance:
+image: sitewide-social-image.png
+source: maintained SVG artwork rendered with Chromium
+Generated from examples/feature-demos/sitewide-content/assets/social-image.svg
+by its render-assets.mjs script; identical to the demo's public/social-image.png.
+-->
+
+```image-stack
+items:
+  - image: sitewide-social-image.png
+    alt: Shared Frame sharing image with the title Sitewide Content and the text One identity across every page.
+    caption: One sharing image reused by all content pages in the demo.
+```
+
+The homepage supplies the accompanying title and description:
+
+```md title="root/content.md: opening excerpt"
+---
+page:
+  description: See a shared logo, browser icons, link previews, notices and footer across a Norna site.
+---
+
+# Sitewide Content
+```
+
+Here the preview title is **Sitewide Content**. The description is the sentence
+in `page.description`; Norna does not extract it from the page's paragraphs.
+Other pages supply their own title and description while using the same image.
+The service receiving the link decides the card's layout and may cache it.
+
+**Source:** A conventionally named sharing image plus page Markdown. Read the
+[social-preview reference](/reference/site/public-files/#social-previews) for
+the generated metadata and current limits.
 
 ### Notices and footer
 
@@ -499,3 +556,54 @@ for accepted settings, the
 for file placement, and the
 [content reference](/reference/commands/validate/)
 for content errors and image synchronization.
+
+### Hosting and verification {#hosting-and-verification}
+
+A service may give you a file to prove that you control a website. Keep its
+filename and contents, place it directly in `site/public/`, and add its exact
+name to the existing site settings. This demo uses an illustrative file:
+
+```text title="site/public/example-verification.html"
+norna-example-verification: demonstration-only
+```
+
+```yaml title="site/site-config/settings.yaml: excerpt"
+verificationFiles:
+  - example-verification.html
+```
+
+[Open the demo's verification file](https://janga.github.io/norna/examples/feature-demos/sitewide-content/example-verification.html).
+Its text is a working publication example, not a token for a real service.
+The declaration allows the file; it does not create it. Files supplied for
+`.well-known/` go in that directory and need no declaration.
+
+For a GitHub Pages site with a custom domain, a `CNAME` file contains the
+hostname alone. The following values belong to a separate example domain:
+
+```text title="site/public/CNAME"
+www.example.com
+```
+
+```yaml title="site/site-config/settings.yaml: excerpt"
+url: https://www.example.com/
+```
+
+Configure that domain with the hosting service too. If the service requires a
+verification file or `robots.txt` at the domain root, publishing a Norna site
+under `/manual/` will not put the file at the required root address.
+
+**Source:** Technical public files and site settings. See
+[public-file locations](/reference/site/public-files/#allowed-files) and
+[verification files](/reference/site/public-files/#verification-files).
+
+### Sitemap and missing pages {#generated-files}
+
+After a build, open this site's [sitemap](/sitemap.xml) and
+[generated 404 page](/404.html). The sitemap lists canonical page URLs, including
+pages hidden from navigation. The 404 page uses the site's theme and provides
+a link Home; the hosting service decides when to show it for a missing address.
+
+Norna creates `dist/sitemap.xml` and `dist/404.html` automatically. Keep authored
+files such as [robots.txt](/robots.txt) in `site/public/`; leave those two
+generated filenames to Norna. See [generated output](/reference/site/public-files/#generated-sitemap)
+for the complete rules.

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f5f2ec"/>
+  <rect x="44" y="44" width="1112" height="542" rx="20" fill="none" stroke="#b9473e" stroke-width="4"/>
+  <g transform="translate(94 112) scale(2.4)">
+    <rect x="6" y="11" width="38" height="38" rx="4" fill="none" stroke="#b9473e" stroke-width="5"/>
+    <rect x="18" y="21" width="38" height="32" rx="4" fill="#f5f2ec" stroke="#8a7168" stroke-width="4"/>
+    <path d="M27 37h20M37 28v18" stroke="#b9473e" stroke-width="3"/>
+    <text x="72" y="40" fill="#8a7168" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700">Shared Frame</text>
+  </g>
+  <text x="110" y="360" fill="#272321" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="700">Sitewide Content</text>
+  <text x="110" y="420" fill="#56504b" font-family="Arial, Helvetica, sans-serif" font-size="32">One identity across every page.</text>
+  <text x="110" y="530" fill="#b9473e" font-family="Arial, Helvetica, sans-serif" font-size="24">A working Norna example</text>
+</svg>

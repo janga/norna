@@ -22,7 +22,28 @@ These are illustrative URLs. The external host controls whether the files
 remain available. Norna does not import or resize the image, move these files
 with a page, or check the external site's availability.
 
-## Shared files in public/
+## Shared files in public/ {#shared-files-in-public}
+
+Use a shared image when several pages need the same asset. This example and
+[Building a site with Norna](/examples/building-a-site/#branding) both use one file:
+
+```text
+site/public/images/shared-frame.svg
+```
+
+![The Shared Frame example logo: overlapping frames and a wordmark.](/_norna/shared/images/shared-frame.svg)
+
+```md
+![The Shared Frame example logo: overlapping frames and a wordmark.](/_norna/shared/images/shared-frame.svg)
+```
+
+Write the link as shown, without the site's deployment prefix. Norna adds it
+automatically: this site's published image is at
+`/norna/_norna/shared/images/shared-frame.svg`. The file keeps its original bytes and filename,
+without the responsive variants or hashed filenames of page-owned images.
+Ordinary Markdown references participate in Norna's rename and move updates.
+
+Technical files have a different location. For example:
 
 [Open this site's robots.txt](/robots.txt).
 
@@ -30,11 +51,10 @@ with a page, or check the external site's availability.
 [Open this site's robots.txt](/robots.txt).
 ```
 
-The file lives in `site/public/robots.txt`. Public files keep a site-wide
-address and suit logos, icons, crawler instructions and declared verification files. Put downloadable documents
-in a page’s `downloads/`, including documents linked from several pages.
-Ordinary Markdown images can also refer to public image files; those images
-stay outside managed image processing. See [public files](/reference/site/public-files/).
+The file lives in `site/public/robots.txt` and is published at the site's root.
+Put downloadable documents in a page's `downloads/`, including documents linked
+from several pages. See [public files](/reference/site/public-files/) for the
+allowed technical files and shared images.
 
 ## Why page-owned images and attachments are preferred
 

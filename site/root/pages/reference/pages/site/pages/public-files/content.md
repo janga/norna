@@ -12,6 +12,22 @@ Norna checks their locations and publishes them without changing their bytes.
 Put documents and other downloads in a page's
 [attachments folder](/reference/site/attachments/), even when several pages link to them.
 
+```text title="Example source locations"
+site/
+|-- public/
+|   |-- logo.svg
+|   |-- favicon.ico
+|   |-- robots.txt
+|   `-- images/site-mark.svg
+`-- root/
+    |-- content.md
+    `-- downloads/handbook.pdf
+```
+
+The logo and icon are discovered automatically. Shared images use their
+published address in Markdown; the handbook belongs to Home's `downloads/`.
+An arbitrary download folder under `public/` is not supported.
+
 ## Allowed files
 
 | Source in `public/` | Published path, before the site's base path |
@@ -51,6 +67,15 @@ a logo, navigation uses the homepage title. Logo alternative text comes from
 Home's H1; [shared content](/reference/configuration/shared-content/#logo)
 controls its displayed height.
 
+Norna copies these images as supplied. It does not remove backgrounds, create
+icon formats or choose different artwork for Light and Dark appearance. Prepare
+logos and icons that remain legible on both backgrounds. Browsers choose among
+the supplied favicon formats; a touch icon is used when a supporting device
+adds the site to its home screen.
+
+The [branding examples](/examples/building-a-site/#branding) show the logo,
+browser icon and sharing image in one working site.
+
 ## Shared images
 
 ```text title="An image used on several pages"
@@ -71,7 +96,7 @@ updates. HTML references require manual maintenance.
 
 Place a verification file directly in `public/` and declare its exact filename:
 
-```yaml title="site-config/settings.yaml: optional verification files"
+```yaml title="site/site-config/settings.yaml: optional verification files"
 sourceFormat: 2
 url: https://example.com/
 verificationFiles:
@@ -86,24 +111,29 @@ Files beneath `.well-known/` need no declaration.
 ## Social previews
 
 Each content page supplies its H1 as sharing title and canonical URL as
-sharing URL. `page.description`, when present, supplies the description.
+sharing URL. `page.description`, when present, supplies the description;
+Norna does not infer a summary from the prose.
 A social image supplies absolute `og:image` and `twitter:image` URLs and a
-large-image card. Without it, output uses a text summary card. Page-specific
-preview images and generated text-on-image cards are not supported.
+large-image card. Without it, output uses a text summary card. The receiving
+service decides how to display that information and may cache earlier values.
+Page-specific preview images and generated text-on-image cards are not supported.
 
 ## Generated sitemap
 
 Norna generates `sitemap.xml` from canonical URLs for all content pages,
-even unlisted ones, including the deployment prefix. Aliases are excluded.
+even unlisted ones, and generated category lists, including the deployment
+prefix. Aliases and category redirects are excluded. Entries are sorted by
+URL, independently of navigation order.
 Preparation writes `site/.norna/public/sitemap.xml`; the final build includes
 `dist/sitemap.xml`. Do not supply a source `public/sitemap.xml`.
-No modification dates are inferred from filesystem times.
+The sitemap omits `lastmod`; no modification dates are inferred from filesystem times.
 
 ## Generated 404 page
 
 Every build creates `404.html` with a localized message, the shared theme and
-a Home link. It has `noindex` and works without JavaScript. Custom editorial
-404 content is not supported; the host decides when to serve this file.
+a Home link. It has `noindex`, no canonical URL or social metadata, and works
+without JavaScript. Custom editorial 404 content is not supported; the host
+decides when to serve this file.
 
 ## Preparation and reserved paths
 

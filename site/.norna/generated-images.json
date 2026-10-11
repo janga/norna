@@ -23,14 +23,6 @@
       }
     ]
   },
-  "root/pages/examples/pages/building-a-site/images/navigation-logo.svg": {
-    "kind": "static",
-    "outputVersion": 3,
-    "sourceHash": "d7fb2b20e5824da2c874373bc099cc145bf3fff079609ab9b4f18802aa366123",
-    "src": "/_norna/images/original/pages/examples/pages/building-a-site/images/navigation-logo-d7fb2b20.svg",
-    "width": 250,
-    "height": 64
-  },
   "root/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png": {
     "outputVersion": 3,
     "sourceHash": "02b274fefd25b0fbfed3c65677b302d4114b3aaf81bf9d35cffa33f3b6149f50",
@@ -195,6 +187,30 @@
       },
       {
         "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-sections.png-53042071-1200.webp",
+        "width": 1200
+      }
+    ]
+  },
+  "root/pages/examples/pages/building-a-site/images/sitewide-social-image.png": {
+    "outputVersion": 3,
+    "sourceHash": "4b87576633f3d7f2a19b65f5d55a00c0ad162088b16a5e2e9eceb15d22bba656",
+    "width": 1200,
+    "height": 630,
+    "variants": [
+      {
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-768.webp",
+        "width": 768
+      },
+      {
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-1080.webp",
+        "width": 1080
+      },
+      {
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-1200.webp",
         "width": 1200
       }
     ]

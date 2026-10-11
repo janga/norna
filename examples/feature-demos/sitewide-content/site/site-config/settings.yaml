@@ -1,4 +1,6 @@
 sourceFormat: 2
 url: http://localhost:4321/
+verificationFiles:
+  - example-verification.html
 editLink:
   localEditor: vscode
