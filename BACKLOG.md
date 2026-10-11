@@ -16,7 +16,10 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-No item is currently ready for implementation.
+- ★ [BL-180 Preserve And Relocate Getting Started Knowledge](docs/design/backlog/BL-180-preserve-getting-started-knowledge.md):
+  **Ready; first priority.** Preserve useful explanations, examples and
+  illustrations in verified reference destinations before replacing the
+  current Getting Started with the VS Code introduction.
 
 ## Next
 
