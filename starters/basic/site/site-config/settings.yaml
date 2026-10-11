@@ -1,2 +1,4 @@
+# Norna increments this version for breaking changes to the site source format.
+# Change it only as part of a documented format conversion.
 sourceFormat: 2
 url: https://example.com/

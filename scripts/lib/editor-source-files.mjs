@@ -7,6 +7,12 @@ import { checkedPath } from './editor-site-files.mjs';
 import { escapeMarkdownHeading } from './site-node-create.mjs';
 
 export const siteTreeEditingApiVersion = 1;
+const sourceFormatHeader = [
+	'# Norna increments this version for breaking changes to the site source format.',
+	'# Change it only as part of a documented format conversion.',
+	'sourceFormat: 2',
+	'',
+].join('\n');
 const stat = (filename) => lstat(filename).catch((error) => {
 	if (error.code === 'ENOENT') return null;
 	throw error;
@@ -54,7 +60,7 @@ export const planEditorSourceFileCreation = async ({ siteRoot, directory, filena
 	if (definition.input) {
 		if (typeof value !== 'string' || !value.trim() || /[\r\n]/.test(value)) throw new Error('Enter a non-empty, single line of text.');
 		text = definition.input === 'title' ? `# ${escapeMarkdownHeading(value.trim())}\n`
-			: `${definition.schemaKind === 'config' ? 'sourceFormat: 2\n' : ''}${definition.input}: ${JSON.stringify(value.trim())}\n`;
+			: `${definition.schemaKind === 'config' ? sourceFormatHeader : ''}${definition.input}: ${JSON.stringify(value.trim())}\n`;
 	}
 	if (definition.schema) parseYamlConfig(text, filename, { schema: definition.schema });
 	const identity = async (location) => { const entry = await stat(location); return entry ? [entry.dev, entry.ino] : null; };
