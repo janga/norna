@@ -5,4 +5,4 @@ navigation:
 
 # Move destination
 
-Move the Markdown images and Markdown files pages here after their rename tests. Their local files must move with them.
+Move the Markdown files page here after its rename test. Its attachments must move with it, and incoming links must update.

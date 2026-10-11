@@ -1,8 +1,8 @@
 # Editor Acceptance Examples
 
-Manual examples for BL-166 Page Order In Frontmatter, BL-159 Managed Local
-Markdown Images, BL-160 Standard Markdown For Local Attachments, BL-154 VS Code
-Site Tree Context Actions, BL-155 Page Attachments and BL-156 Local Site Preview.
+Manual examples for the remaining review of BL-160 Standard Markdown For Local
+Attachments, BL-154 VS Code Site Tree Context Actions, BL-155 Page Attachments
+and BL-156 Local Site Preview.
 Each review page contains its steps and expected result.
 
 ## Open The Disposable Copy
@@ -32,19 +32,14 @@ Install the evaluation VSIX yourself if needed: `editors/vscode/norna-vscode.vsi
 
 | Page | Review |
 | --- | --- |
-| BL-166 Create between pages | Create after Alpha with orders 1, 2, 3; cancel, then confirm renumbering. |
-| BL-166 Move between pages | Move Move me after Alpha in a separate group; cancel, then confirm. |
-| BL-159 Markdown images | Three path forms, shared definitions, title/alt text, rename and page move. |
 | BL-160 Markdown files | Three path forms, shared definitions, incoming links and page move. |
 | BL-154 Context actions | Page title, technical file/folder operations, public-file restrictions and optional themes. |
 | BL-155 Import and replace | Single/batch import, collision, replacement, deletion and Trash. |
 | BL-156 Local preview | Start/reuse/stop, nested page, saved edits and logs. |
 | Incoming links | Verify attachment and public-file links after rename/move. |
-| Move destination | Destination for the image and attachment page moves. |
+| Move destination | Destination for the Markdown files page move. |
 
-Test the two BL-166 groups before changing their order manually. Creation in
-one group does not consume the other group's renumbering case. The remaining
-pages can be reviewed independently. For name changes, try unsaved prose,
+The pages can be reviewed independently. For name changes, try unsaved prose,
 text Undo/Redo, save, close and reopen. Text Undo does not reverse filesystem
 transactions such as a resource rename or page move.
 
@@ -72,30 +67,23 @@ build verification, use a separate state directory while a preview runs:
 NORNA_INTERNAL_STATE_DIR="$PWD/.local/editor-review-build/.norna" node bin/norna.mjs --site-dir fixtures/editor-acceptance/site build
 ```
 
-## Preparation Checks
-
-On 2026-10-04 the 19-page fixture build and review-registry checks passed.
-Read-only engine plans confirmed the exact three sibling changes in each
-renumbering case, reference-only image/file usage and incoming-link rename.
-The extension's project discovery selected this repository's engine, and the
-preview API selected the registered port 4398. A browser with JavaScript
-disabled loaded all eight image instances, received the unchanged attachment
-bytes and opened the nested preview target. The creation instructions and
-order table were inspected at the compact viewport.
+## Review Scope
 
 The owner approved BL-159 Managed Local Markdown Images and BL-166 Page Order
-In Frontmatter on 2026-10-11. Their examples remain available for regression
-review. Owner approval remains pending for BL-160 and the remaining BL-154–156
-scenarios; no individual manual test result is inferred from these approvals.
+In Frontmatter on 2026-10-11. Their manual pages and dependent links were removed
+from this fixture and the active copy at the owner's request. Dedicated engine
+regression tests remain in place.
 
-BL-177 Publication Path Ownership And Collision Checks updates the maintained
-fixture's cross-page attachment addresses to the reserved resource area. Its isolated build passed
-on 2026-10-04 with 20 generated HTML pages. An existing disposable copy is not
-updated automatically; retain any wanted edits before using **Start Again**.
+Owner approval remains pending for BL-160 and the remaining BL-154–156
+scenarios. The public-file exercise also covers the publication paths from
+BL-177 Publication Path Ownership And Collision Checks and the restrictions
+from BL-179 Simplify Public Site Resources. No individual manual result is
+inferred from this fixture's preparation or automated checks.
 
-BL-179 Simplify Public Site Resources replaces the former shared-image move
-exercise with technical verification files under `public/.well-known/`. Try
-creating `public/images/` to check its refusal before using the supported
-technical folders. The matching import is `imports/verification.txt`. The
-fixture continues to exercise full and short URLs, incoming links, file/folder
-rename, moves and cancellation.
+Public-file moves use technical verification files under `public/.well-known/`.
+Try creating `public/images/` to check its refusal before using the supported
+technical folders. The matching import is `imports/verification.txt`.
+
+The fixture contains nine source pages. After changes, run `content:check` for
+both this fixture and the active copy; verify the live homepage and incoming
+links. The active copy is updated in place so unrelated owner edits survive.

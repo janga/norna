@@ -17,8 +17,6 @@ navigation:
 
 ## Page links
 
-[Image page](/markdown-images/)
-
 [File page](/markdown-files/)
 
 [Page whose title can change](/context-actions/rename-me/)
