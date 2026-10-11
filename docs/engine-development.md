@@ -272,7 +272,9 @@ npx playwright install chromium
 ## Temporary Review Sites
 
 For the BL-166, BL-159/160 and BL-154–156 owner review, prepare the dedicated
-`editor` copy with `node fixtures/editor-acceptance/prepare.mjs`. Its
+`editor` copy with `node fixtures/editor-acceptance/prepare.mjs`. The editable
+workspace lives in `test-sites/editor-review/` beneath the repository root;
+this disposable directory is ignored by Git. Its
 [examples and reset instructions](../fixtures/editor-acceptance/README.md)
 keep mutation tests separate from the general scratch site.
 

@@ -2,10 +2,11 @@ import { cp, lstat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { prepareScratchSite } from '../../scripts/review-scratch-site.mjs';
+import { getReviewEnvironment } from '../../scripts/review-environment-registry.mjs';
 
 const fixtureRoot = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(fixtureRoot, '../..');
-const scratchRoot = path.join(repositoryRoot, '.local/test-sites/editor-review');
+const scratchRoot = path.dirname(path.resolve(repositoryRoot, getReviewEnvironment('editor').siteDirectory));
 const args = process.argv.slice(2);
 if (args.length && (args.length !== 1 || args[0] !== '--replace')) {
   throw new Error('Usage: node fixtures/editor-acceptance/prepare.mjs [--replace]');

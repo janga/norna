@@ -34,6 +34,7 @@ blob-report/
 # local scratch work
 todos/
 /.local/
+/test-sites/
 
 # private product research and non-public marketing sites (separate local Git repository)
 /marketing/

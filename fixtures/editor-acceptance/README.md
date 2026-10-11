@@ -14,7 +14,9 @@ node fixtures/editor-acceptance/prepare.mjs
 npm run review:start -- editor
 ```
 
-Open `.local/test-sites/editor-review/editor-review.code-workspace` in VS Code.
+Open `test-sites/editor-review/editor-review.code-workspace` in VS Code.
+The editable site and import files are in this visible folder beneath the
+repository root. The disposable `test-sites/` directory is ignored by Git.
 Use extension **0.15.0** or later and **Developer: Reload Window** to load the
 working-tree engine. The workspace exposes the copied site and import files;
 it uses the engine in the ancestor Norna repository without installing or linking

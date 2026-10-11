@@ -34,7 +34,7 @@ const definitions = {
 	},
 	editor: {
 		label: 'Disposable editor acceptance site',
-		siteDirectory: '.local/test-sites/editor-review/site',
+		siteDirectory: 'test-sites/editor-review/site',
 		port: 4398,
 		basePath: '/review/',
 		browserSuites: [],
