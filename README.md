@@ -77,7 +77,6 @@ site/
   [Child-page lists](https://janga.github.io/norna/reference/site/pages/#list-child-pages).
 - Page directories use their URL slug. Set optional `navigation.order` in each
   page’s frontmatter to order siblings; reordering keeps their paths unchanged.
-  New sites declare `sourceFormat: 2` in `site-config/settings.yaml`.
 - A page may contain local images, visual settings and nested
   entries under its own `pages/` directory.
 - `root/tree-theme.yaml` selects shared visual defaults. Optional `page-theme.yaml`

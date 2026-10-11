@@ -14,18 +14,15 @@ on this page is optional during an initial local preview.
 
 ## Set the site language {#language}
 
-Add `language` beside the existing public URL in `site/site-config/settings.yaml` when the
-site is not written in English:
+For a site written in Swedish, add this line to the existing
+`site/site-config/settings.yaml` file:
 
 ```yaml
-sourceFormat: 2
-url: https://example.com/
 language: sv
 ```
 
 Norna uses this value for the document language and its own interface labels.
-The content remains in the language you write. Keep the generated example URL
-while working locally; the publishing step replaces it with the real address.
+The content remains in the language you write.
 
 See [Configuration](/reference/configuration/language/)
 for supported language tags and fallback rules.

@@ -33,6 +33,12 @@ rewrite until its disposition is implemented and verified.
   linked reference or explanatory material.
 - Existing Examples already pair source code with rendered results. Reuse
   relevant material and link to it; tutorial excerpts serve the current step.
+- Retain `sourceFormat` as a generated format marker, but keep it out of the
+  introduction. Its explanation belongs in the
+  [configuration reference](../../../site/root/pages/reference/pages/configuration/pages/site/content.md#source-format)
+  and format-conversion guidance. The owner confirmed this on 2026-10-11;
+  Getting Started and the README now omit it, with tutorial snippets explicitly
+  showing additions or edits to existing settings.
 
 ## Scope And Boundaries
 
