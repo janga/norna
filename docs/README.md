@@ -21,6 +21,9 @@ review environments, package checks and the release procedure. The
 
 Read the [Documentation Style Guide](design/documentation-style-guide.md)
 before changing reference, schema help, editor descriptions or diagnostics.
+For homepage copy, product demonstrations, package descriptions and release
+announcements, also use the
+[Product Presentation Guide](design/product-presentation-guide.md).
 Use the [reference maintenance map](design/reference-inventory.md) to find
 the code and tests associated with each reference area. Design rationale and
 review evidence remain under [`docs/design/`](design).

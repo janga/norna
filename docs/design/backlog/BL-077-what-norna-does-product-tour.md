@@ -1,5 +1,18 @@
 # BL-077: What Norna Does Product Tour
 
+## Editorial Guidance And Later Decision
+
+Reusable writing and demonstration principles are now maintained in the
+[Product Presentation Guide](../product-presentation-guide.md), extracted on
+2026-10-11. The original assignment below remains as historical context, not a
+second maintained style guide.
+
+On 2026-10-11 the owner approved developing the homepage and product
+demonstration as one coherent presentation first. A later split must be
+justified by the content's scope and reader need. This supersedes the fixed
+separate-page requirement below for that redesign. The existing `/features/`
+page and links remain until their destination is handled in the redesign.
+
 ## Outcome
 
 The documentation site has one evidence-led page between `Norna` and `Getting

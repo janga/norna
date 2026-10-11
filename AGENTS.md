@@ -9,6 +9,9 @@ Read the sections relevant to the task, not every linked document.
   docs/engine-development.md
 - Documentation, schema descriptions, UI help and diagnostics:
   docs/design/documentation-style-guide.md
+- Product presentation and marketing copy, including the homepage, product
+  demonstrations, package descriptions and release announcements:
+  docs/design/product-presentation-guide.md
 - Website presentation and presets:
   docs/design/preset-design-guide.md
 - VS Code extension and engine-side editor APIs:

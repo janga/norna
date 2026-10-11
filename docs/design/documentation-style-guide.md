@@ -5,6 +5,12 @@ the product. It applies to human-facing Markdown and HTML documentation,
 schemas and IntelliSense text, CLI diagnostics, UI help, and explanatory
 examples.
 
+For product presentation and marketing, also use the
+[Product Presentation Guide](product-presentation-guide.md). It covers message
+selection, evidence, demonstrations and next actions. The terminology,
+factual accuracy and accessibility principles here apply to that work too;
+the detailed reference-writing procedure applies to reference pages.
+
 The goal is not stylistic uniformity for its own sake. The goal is that a new
 reader can understand Norna's model without already knowing Norna's vocabulary,
 and that an experienced reader can find an exact answer without reconciling

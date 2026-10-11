@@ -1,5 +1,13 @@
 # BL-038: Selling Homepage And Product Positioning
 
+## Editorial Guidance
+
+Reusable writing and presentation principles are now maintained in the
+[Product Presentation Guide](../product-presentation-guide.md), extracted on
+2026-10-11. The assignment below retains its original scope and acceptance
+record; it is not a second maintained style guide. Use the current approved
+brief for later audience, message and page-structure decisions.
+
 ## Outcome
 
 Norna's front page helps a prospective user quickly understand what the product
