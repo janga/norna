@@ -26,17 +26,17 @@ export const publicFilePublication = (relativePath, { verificationFiles = [] } =
 	const segments = relativePath.split('/');
 	if (!segments.every(safeSegment)) throw new Error(`public/${relativePath} has an unsafe path. Use regular names without URL punctuation or parent-directory segments.`);
 	if (directory) {
-		if (segments[0] === 'images' || segments[0] === '.well-known') return { pathname: segments[0] === 'images' ? sharedOutputPrefix + relativePath : '/' + relativePath, kind: 'public-directory' };
-		throw new Error(`public/${relativePath}/ is not a supported public folder. Use images/ for shared images or .well-known/ for technical files.`);
+		if (segments[0] === '.well-known') return { pathname: '/' + relativePath, kind: 'public-directory' };
+		throw new Error(`public/${relativePath}/ is not a supported public folder. Put content images in the owning page’s images/ beside content.md. Only .well-known/ is supported here, for technical files.`);
 	}
 	if (technicalFiles.has(relativePath) || segments[0] === '.well-known' && segments.length > 1 || verificationFiles.includes(relativePath) && isVerificationFilename(relativePath)) {
 		return { pathname: '/' + relativePath, kind: 'technical-file' };
 	}
-	if (siteImages.has(relativePath) || segments[0] === 'images' && segments.length > 1 && /\.(jpe?g|png|svg)$/i.test(relativePath)) {
+	if (siteImages.has(relativePath)) {
 		return { pathname: sharedOutputPrefix + relativePath, kind: 'shared-image' };
 	}
 	const generated = ['_norna', '_astro', 'sitemap.xml', '404.html'].includes(key(segments[0]));
-	throw new Error(`public/${relativePath} ${generated ? 'conflicts with a generated resource area' : 'is not a supported public file'}. Use a page’s downloads/ for documents, public/images/ for shared images, or declare an exact root verification filename in verificationFiles.`);
+	throw new Error(`public/${relativePath} ${generated ? 'conflicts with a generated resource area' : 'is not a supported public file'}. Put content images in the owning page’s images/ beside content.md and documents in its downloads/. Public images must use a recognized logo, favicon, apple-touch-icon or social-image filename. Declare exact root verification filenames in verificationFiles.`);
 };
 
 export const publicationIssues = ({ pages = [], publicFiles = [], attachments = [], images = [], generatedRoutes = [] } = {}) => {

@@ -12,7 +12,7 @@ import {
 	runNorna,
 } from './test-support/content-model.mjs';
 
-test('content:check requires local Markdown images and accepts external and published shared images', async () => {
+test('content:check requires local Markdown images and accepts external and named site images', async () => {
 	const { root, siteDir } = await createTempSite();
 	try {
 		await writeFile(path.join(siteDir, 'root/content.md'), `---

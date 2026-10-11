@@ -341,7 +341,8 @@ visible caption, or an image carousel when readers should browse several images.
 The [managed-image reference](/reference/site/images/) explains supported files
 and processing. [Markdown images](/reference/content/markdown/#markdown-images)
 shows alternative reference forms. See [External images and files](/examples/external-images-and-files/)
-for images hosted elsewhere or kept in `public/`.
+for images hosted elsewhere. The [branding example](/examples/building-a-site/#branding)
+shows the named logo, icons and sharing image stored in `public/`.
 
 ## Using tables
 

@@ -146,7 +146,7 @@ try {
 	assert.match(at('root/page-theme.yaml').description, /this page only.*tree theme/);
 	assert.match(at('root/pages/guide/tree-theme.yaml').description, /this page and its descendants.*inherited values/);
 	assert.match(at('root/pages/topics/tree-theme.yaml').description, /this page and its descendants/);
-	assert.match(at('public').description, /Technical site files and shared images.*downloads\/ for documents/);
+	assert.match(at('public').description, /Technical site files, logo, browser icons and social image.*page’s images\/.*downloads\//);
 	assert.equal(new Set(files.items.map((item) => item.id)).size, files.items.length, 'Resource and page identities must be unique.');
 	assert.deepEqual(files.items.filter((item) => item.kind === 'page').map((item) => item.url), files.nodes.map((item) => item.url));
 	assert.deepEqual(await inventory(firstSite), beforeBrowse, 'Browsing may not change source bytes, create directories or generated state.');

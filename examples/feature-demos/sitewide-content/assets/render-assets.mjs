@@ -6,7 +6,8 @@ import { chromium } from '@playwright/test';
 
 const publicDirectory = path.resolve(import.meta.dirname, '../site/public');
 const documentationSite = path.resolve(import.meta.dirname, '../../../../site');
-await copyFile(path.join(publicDirectory, 'logo.svg'), path.join(documentationSite, 'public/images/shared-frame.svg'));
+await copyFile(path.join(publicDirectory, 'logo.svg'), path.join(documentationSite,
+	'root/pages/examples/pages/building-a-site/images/shared-frame.svg'));
 const browser = await chromium.launch();
 try {
 	const page = await browser.newPage({ deviceScaleFactor: 1 });

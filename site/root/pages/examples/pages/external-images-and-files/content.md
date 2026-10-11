@@ -1,15 +1,15 @@
 ---
 page:
-  description: Choose between external resources, shared public files and files that belong to a page.
+  description: Link to resources hosted elsewhere and choose the right location for local files.
 navigation:
   order: 2000
 ---
 
 # External images and files
 
-Ordinary Markdown can refer to images and files hosted elsewhere or kept in
-`site/public/`. These have useful roles, but they do not receive the same
-processing and page ownership as files in a page's `images/` or `downloads/`.
+Ordinary Markdown can refer to images and files hosted elsewhere. For local
+content, use the page's `images/` and `downloads/` folders so Norna can manage
+the files with their page.
 
 ## External images and files
 
@@ -22,28 +22,10 @@ These are illustrative URLs. The external host controls whether the files
 remain available. Norna does not import or resize the image, move these files
 with a page, or check the external site's availability.
 
-## Shared files in public/ {#shared-files-in-public}
+## Technical files in public/ {#shared-files-in-public}
 
-Use a shared image when several pages need the same asset. This example and
-[Building a site with Norna](/examples/building-a-site/#branding) both use one file:
-
-```text
-site/public/images/shared-frame.svg
-```
-
-![The Shared Frame example logo: overlapping frames and a wordmark.](/_norna/shared/images/shared-frame.svg)
-
-```md
-![The Shared Frame example logo: overlapping frames and a wordmark.](/_norna/shared/images/shared-frame.svg)
-```
-
-Write the link as shown, without the site's deployment prefix. Norna adds it
-automatically: this site's published image is at
-`/norna/_norna/shared/images/shared-frame.svg`. The file keeps its original bytes and filename,
-without the responsive variants or hashed filenames of page-owned images.
-Ordinary Markdown references participate in Norna's rename and move updates.
-
-Technical files have a different location. For example:
+Technical files such as `robots.txt` belong in `site/public/`. You can link to
+them using ordinary Markdown:
 
 [Open this site's robots.txt](/robots.txt).
 
@@ -51,18 +33,25 @@ Technical files have a different location. For example:
 [Open this site's robots.txt](/robots.txt).
 ```
 
-The file lives in `site/public/robots.txt` and is published at the site's root.
-Put downloadable documents in a page's `downloads/`, including documents linked
-from several pages. See [public files](/reference/site/public-files/) for the
-allowed technical files and shared images.
+Write the path without the deployment prefix; Norna adds it. On this site the
+file is published at `/norna/robots.txt`. A crawler looking for the domain's
+`/robots.txt` needs that file deployed separately at the domain root.
 
-## Why page-owned images and attachments are preferred
+The site's named logo, icons and sharing image also belong in `public/`; see
+the [working branding example](/examples/building-a-site/#branding).
+Keep ordinary content images in their page's `images/` folder. See
+[public files](/reference/site/public-files/) for accepted filenames and hosting
+requirements.
+
+## Local images and attachments
 
 For an image that belongs to an article, put its source in the page's
 `images/` directory and use a [Markdown image](/examples/standard-markdown/#images-and-tables)
 or a [Norna image block](/examples/norna-extensions/#image-stacks). Norna can
 validate it, generate responsive output and move it with the page.
 
-For a downloadable file that belongs to a page, use its `downloads/` directory
+For a downloadable file, use its owning page's `downloads/` directory
 and an [ordinary attachment link](/examples/building-a-site/#page-attachments). Norna publishes the file
-unchanged and keeps it with its page.
+unchanged and keeps it with its page. Other pages can link to that attachment's
+published address. For an image needed on several pages, place a copy in each
+owning page's `images/`; each copy is managed independently.

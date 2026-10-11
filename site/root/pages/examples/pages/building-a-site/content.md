@@ -331,16 +331,15 @@ frame symbol. On a supporting device, adding the site to the home screen uses
 the supplied touch icon.
 
 <!-- norna-image-provenance:
-image: /_norna/shared/images/shared-frame.svg
+image: shared-frame.svg
 source: maintained repository asset
 Copied from the public files of the site-wide content demonstration.
 -->
 
-![The Shared Frame example logo: overlapping frames and a wordmark.](/_norna/shared/images/shared-frame.svg)
+![The Shared Frame example logo: overlapping frames and a wordmark.](images/shared-frame.svg)
 
-This illustration uses the same public image as the
-[shared-image example](/examples/external-images-and-files/#shared-files-in-public).
-In the demo itself, the navigation logo is discovered by its filename:
+This illustration belongs to this page's `images/` folder. In the demo itself,
+the navigation logo is discovered by its filename:
 
 ```text
 site/public/
@@ -357,8 +356,9 @@ the supplied artwork; it does not remove a background or create icon sizes.
 
 The favicon can use a simpler symbol without small lettering. The demo supplies
 an SVG favicon and a 180 × 180 PNG touch icon. To use an ICO favicon instead,
-place a real `favicon.ico` in `public/`. Browsers choose among the icon formats
-you supply.
+place a real `favicon.ico` containing several sizes in `public/`. Browsers choose
+among the icon formats you supply. Prefer SVG for a logo that should stay sharp
+at different sizes; Norna copies a supplied PNG/JPEG without resizing it.
 
 **Source:** Convention-based public files. No image path belongs in YAML.
 See the [recognized filenames](/reference/site/public-files/#recognized-files)

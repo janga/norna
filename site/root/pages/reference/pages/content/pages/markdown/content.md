@@ -147,12 +147,12 @@ The optional **title** is additional information preserved in the image's
 `title` attribute. Neither field becomes a visible caption. Use an
 [image stack](/reference/content/images/#image-stack) for a visible caption.
 
-External URLs and root-relative public image paths keep their ordinary behavior
-and stay outside managed processing:
+External URLs and published paths to named site images keep their ordinary
+behavior and stay outside managed processing:
 
 ```md title="content.md: external and public images"
 ![External diagram](https://example.com/diagram.png)
-![Public icon](/favicon.svg)
+![Site icon](/_norna/shared/favicon.svg)
 ```
 
 ## Metadata and embedded examples

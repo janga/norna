@@ -1,5 +1,12 @@
 # BL-177: Publication Path Ownership And Collision Checks
 
+The general `public/images/` source area below was superseded on 2026-10-11 by
+[BL-179 Simplify Public Site Resources](BL-179-simplify-public-site-resources.md).
+Only named site artwork remains in `public/`; ordinary content images belong
+to their pages. [BL-178 Automatic Site Image Processing](BL-178-managed-shared-images.md)
+is now an idea for processing the named site resources. The original delivery
+record below remains historical evidence.
+
 ## Purpose
 
 Give every published URL area one owner. A page named images, downloads or

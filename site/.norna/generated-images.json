@@ -191,6 +191,14 @@
       }
     ]
   },
+  "root/pages/examples/pages/building-a-site/images/shared-frame.svg": {
+    "kind": "static",
+    "outputVersion": 3,
+    "sourceHash": "dcceb63e95ec4bacf123d9ac5bf94fb87f485db8c507bc91c464c02ede25829d",
+    "src": "/_norna/images/original/pages/examples/pages/building-a-site/images/shared-frame-dcceb63e.svg",
+    "width": 250,
+    "height": 64
+  },
   "root/pages/examples/pages/building-a-site/images/sitewide-social-image.png": {
     "outputVersion": 3,
     "sourceHash": "4b87576633f3d7f2a19b65f5d55a00c0ad162088b16a5e2e9eceb15d22bba656",

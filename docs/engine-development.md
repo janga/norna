@@ -70,16 +70,17 @@ owning `content.md`. Keep exactly one H1; prefer derived H2/H3 anchors unless an
 explicit ID must preserve a public address. Managed images belong directly in
 the owning page's `images/`. Ordinary Markdown images (including reference
 definitions) share validation, usage tracking and processing with image blocks;
-recommend `images/name.jpg`. Remote URLs and `public/` images remain separate.
+recommend `images/name.jpg`. Remote URLs and named site artwork in `public/` remain separate.
 After intentionally moving image references,
 `npm run content:sync` can move unambiguous images; inspect its source changes.
 Do not commit unreferenced source images unless explicitly requested.
 
 `publication-paths.mjs` owns resource URLs, public-source policy and output
 collision checks. `public/` accepts known technical files, declared verification
-files, `.well-known/` and shared images. Page attachments use
-`/_norna/downloads/<page-key>/`, managed images use `/_norna/images/`, shared
-images use `/_norna/shared/`, and search/build assets have separate areas under
+files, `.well-known/` and named site artwork. Ordinary content images belong in
+the owning page's `images/`; `public/images/` is unsupported. Page attachments use
+`/_norna/downloads/<page-key>/`, managed images use `/_norna/images/`, named
+site images use `/_norna/shared/`, and search/build assets have separate areas under
 `/_norna/`. Builds do not rewrite authored source or preserve former resource
 URLs. The [public-file reference](../site/root/pages/reference/pages/site/pages/public-files/content.md)
 defines allowed sources and `verificationFiles`. `.norna/public/`

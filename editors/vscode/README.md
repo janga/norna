@@ -21,9 +21,10 @@ Full URLs copied with **Copy Link** participate in reference discovery and
 rename/move updates when they match the selected site's configured URL,
 including its scheme, host, port and deployment prefix. Short internal paths
 omit that prefix. The project engine owns these rules. Resource addresses use its reserved
-`/_norna/` areas; `public/` accepts supported technical files and shared images.
-Use page-owned `downloads/` for documents and `public/images/` for shared
-pictures. The engine validates names and locations before editor operations.
+`/_norna/` areas; `public/` accepts supported technical files and named site
+artwork (logo, browser icons and sharing image). Use page-owned `images/` for
+content images and `downloads/` for documents. The engine validates names and
+locations before editor operations.
 
 ## Features
 
@@ -253,8 +254,8 @@ site configuration and the homepage are protected. These actions need the
 engine's corresponding removal/address capabilities. See
 [addresses and removal](https://janga.github.io/norna/reference/workflows/editor/#inspect-and-change-addresses).
 
-Public files and subfolders can be created, imported, renamed and moved within
-`public/`. Public-file replacement keeps the address and sends the original to
+Supported public files can be created, imported, renamed and moved within
+`public/`. Only `.well-known/` permits subfolders, for technical files. Public-file replacement keeps the address and sends the original to
 Trash. Renaming or moving updates known page-content links, including dirty
 buffers; configuration, raw HTML and external references are not rewritten.
 Preflight checks prevent overwriting and conflicts with generated paths, page

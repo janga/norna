@@ -93,7 +93,7 @@ Resources occupy `/_norna/`, separately from page URLs. Managed images use
 `/_norna/images/` with content hashes. Attachments use
 `/_norna/downloads/<page-key>/<filename>`; the homepage key is `~home`, and
 other keys join page slugs with `--` (for example `guides--install`).
-Shared public images use `/_norna/shared/`. Known technical public files keep
+Named site images (logo, browser icons and sharing image) use `/_norna/shared/`. Known technical public files keep
 their required site-relative paths. See [public files](/reference/site/public-files/).
 
 Pages can use the slugs `images`, `downloads` and `shared` without claiming

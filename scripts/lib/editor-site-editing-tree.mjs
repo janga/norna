@@ -83,7 +83,7 @@ export const readSiteEditingTree = async ({ siteRoot, sources = new Map(), snaps
 		} else {
 			container = { id: resourceId(directory), parentId, ownerId: owner.id, sourcePath: directory,
 				kind: 'directory', role, title: path.basename(directory), description: role === 'public'
-					? 'Technical site files and shared images. Use images/ for shared pictures and a page’s downloads/ for documents.' : role === 'configuration' ? 'Settings and content shared by the complete site' : '' };
+					? 'Technical site files, logo, browser icons and social image. Put content images in a page’s images/ and documents in its downloads/.' : role === 'configuration' ? 'Settings and content shared by the complete site' : '' };
 			items.push(container);
 		}
 		const order = location ? ['images', 'downloads', 'tree-theme.yaml', 'page-theme.yaml', 'pages']

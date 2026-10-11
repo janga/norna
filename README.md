@@ -88,7 +88,7 @@ site/
   footer content.
 - `site-config/settings.yaml` holds the public URL and optional language, local and remote
   source links, navigation model, static search, and scroll behavior.
-- `public/` holds supported technical files and shared images; documents belong in page-owned `downloads/`.
+- `public/` holds supported technical files and named site artwork (logo, icons and sharing image). Content images and documents belong in each page's `images/` and `downloads/`.
 
 Norna validates this structure, processes managed images when needed, and
 builds the generated website into `dist/`. Sites using an earlier layout need

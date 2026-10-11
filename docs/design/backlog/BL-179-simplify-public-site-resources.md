@@ -54,3 +54,44 @@ it beside a page's `images/` and `downloads/`, then list exact recognized names
 and published locations. Place practical format/size guidance beside the named
 artwork. Link detailed managed-image and attachment behavior to their references;
 keep automatic-processing proposals out of published documentation.
+
+## Implementation And Verification
+
+Implemented 2026-10-11 at 12:42 CEST. The shared publication policy rejects the
+former image directory and directs authors to the owning page's `images/`.
+The editor reuses that policy for creation, import, rename and move; its public
+folder help now describes only named site artwork and technical files.
+
+The branding illustration moved to its page's managed images with unchanged
+source bytes. Reference and Examples now explain source ownership, supported
+site artwork, recommended formats/sizes and unchanged-copy behavior. The
+previously owner-deleted, unreferenced favicon comparison PNGs are also removed
+from the tracked public-image area. The actual logo and favicon remain intact.
+
+Directly relevant verification passed:
+
+- Public synchronization (three cases) and publication contracts (seven cases),
+  including refusal of empty `public/images/`, non-destructive failed preflight,
+  removal of obsolete output, collision rules, and a build below `/docs/`.
+- Eight engine resource-action cases, eight extension resource-adapter cases,
+  and the Site Tree engine check. Import refusal is shown in the input dialog;
+  cancelling that correction writes no files.
+- Documentation links, examples, source snippets and image references.
+- Documentation build: 86 HTML pages and 83 search documents. Editor acceptance
+  fixture build: 20 HTML pages. The active disposable copy's content check passed.
+- Byte comparisons for the moved SVG, named logo/favicon and technical fixture
+  output. The former shared-image output directory is absent after preparation.
+- Local HTTP checks returned the exact source bytes for logo, favicon and both
+  technical review files; the review page renders both short and full links.
+- Inspected the branding illustration and editor review page at 1024px, and
+  the recognized-file table and size recommendations at 390px.
+
+The active `test-sites/editor-review/` copy was adapted without resetting other
+test edits. Its 35 pre-change source files were backed up under
+`.local/editor-review-backups/2026-10-11-bl179/`; unrelated source files were
+compared byte-for-byte. Public move exercises now use disposable technical
+verification files under `.well-known/`, with a matching external import.
+
+No full release suite was run. Native VS Code interaction, Undo/save/reopen and
+manual acceptance remain with the owner. No new VSIX is needed: Reload Window
+loads this working-tree engine. BL-178 remains an unimplemented idea.

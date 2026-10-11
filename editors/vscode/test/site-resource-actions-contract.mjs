@@ -20,7 +20,7 @@ const fixture = async t => {
 	const site = { id: siteRoot, siteRoot, sourcePath: siteRoot, kind: 'site', title: 'Site' };
 	const page = { id: home, siteRoot, sourcePath: home, kind: 'page', isHome: true, title: 'Home' };
 	const node = { id: image, siteRoot, sourcePath: image, kind: 'file', title: 'old.png' };
-	const commands = new Map(), documents = [], inputs = [], warnings = [], open = [], deletes = [];
+	const commands = new Map(), documents = [], inputs = [], inputDialogs = [], warnings = [], open = [], deletes = [];
 	let selected = node, failText = false, failMove = false, failRollback = false, beforeConfirmation, moves = 0, refreshes = 0;
 	const documentSources = () => new Map(documents.filter(doc => doc.isDirty).map(doc => [doc.uri.fsPath, doc.getText()]));
 	const vscode = {
@@ -45,14 +45,14 @@ const fixture = async t => {
 			fs: { createDirectory: uri => mkdir(uri.fsPath, { recursive: true }), copy: (from,to) => cp(from.fsPath,to.fsPath,{errorOnExist:true,force:false}),
 				delete: async (uri, options) => { deletes.push({ filename: uri.fsPath, options }); await rm(uri.fsPath,{recursive:options?.recursive,force:false}); } },
 		},
-		window: { showInputBox: async options => { const value=inputs.shift(); if(value!==undefined && options.validateInput) assert.equal(await options.validateInput(value),undefined);return value; },
+		window: { showInputBox: async options => { inputDialogs.push(options); const value=inputs.shift(); if(value!==undefined && options.validateInput) assert.equal(await options.validateInput(value),undefined);return value; },
 			showWarningMessage: async (_title,_options,...actions) => { await beforeConfirmation?.(); const choice=warnings.shift(); return choice === true ? actions[0] : choice; },
 			showOpenDialog: async () => open.shift(), showTextDocument: async doc => ({edit: async callback => { callback({replace:(range,text)=>doc.set(doc.getText().slice(0,range.start)+text+doc.getText().slice(range.end))});return true;}}),
 		},
 	};
 	registerSiteResourceActions({ vscode, context: { globalStorageUri: { fsPath: path.join(root,'storage') } }, chooseNode: async argument => argument ?? selected,
 		activeSite: () => site, ownerOf: () => page, serviceFor: async () => engine, documentSources, refresh: async () => {refreshes++;}, register: (name, action) => commands.set(name.split('.').at(-1),action) });
-	return { siteRoot, home, image, node, page, site, write, vscode, inputs, warnings, open, deletes, documents, run: (name,argument) => commands.get(name)(argument),
+	return { siteRoot, home, image, node, page, site, write, vscode, inputs, inputDialogs, warnings, open, deletes, documents, run: (name,argument) => commands.get(name)(argument),
 		faults: options => { ({failText = false,failMove = false,failRollback = false,beforeConfirmation} = options); }, moves: () => moves, refreshes: () => refreshes };
 };
 
@@ -96,6 +96,21 @@ test('public file creation/import works at site level without a homepage; cancel
 	f.inputs.push('robots.txt');await f.run('newPublicFile',f.site);assert.equal(await readFile(path.join(f.siteRoot,'public/robots.txt'),'utf8'),'');
 	const source=await f.write('llms.txt','public bytes');f.open.push([{scheme:'file',fsPath:source}]);
 	await f.run('addSitePublicFiles');assert.equal(await readFile(path.join(f.siteRoot,'public/llms.txt'),'utf8'),'public bytes');
+});
+
+test('public folder creation and image import reject unsupported sources before writing', async t => {
+	const f = await fixture(t);
+	await f.run('newPublicFolder', f.site);
+	assert.match(await f.inputDialogs.at(-1).validateInput('images'), /owning page’s images\/ beside content.md/);
+	assert.equal(await exists(path.join(f.siteRoot, 'public')), false);
+	const source = await f.write('picture.svg', '<svg/>');
+	f.open.push([{ scheme: 'file', fsPath: source }]);
+	await f.run('addSitePublicFiles');
+	assert.match(f.inputDialogs.at(-1).prompt, /owning page’s images\/ beside content.md/);
+	assert.match(await f.inputDialogs.at(-1).validateInput('picture.svg'), /owning page’s images\/ beside content.md/);
+	assert.equal(await exists(path.join(f.siteRoot, 'public')), false);
+	assert.equal(await readFile(source, 'utf8'), '<svg/>');
+	assert.equal(f.refreshes(), 0);
 });
 
 test('folder deletion waits for confirmation, detects changed contents, and uses Trash', async t => {

@@ -115,7 +115,7 @@ test('site:public rejects a source sitemap before changing generated public outp
 
 		assert.notEqual(result.status, 0, output);
 		assert.match(output, /public\/sitemap\.xml conflicts with a generated resource area/);
-		assert.match(output, /page’s downloads/);
+		assert.match(output, /documents in its downloads\//);
 		assert.equal(await readFixtureFile(root, 'custom-site/public/sitemap.xml'), 'source sitemap\n');
 		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/sitemap.xml'), 'previous generated sitemap\n');
 		assert.equal(await readFixtureFile(root, 'custom-site/.norna/public/stale.txt'), 'keep after failed preflight\n');

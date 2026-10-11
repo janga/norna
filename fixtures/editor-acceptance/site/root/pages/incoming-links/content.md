@@ -13,7 +13,7 @@ navigation:
 
 ## Public link
 
-[Shared image](/_norna/shared/images/review-files/note.svg)
+[Technical verification file](/.well-known/review-files/verification.txt)
 
 ## Page links
 

@@ -1,14 +1,18 @@
 ---
 page:
-  description: Add technical site files and shared images, and understand their published addresses.
+  description: Add a site logo, browser icons, sharing image and technical files, and understand their published addresses.
 navigation:
   order: 7000
 ---
 
 # Public files and output
 
-`site/public/` holds technical site files and images shared across the site.
-Norna checks their locations and publishes them without changing their bytes.
+`site/public/` holds technical site files and the site's named logo, browser
+icons and sharing image. Norna checks these public files' locations and
+publishes them without changing their bytes.
+
+Put ordinary content images in the owning page's
+[`images/` folder](/reference/site/images/), beside `content.md`.
 Put documents and other downloads in a page's
 [attachments folder](/reference/site/attachments/), even when several pages link to them.
 
@@ -17,16 +21,16 @@ site/
 |-- public/
 |   |-- logo.svg
 |   |-- favicon.ico
-|   |-- robots.txt
-|   `-- images/site-mark.svg
+|   `-- robots.txt
 `-- root/
     |-- content.md
+    |-- images/diagram.svg
     `-- downloads/handbook.pdf
 ```
 
-The logo and icon are discovered automatically. Shared images use their
-published address in Markdown; the handbook belongs to Home's `downloads/`.
-An arbitrary download folder under `public/` is not supported.
+The logo and icon are discovered automatically. The diagram and handbook belong
+to Home; refer to them as `images/diagram.svg` and `downloads/handbook.pdf` in its
+Markdown. A general `public/images/` or download folder is not supported.
 
 ## Allowed files
 
@@ -36,16 +40,18 @@ An arbitrary download folder under `public/` is not supported.
 | Files beneath `.well-known/` | The same `.well-known/` path |
 | Explicitly declared verification files | The same filename at the site root |
 | Recognized logo, icon and social-image filenames | `/_norna/shared/` followed by the filename |
-| JPG, JPEG, PNG and SVG files beneath `images/` | `/_norna/shared/images/` followed by their relative path |
 
-The `images/` and `.well-known/` directories may contain subdirectories.
+The `.well-known/` directory may contain subdirectories for technical files.
 Use regular files and directories; symbolic links are unsupported. Other files,
 including arbitrary HTML, scripts, stylesheets, fonts and documents, are rejected.
 Names that differ only in case or Unicode normalization cannot claim the same
 published file. A failed publication check leaves prepared output unchanged.
 
-`CNAME` contains a hostname alone, such as `www.example.com`; GitHub Pages
-interprets it. The `url` in `site-config/settings.yaml` should use that domain.
+`CNAME` contains a hostname alone, such as `www.example.com`. GitHub Pages uses
+it for publishing from a branch; a custom Actions workflow uses the domain
+configured in the repository's Pages settings instead. See
+[GitHub's CNAME guidance](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/troubleshooting-custom-domains-and-github-pages#cname-errors).
+The `url` in `site-config/settings.yaml` should use that domain.
 
 A build writes inside its own output directory. If a hosting service requires
 `robots.txt`, verification files or `.well-known/` at the **domain root**, deploying
@@ -73,24 +79,22 @@ logos and icons that remain legible on both backgrounds. Browsers choose among
 the supplied favicon formats; a touch icon is used when a supporting device
 adds the site to its home screen.
 
+### Choosing formats and sizes
+
+These are practical starting points, not required dimensions:
+
+| Resource | Recommendation |
+| --- | --- |
+| Navigation logo | Prefer SVG. For PNG/JPEG, supply enough pixels for the configured height on a high-density screen; twice the displayed dimensions is a useful starting point. |
+| Favicon | Use SVG or a real ICO containing several sizes, including 16 × 16 and 32 × 32. Simplify tiny artwork when lettering or fine details become illegible. |
+| Touch icon | Supply `apple-touch-icon.png` at 180 × 180. |
+| Sharing image | Start with a composed PNG/JPEG at 1200 × 630, with important text and artwork away from the edges. |
+
+Norna does not generate these sizes or a sharing composition from the logo.
+A prepared ICO keeps all its embedded sizes. The named public images retain
+their filenames and receive no content hashes or responsive variants.
 The [branding examples](/examples/building-a-site/#branding) show the logo,
 browser icon and sharing image in one working site.
-
-## Shared images
-
-```text title="An image used on several pages"
-site/public/images/site-mark.svg
-```
-
-```md title="content.md: a shared image"
-![The project mark](/_norna/shared/images/site-mark.svg)
-```
-
-Omit the deployment prefix; Norna adds it. Public images currently retain their
-original bytes and filenames. They do not receive the responsive variants and
-hashing of [page-owned managed images](/reference/site/images/). Shared image
-links in ordinary Markdown participate in reference discovery and rename/move
-updates. HTML references require manual maintenance.
 
 ## Verification files
 
@@ -137,7 +141,7 @@ decides when to serve this file.
 
 ## Preparation and reserved paths
 
-`site:public` validates sources, replaces prepared technical files, shared images
+`site:public` validates sources, replaces prepared technical files, named site images
 and attachments, and writes the sitemap. Generated image output and the current
 search index are retained in their own areas. `build` produces the final artifact.
 

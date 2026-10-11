@@ -36,7 +36,7 @@ Install the evaluation VSIX yourself if needed: `editors/vscode/norna-vscode.vsi
 | BL-166 Move between pages | Move Move me after Alpha in a separate group; cancel, then confirm. |
 | BL-159 Markdown images | Three path forms, shared definitions, title/alt text, rename and page move. |
 | BL-160 Markdown files | Three path forms, shared definitions, incoming links and page move. |
-| BL-154 Context actions | Page title, shared-image file/folder operations, public-file restrictions and optional themes. |
+| BL-154 Context actions | Page title, technical file/folder operations, public-file restrictions and optional themes. |
 | BL-155 Import and replace | Single/batch import, collision, replacement, deletion and Trash. |
 | BL-156 Local preview | Start/reuse/stop, nested page, saved edits and logs. |
 | Incoming links | Verify attachment and public-file links after rename/move. |
@@ -89,7 +89,13 @@ review. Owner approval remains pending for BL-160 and the remaining BL-154–156
 scenarios; no individual manual test result is inferred from these approvals.
 
 BL-177 Publication Path Ownership And Collision Checks updates the maintained
-fixture's public-file operations to shared images and changes cross-page
-attachment addresses to the reserved resource area. Its isolated build passed
+fixture's cross-page attachment addresses to the reserved resource area. Its isolated build passed
 on 2026-10-04 with 20 generated HTML pages. An existing disposable copy is not
 updated automatically; retain any wanted edits before using **Start Again**.
+
+BL-179 Simplify Public Site Resources replaces the former shared-image move
+exercise with technical verification files under `public/.well-known/`. Try
+creating `public/images/` to check its refusal before using the supported
+technical folders. The matching import is `imports/verification.txt`. The
+fixture continues to exercise full and short URLs, incoming links, file/folder
+rename, moves and cancellation.

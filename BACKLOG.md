@@ -16,9 +16,7 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-- [BL-179 Simplify Public Site Resources](docs/design/backlog/BL-179-simplify-public-site-resources.md):
-  **Ready; owner requested implementation 2026-10-11.** Keep named site images
-  and technical files in `public/`, and use page-owned images for content.
+No item is currently ready for implementation.
 
 ## Next
 
