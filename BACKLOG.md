@@ -16,7 +16,9 @@ when implementation can begin.
 
 `Now` contains at most five active items in exact technical order.
 
-No item is currently ready for implementation.
+- [BL-179 Simplify Public Site Resources](docs/design/backlog/BL-179-simplify-public-site-resources.md):
+  **Ready; owner requested implementation 2026-10-11.** Keep named site images
+  and technical files in `public/`, and use page-owned images for content.
 
 ## Next
 
@@ -30,6 +32,9 @@ Always include active ideas when presenting prioritized backlog work. These
 are priorities for discussion, not authorization to implement; unresolved
 choices still need to be settled. Explicitly deferred ideas remain deferred.
 
+- [BL-178 Automatic Site Image Processing](docs/design/backlog/BL-178-managed-shared-images.md):
+  **Idea; needs design.** Generate appropriate variants and cache-safe URLs for
+  named site images from one source per role, preserving prepared icon artwork.
 - `BL-113` **Page References: Idea; needs evidence.**
   Consider an expandable reference to one page with selected heading links and
   automatically retrieved titles, but first try ordinary Markdown links in
@@ -105,10 +110,6 @@ These items have no approved implementation position yet. Move one into `Now`,
 
 These owner-selected items are ordered for design discussion, not yet for
 implementation. They enter `Now` or `Next` after their open decisions are settled.
-
-- [BL-178 Managed Shared Images](docs/design/backlog/BL-178-managed-shared-images.md):
-  **Needs design; follows BL-177.** Process shared site images with content hashes
-  and usage tracking after agreeing reference syntax and the first consumers.
 
 - ★ [`BL-050` Source-Backed Code Excerpts](docs/design/backlog/BL-050-source-backed-code.md):
   **Needs design.** Include checked source-file regions in documentation
