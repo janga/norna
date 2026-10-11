@@ -18,12 +18,6 @@ const writePage = async (siteDir, pageDirectory, source) => {
 	await writeFile(path.join(pageDir, 'content.md'), source);
 };
 
-const writePublicRoute = async (siteDir, route) => {
-	const routeDir = path.join(siteDir, 'public', route);
-	await mkdir(routeDir, { recursive: true });
-	await writeFile(path.join(routeDir, 'index.html'), '<!doctype html><title>Fixture target</title>\n');
-};
-
 test('named sidenotes render as linked lettered CSS margin notes', async () => {
 	const { root, siteDir } = await createTempSite({ underRepoCache: true });
 	try {
@@ -51,7 +45,20 @@ The third paragraph points to a link-only note.[^margin:third]
 
 [^margin:third]: [Install ImageMagick.](/faq/#link-only-note)
 `);
-		await writePublicRoute(siteDir, 'faq');
+		await writePage(siteDir, 'faq', `# FAQ
+
+## Site files {#site-files}
+
+Fixture source files.
+
+## Second note {#second-note}
+
+Supporting explanation.
+
+## Link-only note {#link-only-note}
+
+Installation details.
+`);
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');
@@ -93,7 +100,12 @@ The introduction points to an installation note.[^margin:install]
 
 Page content.
 `);
-		await writePublicRoute(siteDir, 'faq');
+		await writePage(siteDir, 'faq', `# FAQ
+
+## Install ImageMagick {#install-imagemagick}
+
+Installation details.
+`);
 
 		await runNorna(['--site-dir', siteDir, 'build']);
 		const html = await readFile(path.join(path.dirname(siteDir), 'dist', 'index.html'), 'utf8');

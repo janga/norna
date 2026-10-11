@@ -261,12 +261,13 @@ Instructions.
 		assert.match(html, /<meta property="og:title" content="Install">/);
 		assert.match(html, /<meta property="og:url" content="https:\/\/example\.com\/project\/guides\/install\/">/);
 		assert.match(html, /<meta property="og:description" content="Install the project\."/);
-		assert.match(html, /<meta property="og:image" content="https:\/\/example\.com\/project\/social-image\.jpg">/);
+		assert.match(html, /<meta property="og:image" content="https:\/\/example\.com\/project\/_norna\/shared\/social-image\.jpg">/);
 		assert.match(html, /<meta property="og:image:type" content="image\/jpeg">/);
 		assert.match(html, /<meta name="twitter:card" content="summary_large_image">/);
 		assert.match(html, /<meta name="twitter:title" content="Install">/);
 		assert.match(html, /<meta name="twitter:description" content="Install the project\."/);
-		assert.match(html, /<meta name="twitter:image" content="https:\/\/example\.com\/project\/social-image\.jpg">/);
+		assert.match(html, /<meta name="twitter:image" content="https:\/\/example\.com\/project\/_norna\/shared\/social-image\.jpg">/);
+		assert.equal(await readFile(path.join(root, 'dist', '_norna', 'shared', 'social-image.jpg'), 'utf8'), 'preview');
 	} finally {
 		await rm(root, { recursive: true, force: true });
 	}

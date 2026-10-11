@@ -171,7 +171,7 @@ unknownPageSetting: true
 	);
 	assert.doesNotMatch(invalidContentStart.stderr, /(?:dev-local|yaml-config|site-link-graph)\.mjs:\d+|Astro reported:|Command failed:/u);
 	const preparationLog = await readFile(path.join(siteDir, '.norna', 'dev', 'preparation.log'), 'utf8');
-	assert.match(preparationLog, /unknownPageSetting.*yaml-config\.mjs:\d+/su);
+	assert.match(preparationLog, /site\/root\/content\.md frontmatter has invalid YAML structure.*Frontmatter line 1 defines "unknownPageSetting".*Move "unknownPageSetting:"/su);
 	const failedStartStatus = run('status');
 	assertSucceeded(failedStartStatus, 'dev status after invalid content');
 	assert.match(failedStartStatus.stdout, /No dev server is running/u);

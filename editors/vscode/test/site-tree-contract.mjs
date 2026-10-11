@@ -205,7 +205,7 @@ try {
 	assert.match(localTheme.tooltip, /Visual settings for this page and its descendants/);
 	assert.match(localTheme.tooltip, /Preset: documentation\nPreset source: root\/tree-theme.yaml/);
 	assert.equal(provider.getTreeItem(home).tooltip, 'URL: https://example.com/');
-	assert.match(provider.getTreeItem(roots.find((node) => node.role === 'public')).tooltip, /Files published unchanged/);
+	assert.match(provider.getTreeItem(roots.find((node) => node.role === 'public')).tooltip, /Technical site files, logo, browser icons and social image.*page’s images\/.*downloads\//);
 	assert.equal(state.get('norna.siteTree.activeSite'), siteRoot);
 	assert.equal(contexts.get('nornaSiteTree.hasActiveSite'), true);
 	choices.push(() => undefined);

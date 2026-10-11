@@ -216,10 +216,22 @@ const assertPackageContents = async (packageRoot) => {
 		'scripts/generate-schemas.mjs',
 		'scripts/init-site.mjs',
 		'scripts/lib/astro-command.mjs',
+		'scripts/lib/attachment-render.mjs',
+		'scripts/lib/dev-server-identity.mjs',
 		'scripts/lib/documentation-links.mjs',
+		'scripts/lib/editor-attachments.mjs',
 		'scripts/lib/editor-language-service.mjs',
+		'scripts/lib/editor-resource-actions.mjs',
+		'scripts/lib/editor-site-preview.mjs',
+		'scripts/lib/markdown-images.mjs',
+		'scripts/lib/page-attachments.mjs',
+		'scripts/lib/page-order-source.mjs',
+		'scripts/lib/page-order.mjs',
+		'scripts/lib/page-placement-cli.mjs',
+		'scripts/lib/publication-paths.mjs',
 		'scripts/lib/site-page-urls.mjs',
 		'scripts/lib/site-paths.mjs',
+		'scripts/lib/site-source-format.mjs',
 		'scripts/lib/sitemap.mjs',
 		'scripts/lib/social-image-assets.mjs',
 		'scripts/list-theme-presets.mjs',
@@ -230,6 +242,7 @@ const assertPackageContents = async (packageRoot) => {
 		'scripts/sync-site-public.mjs',
 		'scripts/update-engine.mjs',
 		'scripts/watch-pages-deploy.mjs',
+		'src/lib/markdownImages.ts',
 		'src/pages/index.astro',
 		'src/pages/404.astro',
 		'starters/basic/.github/workflows/deploy.yml',
@@ -268,7 +281,7 @@ const assertPackageContents = async (packageRoot) => {
 	));
 
 	assert.deepEqual(forbiddenFiles, [], `Packed package contains repository-only files:\n${forbiddenFiles.join('\n')}`);
-	assert.ok(files.length < 250, `Packed package unexpectedly contains ${files.length} files (limit: 249).`);
+	assert.ok(files.length <= 250, `Packed package unexpectedly contains ${files.length} files (limit: 250).`);
 };
 
 try {
@@ -533,20 +546,20 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
-		'<meta property="og:image" content="https://example.com/site/social-image.png">',
+		'<meta property="og:image" content="https://example.com/site/_norna/shared/social-image.png">',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
 		'<meta name="twitter:card" content="summary_large_image">',
 	);
-	await assertFileExists(path.join(siteProjectRoot, 'dist', 'social-image.png'));
+	await assertFileExists(path.join(siteProjectRoot, 'dist', '_norna', 'shared', 'social-image.png'));
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'about', 'index.html'),
 		'href="/site/about/" aria-current="page"',
 	);
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<a class="site-brand" href="/site/" aria-label="Home" title="Home"><img class="site-brand-logo" src="/site/logo.svg" alt="Package Check Site">',
+		'<a class="site-brand" href="/site/" aria-label="Home" title="Home"><img class="site-brand-logo" src="/site/_norna/shared/logo.svg" alt="Package Check Site">',
 	);
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
@@ -657,10 +670,10 @@ This page verifies that packaged norna sites can build additional pages.
 	);
 	await writeFile(path.join(siteProjectRoot, 'site', 'public', 'favicon.ico'), 'fake icon');
 	await runInherit(npxBin, ['norna', 'build'], { cwd: siteProjectRoot, env: npmEnv });
-	await assertFileExists(path.join(siteProjectRoot, 'dist', 'favicon.ico'));
+	await assertFileExists(path.join(siteProjectRoot, 'dist', '_norna', 'shared', 'favicon.ico'));
 	await assertFileIncludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
-		'<link rel="icon" sizes="any" href="/site/favicon.ico">',
+		'<link rel="icon" sizes="any" href="/site/_norna/shared/favicon.ico">',
 	);
 	await assertFileExcludes(
 		path.join(siteProjectRoot, 'dist', 'index.html'),
