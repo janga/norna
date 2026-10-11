@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.dirname(fileURLToPath(import.meta.url));
 const output = path.join(root, 'site/root/pages/bl-133/images');
 const repo = path.resolve(root, '../../..');
-const preview = await readFile(path.join(repo, 'site/root/pages/features/images/navigation-single-desktop.png'));
+const preview = await readFile(path.join(repo, 'site/root/pages/examples/pages/building-a-site/images/navigation-single-desktop.png'));
 const photo = `data:image/png;base64,${preview.toString('base64')}`;
 const escape = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 

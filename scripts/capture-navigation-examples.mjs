@@ -5,7 +5,7 @@ import { runReviewEnvironment } from './review-environments.mjs';
 import { captureReviewPage } from './review-capture.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const consumers = ['site/root/pages/features/images', 'site/root/pages/examples/pages/building-a-site/images'];
+const navigationImages = path.join(root, 'site/root/pages/examples/pages/building-a-site/images');
 
 // Replace only the registered disposable scratch copy, never a maintained site.
 for (const [scenario, route, pageMenu] of [
@@ -28,10 +28,7 @@ for (const [scenario, route, pageMenu] of [
 			root,
 			rawArguments: [route, '--viewport', viewport, ...(menu ? ['--menu', menu] : [])],
 		});
-		for (const consumer of consumers) {
-			if (consumer.includes('010-features') && (state !== 'desktop' || scenario === 'documentation')) continue;
-			await copyFile(capture.outputPath, path.join(root, consumer, `navigation-${scenario}-${state}.png`));
-		}
+		await copyFile(capture.outputPath, path.join(navigationImages, `navigation-${scenario}-${state}.png`));
 	}
 }
 

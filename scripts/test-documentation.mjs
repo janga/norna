@@ -352,47 +352,6 @@ const checkSitemapReference = async () => {
 	);
 };
 
-const checkProductTour = async () => {
-	const tourDirectory = path.join(repoRoot, 'site', 'root', 'pages', 'features');
-	const source = await readFile(path.join(tourDirectory, 'content.md'), 'utf8');
-	const orderedSections = [
-		'# What Norna Does',
-		'## Write With Markdown',
-		'## Let Files Become A Site',
-		'## Change Structure Safely',
-		'## Extend Markdown Only Where It Helps',
-		'## Start With A Coherent Presentation',
-		'## Keep Difficult Content Readable',
-		'## Useful Before JavaScript',
-		'## Build Ordinary Static Output',
-	];
-	let previousIndex = -1;
-	for (const heading of orderedSections) {
-		const index = source.indexOf(heading);
-		assert.ok(index > previousIndex, `Product tour is missing or has misplaced heading: ${heading}`);
-		previousIndex = index;
-	}
-
-	for (const statement of [
-		'One page uses section navigation',
-		'Top-level pages use top navigation',
-		'Related child pages introduce a page tree',
-		'There is no second sidebar file to keep synchronized',
-	]) {
-		assert.ok(source.includes(statement), `Product tour is missing its navigation explanation: ${statement}`);
-	}
-
-	for (const imageName of [
-		'navigation-single-desktop.png',
-		'navigation-top-desktop.png',
-		'navigation-nested-desktop.png',
-	]) {
-		const image = await readFile(path.join(tourDirectory, 'images', imageName));
-		assert.ok(source.includes(`image: ${imageName}`), `Product tour does not reference ${imageName}.`);
-		assert.equal(image.subarray(1, 4).toString(), 'PNG', `${imageName} must be a real page capture.`);
-	}
-};
-
 const checkPublishedExampleReferences = async () => {
 	const documentationUrl = new URL(projectConfig.site.url);
 	const exampleFiles = await collectMarkdownFiles(path.join(repoRoot, 'site', 'root', 'pages', 'examples'));
@@ -401,6 +360,10 @@ const checkPublishedExampleReferences = async () => {
 	const exampleModels = await Promise.all(exampleFiles.map(async (file) => ({
 		file, model: await parsePageMarkdownSource(await readFile(file, 'utf8')),
 	})));
+	const overview = exampleModels.find(({ file }) => file === path.join(repoRoot, 'site/root/pages/examples/content.md'));
+	const overviewMetadata = yaml.load(overview.model.frontmatter.trim().split('\n').slice(1, -1).join('\n'));
+	assert.ok(overviewMetadata?.page?.aliases?.includes('/features/'),
+		'The retired product-tour address must continue to lead to Examples.');
 	const exampleSubsections = new Map(exampleModels.flatMap(({ model }) =>
 		model.sections.map((section) => [section.id, section])));
 	for (const { file, model } of exampleModels) {
@@ -506,6 +469,15 @@ const checkPublishedExampleReferences = async () => {
 		assert.equal(shownSource.trim(), (await readFile(path.join(repoRoot, relativePath), 'utf8')).trim(),
 			`Navigation illustration source differs from ${relativePath}. Regenerate its capture after editing.`);
 	}
+	const navigationExample = exampleSubsections.get('automatic-navigation');
+	for (const scenario of ['single', 'top', 'nested', 'documentation']) {
+		const imageName = `navigation-${scenario}-desktop.png`;
+		const image = await readFile(path.join(repoRoot,
+			'site/root/pages/examples/pages/building-a-site/images', imageName));
+		assert.ok(navigationExample.bodyMarkdown.includes(`image: ${imageName}`),
+			`The navigation example must show ${imageName}.`);
+		assert.equal(image.subarray(1, 4).toString(), 'PNG', `${imageName} must be a real page capture.`);
+	}
 
 	const presetComparisonUrl = new URL('examples/theme-presets/', documentationUrl).href;
 	assert.ok(
@@ -608,7 +580,6 @@ await checkSinglePageDiagramSource();
 await checkEditorFormattingGuidance();
 await checkThemePresetReference();
 await checkSitemapReference();
-await checkProductTour();
 await checkPublishedExampleReferences();
 checkThemeExplorer();
 

@@ -41,6 +41,9 @@ Use an image block for visible captions or several images in a stack.
 receive the same file validation, responsive variants and page-move support
 when they refer to files in the page's `images/` directory.
 
+Open the image above to inspect it more closely. Narrow the browser window to
+see how the image and caption fit the available space.
+
 Norna supplies semantic image markup and responsive presentation. The author
 still owns the image's meaning. An AI tool may draft alternative text, but the
 author must review it in the context where the image appears and decide whether
@@ -164,6 +167,9 @@ layout has a free margin.[^margin:available-space]
 [^margin:available-space]:
     This linked note returns to the normal reading flow when the available
     margin cannot hold it safely.
+
+Narrow the browser window to see the note return to the reading flow beside
+its reference. Widen it again to make room in the margin.
 
 ```md
 A short qualification can remain next to the sentence that needs it when the

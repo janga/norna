@@ -3,6 +3,28 @@ import { expect, test } from '@playwright/test';
 const componentsPath = '/guide/components/';
 const centeredFitPath = '/reference/';
 
+test('keeps the root overview and standalone destinations distinct from flat collections', async ({ playwright, baseURL }) => {
+	// Keep the WebKit coverage moved from the documentation-site suite.
+	const browser = await playwright.webkit.launch();
+	try {
+		const page = await browser.newPage({ baseURL, viewport: { width: 1440, height: 1000 } });
+		await page.goto('/guide/');
+		await expect(page.locator('.tree-local-navigation')).toHaveAttribute('data-navigation-area', 'guide');
+		await page.goto('/');
+		await expect(page.locator('.tree-local-navigation')).toHaveCount(0);
+		const reference = page.locator('.site-nav > ul > li > a[href="/reference/"]');
+		await expect(reference).toBeVisible();
+		await expect(reference.locator('..').locator('summary')).toHaveCount(0);
+		await reference.click();
+		await expect(page).toHaveURL(/\/reference\/$/);
+		await expect(page.locator('html')).toHaveAttribute('data-area-reading-frame', '');
+		await expect(page.locator('.tree-local-navigation .navigation-page-tree')).toHaveCount(0);
+		await expect(page.locator('.tree-local-navigation a[href="#centered-fit-stack"]')).toBeVisible();
+	} finally {
+		await browser.close();
+	}
+});
+
 const openComponents = async (page) => {
 	await page.goto(componentsPath, { waitUntil: 'domcontentloaded' });
 	await page.locator('[data-carousel-ready="true"]').waitFor();

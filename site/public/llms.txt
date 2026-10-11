@@ -11,7 +11,7 @@ in that tag’s README. Current sources use site/root/pages/reference/.
 ## Learn and compare
 
 - [Getting Started](https://janga.github.io/norna/getting-started/install-norna/)
-- [What Norna Does](https://janga.github.io/norna/features/)
+- [Norna overview](https://janga.github.io/norna/)
 - [Examples](https://janga.github.io/norna/examples/)
 
 

@@ -40,9 +40,14 @@ not establish that page rendering still works.
 The editable SVG generator produces schematic full-window VS Code proposals,
 including light/dark and compact examples. They are not actual screenshots of
 implemented behavior. The embedded image preview comes from the existing
-`site/pages/features/images/navigation-single-desktop.png`; the homepage
+`site/root/pages/examples/pages/building-a-site/images/navigation-single-desktop.png`;
+the homepage
 theme, local theme, deep-tree and shared-file scenes identify illustrative
 files or structures. YAML and Markdown editor text is schematic.
+
+The sketches retain the historical **What Norna Does** labels from the review.
+That public page was consolidated into the homepage and Examples on 2026-10-11;
+the identical navigation capture is now maintained with the Examples page.
 
 The drawing frame reaches all canvas edges. Every generated SVG is used in
 the review page. Reusable walkthrough text and final real screenshots move to

@@ -10,8 +10,62 @@ second maintained style guide.
 On 2026-10-11 the owner approved developing the homepage and product
 demonstration as one coherent presentation first. A later split must be
 justified by the content's scope and reader need. This supersedes the fixed
-separate-page requirement below for that redesign. The existing `/features/`
-page and links remain until their destination is handled in the redesign.
+separate-page requirement below for that redesign.
+
+The owner subsequently approved retiring the separate page on 2026-10-11.
+The homepage introduces Norna; Examples demonstrates it. `/features/` is now
+an alias of `/examples/`, preserving entry from the old address without
+retaining duplicate product prose or a navigation item. Former section links
+lead to the Examples overview; the destinations below hold the detailed material.
+
+### Content Preservation
+
+Compared against the product tour at commit `468c733`. All eight subjects
+already had maintained destinations; no full section needed copying:
+
+| Former section | Retained destination and disposition |
+| --- | --- |
+| Write With Markdown | [Standard Markdown](../../../site/root/pages/examples/pages/standard-markdown/content.md) already pairs syntax and result. Remove the duplicate. |
+| Let Files Become A Site | [Automatic navigation](../../../site/root/pages/examples/pages/building-a-site/content.md#automatic-navigation) includes desktop/mobile captures and all four maintained source examples. The three former tour images are byte-identical copies; keep the Examples originals. |
+| Change Structure Safely | [Moving pages](../../../site/root/pages/examples/pages/building-a-site/content.md#page-move) demonstrates preview and application. [Page creation](../../../site/root/pages/reference/pages/commands/pages/create/content.md) and [manual moves](../../../site/root/pages/reference/pages/commands/pages/move/content.md#after-a-manual-folder-move) retain the other command details. |
+| Extend Markdown Only Where It Helps | [Common extensions](../../../site/root/pages/examples/pages/common-markdown-extensions/content.md) and [Norna extensions](../../../site/root/pages/examples/pages/norna-extensions/content.md) retain source, result and supported behavior. The homepage explains the coordinated built-ins. |
+| Start With A Coherent Presentation | [Presets and palettes](../../../site/root/pages/examples/pages/building-a-site/content.md#presets) already covers defaults, overrides and the Theme explorer. |
+| Keep Difficult Content Readable | Existing table, code, image and sidenote examples retain the behavior. Add short image-inspection and window-width instructions to [Norna extensions](../../../site/root/pages/examples/pages/norna-extensions/content.md), without duplicating the overview table. |
+| Useful Before JavaScript | Link the [Examples overview](../../../site/root/pages/examples/content.md) to [JavaScript and accessibility](../../../site/root/pages/reference/pages/reader/pages/accessibility/content.md#without-javascript); keep feature-specific explanations beside their examples. |
+| Build Ordinary Static Output | [Checks and generated files](../../../site/root/pages/examples/pages/building-a-site/content.md#source-checks), [publishing](../../../site/root/pages/reference/pages/workflows/pages/publishing/content.md) and [build output](../../../site/root/pages/reference/pages/commands/pages/build/content.md) retain the details. Getting Started remains unchanged pending BL-180. |
+
+The navigation capture script now writes only the maintained Examples images.
+The historical VS Code sketch generator reads the same retained image; its
+illustrated page labels remain historical. Documentation checks cover the
+retained navigation captures, source examples and old-address alias instead of
+requiring the retired page's headings and prose. Browser checks use current
+documentation destinations; the standalone-page case moves to the existing
+preset fixture so removal of the product tour does not remove that coverage.
+
+### Retirement Verification
+
+Verified on 2026-10-11 against `468c733` plus this retirement change:
+
+- Documentation checks and capture/sketch script syntax checks passed.
+- An isolated documentation build produced 86 HTML pages, including the old-URL
+  redirect, and an index of 82 searchable pages. The built `/features/` document
+  points to `/norna/examples/`; navigation, sitemap and `llms.txt` use current
+  destinations. The image manifest removes only the three duplicate sources.
+- All 74 cases in the registered documentation browser suite passed across
+  runs: 62 initially, then the 11 previously failing cases and the build-dependent
+  case. The initial failures exposed old expectations for category redirects,
+  parent-page menus, tree structure and an edited page title. These expectations
+  were reconciled with the current parent-page model; runtime behavior was not
+  changed. Only affected cases were rerun after their corrections.
+- The standalone-page regression passed separately in WebKit against the
+  existing preset fixture. The old documentation address was checked with
+  JavaScript enabled and disabled.
+- Inspected Examples and the image/sidenote instructions at desktop and mobile
+  widths, including Light and Dark appearance. The owner authorized the
+  consolidation and additions; this records agent inspection of their rendering.
+
+No full engine release chain was needed: changes affect documentation content,
+its asset consumers and its browser checks, not shared engine contracts.
 
 ## Outcome
 

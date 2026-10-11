@@ -26,6 +26,17 @@ const clickVisibleControl = async (control: Locator) => {
 	await control.page().mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 };
 const openReadingMenu = (page: Page) => clickVisibleControl(page.locator('[data-area-switcher] > summary'));
+const openExamplesFromHome = async (page: Page) => {
+	if (page.viewportSize()!.width < 961) {
+		await clickVisibleControl(page.locator('.mobile-nav-menu > summary'));
+		await page.locator('.mobile-site-nav a[href$="/examples/"]').click();
+	} else {
+		await clickVisibleControl(page.locator('[data-area-menu="examples"] > summary'));
+		await page.locator('[data-area-menu="examples"] [data-area-choice="examples"]').click();
+	}
+	await page.waitForURL('**/examples/');
+	await ready(page);
+};
 const referenceAreas = ['site', 'configuration', 'content', 'commands', 'reader', 'workflows'] as const;
 
 for (const width of [1440, 1024, 390]) {
@@ -50,14 +61,7 @@ for (const width of [1440, 1024, 390]) {
 			const home = await logoSize();
 			const rem = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).fontSize));
 			expect(home.height).toBeCloseTo(rem * (width <= 700 ? 2.15 : configuredHeight ? 3 : 2.6), 1);
-			if (width < 961) {
-				await clickVisibleControl(page.locator('.mobile-nav-menu > summary'));
-				await page.locator('.mobile-site-nav a[href$="/features/"]').click();
-			} else {
-				await page.locator('.site-nav > ul > li > a[href$="/features/"]').click();
-			}
-			await page.waitForURL('**/features/');
-			await ready(page);
+			await openExamplesFromHome(page);
 			await expect(page.locator('html')).toHaveAttribute('data-area-reading-frame', '');
 			expect(await logoSize()).toEqual(home);
 			const assertLogoFitsHeader = async () => {
@@ -95,14 +99,7 @@ test('keeps the reading frame stable and restores the global Home navigation', a
 		await page.evaluate(() => document.fonts.ready);
 		const homePath = new URL(page.url()).pathname;
 		const home = await snapshot();
-		if (width < 961) {
-			await clickVisibleControl(page.locator('.mobile-nav-menu > summary'));
-			await page.locator('.mobile-site-nav a[href$="/features/"]').click();
-		} else {
-			await page.locator('.site-nav > ul > li > a[href$="/features/"]').click();
-		}
-		await page.waitForURL('**/features/');
-		await ready(page);
+		await openExamplesFromHome(page);
 		await page.evaluate(() => document.fonts.ready);
 		await expect(page.locator('html')).toHaveAttribute('data-area-reading-frame', '');
 		await expect(page.locator('.site-nav')).toHaveCount(0);
@@ -160,7 +157,7 @@ test('keeps site search and Display reachable in the reading frame without a pag
 	await page.keyboard.press('Escape');
 	await openReadingMenu(page);
 	await expect(page.locator('[data-area-switcher] .area-navigation-other-roots a')).toHaveText([
-		'Home', 'What Norna Does', 'Getting Started', 'Examples', 'Reference', 'FAQ', 'Resources',
+		'Home', 'Getting Started', 'Examples', 'Reference', 'FAQ', 'Resources',
 	]);
 	await page.locator('[data-area-switcher] a[href$="/reference/"]').click();
 	await ready(page);
@@ -252,14 +249,18 @@ test('keeps menus open while crossing slowly and diagonally from their titles', 
 
 test('presents flat collections in columns and keeps an open panel aligned after resizing', async ({ page }) => {
 	await openPage(page, './');
-	for (const [name, columns] of [['getting-started', 3], ['faq', 2]] as const) {
+	for (const [name, children] of [['getting-started', 5], ['faq', 4]] as const) {
 		const menu = page.locator(`[data-area-menu="${name}"]`);
 		await menu.locator('summary').focus();
 		await page.keyboard.press('ArrowDown');
 		await expect(menu).toHaveAttribute('open', '');
+		await expect(menu.locator('[data-area-choice-group="branches"] [data-area-choice]'))
+			.toHaveAttribute('data-area-choice', name);
+		await expect(menu.locator('[data-area-choice-group="pages"] [data-area-choice]')).toHaveCount(children);
 		const positions = await menu.locator('[data-area-choice]').evaluateAll(links =>
 			links.map(link => link.getBoundingClientRect().left));
-		expect(new Set(positions).size).toBe(columns);
+		// The parent overview occupies one column, its leaf pages the other.
+		expect(new Set(positions).size).toBe(2);
 		for (const width of [1024, 1440]) {
 			await page.setViewportSize({ width, height: 1000 });
 			await expect.poll(() => menu.evaluate(element => {
@@ -283,7 +284,7 @@ test('retains touch activation of desktop menu titles without requiring hover', 
 		await page.waitForTimeout(700);
 		await expect(page.locator('[data-area-choice="reference/site"]')).toBeVisible();
 		await page.locator('[data-area-choice="reference/configuration"]').tap();
-		await page.waitForURL('**/reference/configuration/site/');
+		await page.waitForURL('**/reference/configuration/');
 		await ready(page);
 		await expect(tree(page)).toHaveAttribute('data-navigation-area', 'reference/configuration');
 	} finally { await context.close(); }
@@ -294,13 +295,15 @@ test('offers equal immediate area choices and resolves the same scope on menu an
 		await openPage(page, 'reference/');
 		await openReadingMenu(page);
 		const choices = page.locator('[data-area-switcher] [data-area-choice]');
-		await expect(choices).toHaveCount(6);
+		await expect(choices).toHaveCount(1 + referenceAreas.length);
+		expect(await choices.evaluateAll(links => links.map(link => link.getAttribute('data-area-choice'))))
+			.toEqual(['reference', ...referenceAreas.map(area => `reference/${area}`)]);
 		const layout = await choices.evaluateAll(links => links.map(link => {
 			const box = link.getBoundingClientRect();
 			return { x: box.x, y: box.y };
 		}));
 		expect(new Set(layout.map(({ x }) => x)).size).toBe(3);
-		expect(new Set(layout.map(({ y }) => y)).size).toBe(2);
+		expect(new Set(layout.map(({ y }) => y)).size).toBe(3);
 		const href = await page.locator(`[data-area-choice="reference/${area}"]`).getAttribute('href');
 		await page.locator(`[data-area-choice="reference/${area}"]`).click();
 		await page.waitForURL(url => url.pathname === href);
@@ -323,12 +326,16 @@ for (const [menu, slugs] of [
 		const path = `${menu}/${slugs[0]}/`;
 		await openPage(page, path);
 		const siblings = slugs.map(slug => new URL(`../${slug}/`, page.url()).pathname);
-		const pageLinks = tree(page).locator(':scope > nav > ul > li > .navigation-page-link');
+		const pageLinks = tree(page).locator('.navigation-page-link');
 		await expect(tree(page)).toHaveAttribute('data-navigation-area', menu);
+		await expect(tree(page).locator(`.navigation-page-disclosure[data-page-path="${menu}"]`))
+			.toHaveAttribute('open', '');
+		await expect(tree(page).locator('.navigation-page-open-link').first())
+			.toHaveAttribute('href', new URL('../', page.url()).pathname);
 		expect(await pageLinks.evaluateAll(links => links.map(a => a.getAttribute('href')))).toEqual(siblings);
 		const current = tree(page).locator(`details[data-page-path="${menu}/${slugs[0]}"]`);
 		await expect(current).toHaveAttribute('open', '');
-		await expect(tree(page).locator('details[open]')).toHaveCount(1);
+		await expect(tree(page).locator('.navigation-page-sections-disclosure[open]')).toHaveCount(1);
 		const headings = await page.locator('main h2[id]').evaluateAll(elements => elements.map(e => `#${e.id}`));
 		expect(await current.locator('.page-contents-links a').evaluateAll(links => links.map(a => a.getAttribute('href')))).toEqual(headings);
 		await expect(tree(page).locator('.page-contents-links ol')).toHaveCount(0);
@@ -359,19 +366,18 @@ for (const [menu, slugs] of [
 	});
 }
 
-test('keeps the root overview and standalone destinations distinct from flat collections', async ({ page }) => {
-	await openPage(page, 'reference/');
-	await expect(tree(page)).toHaveAttribute('data-navigation-area', 'reference');
-	await openPage(page, './');
-	await expect(tree(page)).toHaveCount(0);
-	const features = page.locator('.site-nav > ul > li > a[href$="/features/"]');
-	await expect(features).toBeVisible();
-	await expect(features.locator('..').locator('summary')).toHaveCount(0);
-	await features.click();
-	await page.waitForURL('**/features/');
-	await ready(page);
-	await expect(tree(page).locator('.navigation-page-tree')).toHaveCount(0);
-});
+for (const javaScriptEnabled of [true, false]) {
+	test.describe(`retired product tour with JavaScript ${javaScriptEnabled ? 'enabled' : 'disabled'}`, () => {
+		test.use({ javaScriptEnabled });
+		test('leads to Examples while navigation uses its current address', async ({ page }) => {
+			await page.goto('features/');
+			await expect(page).toHaveURL(/\/norna\/examples\/$/);
+			await expect(page.locator('main h1')).toHaveText('Examples');
+			await expect(page.locator('main .child-page-list a')).toHaveCount(6);
+			await expect(page.locator('nav a[href$="/features/"]')).toHaveCount(0);
+		});
+	});
+}
 
 test('discloses another page H2 independently and follows its fragment without H3 menu levels', async ({ page }) => {
 	await openPage(page, 'reference/site/files/');
@@ -396,8 +402,8 @@ test('a page choice reopens its outline from sticky navigation and from its own 
 	await current.locator('summary').click();
 	await expect(current).not.toHaveAttribute('open', '');
 	await openReadingMenu(page);
-	await page.locator('.area-navigation-other-roots a[href$="/features/"]').click();
-	await page.waitForURL('**/features/');
+	await page.locator('.area-navigation-other-roots a[href$="/examples/"]').click();
+	await page.waitForURL('**/examples/');
 	await ready(page);
 	await page.locator('.site-brand').click();
 	await ready(page);
@@ -475,7 +481,7 @@ test('opens the selected outline before deferred scripts while retaining other s
 		await page.goto('reference/site/urls/', { waitUntil: 'commit' });
 		await tree(page).locator('details[data-page-path="reference/site/requirements"]').waitFor({ state: 'attached' });
 		before = await snapshot();
-		expect(before).toEqual({ scroll: 70, open: ['reference/site/files', 'reference/site/pages', 'reference/site/urls'] });
+		expect(before).toEqual({ scroll: 70, open: ['reference/site', 'reference/site/files', 'reference/site/pages', 'reference/site/urls'] });
 	} finally { release(); }
 	await ready(page);
 	expect(await snapshot()).toEqual(before);
@@ -516,6 +522,9 @@ for (const width of [1200, 1440]) {
 		await ready(page);
 		await openReadingMenu(page);
 		await page.locator('[data-area-choice="reference/site"]').click();
+		await page.waitForURL('**/reference/site/');
+		await ready(page);
+		await tree(page).locator('a[href$="/reference/site/files/"]').click();
 		await page.waitForURL('**/reference/site/files/');
 		await ready(page);
 		const snapshot = () => tree(page).evaluate(nav => ({
@@ -647,6 +656,9 @@ test('supports keyboard and no-script area selection while retaining native link
 		await plain.goto('reference/site/files/');
 		await plain.locator('[data-area-switcher] > summary').click();
 		await plain.locator('[data-area-choice="reference/configuration"]').click();
+		await expect(plain).toHaveURL(/\/reference\/configuration\/$/);
+		await expect(tree(plain)).toHaveAttribute('data-navigation-area', 'reference/configuration');
+		await tree(plain).locator('a[href$="/reference/configuration/site/"]').click();
 		await expect(plain).toHaveURL(/\/reference\/configuration\/site\/$/);
 		const outline = tree(plain).locator('details[data-page-path="reference/configuration/site"]');
 		await expect(outline).toHaveAttribute('open', '');
@@ -697,8 +709,8 @@ test('retains Focus reading, compact destinations and touch activation', async (
 	} finally { await context.close(); }
 });
 
-test('resolves prose and category-overview links directly and leaves external links native', async ({ page, context }) => {
-	await openPage(page, 'reference/');
+test('resolves prose and parent-overview links directly and leaves external links native', async ({ page, context }) => {
+	await openPage(page, 'reference/site/');
 	const documents: string[] = [];
 	page.on('request', request => {
 		if (request.isNavigationRequest() && request.frame() === page.mainFrame()) documents.push(request.url());
@@ -707,7 +719,7 @@ test('resolves prose and category-overview links directly and leaves external li
 	await page.waitForURL('**/reference/site/files/');
 	await ready(page);
 	expect(documents).toHaveLength(1);
-	await page.locator('main').getByRole('link', { name: 'limited inherited overrides', exact: true }).click();
+	await page.locator('main a[href$="/reference/configuration/theme/#page-themes"]').click();
 	await page.waitForURL('**/reference/configuration/theme/#page-themes');
 	await ready(page);
 	await expect(tree(page)).toHaveAttribute('data-navigation-area', 'reference/configuration');
@@ -734,7 +746,7 @@ test('keeps wide reading frames near the left edge without widening prose', asyn
 	let wideProseWidth: number | undefined;
 	for (const [width, height] of [[1024, 666], [1152, 648], [1710, 1112], [1920, 1080], [2560, 1440], [3840, 2160]]) {
 		await page.setViewportSize({ width, height });
-		await openPage(page, 'features/');
+		await openPage(page, 'examples/norna-extensions/');
 		await page.evaluate(() => document.fonts.ready);
 		const geometry = await page.evaluate(() => {
 			const box = (selector: string) => document.querySelector(selector)!.getBoundingClientRect().toJSON();
@@ -759,7 +771,7 @@ test('keeps wide reading frames near the left edge without widening prose', asyn
 test('Focus reading keeps the wide article on its existing reading axis', async ({ page }) => {
 	for (const width of [1920, 3840]) {
 		await page.setViewportSize({ width, height: 1080 });
-		await openPage(page, 'features/');
+		await openPage(page, 'examples/norna-extensions/');
 		const paragraph = page.locator('.section-markdown p').first();
 		const before = (await paragraph.boundingBox())!;
 		const display = page.locator('[data-display-settings]');

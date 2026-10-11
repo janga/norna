@@ -46,11 +46,12 @@ test('restores the reading position when returning from search', async ({ page }
 	await ready(page);
 	await page.evaluate(() => scrollBy({ top: 220, behavior: 'instant' }));
 	const position = await page.evaluate(() => scrollY);
+	const title = (await page.locator('main h1').textContent())!.trim();
 	const search = await page.locator('.site-search-link').boundingBox();
 	expect(search).not.toBeNull();
 	await page.mouse.click(search!.x + search!.width / 2, search!.y + search!.height / 2);
 	const returnLink = page.locator('[data-search-return]');
-	await expect(returnLink).toContainText('Pages and categories');
+	await expect(returnLink).toContainText(title);
 	await returnLink.click();
 	await ready(page);
 	await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - position)).toBeLessThanOrEqual(1);

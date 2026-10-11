@@ -1,6 +1,8 @@
 ---
 page:
   description: Explore ordinary Markdown, common extensions, Norna content features and complete sites.
+  aliases:
+    - /features/
   listChildren: true
 navigation:
   order: 3000
@@ -15,3 +17,6 @@ which are shared or hosted elsewhere.
 
 For examples that combine content, navigation and presentation, explore the
 complete sites and their source files.
+
+See [what remains available without JavaScript](/reference/reader/accessibility/#without-javascript)
+and which interactions scripts add.
