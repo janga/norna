@@ -1,75 +1,55 @@
 ---
 page:
   description: >-
-    Build a complete, responsive website from Markdown, images, folders, and a
-    coordinated theme preset.
+    Create project websites and documentation from Markdown with coordinated
+    typography, layouts, and content elements.
 ---
 
 # Norna
 
-## A complete website from Markdown, images, and folders. {#intro}
+A well-designed website, built from Markdown.
 
-**Norna is an opinionated, open source publishing system for documentation,
-project sites, portfolios, and other content-led websites.**
+Norna is an open-source tool for creating project websites and documentation.
+Choose a visual style with coordinated typography, layouts, and content elements.
 
-You write in Markdown, choose the images, arrange pages in folders, and select
-a visual preset. Norna supplies the responsive presentation, navigation, image
-handling, checks, search, and static output around that content.
+[Get started](/getting-started/) · [Explore examples](/examples/)
 
-**[Install Norna and create a site](/getting-started/install-norna/)**
+## Explain your work
 
-Or [explore the examples](/examples/) before creating a project.
+Combine text and figures to explain an idea. Walk through code examples and
+highlight the lines that matter. Share reports and other resources alongside
+your explanation.
 
-## See the model at work {#examples}
+Norna’s built-in Markdown extensions let you add captions to figures, place
+supporting notes in the margin, and group related resources into cards. Each
+element follows your site’s visual style.
 
-These examples use the same file-based model at very different scales.
+[Explore Examples](/examples/) to see the results alongside the source.
 
-```card-list
-flow: grid
-size: m
-width: wide
-items:
-  - title: Documentation that scales
-    text: This documentation is a Norna site. Its nested pages produce a persistent page tree and a separate outline for the current page where the hierarchy needs them.
-    link: /getting-started/install-norna/
-  - title: A deliberately small complete site
-    text: The dog-shelter site is so small that its desktop navigation barely has work to do. It shows the simpler top navigation that Norna uses when a hierarchy would add little value.
-    link: https://janga.github.io/norna/examples/complete-sites/dog-shelter-multi-page/
-  - title: One source, several visual directions
-    text: The Theme explorer keeps the content fixed while presets change typography, spacing, width, media, and color. The differences have their greatest effect and are easiest to compare on a desktop screen.
-    link: https://janga.github.io/norna/examples/theme-presets/
-```
+## Write and organize in VS Code
 
-## One model as the site grows {#growth}
+Your content lives in ordinary files. Write and revise it yourself or work with
+an AI assistant.
 
-Start with one page and its sections. Add top-level pages when the content
-needs separate URLs. Nest pages when readers need a deeper hierarchy. Norna
-derives the corresponding desktop and mobile navigation from the same page
-folders and headings; there is no separate sidebar structure to maintain.
+Norna’s VS Code extension helps you add and move pages and manage their images
+and attachments. Preview the result as you work, then run Norna’s checks before
+publishing.
 
-[See the illustrated progression from one page to a nested site](/getting-started/grow-your-site/).
+Use Git to track changes, review your work, and return to earlier versions.
 
-## Less website machinery to maintain {#maintenance}
+## Keep a growing site consistent
 
-A preset gives the site a coordinated starting point instead of a collection
-of disconnected styling choices. The page structure is reused for navigation,
-link and asset checks, static search, the sitemap, and redirects from old page
-URLs. Norna also prepares responsive images and publishable static output.
+Navigation follows your page structure as you add and move pages. New pages use
+your site’s shared styles. Norna prepares your page images in the sizes needed
+for different screens.
 
-The source remains ordinary files that can be inspected, reviewed, reversed
-with Git, and edited by the same AI assistants that work with the author.
+These features and the Markdown extensions are built into Norna and maintained
+together. There are no separate website plugins to install or keep compatible.
 
-[Review the current capabilities and product boundaries](/resources/capabilities/).
+## Publish with GitHub Pages
 
-## Where Norna fits {#fit}
+Create a repository on GitHub and enable GitHub Pages. Norna’s included workflow
+builds and publishes your site when you push changes to the repository’s default
+branch.
 
-Norna fits websites where writing, images, and clear navigation are the main
-substance: documentation, project and product sites, portfolios, and
-organisation or information sites.
-
-Choose a more flexible platform when the project is a dynamic application,
-needs database-backed or visual-CMS publishing, or depends on complete control
-over templates, components, and rendering logic.
-
-**[Create a Norna site](/getting-started/install-norna/)** or
-[browse all examples](/examples/).
+[Get started](/getting-started/) · [Explore examples](/examples/)
