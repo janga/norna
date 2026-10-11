@@ -53,6 +53,14 @@ When an item is complete, remove it from `BACKLOG.md` in the implementation
 commit. Preserve the identifier in the commit message or pull request. Git
 history is the completion log; do not maintain a growing `Done` section.
 
+Before closing an implementation item, apply the
+[verification rules](../../engine-development.md#common-checks): update affected
+tests and fixtures with the behavior, and record results for every affected
+consumer. Required checks must pass; owner approval does not replace them.
+Keep concrete unrelated test failures in an active item linked from the
+verification note and handover until resolved. Do not reopen completed items
+solely because an unrelated check failed.
+
 ## Design-Item Record
 
 Use the following headings for an item whose purpose is to reach an

@@ -49,11 +49,23 @@ and requirements.
 
 ## Verification and review
 
-- Select checks by the changed behavior and its consumers. Do not repeat checks
-  already covered by a successful aggregate on the same relevant source state.
-  A commit alone does not justify a broader run.
-- Use the full npm test chain for release or when the change requires its scope.
-  npm run build already checks configuration and content.
+- Trace changed behavior through every affected consumer, including engine,
+  CLI, VS Code extension, built output and installed package. Search for old
+  expectations and affected fixtures; update them in the same change. A behavior
+  change is complete only after the required checks for those consumers pass.
+- Follow docs/engine-development.md#common-checks for test scope. Run the full
+  npm test chain for release and changes to shared contracts across consumers;
+  use focused checks for isolated changes, including wording-only updates.
+  Include relevant browser or editor checks outside that aggregate.
+- Reuse successful checks while their relevant source, fixtures, dependencies
+  and configuration remain unchanged. Do not rerun covered child commands or
+  broaden testing merely for a commit. npm run build already checks configuration
+  and content. After a failed aggregate, account for checks it never reached.
+- Keep known failures in required release checks visible as release blockers
+  until resolved. Fix failures caused by the current change; record unrelated
+  failures in an active backlog item and link it from the verification note and
+  any handover. Report passed, failed and unrun required checks separately;
+  owner approval does not establish automated test results.
 - For new or materially changed visual presentation or interaction, inspect
   the result and obtain local user approval before committing unless the owner
   has explicitly taken responsibility for later review. Quick relevant checks

@@ -96,12 +96,37 @@ creating an open-ended diagnostics task.
 
 ## Common Checks
 
-Choose checks for the changed behavior and its consumers. These are alternatives
-and complements, not a checklist to run for every change:
+Choose checks by the behavior being changed and every consumer of that behavior.
+For a behavior change, briefly record the affected consumers and selected checks
+in the task's verification note or backlog item. Trace engine rules through CLI
+commands, the VS Code extension, generated output and the installed package
+where applicable. Search tests and fixtures for the previous paths, messages,
+values and source assumptions; imports alone do not reveal every dependency.
+Update affected expectations and fixtures in the same change as the behavior.
+
+For example, a publication-path change can affect editor resource actions,
+404 pages, social-image metadata, Markdown fixtures and packaged-site output.
+Passing the publication module's own tests does not verify those consumers.
+
+### Select The Scope
+
+Run the full `npm test` chain for releases and changes to shared contracts across
+consumers. This includes changes to source format, resource ownership or URLs,
+configuration validation, editor APIs, or package/installation behavior that
+affect multiple areas above. Use focused checks while developing, then complete
+the required aggregate before marking the behavior change finished. When the
+impact cannot be confidently bounded, use the full chain.
+
+For an isolated change, run the smallest set that covers its affected behavior
+and consumers. Contributor prose does not require engine or package tests;
+wording-only UI help changes require the affected text contracts, not the full
+release chain. A change in a shared file does not by itself imply a shared
+behavior change. These checks are starting points to combine as needed, not a
+checklist to run for every change:
 
 | Changed contract | Focused check |
 | --- | --- |
-| Content validation or synchronization | `npm run test:content-check` |
+| Content validation or synchronization | Relevant `test:content-check`, `test:content-sync-plan` or `test:content-sync` checks |
 | Static public-file synchronization | `npm run test:site-public` |
 | Contributor documentation, README files or `llms.txt` | `npm run test:documentation` |
 | Package/site-root behavior | `npm run test:fixture:build` and, where packaging is affected, `npm run package:check` |
@@ -111,13 +136,55 @@ and complements, not a checklist to run for every change:
 | Navigation or shared presentation | Relevant registered `review:test` suite |
 | Editor APIs or extension behavior | Focused contracts and the changed workflows in the [editor test plan](design/editor-workflow-test-plan.md) |
 
+Inspect the current command definitions in `package.json` and
+`editors/vscode/package.json` before assuming an aggregate covers a check.
+Include affected standalone tests, browser suites and native editor workflows
+that are outside `npm test`. Manual approval and automated results establish
+different things; record them separately.
+
+### Reuse Results And Handle Failures
+
 `npm run build` already validates configuration and content. Use `config:check`
 or `content:check` for early, narrow feedback; neither is an obligatory separate
 step before that build. `test:editor-language` includes engine language-service
 contracts and the extension's check command. Do not rerun covered child commands
-on unchanged relevant sources merely to prepare a commit. After a failure,
-rerun after a correction or a concrete diagnostic hypothesis, including evidence
-of an infrastructure failure.
+on unchanged relevant sources merely to prepare a commit. Reuse a passing result
+only while its relevant source, fixtures, dependencies and configuration are
+unchanged. Contributor-prose changes alone do not invalidate unrelated engine
+test results.
+
+When a check fails, establish whether the cause is a regression, an intended
+contract change or an environment failure. Correct the cause before rerunning,
+or state a concrete diagnostic hypothesis. Do not relax an assertion simply to
+make a failure disappear. Prefer observable behavior over incidental full
+messages or stack traces unless those details are the contract. Keep expected
+results independent of the production helper being tested. Justify changes to
+package limits by inspecting the actual package contents.
+
+The `npm test` chain stops at the first failure. Record the failing command and
+the remaining commands it never reached. After a correction, rerun the failed
+check and any earlier checks affected by the correction, then complete the
+remaining chain. Reuse earlier passes only under the unchanged-input rule above;
+if their validity is uncertain, rerun the aggregate. Report segmented completion
+as such rather than claiming a single successful `npm test` invocation.
+
+A behavior change is not complete until its required checks pass. Fix failures
+introduced by the change before closing it. Any unresolved failure in a required
+release check remains a release blocker, including a known stale expectation.
+If the failure is unrelated to the current task, record the command, diagnostic,
+affected source state and next action in an active backlog item; link it from
+the verification note and any handover. Unrelated work may continue, but a
+restart note alone must not become the only record of the blocker. Never count
+unrun checks as passed or describe the release chain as green while a blocker
+remains.
+
+Keep the verification note short: scope and commands, passing results, failures
+and required checks not run, with the reason and blocker link where applicable.
+Identify the checked commit or working-tree state, prepared version if used, and
+any relevant environment limitation. For a small isolated change, one sentence
+may suffice.
+
+### CI And Release Evidence
 
 The **Engine tests** GitHub Actions workflow prepares a patch version and
 regenerates schemas inside its temporary checkout, then runs the complete
@@ -127,9 +194,16 @@ started manually. Preparing the version catches checks that depend on the
 new release's documentation links. The prepared package stays inside the CI
 job.
 
+For local verification of an upcoming release, use a disposable physical copy
+of the intended source state and prepare its version and schemas as CI does.
+Keep that preparation separate from the maintained working tree; run the checks
+without invoking a release or publishing command.
+
 The **Deploy to GitHub Pages** workflow builds the documentation and examples
 separately. Check the Engine tests result for the commit being released; the
 release command runs the complete chain again with the chosen release version.
+
+### Browser And Fixture Checks
 
 Navigation continuity loads `src/lib/navigationContinuity.ts` through an
 import string generated by `injectScript` in `astro.config.mjs`, for every
