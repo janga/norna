@@ -38,7 +38,9 @@ accepted path forms, same-page ownership, usage/removal, Go to Definition,
 shared-definition rename, dirty CRLF buffers and page moves. Focused extension
 Markdown and package contracts pass.
 
-Owner review remains pending under the agreed VSIX workflow:
+The owner approved BL-159 Managed Local Markdown Images on 2026-10-11.
+Its feature review is closed. Keep the following scenarios for regression
+review; approval does not assert a new run of each individual check:
 
 - Use `images/name.jpg`, `./images/name.jpg`, the bare filename and a reference
   definition. Verify Go to Definition opens the owning page's actual image.

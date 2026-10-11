@@ -6,9 +6,9 @@ Let authors use ordinary Markdown image references for local images while
 receiving the same file validation, responsive variants and file-lifecycle
 support as images referenced through `image-stack`.
 
-**Status: Implemented 2026-10-04.** Created at the owner's request on 2026-10-02;
+**Status: Implemented 2026-10-04; owner-approved 2026-10-11.** Created at the owner's request on 2026-10-02;
 the authoring and presentation decisions below were approved on 2026-10-04.
-Native editor review remains with the owner under the existing review agreement.
+The owner's approval closes the outstanding feature review.
 
 ## Scope And Boundaries
 
@@ -177,9 +177,9 @@ direct links without JavaScript. Light/dark and narrow screenshots were
 inspected; list markers were adjusted to align with the top of an image.
 
 VS Code 0.15.0 forwards the cursor column for image Go to Definition.
-Its focused Markdown and packaging checks pass. The owner installs the VSIX
-and reviews Go to Definition, usage labels, rename, Undo and dirty save/reopen
-in the native editor; these manual checks are not claimed as completed.
+Its focused Markdown and packaging checks pass. The owner approved BL-159 on
+2026-10-11. This closes the feature review without asserting that each suggested
+manual test was individually performed.
 
 ## Evidence Behind The Decisions
 
