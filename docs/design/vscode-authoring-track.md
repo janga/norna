@@ -124,8 +124,8 @@ the permanent per-row plus and ellipsis requirements above: grouped native
 context menus provide Add, Rename, Properties, Move, References and Delete
 where applicable. Page/file activation still opens content, and chevrons
 still control expansion. The reviewed local controls for an active page move
-remain visible. The owner authorized committing the implementation and will
-handle further manual review.
+remain visible. The owner approved BL-154 on 2026-10-11, closing its feature
+review.
 
 Image rename from BL-152 VS Code Image Rename is included in BL-154.
 [BL-155 Page Attachments](backlog/BL-155-page-attachments.md) has approved product

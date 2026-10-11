@@ -6,16 +6,14 @@ Give every Site Tree element a predictable menu for adding, changing and
 removing its contents. Authors should not need to try several buttons to find
 an operation or leave Site Tree to manage public files.
 
-**Status: Implemented; commit authorized on 2026-09-30.** The owner
-approved this interaction model and authorized implementation on 2026-09-30.
-The engine plans, native menus and adapter operations are implemented.
-Focused automated checks pass. Native review has verified the page and image
-rename flows, real Undo and dirty save/reopen, keyboard context menus, public
-text-file creation, and cancellation of folder deletion with incoming links.
-The review matrix and remaining practical checks are recorded in
-[the editor workflow test plan](../editor-workflow-test-plan.md). The owner
-handles further interface review and error reports; those checks are not claimed
-as passed and no longer block committing the implementation.
+**Status: Implemented; owner-approved 2026-10-11.** The owner's approval
+closes the outstanding feature review. The interaction model and implementation
+were authorized on 2026-09-30. The engine plans, native menus and adapter
+operations are implemented.
+
+The review matrix and earlier verification evidence remain in
+[the editor workflow test plan](../editor-workflow-test-plan.md) for regression
+review. Approval does not assert a new run of each individual test case.
 
 ## Approved Interaction Model
 

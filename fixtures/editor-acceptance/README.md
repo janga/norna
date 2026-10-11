@@ -1,8 +1,9 @@
 # Editor Acceptance Examples
 
 Manual examples for the remaining review of BL-160 Standard Markdown For Local
-Attachments, BL-154 VS Code Site Tree Context Actions, BL-155 Page Attachments
-and BL-156 Local Site Preview.
+Attachments, BL-155 Page Attachments and BL-156 Local Site Preview.
+BL-154 VS Code Site Tree Context Actions is approved; its examples remain
+available for regression review.
 Each review page contains its steps and expected result.
 
 ## Open The Disposable Copy
@@ -33,7 +34,7 @@ Install the evaluation VSIX yourself if needed: `editors/vscode/norna-vscode.vsi
 | Page | Review |
 | --- | --- |
 | BL-160 Markdown files | Three path forms, shared definitions, incoming links and page move. |
-| BL-154 Context actions | Page title, technical file/folder operations, public-file restrictions and optional themes. |
+| BL-154 Context actions (approved) | Regression review: page title, technical file/folder operations, public-file restrictions and optional themes. |
 | BL-155 Import and replace | Single/batch import, collision, replacement, deletion and Trash. |
 | BL-156 Local preview | Start/reuse/stop, nested page, saved edits and logs. |
 | Incoming links | Verify attachment and public-file links after rename/move. |
@@ -74,8 +75,9 @@ In Frontmatter on 2026-10-11. Their manual pages and dependent links were remove
 from this fixture and the active copy at the owner's request. Dedicated engine
 regression tests remain in place.
 
-Owner approval remains pending for BL-160 and the remaining BL-154–156
-scenarios. The public-file exercise also covers the publication paths from
+The owner also approved BL-154 VS Code Site Tree Context Actions on 2026-10-11.
+Owner approval remains pending for BL-160 and BL-155–156. The public-file
+exercise also covers the publication paths from
 BL-177 Publication Path Ownership And Collision Checks and the restrictions
 from BL-179 Simplify Public Site Resources. No individual manual result is
 inferred from this fixture's preparation or automated checks.

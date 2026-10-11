@@ -6,7 +6,7 @@ real editing, not just activation or completion-provider responses.
 ## Acceptance Boundary
 
 The [editor acceptance examples](../../fixtures/editor-acceptance/README.md)
-provide a disposable site for the remaining BL-160 and BL-154–156 review, with
+provide a disposable site for the remaining BL-160 and BL-155–156 review, with
 attachments, incoming links and import/replacement files. BL-159 and BL-166
 were approved and their manual test pages removed on 2026-10-11. The owner
 performs native review; engine regression tests retain coverage of approved work.
@@ -508,9 +508,13 @@ syntax-checked, but has not been executed against VS Code in this change.
 
 ## Site Tree Context Actions (BL-154)
 
-Use the Default profile and the disposable `.local/bl-154-review/site` fixture.
-Install `editors/vscode/norna-vscode.vsix` through **Extensions: Install from
-VSIX…**, then **Developer: Reload Window**. The expected extension is 0.10.0.
+The owner approved **BL-154 VS Code Site Tree Context Actions** on 2026-10-11,
+closing its feature review. Keep the following scenarios and earlier evidence
+for regression review; approval does not assert a new run of each case.
+
+For regression review, use the Default profile and the disposable
+`test-sites/editor-review/editor-review.code-workspace` with extension 0.15.0
+or later. Reload the VS Code window to load the current engine.
 
 | ID | Direct review |
 | --- | --- |
@@ -545,11 +549,11 @@ Native review on 2026-09-30 used extension 0.10.0 in the Default profile:
 - Inspected Delete on the nonempty public/notes folder: one file and one
   incoming link were reported. Cancel preserved the folder and its contents.
 
-The remaining native matrix (all repair/move/optional-file states, public
-import/replace/move, and confirmed deletion with Finder restoration) has not
-been rerun. Automated checks cover those mutation and capability rules; they
-do not replace practical verification. The owner took responsibility for further
-manual review and authorized committing this implementation on 2026-09-30.
+The 2026-09-30 session did not cover every repair/move/optional-file state,
+public import/replace/move or confirmed deletion with Finder restoration.
+Automated checks cover those mutation and capability rules. The owner took
+responsibility for further manual review and approved the feature on
+2026-10-11; no additional individual results are recorded here.
 
 
 ## Site Tree Addresses And Paths (BL-157)
