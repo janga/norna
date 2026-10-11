@@ -25,7 +25,10 @@ when implementation can begin.
 
 `Next` is the exact implementation sequence after `Now`.
 
-No additional item is ready in this sequence.
+- [BL-181 Replace ImageMagick With Sharp](docs/design/backlog/BL-181-replace-imagemagick-with-sharp.md):
+  **Ready.** Include raster image processing in Norna's npm installation, with
+  automatic cache renewal, installation checks on three operating systems,
+  and updated documentation and deployment workflows.
 
 ## Ideas
 
