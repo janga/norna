@@ -5,10 +5,11 @@
 Let authors keep PDFs, archives, spreadsheets and other files with the page
 that owns them, and insert links without manually writing paths.
 
-**Status: Implemented; commit authorized on 2026-09-30.** The owner approved the product
-decisions and form sketch on 2026-09-30. Engine, editor integration and reference
-documentation are implemented. The owner handles further interface review and
-error reports. Commit authorization does not claim that all manual checks passed.
+**Status: Implemented; owner-approved 2026-10-11.** The owner's approval
+closes the outstanding feature review. The product decisions and form sketch
+were approved on 2026-09-30. Engine, editor integration and reference
+documentation are implemented. Approval does not assert a new run of each
+individual test case.
 
 ## Scope And Boundaries
 
@@ -180,10 +181,8 @@ The empty-images-folder rule is an explicit part of this delivery as well as
 empty-downloads-folder visibility. Do not let that cross-cutting requirement
 fall between BL-154 and BL-155.
 
-The design review is complete. Implementation details follow the existing
-engine contracts. The owner handles further review of the functioning
-interaction after commit; the approved sketch is not evidence that every
-implemented interaction has passed manual review.
+The design and feature reviews are complete. Implementation details follow
+the existing engine contracts. Keep the checks below for regression review.
 
 ## Direct Acceptance Checks
 
@@ -224,7 +223,7 @@ run directly affected tests, not an unrelated full release suite.
 - Canonical rules: `/reference/site/attachments/`. Editor procedure:
   `/reference/workflows/editor/#add-and-use-page-attachments`.
 
-Review by opening `.local/bl155-review/site` in the Default VS Code profile.
-Guide contains disposable attachments; Empty Page demonstrates absent resource
-folders with Add actions still available. Further manual review is owner-managed
-and does not block commit, as agreed on 2026-09-30.
+For regression review, open
+`test-sites/editor-review/editor-review.code-workspace` in the Default VS Code
+profile. The Import and replace page provides disposable attachments and import
+steps. The owner approved the feature on 2026-10-11.
