@@ -7,10 +7,10 @@ This is a disposable copy. Import files are in the workspace's imports folder.
 
 1. [BL-160 Markdown files](/markdown-files/): attachment links, rename and page move.
 2. [BL-155 Import and replace](/import-files/): attachment import, replacement and deletion.
-3. [BL-156 Local preview](/preview/): saved and unsaved content, server reuse and nested pages.
 
-[BL-154 Context actions](/context-actions/) was approved on 2026-10-11.
-Its examples remain available for regression review.
+[BL-154 Context actions](/context-actions/) and [BL-156 Local preview](/preview/)
+were approved on 2026-10-11. Their examples remain available for regression
+review.
 
 [Incoming links](/incoming-links/) makes reference updates visible.
 [Move destination](/move-destination/) is ready for the Markdown files page move.

@@ -5,11 +5,12 @@
 Open the selected page or the whole site locally from the VS Code Site Tree,
 without finding a terminal command or constructing its URL by hand.
 
-**Status: Implemented; commit authorized on 2026-09-30.** Completed after BL-155 Page
-Attachments on 2026-09-30. The owner approved configured port first and standard
-port second. The implementation and documentation below are available in the
-local 0.12.0 VSIX. The owner handles further interface review and error reports;
-commit authorization does not claim that all manual checks passed.
+**Status: Implemented; owner-approved 2026-10-11.** The owner's approval
+closes the outstanding feature review. Implemented after BL-155 Page
+Attachments on 2026-09-30, first available in extension 0.12.0. The owner
+approved configured port first and standard port second. The earlier
+verification evidence below remains for regression review; approval does not
+assert a new run of each individual test case.
 
 ## Scope And Boundaries
 
@@ -179,13 +180,12 @@ Direct checks on 2026-09-30:
 The full release suite and repeated editor-version matrices were not run.
 Native review covered macOS; other operating systems were not manually tested.
 
-### Owner Review
+### Regression Review
 
-Open `.local/test-sites/scratch/site` in the Default VS Code profile. This is a
-physical disposable site with registered port 4399, not the maintained source.
-In Norna Site Tree, try **Preview Page** on a nested page and **Preview Site**
-from the view menu. Edit a page without saving to inspect the saved/unsaved
-choice. Check **Show Preview Log** and **Stop Preview Server** in the same menu.
-The verification server was stopped; Preview starts it again when requested.
-Further manual review is owner-managed and does not block commit, as agreed
-on 2026-09-30.
+For later regression review, open
+`test-sites/editor-review/editor-review.code-workspace` in the Default VS Code
+profile. This disposable site uses registered port 4398 and the `/review/`
+base path. In Norna Site Tree, try **Preview Page** on a nested page and
+**Preview Site** from the view menu. Edit a page without saving to inspect the
+saved/unsaved choice. Check **Show Preview Log** and **Stop Preview Server**
+in the same menu. The owner approved the feature on 2026-10-11.

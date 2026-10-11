@@ -6,10 +6,12 @@ real editing, not just activation or completion-provider responses.
 ## Acceptance Boundary
 
 The [editor acceptance examples](../../fixtures/editor-acceptance/README.md)
-provide a disposable site for the remaining BL-160 and BL-155–156 review, with
+provide a disposable site for the remaining BL-160 and BL-155 review, with
 attachments, incoming links and import/replacement files. BL-159 and BL-166
-were approved and their manual test pages removed on 2026-10-11. The owner
-performs native review; engine regression tests retain coverage of approved work.
+were approved and their manual test pages removed on 2026-10-11. BL-154 Site
+Tree Context Actions and BL-156 Local Site Preview were also approved on that
+date; their examples remain available for regression review. The owner performs
+native review; engine regression tests retain coverage of approved work.
 
 A completion test must accept a suggestion through VS Code's suggestion
 widget and check the inserted text. Calling the provider API only establishes
