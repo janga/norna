@@ -81,7 +81,10 @@ disabled loaded all eight image instances, received the unchanged attachment
 bytes and opened the nested preview target. The creation instructions and
 order table were inspected at the compact viewport.
 
-Native VS Code interactions and owner approval remain pending.
+The owner approved BL-159 Managed Local Markdown Images and BL-166 Page Order
+In Frontmatter on 2026-10-11. Their examples remain available for regression
+review. Owner approval remains pending for BL-160 and the remaining BL-154–156
+scenarios; no individual manual test result is inferred from these approvals.
 
 BL-177 Publication Path Ownership And Collision Checks updates the maintained
 fixture's public-file operations to shared images and changes cross-page

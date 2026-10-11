@@ -7,7 +7,7 @@ names. Store sibling order in each page's frontmatter, with predictable
 placement in both the CLI and VS Code and advance notice when placement
 requires updating several pages.
 
-**Status: Implemented on 2026-10-04; owner VSIX/interface review remains.**
+**Status: Implemented on 2026-10-04; owner-approved on 2026-10-11.**
 The owner approved optional order, warnings for duplicates and confirmation
 before renumbering, and delegated the remaining technical choices.
 
@@ -253,7 +253,7 @@ then complete the operation; check the displayed files and unchanged sibling
 directory names. Also try ordinary sibling reordering and a parent move with
 and without new aliases.
 
-### Checks And Remaining Owner Review
+### Checks And Owner Approval
 
 Passed relevant checks cover page model/order, creation and movement, editor
 language/resource/form contracts, nested navigation, aliases, site links and
@@ -262,8 +262,7 @@ configuration, theme inheritance, source upgrade, migration audit, schemas,
 documentation, installed-package CLI/preview, and all example builds.
 The documentation build and VSIX packaging also pass.
 
-Native VS Code interaction, the real suggestion widget, Undo, and dirty
-save/reopen behavior have not been manually reviewed for this change. The
-owner installs `editors/vscode/norna-vscode.vsix` (0.14.0) and performs that
-review. Automated cancellation/stale/dirty/rollback checks are not a substitute
-for that review. No release, push or external-site conversion was performed.
+The owner approved BL-166 on 2026-10-11, closing its VSIX/interface review.
+This approval does not assert that each suggested native interaction,
+suggestion-widget, Undo or dirty save/reopen check was individually performed.
+No release, push or external-site conversion was performed as part of approval.

@@ -30,6 +30,13 @@ item, and Marketplace publication requires a separate explicit decision.
 The approval does not claim a new run of individual test cases or close the
 separate feature reviews below, including BL-159, BL-160 and BL-166.
 
+## BL-166 Page Order Approval
+
+The owner approved BL-166 Page Order In Frontmatter on 2026-10-11, closing
+its VSIX/interface review. The creation and movement renumbering examples
+remain available for regression review. Approval does not assert a new run
+of each individual manual check.
+
 ## BL-159 Managed Markdown Image Review
 
 Development extension 0.15.0 uses the updated engine's Markdown image handling.
