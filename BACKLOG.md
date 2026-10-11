@@ -55,9 +55,6 @@ These items have high product value but require an external account, publishing
 action, practical user evaluation, or another user-owned prerequisite. They do
 not block `Now` or `Next`.
 
-- [BL-181 Replace ImageMagick With Sharp](docs/design/backlog/BL-181-replace-imagemagick-with-sharp.md):
-  **Implemented; Windows cleanup fix awaits CI.** Three installation jobs passed;
-  rerun Windows after the test-helper fix before closing the item or releasing.
 - [BL-182 Restore CI Integration Checks](docs/design/backlog/BL-182-restore-ci-integration-checks.md):
   **Repaired locally; awaiting CI.** Confirm the corrected native editor fixtures
   and WebKit setup in passing Editor extension and Engine tests runs.

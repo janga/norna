@@ -290,6 +290,17 @@ failures. These required CI failures are tracked in
 The [Pages deployment](https://github.com/janga/norna/actions/runs/38163548294)
 passed.
 
+## Completion — 2026-10-11
+
+The [v0.7.30 installation matrix](https://github.com/janga/norna/actions/runs/38165282503)
+at `27d0fb6` passed all four jobs: Windows, macOS and Ubuntu with Node 24.18.0,
+and Ubuntu with Node 22.12.0. This confirms the Windows DLL-cleanup correction.
+The complete [engine checks](https://github.com/janga/norna/actions/runs/38165282492)
+and [Pages deployment](https://github.com/janga/norna/actions/runs/38165282584)
+also passed. Public image spot checks used raster recipe 4 and returned valid
+WebP files. BL-181 is complete; the unrelated native-editor CI failure remains
+open in BL-182 Restore CI Integration Checks.
+
 ## Release Note
 
 JPEG and PNG processing now comes with Norna's npm installation through Sharp.
