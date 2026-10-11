@@ -1,10 +1,10 @@
 # Editor Acceptance Examples
 
-Manual examples for the remaining review of BL-160 Standard Markdown For Local
-Attachments and BL-155 Page Attachments. BL-154 VS Code Site Tree Context
-Actions and BL-156 Local Site Preview are approved; their examples remain
-available for regression review.
-Each review page contains its steps and expected result.
+Manual regression examples for BL-154 VS Code Site Tree Context Actions,
+BL-155 Page Attachments, BL-156 Local Site Preview and BL-160 Standard Markdown
+For Local Attachments. All four were approved on 2026-10-11; no feature approval
+remains pending in this test round. Each page retains its steps and expected
+result for regression review.
 
 ## Open The Disposable Copy
 
@@ -33,9 +33,9 @@ Install the evaluation VSIX yourself if needed: `editors/vscode/norna-vscode.vsi
 
 | Page | Review |
 | --- | --- |
-| BL-160 Markdown files | Three path forms, shared definitions, incoming links and page move. |
+| BL-160 Markdown files (approved) | Regression review: three path forms, shared definitions, incoming links and page move. |
 | BL-154 Context actions (approved) | Regression review: page title, technical file/folder operations, public-file restrictions and optional themes. |
-| BL-155 Import and replace | Single/batch import, collision, replacement, deletion and Trash. |
+| BL-155 Import and replace (approved) | Regression review: single/batch import, collision, replacement, deletion and Trash. |
 | BL-156 Local preview (approved) | Regression review: start/reuse/stop, nested page, saved edits and logs. |
 | Incoming links | Verify attachment and public-file links after rename/move. |
 | Move destination | Destination for the Markdown files page move. |
@@ -75,9 +75,10 @@ In Frontmatter on 2026-10-11. Their manual pages and dependent links were remove
 from this fixture and the active copy at the owner's request. Dedicated engine
 regression tests remain in place.
 
-The owner also approved BL-154 VS Code Site Tree Context Actions and BL-156
-Local Site Preview on 2026-10-11. Owner approval remains pending for BL-160 and
-BL-155. The public-file exercise also covers the publication paths from
+The owner also approved BL-154 VS Code Site Tree Context Actions, BL-155 Page
+Attachments, BL-156 Local Site Preview and BL-160 Standard Markdown For Local
+Attachments on 2026-10-11. This acceptance round is complete.
+The public-file exercise also covers the publication paths from
 BL-177 Publication Path Ownership And Collision Checks and the restrictions
 from BL-179 Simplify Public Site Resources. No individual manual result is
 inferred from this fixture's preparation or automated checks.

@@ -5,13 +5,16 @@ real editing, not just activation or completion-provider responses.
 
 ## Acceptance Boundary
 
+The owner approved all items in this acceptance round on 2026-10-11:
+BL-154 Site Tree Context Actions, BL-155 Page Attachments, BL-156 Local Site
+Preview, BL-159 Managed Local Markdown Images, BL-160 Standard Markdown For
+Local Attachments and BL-166 Page Order In Frontmatter.
+
 The [editor acceptance examples](../../fixtures/editor-acceptance/README.md)
-provide a disposable site for the remaining BL-160 and BL-155 review, with
-attachments, incoming links and import/replacement files. BL-159 and BL-166
-were approved and their manual test pages removed on 2026-10-11. BL-154 Site
-Tree Context Actions and BL-156 Local Site Preview were also approved on that
-date; their examples remain available for regression review. The owner performs
-native review; engine regression tests retain coverage of approved work.
+remain available for regression review, with attachments, incoming links and
+import/replacement files. The BL-159 and BL-166 manual pages were removed at
+the owner's request. Engine regression tests retain coverage of approved work.
+Approval does not assert a new run of every individual test case.
 
 A completion test must accept a suggestion through VS Code's suggestion
 widget and check the inserted text. Calling the provider API only establishes
@@ -69,7 +72,9 @@ Focused engine and adapter tests cover local path forms, shared definitions,
 titles, dirty buffers, ownership errors, removal and moves. These checks do
 not establish native Undo or save/reopen behavior.
 
-Owner review remains pending under the agreed workflow:
+The owner approved BL-160 Standard Markdown For Local Attachments on
+2026-10-11, closing its feature review. Keep these scenarios for regression
+review:
 
 - Import one attachment with **Import and insert link**, then use **Insert Link
   in Page…** on an existing file. Confirm that both insert

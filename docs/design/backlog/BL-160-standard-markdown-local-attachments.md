@@ -5,7 +5,8 @@
 Let authors link to page-owned files using ordinary Markdown, with predictable
 file management and clear beginner guidance.
 
-**Status: Implemented 2026-10-04; native VS Code review remains with the owner.**
+**Status: Implemented 2026-10-04; owner-approved 2026-10-11.**
+The owner's approval closes the outstanding feature review.
 Requested on 2026-10-02
 as the attachment counterpart to
 [BL-159 Managed Local Markdown Images](BL-159-managed-local-markdown-images.md).
@@ -134,9 +135,10 @@ Verified on 2026-10-04:
   and received the original checklist bytes with HTTP 200. The link retained
   its title and had no forced-download attribute.
 
-Native insertion, Undo and dirty save/reopen checks remain for the owner;
-automated adapter checks do not establish those results. See the
-[editor review scenarios](../editor-workflow-test-plan.md#bl-160-standard-markdown-attachment-review).
+The owner approved the feature on 2026-10-11. Approval does not assert a new
+run of each individual insertion, Undo or dirty save/reopen check. Keep the
+[editor review scenarios](../editor-workflow-test-plan.md#bl-160-standard-markdown-attachment-review)
+for regression review.
 
 ## Dependencies
 
