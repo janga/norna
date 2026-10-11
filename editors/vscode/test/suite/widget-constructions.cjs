@@ -134,10 +134,13 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 		const pageFields = await waitFor(() => getCompletions(homepageTheme, 0, 0),
 			(items) => items.some((item) => item.label === 'layout'), 'An empty homepage theme did not offer page-theme fields.');
 		const labels = pageFields.map((item) => typeof item.label === 'string' ? item.label : item.label.label);
-		for (const name of ['preset', 'palette', 'appearance', 'corners', 'typography', 'blocks', 'navigation', 'url', 'Norna theme']) {
-			assert.ok(!labels.includes(name), `Homepage theme offered a global setting: ${name}`);
+		for (const name of ['preset', 'palette', 'appearance', 'corners', 'typography', 'blocks', 'layout', 'images', 'sections', 'Norna page theme modifications']) {
+			assert.ok(labels.includes(name), `Homepage theme omitted a supported visual setting or template: ${name}`);
 		}
-		results.push({ name: 'Empty homepage theme excludes global settings and templates', status: 'passed' });
+		for (const name of ['navigation', 'url', 'sourceFormat', 'logo', 'footer', 'Norna root tree theme', 'Norna tree theme modifications']) {
+			assert.ok(!labels.includes(name), `Homepage theme offered a setting or template owned by another file: ${name}`);
+		}
+		results.push({ name: 'Empty homepage theme offers visual overrides and excludes other file roles', status: 'passed' });
 		if (process.env.NORNA_EDITOR_TEST_SUITE === 'configuration') {
 			fs.writeFileSync(path.join(process.env.NORNA_EDITOR_TEST_WORKSPACE, '..', `configuration-${vscode.version}.json`), JSON.stringify({
 				runAt: new Date().toISOString(), vscodeVersion: vscode.version,
@@ -209,15 +212,15 @@ async function runWidgetConstructions({ openDocument, waitFor, getCompletions })
 		// Separate YAML files leave project discovery for the Markdown fixture intact.
 		for (const [kind, filename, body] of [
 			['config', 'site-config/settings.yaml', 'url: https://example.com/\n'],
-			['theme', 'root/tree-theme.yaml', 'preset: portfolio\n'],
+			['rootTheme', 'root/tree-theme.yaml', 'preset: portfolio\n'],
 			['sitewideContent', 'site-config/shared-content.yaml', 'footer:\n  copyrightMessage: Copyright owner.\n'],
 		]) {
 			const relativePath = `widget-site/${filename}`;
-			const schemaFile = { config: 'config', theme: 'theme', sitewideContent: 'sitewide-content' }[kind];
+			const schemaFile = { config: 'config', rootTheme: 'root-theme', sitewideContent: 'sitewide-content' }[kind];
 			let schemaPath = path.relative(path.dirname(path.join(process.env.NORNA_EDITOR_TEST_WORKSPACE, relativePath)),
 				path.join(process.env.NORNA_EDITOR_TEST_ENGINE_ROOT, 'schemas', `${schemaFile}.schema.json`)).split(path.sep).join('/');
 			if (!schemaPath.startsWith('.')) schemaPath = `./${schemaPath}`;
-			const label = { config: 'Norna site configuration', theme: 'Norna theme', sitewideContent: 'Norna site-wide content' }[kind];
+			const label = { config: 'Norna site configuration', rootTheme: 'Norna root tree theme', sitewideContent: 'Norna site-wide content' }[kind];
 			await accept(`Empty ${filename}`, '|CURSOR|', `# yaml-language-server: $schema=${schemaPath}\n\n${body}`, label, relativePath);
 		}
 

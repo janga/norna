@@ -88,7 +88,7 @@ async function runWidgetPriority({ window, widget, openDocument, waitFor, getCom
 			'# Priority\n\n```image-stack\nitems:\n  - image: local.svg\n    alt: value\n```');
 		await check('Card layout values', '# Priority\n\n```card-list\nlayout: |CURSOR|\n```', ['image-top', 'image-left', 'image-right'], undefined,
 			'# Priority\n\n```card-list\nlayout: image-top\n```');
-		await check('Frontmatter fields', '---\npage:\n  |CURSOR|\n---\n# Priority', ['description', 'aliases']);
+		await check('Frontmatter fields', '---\npage:\n  |CURSOR|\n---\n# Priority', ['description', 'listChildren', 'aliases']);
 		await check('Example site discovery', '# Priority\n\n|CURSOR|', constructors,
 			'examples/complete-sites/priority/site/root/content.md');
 		await check('Second project images', '# Priority\n\n```image-stack\nitems:\n  - image: |CURSOR|\n```', ['second-only.svg'], 'second/site/root/content.md',

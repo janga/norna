@@ -58,6 +58,9 @@ not block `Now` or `Next`.
 - [BL-181 Replace ImageMagick With Sharp](docs/design/backlog/BL-181-replace-imagemagick-with-sharp.md):
   **Implemented locally; awaiting installation CI.** Run the new candidate-package
   matrix on Windows, macOS and Ubuntu before closing the item or releasing.
+- [BL-182 Restore CI Integration Checks](docs/design/backlog/BL-182-restore-ci-integration-checks.md):
+  **Repaired locally; awaiting CI.** Confirm the corrected native editor fixtures
+  and WebKit setup in passing Editor extension and Engine tests runs.
 - [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
   **Practical VSIX evaluation approved 2026-10-04; public distribution remains.**
   Settle and deliver the public installation/update channel; Marketplace

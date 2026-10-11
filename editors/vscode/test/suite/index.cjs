@@ -98,6 +98,16 @@ async function run() {
 			documentation: documentationOf(documentationPreset),
 		})}`,
 	);
+	// The completion probe deliberately leaves the required preset empty.
+	// Resolve that error before checking the separate navigation constraint.
+	await waitFor(
+		() => vscode.languages.getDiagnostics(theme.uri),
+		(items) => items.some((item) => item.source === 'Norna' && item.code === 'invalid-resolved-theme' && /preset/.test(item.message)),
+		'Norna did not report the missing root theme preset.',
+	);
+	const presetEdit = new vscode.WorkspaceEdit();
+	presetEdit.insert(theme.uri, new vscode.Position(0, 'preset: '.length), 'documentation');
+	assert.ok(await vscode.workspace.applyEdit(presetEdit), 'Could not select the root theme preset.');
 	const treeSurfaceDiagnostic = await waitFor(
 		() => vscode.languages.getDiagnostics(theme.uri),
 		(items) => items.some((item) => item.source === 'Norna' && item.code === 'tree-section-background-pattern'),

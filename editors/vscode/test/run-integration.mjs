@@ -58,6 +58,7 @@ const prepareWorkspace = async () => {
 	}, null, 2));
 	await write('site/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	await write('tree-content/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
+	await write('tree-content/site-config/shared-content.yaml', 'footer:\n  copyrightMessage: Tree fixture\n');
 	await write('tree-content/root/content.md', '# Tree Home\n');
 	await write('tree-content/root/tree-theme.yaml', 'preset: documentation\n');
 	await write('tree-content/root/page-theme.yaml', 'layout:\n  textWidth: narrow\n');
@@ -217,7 +218,7 @@ Body text.[^margin:context]
 	await write('usage-site/site-config/settings.yaml', 'sourceFormat: 2\nurl: https://example.com/\n');
 	await write('usage-site/root/content.md', '# Image usage\n');
 	await write('usage-site/root/pages/other/content.md', '# Other\n');
-	for (const [page, files] of [['', ['a-used.svg', 'z-unused.svg']], ['root/pages/other', ['b-used.svg', 'y-other.svg']]]) {
+	for (const [page, files] of [['root', ['a-used.svg', 'z-unused.svg']], ['root/pages/other', ['b-used.svg', 'y-other.svg']]]) {
 		for (const file of files) await write(path.join('usage-site', page, 'images', file), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"/>\n');
 	}
 	for (const [project, editorApiVersion] of [['second', 3], ['incompatible', 1]]) {

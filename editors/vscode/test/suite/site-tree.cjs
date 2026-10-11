@@ -44,8 +44,13 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await vscode.commands.executeCommand('notifications.clearAll');
 		const row = (title) => tree.locator('.monaco-list-row').filter({ has: window.getByText(title, { exact: true }) });
 		const sourceRow = (relative) => {
+			if (path.basename(relative) === 'content.md') {
+				const slugs = relative.split('/root/')[1].split('/').slice(0, -1).filter((_segment, index) => index % 2 === 1);
+				const address = `https://example.com/${slugs.length ? slugs.join('/') + '/' : ''}`;
+				return tree.locator(`.monaco-list-row[aria-label$=${JSON.stringify(', ' + address)}]`);
+			}
 			const matches = tree.locator(`.monaco-list-row[aria-label*=${JSON.stringify(path.join(root, relative))}]`);
-			return path.basename(relative) === 'content.md' ? matches : matches.filter({ has: window.getByText(path.basename(relative), { exact: true }) });
+			return matches.filter({ has: window.getByText(path.basename(relative), { exact: true }) });
 		};
 		const expandDirectory = async (relative) => {
 			const item = sourceRow(relative);
@@ -78,6 +83,14 @@ async function runSiteTree({ openDocument, waitFor }) {
 			} else {
 				await targetRow.click();
 				await waitFor(() => targetRow.getAttribute('aria-selected'), (value) => value === 'true', 'The command target was not selected.');
+				// Opening the page is asynchronous. Its editor must finish taking
+				// focus before the test opens the Command Palette on older VS Code.
+				if (typeof title === 'string') await waitFor(
+					() => vscode.window.activeTextEditor?.document.getText(),
+					(source) => source?.split(/\r?\n/).includes(`# ${title}`),
+					`The selected page ${title} did not open before its command.`,
+				);
+				await vscode.commands.executeCommand('nornaSiteTree.focus');
 				await vscode.commands.executeCommand('workbench.action.showCommands');
 				const paletteAction = action === 'Add Page' ? 'New Page' : action;
 				await quick.locator('.quick-input-box input').fill(`>Norna: ${paletteAction}`);
@@ -93,7 +106,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await sourceRow('tree-content/root/page-theme.yaml').click();
 		await activeIs('tree-content/root/page-theme.yaml');
 		await expandDirectory('tree-content/site-config');
-		for (const filename of ['settings.yaml', 'site-theme.yaml']) {
+		for (const filename of ['settings.yaml', 'shared-content.yaml']) {
 			await sourceRow(`tree-content/site-config/${filename}`).click();
 			await activeIs(`tree-content/site-config/${filename}`);
 		}
@@ -213,6 +226,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 			await fields.locator('#slug').fill(slug);
 			await waitFor(() => fields.locator('#preview').innerText(), text => text.includes(slug), 'Missing destination preview.');
 			await fields.getByRole('button', { name: cancel ? 'Cancel' : `Create ${kind}`, exact: true }).click();
+			if (!cancel) await waitFor(() => row(title).getAttribute('aria-selected'), (value) => value === 'true', 'The created page was not revealed before the next action.');
 		};
 		const childDir = path.join(root, 'tree-content/root/pages/topics/pages');
 		const before = fs.readdirSync(childDir);
@@ -229,6 +243,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		assert.match(vscode.window.activeTextEditor.document.getText(), /# New Overview/);
 		passed('Create child, sibling and root pages through tree actions');
 		await openDocument('tree-content/root/pages/topics/pages/child/content.md');
+		await waitFor(() => row('Tree Child').getAttribute('aria-selected'), (value) => value === 'true', 'The active child was not revealed before selecting its pages folder.');
 		const pagesRow = sourceRow('tree-content/root/pages/topics/pages');
 		await contextAction(pagesRow, 'Add Page', true);
 		const directForm = await form();
@@ -277,7 +292,9 @@ async function runSiteTree({ openDocument, waitFor }) {
 		fs.writeFileSync(path.join(external, 'content.md'), '# External Rename\n');
 		await waitFor(() => row('External Rename').count(), (count) => count === 1, 'External title editing did not refresh the tree.');
 		fs.renameSync(external, path.join(root, 'tree-content/root/pages/moved'));
-		await waitFor(() => row('External Rename').getAttribute('aria-label'), (label) => label.includes('pages/moved'), 'External directory rename retained the old source path.');
+		await waitFor(() => row('External Rename').getAttribute('aria-label'), (label) => label.endsWith('https://example.com/moved/'), 'External directory rename retained the old page address.');
+		await row('External Rename').click();
+		await activeIs('tree-content/root/pages/moved/content.md');
 		fs.rmSync(path.join(root, 'tree-content/root/pages/moved'), { recursive: true });
 		await waitFor(() => row('External Rename').count(), (count) => count === 0, 'External deletion did not refresh the tree.');
 		passed('Unlisted descendants and external create/edit/rename/delete refresh');

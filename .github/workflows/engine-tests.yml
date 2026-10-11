@@ -38,7 +38,7 @@ jobs:
         run: npm ci --prefix editors/vscode
 
       - name: Install browser test dependencies
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Prepare release version and schemas
         run: |

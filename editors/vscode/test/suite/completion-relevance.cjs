@@ -60,9 +60,9 @@ async function runCompletionRelevance({ openDocument, getCompletions }) {
 		const context = await setSource(defaultPath, `---\npage:\n  description: |-\n${line}\n---\n# Context`);
 		assert.deepEqual((await read(context)).map(labelOf), [], 'Frontmatter text must not receive structure suggestions.');
 	}
-	await check('Page metadata stays in its own map', '---\npage:\n  description: Text\n  |CURSOR|\nnavigation:\n  listed: true\n---\n# Context', ['aliases']);
+	await check('Page metadata stays in its own map', '---\npage:\n  description: Text\n  |CURSOR|\nnavigation:\n  listed: true\n---\n# Context', ['aliases', 'listChildren']);
 	await check('Root frontmatter omits existing page', '---\npage:\n  description: Text\n|CURSOR|\n---\n# Context', ['navigation']);
-	await check('Navigation metadata stays in its own map', '---\npage:\n  description: Text\nnavigation:\n  |CURSOR|\n---\n# Context', ['listed']);
+	await check('Navigation metadata stays in its own map', '---\npage:\n  description: Text\nnavigation:\n  |CURSOR|\n---\n# Context', ['listed', 'order']);
 	await check('Inline code', '# Context\n\nUse `[^margin:|CURSOR|` literally.', []);
 	await check('Comment note', '# Context\n\n<!-- [^margin:|CURSOR| -->', []);
 	await check('Comment callout', '# Context\n\n<!--\n> [!|CURSOR|\n-->', []);
