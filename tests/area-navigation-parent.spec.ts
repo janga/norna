@@ -50,9 +50,11 @@ test('uses a direct sticky destination and full tree for a collection larger tha
 	await page.locator('.site-nav').getByRole('link', { name: 'Guides', exact: true }).click();
 	await expect(page.locator('.tree-local-navigation')).toHaveAttribute('data-navigation-area', 'guides');
 	const tree = page.locator('.tree-local-navigation');
-	expect(await tree.locator(':scope > nav > ul > li').count()).toBeGreaterThan(12);
+	const children = tree.locator('li').filter({ has: page.locator(':scope > a[href="/guides/"]') })
+		.locator(':scope > .navigation-page-branch-content > ul > li');
+	expect(await children.count()).toBeGreaterThan(12);
 	await tree.locator('a[href="/guides/configuration/"]').click();
-	await expect(page.locator('h1')).toHaveText('Configuration');
+	await expect(page.locator('main h1')).toHaveText('Configuration');
 	await expect(tree).toHaveAttribute('data-navigation-area', 'guides');
 	await page.reload();
 	await expect(tree).toHaveAttribute('data-navigation-area', 'guides');

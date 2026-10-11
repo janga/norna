@@ -212,9 +212,22 @@ as an explicit entry point. Keep that entry aligned with the integration.
 
 The registered docs suite (`npm run review:test -- docs`) checks area menus,
 reading continuity and history state. The navigation suite checks parent pages,
-deep trees, responsive placement and outline following. Run separate browser
-suites sequentially, or supply distinct Playwright `--output` directories: the
-default `test-results/` directory is cleared at the start of each run.
+deep trees, responsive placement and outline following. The Norna browser runner
+assigns each invocation its own `.local/browser-test-results/run-*` directory,
+retained after server cleanup. An explicit Playwright `--output` overrides it.
+When invoking Playwright directly, use separate output directories for concurrent
+runs: its default `test-results/` is cleared at the start of each run.
+
+For a complete regression audit, inventory both package manifests, the CI
+workflows, registered review suites and standalone test files. Execute every
+browser specification against its intended fixture; running Playwright against
+one site is not equivalent. Continue independent groups after a failure and
+record unreached cases within failed groups. Include the minimum and current
+VS Code versions, formatter coexistence, form browser checks and clean image
+installation. Keep the cross-platform CI matrix as separate evidence.
+The [2026-10-11 full test audit](design/full-test-audit-2026-10-11.md) records
+the complete mapping and results for the then-current suite. `npm test` alone
+does not cover that inventory.
 
 Browser-test servers run without keyboard input in their own process groups.
 The test runner stops the entire server group before returning to the terminal,

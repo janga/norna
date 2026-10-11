@@ -29,6 +29,11 @@ const temporaryStateParent = path.join(root, '.local', 'browser-test-state');
 await mkdir(temporaryStateParent, { recursive: true });
 const temporaryStateRoot = await mkdtemp(path.join(temporaryStateParent, 'run-'));
 const temporaryStateDir = path.join(temporaryStateRoot, '.norna');
+// Parallel review suites must not clear each other's Playwright traces.
+// Keep failure artifacts after the temporary server state is removed.
+if (!playwrightTargets.some(argument => argument === '--output' || argument.startsWith('--output='))) {
+	playwrightTargets.push(`--output=${path.join(root, '.local', 'browser-test-results', path.basename(temporaryStateRoot))}`);
+}
 const testEnvironment = {
 	...process.env,
 	NORNA_INTERNAL_STATE_DIR: temporaryStateDir,

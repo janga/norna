@@ -51,3 +51,28 @@ browser command, workflow syntax and contributor documentation.
 - **Required, not yet run:** corrected Editor extension and Engine tests jobs
   on GitHub's Ubuntu runner. Keep this item active until both pass; local results
   do not establish remote results. Push and release remain separate actions.
+
+## Full Audit Follow-up — 2026-10-11
+
+The [Engine tests run at v0.7.30](https://github.com/janga/norna/actions/runs/38165282492)
+passed. The [editor run](https://github.com/janga/norna/actions/runs/38165282474)
+reached Site Tree but failed while opening Tree Topics. The preceding run had
+failed to find Tree Home in the virtualized site picker. These failures remain
+release blockers until the corrected Linux CI run passes.
+
+The [full test audit](../full-test-audit-2026-10-11.md) ran the entire native
+suite locally on VS Code 1.96.0, 1.141.0 and 1.141.0 with Prettier 12.4.0;
+all three passed. Focused repetitions exposed intermittent subsequent commands
+starting before VS Code completed the previous editor/form transition.
+
+The test now filters the site picker and matches the complete accessible row
+label, clicks the intended page label, waits for rendered editor focus and
+form disposal, and accepts a verified Command Palette selection with Enter.
+It preserves the real UI, file, Undo and save/reopen assertions. Final focused
+Site Tree runs passed all 16 workflows on minimum, stable and stable with
+Prettier. Logs are `editor-palette-focus-minimum.log`, `editor-final-stable.log`
+and `editor-final-prettier.log` under `.local/full-test-audit-20261011/`.
+No editor production behavior changed.
+
+**Still required:** a passing Editor extension workflow on Ubuntu after the
+new test changes are pushed. The successful local checks do not close that gate.

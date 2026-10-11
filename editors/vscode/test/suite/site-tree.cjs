@@ -28,11 +28,14 @@ async function runSiteTree({ openDocument, waitFor }) {
 		}
 		const quick = window.locator('.quick-input-widget');
 		const pick = async (label) => {
-			await quick.locator('.quick-input-list .monaco-list-row').filter({ has: window.locator('.label-name').getByText(label, { exact: true }) }).click();
+			await quick.locator(`.quick-input-list .monaco-list-row[aria-label^=${JSON.stringify(label + ', ')}]`).click();
 		};
 		const chooseSite = async (title) => {
 			const choosing = vscode.commands.executeCommand('nornaEditor.chooseSite');
 			await quick.waitFor({ state: 'visible' });
+			// Quick Pick virtualizes rows. Filter first so the chosen site is
+			// rendered even in the shorter Linux CI window.
+			await quick.locator('.quick-input-box input').fill(title);
 			await pick(title);
 			await choosing;
 		};
@@ -68,6 +71,12 @@ async function runSiteTree({ openDocument, waitFor }) {
 			}, Boolean, 'The page form did not open.');
 			return result;
 		};
+		const closeForm = async (fields, button) => {
+			await fields.getByRole('button', { name: button, exact: true }).click();
+			// Applying changes opens/reveals the source before the webview is
+			// disposed. Wait for disposal so it cannot steal the next action's focus.
+			await waitFor(() => fields.isDetached(), Boolean, 'The completed page form did not close.');
+		};
 		const contextAction = async (title, action, direct = false) => {
 			const targetRow = typeof title === 'string' ? row(title) : title;
 			await window.bringToFront();
@@ -81,7 +90,10 @@ async function runSiteTree({ openDocument, waitFor }) {
 				await window.keyboard.press('Enter');
 				await menuItem.waitFor({ state: 'hidden' });
 			} else {
-				await targetRow.click();
+				await vscode.commands.executeCommand('nornaSiteTree.focus');
+				// Click the label: the row also contains a separate disclosure
+				// control whose position depends on the workbench geometry.
+				await (typeof title === 'string' ? targetRow.getByText(title, { exact: true }) : targetRow.locator('.label-name')).click();
 				await waitFor(() => targetRow.getAttribute('aria-selected'), (value) => value === 'true', 'The command target was not selected.');
 				// Opening the page is asynchronous. Its editor must finish taking
 				// focus before the test opens the Command Palette on older VS Code.
@@ -90,11 +102,16 @@ async function runSiteTree({ openDocument, waitFor }) {
 					(source) => source?.split(/\r?\n/).includes(`# ${title}`),
 					`The selected page ${title} did not open before its command.`,
 				);
-				await vscode.commands.executeCommand('nornaSiteTree.focus');
+				if (typeof title === 'string') {
+					await window.locator('.monaco-editor.focused').waitFor({ state: 'visible' });
+					await vscode.commands.executeCommand('nornaSiteTree.focus');
+				}
 				await vscode.commands.executeCommand('workbench.action.showCommands');
 				const paletteAction = action === 'Add Page' ? 'New Page' : action;
 				await quick.locator('.quick-input-box input').fill(`>Norna: ${paletteAction}`);
-				await quick.locator('.quick-input-list .monaco-list-row').filter({ hasText: `Norna: ${paletteAction}` }).first().click();
+				await waitFor(() => quick.locator('.quick-input-list .monaco-list-row.focused').getAttribute('aria-label'),
+					label => label?.startsWith(`Norna: ${paletteAction}`), 'The requested command was not selected in the palette.');
+				await quick.locator('.quick-input-box input').press('Enter');
 			}
 			await form();
 		};
@@ -167,7 +184,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 			const fields = await form();
 			if (field === 'Navigation') await fields.locator('#listed').setChecked(value !== 'Unlisted');
 			else await fields.locator(field === 'Description' ? '#description' : '#title').fill(value);
-			await fields.getByRole('button', { name: 'Save changes', exact: true }).click();
+			await closeForm(fields, 'Save changes');
 			if (field === 'Description') return;
 			const newRow = row(['Title', 'Label'].includes(field) ? value : title);
 			await waitFor(async () => await newRow.count() ? field === 'Navigation' ? await newRow.innerText() : await newRow.getAttribute('aria-label') : '', (label) => {
@@ -225,7 +242,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 			await fields.locator('#title').fill(title);
 			await fields.locator('#slug').fill(slug);
 			await waitFor(() => fields.locator('#preview').innerText(), text => text.includes(slug), 'Missing destination preview.');
-			await fields.getByRole('button', { name: cancel ? 'Cancel' : `Create ${kind}`, exact: true }).click();
+			await closeForm(fields, cancel ? 'Cancel' : `Create ${kind}`);
 			if (!cancel) await waitFor(() => row(title).getAttribute('aria-selected'), (value) => value === 'true', 'The created page was not revealed before the next action.');
 		};
 		const childDir = path.join(root, 'tree-content/root/pages/topics/pages');
@@ -250,7 +267,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await directForm.locator('#title').fill('Added Directly');
 		await directForm.locator('#slug').fill('added-directly');
 		await waitFor(() => directForm.locator('#preview').innerText(), text => text.includes('/topics/added-directly/'), 'Missing direct-child preview.');
-		await directForm.getByRole('button', { name: 'Create page', exact: true }).click();
+		await closeForm(directForm, 'Create page');
 		await activeIs('tree-content/root/pages/topics/pages/added-directly/content.md');
 		passed('Add Page context action selects the physical pages folder without a location prompt');
 		await create({ selected: 'Added Directly', kind: 'page', placement: 'Last child of “Added Directly”', title: 'First Nested Page', slug: 'first-nested-page' });
@@ -264,12 +281,12 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await contextAction('Tree Home', 'Add Page');
 		const homeCreation = await form();
 		assert.match(await homeCreation.locator('#parentPath').innerText(), /Last child of “Tree Home”/);
-		await homeCreation.getByRole('button', { name: 'Cancel', exact: true }).click();
+		await closeForm(homeCreation, 'Cancel');
 		await contextAction('Tree Home', 'Properties');
 		const homeInformation = await form();
 		assert.equal(await homeInformation.locator('#listed').isDisabled(), true);
 		assert.equal(await homeInformation.locator('#listed').isChecked(), true);
-		await homeInformation.getByRole('button', { name: 'Cancel', exact: true }).click();
+		await closeForm(homeInformation, 'Cancel');
 		passed('Home offers child creation and remains listed');
 
 		await contextAction('Tree Home', 'Add Page');
@@ -278,7 +295,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await duplicateForm.locator('#title').fill('Duplicate');
 		await duplicateForm.locator('#slug').fill('guide');
 		await waitFor(() => duplicateForm.locator('#form-error').innerText(), text => text.includes('A sibling with that slug already exists'), 'A colliding URL was not rejected.');
-		await duplicateForm.getByRole('button', { name: 'Cancel', exact: true }).click();
+		await closeForm(duplicateForm, 'Cancel');
 		assert.equal(fs.readFileSync(path.join(root, guidePath), 'utf8'), cleared);
 		passed('URL collisions are rejected without overwriting files');
 
@@ -331,7 +348,7 @@ async function runSiteTree({ openDocument, waitFor }) {
 		await window.setViewportSize({ width: 960, height: 720 });
 		await contextAction('Renamed Guide', 'Properties');
 		await window.screenshot({ path: path.join(root, '..', `site-tree-${vscode.version}-compact.png`) });
-		await (await form()).getByRole('button', { name: 'Cancel', exact: true }).click();
+		await closeForm(await form(), 'Cancel');
 		fs.writeFileSync(path.join(root, '..', `site-tree-${vscode.version}.json`), JSON.stringify({
 			vscode: vscode.version, extension: process.env.NORNA_EDITOR_TEST_EXTENSION_VERSION,
 			bundleSha256: createHash('sha256').update(fs.readFileSync(path.join(vscode.extensions.getExtension('janga.norna-vscode').extensionPath, 'dist/extension.cjs'))).digest('hex'),

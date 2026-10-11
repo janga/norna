@@ -15,7 +15,7 @@ test.describe('desktop tree navigation', () => {
 		await expect(sourceLink).toHaveText('Open in VS Code');
 		await expect(sourceLink).toHaveAttribute(
 			'href',
-			/^vscode:\/\/file\/.*\/fixtures\/nested-pages\/site\/pages\/010-guides\/pages\/010-installation\/pages\/010-macos\/content\.md$/,
+			/^vscode:\/\/file\/.*\/fixtures\/nested-pages\/site\/root\/pages\/guides\/pages\/installation\/pages\/macos\/content\.md$/,
 		);
 	});
 
@@ -201,13 +201,18 @@ test.describe('desktop tree navigation', () => {
 			.locator(':scope > .navigation-page-sections-disclosure')).toHaveAttribute('open', '');
 	});
 
-	test('keeps the area title static and category links usable in the compact tree', async ({ page }) => {
+	test('keeps the parent page reachable separately from its child disclosure', async ({ page }) => {
 		await page.goto('/guides/installation/', { waitUntil: 'networkidle' });
 		await expect(page.locator('.tree-local-navigation .navigation-area-title')).toHaveCount(0);
-		await expect(page.locator('.tree-local-navigation details[data-page-path="guides"]')).toHaveCount(0);
-		await expect(page.locator('.site-reading-location .site-breadcrumbs li').first().locator('a')).toHaveCount(0);
-		await expect(page.locator('.mobile-site-nav .navigation-category-link').filter({ hasText: /^Guides$/ }))
-			.toHaveAttribute('href', '/guides/installation/');
+		await expect(page.locator('.tree-local-navigation details[data-page-path="guides"]')).toHaveAttribute('open', '');
+		await expect(page.locator('.tree-local-navigation').getByRole('link', { name: 'Guides', exact: true })).toHaveAttribute('href', '/guides/');
+		await expect(page.locator('.site-reading-location .site-breadcrumbs li').first().locator('a')).toHaveAttribute('href', '/guides/');
+		await page.setViewportSize(mobileViewport);
+		await page.locator('.mobile-nav-menu > summary').click();
+		await expect(page.locator('.mobile-site-nav').getByRole('link', { name: 'Guides', exact: true }))
+			.toHaveAttribute('href', '/guides/');
+		await page.locator('.mobile-site-nav').getByRole('link', { name: 'Guides', exact: true }).click();
+		await expect(page).toHaveURL(/\/guides\/$/);
 	});
 
 	test('renders a direct child page list on the reading axis', async ({ page }) => {
@@ -550,7 +555,8 @@ test.describe('mobile tree navigation', () => {
 		await menu.locator(':scope > summary').click();
 		await expect(menu.locator('nav[aria-label="Pages"] h2')).toHaveText('Pages');
 		await expect(menu.locator('details[data-page-path="guides"]')).toHaveAttribute('open', '');
-		await expect(menu.locator('details[data-page-path="guides"] > summary')).toHaveText('Guides');
+		await expect(menu.locator('details[data-page-path="guides"] > summary')).toHaveAttribute('aria-label', 'Child pages: Guides');
+		await expect(menu.getByRole('link', { name: 'Guides', exact: true })).toHaveAttribute('href', '/guides/');
 		const currentPageNode = menu.locator('.navigation-page-node-current');
 		const currentPageDisclosure = currentPageNode.locator(':scope > .navigation-page-sections-disclosure');
 		await expect(currentPageDisclosure).toHaveAttribute('open', '');

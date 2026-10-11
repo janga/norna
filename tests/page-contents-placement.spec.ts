@@ -243,7 +243,7 @@ test.describe('adaptive page contents on desktop', () => {
 		await expect(page.locator('.page-contents-navigation')).toHaveCount(0);
 
 		await page.locator('.site-nav').getByRole('link', { name: 'Guides', exact: true }).click();
-		await expect(page).toHaveURL(/\/guides\/installation\/$/);
+		await expect(page).toHaveURL(/\/guides\/$/);
 
 		const nestedTree = page.locator('.tree-local-navigation');
 		await expect(nestedTree).toBeVisible();

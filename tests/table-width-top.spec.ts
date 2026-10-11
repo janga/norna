@@ -90,12 +90,16 @@ test('re-evaluates the smallest sufficient lane after reading width changes', as
 	const settings = page.locator('[data-display-settings]');
 	await settings.locator('summary').click();
 	await settings.getByRole('radio', { name: 'Narrow' }).check();
+	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'narrow');
 	const narrowWidth = await markdown.evaluate((element) => element.getBoundingClientRect().width);
 	await settings.getByRole('radio', { name: 'Standard' }).check();
+	await expect(page.locator('html')).toHaveAttribute('data-reading-width', 'standard');
+	await expect.poll(() => markdown.evaluate((element) => element.getBoundingClientRect().width)).toBeGreaterThan(narrowWidth);
 	const standardWidth = await markdown.evaluate((element) => element.getBoundingClientRect().width);
 	expect(standardWidth).toBeGreaterThan(narrowWidth);
 
 	await settings.getByRole('radio', { name: 'Narrow' }).check();
+	await expect.poll(() => markdown.evaluate((element) => element.getBoundingClientRect().width)).toBeCloseTo(narrowWidth, 1);
 	await configureTableWidth(page, (narrowWidth + standardWidth) / 2);
 	await expect(frame).toHaveAttribute('data-table-layout', 'end');
 

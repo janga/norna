@@ -150,7 +150,7 @@ test('keeps site search and Display reachable in the reading frame without a pag
 	await expect(page.locator('html')).toHaveAttribute('data-area-reading-frame', '');
 	await expect(page.locator('.site-nav, .tree-local-navigation')).toHaveCount(0);
 	await expect(page.locator('.site-reading-location')).toContainText('Search');
-	await expect(page.locator('h1')).toHaveText('Search');
+	await expect(page.locator('main h1')).toHaveText('Search');
 	await expect(page.locator('[data-search-return]')).toHaveAttribute('href', /\/reference\/site\/files\/$/);
 	await clickVisibleControl(page.locator('[data-display-settings] > summary'));
 	await expect(page.locator('.display-settings-panel')).toBeVisible();
