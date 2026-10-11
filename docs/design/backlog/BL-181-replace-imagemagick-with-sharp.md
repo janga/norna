@@ -9,13 +9,10 @@ and SVG handling.
 
 ## Status And Priority
 
-**Ready; first item in Next.** The owner requested this brief, including
-automated tests and documentation changes, on 2026-10-11. Preserve the existing
-first priority of BL-180 Preserve And Relocate Getting Started Knowledge.
-There is no technical dependency on completing that editorial inventory.
-
-This brief scopes implementation; creating it does not implement the switch
-or establish that its acceptance checks have passed.
+**Implemented locally; awaiting installation CI.** The owner authorized
+implementation on 2026-10-11. The remaining external gate is a passing run of
+the new installation matrix against the implementation commit. BL-180 Preserve
+And Relocate Getting Started Knowledge retains its editorial priority.
 
 ## Current Evidence
 
@@ -214,6 +211,73 @@ Getting Started rewrite.
   delivered installation accurately; documentation/link checks pass.
 - Record passed, failed and unrun checks, platform results and any blocking
   failures under the [verification rules](../../engine-development.md#common-checks).
+
+## Implementation And Verification — 2026-10-11
+
+Sharp 0.35.5 is a direct runtime dependency. Raster recipe 4 is recorded in the
+manifest and output filenames; SVG copying retains version 3. Source validation
+uses EXIF-oriented dimensions too. Deployment workflows no longer install
+ImageMagick and cache the current `/_norna/images` output paths. Public guidance,
+examples, their source and the affected navigation screenshot are updated.
+
+Verified working-tree changes based on `3266999`, on macOS arm64 with Node
+26.7.0 and npm 11.19.0. Release-sensitive aggregate checks use an isolated
+physical copy with package version 0.7.30 and regenerated schemas; the maintained
+package remains 0.7.29.
+
+- **Passed:** the candidate `test:image-installation` prepare/check workflow
+  locally: clean install from its portable lockfile, candidate site creation,
+  JPEG/transparent PNG builds with ImageMagick commands blocked, and repeat-build
+  cache reuse. Runtime reported Sharp 0.35.5.
+- **Passed:** eight raster cases plus the existing managed-media checks cover
+  EXIF rotation/mirroring, sizes, alpha, profiled CMYK colour, metadata removal,
+  malformed input, missing runtime, cache transition, URL identity, SVG reuse
+  and source ownership. The final metadata case explicitly puts EXIF, ICC,
+  IPTC and XMP in the input before checking their absence in output.
+- **Passed:** Markdown image browser checks (5), Examples gallery checks (5)
+  and content-tabs checks (3), including desktop/mobile and no-JavaScript
+  behavior. The gallery attachment expectation now uses the existing
+  `/_norna/downloads` contract; the tabs outline includes the existing Footnotes
+  heading. Only the initially failing cases were rerun after those corrections.
+- **Passed in segments:** the complete `npm test` chain, including extension,
+  preview, source-sync, examples and installed-package checks. The initial
+  `test:content-check` failure used a truncated PNG header; replacing it with a
+  valid synthetic PNG preserved the aspect-ratio assertion. That check and all
+  unreached commands were then run. The last `package:check` initially used stale
+  npm metadata lacking Sharp 0.35.5; refreshing its test cache and rerunning
+  that command passed. Earlier passes were retained on unchanged inputs. The
+  final metadata-fixture strengthening passed its focused raster test too.
+- **Passed:** `npm run build:pages` assembled the documentation and all eight
+  rendered example sites in a separate physical copy. Documentation/link checks
+  and workflow YAML parsing passed. No known failing local required check remains.
+- **Visual inspection:** compared a maintained dog photograph, the updated
+  documentation screenshot and synthetic transparent artwork with their
+  generated 480px WebP variants. No material colour/transparency or layout
+  regression was observed. Inspected browser image/tabs captures and the live
+  documentation installation page. The established presentation is retained.
+- **Required, not yet run:** GitHub Actions installation jobs on Ubuntu, macOS
+  and Windows with Node 24.18.0, plus Ubuntu with minimum Node 22.12.0. The same
+  candidate tarball and cleanly generated lockfile are shared across those jobs.
+  Local macOS success does not establish these platform results. Keep this item
+  open until the matrix passes; pushing and releasing remain separate actions.
+
+Local logs are `/tmp/norna-bl181-full-tests.log`,
+`/tmp/norna-bl181-full-tests-tail.log`, `/tmp/norna-sharp-installation-final.log`,
+`/tmp/norna-bl181-package-recheck.log`, `/tmp/norna-sharp-metadata-final.log`
+and `/tmp/norna-sharp-build-pages.log`.
+Visual comparisons are under `.local/sharp-visual-review/`; registered captures
+are under `.local/review-captures/`.
+
+## Release Note
+
+JPEG and PNG processing now comes with Norna's npm installation through Sharp.
+ImageMagick is no longer required. After updating, the next build, content sync,
+image-generation command or preview regenerates the selected site's used raster
+variants once and may update its tracked image manifest. Original images and
+the authoring format are unchanged. Subsequent runs reuse valid output, including
+across ordinary engine updates. Existing GitHub workflows can remove their
+ImageMagick installation step. Native-dependency troubleshooting is documented
+in the installation FAQ.
 
 ## Sources
 

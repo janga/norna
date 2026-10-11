@@ -7,8 +7,7 @@ navigation:
 
 ## Prerequisites
 
-Install Node.js 22.12 or later. For raster images, install ImageMagick too and
-make sure its commands are available in your terminal.
+Install Node.js 22.12 or later and npm. Image processing is included with Norna.
 
 ## Local preview
 

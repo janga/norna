@@ -21,7 +21,7 @@ test('tabs select independently with keyboard and restore the default on reload'
 	await page.reload();
 	await expect(groups.first().getByRole('tab').first()).toHaveAttribute('aria-selected', 'true');
 	await expect(page.locator('body')).not.toContainText(':::: tabs');
-	await expect(page.locator('#main-content h2')).toHaveText(['Install', 'Verify']);
+	await expect(page.locator('#main-content h2')).toHaveText(['Install', 'Verify', 'Footnotes']);
 });
 
 test('all alternatives stay available without JavaScript and in print', async ({ browser, page }) => {

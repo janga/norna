@@ -7,8 +7,8 @@ navigation:
 
 ## Requirements
 
-Install Node.js 22.12 or later. Install ImageMagick too if your site uses
-raster images.
+Install Node.js 22.12 or later and npm. Norna includes image processing in
+its npm installation.
 
 ### Check Node.js
 

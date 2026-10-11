@@ -60,9 +60,9 @@ job whose main build also produces `dist/`, the relevant steps are:
 ```
 
 Keep the workflow's normal checkout, Node setup, `npm ci`, Pages configuration,
-permissions, and deployment steps around this sequence. Install ImageMagick in
-the job when the presentation contains managed PNG or JPEG images. If the main
-project uses another output directory or public prefix, adapt both merge paths
+permissions, and deployment steps around this sequence. `npm ci` also installs
+the image-processing dependencies. If the main project uses another output
+directory or public prefix, adapt both merge paths
 together rather than changing only one.
 
 ## Root files and deployment ownership

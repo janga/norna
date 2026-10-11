@@ -68,6 +68,6 @@ the error before publishing.
 
 `images` creates responsive variants, inspection originals and generated
 metadata for referenced managed images. It reuses unchanged cached output;
-PNG/JPEG conversion requires ImageMagick. It does not perform source-image
-relocation. See [Managed images](/reference/site/images/) for source limits,
+PNG/JPEG conversion uses Sharp from Norna's npm installation. It does not
+perform source-image relocation. See [Managed images](/reference/site/images/) for source limits,
 output paths and the versioned image manifest.

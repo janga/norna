@@ -25,11 +25,6 @@ when implementation can begin.
 
 `Next` is the exact implementation sequence after `Now`.
 
-- [BL-181 Replace ImageMagick With Sharp](docs/design/backlog/BL-181-replace-imagemagick-with-sharp.md):
-  **Ready.** Include raster image processing in Norna's npm installation, with
-  automatic cache renewal, installation checks on three operating systems,
-  and updated documentation and deployment workflows.
-
 ## Ideas
 
 Always include active ideas when presenting prioritized backlog work. These
@@ -60,6 +55,9 @@ These items have high product value but require an external account, publishing
 action, practical user evaluation, or another user-owned prerequisite. They do
 not block `Now` or `Next`.
 
+- [BL-181 Replace ImageMagick With Sharp](docs/design/backlog/BL-181-replace-imagemagick-with-sharp.md):
+  **Implemented locally; awaiting installation CI.** Run the new candidate-package
+  matrix on Windows, macOS and Ubuntu before closing the item or releasing.
 - [`BL-030` Production-ready IntelliSense](docs/design/backlog/BL-030-production-ready-intellisense.md):
   **Practical VSIX evaluation approved 2026-10-04; public distribution remains.**
   Settle and deliver the public installation/update channel; Marketplace

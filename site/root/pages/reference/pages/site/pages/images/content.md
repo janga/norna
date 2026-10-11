@@ -45,16 +45,18 @@ moves only unambiguous misplaced files; see [image sync](/reference/commands/val
 
 ## Variants and SVG
 
-`images` and `build` prepare raster images with ImageMagick. Normal WebP
+`images` and `build` prepare raster images with Sharp, included in Norna's npm
+installation. EXIF orientation is applied before selecting sizes. Normal WebP
 widths are 480, 768, 1080, 1440 and 1920 pixels, skipping sizes above the
 source width. The source width is also included when it differs from these sizes,
 including sources narrower than 480 pixels. Output lives in `site/.norna/public/_norna/images/generated/`.
 
-Filenames include the first eight characters of the source SHA-256 hash.
-Changing a source therefore changes its published URLs and avoids stale caches.
+Raster filenames include the first eight characters of the source SHA-256
+hash and the processing recipe version. Changing either gives the variants
+new URLs so browsers can fetch the updated output.
 
 SVG files are copied to `site/.norna/public/_norna/images/original/` with hashed names.
-They are not rasterized and need no ImageMagick. A `viewBox` or numeric width
+They are copied without rasterization. A `viewBox` or numeric width
 and height supplies an intrinsic ratio; an unreadable ratio does not prevent
 direct SVG rendering.
 
@@ -67,6 +69,16 @@ Keep `site/.norna/generated-images.json` in Git. It records hashes, dimensions,
 output version and variant paths. Output is reused only when the manifest
 matches the source and all expected files exist. Missing cached files are
 regenerated. The starter Actions cache keys generated output from this manifest.
+
+The switch to Sharp renews raster output once, on the selected site's next
+build, content sync, image-generation command or preview start. All JPEG/PNG images referenced
+by that site are processed; unused originals, other sites and unchanged SVG
+output are unaffected. Published sites keep working until their next deployment.
+No manual cache deletion or batch conversion is needed.
+
+The recipe version is independent of Norna's release number and `sourceFormat`.
+Ordinary code upgrades reuse valid output. Review the manifest changes after
+an intentional recipe update; the first processing run can take longer.
 
 Do not version `site/.norna/public/` itself.
 

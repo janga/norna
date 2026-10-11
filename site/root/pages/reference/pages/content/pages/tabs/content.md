@@ -19,7 +19,7 @@ group so navigation does not depend on the reader's selection.
 ::: tab "macOS"
 
 ```sh
-brew install imagemagick
+brew install git
 ```
 
 :::
@@ -27,7 +27,7 @@ brew install imagemagick
 ::: tab "Windows"
 
 ```powershell
-winget install ImageMagick.ImageMagick
+winget install Git.Git
 ```
 
 :::

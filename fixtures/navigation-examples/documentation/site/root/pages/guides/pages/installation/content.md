@@ -7,8 +7,8 @@ navigation:
 
 ## Before you begin
 
-Norna needs Node.js 22.12 or later. Install ImageMagick if your site uses
-raster images. SVG-only sites do not need it.
+Norna needs Node.js 22.12 or later and npm. Its npm installation includes
+image processing.
 
 ## Choose your environment
 

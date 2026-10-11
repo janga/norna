@@ -1,0 +1,57 @@
+name: Image installation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.18.0
+          cache: npm
+      - run: npm ci
+      - run: npm run test:image-installation -- prepare .local/image-installation-bundle
+      - uses: actions/upload-artifact@v4
+        with:
+          name: image-installation-bundle
+          path: .local/image-installation-bundle
+          include-hidden-files: true
+          retention-days: 3
+
+  install:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            node: 24.18.0
+          - os: macos-latest
+            node: 24.18.0
+          - os: windows-latest
+            node: 24.18.0
+          - os: ubuntu-latest
+            node: 22.12.0
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: image-installation-bundle
+          path: .local/image-installation-bundle
+      # The checker uses only Node built-ins until the candidate is installed.
+      - run: npm run test:image-installation -- check .local/image-installation-bundle

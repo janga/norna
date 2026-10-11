@@ -394,6 +394,22 @@ The check uses a reusable npm cache at
 `--prefer-offline` so repeat runs do not redownload dependencies. Set
 `NORNA_PACKAGE_CHECK_CACHE=/path/to/cache` to use another cache.
 
+## Image Processing
+
+`npm run test:image-installation -- prepare <bundle-directory>` creates a
+candidate tarball, initialized site and portable lockfile without publishing.
+`npm run test:image-installation -- check <bundle-directory>` installs that
+candidate with `npm ci` and builds raster images twice, with external
+ImageMagick commands blocked. The Image installation workflow shares the same
+bundle across Windows, macOS and Ubuntu, including the minimum Node version
+on Ubuntu. The full engine suite remains in its separate primary CI job.
+
+The Sharp raster recipe has its own output version in `generate-images.mjs`.
+Bump it when an intentional processing change should replace existing output;
+it appears in both the manifest and generated URLs. Do not tie it to the engine
+release number. SVG copying retains its independent version. Dimension reads
+used by content checks must agree with the oriented raster output.
+
 ## CI Lockfiles
 
 Site repositories are developed on different operating systems but deployed on

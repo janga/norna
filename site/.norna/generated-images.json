@@ -1,192 +1,192 @@
 {
   "root/pages/examples/pages/building-a-site/images/navigation-documentation-desktop.png": {
-    "outputVersion": 3,
-    "sourceHash": "cf1d1a950b41a72f80b722f83513c3b99569eb6b3b9efc4864fc29fdb49ff82e",
+    "outputVersion": 4,
+    "sourceHash": "6eaa0c3871fad3638d29479c72aa39c2ccf5b50dbfa8b2e45fc54f8a2b46705f",
     "width": 1440,
     "height": 850,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-documentation-desktop.png-cf1d1a95-480.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-documentation-desktop.png-6eaa0c38-v4-480.webp",
         "width": 480
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-documentation-desktop.png-cf1d1a95-768.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-documentation-desktop.png-6eaa0c38-v4-768.webp",
         "width": 768
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-documentation-desktop.png-cf1d1a95-1080.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-documentation-desktop.png-6eaa0c38-v4-1080.webp",
         "width": 1080
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-documentation-desktop.png-cf1d1a95-1440.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-documentation-desktop.png-6eaa0c38-v4-1440.webp",
         "width": 1440
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "02b274fefd25b0fbfed3c65677b302d4114b3aaf81bf9d35cffa33f3b6149f50",
     "width": 1200,
     "height": 650,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png-02b274fe-480.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png-02b274fe-v4-480.webp",
         "width": 480
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png-02b274fe-768.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png-02b274fe-v4-768.webp",
         "width": 768
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png-02b274fe-1080.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png-02b274fe-v4-1080.webp",
         "width": 1080
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png-02b274fe-1200.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-desktop.png-02b274fe-v4-1200.webp",
         "width": 1200
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-nested-menu.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "cc0cc9859c90e8a155d1c75401865bc4dfd68bfb2460061f1566d5b9b01ec0bd",
     "width": 390,
     "height": 600,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-menu.png-cc0cc985-390.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-menu.png-cc0cc985-v4-390.webp",
         "width": 390
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-nested-mobile.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "a5f5f9aa2ad9b00b4abed25981e9e63c4dbb6360f826db75aa712b701a667c9f",
     "width": 390,
     "height": 600,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-mobile.png-a5f5f9aa-390.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-nested-mobile.png-a5f5f9aa-v4-390.webp",
         "width": 390
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-single-desktop.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "1ca46b04ce4e687c7bd9401b0d13c0cfd309bb214aa18f1ede2e6619b58d94bd",
     "width": 1200,
     "height": 650,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-desktop.png-1ca46b04-480.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-desktop.png-1ca46b04-v4-480.webp",
         "width": 480
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-desktop.png-1ca46b04-768.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-desktop.png-1ca46b04-v4-768.webp",
         "width": 768
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-desktop.png-1ca46b04-1080.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-desktop.png-1ca46b04-v4-1080.webp",
         "width": 1080
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-desktop.png-1ca46b04-1200.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-desktop.png-1ca46b04-v4-1200.webp",
         "width": 1200
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-single-menu.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "affde01756b26440d426cebc59393e8c44e4ce7d34d0eb502627f2d9b8416142",
     "width": 390,
     "height": 600,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-menu.png-affde017-390.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-menu.png-affde017-v4-390.webp",
         "width": 390
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-single-mobile.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "952492fccd9c0990eea771fd2659f06434e3cada088ea18396792f92b284a08e",
     "width": 390,
     "height": 600,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-mobile.png-952492fc-390.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-single-mobile.png-952492fc-v4-390.webp",
         "width": 390
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-top-desktop.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "b5ca481e4876613e900fe716e5ab4dcc043f0642738e0a445010906bf697ab65",
     "width": 1200,
     "height": 650,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-desktop.png-b5ca481e-480.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-desktop.png-b5ca481e-v4-480.webp",
         "width": 480
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-desktop.png-b5ca481e-768.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-desktop.png-b5ca481e-v4-768.webp",
         "width": 768
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-desktop.png-b5ca481e-1080.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-desktop.png-b5ca481e-v4-1080.webp",
         "width": 1080
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-desktop.png-b5ca481e-1200.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-desktop.png-b5ca481e-v4-1200.webp",
         "width": 1200
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-top-menu.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "31dde2c1c02f824671a87727f10c3e33a648b72d0993a2e4f641a1157eaee617",
     "width": 390,
     "height": 600,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-menu.png-31dde2c1-390.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-menu.png-31dde2c1-v4-390.webp",
         "width": 390
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-top-mobile.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "198942450eb5b2bae594eadfdf8e8b9115f07610fdea995db538afa22a623173",
     "width": 390,
     "height": 600,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-mobile.png-19894245-390.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-mobile.png-19894245-v4-390.webp",
         "width": 390
       }
     ]
   },
   "root/pages/examples/pages/building-a-site/images/navigation-top-sections.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "5304207185eafa374082ee0c48d5e138db9f5860b918c53e56943de98ba0bd37",
     "width": 1200,
     "height": 650,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-sections.png-53042071-480.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-sections.png-53042071-v4-480.webp",
         "width": 480
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-sections.png-53042071-768.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-sections.png-53042071-v4-768.webp",
         "width": 768
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-sections.png-53042071-1080.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-sections.png-53042071-v4-1080.webp",
         "width": 1080
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-sections.png-53042071-1200.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/navigation-top-sections.png-53042071-v4-1200.webp",
         "width": 1200
       }
     ]
@@ -200,73 +200,73 @@
     "height": 64
   },
   "root/pages/examples/pages/building-a-site/images/sitewide-social-image.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "4b87576633f3d7f2a19b65f5d55a00c0ad162088b16a5e2e9eceb15d22bba656",
     "width": 1200,
     "height": 630,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-480.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-v4-480.webp",
         "width": 480
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-768.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-v4-768.webp",
         "width": 768
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-1080.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-v4-1080.webp",
         "width": 1080
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-1200.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/building-a-site/images/sitewide-social-image.png-4b875766-v4-1200.webp",
         "width": 1200
       }
     ]
   },
   "root/pages/examples/pages/complete-sites/images/multi-page-dog-shelter.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "7492c5d5521e6d382c4cfe8cd05468af5f5840177a52b9a7e31c21eeb97dc45e",
     "width": 1200,
     "height": 800,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/multi-page-dog-shelter.png-7492c5d5-480.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/multi-page-dog-shelter.png-7492c5d5-v4-480.webp",
         "width": 480
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/multi-page-dog-shelter.png-7492c5d5-768.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/multi-page-dog-shelter.png-7492c5d5-v4-768.webp",
         "width": 768
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/multi-page-dog-shelter.png-7492c5d5-1080.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/multi-page-dog-shelter.png-7492c5d5-v4-1080.webp",
         "width": 1080
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/multi-page-dog-shelter.png-7492c5d5-1200.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/multi-page-dog-shelter.png-7492c5d5-v4-1200.webp",
         "width": 1200
       }
     ]
   },
   "root/pages/examples/pages/complete-sites/images/single-page-dog-shelter.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "c9d594087f8dc2ee2e10dfdea964539f3324b258a404848ef48dbbf1060d6a2d",
     "width": 1200,
     "height": 800,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/single-page-dog-shelter.png-c9d59408-480.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/single-page-dog-shelter.png-c9d59408-v4-480.webp",
         "width": 480
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/single-page-dog-shelter.png-c9d59408-768.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/single-page-dog-shelter.png-c9d59408-v4-768.webp",
         "width": 768
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/single-page-dog-shelter.png-c9d59408-1080.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/single-page-dog-shelter.png-c9d59408-v4-1080.webp",
         "width": 1080
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/single-page-dog-shelter.png-c9d59408-1200.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/complete-sites/images/single-page-dog-shelter.png-c9d59408-v4-1200.webp",
         "width": 1200
       }
     ]
@@ -320,25 +320,25 @@
     "height": 700
   },
   "root/pages/examples/pages/norna-extensions/images/child-page-list.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "df9c037f50810d85b1b763d02da1bcb3f354c41d2f2a88b4c24078d41993a981",
     "width": 1200,
     "height": 800,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/examples/pages/norna-extensions/images/child-page-list.png-df9c037f-480.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/norna-extensions/images/child-page-list.png-df9c037f-v4-480.webp",
         "width": 480
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/norna-extensions/images/child-page-list.png-df9c037f-768.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/norna-extensions/images/child-page-list.png-df9c037f-v4-768.webp",
         "width": 768
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/norna-extensions/images/child-page-list.png-df9c037f-1080.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/norna-extensions/images/child-page-list.png-df9c037f-v4-1080.webp",
         "width": 1080
       },
       {
-        "src": "/_norna/images/generated/pages/examples/pages/norna-extensions/images/child-page-list.png-df9c037f-1200.webp",
+        "src": "/_norna/images/generated/pages/examples/pages/norna-extensions/images/child-page-list.png-df9c037f-v4-1200.webp",
         "width": 1200
       }
     ]
@@ -368,25 +368,25 @@
     "height": 700
   },
   "root/pages/getting-started/pages/grow-your-site/images/dog-shelter-mobile-navigation.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "59391784917c44215afa72abd3fccba334b28996e0dc7451fe435513ee7cc3d5",
     "width": 390,
     "height": 600,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/getting-started/pages/grow-your-site/images/dog-shelter-mobile-navigation.png-59391784-390.webp",
+        "src": "/_norna/images/generated/pages/getting-started/pages/grow-your-site/images/dog-shelter-mobile-navigation.png-59391784-v4-390.webp",
         "width": 390
       }
     ]
   },
   "root/pages/getting-started/pages/grow-your-site/images/dog-shelter-mobile-page.png": {
-    "outputVersion": 3,
+    "outputVersion": 4,
     "sourceHash": "41c4912dda204ae031e01143f538b953da7b75a8eaedb486df78f87a8ea66234",
     "width": 390,
     "height": 600,
     "variants": [
       {
-        "src": "/_norna/images/generated/pages/getting-started/pages/grow-your-site/images/dog-shelter-mobile-page.png-41c4912d-390.webp",
+        "src": "/_norna/images/generated/pages/getting-started/pages/grow-your-site/images/dog-shelter-mobile-page.png-41c4912d-v4-390.webp",
         "width": 390
       }
     ]

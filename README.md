@@ -136,7 +136,7 @@ components, and rendering logic.
 ## Requirements And Current Limits
 
 - Node.js `>=22.12.0` is required.
-- ImageMagick is required when Norna generates responsive raster image variants.
+- Image processing is included in the npm installation through Sharp.
 - GitHub Pages is the only publishing provider integrated by Norna today.
 - The build output is static and written to `dist/`; other static hosts can
   serve that output, but Norna does not currently configure or publish to them.

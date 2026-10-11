@@ -22,8 +22,9 @@ in that order. A failed step stops later steps. It does not publish or commit.
 The completed site is normally `dist/` in the project directory. Generated
 public files live under the selected site's `.norna/public/`; the image
 manifest `.norna/generated-images.json` may change and should be reviewed in
-Git. PNG/JPEG processing requires ImageMagick when cached output cannot be
-reused.
+Git. PNG/JPEG processing uses Sharp, included in Norna's npm installation.
+A changed image-processing recipe regenerates this site's used raster variants
+on its next build; ordinary engine updates reuse valid cached output.
 
 The artifact includes generated page/category destinations, aliases,
 `sitemap.xml` and `404.html`; enabled search adds `/search/` and `/_norna/search/`.

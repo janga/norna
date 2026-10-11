@@ -27,18 +27,15 @@ jobs:
           node-version: 24.18.0
           cache: npm
 
-      - name: Install image tools
-        run: sudo apt-get update && sudo apt-get install -y imagemagick
-
       - name: Restore generated image cache
         uses: actions/cache@v6
         with:
           path: |
-            site/.norna/public/images/generated
-            examples/**/site/.norna/public/images/generated
-          key: norna-pages-images-v2-${{ hashFiles('site/root/**/images/**', 'examples/**/site/root/**/images/**') }}
+            site/.norna/public/_norna/images
+            examples/**/site/.norna/public/_norna/images
+          key: norna-pages-images-v4-${{ hashFiles('site/root/**/images/**', 'examples/**/site/root/**/images/**') }}
           restore-keys: |
-            norna-pages-images-v2-
+            norna-pages-images-v4-
 
       - name: Install dependencies
         run: npm ci

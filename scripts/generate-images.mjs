@@ -1,13 +1,10 @@
 import { getPageImageSourceKey } from './lib/site-conventions.mjs';
-import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { copyFile, mkdir, readdir, readFile, rm, stat, lstat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { promisify } from 'node:util';
 import {
 	getContentFiles,
 	readSiteFile,
-	rasterImageExtensions,
 	staticImageExtensions,
 	supportedImageExtensions,
 	toPosixPath,
@@ -22,61 +19,16 @@ import {
 	siteDir,
 } from './lib/site-paths.mjs';
 
-const execFileAsync = promisify(execFile);
-
-const imageOutputVersion = 3;
+// Bump only when the raster recipe changes, not on ordinary engine releases.
+const rasterOutputVersion = 4;
+const staticOutputVersion = 3;
 const sourceHashSlugLength = 8;
 const widths = [480, 768, 1080, 1440, 1920];
 
-const run = async (command, args) => {
-	const { stdout } = await execFileAsync(command, args, { maxBuffer: 1024 * 1024 * 10 });
-	return stdout.trim();
-};
-
-const canRun = async (command, args = ['-version']) => {
-	try {
-		await run(command, args);
-		return true;
-	} catch {
-		return false;
-	}
-};
-
-const getImageMagick = async () => {
-	if (await canRun('magick')) {
-		return {
-			identify: (sourcePath) => run('magick', ['identify', '-format', '%w %h', sourcePath]),
-			convert: (sourcePath, outputPath, width) => run('magick', [
-				sourcePath,
-				'-auto-orient',
-				'-resize',
-				`${width}x`,
-				'-strip',
-				'-quality',
-				'82',
-				outputPath,
-			]),
-		};
-	}
-
-	if (await canRun('identify') && await canRun('convert')) {
-		return {
-			identify: (sourcePath) => run('identify', ['-format', '%w %h', sourcePath]),
-			convert: (sourcePath, outputPath, width) => run('convert', [
-				sourcePath,
-				'-auto-orient',
-				'-resize',
-				`${width}x`,
-				'-strip',
-				'-quality',
-				'82',
-				outputPath,
-			]),
-		};
-	}
-
-	throw new Error('ImageMagick is missing. Install either the "magick" command or both "identify" and "convert".');
-};
+let sharpPromise;
+const getSharp = () => sharpPromise ??= import('sharp').then(({ default: sharp }) => sharp).catch(() => {
+	throw new Error('Norna could not load Sharp for image processing. Run npm install --include=optional in the project to install the native image dependencies for this computer.');
+});
 
 const toPublicPath = (filePath) => filePath.split(path.sep).join('/');
 const getPublicPath = (filePath) => `/${toPublicPath(path.relative(astroPublicDir, filePath))}`;
@@ -86,7 +38,7 @@ const getSourceHashSlug = (sourceHash) => sourceHash.slice(0, sourceHashSlugLeng
 
 const getGeneratedPath = (sourceKey, sourceHash, width) => {
 	const parsed = path.parse(sourceKey.replace(/^root\//, ''));
-	return path.join(generatedImagesDir, parsed.dir, `${parsed.base}-${getSourceHashSlug(sourceHash)}-${width}.webp`);
+	return path.join(generatedImagesDir, parsed.dir, `${parsed.base}-${getSourceHashSlug(sourceHash)}-v${rasterOutputVersion}-${width}.webp`);
 };
 
 const getOriginalPath = (sourceKey, sourceHash) => {
@@ -212,15 +164,18 @@ const validateCarouselOrientations = async (manifest) => {
 	}
 };
 
-const identify = async (sourcePath, imageMagick) => {
-	const output = await imageMagick.identify(sourcePath);
-	const [width, height] = output.split(' ').map(Number);
-	return { width, height };
+const identify = async (sourcePath, sharp) => {
+	const { autoOrient: dimensions } = await sharp(sourcePath).metadata();
+	if (!dimensions || !Number.isSafeInteger(dimensions.width) || !Number.isSafeInteger(dimensions.height)
+		|| dimensions.width <= 0 || dimensions.height <= 0) throw new Error('The image has no usable dimensions.');
+	return dimensions;
 };
 
-const convert = async (sourcePath, outputPath, width, imageMagick) => {
+const convert = async (sourcePath, outputPath, width, sharp) => {
 	await mkdir(path.dirname(outputPath), { recursive: true });
-	await imageMagick.convert(sourcePath, outputPath, width);
+	// Sharp converts to sRGB and strips metadata by default.
+	await sharp(sourcePath).autoOrient().resize({ width, withoutEnlargement: true })
+		.webp({ quality: 82 }).toFile(outputPath);
 };
 
 const getHash = (value) => createHash('sha256').update(value).digest('hex');
@@ -275,7 +230,7 @@ const hasGeneratedVariants = async (variants) => {
 const getReusableEntry = async (sourceKey, previousEntry, sourceHash) => {
 	if (
 		previousEntry?.sourceHash !== sourceHash
-		|| previousEntry?.outputVersion !== imageOutputVersion
+		|| previousEntry?.outputVersion !== rasterOutputVersion
 		|| !Number.isFinite(previousEntry?.width)
 		|| !Number.isFinite(previousEntry?.height)
 	) {
@@ -289,7 +244,7 @@ const getReusableEntry = async (sourceKey, previousEntry, sourceHash) => {
 	}
 
 	return {
-		outputVersion: imageOutputVersion,
+		outputVersion: rasterOutputVersion,
 		sourceHash,
 		width: previousEntry.width,
 		height: previousEntry.height,
@@ -301,7 +256,7 @@ const getReusableStaticEntry = async (previousEntry, sourceHash, sourceKey) => {
 	if (
 		previousEntry?.kind !== 'static'
 		|| previousEntry?.sourceHash !== sourceHash
-		|| previousEntry?.outputVersion !== imageOutputVersion
+		|| previousEntry?.outputVersion !== staticOutputVersion
 		|| previousEntry?.src !== getPublicPath(getOriginalPath(sourceKey, sourceHash))
 		|| !(await fileExists(getFilePathFromPublicPath(previousEntry.src)))
 	) {
@@ -365,7 +320,6 @@ const main = async () => {
 	const sources = await getReferencedSources();
 	const manifest = {};
 	const isStaticSource = (sourcePath) => staticImageExtensions.has(path.extname(sourcePath).toLowerCase());
-	const isRasterSource = (sourcePath) => rasterImageExtensions.has(path.extname(sourcePath).toLowerCase());
 
 	if (sources.length === 0) {
 		await removeUnreferencedGeneratedFiles(manifest);
@@ -373,10 +327,6 @@ const main = async () => {
 		await writeFile(generatedImagesManifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 		return;
 	}
-
-	const imageMagick = sources.some(({ sourcePath }) => isRasterSource(sourcePath))
-		? await getImageMagick()
-		: null;
 
 	for (const { sourcePath, sourceKey } of sources) {
 		const sourceHash = await getSourceHash(sourcePath);
@@ -396,7 +346,7 @@ const main = async () => {
 			const dimensions = await readImageDimensions(sourcePath).catch(() => null);
 			manifest[sourceKey] = {
 				kind: 'static',
-				outputVersion: imageOutputVersion,
+				outputVersion: staticOutputVersion,
 				sourceHash,
 				src: getPublicPath(outputPath),
 				...(dimensions ? { width: dimensions.width, height: dimensions.height } : {}),
@@ -411,20 +361,22 @@ const main = async () => {
 			continue;
 		}
 
-		if (!imageMagick) {
-			throw new Error(`ImageMagick is missing for raster image: ${sourcePath}`);
-		}
-
-		const dimensions = await identify(sourcePath, imageMagick);
-		const variantWidths = getVariantWidths(dimensions);
-		const variants = getVariants(sourceKey, sourceHash, variantWidths);
-		for (const width of variantWidths) {
-			const outputPath = getGeneratedPath(sourceKey, sourceHash, width);
-			await convert(sourcePath, outputPath, width, imageMagick);
+		const sharp = await getSharp();
+		let dimensions;
+		let variants;
+		try {
+			dimensions = await identify(sourcePath, sharp);
+			const variantWidths = getVariantWidths(dimensions);
+			variants = getVariants(sourceKey, sourceHash, variantWidths);
+			for (const width of variantWidths) {
+				await convert(sourcePath, getGeneratedPath(sourceKey, sourceHash, width), width, sharp);
+			}
+		} catch (error) {
+			throw new Error(`Cannot process image ${sourcePath}: ${error.message}`);
 		}
 
 		manifest[sourceKey] = {
-			outputVersion: imageOutputVersion,
+			outputVersion: rasterOutputVersion,
 			sourceHash,
 			width: dimensions.width,
 			height: dimensions.height,

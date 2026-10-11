@@ -12,15 +12,8 @@ edit, and validate the result. This is the normal standalone setup.
 
 ## Create a site {#create}
 
-You need:
-
-- Node.js 22.12 or later and npm.
-- ImageMagick before adding JPEG or PNG images through Norna image blocks.
-
-Norna needs ImageMagick to prepare raster images for responsive layouts. Install
-it separately for your operating system when the site uses those formats.[^margin:imagemagick] SVG images do not require it.
-
-[^margin:imagemagick]: [How to install ImageMagick.](/faq/installation/#install-imagemagick)
+You need Node.js 22.12 or later and npm. Norna's installation includes the
+image processing needed for JPEG and PNG files.
 
 ```sh
 # Create a new site project in my-site/

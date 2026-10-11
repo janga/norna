@@ -94,7 +94,7 @@ test('the overview links to six areas with working media and attachments', async
 		await expect(section(page, 'semantic-callouts').locator(`.norna-callout-${type}`)).toHaveCount(1);
 	}
 	await page.goto('examples/building-a-site/');
-	const attachment = page.locator('#main-content a[href$="/examples/building-a-site/downloads/visit-checklist.txt"]');
+	const attachment = page.locator('#main-content a[href$="/_norna/downloads/examples--building-a-site/visit-checklist.txt"]');
 	await expect(attachment).toHaveCount(1);
 	const response = await page.request.get((await attachment.getAttribute('href'))!);
 	expect(response.ok()).toBe(true);
@@ -128,10 +128,10 @@ test('gallery alternatives retain exact code and a stable page outline', async (
 	const group = example.locator('[data-content-tabs]');
 	const headings = await page.locator('#main-content :is(h1,h2,h3)').allTextContents();
 	await group.getByRole('tab', { name: 'Windows' }).click();
-	await expect(group.getByRole('tabpanel').locator('pre code')).toHaveText('winget install ImageMagick.ImageMagick');
+	await expect(group.getByRole('tabpanel').locator('pre code')).toHaveText('winget install Git.Git');
 	await group.getByRole('tab', { name: 'macOS' }).focus();
 	await page.keyboard.press('Home');
-	await expect(group.getByRole('tabpanel').locator('pre code')).toHaveText('brew install imagemagick');
+	await expect(group.getByRole('tabpanel').locator('pre code')).toHaveText('brew install git');
 	await expect(group.getByRole('tabpanel').locator('.norna-callout-tip')).toBeVisible();
 	expect(await page.locator('#main-content :is(h1,h2,h3)').allTextContents()).toEqual(headings);
 	await expect(example.locator('a[href$="/reference/content/tabs/"]')).toHaveCount(1);

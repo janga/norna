@@ -12,7 +12,7 @@ Choose an installation method.
 > Use the package manager already installed on this computer.
 
 ```sh title="Install with Homebrew"
-brew install imagemagick
+brew install git
 ```
 
 Check the version after installation.[^terminal]
@@ -22,7 +22,7 @@ Check the version after installation.[^terminal]
 ::: tab "Windows"
 
 ```powershell title="Install with WinGet"
-winget install ImageMagick.ImageMagick
+winget install Git.Git
 ```
 
 | Step | Result |
@@ -49,7 +49,7 @@ items:
 
 ::: tab "Linux"
 
-Not applicable. This example assumes ImageMagick is already installed.
+Not applicable. This example assumes Git is already installed.
 
 :::
 
@@ -62,7 +62,7 @@ Not applicable. This example assumes ImageMagick is already installed.
 ::: tab "macOS"
 
 ```sh
-magick --version
+git --version
 ```
 
 :::
@@ -70,7 +70,7 @@ magick --version
 ::: tab "Windows"
 
 ```powershell
-magick --version
+git --version
 ```
 
 :::

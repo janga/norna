@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const contentScript = path.join(repoRoot, 'scripts', 'sync-content-sections.mjs');
@@ -32,15 +33,9 @@ const writeFixtureFile = async (root, relativePath, contents = 'fixture image') 
 	await writeFile(filePath, contents);
 };
 
-const makePngHeader = ({ width, height }) => {
-	const buffer = Buffer.alloc(24);
-	Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(buffer, 0);
-	buffer.writeUInt32BE(13, 8);
-	buffer.write('IHDR', 12, 'ascii');
-	buffer.writeUInt32BE(width, 16);
-	buffer.writeUInt32BE(height, 20);
-	return buffer;
-};
+const makePng = ({ width, height }) => sharp({
+	create: { width, height, channels: 3, background: '#808080' },
+}).png().toBuffer();
 
 const defaultTheme = `preset: project
 typography:
@@ -157,11 +152,11 @@ test('content:check warns when carousel images use different aspect ratios', asy
 		files: [
 			{
 				path: 'site/root/images/wide.png',
-				contents: makePngHeader({ width: 400, height: 300 }),
+				contents: await makePng({ width: 400, height: 300 }),
 			},
 			{
 				path: 'site/root/images/wider.png',
-				contents: makePngHeader({ width: 600, height: 300 }),
+				contents: await makePng({ width: 600, height: 300 }),
 			},
 		],
 	}, async (root) => {

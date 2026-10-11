@@ -25,61 +25,23 @@ mode before running `npm install`. Do not create an empty `package.json` merely
 to silence the error; let Norna create a standalone project or update the real
 existing project.
 
-## How do I install ImageMagick? {#install-imagemagick}
+## Do I need ImageMagick? {#install-imagemagick}
 
-When a JPEG or PNG file is referenced from a Norna image stack, carousel, or
-card list, Norna uses ImageMagick to read its dimensions and create responsive
-variants. Install ImageMagick separately before using those raster formats.
-SVG images in the same blocks do not require it.
+No. Norna includes Sharp for JPEG and PNG processing through npm. Earlier
+Norna releases required a separate ImageMagick installation. Existing deployment
+workflows can remove that installation step after updating Norna.
 
-**macOS**
+## Why can't Norna load image processing? {#image-processing}
 
-Install ImageMagick with [Homebrew](https://brew.sh/):
-
-```sh
-brew install imagemagick
-```
-
-**Windows**
-
-Install the official Windows package from PowerShell or Windows Terminal:
-
-```powershell
-winget install ImageMagick.Q16
-```
-
-You can instead use the installer from the
-[official ImageMagick download page](https://imagemagick.org/download/). Open a
-new terminal after installation so the `magick` command is available.
-
-**Debian and Ubuntu**
+Sharp needs native components for the computer running the build. If Norna
+reports that Sharp cannot load, run this from the site project:
 
 ```sh
-sudo apt update
-sudo apt install imagemagick
+npm install --include=optional
 ```
 
-**Fedora**
-
-```sh
-sudo dnf install ImageMagick
-```
-
-**Verify the installation**
-
-Current ImageMagick installations provide this command:
-
-```sh
-magick -version
-```
-
-Some Linux distributions install an older ImageMagick version instead. Norna
-also accepts that version when both of these commands work:
-
-```sh
-identify -version
-convert -version
-```
-
-See [ImageMagick's official download page](https://imagemagick.org/download/)
-for other operating systems and installation methods.
+Install dependencies on the computer that runs Norna; copying `node_modules/`
+from a different operating system or processor can leave the wrong binaries.
+In CI, use `npm ci` with optional dependencies enabled and a current lockfile.
+If installation still fails, check Sharp's
+[supported platforms and installation guidance](https://sharp.pixelplumbing.com/install/).

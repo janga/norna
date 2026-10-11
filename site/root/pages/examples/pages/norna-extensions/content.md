@@ -202,18 +202,18 @@ and
 >
 > Use Homebrew if it is already installed on your computer.
 
-```sh title="Install ImageMagick with Homebrew"
-brew install imagemagick
+```sh title="Install Git with Homebrew"
+brew install git
 ```
 
 :::
 
 ::: tab "Windows"
 
-Open PowerShell and install ImageMagick with WinGet:
+Open PowerShell and install Git with WinGet:
 
-```powershell title="Install ImageMagick with WinGet"
-winget install ImageMagick.ImageMagick
+```powershell title="Install Git with WinGet"
+winget install Git.Git
 ```
 
 :::
@@ -229,18 +229,18 @@ winget install ImageMagick.ImageMagick
 >
 > Use Homebrew if it is already installed on your computer.
 
-```sh title="Install ImageMagick with Homebrew"
-brew install imagemagick
+```sh title="Install Git with Homebrew"
+brew install git
 ```
 
 :::
 
 ::: tab "Windows"
 
-Open PowerShell and install ImageMagick with WinGet:
+Open PowerShell and install Git with WinGet:
 
-```powershell title="Install ImageMagick with WinGet"
-winget install ImageMagick.ImageMagick
+```powershell title="Install Git with WinGet"
+winget install Git.Git
 ```
 
 :::

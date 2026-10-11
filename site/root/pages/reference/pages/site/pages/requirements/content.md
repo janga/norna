@@ -15,15 +15,15 @@ static; readers need only a browser.
 | Tool | Needed for |
 | --- | --- |
 | Node.js and npm | Installing Norna, checking sources and building |
-| ImageMagick | Processing managed JPEG and PNG images |
 | Git | Source control and GitHub publishing commands |
 | GitHub CLI (`gh`) | Norna deploy and deploy-monitoring commands |
 | VS Code and the Norna extension | Optional editing assistance |
 
-ImageMagick is a system tool, not an npm dependency. Norna accepts `magick`
-or compatible `identify` and `convert` commands. SVG-only sites do not need it.
-The [installation FAQ](/faq/installation/#install-imagemagick) gives installation
-instructions. Playwright and engine-contributor tools are not required for a site.
+Norna includes Sharp for JPEG and PNG processing through npm. Its prebuilt
+native components cover common Windows, macOS and Linux environments; keep
+npm's optional dependencies enabled. See the
+[installation FAQ](/faq/installation/#image-processing) if image processing
+cannot load. Playwright and engine-contributor tools are not required for a site.
 
 ## Product boundaries
 

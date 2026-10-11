@@ -41,6 +41,16 @@ Correct reported source problems, then inspect Home, nested pages, navigation
 at desktop and mobile widths, images, banners, footer and local themes. Review
 and commit the source and lockfile changes together before publishing.
 
+### Image processing after the Sharp update
+
+Image processing now comes with the npm installation. The first build or
+preview with the Sharp pipeline regenerates the selected site's used JPEG/PNG
+variants and updates its image manifest. It can take longer than a cached
+build. Original images and unchanged SVG output are preserved; `sourceFormat`
+does not change. Later builds and ordinary engine upgrades reuse valid output.
+See [image caching](/reference/site/images/#manifest-and-cache) for the exact
+regeneration rules.
+
 ## Older source models
 
 For substantially older sites, initialize a temporary current project and use

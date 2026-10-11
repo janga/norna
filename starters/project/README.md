@@ -10,6 +10,8 @@ npm install
 npm run norna:dev
 ```
 
+The npm installation includes image processing for JPEG and PNG files.
+
 Open the address printed by the development server. Stop it later with
 `npm run norna:dev:stop`.
 
