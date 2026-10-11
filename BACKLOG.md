@@ -56,8 +56,8 @@ action, practical user evaluation, or another user-owned prerequisite. They do
 not block `Now` or `Next`.
 
 - [BL-181 Replace ImageMagick With Sharp](docs/design/backlog/BL-181-replace-imagemagick-with-sharp.md):
-  **Implemented locally; awaiting installation CI.** Run the new candidate-package
-  matrix on Windows, macOS and Ubuntu before closing the item or releasing.
+  **Implemented; Windows cleanup fix awaits CI.** Three installation jobs passed;
+  rerun Windows after the test-helper fix before closing the item or releasing.
 - [BL-182 Restore CI Integration Checks](docs/design/backlog/BL-182-restore-ci-integration-checks.md):
   **Repaired locally; awaiting CI.** Confirm the corrected native editor fixtures
   and WebKit setup in passing Editor extension and Engine tests runs.

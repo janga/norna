@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
 import { cp, mkdir, mkdtemp, readFile, rename, rm, stat, utimes, writeFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -20,10 +19,16 @@ const node = (args, cwd, env = process.env) => run(process.execPath, args, { cwd
 const npm = (args, cwd) => node([npmCli, ...args, '--no-audit', '--no-fund'], cwd);
 const readJson = async filename => JSON.parse(await readFile(filename, 'utf8'));
 const saveJson = (filename, data) => writeFile(filename, JSON.stringify(data, null, 2) + '\n');
-const installedSharp = async project => {
-	const require = createRequire(path.join(project, 'node_modules/@janga/norna/package.json'));
-	return (await import(pathToFileURL(require.resolve('sharp')).href)).default;
-};
+// Loading a native DLL in this process would keep Windows from removing the
+// temporary installation. Let a child exit and release it before cleanup.
+const withInstalledSharp = (project, source, args = []) => node(['--input-type=module', '-e', `
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+const require = createRequire(path.resolve('node_modules/@janga/norna/package.json'));
+const sharp = (await import(pathToFileURL(require.resolve('sharp')).href)).default;
+${source}
+`, ...args], project);
 
 if (mode === 'prepare') {
 	// Fail rather than overwrite an earlier bundle or its test results.
@@ -47,9 +52,9 @@ if (mode === 'prepare') {
 		const imageDir = path.join(project, 'site/root/images');
 		await mkdir(imageDir, { recursive: true });
 		await cp(path.join(repoRoot, 'fixtures/content-model-v2/site/root/images/image.jpg'), path.join(imageDir, 'photo.jpg'));
-		const sharp = await installedSharp(bootstrap);
-		await sharp({ create: { width: 960, height: 600, channels: 4, background: { r: 30, g: 140, b: 80, alpha: 0.5 } } })
-			.png().toFile(path.join(imageDir, 'alpha.png'));
+		await withInstalledSharp(bootstrap, `
+await sharp({ create: { width: 960, height: 600, channels: 4, background: { r: 30, g: 140, b: 80, alpha: 0.5 } } })
+ .png().toFile(process.argv[1]);`, [path.join(imageDir, 'alpha.png')]);
 		await writeFile(path.join(project, 'site/root/content.md'), '# Installation test\n\n![Photograph](images/photo.jpg)\n\n```image-stack\nitems:\n  - image: alpha.png\n    alt: Transparent sample\n```\n');
 		const workflow = await readFile(path.join(project, '.github/workflows/deploy.yml'), 'utf8');
 		assert.doesNotMatch(workflow, /imagemagick/i);
@@ -94,14 +99,18 @@ syncBuiltinESMExports();
 		await node([cli, 'build'], project, env);
 		const manifestPath = path.join(project, 'site/.norna/generated-images.json');
 		const manifest = await readJson(manifestPath);
-		const sharp = await installedSharp(project);
+		const filenames = Object.values(manifest).flatMap(entry => entry.variants.map(variant => path.join(project, 'site/.norna/public', variant.src)));
+		const probe = JSON.parse((await withInstalledSharp(project, `
+const metadata = await Promise.all(JSON.parse(process.argv[1]).map(filename => sharp(filename).metadata()));
+console.log(JSON.stringify({ version: sharp.versions.sharp, metadata }));`, [JSON.stringify(filenames)])).stdout);
+		let metadataIndex = 0;
 		const oldTime = new Date('2000-01-01');
 		const html = await readFile(path.join(project, 'dist/index.html'), 'utf8');
 		for (const [source, entry] of Object.entries(manifest)) {
 			assert.ok(entry.variants.length > 0);
 			for (const variant of entry.variants) {
 				const filename = path.join(project, 'site/.norna/public', variant.src);
-				const meta = await sharp(filename).metadata();
+				const meta = probe.metadata[metadataIndex++];
 				assert.equal(meta.format, 'webp');
 				assert.equal(meta.width, variant.width);
 				if (source.endsWith('alpha.png')) assert.equal(meta.hasAlpha, true);
@@ -116,6 +125,6 @@ syncBuiltinESMExports();
 			assert.equal((await stat(path.join(project, 'site/.norna/public', variant.src))).mtimeMs, oldTime.getTime());
 		}
 		await assert.rejects(stat(attempts), { code: 'ENOENT' });
-		console.log(`Image installation passed: ${process.platform}/${process.arch}, Node ${process.version}, npm ${(await npm(['--version'], project)).stdout.trim()}, Norna ${engine.version}, Sharp ${sharp.versions.sharp}`);
+		console.log(`Image installation passed: ${process.platform}/${process.arch}, Node ${process.version}, npm ${(await npm(['--version'], project)).stdout.trim()}, Norna ${engine.version}, Sharp ${probe.version}`);
 	} finally { await rm(temporary, { recursive: true, force: true }); }
 }

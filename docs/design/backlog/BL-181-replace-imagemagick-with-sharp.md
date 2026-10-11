@@ -268,6 +268,28 @@ and `/tmp/norna-sharp-build-pages.log`.
 Visual comparisons are under `.local/sharp-visual-review/`; registered captures
 are under `.local/review-captures/`.
 
+## CI Follow-up — 2026-10-11
+
+The first [installation matrix](https://github.com/janga/norna/actions/runs/38163548313)
+at `6c7c6cc` passed on macOS and Ubuntu with Node 24.18.0, and Ubuntu with
+minimum Node 22.12.0. The Windows Node 24.18.0 job passed installation, site
+creation, both image builds, decoding and cache reuse, then failed to delete
+the temporary installation: the test process still held Sharp's libvips DLL.
+
+The helper now loads Sharp in a child process that exits before cleanup. It
+retains all assertions and cleanup failures. Candidate preparation and checking
+passed locally on macOS arm64, Node 26.7.0, npm 11.19.0, Sharp 0.35.5; log:
+`/tmp/norna-sharp-cleanup-fix.log`. **Required, not yet run:** the corrected
+Windows job. The matrix is not yet fully green.
+
+The [Engine tests run](https://github.com/janga/norna/actions/runs/38163548317)
+passed its complete prepared-release `npm test` chain. Its later navigation
+browser check lacked WebKit. The native editor job also exposed older fixture
+failures. These required CI failures are tracked in
+[BL-182 Restore CI Integration Checks](BL-182-restore-ci-integration-checks.md).
+The [Pages deployment](https://github.com/janga/norna/actions/runs/38163548294)
+passed.
+
 ## Release Note
 
 JPEG and PNG processing now comes with Norna's npm installation through Sharp.
